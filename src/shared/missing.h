@@ -926,3 +926,8 @@ static inline int renameat2(int oldfd, const char *oldname, int newfd, const cha
 #ifndef RENAME_NOREPLACE
 #define RENAME_NOREPLACE (1 << 0)
 #endif
+
+
+#ifndef INPUT_PROP_POINTING_STICK
+#define INPUT_PROP_POINTING_STICK 0x05
+#endif
