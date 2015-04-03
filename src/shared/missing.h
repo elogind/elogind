@@ -931,3 +931,7 @@ static inline int renameat2(int oldfd, const char *oldname, int newfd, const cha
 #ifndef INPUT_PROP_POINTING_STICK
 #define INPUT_PROP_POINTING_STICK 0x05
 #endif
+
+#ifndef INPUT_PROP_ACCELEROMETER
+#define INPUT_PROP_ACCELEROMETER  0x06
+#endif
