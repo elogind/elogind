@@ -21,6 +21,7 @@
 
 #include "util.h"
 #include "path-util.h"
+#include "btrfs-util.h"
 #include "rm-rf.h"
 
 int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
@@ -75,7 +76,8 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                 if (streq(de->d_name, ".") || streq(de->d_name, ".."))
                         continue;
 
-                if (de->d_type == DT_UNKNOWN || (de->d_type == DT_DIR && root_dev)) {
+                if (de->d_type == DT_UNKNOWN ||
+                    (de->d_type == DT_DIR && (root_dev || (flags & REMOVE_SUBVOLUME)))) {
                         if (fstatat(fd, de->d_name, &st, AT_SYMLINK_NOFOLLOW) < 0) {
                                 if (ret == 0 && errno != ENOENT)
                                         ret = -errno;
@@ -114,6 +116,30 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                                 continue;
                         }
 
+                        if ((flags & REMOVE_SUBVOLUME) && st.st_ino == 256) {
+
+                                /* This could be a subvolume, try to remove it */
+
+                                r = btrfs_subvol_remove_fd(fd, de->d_name, true);
+                                if (r < 0) {
+                                        if (r != -ENOTTY && r != -EINVAL) {
+                                                if (ret == 0)
+                                                        ret = r;
+
+                                                safe_close(subdir_fd);
+                                                continue;
+                                        }
+
+                                        /* ENOTTY, then it wasn't a
+                                         * btrfs subvolume, continue
+                                         * below. */
+                                } else {
+                                        /* It was a subvolume, continue. */
+                                        safe_close(subdir_fd);
+                                        continue;
+                                }
+                        }
+
                         /* We pass REMOVE_PHYSICAL here, to avoid
                          * doing the fstatfs() to check the file
                          * system type again for each directory */
@@ -150,6 +176,18 @@ int rm_rf(const char *path, RemoveFlags flags) {
                 return -EPERM;
         }
 
+        if ((flags & (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) == (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) {
+                /* Try to remove as subvolume first */
+                r = btrfs_subvol_remove(path, true);
+                if (r >= 0)
+                        return r;
+
+                if (r != -ENOTTY && r != -EINVAL)
+                        return r;
+
+                /* Not btrfs or not a subvolume */
+        }
+
         fd = open(path, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW|O_NOATIME);
         if (fd < 0) {
 
@@ -176,8 +214,8 @@ int rm_rf(const char *path, RemoveFlags flags) {
         r = rm_rf_children(fd, flags, NULL);
 
         if (flags & REMOVE_ROOT) {
-                if (rmdir(path) < 0 && errno != ENOENT) {
-                        if (r == 0)
+                if (rmdir(path) < 0) {
+                        if (r == 0 && errno != ENOENT)
                                 r = -errno;
                 }
         }
