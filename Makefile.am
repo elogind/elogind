@@ -525,8 +525,6 @@ libsystemd_shared_la_SOURCES = \
 	src/shared/json.h \
 	src/shared/selinux-util.c \
 	src/shared/selinux-util.h \
-	src/shared/smack-util.c \
-	src/shared/smack-util.h \
 	src/shared/label.c \
 	src/shared/label.h \
 	src/shared/socket-label.c \
@@ -976,8 +974,7 @@ libsystemd_logind_core_la_SOURCES = \
 
 libsystemd_logind_core_la_LIBADD = \
 	$(UDEV_LIBS) \
-	libsystemd-internal.la \
-	libsystemd-shared.la
+	libsystemd-internal.la
 
 if HAVE_ACL
 libsystemd_logind_core_la_SOURCES += \
@@ -1059,30 +1056,29 @@ tests += \
 	test-login-shared
 
 if HAVE_PAM
-pam_systemd_la_SOURCES = \
-	src/login/pam_systemd.sym \
-	src/login/pam_systemd.c
+pam_elogind_la_SOURCES = \
+	src/login/pam_elogind.sym \
+	src/login/pam_elogind.c
 
-pam_systemd_la_CFLAGS = \
+pam_elogind_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(PAM_CFLAGS) \
 	-fvisibility=hidden
 
-pam_systemd_la_LDFLAGS = \
+pam_elogind_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
 	-module \
 	-export-dynamic \
 	-avoid-version \
 	-shared \
-	-Wl,--version-script=$(top_srcdir)/src/login/pam_systemd.sym
+	-Wl,--version-script=$(top_srcdir)/src/login/pam_elogind.sym
 
-pam_systemd_la_LIBADD = \
+pam_elogind_la_LIBADD = \
 	libsystemd-internal.la \
-	libsystemd-shared.la \
 	$(PAM_LIBS)
 
 pamlib_LTLIBRARIES = \
-	pam_systemd.la
+	pam_elogind.la
 
 dist_pamconf_DATA = \
 	src/login/systemd-user
