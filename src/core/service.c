@@ -347,7 +347,7 @@ static int service_add_fd_store(Service *s, int fd) {
                 return 0;
 
         LIST_FOREACH(fd_store, fs, s->fd_store) {
-                r = same_fd(fs->fd, fd);
+                r = -EINVAL;
                 if (r < 0)
                         return r;
                 if (r > 0) {

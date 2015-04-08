@@ -155,9 +155,12 @@ CLEANFILES = $(BUILT_SOURCES) \
 	$(INSTALL_DATA_HOOKS) $(UNINSTALL_DATA_HOOKS) \
 	$(DISTCLEAN_LOCAL_HOOKS) $(CLEAN_LOCAL_HOOKS)
 
+# FIXME a different pkttyagent path...
+
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
+	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
 	-DSYSTEM_CONFIG_UNIT_PATH=\"$(pkgsysconfdir)/system\" \
 	-DSYSTEM_DATA_UNIT_PATH=\"$(systemunitdir)\" \
 	-DSYSTEM_SYSVINIT_PATH=\"$(SYSTEM_SYSVINIT_PATH)\" \
@@ -190,6 +193,10 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/systemd \
 	-I $(top_builddir)/src/core \
 	-I $(top_srcdir)/src/core \
+	-I $(top_srcdir)/src/libsystemd/sd-bus \
+	-I $(top_srcdir)/src/libsystemd/sd-event \
+	-I $(top_srcdir)/src/libsystemd/sd-device \
+	$(UDEV_CFLAGS) \
 	$(OUR_CPPFLAGS)
 
 AM_CFLAGS = $(OUR_CFLAGS)
@@ -329,7 +336,6 @@ dist_doc_DATA = \
 	LICENSE.LGPL2.1 \
 	LICENSE.GPL2 \
 	LICENSE.MIT \
-	DISTRO_PORTING \
 	src/libsystemd/sd-bus/PORTING-DBUS1 \
 	src/libsystemd/sd-bus/DIFFERENCES \
 	src/libsystemd/sd-bus/GVARIANT-SERIALIZATION
@@ -476,8 +482,6 @@ libsystemd_shared_la_SOURCES = \
 	src/shared/unit-name.h \
 	src/shared/watchdog.c \
 	src/shared/watchdog.h \
-	src/shared/spawn-ask-password-agent.c \
-	src/shared/spawn-ask-password-agent.h \
 	src/shared/replace-var.c \
 	src/shared/replace-var.h \
 	src/shared/spawn-polkit-agent.c \
@@ -519,6 +523,16 @@ libsystemd_shared_la_SOURCES = \
 	src/shared/xml.h \
 	src/shared/json.c \
 	src/shared/json.h \
+	src/shared/selinux-util.c \
+	src/shared/selinux-util.h \
+	src/shared/smack-util.c \
+	src/shared/smack-util.h \
+	src/shared/label.c \
+	src/shared/label.h \
+	src/shared/socket-label.c \
+	src/shared/mkdir-label.c \
+	src/shared/fileio-label.h \
+	src/shared/fileio-label.c \
 	src/shared/bus-label.c \
 	src/shared/bus-label.h \
 	src/shared/gpt.h \
@@ -621,10 +635,6 @@ libsystemd_core_la_SOURCES = \
 	src/core/snapshot.h \
 	src/core/device.c \
 	src/core/device.h \
-	src/core/mount.c \
-	src/core/mount.h \
-	src/core/automount.c \
-	src/core/automount.h \
 	src/core/swap.c \
 	src/core/swap.h \
 	src/core/timer.c \
@@ -661,10 +671,6 @@ libsystemd_core_la_SOURCES = \
 	src/core/dbus-snapshot.h \
 	src/core/dbus-device.c \
 	src/core/dbus-device.h \
-	src/core/dbus-mount.c \
-	src/core/dbus-mount.h \
-	src/core/dbus-automount.c \
-	src/core/dbus-automount.h \
 	src/core/dbus-swap.c \
 	src/core/dbus-swap.h \
 	src/core/dbus-timer.c \
@@ -697,12 +703,8 @@ libsystemd_core_la_SOURCES = \
 	src/core/hostname-setup.h \
 	src/core/machine-id-setup.c \
 	src/core/machine-id-setup.h \
-	src/core/mount-setup.c \
-	src/core/mount-setup.h \
 	src/core/kmod-setup.c \
 	src/core/kmod-setup.h \
-	src/core/loopback-setup.h \
-	src/core/loopback-setup.c \
 	src/core/namespace.c \
 	src/core/namespace.h \
 	src/core/killall.h \
@@ -725,7 +727,6 @@ libsystemd_core_la_CFLAGS = \
 
 libsystemd_core_la_LIBADD = \
 	libsystemd-shared.la \
-	libsystemd-internal.la \
 	$(PAM_LIBS)
 
 src/core/load-fragment-gperf-nulstr.c: src/core/load-fragment-gperf.gperf
@@ -819,7 +820,10 @@ dist_factory_pam_DATA = \
 endif
 
 # ------------------------------------------------------------------------------
-libsystemd_la_SOURCES = \
+noinst_LTLIBRARIES += \
+	libsystemd-internal.la
+
+libsystemd_internal_la_SOURCES = \
 	src/systemd/sd-bus.h \
 	src/systemd/sd-bus-protocol.h \
 	src/systemd/sd-bus-vtable.h \
@@ -832,7 +836,6 @@ libsystemd_la_SOURCES = \
 	src/systemd/sd-daemon.h \
 	src/systemd/sd-path.h \
 	src/systemd/sd-network.h \
-	src/systemd/sd-hwdb.h \
 	src/systemd/sd-device.h \
 	src/libsystemd/sd-bus/sd-bus.c \
 	src/libsystemd/sd-bus/bus-control.c \
@@ -895,27 +898,28 @@ libsystemd_la_SOURCES = \
 	src/libsystemd/sd-network/sd-network.c \
 	src/libsystemd/sd-network/network-util.h \
 	src/libsystemd/sd-network/network-util.c \
-	src/libsystemd/sd-hwdb/sd-hwdb.c \
-	src/libsystemd/sd-hwdb/hwdb-util.h \
-	src/libsystemd/sd-hwdb/hwdb-intenal.h \
 	src/libsystemd/sd-device/device-internal.h \
 	src/libsystemd/sd-device/device-util.h \
 	src/libsystemd/sd-device/sd-device.c \
 	src/libsystemd/sd-device/device-private.c \
 	src/libsystemd/sd-device/device-private.h
 
-nodist_libsystemd_la_SOURCES = \
+nodist_libsystemd_internal_la_SOURCES = \
 	src/libsystemd/libsystemd.sym
 
-libsystemd_la_CFLAGS = \
+libsystemd_internal_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	-pthread
 
-libsystemd_la_LIBADD = \
+BUILT_SOURCES += \
+       src/libsystemd/libsystemd.sym
+
+
+libsystemd_internal_la_LIBADD = \
 	$(RT_LIBS) \
 	libsystemd-shared.la
 
-libsystemd_la_LDFLAGS = \
+libsystemd_internal_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
 	-version-info $(LIBSYSTEMD_CURRENT):$(LIBSYSTEMD_REVISION):$(LIBSYSTEMD_AGE) \
 	-Wl,--version-script=$(top_builddir)/src/libsystemd/libsystemd.sym
@@ -934,9 +938,6 @@ pkgconfiglib_DATA += \
 
 pkginclude_HEADERS += \
 	src/systemd/sd-login.h
-
-lib_LTLIBRARIES += \
-	libsystemd.la
 
 # ------------------------------------------------------------------------------
 systemd_logind_SOURCES = \
@@ -974,9 +975,8 @@ libsystemd_logind_core_la_SOURCES = \
 	src/login/logind-acl.h
 
 libsystemd_logind_core_la_LIBADD = \
-	libsystemd-label.la \
-	libudev-internal.la \
 	$(UDEV_LIBS) \
+	libsystemd-internal.la \
 	libsystemd-shared.la
 
 if HAVE_ACL
@@ -1001,8 +1001,6 @@ loginctl_SOURCES = \
 loginctl_LDADD = \
 	$(UDEV_LIBS) \
 	libsystemd-internal.la \
-	libsystemd-logs.la \
-	libsystemd-journal-internal.la \
 	libsystemd-shared.la
 
 rootbin_PROGRAMS += \
@@ -1149,7 +1147,6 @@ substitutions = \
        '|userunitdir=$(userunitdir)|' \
        '|systempresetdir=$(systempresetdir)|' \
        '|userpresetdir=$(userpresetdir)|' \
-       '|udevhwdbdir=$(udevhwdbdir)|' \
        '|udevrulesdir=$(udevrulesdir)|' \
        '|catalogdir=$(catalogdir)|' \
        '|tmpfilesdir=$(tmpfilesdir)|' \
@@ -1333,8 +1330,6 @@ distclean-local: $(DISTCLEAN_LOCAL_HOOKS)
 
 clean-local: $(CLEAN_LOCAL_HOOKS)
 	rm -rf $(abs_srcdir)/install-tree
-	rm -f $(abs_srcdir)/hwdb/usb.ids $(abs_srcdir)/hwdb/pci.ids $(abs_srcdir)/hwdb/oui.txt \
-	      $(abs_srcdir)/hwdb/iab.txt
 
 DISTCHECK_CONFIGURE_FLAGS = \
 	--with-dbuspolicydir=$$dc_install_base/$(dbuspolicydir) \

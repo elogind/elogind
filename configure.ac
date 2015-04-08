@@ -316,6 +316,9 @@ AS_IF([test "x$enable_dbus" != "xno"], [
 AM_CONDITIONAL(HAVE_DBUS, [test "$have_dbus" = "yes"])
 
 # ------------------------------------------------------------------------------
+PKG_CHECK_MODULES(UDEV, [libudev])
+
+# ------------------------------------------------------------------------------
 have_compat_libs=no
 AC_ARG_ENABLE([compat_libs], AS_HELP_STRING([--enable-compat-libs],[Enable creation of compatibility libraries]),
                 [case "${enableval}" in

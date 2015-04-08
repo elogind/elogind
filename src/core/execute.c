@@ -61,7 +61,6 @@
 #include "namespace.h"
 #include "exit-status.h"
 #include "missing.h"
-#include "utmp-wtmp.h"
 #include "def.h"
 #include "path-util.h"
 #include "env-util.h"

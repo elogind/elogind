@@ -933,7 +933,8 @@ int manager_setup_cgroup(Manager *m) {
 
                 /* 3. Install agent */
                 if (m->running_as == SYSTEMD_SYSTEM) {
-                        r = cg_install_release_agent(SYSTEMD_CGROUP_CONTROLLER, SYSTEMD_CGROUP_AGENT_PATH);
+                        r = -EINVAL;
+                        // cg_install_release_agent(SYSTEMD_CGROUP_CONTROLLER, SYSTEMD_CGROUP_AGENT_PATH);
                         if (r < 0)
                                 log_warning_errno(r, "Failed to install release agent, ignoring: %m");
                         else if (r > 0)

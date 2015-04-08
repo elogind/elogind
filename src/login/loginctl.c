@@ -492,7 +492,7 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
         if (i.scope) {
                 printf("\t    Unit: %s\n", i.scope);
                 show_unit_cgroup(bus, "org.freedesktop.systemd1.Scope", i.scope, i.leader);
-
+#if 0
                 if (arg_transport == BUS_TRANSPORT_LOCAL) {
 
                         show_journal_by_unit(
@@ -508,6 +508,7 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
                                         true,
                                         NULL);
                 }
+#endif
         }
 
         return 0;
@@ -576,7 +577,7 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
         if (i.slice) {
                 printf("\t    Unit: %s\n", i.slice);
                 show_unit_cgroup(bus, "org.freedesktop.systemd1.Slice", i.slice, 0);
-
+#if 0
                 show_journal_by_unit(
                                 stdout,
                                 i.slice,
@@ -589,6 +590,7 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
                                 SD_JOURNAL_LOCAL_ONLY,
                                 true,
                                 NULL);
+#endif
         }
 
 finish:
@@ -1272,7 +1274,11 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case 'o':
+#if 0
                         arg_output = output_mode_from_string(optarg);
+#else
+                        arg_output = -1;
+#endif
                         if (arg_output < 0) {
                                 log_error("Unknown output '%s'.", optarg);
                                 return -EINVAL;
