@@ -19,11 +19,12 @@
 
 AC_PREREQ([2.64])
 
-AC_INIT([systemd],
+# FIXME: Update to proper web page
+AC_INIT([elogind],
         [219],
-        [http://bugs.freedesktop.org/enter_bug.cgi?product=systemd],
-        [systemd],
-        [http://www.freedesktop.org/wiki/Software/systemd])
+        [http://bugs.freedesktop.org/enter_bug.cgi?product=elogind],
+        [elogind],
+        [http://www.freedesktop.org/wiki/Software/elogind])
 
 AC_CONFIG_SRCDIR([src/core/main.c])
 AC_CONFIG_MACRO_DIR([m4])
@@ -41,8 +42,8 @@ AC_DEFINE_UNQUOTED([CANONICAL_HOST], "$host", [Canonical host string.])
 LT_PREREQ(2.2)
 LT_INIT([disable-static])
 
-AS_IF([test "x$enable_static" = "xyes"], [AC_MSG_ERROR([--enable-static is not supported by systemd])])
-AS_IF([test "x$enable_largefile" = "xno"], [AC_MSG_ERROR([--disable-largefile is not supported by systemd])])
+AS_IF([test "x$enable_static" = "xyes"], [AC_MSG_ERROR([--enable-static is not supported by elogind])])
+AS_IF([test "x$enable_largefile" = "xno"], [AC_MSG_ERROR([--disable-largefile is not supported by elogind])])
 
 SET_ARCH(X86_64, x86_64*)
 SET_ARCH(IA32, i*86*)
@@ -71,9 +72,9 @@ AS_IF([test -z "$INTLTOOL_POLICY_RULE"], [
     AC_SUBST(INTLTOOL_POLICY_RULE)
 ])
 
-GETTEXT_PACKAGE=systemd
+GETTEXT_PACKAGE=elogind
 AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [systemd])
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [elogind])
 
 AC_PROG_MKDIR_P
 AC_PROG_LN_S
