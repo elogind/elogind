@@ -242,54 +242,6 @@ AC_CHECK_SIZEOF(rlim_t,,[
 ])
 
 # ------------------------------------------------------------------------------
-# we use python to build the man page index, and for systemd-python
-have_python=no
-AC_ARG_WITH([python],
-        [AS_HELP_STRING([--without-python], [Disable building the man page index and systemd-python (default: test)])])
-
-have_lxml=no
-AS_IF([test "x$with_python" != "xno"], [
-        AM_PATH_PYTHON(,, [:])
-        AS_IF([test "x$PYTHON" != "x:"], [
-                AC_MSG_CHECKING([for python lxml module])
-                AS_IF(["$PYTHON" -c 'import lxml' 2>/dev/null], [have_lxml=yes])
-                AC_MSG_RESULT([$have_lxml])
-                AS_IF([test "x$have_lxml" = "xyes"], [have_python=yes],
-                      [AC_MSG_WARN([*** python support requires python-lxml module installed])])
-        ])
-])
-AS_IF([test "$have_python" != "yes"], [
-      AS_IF([test "$with_python" = "yes"],
-            [AC_MSG_ERROR([*** python support requested but python support not found])])
-      AS_IF([test "$with_python" != "no"],
-            [AC_MSG_WARN([*** python support not found, some documentation cannot be built])])
-])
-
-AM_CONDITIONAL([HAVE_PYTHON], [test "x$have_python" = "xyes"])
-AS_IF([test "x$PYTHON_BINARY" = "x"],
-      [AS_IF([test "x$have_python" = "xyes"],
-             [PYTHON_BINARY="$(which "$PYTHON")"],
-             [PYTHON_BINARY=/usr/bin/python])])
-AC_ARG_VAR(PYTHON_BINARY, [Python binary used to launch installed scripts])
-
-AS_IF([test "x$have_python" != "xyes" -a "x$enable_python_devel" = "xyes"],
-      [AC_MSG_ERROR([*** python-devel support requires --with-python])])
-
-have_python_devel=no
-AC_ARG_ENABLE(python_devel, AS_HELP_STRING([--disable-python-devel], [Do not build python modules]))
-AS_IF([test "x$have_python" = "xyes" -a "x$enable_python_devel" != "xno"], [
-      PKG_CHECK_MODULES([PYTHON_DEVEL], [python-${PYTHON_VERSION}],
-            [have_python_devel=yes],
-            [PKG_CHECK_MODULES([PYTHON_DEVEL], [python],
-                  [have_python_devel=yes],
-                  [have_python_devel=no])])
-      AS_IF([test "x$have_python_devel" = xno -a "x$enable_python_devel" = xyes],
-            [AC_MSG_ERROR([*** python-devel support requested but libraries not found])])
-      AC_PATH_PROGS(SPHINX_BUILD, sphinx-build-${PYTHON_VERSION} sphinx-build)
-])
-AM_CONDITIONAL([HAVE_PYTHON_DEVEL], [test "$have_python_devel" = "yes"])
-
-# ------------------------------------------------------------------------------
 
 AC_SEARCH_LIBS([dlsym], [dl], [], [AC_MSG_ERROR([*** Dynamic linking loader library not found])])
 AC_CHECK_HEADERS([sys/capability.h], [], [AC_MSG_ERROR([*** POSIX caps headers not found])])

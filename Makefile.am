@@ -1353,11 +1353,6 @@ DISTCHECK_CONFIGURE_FLAGS += \
 	--with-sysvinit-path= \
 	--with-sysvrcnd-path=
 
-if HAVE_PYTHON
-DISTCHECK_CONFIGURE_FLAGS += \
-	--with-python
-endif
-
 if ENABLE_GTK_DOC
 DISTCHECK_CONFIGURE_FLAGS += \
 	--enable-gtk-doc
@@ -1366,12 +1361,7 @@ endif
 #
 # Require python when making dist
 #
-.PHONY: dist-check-python dist-check-compat-libs dist-check-help
-dist-check-python:
-if !HAVE_PYTHON
-	@echo "*** python and python-lxml module must be installed and enabled in order to make dist"
-	@false
-endif
+.PHONY: dist-check-compat-libs dist-check-help
 
 dist-check-compat-libs:
 if !ENABLE_COMPAT_LIBS
