@@ -605,16 +605,6 @@ EXTRA_DIST += \
 	units/systemd-nspawn@.service.in \
 	units/systemd-update-done.service.in
 
-if HAVE_SYSV_COMPAT
-nodist_systemunit_DATA += \
-	units/rc-local.service \
-	units/halt-local.service
-
-systemgenerator_PROGRAMS += \
-	systemd-sysv-generator \
-	systemd-rc-local-generator
-endif
-
 EXTRA_DIST += \
 	units/rc-local.service.in \
 	units/halt-local.service.in
@@ -2186,11 +2176,6 @@ dist_tmpfiles_DATA = \
 	tmpfiles.d/tmp.conf \
 	tmpfiles.d/x11.conf \
 	tmpfiles.d/var.conf
-
-if HAVE_SYSV_COMPAT
-dist_tmpfiles_DATA += \
-	tmpfiles.d/legacy.conf
-endif
 
 SYSINIT_TARGET_WANTS += \
 	systemd-tmpfiles-setup-dev.service \
@@ -3865,11 +3850,6 @@ TESTS += \
 	test/rule-syntax-check.py \
 	$(NULL)
 
-if HAVE_SYSV_COMPAT
-TESTS += \
-	test/sysv-generator-test.py \
-	$(NULL)
-endif
 endif
 
 manual_tests += \
@@ -6527,24 +6507,6 @@ EXTRA_DIST += \
 	man/custom-man.xsl
 
 # ------------------------------------------------------------------------------
-if HAVE_SYSV_COMPAT
-sysvinit_DATA = \
-	docs/sysvinit/README
-
-varlog_DATA = \
-	docs/var-log/README
-
-docs/sysvinit/README: docs/sysvinit/README.in
-	$(SED_PROCESS)
-
-docs/var-log/README: docs/var-log/README.in
-	$(SED_PROCESS)
-
-CLEANFILES += \
-	docs/sysvinit/README \
-	docs/var-log/README
-endif
-
 EXTRA_DIST += \
 	docs/sysvinit/README.in \
 	docs/var-log/README.in
@@ -6574,17 +6536,6 @@ SYSINIT_TARGET_WANTS += \
 	systemd-sysctl.service \
 	systemd-ask-password-console.path
 
-if HAVE_SYSV_COMPAT
-SYSTEM_UNIT_ALIASES += \
-	poweroff.target runlevel0.target \
-	rescue.target runlevel1.target \
-	multi-user.target runlevel2.target \
-	multi-user.target runlevel3.target \
-	multi-user.target runlevel4.target \
-	graphical.target runlevel5.target \
-	reboot.target runlevel6.target
-endif
-
 SYSTEM_UNIT_ALIASES += \
 	graphical.target default.target \
 	reboot.target ctrl-alt-del.target \
@@ -6610,15 +6561,6 @@ GENERAL_ALIASES += \
 	$(systemunitdir)/getty@.service $(pkgsysconfdir)/system/getty.target.wants/getty@tty1.service \
 	$(pkgsysconfdir)/user $(sysconfdir)/xdg/systemd/user \
 	$(dbussystemservicedir)/org.freedesktop.systemd1.service $(dbussessionservicedir)/org.freedesktop.systemd1.service
-
-if HAVE_SYSV_COMPAT
-INSTALL_DIRS += \
-	$(systemunitdir)/runlevel1.target.wants \
-	$(systemunitdir)/runlevel2.target.wants \
-	$(systemunitdir)/runlevel3.target.wants \
-	$(systemunitdir)/runlevel4.target.wants \
-	$(systemunitdir)/runlevel5.target.wants
-endif
 
 INSTALL_DIRS += \
 	$(prefix)/lib/modules-load.d \
@@ -6668,15 +6610,9 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--enable-kdbus \
 	--enable-compat-libs
 
-if HAVE_SYSV_COMPAT
-DISTCHECK_CONFIGURE_FLAGS += \
-	--with-sysvinit-path=$$dc_install_base/$(sysvinitdir) \
-	--with-sysvrcnd-path=$$dc_install_base/$(sysvrcnddir)
-else
 DISTCHECK_CONFIGURE_FLAGS += \
 	--with-sysvinit-path= \
 	--with-sysvrcnd-path=
-endif
 
 if HAVE_PYTHON
 DISTCHECK_CONFIGURE_FLAGS += \
