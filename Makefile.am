@@ -965,24 +965,6 @@ libsystemd_label_la_LIBADD = \
 
 # -----------------------------------------------------------------------------
 
-if HAVE_LIBIPTC
-noinst_LTLIBRARIES += \
-	libsystemd-fw.la
-
-libsystemd_fw_la_SOURCES = \
-	src/shared/fw-util.h \
-	src/shared/fw-util.c
-
-libsystemd_fw_la_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(LIBIPTC_CFLAGS)
-
-libsystemd_fw_la_LIBADD = \
-	$(LIBIPTC_LIBS)
-endif
-
-# -----------------------------------------------------------------------------
-
 if ENABLE_LDCONFIG
 dist_systemunit_DATA += \
 	units/ldconfig.service
@@ -1331,11 +1313,6 @@ manual_tests += \
 	test-log \
 	test-ipcrm \
 	test-btrfs
-
-if HAVE_LIBIPTC
-manual_tests += \
-	test-fw-util
-endif
 
 if HAVE_KMOD
 manual_tests += \
@@ -1812,20 +1789,6 @@ test_btrfs_SOURCES = \
 test_btrfs_LDADD = \
 	libsystemd-label.la \
 	libsystemd-shared.la
-
-if HAVE_LIBIPTC
-test_fw_util_SOURCES = \
-	src/test/test-fw-util.c
-
-test_fw_util_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(LIBIPTC_CFLAGS)
-
-test_fw_util_LDADD = \
-	libsystemd-fw.la \
-	libsystemd-shared.la \
-	$(LIBIPTC_LIBS)
-endif
 
 test_rtnl_manual_SOURCES = \
 	src/test/test-rtnl-manual.c
@@ -2769,11 +2732,6 @@ if HAVE_SECCOMP
 systemd_nspawn_LDADD += \
 	libsystemd-seccomp.la \
 	$(SECCOMP_LIBS)
-endif
-
-if HAVE_LIBIPTC
-systemd_nspawn_LDADD += \
-	libsystemd-fw.la
 endif
 
 # ------------------------------------------------------------------------------
@@ -5649,11 +5607,6 @@ systemd_networkd_SOURCES = \
 systemd_networkd_LDADD = \
 	libsystemd-networkd-core.la
 
-if HAVE_LIBIPTC
-systemd_networkd_LDADD += \
-	libsystemd-fw.la
-endif
-
 noinst_LTLIBRARIES += \
 	libsystemd-networkd-core.la
 
@@ -5749,11 +5702,6 @@ test_network_SOURCES = \
 test_network_LDADD = \
 	libsystemd-networkd-core.la
 
-if HAVE_LIBIPTC
-test_network_LDADD += \
-	libsystemd-fw.la
-endif
-
 test_network_tables_SOURCES = \
 	src/network/test-network-tables.c \
 	src/shared/test-tables.h
@@ -5761,11 +5709,6 @@ test_network_tables_SOURCES = \
 test_network_tables_LDADD = \
 	libsystemd-networkd-core.la \
 	libudev-core.la
-
-if HAVE_LIBIPTC
-test_network_tables_LDADD += \
-	libsystemd-fw.la
-endif
 
 tests += \
 	test-network \
