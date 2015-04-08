@@ -1507,10 +1507,6 @@ AC_SUBST([rootlibdir], [$with_rootlibdir])
 
 AC_CONFIG_FILES([
         Makefile po/Makefile.in
-        docs/libudev/Makefile
-        docs/libudev/version.xml
-        docs/gudev/Makefile
-        docs/gudev/version.xml
 ])
 
 AC_OUTPUT

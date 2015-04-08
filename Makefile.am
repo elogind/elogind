@@ -3604,12 +3604,6 @@ src/libsystemd-terminal/unifont-glyph-array.bin: tools/compile-unifont.py $(UNIF
 
 # ------------------------------------------------------------------------------
 if ENABLE_GTK_DOC
-SUBDIRS += \
-	docs/libudev
-
-noinst_DATA += \
-	docs/html/libudev \
-	docs/html/gudev
 endif
 
 include_HEADERS += \
@@ -3650,18 +3644,6 @@ pkgconfiglib_DATA += \
 
 EXTRA_DIST += \
 	src/libudev/libudev.pc.in
-
-CLEANFILES += \
-	docs/html/libudev \
-	docs/html/gudev
-
-docs/html/libudev:
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_LN)$(LN_S) -f ../libudev/html $@
-
-docs/html/gudev:
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_LN)$(LN_S) -f ../gudev/html $@
 
 # move lib from $(libdir) to $(rootlibdir) and update devel link, if needed
 libudev-install-hook:
@@ -4059,8 +4041,6 @@ dist_udevrules_DATA += \
 # ------------------------------------------------------------------------------
 if ENABLE_GUDEV
 if ENABLE_GTK_DOC
-SUBDIRS += \
-	docs/gudev
 endif
 
 libgudev_includedir = \
