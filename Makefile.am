@@ -404,11 +404,6 @@ rootlibexec_PROGRAMS = \
 	systemd-socket-proxyd \
 	systemd-update-done
 
-if HAVE_UTMP
-rootlibexec_PROGRAMS += \
-	systemd-update-utmp
-endif
-
 systemgenerator_PROGRAMS = \
 	systemd-getty-generator \
 	systemd-fstab-generator \
@@ -565,12 +560,6 @@ nodist_systemunit_DATA = \
 	units/systemd-nspawn@.service \
 	units/systemd-update-done.service
 
-if HAVE_UTMP
-nodist_systemunit_DATA += \
-	units/systemd-update-utmp.service \
-	units/systemd-update-utmp-runlevel.service
-endif
-
 dist_userunit_DATA = \
 	units/user/basic.target \
 	units/user/default.target \
@@ -592,8 +581,6 @@ EXTRA_DIST += \
 	units/systemd-initctl.service.in \
 	units/systemd-shutdownd.service.in \
 	units/systemd-remount-fs.service.in \
-	units/systemd-update-utmp.service.in \
-	units/systemd-update-utmp-runlevel.service.in \
 	units/systemd-ask-password-wall.service.in \
 	units/systemd-ask-password-console.service.in \
 	units/systemd-sysctl.service.in \
@@ -833,7 +820,6 @@ libsystemd_shared_la_SOURCES = \
 	src/shared/cgroup-show.h \
 	src/shared/unit-name.c \
 	src/shared/unit-name.h \
-	src/shared/utmp-wtmp.h \
 	src/shared/watchdog.c \
 	src/shared/watchdog.h \
 	src/shared/spawn-ask-password-agent.c \
@@ -910,11 +896,6 @@ libsystemd_shared_la_SOURCES = \
 	src/shared/import-util.h \
 	src/shared/sysctl-util.c \
 	src/shared/sysctl-util.h
-
-if HAVE_UTMP
-libsystemd_shared_la_SOURCES += \
-	src/shared/utmp-wtmp.c
-endif
 
 nodist_libsystemd_shared_la_SOURCES = \
 	src/shared/errno-from-name.h \
@@ -2096,19 +2077,6 @@ systemd_initctl_SOURCES = \
 systemd_initctl_LDADD = \
 	libsystemd-internal.la \
 	libsystemd-shared.la
-
-# ------------------------------------------------------------------------------
-systemd_update_utmp_SOURCES = \
-	src/update-utmp/update-utmp.c
-
-systemd_update_utmp_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(AUDIT_CFLAGS)
-
-systemd_update_utmp_LDADD = \
-	libsystemd-internal.la \
-	libsystemd-shared.la \
-	$(AUDIT_LIBS)
 
 # ------------------------------------------------------------------------------
 systemd_update_done_SOURCES = \
@@ -6584,20 +6552,6 @@ EXTRA_DIST += \
 SOCKETS_TARGET_WANTS += \
 	systemd-initctl.socket \
 	systemd-shutdownd.socket
-
-if HAVE_UTMP
-if HAVE_SYSV_COMPAT
-MULTI_USER_TARGET_WANTS += \
-	systemd-update-utmp-runlevel.service
-GRAPHICAL_TARGET_WANTS += \
-	systemd-update-utmp-runlevel.service
-RESCUE_TARGET_WANTS += \
-	systemd-update-utmp-runlevel.service
-endif
-
-SYSINIT_TARGET_WANTS += \
-	systemd-update-utmp.service
-endif
 
 SYSINIT_TARGET_WANTS += \
 	systemd-update-done.service
