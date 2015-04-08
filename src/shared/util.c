@@ -7634,7 +7634,7 @@ int fd_setcrtime(int fd, usec_t usec) {
         return 0;
 }
 
-int chattr_fd(int fd, bool b, unsigned mask) {
+int chattr_fd(int fd, unsigned value, unsigned mask) {
         unsigned old_attr, new_attr;
 
         assert(fd >= 0);
@@ -7645,21 +7645,17 @@ int chattr_fd(int fd, bool b, unsigned mask) {
         if (ioctl(fd, FS_IOC_GETFLAGS, &old_attr) < 0)
                 return -errno;
 
-        if (b)
-                new_attr = old_attr | mask;
-        else
-                new_attr = old_attr & ~mask;
-
+        new_attr = (old_attr & ~mask) | (value & mask);
         if (new_attr == old_attr)
                 return 0;
 
         if (ioctl(fd, FS_IOC_SETFLAGS, &new_attr) < 0)
                 return -errno;
 
-        return 0;
+        return 1;
 }
 
-int chattr_path(const char *p, bool b, unsigned mask) {
+int chattr_path(const char *p, unsigned value, unsigned mask) {
         _cleanup_close_ int fd = -1;
 
         assert(p);
@@ -7671,29 +7667,7 @@ int chattr_path(const char *p, bool b, unsigned mask) {
         if (fd < 0)
                 return -errno;
 
-        return chattr_fd(fd, b, mask);
-}
-
-int change_attr_fd(int fd, unsigned value, unsigned mask) {
-        unsigned old_attr, new_attr;
-
-        assert(fd >= 0);
-
-        if (mask == 0)
-                return 0;
-
-        if (ioctl(fd, FS_IOC_GETFLAGS, &old_attr) < 0)
-                return -errno;
-
-        new_attr = (old_attr & ~mask) |(value & mask);
-
-        if (new_attr == old_attr)
-                return 0;
-
-        if (ioctl(fd, FS_IOC_SETFLAGS, &new_attr) < 0)
-                return -errno;
-
-        return 0;
+        return chattr_fd(fd, value, mask);
 }
 
 int read_attr_fd(int fd, unsigned *ret) {
