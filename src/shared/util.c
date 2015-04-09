@@ -1353,7 +1353,7 @@ char *cescape(const char *s) {
 
         assert(s);
 
-        /* Does C style string escaping. May be be reversed with
+        /* Does C style string escaping. May be reversed with
          * cunescape(). */
 
         r = new(char, strlen(s)*4 + 1);
