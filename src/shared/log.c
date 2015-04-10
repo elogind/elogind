@@ -35,6 +35,8 @@
 #include "macro.h"
 #include "socket-util.h"
 #include "formats-util.h"
+#include "process-util.h"
+#include "terminal-util.h"
 
 #define SNDBUF_SIZE (8*1024*1024)
 

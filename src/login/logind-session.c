@@ -40,6 +40,7 @@
 #include "def.h"
 #include "logind-session.h"
 #include "formats-util.h"
+#include "terminal-util.h"
 
 static void session_remove_fifo(Session *s);
 
