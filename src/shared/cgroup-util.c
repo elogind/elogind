@@ -33,6 +33,8 @@
 #include "set.h"
 #include "macro.h"
 #include "util.h"
+#include "formats-util.h"
+#include "process-util.h"
 #include "path-util.h"
 #include "fileio.h"
 #include "special.h"

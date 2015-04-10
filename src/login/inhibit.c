@@ -31,6 +31,8 @@
 #include "util.h"
 #include "build.h"
 #include "strv.h"
+#include "formats-util.h"
+#include "process-util.h"
 
 static const char* arg_what = "idle:sleep:shutdown";
 static const char* arg_who = NULL;

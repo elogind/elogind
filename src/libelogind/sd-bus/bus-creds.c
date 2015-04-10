@@ -23,6 +23,8 @@
 #include <linux/capability.h>
 
 #include "util.h"
+#include "formats-util.h"
+#include "process-util.h"
 #include "capability.h"
 #include "cgroup-util.h"
 #include "fileio.h"
