@@ -1,7 +1,7 @@
 /***
   This file is part of systemd
 
-  Copyright 2013 Zbigniew Jędrzejewski-Szmek
+  Copyright 2014 Zbigniew Jędrzejewski-Szmek
 
   systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
@@ -17,19 +17,47 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "logind-action.h"
-#include "logind-session.h"
+#include "set.h"
 
-#include "test-tables.h"
+static void test_set_steal_first(void) {
+        _cleanup_set_free_ Set *m = NULL;
+        int seen[3] = {};
+        char *val;
 
-int main(int argc, char **argv) {
-        test_table(handle_action, HANDLE_ACTION);
-        test_table(inhibit_mode, INHIBIT_MODE);
-        test_table(kill_who, KILL_WHO);
-        test_table(session_class, SESSION_CLASS);
-        test_table(session_state, SESSION_STATE);
-        test_table(session_type, SESSION_TYPE);
-        test_table(user_state, USER_STATE);
+        m = set_new(&string_hash_ops);
+        assert_se(m);
 
-        return EXIT_SUCCESS;
+        assert_se(set_put(m, (void*) "1") == 1);
+        assert_se(set_put(m, (void*) "22") == 1);
+        assert_se(set_put(m, (void*) "333") == 1);
+
+        while ((val = set_steal_first(m)))
+                seen[strlen(val) - 1]++;
+
+        assert_se(seen[0] == 1 && seen[1] == 1 && seen[2] == 1);
+
+        assert_se(set_isempty(m));
+}
+
+static void test_set_put(void) {
+        _cleanup_set_free_ Set *m = NULL;
+
+        m = set_new(&string_hash_ops);
+        assert_se(m);
+
+        assert_se(set_put(m, (void*) "1") == 1);
+        assert_se(set_put(m, (void*) "22") == 1);
+        assert_se(set_put(m, (void*) "333") == 1);
+        assert_se(set_put(m, (void*) "333") == 0);
+        assert_se(set_remove(m, (void*) "333"));
+        assert_se(set_put(m, (void*) "333") == 1);
+        assert_se(set_put(m, (void*) "333") == 0);
+        assert_se(set_put(m, (void*) "22") == 0);
+}
+
+int main(int argc, const char *argv[]) {
+        test_set_steal_first();
+        test_set_put();
+
+        return 0;
 }
