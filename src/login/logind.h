@@ -122,9 +122,6 @@ struct Manager {
         size_t runtime_dir_size;
 };
 
-Manager *manager_new(void);
-void manager_free(Manager *m);
-
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_device);
 int manager_add_button(Manager *m, const char *name, Button **_button);
 int manager_add_seat(Manager *m, const char *id, Seat **_seat);
@@ -137,10 +134,6 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 int manager_process_seat_device(Manager *m, struct udev_device *d);
 int manager_process_button_device(Manager *m, struct udev_device *d);
 
-int manager_startup(Manager *m);
-int manager_run(Manager *m);
-
-void manager_gc(Manager *m, bool drop_not_started);
 
 bool manager_shall_kill(Manager *m, const char *user);
 
