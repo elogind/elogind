@@ -797,13 +797,9 @@ static int method_create_session(sd_bus *bus, sd_bus_message *message, void *use
 
         session->create_message = sd_bus_message_ref(message);
 
-        /* Here upstream systemd starts cgroups and the user systemd,
-           and arranges to reply asynchronously.  We reply
-           directly.  */
-
-        r = session_send_create_reply(session, NULL);
-        if (r < 0)
-                goto fail;
+        /* Now, let's wait until the slice unit and stuff got
+         * created. We send the reply back from
+         * session_send_create_reply(). */
 
         return 1;
 
@@ -838,8 +834,6 @@ static int method_release_session(sd_bus *bus, sd_bus_message *message, void *us
         r = session_release(session);
         if (r < 0)
                 return r;
-
-        session_add_to_gc_queue(session);
 
         return sd_bus_reply_method_return(message, NULL);
 }
@@ -1337,36 +1331,31 @@ static int have_multiple_sessions(
 static int bus_manager_log_shutdown(
                 Manager *m,
                 InhibitWhat w,
-                HandleAction action) {
+                const char *unit_name) {
 
         const char *p, *q;
 
         assert(m);
+        assert(unit_name);
 
         if (w != INHIBIT_SHUTDOWN)
                 return 0;
 
-        switch (action) {
-        case HANDLE_POWEROFF:
+        if (streq(unit_name, SPECIAL_POWEROFF_TARGET)) {
                 p = "MESSAGE=System is powering down.";
                 q = "SHUTDOWN=power-off";
-                break;
-        case HANDLE_HALT:
+        } else if (streq(unit_name, SPECIAL_HALT_TARGET)) {
                 p = "MESSAGE=System is halting.";
                 q = "SHUTDOWN=halt";
-                break;
-        case HANDLE_REBOOT:
+        } else if (streq(unit_name, SPECIAL_REBOOT_TARGET)) {
                 p = "MESSAGE=System is rebooting.";
                 q = "SHUTDOWN=reboot";
-                break;
-        case HANDLE_KEXEC:
+        } else if (streq(unit_name, SPECIAL_KEXEC_TARGET)) {
                 p = "MESSAGE=System is rebooting with kexec.";
                 q = "SHUTDOWN=kexec";
-                break;
-        default:
+        } else {
                 p = "MESSAGE=System is shutting down.";
                 q = NULL;
-                break;
         }
 
         return log_struct(LOG_NOTICE,
@@ -1421,6 +1410,130 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
         return r;
 }
 
+static int execute_shutdown_or_sleep(
+                Manager *m,
+                InhibitWhat w,
+                const char *unit_name,
+                sd_bus_error *error) {
+
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        const char *p;
+        char *c;
+        int r;
+
+        assert(m);
+        assert(w >= 0);
+        assert(w < _INHIBIT_WHAT_MAX);
+        assert(unit_name);
+
+        bus_manager_log_shutdown(m, w, unit_name);
+
+        r = sd_bus_call_method(
+                        m->bus,
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
+                        "StartUnit",
+                        error,
+                        &reply,
+                        "ss", unit_name, "replace-irreversibly");
+        if (r < 0)
+                return r;
+
+        r = sd_bus_message_read(reply, "o", &p);
+        if (r < 0)
+                return r;
+
+        c = strdup(p);
+        if (!c)
+                return -ENOMEM;
+
+        m->action_unit = unit_name;
+        free(m->action_job);
+        m->action_job = c;
+        m->action_what = w;
+
+        /* Make sure the lid switch is ignored for a while */
+        manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
+
+        return 0;
+}
+
+static int manager_inhibit_timeout_handler(
+                        sd_event_source *s,
+                        uint64_t usec,
+                        void *userdata) {
+
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        Inhibitor *offending = NULL;
+        Manager *manager = userdata;
+        int r;
+
+        assert(manager);
+        assert(manager->inhibit_timeout_source == s);
+
+        if (manager->action_what == 0 || manager->action_job)
+                return 0;
+
+        if (manager_is_inhibited(manager, manager->action_what, INHIBIT_DELAY, NULL, false, false, 0, &offending)) {
+                _cleanup_free_ char *comm = NULL, *u = NULL;
+
+                (void) get_process_comm(offending->pid, &comm);
+                u = uid_to_name(offending->uid);
+
+                log_notice("Delay lock is active (UID "UID_FMT"/%s, PID "PID_FMT"/%s) but inhibitor timeout is reached.",
+                           offending->uid, strna(u),
+                           offending->pid, strna(comm));
+        }
+
+        /* Actually do the operation */
+        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->action_unit, &error);
+        if (r < 0) {
+                log_warning("Failed to send delayed message: %s", bus_error_message(&error, r));
+
+                manager->action_unit = NULL;
+                manager->action_what = 0;
+        }
+
+        return 0;
+}
+
+static int delay_shutdown_or_sleep(
+                Manager *m,
+                InhibitWhat w,
+                const char *unit_name) {
+
+        int r;
+        usec_t timeout_val;
+
+        assert(m);
+        assert(w >= 0);
+        assert(w < _INHIBIT_WHAT_MAX);
+        assert(unit_name);
+
+        timeout_val = now(CLOCK_MONOTONIC) + m->inhibit_delay_max;
+
+        if (m->inhibit_timeout_source) {
+                r = sd_event_source_set_time(m->inhibit_timeout_source, timeout_val);
+                if (r < 0)
+                        return log_error_errno(r, "sd_event_source_set_time() failed: %m\n");
+
+                r = sd_event_source_set_enabled(m->inhibit_timeout_source, SD_EVENT_ONESHOT);
+                if (r < 0)
+                        return log_error_errno(r, "sd_event_source_set_enabled() failed: %m\n");
+        } else {
+                r = sd_event_add_time(m->event, &m->inhibit_timeout_source, CLOCK_MONOTONIC,
+                                      timeout_val, 0, manager_inhibit_timeout_handler, m);
+                if (r < 0)
+                        return r;
+        }
+
+        m->action_unit = unit_name;
+        m->action_what = w;
+
+        return 0;
+}
+
 static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 
         static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
@@ -1443,54 +1556,9 @@ static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
                                   active);
 }
 
-static int execute_shutdown_or_sleep(
-                Manager *m,
-                InhibitWhat w,
-                HandleAction action,
-                sd_bus_error *error) {
-        int r;
-
-        assert(m);
-        assert(w >= 0);
-        assert(w < _INHIBIT_WHAT_MAX);
-
-        bus_manager_log_shutdown(m, w, action);
-
-        r = shutdown_or_sleep(m, action);
-        if (r < 0)
-                return r;
-
-        if (w == INHIBIT_SLEEP)
-                /* And we're back. */
-                send_prepare_for(m, w, false);
-
-        m->action_what = 0;
-
-        /* Make sure the lid switch is ignored for a while (?) */
-        manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
-
-        return 0;
-}
-
-static int delay_shutdown_or_sleep(
-                Manager *m,
-                InhibitWhat w,
-                HandleAction action) {
-
-        assert(m);
-        assert(w >= 0);
-        assert(w < _INHIBIT_WHAT_MAX);
-
-        m->action_timestamp = now(CLOCK_MONOTONIC);
-        m->pending_action = action;
-        m->action_what = w;
-
-        return 0;
-}
-
 int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
-                HandleAction action,
+                const char *unit_name,
                 InhibitWhat w,
                 sd_bus_error *error) {
 
@@ -1498,8 +1566,10 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         int r;
 
         assert(m);
+        assert(unit_name);
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
+        assert(!m->action_job);
 
         /* Tell everybody to prepare for shutdown/sleep */
         send_prepare_for(m, w, true);
@@ -1511,11 +1581,11 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
-                r = delay_shutdown_or_sleep(m, w, action);
+                r = delay_shutdown_or_sleep(m, w, unit_name);
         else
                 /* Shutdown is not delayed, execute it
                  * immediately */
-                r = execute_shutdown_or_sleep(m, w, action, error);
+                r = execute_shutdown_or_sleep(m, w, unit_name, error);
 
         return r;
 }
@@ -1523,7 +1593,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
-                HandleAction sleep_action,
+                const char *unit_name,
                 InhibitWhat w,
                 const char *action,
                 const char *action_multiple_sessions,
@@ -1539,6 +1609,7 @@ static int method_do_shutdown_or_sleep(
 
         assert(m);
         assert(message);
+        assert(unit_name);
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
         assert(action);
@@ -1602,7 +1673,7 @@ static int method_do_shutdown_or_sleep(
                         return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
         }
 
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, sleep_action, w, error);
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
         if (r < 0)
                 return r;
 
@@ -1614,7 +1685,7 @@ static int method_poweroff(sd_bus *bus, sd_bus_message *message, void *userdata,
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_POWEROFF,
+                        SPECIAL_POWEROFF_TARGET,
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.power-off",
                         "org.freedesktop.login1.power-off-multiple-sessions",
@@ -1629,7 +1700,7 @@ static int method_reboot(sd_bus *bus, sd_bus_message *message, void *userdata, s
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_REBOOT,
+                        SPECIAL_REBOOT_TARGET,
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.reboot",
                         "org.freedesktop.login1.reboot-multiple-sessions",
@@ -1644,7 +1715,7 @@ static int method_suspend(sd_bus *bus, sd_bus_message *message, void *userdata, 
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_SUSPEND,
+                        SPECIAL_SUSPEND_TARGET,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.suspend",
                         "org.freedesktop.login1.suspend-multiple-sessions",
@@ -1659,7 +1730,7 @@ static int method_hibernate(sd_bus *bus, sd_bus_message *message, void *userdata
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_HIBERNATE,
+                        SPECIAL_HIBERNATE_TARGET,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -1674,7 +1745,7 @@ static int method_hybrid_sleep(sd_bus *bus, sd_bus_message *message, void *userd
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_HYBRID_SLEEP,
+                        SPECIAL_HYBRID_SLEEP_TARGET,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -2054,6 +2125,7 @@ fail:
 const sd_bus_vtable manager_vtable[] = {
         SD_BUS_VTABLE_START(0),
 
+        SD_BUS_PROPERTY("NAutoVTs", "u", NULL, offsetof(Manager, n_autovts), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("KillOnlyUsers", "as", NULL, offsetof(Manager, kill_only_users), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("KillExcludeUsers", "as", NULL, offsetof(Manager, kill_exclude_users), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("KillUserProcesses", "b", NULL, offsetof(Manager, kill_user_processes), SD_BUS_VTABLE_PROPERTY_CONST),
@@ -2126,6 +2198,217 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_VTABLE_END
 };
 
+static int session_jobs_reply(Session *s, const char *unit, const char *result) {
+        int r = 0;
+
+        assert(s);
+        assert(unit);
+
+        if (!s->started)
+                return r;
+
+        if (streq(result, "done"))
+                r = session_send_create_reply(s, NULL);
+        else {
+                _cleanup_bus_error_free_ sd_bus_error e = SD_BUS_ERROR_NULL;
+
+                sd_bus_error_setf(&e, BUS_ERROR_JOB_FAILED, "Start job for unit %s failed with '%s'", unit, result);
+                r = session_send_create_reply(s, &e);
+        }
+
+        return r;
+}
+
+int match_job_removed(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        const char *path, *result, *unit;
+        Manager *m = userdata;
+        Session *session;
+        uint32_t id;
+        User *user;
+        int r;
+
+        assert(bus);
+        assert(message);
+        assert(m);
+
+        r = sd_bus_message_read(message, "uoss", &id, &path, &unit, &result);
+        if (r < 0) {
+                bus_log_parse_error(r);
+                return r;
+        }
+
+        if (m->action_job && streq(m->action_job, path)) {
+                log_info("Operation finished.");
+
+                /* Tell people that they now may take a lock again */
+                send_prepare_for(m, m->action_what, false);
+
+                free(m->action_job);
+                m->action_job = NULL;
+                m->action_unit = NULL;
+                m->action_what = 0;
+                return 0;
+        }
+
+        session = hashmap_get(m->session_units, unit);
+        if (session) {
+
+                if (streq_ptr(path, session->scope_job)) {
+                        free(session->scope_job);
+                        session->scope_job = NULL;
+                }
+
+                session_jobs_reply(session, unit, result);
+
+                session_save(session);
+                session_add_to_gc_queue(session);
+        }
+
+        user = hashmap_get(m->user_units, unit);
+        if (user) {
+
+                if (streq_ptr(path, user->service_job)) {
+                        free(user->service_job);
+                        user->service_job = NULL;
+                }
+
+                if (streq_ptr(path, user->slice_job)) {
+                        free(user->slice_job);
+                        user->slice_job = NULL;
+                }
+
+                LIST_FOREACH(sessions_by_user, session, user->sessions) {
+                        session_jobs_reply(session, unit, result);
+                }
+
+                user_save(user);
+                user_add_to_gc_queue(user);
+        }
+
+        return 0;
+}
+
+int match_unit_removed(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        const char *path, *unit;
+        Manager *m = userdata;
+        Session *session;
+        User *user;
+        int r;
+
+        assert(bus);
+        assert(message);
+        assert(m);
+
+        r = sd_bus_message_read(message, "so", &unit, &path);
+        if (r < 0) {
+                bus_log_parse_error(r);
+                return r;
+        }
+
+        session = hashmap_get(m->session_units, unit);
+        if (session)
+                session_add_to_gc_queue(session);
+
+        user = hashmap_get(m->user_units, unit);
+        if (user)
+                user_add_to_gc_queue(user);
+
+        return 0;
+}
+
+int match_properties_changed(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        _cleanup_free_ char *unit = NULL;
+        Manager *m = userdata;
+        const char *path;
+        Session *session;
+        User *user;
+        int r;
+
+        assert(bus);
+        assert(message);
+        assert(m);
+
+        path = sd_bus_message_get_path(message);
+        if (!path)
+                return 0;
+
+        r = unit_name_from_dbus_path(path, &unit);
+        if (r == -EINVAL) /* not a unit */
+                return 0;
+        if (r < 0)
+                return r;
+
+        session = hashmap_get(m->session_units, unit);
+        if (session)
+                session_add_to_gc_queue(session);
+
+        user = hashmap_get(m->user_units, unit);
+        if (user)
+                user_add_to_gc_queue(user);
+
+        return 0;
+}
+
+int match_reloading(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+        Session *session;
+        Iterator i;
+        int b, r;
+
+        assert(bus);
+
+        r = sd_bus_message_read(message, "b", &b);
+        if (r < 0) {
+                bus_log_parse_error(r);
+                return r;
+        }
+
+        if (b)
+                return 0;
+
+        /* systemd finished reloading, let's recheck all our sessions */
+        log_debug("System manager has been reloaded, rechecking sessions...");
+
+        HASHMAP_FOREACH(session, m->sessions, i)
+                session_add_to_gc_queue(session);
+
+        return 0;
+}
+
+int match_name_owner_changed(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        const char *name, *old, *new;
+        Manager *m = userdata;
+        Session *session;
+        Iterator i;
+        int r;
+
+
+        char *key;
+
+        r = sd_bus_message_read(message, "sss", &name, &old, &new);
+        if (r < 0) {
+                bus_log_parse_error(r);
+                return r;
+        }
+
+        if (isempty(old) || !isempty(new))
+                return 0;
+
+        key = set_remove(m->busnames, (char*) old);
+        if (!key)
+                return 0;
+
+        /* Drop all controllers owned by this name */
+
+        free(key);
+
+        HASHMAP_FOREACH(session, m->sessions, i)
+                if (session_is_controller(session, old))
+                        session_drop_controller(session);
+
+        return 0;
+}
+
 int manager_send_changed(Manager *manager, const char *property, ...) {
         char **l;
 
@@ -2140,40 +2423,320 @@ int manager_send_changed(Manager *manager, const char *property, ...) {
                         l);
 }
 
-int manager_dispatch_delayed(Manager *manager) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        Inhibitor *offending = NULL;
+int manager_start_scope(
+                Manager *manager,
+                const char *scope,
+                pid_t pid,
+                const char *slice,
+                const char *description,
+                const char *after, const char *after2,
+                sd_bus_error *error,
+                char **job) {
+
+        _cleanup_bus_message_unref_ sd_bus_message *m = NULL, *reply = NULL;
         int r;
 
         assert(manager);
+        assert(scope);
+        assert(pid > 1);
 
-        if (manager->action_what == 0)
-                return 0;
+        r = sd_bus_message_new_method_call(
+                        manager->bus,
+                        &m,
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
+                        "StartTransientUnit");
+        if (r < 0)
+                return r;
 
-        /* Continue delay? */
-        if (manager_is_inhibited(manager, manager->action_what, INHIBIT_DELAY, NULL, false, false, 0, &offending)) {
-                _cleanup_free_ char *comm = NULL, *u = NULL;
+        r = sd_bus_message_append(m, "ss", strempty(scope), "fail");
+        if (r < 0)
+                return r;
 
-                get_process_comm(offending->pid, &comm);
-                u = uid_to_name(offending->uid);
+        r = sd_bus_message_open_container(m, 'a', "(sv)");
+        if (r < 0)
+                return r;
 
-                if (manager->action_timestamp + manager->inhibit_delay_max > now(CLOCK_MONOTONIC))
-                        return 0;
-
-                log_info("Delay lock is active (UID "UID_FMT"/%s, PID "PID_FMT"/%s) but inhibitor timeout is reached.",
-                         offending->uid, strna(u),
-                         offending->pid, strna(comm));
+        if (!isempty(slice)) {
+                r = sd_bus_message_append(m, "(sv)", "Slice", "s", slice);
+                if (r < 0)
+                        return r;
         }
 
-        /* Actually do the operation */
-        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->pending_action, &error);
-        if (r < 0) {
-                log_warning("Failed to send delayed message: %s", bus_error_message(&error, r));
+        if (!isempty(description)) {
+                r = sd_bus_message_append(m, "(sv)", "Description", "s", description);
+                if (r < 0)
+                        return r;
+        }
 
-                manager->pending_action = HANDLE_IGNORE;
-                manager->action_what = 0;
+        if (!isempty(after)) {
+                r = sd_bus_message_append(m, "(sv)", "After", "as", 1, after);
+                if (r < 0)
+                        return r;
+        }
+
+        if (!isempty(after2)) {
+                r = sd_bus_message_append(m, "(sv)", "After", "as", 1, after2);
+                if (r < 0)
+                        return r;
+        }
+
+        /* cgroup empty notification is not available in containers
+         * currently. To make this less problematic, let's shorten the
+         * stop timeout for sessions, so that we don't wait
+         * forever. */
+
+        /* Make sure that the session shells are terminated with
+         * SIGHUP since bash and friends tend to ignore SIGTERM */
+        r = sd_bus_message_append(m, "(sv)", "SendSIGHUP", "b", true);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_message_append(m, "(sv)", "PIDs", "au", 1, pid);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_message_close_container(m);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_message_append(m, "a(sa(sv))", 0);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_call(manager->bus, m, 0, error, &reply);
+        if (r < 0)
+                return r;
+
+        if (job) {
+                const char *j;
+                char *copy;
+
+                r = sd_bus_message_read(reply, "o", &j);
+                if (r < 0)
+                        return r;
+
+                copy = strdup(j);
+                if (!copy)
+                        return -ENOMEM;
+
+                *job = copy;
+        }
+
+        return 1;
+}
+
+int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job) {
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        int r;
+
+        assert(manager);
+        assert(unit);
+
+        r = sd_bus_call_method(
+                        manager->bus,
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
+                        "StartUnit",
+                        error,
+                        &reply,
+                        "ss", unit, "fail");
+        if (r < 0)
+                return r;
+
+        if (job) {
+                const char *j;
+                char *copy;
+
+                r = sd_bus_message_read(reply, "o", &j);
+                if (r < 0)
+                        return r;
+
+                copy = strdup(j);
+                if (!copy)
+                        return -ENOMEM;
+
+                *job = copy;
+        }
+
+        return 1;
+}
+
+int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job) {
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        int r;
+
+        assert(manager);
+        assert(unit);
+
+        r = sd_bus_call_method(
+                        manager->bus,
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
+                        "StopUnit",
+                        error,
+                        &reply,
+                        "ss", unit, "fail");
+        if (r < 0) {
+                if (sd_bus_error_has_name(error, BUS_ERROR_NO_SUCH_UNIT) ||
+                    sd_bus_error_has_name(error, BUS_ERROR_LOAD_FAILED)) {
+
+                        if (job)
+                                *job = NULL;
+
+                        sd_bus_error_free(error);
+                        return 0;
+                }
+
+                return r;
+        }
+
+        if (job) {
+                const char *j;
+                char *copy;
+
+                r = sd_bus_message_read(reply, "o", &j);
+                if (r < 0)
+                        return r;
+
+                copy = strdup(j);
+                if (!copy)
+                        return -ENOMEM;
+
+                *job = copy;
+        }
+
+        return 1;
+}
+
+int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error) {
+        _cleanup_free_ char *path = NULL;
+        int r;
+
+        assert(manager);
+        assert(scope);
+
+        path = unit_dbus_path_from_name(scope);
+        if (!path)
+                return -ENOMEM;
+
+        r = sd_bus_call_method(
+                        manager->bus,
+                        "org.freedesktop.systemd1",
+                        path,
+                        "org.freedesktop.systemd1.Scope",
+                        "Abandon",
+                        error,
+                        NULL,
+                        NULL);
+        if (r < 0) {
+                if (sd_bus_error_has_name(error, BUS_ERROR_NO_SUCH_UNIT) ||
+                    sd_bus_error_has_name(error, BUS_ERROR_LOAD_FAILED) ||
+                    sd_bus_error_has_name(error, BUS_ERROR_SCOPE_NOT_RUNNING)) {
+                        sd_bus_error_free(error);
+                        return 0;
+                }
+
                 return r;
         }
 
         return 1;
+}
+
+int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error) {
+        assert(manager);
+        assert(unit);
+
+        return sd_bus_call_method(
+                        manager->bus,
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
+                        "KillUnit",
+                        error,
+                        NULL,
+                        "ssi", unit, who == KILL_LEADER ? "main" : "all", signo);
+}
+
+int manager_unit_is_active(Manager *manager, const char *unit) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        _cleanup_free_ char *path = NULL;
+        const char *state;
+        int r;
+
+        assert(manager);
+        assert(unit);
+
+        path = unit_dbus_path_from_name(unit);
+        if (!path)
+                return -ENOMEM;
+
+        r = sd_bus_get_property(
+                        manager->bus,
+                        "org.freedesktop.systemd1",
+                        path,
+                        "org.freedesktop.systemd1.Unit",
+                        "ActiveState",
+                        &error,
+                        &reply,
+                        "s");
+        if (r < 0) {
+                /* systemd might have droppped off momentarily, let's
+                 * not make this an error */
+                if (sd_bus_error_has_name(&error, SD_BUS_ERROR_NO_REPLY) ||
+                    sd_bus_error_has_name(&error, SD_BUS_ERROR_DISCONNECTED))
+                        return true;
+
+                /* If the unit is already unloaded then it's not
+                 * active */
+                if (sd_bus_error_has_name(&error, BUS_ERROR_NO_SUCH_UNIT) ||
+                    sd_bus_error_has_name(&error, BUS_ERROR_LOAD_FAILED))
+                        return false;
+
+                return r;
+        }
+
+        r = sd_bus_message_read(reply, "s", &state);
+        if (r < 0)
+                return -EINVAL;
+
+        return !streq(state, "inactive") && !streq(state, "failed");
+}
+
+int manager_job_is_active(Manager *manager, const char *path) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        int r;
+
+        assert(manager);
+        assert(path);
+
+        r = sd_bus_get_property(
+                        manager->bus,
+                        "org.freedesktop.systemd1",
+                        path,
+                        "org.freedesktop.systemd1.Job",
+                        "State",
+                        &error,
+                        &reply,
+                        "s");
+        if (r < 0) {
+                if (sd_bus_error_has_name(&error, SD_BUS_ERROR_NO_REPLY) ||
+                    sd_bus_error_has_name(&error, SD_BUS_ERROR_DISCONNECTED))
+                        return true;
+
+                if (sd_bus_error_has_name(&error, SD_BUS_ERROR_UNKNOWN_OBJECT))
+                        return false;
+
+                return r;
+        }
+
+        /* We don't actually care about the state really. The fact
+         * that we could read the job state is enough for us */
+
+        return true;
 }

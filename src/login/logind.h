@@ -90,7 +90,7 @@ struct Manager {
            contains the action we are supposed to perform after the
            delay is over */
         HandleAction pending_action;
-        usec_t action_timestamp;
+        sd_event_source *inhibit_timeout_source;
 
         sd_event_source *idle_action_event_source;
         usec_t idle_action_usec;
@@ -160,7 +160,6 @@ int shutdown_or_sleep(Manager *m, HandleAction action);
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 
-int manager_dispatch_delayed(Manager *manager);
 
 /* gperf lookup function */
 const struct ConfigPerfItem* logind_gperf_lookup(const char *key, unsigned length);
