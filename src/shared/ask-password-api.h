@@ -29,3 +29,4 @@ int ask_password_agent(const char *message, const char *icon, const char *id,
 
 int ask_password_auto(const char *message, const char *icon, const char *id,
                       usec_t until, bool accept_cached, char ***_passphrases);
+        SD_BUS_PROPERTY("TimeoutIdleUSec", "t", bus_property_get_usec, offsetof(Automount, timeout_idle_usec), SD_BUS_VTABLE_PROPERTY_CONST),
