@@ -21,6 +21,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include "libudev-private.h"
 #include "sd-device.h"
 
 int device_enumerator_scan_devices(sd_device_enumerator *enumeartor);
