@@ -525,16 +525,6 @@ fi
 AM_CONDITIONAL(ENABLE_KDBUS, [test "$have_kdbus" = "yes"])
 
 # ------------------------------------------------------------------------------
-AC_ARG_WITH(telinit,
-        AS_HELP_STRING([--with-telinit=PATH],
-                [Path to telinit]),
-        [TELINIT="$withval"],
-        [TELINIT="/lib/sysvinit/telinit"])
-
-AC_DEFINE_UNQUOTED(TELINIT, ["$TELINIT"], [Path to telinit])
-
-AC_SUBST(TELINIT)
-
 AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
 
 # ------------------------------------------------------------------------------
