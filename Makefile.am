@@ -1,24 +1,24 @@
 #  -*- Mode: makefile; indent-tabs-mode: t -*-
 #
-#  This file is part of systemd.
+#  This file is part of elogind.
 #
 #  Copyright 2010-2012 Lennart Poettering
 #  Copyright 2010-2012 Kay Sievers
 #  Copyright 2013 Zbigniew Jędrzejewski-Szmek
 #  Copyright 2013 David Strauss
 #
-#  systemd is free software; you can redistribute it and/or modify it
+#  elogind is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 2.1 of the License, or
 #  (at your option) any later version.
 #
-#  systemd is distributed in the hope that it will be useful, but
+#  elogind is distributed in the hope that it will be useful, but
 #  WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  Lesser General Public License for more details.
 #
 #  You should have received a copy of the GNU Lesser General Public License
-#  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+#  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_MAKEFLAGS = --no-print-directory
@@ -38,27 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBSYSTEMD_CURRENT=6
-LIBSYSTEMD_REVISION=0
-LIBSYSTEMD_AGE=6
-
-# The following four libraries only exist for compatibility reasons,
-# their version info should not be bumped anymore
-LIBSYSTEMD_LOGIN_CURRENT=9
-LIBSYSTEMD_LOGIN_REVISION=3
-LIBSYSTEMD_LOGIN_AGE=9
-
-LIBSYSTEMD_DAEMON_CURRENT=0
-LIBSYSTEMD_DAEMON_REVISION=12
-LIBSYSTEMD_DAEMON_AGE=0
-
-LIBSYSTEMD_ID128_CURRENT=0
-LIBSYSTEMD_ID128_REVISION=28
-LIBSYSTEMD_ID128_AGE=0
-
-LIBSYSTEMD_JOURNAL_CURRENT=11
-LIBSYSTEMD_JOURNAL_REVISION=5
-LIBSYSTEMD_JOURNAL_AGE=11
+LIBELOGIND_CURRENT=6
+LIBELOGIND_REVISION=0
+LIBELOGIND_AGE=6
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -71,38 +53,38 @@ polkitpolicydir=$(datadir)/polkit-1/actions
 bashcompletiondir=@bashcompletiondir@
 zshcompletiondir=@zshcompletiondir@
 varlogdir=$(localstatedir)/log
-systemdstatedir=$(localstatedir)/lib/systemd
-catalogstatedir=$(systemdstatedir)/catalog
+elogindstatedir=$(localstatedir)/lib/elogind
+catalogstatedir=$(elogindstatedir)/catalog
 xinitrcdir=$(sysconfdir)/X11/xinit/xinitrc.d
 
 # Our own, non-special dirs
-pkgsysconfdir=$(sysconfdir)/systemd
-userunitdir=$(prefix)/lib/systemd/user
-userpresetdir=$(prefix)/lib/systemd/user-preset
+pkgsysconfdir=$(sysconfdir)/elogind
+userunitdir=$(prefix)/lib/elogind/user
+userpresetdir=$(prefix)/lib/elogind/user-preset
 tmpfilesdir=$(prefix)/lib/tmpfiles.d
 sysusersdir=$(prefix)/lib/sysusers.d
 sysctldir=$(prefix)/lib/sysctl.d
 binfmtdir=$(prefix)/lib/binfmt.d
 modulesloaddir=$(prefix)/lib/modules-load.d
-networkdir=$(rootprefix)/lib/systemd/network
-pkgincludedir=$(includedir)/systemd
+networkdir=$(rootprefix)/lib/elogind/network
+pkgincludedir=$(includedir)/elogind
 systemgeneratordir=$(rootlibexecdir)/system-generators
-usergeneratordir=$(prefix)/lib/systemd/user-generators
+usergeneratordir=$(prefix)/lib/elogind/user-generators
 systemshutdowndir=$(rootlibexecdir)/system-shutdown
 systemsleepdir=$(rootlibexecdir)/system-sleep
-systemunitdir=$(rootprefix)/lib/systemd/system
-systempresetdir=$(rootprefix)/lib/systemd/system-preset
+systemunitdir=$(rootprefix)/lib/elogind/system
+systempresetdir=$(rootprefix)/lib/elogind/system-preset
 udevrulesdir=$(rootprefix)/lib/udev/rules.d
-catalogdir=$(prefix)/lib/systemd/catalog
+catalogdir=$(prefix)/lib/elogind/catalog
 kernelinstalldir = $(prefix)/lib/kernel/install.d
 factory_etcdir = $(prefix)/share/factory/etc
 factory_pamdir = $(prefix)/share/factory/etc/pam.d
-bootlibdir = $(prefix)/lib/systemd/boot/efi
+bootlibdir = $(prefix)/lib/elogind/boot/efi
 
 # And these are the special ones for /
 rootprefix=@rootprefix@
 rootbindir=$(rootprefix)/bin
-rootlibexecdir=$(rootprefix)/lib/systemd
+rootlibexecdir=$(rootprefix)/lib/elogind
 
 EXTRA_DIST =
 BUILT_SOURCES =
@@ -170,14 +152,14 @@ AM_CPPFLAGS = \
 	-DCERTIFICATE_ROOT=\"$(CERTIFICATEROOT)\" \
 	-DCATALOG_DATABASE=\"$(catalogstatedir)/database\" \
 	-DROOTPREFIX=\"$(rootprefix)\" \
-	-DRANDOM_SEED_DIR=\"$(localstatedir)/lib/systemd/\" \
-	-DRANDOM_SEED=\"$(localstatedir)/lib/systemd/random-seed\" \
+	-DRANDOM_SEED_DIR=\"$(localstatedir)/lib/elogind/\" \
+	-DRANDOM_SEED=\"$(localstatedir)/lib/elogind/random-seed\" \
 	-DSYSTEM_GENERATOR_PATH=\"$(systemgeneratordir)\" \
 	-DUSER_GENERATOR_PATH=\"$(usergeneratordir)\" \
 	-DSYSTEM_SHUTDOWN_PATH=\"$(systemshutdowndir)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
-	-DSYSTEMD_KBD_MODEL_MAP=\"$(pkgdatadir)/kbd-model-map\" \
-	-DSYSTEMD_LANGUAGE_FALLBACK_MAP=\"$(pkgdatadir)/language-fallback-map\" \
+	-DELOGIND_KBD_MODEL_MAP=\"$(pkgdatadir)/kbd-model-map\" \
+	-DELOGIND_LANGUAGE_FALLBACK_MAP=\"$(pkgdatadir)/language-fallback-map\" \
 	-DX_SERVER=\"$(bindir)/X\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
 	-DQUOTACHECK=\"$(QUOTACHECK)\" \
@@ -193,9 +175,9 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/systemd \
 	-I $(top_builddir)/src/core \
 	-I $(top_srcdir)/src/core \
-	-I $(top_srcdir)/src/libsystemd/sd-bus \
-	-I $(top_srcdir)/src/libsystemd/sd-event \
-	-I $(top_srcdir)/src/libsystemd/sd-device \
+	-I $(top_srcdir)/src/libelogind/sd-bus \
+	-I $(top_srcdir)/src/libelogind/sd-event \
+	-I $(top_srcdir)/src/libelogind/sd-device \
 	$(UDEV_CFLAGS) \
 	$(OUR_CPPFLAGS)
 
@@ -336,9 +318,9 @@ dist_doc_DATA = \
 	LICENSE.LGPL2.1 \
 	LICENSE.GPL2 \
 	LICENSE.MIT \
-	src/libsystemd/sd-bus/PORTING-DBUS1 \
-	src/libsystemd/sd-bus/DIFFERENCES \
-	src/libsystemd/sd-bus/GVARIANT-SERIALIZATION
+	src/libelogind/sd-bus/PORTING-DBUS1 \
+	src/libelogind/sd-bus/DIFFERENCES \
+	src/libelogind/sd-bus/GVARIANT-SERIALIZATION
 
 @INTLTOOL_POLICY_RULE@
 
@@ -396,9 +378,9 @@ EXTRA_DIST += \
 
 # ------------------------------------------------------------------------------
 noinst_LTLIBRARIES += \
-	libsystemd-shared.la
+	libelogind-shared.la
 
-libsystemd_shared_la_SOURCES = \
+libelogind_shared_la_SOURCES = \
 	src/shared/capability.c \
 	src/shared/capability.h \
 	src/shared/linux/auto_dev-ioctl.h \
@@ -563,7 +545,7 @@ libsystemd_shared_la_SOURCES = \
 	src/shared/sysctl-util.c \
 	src/shared/sysctl-util.h
 
-nodist_libsystemd_shared_la_SOURCES = \
+nodist_libelogind_shared_la_SOURCES = \
 	src/shared/errno-from-name.h \
 	src/shared/errno-to-name.h \
 	src/shared/af-from-name.h \
@@ -573,38 +555,38 @@ nodist_libsystemd_shared_la_SOURCES = \
 	src/shared/cap-from-name.h \
 	src/shared/cap-to-name.h
 
-libsystemd_shared_la_CFLAGS = \
+libelogind_shared_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(CAP_CFLAGS) \
 	$(SECCOMP_CFLAGS) \
 	-pthread
 
-libsystemd_shared_la_LIBADD = \
+libelogind_shared_la_LIBADD = \
 	$(CAP_LIBS) \
 	-lm
 
 # ------------------------------------------------------------------------------
 if HAVE_ACL
 noinst_LTLIBRARIES += \
-	libsystemd-acl.la
+	libelogind-acl.la
 
-libsystemd_acl_la_SOURCES = \
+libelogind_acl_la_SOURCES = \
 	src/shared/acl-util.c \
 	src/shared/acl-util.h
 
-libsystemd_acl_la_CFLAGS = \
+libelogind_acl_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(ACL_CFLAGS)
 
-libsystemd_acl_la_LIBADD = \
+libelogind_acl_la_LIBADD = \
 	$(ACL_LIBS)
 endif
 
 # ------------------------------------------------------------------------------
-noinst_LTLIBRARIES += \
-	libsystemd-core.la
+#noinst_LTLIBRARIES += \
+#	elogind-core.la
 
-libsystemd_core_la_SOURCES = \
+elogind_core_la_SOURCES = \
 	src/core/unit.c \
 	src/core/unit.h \
 	src/core/unit-printf.c \
@@ -714,17 +696,17 @@ libsystemd_core_la_SOURCES = \
 	src/core/failure-action.c \
 	src/core/failure-action.h
 
-nodist_libsystemd_core_la_SOURCES = \
+nodist_elogind_core_la_SOURCES = \
 	src/core/load-fragment-gperf.c \
 	src/core/load-fragment-gperf-nulstr.c
 
-libsystemd_core_la_CFLAGS = \
+elogind_core_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(PAM_CFLAGS) \
 	-pthread
 
-libsystemd_core_la_LIBADD = \
-	libsystemd-shared.la \
+elogind_core_la_LIBADD = \
+	libelogind-shared.la \
 	$(PAM_LIBS)
 
 src/core/load-fragment-gperf-nulstr.c: src/core/load-fragment-gperf.gperf
@@ -819,9 +801,9 @@ endif
 
 # ------------------------------------------------------------------------------
 noinst_LTLIBRARIES += \
-	libsystemd-internal.la
+	libelogind-internal.la
 
-libsystemd_internal_la_SOURCES = \
+libelogind_internal_la_SOURCES = \
 	src/systemd/sd-bus.h \
 	src/systemd/sd-bus-protocol.h \
 	src/systemd/sd-bus-vtable.h \
@@ -835,120 +817,120 @@ libsystemd_internal_la_SOURCES = \
 	src/systemd/sd-path.h \
 	src/systemd/sd-network.h \
 	src/systemd/sd-device.h \
-	src/libsystemd/sd-bus/sd-bus.c \
-	src/libsystemd/sd-bus/bus-control.c \
-	src/libsystemd/sd-bus/bus-control.h \
-	src/libsystemd/sd-bus/bus-error.c \
-	src/libsystemd/sd-bus/bus-error.h \
-	src/libsystemd/sd-bus/bus-common-errors.h \
-	src/libsystemd/sd-bus/bus-common-errors.c \
-	src/libsystemd/sd-bus/bus-internal.c \
-	src/libsystemd/sd-bus/bus-internal.h \
-	src/libsystemd/sd-bus/bus-socket.c \
-	src/libsystemd/sd-bus/bus-socket.h \
-	src/libsystemd/sd-bus/bus-kernel.c \
-	src/libsystemd/sd-bus/bus-kernel.h \
-	src/libsystemd/sd-bus/bus-container.c \
-	src/libsystemd/sd-bus/bus-container.h \
-	src/libsystemd/sd-bus/bus-message.c \
-	src/libsystemd/sd-bus/bus-message.h \
-	src/libsystemd/sd-bus/bus-creds.c \
-	src/libsystemd/sd-bus/bus-creds.h \
-	src/libsystemd/sd-bus/bus-signature.c \
-	src/libsystemd/sd-bus/bus-signature.h \
-	src/libsystemd/sd-bus/bus-type.c \
-	src/libsystemd/sd-bus/bus-type.h \
-	src/libsystemd/sd-bus/bus-match.c \
-	src/libsystemd/sd-bus/bus-match.h \
-	src/libsystemd/sd-bus/bus-bloom.c \
-	src/libsystemd/sd-bus/bus-bloom.h \
-	src/libsystemd/sd-bus/bus-introspect.c \
-	src/libsystemd/sd-bus/bus-introspect.h \
-	src/libsystemd/sd-bus/bus-objects.c \
-	src/libsystemd/sd-bus/bus-objects.h \
-	src/libsystemd/sd-bus/bus-gvariant.c \
-	src/libsystemd/sd-bus/bus-gvariant.h \
-	src/libsystemd/sd-bus/bus-convenience.c \
-	src/libsystemd/sd-bus/bus-track.c \
-	src/libsystemd/sd-bus/bus-track.h \
-	src/libsystemd/sd-bus/bus-util.c \
-	src/libsystemd/sd-bus/bus-util.h \
-	src/libsystemd/sd-bus/bus-slot.c \
-	src/libsystemd/sd-bus/bus-slot.h \
-	src/libsystemd/sd-bus/bus-protocol.h \
-	src/libsystemd/sd-bus/kdbus.h \
-	src/libsystemd/sd-utf8/sd-utf8.c \
-	src/libsystemd/sd-event/sd-event.c \
-	src/libsystemd/sd-event/event-util.h \
-	src/libsystemd/sd-rtnl/sd-rtnl.c \
-	src/libsystemd/sd-rtnl/rtnl-internal.h \
-	src/libsystemd/sd-rtnl/rtnl-message.c \
-	src/libsystemd/sd-rtnl/rtnl-types.h \
-	src/libsystemd/sd-rtnl/rtnl-types.c \
-	src/libsystemd/sd-rtnl/rtnl-util.h \
-	src/libsystemd/sd-rtnl/rtnl-util.c \
-	src/libsystemd/sd-rtnl/local-addresses.h \
-	src/libsystemd/sd-rtnl/local-addresses.c \
-	src/libsystemd/sd-id128/sd-id128.c \
-	src/libsystemd/sd-daemon/sd-daemon.c \
-	src/libsystemd/sd-login/sd-login.c \
-	src/libsystemd/sd-path/sd-path.c \
-	src/libsystemd/sd-network/sd-network.c \
-	src/libsystemd/sd-network/network-util.h \
-	src/libsystemd/sd-network/network-util.c \
-	src/libsystemd/sd-device/device-internal.h \
-	src/libsystemd/sd-device/device-util.h \
-	src/libsystemd/sd-device/sd-device.c \
-	src/libsystemd/sd-device/device-private.c \
-	src/libsystemd/sd-device/device-private.h
+	src/libelogind/sd-bus/sd-bus.c \
+	src/libelogind/sd-bus/bus-control.c \
+	src/libelogind/sd-bus/bus-control.h \
+	src/libelogind/sd-bus/bus-error.c \
+	src/libelogind/sd-bus/bus-error.h \
+	src/libelogind/sd-bus/bus-common-errors.h \
+	src/libelogind/sd-bus/bus-common-errors.c \
+	src/libelogind/sd-bus/bus-internal.c \
+	src/libelogind/sd-bus/bus-internal.h \
+	src/libelogind/sd-bus/bus-socket.c \
+	src/libelogind/sd-bus/bus-socket.h \
+	src/libelogind/sd-bus/bus-kernel.c \
+	src/libelogind/sd-bus/bus-kernel.h \
+	src/libelogind/sd-bus/bus-container.c \
+	src/libelogind/sd-bus/bus-container.h \
+	src/libelogind/sd-bus/bus-message.c \
+	src/libelogind/sd-bus/bus-message.h \
+	src/libelogind/sd-bus/bus-creds.c \
+	src/libelogind/sd-bus/bus-creds.h \
+	src/libelogind/sd-bus/bus-signature.c \
+	src/libelogind/sd-bus/bus-signature.h \
+	src/libelogind/sd-bus/bus-type.c \
+	src/libelogind/sd-bus/bus-type.h \
+	src/libelogind/sd-bus/bus-match.c \
+	src/libelogind/sd-bus/bus-match.h \
+	src/libelogind/sd-bus/bus-bloom.c \
+	src/libelogind/sd-bus/bus-bloom.h \
+	src/libelogind/sd-bus/bus-introspect.c \
+	src/libelogind/sd-bus/bus-introspect.h \
+	src/libelogind/sd-bus/bus-objects.c \
+	src/libelogind/sd-bus/bus-objects.h \
+	src/libelogind/sd-bus/bus-gvariant.c \
+	src/libelogind/sd-bus/bus-gvariant.h \
+	src/libelogind/sd-bus/bus-convenience.c \
+	src/libelogind/sd-bus/bus-track.c \
+	src/libelogind/sd-bus/bus-track.h \
+	src/libelogind/sd-bus/bus-util.c \
+	src/libelogind/sd-bus/bus-util.h \
+	src/libelogind/sd-bus/bus-slot.c \
+	src/libelogind/sd-bus/bus-slot.h \
+	src/libelogind/sd-bus/bus-protocol.h \
+	src/libelogind/sd-bus/kdbus.h \
+	src/libelogind/sd-utf8/sd-utf8.c \
+	src/libelogind/sd-event/sd-event.c \
+	src/libelogind/sd-event/event-util.h \
+	src/libelogind/sd-rtnl/sd-rtnl.c \
+	src/libelogind/sd-rtnl/rtnl-internal.h \
+	src/libelogind/sd-rtnl/rtnl-message.c \
+	src/libelogind/sd-rtnl/rtnl-types.h \
+	src/libelogind/sd-rtnl/rtnl-types.c \
+	src/libelogind/sd-rtnl/rtnl-util.h \
+	src/libelogind/sd-rtnl/rtnl-util.c \
+	src/libelogind/sd-rtnl/local-addresses.h \
+	src/libelogind/sd-rtnl/local-addresses.c \
+	src/libelogind/sd-id128/sd-id128.c \
+	src/libelogind/sd-daemon/sd-daemon.c \
+	src/libelogind/sd-login/sd-login.c \
+	src/libelogind/sd-path/sd-path.c \
+	src/libelogind/sd-network/sd-network.c \
+	src/libelogind/sd-network/network-util.h \
+	src/libelogind/sd-network/network-util.c \
+	src/libelogind/sd-device/device-internal.h \
+	src/libelogind/sd-device/device-util.h \
+	src/libelogind/sd-device/sd-device.c \
+	src/libelogind/sd-device/device-private.c \
+	src/libelogind/sd-device/device-private.h
 
-nodist_libsystemd_internal_la_SOURCES = \
-	src/libsystemd/libsystemd.sym
+nodist_libelogind_internal_la_SOURCES = \
+	src/libelogind/libelogind.sym
 
-libsystemd_internal_la_CFLAGS = \
+libelogind_internal_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	-pthread
 
 BUILT_SOURCES += \
-       src/libsystemd/libsystemd.sym
+       src/libelogind/libelogind.sym
 
 
-libsystemd_internal_la_LIBADD = \
+libelogind_internal_la_LIBADD = \
 	$(RT_LIBS) \
-	libsystemd-shared.la
+	libelogind-shared.la
 
-libsystemd_internal_la_LDFLAGS = \
+libelogind_internal_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	-version-info $(LIBSYSTEMD_CURRENT):$(LIBSYSTEMD_REVISION):$(LIBSYSTEMD_AGE) \
-	-Wl,--version-script=$(top_builddir)/src/libsystemd/libsystemd.sym
+	-version-info $(LIBELOGIND_CURRENT):$(LIBELOGIND_REVISION):$(LIBELOGIND_AGE) \
+	-Wl,--version-script=$(top_builddir)/src/libelogind/libelogind.sym
 
-libsystemd-install-hook:
-	libname=libsystemd.so && $(move-to-rootlibdir)
+libelogind-install-hook:
+	libname=libelogind.so && $(move-to-rootlibdir)
 
-libsystemd-uninstall-hook:
-	rm -f $(DESTDIR)$(rootlibdir)/libsystemd.so*
+libelogind-uninstall-hook:
+	rm -f $(DESTDIR)$(rootlibdir)/libelogind.so*
 
-INSTALL_EXEC_HOOKS += libsystemd-install-hook
-UNINSTALL_EXEC_HOOKS += libsystemd-uninstall-hook
+INSTALL_EXEC_HOOKS += libelogind-install-hook
+UNINSTALL_EXEC_HOOKS += libelogind-uninstall-hook
 
 pkgconfiglib_DATA += \
-	src/libsystemd/libsystemd.pc
+	src/libelogind/libsystemd.pc
 
 pkginclude_HEADERS += \
 	src/systemd/sd-login.h
 
 # ------------------------------------------------------------------------------
-systemd_logind_SOURCES = \
+elogind_SOURCES = \
 	src/login/logind.c \
 	src/login/logind.h
 
-nodist_systemd_logind_SOURCES = \
+nodist_elogind_SOURCES = \
 	src/login/logind-gperf.c
 
-systemd_logind_LDADD = \
-	libsystemd-logind-core.la
+elogind_LDADD = \
+	libelogind-core.la
 
-libsystemd_logind_core_la_SOURCES = \
+libelogind_core_la_SOURCES = \
 	src/login/logind-core.c \
 	src/login/logind-device.c \
 	src/login/logind-device.h \
@@ -972,23 +954,23 @@ libsystemd_logind_core_la_SOURCES = \
 	src/login/logind-user-dbus.c \
 	src/login/logind-acl.h
 
-libsystemd_logind_core_la_LIBADD = \
+libelogind_core_la_LIBADD = \
 	$(UDEV_LIBS) \
-	libsystemd-internal.la
+	libelogind-internal.la
 
 if HAVE_ACL
-libsystemd_logind_core_la_SOURCES += \
+libelogind_core_la_SOURCES += \
 	src/login/logind-acl.c
 
-libsystemd_logind_core_la_LIBADD += \
-	libsystemd-acl.la
+libelogind_core_la_LIBADD += \
+	libelogind-acl.la
 endif
 
 noinst_LTLIBRARIES += \
-	libsystemd-logind-core.la
+	libelogind-core.la
 
 rootlibexec_PROGRAMS += \
-	systemd-logind
+	elogind
 
 loginctl_SOURCES = \
 	src/login/loginctl.c \
@@ -997,8 +979,8 @@ loginctl_SOURCES = \
 
 loginctl_LDADD = \
 	$(UDEV_LIBS) \
-	libsystemd-internal.la \
-	libsystemd-shared.la
+	libelogind-internal.la \
+	libelogind-shared.la
 
 rootbin_PROGRAMS += \
 	loginctl
@@ -1014,38 +996,38 @@ systemd_inhibit_SOURCES = \
 	src/login/inhibit.c
 
 systemd_inhibit_LDADD = \
-	libsystemd-internal.la \
-	libsystemd-shared.la
+	libelogind-internal.la \
+	libelogind-shared.la
 
 rootbin_PROGRAMS += \
 	systemd-inhibit
 
 test_login_SOURCES = \
-	src/libsystemd/sd-login/test-login.c
+	src/libelogind/sd-login/test-login.c
 
 test_login_LDADD = \
-	libsystemd-internal.la \
-	libsystemd-shared.la
+	libelogind-internal.la \
+	libelogind-shared.la
 
 test_login_shared_SOURCES = \
 	src/login/test-login-shared.c
 
 test_login_shared_LDADD = \
-	libsystemd-internal.la \
-	libsystemd-shared.la
+	libelogind-internal.la \
+	libelogind-shared.la
 
 test_inhibit_SOURCES = \
 	src/login/test-inhibit.c
 
 test_inhibit_LDADD = \
-	libsystemd-internal.la \
-	libsystemd-shared.la
+	libelogind-internal.la \
+	libelogind-shared.la
 
 test_login_tables_SOURCES = \
 	src/login/test-login-tables.c
 
 test_login_tables_LDADD = \
-	libsystemd-logind-core.la
+	libelogind-core.la
 
 manual_tests += \
 	test-login \
@@ -1074,14 +1056,14 @@ pam_elogind_la_LDFLAGS = \
 	-Wl,--version-script=$(top_srcdir)/src/login/pam_elogind.sym
 
 pam_elogind_la_LIBADD = \
-	libsystemd-internal.la \
+	libelogind-internal.la \
 	$(PAM_LIBS)
 
 pamlib_LTLIBRARIES = \
 	pam_elogind.la
 
 dist_pamconf_DATA = \
-	src/login/systemd-user
+	src/login/elogind-user
 
 endif
 
@@ -1098,10 +1080,10 @@ polkitpolicy_files += \
 	src/login/org.freedesktop.login1.policy
 
 INSTALL_DIRS += \
-	$(systemdstatedir)
+	$(elogindstatedir)
 
 SYSTEM_UNIT_ALIASES += \
-	systemd-logind.service dbus-org.freedesktop.login1.service
+	elogind.service dbus-org.freedesktop.login1.service
 
 dist_udevrules_DATA = \
 	src/login/70-uaccess.rules \
@@ -1119,22 +1101,13 @@ gperf_gperf_sources = \
 
 EXTRA_DIST += \
 	src/login/71-seat.rules.in \
-	src/login/73-seat-late.rules.in \
-	units/systemd-logind.service.in
-
-pkgconfiglib_DATA += \
-	src/compat-libs/libsystemd-login.pc
-
-EXTRA_DIST += \
-	src/compat-libs/libsystemd-login.pc.in
+	src/login/73-seat-late.rules.in
 
 # ------------------------------------------------------------------------------
 substitutions = \
        '|rootlibexecdir=$(rootlibexecdir)|' \
        '|rootbindir=$(rootbindir)|' \
        '|bindir=$(bindir)|' \
-       '|SYSTEMCTL=$(rootbindir)/systemctl|' \
-       '|SYSTEMD_NOTIFY=$(rootbindir)/systemd-notify|' \
        '|pkgsysconfdir=$(pkgsysconfdir)|' \
        '|SYSTEM_CONFIG_UNIT_PATH=$(pkgsysconfdir)/system|' \
        '|USER_CONFIG_UNIT_PATH=$(pkgsysconfdir)/user|' \
@@ -1154,8 +1127,8 @@ substitutions = \
        '|PACKAGE_VERSION=$(PACKAGE_VERSION)|' \
        '|PACKAGE_NAME=$(PACKAGE_NAME)|' \
        '|PACKAGE_URL=$(PACKAGE_URL)|' \
-       '|RANDOM_SEED_DIR=$(localstatedir)/lib/systemd/|' \
-       '|RANDOM_SEED=$(localstatedir)/lib/systemd/random-seed|' \
+       '|RANDOM_SEED_DIR=$(localstatedir)/lib/elogind/|' \
+       '|RANDOM_SEED=$(localstatedir)/lib/elogind/random-seed|' \
        '|prefix=$(prefix)|' \
        '|exec_prefix=$(exec_prefix)|' \
        '|libdir=$(libdir)|' \
@@ -1279,7 +1252,7 @@ XSLTPROC_FLAGS = \
 	--stringparam funcsynopsis.style ansi \
 	--stringparam man.authors.section.enabled 0 \
 	--stringparam man.copyright.section.enabled 0 \
-	--stringparam systemd.version $(VERSION) \
+	--stringparam elogind.version $(VERSION) \
 	--path '$(builddir)/man:$(srcdir)/man'
 
 XSLTPROC_PROCESS_MAN = \
@@ -1337,8 +1310,7 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-pamconfdir=$$dc_install_base/$(pamconfdir) \
 	--with-rootprefix=$$dc_install_base \
 	--disable-split-usr \
-	--enable-kdbus \
-	--enable-compat-libs
+	--enable-kdbus
 
 DISTCHECK_CONFIGURE_FLAGS += \
 	--with-sysvinit-path= \
@@ -1352,13 +1324,7 @@ endif
 #
 # Require python when making dist
 #
-.PHONY: dist-check-compat-libs dist-check-help
-
-dist-check-compat-libs:
-if !ENABLE_COMPAT_LIBS
-	@echo "*** compat-libs must be enabled in order to make dist"
-	@false
-endif
+.PHONY: dist-check-help
 
 dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
 	for i in $(abspath $^); do                                             \
@@ -1368,4 +1334,4 @@ dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
 	        exit 1;                                                        \
             fi; done
 
-dist: dist-check-python dist-check-compat-libs
+dist: dist-check-python
