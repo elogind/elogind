@@ -1000,7 +1000,6 @@ substitutions = \
        '|SUSHELL=$(SUSHELL)|' \
        '|SULOGIN=$(SULOGIN)|' \
        '|DEBUGTTY=$(DEBUGTTY)|' \
-       '|KILL=$(KILL)|' \
        '|KMOD=$(KMOD)|' \
        '|MKDIR_P=$(MKDIR_P)|' \
        '|SYSTEM_SYSVINIT_PATH=$(sysvinitdir)|' \
