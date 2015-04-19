@@ -75,12 +75,6 @@
 #define _BLKID_FEATURE_ "-BLKID"
 #endif
 
-#ifdef HAVE_ELFUTILS
-#define _ELFUTILS_FEATURE_ "+ELFUTILS"
-#else
-#define _ELFUTILS_FEATURE_ "-ELFUTILS"
-#endif
-
 #ifdef HAVE_LIBIDN
 #define _IDN_FEATURE_ "+IDN"
 #else
@@ -97,5 +91,4 @@
         _ACL_FEATURE_ " "                                               \
         _SECCOMP_FEATURE_ " "                                           \
         _BLKID_FEATURE_ " "                                             \
-        _ELFUTILS_FEATURE_ " "                                          \
         _IDN_FEATURE_
