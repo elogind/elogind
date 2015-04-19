@@ -666,7 +666,6 @@ AC_MSG_RESULT([
         gtk-doc:                 ${enable_gtk_doc}
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
-        SysV compatibility:      ${SYSTEM_SYSV_COMPAT}
         extra debugging:         ${enable_debug}
 
         prefix:                  ${prefix}
@@ -674,11 +673,8 @@ AC_MSG_RESULT([
         sysconf dir:             ${sysconfdir}
         datarootdir:             ${datarootdir}
         includedir:              ${includedir}
-        include_prefix:          ${INCLUDE_PREFIX}
         lib dir:                 ${libdir}
         rootlib dir:             ${with_rootlibdir}
-        SysV init scripts:       ${SYSTEM_SYSVINIT_PATH}
-        SysV rc?.d directories:  ${SYSTEM_SYSVRCND_PATH}
         PAM modules dir:         ${with_pamlibdir}
         PAM configuration dir:   ${with_pamconfdir}
         D-Bus policy dir:        ${with_dbuspolicydir}
