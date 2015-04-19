@@ -757,7 +757,6 @@ BUILT_SOURCES += \
 
 
 libelogind_internal_la_LIBADD = \
-	$(RT_LIBS) \
 	libelogind-shared.la
 
 libelogind_internal_la_LDFLAGS = \
