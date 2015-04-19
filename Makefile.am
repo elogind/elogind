@@ -173,8 +173,6 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/shared \
 	-I $(top_srcdir)/src/login \
 	-I $(top_srcdir)/src/systemd \
-	-I $(top_builddir)/src/core \
-	-I $(top_srcdir)/src/core \
 	-I $(top_srcdir)/src/libelogind/sd-bus \
 	-I $(top_srcdir)/src/libelogind/sd-event \
 	-I $(top_srcdir)/src/libelogind/sd-device \
@@ -582,140 +580,6 @@ libelogind_acl_la_LIBADD = \
 	$(ACL_LIBS)
 endif
 
-# ------------------------------------------------------------------------------
-#noinst_LTLIBRARIES += \
-#	elogind-core.la
-
-elogind_core_la_SOURCES = \
-	src/core/unit.c \
-	src/core/unit.h \
-	src/core/unit-printf.c \
-	src/core/unit-printf.h \
-	src/core/job.c \
-	src/core/job.h \
-	src/core/manager.c \
-	src/core/manager.h \
-	src/core/transaction.c \
-	src/core/transaction.h \
-	src/core/load-fragment.c \
-	src/core/load-fragment.h \
-	src/core/service.c \
-	src/core/service.h \
-	src/core/socket.c \
-	src/core/socket.h \
-	src/core/busname.c \
-	src/core/busname.h \
-	src/core/bus-endpoint.c \
-	src/core/bus-endpoint.h \
-	src/core/bus-policy.c \
-	src/core/bus-policy.h \
-	src/core/target.c \
-	src/core/target.h \
-	src/core/snapshot.c \
-	src/core/snapshot.h \
-	src/core/device.c \
-	src/core/device.h \
-	src/core/swap.c \
-	src/core/swap.h \
-	src/core/timer.c \
-	src/core/timer.h \
-	src/core/path.c \
-	src/core/path.h \
-	src/core/slice.c \
-	src/core/slice.h \
-	src/core/scope.c \
-	src/core/scope.h \
-	src/core/load-dropin.c \
-	src/core/load-dropin.h \
-	src/core/execute.c \
-	src/core/execute.h \
-	src/core/kill.c \
-	src/core/kill.h \
-	src/core/dbus.c \
-	src/core/dbus.h \
-	src/core/dbus-manager.c \
-	src/core/dbus-manager.h \
-	src/core/dbus-unit.c \
-	src/core/dbus-unit.h \
-	src/core/dbus-job.c \
-	src/core/dbus-job.h \
-	src/core/dbus-service.c \
-	src/core/dbus-service.h \
-	src/core/dbus-socket.c \
-	src/core/dbus-socket.h \
-	src/core/dbus-busname.c \
-	src/core/dbus-busname.h \
-	src/core/dbus-target.c \
-	src/core/dbus-target.h \
-	src/core/dbus-snapshot.c \
-	src/core/dbus-snapshot.h \
-	src/core/dbus-device.c \
-	src/core/dbus-device.h \
-	src/core/dbus-swap.c \
-	src/core/dbus-swap.h \
-	src/core/dbus-timer.c \
-	src/core/dbus-timer.h \
-	src/core/dbus-path.c \
-	src/core/dbus-path.h \
-	src/core/dbus-slice.c \
-	src/core/dbus-slice.h \
-	src/core/dbus-scope.c \
-	src/core/dbus-scope.h \
-	src/core/dbus-execute.c \
-	src/core/dbus-execute.h \
-	src/core/dbus-kill.c \
-	src/core/dbus-kill.h \
-	src/core/dbus-cgroup.c \
-	src/core/dbus-cgroup.h \
-	src/core/cgroup.c \
-	src/core/cgroup.h \
-	src/core/selinux-access.c \
-	src/core/selinux-access.h \
-	src/core/selinux-setup.c \
-	src/core/selinux-setup.h \
-	src/core/smack-setup.c \
-	src/core/smack-setup.h \
-	src/core/ima-setup.c \
-	src/core/ima-setup.h \
-	src/core/locale-setup.h \
-	src/core/locale-setup.c \
-	src/core/hostname-setup.c \
-	src/core/hostname-setup.h \
-	src/core/machine-id-setup.c \
-	src/core/machine-id-setup.h \
-	src/core/kmod-setup.c \
-	src/core/kmod-setup.h \
-	src/core/namespace.c \
-	src/core/namespace.h \
-	src/core/killall.h \
-	src/core/killall.c \
-	src/core/audit-fd.c \
-	src/core/audit-fd.h \
-	src/core/show-status.c \
-	src/core/show-status.h \
-	src/core/failure-action.c \
-	src/core/failure-action.h
-
-nodist_elogind_core_la_SOURCES = \
-	src/core/load-fragment-gperf.c \
-	src/core/load-fragment-gperf-nulstr.c
-
-elogind_core_la_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(PAM_CFLAGS) \
-	-pthread
-
-elogind_core_la_LIBADD = \
-	libelogind-shared.la \
-	$(PAM_LIBS)
-
-src/core/load-fragment-gperf-nulstr.c: src/core/load-fragment-gperf.gperf
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(AWK) 'BEGIN{ keywords=0 ; FS="," ; print "extern const char load_fragment_gperf_nulstr[];" ; print "const char load_fragment_gperf_nulstr[] ="} ; keyword==1 { print "\"" $$1 "\\0\"" } ; /%%/ { keyword=1} ; END { print ";" }' < $< > $@
-
-gperf_gperf_m4_sources = \
-	src/core/load-fragment-gperf.gperf.m4
-
 gperf_txt_sources = \
 	src/shared/errno-list.txt \
 	src/shared/af-list.txt \
@@ -723,8 +587,6 @@ gperf_txt_sources = \
 	src/shared/cap-list.txt
 
 BUILT_SOURCES += \
-	$(gperf_gperf_m4_sources:-gperf.gperf.m4=-gperf.c) \
-	$(gperf_gperf_m4_sources:-gperf.gperf.m4=-gperf-nulstr.c) \
 	$(gperf_gperf_sources:-gperf.gperf=-gperf.c) \
 	$(gperf_txt_sources:-list.txt=-from-name.h) \
 	$(gperf_txt_sources:-list.txt=-to-name.h)
@@ -1178,9 +1040,6 @@ sysctl.d/%: sysctl.d/%.in
 	$(SED_PROCESS)
 
 %.conf: %.conf.in
-	$(SED_PROCESS)
-
-src/core/macros.%: src/core/macros.%.in
 	$(SED_PROCESS)
 
 src/%.policy.in: src/%.policy.in.in
