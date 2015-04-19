@@ -27,12 +27,6 @@
 #define _PAM_FEATURE_ "-PAM"
 #endif
 
-#ifdef HAVE_AUDIT
-#define _AUDIT_FEATURE_ "+AUDIT"
-#else
-#define _AUDIT_FEATURE_ "-AUDIT"
-#endif
-
 #ifdef HAVE_SELINUX
 #define _SELINUX_FEATURE_ "+SELINUX"
 #else
@@ -95,7 +89,6 @@
 
 #define SYSTEMD_FEATURES                                                \
         _PAM_FEATURE_ " "                                               \
-        _AUDIT_FEATURE_ " "                                             \
         _SELINUX_FEATURE_ " "                                           \
         _APPARMOR_FEATURE_ " "                                          \
         _SMACK_FEATURE_ " "                                             \

@@ -486,43 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-AC_ARG_ENABLE([audit],
-        AS_HELP_STRING([--disable-audit],[Disable optional AUDIT support]),
-                [case "${enableval}" in
-                        yes) have_audit=yes ;;
-                        no) have_audit=no ;;
-                        *) AC_MSG_ERROR(bad value ${enableval} for --disable-audit) ;;
-                esac],
-                [have_audit=auto])
-
-if test "x${have_audit}" != xno ; then
-        AC_CHECK_HEADERS(
-                [libaudit.h],
-                [have_audit=yes],
-                [if test "x$have_audit" = xyes ; then
-                        AC_MSG_ERROR([*** AUDIT headers not found.])
-                fi])
-
-        AC_CHECK_LIB(
-                [audit],
-                [audit_open],
-                [have_audit=yes],
-                [if test "x$have_audit" = xyes ; then
-                        AC_MSG_ERROR([*** libaudit not found.])
-                fi])
-
-        if test "x$have_audit" = xyes ; then
-                AUDIT_LIBS="-laudit"
-                AC_DEFINE(HAVE_AUDIT, 1, [AUDIT available])
-        else
-                have_audit=no
-        fi
-else
-        AUDIT_LIBS=
-fi
-AC_SUBST(AUDIT_LIBS)
-
-# ------------------------------------------------------------------------------
 AC_ARG_ENABLE([elfutils],
         AS_HELP_STRING([--disable-elfutils],[Disable optional ELFUTILS support]),
                 [case "${enableval}" in
@@ -1182,7 +1145,6 @@ AC_MSG_RESULT([
 
         libcryptsetup:           ${have_libcryptsetup}
         PAM:                     ${have_pam}
-        AUDIT:                   ${have_audit}
         AppArmor:                ${have_apparmor}
         SELinux:                 ${have_selinux}
         SECCOMP:                 ${have_seccomp}

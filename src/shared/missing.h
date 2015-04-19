@@ -37,10 +37,6 @@
 #include <linux/capability.h>
 #include <linux/neighbour.h>
 
-#ifdef HAVE_AUDIT
-#include <libaudit.h>
-#endif
-
 #ifdef ARCH_MIPS
 #include <asm/sgidefs.h>
 #endif
