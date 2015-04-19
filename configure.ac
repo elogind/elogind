@@ -486,40 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_machined=no
-AC_ARG_ENABLE(machined, AS_HELP_STRING([--disable-machined], [disable machine daemon]))
-if test "x$enable_machined" != "xno"; then
-        have_machined=yes
-fi
-AM_CONDITIONAL(ENABLE_MACHINED, [test "$have_machined" = "yes"])
-AS_IF([test "$have_machined" = "yes"], [ AC_DEFINE(HAVE_MACHINED, [1], [Machined support available]) ])
-
-# ------------------------------------------------------------------------------
-have_importd=no
-AC_ARG_ENABLE(importd, AS_HELP_STRING([--disable-importd], [disable import daemon]))
-if test "x$enable_importd" != "xno"; then
-        have_importd=yes
-fi
-AM_CONDITIONAL(ENABLE_IMPORTD, [test "$have_importd" = "yes"])
-AS_IF([test "$have_importd" = "yes"], [ AC_DEFINE(HAVE_IMPORTD, [1], [Importd support available]) ])
-
-# ------------------------------------------------------------------------------
-have_hostnamed=no
-AC_ARG_ENABLE(hostnamed, AS_HELP_STRING([--disable-hostnamed], [disable hostname daemon]))
-if test "x$enable_hostnamed" != "xno"; then
-        have_hostnamed=yes
-fi
-AM_CONDITIONAL(ENABLE_HOSTNAMED, [test "$have_hostnamed" = "yes"])
-
-# ------------------------------------------------------------------------------
-have_timedated=no
-AC_ARG_ENABLE(timedated, AS_HELP_STRING([--disable-timedated], [disable timedate daemon]))
-if test "x$enable_timedated" != "xno"; then
-        have_timedated=yes
-fi
-AM_CONDITIONAL(ENABLE_TIMEDATED, [test "$have_timedated" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_timesyncd=no
 AC_ARG_ENABLE(timesyncd, AS_HELP_STRING([--disable-timesyncd], [disable timesync daemon]))
 if test "x$enable_timesyncd" != "xno"; then
@@ -947,10 +913,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        machined:                ${have_machined}
-        importd:                 ${have_importd}
-        hostnamed:               ${have_hostnamed}
-        timedated:               ${have_timedated}
         timesyncd:               ${have_timesyncd}
         default NTP servers:     ${NTP_SERVERS}
         time epoch:              ${TIME_EPOCH}
