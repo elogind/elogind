@@ -486,14 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_rfkill=no
-AC_ARG_ENABLE(rfkill, AS_HELP_STRING([--disable-rfkill], [disable rfkill tools]))
-if test "x$enable_rfkill" != "xno"; then
-        have_rfkill=yes
-fi
-AM_CONDITIONAL(ENABLE_RFKILL, [test "$have_rfkill" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_logind=no
 AC_ARG_ENABLE(logind, AS_HELP_STRING([--disable-logind], [disable login daemon]))
 if test "x$enable_logind" != "xno"; then
@@ -964,7 +956,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        rfkill:                  ${have_rfkill}
         logind:                  ${have_logind}
         machined:                ${have_machined}
         importd:                 ${have_importd}
