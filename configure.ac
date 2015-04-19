@@ -486,18 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_libcurl=no
-AC_ARG_ENABLE(libcurl, AS_HELP_STRING([--disable-libcurl], [disable libcurl support]))
-if test "x$enable_libcurl" != "xno"; then
-        PKG_CHECK_MODULES(LIBCURL, [libcurl],
-                [AC_DEFINE(HAVE_LIBCURL, 1, [Define if libcurl is available]) have_libcurl=yes], have_libcurl=no)
-        if test "x$have_libcurl" = xno -a "x$enable_libcurl" = xyes; then
-                AC_MSG_ERROR([*** libcurl support requested but libraries not found])
-        fi
-fi
-AM_CONDITIONAL(HAVE_LIBCURL, [test "$have_libcurl" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_binfmt=no
 AC_ARG_ENABLE(binfmt, AS_HELP_STRING([--disable-binfmt], [disable binfmt tool]))
 if test "x$enable_binfmt" != "xno"; then
@@ -1040,7 +1028,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        libcurl:                 ${have_libcurl}
         binfmt:                  ${have_binfmt}
         vconsole:                ${have_vconsole}
         bootchart:               ${have_bootchart}
