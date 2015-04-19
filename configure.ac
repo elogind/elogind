@@ -103,7 +103,6 @@ AS_IF([test "x$enable_gtk_doc" = "xyes" -a "x$XSLTPROC" = x], [
         AC_MSG_ERROR([*** GTK doc requested but xsltproc not found])
 ])
 
-AC_CHECK_TOOL(STRINGS, strings)
 AC_CHECK_TOOL(GPERF, gperf)
 if test -z "$GPERF" ; then
         AC_MSG_ERROR([*** gperf not found])
