@@ -662,8 +662,6 @@ AC_MSG_RESULT([
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
         kdbus:                   ${have_kdbus}
-        Python:                  ${have_python}
-        Python Headers:          ${have_python_devel}
         man pages:               ${have_manpages}
         gtk-doc:                 ${enable_gtk_doc}
         test coverage:           ${have_coverage}
@@ -681,9 +679,6 @@ AC_MSG_RESULT([
         rootlib dir:             ${with_rootlibdir}
         SysV init scripts:       ${SYSTEM_SYSVINIT_PATH}
         SysV rc?.d directories:  ${SYSTEM_SYSVRCND_PATH}
-        Build Python:            ${PYTHON}
-        Installation Python:     ${PYTHON_BINARY}
-        sphinx binary:           ${SPHINX_BUILD}
         PAM modules dir:         ${with_pamlibdir}
         PAM configuration dir:   ${with_pamconfdir}
         D-Bus policy dir:        ${with_dbuspolicydir}
@@ -697,6 +692,4 @@ AC_MSG_RESULT([
         CFLAGS:                  ${OUR_CFLAGS} ${CFLAGS}
         CPPFLAGS:                ${OUR_CPPFLAGS} ${CPPFLAGS}
         LDFLAGS:                 ${OUR_LDFLAGS} ${LDFLAGS}
-        PYTHON_CFLAGS:           ${PYTHON_DEVEL_CFLAGS}
-        PYTHON_LIBS:             ${PYTHON_DEVEL_LIBS}
 ])
