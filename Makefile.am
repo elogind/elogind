@@ -998,7 +998,6 @@ substitutions = \
        '|rootprefix=$(rootprefix)|' \
        '|udevlibexecdir=$(udevlibexecdir)|' \
        '|SUSHELL=$(SUSHELL)|' \
-       '|SULOGIN=$(SULOGIN)|' \
        '|DEBUGTTY=$(DEBUGTTY)|' \
        '|MKDIR_P=$(MKDIR_P)|' \
        '|SYSTEM_SYSVINIT_PATH=$(sysvinitdir)|' \
