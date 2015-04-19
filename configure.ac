@@ -87,8 +87,6 @@ AC_PROG_CC_C99
 AC_PATH_PROG([M4], [m4])
 AC_PATH_PROG([XSLTPROC], [xsltproc])
 
-AC_PATH_PROG([KMOD], [kmod], [/usr/bin/kmod], [$PATH:/usr/sbin:/sbin])
-
 AC_PATH_PROG([KEXEC], [kexec], [/usr/sbin/kexec], [$PATH:/usr/sbin:/sbin])
 
 AC_PATH_PROG([SULOGIN], [sulogin], [/usr/sbin/sulogin], [$PATH:/usr/sbin:/sbin])
@@ -344,22 +342,6 @@ if test "x$enable_coverage" = "xyes" ; then
         fi
 fi
 AM_CONDITIONAL(ENABLE_COVERAGE, [test "$have_coverage" = "yes"])
-
-# ------------------------------------------------------------------------------
-have_kmod=no
-AC_ARG_ENABLE(kmod, AS_HELP_STRING([--disable-kmod], [disable loadable modules support]))
-if test "x$enable_kmod" != "xno"; then
-        PKG_CHECK_EXISTS([ libkmod ], have_kmod=yes, have_kmod=no)
-        if test "x$have_kmod" = "xyes"; then
-                PKG_CHECK_MODULES(KMOD, [ libkmod >= 15 ],
-                        [AC_DEFINE(HAVE_KMOD, 1, [Define if kmod is available])],
-                        AC_MSG_ERROR([*** kmod version >= 15 not found]))
-        fi
-        if test "x$have_kmod" = xno -a "x$enable_kmod" = xyes; then
-                AC_MSG_ERROR([*** kmod support requested, but libraries not found])
-        fi
-fi
-AM_CONDITIONAL(HAVE_KMOD, [test "$have_kmod" = "yes"])
 
 # ------------------------------------------------------------------------------
 have_xkbcommon=no
@@ -1440,7 +1422,6 @@ AC_MSG_RESULT([
         EFI libdir:              ${EFI_LIB_DIR}
         EFI ldsdir:              ${EFI_LDS_DIR}
         EFI includedir:          ${EFI_INC_DIR}
-        kmod:                    ${have_kmod}
         xkbcommon:               ${have_xkbcommon}
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
