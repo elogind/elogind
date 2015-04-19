@@ -486,14 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_firstboot=no
-AC_ARG_ENABLE(firstboot, AS_HELP_STRING([--disable-firstboot], [disable firstboot support]))
-if test "x$enable_firstboot" != "xno"; then
-        have_firstboot=yes
-fi
-AM_CONDITIONAL(ENABLE_FIRSTBOOT, [test "$have_firstboot" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_randomseed=no
 AC_ARG_ENABLE(randomseed, AS_HELP_STRING([--disable-randomseed], [disable randomseed tools]))
 if test "x$enable_randomseed" != "xno"; then
@@ -988,7 +980,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        firstboot:               ${have_firstboot}
         randomseed:              ${have_randomseed}
         backlight:               ${have_backlight}
         rfkill:                  ${have_rfkill}
