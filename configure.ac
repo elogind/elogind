@@ -486,14 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_vconsole=no
-AC_ARG_ENABLE(vconsole, AS_HELP_STRING([--disable-vconsole], [disable vconsole tool]))
-if test "x$enable_vconsole" != "xno"; then
-        have_vconsole=yes
-fi
-AM_CONDITIONAL(ENABLE_VCONSOLE, [test "$have_vconsole" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_bootchart=no
 AC_ARG_ENABLE(bootchart, AS_HELP_STRING([--disable-bootchart], [disable bootchart tool]))
 if test "x$enable_bootchart" != "xno"; then
@@ -1020,7 +1012,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        vconsole:                ${have_vconsole}
         bootchart:               ${have_bootchart}
         tmpfiles:                ${have_tmpfiles}
         sysusers:                ${have_sysusers}
