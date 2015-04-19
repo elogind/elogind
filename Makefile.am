@@ -646,8 +646,7 @@ src/shared/cap-from-name.h: src/shared/cap-from-name.gperf
 	$(AM_V_GPERF)$(GPERF) -L ANSI-C -t --ignore-case -N lookup_capability -H hash_capability_name -p -C <$< >$@
 
 # ------------------------------------------------------------------------------
-dist_factory_etc_DATA = \
-	factory/etc/nsswitch.conf
+dist_factory_etc_DATA =
 
 if HAVE_PAM
 dist_factory_pam_DATA = \

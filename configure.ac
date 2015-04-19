@@ -528,25 +528,6 @@ AM_CONDITIONAL(ENABLE_KDBUS, [test "$have_kdbus" = "yes"])
 AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
 
 # ------------------------------------------------------------------------------
-have_myhostname=no
-AC_ARG_ENABLE(myhostname, AS_HELP_STRING([--disable-myhostname], [disable nss-myhostname support]))
-if test "x$enable_myhostname" != "xno"; then
-        AC_HEADER_STDC
-        AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h sys/time.h unistd.h nss.h sys/ioctl.h sys/auxv.h])
-
-        AC_C_CONST
-        AC_TYPE_SIZE_T
-        AC_HEADER_TIME
-
-        AC_FUNC_MALLOC
-        AC_FUNC_SELECT_ARGTYPES
-        AC_CHECK_FUNCS([gethostbyaddr gethostbyname gettimeofday inet_ntoa memset select socket strcspn strdup strerror strncasecmp strcasecmp strspn])
-
-        have_myhostname=yes
-fi
-AM_CONDITIONAL(HAVE_MYHOSTNAME, [test "$have_myhostname" = "yes"])
-
-# ------------------------------------------------------------------------------
 AC_ARG_ENABLE([gudev],
        AS_HELP_STRING([--disable-gudev], [disable Gobject libudev support @<:@default=enabled@:>@]),
        [], [enable_gudev=yes])
@@ -733,7 +714,6 @@ AC_MSG_RESULT([
         polkit:                  ${have_polkit}
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
-        nss-myhostname:          ${have_myhostname}
         gudev:                   ${enable_gudev}
         hwdb:                    ${enable_hwdb}
         kdbus:                   ${have_kdbus}
