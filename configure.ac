@@ -506,14 +506,6 @@ AC_DEFINE_UNQUOTED(SYSTEM_GID_MAX, [$SYSTEM_GID_MAX], [Maximum System GID])
 AC_SUBST(SYSTEM_GID_MAX)
 
 # ------------------------------------------------------------------------------
-have_coredump=no
-AC_ARG_ENABLE(coredump, AS_HELP_STRING([--disable-coredump], [disable coredump hook]))
-if test "x$enable_coredump" != "xno"; then
-        have_coredump=yes
-fi
-AM_CONDITIONAL(ENABLE_COREDUMP, [test "$have_coredump" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_polkit=no
 AC_ARG_ENABLE(polkit, AS_HELP_STRING([--disable-polkit], [disable PolicyKit support]))
 if test "x$enable_polkit" != "xno"; then
@@ -805,7 +797,6 @@ AC_MSG_RESULT([
         ACL:                     ${have_acl}
         resolved:                ${have_resolved}
         default DNS servers:     ${DNS_SERVERS}
-        coredump:                ${have_coredump}
         polkit:                  ${have_polkit}
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
