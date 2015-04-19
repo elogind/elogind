@@ -539,11 +539,6 @@ AS_IF([test "x$enable_manpages" != xno], [have_manpages=yes])
 AM_CONDITIONAL(ENABLE_MANPAGES, [test "x$have_manpages" = "xyes"])
 
 # ------------------------------------------------------------------------------
-AC_ARG_ENABLE(ldconfig,
-       [AC_HELP_STRING([--disable-ldconfig], [disable ldconfig])],
-       enable_ldconfig=$enableval, enable_ldconfig=yes)
-AM_CONDITIONAL(ENABLE_LDCONFIG, [test x$enable_ldconfig = xyes])
-
 AC_SUBST(M4_DEFINES)
 
 AC_ARG_WITH([tty-gid],
@@ -708,7 +703,6 @@ AC_MSG_RESULT([
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
         SysV compatibility:      ${SYSTEM_SYSV_COMPAT}
-        ldconfig support:        ${enable_ldconfig}
         extra debugging:         ${enable_debug}
 
         prefix:                  ${prefix}
