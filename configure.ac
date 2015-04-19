@@ -486,18 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_microhttpd=no
-AC_ARG_ENABLE(microhttpd, AS_HELP_STRING([--disable-microhttpd], [disable microhttpd support]))
-if test "x$enable_microhttpd" != "xno"; then
-        PKG_CHECK_MODULES(MICROHTTPD, [libmicrohttpd >= 0.9.33],
-                [AC_DEFINE(HAVE_MICROHTTPD, 1, [Define if microhttpd is available]) have_microhttpd=yes], have_microhttpd=no)
-        if test "x$have_microhttpd" = xno -a "x$enable_microhttpd" = xyes; then
-                AC_MSG_ERROR([*** microhttpd support requested but libraries not found])
-        fi
-fi
-AM_CONDITIONAL(HAVE_MICROHTTPD, [test "$have_microhttpd" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_gnutls=no
 AC_ARG_ENABLE(gnutls, AS_HELP_STRING([--disable-gnutls], [disable gnutls support]))
 if test "x$enable_gnutls" != "xno"; then
@@ -1079,7 +1067,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        MICROHTTPD:              ${have_microhttpd}
         GNUTLS:                  ${have_gnutls}
         libcurl:                 ${have_libcurl}
         libidn:                  ${have_libidn}
