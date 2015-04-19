@@ -57,12 +57,6 @@
 #define _LIBCRYPTSETUP_FEATURE_ "-LIBCRYPTSETUP"
 #endif
 
-#ifdef HAVE_GCRYPT
-#define _GCRYPT_FEATURE_ "+GCRYPT"
-#else
-#define _GCRYPT_FEATURE_ "-GCRYPT"
-#endif
-
 #ifdef HAVE_GNUTLS
 #define _GNUTLS_FEATURE_ "+GNUTLS"
 #else
@@ -106,7 +100,6 @@
         _APPARMOR_FEATURE_ " "                                          \
         _SMACK_FEATURE_ " "                                             \
         _LIBCRYPTSETUP_FEATURE_ " "                                     \
-        _GCRYPT_FEATURE_ " "                                            \
         _GNUTLS_FEATURE_ " "                                            \
         _ACL_FEATURE_ " "                                               \
         _SECCOMP_FEATURE_ " "                                           \
