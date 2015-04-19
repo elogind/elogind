@@ -486,14 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_tmpfiles=no
-AC_ARG_ENABLE(tmpfiles, AS_HELP_STRING([--disable-tmpfiles], [disable tmpfiles support]))
-if test "x$enable_tmpfiles" != "xno"; then
-        have_tmpfiles=yes
-fi
-AM_CONDITIONAL(ENABLE_TMPFILES, [test "$have_tmpfiles" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_sysusers=no
 AC_ARG_ENABLE(sysusers, AS_HELP_STRING([--disable-sysusers], [disable sysusers support]))
 if test "x$enable_sysusers" != "xno"; then
@@ -1004,7 +996,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        tmpfiles:                ${have_tmpfiles}
         sysusers:                ${have_sysusers}
         firstboot:               ${have_firstboot}
         randomseed:              ${have_randomseed}
