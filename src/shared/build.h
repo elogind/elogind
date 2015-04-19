@@ -45,12 +45,6 @@
 #define _SMACK_FEATURE_ "-SMACK"
 #endif
 
-#ifdef HAVE_LIBCRYPTSETUP
-#define _LIBCRYPTSETUP_FEATURE_ "+LIBCRYPTSETUP"
-#else
-#define _LIBCRYPTSETUP_FEATURE_ "-LIBCRYPTSETUP"
-#endif
-
 #ifdef HAVE_GNUTLS
 #define _GNUTLS_FEATURE_ "+GNUTLS"
 #else
@@ -86,7 +80,6 @@
         _SELINUX_FEATURE_ " "                                           \
         _APPARMOR_FEATURE_ " "                                          \
         _SMACK_FEATURE_ " "                                             \
-        _LIBCRYPTSETUP_FEATURE_ " "                                     \
         _GNUTLS_FEATURE_ " "                                            \
         _ACL_FEATURE_ " "                                               \
         _SECCOMP_FEATURE_ " "                                           \
