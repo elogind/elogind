@@ -26,7 +26,7 @@ AC_INIT([elogind],
         [elogind],
         [http://www.freedesktop.org/wiki/Software/elogind])
 
-AC_CONFIG_SRCDIR([src/core/main.c])
+AC_CONFIG_SRCDIR([src/login/logind.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -86,9 +86,6 @@ AC_PROG_CC_C99
 
 AC_PATH_PROG([M4], [m4])
 AC_PATH_PROG([XSLTPROC], [xsltproc])
-
-AC_PATH_PROG([QUOTAON], [quotaon], [/usr/sbin/quotaon], [$PATH:/usr/sbin:/sbin])
-AC_PATH_PROG([QUOTACHECK], [quotacheck], [/usr/sbin/quotacheck], [$PATH:/usr/sbin:/sbin])
 
 AC_PATH_PROG([SETCAP], [setcap], [/usr/sbin/setcap], [$PATH:/usr/sbin:/sbin])
 
@@ -862,14 +859,6 @@ fi
 AM_CONDITIONAL(ENABLE_BOOTCHART, [test "$have_bootchart" = "yes"])
 
 # ------------------------------------------------------------------------------
-have_quotacheck=no
-AC_ARG_ENABLE(quotacheck, AS_HELP_STRING([--disable-quotacheck], [disable quotacheck tools]))
-if test "x$enable_quotacheck" != "xno"; then
-        have_quotacheck=yes
-fi
-AM_CONDITIONAL(ENABLE_QUOTACHECK, [test "$have_quotacheck" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_tmpfiles=no
 AC_ARG_ENABLE(tmpfiles, AS_HELP_STRING([--disable-tmpfiles], [disable tmpfiles support]))
 if test "x$enable_tmpfiles" != "xno"; then
@@ -1427,7 +1416,6 @@ AC_MSG_RESULT([
         binfmt:                  ${have_binfmt}
         vconsole:                ${have_vconsole}
         bootchart:               ${have_bootchart}
-        quotacheck:              ${have_quotacheck}
         tmpfiles:                ${have_tmpfiles}
         sysusers:                ${have_sysusers}
         firstboot:               ${have_firstboot}
