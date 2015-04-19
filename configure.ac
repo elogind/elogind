@@ -486,14 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_binfmt=no
-AC_ARG_ENABLE(binfmt, AS_HELP_STRING([--disable-binfmt], [disable binfmt tool]))
-if test "x$enable_binfmt" != "xno"; then
-        have_binfmt=yes
-fi
-AM_CONDITIONAL(ENABLE_BINFMT, [test "$have_binfmt" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_vconsole=no
 AC_ARG_ENABLE(vconsole, AS_HELP_STRING([--disable-vconsole], [disable vconsole tool]))
 if test "x$enable_vconsole" != "xno"; then
@@ -1028,7 +1020,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        binfmt:                  ${have_binfmt}
         vconsole:                ${have_vconsole}
         bootchart:               ${have_bootchart}
         tmpfiles:                ${have_tmpfiles}
