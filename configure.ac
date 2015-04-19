@@ -541,63 +541,6 @@ AC_DEFINE_UNQUOTED(DNS_SERVERS, ["$DNS_SERVERS"], [Default DNS Servers])
 AC_SUBST(DNS_SERVERS)
 
 # ------------------------------------------------------------------------------
-EFI_CC=gcc
-AC_SUBST([EFI_CC])
-
-EFI_ARCH=`echo $host | sed "s/\(-\).*$//"`
-
-AM_COND_IF(ARCH_IA32, [
-        EFI_ARCH=ia32
-        EFI_MACHINE_TYPE_NAME=ia32])
-
-AM_COND_IF(ARCH_X86_64, [
-        EFI_MACHINE_TYPE_NAME=x64])
-
-AC_SUBST([EFI_ARCH])
-AC_SUBST([EFI_MACHINE_TYPE_NAME])
-
-have_gnuefi=no
-AC_ARG_ENABLE(gnuefi, AS_HELP_STRING([--enable-gnuefi], [Disable optional gnuefi support]))
-AS_IF([test "x$enable_gnuefi" != "xno"], [
-        AC_CHECK_HEADERS(efi/${EFI_ARCH}/efibind.h,
-                [AC_DEFINE(HAVE_GNUEFI, 1, [Define if gnuefi is available])
-                 have_gnuefi=yes],
-                [AS_IF([test "x$enable_gnuefi" = xyes],
-                       [AC_MSG_ERROR([*** gnuefi support requested but headers not found])])
-        ])
-
-        efiroot=$(echo $(cd /usr/lib/$(gcc -print-multi-os-directory); pwd))
-
-        EFI_LIB_DIR="$efiroot"
-        AC_ARG_WITH(efi-libdir,
-                AS_HELP_STRING([--with-efi-libdir=PATH], [Path to EFI lib directory]),
-                [EFI_LIB_DIR="$withval"], [EFI_LIB_DIR="$efiroot"]
-        )
-        AC_SUBST([EFI_LIB_DIR])
-
-        have_efi_lds=no
-        AC_ARG_WITH(efi-ldsdir,
-                AS_HELP_STRING([--with-efi-ldsdir=PATH], [Path to EFI lds directory]),
-                [EFI_LDS_DIR="$withval" && AC_CHECK_FILE([${EFI_LDS_DIR}/elf_${EFI_ARCH}_efi.lds],
-                        [have_efi_lds=yes])],
-                [AS_FOR([DIR], [EFI_LDS_DIR], ["${efiroot}/gnuefi" "${efiroot}"],
-                        [AC_CHECK_FILE([${EFI_LDS_DIR}/elf_${EFI_ARCH}_efi.lds],
-                                       [have_efi_lds=yes && break])])])
-        AS_IF([test "x$have_efi_lds" = xyes],
-              [AC_SUBST([EFI_LDS_DIR])],
-              [AS_IF([test "x$enable_gnuefi" = xyes],
-                     [AC_MSG_ERROR([*** gnuefi support requested but files not found])],
-                     [have_gnuefi=no])])
-
-        AC_ARG_WITH(efi-includedir,
-                AS_HELP_STRING([--with-efi-includedir=PATH], [Path to EFI include directory]),
-                [EFI_INC_DIR="$withval"], [EFI_INC_DIR="/usr/include"]
-        )
-        AC_SUBST([EFI_INC_DIR])
-])
-AM_CONDITIONAL(HAVE_GNUEFI, [test "x$have_gnuefi" = xyes])
-
-# ------------------------------------------------------------------------------
 have_kdbus=no
 AC_ARG_ENABLE(kdbus, AS_HELP_STRING([--enable-kdbus], [do connect to kdbus by default]))
 if test "x$enable_kdbus" = "xyes"; then
@@ -864,13 +807,6 @@ AC_MSG_RESULT([
         default DNS servers:     ${DNS_SERVERS}
         coredump:                ${have_coredump}
         polkit:                  ${have_polkit}
-        gnuefi:                  ${have_gnuefi}
-        efi arch:                ${EFI_ARCH}
-        EFI machine type:        ${EFI_MACHINE_TYPE_NAME}
-        EFI CC                   ${EFI_CC}
-        EFI libdir:              ${EFI_LIB_DIR}
-        EFI ldsdir:              ${EFI_LDS_DIR}
-        EFI includedir:          ${EFI_INC_DIR}
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
         nss-myhostname:          ${have_myhostname}
