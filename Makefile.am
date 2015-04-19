@@ -401,8 +401,6 @@ libelogind_shared_la_SOURCES = \
 	src/shared/virt.h \
 	src/shared/architecture.c \
 	src/shared/architecture.h \
-	src/shared/efivars.c \
-	src/shared/efivars.h \
 	src/shared/fstab-util.c \
 	src/shared/fstab-util.h \
 	src/shared/path-util.c \
@@ -476,8 +474,6 @@ libelogind_shared_la_SOURCES = \
 	src/shared/MurmurHash2.h \
 	src/shared/acpi-fpdt.h \
 	src/shared/acpi-fpdt.c \
-	src/shared/boot-timestamps.h \
-	src/shared/boot-timestamps.c \
 	src/shared/mkdir.c \
 	src/shared/mkdir.h \
 	src/shared/smack-util.c \

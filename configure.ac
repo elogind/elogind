@@ -541,15 +541,6 @@ AC_DEFINE_UNQUOTED(DNS_SERVERS, ["$DNS_SERVERS"], [Default DNS Servers])
 AC_SUBST(DNS_SERVERS)
 
 # ------------------------------------------------------------------------------
-have_efi=no
-AC_ARG_ENABLE(efi, AS_HELP_STRING([--disable-efi], [disable EFI support]))
-if test "x$enable_efi" != "xno"; then
-        AC_DEFINE(ENABLE_EFI, 1, [Define if EFI support is to be enabled])
-        have_efi=yes
-fi
-AM_CONDITIONAL(ENABLE_EFI, [test "x$have_efi" = "xyes"])
-
-# ------------------------------------------------------------------------------
 EFI_CC=gcc
 AC_SUBST([EFI_CC])
 
@@ -873,7 +864,6 @@ AC_MSG_RESULT([
         default DNS servers:     ${DNS_SERVERS}
         coredump:                ${have_coredump}
         polkit:                  ${have_polkit}
-        efi:                     ${have_efi}
         gnuefi:                  ${have_gnuefi}
         efi arch:                ${EFI_ARCH}
         EFI machine type:        ${EFI_MACHINE_TYPE_NAME}
