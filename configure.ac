@@ -528,12 +528,9 @@ AM_CONDITIONAL(ENABLE_KDBUS, [test "$have_kdbus" = "yes"])
 AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
 
 # ------------------------------------------------------------------------------
-AC_ARG_ENABLE([gudev],
-       AS_HELP_STRING([--disable-gudev], [disable Gobject libudev support @<:@default=enabled@:>@]),
-       [], [enable_gudev=yes])
-AS_IF([test "x$enable_gudev" = "xyes"], [ PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.22.0 gobject-2.0 >= 2.22.0 gio-2.0]) ])
-AM_CONDITIONAL([ENABLE_GUDEV], [test "x$enable_gudev" = "xyes"])
-AS_IF([test "x$enable_gudev" = "xyes"], [ AC_DEFINE(HAVE_GLIB, 1, [Define if glib is available]) ])
+PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.22.0 gobject-2.0 >= 2.22.0 gio-2.0],
+                  [have_glib=yes], [have_glib=no])
+AS_IF([test "x$have_glib" = "xyes"], [ AC_DEFINE(HAVE_GLIB, 1, [Define if glib is available]) ])
 
 # ------------------------------------------------------------------------------
 AC_ARG_ENABLE(hwdb, [AC_HELP_STRING([--disable-hwdb], [disable hardware database support])],
@@ -714,7 +711,6 @@ AC_MSG_RESULT([
         polkit:                  ${have_polkit}
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
-        gudev:                   ${enable_gudev}
         hwdb:                    ${enable_hwdb}
         kdbus:                   ${have_kdbus}
         Python:                  ${have_python}
