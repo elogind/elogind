@@ -486,14 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_bootchart=no
-AC_ARG_ENABLE(bootchart, AS_HELP_STRING([--disable-bootchart], [disable bootchart tool]))
-if test "x$enable_bootchart" != "xno"; then
-        have_bootchart=yes
-fi
-AM_CONDITIONAL(ENABLE_BOOTCHART, [test "$have_bootchart" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_tmpfiles=no
 AC_ARG_ENABLE(tmpfiles, AS_HELP_STRING([--disable-tmpfiles], [disable tmpfiles support]))
 if test "x$enable_tmpfiles" != "xno"; then
@@ -1012,7 +1004,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        bootchart:               ${have_bootchart}
         tmpfiles:                ${have_tmpfiles}
         sysusers:                ${have_sysusers}
         firstboot:               ${have_firstboot}
