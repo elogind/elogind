@@ -525,24 +525,6 @@ fi
 AM_CONDITIONAL(ENABLE_KDBUS, [test "$have_kdbus" = "yes"])
 
 # ------------------------------------------------------------------------------
-AC_ARG_WITH(kbd-loadkeys,
-        AS_HELP_STRING([--with-kbd-loadkeys=PATH],
-                [Path to loadkeys]),
-        [KBD_LOADKEYS="$withval"],
-        [KBD_LOADKEYS="/usr/bin/loadkeys"])
-
-AC_ARG_WITH(kbd-setfont,
-        AS_HELP_STRING([--with-kbd-setfont=PATH],
-                [Path to setfont]),
-        [KBD_SETFONT="$withval"],
-        [KBD_SETFONT="/usr/bin/setfont"])
-
-AC_DEFINE_UNQUOTED(KBD_LOADKEYS, ["$KBD_LOADKEYS"], [Path of loadkeys])
-AC_DEFINE_UNQUOTED(KBD_SETFONT, ["$KBD_SETFONT"], [Path of setfont])
-
-AC_SUBST(KBD_LOADKEYS)
-AC_SUBST(KBD_SETFONT)
-
 AC_ARG_WITH(telinit,
         AS_HELP_STRING([--with-telinit=PATH],
                 [Path to telinit]),

@@ -158,7 +158,6 @@ AM_CPPFLAGS = \
 	-DUSER_GENERATOR_PATH=\"$(usergeneratordir)\" \
 	-DSYSTEM_SHUTDOWN_PATH=\"$(systemshutdowndir)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
-	-DELOGIND_KBD_MODEL_MAP=\"$(pkgdatadir)/kbd-model-map\" \
 	-DELOGIND_LANGUAGE_FALLBACK_MAP=\"$(pkgdatadir)/language-fallback-map\" \
 	-DX_SERVER=\"$(bindir)/X\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
