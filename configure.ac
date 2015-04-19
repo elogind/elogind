@@ -372,15 +372,6 @@ if test "x$enable_apparmor" != "xno"; then
 fi
 AM_CONDITIONAL(HAVE_APPARMOR, [test "$have_apparmor" = "yes"])
 
-
-AC_ARG_WITH([certificate-root],
-        AS_HELP_STRING([--with-certificate-root=PATH],
-                [Specify the prefix for TLS certificates [/etc/ssl]]),
-        [CERTIFICATEROOT="$withval"],
-        [CERTIFICATEROOT="/etc/ssl"])
-
-AC_SUBST(CERTIFICATEROOT)
-
 # ------------------------------------------------------------------------------
 AC_ARG_ENABLE([pam],
         AS_HELP_STRING([--disable-pam],[Disable optional PAM support]),
@@ -702,7 +693,6 @@ AC_MSG_RESULT([
         Zsh completions dir:     ${with_zshcompletiondir}
         Maximum System UID:      ${SYSTEM_UID_MAX}
         Maximum System GID:      ${SYSTEM_GID_MAX}
-        Certificate root:        ${CERTIFICATEROOT}
 
         CFLAGS:                  ${OUR_CFLAGS} ${CFLAGS}
         CPPFLAGS:                ${OUR_CPPFLAGS} ${CPPFLAGS}
