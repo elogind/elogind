@@ -103,12 +103,6 @@ AS_IF([test "x$enable_gtk_doc" = "xyes" -a "x$XSLTPROC" = x], [
         AC_MSG_ERROR([*** GTK doc requested but xsltproc not found])
 ])
 
-m4_ifdef([GOBJECT_INTROSPECTION_CHECK], [
-GOBJECT_INTROSPECTION_CHECK([1.31.1])
-], [
-   AM_CONDITIONAL([HAVE_INTROSPECTION], [false])
-   enable_introspection=no])
-
 AC_CHECK_TOOL(STRINGS, strings)
 AC_CHECK_TOOL(GPERF, gperf)
 if test -z "$GPERF" ; then
@@ -1426,7 +1420,6 @@ AC_MSG_RESULT([
         nss-myhostname:          ${have_myhostname}
         gudev:                   ${enable_gudev}
         hwdb:                    ${enable_hwdb}
-        gintrospection:          ${enable_introspection}
         terminal:                ${have_terminal}
         kdbus:                   ${have_kdbus}
         Python:                  ${have_python}
