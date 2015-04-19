@@ -225,7 +225,6 @@ AC_CHECK_SIZEOF(rlim_t,,[
 
 # ------------------------------------------------------------------------------
 
-AC_SEARCH_LIBS([dlsym], [dl], [], [AC_MSG_ERROR([*** Dynamic linking loader library not found])])
 AC_CHECK_HEADERS([sys/capability.h], [], [AC_MSG_ERROR([*** POSIX caps headers not found])])
 AC_CHECK_HEADERS([linux/btrfs.h], [], [])
 AC_CHECK_HEADERS([linux/memfd.h], [], [])
