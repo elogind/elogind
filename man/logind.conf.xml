@@ -21,8 +21,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="logind.conf" conditional='ENABLE_LOGIND'
-    xmlns:xi="http://www.w3.org/2001/XInclude">
+<refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
     <title>logind.conf</title>
     <productname>systemd</productname>

@@ -486,15 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_logind=no
-AC_ARG_ENABLE(logind, AS_HELP_STRING([--disable-logind], [disable login daemon]))
-if test "x$enable_logind" != "xno"; then
-        have_logind=yes
-fi
-AM_CONDITIONAL(ENABLE_LOGIND, [test "$have_logind" = "yes"])
-AS_IF([test "$have_logind" = "yes"], [ AC_DEFINE(HAVE_LOGIND, [1], [Logind support available]) ])
-
-# ------------------------------------------------------------------------------
 have_machined=no
 AC_ARG_ENABLE(machined, AS_HELP_STRING([--disable-machined], [disable machine daemon]))
 if test "x$enable_machined" != "xno"; then
@@ -956,7 +947,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        logind:                  ${have_logind}
         machined:                ${have_machined}
         importd:                 ${have_importd}
         hostnamed:               ${have_hostnamed}

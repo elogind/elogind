@@ -21,7 +21,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="systemd-logind.service" conditional='ENABLE_LOGIND'>
+<refentry id="systemd-logind.service">
 
   <refentryinfo>
     <title>systemd-logind.service</title>
