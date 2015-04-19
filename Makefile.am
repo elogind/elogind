@@ -997,7 +997,6 @@ substitutions = \
        '|PYTHON_BINARY=$(PYTHON_BINARY)|' \
        '|systemuidmax=$(SYSTEM_UID_MAX)|' \
        '|systemgidmax=$(SYSTEM_GID_MAX)|' \
-       '|TTY_GID=$(TTY_GID)|' \
        '|systemsleepdir=$(systemsleepdir)|' \
        '|systemshutdowndir=$(systemshutdowndir)|' \
        '|binfmtdir=$(binfmtdir)|' \

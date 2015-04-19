@@ -541,15 +541,6 @@ AM_CONDITIONAL(ENABLE_MANPAGES, [test "x$have_manpages" = "xyes"])
 # ------------------------------------------------------------------------------
 AC_SUBST(M4_DEFINES)
 
-AC_ARG_WITH([tty-gid],
-        [AS_HELP_STRING([--with-tty-gid=GID],
-                [Specify the numeric GID of the 'tty' group])],
-        [TTY_GID="$withval"],
-        [TTY_GID="5"])
-
-AC_DEFINE_UNQUOTED(TTY_GID, [$TTY_GID], [GID of the 'tty' group])
-AC_SUBST(TTY_GID)
-
 AC_ARG_WITH([dbuspolicydir],
         AS_HELP_STRING([--with-dbuspolicydir=DIR], [D-Bus policy directory]),
         [],
@@ -725,7 +716,6 @@ AC_MSG_RESULT([
         D-Bus system dir:        ${with_dbussystemservicedir}
         Bash completions dir:    ${with_bashcompletiondir}
         Zsh completions dir:     ${with_zshcompletiondir}
-        TTY GID:                 ${TTY_GID}
         Maximum System UID:      ${SYSTEM_UID_MAX}
         Maximum System GID:      ${SYSTEM_GID_MAX}
         Certificate root:        ${CERTIFICATEROOT}
