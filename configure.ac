@@ -541,16 +541,6 @@ AC_DEFINE_UNQUOTED(DNS_SERVERS, ["$DNS_SERVERS"], [Default DNS Servers])
 AC_SUBST(DNS_SERVERS)
 
 # ------------------------------------------------------------------------------
-have_networkd=no
-AC_ARG_ENABLE(networkd, AS_HELP_STRING([--disable-networkd], [disable networkd]))
-AS_IF([test "x$enable_networkd" != "xno"], [
-        AC_DEFINE(ENABLE_NETWORKD, 1, [Define if networkd support is to be enabled])
-        have_networkd=yes
-        M4_DEFINES="$M4_DEFINES -DENABLE_NETWORKD"
-])
-AM_CONDITIONAL(ENABLE_NETWORKD, [test "x$have_networkd" = "xyes"])
-
-# ------------------------------------------------------------------------------
 have_efi=no
 AC_ARG_ENABLE(efi, AS_HELP_STRING([--disable-efi], [disable EFI support]))
 if test "x$enable_efi" != "xno"; then
@@ -879,7 +869,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        networkd:                ${have_networkd}
         resolved:                ${have_resolved}
         default DNS servers:     ${DNS_SERVERS}
         coredump:                ${have_coredump}
