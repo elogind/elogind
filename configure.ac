@@ -533,11 +533,6 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.22.0 gobject-2.0 >= 2.22.0 gio-2.0],
 AS_IF([test "x$have_glib" = "xyes"], [ AC_DEFINE(HAVE_GLIB, 1, [Define if glib is available]) ])
 
 # ------------------------------------------------------------------------------
-AC_ARG_ENABLE(hwdb, [AC_HELP_STRING([--disable-hwdb], [disable hardware database support])],
-       enable_hwdb=$enableval, enable_hwdb=yes)
-AM_CONDITIONAL(ENABLE_HWDB, [test x$enable_hwdb = xyes])
-
-# ------------------------------------------------------------------------------
 have_manpages=no
 AC_ARG_ENABLE(manpages, AS_HELP_STRING([--disable-manpages], [disable manpages]))
 AS_IF([test "x$enable_manpages" != xno], [have_manpages=yes])
@@ -711,7 +706,6 @@ AC_MSG_RESULT([
         polkit:                  ${have_polkit}
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
-        hwdb:                    ${enable_hwdb}
         kdbus:                   ${have_kdbus}
         Python:                  ${have_python}
         Python Headers:          ${have_python_devel}
