@@ -486,18 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_gnutls=no
-AC_ARG_ENABLE(gnutls, AS_HELP_STRING([--disable-gnutls], [disable gnutls support]))
-if test "x$enable_gnutls" != "xno"; then
-        PKG_CHECK_MODULES(GNUTLS, [gnutls >= 3.1.4],
-                [AC_DEFINE(HAVE_GNUTLS, 1, [Define if gnutls is available]) have_gnutls=yes], have_gnutls=no)
-        if test "x$have_gnutls" = xno -a "x$enable_gnutls" = xyes; then
-                AC_MSG_ERROR([*** gnutls support requested but libraries not found])
-        fi
-fi
-AM_CONDITIONAL(HAVE_GNUTLS, [test "$have_gnutls" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_libcurl=no
 AC_ARG_ENABLE(libcurl, AS_HELP_STRING([--disable-libcurl], [disable libcurl support]))
 if test "x$enable_libcurl" != "xno"; then
@@ -1067,7 +1055,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        GNUTLS:                  ${have_gnutls}
         libcurl:                 ${have_libcurl}
         libidn:                  ${have_libidn}
         binfmt:                  ${have_binfmt}

@@ -45,12 +45,6 @@
 #define _SMACK_FEATURE_ "-SMACK"
 #endif
 
-#ifdef HAVE_GNUTLS
-#define _GNUTLS_FEATURE_ "+GNUTLS"
-#else
-#define _GNUTLS_FEATURE_ "-GNUTLS"
-#endif
-
 #ifdef HAVE_ACL
 #define _ACL_FEATURE_ "+ACL"
 #else
@@ -80,7 +74,6 @@
         _SELINUX_FEATURE_ " "                                           \
         _APPARMOR_FEATURE_ " "                                          \
         _SMACK_FEATURE_ " "                                             \
-        _GNUTLS_FEATURE_ " "                                            \
         _ACL_FEATURE_ " "                                               \
         _SECCOMP_FEATURE_ " "                                           \
         _BLKID_FEATURE_ " "                                             \
