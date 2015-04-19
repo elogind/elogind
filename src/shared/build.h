@@ -75,18 +75,6 @@
 #define _ACL_FEATURE_ "-ACL"
 #endif
 
-#ifdef HAVE_XZ
-#define _XZ_FEATURE_ "+XZ"
-#else
-#define _XZ_FEATURE_ "-XZ"
-#endif
-
-#ifdef HAVE_LZ4
-#define _LZ4_FEATURE_ "+LZ4"
-#else
-#define _LZ4_FEATURE_ "-LZ4"
-#endif
-
 #ifdef HAVE_SECCOMP
 #define _SECCOMP_FEATURE_ "+SECCOMP"
 #else
@@ -121,8 +109,6 @@
         _GCRYPT_FEATURE_ " "                                            \
         _GNUTLS_FEATURE_ " "                                            \
         _ACL_FEATURE_ " "                                               \
-        _XZ_FEATURE_ " "                                                \
-        _LZ4_FEATURE_ " "                                               \
         _SECCOMP_FEATURE_ " "                                           \
         _BLKID_FEATURE_ " "                                             \
         _ELFUTILS_FEATURE_ " "                                          \
