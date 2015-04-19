@@ -486,14 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_sysusers=no
-AC_ARG_ENABLE(sysusers, AS_HELP_STRING([--disable-sysusers], [disable sysusers support]))
-if test "x$enable_sysusers" != "xno"; then
-        have_sysusers=yes
-fi
-AM_CONDITIONAL(ENABLE_SYSUSERS, [test "$have_sysusers" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_firstboot=no
 AC_ARG_ENABLE(firstboot, AS_HELP_STRING([--disable-firstboot], [disable firstboot support]))
 if test "x$enable_firstboot" != "xno"; then
@@ -996,7 +988,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        sysusers:                ${have_sysusers}
         firstboot:               ${have_firstboot}
         randomseed:              ${have_randomseed}
         backlight:               ${have_backlight}
