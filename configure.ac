@@ -373,22 +373,6 @@ fi
 AM_CONDITIONAL(HAVE_APPARMOR, [test "$have_apparmor" = "yes"])
 
 
-AC_ARG_WITH(debug-shell,
-        AS_HELP_STRING([--with-debug-shell=PATH],
-                [Path to debug shell binary]),
-        [SUSHELL="$withval"],[
-        AS_IF([test "x${have_selinux}" != "xno"], [SUSHELL="/sbin/sushell"] , [SUSHELL="/bin/sh"])])
-
-AC_SUBST(SUSHELL)
-
-AC_ARG_WITH([debug-tty],
-        AS_HELP_STRING([--with-debug-tty=PATH],
-                [Specify the tty device for debug shell]),
-        [DEBUGTTY="$withval"],
-        [DEBUGTTY=/dev/tty9])
-
-AC_SUBST(DEBUGTTY)
-
 AC_ARG_WITH([certificate-root],
         AS_HELP_STRING([--with-certificate-root=PATH],
                 [Specify the prefix for TLS certificates [/etc/ssl]]),
@@ -1314,7 +1298,6 @@ AC_MSG_RESULT([
         Zsh completions dir:     ${with_zshcompletiondir}
         Extra start script:      ${RC_LOCAL_SCRIPT_PATH_START}
         Extra stop script:       ${RC_LOCAL_SCRIPT_PATH_STOP}
-        Debug shell:             ${SUSHELL} @ ${DEBUGTTY}
         TTY GID:                 ${TTY_GID}
         Maximum System UID:      ${SYSTEM_UID_MAX}
         Maximum System GID:      ${SYSTEM_GID_MAX}
