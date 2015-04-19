@@ -218,21 +218,6 @@ static char** user_dirs(
         return tmp;
 }
 
-char **generator_paths(SystemdRunningAs running_as) {
-        if (running_as == SYSTEMD_USER)
-                return strv_new("/run/systemd/user-generators",
-                                "/etc/systemd/user-generators",
-                                "/usr/local/lib/systemd/user-generators",
-                                USER_GENERATOR_PATH,
-                                NULL);
-        else
-                return strv_new("/run/systemd/system-generators",
-                                "/etc/systemd/system-generators",
-                                "/usr/local/lib/systemd/system-generators",
-                                SYSTEM_GENERATOR_PATH,
-                                NULL);
-}
-
 int lookup_paths_init(
                 LookupPaths *p,
                 SystemdRunningAs running_as,
