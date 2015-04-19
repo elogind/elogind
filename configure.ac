@@ -344,20 +344,6 @@ fi
 AM_CONDITIONAL(HAVE_SECCOMP, [test "$have_seccomp" = "yes"])
 
 # ------------------------------------------------------------------------------
-have_ima=yes
-AC_ARG_ENABLE([ima], AS_HELP_STRING([--disable-ima],[Disable optional IMA support]),
-                [case "${enableval}" in
-                        yes) have_ima=yes ;;
-                        no) have_ima=no ;;
-                        *) AC_MSG_ERROR(bad value ${enableval} for --disable-ima) ;;
-                esac],
-                [have_ima=yes])
-
-if test "x${have_ima}" != xno ; then
-        AC_DEFINE(HAVE_IMA, 1, [Define if IMA is available])
-fi
-
-# ------------------------------------------------------------------------------
 have_chkconfig=yes
 AC_ARG_ENABLE([chkconfig], AS_HELP_STRING([--disable-chkconfig],[Disable optional chkconfig support]),
                 [case "${enableval}" in
@@ -1313,7 +1299,6 @@ AC_MSG_RESULT([
         libcryptsetup:           ${have_libcryptsetup}
         PAM:                     ${have_pam}
         AUDIT:                   ${have_audit}
-        IMA:                     ${have_ima}
         AppArmor:                ${have_apparmor}
         SELinux:                 ${have_selinux}
         SECCOMP:                 ${have_seccomp}

@@ -45,12 +45,6 @@
 #define _APPARMOR_FEATURE_ "-APPARMOR"
 #endif
 
-#ifdef HAVE_IMA
-#define _IMA_FEATURE_ "+IMA"
-#else
-#define _IMA_FEATURE_ "-IMA"
-#endif
-
 #ifdef HAVE_SMACK
 #define _SMACK_FEATURE_ "+SMACK"
 #else
@@ -121,7 +115,6 @@
         _PAM_FEATURE_ " "                                               \
         _AUDIT_FEATURE_ " "                                             \
         _SELINUX_FEATURE_ " "                                           \
-        _IMA_FEATURE_ " "                                               \
         _APPARMOR_FEATURE_ " "                                          \
         _SMACK_FEATURE_ " "                                             \
         _LIBCRYPTSETUP_FEATURE_ " "                                     \
