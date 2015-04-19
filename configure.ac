@@ -486,32 +486,6 @@ fi
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_timesyncd=no
-AC_ARG_ENABLE(timesyncd, AS_HELP_STRING([--disable-timesyncd], [disable timesync daemon]))
-if test "x$enable_timesyncd" != "xno"; then
-        have_timesyncd=yes
-        M4_DEFINES="$M4_DEFINES -DENABLE_TIMESYNCD"
-fi
-AM_CONDITIONAL(ENABLE_TIMESYNCD, [test "$have_timesyncd" = "yes"])
-
-AC_ARG_WITH(ntp-servers,
-        AS_HELP_STRING([--with-ntp-servers=NTPSERVERS],
-                [Space-separated list of default NTP servers]),
-        [NTP_SERVERS="$withval"],
-        [NTP_SERVERS="time1.google.com time2.google.com time3.google.com time4.google.com"])
-
-AC_DEFINE_UNQUOTED(NTP_SERVERS, ["$NTP_SERVERS"], [Default NTP Servers])
-AC_SUBST(NTP_SERVERS)
-
-AC_ARG_WITH(time-epoch,
-        AS_HELP_STRING([--with-time-epoch=SECONDS],
-                [Time epoch for time clients]),
-        [TIME_EPOCH="$withval"],
-        [TIME_EPOCH="`stat -c %Y ${srcdir}/NEWS 2>/dev/null || echo 0`"])
-
-AC_DEFINE_UNQUOTED(TIME_EPOCH, [$TIME_EPOCH], [Time Epoch])
-
-# ------------------------------------------------------------------------------
 AC_ARG_WITH(system-uid-max,
         AS_HELP_STRING([--with-system-uid-max=UID]
                 [Maximum UID for system users]),
@@ -913,9 +887,6 @@ AC_MSG_RESULT([
         SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
-        timesyncd:               ${have_timesyncd}
-        default NTP servers:     ${NTP_SERVERS}
-        time epoch:              ${TIME_EPOCH}
         localed:                 ${have_localed}
         networkd:                ${have_networkd}
         resolved:                ${have_resolved}

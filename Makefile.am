@@ -1003,7 +1003,6 @@ substitutions = \
        '|RC_LOCAL_SCRIPT_PATH_STOP=$(RC_LOCAL_SCRIPT_PATH_STOP)|' \
        '|PYTHON=$(PYTHON)|' \
        '|PYTHON_BINARY=$(PYTHON_BINARY)|' \
-       '|NTP_SERVERS=$(NTP_SERVERS)|' \
        '|DNS_SERVERS=$(DNS_SERVERS)|' \
        '|systemuidmax=$(SYSTEM_UID_MAX)|' \
        '|systemgidmax=$(SYSTEM_GID_MAX)|' \
