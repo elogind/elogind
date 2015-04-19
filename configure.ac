@@ -608,14 +608,6 @@ AS_IF([test "x$0" != "x./configure"], [
         AC_SUBST([INTLTOOL_UPDATE], [/bin/true])
 ])
 
-# QEMU and OVMF UEFI firmware
-AS_IF([test x"$cross_compiling" = "xyes"], [], [
-        AC_PATH_PROG([QEMU], [qemu-system-x86_64])
-        AC_CHECK_FILE([/usr/share/qemu/bios-ovmf.bin], [QEMU_BIOS=/usr/share/qemu/bios-ovmf.bin],
-                [AC_CHECK_FILE([/usr/share/qemu-ovmf/bios.bin], [QEMU_BIOS=/usr/share/qemu-ovmf/bios.bin])])
-        AC_SUBST([QEMU_BIOS])
-])
-
 AC_ARG_ENABLE(tests,
         [AC_HELP_STRING([--disable-tests], [disable tests])],
         enable_tests=$enableval, enable_tests=yes)
