@@ -1094,26 +1094,7 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--disable-split-usr \
 	--enable-kdbus
 
-DISTCHECK_CONFIGURE_FLAGS += \
-	--with-sysvinit-path= \
-	--with-sysvrcnd-path=
-
 if ENABLE_GTK_DOC
 DISTCHECK_CONFIGURE_FLAGS += \
 	--enable-gtk-doc
 endif
-
-#
-# Require python when making dist
-#
-.PHONY: dist-check-help
-
-dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
-	for i in $(abspath $^); do                                             \
-            if $$i  --help | grep -v 'default:' | grep -E -q '.{80}.' ; then   \
-		echo "$(basename $$i) --help output is too wide:";             \
-	        $$i  --help | awk 'length > 80' | grep -E --color=yes '.{80}'; \
-	        exit 1;                                                        \
-            fi; done
-
-dist: dist-check-python
