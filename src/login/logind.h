@@ -92,6 +92,10 @@ struct Manager {
         HandleAction pending_action;
         sd_event_source *inhibit_timeout_source;
 
+        char *scheduled_shutdown_type;
+        usec_t scheduled_shutdown_timeout;
+        sd_event_source *scheduled_shutdown_timeout_source;
+
         sd_event_source *idle_action_event_source;
         usec_t idle_action_usec;
         usec_t idle_action_not_before_usec;
