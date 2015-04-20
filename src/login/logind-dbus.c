@@ -1590,6 +1590,68 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         return r;
 }
 
+static int verify_shutdown_creds(
+                Manager *m,
+                sd_bus_message *message,
+                InhibitWhat w,
+                bool interactive,
+                const char *action,
+                const char *action_multiple_sessions,
+                const char *action_ignore_inhibit,
+                sd_bus_error *error) {
+
+        _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
+        bool multiple_sessions, blocked;
+        uid_t uid;
+        int r;
+
+        assert(m);
+        assert(message);
+        assert(w >= 0);
+        assert(w <= _INHIBIT_WHAT_MAX);
+
+        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_creds_get_euid(creds, &uid);
+        if (r < 0)
+                return r;
+
+        r = have_multiple_sessions(m, uid);
+        if (r < 0)
+                return r;
+
+        multiple_sessions = r > 0;
+        blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
+
+        if (multiple_sessions && action_multiple_sessions) {
+                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action_multiple_sessions, interactive, UID_INVALID, &m->polkit_registry, error);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
+        }
+
+        if (blocked && action_ignore_inhibit) {
+                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action_ignore_inhibit, interactive, UID_INVALID, &m->polkit_registry, error);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
+        }
+
+        if (!multiple_sessions && !blocked && action) {
+                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action, interactive, UID_INVALID, &m->polkit_registry, error);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
+        }
+
+        return 0;
+}
+
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
@@ -1599,23 +1661,15 @@ static int method_do_shutdown_or_sleep(
                 const char *action_multiple_sessions,
                 const char *action_ignore_inhibit,
                 const char *sleep_verb,
-                sd_bus_message_handler_t method,
                 sd_bus_error *error) {
 
-        _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
-        bool multiple_sessions, blocked;
         int interactive, r;
-        uid_t uid;
 
         assert(m);
         assert(message);
         assert(unit_name);
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
-        assert(action);
-        assert(action_multiple_sessions);
-        assert(action_ignore_inhibit);
-        assert(method);
 
         r = sd_bus_message_read(message, "b", &interactive);
         if (r < 0)
@@ -1634,44 +1688,10 @@ static int method_do_shutdown_or_sleep(
                         return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Sleep verb not supported");
         }
 
-        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
-        if (r < 0)
+        r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
+                                  action_ignore_inhibit, error);
+        if (r != 0)
                 return r;
-
-        r = sd_bus_creds_get_euid(creds, &uid);
-        if (r < 0)
-                return r;
-
-        r = have_multiple_sessions(m, uid);
-        if (r < 0)
-                return r;
-
-        multiple_sessions = r > 0;
-        blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
-
-        if (multiple_sessions) {
-                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action_multiple_sessions, interactive, UID_INVALID, &m->polkit_registry, error);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
-        }
-
-        if (blocked) {
-                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action_ignore_inhibit, interactive, UID_INVALID, &m->polkit_registry, error);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
-        }
-
-        if (!multiple_sessions && !blocked) {
-                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action, interactive, UID_INVALID, &m->polkit_registry, error);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
-        }
 
         r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
         if (r < 0)
@@ -1691,7 +1711,6 @@ static int method_poweroff(sd_bus *bus, sd_bus_message *message, void *userdata,
                         "org.freedesktop.login1.power-off-multiple-sessions",
                         "org.freedesktop.login1.power-off-ignore-inhibit",
                         NULL,
-                        method_poweroff,
                         error);
 }
 
@@ -1706,7 +1725,6 @@ static int method_reboot(sd_bus *bus, sd_bus_message *message, void *userdata, s
                         "org.freedesktop.login1.reboot-multiple-sessions",
                         "org.freedesktop.login1.reboot-ignore-inhibit",
                         NULL,
-                        method_reboot,
                         error);
 }
 
@@ -1721,7 +1739,6 @@ static int method_suspend(sd_bus *bus, sd_bus_message *message, void *userdata, 
                         "org.freedesktop.login1.suspend-multiple-sessions",
                         "org.freedesktop.login1.suspend-ignore-inhibit",
                         "suspend",
-                        method_suspend,
                         error);
 }
 
@@ -1736,7 +1753,6 @@ static int method_hibernate(sd_bus *bus, sd_bus_message *message, void *userdata
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
                         "hibernate",
-                        method_hibernate,
                         error);
 }
 
@@ -1751,7 +1767,6 @@ static int method_hybrid_sleep(sd_bus *bus, sd_bus_message *message, void *userd
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
                         "hybrid-sleep",
-                        method_hybrid_sleep,
                         error);
 }
 
