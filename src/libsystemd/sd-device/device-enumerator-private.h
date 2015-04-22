@@ -30,6 +30,9 @@ int device_enumerator_add_device(sd_device_enumerator *enumerator, sd_device *de
 int device_enumerator_add_match_is_initialized(sd_device_enumerator *enumerator);
 sd_device *device_enumerator_get_first(sd_device_enumerator *enumerator);
 sd_device *device_enumerator_get_next(sd_device_enumerator *enumerator);
+        bool properties_read:1;
+        bool tags_read:1;
+        bool devlinks_read:1;
 
 #define FOREACH_DEVICE_AND_SUBSYSTEM(enumerator, device)       \
         for (device = device_enumerator_get_first(enumerator); \
