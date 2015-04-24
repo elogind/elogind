@@ -222,8 +222,8 @@
   </a>
 
   <span style="float:right">
-    <xsl:text>systemd </xsl:text>
-    <xsl:value-of select="$systemd.version"/>
+    <xsl:text>elogind </xsl:text>
+    <xsl:value-of select="$elogind.version"/>
   </span>
   <hr/>
 </xsl:template>
