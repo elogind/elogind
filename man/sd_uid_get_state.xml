@@ -174,7 +174,7 @@
 
     <para>Functions described here are available as a shared library,
     and can be compiled and linked to using the
-    <constant>libsystemd</constant> <citerefentry project='die-net'><refentrytitle>pkg-config</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+    <constant>libelogind</constant> <citerefentry project='die-net'><refentrytitle>pkg-config</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     entry.</para>
   </refsect1>
 
