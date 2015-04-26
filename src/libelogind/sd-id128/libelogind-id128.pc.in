@@ -10,9 +10,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: systemd
-Description: systemd Library
+Name: elogind
+Description: elogind 128 Bit ID Utility Library
 URL: @PACKAGE_URL@
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -lsystemd
+Libs: -L${libdir} -lelogind-id128
 Cflags: -I${includedir}

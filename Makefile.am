@@ -734,7 +734,7 @@ INSTALL_EXEC_HOOKS += libelogind-install-hook
 UNINSTALL_EXEC_HOOKS += libelogind-uninstall-hook
 
 pkgconfiglib_DATA += \
-	src/libelogind/libsystemd.pc
+	src/libelogind/libelogind.pc
 
 pkginclude_HEADERS += \
 	src/systemd/sd-login.h
