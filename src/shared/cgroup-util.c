@@ -35,6 +35,7 @@
 #include "util.h"
 #include "formats-util.h"
 #include "path-util.h"
+#include "unit-name.h"
 #include "fileio.h"
 #include "special.h"
 #include "mkdir.h"
@@ -439,7 +440,7 @@ static const char *normalize_controller(const char *controller) {
         assert(controller);
 
         if (streq(controller, SYSTEMD_CGROUP_CONTROLLER))
-                return "elogind";
+                return "systemd";
         else if (startswith(controller, "name="))
                 return controller + 5;
         else
@@ -1060,9 +1061,21 @@ int cg_mangle_path(const char *path, char **result) {
 }
 
 int cg_get_root_path(char **path) {
+        char *p, *e;
+        int r;
+
         assert(path);
 
-        return cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, path);
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, &p);
+        if (r < 0)
+                return r;
+
+        e = endswith(p, "/" SPECIAL_SYSTEM_SLICE);
+        if (e)
+                *e = 0;
+
+        *path = p;
+        return 0;
 }
 
 int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {
@@ -1125,30 +1138,201 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         return 0;
 }
 
-int cg_path_get_session(const char *path, char **session) {
-        const char *e, *n, *s;
+int cg_path_decode_unit(const char *cgroup, char **unit){
+        char *e, *c, *s;
 
-        /* Elogind uses a flat hierarchy, just "/SESSION".  The only
-           wrinkle is that SESSION might be escaped.  */
+        assert(cgroup);
+        assert(unit);
+
+        e = strchrnul(cgroup, '/');
+        c = strndupa(cgroup, e - cgroup);
+        c = cg_unescape(c);
+
+        if (!unit_name_is_valid(c, TEMPLATE_INVALID))
+                return -ENXIO;
+
+        s = strdup(c);
+        if (!s)
+                return -ENOMEM;
+
+        *unit = s;
+        return 0;
+}
+
+static const char *skip_slices(const char *p) {
+        /* Skips over all slice assignments */
+
+        for (;;) {
+                size_t n;
+
+                p += strspn(p, "/");
+
+                n = strcspn(p, "/");
+                if (n <= 6 || memcmp(p + n - 6, ".slice", 6) != 0)
+                        return p;
+
+                p += n;
+        }
+}
+
+int cg_path_get_unit(const char *path, char **unit) {
+        const char *e;
 
         assert(path);
-        assert(path[0] == '/');
+        assert(unit);
 
-        e = path + 1;
+        e = skip_slices(path);
+
+        return cg_path_decode_unit(e, unit);
+}
+
+int cg_pid_get_unit(pid_t pid, char **unit) {
+        _cleanup_free_ char *cgroup = NULL;
+        int r;
+
+        assert(unit);
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        return cg_path_get_unit(cgroup, unit);
+}
+
+/**
+ * Skip session-*.scope, but require it to be there.
+ */
+static const char *skip_session(const char *p) {
+        size_t n;
+
+        assert(p);
+
+        p += strspn(p, "/");
+
+        n = strcspn(p, "/");
+        if (n < strlen("session-x.scope") || memcmp(p, "session-", 8) != 0 || memcmp(p + n - 6, ".scope", 6) != 0)
+                return NULL;
+
+        p += n;
+        p += strspn(p, "/");
+
+        return p;
+}
+
+/**
+ * Skip user@*.service, but require it to be there.
+ */
+static const char *skip_user_manager(const char *p) {
+        size_t n;
+
+        assert(p);
+
+        p += strspn(p, "/");
+
+        n = strcspn(p, "/");
+        if (n < strlen("user@x.service") || memcmp(p, "user@", 5) != 0 || memcmp(p + n - 8, ".service", 8) != 0)
+                return NULL;
+
+        p += n;
+        p += strspn(p, "/");
+
+        return p;
+}
+
+int cg_path_get_user_unit(const char *path, char **unit) {
+        const char *e, *t;
+
+        assert(path);
+        assert(unit);
+
+        /* We always have to parse the path from the beginning as unit
+         * cgroups might have arbitrary child cgroups and we shouldn't get
+         * confused by those */
+
+        /* Skip slices, if there are any */
+        e = skip_slices(path);
+
+        /* Skip the session scope or user manager... */
+        t = skip_session(e);
+        if (!t)
+                t = skip_user_manager(e);
+        if (!t)
+                return -ENXIO;
+
+        /* ... and skip more slices if there are any */
+        e = skip_slices(t);
+
+        return cg_path_decode_unit(e, unit);
+}
+
+int cg_pid_get_user_unit(pid_t pid, char **unit) {
+        _cleanup_free_ char *cgroup = NULL;
+        int r;
+
+        assert(unit);
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        return cg_path_get_user_unit(cgroup, unit);
+}
+
+int cg_path_get_machine_name(const char *path, char **machine) {
+        _cleanup_free_ char *u = NULL, *sl = NULL;
+        int r;
+
+        r = cg_path_get_unit(path, &u);
+        if (r < 0)
+                return r;
+
+        sl = strjoin("/run/systemd/machines/unit:", u, NULL);
+        if (!sl)
+                return -ENOMEM;
+
+        return readlink_malloc(sl, machine);
+}
+
+int cg_pid_get_machine_name(pid_t pid, char **machine) {
+        _cleanup_free_ char *cgroup = NULL;
+        int r;
+
+        assert(machine);
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        return cg_path_get_machine_name(cgroup, machine);
+}
+
+int cg_path_get_session(const char *path, char **session) {
+        const char *e, *n, *x, *y;
+        char *s;
+
+        assert(path);
+
+        /* Skip slices, if there are any */
+        e = skip_slices(path);
+
         n = strchrnul(e, '/');
         if (e == n)
-                return -ENOENT;
+                return -ENXIO;
 
         s = strndupa(e, n - e);
         s = cg_unescape(s);
 
-        if (!s[0])
-                return -ENOENT;
+        x = startswith(s, "session-");
+        if (!x)
+                return -ENXIO;
+        y = endswith(x, ".scope");
+        if (!y || x == y)
+                return -ENXIO;
 
         if (session) {
                 char *r;
 
-                r = strdup(s);
+                r = strndup(x, y - x);
                 if (!r)
                         return -ENOMEM;
 
@@ -1167,6 +1351,97 @@ int cg_pid_get_session(pid_t pid, char **session) {
                 return r;
 
         return cg_path_get_session(cgroup, session);
+}
+
+int cg_path_get_owner_uid(const char *path, uid_t *uid) {
+        _cleanup_free_ char *slice = NULL;
+        const char *start, *end;
+        char *s;
+        uid_t u;
+        int r;
+
+        assert(path);
+
+        r = cg_path_get_slice(path, &slice);
+        if (r < 0)
+                return r;
+
+        start = startswith(slice, "user-");
+        if (!start)
+                return -ENXIO;
+        end = endswith(slice, ".slice");
+        if (!end)
+                return -ENXIO;
+
+        s = strndupa(start, end - start);
+        if (!s)
+                return -ENXIO;
+
+        if (parse_uid(s, &u) < 0)
+                return -ENXIO;
+
+        if (uid)
+                *uid = u;
+
+        return 0;
+}
+
+int cg_pid_get_owner_uid(pid_t pid, uid_t *uid) {
+        _cleanup_free_ char *cgroup = NULL;
+        int r;
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        return cg_path_get_owner_uid(cgroup, uid);
+}
+
+int cg_path_get_slice(const char *p, char **slice) {
+        const char *e = NULL;
+        size_t m = 0;
+
+        assert(p);
+        assert(slice);
+
+        for (;;) {
+                size_t n;
+
+                p += strspn(p, "/");
+
+                n = strcspn(p, "/");
+                if (n <= 6 || memcmp(p + n - 6, ".slice", 6) != 0) {
+                        char *s;
+
+                        if (!e)
+                                return -ENXIO;
+
+                        s = strndup(e, m);
+                        if (!s)
+                                return -ENOMEM;
+
+                        *slice = s;
+                        return 0;
+                }
+
+                e = p;
+                m = n;
+
+                p += n;
+        }
+}
+
+int cg_pid_get_slice(pid_t pid, char **slice) {
+        _cleanup_free_ char *cgroup = NULL;
+        int r;
+
+        assert(slice);
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        return cg_path_get_slice(cgroup, slice);
 }
 
 char *cg_escape(const char *p) {
@@ -1253,6 +1528,56 @@ bool cg_controller_is_valid(const char *p, bool allow_named) {
                 return false;
 
         return true;
+}
+
+int cg_slice_to_path(const char *unit, char **ret) {
+        _cleanup_free_ char *p = NULL, *s = NULL, *e = NULL;
+        const char *dash;
+
+        assert(unit);
+        assert(ret);
+
+        if (!unit_name_is_valid(unit, TEMPLATE_INVALID))
+                return -EINVAL;
+
+        if (!endswith(unit, ".slice"))
+                return -EINVAL;
+
+        p = unit_name_to_prefix(unit);
+        if (!p)
+                return -ENOMEM;
+
+        dash = strchr(p, '-');
+        while (dash) {
+                _cleanup_free_ char *escaped = NULL;
+                char n[dash - p + sizeof(".slice")];
+
+                strcpy(stpncpy(n, p, dash - p), ".slice");
+
+                if (!unit_name_is_valid(n, TEMPLATE_INVALID))
+                        return -EINVAL;
+
+                escaped = cg_escape(n);
+                if (!escaped)
+                        return -ENOMEM;
+
+                if (!strextend(&s, escaped, "/", NULL))
+                        return -ENOMEM;
+
+                dash = strchr(dash+1, '-');
+        }
+
+        e = cg_escape(unit);
+        if (!e)
+                return -ENOMEM;
+
+        if (!strextend(&s, e, NULL))
+                return -ENOMEM;
+
+        *ret = s;
+        s = NULL;
+
+        return 0;
 }
 
 int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value) {
