@@ -21,11 +21,12 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <sys/types.h>
+#include "sd-bus.h"
+#include "job.h"
 
-int audit_session_from_pid(pid_t pid, uint32_t *id);
-int audit_loginuid_from_pid(pid_t pid, uid_t *uid);
+extern const sd_bus_vtable bus_job_vtable[];
 
-bool use_audit(void);
+int bus_job_method_cancel(sd_bus_message *message, void *job, sd_bus_error *error);
+
+void bus_job_send_change_signal(Job *j);
+void bus_job_send_removed_signal(Job *j);

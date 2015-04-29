@@ -21,12 +21,8 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdbool.h>
+#include "sd-bus.h"
 
-#include "macro.h"
+extern const sd_bus_vtable bus_snapshot_vtable[];
 
-int pager_open(bool jump_to_end);
-void pager_close(void);
-bool pager_have(void) _pure_;
-
-int show_man_page(const char *page, bool null_stdio);
+int bus_snapshot_method_remove(sd_bus_message *message, void *userdata, sd_bus_error *error);
