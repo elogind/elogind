@@ -83,6 +83,19 @@ void user_free(User *u) {
         while (u->sessions)
                 session_free(u->sessions);
 
+        if (u->slice) {
+                hashmap_remove(u->manager->user_units, u->slice);
+                free(u->slice);
+        }
+
+        if (u->service) {
+                hashmap_remove(u->manager->user_units, u->service);
+                free(u->service);
+        }
+
+        free(u->slice_job);
+        free(u->service_job);
+
         free(u->runtime_path);
 
         hashmap_remove(u->manager->users, UID_TO_PTR(u->uid));
@@ -122,6 +135,16 @@ int user_save(User *u) {
 
         if (u->runtime_path)
                 fprintf(f, "RUNTIME=%s\n", u->runtime_path);
+
+        if (u->service)
+                fprintf(f, "SERVICE=%s\n", u->service);
+        if (u->service_job)
+                fprintf(f, "SERVICE_JOB=%s\n", u->service_job);
+
+        if (u->slice)
+                fprintf(f, "SLICE=%s\n", u->slice);
+        if (u->slice_job)
+                fprintf(f, "SLICE_JOB=%s\n", u->slice_job);
 
         if (u->display)
                 fprintf(f, "DISPLAY=%s\n", u->display->id);
@@ -244,6 +267,10 @@ int user_load(User *u) {
 
         r = parse_env_file(u->state_file, NEWLINE,
                            "RUNTIME",     &u->runtime_path,
+                           "SERVICE",     &u->service,
+                           "SERVICE_JOB", &u->service_job,
+                           "SLICE",       &u->slice,
+                           "SLICE_JOB",   &u->slice_job,
                            "DISPLAY",     &display,
                            "REALTIME",    &realtime,
                            "MONOTONIC",   &monotonic,
@@ -340,6 +367,72 @@ fail:
         return r;
 }
 
+static int user_start_slice(User *u) {
+        char *job;
+        int r;
+
+        assert(u);
+
+        if (!u->slice) {
+                _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+                char lu[DECIMAL_STR_MAX(uid_t) + 1], *slice;
+                sprintf(lu, UID_FMT, u->uid);
+
+                r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &slice);
+                if (r < 0)
+                        return r;
+
+                r = manager_start_unit(u->manager, slice, &error, &job);
+                if (r < 0) {
+                        log_error("Failed to start user slice: %s", bus_error_message(&error, r));
+                        free(slice);
+                } else {
+                        u->slice = slice;
+
+                        free(u->slice_job);
+                        u->slice_job = job;
+                }
+        }
+
+        if (u->slice)
+                hashmap_put(u->manager->user_units, u->slice, u);
+
+        return 0;
+}
+
+static int user_start_service(User *u) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job;
+        int r;
+
+        assert(u);
+
+        if (!u->service) {
+                char lu[DECIMAL_STR_MAX(uid_t) + 1], *service;
+                sprintf(lu, UID_FMT, u->uid);
+
+                r = unit_name_build("user", lu, ".service", &service);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to build service name: %m");
+
+                r = manager_start_unit(u->manager, service, &error, &job);
+                if (r < 0) {
+                        log_error("Failed to start user service: %s", bus_error_message(&error, r));
+                        free(service);
+                } else {
+                        u->service = service;
+
+                        free(u->service_job);
+                        u->service_job = job;
+                }
+        }
+
+        if (u->service)
+                hashmap_put(u->manager->user_units, u->service, u);
+
+        return 0;
+}
+
 int user_start(User *u) {
         int r;
 
@@ -355,6 +448,16 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 
+        /* Create cgroup */
+        r = user_start_slice(u);
+        if (r < 0)
+                return r;
+
+        /* Spawn user systemd */
+        r = user_start_service(u);
+        if (r < 0)
+                return r;
+
         if (!dual_timestamp_is_set(&u->timestamp))
                 dual_timestamp_get(&u->timestamp);
 
@@ -366,6 +469,50 @@ int user_start(User *u) {
         user_send_signal(u, true);
 
         return 0;
+}
+
+static int user_stop_slice(User *u) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job;
+        int r;
+
+        assert(u);
+
+        if (!u->slice)
+                return 0;
+
+        r = manager_stop_unit(u->manager, u->slice, &error, &job);
+        if (r < 0) {
+                log_error("Failed to stop user slice: %s", bus_error_message(&error, r));
+                return r;
+        }
+
+        free(u->slice_job);
+        u->slice_job = job;
+
+        return r;
+}
+
+static int user_stop_service(User *u) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job;
+        int r;
+
+        assert(u);
+
+        if (!u->service)
+                return 0;
+
+        r = manager_stop_unit(u->manager, u->service, &error, &job);
+        if (r < 0) {
+                log_error("Failed to stop user service: %s", bus_error_message(&error, r));
+                return r;
+        }
+
+        free(u->service_job);
+        u->service_job = job;
+
+        return r;
 }
 
 static int user_remove_runtime_path(User *u) {
@@ -413,6 +560,16 @@ int user_stop(User *u, bool force) {
                 if (k < 0)
                         r = k;
         }
+
+        /* Kill systemd */
+        k = user_stop_service(u);
+        if (k < 0)
+                r = k;
+
+        /* Kill cgroup */
+        k = user_stop_slice(u);
+        if (k < 0)
+                r = k;
 
         u->stopping = true;
 
@@ -520,6 +677,12 @@ bool user_check_gc(User *u, bool drop_not_started) {
         if (user_check_linger_file(u) > 0)
                 return true;
 
+        if (u->slice_job && manager_job_is_active(u->manager, u->slice_job))
+                return true;
+
+        if (u->service_job && manager_job_is_active(u->manager, u->service_job))
+                return true;
+
         return false;
 }
 
@@ -540,6 +703,9 @@ UserState user_get_state(User *u) {
 
         if (u->stopping)
                 return USER_CLOSING;
+
+        if (u->slice_job || u->service_job)
+                return USER_OPENING;
 
         if (u->sessions) {
                 bool all_closing = true;
@@ -564,18 +730,12 @@ UserState user_get_state(User *u) {
 }
 
 int user_kill(User *u, int signo) {
-        Session *s;
-        int res = 0;
-
         assert(u);
 
-        LIST_FOREACH(sessions_by_user, s, u->sessions) {
-                int r = session_kill(s, KILL_ALL, signo);
-                if (res == 0 && r < 0)
-                        res = r;
-        }
+        if (!u->slice)
+                return -ESRCH;
 
-        return res;
+        return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);
 }
 
 void user_elect_display(User *u) {
