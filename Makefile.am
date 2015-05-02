@@ -207,10 +207,6 @@ install-directories-hook:
 	$(MKDIR_P) $(addprefix $(DESTDIR),$(INSTALL_DIRS))
 
 install-aliases-hook:
-	set -- $(SYSTEM_UNIT_ALIASES) && \
-		dir=$(systemunitdir) && $(install-aliases)
-	set -- $(USER_UNIT_ALIASES) && \
-		dir=$(userunitdir) && $(install-relative-aliases)
 	set -- $(GENERAL_ALIASES) && \
 		dir= && $(install-relative-aliases)
 
