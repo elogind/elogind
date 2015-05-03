@@ -75,7 +75,7 @@
     monitoring of seats, sessions and users. To actively make changes
     to the seat configuration, terminate login sessions, or switch
     session on a seat you need to utilize the D-Bus API of
-    systemd-logind, instead.</para>
+    logind, instead.</para>
 
     <para>These functions synchronously access data in
     <filename>/proc</filename>, <filename>/sys/fs/cgroup</filename>
@@ -85,7 +85,7 @@
 
     <para>It is possible (and often a very good choice) to mix calls
     to the synchronous interface of <filename>sd-login.h</filename>
-    with the asynchronous D-Bus interface of systemd-logind. However,
+    with the asynchronous D-Bus interface of logind. However,
     if this is done you need to think a bit about possible races since
     the stream of events from D-Bus and from
     <filename>sd-login.h</filename> interfaces such as the login
