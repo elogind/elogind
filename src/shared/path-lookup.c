@@ -218,9 +218,24 @@ static char** user_dirs(
         return tmp;
 }
 
+char **generator_paths(ManagerRunningAs running_as) {
+        if (running_as == MANAGER_USER)
+                return strv_new("/run/systemd/user-generators",
+                                "/etc/systemd/user-generators",
+                                "/usr/local/lib/systemd/user-generators",
+                                USER_GENERATOR_PATH,
+                                NULL);
+        else
+                return strv_new("/run/systemd/system-generators",
+                                "/etc/systemd/system-generators",
+                                "/usr/local/lib/systemd/system-generators",
+                                SYSTEM_GENERATOR_PATH,
+                                NULL);
+}
+
 int lookup_paths_init(
                 LookupPaths *p,
-                SystemdRunningAs running_as,
+                ManagerRunningAs running_as,
                 bool personal,
                 const char *root_dir,
                 const char *generator,
@@ -262,7 +277,7 @@ int lookup_paths_init(
                  * we include /lib in the search path for the system
                  * stuff but avoid it for user stuff. */
 
-                if (running_as == SYSTEMD_USER) {
+                if (running_as == MANAGER_USER) {
                         if (personal)
                                 unit_path = user_dirs(generator, generator_early, generator_late);
                         else
@@ -322,8 +337,78 @@ int lookup_paths_init(
                 p->unit_path = NULL;
         }
 
-        if (running_as == SYSTEMD_SYSTEM) {
+        if (running_as == MANAGER_SYSTEM) {
+#ifdef HAVE_SYSV_COMPAT
+                /* /etc/init.d/ compatibility does not matter to users */
+
+                e = getenv("SYSTEMD_SYSVINIT_PATH");
+                if (e) {
+                        p->sysvinit_path = path_split_and_make_absolute(e);
+                        if (!p->sysvinit_path)
+                                return -ENOMEM;
+                } else
+                        p->sysvinit_path = NULL;
+
+                if (strv_isempty(p->sysvinit_path)) {
+                        strv_free(p->sysvinit_path);
+
+                        p->sysvinit_path = strv_new(
+                                        SYSTEM_SYSVINIT_PATH,     /* /etc/init.d/ */
+                                        NULL);
+                        if (!p->sysvinit_path)
+                                return -ENOMEM;
+                }
+
+                e = getenv("SYSTEMD_SYSVRCND_PATH");
+                if (e) {
+                        p->sysvrcnd_path = path_split_and_make_absolute(e);
+                        if (!p->sysvrcnd_path)
+                                return -ENOMEM;
+                } else
+                        p->sysvrcnd_path = NULL;
+
+                if (strv_isempty(p->sysvrcnd_path)) {
+                        strv_free(p->sysvrcnd_path);
+
+                        p->sysvrcnd_path = strv_new(
+                                        SYSTEM_SYSVRCND_PATH,     /* /etc/rcN.d/ */
+                                        NULL);
+                        if (!p->sysvrcnd_path)
+                                return -ENOMEM;
+                }
+
+                if (!path_strv_resolve_uniq(p->sysvinit_path, root_dir))
+                        return -ENOMEM;
+
+                if (!path_strv_resolve_uniq(p->sysvrcnd_path, root_dir))
+                        return -ENOMEM;
+
+                if (!strv_isempty(p->sysvinit_path)) {
+                        _cleanup_free_ char *t = strv_join(p->sysvinit_path, "\n\t");
+                        if (!t)
+                                return -ENOMEM;
+                        log_debug("Looking for SysV init scripts in:\n\t%s", t);
+                } else {
+                        log_debug("Ignoring SysV init scripts.");
+                        strv_free(p->sysvinit_path);
+                        p->sysvinit_path = NULL;
+                }
+
+                if (!strv_isempty(p->sysvrcnd_path)) {
+                        _cleanup_free_ char *t =
+                                strv_join(p->sysvrcnd_path, "\n\t");
+                        if (!t)
+                                return -ENOMEM;
+
+                        log_debug("Looking for SysV rcN.d links in:\n\t%s", t);
+                } else {
+                        log_debug("Ignoring SysV rcN.d links.");
+                        strv_free(p->sysvrcnd_path);
+                        p->sysvrcnd_path = NULL;
+                }
+#else
                 log_debug("SysV init scripts and rcN.d links support disabled");
+#endif
         }
 
         return 0;
@@ -334,6 +419,12 @@ void lookup_paths_free(LookupPaths *p) {
 
         strv_free(p->unit_path);
         p->unit_path = NULL;
+
+#ifdef HAVE_SYSV_COMPAT
+        strv_free(p->sysvinit_path);
+        strv_free(p->sysvrcnd_path);
+        p->sysvinit_path = p->sysvrcnd_path = NULL;
+#endif
 }
 
 int lookup_paths_init_from_scope(LookupPaths *paths,
@@ -346,7 +437,7 @@ int lookup_paths_init_from_scope(LookupPaths *paths,
         zero(*paths);
 
         return lookup_paths_init(paths,
-                                 scope == UNIT_FILE_SYSTEM ? SYSTEMD_SYSTEM : SYSTEMD_USER,
+                                 scope == UNIT_FILE_SYSTEM ? MANAGER_SYSTEM : MANAGER_USER,
                                  scope == UNIT_FILE_USER,
                                  root_dir,
                                  NULL, NULL, NULL);
