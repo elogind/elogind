@@ -1665,7 +1665,7 @@ int loop_write(int fd, const void *buf, size_t nbytes, bool do_poll) {
 
         errno = 0;
 
-        while (nbytes > 0) {
+        do {
                 ssize_t k;
 
                 k = write(fd, p, nbytes);
@@ -1685,12 +1685,12 @@ int loop_write(int fd, const void *buf, size_t nbytes, bool do_poll) {
                         return -errno;
                 }
 
-                if (k == 0) /* Can't really happen */
+                if (nbytes > 0 && k == 0) /* Can't really happen */
                         return -EIO;
 
                 p += k;
                 nbytes -= k;
-        }
+        } while (nbytes > 0);
 
         return 0;
 }
