@@ -29,7 +29,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <signal.h>
 #include <sched.h>
 #include <limits.h>
 #include <sys/types.h>
@@ -280,9 +279,6 @@ int readlink_value(const char *p, char **ret);
 int readlink_and_make_absolute(const char *p, char **r);
 int readlink_and_canonicalize(const char *p, char **r);
 
-int reset_all_signal_handlers(void);
-int reset_signal_mask(void);
-
 char *strstrip(char *s);
 char *delete_chars(char *s, const char *bad);
 char *truncate_nl(char *s);
@@ -425,10 +421,6 @@ int release_terminal(void);
 
 int flush_fd(int fd);
 
-int ignore_signals(int sig, ...);
-int default_signals(int sig, ...);
-int sigaction_many(const struct sigaction *sa, ...);
-
 int fopen_temporary(const char *path, FILE **_f, char **_temp_path);
 
 ssize_t loop_read(int fd, void *buf, size_t nbytes, bool do_poll);
@@ -441,9 +433,6 @@ int dir_is_empty(const char *path);
 char* dirname_malloc(const char *path);
 
 void rename_process(const char name[8]);
-
-void sigset_add_many(sigset_t *ss, ...);
-int sigprocmask_many(int how, ...);
 
 bool hostname_is_set(void);
 
@@ -626,11 +615,6 @@ int rlimit_from_string(const char *s) _pure_;
 
 int ip_tos_to_string_alloc(int i, char **s);
 int ip_tos_from_string(const char *s);
-
-const char *signal_to_string(int i) _const_;
-int signal_from_string(const char *s) _pure_;
-
-int signal_from_string_try_harder(const char *s);
 
 extern int saved_argc;
 extern char **saved_argv;
