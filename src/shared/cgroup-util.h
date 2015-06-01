@@ -110,7 +110,7 @@ int cg_pid_get_user_slice(pid_t pid, char **slice);
 char *cg_escape(const char *p);
 char *cg_unescape(const char *p) _pure_;
 
-bool cg_controller_is_valid(const char *p, bool allow_named);
+bool cg_controller_is_valid(const char *p);
 
 typedef const char* (*cg_migrate_callback_t)(CGroupControllerMask mask, void *userdata);
 
