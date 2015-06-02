@@ -219,7 +219,6 @@
       <xsl:text>index.html</xsl:text>
     </xsl:attribute>
     <xsl:text>Index </xsl:text>
-  </a>
 
   <span style="float:right">
     <xsl:text>elogind </xsl:text>
