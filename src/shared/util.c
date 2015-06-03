@@ -60,8 +60,8 @@
 #include <linux/fs.h>
 
 /* When we include libgen.h because we need dirname() we immediately
- * undefine basename() since libgen.h defines it as a macro to the XDG
- * version which is really broken. */
+ * undefine basename() since libgen.h defines it as a macro to the POSIX
+ * version which is really broken. We prefer GNU basename(). */
 #include <libgen.h>
 #undef basename
 
@@ -144,6 +144,27 @@ char* endswith(const char *s, const char *postfix) {
                 return NULL;
 
         if (memcmp(s + sl - pl, postfix, pl) != 0)
+                return NULL;
+
+        return (char*) s + sl - pl;
+}
+
+char* endswith_no_case(const char *s, const char *postfix) {
+        size_t sl, pl;
+
+        assert(s);
+        assert(postfix);
+
+        sl = strlen(s);
+        pl = strlen(postfix);
+
+        if (pl == 0)
+                return (char*) s + sl;
+
+        if (sl < pl)
+                return NULL;
+
+        if (strcasecmp(s + sl - pl, postfix) != 0)
                 return NULL;
 
         return (char*) s + sl - pl;
@@ -1131,7 +1152,7 @@ static int cunescape_one(const char *p, size_t length, char *ret, uint32_t *ret_
                 int a, b, c;
                 uint32_t m;
 
-                if (length != (size_t) -1 && length < 4)
+                if (length != (size_t) -1 && length < 3)
                         return -EINVAL;
 
                 a = unoctchar(p[0]);
@@ -2500,7 +2521,7 @@ int fopen_temporary(const char *path, FILE **_f, char **_temp_path) {
         assert(_f);
         assert(_temp_path);
 
-        r = tempfn_xxxxxx(path, &t);
+        r = tempfn_xxxxxx(path, NULL, &t);
         if (r < 0)
                 return r;
 
@@ -2530,7 +2551,7 @@ int symlink_atomic(const char *from, const char *to) {
         assert(from);
         assert(to);
 
-        r = tempfn_random(to, &t);
+        r = tempfn_random(to, NULL, &t);
         if (r < 0)
                 return r;
 
@@ -2573,7 +2594,7 @@ int mknod_atomic(const char *path, mode_t mode, dev_t dev) {
 
         assert(path);
 
-        r = tempfn_random(path, &t);
+        r = tempfn_random(path, NULL, &t);
         if (r < 0)
                 return r;
 
@@ -2594,7 +2615,7 @@ int mkfifo_atomic(const char *path, mode_t mode) {
 
         assert(path);
 
-        r = tempfn_random(path, &t);
+        r = tempfn_random(path, NULL, &t);
         if (r < 0)
                 return r;
 
@@ -4911,7 +4932,7 @@ int bind_remount_recursive(const char *prefix, bool ro) {
                 while ((x = set_steal_first(todo))) {
 
                         r = set_consume(done, x);
-                        if (r == -EEXIST)
+                        if (r == -EEXIST || r == 0)
                                 continue;
                         if (r < 0)
                                 return r;
@@ -4948,7 +4969,7 @@ int fflush_and_check(FILE *f) {
         return 0;
 }
 
-int tempfn_xxxxxx(const char *p, char **ret) {
+int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
         const char *fn;
         char *t;
 
@@ -4960,24 +4981,27 @@ int tempfn_xxxxxx(const char *p, char **ret) {
          *         /foo/bar/waldo
          *
          * Into this:
-         *         /foo/bar/.#waldoXXXXXX
+         *         /foo/bar/.#<extra>waldoXXXXXX
          */
 
         fn = basename(p);
         if (!filename_is_valid(fn))
                 return -EINVAL;
 
-        t = new(char, strlen(p) + 2 + 6 + 1);
+        if (extra == NULL)
+                extra = "";
+
+        t = new(char, strlen(p) + 2 + strlen(extra) + 6 + 1);
         if (!t)
                 return -ENOMEM;
 
-        strcpy(stpcpy(stpcpy(mempcpy(t, p, fn - p), ".#"), fn), "XXXXXX");
+        strcpy(stpcpy(stpcpy(stpcpy(mempcpy(t, p, fn - p), ".#"), extra), fn), "XXXXXX");
 
         *ret = path_kill_slashes(t);
         return 0;
 }
 
-int tempfn_random(const char *p, char **ret) {
+int tempfn_random(const char *p, const char *extra, char **ret) {
         const char *fn;
         char *t, *x;
         uint64_t u;
@@ -4991,18 +5015,21 @@ int tempfn_random(const char *p, char **ret) {
          *         /foo/bar/waldo
          *
          * Into this:
-         *         /foo/bar/.#waldobaa2a261115984a9
+         *         /foo/bar/.#<extra>waldobaa2a261115984a9
          */
 
         fn = basename(p);
         if (!filename_is_valid(fn))
                 return -EINVAL;
 
-        t = new(char, strlen(p) + 2 + 16 + 1);
+        if (!extra)
+                extra = "";
+
+        t = new(char, strlen(p) + 2 + strlen(extra) + 16 + 1);
         if (!t)
                 return -ENOMEM;
 
-        x = stpcpy(stpcpy(mempcpy(t, p, fn - p), ".#"), fn);
+        x = stpcpy(stpcpy(stpcpy(mempcpy(t, p, fn - p), ".#"), extra), fn);
 
         u = random_u64();
         for (i = 0; i < 16; i++) {
@@ -5016,7 +5043,7 @@ int tempfn_random(const char *p, char **ret) {
         return 0;
 }
 
-int tempfn_random_child(const char *p, char **ret) {
+int tempfn_random_child(const char *p, const char *extra, char **ret) {
         char *t, *x;
         uint64_t u;
         unsigned i;
@@ -5027,14 +5054,17 @@ int tempfn_random_child(const char *p, char **ret) {
         /* Turns this:
          *         /foo/bar/waldo
          * Into this:
-         *         /foo/bar/waldo/.#3c2b6219aa75d7d0
+         *         /foo/bar/waldo/.#<extra>3c2b6219aa75d7d0
          */
 
-        t = new(char, strlen(p) + 3 + 16 + 1);
+        if (!extra)
+                extra = "";
+
+        t = new(char, strlen(p) + 3 + strlen(extra) + 16 + 1);
         if (!t)
                 return -ENOMEM;
 
-        x = stpcpy(stpcpy(t, p), "/.#");
+        x = stpcpy(stpcpy(stpcpy(t, p), "/.#"), extra);
 
         u = random_u64();
         for (i = 0; i < 16; i++) {
@@ -5179,35 +5209,6 @@ int unquote_first_word(const char **p, char **ret, UnquoteFlags flags) {
 
                         break;
 
-                case VALUE_ESCAPE:
-                        if (c == 0) {
-                                if (flags & UNQUOTE_RELAX)
-                                        goto finish;
-                                return -EINVAL;
-                        }
-
-                        if (!GREEDY_REALLOC(s, allocated, sz+7))
-                                return -ENOMEM;
-
-                        if (flags & UNQUOTE_CUNESCAPE) {
-                                uint32_t u;
-
-                                r = cunescape_one(*p, (size_t) -1, &c, &u);
-                                if (r < 0)
-                                        return -EINVAL;
-
-                                (*p) += r - 1;
-
-                                if (c != 0)
-                                        s[sz++] = c; /* normal explicit char */
-                                else
-                                        sz += utf8_encode_unichar(s + sz, u); /* unicode chars we'll encode as utf8 */
-                        } else
-                                s[sz++] = c;
-
-                        state = VALUE;
-                        break;
-
                 case SINGLE_QUOTE:
                         if (c == 0) {
                                 if (flags & UNQUOTE_RELAX)
@@ -5226,35 +5227,6 @@ int unquote_first_word(const char **p, char **ret, UnquoteFlags flags) {
 
                         break;
 
-                case SINGLE_QUOTE_ESCAPE:
-                        if (c == 0) {
-                                if (flags & UNQUOTE_RELAX)
-                                        goto finish;
-                                return -EINVAL;
-                        }
-
-                        if (!GREEDY_REALLOC(s, allocated, sz+7))
-                                return -ENOMEM;
-
-                        if (flags & UNQUOTE_CUNESCAPE) {
-                                uint32_t u;
-
-                                r = cunescape_one(*p, (size_t) -1, &c, &u);
-                                if (r < 0)
-                                        return -EINVAL;
-
-                                (*p) += r - 1;
-
-                                if (c != 0)
-                                        s[sz++] = c;
-                                else
-                                        sz += utf8_encode_unichar(s + sz, u);
-                        } else
-                                s[sz++] = c;
-
-                        state = SINGLE_QUOTE;
-                        break;
-
                 case DOUBLE_QUOTE:
                         if (c == 0)
                                 return -EINVAL;
@@ -5271,33 +5243,56 @@ int unquote_first_word(const char **p, char **ret, UnquoteFlags flags) {
 
                         break;
 
+                case SINGLE_QUOTE_ESCAPE:
                 case DOUBLE_QUOTE_ESCAPE:
+                case VALUE_ESCAPE:
+                        if (!GREEDY_REALLOC(s, allocated, sz+7))
+                                return -ENOMEM;
+
                         if (c == 0) {
+                                if ((flags & UNQUOTE_CUNESCAPE_RELAX) &&
+                                    (state == VALUE_ESCAPE || flags & UNQUOTE_RELAX)) {
+                                        /* If we find an unquoted trailing backslash and we're in
+                                         * UNQUOTE_CUNESCAPE_RELAX mode, keep it verbatim in the
+                                         * output.
+                                         *
+                                         * Unbalanced quotes will only be allowed in UNQUOTE_RELAX
+                                         * mode, UNQUOTE_CUNESCAP_RELAX mode does not allow them.
+                                         */
+                                        s[sz++] = '\\';
+                                        goto finish;
+                                }
                                 if (flags & UNQUOTE_RELAX)
                                         goto finish;
                                 return -EINVAL;
                         }
 
-                        if (!GREEDY_REALLOC(s, allocated, sz+7))
-                                return -ENOMEM;
-
                         if (flags & UNQUOTE_CUNESCAPE) {
                                 uint32_t u;
 
                                 r = cunescape_one(*p, (size_t) -1, &c, &u);
-                                if (r < 0)
+                                if (r < 0) {
+                                        if (flags & UNQUOTE_CUNESCAPE_RELAX) {
+                                                s[sz++] = '\\';
+                                                s[sz++] = c;
+                                                goto end_escape;
+                                        }
                                         return -EINVAL;
+                                }
 
                                 (*p) += r - 1;
 
                                 if (c != 0)
-                                        s[sz++] = c;
+                                        s[sz++] = c; /* normal explicit char */
                                 else
-                                        sz += utf8_encode_unichar(s + sz, u);
+                                        sz += utf8_encode_unichar(s + sz, u); /* unicode chars we'll encode as utf8 */
                         } else
                                 s[sz++] = c;
 
-                        state = DOUBLE_QUOTE;
+end_escape:
+                        state = (state == SINGLE_QUOTE_ESCAPE) ? SINGLE_QUOTE :
+                                (state == DOUBLE_QUOTE_ESCAPE) ? DOUBLE_QUOTE :
+                                VALUE;
                         break;
 
                 case SPACE:
@@ -5499,7 +5494,7 @@ int openpt_in_namespace(pid_t pid, int flags) {
         if (recvmsg(pair[0], &mh, MSG_NOSIGNAL|MSG_CMSG_CLOEXEC) < 0)
                 return -errno;
 
-        for (cmsg = CMSG_FIRSTHDR(&mh); cmsg; cmsg = CMSG_NXTHDR(&mh, cmsg))
+        CMSG_FOREACH(cmsg, &mh)
                 if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
                         int *fds;
                         unsigned n_fds;
@@ -5887,7 +5882,7 @@ void cmsg_close_all(struct msghdr *mh) {
 
         assert(mh);
 
-        for (cmsg = CMSG_FIRSTHDR(mh); cmsg; cmsg = CMSG_NXTHDR(mh, cmsg))
+        CMSG_FOREACH(cmsg, mh)
                 if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS)
                         close_many((int*) CMSG_DATA(cmsg), (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(int));
 }
