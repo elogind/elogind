@@ -5,8 +5,7 @@
 /***
   This file is part of systemd.
 
-  Copyright 2014 Lennart Poettering
-  Copyright 2014 Tom Gundersen
+  Copyright 2008-2011 Lennart Poettering
 
   systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
@@ -22,25 +21,17 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-typedef struct Link Link;
 
-#include "networkd-wait-online.h"
+#include "sd-netlink.h"
+#include "in-addr-util.h"
 
-struct Link {
-        Manager *manager;
-
-        int ifindex;
-        char *ifname;
-        unsigned flags;
-
-        char *operational_state;
-        char *state;
+struct local_address {
+        int family, ifindex;
+        unsigned char scope;
+        uint32_t metric;
+        union in_addr_union address;
 };
 
-int link_new(Manager *m, Link **ret, int ifindex, const char *ifname);
-Link *link_free(Link *l);
-int link_update_rtnl(Link *l, sd_netlink_message *m);
-int link_update_monitor(Link *l);
-bool link_relevant(Link *l);
+int local_addresses(sd_netlink *rtnl, int ifindex, int af, struct local_address **ret);
 
-DEFINE_TRIVIAL_CLEANUP_FUNC(Link*, link_free);
+int local_gateways(sd_netlink *rtnl, int ifindex, int af, struct local_address **ret);

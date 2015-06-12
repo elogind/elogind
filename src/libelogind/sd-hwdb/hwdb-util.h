@@ -1,7 +1,5 @@
 /*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
 
-#pragma once
-
 /***
   This file is part of systemd.
 
@@ -21,14 +19,38 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "util.h"
+#pragma once
 
-#include "sd-hwdb.h"
+#include "sd-event.h"
+#include "sd-netlink.h"
+#include "sd-network.h"
 
-DEFINE_TRIVIAL_CLEANUP_FUNC(sd_hwdb*, sd_hwdb_unref);
-#define _cleanup_hwdb_unref_ _cleanup_(sd_hwdb_unrefp)
-        bool udpcsum;
-        bool udp6zerocsumtx;
-        bool udp6zerocsumrx;
+#include "hashmap.h"
 
-bool hwdb_validate(sd_hwdb *hwdb);
+typedef struct Manager Manager;
+
+#include "networkd-wait-online-link.h"
+
+struct Manager {
+        Hashmap *links;
+        Hashmap *links_by_name;
+
+        char **interfaces;
+        char **ignore;
+
+        sd_netlink *rtnl;
+        sd_event_source *rtnl_event_source;
+
+        sd_network_monitor *network_monitor;
+        sd_event_source *network_monitor_event_source;
+
+        sd_event *event;
+};
+
+void manager_free(Manager *m);
+int manager_new(Manager **ret, char **interfaces, char **ignore, usec_t timeout);
+
+DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_free);
+
+bool manager_all_configured(Manager *m);
+bool manager_ignore_link(Manager *m, Link *link);
