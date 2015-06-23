@@ -72,10 +72,6 @@ struct sd_netlink {
         unsigned rqueue_partial_size;
         size_t rqueue_partial_allocated;
 
-        sd_netlink_message **wqueue;
-        unsigned wqueue_size;
-        size_t wqueue_allocated;
-
         struct nlmsghdr *rbuffer;
         size_t rbuffer_allocated;
 
@@ -96,18 +92,27 @@ struct sd_netlink {
         sd_event *event;
 };
 
+struct netlink_attribute {
+        size_t offset; /* offset from hdr to attirubte */
+        bool nested:1;
+        bool net_byteorder:1;
+};
+
+struct netlink_container {
+        const struct NLTypeSystem *type_system; /* the type system of the container */
+        size_t offset; /* offset from hdr to the start of the container */
+        struct netlink_attribute *attributes;
+        unsigned short n_attributes; /* number of attributes in container */
+};
+
 struct sd_netlink_message {
         RefCount n_ref;
 
         sd_netlink *rtnl;
 
         struct nlmsghdr *hdr;
-        const struct NLTypeSystem *(container_type_system[RTNL_CONTAINER_DEPTH]); /* the type of the container and all its parents */
-        size_t container_offsets[RTNL_CONTAINER_DEPTH]; /* offset from hdr to each container's start */
+        struct netlink_container containers[RTNL_CONTAINER_DEPTH];
         unsigned n_containers; /* number of containers */
-        size_t next_rta_offset; /* offset from hdr to next rta */
-        size_t *rta_offset_tb[RTNL_CONTAINER_DEPTH];
-        unsigned short rta_tb_size[RTNL_CONTAINER_DEPTH];
         bool sealed:1;
         bool broadcast:1;
 
@@ -115,20 +120,16 @@ struct sd_netlink_message {
 };
 
 int message_new(sd_netlink *rtnl, sd_netlink_message **ret, uint16_t type);
+int message_new_empty(sd_netlink *rtnl, sd_netlink_message **ret);
 
+int socket_open(int family);
+int socket_bind(sd_netlink *nl);
+int socket_join_broadcast_group(sd_netlink *nl, unsigned group);
 int socket_write_message(sd_netlink *nl, sd_netlink_message *m);
 int socket_read_message(sd_netlink *nl);
 
 int rtnl_rqueue_make_room(sd_netlink *rtnl);
 int rtnl_rqueue_partial_make_room(sd_netlink *rtnl);
-
-int rtnl_message_read_internal(sd_netlink_message *m, unsigned short type, void **data);
-int rtnl_message_parse(sd_netlink_message *m,
-                       size_t **rta_offset_tb,
-                       unsigned short *rta_tb_size,
-                       int max,
-                       struct rtattr *rta,
-                       unsigned int rt_len);
 
 /* Make sure callbacks don't destroy the rtnl connection */
 #define RTNL_DONT_DESTROY(rtnl) \
