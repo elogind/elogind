@@ -6,7 +6,6 @@
   This file is part of systemd.
 
   Copyright 2014 Lennart Poettering
-  Copyright 2014 Tom Gundersen
 
   systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
@@ -22,25 +21,45 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-typedef struct Link Link;
+#include "in-addr-util.h"
 
-#include "networkd-wait-online.h"
+typedef struct DnsServer DnsServer;
+typedef enum DnsServerSource DnsServerSource;
 
-struct Link {
+typedef enum DnsServerType {
+        DNS_SERVER_SYSTEM,
+        DNS_SERVER_FALLBACK,
+        DNS_SERVER_LINK,
+} DnsServerType;
+
+#include "resolved-link.h"
+
+struct DnsServer {
         Manager *manager;
 
-        int ifindex;
-        char *ifname;
-        unsigned flags;
+        unsigned n_ref;
 
-        char *operational_state;
-        char *state;
+        DnsServerType type;
+
+        Link *link;
+
+        int family;
+        union in_addr_union address;
+
+        bool marked:1;
+
+        LIST_FIELDS(DnsServer, servers);
 };
 
-int link_new(Manager *m, Link **ret, int ifindex, const char *ifname);
-Link *link_free(Link *l);
-int link_update_rtnl(Link *l, sd_netlink_message *m);
-int link_update_monitor(Link *l);
-bool link_relevant(Link *l);
+int dns_server_new(
+                Manager *m,
+                DnsServer **s,
+                DnsServerType type,
+                Link *l,
+                int family,
+                const union in_addr_union *address);
 
-DEFINE_TRIVIAL_CLEANUP_FUNC(Link*, link_free);
+DnsServer* dns_server_ref(DnsServer *s);
+DnsServer* dns_server_unref(DnsServer *s);
+
+extern const struct hash_ops dns_server_hash_ops;
