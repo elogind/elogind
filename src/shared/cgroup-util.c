@@ -645,7 +645,7 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
 
         snprintf(c, sizeof(c), PID_FMT"\n", pid);
 
-        return write_string_file_no_create(fs, c);
+        return write_string_file(fs, c, 0);
 }
 
 int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
@@ -819,7 +819,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
 
         sc = strstrip(contents);
         if (sc[0] == 0) {
-                r = write_string_file_no_create(fs, agent);
+                r = write_string_file(fs, agent, 0);
                 if (r < 0)
                         return r;
         } else if (!streq(sc, agent))
@@ -839,7 +839,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
 
         sc = strstrip(contents);
         if (streq(sc, "0")) {
-                r = write_string_file_no_create(fs, "1");
+                r = write_string_file(fs, "1", 0);
                 if (r < 0)
                         return r;
 
@@ -860,7 +860,7 @@ int cg_uninstall_release_agent(const char *controller) {
         if (r < 0)
                 return r;
 
-        r = write_string_file_no_create(fs, "0");
+        r = write_string_file(fs, "0", 0);
         if (r < 0)
                 return r;
 
@@ -871,7 +871,7 @@ int cg_uninstall_release_agent(const char *controller) {
         if (r < 0)
                 return r;
 
-        r = write_string_file_no_create(fs, "");
+        r = write_string_file(fs, "", 0);
         if (r < 0)
                 return r;
 
@@ -1701,7 +1701,7 @@ int cg_set_attribute(const char *controller, const char *path, const char *attri
         if (r < 0)
                 return r;
 
-        return write_string_file_no_create(p, value);
+        return write_string_file(p, value, 0);
 }
 
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret) {
