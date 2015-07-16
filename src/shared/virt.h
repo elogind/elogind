@@ -21,20 +21,46 @@
 
 #pragma once
 
-typedef struct TunTap TunTap;
+typedef struct VxLan VxLan;
 
 #include "networkd-netdev.h"
 
-struct TunTap {
+#include "in-addr-util.h"
+
+#define VXLAN_VID_MAX (1u << 24) - 1
+
+struct VxLan {
         NetDev meta;
 
-        char *user_name;
-        char *group_name;
-        bool one_queue;
-        bool multi_queue;
-        bool packet_info;
-        bool vnet_hdr;
+        uint64_t id;
+
+        int family;
+        union in_addr_union group;
+
+        unsigned tos;
+        unsigned ttl;
+
+        usec_t fdb_ageing;
+
+        bool learning;
+        bool arp_proxy;
+        bool route_short_circuit;
+        bool l2miss;
+        bool l3miss;
+        bool udpcsum;
+        bool udp6zerocsumtx;
+        bool udp6zerocsumrx;
 };
 
-extern const NetDevVTable tun_vtable;
-extern const NetDevVTable tap_vtable;
+extern const NetDevVTable vxlan_vtable;
+
+int config_parse_vxlan_group_address(const char *unit,
+                                     const char *filename,
+                                     unsigned line,
+                                     const char *section,
+                                     unsigned section_line,
+                                     const char *lvalue,
+                                     int ltype,
+                                     const char *rvalue,
+                                     void *data,
+                                     void *userdata);
