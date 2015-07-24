@@ -27,7 +27,7 @@
 
 int verify_units(char **filenames, ManagerRunningAs running_as, bool check_man);
 
-/* XXX: find an authorotative list of all pseudo types? */
+/* XXX: find an authoritative list of all pseudo types? */
 bool dns_type_is_pseudo(int n) {
         return IN_SET(n, DNS_TYPE_ANY, DNS_TYPE_AXFR, DNS_TYPE_IXFR, DNS_TYPE_OPT);
 }
