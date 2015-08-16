@@ -195,7 +195,7 @@ dnl AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
 dnl         [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
 dnl                -flto -ffat-lto-objects])],
 dnl         [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
-dnl AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
+AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
         [CC_CHECK_FLAGS_APPEND([with_cppflags], [CPPFLAGS], [\
