@@ -21,7 +21,7 @@ AC_PREREQ([2.64])
 
 # FIXME: Update to proper web page
 AC_INIT([elogind],
-        [219],
+        [219.0],
         [http://bugs.freedesktop.org/enter_bug.cgi?product=elogind],
         [elogind],
         [http://www.freedesktop.org/wiki/Software/elogind])
@@ -596,7 +596,7 @@ AS_IF([test "x${enable_split_usr}" = "xyes"], [
 AM_CONDITIONAL([ENABLE_GTK_DOC_TESTS], [test "x$0" = "x./configure"],
                                        [Define to do gtk-doc tests])
 AS_IF([test "x$0" != "x./configure"], [
-        AC_SUBST([INTLTOOL_UPDATE], [/bin/true])
+        AC_SUBST([INTLTOOL_UPDATE], [/usr/bin/env true])
 ])
 
 AC_ARG_ENABLE(tests,

@@ -416,6 +416,7 @@ libelogind_shared_la_SOURCES = \
 	src/shared/cgroup-util.h \
 	src/shared/cgroup-show.c \
 	src/shared/cgroup-show.h \
+	src/shared/logs-show.h \
 	src/shared/unit-name.c \
 	src/shared/unit-name.h \
 	src/shared/watchdog.c \
@@ -733,7 +734,23 @@ pkgconfiglib_DATA += \
 	src/libelogind/libelogind.pc
 
 pkginclude_HEADERS += \
-	src/systemd/sd-login.h
+	src/systemd/sd-login.h \
+	src/systemd/sd-messages.h \
+	src/systemd/sd-journal.h \
+	src/systemd/_sd-common.h
+
+EXTRA_DIST += \
+	src/libelogind/libelogind.sym.m4 \
+	src/libelogind/libelogind.pc.in \
+	src/libelogind/sd-bus/DIFFERENCES \
+	src/libelogind/sd-bus/GVARIANT-SERIALIZATION
+
+CLEANFILES += \
+	src/libelogind/libelogind.sym
+
+BUILT_SOURCES += \
+	src/libelogind/libelogind.sym
+
 
 # ------------------------------------------------------------------------------
 elogind_SOURCES = \
@@ -839,7 +856,8 @@ test_inhibit_LDADD = \
 	libelogind-shared.la
 
 test_login_tables_SOURCES = \
-	src/login/test-login-tables.c
+	src/login/test-login-tables.c \
+	src/shared/test-tables.h
 
 test_login_tables_LDADD = \
 	libelogind-core.la
