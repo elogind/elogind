@@ -675,8 +675,8 @@ static int manager_connect_bus(Manager *m) {
                         &error,
                         NULL, NULL);
         if (r < 0) {
-                log_error("Failed to enable subscription: %s", bus_error_message(&error, r));
-                return r;
+                log_warning("Failed to subscribe to org.freedesktop.systemd1.Manager: %s",
+                            bus_error_message(&error, r));
         }
 
         r = sd_bus_request_name(m->bus, "org.freedesktop.login1", 0);
