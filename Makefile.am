@@ -717,9 +717,23 @@ libelogind_internal_la_LIBADD = \
 	libelogind-shared.la
 
 libelogind_internal_la_LDFLAGS = \
+	$(AM_LDFLAGS)
+
+lib_LTLIBRARIES += \
+	libelogind.la
+
+libelogind_la_SOURCES =
+
+libelogind_la_CFLAGS = \
+	$(AM_CFLAGS)
+
+libelogind_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
 	-version-info $(LIBELOGIND_CURRENT):$(LIBELOGIND_REVISION):$(LIBELOGIND_AGE) \
-	-Wl,--version-script=$(top_builddir)/src/libelogind/libelogind.sym
+	-Wl,--version-script=src/libelogind/libelogind.sym
+
+libelogind_la_LIBADD = \
+	libelogind-internal.la
 
 libelogind-install-hook:
 	libname=libelogind.so && $(move-to-rootlibdir)
