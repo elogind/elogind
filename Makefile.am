@@ -632,7 +632,6 @@ libelogind_internal_la_SOURCES = \
 	src/systemd/sd-login.h \
 	src/systemd/sd-id128.h \
 	src/systemd/sd-daemon.h \
-	src/systemd/sd-path.h \
 	src/systemd/sd-network.h \
 	src/systemd/sd-device.h \
 	src/libelogind/sd-bus/sd-bus.c \
@@ -692,7 +691,6 @@ libelogind_internal_la_SOURCES = \
 	src/libelogind/sd-id128/sd-id128.c \
 	src/libelogind/sd-daemon/sd-daemon.c \
 	src/libelogind/sd-login/sd-login.c \
-	src/libelogind/sd-path/sd-path.c \
 	src/libelogind/sd-network/sd-network.c \
 	src/libelogind/sd-network/network-util.h \
 	src/libelogind/sd-network/network-util.c \
