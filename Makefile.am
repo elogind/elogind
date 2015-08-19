@@ -55,17 +55,14 @@ zshcompletiondir=@zshcompletiondir@
 varlogdir=$(localstatedir)/log
 elogindstatedir=$(localstatedir)/lib/elogind
 
+udevrulesdir=@udevrulesdir@
+udevbindir=@udevbindir@
+
 # Our own, non-special dirs
 pkgsysconfdir=$(sysconfdir)/elogind
 pkgincludedir=$(includedir)/elogind
-udevrulesdir=$(rootprefix)/lib/udev/rules.d
 factory_etcdir = $(prefix)/share/factory/etc
 factory_pamdir = $(prefix)/share/factory/etc/pam.d
-
-# And these are the special ones for /
-rootprefix=@rootprefix@
-rootbindir=$(rootprefix)/bin
-rootlibexecdir=$(rootprefix)/lib/elogind
 
 EXTRA_DIST =
 BUILT_SOURCES =
@@ -130,8 +127,6 @@ AM_CPPFLAGS = \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
 	-DKEXEC=\"$(KEXEC)\" \
 	-DLIBDIR=\"$(libdir)\" \
-	-DROOTLIBDIR=\"$(rootlibdir)\" \
-	-DROOTLIBEXECDIR=\"$(rootlibexecdir)\" \
 	-DTEST_DIR=\"$(abs_top_srcdir)/test\" \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src/shared \
@@ -148,18 +143,6 @@ AM_CFLAGS = $(OUR_CFLAGS)
 AM_LDFLAGS = $(OUR_LDFLAGS)
 
 # ------------------------------------------------------------------------------
-define move-to-rootlibdir
-	if test "$(libdir)" != "$(rootlibdir)"; then \
-		$(MKDIR_P) $(DESTDIR)$(rootlibdir) && \
-		so_img_name=$$(readlink $(DESTDIR)$(libdir)/$$libname) && \
-		rm -f $(DESTDIR)$(libdir)/$$libname && \
-		$(LN_S) --relative -f $(DESTDIR)$(rootlibdir)/$$so_img_name $(DESTDIR)$(libdir)/$$libname && \
-		mv $(DESTDIR)$(libdir)/$$libname.* $(DESTDIR)$(rootlibdir); \
-	fi
-endef
-
-INSTALL_DIRS =
-
 SHUTDOWN_TARGET_WANTS =
 LOCAL_FS_TARGET_WANTS =
 MULTI_USER_TARGET_WANTS =
@@ -203,9 +186,6 @@ define add-wants
 	  for i in $$what; do $(LN_S) ../$$i . || exit $$? ; done )
 endef
 
-install-directories-hook:
-	$(MKDIR_P) $(addprefix $(DESTDIR),$(INSTALL_DIRS))
-
 install-aliases-hook:
 	set -- $(GENERAL_ALIASES) && \
 		dir= && $(install-relative-aliases)
@@ -233,7 +213,6 @@ install-touch-usr-hook:
 
 INSTALL_EXEC_HOOKS += \
 	install-target-wants-hook \
-	install-directories-hook \
 	install-aliases-hook \
 	install-touch-usr-hook
 
@@ -264,9 +243,8 @@ AM_V_RM_ = $(AM_V_RM_$(AM_DEFAULT_VERBOSITY))
 AM_V_RM_0 = @echo "  RM      " $@;
 
 # ------------------------------------------------------------------------------
-rootbin_PROGRAMS =
 bin_PROGRAMS =
-rootlibexec_PROGRAMS =
+pkglibexec_PROGRAMS =
 dist_bashcompletion_DATA =
 dist_zshcompletion_DATA =
 
@@ -733,15 +711,6 @@ libelogind_la_LDFLAGS = \
 libelogind_la_LIBADD = \
 	libelogind-internal.la
 
-libelogind-install-hook:
-	libname=libelogind.so && $(move-to-rootlibdir)
-
-libelogind-uninstall-hook:
-	rm -f $(DESTDIR)$(rootlibdir)/libelogind.so*
-
-INSTALL_EXEC_HOOKS += libelogind-install-hook
-UNINSTALL_EXEC_HOOKS += libelogind-uninstall-hook
-
 pkgconfiglib_DATA += \
 	src/libelogind/libelogind.pc
 
@@ -814,8 +783,7 @@ endif
 noinst_LTLIBRARIES += \
 	libelogind-core.la
 
-rootlibexec_PROGRAMS += \
-	elogind
+pkglibexec_PROGRAMS += elogind
 
 loginctl_SOURCES = \
 	src/login/loginctl.c \
@@ -827,7 +795,7 @@ loginctl_LDADD = \
 	libelogind-internal.la \
 	libelogind-shared.la
 
-rootbin_PROGRAMS += \
+bin_PROGRAMS += \
 	loginctl
 
 dist_bashcompletion_DATA += \
@@ -843,7 +811,7 @@ systemd_inhibit_LDADD = \
 	libelogind-internal.la \
 	libelogind-shared.la
 
-rootbin_PROGRAMS += \
+bin_PROGRAMS += \
 	systemd-inhibit
 
 test_login_SOURCES = \
@@ -924,9 +892,6 @@ dist_pkgsysconf_DATA += \
 polkitpolicy_files += \
 	src/login/org.freedesktop.login1.policy
 
-INSTALL_DIRS += \
-	$(elogindstatedir)
-
 SYSTEM_UNIT_ALIASES += \
 	elogind.service dbus-org.freedesktop.login1.service
 
@@ -950,12 +915,10 @@ EXTRA_DIST += \
 
 # ------------------------------------------------------------------------------
 substitutions = \
-       '|rootlibexecdir=$(rootlibexecdir)|' \
-       '|rootbindir=$(rootbindir)|' \
        '|bindir=$(bindir)|' \
+       '|udevbindir=$(udevbindir)|' \
        '|pkgsysconfdir=$(pkgsysconfdir)|' \
        '|pkgdatadir=$(pkgdatadir)|' \
-       '|udevrulesdir=$(udevrulesdir)|' \
        '|PACKAGE_VERSION=$(PACKAGE_VERSION)|' \
        '|PACKAGE_NAME=$(PACKAGE_NAME)|' \
        '|PACKAGE_URL=$(PACKAGE_URL)|' \
@@ -966,7 +929,6 @@ substitutions = \
        '|VERSION=$(VERSION)|' \
        '|rootprefix=$(rootprefix)|' \
        '|MKDIR_P=$(MKDIR_P)|' \
-       '|VARLOGDIR=$(varlogdir)|' \
        '|systemuidmax=$(SYSTEM_UID_MAX)|' \
        '|systemgidmax=$(SYSTEM_GID_MAX)|'
 
@@ -1115,9 +1077,8 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-zshcompletiondir=$$dc_install_base/$(zshcompletiondir) \
 	--with-pamlibdir=$$dc_install_base/$(pamlibdir) \
 	--with-pamconfdir=$$dc_install_base/$(pamconfdir) \
-	--with-rootprefix=$$dc_install_base \
-	--disable-split-usr \
-	--enable-kdbus
+	--enable-kdbus \
+	--with-udevrulesdir=$$dc_install_base/$(udevrulesdir)
 
 if ENABLE_GTK_DOC
 DISTCHECK_CONFIGURE_FLAGS += \

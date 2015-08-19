@@ -293,6 +293,13 @@ AM_CONDITIONAL(HAVE_DBUS, [test "$have_dbus" = "yes"])
 # ------------------------------------------------------------------------------
 PKG_CHECK_MODULES(UDEV, [libudev])
 
+AC_ARG_WITH([udevrulesdir],
+            AS_HELP_STRING([--with-udevrulesdir=DIR], [Directory for udev rules files]),
+            [],
+            [with_udevrulesdir=$($PKG_CONFIG --variable=udevdir udev)/rules.d])
+AC_SUBST([udevrulesdir], [$with_udevrulesdir])
+AC_SUBST([udevbindir], [$($PKG_CONFIG --variable=udevdir udev)/../bin])
+
 # ------------------------------------------------------------------------------
 have_coverage=no
 AC_ARG_ENABLE(coverage, AS_HELP_STRING([--enable-coverage], [enable test coverage]))
@@ -560,10 +567,6 @@ AC_ARG_WITH([zshcompletiondir],
         AS_HELP_STRING([--with-zshcompletiondir=DIR], [Zsh completions directory]),
         [], [with_zshcompletiondir=${datadir}/zsh/site-functions])
 
-AC_ARG_WITH([rootprefix],
-        AS_HELP_STRING([--with-rootprefix=DIR], [rootfs directory prefix for config files and kernel modules]),
-        [], [with_rootprefix=${ac_default_prefix}])
-
 AC_ARG_WITH([rootlibdir],
         AS_HELP_STRING([--with-rootlibdir=DIR], [Root directory for libraries necessary for boot]),
         [],
@@ -641,7 +644,6 @@ AC_SUBST([bashcompletiondir], [$with_bashcompletiondir])
 AC_SUBST([zshcompletiondir], [$with_zshcompletiondir])
 AC_SUBST([pamlibdir], [$with_pamlibdir])
 AC_SUBST([pamconfdir], [$with_pamconfdir])
-AC_SUBST([rootprefix], [$with_rootprefix])
 AC_SUBST([rootlibdir], [$with_rootlibdir])
 
 AC_CONFIG_FILES([
@@ -669,7 +671,6 @@ AC_MSG_RESULT([
         extra debugging:         ${enable_debug}
 
         prefix:                  ${prefix}
-        rootprefix:              ${with_rootprefix}
         sysconf dir:             ${sysconfdir}
         datarootdir:             ${datarootdir}
         includedir:              ${includedir}
