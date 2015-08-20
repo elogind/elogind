@@ -1152,6 +1152,7 @@ int main(int argc, char *argv[]) {
          * existence of /run/systemd/seats/ to determine whether
          * logind is available, so please always make sure this check
          * stays in. */
+        mkdir_label("/run/systemd", 0755);
         mkdir_label("/run/systemd/seats", 0755);
         mkdir_label("/run/systemd/users", 0755);
         mkdir_label("/run/systemd/sessions", 0755);
