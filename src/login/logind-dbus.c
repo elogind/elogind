@@ -797,6 +797,15 @@ static int method_create_session(sd_bus *bus, sd_bus_message *message, void *use
          * created. We send the reply back from
          * session_send_create_reply(). */
 
+        /* Elogind note: replying directly, since we're not actually
+           starting slices and thus we aren't waiting on systemd.  */
+
+        r = session_send_create_reply(session, NULL);
+        if (r < 0)
+                goto fail;
+
+        session_save(session);
+
         return 1;
 
 fail:

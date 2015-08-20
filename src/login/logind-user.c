@@ -446,6 +446,7 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 
+#if 0
         /* Create cgroup */
         r = user_start_slice(u);
         if (r < 0)
@@ -455,6 +456,7 @@ int user_start(User *u) {
         r = user_start_service(u);
         if (r < 0)
                 return r;
+#endif
 
         if (!dual_timestamp_is_set(&u->timestamp))
                 dual_timestamp_get(&u->timestamp);
