@@ -547,9 +547,11 @@ int session_start(Session *s) {
                 return r;
 
         /* Create cgroup */
+#if 0
         r = session_start_scope(s);
         if (r < 0)
                 return r;
+#endif
 
         log_struct(s->class == SESSION_BACKGROUND ? LOG_DEBUG : LOG_INFO,
                    LOG_MESSAGE_ID(SD_MESSAGE_SESSION_START),
