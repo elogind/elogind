@@ -66,13 +66,9 @@ Manager *manager_new(void) {
         m->inhibitors = hashmap_new(&string_hash_ops);
         m->buttons = hashmap_new(&string_hash_ops);
 
-        m->user_units = hashmap_new(&string_hash_ops);
-        m->session_units = hashmap_new(&string_hash_ops);
-
         m->busnames = set_new(&string_hash_ops);
 
-        if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->busnames ||
-            !m->user_units || !m->session_units)
+        if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->busnames)
                 goto fail;
 
         m->kill_exclude_users = strv_new("root", NULL);
@@ -130,9 +126,6 @@ void manager_free(Manager *m) {
         hashmap_free(m->users);
         hashmap_free(m->inhibitors);
         hashmap_free(m->buttons);
-
-        hashmap_free(m->user_units);
-        hashmap_free(m->session_units);
 
         set_free_free(m->busnames);
 
@@ -583,73 +576,6 @@ static int manager_connect_bus(Manager *m) {
         r = sd_bus_add_node_enumerator(m->bus, NULL, "/org/freedesktop/login1/user", user_node_enumerator, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to add user enumerator: %m");
-
-        r = sd_bus_add_match(m->bus,
-                             NULL,
-                             "type='signal',"
-                             "sender='org.freedesktop.DBus',"
-                             "interface='org.freedesktop.DBus',"
-                             "member='NameOwnerChanged',"
-                             "path='/org/freedesktop/DBus'",
-                             match_name_owner_changed, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to add match for NameOwnerChanged: %m");
-
-        r = sd_bus_add_match(m->bus,
-                             NULL,
-                             "type='signal',"
-                             "sender='org.freedesktop.systemd1',"
-                             "interface='org.freedesktop.systemd1.Manager',"
-                             "member='JobRemoved',"
-                             "path='/org/freedesktop/systemd1'",
-                             match_job_removed, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to add match for JobRemoved: %m");
-
-        r = sd_bus_add_match(m->bus,
-                             NULL,
-                             "type='signal',"
-                             "sender='org.freedesktop.systemd1',"
-                             "interface='org.freedesktop.systemd1.Manager',"
-                             "member='UnitRemoved',"
-                             "path='/org/freedesktop/systemd1'",
-                             match_unit_removed, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to add match for UnitRemoved: %m");
-
-        r = sd_bus_add_match(m->bus,
-                             NULL,
-                             "type='signal',"
-                             "sender='org.freedesktop.systemd1',"
-                             "interface='org.freedesktop.DBus.Properties',"
-                             "member='PropertiesChanged'",
-                             match_properties_changed, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to add match for PropertiesChanged: %m");
-
-        r = sd_bus_add_match(m->bus,
-                             NULL,
-                             "type='signal',"
-                             "sender='org.freedesktop.systemd1',"
-                             "interface='org.freedesktop.systemd1.Manager',"
-                             "member='Reloading',"
-                             "path='/org/freedesktop/systemd1'",
-                             match_reloading, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to add match for Reloading: %m");
-
-        r = sd_bus_call_method(
-                        m->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "Subscribe",
-                        &error,
-                        NULL, NULL);
-        if (r < 0) {
-                log_warning("Failed to subscribe to org.freedesktop.systemd1.Manager: %s",
-                            bus_error_message(&error, r));
-        }
 
         r = sd_bus_request_name(m->bus, "org.freedesktop.login1", 0);
         if (r < 0)

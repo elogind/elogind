@@ -118,13 +118,6 @@ void session_free(Session *s) {
                 LIST_REMOVE(sessions_by_seat, s->seat->sessions, s);
         }
 
-        if (s->scope) {
-                hashmap_remove(s->manager->session_units, s->scope);
-                free(s->scope);
-        }
-
-        free(s->scope_job);
-
         sd_bus_message_unref(s->create_message);
 
         free(s->tty);
@@ -191,11 +184,6 @@ int session_save(Session *s) {
 
         if (s->class >= 0)
                 fprintf(f, "CLASS=%s\n", session_class_to_string(s->class));
-
-        if (s->scope)
-                fprintf(f, "SCOPE=%s\n", s->scope);
-        if (s->scope_job)
-                fprintf(f, "SCOPE_JOB=%s\n", s->scope_job);
 
         if (s->fifo_path)
                 fprintf(f, "FIFO=%s\n", s->fifo_path);
@@ -315,8 +303,6 @@ int session_load(Session *s) {
 
         r = parse_env_file(s->state_file, NEWLINE,
                            "REMOTE",         &remote,
-                           "SCOPE",          &s->scope,
-                           "SCOPE_JOB",      &s->scope_job,
                            "FIFO",           &s->fifo_path,
                            "SEAT",           &seat,
                            "TTY",            &s->tty,
@@ -491,46 +477,6 @@ int session_activate(Session *s) {
         return 0;
 }
 
-static int session_start_scope(Session *s) {
-        int r;
-
-        assert(s);
-        assert(s->user);
-        assert(s->user->slice);
-
-        if (!s->scope) {
-                _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-                _cleanup_free_ char *description = NULL;
-                char *scope, *job = NULL;
-
-                description = strjoin("Session ", s->id, " of user ", s->user->name, NULL);
-                if (!description)
-                        return log_oom();
-
-                scope = strjoin("session-", s->id, ".scope", NULL);
-                if (!scope)
-                        return log_oom();
-
-                r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "logind.service", "systemd-user-sessions.service", &error, &job);
-                if (r < 0) {
-                        log_error("Failed to start session scope %s: %s %s",
-                                  scope, bus_error_message(&error, r), error.name);
-                        free(scope);
-                        return r;
-                } else {
-                        s->scope = scope;
-
-                        free(s->scope_job);
-                        s->scope_job = job;
-                }
-        }
-
-        if (s->scope)
-                hashmap_put(s->manager->session_units, s->scope, s);
-
-        return 0;
-}
-
 int session_start(Session *s) {
         int r;
 
@@ -545,13 +491,6 @@ int session_start(Session *s) {
         r = user_start(s->user);
         if (r < 0)
                 return r;
-
-        /* Create cgroup */
-#if 0
-        r = session_start_scope(s);
-        if (r < 0)
-                return r;
-#endif
 
         log_struct(s->class == SESSION_BACKGROUND ? LOG_DEBUG : LOG_INFO,
                    LOG_MESSAGE_ID(SD_MESSAGE_SESSION_START),
@@ -590,38 +529,8 @@ int session_start(Session *s) {
         return 0;
 }
 
-static int session_stop_scope(Session *s, bool force) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        char *job = NULL;
-        int r;
-
-        assert(s);
-
-        if (!s->scope)
-                return 0;
-
-        if (force || manager_shall_kill(s->manager, s->user->name)) {
-                r = manager_stop_unit(s->manager, s->scope, &error, &job);
-                if (r < 0) {
-                        log_error("Failed to stop session scope: %s", bus_error_message(&error, r));
-                        return r;
-                }
-
-                free(s->scope_job);
-                s->scope_job = job;
-        } else {
-                r = manager_abandon_scope(s->manager, s->scope, &error);
-                if (r < 0) {
-                        log_error("Failed to abandon session scope: %s", bus_error_message(&error, r));
-                        return r;
-                }
-        }
-
-        return 0;
-}
-
 int session_stop(Session *s, bool force) {
-        int r;
+        int r = 0;
 
         assert(s);
 
@@ -632,9 +541,6 @@ int session_stop(Session *s, bool force) {
 
         /* We are going down, don't care about FIFOs anymore */
         session_remove_fifo(s);
-
-        /* Kill cgroup */
-        r = session_stop_scope(s, force);
 
         s->stopping = true;
 
@@ -921,12 +827,6 @@ bool session_check_gc(Session *s, bool drop_not_started) {
                         return true;
         }
 
-        if (s->scope_job && manager_job_is_active(s->manager, s->scope_job))
-                return true;
-
-        if (s->scope && manager_unit_is_active(s->manager, s->scope))
-                return true;
-
         return false;
 }
 
@@ -947,7 +847,7 @@ SessionState session_get_state(Session *s) {
         if (s->stopping || s->timer_event_source)
                 return SESSION_CLOSING;
 
-        if (s->scope_job || s->fifo_fd < 0)
+        if (s->fifo_fd < 0)
                 return SESSION_OPENING;
 
         if (session_is_active(s))
@@ -959,10 +859,8 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
-        if (!s->scope)
-                return -ESRCH;
-
-        return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
+        /* No way to kill the session without cgroups.  */
+        return -ESRCH;
 }
 
 static int session_open_vt(Session *s) {
