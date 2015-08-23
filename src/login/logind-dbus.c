@@ -793,12 +793,9 @@ static int method_create_session(sd_bus *bus, sd_bus_message *message, void *use
 
         session->create_message = sd_bus_message_ref(message);
 
-        /* Now, let's wait until the slice unit and stuff got
-         * created. We send the reply back from
-         * session_send_create_reply(). */
-
-        /* Elogind note: replying directly, since we're not actually
-           starting slices and thus we aren't waiting on systemd.  */
+        /* Here upstream systemd starts cgroups and the user systemd,
+           and arranges to reply asynchronously.  We reply
+           directly.  */
 
         r = session_send_create_reply(session, NULL);
         if (r < 0)
@@ -1336,31 +1333,36 @@ static int have_multiple_sessions(
 static int bus_manager_log_shutdown(
                 Manager *m,
                 InhibitWhat w,
-                const char *unit_name) {
+                HandleAction action) {
 
         const char *p, *q;
 
         assert(m);
-        assert(unit_name);
 
         if (w != INHIBIT_SHUTDOWN)
                 return 0;
 
-        if (streq(unit_name, SPECIAL_POWEROFF_TARGET)) {
+        switch (action) {
+        case HANDLE_POWEROFF:
                 p = "MESSAGE=System is powering down.";
                 q = "SHUTDOWN=power-off";
-        } else if (streq(unit_name, SPECIAL_HALT_TARGET)) {
+                break;
+        case HANDLE_HALT:
                 p = "MESSAGE=System is halting.";
                 q = "SHUTDOWN=halt";
-        } else if (streq(unit_name, SPECIAL_REBOOT_TARGET)) {
+                break;
+        case HANDLE_REBOOT:
                 p = "MESSAGE=System is rebooting.";
                 q = "SHUTDOWN=reboot";
-        } else if (streq(unit_name, SPECIAL_KEXEC_TARGET)) {
+                break;
+        case HANDLE_KEXEC:
                 p = "MESSAGE=System is rebooting with kexec.";
                 q = "SHUTDOWN=kexec";
-        } else {
+                break;
+        default:
                 p = "MESSAGE=System is shutting down.";
                 q = NULL;
+                break;
         }
 
         return log_struct(LOG_NOTICE,
@@ -1418,7 +1420,7 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
 static int execute_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
-                const char *unit_name,
+                HandleAction action,
                 sd_bus_error *error) {
 
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
@@ -1429,9 +1431,10 @@ static int execute_shutdown_or_sleep(
         assert(m);
         assert(w >= 0);
         assert(w < _INHIBIT_WHAT_MAX);
-        assert(unit_name);
 
-        bus_manager_log_shutdown(m, w, unit_name);
+        bus_manager_log_shutdown(m, w, action);
+
+        /* FIXME: here do the thing.  */
 
         r = sd_bus_call_method(
                         m->bus,
@@ -1441,7 +1444,7 @@ static int execute_shutdown_or_sleep(
                         "StartUnit",
                         error,
                         &reply,
-                        "ss", unit_name, "replace-irreversibly");
+                        "ss", NULL, "replace-irreversibly");
         if (r < 0)
                 return r;
 
@@ -1453,12 +1456,7 @@ static int execute_shutdown_or_sleep(
         if (!c)
                 return -ENOMEM;
 
-        m->action_unit = unit_name;
-        free(m->action_job);
-        m->action_job = c;
-        m->action_what = w;
-
-        /* Make sure the lid switch is ignored for a while */
+        /* Make sure the lid switch is ignored for a while (?) */
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
 
         return 0;
@@ -1467,15 +1465,14 @@ static int execute_shutdown_or_sleep(
 static int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
-                const char *unit_name) {
+                HandleAction action) {
 
         assert(m);
         assert(w >= 0);
         assert(w < _INHIBIT_WHAT_MAX);
-        assert(unit_name);
 
         m->action_timestamp = now(CLOCK_MONOTONIC);
-        m->action_unit = unit_name;
+        m->pending_action = action;
         m->action_what = w;
 
         return 0;
@@ -1505,7 +1502,7 @@ static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 
 int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
-                const char *unit_name,
+                HandleAction action,
                 InhibitWhat w,
                 sd_bus_error *error) {
 
@@ -1513,10 +1510,8 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         int r;
 
         assert(m);
-        assert(unit_name);
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
-        assert(!m->action_job);
 
         /* Tell everybody to prepare for shutdown/sleep */
         send_prepare_for(m, w, true);
@@ -1528,11 +1523,11 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
-                r = delay_shutdown_or_sleep(m, w, unit_name);
+                r = delay_shutdown_or_sleep(m, w, action);
         else
                 /* Shutdown is not delayed, execute it
                  * immediately */
-                r = execute_shutdown_or_sleep(m, w, unit_name, error);
+                r = execute_shutdown_or_sleep(m, w, action, error);
 
         return r;
 }
@@ -1540,7 +1535,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
-                const char *unit_name,
+                HandleAction sleep_action,
                 InhibitWhat w,
                 const char *action,
                 const char *action_multiple_sessions,
@@ -1556,7 +1551,6 @@ static int method_do_shutdown_or_sleep(
 
         assert(m);
         assert(message);
-        assert(unit_name);
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
         assert(action);
@@ -1620,7 +1614,7 @@ static int method_do_shutdown_or_sleep(
                         return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
         }
 
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, sleep_action, w, error);
         if (r < 0)
                 return r;
 
@@ -1632,7 +1626,7 @@ static int method_poweroff(sd_bus *bus, sd_bus_message *message, void *userdata,
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        SPECIAL_POWEROFF_TARGET,
+                        HANDLE_POWEROFF,
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.power-off",
                         "org.freedesktop.login1.power-off-multiple-sessions",
@@ -1647,7 +1641,7 @@ static int method_reboot(sd_bus *bus, sd_bus_message *message, void *userdata, s
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        SPECIAL_REBOOT_TARGET,
+                        HANDLE_REBOOT,
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.reboot",
                         "org.freedesktop.login1.reboot-multiple-sessions",
@@ -1662,7 +1656,7 @@ static int method_suspend(sd_bus *bus, sd_bus_message *message, void *userdata, 
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        SPECIAL_SUSPEND_TARGET,
+                        HANDLE_SUSPEND,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.suspend",
                         "org.freedesktop.login1.suspend-multiple-sessions",
@@ -1677,7 +1671,7 @@ static int method_hibernate(sd_bus *bus, sd_bus_message *message, void *userdata
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        SPECIAL_HIBERNATE_TARGET,
+                        HANDLE_HIBERNATE,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -1692,7 +1686,7 @@ static int method_hybrid_sleep(sd_bus *bus, sd_bus_message *message, void *userd
 
         return method_do_shutdown_or_sleep(
                         m, message,
-                        SPECIAL_HYBRID_SLEEP_TARGET,
+                        HANDLE_HYBRID_SLEEP,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -2044,27 +2038,6 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_VTABLE_END
 };
 
-static int session_jobs_reply(Session *s, const char *unit, const char *result) {
-        int r = 0;
-
-        assert(s);
-        assert(unit);
-
-        if (!s->started)
-                return r;
-
-        if (streq(result, "done"))
-                r = session_send_create_reply(s, NULL);
-        else {
-                _cleanup_bus_error_free_ sd_bus_error e = SD_BUS_ERROR_NULL;
-
-                sd_bus_error_setf(&e, BUS_ERROR_JOB_FAILED, "Start job for unit %s failed with '%s'", unit, result);
-                r = session_send_create_reply(s, &e);
-        }
-
-        return r;
-}
-
 int manager_send_changed(Manager *manager, const char *property, ...) {
         char **l;
 
@@ -2086,7 +2059,7 @@ int manager_dispatch_delayed(Manager *manager) {
 
         assert(manager);
 
-        if (manager->action_what == 0 || manager->action_job)
+        if (manager->action_what == 0)
                 return 0;
 
         /* Continue delay? */
@@ -2105,11 +2078,11 @@ int manager_dispatch_delayed(Manager *manager) {
         }
 
         /* Actually do the operation */
-        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->action_unit, &error);
+        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->pending_action, &error);
         if (r < 0) {
                 log_warning("Failed to send delayed message: %s", bus_error_message(&error, r));
 
-                manager->action_unit = NULL;
+                manager->pending_action = HANDLE_IGNORE;
                 manager->action_what = 0;
                 return r;
         }

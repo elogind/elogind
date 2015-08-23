@@ -80,13 +80,9 @@ struct Manager {
         InhibitWhat action_what;
 
         /* If a shutdown/suspend was delayed due to a inhibitor this
-           contains the unit name we are supposed to start after the
+           contains the action we are supposed to perform after the
            delay is over */
-        const char *action_unit;
-
-        /* If a shutdown/suspend is currently executed, then this is
-         * the job of it */
-        char *action_job;
+        HandleAction pending_action;
         usec_t action_timestamp;
 
         sd_event_source *idle_action_event_source;
@@ -148,7 +144,7 @@ bool manager_is_docked_or_multiple_displays(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
-int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, const char *unit_name, InhibitWhat w, sd_bus_error *error);
+int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 

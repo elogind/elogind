@@ -161,7 +161,6 @@ void manager_free(Manager *m) {
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);
 
-        free(m->action_job);
         free(m);
 }
 
@@ -959,7 +958,7 @@ int manager_run(Manager *m) {
                 if (manager_dispatch_delayed(m) > 0)
                         continue;
 
-                if (m->action_what != 0 && !m->action_job) {
+                if (m->action_what != 0) {
                         usec_t x, y;
 
                         x = now(CLOCK_MONOTONIC);

@@ -45,16 +45,6 @@ int manager_handle_action(
                 [HANDLE_HYBRID_SLEEP] = "Hibernating and suspending..."
         };
 
-        static const char * const target_table[_HANDLE_ACTION_MAX] = {
-                [HANDLE_POWEROFF] = SPECIAL_POWEROFF_TARGET,
-                [HANDLE_REBOOT] = SPECIAL_REBOOT_TARGET,
-                [HANDLE_HALT] = SPECIAL_HALT_TARGET,
-                [HANDLE_KEXEC] = SPECIAL_KEXEC_TARGET,
-                [HANDLE_SUSPEND] = SPECIAL_SUSPEND_TARGET,
-                [HANDLE_HIBERNATE] = SPECIAL_HIBERNATE_TARGET,
-                [HANDLE_HYBRID_SLEEP] = SPECIAL_HYBRID_SLEEP_TARGET
-        };
-
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         InhibitWhat inhibit_operation;
         Inhibitor *offending = NULL;
@@ -150,7 +140,7 @@ int manager_handle_action(
 
         log_info("%s", message_table[handle]);
 
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, target_table[handle], inhibit_operation, &error);
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
         if (r < 0) {
                 log_error("Failed to execute operation: %s", bus_error_message(&error, r));
                 return r;
