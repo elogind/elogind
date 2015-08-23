@@ -46,10 +46,7 @@ static Manager *manager_new(void) {
                 return NULL;
 
         m->console_active_fd = -1;
-        m->reserve_vt_fd = -1;
 
-        m->n_autovts = 6;
-        m->reserve_vt = 6;
         m->remove_ipc = true;
         m->inhibit_delay_max = 5 * USEC_PER_SEC;
         m->handle_power_key = HANDLE_POWEROFF;
@@ -177,8 +174,6 @@ static void manager_free(Manager *m) {
 
         sd_bus_unref(m->bus);
         sd_event_unref(m->event);
-
-        safe_close(m->reserve_vt_fd);
 
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);
@@ -564,29 +559,6 @@ static int manager_dispatch_console(sd_event_source *s, int fd, uint32_t revents
         return 0;
 }
 
-static int manager_reserve_vt(Manager *m) {
-        _cleanup_free_ char *p = NULL;
-
-        assert(m);
-
-        if (m->reserve_vt <= 0)
-                return 0;
-
-        if (asprintf(&p, "/dev/tty%u", m->reserve_vt) < 0)
-                return log_oom();
-
-        m->reserve_vt_fd = open(p, O_RDWR|O_NOCTTY|O_CLOEXEC|O_NONBLOCK);
-        if (m->reserve_vt_fd < 0) {
-
-                /* Don't complain on VT-less systems */
-                if (errno != ENOENT)
-                        log_warning_errno(errno, "Failed to pin reserved VT: %m");
-                return -errno;
-        }
-
-        return 0;
-}
-
 static int manager_connect_bus(Manager *m) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
@@ -874,26 +846,6 @@ static int manager_connect_udev(Manager *m) {
                         return r;
         }
 
-        /* Don't bother watching VCSA devices, if nobody cares */
-        if (m->n_autovts > 0 && m->console_active_fd >= 0) {
-
-                m->udev_vcsa_monitor = udev_monitor_new_from_netlink(m->udev, "udev");
-                if (!m->udev_vcsa_monitor)
-                        return -ENOMEM;
-
-                r = udev_monitor_filter_add_match_subsystem_devtype(m->udev_vcsa_monitor, "vc", NULL);
-                if (r < 0)
-                        return r;
-
-                r = udev_monitor_enable_receiving(m->udev_vcsa_monitor);
-                if (r < 0)
-                        return r;
-
-                r = sd_event_add_io(m->event, &m->udev_vcsa_event_source, udev_monitor_get_fd(m->udev_vcsa_monitor), EPOLLIN, manager_dispatch_vcsa_udev, m);
-                if (r < 0)
-                        return r;
-        }
-
         return 0;
 }
 
@@ -1070,9 +1022,6 @@ static int manager_startup(Manager *m) {
 
         /* Remove stale objects before we start them */
         manager_gc(m, false);
-
-        /* Reserve the special reserved VT */
-        manager_reserve_vt(m);
 
         /* And start everything */
         HASHMAP_FOREACH(seat, m->seats, i)
