@@ -436,46 +436,6 @@ static int vt_is_busy(unsigned int vtnr) {
         return r;
 }
 
-int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        char name[sizeof("autovt@tty.service") + DECIMAL_STR_MAX(unsigned int)];
-        int r;
-
-        assert(m);
-        assert(vtnr >= 1);
-
-        if (vtnr > m->n_autovts &&
-            vtnr != m->reserve_vt)
-                return 0;
-
-        if (vtnr != m->reserve_vt) {
-                /* If this is the reserved TTY, we'll start the getty
-                 * on it in any case, but otherwise only if it is not
-                 * busy. */
-
-                r = vt_is_busy(vtnr);
-                if (r < 0)
-                        return r;
-                else if (r > 0)
-                        return -EBUSY;
-        }
-
-        snprintf(name, sizeof(name), "autovt@tty%u.service", vtnr);
-        r = sd_bus_call_method(
-                        m->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "StartUnit",
-                        &error,
-                        NULL,
-                        "ss", name, "fail");
-        if (r < 0)
-                log_error("Failed to start %s: %s", name, bus_error_message(&error, r));
-
-        return r;
-}
-
 bool manager_is_docked(Manager *m) {
         Iterator i;
         Button *b;

@@ -65,11 +65,6 @@ struct Manager {
 
         int console_active_fd;
 
-        unsigned n_autovts;
-
-        unsigned reserve_vt;
-        int reserve_vt_fd;
-
         Seat *seat0;
 
         char **kill_only_users, **kill_exclude_users;
@@ -140,7 +135,6 @@ int manager_process_button_device(Manager *m, struct udev_device *d);
 
 int manager_startup(Manager *m);
 int manager_run(Manager *m);
-int manager_spawn_autovt(Manager *m, unsigned int vtnr);
 
 void manager_gc(Manager *m, bool drop_not_started);
 
