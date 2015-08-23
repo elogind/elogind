@@ -145,6 +145,7 @@ bool manager_is_docked_or_multiple_displays(Manager *m);
 extern const sd_bus_vtable manager_vtable[];
 
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
+int shutdown_or_sleep(HandleAction action);
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 

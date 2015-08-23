@@ -20,12 +20,20 @@
 ***/
 
 #include <unistd.h>
+#include <stdio.h>
+#include <errno.h>
 
+#include "sd-messages.h"
+#include "log.h"
+#include "util.h"
+#include "strv.h"
+#include "fileio.h"
+#include "build.h"
+#include "def.h"
 #include "conf-parser.h"
-#include "special.h"
 #include "sleep-config.h"
-#include "bus-util.h"
 #include "bus-error.h"
+#include "bus-util.h"
 #include "logind-action.h"
 
 int manager_handle_action(
@@ -147,6 +155,144 @@ int manager_handle_action(
         }
 
         return 1;
+}
+
+static int run_helper(const char *helper) {
+        int pid = fork();
+        if (pid < 0) {
+                return log_error_errno(errno, "Failed to fork: %m");
+        }
+
+        if (pid == 0) {
+                /* Child */
+
+                close_all_fds(NULL, 0);
+
+                execlp(helper, helper, NULL);
+                log_error_errno(errno, "Failed to execute %s: %m", helper);
+                _exit(EXIT_FAILURE);
+        }
+
+        return wait_for_terminate_and_warn(helper, pid, true);
+}
+
+static int write_mode(char **modes) {
+        int r = 0;
+        char **mode;
+
+        STRV_FOREACH(mode, modes) {
+                int k;
+
+                k = write_string_file("/sys/power/disk", *mode);
+                if (k == 0)
+                        return 0;
+
+                log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m",
+                                *mode);
+                if (r == 0)
+                        r = k;
+        }
+
+        if (r < 0)
+                log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
+
+        return r;
+}
+
+static int write_state(FILE **f, char **states) {
+        char **state;
+        int r = 0;
+
+        STRV_FOREACH(state, states) {
+                int k;
+
+                k = write_string_stream(*f, *state);
+                if (k == 0)
+                        return 0;
+                log_debug_errno(k, "Failed to write '%s' to /sys/power/state: %m",
+                                *state);
+                if (r == 0)
+                        r = k;
+
+                fclose(*f);
+                *f = fopen("/sys/power/state", "we");
+                if (!*f)
+                        return log_error_errno(errno, "Failed to open /sys/power/state: %m");
+        }
+
+        return r;
+}
+
+static int do_sleep(const char *arg_verb) {
+        _cleanup_strv_free_ char **modes = NULL, **states = NULL;
+        char *arguments[] = {
+                NULL,
+                (char*) "pre",
+                (char*) arg_verb,
+                NULL
+        };
+        static const char* const dirs[] = { SYSTEM_SLEEP_PATH, NULL};
+        int r;
+        _cleanup_fclose_ FILE *f = NULL;
+
+        r = parse_sleep_config(arg_verb, &modes, &states);
+        if (r < 0)
+                return r;
+
+        /* This file is opened first, so that if we hit an error,
+         * we can abort before modifying any state. */
+        f = fopen("/sys/power/state", "we");
+        if (!f)
+                return log_error_errno(errno, "Failed to open /sys/power/state: %m");
+
+        /* Configure the hibernation mode */
+        r = write_mode(modes);
+        if (r < 0)
+                return r;
+
+        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, arguments);
+
+        log_struct(LOG_INFO,
+                   LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
+                   LOG_MESSAGE("Suspending system..."),
+                   "SLEEP=%s", arg_verb,
+                   NULL);
+
+        r = write_state(&f, states);
+        if (r < 0)
+                return r;
+
+        log_struct(LOG_INFO,
+                   LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_STOP),
+                   LOG_MESSAGE("System resumed."),
+                   "SLEEP=%s", arg_verb,
+                   NULL);
+
+        arguments[1] = (char*) "post";
+        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, arguments);
+
+        return r;
+}
+
+int shutdown_or_sleep(HandleAction action) {
+        switch (action) {
+        case HANDLE_POWEROFF:
+                return run_helper(HALT);
+        case HANDLE_REBOOT:
+                return run_helper(REBOOT);
+        case HANDLE_HALT:
+                return run_helper(HALT);
+        case HANDLE_KEXEC:
+                return run_helper(KEXEC);
+        case HANDLE_SUSPEND:
+                return do_sleep("suspend");
+        case HANDLE_HIBERNATE:
+                return do_sleep("hibernate");
+        case HANDLE_HYBRID_SLEEP:
+                return do_sleep("hybrid-sleep");
+        default:
+                return -EINVAL;
+        }
 }
 
 static const char* const handle_action_table[_HANDLE_ACTION_MAX] = {
