@@ -25,6 +25,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "label.h"
 #include "sd-daemon.h"
 #include "strv.h"
 #include "conf-parser.h"
@@ -488,28 +489,6 @@ static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t rev
                 return -ENOMEM;
 
         manager_process_seat_device(m, d);
-        return 0;
-}
-
-static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
-        Manager *m = userdata;
-        const char *name;
-
-        assert(m);
-
-        d = udev_monitor_receive_device(m->udev_vcsa_monitor);
-        if (!d)
-                return -ENOMEM;
-
-        name = udev_device_get_sysname(d);
-
-        /* Whenever a VCSA device is removed try to reallocate our
-         * VTs, to make sure our auto VTs never go away. */
-
-        if (name && startswith(name, "vcsa") && streq_ptr(udev_device_get_action(d), "remove"))
-                seat_preallocate_vts(m->seat0);
-
         return 0;
 }
 
@@ -1027,7 +1006,6 @@ int main(int argc, char *argv[]) {
          * existence of /run/systemd/seats/ to determine whether
          * logind is available, so please always make sure this check
          * stays in. */
-        mkdir_label("/run/systemd", 0755);
         mkdir_label("/run/systemd/seats", 0755);
         mkdir_label("/run/systemd/users", 0755);
         mkdir_label("/run/systemd/sessions", 0755);
