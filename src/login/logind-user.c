@@ -26,7 +26,6 @@
 
 #include "util.h"
 #include "mkdir.h"
-#include "rm-rf.h"
 #include "hashmap.h"
 #include "fileio.h"
 #include "path-util.h"
@@ -37,7 +36,6 @@
 #include "conf-parser.h"
 #include "clean-ipc.h"
 #include "smack-util.h"
-#include "formats-util.h"
 #include "label.h"
 #include "logind-user.h"
 
@@ -84,19 +82,6 @@ void user_free(User *u) {
         while (u->sessions)
                 session_free(u->sessions);
 
-        if (u->slice) {
-                hashmap_remove(u->manager->user_units, u->slice);
-                free(u->slice);
-        }
-
-        if (u->service) {
-                hashmap_remove(u->manager->user_units, u->service);
-                free(u->service);
-        }
-
-        free(u->slice_job);
-        free(u->service_job);
-
         free(u->runtime_path);
 
         hashmap_remove(u->manager->users, UID_TO_PTR(u->uid));
@@ -133,16 +118,6 @@ static int user_save_internal(User *u) {
 
         if (u->runtime_path)
                 fprintf(f, "RUNTIME=%s\n", u->runtime_path);
-
-        if (u->service)
-                fprintf(f, "SERVICE=%s\n", u->service);
-        if (u->service_job)
-                fprintf(f, "SERVICE_JOB=%s\n", u->service_job);
-
-        if (u->slice)
-                fprintf(f, "SLICE=%s\n", u->slice);
-        if (u->slice_job)
-                fprintf(f, "SLICE_JOB=%s\n", u->slice_job);
 
         if (u->display)
                 fprintf(f, "DISPLAY=%s\n", u->display->id);
@@ -274,10 +249,6 @@ int user_load(User *u) {
 
         r = parse_env_file(u->state_file, NEWLINE,
                            "RUNTIME",     &u->runtime_path,
-                           "SERVICE",     &u->service,
-                           "SERVICE_JOB", &u->service_job,
-                           "SLICE",       &u->slice,
-                           "SLICE_JOB",   &u->slice_job,
                            "DISPLAY",     &display,
                            "REALTIME",    &realtime,
                            "MONOTONIC",   &monotonic,
@@ -378,72 +349,6 @@ fail:
         return r;
 }
 
-static int user_start_slice(User *u) {
-        char *job;
-        int r;
-
-        assert(u);
-
-        if (!u->slice) {
-                _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-                char lu[DECIMAL_STR_MAX(uid_t) + 1], *slice;
-                sprintf(lu, UID_FMT, u->uid);
-
-                r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &slice);
-                if (r < 0)
-                        return r;
-
-                r = manager_start_unit(u->manager, slice, &error, &job);
-                if (r < 0) {
-                        log_error("Failed to start user slice: %s", bus_error_message(&error, r));
-                        free(slice);
-                } else {
-                        u->slice = slice;
-
-                        free(u->slice_job);
-                        u->slice_job = job;
-                }
-        }
-
-        if (u->slice)
-                hashmap_put(u->manager->user_units, u->slice, u);
-
-        return 0;
-}
-
-static int user_start_service(User *u) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        char *job;
-        int r;
-
-        assert(u);
-
-        if (!u->service) {
-                char lu[DECIMAL_STR_MAX(uid_t) + 1], *service;
-                sprintf(lu, UID_FMT, u->uid);
-
-                r = unit_name_build("user", lu, ".service", &service);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to build service name: %m");
-
-                r = manager_start_unit(u->manager, service, &error, &job);
-                if (r < 0) {
-                        log_error("Failed to start user service: %s", bus_error_message(&error, r));
-                        free(service);
-                } else {
-                        u->service = service;
-
-                        free(u->service_job);
-                        u->service_job = job;
-                }
-        }
-
-        if (u->service)
-                hashmap_put(u->manager->user_units, u->service, u);
-
-        return 0;
-}
-
 int user_start(User *u) {
         int r;
 
@@ -459,23 +364,11 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 
-#if 0
-        /* Create cgroup */
-        r = user_start_slice(u);
-        if (r < 0)
-                return r;
-
         /* Save the user data so far, because pam_systemd will read the
          * XDG_RUNTIME_DIR out of it while starting up systemd --user.
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
         user_save_internal(u);
-
-        /* Spawn user systemd */
-        r = user_start_service(u);
-        if (r < 0)
-                return r;
-#endif
 
         if (!dual_timestamp_is_set(&u->timestamp))
                 dual_timestamp_get(&u->timestamp);
@@ -490,50 +383,6 @@ int user_start(User *u) {
         return 0;
 }
 
-static int user_stop_slice(User *u) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        char *job;
-        int r;
-
-        assert(u);
-
-        if (!u->slice)
-                return 0;
-
-        r = manager_stop_unit(u->manager, u->slice, &error, &job);
-        if (r < 0) {
-                log_error("Failed to stop user slice: %s", bus_error_message(&error, r));
-                return r;
-        }
-
-        free(u->slice_job);
-        u->slice_job = job;
-
-        return r;
-}
-
-static int user_stop_service(User *u) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        char *job;
-        int r;
-
-        assert(u);
-
-        if (!u->service)
-                return 0;
-
-        r = manager_stop_unit(u->manager, u->service, &error, &job);
-        if (r < 0) {
-                log_error("Failed to stop user service: %s", bus_error_message(&error, r));
-                return r;
-        }
-
-        free(u->service_job);
-        u->service_job = job;
-
-        return r;
-}
-
 static int user_remove_runtime_path(User *u) {
         int r;
 
@@ -542,7 +391,7 @@ static int user_remove_runtime_path(User *u) {
         if (!u->runtime_path)
                 return 0;
 
-        r = rm_rf(u->runtime_path, 0);
+        r = rm_rf(u->runtime_path, false, false, false);
         if (r < 0)
                 log_error_errno(r, "Failed to remove runtime directory %s: %m", u->runtime_path);
 
@@ -553,7 +402,7 @@ static int user_remove_runtime_path(User *u) {
         if (r < 0 && errno != EINVAL && errno != ENOENT)
                 log_error_errno(errno, "Failed to unmount user runtime directory %s: %m", u->runtime_path);
 
-        r = rm_rf(u->runtime_path, REMOVE_ROOT);
+        r = rm_rf(u->runtime_path, false, true, false);
         if (r < 0)
                 log_error_errno(r, "Failed to remove runtime directory %s: %m", u->runtime_path);
 
@@ -579,16 +428,6 @@ int user_stop(User *u, bool force) {
                 if (k < 0)
                         r = k;
         }
-
-        /* Kill systemd */
-        k = user_stop_service(u);
-        if (k < 0)
-                r = k;
-
-        /* Kill cgroup */
-        k = user_stop_slice(u);
-        if (k < 0)
-                r = k;
 
         u->stopping = true;
 
@@ -696,12 +535,6 @@ bool user_check_gc(User *u, bool drop_not_started) {
         if (user_check_linger_file(u) > 0)
                 return true;
 
-        if (u->slice_job && manager_job_is_active(u->manager, u->slice_job))
-                return true;
-
-        if (u->service_job && manager_job_is_active(u->manager, u->service_job))
-                return true;
-
         return false;
 }
 
@@ -722,9 +555,6 @@ UserState user_get_state(User *u) {
 
         if (u->stopping)
                 return USER_CLOSING;
-
-        if (!u->started || u->slice_job || u->service_job)
-                return USER_OPENING;
 
         if (u->sessions) {
                 bool all_closing = true;
@@ -751,10 +581,8 @@ UserState user_get_state(User *u) {
 int user_kill(User *u, int signo) {
         assert(u);
 
-        if (!u->slice)
-                return -ESRCH;
-
-        return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);
+        /* FIXME: No way to kill a user without systemd.  */
+        return -ESRCH;
 }
 
 static bool elect_display_filter(Session *s) {
