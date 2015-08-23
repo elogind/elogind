@@ -1422,10 +1422,6 @@ static int execute_shutdown_or_sleep(
                 InhibitWhat w,
                 HandleAction action,
                 sd_bus_error *error) {
-
-        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
-        const char *p;
-        char *c;
         int r;
 
         assert(m);
@@ -1436,25 +1432,9 @@ static int execute_shutdown_or_sleep(
 
         /* FIXME: here do the thing.  */
 
-        r = sd_bus_call_method(
-                        m->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "StartUnit",
-                        error,
-                        &reply,
-                        "ss", NULL, "replace-irreversibly");
+        r = shutdown_or_sleep(action);
         if (r < 0)
                 return r;
-
-        r = sd_bus_message_read(reply, "o", &p);
-        if (r < 0)
-                return r;
-
-        c = strdup(p);
-        if (!c)
-                return -ENOMEM;
 
         /* Make sure the lid switch is ignored for a while (?) */
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
