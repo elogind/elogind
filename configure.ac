@@ -234,11 +234,18 @@ AC_CHECK_HEADERS([linux/memfd.h], [], [])
 # unconditionally pull-in librt with old glibc versions
 AC_SEARCH_LIBS([clock_gettime], [rt], [], [])
 
+AC_ARG_WITH([libcap],
+            AS_HELP_STRING([--with-libcap=DIR], [Prefix for libcap]),
+            [CAP_LDFLAGS="-L$with_libcap/lib"],
+            [CAP_LDFLAGS=""])
 save_LIBS="$LIBS"
 LIBS=
+LDFLAGS="$LDFLAGS $CAP_LDFLAGS"
 AC_SEARCH_LIBS([cap_init], [cap], [], [AC_MSG_ERROR([*** POSIX caps library not found])])
 CAP_LIBS="$LIBS"
 AC_SUBST(CAP_LIBS)
+AC_SUBST(CAP_LDFLAGS)
+LDFLAGS="$save_LDFLAGS"
 
 AC_CHECK_FUNCS([memfd_create])
 AC_CHECK_FUNCS([__secure_getenv secure_getenv])

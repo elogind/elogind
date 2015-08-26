@@ -503,6 +503,9 @@ libelogind_shared_la_LIBADD = \
 	$(CAP_LIBS) \
 	-lm
 
+libelogind_shared_la_LDFLAGS = \
+	$(CAP_LDFLAGS)
+
 # ------------------------------------------------------------------------------
 if HAVE_ACL
 noinst_LTLIBRARIES += \
