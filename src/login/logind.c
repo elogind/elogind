@@ -76,6 +76,23 @@ Manager *manager_new(void) {
         if (!m->kill_exclude_users)
                 goto fail;
 
+        m->suspend_mode = NULL;
+        m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
+        if (!m->suspend_state)
+                goto fail;
+        m->hibernate_mode = strv_new("platform", "shutdown", NULL);
+        if (!m->hibernate_mode)
+                goto fail;
+        m->hibernate_state = strv_new("disk", NULL);
+        if (!m->hibernate_state)
+                goto fail;
+        m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
+        if (!m->hybrid_sleep_mode)
+                goto fail;
+        m->hybrid_sleep_state = strv_new("disk", NULL);
+        if (!m->hybrid_sleep_state)
+                goto fail;
+
         m->udev = udev_new();
         if (!m->udev)
                 goto fail;
@@ -85,6 +102,7 @@ Manager *manager_new(void) {
                 goto fail;
 
         sd_event_set_watchdog(m->event, true);
+
 
         return m;
 
@@ -160,6 +178,13 @@ void manager_free(Manager *m) {
 
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);
+
+        strv_free(m->suspend_mode);
+        strv_free(m->suspend_state);
+        strv_free(m->hibernate_mode);
+        strv_free(m->hibernate_state);
+        strv_free(m->hybrid_sleep_mode);
+        strv_free(m->hybrid_sleep_state);
 
         free(m);
 }
@@ -974,13 +999,25 @@ int manager_run(Manager *m) {
 }
 
 static int manager_parse_config_file(Manager *m) {
+        const char *unit, *logind_conf, *sections;
+        FILE *file;
+        bool relaxed, allow_include, warn;
+
         assert(m);
 
-        return config_parse_many("/etc/systemd/logind.conf",
-                                 CONF_DIRS_NULSTR("systemd/logind.conf"),
-                                 "Login\0",
-                                 config_item_perf_lookup, logind_gperf_lookup,
-                                 false, m);
+        unit = NULL;
+        logind_conf = getenv("ELOGIND_CONF_FILE");
+        if (!logind_conf)
+                logind_conf = PKGSYSCONFDIR "/logind.conf";
+        sections = "Login\0Sleep\0";
+        file = NULL;
+        relaxed = false;
+        allow_include = false;
+        warn = true;
+
+        return config_parse(unit, logind_conf, file, sections,
+                            config_item_perf_lookup, logind_gperf_lookup,
+                            relaxed, allow_include, warn, m);
 }
 
 int main(int argc, char *argv[]) {

@@ -1430,9 +1430,7 @@ static int execute_shutdown_or_sleep(
 
         bus_manager_log_shutdown(m, w, action);
 
-        /* FIXME: here do the thing.  */
-
-        r = shutdown_or_sleep(action);
+        r = shutdown_or_sleep(m, action);
         if (r < 0)
                 return r;
 

@@ -223,8 +223,7 @@ static int write_state(FILE **f, char **states) {
         return r;
 }
 
-static int do_sleep(const char *arg_verb) {
-        _cleanup_strv_free_ char **modes = NULL, **states = NULL;
+static int do_sleep(const char *arg_verb, const char **modes, const char **states) {
         char *arguments[] = {
                 NULL,
                 (char*) "pre",
@@ -234,10 +233,6 @@ static int do_sleep(const char *arg_verb) {
         static const char* const dirs[] = { SYSTEM_SLEEP_PATH, NULL};
         int r;
         _cleanup_fclose_ FILE *f = NULL;
-
-        r = parse_sleep_config(arg_verb, &modes, &states);
-        if (r < 0)
-                return r;
 
         /* This file is opened first, so that if we hit an error,
          * we can abort before modifying any state. */
@@ -274,7 +269,7 @@ static int do_sleep(const char *arg_verb) {
         return r;
 }
 
-int shutdown_or_sleep(HandleAction action) {
+int shutdown_or_sleep(Manager *m, HandleAction action) {
         switch (action) {
         case HANDLE_POWEROFF:
                 return run_helper(HALT);
@@ -285,11 +280,11 @@ int shutdown_or_sleep(HandleAction action) {
         case HANDLE_KEXEC:
                 return run_helper(KEXEC);
         case HANDLE_SUSPEND:
-                return do_sleep("suspend");
+                return do_sleep("suspend", m->suspend_mode, m->suspend_state);
         case HANDLE_HIBERNATE:
-                return do_sleep("hibernate");
+                return do_sleep("hibernate", m->hibernate_mode, m->hibernate_state);
         case HANDLE_HYBRID_SLEEP:
-                return do_sleep("hybrid-sleep");
+                return do_sleep("hybrid-sleep", m->hybrid_sleep_mode, m->hybrid_sleep_state);
         default:
                 return -EINVAL;
         }
