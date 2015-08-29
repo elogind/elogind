@@ -26,6 +26,7 @@
 #include <locale.h>
 
 #include "sd-bus.h"
+#include "sd-login.h"
 #include "bus-util.h"
 #include "bus-error.h"
 #include "log.h"
@@ -52,6 +53,7 @@ static int arg_signal = SIGTERM;
 static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
 static bool arg_ask_password = true;
+static bool arg_ignore_inhibitors = false;
 static unsigned arg_lines = 10;
 static OutputMode arg_output = OUTPUT_SHORT;
 
@@ -1150,6 +1152,248 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
+static int check_inhibitors(sd_bus *bus, const char *verb, const char *inhibit_what) {
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        _cleanup_strv_free_ char **sessions = NULL;
+        const char *what, *who, *why, *mode;
+        uint32_t uid, pid;
+        unsigned c = 0;
+        char **s;
+        int r;
+
+        assert(bus);
+
+        if (arg_ignore_inhibitors)
+                return 0;
+
+        if (geteuid() == 0)
+                return 0;
+
+        if (!on_tty())
+                return 0;
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "ListInhibitors",
+                        NULL,
+                        &reply,
+                        NULL);
+        if (r < 0)
+                /* If logind is not around, then there are no inhibitors... */
+                return 0;
+
+        r = sd_bus_message_enter_container(reply, SD_BUS_TYPE_ARRAY, "(ssssuu)");
+        if (r < 0)
+                return bus_log_parse_error(r);
+
+        while ((r = sd_bus_message_read(reply, "(ssssuu)", &what, &who, &why, &mode, &uid, &pid)) > 0) {
+                _cleanup_free_ char *comm = NULL, *user = NULL;
+                _cleanup_strv_free_ char **sv = NULL;
+
+                if (!streq(mode, "block"))
+                        continue;
+
+                sv = strv_split(what, ":");
+                if (!sv)
+                        return log_oom();
+
+                if (!strv_contains(sv, inhibit_what))
+                        continue;
+
+                get_process_comm(pid, &comm);
+                user = uid_to_name(uid);
+
+                log_warning("Operation inhibited by \"%s\" (PID "PID_FMT" \"%s\", user %s), reason is \"%s\".",
+                            who, pid, strna(comm), strna(user), why);
+
+                c++;
+        }
+        if (r < 0)
+                return bus_log_parse_error(r);
+
+        r = sd_bus_message_exit_container(reply);
+        if (r < 0)
+                return bus_log_parse_error(r);
+
+        /* Check for current sessions */
+        sd_get_sessions(&sessions);
+        STRV_FOREACH(s, sessions) {
+                _cleanup_free_ char *type = NULL, *tty = NULL, *seat = NULL, *user = NULL, *service = NULL, *class = NULL;
+
+                if (sd_session_get_uid(*s, &uid) < 0 || uid == getuid())
+                        continue;
+
+                if (sd_session_get_class(*s, &class) < 0 || !streq(class, "user"))
+                        continue;
+
+                if (sd_session_get_type(*s, &type) < 0 || (!streq(type, "x11") && !streq(type, "tty")))
+                        continue;
+
+                sd_session_get_tty(*s, &tty);
+                sd_session_get_seat(*s, &seat);
+                sd_session_get_service(*s, &service);
+                user = uid_to_name(uid);
+
+                log_warning("User %s is logged in on %s.", strna(user), isempty(tty) ? (isempty(seat) ? strna(service) : seat) : tty);
+                c++;
+        }
+
+        if (c <= 0)
+                return 0;
+
+        log_error("Please retry operation after closing inhibitors and logging out other users.\nAlternatively, ignore inhibitors and users with 'loginctl %s -i'.", verb);
+
+        return -EPERM;
+}
+
+static int poweroff(int argc, char *argv[], void *userdata) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        sd_bus *bus = userdata;
+        int r;
+
+        assert(bus);
+
+        r = check_inhibitors(bus, "shutdown", "poweroff");
+        if (r < 0)
+                return r;
+
+        polkit_agent_open_if_enabled();
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "PowerOff",
+                        &error,
+                        NULL,
+                        "b", arg_ask_password);
+        if (r < 0)
+                log_error("Failed to power off: %s", bus_error_message(&error, r));
+
+        return r;
+}
+
+static int reboot(int argc, char *argv[], void *userdata) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        sd_bus *bus = userdata;
+        int r;
+
+        assert(bus);
+
+        r = check_inhibitors(bus, "shutdown", "reboot");
+        if (r < 0)
+                return r;
+
+        polkit_agent_open_if_enabled();
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "Reboot",
+                        &error,
+                        NULL,
+                        "b", arg_ask_password);
+        if (r < 0)
+                log_error("Failed to reboot: %s", bus_error_message(&error, r));
+
+        return r;
+}
+
+static int suspend(int argc, char *argv[], void *userdata) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        sd_bus *bus = userdata;
+        int r;
+
+        assert(bus);
+
+        r = check_inhibitors(bus, "sleep", "suspend");
+        if (r < 0)
+                return r;
+
+        polkit_agent_open_if_enabled();
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "Suspend",
+                        &error,
+                        NULL,
+                        "b", arg_ask_password);
+        if (r < 0)
+                log_error("Failed to suspend: %s", bus_error_message(&error, r));
+
+        return r;
+}
+
+static int hibernate(int argc, char *argv[], void *userdata) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        sd_bus *bus = userdata;
+        int r;
+
+        assert(bus);
+
+        r = check_inhibitors(bus, "sleep", "hibernate");
+        if (r < 0)
+                return r;
+
+        polkit_agent_open_if_enabled();
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "Hibernate",
+                        &error,
+                        NULL,
+                        "b", arg_ask_password);
+        if (r < 0)
+                log_error("Failed to hibernate: %s", bus_error_message(&error, r));
+
+        return r;
+}
+
+static int hybrid_sleep(int argc, char *argv[], void *userdata) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        sd_bus *bus = userdata;
+        int r;
+
+        assert(bus);
+
+        r = check_inhibitors(bus, "sleep", "hybrid-sleep");
+        if (r < 0)
+                return r;
+
+        polkit_agent_open_if_enabled();
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "HybridSleep",
+                        &error,
+                        NULL,
+                        "b", arg_ask_password);
+        if (r < 0)
+                log_error("Failed to hybrid sleep: %s", bus_error_message(&error, r));
+
+        return r;
+}
+
 static int help(int argc, char *argv[], void *userdata) {
 
         printf("%s [OPTIONS...] {COMMAND} ...\n\n"
@@ -1159,6 +1403,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "     --no-pager            Do not pipe output into a pager\n"
                "     --no-legend           Do not show the headers and footers\n"
                "     --no-ask-password     Don't prompt for password\n"
+               "  -i --ignore-inhibitors   Ignore inhibitors when suspending or shutting down\n"
                "  -H --host=[USER@]HOST    Operate on remote host\n"
                "  -M --machine=CONTAINER   Operate on local container\n"
                "  -p --property=NAME       Show only properties by this name\n"
@@ -1194,7 +1439,13 @@ static int help(int argc, char *argv[], void *userdata) {
                "  show-seat [NAME...]      Show properties of seats or the manager\n"
                "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
                "  flush-devices            Flush all device associations\n"
-               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
+               "System Commands:\n"
+               "  poweroff                 Turn off the machine\n"
+               "  reboot                   Reboot the machine\n"
+               "  suspend                  Suspend the machine to memory\n"
+               "  hibernate                Suspend the machine to disk\n"
+               "  hybrid-sleep             Suspend the machine to memory and disk\n"
                , program_invocation_short_name);
 
         return 0;
@@ -1223,6 +1474,7 @@ static int parse_argv(int argc, char *argv[]) {
                 { "host",            required_argument, NULL, 'H'                 },
                 { "machine",         required_argument, NULL, 'M'                 },
                 { "no-ask-password", no_argument,       NULL, ARG_NO_ASK_PASSWORD },
+                { "ignore-inhibitors", no_argument,     NULL, 'i'                 },
                 { "lines",           required_argument, NULL, 'n'                 },
                 { "output",          required_argument, NULL, 'o'                 },
                 {}
@@ -1233,7 +1485,7 @@ static int parse_argv(int argc, char *argv[]) {
         assert(argc >= 0);
         assert(argv);
 
-        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:", options, NULL)) >= 0)
+        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:i", options, NULL)) >= 0)
 
                 switch (c) {
 
@@ -1283,6 +1535,10 @@ static int parse_argv(int argc, char *argv[]) {
                                 log_error("Unknown output '%s'.", optarg);
                                 return -EINVAL;
                         }
+                        break;
+
+                case 'i':
+                        arg_ignore_inhibitors = true;
                         break;
 
                 case ARG_NO_PAGER:
@@ -1356,6 +1612,11 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "attach",            3,        VERB_ANY, 0,            attach            },
                 { "flush-devices",     VERB_ANY, 1,        0,            flush_devices     },
                 { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
+                { "poweroff",          VERB_ANY, 1,        0,            poweroff          },
+                { "reboot",            VERB_ANY, 1,        0,            reboot            },
+                { "suspend",           VERB_ANY, 1,        0,            suspend           },
+                { "hibernate",         VERB_ANY, 1,        0,            hibernate         },
+                { "hybrid-sleep",      VERB_ANY, 1,        0,            hybrid_sleep      },
                 {}
         };
 
