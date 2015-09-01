@@ -38,8 +38,6 @@
 #include "bus-error.h"
 #include "logind-session.h"
 
-#define RELEASE_USEC (20*USEC_PER_SEC)
-
 static void session_remove_fifo(Session *s);
 
 Session* session_new(Manager *m, const char *id) {
@@ -599,16 +597,6 @@ int session_finalize(Session *s) {
         return r;
 }
 
-static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *userdata) {
-        Session *s = userdata;
-
-        assert(es);
-        assert(s);
-
-        session_stop(s, false);
-        return 0;
-}
-
 int session_release(Session *s) {
         assert(s);
 
@@ -618,11 +606,10 @@ int session_release(Session *s) {
         if (s->timer_event_source)
                 return 0;
 
-        return sd_event_add_time(s->manager->event,
-                                 &s->timer_event_source,
-                                 CLOCK_MONOTONIC,
-                                 now(CLOCK_MONOTONIC) + RELEASE_USEC, 0,
-                                 release_timeout_callback, s);
+        /* In systemd, session release is triggered by user jobs
+           dying.  In elogind we don't have that so go ahead and stop
+           now.  */
+        session_stop(s, false);
 }
 
 bool session_is_active(Session *s) {
