@@ -60,6 +60,8 @@ systemshutdowndir=$(pkglibexecdir)/shutdown.d
 udevrulesdir=@udevrulesdir@
 udevbindir=@udevbindir@
 
+PKTTYAGENT=$(bindir)/pkttyagent
+
 # Our own, non-special dirs
 pkgsysconfdir=$(sysconfdir)/elogind
 pkgincludedir=$(includedir)/elogind
@@ -115,12 +117,10 @@ CLEANFILES = $(BUILT_SOURCES) \
 	$(INSTALL_DATA_HOOKS) $(UNINSTALL_DATA_HOOKS) \
 	$(DISTCLEAN_LOCAL_HOOKS) $(CLEAN_LOCAL_HOOKS)
 
-# FIXME a different pkttyagent path...
-
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
-	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
+	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_CONFIG_UNIT_PATH=\"$(pkgsysconfdir)/system\" \
 	-DSYSTEM_DATA_UNIT_PATH=\"$(systemunitdir)\" \
 	-DUSER_CONFIG_UNIT_PATH=\"$(pkgsysconfdir)/user\" \
