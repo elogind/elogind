@@ -1257,7 +1257,7 @@ static int poweroff(int argc, char *argv[], void *userdata) {
 
         assert(bus);
 
-        r = check_inhibitors(bus, "shutdown", "poweroff");
+        r = check_inhibitors(bus, "poweroff", "shutdown");
         if (r < 0)
                 return r;
 
@@ -1286,7 +1286,7 @@ static int reboot(int argc, char *argv[], void *userdata) {
 
         assert(bus);
 
-        r = check_inhibitors(bus, "shutdown", "reboot");
+        r = check_inhibitors(bus, "reboot", "shutdown");
         if (r < 0)
                 return r;
 
@@ -1315,7 +1315,7 @@ static int suspend(int argc, char *argv[], void *userdata) {
 
         assert(bus);
 
-        r = check_inhibitors(bus, "sleep", "suspend");
+        r = check_inhibitors(bus, "suspend", "sleep");
         if (r < 0)
                 return r;
 
@@ -1344,7 +1344,7 @@ static int hibernate(int argc, char *argv[], void *userdata) {
 
         assert(bus);
 
-        r = check_inhibitors(bus, "sleep", "hibernate");
+        r = check_inhibitors(bus, "hibernate", "sleep");
         if (r < 0)
                 return r;
 
@@ -1373,7 +1373,7 @@ static int hybrid_sleep(int argc, char *argv[], void *userdata) {
 
         assert(bus);
 
-        r = check_inhibitors(bus, "sleep", "hybrid-sleep");
+        r = check_inhibitors(bus, "hybrid-sleep", "sleep");
         if (r < 0)
                 return r;
 
