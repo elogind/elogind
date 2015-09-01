@@ -1045,6 +1045,7 @@ int main(int argc, char *argv[]) {
         mkdir_label("/run/systemd/seats", 0755);
         mkdir_label("/run/systemd/users", 0755);
         mkdir_label("/run/systemd/sessions", 0755);
+        mkdir_label("/run/systemd/machines", 0755);
 
         m = manager_new();
         if (!m) {

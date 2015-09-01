@@ -21,7 +21,7 @@ AC_PREREQ([2.64])
 
 # FIXME: Update to proper web page
 AC_INIT([elogind],
-        [219.9],
+        [219.10],
         [http://bugs.freedesktop.org/enter_bug.cgi?product=elogind],
         [elogind],
         [http://www.freedesktop.org/wiki/Software/elogind])
