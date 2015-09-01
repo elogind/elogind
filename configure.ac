@@ -19,12 +19,11 @@
 
 AC_PREREQ([2.64])
 
-# FIXME: Update to proper web page
 AC_INIT([elogind],
-        [219.11],
-        [http://bugs.freedesktop.org/enter_bug.cgi?product=elogind],
+        [219.12],
+        [https://github.com/andywingo/elogind/issues],
         [elogind],
-        [http://www.freedesktop.org/wiki/Software/elogind])
+        [https://github.com/andywingo/elogind])
 
 AC_CONFIG_SRCDIR([src/login/logind.c])
 AC_CONFIG_MACRO_DIR([m4])
