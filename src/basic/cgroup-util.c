@@ -842,7 +842,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
                 r = write_string_file_no_create(fs, agent);
                 if (r < 0)
                         return r;
-        } else if (!streq(sc, agent))
+        } else if (!path_equal(sc, agent))
                 return -EEXIST;
 
         fs = mfree(fs);
