@@ -1340,8 +1340,7 @@ static int bus_manager_log_shutdown(
                 InhibitWhat w,
                 const char *unit_name) {
 
-        const char *p;
-        const char *q;
+        const char *p, *q;
 
         assert(m);
         assert(unit_name);
@@ -1366,8 +1365,8 @@ static int bus_manager_log_shutdown(
                 q = NULL;
         }
 
-        if (m->wall_message)
-                p = strjoina(p, " (", m->wall_message, ")", NULL);
+        if (!isempty(m->wall_message))
+                p = strjoina(p, " (", m->wall_message, ")");
 
         return log_struct(LOG_NOTICE,
                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
@@ -2292,15 +2291,19 @@ static int method_set_wall_message(
                                     UID_INVALID,
                                     &m->polkit_registry,
                                     error);
-
         if (r < 0)
                 return r;
         if (r == 0)
                 return 1; /* Will call us back */
 
-        r = free_and_strdup(&m->wall_message, wall_message);
-        if (r < 0)
-                return log_oom();
+        if (isempty(wall_message))
+                m->wall_message = mfree(m->wall_message);
+        else {
+                r = free_and_strdup(&m->wall_message, wall_message);
+                if (r < 0)
+                        return log_oom();
+        }
+
         m->enable_wall_messages = enable_wall_messages;
 
         return sd_bus_reply_method_return(message, NULL);
