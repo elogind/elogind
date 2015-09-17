@@ -731,6 +731,8 @@ pamlib_LTLIBRARIES = \
 dist_pamconf_DATA = \
 	src/login/elogind-user
 
+EXTRA_DIST += \
+	src/login/elogind-user.m4
 endif
 
 dist_dbussystemservice_DATA += \
