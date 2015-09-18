@@ -2125,7 +2125,13 @@ ssize_t loop_read(int fd, void *buf, size_t nbytes, bool do_poll) {
         assert(fd >= 0);
         assert(buf);
 
-        while (nbytes > 0) {
+        /* If called with nbytes == 0, let's call read() at least
+         * once, to validate the operation */
+
+        if (nbytes > (size_t) SSIZE_MAX)
+                return -EINVAL;
+
+        do {
                 ssize_t k;
 
                 k = read(fd, p, nbytes);
@@ -2139,7 +2145,7 @@ ssize_t loop_read(int fd, void *buf, size_t nbytes, bool do_poll) {
                                  * and expect that any error/EOF is reported
                                  * via read() */
 
-                                fd_wait_for_event(fd, POLLIN, USEC_INFINITY);
+                                (void) fd_wait_for_event(fd, POLLIN, USEC_INFINITY);
                                 continue;
                         }
 
@@ -2149,10 +2155,12 @@ ssize_t loop_read(int fd, void *buf, size_t nbytes, bool do_poll) {
                 if (k == 0)
                         return n;
 
+                assert((size_t) k <= nbytes);
+
                 p += k;
                 nbytes -= k;
                 n += k;
-        }
+        } while (nbytes > 0);
 
         return n;
 }
@@ -2162,9 +2170,10 @@ int loop_read_exact(int fd, void *buf, size_t nbytes, bool do_poll) {
 
         n = loop_read(fd, buf, nbytes, do_poll);
         if (n < 0)
-                return n;
+                return (int) n;
         if ((size_t) n != nbytes)
                 return -EIO;
+
         return 0;
 }
 
@@ -2174,7 +2183,8 @@ int loop_write(int fd, const void *buf, size_t nbytes, bool do_poll) {
         assert(fd >= 0);
         assert(buf);
 
-        errno = 0;
+        if (nbytes > (size_t) SSIZE_MAX)
+                return -EINVAL;
 
         do {
                 ssize_t k;
@@ -2189,15 +2199,17 @@ int loop_write(int fd, const void *buf, size_t nbytes, bool do_poll) {
                                  * and expect that any error/EOF is reported
                                  * via write() */
 
-                                fd_wait_for_event(fd, POLLOUT, USEC_INFINITY);
+                                (void) fd_wait_for_event(fd, POLLOUT, USEC_INFINITY);
                                 continue;
                         }
 
                         return -errno;
                 }
 
-                if (nbytes > 0 && k == 0) /* Can't really happen */
+                if (_unlikely_(nbytes > 0 && k == 0)) /* Can't really happen */
                         return -EIO;
+
+                assert((size_t) k <= nbytes);
 
                 p += k;
                 nbytes -= k;
