@@ -227,7 +227,7 @@ int mount_setup_early(void) {
                 int j;
 
                 j = mount_one(mount_table + i, false);
-                if (r == 0)
+                if (j != 0 && r >= 0)
                         r = j;
         }
 
@@ -371,7 +371,7 @@ int mount_setup(bool loaded_policy) {
                 int j;
 
                 j = mount_one(mount_table + i, loaded_policy);
-                if (r == 0)
+                if (j != 0 && r >= 0)
                         r = j;
         }
 
