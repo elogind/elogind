@@ -1,594 +1,598 @@
-# Belarusian translation for systemd.
-# Copyright (C) 2015 systemd's COPYRIGHT HOLDER
+# Turkish translation for systemd.
+# Copyright (C) 2014-2015 systemd's COPYRIGHT HOLDER
 # This file is distributed under the same license as the systemd package.
+# Necdet Yücel <necdetyucel@gmail.com>, 2014.
+# Gökhan Gurbetoğlu <ggurbet@gmail.com>, 2015.
+# Muhammet Kara <muhammetk@gmail.com>, 2015.
 #
-#
-# Viktar Vaŭčkievič <victorenator@gmail.com>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-12 13:42+0300\n"
-"PO-Revision-Date: 2015-09-12 16:25+0300\n"
-"Last-Translator: Viktar Vaŭčkievič <victorenator@gmail.com>\n"
-"Language-Team: \n"
-"Language: be@latin\n"
+"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"POT-Creation-Date: 2015-09-18 00:07+0000\n"
+"PO-Revision-Date: 2015-09-19 08:31+0300\n"
+"Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
+"Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
-"X-Generator: Lokalize 2.0\n"
+"Language: tr_TR\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 msgid "Send passphrase back to system"
-msgstr "Adpravić paroĺ nazad sistemie"
+msgstr "Sisteme parolayı geri gönder"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
 msgid ""
 "Authentication is required to send the entered passphrase back to the system."
-msgstr "Nieabchodna aŭtentyfikacyja dlia adpraŭki parolia nazad sistemie."
+msgstr "Sisteme parolayı geri göndermek kimlik doğrulaması gerektiriyor."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 msgid "Manage system services or other units"
-msgstr "Kiravać servisami i inšymi sistemnymi adzinkami"
+msgstr "Sistem servislerini veya diğer birimlerini yönet"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 msgid "Authentication is required to manage system services or other units."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia kiravannia servisami i inšymi sistemnymi "
-"adzinkami."
+"Sistem servislerini veya diğer birimlerini yönetmek kimlik doğrulaması "
+"gerektiriyor."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 msgid "Manage system service or unit files"
-msgstr "Kiravać fajlami servisaŭ i inšych sistemnych adzinak"
+msgstr "Sistem servislerini veya birim dosyalarını yönet"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 msgid "Authentication is required to manage system service or unit files."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia kiravannia fajlami servisaŭ i inšych "
-"sistemnych adzinak."
+"Sistem servislerini veya birim dosyalarını yönetmek kimlik doğrulaması "
+"gerektiriyor."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 msgid "Set or unset system and service manager environment variables"
-msgstr "Ustaliavać abo skinuć zmiennyja asiaroddzia sistemnaha menedžera"
+msgstr "Sistem ve servis yöneticisi ortam değişkenlerini ayarla ya da kaldır"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 msgid ""
 "Authentication is required to set or unset system and service manager "
 "environment variables."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia abo skidu zmiennych "
-"asiaroddzia sistemnaha menedžera."
+"Sistem ve servis yöneticisi ortam değişkenlerini ayarlamak ya da kaldırmak "
+"kimlik doğrulaması gerektiriyor."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 msgid "Reload the systemd state"
-msgstr "Pieračytać stan systemd"
+msgstr "systemd durumunu yeniden yükle"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 msgid "Authentication is required to reload the systemd state."
-msgstr "Nieabchodna aŭtentyfikacyja dlia pieračytannia stanu systemd."
+msgstr "systemd durumunu yeniden yüklemek kimlik doğrulaması gerektiriyor."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 msgid "Set host name"
-msgstr "Ustaliavać imia vuzla"
+msgstr "Makine adını ayarla"
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
 msgid "Authentication is required to set the local host name."
-msgstr "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia imia vuzla."
+msgstr "Yerel makine adını ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 msgid "Set static host name"
-msgstr "Ustaliavać statyčnaje imia vuzla"
+msgstr "Statik makine adı ayarla"
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 msgid ""
 "Authentication is required to set the statically configured local host name, "
 "as well as the pretty host name."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia jak statyčnaha tak i "
-"pryhožaha imia vuzla."
+"Statik olarak yapılandırılmış konak makine adını ve yerel makine adını "
+"ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
 msgid "Set machine information"
-msgstr "Ustaliavać infarmacyju ab mašynie"
+msgstr "Makine bilgisini ayarla"
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
 msgid "Authentication is required to set local machine information."
-msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia infarmacyi ab lakaĺnaj "
-"mašynie."
+msgstr "Yerel makine bilgisini ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:1
 msgid "Import a VM or container image"
-msgstr "Impartavać vobraz VM abo kantejniera"
+msgstr "Bir SM ya da kapsayıcı kalıbını içe aktar"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:2
 msgid "Authentication is required to import a VM or container image"
-msgstr "Nieabchodna aŭtentyfikacyja dlia impartu vobraza VM abo kantejniera"
+msgstr ""
+"Bir SM ya da kapsayıcı kalıbını içe aktarmak için kimlik doğrulaması "
+"gereklidir"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:3
 msgid "Export a VM or container image"
-msgstr "Ekspartavać vobraz VM abo kantejniera"
+msgstr "Bir SM ya da kapsayıcı kalıbını dışa aktar"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:4
 msgid "Authentication is required to export a VM or container image"
-msgstr "Nieabchodna aŭtentyfikacyja dlia ekspartu vobraza VM abo kantejniera"
+msgstr ""
+"Bir SM ya da kapsayıcı kalıbını dışa aktarmak için kimlik doğrulaması "
+"gereklidir"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:5
 msgid "Download a VM or container image"
-msgstr "Spampavać vobraz VM abo kantejniera"
+msgstr "Bir SM ya da kapsayıcı kalıbını indir"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:6
 msgid "Authentication is required to download a VM or container image"
-msgstr "Nieabchodna aŭtentyfikacyja dlia spampoŭki vobraza VM abo kantejniera"
+msgstr ""
+"Bir SM ya da kapsayıcı kalıbını indirmek için kimlik doğrulaması gereklidir"
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
 msgid "Set system locale"
-msgstr "Ustaliavać sistemnuju lakaĺ"
+msgstr "Sistem yerelini ayarla"
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
 msgid "Authentication is required to set the system locale."
-msgstr "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia sistemnaj lakali."
+msgstr "Sistem yerelini ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
 msgid "Set system keyboard settings"
-msgstr "Ustaliavać sistemnyja nalady klavijatury"
+msgstr "Sistem klavye ayarlarını ayarla"
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 msgid "Authentication is required to set the system keyboard settings."
-msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia sistemnych nalad klavijatury."
+msgstr "Sistem klavye ayarlarını ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
-msgstr "Dazvolić prahramam pieraškadžać vykliučenniu sistemy"
+msgstr "Uygulamaların sistemin kapanmasına engel olmasına izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:2
 msgid ""
 "Authentication is required for an application to inhibit system shutdown."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam pieraškadžać vykliučenniu "
-"sistemy."
+"Bir uygulamanın sistemin kapanmasına engel olması için kimlik doğrulaması "
+"gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:3
 msgid "Allow applications to delay system shutdown"
-msgstr "Dazvolić prahramam zatrymlivać vykliučennie sistemy"
+msgstr "Uygulamaların sistemin kapanmasını geciktirmelerine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:4
 msgid "Authentication is required for an application to delay system shutdown."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam zatrymlivać vykliučennie "
-"sistemy."
+"Bir uygulamanın sistemin kapanmasını geciktirmesi için kimlik doğrulaması "
+"gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:5
 msgid "Allow applications to inhibit system sleep"
-msgstr "Dazvolić prahramam pieraškadžać zasypanniu sistemy"
+msgstr "Uygulamaların sistemin beklemeye geçmesini engellemesine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:6
 msgid "Authentication is required for an application to inhibit system sleep."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam pieraškadžać zasypanniu "
-"sistemy."
+"Bir uygulamanın sistemin uykuya geçmesine engel olması için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:7
 msgid "Allow applications to delay system sleep"
-msgstr "Dazvolić prahramam zatrymlivać zasypannie sistemy"
+msgstr "Uygulamaların sistemin beklemeye geçmesini ertelemesine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:8
 msgid "Authentication is required for an application to delay system sleep."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam zatrymlivać zasypannie "
-"sistemy."
+"Bir uygulamanın sistemin uykuya geçmesini geciktirmesi için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:9
 msgid "Allow applications to inhibit automatic system suspend"
-msgstr "Dazvolić prahramam pieraškadžać aŭtamatyčnamu prypynienniu sistemy"
+msgstr ""
+"Uygulamaların sistemin otomatik bekletmeye geçmesini engellemesine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:10
 msgid ""
 "Authentication is required for an application to inhibit automatic system "
 "suspend."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam pieraškadžać "
-"aŭtamatyčnamu prypynienniu sistemy."
+"Bir uygulamanın sistemin otomatik olarak askıya alınmasına engel olması için "
+"kimlik doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:11
 msgid "Allow applications to inhibit system handling of the power key"
-msgstr ""
-"Dazvolić prahramam pieraškadžać sistemie apracoŭvać klavišu vykliučennia"
+msgstr "Uygulamaların sistemin güç tuşunun kullanımını engellemesine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:12
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the power key."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam pieraškadžać sistemie "
-"apracoŭvać klavišu vykliučennia."
+"Bir uygulamanın sistemin güç tuşunu idare etmesine engel olması için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:13
 msgid "Allow applications to inhibit system handling of the suspend key"
 msgstr ""
-"Dazvolić prahramam pieraškadžać sistemie apracoŭvać klavišu prypyniennia"
+"Uygulamaların sistemin beklet tuşunun kullanımını engellemesine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:14
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the suspend key."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam pieraškadžać sistemie "
-"apracoŭvać klavišu prypyniennia."
+"Bir uygulamanın sistemin askıya alma tuşunu idare etmesine engel olması için "
+"kimlik doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:15
 msgid "Allow applications to inhibit system handling of the hibernate key"
 msgstr ""
-"Dazvolić prahramam pieraškadžać sistemie apracoŭvać klavišu hibiernacyi"
+"Uygulamaların sistemin uykuya geçme tuşunun kullanımını engellemesine izin "
+"ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:16
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the hibernate key."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam pieraškadžać sistemie "
-"apracoŭvać klavišu hibiernacyi."
+"Bir uygulamanın sistemin hazırda bekletme tuşunu idare etmesine engel olması "
+"için kimlik doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:17
 msgid "Allow applications to inhibit system handling of the lid switch"
 msgstr ""
-"Dazvolić prahramam pieraškadžać sistemie apracoŭvać zakryccio kryški noŭtbuka"
+"Uygulamaların sistemin kapak anahtarının kullanımını engellemesine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:18
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the lid switch."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dazvolu prahramam pieraškadžać sistemie "
-"apracoŭvać zakryccio kryški noŭtbuka."
+"Bir uygulamanın sistemin kapak anahtarını idare etmesine engel olması için "
+"kimlik doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:19
 msgid "Allow non-logged-in users to run programs"
-msgstr ""
-"Dazvolić karystaĺnikam, jakija jašče nie ŭvajšli ŭ sistemu, vykonvać prahramy"
+msgstr "Oturum açmamış kullanıcıların program çalıştırmasına izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:20
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia vykanannia prahram karystaĺnika, jaki jašče "
-"nie ŭvajšoŭ u sistemu."
+"Oturum açmamış bir kullanıcı olarak program çalıştırmak için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:21
 msgid "Allow attaching devices to seats"
-msgstr "Dazvolić dalučać prylady da pracoŭnych miescaŭ"
+msgstr "Aygıtların yuvaya takılmasına izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:22
 msgid "Authentication is required for attaching a device to a seat."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia dalučennia prylad da pracoŭnych miescaŭ."
+"Bir aygıtın yuvaya takılmasına izin vermek kimlik doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:23
 msgid "Flush device to seat attachments"
-msgstr "Adkliučać prylady ad pracoŭnych miescaŭ"
+msgstr "Aygıtın yuvaya eklenmesini sıfırla"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:24
 msgid ""
 "Authentication is required for resetting how devices are attached to seats."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia adkliučennia prylad ad pracoŭnych miescaŭ."
+"Aygıtların yuvalara nasıl takıldığını sıfırlamak kimlik doğrulama "
+"gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:25
 msgid "Power off the system"
-msgstr "Vykliučyć sistemu"
+msgstr "Sistemi kapat"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:26
 msgid "Authentication is required for powering off the system."
-msgstr "Nieabchodna aŭtentyfikacyja dlia vykliučennia sistemy."
+msgstr "Sistemi kapatmak için kimlik doğrulaması gerekiyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:27
 msgid "Power off the system while other users are logged in"
-msgstr "Vykliučyć sistemu pry prysutnasci inšych karystaĺnikaŭ"
+msgstr "Diğer kullanıcılar oturum açmışken sistemi kapat"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:28
 msgid ""
 "Authentication is required for powering off the system while other users are "
 "logged in."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia vykliučennia sistemy pry prysutnasci inšych "
-"karystaĺnikaŭ."
+"Diğer kullanıcılar oturum açmışken sistemi kapatmak kimlik doğrulaması "
+"gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:29
 msgid "Power off the system while an application asked to inhibit it"
-msgstr "Vykliučyć sistemu, kali prahramy pieraškadžajuć hetamu"
+msgstr "Bir uygulama engellenmesini isterken sistemi kapat"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:30
 msgid ""
 "Authentication is required for powering off the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia vykliučennia sistemy, kali prahramy "
-"pieraškadžajuć hetamu."
+"Bir uygulama engellenmesini isterken sistemi kapatmak kimlik doğrulaması "
+"gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:31
 msgid "Reboot the system"
-msgstr "Pierazahruzić sistemu"
+msgstr "Sistemi yeniden başlat"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:32
 msgid "Authentication is required for rebooting the system."
-msgstr "Nieabchodna aŭtentyfikacyja dlia pierazahruzki sistemy."
+msgstr "Sistemi yeniden başlatmak kimlik doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:33
 msgid "Reboot the system while other users are logged in"
-msgstr "Pierazahruzić sistemu pry prysutnasci inšych karystaĺnikaŭ"
+msgstr "Diğer kullanıcılar oturum açmışken sistemi yeniden başlat"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:34
 msgid ""
 "Authentication is required for rebooting the system while other users are "
 "logged in."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia pierazahruzki sistemy pry prysutnasci "
-"inšych karystaĺnikaŭ."
+"Diğer kullanıcılar oturum açmışken sistemi yeniden başlatmak kimlik "
+"doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:35
 msgid "Reboot the system while an application asked to inhibit it"
-msgstr "Pierazahruzić sistemu, kali prahramy pieraškadžajuć hetamu"
+msgstr "Bir uygulama engellenmesini isterken sistemi yeniden başlat"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:36
 msgid ""
 "Authentication is required for rebooting the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia pierazahruzki sistemy, kali prahramy "
-"pieraškadžajuć hetamu."
+"Bir uygulama engellenmesini isterken sistemi yeniden başlatmak kimlik "
+"doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:37
 msgid "Suspend the system"
-msgstr "Prypynić sistemu"
+msgstr "Sistemi askıya al"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:38
 msgid "Authentication is required for suspending the system."
-msgstr "Nieabchodna aŭtentyfikacyja dlia prypyniennia sistemy."
+msgstr "Sistemi askıya almak kimlik doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:39
 msgid "Suspend the system while other users are logged in"
-msgstr "Prypynić sistemu pry prysutnasci inšych karystaĺnikaŭ"
+msgstr "Diğer kullanıcılar oturum açmışken sistemi askıya al"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:40
 msgid ""
 "Authentication is required for suspending the system while other users are "
 "logged in."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia prypyniennia sistemy pry prysutnasci inšych "
-"karystaĺnikaŭ."
+"Diğer kullanıcılar oturum açmışken sistemi askıya almak kimlik doğrulaması "
+"gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:41
 msgid "Suspend the system while an application asked to inhibit it"
-msgstr "Prypynić sistemu, kali prahramy pieraškadžajuć hetamu"
+msgstr "Bir uygulama engellenmesini isterken sistemi askıya al"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:42
 msgid ""
 "Authentication is required for suspending the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia prypyniennia sistemy, kali prahramy "
-"pieraškadžajuć hetamu."
+"Bir uygulama engellenmesini isterken sistemi askıya almak kimlik doğrulaması "
+"gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:43
 msgid "Hibernate the system"
-msgstr "Hibiernavać sistemu"
+msgstr "Sistemi hazırda beklet"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:44
 msgid "Authentication is required for hibernating the system."
-msgstr "Nieabchodna aŭtentyfikacyja dlia hibiernacyi sistemy."
+msgstr "Sistemi hazırda bekletmek kimlik doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:45
 msgid "Hibernate the system while other users are logged in"
-msgstr "Hibiernavać sistemu pry prysutnasci inšych karystaĺnikaŭ"
+msgstr "Diğer kullanıcılar oturum açmışken sistemi hazırda beklet"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:46
 msgid ""
 "Authentication is required for hibernating the system while other users are "
 "logged in."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia hibiernacyi sistemy pry prysutnasci inšych "
-"karystaĺnikaŭ."
+"Diğer kullanıcılar oturum açmışken sistemi hazırda bekletmek kimlik "
+"doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:47
 msgid "Hibernate the system while an application asked to inhibit it"
-msgstr "Hibiernavać sistemu, kali prahramy pieraškadžajuć hetamu"
+msgstr "Bir uygulama engellenmesini isterken sistemi hazırda beklet"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:48
 msgid ""
 "Authentication is required for hibernating the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia hibiernacyi sistemy, kali prahramy "
-"pieraškadžajuć hetamu."
+"Bir uygulama engellenmesini isterken sistemi hazırda bekletmek kimlik "
+"doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:49
 msgid "Manage active sessions, users and seats"
-msgstr "Kiravać aktyŭnymi siesijami, karystaĺnikami i pracoŭnymi miescami"
+msgstr "Aktif oturumları, kullanıcıları ve yuvaları yönet"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:50
 msgid ""
 "Authentication is required for managing active sessions, users and seats."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia kiravannia aktyŭnymi siesijami, "
-"karystaĺnikami i miescami."
+"Aktif oturumları, kullanıcıları ve yuvaları yönetmek için kimlik doğrulaması "
+"gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:51
 msgid "Lock or unlock active sessions"
-msgstr "Blakavać abo razblakavać aktyŭnuju siesiju"
+msgstr "Aktif oturumları kilitle ya da kilidini aç"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:52
 msgid "Authentication is required to lock or unlock active sessions."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia blakiroŭki abo razblakiroŭki aktyŭnaj "
-"siesii."
+"Aktif oturumları kilitlemek ve bunların kilidini açmak için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:53
 msgid "Allow indication to the firmware to boot to setup interface"
-msgstr "Dazvolić ukazannie prašyŭcy na zahruzku interfiejsu nalad"
+msgstr ""
+"Kurulum arayüzünü önyüklemek için ürün yazılımının belirtilmesine izin ver"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:54
 msgid ""
 "Authentication is required to indicate to the firmware to boot to setup "
 "interface."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭkazannia prašyŭcy na zahruzku interfiejsu "
-"nalad."
+"Kurulum arayüzünü önyüklemek için ürün yazılımının belirtilmesi için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:55
 msgid "Set a wall message"
-msgstr "Ustaliavać usieahuĺnaje paviedamliennie"
+msgstr "Bir duvar mesajı ayarla"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:56
 msgid "Authentication is required to set a wall message"
-msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia usieahuĺnaha paviedamliennia."
+msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 msgid "Log into a local container"
-msgstr "Uvajsci ŭ lakaĺny kantejnier"
+msgstr "Yerel kapsayıcıya giriş yap"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
 msgid "Authentication is required to log into a local container."
-msgstr "Nieabchodna aŭtentyfikacyja dlia ŭvachodu ŭ lakaĺny kantejnier."
+msgstr "Yerel kapsayıcıda oturum açmak için kimlik doğrulaması gereklidir."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
 msgid "Log into the local host"
-msgstr "Uvajsci ŭ lakaĺny vuziel"
+msgstr "Yerel (ana) makineye giriş yap"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
 msgid "Authentication is required to log into the local host."
-msgstr "Nieabchodna aŭtentyfikacyja dlia ŭvachodu ŭ lakaĺny vuziel."
+msgstr "Yerel (ana) makinede oturum açmak için kimlik doğrulaması gereklidir."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
 msgid "Acquire a shell in a local container"
-msgstr "Atrymać abalonku na lakaĺnym kantejniery"
+msgstr "Yerel kapsayıcıda kabuk (shell) aç"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
 msgid "Authentication is required to acquire a shell in a local container."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia atrymannia abalonki na lakaĺnym kantejniery."
+"Yerel kapsayıcıda kabuk (shell) açmak için kimlik doğrulaması gereklidir."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
 msgid "Acquire a shell on the local host"
-msgstr "Atrymać abalonku na lakaĺnym vuzlie"
+msgstr "Yerel (ana) makinede kabuk (shell) aç"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
 msgid "Authentication is required to acquire a shell on the local host."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia atrymannia abalonki na lakaĺnym vuzlie."
+"Yerel (ana) makinede kabuk (shell) açmak için kimlik doğrulaması gereklidir."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
 msgid "Acquire a pseudo TTY in a local container"
-msgstr "Atrymać psieŭda TTY na lakaĺnym kantejniery"
+msgstr "Yerel kapsayıcıda sözde (pseudo) TTY al"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
 msgid ""
 "Authentication is required to acquire a pseudo TTY in a local container."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia atrymannia psieŭda TTY na lakaĺnym "
-"kantejniery."
+"Yerel kapsayıcıda sözde (pseudo) TTY almak için kimlik doğrulaması "
+"gereklidir."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
 msgid "Acquire a pseudo TTY on the local host"
-msgstr "Atrymać psieŭda TTY na lakaĺnym vuzlie"
+msgstr "Yerel (ana) makinede sözde (pseudo) TTY al"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
 msgid "Authentication is required to acquire a pseudo TTY on the local host."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia atrymannia psieŭda TTY na lakaĺnym vuzlie."
+"Yerel (ana) makinede sözde (pseudo) TTY almak için kimlik doğrulaması "
+"gereklidir."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 msgid "Manage local virtual machines and containers"
-msgstr "Kiravać lakaĺnymi virtuaĺnymi mašynami abo kantejnierami"
+msgstr "Yerel sanal makineleri ve kapsayıcıları yönet"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
 msgid ""
 "Authentication is required to manage local virtual machines and containers."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia kiravannia lakaĺnymi virtuaĺnymi mašynami i "
-"kantejnierami."
+"Yerel sanal makineleri ve kapsayıcıları yönetmek için kimlik doğrulaması "
+"gereklidir."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 msgid "Manage local virtual machine and container images"
-msgstr "Kiravać vobrazami lakaĺnych virtuaĺnych mašyn i kantejnieraŭ"
+msgstr "Yerel sanal makine ve kapsayıcı kalıplarını yönet"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 msgid ""
 "Authentication is required to manage local virtual machine and container "
 "images."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia kiravannia vobrazami lakaĺnych virtuaĺnych "
-"mašyn i kantejnieraŭ."
+"Yerel sanal makineler ve kapsayıcı kalıplarını yönetmek için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
 msgid "Set system time"
-msgstr "Ustaliavać sistemny čas"
+msgstr "Sistem zamanını ayarla"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
 msgid "Authentication is required to set the system time."
-msgstr "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia sistemnaha času."
+msgstr "Sistem zamanını ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
 msgid "Set system timezone"
-msgstr "Ustaliavać sistemny časavy pojas"
+msgstr "Sistem zaman dilimini ayarla"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
 msgid "Authentication is required to set the system timezone."
-msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia sistemnaha časavoha pojasu."
+msgstr "Sistem zaman dilimini ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
 msgid "Set RTC to local timezone or UTC"
-msgstr "Ustaliavać časavy pojas (miascovy abo UTC), u jakim RTC zachoŭvaje čas"
+msgstr "Gerçek zamanlı saat olarak yerel zaman dilimini veya UTC'yi ayarla"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
 msgid ""
 "Authentication is required to control whether the RTC stores the local or "
 "UTC time."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia časavoha pojasu (miascovy abo "
-"UTC), u jakim zachoŭvajecca čas u RTC."
+"Gerçek zamanlı saat olarak yerel zaman dilimini veya UTC'yi ayarlamak kimlik "
+"doğrulaması gerektiriyor."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
 msgid "Turn network time synchronization on or off"
-msgstr "Ukliučyć abo vykliučyć sinchranizacyju času pa sietcy"
+msgstr "Ağ zaman eş zamanlamasını aç veya kapat"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
 msgid ""
 "Authentication is required to control whether network time synchronization "
 "shall be enabled."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭkliučennia abo vykliučennia sinchranizacyi "
-"času pa sietcy."
+"Ağ zaman eş zamanlamasını kontrol etmek kimlik doğrulaması gerektiriyor."
 
 #: ../src/core/dbus-unit.c:428
 msgid "Authentication is required to start '$(unit)'."
-msgstr "Nieabchodna aŭtentyfikacyja dlia zapusku '$(unit)'."
+msgstr "'$(unit)' başlatmak için kimlik doğrulaması gereklidir."
 
 #: ../src/core/dbus-unit.c:429
 msgid "Authentication is required to stop '$(unit)'."
-msgstr "Nieabchodna aŭtentyfikacyja dlia ."
+msgstr "'$(unit)' durdurmak için kimlik doğrulaması gereklidir."
 
 #: ../src/core/dbus-unit.c:430
 msgid "Authentication is required to reload '$(unit)'."
-msgstr "Nieabchodna aŭtentyfikacyja dlia pieračytannia stanu '$(unit)'."
+msgstr "'$(unit)' yeniden yüklemek için kimlik doğrulaması gereklidir."
 
 #: ../src/core/dbus-unit.c:431 ../src/core/dbus-unit.c:432
 msgid "Authentication is required to restart '$(unit)'."
-msgstr "Nieabchodna aŭtentyfikacyja dlia pierazapusku '$(unit)'."
+msgstr "'$(unit)' yeniden başlatmak için kimlik doğrulaması gereklidir."
 
 #: ../src/core/dbus-unit.c:535
 msgid "Authentication is required to kill '$(unit)'."
-msgstr "Nieabchodna aŭtentyfikacyja dlia zabojstva '$(unit)'."
+msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."
 
 #: ../src/core/dbus-unit.c:565
 msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia anuliavannia pamylkovaha stanu '$(unit)'."
+"'$(unit)'in \"failed\" (başarısız) durumunu sıfırlamak için kimlik "
+"doğrulaması gereklidir."
 
 #: ../src/core/dbus-unit.c:597
 msgid "Authentication is required to set properties on '$(unit)'."
 msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia ŭlascivasciej '$(unit)'."
+"'$(unit)' üzerindeki özellikleri ayarlamak için kimlik doğrulaması "
+"gereklidir."
