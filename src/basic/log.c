@@ -446,7 +446,7 @@ static int write_to_syslog(
 static int write_to_kmsg(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
@@ -519,7 +519,7 @@ static int log_do_header(
 static int write_to_journal(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
@@ -657,7 +657,7 @@ int log_dump_internal(
 int log_internalv(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *format,
@@ -684,7 +684,7 @@ int log_internalv(
 int log_internal(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *format, ...) {
@@ -702,7 +702,7 @@ int log_internal(
 int log_object_internalv(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
@@ -746,7 +746,7 @@ int log_object_internalv(
 int log_object_internal(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
