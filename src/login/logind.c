@@ -665,7 +665,7 @@ static int signal_agent_released(sd_bus_message *message, void *userdata, sd_bus
 }
 
 static int manager_connect_bus(Manager *m) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(m);
