@@ -73,7 +73,7 @@ int parse_mode(const char *s, mode_t *ret) {
 
         errno = 0;
         l = strtol(s, &x, 8);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -168,7 +168,7 @@ int parse_size(const char *t, uint64_t base, uint64_t *size) {
 
                 errno = 0;
                 l = strtoull(p, &e, 10);
-                if (errno != 0)
+                if (errno > 0)
                         return -errno;
                 if (e == p)
                         return -EINVAL;
@@ -184,7 +184,7 @@ int parse_size(const char *t, uint64_t base, uint64_t *size) {
                                 char *e2;
 
                                 l2 = strtoull(e, &e2, 10);
-                                if (errno != 0)
+                                if (errno > 0)
                                         return -errno;
 
                                 /* Ignore failure. E.g. 10.M is valid */
@@ -324,7 +324,7 @@ int safe_atou(const char *s, unsigned *ret_u) {
 
         errno = 0;
         l = strtoul(s, &x, 0);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -346,7 +346,7 @@ int safe_atoi(const char *s, int *ret_i) {
 
         errno = 0;
         l = strtol(s, &x, 0);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -368,7 +368,7 @@ int safe_atollu(const char *s, long long unsigned *ret_llu) {
 
         errno = 0;
         l = strtoull(s, &x, 0);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -388,7 +388,7 @@ int safe_atolli(const char *s, long long int *ret_lli) {
 
         errno = 0;
         l = strtoll(s, &x, 0);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -408,7 +408,7 @@ int safe_atou8(const char *s, uint8_t *ret) {
 
         errno = 0;
         l = strtoul(s, &x, 0);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -432,7 +432,7 @@ int safe_atou16(const char *s, uint16_t *ret) {
 
         errno = 0;
         l = strtoul(s, &x, 0);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -454,7 +454,7 @@ int safe_atoi16(const char *s, int16_t *ret) {
 
         errno = 0;
         l = strtol(s, &x, 0);
-        if (errno != 0)
+        if (errno > 0)
                 return -errno;
         if (!x || x == s || *x)
                 return -EINVAL;
@@ -479,7 +479,7 @@ int safe_atod(const char *s, double *ret_d) {
 
         errno = 0;
         d = strtod_l(s, &x, loc);
-        if (errno != 0) {
+        if (errno > 0) {
                 freelocale(loc);
                 return -errno;
         }
