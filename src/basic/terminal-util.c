@@ -121,7 +121,7 @@ int read_one_char(FILE *f, char *ret, usec_t t, bool *need_nl) {
 
         errno = 0;
         if (!fgets(line, sizeof(line), f))
-                return errno ? -errno : -EIO;
+                return errno > 0 ? -errno : -EIO;
 
         truncate_nl(line);
 
@@ -205,7 +205,7 @@ int ask_string(char **ret, const char *text, ...) {
 
                 errno = 0;
                 if (!fgets(line, sizeof(line), stdin))
-                        return errno ? -errno : -EIO;
+                        return errno > 0 ? -errno : -EIO;
 
                 if (!endswith(line, "\n"))
                         putchar('\n');
