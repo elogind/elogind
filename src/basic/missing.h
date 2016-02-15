@@ -169,7 +169,7 @@ static inline int pivot_root(const char *new_root, const char *put_old) {
 #  endif
 #endif
 
-#ifndef HAVE_MEMFD_CREATE
+#if !HAVE_DECL_MEMFD_CREATE
 static inline int memfd_create(const char *name, unsigned int flags) {
         return syscall(__NR_memfd_create, name, flags);
 }
@@ -1101,7 +1101,7 @@ static inline int kcmp(pid_t pid1, pid_t pid2, int type, unsigned long idx1, uns
 #define INPUT_PROP_ACCELEROMETER  0x06
 #endif
 
-#if !HAVE_DECL_KEY_SERIAL_T
+#ifndef HAVE_KEY_SERIAL_T
 typedef int32_t key_serial_t;
 #endif
 
@@ -1173,11 +1173,11 @@ static inline key_serial_t request_key(const char *type, const char *description
 #ifndef IF_OPER_UP
 #define IF_OPER_UP 6
 
-#ifndef HAVE_DECL_CHAR32_T
+#ifndef HAVE_CHAR32_T
 #define char32_t uint32_t
 #endif
 
-#ifndef HAVE_DECL_CHAR16_T
+#ifndef HAVE_CHAR16_T
 #define char16_t uint16_t
 #endif
 
