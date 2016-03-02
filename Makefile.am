@@ -123,6 +123,7 @@ AM_CPPFLAGS = \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_CONFIG_UNIT_PATH=\"$(pkgsysconfdir)/system\" \
 	-DSYSTEM_DATA_UNIT_PATH=\"$(systemunitdir)\" \
+	-DSYSTEMD_CGROUP_AGENT_PATH=\"$(pkglibexecdir)/logind-cgroups-agent\" \
 	-DUSER_CONFIG_UNIT_PATH=\"$(pkgsysconfdir)/user\" \
 	-DUSER_DATA_UNIT_PATH=\"$(userunitdir)\" \
 	-DROOTPREFIX=\"$(rootprefix)\" \
@@ -805,6 +806,16 @@ loginctl_LDADD = \
 
 bin_PROGRAMS += \
 	loginctl
+
+logind_cgroups_agent_SOURCES = \
+	src/cgroups-agent/cgroups-agent.c
+
+logind_cgroups_agent_LDADD = \
+	libelogind-internal.la \
+	libelogind-shared.la
+
+pkglibexec_PROGRAMS += \
+	logind-cgroups-agent
 
 dist_bashcompletion_DATA += \
 	shell-completion/bash/loginctl
