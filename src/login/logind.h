@@ -63,6 +63,13 @@ struct Manager {
         sd_event_source *udev_vcsa_event_source;
         sd_event_source *udev_button_event_source;
 
+        /* Make sure the user cannot accidentally unmount our cgroup
+         * file system */
+        int pin_cgroupfs_fd;
+
+        /* Data specific to the cgroup subsystem */
+        char *cgroup_root;
+
         int console_active_fd;
 
         Seat *seat0;

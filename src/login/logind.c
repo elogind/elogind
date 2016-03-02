@@ -28,6 +28,7 @@
 #include "label.h"
 #include "sd-daemon.h"
 #include "strv.h"
+#include "cgroup-util.h"
 #include "conf-parser.h"
 #include "bus-util.h"
 #include "bus-error.h"
@@ -632,6 +633,57 @@ static int manager_vt_switch(sd_event_source *src, const struct signalfd_siginfo
         return 0;
 }
 
+static int manager_setup_cgroup(Manager *m) {
+        _cleanup_free_ char *path = NULL;
+        int r;
+
+        assert(m);
+
+        /* 1. Determine hierarchy */
+        free(m->cgroup_root);
+        m->cgroup_root = NULL;
+
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 0, &m->cgroup_root);
+        if (r < 0)
+                return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
+
+        /* Make sure to store away the root value without trailing
+         * slash, even for the root dir, so that we can easily prepend
+         * it everywhere. */
+        if (streq(m->cgroup_root, "/"))
+                m->cgroup_root[0] = 0;
+
+        /* 2. Show data */
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, NULL, &path);
+        if (r < 0)
+                return log_error_errno(r, "Cannot find cgroup mount point: %m");
+
+        log_debug("Using cgroup controller " SYSTEMD_CGROUP_CONTROLLER ". File system hierarchy is at %s.", path);
+
+        /* 3. Install agent */
+        r = cg_install_release_agent(SYSTEMD_CGROUP_CONTROLLER, SYSTEMD_CGROUP_AGENT_PATH);
+        if (r < 0)
+                log_warning_errno(r, "Failed to install release agent, ignoring: %m");
+        else if (r > 0)
+                log_debug("Installed release agent.");
+        else
+                log_debug("Release agent already installed.");
+
+        /* 4. Make sure we are in the root cgroup */
+        r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, 0);
+        if (r < 0)
+                return log_error_errno(r, "Failed to create root cgroup hierarchy: %m");
+
+        /* 5. And pin it, so that it cannot be unmounted */
+        safe_close(m->pin_cgroupfs_fd);
+
+        m->pin_cgroupfs_fd = open(path, O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOCTTY|O_NONBLOCK);
+        if (m->pin_cgroupfs_fd < 0)
+                return log_error_errno(errno, "Failed to open pin file: %m");
+
+        return 0;
+}
+
 static int manager_connect_console(Manager *m) {
         int r;
 
@@ -890,6 +942,11 @@ int manager_startup(Manager *m) {
         Iterator i;
 
         assert(m);
+
+        /* Make cgroups */
+        r = manager_setup_cgroup(m);
+        if (r < 0)
+                return r;
 
         /* Connect to console */
         r = manager_connect_console(m);
