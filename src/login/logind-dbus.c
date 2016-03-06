@@ -801,8 +801,6 @@ static int method_create_session(sd_bus *bus, sd_bus_message *message, void *use
         if (r < 0)
                 goto fail;
 
-        session_save(session);
-
         return 1;
 
 fail:
