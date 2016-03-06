@@ -20,10 +20,10 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [219.12],
-        [https://github.com/andywingo/elogind/issues],
+        [219.13],
+        [https://github.com/wingo/elogind/issues],
         [elogind],
-        [https://github.com/andywingo/elogind])
+        [https://github.com/wingo/elogind])
 
 AC_CONFIG_SRCDIR([src/login/logind.c])
 AC_CONFIG_MACRO_DIR([m4])
