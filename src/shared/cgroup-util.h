@@ -99,14 +99,11 @@ int cg_is_empty_recursive(const char *controller, const char *path, bool ignore_
 int cg_get_root_path(char **path);
 
 int cg_path_get_session(const char *path, char **session);
-int cg_path_get_user_slice(const char *path, char **slice);
 
 int cg_shift_path(const char *cgroup, const char *cached_root, const char **shifted);
 int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
 int cg_pid_get_session(pid_t pid, char **session);
-int cg_pid_get_user_slice(pid_t pid, char **slice);
-
 char *cg_escape(const char *p);
 char *cg_unescape(const char *p) _pure_;
 
