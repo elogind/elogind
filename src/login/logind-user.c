@@ -562,10 +562,18 @@ UserState user_get_state(User *u) {
 }
 
 int user_kill(User *u, int signo) {
+        Session *s;
+        int res = 0;
+
         assert(u);
 
-        /* FIXME: No way to kill a user without systemd.  */
-        return -ESRCH;
+        LIST_FOREACH(sessions_by_user, s, u->sessions) {
+                int r = session_kill(s, KILL_ALL, signo);
+                if (res == 0 && r < 0)
+                        res = r;
+        }
+
+        return res;
 }
 
 void user_elect_display(User *u) {

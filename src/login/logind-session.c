@@ -36,6 +36,8 @@
 #include "audit.h"
 #include "bus-util.h"
 #include "bus-error.h"
+#include "cgroup-util.h"
+#include "def.h"
 #include "logind-session.h"
 
 static void session_remove_fifo(Session *s);
@@ -475,6 +477,25 @@ int session_activate(Session *s) {
         return 0;
 }
 
+static int session_start_cgroup(Session *s) {
+        int r;
+
+        assert(s);
+        assert(s->user);
+        assert(s->leader > 0);
+
+        /* First, create our own group */
+        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
+        if (r < 0)
+                return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
+
+        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader);
+        if (r < 0)
+                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader, s->id);
+
+        return 0;
+}
+
 int session_start(Session *s) {
         int r;
 
@@ -487,6 +508,10 @@ int session_start(Session *s) {
                 return 0;
 
         r = user_start(s->user);
+        if (r < 0)
+                return r;
+
+        r = session_start_cgroup(s);
         if (r < 0)
                 return r;
 
@@ -527,8 +552,23 @@ int session_start(Session *s) {
         return 0;
 }
 
+static int session_stop_cgroup(Session *s, bool force) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r;
+
+        assert(s);
+
+        if (force || manager_shall_kill(s->manager, s->user->name)) {
+                r = session_kill(s, KILL_ALL, SIGTERM);
+                if (r < 0)
+                        return r;
+        }
+
+        return 0;
+}
+
 int session_stop(Session *s, bool force) {
-        int r = 0;
+        int r;
 
         assert(s);
 
@@ -539,6 +579,9 @@ int session_stop(Session *s, bool force) {
 
         /* We are going down, don't care about FIFOs anymore */
         session_remove_fifo(s);
+
+        /* Kill cgroup */
+        r = session_stop_cgroup(s, force);
 
         s->stopping = true;
 
@@ -609,7 +652,7 @@ int session_release(Session *s) {
         /* In systemd, session release is triggered by user jobs
            dying.  In elogind we don't have that so go ahead and stop
            now.  */
-        session_stop(s, false);
+        return session_stop(s, false);
 }
 
 bool session_is_active(Session *s) {
@@ -814,6 +857,9 @@ bool session_check_gc(Session *s, bool drop_not_started) {
                         return true;
         }
 
+        if (cg_is_empty_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, false) > 0)
+                return true;
+
         return false;
 }
 
@@ -846,8 +892,23 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
-        /* No way to kill the session without cgroups.  */
-        return -ESRCH;
+        if (who == KILL_LEADER) {
+                if (s->leader <= 0)
+                        return -ESRCH;
+
+                /* FIXME: verify that leader is in cgroup?  */
+
+                if (kill(s->leader, signo) < 0) {
+                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader, s->id);
+                }
+                return 0;
+        } else {
+                bool sigcont = false;
+                bool ignore_self = true;
+                bool rem = true;
+                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
+                                          sigcont, ignore_self, rem, NULL);
+        }
 }
 
 static int session_open_vt(Session *s) {

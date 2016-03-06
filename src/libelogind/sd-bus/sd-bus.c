@@ -1124,10 +1124,7 @@ _public_ int sd_bus_open(sd_bus **ret) {
 
         e = secure_getenv("DBUS_STARTER_ADDRESS");
         if (!e) {
-                if (cg_pid_get_owner_uid(0, NULL) >= 0)
-                        return sd_bus_open_user(ret);
-                else
-                        return sd_bus_open_system(ret);
+                return sd_bus_open_system(ret);
         }
 
         r = sd_bus_new(&b);
@@ -3327,10 +3324,7 @@ _public_ int sd_bus_default(sd_bus **ret) {
         /* Finally, if nothing is set use the cached connection for
          * the right scope */
 
-        if (cg_pid_get_owner_uid(0, NULL) >= 0)
-                return sd_bus_default_user(ret);
-        else
-                return sd_bus_default_system(ret);
+        return sd_bus_default_system(ret);
 }
 
 _public_ int sd_bus_get_tid(sd_bus *b, pid_t *tid) {

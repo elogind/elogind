@@ -311,24 +311,41 @@ int manager_process_button_device(Manager *m, struct udev_device *d) {
 }
 
 int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
+        _cleanup_free_ char *session_name = NULL;
+        Session *s;
+        int r;
+
         assert(m);
         assert(session);
-
-        /* Without cgroups, we have no way to map from pid to
-           session.  */
-        return 0;
-}
-
-int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
-        assert(m);
-        assert(user);
 
         if (pid < 1)
                 return -EINVAL;
 
-        /* Without cgroups, we have no way to map from pid to
-           user.  */
-        return 0;
+        r = cg_pid_get_session(pid, &session_name);
+        if (r < 0)
+                return 0;
+
+        s = hashmap_get(m->sessions, session_name);
+        if (!s)
+                return 0;
+
+        *session = s;
+        return 1;
+}
+
+int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
+        Session *s;
+        int r;
+
+        assert(m);
+        assert(user);
+
+        r = manager_get_session_by_pid (m, pid, &s);
+        if (r <= 0)
+                return r;
+
+        *user = s->user;
+        return 1;
 }
 
 int manager_get_idle_hint(Manager *m, dual_timestamp *t) {

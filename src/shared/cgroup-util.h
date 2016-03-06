@@ -99,30 +99,16 @@ int cg_is_empty_recursive(const char *controller, const char *path, bool ignore_
 int cg_get_root_path(char **path);
 
 int cg_path_get_session(const char *path, char **session);
-int cg_path_get_owner_uid(const char *path, uid_t *uid);
-int cg_path_get_unit(const char *path, char **unit);
-int cg_path_get_user_unit(const char *path, char **unit);
-int cg_path_get_machine_name(const char *path, char **machine);
-int cg_path_get_slice(const char *path, char **slice);
 
 int cg_shift_path(const char *cgroup, const char *cached_root, const char **shifted);
 int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
 int cg_pid_get_session(pid_t pid, char **session);
-int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
-int cg_pid_get_unit(pid_t pid, char **unit);
-int cg_pid_get_user_unit(pid_t pid, char **unit);
-int cg_pid_get_machine_name(pid_t pid, char **machine);
-int cg_pid_get_slice(pid_t pid, char **slice);
-
-int cg_path_decode_unit(const char *cgroup, char **unit);
 
 char *cg_escape(const char *p);
 char *cg_unescape(const char *p) _pure_;
 
 bool cg_controller_is_valid(const char *p, bool allow_named);
-
-int cg_slice_to_path(const char *unit, char **ret);
 
 typedef const char* (*cg_migrate_callback_t)(CGroupControllerMask mask, void *userdata);
 

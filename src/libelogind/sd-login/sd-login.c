@@ -46,7 +46,7 @@ _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
-        return cg_pid_get_unit(pid, unit);
+        return -ESRCH;
 }
 
 _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
@@ -54,7 +54,7 @@ _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
-        return cg_pid_get_user_unit(pid, unit);
+        return -ESRCH;
 }
 
 _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
@@ -62,7 +62,7 @@ _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(name, -EINVAL);
 
-        return cg_pid_get_machine_name(pid, name);
+        return -ESRCH;
 }
 
 _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
@@ -70,7 +70,7 @@ _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
-        return cg_pid_get_slice(pid, slice);
+        return -ESRCH;
 }
 
 _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
@@ -78,7 +78,7 @@ _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(uid, -EINVAL);
 
-        return cg_pid_get_owner_uid(pid, uid);
+        return -ESRCH;
 }
 
 _public_ int sd_peer_get_session(int fd, char **session) {
@@ -106,7 +106,7 @@ _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
         if (r < 0)
                 return r;
 
-        return cg_pid_get_owner_uid(ucred.pid, uid);
+        return -ESRCH;
 }
 
 _public_ int sd_peer_get_unit(int fd, char **unit) {
@@ -120,7 +120,7 @@ _public_ int sd_peer_get_unit(int fd, char **unit) {
         if (r < 0)
                 return r;
 
-        return cg_pid_get_unit(ucred.pid, unit);
+        return -ESRCH;
 }
 
 _public_ int sd_peer_get_user_unit(int fd, char **unit) {
@@ -134,7 +134,7 @@ _public_ int sd_peer_get_user_unit(int fd, char **unit) {
         if (r < 0)
                 return r;
 
-        return cg_pid_get_user_unit(ucred.pid, unit);
+        return -ESRCH;
 }
 
 _public_ int sd_peer_get_machine_name(int fd, char **machine) {
@@ -148,7 +148,7 @@ _public_ int sd_peer_get_machine_name(int fd, char **machine) {
         if (r < 0)
                 return r;
 
-        return cg_pid_get_machine_name(ucred.pid, machine);
+        return -ESRCH;
 }
 
 _public_ int sd_peer_get_slice(int fd, char **slice) {
@@ -162,7 +162,7 @@ _public_ int sd_peer_get_slice(int fd, char **slice) {
         if (r < 0)
                 return r;
 
-        return cg_pid_get_slice(ucred.pid, slice);
+        return -ESRCH;
 }
 
 static int file_of_uid(uid_t uid, char **p) {
