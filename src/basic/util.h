@@ -41,6 +41,7 @@
 #include <mntent.h>
 #include <sys/inotify.h>
 #include <sys/statfs.h>
+#include <sys/sysmacros.h>
 
 #include "macro.h"
 #include "missing.h"
