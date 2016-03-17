@@ -1456,8 +1456,11 @@ static int execute_shutdown_or_sleep(
         if (r < 0)
                 return r;
 
-        /* And we're back. */
-        send_prepare_for(m, w, false);
+        if (w == INHIBIT_SLEEP)
+                /* And we're back. */
+                send_prepare_for(m, w, false);
+
+        m->action_what = 0;
 
         /* Make sure the lid switch is ignored for a while (?) */
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
