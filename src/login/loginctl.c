@@ -54,6 +54,7 @@
 
 static char **arg_property = NULL;
 static bool arg_all = false;
+static bool arg_value = false;
 static bool arg_full = false;
 static bool arg_no_pager = false;
 static bool arg_legend = true;
@@ -715,6 +716,14 @@ static int print_seat_status_info(sd_bus *bus, const char *path, bool *new_line)
         return 0;
 }
 
+#define property(name, fmt, ...)                                        \
+        do {                                                            \
+                if (arg_value)                                          \
+                        printf(fmt "\n", __VA_ARGS__);                  \
+                else                                                    \
+                        printf("%s=" fmt "\n", name, __VA_ARGS__);      \
+        } while(0)
+
 static int print_property(const char *name, sd_bus_message *m, const char *contents) {
         int r;
 
@@ -738,7 +747,7 @@ static int print_property(const char *name, sd_bus_message *m, const char *conte
                                 return bus_log_parse_error(r);
 
                         if (arg_all || !isempty(s))
-                                printf("%s=%s\n", name, s);
+                                property(name, "%s", s);
 
                         return 0;
 
@@ -754,8 +763,7 @@ static int print_property(const char *name, sd_bus_message *m, const char *conte
                                 return -EINVAL;
                         }
 
-                        printf("%s=" UID_FMT "\n", name, uid);
-
+                        property(name, UID_FMT, uid);
                         return 0;
                 }
 
@@ -771,14 +779,16 @@ static int print_property(const char *name, sd_bus_message *m, const char *conte
                         if (r < 0)
                                 return bus_log_parse_error(r);
 
-                        printf("%s=", name);
+                        if (!arg_value)
+                                printf("%s=", name);
 
                         while ((r = sd_bus_message_read(m, "(so)", &s, NULL)) > 0) {
                                 printf("%s%s", space ? " " : "", s);
                                 space = true;
                         }
 
-                        printf("\n");
+                        if (space || !arg_value)
+                                printf("\n");
 
                         if (r < 0)
                                 return bus_log_parse_error(r);
@@ -793,7 +803,7 @@ static int print_property(const char *name, sd_bus_message *m, const char *conte
                 break;
         }
 
-        r = bus_print_property(name, m, false, arg_all);
+        r = bus_print_property(name, m, arg_value, arg_all);
         if (r < 0)
                 return bus_log_parse_error(r);
 
@@ -1614,6 +1624,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -M --machine=CONTAINER   Operate on local container\n"
                "  -p --property=NAME       Show only properties by this name\n"
                "  -a --all                 Show all properties, including empty ones\n"
+               "     --value               When showing properties, only print the value\n"
                "  -l --full                Do not ellipsize output\n"
                "     --kill-who=WHO        Who to send signal to\n"
                "  -s --signal=SIGNAL       Which signal to send\n"
@@ -1665,6 +1676,7 @@ static int parse_argv(int argc, char *argv[]) {
 
         enum {
                 ARG_VERSION = 0x100,
+                ARG_VALUE,
                 ARG_NO_PAGER,
                 ARG_NO_LEGEND,
                 ARG_KILL_WHO,
@@ -1676,6 +1688,7 @@ static int parse_argv(int argc, char *argv[]) {
                 { "version",         no_argument,       NULL, ARG_VERSION         },
                 { "property",        required_argument, NULL, 'p'                 },
                 { "all",             no_argument,       NULL, 'a'                 },
+                { "value",           no_argument,       NULL, ARG_VALUE           },
                 { "full",            no_argument,       NULL, 'l'                 },
                 { "no-pager",        no_argument,       NULL, ARG_NO_PAGER        },
                 { "no-legend",       no_argument,       NULL, ARG_NO_LEGEND       },
@@ -1722,6 +1735,10 @@ static int parse_argv(int argc, char *argv[]) {
 
                 case 'a':
                         arg_all = true;
+                        break;
+
+                case ARG_VALUE:
+                        arg_value = true;
                         break;
 
                 case 'l':
