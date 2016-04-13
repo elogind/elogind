@@ -1083,11 +1083,11 @@ static int method_terminate_seat(sd_bus_message *message, void *userdata, sd_bus
 static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *cc = NULL;
         Manager *m = userdata;
-        int b, r;
+        int r, b, interactive;
         struct passwd *pw;
         const char *path;
         uint32_t uid;
-        int interactive;
+        bool self = false;
 
         assert(message);
         assert(m);
@@ -1108,6 +1108,8 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
                 if (r < 0)
                         return r;
 
+                self = true;
+
         } else if (!uid_is_valid(uid))
                 return -EINVAL;
 
@@ -1119,7 +1121,7 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
         r = bus_verify_polkit_async(
                         message,
                         CAP_SYS_ADMIN,
-                        "org.freedesktop.login1.set-user-linger",
+                        self ? "org.freedesktop.login1.set-self-linger" : "org.freedesktop.login1.set-user-linger",
                         NULL,
                         interactive,
                         UID_INVALID,
