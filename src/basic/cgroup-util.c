@@ -134,6 +134,22 @@ int cg_read_event(const char *controller, const char *path, const char *event,
         return -ENOENT;
 }
 
+#if 0 /// UNNEEDED by elogind
+bool cg_ns_supported(void) {
+        static thread_local int enabled = -1;
+
+        if (enabled >= 0)
+                return enabled;
+
+        if (access("/proc/self/ns/cgroup", F_OK) == 0)
+                enabled = 1;
+        else
+                enabled = 0;
+
+        return enabled;
+}
+#endif //0
+
 int cg_enumerate_subgroups(const char *controller, const char *path, DIR **_d) {
         _cleanup_free_ char *fs = NULL;
         int r;

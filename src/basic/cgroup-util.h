@@ -232,6 +232,8 @@ int cg_mask_supported(CGroupMask *ret);
 
 #if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set *controllers);
+
+bool cg_ns_supported(void);
 #endif // 0
 
 int cg_unified(void);
