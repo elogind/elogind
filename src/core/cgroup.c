@@ -745,7 +745,10 @@ static void cgroup_context_apply(Unit *u, CGroupMask mask, ManagerState state) {
                                 "/dev/random\0" "rwm\0"
                                 "/dev/urandom\0" "rwm\0"
                                 "/dev/tty\0" "rwm\0"
-                                "/dev/pts/ptmx\0" "rw\0"; /* /dev/pts/ptmx may not be duplicated, but accessed */
+                                "/dev/pts/ptmx\0" "rw\0" /* /dev/pts/ptmx may not be duplicated, but accessed */
+                                /* Allow /run/elogind/inaccessible/{chr,blk} devices for mapping InaccessiblePaths */
+                                "/run/elogind/inaccessible/chr\0" "rwm\0"
+                                "/run/elogind/inaccessible/blk\0" "rwm\0";
 
                         const char *x, *y;
 
