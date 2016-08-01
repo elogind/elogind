@@ -50,6 +50,8 @@ static int detect_vm_cpuid(void) {
                 { "VMwareVMware", VIRTUALIZATION_VMWARE    },
                 /* http://msdn.microsoft.com/en-us/library/ff542428.aspx */
                 { "Microsoft Hv", VIRTUALIZATION_MICROSOFT },
+                /* https://wiki.freebsd.org/bhyve */
+                { "bhyve bhyve ", VIRTUALIZATION_BHYVE     },
         };
 
         uint32_t eax, ecx;
@@ -179,6 +181,8 @@ static int detect_vm_dmi(void) {
                 { "Xen",           VIRTUALIZATION_XEN       },
                 { "Bochs",         VIRTUALIZATION_BOCHS     },
                 { "Parallels",     VIRTUALIZATION_PARALLELS },
+                /* https://wiki.freebsd.org/bhyve */
+                { "BHYVE",         VIRTUALIZATION_BHYVE     },
         };
         unsigned i;
         int r;
@@ -506,6 +510,7 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_MICROSOFT] = "microsoft",
         [VIRTUALIZATION_ZVM] = "zvm",
         [VIRTUALIZATION_PARALLELS] = "parallels",
+        [VIRTUALIZATION_BHYVE] = "bhyve",
         [VIRTUALIZATION_VM_OTHER] = "vm-other",
 
         [VIRTUALIZATION_SYSTEMD_NSPAWN] = "systemd-nspawn",
