@@ -1293,7 +1293,7 @@ int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {
         }
 
         p = path_startswith(cgroup, root);
-        if (p && p[0] && (p > cgroup))
+        if (p && p > cgroup)
                 *shifted = p - 1;
         else
                 *shifted = cgroup;
@@ -1954,6 +1954,49 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 }
 
 #if 0 /// UNNEEDED by elogind
+int cg_get_keyed_attribute(const char *controller, const char *path, const char *attribute, const char **keys, char **values) {
+        _cleanup_free_ char *filename = NULL, *content = NULL;
+        char *line, *p;
+        int i, r;
+
+        for (i = 0; keys[i]; i++)
+                values[i] = NULL;
+
+        r = cg_get_path(controller, path, attribute, &filename);
+        if (r < 0)
+                return r;
+
+        r = read_full_file(filename, &content, NULL);
+        if (r < 0)
+                return r;
+
+        p = content;
+        while ((line = strsep(&p, "\n"))) {
+                char *key;
+
+                key = strsep(&line, " ");
+
+                for (i = 0; keys[i]; i++) {
+                        if (streq(key, keys[i])) {
+                                values[i] = strdup(line);
+                                break;
+                        }
+                }
+        }
+
+        for (i = 0; keys[i]; i++) {
+                if (!values[i]) {
+                        for (i = 0; keys[i]; i++) {
+                                free(values[i]);
+                                values[i] = NULL;
+                        }
+                        return -ENOENT;
+                }
+        }
+
+        return 0;
+}
+
 int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path) {
         CGroupController c;
         int r, unified;
@@ -2151,10 +2194,10 @@ int cg_mask_supported(CGroupMask *ret) {
                         mask |= CGROUP_CONTROLLER_TO_MASK(v);
                 }
 
-                /* Currently, we only support the memory, io and pids
+                /* Currently, we support the cpu, memory, io and pids
                  * controller in the unified hierarchy, mask
                  * everything else off. */
-                mask &= CGROUP_MASK_MEMORY | CGROUP_MASK_IO | CGROUP_MASK_PIDS;
+                mask &= CGROUP_MASK_CPU | CGROUP_MASK_MEMORY | CGROUP_MASK_IO | CGROUP_MASK_PIDS;
 
         } else {
                 CGroupController c;
