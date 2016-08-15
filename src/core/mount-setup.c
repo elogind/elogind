@@ -105,10 +105,11 @@ static const MountPoint mount_table[] = {
         { "tmpfs",       "/sys/fs/cgroup",            "tmpfs",      "mode=755",                MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_STRICTATIME,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #if 0 /// UNNEEDED by elogind
+        { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup2",    NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
+          cg_is_unified_systemd_controller_wanted, MNT_IN_CONTAINER },
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          cg_is_legacy_wanted, MNT_IN_CONTAINER           },
+          cg_is_legacy_systemd_controller_wanted, MNT_IN_CONTAINER           },
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #else
         { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER           },
