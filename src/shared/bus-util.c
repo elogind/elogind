@@ -1029,7 +1029,7 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
                         break;
 
                 if (isempty(s))
-                        break;
+                        s = NULL;
 
                 r = free_and_strdup(p, s);
                 break;
