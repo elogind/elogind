@@ -135,7 +135,7 @@ static int create_log_socket(int type) {
         if (fd < 0)
                 return -errno;
 
-        fd_inc_sndbuf(fd, SNDBUF_SIZE);
+        (void) fd_inc_sndbuf(fd, SNDBUF_SIZE);
 
         /* We need a blocking fd here since we'd otherwise lose
         messages way too early. However, let's not hang forever in the
@@ -355,7 +355,7 @@ static int write_to_console(
                 return 0;
 
         if (log_target == LOG_TARGET_CONSOLE_PREFIXED) {
-                sprintf(prefix, "<%i>", level);
+                xsprintf(prefix, "<%i>", level);
                 IOVEC_SET_STRING(iovec[n++], prefix);
         }
 
@@ -577,15 +577,15 @@ static int log_dispatch(
 
         assert(buffer);
 
+        if (error < 0)
+                error = -error;
+
         if (log_target == LOG_TARGET_NULL)
                 return -error;
 
         /* Patch in LOG_DAEMON facility if necessary */
         if ((level & LOG_FACMASK) == 0)
                 level = log_facility | LOG_PRI(level);
-
-        if (error < 0)
-                error = -error;
 
         do {
                 char *e;
