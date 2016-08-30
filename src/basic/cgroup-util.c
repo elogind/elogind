@@ -876,7 +876,7 @@ int cg_set_task_access(
         if (r < 0)
                 return r;
 
-        unified = cg_all_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
         if (unified)
@@ -891,6 +891,43 @@ int cg_set_task_access(
 }
 #endif // 0
 
+int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags) {
+        _cleanup_free_ char *fs = NULL;
+        int r;
+
+        assert(path);
+        assert(name);
+        assert(value || size <= 0);
+
+        r = cg_get_path(controller, path, NULL, &fs);
+        if (r < 0)
+                return r;
+
+        if (setxattr(fs, name, value, size, flags) < 0)
+                return -errno;
+
+        return 0;
+}
+
+int cg_get_xattr(const char *controller, const char *path, const char *name, void *value, size_t size) {
+        _cleanup_free_ char *fs = NULL;
+        ssize_t n;
+        int r;
+
+        assert(path);
+        assert(name);
+
+        r = cg_get_path(controller, path, NULL, &fs);
+        if (r < 0)
+                return r;
+
+        n = getxattr(fs, name, value, size);
+        if (n < 0)
+                return -errno;
+
+        return (int) n;
+}
+
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
         char line[LINE_MAX];
@@ -901,18 +938,17 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         assert(path);
         assert(pid >= 0);
 
-        unified = cg_all_unified();
+        if (controller) {
+                if (!cg_controller_is_valid(controller))
+                        return -EINVAL;
+        } else
+                controller = SYSTEMD_CGROUP_CONTROLLER;
+
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
-        if (unified == 0) {
-                if (controller) {
-                        if (!cg_controller_is_valid(controller))
-                                return -EINVAL;
-                } else
-                        controller = SYSTEMD_CGROUP_CONTROLLER;
-
+        if (unified == 0)
                 cs = strlen(controller);
-        }
 
         fs = procfs_file_alloca(pid, "cgroup");
         log_debug_elogind("Searching for PID %u in \"%s\" (controller \"%s\")",
@@ -980,7 +1016,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
 
         assert(agent);
 
-        unified = cg_all_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
         if (unified) /* doesn't apply to unified hierarchy */
@@ -1031,7 +1067,7 @@ int cg_uninstall_release_agent(const char *controller) {
         _cleanup_free_ char *fs = NULL;
         int r, unified;
 
-        unified = cg_all_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
         if (unified) /* Doesn't apply to unified hierarchy */
@@ -1087,7 +1123,7 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
         if (controller && (isempty(path) || path_equal(path, "/")))
                 return false;
 
-        unified = cg_all_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
 
@@ -2276,9 +2312,10 @@ int cg_kernel_controllers(Set *controllers) {
 }
 #endif // 0
 
-static thread_local int unified_cache = -1;
+static thread_local CGroupUnified unified_cache = CGROUP_UNIFIED_UNKNOWN;
 
-int cg_all_unified(void) {
+static int cg_update_unified(void) {
+
         struct statfs fs;
 
         /* Checks if we support the unified hierarchy. Returns an
@@ -2286,8 +2323,8 @@ int cg_all_unified(void) {
          * have any other trouble determining if the unified hierarchy
          * is supported. */
 
-        if (unified_cache >= 0)
-                return unified_cache;
+        if (unified_cache >= CGROUP_UNIFIED_NONE)
+                return 0;
 
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
                 return -errno;
@@ -2302,18 +2339,41 @@ int cg_all_unified(void) {
          * add such a support. */
         if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #endif // 0
-                unified_cache = true;
-        else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
-                unified_cache = false;
-        else
+                unified_cache = CGROUP_UNIFIED_ALL;
+        else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
+                if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
+                        return -errno;
+
+                unified_cache = F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC) ?
+                        CGROUP_UNIFIED_SYSTEMD : CGROUP_UNIFIED_NONE;
+        } else
                 return -ENOMEDIUM;
 
-        return unified_cache;
+        return 0;
+}
+
+int cg_unified(const char *controller) {
+
+        int r;
+
+        r = cg_update_unified();
+        if (r < 0)
+                return r;
+
+        if (streq_ptr(controller, SYSTEMD_CGROUP_CONTROLLER))
+                return unified_cache >= CGROUP_UNIFIED_SYSTEMD;
+        else
+                return unified_cache >= CGROUP_UNIFIED_ALL;
+}
+
+int cg_all_unified(void) {
+
+        return cg_unified(NULL);
 }
 
 #if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void) {
-        unified_cache = -1;
+        unified_cache = CGROUP_UNIFIED_UNKNOWN;
 }
 
 int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
@@ -2421,8 +2481,10 @@ bool cg_is_unified_systemd_controller_wanted(void) {
 
         r = get_proc_cmdline_key("systemd.legacy_systemd_cgroup_controller", NULL);
         if (r > 0) {
+        if (r > 0)
                 wanted = false;
         } else {
+        else {
                 _cleanup_free_ char *value = NULL;
 
                 r = get_proc_cmdline_key("systemd.legacy_systemd_cgroup_controller=", &value);

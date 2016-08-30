@@ -67,6 +67,7 @@ void cgroup_context_init(CGroupContext *c) {
 
         c->memory_high = CGROUP_LIMIT_MAX;
         c->memory_max = CGROUP_LIMIT_MAX;
+        c->memory_swap_max = CGROUP_LIMIT_MAX;
 
         c->memory_limit = CGROUP_LIMIT_MAX;
 
@@ -174,6 +175,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 "%sMemoryLow=%" PRIu64 "\n"
                 "%sMemoryHigh=%" PRIu64 "\n"
                 "%sMemoryMax=%" PRIu64 "\n"
+                "%sMemorySwapMax=%" PRIu64 "\n"
                 "%sMemoryLimit=%" PRIu64 "\n"
                 "%sTasksMax=%" PRIu64 "\n"
                 "%sDevicePolicy=%s\n"
@@ -195,6 +197,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 prefix, c->memory_low,
                 prefix, c->memory_high,
                 prefix, c->memory_max,
+                prefix, c->memory_swap_max,
                 prefix, c->memory_limit,
                 prefix, c->tasks_max,
                 prefix, cgroup_device_policy_to_string(c->device_policy),
@@ -618,7 +621,7 @@ static unsigned cgroup_apply_blkio_device_limit(Unit *u, const char *dev_path, u
 }
 
 static bool cgroup_context_has_unified_memory_config(CGroupContext *c) {
-        return c->memory_low > 0 || c->memory_high != CGROUP_LIMIT_MAX || c->memory_max != CGROUP_LIMIT_MAX;
+        return c->memory_low > 0 || c->memory_high != CGROUP_LIMIT_MAX || c->memory_max != CGROUP_LIMIT_MAX || c->memory_swap_max != CGROUP_LIMIT_MAX;
 }
 
 static void cgroup_apply_unified_memory_limit(Unit *u, const char *file, uint64_t v) {
@@ -666,7 +669,7 @@ static void cgroup_context_apply(Unit *u, CGroupMask mask, ManagerState state) {
                 bool has_weight = cgroup_context_has_cpu_weight(c);
                 bool has_shares = cgroup_context_has_cpu_shares(c);
 
-                if (cg_unified() > 0) {
+                if (cg_all_unified() > 0) {
                         uint64_t weight;
 
                         if (has_weight)
@@ -847,12 +850,14 @@ static void cgroup_context_apply(Unit *u, CGroupMask mask, ManagerState state) {
         }
 
         if ((mask & CGROUP_MASK_MEMORY) && !is_root) {
-                if (cg_unified() > 0) {
+                if (cg_all_unified() > 0) {
                         uint64_t max = c->memory_max;
+                        uint64_t swap_max = c->memory_swap_max;
 
-                        if (cgroup_context_has_unified_memory_config(c))
+                        if (cgroup_context_has_unified_memory_config(c)) {
                                 max = c->memory_max;
-                        else {
+                                swap_max = c->memory_swap_max;
+                        } else {
                                 max = c->memory_limit;
 
                                 if (max != CGROUP_LIMIT_MAX)
@@ -862,6 +867,7 @@ static void cgroup_context_apply(Unit *u, CGroupMask mask, ManagerState state) {
                         cgroup_apply_unified_memory_limit(u, "memory.low", c->memory_low);
                         cgroup_apply_unified_memory_limit(u, "memory.high", c->memory_high);
                         cgroup_apply_unified_memory_limit(u, "memory.max", max);
+                        cgroup_apply_unified_memory_limit(u, "memory.swap.max", swap_max);
                 } else {
                         char buf[DECIMAL_STR_MAX(uint64_t) + 1];
                         uint64_t val = c->memory_limit;
@@ -1021,7 +1027,7 @@ CGroupMask unit_get_own_mask(Unit *u) {
                 e = unit_get_exec_context(u);
                 if (!e ||
                     exec_context_maintains_privileges(e) ||
-                    cg_unified() > 0)
+                    cg_all_unified() > 0)
                         return _CGROUP_MASK_ALL;
         }
 
@@ -1247,7 +1253,7 @@ int unit_watch_cgroup(Unit *u) {
                 return 0;
 
         /* Only applies to the unified hierarchy */
-        r = cg_unified();
+        r = cg_unified(SYSTEMD_CGROUP_CONTROLLER);
         if (r < 0)
                 return log_unit_error_errno(u, r, "Failed detect whether the unified hierarchy is used: %m");
         if (r == 0)
@@ -1357,6 +1363,26 @@ int unit_attach_pids_to_cgroup(Unit *u) {
         return 0;
 }
 
+static void cgroup_xattr_apply(Unit *u) {
+        char ids[SD_ID128_STRING_MAX];
+        int r;
+
+        assert(u);
+
+        if (!MANAGER_IS_SYSTEM(u->manager))
+                return;
+
+        if (sd_id128_is_null(u->invocation_id))
+                return;
+
+        r = cg_set_xattr(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path,
+                         "trusted.invocation_id",
+                         sd_id128_to_string(u->invocation_id, ids), 32,
+                         0);
+        if (r < 0)
+                log_unit_warning_errno(u, r, "Failed to set invocation ID on control group %s, ignoring: %m", u->cgroup_path);
+}
+
 static bool unit_has_mask_realized(Unit *u, CGroupMask target_mask, CGroupMask enable_mask) {
         assert(u);
 
@@ -1400,6 +1426,7 @@ static int unit_realize_cgroup_now(Unit *u, ManagerState state) {
 
         /* Finally, apply the necessary attributes. */
         cgroup_context_apply(u, target_mask, state);
+        cgroup_xattr_apply(u);
 
         return 0;
 }
@@ -1526,6 +1553,8 @@ void unit_prune_cgroup(Unit *u) {
         if (!u->cgroup_path)
                 return;
 
+        (void) unit_get_cpu_usage(u, NULL); /* Cache the last CPU usage value before we destroy the cgroup */
+
         is_root_slice = unit_has_name(u, SPECIAL_ROOT_SLICE);
 
         r = cg_trim_everywhere(u->manager->cgroup_supported, u->cgroup_path, !is_root_slice);
@@ -1647,7 +1676,7 @@ int unit_watch_all_pids(Unit *u) {
         if (!u->cgroup_path)
                 return -ENOENT;
 
-        if (cg_unified() > 0) /* On unified we can use proper notifications */
+        if (cg_unified(SYSTEMD_CGROUP_CONTROLLER) > 0) /* On unified we can use proper notifications */
                 return 0;
 
         return unit_watch_pids_in_path(u, u->cgroup_path);
@@ -1721,7 +1750,7 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
 int manager_setup_cgroup(Manager *m) {
         _cleanup_free_ char *path = NULL;
         CGroupController c;
-        int r, unified;
+        int r, all_unified, systemd_unified;
         char *e;
 
         assert(m);
@@ -1762,11 +1791,17 @@ int manager_setup_cgroup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Cannot find cgroup mount point: %m");
 
-        unified = cg_unified();
-        if (unified < 0)
-                return log_error_errno(r, "Couldn't determine if we are running in the unified hierarchy: %m");
-        if (unified > 0)
+        all_unified = cg_all_unified();
+        systemd_unified = cg_unified(SYSTEMD_CGROUP_CONTROLLER);
+
+        if (all_unified < 0 || systemd_unified < 0)
+                return log_error_errno(all_unified < 0 ? all_unified : systemd_unified,
+                                       "Couldn't determine if we are running in the unified hierarchy: %m");
+
+        if (all_unified > 0)
                 log_debug("Unified cgroup hierarchy is located at %s.", path);
+        else if (systemd_unified > 0)
+                log_debug("Unified cgroup hierarchy is located at %s. Controllers are on legacy hierarchies.", path);
         else
                 log_debug("Using cgroup controller " SYSTEMD_CGROUP_CONTROLLER ". File system hierarchy is at %s.", path);
 
@@ -1774,7 +1809,7 @@ int manager_setup_cgroup(Manager *m) {
                 const char *scope_path;
 
                 /* 3. Install agent */
-                if (unified) {
+                if (systemd_unified) {
 
                         /* In the unified hierarchy we can get
                          * cgroup empty notifications via inotify. */
@@ -1852,7 +1887,7 @@ int manager_setup_cgroup(Manager *m) {
                         return log_error_errno(errno, "Failed to open pin file: %m");
 
                 /* 6.  Always enable hierarchical support if it exists... */
-                if (!unified)
+                if (!all_unified)
                         (void) cg_set_attribute("memory", "/", "memory.use_hierarchy", "1");
         }
 
@@ -1989,7 +2024,6 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         return 0;
 }
 #endif // 0
-
 #if 0 /// UNNEEDED by elogind
 int unit_get_memory_current(Unit *u, uint64_t *ret) {
         _cleanup_free_ char *v = NULL;
@@ -2004,7 +2038,7 @@ int unit_get_memory_current(Unit *u, uint64_t *ret) {
         if ((u->cgroup_realized_mask & CGROUP_MASK_MEMORY) == 0)
                 return -ENODATA;
 
-        if (cg_unified() <= 0)
+        if (cg_all_unified() <= 0)
                 r = cg_get_attribute("memory", u->cgroup_path, "memory.usage_in_bytes", &v);
         else
                 r = cg_get_attribute("memory", u->cgroup_path, "memory.current", &v);
@@ -2049,7 +2083,7 @@ static int unit_get_cpu_usage_raw(Unit *u, nsec_t *ret) {
         if (!u->cgroup_path)
                 return -ENODATA;
 
-        if (cg_unified() > 0) {
+        if (cg_all_unified() > 0) {
                 const char *keys[] = { "usage_usec", NULL };
                 _cleanup_free_ char *val = NULL;
                 uint64_t us;
@@ -2089,7 +2123,21 @@ int unit_get_cpu_usage(Unit *u, nsec_t *ret) {
         nsec_t ns;
         int r;
 
+        assert(u);
+
+        /* Retrieve the current CPU usage counter. This will subtract the CPU counter taken when the unit was
+         * started. If the cgroup has been removed already, returns the last cached value. To cache the value, simply
+         * call this function with a NULL return value. */
+
         r = unit_get_cpu_usage_raw(u, &ns);
+        if (r == -ENODATA && u->cpu_usage_last != NSEC_INFINITY) {
+                /* If we can't get the CPU usage anymore (because the cgroup was already removed, for example), use our
+                 * cached value. */
+
+                if (ret)
+                        *ret = u->cpu_usage_last;
+                return 0;
+        }
         if (r < 0)
                 return r;
 
@@ -2098,7 +2146,10 @@ int unit_get_cpu_usage(Unit *u, nsec_t *ret) {
         else
                 ns = 0;
 
-        *ret = ns;
+        u->cpu_usage_last = ns;
+        if (ret)
+                *ret = ns;
+
         return 0;
 }
 
@@ -2107,6 +2158,8 @@ int unit_reset_cpu_usage(Unit *u) {
         int r;
 
         assert(u);
+
+        u->cpu_usage_last = NSEC_INFINITY;
 
         r = unit_get_cpu_usage_raw(u, &ns);
         if (r < 0) {

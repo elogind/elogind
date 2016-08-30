@@ -102,18 +102,22 @@ int log_object_internal(
                 const char *func,
                 const char *object_field,
                 const char *object,
-                const char *format, ...) _printf_(8,9);
+                const char *extra_field,
+                const char *extra,
+                const char *format, ...) _printf_(10,11);
 
 int log_object_internalv(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
                 const char *object,
+                const char *extra_field,
+                const char *extra,
                 const char *format,
-                va_list ap) _printf_(8,0);
+                va_list ap) _printf_(9,0);
 
 int log_struct_internal(
                 int level,
@@ -203,7 +207,6 @@ void log_assert_failed_return(
 #else
 #  define log_debug_elogind(...) do {} while (0)
 #endif // ENABLE_DEBUG_ELOGIND
-
 /* Structured logging */
 #define log_struct(level, ...) log_struct_internal(level, 0, __FILE__, __LINE__, __func__, __VA_ARGS__)
 #define log_struct_errno(level, error, ...) log_struct_internal(level, error, __FILE__, __LINE__, __func__, __VA_ARGS__)
