@@ -1712,7 +1712,7 @@ int cg_path_get_slice(const char *p, char **slice) {
                         if (!e) {
                                 char *s;
 
-                                s = strdup("-.slice");
+                                s = strdup(SPECIAL_ROOT_SLICE);
                                 if (!s)
                                         return -ENOMEM;
 
@@ -1869,7 +1869,7 @@ int cg_slice_to_path(const char *unit, char **ret) {
         assert(unit);
         assert(ret);
 
-        if (streq(unit, "-.slice")) {
+        if (streq(unit, SPECIAL_ROOT_SLICE)) {
                 char *x;
 
                 x = strdup("");
