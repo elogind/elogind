@@ -1046,7 +1046,7 @@ int fopen_temporary(const char *path, FILE **_f, char **_temp_path) {
         if (r < 0)
                 return r;
 
-        fd = mkostemp_safe(t, O_WRONLY|O_CLOEXEC);
+        fd = mkostemp_safe(t);
         if (fd < 0) {
                 free(t);
                 return -errno;
@@ -1079,7 +1079,7 @@ int fflush_and_check(FILE *f) {
 }
 
 /* This is much like mkostemp() but is subject to umask(). */
-int mkostemp_safe(char *pattern, int flags) {
+int mkostemp_safe(char *pattern) {
         _cleanup_umask_ mode_t u = 0;
         int fd;
 
@@ -1087,7 +1087,7 @@ int mkostemp_safe(char *pattern, int flags) {
 
         u = umask(077);
 
-        fd = mkostemp(pattern, flags);
+        fd = mkostemp(pattern, O_CLOEXEC);
         if (fd < 0)
                 return -errno;
 
@@ -1293,7 +1293,7 @@ int open_tmpfile_unlinkable(const char *directory, int flags) {
         /* Fall back to unguessable name + unlinking */
         p = strjoina(directory, "/systemd-tmp-XXXXXX");
 
-        fd = mkostemp_safe(p, flags);
+        fd = mkostemp_safe(p);
         if (fd < 0)
                 return fd;
 
