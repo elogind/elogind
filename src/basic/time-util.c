@@ -40,10 +40,6 @@
 #include "strv.h"
 #include "time-util.h"
 
-#if 0 /// UNNEEDED by elogind
-static nsec_t timespec_load_nsec(const struct timespec *ts);
-#endif // 0
-
 static clockid_t map_clock_id(clockid_t c) {
 
         /* Some more exotic archs (s390, ppc, …) lack the "ALARM" flavour of the clocks. Thus, clock_gettime() will
@@ -205,7 +201,7 @@ usec_t timespec_load(const struct timespec *ts) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static nsec_t timespec_load_nsec(const struct timespec *ts) {
+nsec_t timespec_load_nsec(const struct timespec *ts) {
         assert(ts);
 
         if (ts->tv_sec == (time_t) -1 && ts->tv_nsec == (long) -1)
