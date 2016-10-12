@@ -817,9 +817,14 @@ bool is_device_path(const char *path) {
         /* Returns true on paths that refer to a device, either in
          * sysfs or in /dev */
 
-        return
-                path_startswith(path, "/dev/") ||
-                path_startswith(path, "/sys/");
+        return path_startswith(path, "/dev/") ||
+               path_startswith(path, "/sys/");
+}
+
+bool is_deviceallow_pattern(const char *path) {
+        return path_startswith(path, "/dev/") ||
+               startswith(path, "block-") ||
+               startswith(path, "char-");
 }
 #endif // 0
 
