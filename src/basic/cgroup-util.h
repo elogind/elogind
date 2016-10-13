@@ -118,6 +118,13 @@ static inline bool CGROUP_BLKIO_WEIGHT_IS_OK(uint64_t x) {
 #define DEFAULT_TASKS_MAX_PERCENTAGE            15U /* 15% of PIDs, 4915 on default settings */
 #define DEFAULT_USER_TASKS_MAX_PERCENTAGE       33U /* 33% of PIDs, 10813 on default settings */
 
+typedef enum CGroupUnified {
+        CGROUP_UNIFIED_UNKNOWN = -1,
+        CGROUP_UNIFIED_NONE = 0,        /* Both systemd and controllers on legacy */
+        CGROUP_UNIFIED_SYSTEMD = 1,     /* Only systemd on unified */
+        CGROUP_UNIFIED_ALL = 2,         /* Both systemd and controllers on unified */
+} CGroupUnified;
+
 /*
  * General rules:
  *
@@ -182,6 +189,9 @@ int cg_set_group_access(const char *controller, const char *path, mode_t mode, u
 int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 #endif // 0
 
+int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags);
+int cg_get_xattr(const char *controller, const char *path, const char *name, void *value, size_t size);
+
 int cg_install_release_agent(const char *controller, const char *agent);
 int cg_uninstall_release_agent(const char *controller);
 
@@ -242,12 +252,15 @@ bool cg_ns_supported(void);
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-int cg_unified(void);
+int cg_all_unified(void);
+int cg_unified(const char *controller);
 void cg_unified_flush(void);
 
 bool cg_is_unified_wanted(void);
 #endif // 0
 bool cg_is_legacy_wanted(void);
+bool cg_is_unified_systemd_controller_wanted(void);
+bool cg_is_legacy_systemd_controller_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
@@ -257,3 +270,6 @@ int cg_weight_parse(const char *s, uint64_t *ret);
 int cg_cpu_shares_parse(const char *s, uint64_t *ret);
 int cg_blkio_weight_parse(const char *s, uint64_t *ret);
 #endif // 0
+
+bool is_cgroup_fs(const struct statfs *s);
+bool fd_is_cgroup_fs(int fd);
