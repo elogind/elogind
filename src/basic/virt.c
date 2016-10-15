@@ -491,6 +491,9 @@ int detect_virtualization(void) {
 int running_in_chroot(void) {
         int ret;
 
+        if (getenv_bool("SYSTEMD_IGNORE_CHROOT") > 0)
+                return 0;
+
         ret = files_same("/proc/1/root", "/");
         if (ret < 0)
                 return ret;
