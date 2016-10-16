@@ -684,9 +684,7 @@ int chase_symlinks(const char *path, const char *_root, char **ret) {
                             !path_startswith(parent, root))
                                 return -EINVAL;
 
-                        free(done);
-                        done = parent;
-                        parent = NULL;
+                        free_and_replace(done, parent);
 
                         fd_parent = openat(fd, "..", O_CLOEXEC|O_NOFOLLOW|O_PATH);
                         if (fd_parent < 0)
@@ -730,9 +728,7 @@ int chase_symlinks(const char *path, const char *_root, char **ret) {
                                 if (fd < 0)
                                         return -errno;
 
-                                free(buffer);
-                                buffer = destination;
-                                destination = NULL;
+                                free_and_replace(buffer, destination);
 
                                 todo = buffer;
                                 free(done);
