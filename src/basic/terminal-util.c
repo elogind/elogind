@@ -47,7 +47,6 @@
 #include "log.h"
 #include "macro.h"
 #include "parse-util.h"
-#include "path-util.h"
 #include "process-util.h"
 #include "socket-util.h"
 #include "stat-util.h"

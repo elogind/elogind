@@ -24,7 +24,6 @@
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"
-#include "process-util.h"
 #include "signal-util.h"
 #include "util.h"
 

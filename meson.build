@@ -496,6 +496,8 @@ foreach ident : [
                                  #include <keyutils.h>'''],
         ['copy_file_range',   '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
+        ['bpf',               '''#include <sys/syscall.h>
+                                 #include <unistd.h>'''],
         ['explicit_bzero' ,   '''#include <string.h>'''],
 ]
 
@@ -761,7 +763,7 @@ endif
 
 #if 0 /// UNNEEDED by elogind
 # libmount = dependency('mount',
-#                       version : '>= 2.27')
+#                       version : '>= 2.30')
 #
 # want_seccomp = get_option('seccomp')
 # if want_seccomp != 'false'
@@ -2460,17 +2462,17 @@ executable('elogind-cgroups-agent',
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-# endif
 #
 #         exe = executable('networkctl',
-#                  networkctl_sources,
-#                  include_directories : includes,
-#                  link_with : [libsystemd_network,
+#                    networkctl_sources,
+#                    include_directories : includes,
+#                    link_with : [libsystemd_network,
 #                               libshared],
-#                  install_rpath : rootlibexecdir,
-#                  install : true,
-#                  install_dir : rootbindir)
-# public_programs += [exe]
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootbindir)
+#         public_programs += [exe]
+# endif
 #endif // 0
 
 ############################################################

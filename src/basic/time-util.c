@@ -861,11 +861,11 @@ parse_usec:
         }
 
 from_tm:
-        if (weekday >= 0 && tm.tm_wday != weekday)
-                return -EINVAL;
-
         x = mktime_or_timegm(&tm, utc);
         if (x < 0)
+                return -EINVAL;
+
+        if (weekday >= 0 && tm.tm_wday != weekday)
                 return -EINVAL;
 
         ret = (usec_t) x * USEC_PER_SEC + x_usec;
@@ -895,17 +895,19 @@ typedef struct ParseTimestampResult {
 } ParseTimestampResult;
 
 int parse_timestamp(const char *t, usec_t *usec) {
-        char *last_space, *tz = NULL;
+        char *last_space, *timezone = NULL;
         ParseTimestampResult *shared, tmp;
         int r;
         pid_t pid;
 
         last_space = strrchr(t, ' ');
         if (last_space != NULL && timezone_is_valid(last_space + 1))
-                tz = last_space + 1;
+                timezone = last_space + 1;
 
-        if (tz == NULL || endswith_no_case(t, " UTC"))
+        if (timezone == NULL || endswith_no_case(t, " UTC"))
                 return parse_timestamp_impl(t, usec, false);
+
+        t = strndupa(t, last_space - t);
 
         shared = mmap(NULL, sizeof *shared, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
         if (shared == MAP_FAILED)
@@ -920,24 +922,14 @@ int parse_timestamp(const char *t, usec_t *usec) {
         }
 
         if (pid == 0) {
-                bool with_tz = true;
-
-                if (setenv("TZ", tz, 1) != 0) {
+                if (setenv("TZ", timezone, 1) != 0) {
                         shared->return_value = negative_errno();
                         _exit(EXIT_FAILURE);
                 }
 
                 tzset();
 
-                /* If there is a timezone that matches the tzname fields, leave the parsing to the implementation.
-                 * Otherwise just cut it off */
-                with_tz = !STR_IN_SET(tz, tzname[0], tzname[1]);
-
-                /*cut off the timezone if we dont need it*/
-                if (with_tz)
-                        t = strndupa(t, last_space - t);
-
-                shared->return_value = parse_timestamp_impl(t, &shared->usec, with_tz);
+                shared->return_value = parse_timestamp_impl(t, &shared->usec, true);
 
                 _exit(EXIT_SUCCESS);
         }

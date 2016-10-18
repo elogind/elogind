@@ -1140,7 +1140,6 @@ static int manager_dispatch_reload_signal(sd_event_source *s, const struct signa
 #if 1 /// elogind needs an Add-On for sleep configuration
         elogind_manager_reset_config(m);
 #endif // 1
-
         return 0;
 }
 
@@ -1164,7 +1163,6 @@ static int manager_startup(Manager *m) {
 #if 1 /// elogind needs some extra preparations before connecting...
         elogind_manager_startup(m);
 #endif // 1
-
         /* Connect to console */
         r = manager_connect_console(m);
         if (r < 0)
@@ -1343,14 +1341,13 @@ int main(int argc, char *argv[]) {
 #if 1 /// elogind needs an Add-On for sleep configuration
         elogind_manager_reset_config(m);
 #endif // 1
-
         r = manager_startup(m);
         if (r < 0) {
                 log_error_errno(r, "Failed to fully start up daemon: %m");
                 goto finish;
         }
 
-        log_debug("elogind running as pid "PID_FMT, getpid());
+        log_debug("elogind running as pid "PID_FMT, getpid_cached());
 
         sd_notify(false,
                   "READY=1\n"

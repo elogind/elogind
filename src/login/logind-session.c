@@ -33,7 +33,6 @@
 #include "bus-error.h"
 #include "bus-util.h"
 #include "escape.h"
-#include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"

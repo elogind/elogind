@@ -21,7 +21,6 @@
 #include <unistd.h>
 
 #include "macro.h"
-#include "process-util.h"
 #include "signal-util.h"
 
 static void test_block_signals(void) {
