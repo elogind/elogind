@@ -42,7 +42,6 @@
 #include "signal-util.h"
 #include "strv.h"
 #include "udev-util.h"
-
 /// Additional includes needed by elogind
 #include "cgroup.h"       // From src/core/
 #include "elogind.h"
