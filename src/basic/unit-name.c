@@ -275,7 +275,7 @@ int unit_name_build(const char *prefix, const char *instance, const char *suffix
         if (!instance)
                 s = strappend(prefix, suffix);
         else
-                s = strjoin(prefix, "@", instance, suffix, NULL);
+                s = strjoin(prefix, "@", instance, suffix);
         if (!s)
                 return -ENOMEM;
 
@@ -557,7 +557,7 @@ int unit_name_from_path_instance(const char *prefix, const char *path, const cha
         if (r < 0)
                 return r;
 
-        s = strjoin(prefix, "@", p, suffix, NULL);
+        s = strjoin(prefix, "@", p, suffix);
         if (!s)
                 return -ENOMEM;
 

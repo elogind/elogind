@@ -1355,7 +1355,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
                         return -ENOMEM;
         }
 
-        b->address = strjoin("unixexec:path=ssh,argv1=-xT,argv2=", e, ",argv3=systemd-stdio-bridge", c, NULL);
+        b->address = strjoin("unixexec:path=ssh,argv1=-xT,argv2=", e, ",argv3=systemd-stdio-bridge", c);
         if (!b->address)
                 return -ENOMEM;
 
@@ -1403,7 +1403,7 @@ int bus_set_address_system_machine(sd_bus *b, const char *machine) {
         if (!e)
                 return -ENOMEM;
 
-        b->address = strjoin("x-machine-kernel:machine=", e, ";x-machine-unix:machine=", e, NULL);
+        b->address = strjoin("x-machine-kernel:machine=", e, ";x-machine-unix:machine=", e);
         if (!b->address)
                 return -ENOMEM;
 
@@ -3511,7 +3511,7 @@ _public_ int sd_bus_path_encode(const char *prefix, const char *external_id, cha
         if (!e)
                 return -ENOMEM;
 
-        ret = strjoin(prefix, "/", e, NULL);
+        ret = strjoin(prefix, "/", e);
         if (!ret)
                 return -ENOMEM;
 
