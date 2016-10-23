@@ -346,7 +346,7 @@ int cg_kill_recursive(
         while ((r = cg_read_subgroup(d, &fn)) > 0) {
                 _cleanup_free_ char *p = NULL;
 
-                p = strjoin(path, "/", fn, NULL);
+                p = strjoin(path, "/", fn);
                 free(fn);
                 if (!p)
                         return -ENOMEM;
@@ -484,7 +484,7 @@ int cg_migrate_recursive(
         while ((r = cg_read_subgroup(d, &fn)) > 0) {
                 _cleanup_free_ char *p = NULL;
 
-                p = strjoin(pfrom, "/", fn, NULL);
+                p = strjoin(pfrom, "/", fn);
                 free(fn);
                 if (!p)
                         return -ENOMEM;
@@ -567,11 +567,11 @@ static int join_path_legacy(const char *controller, const char *path, const char
         if (isempty(path) && isempty(suffix))
                 t = strappend("/sys/fs/cgroup/", dn);
         else if (isempty(path))
-                t = strjoin("/sys/fs/cgroup/", dn, "/", suffix, NULL);
+                t = strjoin("/sys/fs/cgroup/", dn, "/", suffix);
         else if (isempty(suffix))
-                t = strjoin("/sys/fs/cgroup/", dn, "/", path, NULL);
+                t = strjoin("/sys/fs/cgroup/", dn, "/", path);
         else
-                t = strjoin("/sys/fs/cgroup/", dn, "/", path, "/", suffix, NULL);
+                t = strjoin("/sys/fs/cgroup/", dn, "/", path, "/", suffix);
         if (!t)
                 return -ENOMEM;
 
@@ -591,7 +591,7 @@ static int join_path_unified(const char *path, const char *suffix, char **fs) {
         else if (isempty(suffix))
                 t = strappend("/sys/fs/cgroup/", path);
         else
-                t = strjoin("/sys/fs/cgroup/", path, "/", suffix, NULL);
+                t = strjoin("/sys/fs/cgroup/", path, "/", suffix);
         if (!t)
                 return -ENOMEM;
 
@@ -618,7 +618,7 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
                 else if (!path)
                         t = strdup(suffix);
                 else
-                        t = strjoin(path, "/", suffix, NULL);
+                        t = strjoin(path, "/", suffix);
                 if (!t)
                         return -ENOMEM;
 
@@ -1155,7 +1155,7 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
                 while ((r = cg_read_subgroup(d, &fn)) > 0) {
                         _cleanup_free_ char *p = NULL;
 
-                        p = strjoin(path, "/", fn, NULL);
+                        p = strjoin(path, "/", fn);
                         free(fn);
                         if (!p)
                                 return -ENOMEM;
@@ -2481,10 +2481,8 @@ bool cg_is_unified_systemd_controller_wanted(void) {
                 return wanted;
 
         r = get_proc_cmdline_key("systemd.legacy_systemd_cgroup_controller", NULL);
-        if (r > 0) {
         if (r > 0)
                 wanted = false;
-        } else {
         else {
                 _cleanup_free_ char *value = NULL;
 

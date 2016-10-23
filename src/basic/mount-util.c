@@ -161,7 +161,7 @@ int fd_is_mount_point(int fd, const char *filename, int flags) {
 
 fallback_fdinfo:
         r = fd_fdinfo_mnt_id(fd, filename, flags, &mount_id);
-        if (IN_SET(r, -EOPNOTSUPP, -EACCES))
+        if (r == -EOPNOTSUPP)
                 goto fallback_fstat;
         if (r < 0)
                 return r;
@@ -525,7 +525,6 @@ bool fstype_is_network(const char *fstype) {
                 "glusterfs\0"
                 "pvfs2\0" /* OrangeFS */
                 "ocfs2\0"
-                "lustre\0"
                 ;
 
         const char *x;
@@ -644,7 +643,7 @@ static char* mount_flags_to_string(long unsigned flags) {
                     FLAG(MS_I_VERSION),
                     FLAG(MS_STRICTATIME),
                     FLAG(MS_LAZYTIME),
-                    y, NULL);
+                    y);
         if (!x)
                 return NULL;
         if (!y)
