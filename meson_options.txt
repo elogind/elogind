@@ -7,7 +7,6 @@ option('rootlibdir', type : 'string',
 option('rootprefix', type : 'string',
        description : '''override the root prefix''')
 #if 0 /// UNNEEDED by elogind
-# Note: See meson.build why we use precompiler masks
 # option('link-udev-shared', type : 'boolean',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
 # 

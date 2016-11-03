@@ -2474,7 +2474,6 @@ executable('elogind-cgroups-agent',
 #         public_programs += [exe]
 # endif
 #endif // 0
-
 ############################################################
 
 foreach tuple : tests
