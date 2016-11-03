@@ -1650,7 +1650,7 @@ int bus_kernel_create_bus(const char *name, bool world, char **s) {
         if (s) {
                 char *p;
 
-                p = strjoin("/sys/fs/kdbus/", n->str, "/bus");
+                p = strjoin("/sys/fs/kdbus/", n->str, "/bus", NULL);
                 if (!p) {
                         safe_close(fd);
                         return -ENOMEM;
