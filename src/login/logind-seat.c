@@ -420,7 +420,7 @@ int seat_start(Seat *s) {
                 return 0;
 
         log_struct(LOG_INFO,
-                   "MESSAGE_ID=" SD_MESSAGE_SEAT_START_STR,
+                   LOG_MESSAGE_ID(SD_MESSAGE_SEAT_START),
                    "SEAT_ID=%s", s->id,
                    LOG_MESSAGE("New seat %s.", s->id),
                    NULL);
@@ -450,7 +450,7 @@ int seat_stop(Seat *s, bool force) {
 
         if (s->started)
                 log_struct(LOG_INFO,
-                           "MESSAGE_ID=" SD_MESSAGE_SEAT_STOP_STR,
+                           LOG_MESSAGE_ID(SD_MESSAGE_SEAT_STOP),
                            "SEAT_ID=%s", s->id,
                            LOG_MESSAGE("Removed seat %s.", s->id),
                            NULL);
@@ -546,6 +546,8 @@ int seat_attach_session(Seat *s, Session *session) {
         session->seat = s;
         LIST_PREPEND(sessions_by_seat, s->sessions, session);
         seat_assign_position(s, session);
+
+        seat_send_changed(s, "Sessions", NULL);
 
         /* On seats with VTs, the VT logic defines which session is active. On
          * seats without VTs, we automatically activate new sessions. */

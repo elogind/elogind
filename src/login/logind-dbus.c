@@ -1301,7 +1301,8 @@ static int flush_devices(Manager *m) {
         } else {
                 struct dirent *de;
 
-                FOREACH_DIRENT_ALL(de, d, break) {
+                while ((de = readdir(d))) {
+
                         if (!dirent_is_file(de))
                                 continue;
 
@@ -1446,7 +1447,7 @@ static int bus_manager_log_shutdown(
                 p = strjoina(p, " (", m->wall_message, ").");
 
         return log_struct(LOG_NOTICE,
-                          "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
+                          LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
                           p,
                           q,
                           NULL);
@@ -2464,9 +2465,13 @@ static int method_set_wall_message(
                 return 1; /* Will call us back */
 #endif // 0
 
-        r = free_and_strdup(&m->wall_message, empty_to_null(wall_message));
-        if (r < 0)
-                return log_oom();
+        if (isempty(wall_message))
+                m->wall_message = mfree(m->wall_message);
+        else {
+                r = free_and_strdup(&m->wall_message, wall_message);
+                if (r < 0)
+                        return log_oom();
+        }
 
         m->enable_wall_messages = enable_wall_messages;
 

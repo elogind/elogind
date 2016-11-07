@@ -42,7 +42,7 @@
 #include "capability-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "formats-util.h"
+#include "format-util.h"
 #include "memfd-util.h"
 #include "parse-util.h"
 #include "stdio-util.h"
@@ -1650,7 +1650,7 @@ int bus_kernel_create_bus(const char *name, bool world, char **s) {
         if (s) {
                 char *p;
 
-                p = strjoin("/sys/fs/kdbus/", n->str, "/bus", NULL);
+                p = strjoin("/sys/fs/kdbus/", n->str, "/bus");
                 if (!p) {
                         safe_close(fd);
                         return -ENOMEM;

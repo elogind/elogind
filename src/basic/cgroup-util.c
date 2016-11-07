@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 //#include <sys/statfs.h>
 #include <sys/types.h>
+#include <sys/xattr.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
@@ -37,7 +38,7 @@
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "formats-util.h"
+#include "format-util.h"
 #include "fs-util.h"
 //#include "log.h"
 #include "login-util.h"
