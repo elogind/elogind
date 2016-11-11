@@ -88,6 +88,7 @@ struct CGroupContext {
         bool blockio_accounting;
         bool memory_accounting;
         bool tasks_accounting;
+        bool ip_accounting;
 
         /* For unified hierarchy */
         uint64_t cpu_weight;
@@ -103,6 +104,9 @@ struct CGroupContext {
         uint64_t memory_high;
         uint64_t memory_max;
         uint64_t memory_swap_max;
+
+        LIST_HEAD(IPAddressAccessItem, ip_address_allow);
+        LIST_HEAD(IPAddressAccessItem, ip_address_deny);
 
         /* For legacy hierarchies */
         uint64_t cpu_shares;
