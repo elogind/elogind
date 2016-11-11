@@ -4,6 +4,8 @@
 #         audit-fd.h
 #         automount.c
 #         automount.h
+#         bpf-firewall.c
+#         bpf-firewall.h
 #         cgroup.c
 #         cgroup.h
 #         dbus-automount.c
