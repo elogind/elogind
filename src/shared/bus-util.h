@@ -179,3 +179,5 @@ int bus_path_decode_unique(const char *path, const char *prefix, char **ret_send
 #if 0 /// UNNEEDED by elogind
 int bus_property_get_rlimit(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
 #endif // 0
+
+int bus_track_add_name_many(sd_bus_track *t, char **l);
