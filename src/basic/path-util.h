@@ -76,8 +76,8 @@ static inline bool path_equal_ptr(const char *a, const char *b) {
 #if 0 /// UNNEEDED by elogind
 int path_strv_make_absolute_cwd(char **l);
 #endif // 0
-char** path_strv_resolve(char **l, const char *prefix);
-char** path_strv_resolve_uniq(char **l, const char *prefix);
+char** path_strv_resolve(char **l, const char *root);
+char** path_strv_resolve_uniq(char **l, const char *root);
 
 #if 0 /// UNNEEDED by elogind
 int find_binary(const char *name, char **filename);
