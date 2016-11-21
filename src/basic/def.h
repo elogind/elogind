@@ -33,9 +33,24 @@
  * the watchdog pings will keep the loop busy. */
 #define DEFAULT_EXIT_USEC (30*USEC_PER_SEC)
 
+/* The default value for the net.unix.max_dgram_qlen sysctl */
+#define DEFAULT_UNIX_MAX_DGRAM_QLEN 512UL
+
+#if 0 /// elogind allows foreign cgroup controllers. (Well, needs them, actually)
+#define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=systemd"
+#define SYSTEMD_CGROUP_CONTROLLER_HYBRID "name=unified"
+#define SYSTEMD_CGROUP_CONTROLLER "_systemd"
+#else
+#ifndef SYSTEMD_CGROUP_CONTROLLER_LEGACY
+#  define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=elogind"
+#endif // SYSTEMD_CGROUP_CONTROLLER_LEGACY
+#ifndef SYSTEMD_CGROUP_CONTROLLER_HYBRID
+#  define SYSTEMD_CGROUP_CONTROLLER_HYBRID "name=elogind"
+#endif // SYSTEMD_CGROUP_CONTROLLER_HYBRID
 #ifndef SYSTEMD_CGROUP_CONTROLLER
-#  define SYSTEMD_CGROUP_CONTROLLER "name=elogind"
-#endif
+#  define SYSTEMD_CGROUP_CONTROLLER "_elogind"
+#endif // SYSTEMD_CGROUP_CONTROLLER
+#endif // 0
 
 #define SIGNALS_CRASH_HANDLER SIGSEGV,SIGILL,SIGFPE,SIGBUS,SIGQUIT,SIGABRT
 #define SIGNALS_IGNORE SIGPIPE

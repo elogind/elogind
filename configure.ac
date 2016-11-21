@@ -153,10 +153,7 @@ AS_IF(  [test "x$with_cgroupctrl" = "xnone"], [with_cgroupctrl=elogind])
 # If this was not possible, /proc/self/cgroup not mounted yet, and 'auto'
 # chosen, error out.
 AS_IF(  [test -z "$with_cgroupctrl"],
-        AC_MSG_ERROR([No running cgroup controller found]), [
-        # Otherwise add the 'name=' prefix
-        with_cgroupctrl="name=$with_cgroupctrl"
-])
+        AC_MSG_ERROR([No running cgroup controller found]))
 
 # ------------------------------------------------------------------------------
 address_sanitizer_cflags=

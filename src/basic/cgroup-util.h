@@ -253,17 +253,17 @@ int cg_kernel_controllers(Set *controllers);
 bool cg_ns_supported(void);
 #endif // 0
 
-int cg_all_unified(void);
-int cg_unified(const char *controller);
 #if 0 /// UNNEEDED by elogind
-void cg_unified_flush(void);
+bool cg_all_unified(void);
+bool cg_hybrid_unified(void);
+bool cg_unified(const char *controller);
+int cg_unified_flush(void);
 
 bool cg_is_unified_wanted(void);
 #endif // 0
 bool cg_is_legacy_wanted(void);
 #if 0 /// UNNEEDED by elogind
 bool cg_is_unified_systemd_controller_wanted(void);
-bool cg_is_legacy_systemd_controller_wanted(void);
 #endif // 0
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;

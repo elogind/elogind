@@ -105,10 +105,10 @@ static const MountPoint mount_table[] = {
         { "tmpfs",       "/sys/fs/cgroup",            "tmpfs",      "mode=755",                MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_STRICTATIME,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #if 0 /// UNNEEDED by elogind
-        { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup2",    NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup/unified",    "cgroup2",    NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_unified_systemd_controller_wanted, MNT_IN_CONTAINER },
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          cg_is_legacy_systemd_controller_wanted, MNT_IN_CONTAINER           },
+          cg_is_legacy_wanted, MNT_IN_CONTAINER     },
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
 #else
         { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
@@ -377,7 +377,6 @@ int mount_setup(bool loaded_policy) {
         int r = 0;
 
         r = mount_points_setup(ELEMENTSOF(mount_table), loaded_policy);
-
         if (r < 0)
                 return r;
 
@@ -409,26 +408,25 @@ int mount_setup(bool loaded_policy) {
          * udevd. */
         dev_setup(NULL, UID_INVALID, GID_INVALID);
 
-        /* Mark the root directory as shared in regards to mount
-         * propagation. The kernel defaults to "private", but we think
-         * it makes more sense to have a default of "shared" so that
-         * nspawn and the container tools work out of the box. If
-         * specific setups need other settings they can reset the
-         * propagation mode to private if needed. */
+        /* Mark the root directory as shared in regards to mount propagation. The kernel defaults to "private", but we
+         * think it makes more sense to have a default of "shared" so that nspawn and the container tools work out of
+         * the box. If specific setups need other settings they can reset the propagation mode to private if
+         * needed. Note that we set this only when we are invoked directly by the kernel. If we are invoked by a
+         * container manager we assume the container manager knows what it is doing (for example, because it set up
+         * some directories with different propagation modes). */
         if (detect_container() <= 0)
                 if (mount(NULL, "/", NULL, MS_REC|MS_SHARED, NULL) < 0)
                         log_warning_errno(errno, "Failed to set up the root directory for shared mount propagation: %m");
 
-        /* Create a few directories we always want around, Note that
-         * sd_booted() checks for /run/systemd/system, so this mkdir
-         * really needs to stay for good, otherwise software that
-         * copied sd-daemon.c into their sources will misdetect
-         * systemd. */
 #endif // 0
+        /* Create a few directories we always want around, Note that sd_booted() checks for /run/systemd/system, so
+         * this mkdir really needs to stay for good, otherwise software that copied sd-daemon.c into their sources will
+         * misdetect systemd. */
         (void) mkdir_label("/run/systemd", 0755);
         (void) mkdir_label("/run/systemd/system", 0755);
-        (void) mkdir_label("/run/systemd/inaccessible", 0000);
+
         /* Set up inaccessible items */
+        (void) mkdir_label("/run/systemd/inaccessible", 0000);
         (void) mknod("/run/systemd/inaccessible/reg", S_IFREG | 0000, 0);
         (void) mkdir_label("/run/systemd/inaccessible/dir", 0000);
         (void) mknod("/run/systemd/inaccessible/chr", S_IFCHR | 0000, makedev(0, 0));
