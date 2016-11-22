@@ -219,7 +219,7 @@ int path_is_mount_point(const char *t, const char *root, int flags) {
          * /bin -> /usr/bin/ and /usr is a mount point, then the parent that we
          * look at needs to be /usr, not /. */
         if (flags & AT_SYMLINK_FOLLOW) {
-                r = chase_symlinks(t, root, &canonical);
+                r = chase_symlinks(t, root, 0, &canonical);
                 if (r < 0)
                         return r;
 
@@ -691,3 +691,35 @@ int umount_verbose(const char *what) {
         return 0;
 }
 #endif // 0
+
+const char *mount_propagation_flags_to_string(unsigned long flags) {
+
+        switch (flags & (MS_SHARED|MS_SLAVE|MS_PRIVATE)) {
+
+        case MS_SHARED:
+                return "shared";
+
+        case MS_SLAVE:
+                return "slave";
+
+        case MS_PRIVATE:
+                return "private";
+        }
+
+        return NULL;
+}
+
+unsigned long mount_propagation_flags_from_string(const char *name) {
+
+        if (isempty(name))
+                return 0;
+
+        if (streq(name, "shared"))
+                return MS_SHARED;
+        if (streq(name, "slave"))
+                return MS_SLAVE;
+        if (streq(name, "private"))
+                return MS_PRIVATE;
+
+        return 0;
+}
