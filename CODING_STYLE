@@ -1,6 +1,10 @@
 - 8ch indent, no tabs, except for files in man/ which are 2ch indent,
   and still no tabs
 
+- We prefer /* comments */ over // comments, please. This is not C++, after
+  all. (Yes we know that C99 supports both kinds of comments, but still,
+  please!)
+
 - Don't break code lines too eagerly. We do *not* force line breaks at
   80ch, all of today's screens should be much larger than that. But
   then again, don't overdo it, ~140ch should be enough really.
@@ -117,7 +121,8 @@
   no speed benefit, and on calls like printf() "float"s get promoted
   to "double"s anyway, so there is no point.
 
-- Do not invoke functions when you allocate variables on the stack. Wrong:
+- Do not mix function invocations with variable definitions in one
+  line. Wrong:
 
   {
           int a = foobar();
@@ -142,7 +147,9 @@
 
 - Do not use types like "short". They *never* make sense. Use ints,
   longs, long longs, all in unsigned+signed fashion, and the fixed
-  size types uint32_t and so on, as well as size_t, but nothing else.
+  size types uint32_t and so on, as well as size_t, but nothing
+  else. Do not use kernel types like u32 and so on, leave that to the
+  kernel.
 
 - Public API calls (i.e. functions exported by our shared libraries)
   must be marked "_public_" and need to be prefixed with "sd_". No
@@ -239,3 +246,49 @@
   2, i.e. stdin, stdout, stderr, should those fds be closed. Given the
   special semantics of those fds, it's probably a good idea to avoid
   them. F_DUPFD_CLOEXEC with "3" as parameter avoids them.
+
+- When you define a destructor or unref() call for an object, please
+  accept a NULL object and simply treat this as NOP. This is similar
+  to how libc free() works, which accepts NULL pointers and becomes a
+  NOP for them. By following this scheme a lot of if checks can be
+  removed before invoking your destructor, which makes the code
+  substantially more readable and robust.
+
+- Related to this: when you define a destructor or unref() call for an
+  object, please make it return the same type it takes and always
+  return NULL from it. This allows writing code like this:
+
+            p = foobar_unref(p);
+
+  which will always work regardless if p is initialized or not, and
+  guarantees that p is NULL afterwards, all in just one line.
+
+- Use alloca(), but never forget that it is not OK to invoke alloca()
+  within a loop or within function call parameters. alloca() memory is
+  released at the end of a function, and not at the end of a {}
+  block. Thus, if you invoke it in a loop, you keep increasing the
+  stack pointer without ever releasing memory again. (VLAs have better
+  behaviour in this case, so consider using them as an alternative.)
+  Regarding not using alloca() within function parameters, see the
+  BUGS section of the alloca(3) man page.
+
+- Use memzero() or even better zero() instead of memset(..., 0, ...)
+
+- Instead of using memzero()/memset() to initialize structs allocated
+  on the stack, please try to use c99 structure initializers. It's
+  short, prettier and actually even faster at execution. Hence:
+
+          struct foobar t = {
+                  .foo = 7,
+                  .bar = "bazz",
+          };
+
+  instead of:
+
+          struct foobar t;
+          zero(t);
+          t.foo = 7;
+          t.bar = "bazz";
+
+- When returning a return code from main(), please preferably use
+  EXIT_FAILURE and EXIT_SUCCESS as defined by libc.

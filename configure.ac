@@ -1,15 +1,15 @@
 #
-#  This file is part of systemd.
+#  This file is part of elogind.
 #
 #  Copyright 2010-2012 Lennart Poettering
 #  Copyright 2010-2012 Kay Sievers
 #
-#  systemd is free software; you can redistribute it and/or modify it
+#  elogind is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 2.1 of the License, or
 #  (at your option) any later version.
 #
-#  systemd is distributed in the hope that it will be useful, but
+#  elogind is distributed in the hope that it will be useful, but
 #  WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  Lesser General Public License for more details.
@@ -20,10 +20,10 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [219.14],
-        [https://github.com/wingo/elogind/issues],
+        [220],
+        [https://github.com/elogind/elogind/issues],
         [elogind],
-        [https://github.com/wingo/elogind])
+        [https://github.com/elogind/elogind])
 
 AC_CONFIG_SRCDIR([src/login/logind.c])
 AC_CONFIG_MACRO_DIR([m4])
@@ -273,7 +273,8 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
                 IFLA_IPTUN_6RD_RELAY_PREFIXLEN,
                 IFLA_BRIDGE_VLAN_INFO,
                 IFLA_BRPORT_UNICAST_FLOOD,
-                NDA_IFINDEX],
+                NDA_IFINDEX,
+                IFA_FLAGS],
 [], [], [[
 #include <inttypes.h>
 #include <netinet/in.h>
@@ -303,7 +304,7 @@ AM_CONDITIONAL(HAVE_DBUS, [test "$have_dbus" = "yes"])
 
 # ------------------------------------------------------------------------------
 PKG_CHECK_MODULES(UDEV, [libudev])
-
+dnl
 AC_ARG_WITH([udevrulesdir],
             AS_HELP_STRING([--with-udevrulesdir=DIR], [Directory for udev rules files]),
             [],
@@ -484,7 +485,7 @@ fi
 
 AC_ARG_WITH(smack-run-label,
 AS_HELP_STRING([--with-smack-run-label=STRING],
-        [run systemd --system with a specific SMACK label]),
+        [run elogind --system with a specific SMACK label]),
         [AC_DEFINE_UNQUOTED(SMACK_RUN_LABEL, ["$withval"], [Run with a smack label])],
         [])
 

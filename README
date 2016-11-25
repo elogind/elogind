@@ -29,7 +29,7 @@ provide a subset of the interfaces of systemd 219.
 
 To contribute to elogind, fork the current source code from github:
 
-  https://github.com/wingo/elogind
+  https://github.com/elogind/elogind
 
 Send a pull request for the changes you like.
 
@@ -39,7 +39,7 @@ To chat about elogind:
 
 Finally, bug reports:
 
-  https://github.com/wingo/elogind/issues
+  https://github.com/elogind/elogind/issues
 
 Why bother?
 -----------

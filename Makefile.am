@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=6
+LIBELOGIND_CURRENT=7
 LIBELOGIND_REVISION=0
-LIBELOGIND_AGE=6
+LIBELOGIND_AGE=7
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -65,8 +65,11 @@ PKTTYAGENT=$(bindir)/pkttyagent
 # Our own, non-special dirs
 pkgsysconfdir=$(sysconfdir)/elogind
 pkgincludedir=$(includedir)/elogind
-factory_etcdir = $(prefix)/share/factory/etc
-factory_pamdir = $(prefix)/share/factory/etc/pam.d
+udevlibexecdir=$(udevbindir)
+udevhomedir=$(udevlibexecdir)
+udevhwdbdir=$(udevlibexecdir)/hwdb.d
+factory_etcdir = $(datadir)/factory/etc
+factory_pamdir = $(datadir)/factory/etc/pam.d
 
 EXTRA_DIST =
 BUILT_SOURCES =
@@ -131,8 +134,10 @@ AM_CPPFLAGS = \
 	-DSYSTEM_SHUTDOWN_PATH=\"$(systemshutdowndir)\" \
 	-DHALT=\"$(HALT)\" \
 	-DREBOOT=\"$(REBOOT)\" \
+	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DKEXEC=\"$(KEXEC)\" \
 	-DLIBDIR=\"$(libdir)\" \
+	-DROOTLIBDIR=\"$(rootlibdir)\" \
 	-DTEST_DIR=\"$(abs_top_srcdir)/test\" \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src/shared \
@@ -471,6 +476,12 @@ libelogind_shared_la_SOURCES = \
 	src/shared/base-filesystem.h \
 	src/shared/memfd-util.c \
 	src/shared/memfd-util.h \
+	src/shared/process-util.c \
+	src/shared/process-util.h \
+	src/shared/random-util.c \
+	src/shared/random-util.h \
+	src/shared/terminal-util.c \
+	src/shared/terminal-util.h \
 	src/shared/uid-range.c \
 	src/shared/uid-range.h \
 	src/shared/nss-util.h \
@@ -482,7 +493,9 @@ libelogind_shared_la_SOURCES = \
 	src/shared/import-util.c \
 	src/shared/import-util.h \
 	src/shared/sysctl-util.c \
-	src/shared/sysctl-util.h
+	src/shared/sysctl-util.h \
+	src/shared/hostname-util.h \
+	src/shared/hostname-util.c
 
 nodist_libelogind_shared_la_SOURCES = \
 	src/shared/errno-from-name.h \
@@ -619,7 +632,9 @@ libelogind_internal_la_SOURCES = \
 	src/systemd/sd-login.h \
 	src/systemd/sd-id128.h \
 	src/systemd/sd-daemon.h \
+	src/systemd/sd-path.h \
 	src/systemd/sd-network.h \
+	src/systemd/sd-hwdb.h \
 	src/systemd/sd-device.h \
 	src/libelogind/sd-bus/sd-bus.c \
 	src/libelogind/sd-bus/bus-control.c \
@@ -678,11 +693,17 @@ libelogind_internal_la_SOURCES = \
 	src/libelogind/sd-id128/sd-id128.c \
 	src/libelogind/sd-daemon/sd-daemon.c \
 	src/libelogind/sd-login/sd-login.c \
+	src/libelogind/sd-path/sd-path.c \
 	src/libelogind/sd-network/sd-network.c \
 	src/libelogind/sd-network/network-util.h \
 	src/libelogind/sd-network/network-util.c \
+	src/libelogind/sd-hwdb/sd-hwdb.c \
+	src/libelogind/sd-hwdb/hwdb-util.h \
+	src/libelogind/sd-hwdb/hwdb-internal.h \
 	src/libelogind/sd-device/device-internal.h \
 	src/libelogind/sd-device/device-util.h \
+	src/libelogind/sd-device/device-enumerator.c \
+	src/libelogind/sd-device/device-enumerator-private.h \
 	src/libelogind/sd-device/sd-device.c \
 	src/libelogind/sd-device/device-private.c \
 	src/libelogind/sd-device/device-private.h
@@ -693,10 +714,6 @@ nodist_libelogind_internal_la_SOURCES = \
 libelogind_internal_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	-pthread
-
-BUILT_SOURCES += \
-       src/libelogind/libelogind.sym
-
 
 libelogind_internal_la_LIBADD = \
 	libelogind-shared.la
@@ -735,12 +752,8 @@ EXTRA_DIST += \
 	src/libelogind/sd-bus/DIFFERENCES \
 	src/libelogind/sd-bus/GVARIANT-SERIALIZATION
 
-CLEANFILES += \
-	src/libelogind/libelogind.sym
-
 BUILT_SOURCES += \
-	src/libelogind/libelogind.sym
-
+       src/libelogind/libelogind.sym
 
 # ------------------------------------------------------------------------------
 elogind_SOURCES = \

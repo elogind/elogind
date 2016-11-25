@@ -22,6 +22,10 @@
 /*.tar.xz
 /Makefile
 /TAGS
+/GPATH
+/GRTAGS
+/GSYMS
+/GTAGS
 /accelerometer
 /ata_id
 /bootctl
@@ -78,7 +82,6 @@
 /systemd-export
 /systemd-firstboot
 /systemd-fsck
-/systemd-fsckd
 /systemd-fstab-generator
 /systemd-getty-generator
 /systemd-gnome-ask-password-agent
@@ -120,7 +123,6 @@
 /systemd-rfkill
 /systemd-run
 /systemd-shutdown
-/systemd-shutdownd
 /systemd-sleep
 /systemd-socket-proxyd
 /systemd-stdio-bridge
@@ -141,10 +143,12 @@
 /systemd-vconsole-setup
 /tags
 /test-architecture
+/test-audit-type
 /test-async
 /test-barrier
 /test-boot-timestamp
 /test-btrfs
+/test-bus-benchmark
 /test-bus-chat
 /test-bus-cleanup
 /test-bus-creds
@@ -152,7 +156,6 @@
 /test-bus-gvariant
 /test-bus-introspect
 /test-bus-kernel
-/test-bus-kernel-benchmark
 /test-bus-kernel-bloom
 /test-bus-marshal
 /test-bus-match
@@ -234,6 +237,7 @@
 /test-path-util
 /test-pppoe
 /test-prioq
+/test-process-util
 /test-pty
 /test-qcow2
 /test-ratelimit
@@ -255,6 +259,7 @@
 /test-tables
 /test-term-page
 /test-term-parser
+/test-terminal-util
 /test-time
 /test-tmpfiles
 /test-udev
@@ -280,3 +285,4 @@ config.log
 config.status
 configure
 stamp-*
+/pwx_*
