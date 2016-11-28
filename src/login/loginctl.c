@@ -56,9 +56,10 @@ static int arg_signal = SIGTERM;
 static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
 static bool arg_ask_password = true;
-static bool arg_ignore_inhibitors = false;
+#if 0
 static unsigned arg_lines = 10;
 static OutputMode arg_output = OUTPUT_SHORT;
+#endif // 0
 
 static void pager_open_if_enabled(void) {
 
@@ -552,7 +553,8 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
                                         true,
                                         NULL);
                 }
-#endif
+
+#endif // 0
         }
 
         return 0;
@@ -632,7 +634,8 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
                                 SD_JOURNAL_LOCAL_ONLY,
                                 true,
                                 NULL);
-#endif
+
+#endif // 0
         }
 
         return 0;
@@ -1195,9 +1198,6 @@ static int check_inhibitors(sd_bus *bus, const char *verb, const char *inhibit_w
 
         assert(bus);
 
-        if (arg_ignore_inhibitors)
-                return 0;
-
         if (geteuid() == 0)
                 return 0;
 
@@ -1435,7 +1435,6 @@ static int help(int argc, char *argv[], void *userdata) {
                "     --no-pager            Do not pipe output into a pager\n"
                "     --no-legend           Do not show the headers and footers\n"
                "     --no-ask-password     Don't prompt for password\n"
-               "  -i --ignore-inhibitors   Ignore inhibitors when suspending or shutting down\n"
                "  -H --host=[USER@]HOST    Operate on remote host\n"
                "  -M --machine=CONTAINER   Operate on local container\n"
                "  -p --property=NAME       Show only properties by this name\n"
@@ -1443,9 +1442,11 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -l --full                Do not ellipsize output\n"
                "     --kill-who=WHO        Who to send signal to\n"
                "  -s --signal=SIGNAL       Which signal to send\n"
+#if 0
                "  -n --lines=INTEGER       Number of journal entries to show\n"
                "  -o --output=STRING       Change journal output mode (short, short-monotonic,\n"
                "                           verbose, export, json, json-pretty, json-sse, cat)\n\n"
+#endif // 0
                "Session Commands:\n"
                "  list-sessions            List sessions\n"
                "  session-status [ID...]   Show session status\n"
@@ -1471,7 +1472,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  show-seat [NAME...]      Show properties of seats or the manager\n"
                "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
                "  flush-devices            Flush all device associations\n"
-               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
+               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
                "System Commands:\n"
                "  poweroff                 Turn off the machine\n"
                "  reboot                   Reboot the machine\n"
@@ -1506,9 +1507,10 @@ static int parse_argv(int argc, char *argv[]) {
                 { "host",            required_argument, NULL, 'H'                 },
                 { "machine",         required_argument, NULL, 'M'                 },
                 { "no-ask-password", no_argument,       NULL, ARG_NO_ASK_PASSWORD },
-                { "ignore-inhibitors", no_argument,     NULL, 'i'                 },
+#if 0
                 { "lines",           required_argument, NULL, 'n'                 },
                 { "output",          required_argument, NULL, 'o'                 },
+#endif //
                 {}
         };
 
@@ -1517,7 +1519,7 @@ static int parse_argv(int argc, char *argv[]) {
         assert(argc >= 0);
         assert(argv);
 
-        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:i", options, NULL)) >= 0)
+        while ((c = getopt_long(argc, argv, "hp:als:H:M:", options, NULL)) >= 0)
 
                 switch (c) {
 
@@ -1549,7 +1551,7 @@ static int parse_argv(int argc, char *argv[]) {
                 case 'l':
                         arg_full = true;
                         break;
-
+#if 0
                 case 'n':
                         if (safe_atou(optarg, &arg_lines) < 0) {
                                 log_error("Failed to parse lines '%s'", optarg);
@@ -1558,21 +1560,13 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case 'o':
-#if 0
                         arg_output = output_mode_from_string(optarg);
-#else
-                        arg_output = -1;
-#endif
                         if (arg_output < 0) {
                                 log_error("Unknown output '%s'.", optarg);
                                 return -EINVAL;
                         }
                         break;
-
-                case 'i':
-                        arg_ignore_inhibitors = true;
-                        break;
-
+#endif // 0
                 case ARG_NO_PAGER:
                         arg_no_pager = true;
                         break;

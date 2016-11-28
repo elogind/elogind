@@ -178,6 +178,34 @@ static int vt_allocate(unsigned int vtnr) {
         return 0;
 }
 
+int seat_preallocate_vts(Seat *s) {
+        int r = 0;
+        unsigned i;
+
+        assert(s);
+        assert(s->manager);
+
+        log_debug("Preallocating VTs...");
+
+        if (s->manager->n_autovts <= 0)
+                return 0;
+
+        if (!seat_has_vts(s))
+                return 0;
+
+        for (i = 1; i <= s->manager->n_autovts; i++) {
+                int q;
+
+                q = vt_allocate(i);
+                if (q < 0) {
+                        log_error_errno(q, "Failed to preallocate VT %u: %m", i);
+                        r = q;
+                }
+        }
+
+        return r;
+}
+
 int seat_apply_acls(Seat *s, Session *old_active) {
         int r;
 
@@ -328,6 +356,7 @@ int seat_active_vt_changed(Seat *s, unsigned int vtnr) {
         }
 
         r = seat_set_active(s, new_active);
+        manager_spawn_autovt(s->manager, vtnr);
 
         return r;
 }
@@ -384,6 +413,9 @@ int seat_start(Seat *s) {
                    "SEAT_ID=%s", s->id,
                    LOG_MESSAGE("New seat %s.", s->id),
                    NULL);
+
+        /* Initialize VT magic stuff */
+        seat_preallocate_vts(s);
 
         /* Read current VT */
         seat_read_active_vt(s);

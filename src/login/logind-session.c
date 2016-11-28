@@ -36,11 +36,11 @@
 #include "audit.h"
 #include "bus-util.h"
 #include "bus-error.h"
-#include "cgroup-util.h"
-#include "def.h"
 #include "logind-session.h"
 #include "formats-util.h"
 #include "terminal-util.h"
+
+#define RELEASE_USEC (20*USEC_PER_SEC)
 
 static void session_remove_fifo(Session *s);
 
@@ -120,6 +120,13 @@ void session_free(Session *s) {
                 LIST_REMOVE(sessions_by_seat, s->seat->sessions, s);
         }
 
+        if (s->scope) {
+                hashmap_remove(s->manager->session_units, s->scope);
+                free(s->scope);
+        }
+
+        free(s->scope_job);
+
         sd_bus_message_unref(s->create_message);
 
         free(s->tty);
@@ -186,6 +193,11 @@ int session_save(Session *s) {
 
         if (s->class >= 0)
                 fprintf(f, "CLASS=%s\n", session_class_to_string(s->class));
+
+        if (s->scope)
+                fprintf(f, "SCOPE=%s\n", s->scope);
+        if (s->scope_job)
+                fprintf(f, "SCOPE_JOB=%s\n", s->scope_job);
 
         if (s->fifo_path)
                 fprintf(f, "FIFO=%s\n", s->fifo_path);
@@ -305,6 +317,8 @@ int session_load(Session *s) {
 
         r = parse_env_file(s->state_file, NEWLINE,
                            "REMOTE",         &remote,
+                           "SCOPE",          &s->scope,
+                           "SCOPE_JOB",      &s->scope_job,
                            "FIFO",           &s->fifo_path,
                            "SEAT",           &seat,
                            "TTY",            &s->tty,
@@ -479,21 +493,42 @@ int session_activate(Session *s) {
         return 0;
 }
 
-static int session_start_cgroup(Session *s) {
+static int session_start_scope(Session *s) {
         int r;
 
         assert(s);
         assert(s->user);
-        assert(s->leader > 0);
+        assert(s->user->slice);
 
-        /* First, create our own group */
-        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
-        if (r < 0)
-                return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
+        if (!s->scope) {
+                _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+                _cleanup_free_ char *description = NULL;
+                char *scope, *job = NULL;
 
-        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader);
-        if (r < 0)
-                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader, s->id);
+                description = strjoin("Session ", s->id, " of user ", s->user->name, NULL);
+                if (!description)
+                        return log_oom();
+
+                scope = strjoin("session-", s->id, ".scope", NULL);
+                if (!scope)
+                        return log_oom();
+
+                r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "systemd-logind.service", "systemd-user-sessions.service", &error, &job);
+                if (r < 0) {
+                        log_error("Failed to start session scope %s: %s %s",
+                                  scope, bus_error_message(&error, r), error.name);
+                        free(scope);
+                        return r;
+                } else {
+                        s->scope = scope;
+
+                        free(s->scope_job);
+                        s->scope_job = job;
+                }
+        }
+
+        if (s->scope)
+                hashmap_put(s->manager->session_units, s->scope, s);
 
         return 0;
 }
@@ -513,7 +548,8 @@ int session_start(Session *s) {
         if (r < 0)
                 return r;
 
-        r = session_start_cgroup(s);
+        /* Create cgroup */
+        r = session_start_scope(s);
         if (r < 0)
                 return r;
 
@@ -554,16 +590,31 @@ int session_start(Session *s) {
         return 0;
 }
 
-static int session_stop_cgroup(Session *s, bool force) {
+static int session_stop_scope(Session *s, bool force) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job = NULL;
         int r;
 
         assert(s);
 
+        if (!s->scope)
+                return 0;
+
         if (force || manager_shall_kill(s->manager, s->user->name)) {
-                r = session_kill(s, KILL_ALL, SIGTERM);
-                if (r < 0)
+                r = manager_stop_unit(s->manager, s->scope, &error, &job);
+                if (r < 0) {
+                        log_error("Failed to stop session scope: %s", bus_error_message(&error, r));
                         return r;
+                }
+
+                free(s->scope_job);
+                s->scope_job = job;
+        } else {
+                r = manager_abandon_scope(s->manager, s->scope, &error);
+                if (r < 0) {
+                        log_error("Failed to abandon session scope: %s", bus_error_message(&error, r));
+                        return r;
+                }
         }
 
         return 0;
@@ -586,7 +637,7 @@ int session_stop(Session *s, bool force) {
         session_remove_fifo(s);
 
         /* Kill cgroup */
-        r = session_stop_cgroup(s, force);
+        r = session_stop_scope(s, force);
 
         s->stopping = true;
 
@@ -648,6 +699,16 @@ int session_finalize(Session *s) {
         return r;
 }
 
+static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *userdata) {
+        Session *s = userdata;
+
+        assert(es);
+        assert(s);
+
+        session_stop(s, false);
+        return 0;
+}
+
 int session_release(Session *s) {
         assert(s);
 
@@ -657,10 +718,11 @@ int session_release(Session *s) {
         if (s->timer_event_source)
                 return 0;
 
-        /* In systemd, session release is triggered by user jobs
-           dying.  In elogind we don't have that so go ahead and stop
-           now.  */
-        return session_stop(s, false);
+        return sd_event_add_time(s->manager->event,
+                                 &s->timer_event_source,
+                                 CLOCK_MONOTONIC,
+                                 now(CLOCK_MONOTONIC) + RELEASE_USEC, 0,
+                                 release_timeout_callback, s);
 }
 
 bool session_is_active(Session *s) {
@@ -865,7 +927,10 @@ bool session_check_gc(Session *s, bool drop_not_started) {
                         return true;
         }
 
-        if (cg_is_empty_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, false) > 0)
+        if (s->scope_job && manager_job_is_active(s->manager, s->scope_job))
+                return true;
+
+        if (s->scope && manager_unit_is_active(s->manager, s->scope))
                 return true;
 
         return false;
@@ -888,7 +953,7 @@ SessionState session_get_state(Session *s) {
         if (s->stopping || s->timer_event_source)
                 return SESSION_CLOSING;
 
-        if (s->fifo_fd < 0)
+        if (s->scope_job || s->fifo_fd < 0)
                 return SESSION_OPENING;
 
         if (session_is_active(s))
@@ -900,23 +965,10 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
-        if (who == KILL_LEADER) {
-                if (s->leader <= 0)
-                        return -ESRCH;
+        if (!s->scope)
+                return -ESRCH;
 
-                /* FIXME: verify that leader is in cgroup?  */
-
-                if (kill(s->leader, signo) < 0) {
-                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader, s->id);
-                }
-                return 0;
-        } else {
-                bool sigcont = false;
-                bool ignore_self = true;
-                bool rem = true;
-                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
-                                          sigcont, ignore_self, rem, NULL);
-        }
+        return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
 }
 
 static int session_open_vt(Session *s) {

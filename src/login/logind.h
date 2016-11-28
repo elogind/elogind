@@ -65,6 +65,11 @@ struct Manager {
 
         int console_active_fd;
 
+        unsigned n_autovts;
+
+        unsigned reserve_vt;
+        int reserve_vt_fd;
+
         Seat *seat0;
 
         char **kill_only_users, **kill_exclude_users;
@@ -73,6 +78,9 @@ struct Manager {
         unsigned long session_counter;
         unsigned long inhibit_counter;
 
+        Hashmap *session_units;
+        Hashmap *user_units;
+
         usec_t inhibit_delay_max;
 
         /* If an action is currently being executed or is delayed,
@@ -80,10 +88,26 @@ struct Manager {
         InhibitWhat action_what;
 
         /* If a shutdown/suspend was delayed due to a inhibitor this
-           contains the action we are supposed to perform after the
+           contains the unit name we are supposed to start after the
            delay is over */
-        HandleAction pending_action;
-        usec_t action_timestamp;
+        const char *action_unit;
+
+        /* If a shutdown/suspend is currently executed, then this is
+         * the job of it */
+        char *action_job;
+        sd_event_source *inhibit_timeout_source;
+
+        char *scheduled_shutdown_type;
+        usec_t scheduled_shutdown_timeout;
+        sd_event_source *scheduled_shutdown_timeout_source;
+        uid_t scheduled_shutdown_uid;
+        char *scheduled_shutdown_tty;
+        sd_event_source *nologin_timeout_source;
+        bool unlink_nologin;
+
+        char *wall_message;
+        unsigned enable_wall_messages;
+        sd_event_source *wall_message_timeout_source;
 
         sd_event_source *idle_action_event_source;
         usec_t idle_action_usec;
@@ -111,9 +135,6 @@ struct Manager {
         size_t runtime_dir_size;
 };
 
-Manager *manager_new(void);
-void manager_free(Manager *m);
-
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_device);
 int manager_add_button(Manager *m, const char *name, Button **_button);
 int manager_add_seat(Manager *m, const char *id, Seat **_seat);
@@ -126,10 +147,7 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 int manager_process_seat_device(Manager *m, struct udev_device *d);
 int manager_process_button_device(Manager *m, struct udev_device *d);
 
-int manager_startup(Manager *m);
-int manager_run(Manager *m);
-
-void manager_gc(Manager *m, bool drop_not_started);
+int manager_spawn_autovt(Manager *m, unsigned int vtnr);
 
 bool manager_shall_kill(Manager *m, const char *user);
 
@@ -138,16 +156,21 @@ int manager_get_idle_hint(Manager *m, dual_timestamp *t);
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **user);
 int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session);
 
-bool manager_is_docked_or_external_displays(Manager *m);
+bool manager_is_docked(Manager *m);
+int manager_count_displays(Manager *m);
+bool manager_is_docked_or_multiple_displays(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
-int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
-int shutdown_or_sleep(HandleAction action);
+int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+
+int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, const char *unit_name, InhibitWhat w, sd_bus_error *error);
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
-
-int manager_dispatch_delayed(Manager *manager);
 
 int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
 int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
@@ -171,5 +194,5 @@ int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const ch
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);
 
-
-int manager_dispatch_delayed(Manager *manager, bool timeout);
+int manager_setup_wall_message_timer(Manager *m);
+bool logind_wall_tty_filter(const char *tty, void *userdata);

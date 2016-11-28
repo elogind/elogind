@@ -89,8 +89,8 @@ struct Session {
         char *service;
         char *desktop;
 
-        /* Always NULL.  */
         char *scope;
+        char *scope_job;
 
         Seat *seat;
         unsigned int vtnr;

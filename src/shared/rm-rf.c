@@ -21,7 +21,6 @@
 
 #include "util.h"
 #include "path-util.h"
-#include "btrfs-util.h"
 #include "rm-rf.h"
 
 int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
@@ -115,7 +114,7 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                                 safe_close(subdir_fd);
                                 continue;
                         }
-
+#if 0
                         if ((flags & REMOVE_SUBVOLUME) && st.st_ino == 256) {
 
                                 /* This could be a subvolume, try to remove it */
@@ -139,7 +138,7 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                                         continue;
                                 }
                         }
-
+#endif //
                         /* We pass REMOVE_PHYSICAL here, to avoid
                          * doing the fstatfs() to check the file
                          * system type again for each directory */
@@ -175,7 +174,7 @@ int rm_rf(const char *path, RemoveFlags flags) {
                 log_error("Attempted to remove entire root file system, and we can't allow that.");
                 return -EPERM;
         }
-
+#if 0
         if ((flags & (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) == (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) {
                 /* Try to remove as subvolume first */
                 r = btrfs_subvol_remove(path, true);
@@ -187,7 +186,7 @@ int rm_rf(const char *path, RemoveFlags flags) {
 
                 /* Not btrfs or not a subvolume */
         }
-
+#endif // 0
         fd = open(path, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW|O_NOATIME);
         if (fd < 0) {
 

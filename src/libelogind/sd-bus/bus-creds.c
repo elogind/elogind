@@ -387,6 +387,8 @@ _public_ int sd_bus_creds_get_cgroup(sd_bus_creds *c, const char **ret) {
 }
 
 _public_ int sd_bus_creds_get_unit(sd_bus_creds *c, const char **ret) {
+        int r;
+
         assert_return(c, -EINVAL);
         assert_return(ret, -EINVAL);
 
@@ -395,14 +397,25 @@ _public_ int sd_bus_creds_get_unit(sd_bus_creds *c, const char **ret) {
 
         assert(c->cgroup);
 
-        if (!c->unit)
-                return -ESRCH;
+        if (!c->unit) {
+                const char *shifted;
+
+                r = cg_shift_path(c->cgroup, c->cgroup_root, &shifted);
+                if (r < 0)
+                        return r;
+
+                r = cg_path_get_unit(shifted, (char**) &c->unit);
+                if (r < 0)
+                        return r;
+        }
 
         *ret = c->unit;
         return 0;
 }
 
 _public_ int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **ret) {
+        int r;
+
         assert_return(c, -EINVAL);
         assert_return(ret, -EINVAL);
 
@@ -411,14 +424,25 @@ _public_ int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **ret) {
 
         assert(c->cgroup);
 
-        if (!c->user_unit)
-                return -ESRCH;
+        if (!c->user_unit) {
+                const char *shifted;
+
+                r = cg_shift_path(c->cgroup, c->cgroup_root, &shifted);
+                if (r < 0)
+                        return r;
+
+                r = cg_path_get_user_unit(shifted, (char**) &c->user_unit);
+                if (r < 0)
+                        return r;
+        }
 
         *ret = c->user_unit;
         return 0;
 }
 
 _public_ int sd_bus_creds_get_slice(sd_bus_creds *c, const char **ret) {
+        int r;
+
         assert_return(c, -EINVAL);
         assert_return(ret, -EINVAL);
 
@@ -427,8 +451,17 @@ _public_ int sd_bus_creds_get_slice(sd_bus_creds *c, const char **ret) {
 
         assert(c->cgroup);
 
-        if (!c->slice)
-                return -ESRCH;
+        if (!c->slice) {
+                const char *shifted;
+
+                r = cg_shift_path(c->cgroup, c->cgroup_root, &shifted);
+                if (r < 0)
+                        return r;
+
+                r = cg_path_get_slice(shifted, (char**) &c->slice);
+                if (r < 0)
+                        return r;
+        }
 
         *ret = c->slice;
         return 0;
@@ -504,7 +537,7 @@ _public_ int sd_bus_creds_get_owner_uid(sd_bus_creds *c, uid_t *uid) {
         if (r < 0)
                 return r;
 
-        return -ESRCH;
+        return cg_path_get_owner_uid(shifted, uid);
 }
 
 _public_ int sd_bus_creds_get_cmdline(sd_bus_creds *c, char ***cmdline) {

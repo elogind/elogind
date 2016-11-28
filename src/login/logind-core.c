@@ -312,7 +312,7 @@ int manager_process_button_device(Manager *m, struct udev_device *d) {
 }
 
 int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
-        _cleanup_free_ char *session_name = NULL;
+        _cleanup_free_ char *unit = NULL;
         Session *s;
         int r;
 
@@ -322,11 +322,11 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
         if (pid < 1)
                 return -EINVAL;
 
-        r = cg_pid_get_session(pid, &session_name);
+        r = cg_pid_get_unit(pid, &unit);
         if (r < 0)
                 return 0;
 
-        s = hashmap_get(m->sessions, session_name);
+        s = hashmap_get(m->session_units, unit);
         if (!s)
                 return 0;
 
@@ -335,17 +335,25 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
 }
 
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
-        Session *s;
+        _cleanup_free_ char *unit = NULL;
+        User *u;
         int r;
 
         assert(m);
         assert(user);
 
-        r = manager_get_session_by_pid (m, pid, &s);
-        if (r <= 0)
-                return r;
+        if (pid < 1)
+                return -EINVAL;
 
-        *user = s->user;
+        r = cg_pid_get_slice(pid, &unit);
+        if (r < 0)
+                return 0;
+
+        u = hashmap_get(m->user_units, unit);
+        if (!u)
+                return 0;
+
+        *user = u;
         return 1;
 }
 
@@ -425,6 +433,46 @@ static int vt_is_busy(unsigned int vtnr) {
                 r = -errno;
         else
                 r = !!(vt_stat.v_state & (1 << vtnr));
+
+        return r;
+}
+
+int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        char name[sizeof("autovt@tty.service") + DECIMAL_STR_MAX(unsigned int)];
+        int r;
+
+        assert(m);
+        assert(vtnr >= 1);
+
+        if (vtnr > m->n_autovts &&
+            vtnr != m->reserve_vt)
+                return 0;
+
+        if (vtnr != m->reserve_vt) {
+                /* If this is the reserved TTY, we'll start the getty
+                 * on it in any case, but otherwise only if it is not
+                 * busy. */
+
+                r = vt_is_busy(vtnr);
+                if (r < 0)
+                        return r;
+                else if (r > 0)
+                        return -EBUSY;
+        }
+
+        snprintf(name, sizeof(name), "autovt@tty%u.service", vtnr);
+        r = sd_bus_call_method(
+                        m->bus,
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
+                        "StartUnit",
+                        &error,
+                        NULL,
+                        "ss", name, "fail");
+        if (r < 0)
+                log_error("Failed to start %s: %s", name, bus_error_message(&error, r));
 
         return r;
 }
