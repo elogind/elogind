@@ -74,6 +74,18 @@ static inline bool path_equal_ptr(const char *a, const char *b) {
         })
 
 #if 0 /// UNNEEDED by elogind
+#define PATH_STARTSWITH_SET(p, ...)                             \
+        ({                                                      \
+                char **s;                                       \
+                bool _found = false;                            \
+                STRV_FOREACH(s, STRV_MAKE(__VA_ARGS__))         \
+                        if (path_startswith(p, *s)) {           \
+                               _found = true;                   \
+                               break;                           \
+                        }                                       \
+                _found;                                         \
+        })
+
 int path_strv_make_absolute_cwd(char **l);
 #endif // 0
 char** path_strv_resolve(char **l, const char *root);
