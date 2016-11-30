@@ -286,3 +286,8 @@ config.status
 configure
 stamp-*
 /pwx_*
+/cleanup_*.sh
+/elogind
+/elogind-cgroups-agent
+/rebuild_all.sh
+/src/libelogind/libelogind.pc
