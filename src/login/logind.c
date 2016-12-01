@@ -637,7 +637,7 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to add match for NameOwnerChanged: %m");
 
-        r = sd_bus_add_match(m->bus,
+	r = sd_bus_add_match(m->bus,
                              NULL,
                              "type='signal',"
                              "sender='org.freedesktop.systemd1',"
@@ -679,7 +679,7 @@ static int manager_connect_bus(Manager *m) {
                              match_reloading, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to add match for Reloading: %m");
-
+#if 0
         r = sd_bus_call_method(
                         m->bus,
                         "org.freedesktop.systemd1",
@@ -692,7 +692,7 @@ static int manager_connect_bus(Manager *m) {
                 log_error("Failed to enable subscription: %s", bus_error_message(&error, r));
                 return r;
         }
-
+#endif // 0
         r = sd_bus_request_name(m->bus, "org.freedesktop.login1", 0);
         if (r < 0)
                 return log_error_errno(r, "Failed to register name: %m");
