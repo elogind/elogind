@@ -691,3 +691,35 @@ int umount_verbose(const char *what) {
         return 0;
 }
 #endif // 0
+
+const char *mount_propagation_flags_to_string(unsigned long flags) {
+
+        switch (flags & (MS_SHARED|MS_SLAVE|MS_PRIVATE)) {
+        case 0:
+                return "";
+        case MS_SHARED:
+                return "shared";
+        case MS_SLAVE:
+                return "slave";
+        case MS_PRIVATE:
+                return "private";
+        }
+
+        return NULL;
+}
+
+
+int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
+
+        if (isempty(name))
+                *ret = 0;
+        else if (streq(name, "shared"))
+                *ret = MS_SHARED;
+        else if (streq(name, "slave"))
+                *ret = MS_SLAVE;
+        else if (streq(name, "private"))
+                *ret = MS_PRIVATE;
+        else
+                return -EINVAL;
+        return 0;
+}
