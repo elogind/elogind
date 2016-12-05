@@ -714,9 +714,10 @@ int session_send_create_reply(Session *s, sd_bus_error *error) {
         if (fifo_fd < 0)
                 return fifo_fd;
 
-        /* Update the session state file before we notify the client
+        /* Update the session and user state file before we notify the client
          * about the result. */
         session_save(s);
+        user_save(s->user);
 
         p = session_bus_path(s);
         if (!p)
