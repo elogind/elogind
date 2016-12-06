@@ -67,7 +67,7 @@ void sigkill_waitp(pid_t *pid);
 
 int kill_and_sigcont(pid_t pid, int sig);
 
-void rename_process(const char name[8]);
+int rename_process(const char name[]);
 #endif // 0
 int is_kernel_thread(pid_t pid);
 
