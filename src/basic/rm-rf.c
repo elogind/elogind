@@ -17,7 +17,6 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdbool.h>
@@ -43,6 +42,7 @@ static bool is_physical_fs(const struct statfs *sfs) {
 
 int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
         _cleanup_closedir_ DIR *d = NULL;
+        struct dirent *de;
         int ret = 0, r;
         struct statfs sfs;
 
@@ -78,18 +78,9 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                 return errno == ENOENT ? 0 : -errno;
         }
 
-        for (;;) {
-                struct dirent *de;
+        FOREACH_DIRENT_ALL(de, d, return -errno) {
                 bool is_dir;
                 struct stat st;
-
-                errno = 0;
-                de = readdir(d);
-                if (!de) {
-                        if (errno > 0 && ret == 0)
-                                ret = -errno;
-                        return ret;
-                }
 
                 if (streq(de->d_name, ".") || streq(de->d_name, ".."))
                         continue;
@@ -180,6 +171,7 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                         }
                 }
         }
+        return ret;
 }
 
 int rm_rf(const char *path, RemoveFlags flags) {
