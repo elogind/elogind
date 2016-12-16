@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [220],
+        [221],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -47,6 +47,7 @@ AS_IF([test "x$enable_largefile" = "xno"], [AC_MSG_ERROR([--disable-largefile is
 SET_ARCH(X86_64, x86_64*)
 SET_ARCH(IA32, i*86*)
 SET_ARCH(MIPS, mips*)
+SET_ARCH(AARCH64, aarch64*)
 
 # i18n stuff for the PolicyKit policy files, heck whether intltool can be found, disable NLS otherwise
 AC_CHECK_PROG(intltool_found, [intltool-merge], [yes], [no])
@@ -144,11 +145,9 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
         -pipe \
         -Wall \
         -Wextra \
-        -Wno-inline \
         -Wundef \
         "-Wformat=2 -Wformat-security -Wformat-nonliteral" \
         -Wlogical-op \
-        -Wsign-compare \
         -Wmissing-include-dirs \
         -Wold-style-definition \
         -Wpointer-arith \
@@ -156,17 +155,18 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
         -Wdeclaration-after-statement \
         -Wfloat-equal \
         -Wsuggest-attribute=noreturn \
-        -Wmissing-prototypes \
+        -Werror=missing-prototypes \
+        -Werror=implicit-function-declaration \
+        -Werror=missing-declarations \
+        -Werror=return-type \
+        -Werror=shadow \
         -Wstrict-prototypes \
         -Wredundant-decls \
-        -Wmissing-declarations \
         -Wmissing-noreturn \
         -Wshadow \
         -Wendif-labels \
         -Wstrict-aliasing=2 \
         -Wwrite-strings \
-        -Wno-long-long \
-        -Wno-overlength-strings \
         -Wno-unused-parameter \
         -Wno-missing-field-initializers \
         -Wno-unused-result \
@@ -179,8 +179,6 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
         -fdiagnostics-show-option \
         -fno-strict-aliasing \
         -fvisibility=hidden \
-        -ffunction-sections \
-        -fdata-sections \
         -fstack-protector \
         -fstack-protector-strong \
         -fPIE \
@@ -204,10 +202,21 @@ AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
         [AC_MSG_RESULT([skipping -D_FORTIFY_SOURCE, optimization not enabled])])
 AC_SUBST([OUR_CPPFLAGS], "$with_cppflags $sanitizer_cppflags")
 
+AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
+        [CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
+               -Wl,--gc-sections])],
+        [AC_MSG_RESULT([skipping --gc-sections, optimization not enabled])])
+AC_SUBST([OUR_CFLAGS], "$with_ldflags $sanitizer_cflags")
+
+AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
+        [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
+               -ffunction-sections -fdata-sections])],
+        [AC_MSG_RESULT([skipping -ffunction/data-section, optimization not enabled])])
+AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
+
 CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
         -Wl,--as-needed \
         -Wl,--no-undefined \
-        -Wl,--gc-sections \
         -Wl,-z,relro \
         -Wl,-z,now \
         -pie \
@@ -269,6 +278,7 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
                 IFLA_PHYS_PORT_ID,
                 IFLA_BOND_AD_INFO,
                 IFLA_VLAN_PROTOCOL,
+                IFLA_VXLAN_REMCSUM_NOPARTIAL,
                 IFLA_VXLAN_LOCAL6,
                 IFLA_IPTUN_6RD_RELAY_PREFIXLEN,
                 IFLA_BRIDGE_VLAN_INFO,
@@ -285,6 +295,7 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
 #include <linux/if_tunnel.h>
 #include <linux/if_link.h>
 #include <linux/if_bridge.h>
+#include <linux/if_addr.h>
 #include <linux/neighbour.h>
 ]])
 
@@ -310,7 +321,12 @@ AC_ARG_WITH([udevrulesdir],
             [],
             [with_udevrulesdir=$($PKG_CONFIG --variable=udevdir udev)/rules.d])
 AC_SUBST([udevrulesdir], [$with_udevrulesdir])
-AC_SUBST([udevbindir], [$($PKG_CONFIG --variable=udevdir udev)/../bin])
+
+AC_ARG_WITH([udevbindir],
+            AS_HELP_STRING([--with-udevbindir=DIR], [Directory for udev binary files]),
+            [],
+            [with_udevbindir=$($PKG_CONFIG --variable=udevdir udev)])
+AC_SUBST([udevbindir], [$with_udevbindir])
 
 # ------------------------------------------------------------------------------
 have_coverage=no
@@ -526,9 +542,9 @@ AM_CONDITIONAL(ENABLE_POLKIT, [test "x$have_polkit" = "xyes"])
 
 # ------------------------------------------------------------------------------
 have_kdbus=no
-AC_ARG_ENABLE(kdbus, AS_HELP_STRING([--enable-kdbus], [do connect to kdbus by default]))
-if test "x$enable_kdbus" = "xyes"; then
-        AC_DEFINE(ENABLE_KDBUS, 1, [Define if kdbus support is to be enabled])
+AC_ARG_ENABLE(kdbus, AS_HELP_STRING([--disable-kdbus], [do not connect to kdbus by default]))
+if test "x$enable_kdbus" != "xno"; then
+        AC_DEFINE(ENABLE_KDBUS, 1, [Define if kdbus is to be connected to by default])
         have_kdbus=yes
         M4_DEFINES="$M4_DEFINES -DENABLE_KDBUS"
 fi
@@ -555,16 +571,13 @@ AC_ARG_WITH([dbuspolicydir],
         AS_HELP_STRING([--with-dbuspolicydir=DIR], [D-Bus policy directory]),
         [],
         [with_dbuspolicydir=${sysconfdir}/dbus-1/system.d])
-
-AC_ARG_WITH([dbussessionservicedir],
-        AS_HELP_STRING([--with-dbussessionservicedir=DIR], [D-Bus session service directory]),
-        [],
-        [with_dbussessionservicedir=${datadir}/dbus-1/services])
+AX_NORMALIZE_PATH([with_dbuspolicydir])
 
 AC_ARG_WITH([dbussystemservicedir],
         AS_HELP_STRING([--with-dbussystemservicedir=DIR], [D-Bus system service directory]),
         [],
         [with_dbussystemservicedir=${datadir}/dbus-1/system-services])
+AX_NORMALIZE_PATH([with_dbussystemservicedir])
 
 AC_ARG_WITH([bashcompletiondir],
         AS_HELP_STRING([--with-bashcompletiondir=DIR], [Bash completions directory]),
@@ -574,25 +587,42 @@ AC_ARG_WITH([bashcompletiondir],
         ] , [
                 with_bashcompletiondir=${datadir}/bash-completion/completions
         ])])
+AX_NORMALIZE_PATH([with_bashcompletiondir])
 
 AC_ARG_WITH([zshcompletiondir],
         AS_HELP_STRING([--with-zshcompletiondir=DIR], [Zsh completions directory]),
         [], [with_zshcompletiondir=${datadir}/zsh/site-functions])
+AX_NORMALIZE_PATH([with_zshcompletiondir])
+
+AC_ARG_WITH([rootprefix],
+        AS_HELP_STRING([--with-rootprefix=DIR], [rootfs directory prefix for config files and kernel modules]),
+        [], [with_rootprefix=${ac_default_prefix}])
+# --with-rootprefix= (empty) should default to "/" but AX_NORMALIZE_PATH
+# defaults those to ".", solve that here for now until we can find a suitable
+# fix for AX_NORMALIZE_PATH upstream at autoconf-archive.
+# See: https://github.com/systemd/systemd/issues/54
+if test "x${with_rootprefix}" = "x"; then
+        with_rootprefix="/"
+fi
+AX_NORMALIZE_PATH([with_rootprefix])
 
 AC_ARG_WITH([rootlibdir],
         AS_HELP_STRING([--with-rootlibdir=DIR], [Root directory for libraries necessary for boot]),
         [],
         [with_rootlibdir=${libdir}])
+AX_NORMALIZE_PATH([with_rootlibdir])
 
 AC_ARG_WITH([pamlibdir],
         AS_HELP_STRING([--with-pamlibdir=DIR], [Directory for PAM modules]),
         [],
         [with_pamlibdir=${with_rootlibdir}/security])
+AX_NORMALIZE_PATH([with_pamlibdir])
 
 AC_ARG_WITH([pamconfdir],
         AS_HELP_STRING([--with-pamconfdir=DIR], [Directory for PAM configuration]),
         [],
         [with_pamconfdir=${sysconfdir}/pam.d])
+AX_NORMALIZE_PATH([with_pamconfdir])
 
 AC_ARG_ENABLE([split-usr],
         AS_HELP_STRING([--enable-split-usr], [Assume that /bin, /sbin aren\'t symlinks into /usr]),
@@ -606,10 +636,9 @@ AC_ARG_ENABLE([split-usr],
 AS_IF([test "x${enable_split_usr}" = "xyes"], [
         AC_DEFINE(HAVE_SPLIT_USR, 1, [Define if /bin, /sbin aren't symlinks into /usr])
 ])
+AM_CONDITIONAL(ENABLE_SPLIT_USR, [test "x${enable_split_usr}" = "xyes"])
 
-# Work around intltoolize and gtk-doc problems in VPATH builds
-AM_CONDITIONAL([ENABLE_GTK_DOC_TESTS], [test "x$0" = "x./configure"],
-                                       [Define to do gtk-doc tests])
+# work around intltool-update issues during 'make distcheck'
 AS_IF([test "x$0" != "x./configure"], [
         AC_SUBST([INTLTOOL_UPDATE], [/usr/bin/env true])
 ])
@@ -650,16 +679,17 @@ AS_IF([test x$enable_debug_mmap_cache = xyes], [
 test -z "$enable_debug" && enable_debug="none"
 
 AC_SUBST([dbuspolicydir], [$with_dbuspolicydir])
-AC_SUBST([dbussessionservicedir], [$with_dbussessionservicedir])
 AC_SUBST([dbussystemservicedir], [$with_dbussystemservicedir])
 AC_SUBST([bashcompletiondir], [$with_bashcompletiondir])
 AC_SUBST([zshcompletiondir], [$with_zshcompletiondir])
 AC_SUBST([pamlibdir], [$with_pamlibdir])
 AC_SUBST([pamconfdir], [$with_pamconfdir])
+AC_SUBST([rootprefix], [$with_rootprefix])
 AC_SUBST([rootlibdir], [$with_rootlibdir])
 
 AC_CONFIG_FILES([
-        Makefile po/Makefile.in
+        Makefile
+        po/Makefile.in
 ])
 
 AC_OUTPUT
@@ -677,12 +707,12 @@ AC_MSG_RESULT([
         dbus:                    ${have_dbus}
         kdbus:                   ${have_kdbus}
         man pages:               ${have_manpages}
-        gtk-doc:                 ${enable_gtk_doc}
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
         extra debugging:         ${enable_debug}
 
         prefix:                  ${prefix}
+        rootprefix:              ${with_rootprefix}
         sysconf dir:             ${sysconfdir}
         datarootdir:             ${datarootdir}
         includedir:              ${includedir}
@@ -691,7 +721,6 @@ AC_MSG_RESULT([
         PAM modules dir:         ${with_pamlibdir}
         PAM configuration dir:   ${with_pamconfdir}
         D-Bus policy dir:        ${with_dbuspolicydir}
-        D-Bus session dir:       ${with_dbussessionservicedir}
         D-Bus system dir:        ${with_dbussystemservicedir}
         Bash completions dir:    ${with_bashcompletiondir}
         Zsh completions dir:     ${with_zshcompletiondir}

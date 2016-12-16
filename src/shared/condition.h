@@ -77,7 +77,7 @@ typedef struct Condition {
         LIST_FIELDS(struct Condition, conditions);
 } Condition;
 
-Condition* condition_new(ConditionType type, const char *parameter, bool trigger, bool negate);
+// UNNEEDED Condition* condition_new(ConditionType type, const char *parameter, bool trigger, bool negate);
 void condition_free(Condition *c);
 Condition* condition_free_list(Condition *c);
 

@@ -128,11 +128,14 @@ _public_ sd_bus_creds *sd_bus_creds_unref(sd_bus_creds *c) {
         return NULL;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ uint64_t sd_bus_creds_get_mask(const sd_bus_creds *c) {
         assert_return(c, 0);
 
         return c->mask;
 }
+#endif // 0
 
 _public_ uint64_t sd_bus_creds_get_augmented_mask(const sd_bus_creds *c) {
         assert_return(c, 0);
@@ -152,6 +155,8 @@ sd_bus_creds* bus_creds_new(void) {
         return c;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_new_from_pid(sd_bus_creds **ret, pid_t pid, uint64_t mask) {
         sd_bus_creds *c;
         int r;
@@ -183,6 +188,7 @@ _public_ int sd_bus_creds_new_from_pid(sd_bus_creds **ret, pid_t pid, uint64_t m
         *ret = c;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_creds_get_uid(sd_bus_creds *c, uid_t *uid) {
         assert_return(c, -EINVAL);
@@ -206,6 +212,8 @@ _public_ int sd_bus_creds_get_euid(sd_bus_creds *c, uid_t *euid) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_get_suid(sd_bus_creds *c, uid_t *suid) {
         assert_return(c, -EINVAL);
         assert_return(suid, -EINVAL);
@@ -239,6 +247,7 @@ _public_ int sd_bus_creds_get_gid(sd_bus_creds *c, gid_t *gid) {
         *gid = c->gid;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_creds_get_egid(sd_bus_creds *c, gid_t *egid) {
         assert_return(c, -EINVAL);
@@ -251,6 +260,8 @@ _public_ int sd_bus_creds_get_egid(sd_bus_creds *c, gid_t *egid) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_get_sgid(sd_bus_creds *c, gid_t *sgid) {
         assert_return(c, -EINVAL);
         assert_return(sgid, -EINVAL);
@@ -283,6 +294,7 @@ _public_ int sd_bus_creds_get_supplementary_gids(sd_bus_creds *c, const gid_t **
         *gids = c->supplementary_gids;
         return (int) c->n_supplementary_gids;
 }
+#endif // 0
 
 _public_ int sd_bus_creds_get_pid(sd_bus_creds *c, pid_t *pid) {
         assert_return(c, -EINVAL);
@@ -296,6 +308,8 @@ _public_ int sd_bus_creds_get_pid(sd_bus_creds *c, pid_t *pid) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_get_ppid(sd_bus_creds *c, pid_t *ppid) {
         assert_return(c, -EINVAL);
         assert_return(ppid, -EINVAL);
@@ -312,6 +326,7 @@ _public_ int sd_bus_creds_get_ppid(sd_bus_creds *c, pid_t *ppid) {
         *ppid = c->ppid;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_creds_get_tid(sd_bus_creds *c, pid_t *tid) {
         assert_return(c, -EINVAL);
@@ -336,6 +351,8 @@ _public_ int sd_bus_creds_get_selinux_context(sd_bus_creds *c, const char **ret)
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_get_comm(sd_bus_creds *c, const char **ret) {
         assert_return(c, -EINVAL);
         assert_return(ret, -EINVAL);
@@ -493,6 +510,7 @@ _public_ int sd_bus_creds_get_user_slice(sd_bus_creds *c, const char **ret) {
         *ret = c->user_slice;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_creds_get_session(sd_bus_creds *c, const char **ret) {
         int r;
@@ -559,6 +577,8 @@ _public_ int sd_bus_creds_get_cmdline(sd_bus_creds *c, char ***cmdline) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_get_audit_session_id(sd_bus_creds *c, uint32_t *sessionid) {
         assert_return(c, -EINVAL);
         assert_return(sessionid, -EINVAL);
@@ -572,6 +592,7 @@ _public_ int sd_bus_creds_get_audit_session_id(sd_bus_creds *c, uint32_t *sessio
         *sessionid = c->audit_session_id;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_creds_get_audit_login_uid(sd_bus_creds *c, uid_t *uid) {
         assert_return(c, -EINVAL);
@@ -601,6 +622,8 @@ _public_ int sd_bus_creds_get_tty(sd_bus_creds *c, const char **ret) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_get_unique_name(sd_bus_creds *c, const char **unique_name) {
         assert_return(c, -EINVAL);
         assert_return(unique_name, -EINVAL);
@@ -663,6 +686,7 @@ _public_ int sd_bus_creds_get_description(sd_bus_creds *c, const char **ret) {
         *ret = c->unescaped_description;
         return 0;
 }
+#endif // 0
 
 static int has_cap(sd_bus_creds *c, unsigned offset, int capability) {
         size_t sz;
@@ -689,6 +713,8 @@ _public_ int sd_bus_creds_has_effective_cap(sd_bus_creds *c, int capability) {
         return has_cap(c, CAP_OFFSET_EFFECTIVE, capability);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_creds_has_permitted_cap(sd_bus_creds *c, int capability) {
         assert_return(c, -EINVAL);
         assert_return(capability >= 0, -EINVAL);
@@ -718,6 +744,7 @@ _public_ int sd_bus_creds_has_bounding_cap(sd_bus_creds *c, int capability) {
 
         return has_cap(c, CAP_OFFSET_BOUNDING, capability);
 }
+#endif // 0
 
 static int parse_caps(sd_bus_creds *c, unsigned offset, const char *p) {
         size_t sz, max;

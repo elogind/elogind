@@ -261,6 +261,8 @@ int show_cgroup_and_extra(const char *controller, const char *path, const char *
         return show_extra_pids(controller, path, prefix, n_columns, extra_pids, n_extra_pids, flags);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int show_cgroup_and_extra_by_spec(const char *spec, const char *prefix, unsigned n_columns, bool kernel_threads, const pid_t extra_pids[], unsigned n_extra_pids, OutputFlags flags) {
         _cleanup_free_ char *controller = NULL, *path = NULL;
         int r;
@@ -273,3 +275,4 @@ int show_cgroup_and_extra_by_spec(const char *spec, const char *prefix, unsigned
 
         return show_cgroup_and_extra(controller, path, prefix, n_columns, kernel_threads, extra_pids, n_extra_pids, flags);
 }
+#endif // 0

@@ -487,6 +487,8 @@ int config_parse_iec_size(const char* unit,
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int config_parse_si_size(const char* unit,
                             const char *filename,
                             unsigned line,
@@ -544,6 +546,7 @@ int config_parse_iec_off(const char* unit,
 
         return 0;
 }
+#endif // 0
 
 int config_parse_bool(const char* unit,
                       const char *filename,

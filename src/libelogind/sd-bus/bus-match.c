@@ -909,6 +909,8 @@ fail:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char *bus_match_to_string(struct bus_match_component *components, unsigned n_components) {
         _cleanup_free_ FILE *f = NULL;
         char *buffer = NULL;
@@ -948,6 +950,7 @@ char *bus_match_to_string(struct bus_match_component *components, unsigned n_com
 
         return buffer;
 }
+#endif // 0
 
 int bus_match_add(
                 struct bus_match_node *root,

@@ -21,21 +21,13 @@ oldpwd=$(pwd)
 topdir=$(dirname $0)
 cd $topdir
 
-if [ -f .git/hooks/pre-commit.sample ] && [ ! -f .git/hooks/pre-commit ]; then
-        # This part is allowed to fail
-        cp -p .git/hooks/pre-commit.sample .git/hooks/pre-commit && \
-        chmod +x .git/hooks/pre-commit && \
-        echo "Activated pre-commit hook." || :
-fi
-
-if which gtkdocize >/dev/null 2>/dev/null; then
-        gtkdocize --docdir docs/ --flavour no-tmpl
-        gtkdocargs=--enable-gtk-doc
-else
-        echo "You don't have gtk-doc installed, and thus won't be able to generate the documentation."
-        rm -f docs/gtk-doc.make
-        echo 'EXTRA_DIST =' > docs/gtk-doc.make
-fi
+# We do not need this, we are not systemd upstream!
+#if [ -f .git/hooks/pre-commit.sample ] && [ ! -f .git/hooks/pre-commit ]; then
+#        # This part is allowed to fail
+#        cp -p .git/hooks/pre-commit.sample .git/hooks/pre-commit && \
+#        chmod +x .git/hooks/pre-commit && \
+#        echo "Activated pre-commit hook." || :
+#fi
 
 intltoolize --force --automake
 autoreconf --force --install --symlink

@@ -25,7 +25,7 @@
 
   <refentryinfo>
     <title>loginctl</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
 
     <authorgroup>
       <author>
@@ -44,7 +44,7 @@
 
   <refnamediv>
     <refname>loginctl</refname>
-    <refpurpose>Control the systemd login manager</refpurpose>
+    <refpurpose>Control the elogind login manager</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
@@ -60,10 +60,7 @@
     <title>Description</title>
 
     <para><command>loginctl</command> may be used to introspect and
-    control the state of the
-    <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>
-    login manager
-    <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+        control the state of the elogind login manager</para>
   </refsect1>
 
   <refsect1>
@@ -404,10 +401,7 @@
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     </para>
   </refsect1>
 

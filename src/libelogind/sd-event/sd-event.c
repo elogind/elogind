@@ -517,6 +517,8 @@ static int source_io_register(
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static clockid_t event_source_type_to_clock(EventSourceType t) {
 
         switch (t) {
@@ -540,6 +542,7 @@ static clockid_t event_source_type_to_clock(EventSourceType t) {
                 return (clockid_t) -1;
         }
 }
+#endif // 0
 
 static EventSourceType clock_to_event_source_type(clockid_t clock) {
 
@@ -1229,6 +1232,8 @@ _public_ int sd_event_add_exit(
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ sd_event_source* sd_event_source_ref(sd_event_source *s) {
         assert_return(s, NULL);
 
@@ -1237,6 +1242,7 @@ _public_ sd_event_source* sd_event_source_ref(sd_event_source *s) {
 
         return s;
 }
+#endif // 0
 
 _public_ sd_event_source* sd_event_source_unref(sd_event_source *s) {
 
@@ -1274,6 +1280,8 @@ _public_ int sd_event_source_set_description(sd_event_source *s, const char *des
         return free_and_strdup(&s->description, description);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_description(sd_event_source *s, const char **description) {
         assert_return(s, -EINVAL);
         assert_return(description, -EINVAL);
@@ -1283,6 +1291,7 @@ _public_ int sd_event_source_get_description(sd_event_source *s, const char **de
         *description = s->description;
         return 0;
 }
+#endif // 0
 
 _public_ sd_event *sd_event_source_get_event(sd_event_source *s) {
         assert_return(s, NULL);
@@ -1290,6 +1299,8 @@ _public_ sd_event *sd_event_source_get_event(sd_event_source *s) {
         return s->event;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_pending(sd_event_source *s) {
         assert_return(s, -EINVAL);
         assert_return(s->type != SOURCE_EXIT, -EDOM);
@@ -1306,6 +1317,7 @@ _public_ int sd_event_source_get_io_fd(sd_event_source *s) {
 
         return s->io.fd;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_io_fd(sd_event_source *s, int fd) {
         int r;
@@ -1343,6 +1355,8 @@ _public_ int sd_event_source_set_io_fd(sd_event_source *s, int fd) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_io_events(sd_event_source *s, uint32_t* events) {
         assert_return(s, -EINVAL);
         assert_return(events, -EINVAL);
@@ -1352,6 +1366,7 @@ _public_ int sd_event_source_get_io_events(sd_event_source *s, uint32_t* events)
         *events = s->io.events;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_io_events(sd_event_source *s, uint32_t events) {
         int r;
@@ -1378,6 +1393,8 @@ _public_ int sd_event_source_set_io_events(sd_event_source *s, uint32_t events) 
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_io_revents(sd_event_source *s, uint32_t* revents) {
         assert_return(s, -EINVAL);
         assert_return(revents, -EINVAL);
@@ -1403,6 +1420,7 @@ _public_ int sd_event_source_get_priority(sd_event_source *s, int64_t *priority)
 
         return s->priority;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_priority(sd_event_source *s, int64_t priority) {
         assert_return(s, -EINVAL);
@@ -1426,6 +1444,8 @@ _public_ int sd_event_source_set_priority(sd_event_source *s, int64_t priority) 
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_enabled(sd_event_source *s, int *m) {
         assert_return(s, -EINVAL);
         assert_return(m, -EINVAL);
@@ -1434,6 +1454,7 @@ _public_ int sd_event_source_get_enabled(sd_event_source *s, int *m) {
         *m = s->enabled;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
         int r;
@@ -1640,6 +1661,8 @@ _public_ int sd_event_source_set_time(sd_event_source *s, uint64_t usec) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_time_accuracy(sd_event_source *s, uint64_t *usec) {
         assert_return(s, -EINVAL);
         assert_return(usec, -EINVAL);
@@ -1694,6 +1717,7 @@ _public_ int sd_event_source_get_child_pid(sd_event_source *s, pid_t *pid) {
         *pid = s->child.pid;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_prepare(sd_event_source *s, sd_event_handler_t callback) {
         int r;
@@ -1727,6 +1751,8 @@ _public_ int sd_event_source_set_prepare(sd_event_source *s, sd_event_handler_t 
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ void* sd_event_source_get_userdata(sd_event_source *s) {
         assert_return(s, NULL);
 
@@ -1743,6 +1769,7 @@ _public_ void *sd_event_source_set_userdata(sd_event_source *s, void *userdata) 
 
         return ret;
 }
+#endif // 0
 
 static usec_t sleep_between(sd_event *e, usec_t a, usec_t b) {
         usec_t c;
@@ -2507,6 +2534,8 @@ _public_ int sd_event_run(sd_event *e, uint64_t timeout) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_loop(sd_event *e) {
         int r;
 
@@ -2536,6 +2565,7 @@ _public_ int sd_event_get_fd(sd_event *e) {
 
         return e->epoll_fd;
 }
+#endif // 0
 
 _public_ int sd_event_get_state(sd_event *e) {
         assert_return(e, -EINVAL);
@@ -2567,6 +2597,8 @@ _public_ int sd_event_exit(sd_event *e, int code) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
         assert_return(e, -EINVAL);
         assert_return(usec, -EINVAL);
@@ -2595,6 +2627,7 @@ _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_default(sd_event **ret) {
 
@@ -2687,9 +2720,12 @@ fail:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_get_watchdog(sd_event *e) {
         assert_return(e, -EINVAL);
         assert_return(!event_pid_changed(e), -ECHILD);
 
         return e->watchdog;
 }
+#endif // 0

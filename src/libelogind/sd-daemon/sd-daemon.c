@@ -307,6 +307,37 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
         return 1;
 }
 
+_public_ int sd_is_mq(int fd, const char *path) {
+        struct mq_attr attr;
+
+        assert_return(fd >= 0, -EINVAL);
+
+        if (mq_getattr(fd, &attr) < 0)
+                return -errno;
+
+        if (path) {
+                char fpath[PATH_MAX];
+                struct stat a, b;
+
+                assert_return(path_is_absolute(path), -EINVAL);
+
+                if (fstat(fd, &a) < 0)
+                        return -errno;
+
+                strncpy(stpcpy(fpath, "/dev/mqueue"), path, sizeof(fpath) - 12);
+                fpath[sizeof(fpath)-1] = 0;
+
+                if (stat(fpath, &b) < 0)
+                        return -errno;
+
+                if (a.st_dev != b.st_dev ||
+                    a.st_ino != b.st_ino)
+                        return 0;
+        }
+
+        return 1;
+}
+
 _public_ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, const int *fds, unsigned n_fds) {
         union sockaddr_union sockaddr = {
                 .sa.sa_family = AF_UNIX,

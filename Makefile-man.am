@@ -1,11 +1,10 @@
 MANPAGES += \
 	man/loginctl.1 \
-	man/logind.conf.5 \
-	man/logind.8
+	man/elogind.conf.5
 MANPAGES_ALIAS += \
-	man/logind.conf.d.5
-man/logind.conf.d.5: man/logind.conf.5
-man/logind.conf.d.html: man/logind.conf.html
+	man/elogind.conf.d.5
+man/elogind.conf.d.5: man/elogind.conf.5
+man/elogind.conf.d.html: man/elogind.conf.html
 	$(html-alias)
 
 if HAVE_PAM
@@ -228,8 +227,7 @@ endif
 
 EXTRA_DIST += \
 	man/loginctl.xml \
-	man/logind.xml \
-	man/logind.conf.xml \
+	man/elogind.conf.xml \
 	man/pam_elogind.xml \
 	man/sd_get_seats.xml \
 	man/sd_login_monitor_new.xml \

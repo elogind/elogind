@@ -214,6 +214,8 @@ _public_ sd_bus_slot* sd_bus_slot_unref(sd_bus_slot *slot) {
         return NULL;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ sd_bus* sd_bus_slot_get_bus(sd_bus_slot *slot) {
         assert_return(slot, NULL);
 
@@ -281,3 +283,4 @@ _public_ int sd_bus_slot_get_description(sd_bus_slot *slot, const char **descrip
         *description = slot->description;
         return 0;
 }
+#endif // 0

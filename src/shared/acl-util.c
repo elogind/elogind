@@ -95,6 +95,8 @@ int calc_acl_mask_if_needed(acl_t *acl_p) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int add_base_acls_if_needed(acl_t *acl_p, const char *path) {
         acl_entry_t i;
         int r;
@@ -395,3 +397,4 @@ int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *acl) {
         old = NULL;
         return 0;
 }
+#endif // 0

@@ -88,7 +88,7 @@
 
     <orderedlist>
       <listitem><para>If enabled in
-      <citerefentry><refentrytitle>logind.conf</refentrytitle>
+      <citerefentry><refentrytitle>elogind.conf</refentrytitle>
       <manvolnum>5</manvolnum></citerefentry>, all processes of the
       session are terminated. If the last concurrent session of a user
       ends, the user's elogind instance will be terminated too, and so
@@ -279,8 +279,8 @@ session    required     pam_elogind.so</programlisting>
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>logind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>,

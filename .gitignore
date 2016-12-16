@@ -291,3 +291,4 @@ stamp-*
 /elogind-cgroups-agent
 /rebuild_all.sh
 /src/libelogind/libelogind.pc
+/elogind-inhibit

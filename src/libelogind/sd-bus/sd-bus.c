@@ -229,6 +229,8 @@ _public_ int sd_bus_set_fd(sd_bus *bus, int input_fd, int output_fd) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_set_exec(sd_bus *bus, const char *path, char *const argv[]) {
         char *p, **a;
 
@@ -302,6 +304,7 @@ _public_ int sd_bus_negotiate_timestamp(sd_bus *bus, int b) {
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t mask) {
         uint64_t new_flags;
@@ -342,6 +345,8 @@ _public_ int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t server_id) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_set_anonymous(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
         assert_return(bus->state == BUS_UNSET, -EPERM);
@@ -367,6 +372,7 @@ _public_ int sd_bus_set_description(sd_bus *bus, const char *description) {
 
         return free_and_strdup(&bus->description, description);
 }
+#endif // 0
 
 _public_ int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
@@ -376,12 +382,15 @@ _public_ int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_get_allow_interactive_authorization(sd_bus *bus) {
         assert_return(bus, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->allow_interactive_authorization;
 }
+#endif // 0
 
 static int hello_callback(sd_bus_message *reply, void *userdata, sd_bus_error *error) {
         const char *s;
@@ -1023,10 +1032,12 @@ static int bus_start_address(sd_bus *b) {
 
                 if (b->exec_path)
                         r = bus_socket_exec(b);
-                else if ((b->nspid > 0 || b->machine) && b->kernel)
+#if 0
+		else if ((b->nspid > 0 || b->machine) && b->kernel)
                         r = bus_container_connect_kernel(b);
                 else if ((b->nspid > 0 || b->machine) && b->sockaddr.sa.sa_family != AF_UNSPEC)
                         r = bus_container_connect_socket(b);
+#endif // 0
                 else if (b->kernel)
                         r = bus_kernel_connect(b);
                 else if (b->sockaddr.sa.sa_family != AF_UNSPEC)
@@ -1470,6 +1481,8 @@ _public_ sd_bus *sd_bus_unref(sd_bus *bus) {
         return NULL;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_is_open(sd_bus *bus) {
 
         assert_return(bus, -EINVAL);
@@ -1477,6 +1490,7 @@ _public_ int sd_bus_is_open(sd_bus *bus) {
 
         return BUS_IS_OPEN(bus->state);
 }
+#endif // 0
 
 _public_ int sd_bus_can_send(sd_bus *bus, char type) {
         int r;
@@ -1502,6 +1516,8 @@ _public_ int sd_bus_can_send(sd_bus *bus, char type) {
         return bus_type_is_valid(type);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_get_bus_id(sd_bus *bus, sd_id128_t *id) {
         int r;
 
@@ -1516,6 +1532,7 @@ _public_ int sd_bus_get_bus_id(sd_bus *bus, sd_id128_t *id) {
         *id = bus->server_id;
         return 0;
 }
+#endif // 0
 
 static int bus_seal_message(sd_bus *b, sd_bus_message *m, usec_t timeout) {
         assert(b);
@@ -2771,9 +2788,12 @@ _public_ int sd_bus_process(sd_bus *bus, sd_bus_message **ret) {
         return bus_process_internal(bus, false, 0, ret);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_process_priority(sd_bus *bus, int64_t priority, sd_bus_message **ret) {
         return bus_process_internal(bus, true, priority, ret);
 }
+#endif // 0
 
 static int bus_poll(sd_bus *bus, bool need_more, uint64_t timeout_usec) {
         struct pollfd p[2] = {};
@@ -2992,6 +3012,8 @@ finish:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_remove_match_by_string(
                 sd_bus *bus,
                 const char *match,
@@ -3022,6 +3044,7 @@ finish:
 
         return r;
 }
+#endif // 0
 
 bool bus_pid_changed(sd_bus *bus) {
         assert(bus);
@@ -3267,11 +3290,14 @@ _public_ sd_bus_message* sd_bus_get_current_message(sd_bus *bus) {
         return bus->current_message;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ sd_bus_slot* sd_bus_get_current_slot(sd_bus *bus) {
         assert_return(bus, NULL);
 
         return bus->current_slot;
 }
+#endif // 0
 
 _public_ sd_bus_message_handler_t sd_bus_get_current_handler(sd_bus *bus) {
         assert_return(bus, NULL);
@@ -3358,6 +3384,8 @@ _public_ int sd_bus_default(sd_bus **ret) {
         return sd_bus_default_system(ret);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_get_tid(sd_bus *b, pid_t *tid) {
         assert_return(b, -EINVAL);
         assert_return(tid, -EINVAL);
@@ -3415,6 +3443,7 @@ _public_ int sd_bus_path_decode(const char *path, const char *prefix, char **ext
         *external_id = ret;
         return 1;
 }
+#endif // 0
 
 _public_ int sd_bus_try_close(sd_bus *bus) {
         int r;
@@ -3442,6 +3471,8 @@ _public_ int sd_bus_try_close(sd_bus *bus) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_get_description(sd_bus *bus, const char **description) {
         assert_return(bus, -EINVAL);
         assert_return(description, -EINVAL);
@@ -3451,6 +3482,7 @@ _public_ int sd_bus_get_description(sd_bus *bus, const char **description) {
         *description = bus->description;
         return 0;
 }
+#endif // 0
 
 int bus_get_root_path(sd_bus *bus) {
         int r;
@@ -3470,6 +3502,8 @@ int bus_get_root_path(sd_bus *bus) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_get_scope(sd_bus *bus, const char **scope) {
         int r;
 
@@ -3567,3 +3601,4 @@ _public_ int sd_bus_is_monitor(sd_bus *bus) {
 
         return !!(bus->hello_flags & KDBUS_HELLO_MONITOR);
 }
+#endif // 0
