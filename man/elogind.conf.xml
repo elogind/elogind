@@ -3,25 +3,26 @@
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <!--
-  This file is part of systemd.
+  This file is part of elogind.
 
   Copyright 2010 Lennart Poettering
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
 
-  systemd is distributed in the hope that it will be useful, but
+  elogind is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="elogind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
+<refentry id="elogind.conf" conditional='ENABLE_LOGIND'
+    xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
     <title>elogind.conf</title>
     <productname>elogind</productname>
@@ -43,7 +44,6 @@
 
   <refnamediv>
     <refname>elogind.conf</refname>
-    <refname>elogind.conf.d</refname>
     <refpurpose>Login manager configuration files</refpurpose>
   </refnamediv>
 
@@ -56,6 +56,7 @@
 
     <para>These files configure various parameters of the elogind
     login manager,
+    <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     </para>
   </refsect1>
 
@@ -68,6 +69,48 @@
     <literal>[Login]</literal> section:</para>
 
     <variablelist>
+
+      <varlistentry>
+        <term><varname>NAutoVTs=</varname></term>
+
+        <listitem><para>Takes a positive integer. Configures how many
+        virtual terminals (VTs) to allocate by default that, when
+        switched to and are previously unused,
+        <literal>autovt</literal> services are automatically spawned
+        on. These services are instantiated from the template unit
+        <filename>autovt@.service</filename> for the respective VT TTY
+        name, for example, <filename>autovt@tty4.service</filename>.
+        By default, <filename>autovt@.service</filename> is linked to
+        <filename>getty@.service</filename>. In other words, login
+        prompts are started dynamically as the user switches to unused
+        virtual terminals. Hence, this parameter controls how many
+        login <literal>gettys</literal> are available on the VTs. If a
+        VT is already used by some other subsystem (for example, a
+        graphical login), this kind of activation will not be
+        attempted. Note that the VT configured in
+        <varname>ReserveVT=</varname> is always subject to this kind
+        of activation, even if it is not one of the VTs configured
+        with the <varname>NAutoVTs=</varname> directive. Defaults to
+        6. When set to 0, automatic spawning of
+        <literal>autovt</literal> services is
+        disabled.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>ReserveVT=</varname></term>
+
+        <listitem><para>Takes a positive integer. Identifies one
+        virtual terminal that shall unconditionally be reserved for
+        <filename>autovt@.service</filename> activation (see above).
+        The VT selected with this option will be marked busy
+        unconditionally, so that no other subsystem will allocate it.
+        This functionality is useful to ensure that, regardless of how
+        many VTs are allocated by other subsystems, one login
+        <literal>getty</literal> is always available. Defaults to 6
+        (in other words, there will always be a
+        <literal>getty</literal> available on Alt-F6.). When set to 0,
+        VT reservation is disabled.</para></listitem>
+      </varlistentry>
 
       <varlistentry>
         <term><varname>KillUserProcesses=</varname></term>
@@ -253,7 +296,10 @@
   <refsect1>
       <title>See Also</title>
       <para>
+        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+        <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+        <citerefentry><refentrytitle>elogind-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       </para>
   </refsect1>
 

@@ -4362,8 +4362,6 @@ int parse_proc_cmdline(int (*parse_item)(const char *key, const char *value)) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int get_proc_cmdline_key(const char *key, char **value) {
         _cleanup_free_ char *line = NULL, *ret = NULL;
         bool found = false;
@@ -4416,7 +4414,6 @@ int get_proc_cmdline_key(const char *key, char **value) {
         return found;
 
 }
-#endif // 0
 
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;

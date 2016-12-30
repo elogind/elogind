@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=8
-LIBELOGIND_REVISION=0
-LIBELOGIND_AGE=8
+LIBELOGIND_CURRENT=9
+LIBELOGIND_REVISION=3
+LIBELOGIND_AGE=9
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -240,6 +240,45 @@ noinst_DATA += \
 
 CLEANFILES += \
 	docs/html/man
+
+if HAVE_PYTHON
+man/index.html: man/systemd.index.html
+	$(AM_V_LN)$(LN_S) -f systemd.index.html $@
+
+noinst_DATA += \
+	man/index.html
+
+CLEANFILES += \
+	man/index.html
+
+XML_GLOB = $(wildcard $(top_srcdir)/man/*.xml)
+NON_INDEX_XML_FILES = $(filter-out man/systemd.index.xml,$(XML_FILES))
+SOURCE_XML_FILES = ${patsubst %,$(top_srcdir)/%,$(filter-out man/systemd.directives.xml,$(NON_INDEX_XML_FILES))}
+
+# This target should only be run manually. It recreates Makefile-man.am
+# file in the source directory based on all man/*.xml files. Run it after
+# adding, removing, or changing the conditional in a man page.
+update-man-list: $(top_srcdir)/tools/make-man-rules.py $(XML_GLOB)
+	$(AM_V_GEN)$(PYTHON) $^ > $(top_srcdir)/Makefile-man.tmp
+	$(AM_V_at)mv $(top_srcdir)/Makefile-man.tmp $(top_srcdir)/Makefile-man.am
+	@echo "Makefile-man.am has been regenerated"
+
+man/systemd.index.xml: $(top_srcdir)/tools/make-man-index.py $(NON_INDEX_XML_FILES)
+	$(AM_V_at)$(MKDIR_P) $(dir $@)
+	$(AM_V_GEN)$(PYTHON) $< $@ $(filter-out $<,$^)
+
+man/systemd.directives.xml: $(top_srcdir)/tools/make-directive-index.py man/custom-entities.ent $(SOURCE_XML_FILES)
+	$(AM_V_at)$(MKDIR_P) $(dir $@)
+	$(AM_V_GEN)$(PYTHON) $< $@ $(SOURCE_XML_FILES)
+
+CLEANFILES += \
+	man/systemd.index.xml \
+	man/systemd.directives.xml
+
+EXTRA_DIST += \
+	tools/make-man-rules.py
+
+endif
 
 endif
 

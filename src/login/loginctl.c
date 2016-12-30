@@ -37,7 +37,7 @@
 #include "strv.h"
 #include "unit-name.h"
 #include "sysfs-show.h"
-#include "logs-show.h"
+// #include "logs-show.h"
 #include "cgroup-show.h"
 #include "cgroup-util.h"
 #include "spawn-polkit-agent.h"

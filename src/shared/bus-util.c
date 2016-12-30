@@ -2021,8 +2021,6 @@ int bus_path_decode_unique(const char *path, const char *prefix, char **ret_send
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool is_kdbus_wanted(void) {
         _cleanup_free_ char *value = NULL;
 #ifdef ENABLE_KDBUS
@@ -2056,4 +2054,3 @@ bool is_kdbus_available(void) {
 
         return ioctl(fd, KDBUS_CMD_BUS_MAKE, &cmd) >= 0;
 }
-#endif // 0
