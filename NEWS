@@ -1,5 +1,45 @@
 systemd System and Service Manager
 
+CHANGES WITH 222:
+
+        * udev does not longer support the WAIT_FOR_SYSFS= key in udev rules.
+          There are no known issues with current sysfs, and udev does not need
+          or should be used to work around such bugs.
+
+        * udev does no longer enable USB HID power management. Several reports
+          indicate, that some devices cannot handle that setting.
+
+        * The udev accelerometer helper was removed. The functionality
+          is now fully included in iio-sensor-proxy. But this means,
+          older iio-sensor-proxy versions will no longer provide
+          accelerometer/orientation data with this systemd version.
+          Please upgrade iio-sensor-proxy to version 1.0.
+
+        * networkd gained a new configuration option IPv6PrivacyExtensions=
+          which enables IPv6 privacy extensions (RFC 4941, "Privacy Extensions
+          for Stateless Address") on selected networks.
+
+        * For the sake of fewer build-time dependencies and less code in the
+          main repository, the python bindings are about to be removed in the
+          next release. A new repository has been created which accommodates
+          the code from now on, and we kindly ask distributions to create a
+          separate package for this. The removal will take place in v223.
+
+            https://github.com/systemd/python-systemd
+
+        Contributions from: Abdo Roig-Maranges, Andrew Eikum, Bastien Nocera,
+        Cédric Delmas, Christian Hesse, Christos Trochalakis, Daniel Mack,
+        daurnimator, David Herrmann, Dimitri John Ledkov, Eric Biggers, Eric
+        Cook, Felipe Sateler, Geert Jansen, Gerd Hoffmann, Gianpaolo Macario,
+        Greg Kroah-Hartman, Iago López Galeiras, Jan Alexander Steffens
+        (heftig), Jan Engelhardt, Jay Strict, Kay Sievers, Lennart Poettering,
+        Markus Knetschke, Martin Pitt, Michael Biebl, Michael Marineau, Michal
+        Sekletar, Miguel Bernal Marin, Peter Hutterer, Richard Maw, rinrinne,
+        Susant Sahani, Thomas Hindoe Paaboel Andersen, Tom Gundersen, Torstein
+        Husebø, Vedran Miletić, WaLyong Cho, Zbigniew Jędrzejewski-Szmek
+
+        -- Berlin, 2015-07-07
+
 CHANGES WITH 221:
 
         * The sd-bus.h and sd-event.h APIs have now been declared

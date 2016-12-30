@@ -26,7 +26,6 @@
 /GRTAGS
 /GSYMS
 /GTAGS
-/accelerometer
 /ata_id
 /bootctl
 /build-aux
@@ -38,7 +37,6 @@
 /defined
 /exported
 /exported-*
-/gtk-doc.make
 /hostnamectl
 /install-tree
 /journalctl
@@ -175,6 +173,7 @@
 /test-compress-benchmark
 /test-condition
 /test-conf-files
+/test-conf-parser
 /test-copy
 /test-coredump-vacuum
 /test-daemon
@@ -193,7 +192,7 @@
 /test-fdset
 /test-fileio
 /test-fstab-util
-/test-fw-util
+/test-firewall-util
 /test-hashmap
 /test-hostname
 /test-icmp6-rs
@@ -244,8 +243,8 @@
 /test-replace-var
 /test-resolve
 /test-ring
-/test-rtnl
-/test-rtnl-manual
+/test-netlink
+/test-netlink-manual
 /test-sched-prio
 /test-set
 /test-sigbus
