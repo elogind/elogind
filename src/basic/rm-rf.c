@@ -122,7 +122,7 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                                 /* This could be a subvolume, try to remove it */
                                 r = btrfs_subvol_remove_fd(fd, de->d_name, true);
                                 if (r < 0) {
-					if (r != -ENOTTY && r != -EINVAL) {
+                                        if (r != -ENOTTY && r != -EINVAL) {
                                                 if (ret == 0)
                                                         ret = r;
 
@@ -138,7 +138,7 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                                         safe_close(subdir_fd);
                                         continue;
                                 }
-			}
+                        }
 #endif // 0
 
                         /* We pass REMOVE_PHYSICAL here, to avoid
@@ -177,18 +177,18 @@ int rm_rf(const char *path, RemoveFlags flags) {
                 return -EPERM;
         }
 
+#if 0
         if ((flags & (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) == (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) {
                 /* Try to remove as subvolume first */
-#if 0
-		r = btrfs_subvol_remove(path, true);
+                r = btrfs_subvol_remove(path, true);
                 if (r >= 0)
                         return r;
 
                 if (r != -ENOTTY && r != -EINVAL && r != -ENOTDIR)
                         return r;
-#endif // 0
                 /* Not btrfs or not a subvolume */
         }
+#endif // 0
 
         fd = open(path, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW|O_NOATIME);
         if (fd < 0) {

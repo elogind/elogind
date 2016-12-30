@@ -88,9 +88,11 @@ void mempool_free_tile(struct mempool *mp, void *p) {
         mp->freelist = p;
 }
 
+/// UNNEEDED by elogind
+#if 0
 #ifdef VALGRIND
 
-// UNNEEDED void mempool_drop(struct mempool *mp) {
+void mempool_drop(struct mempool *mp) {
         struct pool *p = mp->first_pool;
         while (p) {
                 struct pool *n;
@@ -101,3 +103,4 @@ void mempool_free_tile(struct mempool *mp, void *p) {
 }
 
 #endif
+#endif // 0

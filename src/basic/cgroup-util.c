@@ -748,7 +748,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
 
                 controller = normalize_controller(controller);
         } else
-                controller = SYSTEMD_CGROUP_CONTROLLER;
+                controller = ELOGIND_CGROUP_CONTROLLER;
 
         fs = procfs_file_alloca(pid, "cgroup");
 
@@ -1060,7 +1060,7 @@ int cg_mangle_path(const char *path, char **result) {
         if (r < 0)
                 return r;
 
-        return cg_get_path(c ? c : SYSTEMD_CGROUP_CONTROLLER, p ? p : "/", NULL, result);
+        return cg_get_path(c ? c : ELOGIND_CGROUP_CONTROLLER, p ? p : "/", NULL, result);
 }
 
 int cg_get_root_path(char **path) {
@@ -1069,7 +1069,7 @@ int cg_get_root_path(char **path) {
 
         assert(path);
 
-        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, &p);
+        r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, 1, &p);
         if (r < 0)
                 return r;
 
@@ -1117,7 +1117,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         assert(pid >= 0);
         assert(cgroup);
 
-        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, pid, &raw);
+        r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, pid, &raw);
         if (r < 0)
                 return r;
 
@@ -1754,7 +1754,7 @@ int cg_create_everywhere(CGroupControllerMask supported, CGroupControllerMask ma
          * in all others */
 
         /* First create the cgroup in our own hierarchy. */
-        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, path);
+        r = cg_create(ELOGIND_CGROUP_CONTROLLER, path);
         if (r < 0)
                 return r;
 
@@ -1776,7 +1776,7 @@ int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t
         const char *n;
         int r;
 
-        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, path, pid);
+        r = cg_attach(ELOGIND_CGROUP_CONTROLLER, path, pid);
         if (r < 0)
                 return r;
 
@@ -1823,7 +1823,7 @@ int cg_migrate_everywhere(CGroupControllerMask supported, const char *from, cons
         int r;
 
         if (!path_equal(from, to))  {
-                r = cg_migrate_recursive(SYSTEMD_CGROUP_CONTROLLER, from, SYSTEMD_CGROUP_CONTROLLER, to, false, true);
+                r = cg_migrate_recursive(ELOGIND_CGROUP_CONTROLLER, from, ELOGIND_CGROUP_CONTROLLER, to, false, true);
                 if (r < 0)
                         return r;
         }
@@ -1838,7 +1838,7 @@ int cg_migrate_everywhere(CGroupControllerMask supported, const char *from, cons
                         if (!p)
                                 p = to;
 
-                        cg_migrate_recursive_fallback(SYSTEMD_CGROUP_CONTROLLER, to, n, p, false, false);
+                        cg_migrate_recursive_fallback(ELOGIND_CGROUP_CONTROLLER, to, n, p, false, false);
                 }
 
                 bit <<= 1;
@@ -1852,7 +1852,7 @@ int cg_trim_everywhere(CGroupControllerMask supported, const char *path, bool de
         const char *n;
         int r;
 
-        r = cg_trim(SYSTEMD_CGROUP_CONTROLLER, path, delete_root);
+        r = cg_trim(ELOGIND_CGROUP_CONTROLLER, path, delete_root);
         if (r < 0)
                 return r;
 
