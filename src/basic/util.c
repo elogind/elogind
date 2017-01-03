@@ -19,81 +19,81 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <libintl.h>
-#include <stdio.h>
-#include <syslog.h>
-#include <sched.h>
-#include <sys/resource.h>
-#include <linux/sched.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <dirent.h>
-#include <sys/ioctl.h>
-#include <stdarg.h>
-#include <poll.h>
-#include <ctype.h>
-#include <sys/prctl.h>
-#include <sys/utsname.h>
-#include <pwd.h>
-#include <netinet/ip.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-#include <glob.h>
-#include <grp.h>
-#include <sys/mman.h>
-#include <sys/vfs.h>
-#include <sys/mount.h>
-#include <linux/magic.h>
-#include <limits.h>
-#include <langinfo.h>
-#include <locale.h>
-#include <sys/personality.h>
-#include <sys/xattr.h>
-#include <sys/statvfs.h>
-#include <sys/file.h>
-#include <linux/fs.h>
+// #include  <string.h>
+// #include  <unistd.h>
+#include  <errno.h>
+// #include  <stdlib.h>
+// #include  <signal.h>
+// #include  <libintl.h>
+// #include  <stdio.h>
+// #include  <syslog.h>
+// #include  <sched.h>
+// #include  <sys/resource.h>
+// #include  <linux/sched.h>
+// #include  <sys/types.h>
+// #include  <sys/stat.h>
+// #include  <fcntl.h>
+// #include  <dirent.h>
+// #include  <sys/ioctl.h>
+// #include  <stdarg.h>
+#include  <poll.h>
+// #include  <ctype.h>
+#include  <sys/prctl.h>
+// #include  <sys/utsname.h>
+#include  <pwd.h>
+#include  <netinet/ip.h>
+// #include  <sys/wait.h>
+// #include  <sys/time.h>
+// #include  <glob.h>
+#include  <grp.h>
+// #include  <sys/mman.h>
+// #include  <sys/vfs.h>
+// #include  <sys/mount.h>
+#include  <linux/magic.h>
+// #include  <limits.h>
+#include  <langinfo.h>
+// #include  <locale.h>
+// #include  <sys/personality.h>
+#include  <sys/xattr.h>
+// #include  <sys/statvfs.h>
+// #include  <sys/file.h>
+#include  <linux/fs.h>
 
 /* When we include libgen.h because we need dirname() we immediately
  * undefine basename() since libgen.h defines it as a macro to the POSIX
  * version which is really broken. We prefer GNU basename(). */
-#include <libgen.h>
-#undef basename
+// #include <libgen.h>
+// #undef basename
 
 #ifdef HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
 #endif
 
-#include "config.h"
-#include "macro.h"
-#include "util.h"
-#include "ioprio.h"
-#include "missing.h"
-#include "log.h"
-#include "strv.h"
-#include "mkdir.h"
-#include "path-util.h"
-#include "exit-status.h"
-#include "hashmap.h"
-#include "env-util.h"
-#include "fileio.h"
-#include "device-nodes.h"
-#include "utf8.h"
-#include "gunicode.h"
-#include "virt.h"
-#include "def.h"
-#include "sparse-endian.h"
-#include "formats-util.h"
-#include "process-util.h"
-#include "random-util.h"
-#include "terminal-util.h"
-#include "hostname-util.h"
-#include "signal-util.h"
+#include  "config.h"
+#include  "macro.h"
+#include  "util.h"
+#include  "ioprio.h"
+// #include  "missing.h"
+// #include  "log.h"
+#include  "strv.h"
+#include  "mkdir.h"
+#include  "path-util.h"
+// #include  "exit-status.h"
+// #include  "hashmap.h"
+// #include  "env-util.h"
+#include  "fileio.h"
+// #include  "device-nodes.h"
+#include  "utf8.h"
+#include  "gunicode.h"
+#include  "virt.h"
+// #include  "def.h"
+#include  "sparse-endian.h"
+// #include  "formats-util.h"
+#include  "process-util.h"
+#include  "random-util.h"
+// #include  "terminal-util.h"
+#include  "hostname-util.h"
+#include  "signal-util.h"
 
 /* Put this test here for a lack of better place */
 assert_cc(EAGAIN == EWOULDBLOCK);
@@ -707,6 +707,8 @@ int readlink_malloc(const char *p, char **ret) {
         return readlinkat_malloc(AT_FDCWD, p, ret);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int readlink_value(const char *p, char **ret) {
         _cleanup_free_ char *link = NULL;
         char *value;
@@ -728,6 +730,7 @@ int readlink_value(const char *p, char **ret) {
 
         return 0;
 }
+#endif // 0
 
 int readlink_and_make_absolute(const char *p, char **r) {
         _cleanup_free_ char *target = NULL;
@@ -749,6 +752,8 @@ int readlink_and_make_absolute(const char *p, char **r) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int readlink_and_canonicalize(const char *p, char **r) {
         char *t, *s;
         int j;
@@ -771,6 +776,7 @@ int readlink_and_canonicalize(const char *p, char **r) {
 
         return 0;
 }
+#endif // 0
 
 char *strstrip(char *s) {
         char *e;
@@ -836,6 +842,8 @@ char *file_in_same_dir(const char *path, const char *filename) {
         return ret;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int rmdir_parents(const char *path, const char *stop) {
         size_t l;
         int r = 0;
@@ -881,6 +889,7 @@ int rmdir_parents(const char *path, const char *stop) {
 
         return 0;
 }
+#endif // 0
 
 char hexchar(int x) {
         static const char table[16] = "0123456789abcdef";
@@ -1301,6 +1310,8 @@ char *xescape(const char *s, const char *bad) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char *ascii_strlower(char *t) {
         char *p;
 
@@ -1312,6 +1323,7 @@ char *ascii_strlower(char *t) {
 
         return t;
 }
+#endif // 0
 
 _pure_ static bool hidden_file_allow_backup(const char *filename) {
         assert(filename);
@@ -1471,6 +1483,8 @@ bool chars_intersect(const char *a, const char *b) {
         return false;
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool fstype_is_network(const char *fstype) {
         static const char table[] =
                 "afs\0"
@@ -1493,6 +1507,7 @@ bool fstype_is_network(const char *fstype) {
 
         return nulstr_contains(table, fstype);
 }
+#endif // 0
 
 int flush_fd(int fd) {
         struct pollfd pollfd = {
@@ -1771,6 +1786,8 @@ bool is_device_path(const char *path) {
                 path_startswith(path, "/sys/");
 }
 
+/// UNNEEDED by elogind
+#if 0
 int dir_is_empty(const char *path) {
         _cleanup_closedir_ DIR *d;
 
@@ -1842,6 +1859,7 @@ void rename_process(const char name[8]) {
                 }
         }
 }
+#endif // 0
 
 char *lookup_uid(uid_t uid) {
         long bufsize;
@@ -1870,6 +1888,8 @@ char *lookup_uid(uid_t uid) {
         return name;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char* getlogname_malloc(void) {
         uid_t uid;
         struct stat st;
@@ -1891,6 +1911,7 @@ char *getusername_malloc(void) {
 
         return lookup_uid(getuid());
 }
+#endif // 0
 
 bool is_temporary_fs(const struct statfs *s) {
         assert(s);
@@ -1945,7 +1966,6 @@ int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid) {
 
         return 0;
 }
-#endif // 0
 
 cpu_set_t* cpu_set_malloc(unsigned *ncpus) {
         cpu_set_t *r;
@@ -1974,6 +1994,7 @@ cpu_set_t* cpu_set_malloc(unsigned *ncpus) {
                 n *= 2;
         }
 }
+#endif // 0
 
 int files_same(const char *filea, const char *fileb) {
         struct stat a, b;
@@ -1988,6 +2009,8 @@ int files_same(const char *filea, const char *fileb) {
                a.st_ino == b.st_ino;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int running_in_chroot(void) {
         int ret;
 
@@ -1997,6 +2020,7 @@ int running_in_chroot(void) {
 
         return ret == 0;
 }
+#endif // 0
 
 static char *ascii_ellipsize_mem(const char *s, size_t old_length, size_t new_length, unsigned percent) {
         size_t x;
@@ -2565,6 +2589,8 @@ int fopen_temporary(const char *path, FILE **_f, char **_temp_path) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int symlink_atomic(const char *from, const char *to) {
         _cleanup_free_ char *t = NULL;
         int r;
@@ -2587,8 +2613,6 @@ int symlink_atomic(const char *from, const char *to) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int symlink_idempotent(const char *from, const char *to) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -2865,7 +2889,6 @@ int in_group(const char *name) {
 
         return in_gid(gid);
 }
-#endif // 0
 
 int glob_exists(const char *path) {
         _cleanup_globfree_ glob_t g = {};
@@ -2886,8 +2909,6 @@ int glob_exists(const char *path) {
                 return errno ? -errno : -EIO;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int glob_extend(char ***strv, const char *path) {
         _cleanup_globfree_ glob_t g = {};
         int k;
@@ -3056,6 +3077,8 @@ bool is_main_thread(void) {
         return cached > 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int block_get_whole_disk(dev_t d, dev_t *ret) {
         char *p, *s;
         int r;
@@ -3115,6 +3138,7 @@ int block_get_whole_disk(dev_t d, dev_t *ret) {
 
         return -ENOENT;
 }
+#endif // 0
 
 static const char *const ioprio_class_table[] = {
         [IOPRIO_CLASS_NONE] = "none",
@@ -3245,7 +3269,7 @@ int prot_from_flags(int flags) {
                 return -EINVAL;
         }
 }
-#endif // 0
+
 char *format_bytes(char *buf, size_t l, off_t t) {
         unsigned i;
 
@@ -3284,6 +3308,7 @@ finish:
         return buf;
 
 }
+#endif // 0
 
 void* memdup(const void *p, size_t l) {
         void *r;
@@ -3435,6 +3460,8 @@ int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *pa
         _exit(EXIT_FAILURE);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int setrlimit_closest(int resource, const struct rlimit *rlim) {
         struct rlimit highest, fixed;
 
@@ -3459,8 +3486,6 @@ int setrlimit_closest(int resource, const struct rlimit *rlim) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool http_etag_is_valid(const char *etag) {
         if (isempty(etag))
                 return false;
@@ -3585,6 +3610,8 @@ int get_home_dir(char **_h) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int get_shell(char **_s) {
         struct passwd *p;
         const char *e;
@@ -3631,6 +3658,7 @@ int get_shell(char **_s) {
         *_s = s;
         return 0;
 }
+#endif // 0
 
 bool filename_is_valid(const char *p) {
 
@@ -3816,6 +3844,8 @@ const char *draw_special_char(DrawSpecialChar ch) {
         return draw_table[!is_locale_utf8()][ch];
 }
 
+/// UNNEEDED by elogind
+#if 0
 char *strreplace(const char *text, const char *old_string, const char *new_string) {
         const char *f;
         char *t, *r;
@@ -4024,6 +4054,7 @@ int on_ac_power(void) {
 
         return found_online || !found_offline;
 }
+#endif // 0
 
 static int search_and_fopen_internal(const char *path, const char *mode, const char *root, char **search, FILE **_f) {
         char **i;
@@ -4415,6 +4446,8 @@ int get_proc_cmdline_key(const char *key, char **value) {
 
 }
 
+/// UNNEEDED by elogind
+#if 0
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;
         const char *p;
@@ -4445,6 +4478,7 @@ int container_get_leader(const char *machine, pid_t *pid) {
         *pid = leader;
         return 0;
 }
+#endif // 0
 
 int namespace_open(pid_t pid, int *pidns_fd, int *mntns_fd, int *netns_fd, int *root_fd) {
         _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, netnsfd = -1;
@@ -4613,6 +4647,8 @@ int mkostemp_safe(char *pattern, int flags) {
         return fd;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int open_tmpfile(const char *path, int flags) {
         char *p;
         int fd;
@@ -4636,6 +4672,7 @@ int open_tmpfile(const char *path, int flags) {
         unlink(p);
         return fd;
 }
+#endif // 0
 
 int fd_warn_permissions(const char *path, int fd) {
         struct stat st;
@@ -4684,6 +4721,8 @@ unsigned long personality_from_string(const char *p) {
 }
 #endif // 0
 
+/// UNNEEDED by elogind
+#if 0
 const char* personality_to_string(unsigned long p) {
 
 #if defined(__x86_64__)
@@ -4702,6 +4741,7 @@ const char* personality_to_string(unsigned long p) {
 
         return NULL;
 }
+#endif // 0
 
 uint64_t physical_memory(void) {
         long mem;
@@ -4759,7 +4799,6 @@ void hexdump(FILE *f, const void *p, size_t s) {
                 s -= 16;
         }
 }
-#endif // 0
 
 int update_reboot_param_file(const char *param) {
         int r = 0;
@@ -5006,6 +5045,7 @@ int bind_remount_recursive(const char *prefix, bool ro) {
                 }
         }
 }
+#endif // 0
 
 int fflush_and_check(FILE *f) {
         assert(f);
@@ -5169,7 +5209,6 @@ int take_password_lock(const char *root) {
 
         return fd;
 }
-#endif // 0
 
 int is_symlink(const char *path) {
         struct stat info;
@@ -5179,6 +5218,7 @@ int is_symlink(const char *path) {
 
         return !!S_ISLNK(info.st_mode);
 }
+#endif // 0
 
 int is_dir(const char* path, bool follow) {
         struct stat st;
@@ -5376,6 +5416,8 @@ finish:
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int unquote_first_word_and_warn(
                 const char **p,
                 char **ret,
@@ -5406,8 +5448,6 @@ int unquote_first_word_and_warn(
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int unquote_many_words(const char **p, UnquoteFlags flags, ...) {
         va_list ap;
         char **l;
@@ -5489,6 +5529,8 @@ int free_and_strdup(char **p, const char *s) {
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int ptsname_malloc(int fd, char **ret) {
         size_t l = 100;
 
@@ -5516,8 +5558,6 @@ int ptsname_malloc(int fd, char **ret) {
         }
 }
 
-/// UNNEEDED by elogind
-#if 0
 int openpt_in_namespace(pid_t pid, int flags) {
         _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, rootfd = -1;
         _cleanup_close_pair_ int pair[2] = { -1, -1 };
@@ -5654,6 +5694,8 @@ int fd_getcrtime(int fd, usec_t *usec) {
         return parse_crtime(le, usec);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags) {
         le64_t le;
         ssize_t n;
@@ -5667,8 +5709,6 @@ int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags) {
         return parse_crtime(le, usec);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int path_getcrtime(const char *p, usec_t *usec) {
         le64_t le;
         ssize_t n;
@@ -5684,7 +5724,6 @@ int path_getcrtime(const char *p, usec_t *usec) {
 
         return parse_crtime(le, usec);
 }
-#endif // 0
 
 int fd_setcrtime(int fd, usec_t usec) {
         le64_t le;
@@ -5765,6 +5804,7 @@ int same_fd(int a, int b) {
 
         return fa == fb;
 }
+#endif // 0
 
 int chattr_fd(int fd, unsigned value, unsigned mask) {
         unsigned old_attr, new_attr;
@@ -5800,6 +5840,8 @@ int chattr_fd(int fd, unsigned value, unsigned mask) {
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int chattr_path(const char *p, unsigned value, unsigned mask) {
         _cleanup_close_ int fd = -1;
 
@@ -5814,6 +5856,7 @@ int chattr_path(const char *p, unsigned value, unsigned mask) {
 
         return chattr_fd(fd, value, mask);
 }
+#endif // 0
 
 int read_attr_fd(int fd, unsigned *ret) {
         struct stat st;
@@ -5832,6 +5875,8 @@ int read_attr_fd(int fd, unsigned *ret) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int read_attr_path(const char *p, unsigned *ret) {
         _cleanup_close_ int fd = -1;
 
@@ -5845,8 +5890,6 @@ int read_attr_path(const char *p, unsigned *ret) {
         return read_attr_fd(fd, ret);
 }
 
-/// UNNEEDED by elogind
-#if 0
 static size_t nul_length(const uint8_t *p, size_t sz) {
         size_t n = 0;
 
@@ -5978,6 +6021,8 @@ ssize_t string_table_lookup(const char * const *table, size_t len, const char *k
         return -1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 void cmsg_close_all(struct msghdr *mh) {
         struct cmsghdr *cmsg;
 
@@ -6028,6 +6073,7 @@ int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char
 
         return 0;
 }
+#endif // 0
 
 char *shell_maybe_quote(const char *s) {
         const char *p;
@@ -6090,6 +6136,8 @@ int parse_mode(const char *s, mode_t *ret) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int mount_move_root(const char *path) {
         assert(path);
 
@@ -6107,6 +6155,7 @@ int mount_move_root(const char *path) {
 
         return 0;
 }
+#endif // 0
 
 int reset_uid_gid(void) {
 

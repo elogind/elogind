@@ -222,9 +222,9 @@ char *strnappend(const char *s, const char *suffix, size_t length);
 
 int readlinkat_malloc(int fd, const char *p, char **ret);
 int readlink_malloc(const char *p, char **r);
-int readlink_value(const char *p, char **ret);
+// UNNEEDED int readlink_value(const char *p, char **ret);
 int readlink_and_make_absolute(const char *p, char **r);
-int readlink_and_canonicalize(const char *p, char **r);
+// UNNEEDED int readlink_and_canonicalize(const char *p, char **r);
 
 char *strstrip(char *s);
 // UNNEEDED char *delete_chars(char *s, const char *bad);
@@ -232,7 +232,7 @@ char *truncate_nl(char *s);
 
 char *file_in_same_dir(const char *path, const char *filename);
 
-int rmdir_parents(const char *path, const char *stop);
+// UNNEEDED int rmdir_parents(const char *path, const char *stop);
 
 char hexchar(int x) _const_;
 int unhexchar(char c) _const_;
@@ -254,7 +254,7 @@ int cunescape_length_with_prefix(const char *s, size_t length, const char *prefi
 
 char *xescape(const char *s, const char *bad);
 
-char *ascii_strlower(char *path);
+// UNNEEDED char *ascii_strlower(char *path);
 
 bool dirent_is_file(const struct dirent *de) _pure_;
 bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) _pure_;
@@ -326,7 +326,7 @@ int fd_cloexec(int fd, bool cloexec);
 
 int close_all_fds(const int except[], unsigned n_except);
 
-bool fstype_is_network(const char *fstype);
+// UNNEEDED bool fstype_is_network(const char *fstype);
 
 int flush_fd(int fd);
 
@@ -338,12 +338,12 @@ int loop_write(int fd, const void *buf, size_t nbytes, bool do_poll);
 
 bool is_device_path(const char *path);
 
-int dir_is_empty(const char *path);
-char* dirname_malloc(const char *path);
+// UNNEEDED int dir_is_empty(const char *path);
+// UNNEEDED char* dirname_malloc(const char *path);
 
 char* lookup_uid(uid_t uid);
-char* getlogname_malloc(void);
-char* getusername_malloc(void);
+// UNNEEDED char* getlogname_malloc(void);
+// UNNEEDED char* getusername_malloc(void);
 
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid);
 // UNNEEDED int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid);
@@ -353,13 +353,13 @@ int fd_is_temporary_fs(int fd);
 
 int pipe_eof(int fd);
 
-cpu_set_t* cpu_set_malloc(unsigned *ncpus);
+// UNNEEDED cpu_set_t* cpu_set_malloc(unsigned *ncpus);
 
 #define xsprintf(buf, fmt, ...) assert_se((size_t) snprintf(buf, ELEMENTSOF(buf), fmt, __VA_ARGS__) < ELEMENTSOF(buf))
 
 int files_same(const char *filea, const char *fileb);
 
-int running_in_chroot(void);
+// UNNEEDED int running_in_chroot(void);
 
 char *ellipsize(const char *s, size_t length, unsigned percent);
                                    /* bytes                 columns */
@@ -390,7 +390,7 @@ char* strshorten(char *s, size_t l);
 
 // UNNEEDED int symlink_idempotent(const char *from, const char *to);
 
-int symlink_atomic(const char *from, const char *to);
+// UNNEEDED int symlink_atomic(const char *from, const char *to);
 // UNNEEDED int mknod_atomic(const char *path, mode_t mode, dev_t dev);
 // UNNEEDED int mkfifo_atomic(const char *path, mode_t mode);
 
@@ -408,7 +408,7 @@ int in_gid(gid_t gid);
 char* uid_to_name(uid_t uid);
 char* gid_to_name(gid_t gid);
 
-int glob_exists(const char *path);
+// UNNEEDED int glob_exists(const char *path);
 // UNNEEDED int glob_extend(char ***strv, const char *path);
 
 int dirent_ensure_type(DIR *d, struct dirent *de);
@@ -425,7 +425,7 @@ static inline bool _pure_ in_charset(const char *s, const char* charset) {
         return s[strspn(s, charset)] == '\0';
 }
 
-int block_get_whole_disk(dev_t d, dev_t *ret);
+// UNNEEDED int block_get_whole_disk(dev_t d, dev_t *ret);
 
 #define NULSTR_FOREACH(i, l)                                    \
         for ((i) = (l); (i) && *(i); (i) = strchr((i), 0)+1)
@@ -461,7 +461,7 @@ bool kexec_loaded(void);
 
 // UNNEEDED int prot_from_flags(int flags) _const_;
 
-char *format_bytes(char *buf, size_t l, off_t t);
+// UNNEEDED char *format_bytes(char *buf, size_t l, off_t t);
 
 int fd_wait_for_event(int fd, int event, usec_t timeout);
 
@@ -472,7 +472,7 @@ int fd_inc_rcvbuf(int fd, size_t n);
 
 int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *path, ...);
 
-int setrlimit_closest(int resource, const struct rlimit *rlim);
+// UNNEEDED int setrlimit_closest(int resource, const struct rlimit *rlim);
 
 bool http_url_is_valid(const char *url) _pure_;
 bool documentation_url_is_valid(const char *url) _pure_;
@@ -482,7 +482,7 @@ bool documentation_url_is_valid(const char *url) _pure_;
 bool in_initrd(void);
 
 int get_home_dir(char **ret);
-int get_shell(char **_ret);
+// UNNEEDED int get_shell(char **_ret);
 
 static inline void freep(void *p) {
         free(*(void**) p);
@@ -570,11 +570,11 @@ typedef enum DrawSpecialChar {
 
 const char *draw_special_char(DrawSpecialChar ch);
 
-char *strreplace(const char *text, const char *old_string, const char *new_string);
+// UNNEEDED char *strreplace(const char *text, const char *old_string, const char *new_string);
 
-char *strip_tab_ansi(char **p, size_t *l);
+// UNNEEDED char *strip_tab_ansi(char **p, size_t *l);
 
-int on_ac_power(void);
+// UNNEEDED int on_ac_power(void);
 
 int search_and_fopen(const char *path, const char *mode, const char *root, const char **search, FILE **_f);
 // UNNEEDED int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **_f);
@@ -785,7 +785,7 @@ int proc_cmdline(char **ret);
 int parse_proc_cmdline(int (*parse_word)(const char *key, const char *value));
 int get_proc_cmdline_key(const char *parameter, char **value);
 
-int container_get_leader(const char *machine, pid_t *pid);
+// UNNEEDED int container_get_leader(const char *machine, pid_t *pid);
 
 int namespace_open(pid_t pid, int *pidns_fd, int *mntns_fd, int *netns_fd, int *root_fd);
 int namespace_enter(int pidns_fd, int mntns_fd, int netns_fd, int root_fd);
@@ -796,7 +796,7 @@ int getpeersec(int fd, char **ret);
 int writev_safe(int fd, const struct iovec *w, int j);
 
 int mkostemp_safe(char *pattern, int flags);
-int open_tmpfile(const char *path, int flags);
+// UNNEEDED int open_tmpfile(const char *path, int flags);
 
 int fd_warn_permissions(const char *path, int fd);
 
@@ -808,7 +808,7 @@ int fd_warn_permissions(const char *path, int fd);
 #endif
 
 // UNNEEDED unsigned long personality_from_string(const char *p);
-const char *personality_to_string(unsigned long);
+// UNNEEDED const char *personality_to_string(unsigned long);
 
 uint64_t physical_memory(void);
 
@@ -820,11 +820,11 @@ union file_handle_union {
 };
 #define FILE_HANDLE_INIT { .handle.handle_bytes = MAX_HANDLE_SZ }
 
-int update_reboot_param_file(const char *param);
+// UNNEEDED int update_reboot_param_file(const char *param);
 
-int umount_recursive(const char *target, int flags);
+// UNNEEDED int umount_recursive(const char *target, int flags);
 
-int bind_remount_recursive(const char *prefix, bool ro);
+// UNNEEDED int bind_remount_recursive(const char *prefix, bool ro);
 
 int fflush_and_check(FILE *f);
 
@@ -834,7 +834,7 @@ int tempfn_random(const char *p, const char *extra, char **ret);
 
 // UNNEEDED int take_password_lock(const char *root);
 
-int is_symlink(const char *path);
+// UNNEEDED int is_symlink(const char *path);
 int is_dir(const char *path, bool follow);
 // UNNEEDED int is_device_node(const char *path);
 
@@ -845,7 +845,7 @@ typedef enum UnquoteFlags {
 } UnquoteFlags;
 
 int unquote_first_word(const char **p, char **ret, UnquoteFlags flags);
-int unquote_first_word_and_warn(const char **p, char **ret, UnquoteFlags flags, const char *unit, const char *filename, unsigned line, const char *rvalue);
+// UNNEEDED int unquote_first_word_and_warn(const char **p, char **ret, UnquoteFlags flags, const char *unit, const char *filename, unsigned line, const char *rvalue);
 // UNNEEDED int unquote_many_words(const char **p, UnquoteFlags flags, ...) _sentinel_;
 
 int free_and_strdup(char **p, const char *s);
@@ -864,24 +864,24 @@ union inotify_event_buffer {
 
 #define laccess(path, mode) faccessat(AT_FDCWD, (path), (mode), AT_SYMLINK_NOFOLLOW)
 
-int ptsname_malloc(int fd, char **ret);
+// UNNEEDED int ptsname_malloc(int fd, char **ret);
 
 // UNNEEDED int openpt_in_namespace(pid_t pid, int flags);
 
 ssize_t fgetxattrat_fake(int dirfd, const char *filename, const char *attribute, void *value, size_t size, int flags);
 
-int fd_setcrtime(int fd, usec_t usec);
+// UNNEEDED int fd_setcrtime(int fd, usec_t usec);
 int fd_getcrtime(int fd, usec_t *usec);
 // UNNEEDED int path_getcrtime(const char *p, usec_t *usec);
-int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags);
+// UNNEEDED int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags);
 
-int same_fd(int a, int b);
+// UNNEEDED int same_fd(int a, int b);
 
 int chattr_fd(int fd, unsigned value, unsigned mask);
-int chattr_path(const char *p, unsigned value, unsigned mask);
+// UNNEEDED int chattr_path(const char *p, unsigned value, unsigned mask);
 
 int read_attr_fd(int fd, unsigned *ret);
-int read_attr_path(const char *p, unsigned *ret);
+// UNNEEDED int read_attr_path(const char *p, unsigned *ret);
 
 #define RLIMIT_MAKE_CONST(lim) ((struct rlimit) { lim, lim })
 
@@ -892,14 +892,14 @@ void sigkill_wait(pid_t *pid);
 
 // UNNEEDED int syslog_parse_priority(const char **p, int *priority, bool with_facility);
 
-void cmsg_close_all(struct msghdr *mh);
+// UNNEEDED void cmsg_close_all(struct msghdr *mh);
 
-int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
+// UNNEEDED int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
 
 char *shell_maybe_quote(const char *s);
 
 int parse_mode(const char *s, mode_t *ret);
 
-int mount_move_root(const char *path);
+// UNNEEDED int mount_move_root(const char *path);
 
 int reset_uid_gid(void);
