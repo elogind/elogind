@@ -73,7 +73,7 @@ usec_t now(clockid_t clock);
 
 dual_timestamp* dual_timestamp_get(dual_timestamp *ts);
 dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u);
-dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
+// UNNEEDED dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
 
 static inline bool dual_timestamp_is_set(dual_timestamp *ts) {
         return ((ts->realtime > 0 && ts->realtime != USEC_INFINITY) ||
@@ -89,12 +89,12 @@ struct timeval *timeval_store(struct timeval *tv, usec_t u);
 char *format_timestamp(char *buf, size_t l, usec_t t);
 // UNNEEDED char *format_timestamp_utc(char *buf, size_t l, usec_t t);
 char *format_timestamp_us(char *buf, size_t l, usec_t t);
-char *format_timestamp_us_utc(char *buf, size_t l, usec_t t);
+// UNNEEDED char *format_timestamp_us_utc(char *buf, size_t l, usec_t t);
 char *format_timestamp_relative(char *buf, size_t l, usec_t t);
 char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 
-void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t);
-int dual_timestamp_deserialize(const char *value, dual_timestamp *t);
+// UNNEEDED void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t);
+// UNNEEDED int dual_timestamp_deserialize(const char *value, dual_timestamp *t);
 
 // UNNEEDED int parse_timestamp(const char *t, usec_t *usec);
 
@@ -106,6 +106,6 @@ int parse_nsec(const char *t, nsec_t *nsec);
 // UNNEEDED int get_timezones(char ***l);
 // UNNEEDED bool timezone_is_valid(const char *name);
 
-clockid_t clock_boottime_or_monotonic(void);
+// UNNEEDED clockid_t clock_boottime_or_monotonic(void);
 
 #define xstrftime(buf, fmt, tm) assert_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0)

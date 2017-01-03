@@ -32,6 +32,8 @@
 #include "fileio.h"
 #include "capability.h"
 
+/// UNNEEDED by elogind
+#if 0
 int have_effective_cap(int value) {
         _cleanup_cap_free_ cap_t cap;
         cap_flag_value_t fv;
@@ -45,6 +47,7 @@ int have_effective_cap(int value) {
         else
                 return fv == CAP_SET;
 }
+#endif // 0
 
 unsigned long cap_last_cap(void) {
         static thread_local unsigned long saved;
@@ -173,6 +176,8 @@ finish:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int drop_from_file(const char *fn, uint64_t drop) {
         int r, k;
         uint32_t hi, lo;
@@ -224,8 +229,6 @@ int capability_bounding_set_drop_usermode(uint64_t drop) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities) {
         _cleanup_cap_free_ cap_t d = NULL;
         unsigned i, j = 0;

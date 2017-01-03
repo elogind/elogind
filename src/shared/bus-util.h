@@ -47,14 +47,14 @@ struct bus_properties_map {
 int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata);
 
 int bus_message_map_all_properties(sd_bus_message *m, const struct bus_properties_map *map,  void *userdata);
-int bus_message_map_properties_changed(sd_bus_message *m, const struct bus_properties_map *map, void *userdata);
+// UNNEEDED int bus_message_map_properties_changed(sd_bus_message *m, const struct bus_properties_map *map, void *userdata);
 int bus_map_all_properties(sd_bus *bus, const char *destination, const char *path, const struct bus_properties_map *map, void *userdata);
 
 int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name);
 
 typedef bool (*check_idle_t)(void *userdata);
 
-int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t timeout, check_idle_t check_idle, void *userdata);
+// UNNEEDED int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t timeout, check_idle_t check_idle, void *userdata);
 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
 
@@ -69,7 +69,7 @@ int bus_open_system_systemd(sd_bus **_bus);
 int bus_open_user_systemd(sd_bus **_bus);
 
 int bus_open_transport(BusTransport transport, const char *host, bool user, sd_bus **bus);
-int bus_open_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
+// UNNEEDED int bus_open_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
 
 int bus_print_property(const char *name, sd_bus_message *property, bool all);
 int bus_print_all_properties(sd_bus *bus, const char *dest, const char *path, char **filter, bool all);
@@ -133,7 +133,7 @@ typedef struct UnitInfo {
         const char *job_path;
 } UnitInfo;
 
-int bus_parse_unit_info(sd_bus_message *message, UnitInfo *u);
+// UNNEEDED int bus_parse_unit_info(sd_bus_message *message, UnitInfo *u);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus*, sd_bus_unref);
 DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus*, sd_bus_flush_close_unref);
@@ -181,14 +181,15 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus_track*, sd_bus_track_unref);
         SD_BUS_PROPERTY(name, "t", bus_property_get_usec, (offset) + offsetof(struct dual_timestamp, realtime), (flags)), \
         SD_BUS_PROPERTY(name "Monotonic", "t", bus_property_get_usec, (offset) + offsetof(struct dual_timestamp, monotonic), (flags))
 
-int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignment);
+// UNNEEDED int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignment);
 
 typedef struct BusWaitForJobs BusWaitForJobs;
 
-int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret);
+// UNNEEDED int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret);
 void bus_wait_for_jobs_free(BusWaitForJobs *d);
 int bus_wait_for_jobs_add(BusWaitForJobs *d, const char *path);
 int bus_wait_for_jobs(BusWaitForJobs *d, bool quiet);
+// UNNEEDED int bus_wait_for_jobs_one(BusWaitForJobs *d, const char *path, bool quiet);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(BusWaitForJobs*, bus_wait_for_jobs_free);
 

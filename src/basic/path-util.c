@@ -84,6 +84,8 @@ int path_get_parent(const char *path, char **_r) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char **path_split_and_make_absolute(const char *p) {
         char **l;
         assert(p);
@@ -99,6 +101,7 @@ char **path_split_and_make_absolute(const char *p) {
 
         return l;
 }
+#endif // 0
 
 char *path_make_absolute(const char *p, const char *prefix) {
         assert(p);
@@ -454,6 +457,8 @@ bool path_equal(const char *a, const char *b) {
         return path_compare(a, b) == 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool path_equal_or_files_same(const char *a, const char *b) {
         return path_equal(a, b) || files_same(a, b) > 0;
 }
@@ -473,6 +478,7 @@ char* path_join(const char *root, const char *path, const char *rest) {
                                rest && rest[0] == '/' ? rest+1 : rest,
                                NULL);
 }
+#endif // 0
 
 static int fd_fdinfo_mnt_id(int fd, const char *filename, int flags, int *mnt_id) {
         char path[strlen("/proc/self/fdinfo/") + DECIMAL_STR_MAX(int)];
@@ -692,6 +698,8 @@ int path_is_read_only_fs(const char *path) {
         return false;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int path_is_os_tree(const char *path) {
         char *p;
         int r;
@@ -709,6 +717,7 @@ int path_is_os_tree(const char *path) {
 
         return r >= 0;
 }
+#endif // 0
 
 int find_binary(const char *name, bool local, char **filename) {
         assert(name);
@@ -798,7 +807,6 @@ bool paths_check_timestamp(const char* const* paths, usec_t *timestamp, bool upd
 
         return changed;
 }
-#endif // 0
 
 int fsck_exists(const char *fstype) {
         _cleanup_free_ char *p = NULL, *d = NULL;
@@ -823,6 +831,7 @@ int fsck_exists(const char *fstype) {
 
         return 0;
 }
+#endif // 0
 
 char *prefix_root(const char *root, const char *path) {
         char *n, *p;

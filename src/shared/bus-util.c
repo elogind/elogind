@@ -93,6 +93,8 @@ int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_event_loop_with_idle(
                 sd_event *e,
                 sd_bus *bus,
@@ -165,6 +167,7 @@ int bus_event_loop_with_idle(
 
         return code;
 }
+#endif // 0
 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error) {
         _cleanup_bus_message_unref_ sd_bus_message *rep = NULL;
@@ -1100,6 +1103,8 @@ int bus_message_map_all_properties(
         return sd_bus_message_exit_container(m);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_message_map_properties_changed(
                 sd_bus_message *m,
                 const struct bus_properties_map *map,
@@ -1135,6 +1140,7 @@ int bus_message_map_properties_changed(
 
         return invalidated;
 }
+#endif // 0
 
 int bus_map_all_properties(
                 sd_bus *bus,
@@ -1202,6 +1208,8 @@ int bus_open_transport(BusTransport transport, const char *host, bool user, sd_b
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_open_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus) {
         int r;
 
@@ -1236,6 +1244,7 @@ int bus_open_transport_systemd(BusTransport transport, const char *host, bool us
 
         return r;
 }
+#endif // 0
 
 int bus_property_get_bool(
                 sd_bus *bus,
@@ -1305,6 +1314,8 @@ int bus_log_create_error(int r) {
         return log_error_errno(r, "Failed to create bus message: %m");
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_parse_unit_info(sd_bus_message *message, UnitInfo *u) {
         assert(message);
         assert(u);
@@ -1564,6 +1575,7 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
 
         return 0;
 }
+#endif // 0
 
 typedef struct BusWaitForJobs {
         sd_bus *bus;
@@ -1576,6 +1588,8 @@ typedef struct BusWaitForJobs {
         sd_bus_slot *slot_disconnected;
 } BusWaitForJobs;
 
+/// UNNEEDED by elogind
+#if 0
 static int match_disconnected(sd_bus_message *m, void *userdata, sd_bus_error *error) {
         assert(m);
 
@@ -1615,6 +1629,7 @@ static int match_job_removed(sd_bus_message *m, void *userdata, sd_bus_error *er
 
         return 0;
 }
+#endif // 0
 
 void bus_wait_for_jobs_free(BusWaitForJobs *d) {
         if (!d)
@@ -1633,6 +1648,8 @@ void bus_wait_for_jobs_free(BusWaitForJobs *d) {
         free(d);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret) {
         _cleanup_(bus_wait_for_jobs_freep) BusWaitForJobs *d = NULL;
         int r;
@@ -1682,6 +1699,7 @@ int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret) {
 
         return 0;
 }
+#endif // 0
 
 static int bus_process_wait(sd_bus *bus) {
         int r;

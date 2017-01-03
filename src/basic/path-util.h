@@ -36,7 +36,7 @@
 #endif
 
 bool is_path(const char *p) _pure_;
-char** path_split_and_make_absolute(const char *p);
+// UNNEEDED char** path_split_and_make_absolute(const char *p);
 int path_get_parent(const char *path, char **parent);
 bool path_is_absolute(const char *p) _pure_;
 char* path_make_absolute(const char *p, const char *prefix);
@@ -46,8 +46,8 @@ char* path_kill_slashes(char *path);
 char* path_startswith(const char *path, const char *prefix) _pure_;
 int path_compare(const char *a, const char *b) _pure_;
 bool path_equal(const char *a, const char *b) _pure_;
-bool path_equal_or_files_same(const char *a, const char *b);
-char* path_join(const char *root, const char *path, const char *rest);
+// UNNEEDED bool path_equal_or_files_same(const char *a, const char *b);
+// UNNEEDED char* path_join(const char *root, const char *path, const char *rest);
 
 char** path_strv_make_absolute_cwd(char **l);
 char** path_strv_resolve(char **l, const char *prefix);
@@ -56,13 +56,13 @@ char** path_strv_resolve_uniq(char **l, const char *prefix);
 int fd_is_mount_point(int fd, const char *filename, int flags);
 int path_is_mount_point(const char *path, int flags);
 int path_is_read_only_fs(const char *path);
-int path_is_os_tree(const char *path);
+// UNNEEDED int path_is_os_tree(const char *path);
 
 int find_binary(const char *name, bool local, char **filename);
 
 // UNNEEDED bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
-int fsck_exists(const char *fstype);
+// UNNEEDED int fsck_exists(const char *fstype);
 
 /* Iterates through the path prefixes of the specified path, going up
  * the tree, to root. Also returns "" (and not "/"!) for the root

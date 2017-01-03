@@ -58,6 +58,8 @@ int mkdir_label(const char *path, mode_t mode) {
         return mac_smack_fix(path, false, false);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int symlink_label(const char *old_path, const char *new_path) {
         int r;
 
@@ -78,3 +80,4 @@ int symlink_label(const char *old_path, const char *new_path) {
 
         return mac_smack_fix(new_path, false, false);
 }
+#endif // 0

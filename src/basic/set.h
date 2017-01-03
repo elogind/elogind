@@ -63,7 +63,7 @@ static inline void *set_remove(Set *s, const void *key) {
 
 /* no set_remove2 */
 /* no set_remove_value */
-int set_remove_and_put(Set *s, const void *old_key, const void *new_key);
+// UNNEEDED int set_remove_and_put(Set *s, const void *old_key, const void *new_key);
 /* no set_remove_and_replace */
 int set_merge(Set *s, Set *other);
 

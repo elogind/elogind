@@ -134,6 +134,8 @@ int read_one_line_file(const char *fn, char **line) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int verify_one_line_file(const char *fn, const char *line) {
         _cleanup_free_ char *value = NULL;
         int r;
@@ -144,6 +146,7 @@ int verify_one_line_file(const char *fn, const char *line) {
 
         return streq(value, line);
 }
+#endif // 0
 
 int read_full_stream(FILE *f, char **contents, size_t *size) {
         size_t n, l;

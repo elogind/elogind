@@ -295,9 +295,12 @@ void log_close(void) {
         log_close_console();
 }
 
+/// UNNEEDED by elogind
+#if 0
 void log_forget_fds(void) {
         console_fd = kmsg_fd = syslog_fd = journal_fd = -1;
 }
+#endif // 0
 
 void log_set_max_level(int level) {
         assert((level & LOG_PRIMASK) == level);
@@ -1061,6 +1064,8 @@ static const char *const log_target_table[_LOG_TARGET_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(log_target, LogTarget);
 
+/// UNNEEDED by elogind
+#if 0
 void log_received_signal(int level, const struct signalfd_siginfo *si) {
         if (si->ssi_pid > 0) {
                 _cleanup_free_ char *p = NULL;
@@ -1081,6 +1086,7 @@ void log_received_signal(int level, const struct signalfd_siginfo *si) {
 void log_set_upgrade_syslog_to_journal(bool b) {
         upgrade_syslog_to_journal = b;
 }
+#endif // 0
 
 int log_syntax_internal(
                 const char *unit,

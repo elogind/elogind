@@ -29,7 +29,7 @@ int reset_all_signal_handlers(void);
 int reset_signal_mask(void);
 
 int ignore_signals(int sig, ...);
-int default_signals(int sig, ...);
+// UNNEEDED int default_signals(int sig, ...);
 int sigaction_many(const struct sigaction *sa, ...);
 
 int sigset_add_many(sigset_t *ss, ...);

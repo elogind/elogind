@@ -1,9 +1,11 @@
 /*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
 
+#pragma once
+
 /***
   This file is part of systemd.
 
-  Copyright 2014 Tom Gundersen <teg@jklm.no>
+  Copyright 2011 Lennart Poettering
 
   systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
@@ -19,49 +21,15 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#pragma once
+int detect_vm(const char **id);
+int detect_container(const char **id);
 
-typedef struct VxLan VxLan;
-
-#include "networkd-netdev.h"
-
-#include "in-addr-util.h"
-
-#define VXLAN_VID_MAX (1u << 24) - 1
-
-struct VxLan {
-        NetDev meta;
-
-        uint64_t id;
-
-        int family;
-        union in_addr_union group;
-
-        unsigned tos;
-        unsigned ttl;
-
-        usec_t fdb_ageing;
-
-        bool learning;
-        bool arp_proxy;
-        bool route_short_circuit;
-        bool l2miss;
-        bool l3miss;
-        bool udpcsum;
-        bool udp6zerocsumtx;
-        bool udp6zerocsumrx;
-        bool group_policy;
+enum {
+        VIRTUALIZATION_NONE = 0,
+        VIRTUALIZATION_VM,
+        VIRTUALIZATION_CONTAINER,
+        _VIRTUALIZATION_MAX,
+        _VIRTUALIZATION_INVALID = -1
 };
 
-extern const NetDevVTable vxlan_vtable;
-
-int config_parse_vxlan_group_address(const char *unit,
-                                     const char *filename,
-                                     unsigned line,
-                                     const char *section,
-                                     unsigned section_line,
-                                     const char *lvalue,
-                                     int ltype,
-                                     const char *rvalue,
-                                     void *data,
-                                     void *userdata);
+// UNNEEDED int detect_virtualization(const char **id);

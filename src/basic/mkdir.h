@@ -30,7 +30,7 @@ int mkdir_p(const char *path, mode_t mode);
 
 /* mandatory access control(MAC) versions */
 int mkdir_safe_label(const char *path, mode_t mode, uid_t uid, gid_t gid);
-int mkdir_parents_label(const char *path, mode_t mode);
+// UNNEEDED int mkdir_parents_label(const char *path, mode_t mode);
 int mkdir_p_label(const char *path, mode_t mode);
 
 /* internally used */

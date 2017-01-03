@@ -45,7 +45,7 @@ int get_process_state(pid_t pid);
 int get_process_comm(pid_t pid, char **name);
 int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char **line);
 int get_process_exe(pid_t pid, char **name);
-int get_process_uid(pid_t pid, uid_t *uid);
+// UNNEEDED int get_process_uid(pid_t pid, uid_t *uid);
 // UNNEEDED int get_process_gid(pid_t pid, gid_t *gid);
 // UNNEEDED int get_process_capeff(pid_t pid, char **capeff);
 // UNNEEDED int get_process_cwd(pid_t pid, char **cwd);
@@ -55,9 +55,9 @@ int get_process_uid(pid_t pid, uid_t *uid);
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_code);
 
-int kill_and_sigcont(pid_t pid, int sig);
+// UNNEEDED int kill_and_sigcont(pid_t pid, int sig);
 pid_t get_parent_of_pid(pid_t pid, pid_t *ppid);
-void rename_process(const char name[8]);
+// UNNEEDED void rename_process(const char name[8]);
 int is_kernel_thread(pid_t pid);
 int getenv_for_pid(pid_t pid, const char *field, char **_value);
 

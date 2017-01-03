@@ -41,7 +41,7 @@ int reset_terminal(const char *name);
 
 int open_terminal(const char *name, int mode);
 int acquire_terminal(const char *name, bool fail, bool force, bool ignore_tiocstty_eperm, usec_t timeout);
-int release_terminal(void);
+// UNNEEDED int release_terminal(void);
 
 int terminal_vhangup_fd(int fd);
 int terminal_vhangup(const char *name);
@@ -49,7 +49,7 @@ int terminal_vhangup(const char *name);
 int chvt(int vt);
 
 int read_one_char(FILE *f, char *ret, usec_t timeout, bool *need_nl);
-int ask_char(char *ret, const char *replies, const char *text, ...) _printf_(3, 4);
+// UNNEEDED int ask_char(char *ret, const char *replies, const char *text, ...) _printf_(3, 4);
 // UNNEEDED int ask_string(char **ret, const char *text, ...) _printf_(2, 3);
 
 int vt_disallocate(const char *name);
@@ -59,13 +59,13 @@ bool tty_is_vc(const char *tty);
 bool tty_is_vc_resolve(const char *tty);
 bool tty_is_console(const char *tty) _pure_;
 int vtnr_from_tty(const char *tty);
-const char *default_term_for_tty(const char *tty);
+// UNNEEDED const char *default_term_for_tty(const char *tty);
 
 void warn_melody(void);
 
 int make_stdio(int fd);
 int make_null_stdio(void);
-int make_console_stdio(void);
+// UNNEEDED int make_console_stdio(void);
 
 int status_vprintf(const char *status, bool ellipse, bool ephemeral, const char *format, va_list ap) _printf_(4,0);
 int status_printf(const char *status, bool ellipse, bool ephemeral, const char *format, ...) _printf_(4,5);
@@ -106,4 +106,4 @@ int get_ctty_devnr(pid_t pid, dev_t *d);
 int get_ctty(pid_t, dev_t *_devnr, char **r);
 
 int getttyname_malloc(int fd, char **r);
-int getttyname_harder(int fd, char **r);
+// UNNEEDED int getttyname_harder(int fd, char **r);

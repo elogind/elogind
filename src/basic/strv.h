@@ -41,7 +41,7 @@ char **strv_copy(char * const *l);
 unsigned strv_length(char * const *l) _pure_;
 
 int strv_extend_strv(char ***a, char **b);
-int strv_extend_strv_concat(char ***a, char **b, const char *suffix);
+// UNNEEDED int strv_extend_strv_concat(char ***a, char **b, const char *suffix);
 int strv_extend(char ***l, const char *value);
 // UNNEEDED int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
 int strv_push(char ***l, char *value);
@@ -73,10 +73,10 @@ static inline bool strv_isempty(char * const *l) {
 char **strv_split(const char *s, const char *separator);
 // UNNEEDED char **strv_split_newlines(const char *s);
 
-int strv_split_quoted(char ***t, const char *s, UnquoteFlags flags);
+// UNNEEDED int strv_split_quoted(char ***t, const char *s, UnquoteFlags flags);
 
 char *strv_join(char **l, const char *separator);
-char *strv_join_quoted(char **l);
+// UNNEEDED char *strv_join_quoted(char **l);
 
 char **strv_parse_nulstr(const char *s, size_t l);
 char **strv_split_nulstr(const char *s);

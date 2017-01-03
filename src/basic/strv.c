@@ -201,6 +201,8 @@ int strv_extend_strv(char ***a, char **b) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int strv_extend_strv_concat(char ***a, char **b, const char *suffix) {
         int r;
         char **s;
@@ -221,6 +223,7 @@ int strv_extend_strv_concat(char ***a, char **b, const char *suffix) {
 
         return 0;
 }
+#endif // 0
 
 char **strv_split(const char *s, const char *separator) {
         const char *word, *state;
@@ -279,7 +282,6 @@ char **strv_split_newlines(const char *s) {
 
         return l;
 }
-#endif // 0
 
 int strv_split_quoted(char ***t, const char *s, UnquoteFlags flags) {
         size_t n = 0, allocated = 0;
@@ -315,6 +317,7 @@ int strv_split_quoted(char ***t, const char *s, UnquoteFlags flags) {
 
         return 0;
 }
+#endif // 0
 
 char *strv_join(char **l, const char *separator) {
         char *r, *e;
@@ -350,6 +353,8 @@ char *strv_join(char **l, const char *separator) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char *strv_join_quoted(char **l) {
         char *buf = NULL;
         char **s;
@@ -386,6 +391,7 @@ char *strv_join_quoted(char **l) {
         free(buf);
         return NULL;
 }
+#endif // 0
 
 int strv_push(char ***l, char *value) {
         char **c;

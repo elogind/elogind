@@ -25,15 +25,15 @@
 
 #include "macro.h"
 
-bool hostname_is_set(void);
+// UNNEEDED bool hostname_is_set(void);
 
-char* gethostname_malloc(void);
+// UNNEEDED char* gethostname_malloc(void);
 
 bool hostname_is_valid(const char *s) _pure_;
 char* hostname_cleanup(char *s, bool lowercase);
 
 bool is_localhost(const char *hostname);
 
-int sethostname_idempotent(const char *s);
+// UNNEEDED int sethostname_idempotent(const char *s);
 
-int read_hostname_config(const char *path, char **hostname);
+// UNNEEDED int read_hostname_config(const char *path, char **hostname);

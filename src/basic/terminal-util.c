@@ -126,6 +126,8 @@ int read_one_char(FILE *f, char *ret, usec_t t, bool *need_nl) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int ask_char(char *ret, const char *replies, const char *text, ...) {
         int r;
 
@@ -174,8 +176,6 @@ int ask_char(char *ret, const char *replies, const char *text, ...) {
         }
 }
 
-/// UNNEEDED by elogind
-#if 0
 int ask_string(char **ret, const char *text, ...) {
         assert(ret);
         assert(text);
@@ -492,6 +492,8 @@ fail:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int release_terminal(void) {
         static const struct sigaction sa_new = {
                 .sa_handler = SIG_IGN,
@@ -517,6 +519,7 @@ int release_terminal(void) {
 
         return r;
 }
+#endif // 0
 
 int terminal_vhangup_fd(int fd) {
         assert(fd >= 0);
@@ -627,6 +630,8 @@ void warn_melody(void) {
         ioctl(fd, KIOCSOUND, 0);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int make_console_stdio(void) {
         int fd, r;
 
@@ -642,6 +647,7 @@ int make_console_stdio(void) {
 
         return 0;
 }
+#endif // 0
 
 int status_vprintf(const char *status, bool ellipse, bool ephemeral, const char *format, va_list ap) {
         static const char status_indent[] = "         "; /* "[" STATUS "] " */
@@ -810,11 +816,14 @@ bool tty_is_vc_resolve(const char *tty) {
         return tty_is_vc(tty);
 }
 
+/// UNNEEDED by elogind
+#if 0
 const char *default_term_for_tty(const char *tty) {
         assert(tty);
 
         return tty_is_vc_resolve(tty) ? "TERM=linux" : "TERM=vt220";
 }
+#endif // 0
 
 int fd_columns(int fd) {
         struct winsize ws = {};
@@ -969,6 +978,8 @@ int getttyname_malloc(int fd, char **ret) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int getttyname_harder(int fd, char **r) {
         int k;
         char *s = NULL;
@@ -985,6 +996,7 @@ int getttyname_harder(int fd, char **r) {
         *r = s;
         return 0;
 }
+#endif // 0
 
 int get_ctty_devnr(pid_t pid, dev_t *d) {
         int r;

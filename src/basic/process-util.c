@@ -243,6 +243,8 @@ int get_process_exe(pid_t pid, char **name) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
         _cleanup_fclose_ FILE *f = NULL;
         char line[LINE_MAX];
@@ -281,8 +283,6 @@ int get_process_uid(pid_t pid, uid_t *uid) {
         return get_process_id(pid, "Uid:", uid);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int get_process_gid(pid_t pid, gid_t *gid) {
         assert_cc(sizeof(uid_t) == sizeof(gid_t));
         return get_process_id(pid, "Gid:", gid);
@@ -452,6 +452,8 @@ int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_cod
         return -EPROTO;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int kill_and_sigcont(pid_t pid, int sig) {
         int r;
 
@@ -462,6 +464,7 @@ int kill_and_sigcont(pid_t pid, int sig) {
 
         return r;
 }
+#endif // 0
 
 int getenv_for_pid(pid_t pid, const char *field, char **_value) {
         _cleanup_fclose_ FILE *f = NULL;

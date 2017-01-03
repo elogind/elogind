@@ -615,6 +615,8 @@ int cg_create(const char *controller, const char *path) {
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_create_and_attach(const char *controller, const char *path, pid_t pid) {
         int r, q;
 
@@ -631,6 +633,7 @@ int cg_create_and_attach(const char *controller, const char *path, pid_t pid) {
         /* This does not remove the cgroup on failure */
         return r;
 }
+#endif // 0
 
 int cg_attach(const char *controller, const char *path, pid_t pid) {
         _cleanup_free_ char *fs = NULL;
@@ -676,6 +679,8 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_set_group_access(
                 const char *controller,
                 const char *path,
@@ -732,6 +737,7 @@ int cg_set_task_access(
 
         return chmod_and_chown(procs, mode, uid, gid);
 }
+#endif // 0
 
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -806,6 +812,8 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         return -ENOENT;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_install_release_agent(const char *controller, const char *agent) {
         _cleanup_free_ char *fs = NULL, *contents = NULL;
         char *sc;
@@ -881,6 +889,7 @@ int cg_uninstall_release_agent(const char *controller) {
 
         return 0;
 }
+#endif // 0
 
 int cg_is_empty(const char *controller, const char *path, bool ignore_self) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -1713,7 +1722,6 @@ int cg_slice_to_path(const char *unit, char **ret) {
 
         return 0;
 }
-#endif // 0
 
 int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value) {
         _cleanup_free_ char *p = NULL;
@@ -1736,6 +1744,7 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 
         return read_one_line_file(p, ret);
 }
+#endif // 0
 
 static const char mask_names[] =
         "cpu\0"
@@ -1744,6 +1753,8 @@ static const char mask_names[] =
         "memory\0"
         "devices\0";
 
+/// UNNEEDED by elogind
+#if 0
 int cg_create_everywhere(CGroupControllerMask supported, CGroupControllerMask mask, const char *path) {
         CGroupControllerMask bit = 1;
         const char *n;
@@ -1770,6 +1781,7 @@ int cg_create_everywhere(CGroupControllerMask supported, CGroupControllerMask ma
 
         return 0;
 }
+#endif // 0
 
 int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t pid, cg_migrate_callback_t path_callback, void *userdata) {
         CGroupControllerMask bit = 1;
@@ -1800,6 +1812,8 @@ int cg_attach_everywhere(CGroupControllerMask supported, const char *path, pid_t
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_attach_many_everywhere(CGroupControllerMask supported, const char *path, Set* pids, cg_migrate_callback_t path_callback, void *userdata) {
         Iterator i;
         void *pidp;
@@ -1930,3 +1944,4 @@ int cg_kernel_controllers(Set *controllers) {
 
         return 0;
 }
+#endif // 0

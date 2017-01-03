@@ -397,20 +397,12 @@ libshared_la_SOURCES = \
 	src/shared/pager.h \
 	src/shared/spawn-polkit-agent.c \
 	src/shared/spawn-polkit-agent.h \
-	src/shared/apparmor-util.c \
-	src/shared/apparmor-util.h \
 	src/shared/clean-ipc.c \
 	src/shared/clean-ipc.h \
 	src/shared/cgroup-show.c \
 	src/shared/cgroup-show.h \
 	src/shared/bus-util.c \
 	src/shared/bus-util.h
-
-if HAVE_SECCOMP
-libshared_la_SOURCES += \
-	src/shared/seccomp-util.h \
-	src/shared/seccomp-util.c
-endif
 
 if HAVE_ACL
 libshared_la_SOURCES += \

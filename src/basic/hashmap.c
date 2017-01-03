@@ -1455,6 +1455,8 @@ int hashmap_remove_and_put(Hashmap *h, const void *old_key, const void *new_key,
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int set_remove_and_put(Set *s, const void *old_key, const void *new_key) {
         struct swap_entries swap;
         struct hashmap_base_entry *e;
@@ -1480,6 +1482,7 @@ int set_remove_and_put(Set *s, const void *old_key, const void *new_key) {
 
         return 0;
 }
+#endif // 0
 
 int hashmap_remove_and_replace(Hashmap *h, const void *old_key, const void *new_key, void *value) {
         struct swap_entries swap;

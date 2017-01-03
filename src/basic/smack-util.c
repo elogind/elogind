@@ -65,6 +65,8 @@ int mac_smack_apply(const char *path, const char *label) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int mac_smack_apply_fd(int fd, const char *label) {
         int r = 0;
 
@@ -146,6 +148,7 @@ int mac_smack_apply_pid(pid_t pid, const char *label) {
 
         return r;
 }
+#endif // 0
 
 int mac_smack_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
 

@@ -57,11 +57,14 @@ bool mac_selinux_use(void) {
 #endif
 }
 
+/// UNNEEDED by elogind
+#if 0
 void mac_selinux_retest(void) {
 #ifdef HAVE_SELINUX
         cached_use = -1;
 #endif
 }
+#endif // 0
 
 int mac_selinux_init(const char *prefix) {
         int r = 0;
@@ -109,6 +112,8 @@ int mac_selinux_init(const char *prefix) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 void mac_selinux_finish(void) {
 
 #ifdef HAVE_SELINUX
@@ -119,6 +124,7 @@ void mac_selinux_finish(void) {
         label_hnd = NULL;
 #endif
 }
+#endif // 0
 
 int mac_selinux_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
 
@@ -187,7 +193,6 @@ int mac_selinux_apply(const char *path, const char *label) {
 #endif
         return 0;
 }
-#endif // 0
 
 int mac_selinux_get_create_label_from_exe(const char *exe, char **label) {
         int r = -EOPNOTSUPP;
@@ -307,6 +312,7 @@ void mac_selinux_free(char *label) {
         freecon((security_context_t) label);
 #endif
 }
+#endif // 0
 
 int mac_selinux_create_file_prepare(const char *path, mode_t mode) {
         int r = 0;
@@ -364,6 +370,8 @@ void mac_selinux_create_file_clear(void) {
 #endif
 }
 
+/// UNNEEDED by elogind
+#if 0
 int mac_selinux_create_socket_prepare(const char *label) {
 
 #ifdef HAVE_SELINUX
@@ -463,3 +471,4 @@ skipped:
 #endif
         return bind(fd, addr, addrlen) < 0 ? -errno : 0;
 }
+#endif // 0

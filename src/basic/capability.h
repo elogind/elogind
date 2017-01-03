@@ -27,9 +27,9 @@
 #include "util.h"
 
 unsigned long cap_last_cap(void);
-int have_effective_cap(int value);
+// UNNEEDED int have_effective_cap(int value);
 int capability_bounding_set_drop(uint64_t drop, bool right_now);
-int capability_bounding_set_drop_usermode(uint64_t drop);
+// UNNEEDED int capability_bounding_set_drop_usermode(uint64_t drop);
 
 // UNNEEDED int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities);
 

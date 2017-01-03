@@ -386,6 +386,8 @@ finish:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 /* Returns a short identifier for the various VM/container implementations */
 int detect_virtualization(const char **id) {
         int r;
@@ -404,3 +406,4 @@ int detect_virtualization(const char **id) {
 
         return VIRTUALIZATION_NONE;
 }
+#endif // 0

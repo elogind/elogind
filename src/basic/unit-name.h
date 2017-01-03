@@ -127,12 +127,12 @@ static inline int unit_prefix_and_instance_is_valid(const char *p) {
 }
 
 int unit_name_to_prefix(const char *n, char **prefix);
-int unit_name_to_instance(const char *n, char **instance);
-int unit_name_to_prefix_and_instance(const char *n, char **ret);
+// UNNEEDED int unit_name_to_instance(const char *n, char **instance);
+// UNNEEDED int unit_name_to_prefix_and_instance(const char *n, char **ret);
 
 UnitType unit_name_to_type(const char *n) _pure_;
 
-int unit_name_change_suffix(const char *n, const char *suffix, char **ret);
+// UNNEEDED int unit_name_change_suffix(const char *n, const char *suffix, char **ret);
 
 int unit_name_build(const char *prefix, const char *instance, const char *suffix, char **ret);
 
@@ -141,13 +141,13 @@ int unit_name_unescape(const char *f, char **ret);
 int unit_name_path_escape(const char *f, char **ret);
 int unit_name_path_unescape(const char *f, char **ret);
 
-int unit_name_replace_instance(const char *f, const char *i, char **ret);
+// UNNEEDED int unit_name_replace_instance(const char *f, const char *i, char **ret);
 
-int unit_name_template(const char *f, char **ret);
+// UNNEEDED int unit_name_template(const char *f, char **ret);
 
 int unit_name_from_path(const char *path, const char *suffix, char **ret);
-int unit_name_from_path_instance(const char *prefix, const char *path, const char *suffix, char **ret);
-int unit_name_to_path(const char *name, char **ret);
+// UNNEEDED int unit_name_from_path_instance(const char *prefix, const char *path, const char *suffix, char **ret);
+// UNNEEDED int unit_name_to_path(const char *name, char **ret);
 
 char *unit_dbus_path_from_name(const char *name);
 int unit_name_from_dbus_path(const char *path, char **name);
@@ -163,7 +163,7 @@ static inline int unit_name_mangle(const char *name, UnitNameMangle allow_globs,
         return unit_name_mangle_with_suffix(name, allow_globs, ".service", ret);
 }
 
-int slice_build_parent_slice(const char *slice, char **ret);
+// UNNEEDED int slice_build_parent_slice(const char *slice, char **ret);
 int slice_build_subslice(const char *slice, const char*name, char **subslice);
 bool slice_name_is_valid(const char *name);
 

@@ -25,6 +25,8 @@
 #include "util.h"
 #include "hostname-util.h"
 
+/// UNNEEDED by elogind
+#if 0
 bool hostname_is_set(void) {
         struct utsname u;
 
@@ -50,6 +52,7 @@ char* gethostname_malloc(void) {
 
         return strdup(u.nodename);
 }
+#endif // 0
 
 static bool hostname_valid_char(char c) {
         return
@@ -142,6 +145,8 @@ bool is_localhost(const char *hostname) {
                endswith(hostname, ".localdomain.");
 }
 
+/// UNNEEDED by elogind
+#if 0
 int sethostname_idempotent(const char *s) {
         char buf[HOST_NAME_MAX + 1] = {};
 
@@ -191,3 +196,4 @@ int read_hostname_config(const char *path, char **hostname) {
         *hostname = name;
         return 0;
 }
+#endif // 0

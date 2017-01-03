@@ -67,6 +67,8 @@ dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u) {
         return ts;
 }
 
+/// UNNEEDED by elogind
+#if 0
 dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u) {
         int64_t delta;
         assert(ts);
@@ -87,6 +89,7 @@ dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u) {
 
         return ts;
 }
+#endif // 0
 
 usec_t timespec_load(const struct timespec *ts) {
         assert(ts);
@@ -209,9 +212,12 @@ char *format_timestamp_us(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal_us(buf, l, t, false);
 }
 
+/// UNNEEDED by elogind
+#if 0
 char *format_timestamp_us_utc(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal_us(buf, l, t, true);
 }
+#endif // 0
 
 char *format_timestamp_relative(char *buf, size_t l, usec_t t) {
         const char *s;
@@ -386,6 +392,8 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
         return buf;
 }
 
+/// UNNEEDED by elogind
+#if 0
 void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t) {
 
         assert(f);
@@ -418,8 +426,6 @@ int dual_timestamp_deserialize(const char *value, dual_timestamp *t) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int parse_timestamp(const char *t, usec_t *usec) {
         static const struct {
                 const char *name;
@@ -985,7 +991,6 @@ bool timezone_is_valid(const char *name) {
 
         return true;
 }
-#endif // 0
 
 clockid_t clock_boottime_or_monotonic(void) {
         static clockid_t clock = -1;
@@ -1004,3 +1009,4 @@ clockid_t clock_boottime_or_monotonic(void) {
 
         return clock;
 }
+#endif // 0

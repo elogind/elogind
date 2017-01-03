@@ -75,6 +75,8 @@ int audit_loginuid_from_pid(pid_t pid, uid_t *uid) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool use_audit(void) {
         static int cached_use = -1;
 
@@ -92,3 +94,4 @@ bool use_audit(void) {
 
         return cached_use;
 }
+#endif // 0
