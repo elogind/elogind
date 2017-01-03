@@ -1,5 +1,30 @@
 systemd System and Service Manager
 
+CHANGES WITH 225:
+
+        * machinectl gained a new verb 'shell' which opens a fresh shell on the
+          target machine. It is similar to 'login', but spawns the shell
+          directly. The pseudo machine '.host' now refers to the local host and
+          is used by default. Hence, 'machinectl shell' can be used as
+          replacement for 'su' which spawns the session as a fresh systemd
+          unit.
+
+        * systemd-networkd learned to cope with private-zone DHCP options and
+          allows other programs to query the values.
+
+        Contributions from: Alastair Hughes, Alex Crawford, Daniel Mack, David
+        Herrmann, Dimitri John Ledkov, Eric Kostrowski, Evgeny Vereshchagin,
+        Felipe Sateler, HATAYAMA Daisuke, Jan Pokorný, Jan Synacek, Johnny
+        Robeson, Karel Zak, Kay Sievers, Kefeng Wang, Lennart Poettering, Major
+        Hayden, Marcel Holtmann, Markus Elfring, Martin Mikkelsen, Martin Pitt,
+        Matt Turner, Maxim Mikityanskiy, Michael Biebl, Namhyung Kim, Nicolas
+        Cornu, Owen W. Taylor, Patrik Flykt, Peter Hutterer, reverendhomer,
+        Richard Maw, Ronny Chevalier, Seth Jennings, Stef Walter, Susant Sahani,
+        Thomas Blume, Thomas Hindoe Paaboel Andersen, Thomas Meyer, Tom
+        Gundersen, Vincent Batts, WaLyong Cho, Zbigniew Jędrzejewski-Szmek
+
+        -- Berlin, 2015-08-27
+
 CHANGES WITH 224:
 
         * The systemd-efi-boot-generator functionality was merged into
@@ -756,7 +781,7 @@ CHANGES WITH 218:
         * When querying unit file enablement status (for example via
           "systemctl is-enabled"), a new state "indirect" is now known
           which indicates that a unit might not be enabled itself, but
-          another unit listed in its Alias= setting might be.
+          another unit listed in its Also= setting might be.
 
         * Similar to the various existing ConditionXYZ= settings for
           units there are now matching AssertXYZ= settings. While

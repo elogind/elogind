@@ -39,7 +39,7 @@ SUBDIRS = . po
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
 LIBELOGIND_CURRENT=10
-LIBELOGIND_REVISION=1
+LIBELOGIND_REVISION=2
 LIBELOGIND_AGE=10
 
 # Dirs of external packages
@@ -187,9 +187,6 @@ AM_V_RM_0 = @echo "  RM      " $@;
 rootbin_PROGRAMS =
 bin_PROGRAMS =
 rootlibexec_PROGRAMS =
-
-dist_bashcompletion_DATA =
-dist_zshcompletion_DATA =
 
 dist_doc_DATA = \
 	README \
@@ -690,12 +687,16 @@ loginctl_LDADD = \
 rootbin_PROGRAMS += \
 	loginctl
 
-dist_bashcompletion_DATA += \
+if ENABLE_BASH_COMPLETION
+dist_bashcompletion_DATA = \
 	shell-completion/bash/loginctl
+endif
 
-dist_zshcompletion_DATA += \
+if ENABLE_ZSH_COMPLETION
+dist_zshcompletion_DATA = \
 	shell-completion/zsh/_loginctl \
 	shell-completion/zsh/_elogind-inhibit
+endif
 
 elogind_inhibit_SOURCES = \
 	src/login/inhibit.c

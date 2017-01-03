@@ -6,7 +6,7 @@ Bugfixes:
   automount points even when the original .automount file did not exist
   anymore. Only the .mount unit was still around.
 
-* ExecStart with unicode characters fails in strv_split_quoted:
+* ExecStart with unicode characters fails in strv_split_extract:
 
           [Service]
           Environment=ONE='one' "TWO='two two' too" THREE=
@@ -25,6 +25,16 @@ External:
   compress coredumps in a way compatible with /usr/bin/lz4.
 
 Features:
+
+* PID 1 should send out sd_notify("WATCHDOG=1") messages (for usage in the --user mode, and when run via nspawn)
+
+* nspawn should send out sd_notify("WATCHDOG=1") messages
+
+* nspawn should optionally support receiving WATCHDOG=1 messages from its payload PID 1...
+
+* introduce "machinectl shell" that is like systemd-run -M foo /bin/bash -t but also adds PAMName=login
+
+* allow loging into host with "machinectl login".
 
 * consider throwing a warning if a service declares it wants to be "Before=" a .device unit.
 
@@ -263,7 +273,7 @@ Features:
 
 * maybe add support for specifier expansion in user.conf, specifically DefaultEnvironment=
 
-* code cleanup: retire FOREACH_WORD_QUOTED, port to unquote_first_word() loops instead
+* code cleanup: retire FOREACH_WORD_QUOTED, port to extract_first_word() loops instead
 
 * introduce systemd-timesync-wait.service or so to sync on an NTP fix?
 
@@ -299,7 +309,7 @@ Features:
 
 * exponential backoff in timesyncd and resolved when we cannot reach a server
 
-* unquote_many_words() should probably be used by a lot of code that
+* extract_many_words() should probably be used by a lot of code that
   currently uses FOREACH_WORD and friends. For example, most conf
   parsing callbacks should use it.
 
@@ -344,7 +354,9 @@ Features:
         - avahi compat
   - DNS-SD service registration from socket units
   - edns0
-  - dname
+  - dname: Not necessary for plain DNS as synthesized cname is handed out instead if we do not
+           announce dname support. However, for DNSSEC it is necessary as the synthesized cname
+           will not be signed.
   - cname on PTR (?)
 
 * Allow multiple ExecStart= for all Type= settings, so that we can cover rescue.service nicely
@@ -460,6 +472,8 @@ Features:
   ReadOnlyDirectories=... for whitelisting files for a service.
 
 * sd-bus:
+  - EBADSLT handling
+  - change argv list matching logic
   - GetAllProperties() on a non-existing object does not result in a failure currently
   - kdbus: process fd=-1 for incoming msgs
   - port to sd-resolve for connecting to TCP dbus servers
@@ -689,10 +703,6 @@ Features:
 * add libsystemd-password or so to query passwords during boot using the password agent logic
 
 * If we show an error about a unit (such as not showing up) and it has no Description string, then show a description string generated form the reverse of unit_name_mangle().
-
-* fedup: add --unit to systemctl switch-root somehow
-* fedup: do not delete initrd on switch-root
-* fedup: generator
 
 * clean up date formatting and parsing so that all absolute/relative timestamps we format can also be parsed
 
