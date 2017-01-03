@@ -760,7 +760,7 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_VXLAN_MAX  (__IFLA_VXLAN_MAX - 1)
 #endif
 
-#if !HAVE_DECL_IFLA_IPTUN_6RD_RELAY_PREFIXLEN
+#if !HAVE_DECL_IFLA_IPTUN_ENCAP_DPORT
 #define IFLA_IPTUN_UNSPEC 0
 #define IFLA_IPTUN_LINK 1
 #define IFLA_IPTUN_LOCAL 2
@@ -776,9 +776,39 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_IPTUN_6RD_RELAY_PREFIX 12
 #define IFLA_IPTUN_6RD_PREFIXLEN 13
 #define IFLA_IPTUN_6RD_RELAY_PREFIXLEN 14
-#define __IFLA_IPTUN_MAX 15
+#define IFLA_IPTUN_ENCAP_TYPE 15
+#define IFLA_IPTUN_ENCAP_FLAGS 16
+#define IFLA_IPTUN_ENCAP_SPORT 17
+#define IFLA_IPTUN_ENCAP_DPORT 18
+
+#define __IFLA_IPTUN_MAX 19
 
 #define IFLA_IPTUN_MAX  (__IFLA_IPTUN_MAX - 1)
+#endif
+
+#if !HAVE_DECL_IFLA_GRE_ENCAP_DPORT
+#define IFLA_GRE_UNSPEC 0
+#define IFLA_GRE_LINK 1
+#define IFLA_GRE_IFLAGS 2
+#define IFLA_GRE_OFLAGS 3
+#define IFLA_GRE_IKEY 4
+#define IFLA_GRE_OKEY 5
+#define IFLA_GRE_LOCAL 6
+#define IFLA_GRE_REMOTE 7
+#define IFLA_GRE_TTL 8
+#define IFLA_GRE_TOS 9
+#define IFLA_GRE_PMTUDISC 10
+#define IFLA_GRE_ENCAP_LIMIT 11
+#define IFLA_GRE_FLOWINFO 12
+#define IFLA_GRE_FLAGS 13
+#define IFLA_GRE_ENCAP_TYPE 14
+#define IFLA_GRE_ENCAP_FLAGS 15
+#define IFLA_GRE_ENCAP_SPORT 16
+#define IFLA_GRE_ENCAP_DPORT 17
+
+#define __IFLA_GRE_MAX 18
+
+#define IFLA_GRE_MAX  (__IFLA_GRE_MAX - 1)
 #endif
 
 #if !HAVE_DECL_IFLA_BRIDGE_VLAN_INFO
@@ -790,7 +820,7 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
 #endif
 
-#if !HAVE_DECL_IFLA_BRPORT_UNICAST_FLOOD
+#if !HAVE_DECL_IFLA_BRPORT_LEARNING_SYNC
 #define IFLA_BRPORT_UNSPEC 0
 #define IFLA_BRPORT_STATE 1
 #define IFLA_BRPORT_PRIORITY 2
@@ -801,7 +831,9 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_BRPORT_FAST_LEAVE 7
 #define IFLA_BRPORT_LEARNING 8
 #define IFLA_BRPORT_UNICAST_FLOOD 9
-#define __IFLA_BRPORT_MAX 10
+#define IFLA_BRPORT_PROXYARP 10
+#define IFLA_BRPORT_LEARNING_SYNC 11
+#define __IFLA_BRPORT_MAX 12
 
 #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
 #endif
