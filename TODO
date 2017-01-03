@@ -51,8 +51,6 @@ Features:
 
 * install: include generator dirs in unit file search paths
 
-* introduce an NSS module that uses machined info to give container UIDs pretty names when user namespacing is used.
-
 * stop using off_t, it's a crazy type. Use uint64_t instead.
 
 * logind: follow PropertiesChanged state more closely, to deal with quick logouts and relogins
@@ -70,8 +68,6 @@ Features:
 * add a version of --merge which also merges /var/log/journal/remote
 
 * log accumulated resource usage after each service invocation
-
-* networkd: dhcp server: try to assign stable IP addresses based on client's MAC address
 
 * nspawn: a nice way to boot up without machine id set, so that it is set at boot automatically for supporting --ephemeral. Maybe hash the host machine id together with the machine name to generate the machine id for the container
 
@@ -97,8 +93,6 @@ Features:
   http://lists.freedesktop.org/archives/systemd-devel/2015-February/028630.html
 
 * nspawn: as soon as networkd has a bus interface, hook up --network-interface=, --network-bridge= with networkd, to trigger netdev creation should an interface be missing
-
-* networkd: make DHCP server IP range configurable, including only with a single IP address
 
 * rework C11 utf8.[ch] to use char32_t instead of uint32_t when referring
   to unicode chars, to make things more expressive.
@@ -318,11 +312,11 @@ Features:
   (throughout the codebase, not only PID1)
 
 * networkd:
+  - make DHCP server IP range configurable, including only with a single IP address
+  - dhcp server: try to assign stable IP addresses based on client's MAC address
   - add LLDP client side support
   - the DHCP lease data (such as NTP/DNS) is still made available when
     a carrier is lost on a link. It should be removed instantly.
-  - .network setting that allows overriding of the hostname to send to the dhcp server
-    http://lists.freedesktop.org/archives/systemd-devel/2014-July/021550.html
   - expose in the API the following bits:
         - option 15, domain name and/or option 119, search list
         - option 12, host name and/or option 81, fqdn
@@ -337,14 +331,13 @@ Features:
   - allow Name= to be specified repeatedly in the [Match] section. Maybe also
     support Name=foo*|bar*|baz ?
   - duplicate address check for static IPs (like ARPCHECK in network-scripts)
+  - allow DUID/IAID to be customized, see issue #394.
 
 * resolved:
   - put networkd events and rtnl events at a higher priority, so that
     we always process them before we process client requests
   - DNSSEC
-        - use base64 for key presentation?
         - add display of private key types (http://tools.ietf.org/html/rfc4034#appendix-A.1.1)?
-        - add nice formatting of DNS timestamps
   - DNS
         - search paths
   - mDNS/DNS-SD
@@ -353,8 +346,6 @@ Features:
   - edns0
   - dname
   - cname on PTR (?)
-  - maybe randomize DNS UDP source ports
-  - maybe compare query section of DNS replies
 
 * Allow multiple ExecStart= for all Type= settings, so that we can cover rescue.service nicely
 

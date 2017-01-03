@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=9
-LIBELOGIND_REVISION=3
-LIBELOGIND_AGE=9
+LIBELOGIND_CURRENT=10
+LIBELOGIND_REVISION=0
+LIBELOGIND_AGE=10
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -835,7 +835,6 @@ substitutions = \
        '|RC_LOCAL_SCRIPT_PATH_START=$(RC_LOCAL_SCRIPT_PATH_START)|' \
        '|RC_LOCAL_SCRIPT_PATH_STOP=$(RC_LOCAL_SCRIPT_PATH_STOP)|' \
        '|PYTHON=$(PYTHON)|' \
-       '|PYTHON_BINARY=$(PYTHON_BINARY)|' \
        '|NTP_SERVERS=$(NTP_SERVERS)|' \
        '|DNS_SERVERS=$(DNS_SERVERS)|' \
        '|systemuidmax=$(SYSTEM_UID_MAX)|' \

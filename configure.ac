@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [222],
+        [223],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -38,6 +38,11 @@ AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules tar-pax no-di
 AM_SILENT_RULES([yes])
 AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED([CANONICAL_HOST], "$host", [Canonical host string.])
+
+AC_CHECK_TOOLS([AR], [gcc-ar ar], [:])
+AC_CHECK_TOOLS([NM], [gcc-nm nm], [:])
+AC_CHECK_TOOLS([RANLIB], [gcc-ranlib ranlib], [:])
+
 LT_PREREQ(2.2)
 LT_INIT([disable-static])
 
@@ -181,10 +186,10 @@ AS_CASE([$CC], [*clang*],
                -Wno-gnu-variable-sized-type-not-at-end \
         ])])
 
-dnl AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
-dnl         [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
-dnl                -flto -ffat-lto-objects])],
-dnl         [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
+AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
+        [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
+               -flto])],
+        [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
 AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
@@ -225,7 +230,7 @@ AC_CHECK_SIZEOF(rlim_t,,[
 ])
 
 # ------------------------------------------------------------------------------
-# we use python to build the man page index, and for systemd-python
+# we use python to build the man page index
 have_python=no
 AC_ARG_WITH([python],
         [AS_HELP_STRING([--without-python], [Disable building the man page index and systemd-python (default: test)])])
@@ -249,28 +254,6 @@ AS_IF([test "$have_python" != "yes"], [
 ])
 
 AM_CONDITIONAL([HAVE_PYTHON], [test "x$have_python" = "xyes"])
-AS_IF([test "x$PYTHON_BINARY" = "x"],
-      [AS_IF([test "x$have_python" = "xyes"],
-             [PYTHON_BINARY="$(which "$PYTHON")"],
-             [PYTHON_BINARY=/usr/bin/python])])
-AC_ARG_VAR(PYTHON_BINARY, [Python binary used to launch installed scripts])
-
-AS_IF([test "x$have_python" != "xyes" -a "x$enable_python_devel" = "xyes"],
-      [AC_MSG_ERROR([*** python-devel support requires --with-python])])
-
-have_python_devel=no
-AC_ARG_ENABLE(python_devel, AS_HELP_STRING([--disable-python-devel], [Do not build python modules]))
-AS_IF([test "x$have_python" = "xyes" -a "x$enable_python_devel" != "xno"], [
-      PKG_CHECK_MODULES([PYTHON_DEVEL], [python-${PYTHON_VERSION}],
-            [have_python_devel=yes],
-            [PKG_CHECK_MODULES([PYTHON_DEVEL], [python],
-                  [have_python_devel=yes],
-                  [have_python_devel=no])])
-      AS_IF([test "x$have_python_devel" = xno -a "x$enable_python_devel" = xyes],
-            [AC_MSG_ERROR([*** python-devel support requested but libraries not found])])
-      AC_PATH_PROGS(SPHINX_BUILD, sphinx-build-${PYTHON_VERSION} sphinx-build)
-])
-AM_CONDITIONAL([HAVE_PYTHON_DEVEL], [test "$have_python_devel" = "yes"])
 
 # ------------------------------------------------------------------------------
 
@@ -319,9 +302,10 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
                 IFLA_VLAN_PROTOCOL,
                 IFLA_VXLAN_REMCSUM_NOPARTIAL,
                 IFLA_VXLAN_LOCAL6,
-                IFLA_IPTUN_6RD_RELAY_PREFIXLEN,
+                IFLA_IPTUN_ENCAP_DPORT,
+                IFLA_GRE_ENCAP_DPORT,
                 IFLA_BRIDGE_VLAN_INFO,
-                IFLA_BRPORT_UNICAST_FLOOD,
+                IFLA_BRPORT_LEARNING_SYNC,
                 NDA_IFINDEX,
                 IFA_FLAGS],
 [], [], [[
@@ -760,6 +744,7 @@ AC_MSG_RESULT([
         blkid:                   ${have_blkid}
         dbus:                    ${have_dbus}
         kdbus:                   ${have_kdbus}
+        Python:                  ${have_python}
         man pages:               ${have_manpages}
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
@@ -772,6 +757,7 @@ AC_MSG_RESULT([
         includedir:              ${includedir}
         lib dir:                 ${libdir}
         rootlib dir:             ${with_rootlibdir}
+        Build Python:            ${PYTHON}
         PAM modules dir:         ${with_pamlibdir}
         PAM configuration dir:   ${with_pamconfdir}
         D-Bus policy dir:        ${with_dbuspolicydir}
