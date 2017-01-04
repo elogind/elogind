@@ -28,21 +28,15 @@
 #include "fileio.h"
 
 int write_string_stream(FILE *f, const char *line, bool enforce_newline) {
+
         assert(f);
         assert(line);
-
-        errno = 0;
 
         fputs(line, f);
         if (enforce_newline && !endswith(line, "\n"))
                 fputc('\n', f);
 
-        fflush(f);
-
-        if (ferror(f))
-                return errno ? -errno : -EIO;
-
-        return 0;
+        return fflush_and_check(f);
 }
 
 static int write_string_file_atomic(const char *fn, const char *line, bool enforce_newline) {
@@ -795,7 +789,7 @@ int executable_is_script(const char *path, char **interpreter) {
  */
 int get_status_field(const char *filename, const char *pattern, char **field) {
         _cleanup_free_ char *status = NULL;
-        char *t;
+        char *t, *f;
         size_t len;
         int r;
 
@@ -829,9 +823,10 @@ int get_status_field(const char *filename, const char *pattern, char **field) {
 
         len = strcspn(t, WHITESPACE);
 
-        *field = strndup(t, len);
-        if (!*field)
+        f = strndup(t, len);
+        if (!f)
                 return -ENOMEM;
 
+        *field = f;
         return 0;
 }

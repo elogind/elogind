@@ -64,14 +64,25 @@ static bool hostname_valid_char(char c) {
                 c == '.';
 }
 
-bool hostname_is_valid(const char *s) {
+/**
+ * Check if s looks like a valid host name or FQDN. This does not do
+ * full DNS validation, but only checks if the name is composed of
+ * allowed characters and the length is not above the maximum allowed
+ * by Linux (c.f. dns_name_is_valid()). Trailing dot is allowed if
+ * allow_trailing_dot is true and at least two components are present
+ * in the name. Note that due to the restricted charset and length
+ * this call is substantially more conservative than
+ * dns_domain_is_valid().
+ */
+bool hostname_is_valid(const char *s, bool allow_trailing_dot) {
+        unsigned n_dots = 0;
         const char *p;
         bool dot;
 
         if (isempty(s))
                 return false;
 
-        /* Doesn't accept empty hostnames, hostnames with trailing or
+        /* Doesn't accept empty hostnames, hostnames with
          * leading dots, and hostnames with multiple dots in a
          * sequence. Also ensures that the length stays below
          * HOST_NAME_MAX. */
@@ -82,6 +93,7 @@ bool hostname_is_valid(const char *s) {
                                 return false;
 
                         dot = true;
+                        n_dots ++;
                 } else {
                         if (!hostname_valid_char(*p))
                                 return false;
@@ -90,16 +102,18 @@ bool hostname_is_valid(const char *s) {
                 }
         }
 
-        if (dot)
+        if (dot && (n_dots < 2 || !allow_trailing_dot))
                 return false;
 
-        if (p-s > HOST_NAME_MAX)
+        if (p-s > HOST_NAME_MAX) /* Note that HOST_NAME_MAX is 64 on
+                                  * Linux, but DNS allows domain names
+                                  * up to 255 characters */
                 return false;
 
         return true;
 }
 
-char* hostname_cleanup(char *s, bool lowercase) {
+char* hostname_cleanup(char *s) {
         char *p, *d;
         bool dot;
 
@@ -113,7 +127,7 @@ char* hostname_cleanup(char *s, bool lowercase) {
                         *(d++) = '.';
                         dot = true;
                 } else if (hostname_valid_char(*p)) {
-                        *(d++) = lowercase ? tolower(*p) : *p;
+                        *(d++) = *p;
                         dot = false;
                 }
 
@@ -135,14 +149,25 @@ bool is_localhost(const char *hostname) {
         /* This tries to identify local host and domain names
          * described in RFC6761 plus the redhatism of .localdomain */
 
-        return streq(hostname, "localhost") ||
-               streq(hostname, "localhost.") ||
-               streq(hostname, "localdomain.") ||
-               streq(hostname, "localdomain") ||
-               endswith(hostname, ".localhost") ||
-               endswith(hostname, ".localhost.") ||
-               endswith(hostname, ".localdomain") ||
-               endswith(hostname, ".localdomain.");
+        return strcaseeq(hostname, "localhost") ||
+               strcaseeq(hostname, "localhost.") ||
+               strcaseeq(hostname, "localdomain.") ||
+               strcaseeq(hostname, "localdomain") ||
+               endswith_no_case(hostname, ".localhost") ||
+               endswith_no_case(hostname, ".localhost.") ||
+               endswith_no_case(hostname, ".localdomain") ||
+               endswith_no_case(hostname, ".localdomain.");
+}
+
+bool is_gateway_hostname(const char *hostname) {
+        assert(hostname);
+
+        /* This tries to identify the valid syntaxes for the our
+         * synthetic "gateway" host. */
+
+        return
+                strcaseeq(hostname, "gateway") ||
+                strcaseeq(hostname, "gateway.");
 }
 
 /// UNNEEDED by elogind
@@ -181,7 +206,7 @@ int read_hostname_config(const char *path, char **hostname) {
                 truncate_nl(l);
                 if (l[0] != '\0' && l[0] != '#') {
                         /* found line with value */
-                        name = hostname_cleanup(l, false);
+                        name = hostname_cleanup(l);
                         name = strdup(name);
                         if (!name)
                                 return -ENOMEM;
