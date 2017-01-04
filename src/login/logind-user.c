@@ -118,11 +118,11 @@ int user_save(User *u) {
 
         r = mkdir_safe_label("/run/systemd/users", 0755, 0, 0);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         r = fopen_temporary(u->state_file, &f, &temp_path);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         fchmod(fileno(f), 0644);
 
@@ -243,19 +243,24 @@ int user_save(User *u) {
                 fputc('\n', f);
         }
 
-        fflush(f);
+        r = fflush_and_check(f);
+        if (r < 0)
+                goto fail;
 
-        if (ferror(f) || rename(temp_path, u->state_file) < 0) {
+        if (rename(temp_path, u->state_file) < 0) {
                 r = -errno;
-                unlink(u->state_file);
-                unlink(temp_path);
+                goto fail;
         }
 
-finish:
-        if (r < 0)
-                log_error_errno(r, "Failed to save user data %s: %m", u->state_file);
+        return 0;
 
-        return r;
+fail:
+        (void) unlink(u->state_file);
+
+        if (temp_path)
+                (void) unlink(temp_path);
+
+        return log_error_errno(r, "Failed to save user data %s: %m", u->state_file);
 }
 
 int user_load(User *u) {

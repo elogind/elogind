@@ -26,7 +26,7 @@ typedef enum KillWho KillWho;
 
 #include "list.h"
 #include "logind-user.h"
-#include "login-shared.h"
+#include "login-util.h"
 
 typedef enum SessionState {
         SESSION_OPENING,  /* Session scope is being created */
@@ -117,6 +117,7 @@ struct Session {
 
         char *controller;
         Hashmap *devices;
+        sd_bus_track *track;
 
         LIST_FIELDS(Session, sessions_by_user);
         LIST_FIELDS(Session, sessions_by_seat);

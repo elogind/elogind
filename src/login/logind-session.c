@@ -165,11 +165,11 @@ int session_save(Session *s) {
 
         r = mkdir_safe_label("/run/systemd/sessions", 0755, 0, 0);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         r = fopen_temporary(s->state_file, &f, &temp_path);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         assert(s->user);
 
@@ -217,7 +217,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->remote_host);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "REMOTE_HOST=%s\n", escaped);
@@ -229,7 +229,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->remote_user);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "REMOTE_USER=%s\n", escaped);
@@ -241,7 +241,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->service);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "SERVICE=%s\n", escaped);
@@ -254,7 +254,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->desktop);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "DESKTOP=%s\n", escaped);
@@ -282,20 +282,26 @@ int session_save(Session *s) {
         if (s->controller)
                 fprintf(f, "CONTROLLER=%s\n", s->controller);
 
-        fflush(f);
+        r = fflush_and_check(f);
+        if (r < 0)
+                goto fail;
 
-        if (ferror(f) || rename(temp_path, s->state_file) < 0) {
+        if (rename(temp_path, s->state_file) < 0) {
                 r = -errno;
-                unlink(s->state_file);
-                unlink(temp_path);
+                goto fail;
         }
 
-finish:
-        if (r < 0)
-                log_error_errno(r, "Failed to save session data %s: %m", s->state_file);
+        return 0;
 
-        return r;
+fail:
+        (void) unlink(s->state_file);
+
+        if (temp_path)
+                (void) unlink(temp_path);
+
+        return log_error_errno(r, "Failed to save session data %s: %m", s->state_file);
 }
+
 
 int session_load(Session *s) {
         _cleanup_free_ char *remote = NULL,
@@ -650,7 +656,6 @@ int session_stop(Session *s, bool force) {
 }
 
 int session_finalize(Session *s) {
-        int r = 0;
         SessionDevice *sd;
 
         assert(s);
@@ -676,7 +681,7 @@ int session_finalize(Session *s) {
         while ((sd = hashmap_first(s->devices)))
                 session_device_free(sd);
 
-        unlink(s->state_file);
+        (void) unlink(s->state_file);
         session_add_to_gc_queue(s);
         user_add_to_gc_queue(s->user);
 
@@ -696,7 +701,7 @@ int session_finalize(Session *s) {
         user_save(s->user);
         user_send_changed(s->user, "Sessions", "Display", NULL);
 
-        return r;
+        return 0;
 }
 
 static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *userdata) {
@@ -1125,7 +1130,18 @@ static void session_release_controller(Session *s, bool notify) {
                 session_device_free(sd);
 
         s->controller = NULL;
-        manager_drop_busname(s->manager, name);
+        s->track = sd_bus_track_unref(s->track);
+}
+
+static int on_bus_track(sd_bus_track *track, void *userdata) {
+        Session *s = userdata;
+
+        assert(track);
+        assert(s);
+
+        session_drop_controller(s);
+
+        return 0;
 }
 
 int session_set_controller(Session *s, const char *sender, bool force) {
@@ -1144,8 +1160,13 @@ int session_set_controller(Session *s, const char *sender, bool force) {
         if (!name)
                 return -ENOMEM;
 
-        r = manager_watch_busname(s->manager, name);
-        if (r)
+        s->track = sd_bus_track_unref(s->track);
+        r = sd_bus_track_new(s->manager->bus, &s->track, on_bus_track, s);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_track_add_name(s->track, name);
+        if (r < 0)
                 return r;
 
         /* When setting a session controller, we forcibly mute the VT and set
@@ -1158,7 +1179,7 @@ int session_set_controller(Session *s, const char *sender, bool force) {
          * or reset the VT in case it crashed/exited, too. */
         r = session_prepare_vt(s);
         if (r < 0) {
-                manager_drop_busname(s->manager, name);
+                s->track = sd_bus_track_unref(s->track);
                 return r;
         }
 
@@ -1176,6 +1197,7 @@ void session_drop_controller(Session *s) {
         if (!s->controller)
                 return;
 
+        s->track = sd_bus_track_unref(s->track);
         session_release_controller(s, false);
         session_save(s);
         session_restore_vt(s);

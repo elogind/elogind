@@ -726,15 +726,13 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                         log_warning("Existing logind session ID %s used by new audit session, ignoring", id);
                         audit_id = 0;
 
-                        free(id);
-                        id = NULL;
+                        id = mfree(id);
                 }
         }
 
         if (!id) {
                 do {
-                        free(id);
-                        id = NULL;
+                        id = mfree(id);
 
                         if (asprintf(&id, "c%lu", ++m->session_counter) < 0)
                                 return -ENOMEM;
@@ -1342,7 +1340,8 @@ static int bus_manager_log_shutdown(
                 InhibitWhat w,
                 const char *unit_name) {
 
-        const char *p, *q;
+        const char *p;
+        const char *q;
 
         assert(m);
         assert(unit_name);
@@ -1366,6 +1365,9 @@ static int bus_manager_log_shutdown(
                 p = "MESSAGE=System is shutting down.";
                 q = NULL;
         }
+
+        if (m->wall_message)
+                p = strjoina(p, " (", m->wall_message, ")", NULL);
 
         return log_struct(LOG_NOTICE,
                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
@@ -1803,17 +1805,22 @@ static int update_schedule_file(Manager *m) {
         if (!isempty(m->wall_message))
                 fprintf(f, "WALL_MESSAGE=%s\n", t);
 
-        (void) fflush_and_check(f);
+        r = fflush_and_check(f);
+        if (r < 0)
+                goto fail;
 
-        if (ferror(f) || rename(temp_path, "/run/systemd/shutdown/scheduled") < 0) {
-                log_error_errno(errno, "Failed to write information about scheduled shutdowns: %m");
+        if (rename(temp_path, "/run/systemd/shutdown/scheduled") < 0) {
                 r = -errno;
-
-                (void) unlink(temp_path);
-                (void) unlink("/run/systemd/shutdown/scheduled");
+                goto fail;
         }
 
-        return r;
+        return 0;
+
+fail:
+                (void) unlink(temp_path);
+                (void) unlink("/run/systemd/shutdown/scheduled");
+
+        return log_error_errno(r, "Failed to write information about scheduled shutdowns: %m");
 }
 
 static int manager_scheduled_shutdown_handler(
@@ -2261,6 +2268,44 @@ static int method_can_reboot_to_firmware_setup(
         return sd_bus_reply_method_return(message, "s", result);
 }
 
+static int method_set_wall_message(
+                sd_bus_message *message,
+                void *userdata,
+                sd_bus_error *error) {
+
+        int r;
+        Manager *m = userdata;
+        char *wall_message;
+        bool enable_wall_messages;
+
+        assert(message);
+        assert(m);
+
+        r = sd_bus_message_read(message, "sb", &wall_message, &enable_wall_messages);
+        if (r < 0)
+                return r;
+
+        r = bus_verify_polkit_async(message,
+                                    CAP_SYS_ADMIN,
+                                    "org.freedesktop.login1.set-wall-message",
+                                    false,
+                                    UID_INVALID,
+                                    &m->polkit_registry,
+                                    error);
+
+        if (r < 0)
+                return r;
+        if (r == 0)
+                return 1; /* Will call us back */
+
+        r = free_and_strdup(&m->wall_message, wall_message);
+        if (r < 0)
+                return log_oom();
+        m->enable_wall_messages = enable_wall_messages;
+
+        return sd_bus_reply_method_return(message, NULL);
+}
+
 static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
         const char *who, *why, *what, *mode;
@@ -2332,8 +2377,7 @@ static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error 
                 return r;
 
         do {
-                free(id);
-                id = NULL;
+                id = mfree(id);
 
                 if (asprintf(&id, "%lu", ++m->inhibit_counter) < 0)
                         return -ENOMEM;
@@ -2442,6 +2486,7 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_METHOD("Inhibit", "ssss", "h", method_inhibit, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanRebootToFirmwareSetup", NULL, "s", method_can_reboot_to_firmware_setup, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("SetRebootToFirmwareSetup", "b", NULL, method_set_reboot_to_firmware_setup, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("SetWallMessage", "sb", NULL, method_set_wall_message, SD_BUS_VTABLE_UNPRIVILEGED),
 
         SD_BUS_SIGNAL("SessionNew", "so", 0),
         SD_BUS_SIGNAL("SessionRemoved", "so", 0),
@@ -2490,7 +2535,7 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
         r = sd_bus_message_read(message, "uoss", &id, &path, &unit, &result);
         if (r < 0) {
                 bus_log_parse_error(r);
-                return r;
+                return 0;
         }
 
         if (m->action_job && streq(m->action_job, path)) {
@@ -2499,8 +2544,7 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
                 /* Tell people that they now may take a lock again */
                 send_prepare_for(m, m->action_what, false);
 
-                free(m->action_job);
-                m->action_job = NULL;
+                m->action_job = mfree(m->action_job);
                 m->action_unit = NULL;
                 m->action_what = 0;
                 return 0;
@@ -2509,10 +2553,8 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
         session = hashmap_get(m->session_units, unit);
         if (session) {
 
-                if (streq_ptr(path, session->scope_job)) {
-                        free(session->scope_job);
-                        session->scope_job = NULL;
-                }
+                if (streq_ptr(path, session->scope_job))
+                        session->scope_job = mfree(session->scope_job);
 
                 session_jobs_reply(session, unit, result);
 
@@ -2523,19 +2565,14 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
         user = hashmap_get(m->user_units, unit);
         if (user) {
 
-                if (streq_ptr(path, user->service_job)) {
-                        free(user->service_job);
-                        user->service_job = NULL;
-                }
+                if (streq_ptr(path, user->service_job))
+                        user->service_job = mfree(user->service_job);
 
-                if (streq_ptr(path, user->slice_job)) {
-                        free(user->slice_job);
-                        user->slice_job = NULL;
-                }
+                if (streq_ptr(path, user->slice_job))
+                        user->slice_job = mfree(user->slice_job);
 
-                LIST_FOREACH(sessions_by_user, session, user->sessions) {
+                LIST_FOREACH(sessions_by_user, session, user->sessions)
                         session_jobs_reply(session, unit, result);
-                }
 
                 user_save(user);
                 user_add_to_gc_queue(user);
@@ -2557,7 +2594,7 @@ int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *er
         r = sd_bus_message_read(message, "so", &unit, &path);
         if (r < 0) {
                 bus_log_parse_error(r);
-                return r;
+                return 0;
         }
 
         session = hashmap_get(m->session_units, unit);
@@ -2589,8 +2626,10 @@ int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_err
         r = unit_name_from_dbus_path(path, &unit);
         if (r == -EINVAL) /* not a unit */
                 return 0;
-        if (r < 0)
-                return r;
+        if (r < 0) {
+                log_oom();
+                return 0;
+        }
 
         session = hashmap_get(m->session_units, unit);
         if (session)
@@ -2615,7 +2654,7 @@ int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error
         r = sd_bus_message_read(message, "b", &b);
         if (r < 0) {
                 bus_log_parse_error(r);
-                return r;
+                return 0;
         }
 
         if (b)
@@ -2626,41 +2665,6 @@ int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error
 
         HASHMAP_FOREACH(session, m->sessions, i)
                 session_add_to_gc_queue(session);
-
-        return 0;
-}
-
-int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        const char *name, *old, *new;
-        Manager *m = userdata;
-        Session *session;
-        Iterator i;
-        int r;
-        char *key;
-
-        assert(message);
-        assert(m);
-
-        r = sd_bus_message_read(message, "sss", &name, &old, &new);
-        if (r < 0) {
-                bus_log_parse_error(r);
-                return r;
-        }
-
-        if (isempty(old) || !isempty(new))
-                return 0;
-
-        key = set_remove(m->busnames, (char*) old);
-        if (!key)
-                return 0;
-
-        /* Drop all controllers owned by this name */
-
-        free(key);
-
-        HASHMAP_FOREACH(session, m->sessions, i)
-                if (session_is_controller(session, old))
-                        session_drop_controller(session);
 
         return 0;
 }
