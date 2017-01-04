@@ -289,3 +289,4 @@ stamp-*
 /rebuild_all.sh
 /src/libelogind/libelogind.pc
 /elogind-inhibit
+/check_tree.sh
