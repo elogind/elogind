@@ -81,6 +81,9 @@ static void introspect_write_flags(struct introspect *i, int type, int flags) {
                 fputs("   <annotation name=\"org.freedesktop.DBus.Method.NoReply\" value=\"true\"/>\n", i->f);
 
         if (type == _SD_BUS_VTABLE_PROPERTY || type == _SD_BUS_VTABLE_WRITABLE_PROPERTY) {
+                if (flags & SD_BUS_VTABLE_PROPERTY_EXPLICIT)
+                        fputs("   <annotation name=\"org.freedesktop.systemd1.Explicit\" value=\"true\"/>\n", i->f);
+
                 if (flags & SD_BUS_VTABLE_PROPERTY_CONST)
                         fputs("   <annotation name=\"org.freedesktop.DBus.Property.EmitsChangedSignal\" value=\"const\"/>\n", i->f);
                 else if (flags & SD_BUS_VTABLE_PROPERTY_EMITS_INVALIDATION)
@@ -179,10 +182,10 @@ int introspect_finish(struct introspect *i, sd_bus *bus, sd_bus_message *m, sd_b
         assert(reply);
 
         fputs("</node>\n", i->f);
-        fflush(i->f);
 
-        if (ferror(i->f))
-                return -ENOMEM;
+        r = fflush_and_check(i->f);
+        if (r < 0)
+                return r;
 
         r = sd_bus_message_new_method_return(m, &q);
         if (r < 0)
@@ -204,8 +207,6 @@ void introspect_free(struct introspect *i) {
         if (i->f)
                 fclose(i->f);
 
-        if (i->introspection)
                 free(i->introspection);
-
         zero(*i);
 }

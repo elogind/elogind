@@ -2706,7 +2706,7 @@ _public_ int sd_bus_message_append_array_memfd(
         int r;
 
         assert_return(m, -EINVAL);
-        assert_return(memfd >= 0, -EINVAL);
+        assert_return(memfd >= 0, -EBADF);
         assert_return(bus_type_is_trivial(type), -EINVAL);
         assert_return(size > 0, -EINVAL);
         assert_return(!m->sealed, -EPERM);
@@ -2782,7 +2782,7 @@ _public_ int sd_bus_message_append_string_memfd(
         int r;
 
         assert_return(m, -EINVAL);
-        assert_return(memfd >= 0, -EINVAL);
+        assert_return(memfd >= 0, -EBADF);
         assert_return(size > 0, -EINVAL);
         assert_return(!m->sealed, -EPERM);
         assert_return(!m->poisoned, -ESTALE);
@@ -5642,21 +5642,23 @@ _public_ int sd_bus_message_read_strv(sd_bus_message *m, char ***l) {
         return 1;
 }
 
-int bus_message_get_arg(sd_bus_message *m, unsigned i, const char **str, char ***strv) {
-        const char *contents;
-        unsigned j;
-        char type;
-        int r;
+static int bus_message_get_arg_skip(
+                sd_bus_message *m,
+                unsigned i,
+                char *_type,
+                const char **_contents) {
 
-        assert(m);
-        assert(str);
-        assert(strv);
+        unsigned j;
+        int r;
 
         r = sd_bus_message_rewind(m, true);
         if (r < 0)
                 return r;
 
         for (j = 0;; j++) {
+                const char *contents;
+                char type;
+
                 r = sd_bus_message_peek_type(m, &type, &contents);
                 if (r < 0)
                         return r;
@@ -5668,31 +5670,56 @@ int bus_message_get_arg(sd_bus_message *m, unsigned i, const char **str, char **
                     !(type == SD_BUS_TYPE_ARRAY && STR_IN_SET(contents, "s", "o", "g")))
                         return -ENXIO;
 
-                if (j >= i)
-                        break;
+                if (j >= i) {
+                        if (_contents)
+                                *_contents = contents;
+                        if (_type)
+                                *_type = type;
+                        return 0;
+                }
 
                 r = sd_bus_message_skip(m, NULL);
                 if (r < 0)
                         return r;
         }
 
-        if (type == SD_BUS_TYPE_ARRAY) {
+}
 
-                r = sd_bus_message_read_strv(m, strv);
+int bus_message_get_arg(sd_bus_message *m, unsigned i, const char **str) {
+        char type;
+        int r;
+
+        assert(m);
+        assert(str);
+
+        r = bus_message_get_arg_skip(m, i, &type, NULL);
                 if (r < 0)
                         return r;
 
-                *str = NULL;
+        if (!IN_SET(type, SD_BUS_TYPE_STRING, SD_BUS_TYPE_OBJECT_PATH, SD_BUS_TYPE_SIGNATURE))
+                return -ENXIO;
 
-        } else {
-                r = sd_bus_message_read_basic(m, type, str);
+        return sd_bus_message_read_basic(m, type, str);
+}
+
+int bus_message_get_arg_strv(sd_bus_message *m, unsigned i, char ***strv) {
+        const char *contents;
+        char type;
+        int r;
+
+        assert(m);
+        assert(strv);
+
+        r = bus_message_get_arg_skip(m, i, &type, &contents);
                 if (r < 0)
                         return r;
 
-                *strv = NULL;
-        }
+        if (type != SD_BUS_TYPE_ARRAY)
+                return -ENXIO;
+        if (!STR_IN_SET(contents, "s", "o", "g"))
+                return -ENXIO;
 
-        return 0;
+        return sd_bus_message_read_strv(m, strv);
 }
 
 _public_ int sd_bus_message_get_errno(sd_bus_message *m) {

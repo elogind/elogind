@@ -1129,7 +1129,7 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If the old name is unset or empty, then
                  * this can match against added names */
-                if (!old_owner || old_owner[0] == 0) {
+                if (isempty(old_owner)) {
                         item->type = KDBUS_ITEM_NAME_ADD;
 
                         r = ioctl(bus->input_fd, KDBUS_CMD_MATCH_ADD, m);
@@ -1139,7 +1139,7 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If the new name is unset or empty, then
                  * this can match against removed names */
-                if (!new_owner || new_owner[0] == 0) {
+                if (isempty(new_owner)) {
                         item->type = KDBUS_ITEM_NAME_REMOVE;
 
                         r = ioctl(bus->input_fd, KDBUS_CMD_MATCH_ADD, m);
@@ -1183,7 +1183,7 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If the old name is unset or empty, then this can
                  * match against added ids */
-                if (!old_owner || old_owner[0] == 0) {
+                if (isempty(old_owner)) {
                         item->type = KDBUS_ITEM_ID_ADD;
                         if (!isempty(new_owner))
                                 item->id_change.id = new_owner_id;
@@ -1195,7 +1195,7 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If thew new name is unset or empty, then this can
                  * match against removed ids */
-                if (!new_owner || new_owner[0] == 0) {
+                if (isempty(new_owner)) {
                         item->type = KDBUS_ITEM_ID_REMOVE;
                         if (!isempty(old_owner))
                                 item->id_change.id = old_owner_id;
@@ -1309,7 +1309,16 @@ int bus_add_match_internal_kernel(
                         break;
                 }
 
-                case BUS_MATCH_ARG_PATH...BUS_MATCH_ARG_PATH_LAST: {
+                case BUS_MATCH_ARG_HAS...BUS_MATCH_ARG_HAS_LAST: {
+                        char buf[sizeof("arg")-1 + 2 + sizeof("-has")];
+
+                        xsprintf(buf, "arg%i-has", c->type - BUS_MATCH_ARG_HAS);
+                        bloom_add_pair(bloom, bus->bloom_size, bus->bloom_n_hash, buf, c->value_str);
+                        using_bloom = true;
+                        break;
+                }
+
+                case BUS_MATCH_ARG_PATH...BUS_MATCH_ARG_PATH_LAST:
                         /*
                          * XXX: DBus spec defines arg[0..63]path= matching to be
                          * a two-way glob. That is, if either string is a prefix
@@ -1323,7 +1332,6 @@ int bus_add_match_internal_kernel(
                          * to properly support multiple-matches here.
                          */
                         break;
-                }
 
                 case BUS_MATCH_ARG_NAMESPACE...BUS_MATCH_ARG_NAMESPACE_LAST: {
                         char buf[sizeof("arg")-1 + 2 + sizeof("-dot-prefix")];
@@ -1334,7 +1342,7 @@ int bus_add_match_internal_kernel(
                         break;
                 }
 
-                case BUS_MATCH_DESTINATION: {
+                case BUS_MATCH_DESTINATION:
                         /*
                          * Kernel only supports matching on destination IDs, but
                          * not on destination names. So just skip the
@@ -1352,7 +1360,6 @@ int bus_add_match_internal_kernel(
                                 matches_name_change = false;
 
                         break;
-                }
 
                 case BUS_MATCH_ROOT:
                 case BUS_MATCH_VALUE:

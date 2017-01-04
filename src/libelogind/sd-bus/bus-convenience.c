@@ -111,15 +111,17 @@ _public_ int sd_bus_call_method(
         _cleanup_bus_message_unref_ sd_bus_message *m = NULL;
         int r;
 
-        assert_return(bus, -EINVAL);
-        assert_return(!bus_pid_changed(bus), -ECHILD);
+        bus_assert_return(bus, -EINVAL, error);
+        bus_assert_return(!bus_pid_changed(bus), -ECHILD, error);
 
-        if (!BUS_IS_OPEN(bus->state))
-                return -ENOTCONN;
+        if (!BUS_IS_OPEN(bus->state)) {
+                r = -ENOTCONN;
+                goto fail;
+        }
 
         r = sd_bus_message_new_method_call(bus, &m, destination, path, interface, member);
         if (r < 0)
-                return r;
+                goto fail;
 
         if (!isempty(types)) {
                 va_list ap;
@@ -128,10 +130,13 @@ _public_ int sd_bus_call_method(
                 r = bus_message_append_ap(m, types, ap);
                 va_end(ap);
                 if (r < 0)
-                        return r;
+                        goto fail;
         }
 
         return sd_bus_call(bus, m, 0, error, reply);
+
+fail:
+        return sd_bus_error_set_errno(error, r);
 }
 
 _public_ int sd_bus_reply_method_return(
@@ -296,15 +301,17 @@ _public_ int sd_bus_get_property(
         sd_bus_message *rep = NULL;
         int r;
 
-        assert_return(bus, -EINVAL);
-        assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL);
-        assert_return(member_name_is_valid(member), -EINVAL);
-        assert_return(reply, -EINVAL);
-        assert_return(signature_is_single(type, false), -EINVAL);
-        assert_return(!bus_pid_changed(bus), -ECHILD);
+        bus_assert_return(bus, -EINVAL, error);
+        bus_assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL, error);
+        bus_assert_return(member_name_is_valid(member), -EINVAL, error);
+        bus_assert_return(reply, -EINVAL, error);
+        bus_assert_return(signature_is_single(type, false), -EINVAL, error);
+        bus_assert_return(!bus_pid_changed(bus), -ECHILD, error);
 
-        if (!BUS_IS_OPEN(bus->state))
-                return -ENOTCONN;
+        if (!BUS_IS_OPEN(bus->state)) {
+                r = -ENOTCONN;
+                goto fail;
+        }
 
         r = sd_bus_call_method(bus, destination, path, "org.freedesktop.DBus.Properties", "Get", error, &rep, "ss", strempty(interface), member);
         if (r < 0)
@@ -313,11 +320,14 @@ _public_ int sd_bus_get_property(
         r = sd_bus_message_enter_container(rep, 'v', type);
         if (r < 0) {
                 sd_bus_message_unref(rep);
-                return r;
+                goto fail;
         }
 
         *reply = rep;
         return 0;
+
+fail:
+        return sd_bus_error_set_errno(error, r);
 }
 
 /// UNNEEDED by elogind
@@ -334,15 +344,17 @@ _public_ int sd_bus_get_property_trivial(
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
         int r;
 
-        assert_return(bus, -EINVAL);
-        assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL);
-        assert_return(member_name_is_valid(member), -EINVAL);
-        assert_return(bus_type_is_trivial(type), -EINVAL);
-        assert_return(ptr, -EINVAL);
-        assert_return(!bus_pid_changed(bus), -ECHILD);
+        bus_assert_return(bus, -EINVAL, error);
+        bus_assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL, error);
+        bus_assert_return(member_name_is_valid(member), -EINVAL, error);
+        bus_assert_return(bus_type_is_trivial(type), -EINVAL, error);
+        bus_assert_return(ptr, -EINVAL, error);
+        bus_assert_return(!bus_pid_changed(bus), -ECHILD, error);
 
-        if (!BUS_IS_OPEN(bus->state))
-                return -ENOTCONN;
+        if (!BUS_IS_OPEN(bus->state)) {
+                r = -ENOTCONN;
+                goto fail;
+        }
 
         r = sd_bus_call_method(bus, destination, path, "org.freedesktop.DBus.Properties", "Get", error, &reply, "ss", strempty(interface), member);
         if (r < 0)
@@ -350,13 +362,16 @@ _public_ int sd_bus_get_property_trivial(
 
         r = sd_bus_message_enter_container(reply, 'v', CHAR_TO_STR(type));
         if (r < 0)
-                return r;
+                goto fail;
 
         r = sd_bus_message_read_basic(reply, type, ptr);
         if (r < 0)
-                return r;
+                goto fail;
 
         return 0;
+
+fail:
+        return sd_bus_error_set_errno(error, r);
 }
 #endif // 0
 
@@ -374,14 +389,16 @@ _public_ int sd_bus_get_property_string(
         char *n;
         int r;
 
-        assert_return(bus, -EINVAL);
-        assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL);
-        assert_return(member_name_is_valid(member), -EINVAL);
-        assert_return(ret, -EINVAL);
-        assert_return(!bus_pid_changed(bus), -ECHILD);
+        bus_assert_return(bus, -EINVAL, error);
+        bus_assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL, error);
+        bus_assert_return(member_name_is_valid(member), -EINVAL, error);
+        bus_assert_return(ret, -EINVAL, error);
+        bus_assert_return(!bus_pid_changed(bus), -ECHILD, error);
 
-        if (!BUS_IS_OPEN(bus->state))
-                return -ENOTCONN;
+        if (!BUS_IS_OPEN(bus->state)) {
+                r = -ENOTCONN;
+                goto fail;
+        }
 
         r = sd_bus_call_method(bus, destination, path, "org.freedesktop.DBus.Properties", "Get", error, &reply, "ss", strempty(interface), member);
         if (r < 0)
@@ -389,18 +406,23 @@ _public_ int sd_bus_get_property_string(
 
         r = sd_bus_message_enter_container(reply, 'v', "s");
         if (r < 0)
-                return r;
+                goto fail;
 
         r = sd_bus_message_read_basic(reply, 's', &s);
         if (r < 0)
-                return r;
+                goto fail;
 
         n = strdup(s);
-        if (!n)
-                return -ENOMEM;
+        if (!n) {
+                r = -ENOMEM;
+                goto fail;
+        }
 
         *ret = n;
         return 0;
+
+fail:
+        return sd_bus_error_set_errno(error, r);
 }
 
 /// UNNEEDED by elogind
@@ -417,14 +439,16 @@ _public_ int sd_bus_get_property_strv(
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
         int r;
 
-        assert_return(bus, -EINVAL);
-        assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL);
-        assert_return(member_name_is_valid(member), -EINVAL);
-        assert_return(ret, -EINVAL);
-        assert_return(!bus_pid_changed(bus), -ECHILD);
+        bus_assert_return(bus, -EINVAL, error);
+        bus_assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL, error);
+        bus_assert_return(member_name_is_valid(member), -EINVAL, error);
+        bus_assert_return(ret, -EINVAL, error);
+        bus_assert_return(!bus_pid_changed(bus), -ECHILD, error);
 
-        if (!BUS_IS_OPEN(bus->state))
-                return -ENOTCONN;
+        if (!BUS_IS_OPEN(bus->state)) {
+                r = -ENOTCONN;
+                goto fail;
+        }
 
         r = sd_bus_call_method(bus, destination, path, "org.freedesktop.DBus.Properties", "Get", error, &reply, "ss", strempty(interface), member);
         if (r < 0)
@@ -432,13 +456,16 @@ _public_ int sd_bus_get_property_strv(
 
         r = sd_bus_message_enter_container(reply, 'v', NULL);
         if (r < 0)
-                return r;
+                goto fail;
 
         r = sd_bus_message_read_strv(reply, ret);
         if (r < 0)
-                return r;
+                goto fail;
 
         return 0;
+
+fail:
+        return sd_bus_error_set_errno(error, r);
 }
 
 _public_ int sd_bus_set_property(
@@ -454,38 +481,43 @@ _public_ int sd_bus_set_property(
         va_list ap;
         int r;
 
-        assert_return(bus, -EINVAL);
-        assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL);
-        assert_return(member_name_is_valid(member), -EINVAL);
-        assert_return(signature_is_single(type, false), -EINVAL);
-        assert_return(!bus_pid_changed(bus), -ECHILD);
+        bus_assert_return(bus, -EINVAL, error);
+        bus_assert_return(isempty(interface) || interface_name_is_valid(interface), -EINVAL, error);
+        bus_assert_return(member_name_is_valid(member), -EINVAL, error);
+        bus_assert_return(signature_is_single(type, false), -EINVAL, error);
+        bus_assert_return(!bus_pid_changed(bus), -ECHILD, error);
 
-        if (!BUS_IS_OPEN(bus->state))
-                return -ENOTCONN;
+        if (!BUS_IS_OPEN(bus->state)) {
+                r = -ENOTCONN;
+                goto fail;
+        }
 
         r = sd_bus_message_new_method_call(bus, &m, destination, path, "org.freedesktop.DBus.Properties", "Set");
         if (r < 0)
-                return r;
+                goto fail;
 
         r = sd_bus_message_append(m, "ss", strempty(interface), member);
         if (r < 0)
-                return r;
+                goto fail;
 
         r = sd_bus_message_open_container(m, 'v', type);
         if (r < 0)
-                return r;
+                goto fail;
 
         va_start(ap, type);
         r = bus_message_append_ap(m, type, ap);
         va_end(ap);
         if (r < 0)
-                return r;
+                goto fail;
 
         r = sd_bus_message_close_container(m);
         if (r < 0)
-                return r;
+                goto fail;
 
         return sd_bus_call(bus, m, 0, error, NULL);
+
+fail:
+        return sd_bus_error_set_errno(error, r);
 }
 #endif // 0
 
