@@ -30,8 +30,9 @@
 #include "macro.h"
 #include "strv.h"
 #include "fileio.h"
-#include "login-shared.h"
+#include "login-util.h"
 #include "formats-util.h"
+#include "hostname-util.h"
 #include "sd-login.h"
 
 _public_ int sd_pid_get_session(pid_t pid, char **session) {
@@ -47,7 +48,7 @@ _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
-        return -ESRCH;
+        return cg_pid_get_unit(pid, unit);
 }
 
 _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
@@ -55,7 +56,7 @@ _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
-        return -ESRCH;
+        return cg_pid_get_user_unit(pid, unit);
 }
 
 _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
@@ -63,7 +64,7 @@ _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(name, -EINVAL);
 
-        return -ESRCH;
+        return cg_pid_get_machine_name(pid, name);
 }
 
 _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
@@ -71,7 +72,7 @@ _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
-        return -ESRCH;
+        return cg_pid_get_slice(pid, slice);
 }
 
 _public_ int sd_pid_get_user_slice(pid_t pid, char **slice) {
@@ -87,14 +88,14 @@ _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(uid, -EINVAL);
 
-        return -ESRCH;
+        return cg_pid_get_owner_uid(pid, uid);
 }
 
 _public_ int sd_peer_get_session(int fd, char **session) {
         struct ucred ucred = {};
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(session, -EINVAL);
 
         r = getpeercred(fd, &ucred);
@@ -108,77 +109,77 @@ _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(uid, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
-        return -ESRCH;
+        return cg_pid_get_owner_uid(ucred.pid, uid);
 }
 
 _public_ int sd_peer_get_unit(int fd, char **unit) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(unit, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
-        return -ESRCH;
+        return cg_pid_get_unit(ucred.pid, unit);
 }
 
 _public_ int sd_peer_get_user_unit(int fd, char **unit) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(unit, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
-        return -ESRCH;
+        return cg_pid_get_user_unit(ucred.pid, unit);
 }
 
 _public_ int sd_peer_get_machine_name(int fd, char **machine) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(machine, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
-        return -ESRCH;
+        return cg_pid_get_machine_name(ucred.pid, machine);
 }
 
 _public_ int sd_peer_get_slice(int fd, char **slice) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(slice, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
-        return -ESRCH;
+        return cg_pid_get_slice(ucred.pid, slice);
 }
 
 _public_ int sd_peer_get_user_slice(int fd, char **slice) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(slice, -EINVAL);
 
         r = getpeercred(fd, &ucred);
@@ -790,7 +791,7 @@ _public_ int sd_get_machine_names(char ***machines) {
 
                 /* Filter out the unit: symlinks */
                 for (a = l, b = l; *a; a++) {
-                        if (startswith(*a, "unit:"))
+                        if (startswith(*a, "unit:") || !machine_name_is_valid(*a))
                                 free(*a);
                         else {
                                 *b = *a;
