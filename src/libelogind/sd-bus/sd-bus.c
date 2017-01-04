@@ -1034,14 +1034,12 @@ static int bus_start_address(sd_bus *b) {
 
                 if (b->exec_path)
                         r = bus_socket_exec(b);
-#if 0
                 else if ((b->nspid > 0 || b->machine) && b->kernel) {
                         r = bus_container_connect_kernel(b);
                         if (r < 0 && !IN_SET(r, -ENOENT, -ESOCKTNOSUPPORT))
                                 container_kdbus_available = true;
                 } else if (!container_kdbus_available && (b->nspid > 0 || b->machine) && b->sockaddr.sa.sa_family != AF_UNSPEC)
                         r = bus_container_connect_socket(b);
-#endif // 0
                 else if (b->kernel) {
                         r = bus_kernel_connect(b);
                         if (r < 0 && !IN_SET(r, -ENOENT, -ESOCKTNOSUPPORT))

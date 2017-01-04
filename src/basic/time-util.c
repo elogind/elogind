@@ -1017,6 +1017,7 @@ bool timezone_is_valid(const char *name) {
 
         return true;
 }
+#endif // 0
 
 clockid_t clock_boottime_or_monotonic(void) {
         static clockid_t clock = -1;
@@ -1035,4 +1036,3 @@ clockid_t clock_boottime_or_monotonic(void) {
 
         return clock;
 }
-#endif // 0

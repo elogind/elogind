@@ -4979,8 +4979,6 @@ int get_proc_cmdline_key(const char *key, char **value) {
 
 }
 
-/// UNNEEDED by elogind
-#if 0
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;
         const char *p;
@@ -5014,7 +5012,6 @@ int container_get_leader(const char *machine, pid_t *pid) {
         *pid = leader;
         return 0;
 }
-#endif // 0
 
 int namespace_open(pid_t pid, int *pidns_fd, int *mntns_fd, int *netns_fd, int *userns_fd, int *root_fd) {
         _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, netnsfd = -1, usernsfd = -1;

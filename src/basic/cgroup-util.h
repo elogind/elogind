@@ -110,10 +110,10 @@ int cg_shift_path(const char *cgroup, const char *cached_root, const char **shif
 int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
 int cg_pid_get_session(pid_t pid, char **session);
-// UNNEEDED int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
+int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
 int cg_pid_get_unit(pid_t pid, char **unit);
-// UNNEEDED int cg_pid_get_user_unit(pid_t pid, char **unit);
-// UNNEEDED int cg_pid_get_machine_name(pid_t pid, char **machine);
+int cg_pid_get_user_unit(pid_t pid, char **unit);
+int cg_pid_get_machine_name(pid_t pid, char **machine);
 int cg_pid_get_slice(pid_t pid, char **slice);
 int cg_pid_get_user_slice(pid_t pid, char **slice);
 

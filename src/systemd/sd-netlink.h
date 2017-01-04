@@ -61,7 +61,6 @@ int sd_netlink_get_events(sd_netlink *nl);
 int sd_netlink_get_timeout(sd_netlink *nl, uint64_t *timeout);
 int sd_netlink_process(sd_netlink *nl, sd_netlink_message **ret);
 int sd_netlink_wait(sd_netlink *nl, uint64_t timeout);
-int sd_netlink_flush(sd_netlink *nl);
 
 int sd_netlink_add_match(sd_netlink *nl, uint16_t match, sd_netlink_message_handler_t c, void *userdata);
 int sd_netlink_remove_match(sd_netlink *nl, uint16_t match, sd_netlink_message_handler_t c, void *userdata);
@@ -115,7 +114,7 @@ int sd_rtnl_message_new_addr(sd_netlink *nl, sd_netlink_message **ret, uint16_t 
 int sd_rtnl_message_new_route(sd_netlink *nl, sd_netlink_message **ret, uint16_t nlmsg_type, int rtm_family, unsigned char rtm_protocol);
 int sd_rtnl_message_new_neigh(sd_netlink *nl, sd_netlink_message **ret, uint16_t msg_type, int index, int nda_family);
 
-int sd_netlink_message_get_family(sd_netlink_message *m, int *family);
+int sd_rtnl_message_get_family(sd_netlink_message *m, int *family);
 
 int sd_rtnl_message_addr_set_prefixlen(sd_netlink_message *m, unsigned char prefixlen);
 int sd_rtnl_message_addr_set_scope(sd_netlink_message *m, unsigned char scope);

@@ -1357,8 +1357,6 @@ int cg_path_get_user_unit(const char *path, char **ret) {
         return cg_path_get_unit(t, ret);
 }
 
-/// UNNEDED by elogind
-#if 0
 int cg_pid_get_user_unit(pid_t pid, char **unit) {
         _cleanup_free_ char *cgroup = NULL;
         int r;
@@ -1371,7 +1369,6 @@ int cg_pid_get_user_unit(pid_t pid, char **unit) {
 
         return cg_path_get_user_unit(cgroup, unit);
 }
-#endif // 0
 
 int cg_path_get_machine_name(const char *path, char **machine) {
         _cleanup_free_ char *u = NULL, *sl = NULL;
@@ -1388,8 +1385,6 @@ int cg_path_get_machine_name(const char *path, char **machine) {
         return readlink_malloc(sl, machine);
 }
 
-/// UNNEDED by elogind
-#if 0
 int cg_pid_get_machine_name(pid_t pid, char **machine) {
         _cleanup_free_ char *cgroup = NULL;
         int r;
@@ -1402,7 +1397,6 @@ int cg_pid_get_machine_name(pid_t pid, char **machine) {
 
         return cg_path_get_machine_name(cgroup, machine);
 }
-#endif // 0
 
 int cg_path_get_session(const char *path, char **session) {
         _cleanup_free_ char *unit = NULL;
@@ -1475,8 +1469,6 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         return 0;
 }
 
-/// UNNEDED by elogind
-#if 0
 int cg_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         _cleanup_free_ char *cgroup = NULL;
         int r;
@@ -1487,7 +1479,6 @@ int cg_pid_get_owner_uid(pid_t pid, uid_t *uid) {
 
         return cg_path_get_owner_uid(cgroup, uid);
 }
-#endif // 0
 
 int cg_path_get_slice(const char *p, char **slice) {
         const char *e = NULL;

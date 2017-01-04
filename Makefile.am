@@ -134,6 +134,8 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/login \
 	-I $(top_srcdir)/src/systemd \
 	-I $(top_builddir)/src/core \
+	-I $(top_srcdir)/src/libudev \
+	-I $(top_srcdir)/src/udev \
 	-I $(top_srcdir)/src/core \
 	-I $(top_srcdir)/src/libelogind/sd-bus \
 	-I $(top_srcdir)/src/libelogind/sd-event \
@@ -524,6 +526,7 @@ libelogind_internal_la_SOURCES = \
 	src/systemd/sd-bus-protocol.h \
 	src/systemd/sd-bus-vtable.h \
 	src/systemd/sd-event.h \
+	src/systemd/sd-netlink.h \
 	src/systemd/sd-login.h \
 	src/systemd/sd-id128.h \
 	src/systemd/sd-daemon.h \
@@ -542,6 +545,8 @@ libelogind_internal_la_SOURCES = \
 	src/libelogind/sd-bus/bus-socket.h \
 	src/libelogind/sd-bus/bus-kernel.c \
 	src/libelogind/sd-bus/bus-kernel.h \
+	src/libelogind/sd-bus/bus-container.c \
+	src/libelogind/sd-bus/bus-container.h \
 	src/libelogind/sd-bus/bus-message.c \
 	src/libelogind/sd-bus/bus-message.h \
 	src/libelogind/sd-bus/bus-creds.c \
