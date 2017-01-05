@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=10
-LIBELOGIND_REVISION=2
-LIBELOGIND_AGE=10
+LIBELOGIND_CURRENT=11
+LIBELOGIND_REVISION=0
+LIBELOGIND_AGE=11
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@

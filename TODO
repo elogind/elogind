@@ -26,15 +26,13 @@ External:
 
 Features:
 
+* sd-event: maybe add support for inotify events
+
 * PID 1 should send out sd_notify("WATCHDOG=1") messages (for usage in the --user mode, and when run via nspawn)
 
 * nspawn should send out sd_notify("WATCHDOG=1") messages
 
 * nspawn should optionally support receiving WATCHDOG=1 messages from its payload PID 1...
-
-* introduce "machinectl shell" that is like systemd-run -M foo /bin/bash -t but also adds PAMName=login
-
-* allow loging into host with "machinectl login".
 
 * consider throwing a warning if a service declares it wants to be "Before=" a .device unit.
 
@@ -64,10 +62,6 @@ Features:
 * stop using off_t, it's a crazy type. Use uint64_t instead.
 
 * logind: follow PropertiesChanged state more closely, to deal with quick logouts and relogins
-
-* change to KillMode=mixed by default
-
-* introduce argv0contains=
 
 * invent a better systemd-run scheme for naming scopes, that works with remoting
 
@@ -209,8 +203,6 @@ Features:
 
 * "machinectl list-images" should show os-release data, as well as machine-info data (including deployment level)
 
-* nspawn: when start a container "foobar" look for its configuration in a file "foobar.nspawn" in /etc/systemd/nspawn/ as well as next to the actualy directory or image to boot
-
 * Port various tools to make use of verbs.[ch], where applicable
 
 * "machinectl history"
@@ -255,8 +247,6 @@ Features:
 * in systemctl list-unit-files: show the install value the presets would suggest for a service in a third column
 
 * figure out when we can use the coarse timers
-
-* sd-resolve: drop res_query wrapping, people should call via the bus to resolved instead
 
 * add "systemctl start -v foobar.service" that shows logs of a service
   while the start command runs. This is non-trivial to do without
@@ -322,26 +312,22 @@ Features:
   (throughout the codebase, not only PID1)
 
 * networkd:
-  - make DHCP server IP range configurable, including only with a single IP address
-  - dhcp server: try to assign stable IP addresses based on client's MAC address
   - add LLDP client side support
   - the DHCP lease data (such as NTP/DNS) is still made available when
     a carrier is lost on a link. It should be removed instantly.
   - expose in the API the following bits:
         - option 15, domain name and/or option 119, search list
         - option 12, host name and/or option 81, fqdn
-        - option 100, 101, timezone
         - option 123, 144, geolocation
         - option 252, configure http proxy (PAC/wpad)
-  - networkd's dhcp server should transparently pass on the DNS and
-    NTP server list it got from user configuration and its dhcp client
-    to clients. It should also pass on its own timezone information.
   - provide a way to define a per-network interface default metric value
     for all routes to it. possibly a second default for DHCP routes.
   - allow Name= to be specified repeatedly in the [Match] section. Maybe also
     support Name=foo*|bar*|baz ?
   - duplicate address check for static IPs (like ARPCHECK in network-scripts)
   - allow DUID/IAID to be customized, see issue #394.
+  - support configuration option for TSO (tcp segmentation offload)
+  - networkd: whenever uplink info changes, make DHCP server send out FORCERENEW
 
 * resolved:
   - put networkd events and rtnl events at a higher priority, so that
@@ -473,7 +459,6 @@ Features:
 
 * sd-bus:
   - EBADSLT handling
-  - change argv list matching logic
   - GetAllProperties() on a non-existing object does not result in a failure currently
   - kdbus: process fd=-1 for incoming msgs
   - port to sd-resolve for connecting to TCP dbus servers
@@ -895,7 +880,6 @@ Features:
 
 * dhcp:
    - figure out how much we can increase Maximum Message Size
-   - export timezone information
    - support RFC4702 (pass FQDN)
 
 * dhcp6:

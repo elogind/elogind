@@ -290,3 +290,4 @@ stamp-*
 /src/libelogind/libelogind.pc
 /elogind-inhibit
 /check_tree.sh
+/get_build_file_diff.sh
