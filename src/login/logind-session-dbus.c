@@ -191,6 +191,7 @@ int bus_session_method_terminate(sd_bus_message *message, void *userdata, sd_bus
                         message,
                         CAP_KILL,
                         "org.freedesktop.login1.manage",
+                        NULL,
                         false,
                         s->user->uid,
                         &s->manager->polkit_registry,
@@ -232,6 +233,7 @@ int bus_session_method_lock(sd_bus_message *message, void *userdata, sd_bus_erro
                         message,
                         CAP_SYS_ADMIN,
                         "org.freedesktop.login1.lock-sessions",
+                        NULL,
                         false,
                         s->user->uid,
                         &s->manager->polkit_registry,
@@ -306,6 +308,7 @@ int bus_session_method_kill(sd_bus_message *message, void *userdata, sd_bus_erro
                         message,
                         CAP_KILL,
                         "org.freedesktop.login1.manage",
+                        NULL,
                         false,
                         s->user->uid,
                         &s->manager->polkit_registry,
@@ -714,10 +717,9 @@ int session_send_create_reply(Session *s, sd_bus_error *error) {
         if (fifo_fd < 0)
                 return fifo_fd;
 
-        /* Update the session and user state file before we notify the client
+        /* Update the session state file before we notify the client
          * about the result. */
         session_save(s);
-        user_save(s->user);
 
         p = session_bus_path(s);
         if (!p)
