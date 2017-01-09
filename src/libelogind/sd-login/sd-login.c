@@ -108,7 +108,7 @@ _public_ int sd_pid_get_cgroup(pid_t pid, char **cgroup) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(cgroup, -EINVAL);
 
-        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, pid, &c);
+        r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, pid, &c);
         if (r < 0)
                 return r;
 
@@ -645,10 +645,10 @@ _public_ int sd_seat_get_active(const char *seat, char **session, uid_t *uid) {
                 return r;
 
         if (session && !s)
-                return -ENOENT;
+                return -ENODATA;
 
         if (uid && !t)
-                return -ENOENT;
+                return -ENODATA;
 
         if (uid && t) {
                 r = parse_uid(t, uid);
