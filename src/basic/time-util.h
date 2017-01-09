@@ -70,11 +70,12 @@ typedef struct dual_timestamp {
 #define DUAL_TIMESTAMP_NULL ((struct dual_timestamp) { 0ULL, 0ULL })
 
 usec_t now(clockid_t clock);
+// UNNEEDED nsec_t now_nsec(clockid_t clock);
 
 dual_timestamp* dual_timestamp_get(dual_timestamp *ts);
 dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u);
 // UNNEEDED dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
-dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, usec_t u);
+// UNNEEDED dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, usec_t u);
 
 static inline bool dual_timestamp_is_set(dual_timestamp *ts) {
         return ((ts->realtime > 0 && ts->realtime != USEC_INFINITY) ||
@@ -107,7 +108,7 @@ int parse_nsec(const char *t, nsec_t *nsec);
 // UNNEEDED bool ntp_synced(void);
 
 // UNNEEDED int get_timezones(char ***l);
-// UNNEEDED bool timezone_is_valid(const char *name);
+bool timezone_is_valid(const char *name);
 
 clockid_t clock_boottime_or_monotonic(void);
 

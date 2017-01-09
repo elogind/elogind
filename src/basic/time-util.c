@@ -37,6 +37,8 @@ usec_t now(clockid_t clock_id) {
         return timespec_load(&ts);
 }
 
+/// UNNEEDED by elogind
+#if 0
 nsec_t now_nsec(clockid_t clock_id) {
         struct timespec ts;
 
@@ -44,6 +46,7 @@ nsec_t now_nsec(clockid_t clock_id) {
 
         return timespec_load_nsec(&ts);
 }
+#endif // 0
 
 dual_timestamp* dual_timestamp_get(dual_timestamp *ts) {
         assert(ts);
@@ -98,7 +101,6 @@ dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u) {
 
         return ts;
 }
-#endif // 0
 
 dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, usec_t u) {
         int64_t delta;
@@ -124,7 +126,7 @@ dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, us
 
         return ts;
 }
-
+#endif // 0
 
 usec_t timespec_load(const struct timespec *ts) {
         assert(ts);
@@ -1000,6 +1002,7 @@ int get_timezones(char ***ret) {
 
         return 0;
 }
+#endif // 0
 
 bool timezone_is_valid(const char *name) {
         bool slash = false;
@@ -1041,7 +1044,6 @@ bool timezone_is_valid(const char *name) {
 
         return true;
 }
-#endif // 0
 
 clockid_t clock_boottime_or_monotonic(void) {
         static clockid_t clock = -1;
