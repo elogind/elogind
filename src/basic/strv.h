@@ -145,7 +145,7 @@ void strv_print(char **l);
         }))
 
 // UNNEEDED char **strv_reverse(char **l);
-char **strv_shell_escape(char **l, const char *bad);
+// UNNEEDED char **strv_shell_escape(char **l, const char *bad);
 
 bool strv_fnmatch(char* const* patterns, const char *s, int flags);
 

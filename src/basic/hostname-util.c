@@ -159,6 +159,8 @@ bool is_localhost(const char *hostname) {
                endswith_no_case(hostname, ".localdomain.");
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool is_gateway_hostname(const char *hostname) {
         assert(hostname);
 
@@ -170,8 +172,6 @@ bool is_gateway_hostname(const char *hostname) {
                 strcaseeq(hostname, "gateway.");
 }
 
-/// UNNEEDED by elogind
-#if 0
 int sethostname_idempotent(const char *s) {
         char buf[HOST_NAME_MAX + 1] = {};
 

@@ -579,6 +579,8 @@ int config_parse_bool(const char* unit,
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int config_parse_tristate(
                 const char* unit,
                 const char *filename,
@@ -611,6 +613,7 @@ int config_parse_tristate(
         *t = !!k;
         return 0;
 }
+#endif // 0
 
 int config_parse_string(
                 const char *unit,
@@ -869,6 +872,8 @@ int config_parse_signal(
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int config_parse_personality(
                 const char *unit,
                 const char *filename,
@@ -897,3 +902,4 @@ int config_parse_personality(
         *personality = p;
         return 0;
 }
+#endif // 0

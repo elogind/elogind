@@ -35,7 +35,7 @@ char* hostname_cleanup(char *s);
 #define machine_name_is_valid(s) hostname_is_valid(s, false)
 
 bool is_localhost(const char *hostname);
-bool is_gateway_hostname(const char *hostname);
+// UNNEEDED bool is_gateway_hostname(const char *hostname);
 
 // UNNEEDED int sethostname_idempotent(const char *s);
 

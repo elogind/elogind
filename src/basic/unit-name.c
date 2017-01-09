@@ -624,6 +624,8 @@ const char* unit_dbus_interface_from_type(UnitType t) {
         return table[t];
 }
 
+/// UNNEEDED by elogind
+#if 0
 const char *unit_dbus_interface_from_name(const char *name) {
         UnitType t;
 
@@ -633,6 +635,7 @@ const char *unit_dbus_interface_from_name(const char *name) {
 
         return unit_dbus_interface_from_type(t);
 }
+#endif // 0
 
 static char *do_escape_mangle(const char *f, UnitNameMangle allow_globs, char *t) {
         const char *valid_chars;

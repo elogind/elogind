@@ -145,17 +145,17 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
 // UNNEEDED int cg_attach_many_everywhere(CGroupMask supported, const char *path, Set* pids, cg_migrate_callback_t callback, void *userdata);
 // UNNEEDED int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to, cg_migrate_callback_t callback, void *userdata);
 // UNNEEDED int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
-int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p);
+// UNNEEDED int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p);
 
 // UNNEEDED int cg_mask_supported(CGroupMask *ret);
 
 // UNNEEDED int cg_kernel_controllers(Set *controllers);
 
 int cg_unified(void);
-void cg_unified_flush(void);
+// UNNEEDED void cg_unified_flush(void);
 
 bool cg_is_unified_wanted(void);
-bool cg_is_legacy_wanted(void);
+// UNNEEDED bool cg_is_legacy_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;

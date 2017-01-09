@@ -713,7 +713,6 @@ char **strv_reverse(char **l) {
 
         return l;
 }
-#endif // 0
 
 char **strv_shell_escape(char **l, const char *bad) {
         char **s;
@@ -734,6 +733,7 @@ char **strv_shell_escape(char **l, const char *bad) {
 
         return l;
 }
+#endif // 0
 
 bool strv_fnmatch(char* const* patterns, const char *s, int flags) {
         char* const* p;

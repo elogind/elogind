@@ -2141,6 +2141,8 @@ int cg_unified(void) {
         return unified_cache;
 }
 
+/// UNNEEDED by elogind
+#if 0
 void cg_unified_flush(void) {
         unified_cache = -1;
 }
@@ -2187,6 +2189,7 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
 
         return 0;
 }
+#endif // 0
 
 bool cg_is_unified_wanted(void) {
         static thread_local int wanted = -1;
@@ -2220,9 +2223,12 @@ bool cg_is_unified_wanted(void) {
         }
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool cg_is_legacy_wanted(void) {
         return !cg_is_unified_wanted();
 }
+#endif // 0
 
 static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_CPU] = "cpu",

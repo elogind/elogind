@@ -1093,6 +1093,8 @@ int get_ctty(pid_t pid, dev_t *_devnr, char **r) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int ptsname_namespace(int pty, char **ret) {
         int no = -1, r;
 
@@ -1111,3 +1113,4 @@ int ptsname_namespace(int pty, char **ret) {
 
         return 0;
 }
+#endif // 0
