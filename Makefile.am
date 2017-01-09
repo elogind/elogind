@@ -362,7 +362,9 @@ libbasic_la_SOURCES = \
 	src/basic/fileio-label.c \
 	src/basic/fileio-label.h \
 	src/basic/rm-rf.c \
-	src/basic/rm-rf.h
+	src/basic/rm-rf.h \
+	src/basic/copy.c \
+	src/basic/copy.h
 
 nodist_libbasic_la_SOURCES = \
 	src/basic/errno-from-name.h \
