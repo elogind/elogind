@@ -87,6 +87,8 @@ struct timespec *timespec_store(struct timespec *ts, usec_t u);
 usec_t timeval_load(const struct timeval *tv) _pure_;
 struct timeval *timeval_store(struct timeval *tv, usec_t u);
 
+nsec_t timespec_load_nsec(const struct timespec *ts) _pure_;
+
 char *format_timestamp(char *buf, size_t l, usec_t t);
 // UNNEEDED char *format_timestamp_utc(char *buf, size_t l, usec_t t);
 char *format_timestamp_us(char *buf, size_t l, usec_t t);
@@ -110,3 +112,5 @@ int parse_nsec(const char *t, nsec_t *nsec);
 clockid_t clock_boottime_or_monotonic(void);
 
 #define xstrftime(buf, fmt, tm) assert_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0)
+
+int get_timezone(char **timezone);

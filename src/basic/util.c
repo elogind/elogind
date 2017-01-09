@@ -403,7 +403,10 @@ int parse_uid(const char *s, uid_t* ret_uid) {
                 return -ERANGE;
 
         if (!uid_is_valid(uid))
-                return -ENXIO;
+                return -ENXIO; /* we return ENXIO instead of EINVAL
+                                * here, to make it easy to distuingish
+                                * invalid numeric uids invalid
+                                * strings. */
 
         if (ret_uid)
                 *ret_uid = uid;
@@ -6196,6 +6199,9 @@ int openpt_in_namespace(pid_t pid, int flags) {
 
                 master = posix_openpt(flags);
                 if (master < 0)
+                        _exit(EXIT_FAILURE);
+
+                if (unlockpt(master) < 0)
                         _exit(EXIT_FAILURE);
 
                 cmsg = CMSG_FIRSTHDR(&mh);

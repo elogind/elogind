@@ -366,6 +366,9 @@ int fd_is_temporary_fs(int fd);
 
 int pipe_eof(int fd);
 
+DEFINE_TRIVIAL_CLEANUP_FUNC(cpu_set_t*, CPU_FREE);
+#define _cleanup_cpu_free_ _cleanup_(CPU_FREEp)
+
 // UNNEEDED cpu_set_t* cpu_set_malloc(unsigned *ncpus);
 
 #define xsprintf(buf, fmt, ...) assert_se((size_t) snprintf(buf, ELEMENTSOF(buf), fmt, __VA_ARGS__) < ELEMENTSOF(buf))
@@ -396,8 +399,6 @@ DIR *xopendirat(int dirfd, const char *name, int flags);
 bool nulstr_contains(const char*nulstr, const char *needle);
 
 // UNNEEDED bool plymouth_running(void);
-
-bool machine_name_is_valid(const char *s) _pure_;
 
 char* strshorten(char *s, size_t l);
 
@@ -566,6 +567,7 @@ _pure_ static inline bool string_is_glob(const char *p) {
 // UNNEEDED                 void *arg);
 
 #define _(String) gettext (String)
+#define N_(String) String
 // UNNEEDED void init_gettext(void);
 bool is_locale_utf8(void);
 
