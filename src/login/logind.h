@@ -179,7 +179,7 @@ int manager_unit_is_active(Manager *manager, const char *unit);
 int manager_job_is_active(Manager *manager, const char *path);
 
 /* gperf lookup function */
-const struct ConfigPerfItem* logind_gperf_lookup(const char *key, unsigned length);
+const struct ConfigPerfItem* logind_gperf_lookup (const char *str, size_t len);
 
 int manager_set_lid_switch_ignore(Manager *m, usec_t until);
 

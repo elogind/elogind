@@ -291,3 +291,6 @@ stamp-*
 /elogind-inhibit
 /check_tree.sh
 /get_build_file_diff.sh
+elogind_patches.lst
+/patches/
+/elogind.cbp
