@@ -47,7 +47,6 @@ typedef struct Manager Manager;
 #define MANAGER_IS_SYSTEM(m) ((m)->is_system)
 #define MANAGER_IS_USER(m) (!((m)->is_system))
 #endif // 1
-
 struct Manager {
         sd_event *event;
         sd_bus *bus;
