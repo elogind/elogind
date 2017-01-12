@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <libudev.h>
 
+#include "config.h"
 #include "sd-event.h"
 #include "sd-bus.h"
 #include "list.h"
@@ -179,7 +180,7 @@ int manager_unit_is_active(Manager *manager, const char *unit);
 int manager_job_is_active(Manager *manager, const char *path);
 
 /* gperf lookup function */
-const struct ConfigPerfItem* logind_gperf_lookup (const char *str, size_t len);
+const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
 
 int manager_set_lid_switch_ignore(Manager *m, usec_t until);
 
