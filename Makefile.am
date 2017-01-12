@@ -240,18 +240,18 @@ CLEANFILES += \
 	docs/html/man
 
 if HAVE_PYTHON
-man/index.html: man/systemd.index.html
-	$(AM_V_LN)$(LN_S) -f systemd.index.html $@
+man/index.html: man/elogind.index.html
+	$(AM_V_LN)$(LN_S) -f elogind.index.html $@
 
 noinst_DATA += \
-	man/index.html
+       man/index.html
 
 CLEANFILES += \
-	man/index.html
+       man/index.html
 
 XML_GLOB = $(wildcard $(top_srcdir)/man/*.xml)
-NON_INDEX_XML_FILES = $(filter-out man/systemd.index.xml,$(XML_FILES))
-SOURCE_XML_FILES = ${patsubst %,$(top_srcdir)/%,$(filter-out man/systemd.directives.xml,$(NON_INDEX_XML_FILES))}
+NON_INDEX_XML_FILES = $(filter-out man/elogind.index.xml,$(XML_FILES))
+SOURCE_XML_FILES = ${patsubst %,$(top_srcdir)/%,$(filter-out man/elogind.directives.xml,$(NON_INDEX_XML_FILES))}
 
 # This target should only be run manually. It recreates Makefile-man.am
 # file in the source directory based on all man/*.xml files. Run it after
@@ -259,22 +259,22 @@ SOURCE_XML_FILES = ${patsubst %,$(top_srcdir)/%,$(filter-out man/systemd.directi
 update-man-list: $(top_srcdir)/tools/make-man-rules.py $(XML_GLOB)
 	$(AM_V_GEN)$(PYTHON) $^ > $(top_srcdir)/Makefile-man.tmp
 	$(AM_V_at)mv $(top_srcdir)/Makefile-man.tmp $(top_srcdir)/Makefile-man.am
-	@echo "Makefile-man.am has been regenerated"
+		@echo "Makefile-man.am has been regenerated"
 
-man/systemd.index.xml: $(top_srcdir)/tools/make-man-index.py $(NON_INDEX_XML_FILES)
+man/elogind.index.xml: $(top_srcdir)/tools/make-man-index.py $(NON_INDEX_XML_FILES)
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
 	$(AM_V_GEN)$(PYTHON) $< $@ $(filter-out $<,$^)
 
-man/systemd.directives.xml: $(top_srcdir)/tools/make-directive-index.py man/custom-entities.ent $(SOURCE_XML_FILES)
+man/elogind.directives.xml: $(top_srcdir)/tools/make-directive-index.py man/custom-entities.ent $(SOURCE_XML_FILES)
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
 	$(AM_V_GEN)$(PYTHON) $< $@ $(SOURCE_XML_FILES)
 
 CLEANFILES += \
-	man/systemd.index.xml \
-	man/systemd.directives.xml
+       man/elogind.index.xml \
+       man/elogind.directives.xml
 
 EXTRA_DIST += \
-	tools/make-man-rules.py
+       tools/make-man-rules.py
 
 endif
 
@@ -791,7 +791,6 @@ substitutions = \
        '|QUOTAON=$(QUOTAON)|' \
        '|RC_LOCAL_SCRIPT_PATH_START=$(RC_LOCAL_SCRIPT_PATH_START)|' \
        '|RC_LOCAL_SCRIPT_PATH_STOP=$(RC_LOCAL_SCRIPT_PATH_STOP)|' \
-       '|PYTHON=$(PYTHON)|' \
        '|NTP_SERVERS=$(NTP_SERVERS)|' \
        '|DNS_SERVERS=$(DNS_SERVERS)|' \
        '|systemuidmax=$(SYSTEM_UID_MAX)|' \
@@ -947,12 +946,7 @@ DISTCHECK_CONFIGURE_FLAGS += \
 	--disable-split-usr
 endif
 
-#
-# Require python when making dist
-#
-.PHONY: dist-check-python dist-check-compat-libs dist-check-help
-dist-check-python:
-
+.PHONY: dist-check-compat-libs dist-check-help
 dist-check-compat-libs:
 
 dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
@@ -963,7 +957,7 @@ dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
 	        exit 1;                                                        \
             fi; done
 
-dist: dist-check-python dist-check-compat-libs
+dist: dist-check-compat-libs
 
 .PHONY: git-tag
 git-tag:

@@ -232,11 +232,11 @@ AC_CHECK_SIZEOF(rlim_t,,[
        #include <sys/resource.h>
 ])
 
-# ------------------------------------------------------------------------------
+ # ------------------------------------------------------------------------------
 # we use python to build the man page index
 have_python=no
 AC_ARG_WITH([python],
-        [AS_HELP_STRING([--without-python], [Disable building the man page index and systemd-python (default: test)])])
+        [AS_HELP_STRING([--without-python], [Disable building the man page index (default: test)])])
 
 have_lxml=no
 AS_IF([test "x$with_python" != "xno"], [
@@ -762,7 +762,6 @@ AC_MSG_RESULT([
         includedir:              ${includedir}
         lib dir:                 ${libdir}
         rootlib dir:             ${with_rootlibdir}
-        Build Python:            ${PYTHON}
         PAM modules dir:         ${with_pamlibdir}
         PAM configuration dir:   ${with_pamconfdir}
         D-Bus policy dir:        ${with_dbuspolicydir}
