@@ -111,12 +111,6 @@
 #define _ELFUTILS_FEATURE_ "-ELFUTILS"
 #endif
 
-#ifdef HAVE_KMOD
-#define _KMOD_FEATURE_ "+KMOD"
-#else
-#define _KMOD_FEATURE_ "-KMOD"
-#endif
-
 #ifdef HAVE_LIBIDN
 #define _IDN_FEATURE_ "+IDN"
 #else
@@ -139,5 +133,4 @@
         _SECCOMP_FEATURE_ " "                                           \
         _BLKID_FEATURE_ " "                                             \
         _ELFUTILS_FEATURE_ " "                                          \
-        _KMOD_FEATURE_ " "                                              \
         _IDN_FEATURE_

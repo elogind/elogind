@@ -149,9 +149,6 @@ enum udev_builtin_cmd {
         UDEV_BUILTIN_HWDB,
         UDEV_BUILTIN_INPUT_ID,
         UDEV_BUILTIN_KEYBOARD,
-#ifdef HAVE_KMOD
-        UDEV_BUILTIN_KMOD,
-#endif
         UDEV_BUILTIN_NET_ID,
         UDEV_BUILTIN_NET_LINK,
         UDEV_BUILTIN_PATH_ID,
@@ -177,9 +174,6 @@ extern const struct udev_builtin udev_builtin_btrfs;
 extern const struct udev_builtin udev_builtin_hwdb;
 extern const struct udev_builtin udev_builtin_input_id;
 extern const struct udev_builtin udev_builtin_keyboard;
-#ifdef HAVE_KMOD
-extern const struct udev_builtin udev_builtin_kmod;
-#endif
 extern const struct udev_builtin udev_builtin_net_id;
 extern const struct udev_builtin udev_builtin_net_setup_link;
 extern const struct udev_builtin udev_builtin_path_id;

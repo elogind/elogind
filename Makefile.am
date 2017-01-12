@@ -775,7 +775,6 @@ substitutions = \
        '|SULOGIN=$(SULOGIN)|' \
        '|DEBUGTTY=$(DEBUGTTY)|' \
        '|KILL=$(KILL)|' \
-       '|KMOD=$(KMOD)|' \
        '|MKDIR_P=$(MKDIR_P)|' \
        '|QUOTAON=$(QUOTAON)|' \
        '|RC_LOCAL_SCRIPT_PATH_START=$(RC_LOCAL_SCRIPT_PATH_START)|' \
