@@ -368,9 +368,7 @@ libbasic_la_SOURCES = \
 
 nodist_libbasic_la_SOURCES = \
 	src/basic/errno-from-name.h \
-	src/basic/errno-to-name.h \
-	src/basic/cap-from-name.h \
-	src/basic/cap-to-name.h
+	src/basic/errno-to-name.h
 
 libbasic_la_CFLAGS = \
 	$(AM_CFLAGS) \
@@ -402,6 +400,7 @@ libshared_la_SOURCES = \
 	src/shared/clean-ipc.h \
 	src/shared/cgroup-show.c \
 	src/shared/cgroup-show.h \
+	src/shared/utmp-wtmp.h \
 	src/shared/bus-util.c \
 	src/shared/bus-util.h
 
@@ -425,10 +424,7 @@ libshared_la_LIBADD = \
 	$(SECCOMP_LIBS)
 
 gperf_txt_sources = \
-	src/basic/errno-list.txt \
-	src/basic/af-list.txt \
-	src/basic/arphrd-list.txt \
-	src/basic/cap-list.txt
+	src/basic/errno-list.txt
 
 BUILT_SOURCES += \
 	$(gperf_gperf_m4_sources:-gperf.gperf.m4=-gperf.c) \
@@ -465,44 +461,6 @@ src/basic/errno-to-name.h: src/basic/errno-list.txt
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
 	$(AM_V_GEN)$(AWK) 'BEGIN{ print "static const char* const errno_names[] = { "} !/EDEADLOCK/ && !/EWOULDBLOCK/ && !/ENOTSUP/ { printf "[%s] = \"%s\",\n", $$1, $$1 } END{print "};"}' <$< >$@
 
-
-src/basic/af-list.txt:
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(CPP) $(CFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS) -dM -include sys/socket.h - </dev/null | grep -v AF_UNSPEC | grep -v AF_MAX | $(AWK) '/^#define[ \t]+AF_[^ \t]+[ \t]+PF_[^ \t]/ { print $$2; }' >$@
-
-src/basic/af-to-name.h: src/basic/af-list.txt
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(AWK) 'BEGIN{ print "static const char* const af_names[] = { "} !/AF_FILE/ && !/AF_ROUTE/ && !/AF_LOCAL/ { printf "[%s] = \"%s\",\n", $$1, $$1 } END{print "};"}' <$< >$@
-
-
-src/basic/arphrd-list.txt:
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(CPP) $(CFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS) -dM -include net/if_arp.h - </dev/null | $(AWK) '/^#define[ \t]+ARPHRD_[^ \t]+[ \t]+[^ \t]/ { print $$2; }' | sed -e 's/ARPHRD_//' >$@
-
-src/basic/arphrd-to-name.h: src/basic/arphrd-list.txt
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(AWK) 'BEGIN{ print "static const char* const arphrd_names[] = { "} !/CISCO/ { printf "[ARPHRD_%s] = \"%s\",\n", $$1, $$1 } END{print "};"}' <$< >$@
-
-src/basic/arphrd-from-name.gperf: src/basic/arphrd-list.txt
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(AWK) 'BEGIN{ print "struct arphrd_name { const char* name; int id; };"; print "%null-strings"; print "%%";} { printf "%s, ARPHRD_%s\n", $$1, $$1 }' <$< >$@
-
-
-src/basic/cap-list.txt:
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(CPP) $(CFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS) -dM -include linux/capability.h -include missing.h - </dev/null | $(AWK) '/^#define[ \t]+CAP_[A-Z_]+[ \t]+/ { print $$2; }' | grep -v CAP_LAST_CAP >$@
-
-src/basic/cap-to-name.h: src/basic/cap-list.txt
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(AWK) 'BEGIN{ print "static const char* const capability_names[] = { "} { printf "[%s] = \"%s\",\n", $$1, tolower($$1) } END{print "};"}' <$< >$@
-
-src/basic/cap-from-name.gperf: src/basic/cap-list.txt
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GEN)$(AWK) 'BEGIN{ print "struct capability_name { const char* name; int id; };"; print "%null-strings"; print "%%";} { printf "%s, %s\n", $$1, $$1 }' <$< >$@
-
-src/basic/cap-from-name.h: src/basic/cap-from-name.gperf
-	$(AM_V_at)$(MKDIR_P) $(dir $@)
-	$(AM_V_GPERF)$(GPERF) -L ANSI-C -t --ignore-case -N lookup_capability -H hash_capability_name -p -C <$< >$@
 
 # ------------------------------------------------------------------------------
 
