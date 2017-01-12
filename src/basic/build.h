@@ -57,12 +57,6 @@
 #define _SMACK_FEATURE_ "-SMACK"
 #endif
 
-#ifdef HAVE_SYSV_COMPAT
-#define _SYSVINIT_FEATURE_ "+SYSVINIT"
-#else
-#define _SYSVINIT_FEATURE_ "-SYSVINIT"
-#endif
-
 #ifdef HAVE_LIBCRYPTSETUP
 #define _LIBCRYPTSETUP_FEATURE_ "+LIBCRYPTSETUP"
 #else
@@ -136,7 +130,6 @@
         _IMA_FEATURE_ " "                                               \
         _APPARMOR_FEATURE_ " "                                          \
         _SMACK_FEATURE_ " "                                             \
-        _SYSVINIT_FEATURE_ " "                                          \
         _LIBCRYPTSETUP_FEATURE_ " "                                     \
         _GCRYPT_FEATURE_ " "                                            \
         _GNUTLS_FEATURE_ " "                                            \

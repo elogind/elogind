@@ -939,10 +939,6 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-rootprefix=$$dc_install_base \
 	--enable-compat-libs
 
-DISTCHECK_CONFIGURE_FLAGS += \
-	--with-sysvinit-path= \
-	--with-sysvrcnd-path=
-
 if ENABLE_SPLIT_USR
 DISTCHECK_CONFIGURE_FLAGS += \
 	--enable-split-usr
