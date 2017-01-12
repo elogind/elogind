@@ -295,3 +295,4 @@ elogind_patches.lst
 /patches/
 /elogind.cbp
 /elogind.layout*
+*.bak
