@@ -163,7 +163,7 @@ int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_
 int manager_dispatch_delayed(Manager *manager);
 
 /* gperf lookup function */
-const struct ConfigPerfItem* logind_gperf_lookup(const char *key, unsigned length);
+const struct ConfigPerfItem* logind_gperf_lookup(const char *key, size_t length);
 
 int manager_watch_busname(Manager *manager, const char *name);
 void manager_drop_busname(Manager *manager, const char *name);
