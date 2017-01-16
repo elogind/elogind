@@ -409,14 +409,12 @@ endif
 libshared_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(ACL_CFLAGS) \
-	$(LIBIDN_CFLAGS) \
 	$(SECCOMP_CFLAGS)
 
 libshared_la_LIBADD = \
 	libelogind-internal.la \
 	$(UDEV_LIBS) \
 	$(ACL_LIBS) \
-	$(LIBIDN_LIBS) \
 	$(SECCOMP_LIBS)
 
 gperf_txt_sources = \

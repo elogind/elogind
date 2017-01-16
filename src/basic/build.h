@@ -63,12 +63,6 @@
 #define _BLKID_FEATURE_ "-BLKID"
 #endif
 
-#ifdef HAVE_LIBIDN
-#define _IDN_FEATURE_ "+IDN"
-#else
-#define _IDN_FEATURE_ "-IDN"
-#endif
-
 #define SYSTEMD_FEATURES                                                \
         _PAM_FEATURE_ " "                                               \
         _SELINUX_FEATURE_ " "                                           \
@@ -76,5 +70,4 @@
         _SMACK_FEATURE_ " "                                             \
         _ACL_FEATURE_ " "                                               \
         _SECCOMP_FEATURE_ " "                                           \
-        _BLKID_FEATURE_ " "                                             \
-        _IDN_FEATURE_
+        _BLKID_FEATURE_ " "
