@@ -909,8 +909,7 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-zshcompletiondir=$$dc_install_base/$(zshcompletiondir) \
 	--with-pamlibdir=$$dc_install_base/$(pamlibdir) \
 	--with-pamconfdir=$$dc_install_base/$(pamconfdir) \
-	--with-rootprefix=$$dc_install_base \
-	--enable-compat-libs
+	--with-rootprefix=$$dc_install_base
 
 if ENABLE_SPLIT_USR
 DISTCHECK_CONFIGURE_FLAGS += \
@@ -920,8 +919,7 @@ DISTCHECK_CONFIGURE_FLAGS += \
 	--disable-split-usr
 endif
 
-.PHONY: dist-check-compat-libs dist-check-help
-dist-check-compat-libs:
+.PHONY: dist-check-help
 
 dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
 	for i in $(abspath $^); do                                             \
@@ -931,7 +929,7 @@ dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
 	        exit 1;                                                        \
             fi; done
 
-dist: dist-check-compat-libs
+dist:
 
 .PHONY: git-tag
 git-tag:
