@@ -34,6 +34,7 @@
 #include "udev-util.h"
 #include "formats-util.h"
 #include "label.h"
+#include "label.h"
 
 static void manager_free(Manager *m);
 

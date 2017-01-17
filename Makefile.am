@@ -131,8 +131,6 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/login \
 	-I $(top_srcdir)/src/systemd \
 	-I $(top_builddir)/src/core \
-	-I $(top_srcdir)/src/libudev \
-	-I $(top_srcdir)/src/udev \
 	-I $(top_srcdir)/src/core \
 	-I $(top_srcdir)/src/libelogind/sd-bus \
 	-I $(top_srcdir)/src/libelogind/sd-event \
