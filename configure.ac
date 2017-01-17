@@ -350,16 +350,6 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
 # This makes sure pkg.m4 is available.
 m4_pattern_forbid([^_?PKG_[A-Z_]+$],[*** pkg.m4 missing, please install pkg-config])
 
-# ------------------------------------------------------------------------------
-have_dbus=no
-AC_ARG_ENABLE(dbus, AS_HELP_STRING([--disable-dbus], [disable usage of dbus-1 in tests]))
-AS_IF([test "x$enable_dbus" != "xno"], [
-        PKG_CHECK_MODULES(DBUS, [dbus-1 >= 1.3.2],
-                [AC_DEFINE(HAVE_DBUS, 1, [Define if dbus-1 library is available]) have_dbus=yes],
-                [have_dbus=no])
-        AS_IF([test "x$have_dbus" = "xno" -a "x$enable_dbus" = "xyes"],
-                [AC_MSG_ERROR([*** dbus-1 support requested but libraries not found])])])
-AM_CONDITIONAL(HAVE_DBUS, [test "$have_dbus" = "yes"])
 
 # ------------------------------------------------------------------------------
 PKG_CHECK_MODULES(UDEV, [libudev])
@@ -769,7 +759,6 @@ AC_MSG_RESULT([
         ACL:                     ${have_acl}
         polkit:                  ${have_polkit}
         blkid:                   ${have_blkid}
-        dbus:                    ${have_dbus}
         kdbus:                   ${have_kdbus}
         Python:                  ${have_python}
         man pages:               ${have_manpages}
