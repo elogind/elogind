@@ -406,14 +406,12 @@ endif
 
 libshared_la_CFLAGS = \
 	$(AM_CFLAGS) \
-	$(ACL_CFLAGS) \
-	$(SECCOMP_CFLAGS)
+	$(ACL_CFLAGS)
 
 libshared_la_LIBADD = \
 	libelogind-internal.la \
 	$(UDEV_LIBS) \
-	$(ACL_LIBS) \
-	$(SECCOMP_LIBS)
+	$(ACL_LIBS)
 
 gperf_txt_sources = \
 	src/basic/errno-list.txt

@@ -390,33 +390,6 @@ fi
 AM_CONDITIONAL(ENABLE_COVERAGE, [test "$have_coverage" = "yes"])
 
 # ------------------------------------------------------------------------------
-have_blkid=no
-AC_ARG_ENABLE(blkid, AS_HELP_STRING([--disable-blkid], [disable blkid support]))
-if test "x$enable_blkid" != "xno"; then
-        PKG_CHECK_MODULES(BLKID, [ blkid >= 2.24 ],
-                [AC_DEFINE(HAVE_BLKID, 1, [Define if blkid is available]) have_blkid=yes], have_blkid=no)
-        if test "x$have_blkid" = xno -a "x$enable_blkid" = xyes; then
-                AC_MSG_ERROR([*** blkid support requested but libraries not found])
-        fi
-fi
-AM_CONDITIONAL(HAVE_BLKID, [test "$have_blkid" = "yes"])
-
-# ------------------------------------------------------------------------------
-have_seccomp=no
-AC_ARG_ENABLE(seccomp, AS_HELP_STRING([--disable-seccomp], [Disable optional SECCOMP support]))
-if test "x$enable_seccomp" != "xno"; then
-        PKG_CHECK_MODULES(SECCOMP, [libseccomp >= 1.0.0],
-               [AC_DEFINE(HAVE_SECCOMP, 1, [Define if seccomp is available])
-                have_seccomp=yes
-                M4_DEFINES="$M4_DEFINES -DHAVE_SECCOMP"],
-               [have_seccomp=no])
-        if test "x$have_seccomp" = "xno" -a "x$enable_seccomp" = "xyes"; then
-                AC_MSG_ERROR([*** seccomp support requested but libraries not found])
-        fi
-fi
-AM_CONDITIONAL(HAVE_SECCOMP, [test "$have_seccomp" = "yes"])
-
-# ------------------------------------------------------------------------------
 have_selinux=no
 AC_ARG_ENABLE(selinux, AS_HELP_STRING([--disable-selinux], [Disable optional SELINUX support]))
 if test "x$enable_selinux" != "xno"; then
@@ -430,20 +403,6 @@ if test "x$enable_selinux" != "xno"; then
         fi
 fi
 AM_CONDITIONAL(HAVE_SELINUX, [test "$have_selinux" = "yes"])
-
-have_apparmor=no
-AC_ARG_ENABLE(apparmor, AS_HELP_STRING([--disable-apparmor], [Disable optional AppArmor support]))
-if test "x$enable_apparmor" != "xno"; then
-        PKG_CHECK_MODULES([APPARMOR], [libapparmor],
-                [AC_DEFINE(HAVE_APPARMOR, 1, [Define if AppArmor is available])
-                 have_apparmor=yes
-                 M4_DEFINES="$M4_DEFINES -DHAVE_APPARMOR"],
-                [have_apparmor=no])
-        if test "x$have_apparmor" = xno -a "x$enable_apparmor" = xyes; then
-                AC_MSG_ERROR([*** AppArmor support requested but libraries not found])
-        fi
-fi
-AM_CONDITIONAL(HAVE_APPARMOR, [test "$have_apparmor" = "yes"])
 
 # ------------------------------------------------------------------------------
 AC_ARG_ENABLE([pam],
@@ -554,15 +513,6 @@ if test "x${have_smack}" = xyes ; then
 fi
 
 AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
-
-# ------------------------------------------------------------------------------
-have_logind=yes
-#AC_ARG_ENABLE(logind, AS_HELP_STRING([--disable-logind], [disable login daemon]))
-#if test "x$enable_logind" != "xno"; then
-#        have_logind=yes
-#fi
-AM_CONDITIONAL(ENABLE_LOGIND, [test "$have_logind" = "yes"])
-AS_IF([test "$have_logind" = "yes"], [ AC_DEFINE(HAVE_LOGIND, [1], [Logind support available]) ])
 
 # ------------------------------------------------------------------------------
 AC_ARG_WITH(system-uid-max,
@@ -752,13 +702,10 @@ AC_MSG_RESULT([
         $PACKAGE_NAME $VERSION
 
         PAM:                     ${have_pam}
-        AppArmor:                ${have_apparmor}
         SELinux:                 ${have_selinux}
-        SECCOMP:                 ${have_seccomp}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
         polkit:                  ${have_polkit}
-        blkid:                   ${have_blkid}
         kdbus:                   ${have_kdbus}
         Python:                  ${have_python}
         man pages:               ${have_manpages}

@@ -21,8 +21,7 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="loginctl" conditional='ENABLE_LOGIND'
-    xmlns:xi="http://www.w3.org/2001/XInclude">
+<refentry id="loginctl" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <refentryinfo>
     <title>loginctl</title>

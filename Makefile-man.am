@@ -16,7 +16,9 @@ MANPAGES += \
 	man/sd_is_fifo.3 \
 	man/sd_machine_get_class.3 \
 	man/sd_notify.3 \
-	man/sd_watchdog_enabled.3
+	man/sd_watchdog_enabled.3 \
+	man/elogind.conf.5 \
+	man/loginctl.1
 MANPAGES_ALIAS += \
 	man/SD_BUS_ERROR_ACCESS_DENIED.3 \
 	man/SD_BUS_ERROR_ADDRESS_IN_USE.3 \
@@ -243,16 +245,6 @@ man/sd_pid_notify_with_fds.html: man/sd_notify.html
 man/sd_pid_notifyf.html: man/sd_notify.html
 	$(html-alias)
 
-
-if ENABLE_LOGIND
-MANPAGES += \
-	man/elogind.conf.5 \
-	man/loginctl.1
-MANPAGES_ALIAS += \
-	#
-
-
-endif
 
 if HAVE_PAM
 MANPAGES += \

@@ -33,12 +33,6 @@
 #define _SELINUX_FEATURE_ "-SELINUX"
 #endif
 
-#ifdef HAVE_APPARMOR
-#define _APPARMOR_FEATURE_ "+APPARMOR"
-#else
-#define _APPARMOR_FEATURE_ "-APPARMOR"
-#endif
-
 #ifdef HAVE_SMACK
 #define _SMACK_FEATURE_ "+SMACK"
 #else
@@ -51,23 +45,8 @@
 #define _ACL_FEATURE_ "-ACL"
 #endif
 
-#ifdef HAVE_SECCOMP
-#define _SECCOMP_FEATURE_ "+SECCOMP"
-#else
-#define _SECCOMP_FEATURE_ "-SECCOMP"
-#endif
-
-#ifdef HAVE_BLKID
-#define _BLKID_FEATURE_ "+BLKID"
-#else
-#define _BLKID_FEATURE_ "-BLKID"
-#endif
-
 #define SYSTEMD_FEATURES                                                \
         _PAM_FEATURE_ " "                                               \
         _SELINUX_FEATURE_ " "                                           \
-        _APPARMOR_FEATURE_ " "                                          \
         _SMACK_FEATURE_ " "                                             \
-        _ACL_FEATURE_ " "                                               \
-        _SECCOMP_FEATURE_ " "                                           \
-        _BLKID_FEATURE_ " "
+        _ACL_FEATURE_ " "
