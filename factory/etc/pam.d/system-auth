@@ -1,4 +1,4 @@
-# This file is part of systemd.
+# This file is part of elogind.
 
 auth     sufficient pam_unix.so nullok try_first_pass
 
