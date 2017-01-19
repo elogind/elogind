@@ -558,13 +558,11 @@ pkgconfiglib_DATA += \
 	src/libelogind/libelogind.pc
 
 pkginclude_HEADERS += \
-	src/systemd/sd-bus.h \
-	src/systemd/sd-bus-protocol.h \
-	src/systemd/sd-bus-vtable.h \
-	src/systemd/sd-event.h \
 	src/systemd/sd-login.h \
+	src/systemd/sd-messages.h \
 	src/systemd/sd-id128.h \
-	src/systemd/sd-daemon.h
+	src/systemd/_sd-common.h
+
 
 lib_LTLIBRARIES += \
 	libelogind.la
