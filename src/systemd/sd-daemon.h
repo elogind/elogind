@@ -154,7 +154,7 @@ int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t 
 
   See sd_is_mq(3) for more information.
 */
-int sd_is_mq(int fd, const char *path);
+/// UNNEEDED int sd_is_mq(int fd, const char *path);
 
 /*
   Informs systemd about changed daemon state. This takes a number of

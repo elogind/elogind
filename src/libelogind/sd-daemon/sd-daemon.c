@@ -307,6 +307,8 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_is_mq(int fd, const char *path) {
         struct mq_attr attr;
 
@@ -337,6 +339,7 @@ _public_ int sd_is_mq(int fd, const char *path) {
 
         return 1;
 }
+#endif // 0
 
 _public_ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, const int *fds, unsigned n_fds) {
         union sockaddr_union sockaddr = {

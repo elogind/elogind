@@ -66,7 +66,7 @@ global:
         /* sd-daemon */
         sd_booted;
         sd_is_fifo;
-        sd_is_mq;
+        /* sd_is_mq; */
         sd_is_socket;
         sd_is_socket_inet;
         sd_is_socket_unix;
