@@ -8,51 +8,16 @@
 # attribute conditional="ENABLE_WHAT" or conditional="WITH_WHAT"
 # to <refentry> element.
 MANPAGES += \
-	man/sd-bus-errors.3 \
-	man/sd_bus_error_add_map.3 \
+	man/elogind.conf.5 \
+	man/loginctl.1 \
 	man/sd_id128_get_machine.3 \
 	man/sd_id128_randomize.3 \
 	man/sd_id128_to_string.3 \
 	man/sd_is_fifo.3 \
 	man/sd_machine_get_class.3 \
 	man/sd_notify.3 \
-	man/sd_watchdog_enabled.3 \
-	man/elogind.conf.5 \
-	man/loginctl.1
+	man/sd_watchdog_enabled.3
 MANPAGES_ALIAS += \
-	man/SD_BUS_ERROR_ACCESS_DENIED.3 \
-	man/SD_BUS_ERROR_ADDRESS_IN_USE.3 \
-	man/SD_BUS_ERROR_AUTH_FAILED.3 \
-	man/SD_BUS_ERROR_BAD_ADDRESS.3 \
-	man/SD_BUS_ERROR_DISCONNECTED.3 \
-	man/SD_BUS_ERROR_END.3 \
-	man/SD_BUS_ERROR_FAILED.3 \
-	man/SD_BUS_ERROR_FILE_EXISTS.3 \
-	man/SD_BUS_ERROR_FILE_NOT_FOUND.3 \
-	man/SD_BUS_ERROR_INCONSISTENT_MESSAGE.3 \
-	man/SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED.3 \
-	man/SD_BUS_ERROR_INVALID_ARGS.3 \
-	man/SD_BUS_ERROR_INVALID_SIGNATURE.3 \
-	man/SD_BUS_ERROR_IO_ERROR.3 \
-	man/SD_BUS_ERROR_LIMITS_EXCEEDED.3 \
-	man/SD_BUS_ERROR_MAP.3 \
-	man/SD_BUS_ERROR_MATCH_RULE_INVALID.3 \
-	man/SD_BUS_ERROR_MATCH_RULE_NOT_FOUND.3 \
-	man/SD_BUS_ERROR_NAME_HAS_NO_OWNER.3 \
-	man/SD_BUS_ERROR_NOT_SUPPORTED.3 \
-	man/SD_BUS_ERROR_NO_MEMORY.3 \
-	man/SD_BUS_ERROR_NO_NETWORK.3 \
-	man/SD_BUS_ERROR_NO_REPLY.3 \
-	man/SD_BUS_ERROR_NO_SERVER.3 \
-	man/SD_BUS_ERROR_PROPERTY_READ_ONLY.3 \
-	man/SD_BUS_ERROR_SERVICE_UNKNOWN.3 \
-	man/SD_BUS_ERROR_TIMEOUT.3 \
-	man/SD_BUS_ERROR_UNIX_PROCESS_ID_UNKNOWN.3 \
-	man/SD_BUS_ERROR_UNKNOWN_INTERFACE.3 \
-	man/SD_BUS_ERROR_UNKNOWN_METHOD.3 \
-	man/SD_BUS_ERROR_UNKNOWN_OBJECT.3 \
-	man/SD_BUS_ERROR_UNKNOWN_PROPERTY.3 \
-	man/sd_bus_error_map.3 \
 	man/sd_id128_from_string.3 \
 	man/sd_id128_get_boot.3 \
 	man/sd_is_mq.3 \
@@ -65,39 +30,6 @@ MANPAGES_ALIAS += \
 	man/sd_pid_notify.3 \
 	man/sd_pid_notify_with_fds.3 \
 	man/sd_pid_notifyf.3
-man/SD_BUS_ERROR_ACCESS_DENIED.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_ADDRESS_IN_USE.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_AUTH_FAILED.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_BAD_ADDRESS.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_DISCONNECTED.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_END.3: man/sd_bus_error_add_map.3
-man/SD_BUS_ERROR_FAILED.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_FILE_EXISTS.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_FILE_NOT_FOUND.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_INCONSISTENT_MESSAGE.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_INVALID_ARGS.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_INVALID_SIGNATURE.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_IO_ERROR.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_LIMITS_EXCEEDED.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_MAP.3: man/sd_bus_error_add_map.3
-man/SD_BUS_ERROR_MATCH_RULE_INVALID.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_MATCH_RULE_NOT_FOUND.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_NAME_HAS_NO_OWNER.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_NOT_SUPPORTED.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_NO_MEMORY.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_NO_NETWORK.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_NO_REPLY.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_NO_SERVER.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_PROPERTY_READ_ONLY.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_SERVICE_UNKNOWN.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_TIMEOUT.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_UNIX_PROCESS_ID_UNKNOWN.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_UNKNOWN_INTERFACE.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_UNKNOWN_METHOD.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_UNKNOWN_OBJECT.3: man/sd-bus-errors.3
-man/SD_BUS_ERROR_UNKNOWN_PROPERTY.3: man/sd-bus-errors.3
-man/sd_bus_error_map.3: man/sd_bus_error_add_map.3
 man/sd_id128_from_string.3: man/sd_id128_to_string.3
 man/sd_id128_get_boot.3: man/sd_id128_get_machine.3
 man/sd_is_mq.3: man/sd_is_fifo.3
@@ -110,105 +42,6 @@ man/sd_notifyf.3: man/sd_notify.3
 man/sd_pid_notify.3: man/sd_notify.3
 man/sd_pid_notify_with_fds.3: man/sd_notify.3
 man/sd_pid_notifyf.3: man/sd_notify.3
-man/SD_BUS_ERROR_ACCESS_DENIED.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_ADDRESS_IN_USE.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_AUTH_FAILED.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_BAD_ADDRESS.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_DISCONNECTED.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_END.html: man/sd_bus_error_add_map.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_FAILED.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_FILE_EXISTS.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_FILE_NOT_FOUND.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_INCONSISTENT_MESSAGE.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_INVALID_ARGS.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_INVALID_SIGNATURE.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_IO_ERROR.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_LIMITS_EXCEEDED.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_MAP.html: man/sd_bus_error_add_map.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_MATCH_RULE_INVALID.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_MATCH_RULE_NOT_FOUND.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_NAME_HAS_NO_OWNER.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_NOT_SUPPORTED.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_NO_MEMORY.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_NO_NETWORK.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_NO_REPLY.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_NO_SERVER.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_PROPERTY_READ_ONLY.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_SERVICE_UNKNOWN.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_TIMEOUT.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_UNIX_PROCESS_ID_UNKNOWN.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_UNKNOWN_INTERFACE.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_UNKNOWN_METHOD.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_UNKNOWN_OBJECT.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/SD_BUS_ERROR_UNKNOWN_PROPERTY.html: man/sd-bus-errors.html
-	$(html-alias)
-
-man/sd_bus_error_map.html: man/sd_bus_error_add_map.html
-	$(html-alias)
-
 man/sd_id128_from_string.html: man/sd_id128_to_string.html
 	$(html-alias)
 
@@ -363,8 +196,6 @@ EXTRA_DIST += \
 	man/libelogind-pkgconfig.xml \
 	man/loginctl.xml \
 	man/pam_elogind.xml \
-	man/sd-bus-errors.xml \
-	man/sd_bus_error_add_map.xml \
 	man/sd_get_seats.xml \
 	man/sd_id128_get_machine.xml \
 	man/sd_id128_randomize.xml \
