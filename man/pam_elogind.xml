@@ -56,7 +56,7 @@
 
     <para><command>pam_elogind</command> registers user sessions with
     the elogind login manager
-    <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+    <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
     and hence the elogind control group hierarchy.</para>
 
     <para>On login, this module ensures the following:</para>
@@ -88,7 +88,7 @@
 
     <orderedlist>
       <listitem><para>If enabled in
-      <citerefentry><refentrytitle>elogind.conf</refentrytitle>
+      <citerefentry><refentrytitle>logind.conf</refentrytitle>
       <manvolnum>5</manvolnum></citerefentry>, all processes of the
       session are terminated. If the last concurrent session of a user
       ends, the user's elogind instance will be terminated too, and so
@@ -280,8 +280,8 @@ session    required     pam_elogind.so</programlisting>
     <title>See Also</title>
     <para>
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
@@ -289,7 +289,7 @@ session    required     pam_elogind.so</programlisting>
       <citerefentry project='man-pages'><refentrytitle>pam_loginuid</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     </para>
   </refsect1>
 

@@ -21,9 +21,9 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="elogind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
+<refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
-    <title>elogind.conf</title>
+    <title>logind.conf</title>
     <productname>elogind</productname>
 
     <authorgroup>
@@ -37,17 +37,17 @@
   </refentryinfo>
 
   <refmeta>
-    <refentrytitle>elogind.conf</refentrytitle>
+    <refentrytitle>logind.conf</refentrytitle>
     <manvolnum>5</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>elogind.conf</refname>
+    <refname>logind.conf</refname>
     <refpurpose>Login manager configuration files</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
-    <para><filename>/etc/elogind/elogind.conf</filename></para>
+    <para><filename>/etc/elogind/logind.conf</filename></para>
   </refsynopsisdiv>
 
   <refsect1>
@@ -55,7 +55,7 @@
 
     <para>These files configure various parameters of the elogind
     login manager,
-    <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     </para>
   </refsect1>
 
@@ -296,7 +296,7 @@
       <title>See Also</title>
       <para>
         <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-        <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+        <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
         <citerefentry><refentrytitle>elogind-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       </para>

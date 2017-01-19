@@ -276,7 +276,7 @@ endif
 endif
 
 EXTRA_DIST += \
-	$(filter-out man/systemd.directives.xml,$(XML_FILES)) \
+	$(filter-out man/elogind.directives.xml,$(XML_FILES)) \
 	$(HTML_FILES) \
 	$(HTML_ALIAS) \
 	$(man_MANS) \

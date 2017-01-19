@@ -194,7 +194,7 @@
         watchdog timestamp. This is the keep-alive ping that services
         need to issue in regular intervals if
         <varname>WatchdogSec=</varname> is enabled for it. See
-        <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for information how to enable this functionality and
         <citerefentry><refentrytitle>sd_watchdog_enabled</refentrytitle><manvolnum>3</manvolnum></citerefentry>
         for the details of how the service can check whether the
@@ -219,7 +219,7 @@
         manager will accept messages for a service only if
         <varname>FileDescriptorStoreMax=</varname> is set to non-zero
         for it (defaults to zero). See
-        <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for details. Multiple arrays of file descriptors may be sent
         in separate messages, in which case the arrays are combined.
         Note that the service manager removes duplicate file
@@ -238,7 +238,7 @@
     <para>Note that elogind will accept status data sent from a
     service only if the <varname>NotifyAccess=</varname> option is
     correctly set in the service definition file. See
-    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for details.</para>
 
     <para><function>sd_notifyf()</function> is similar to
@@ -368,7 +368,7 @@
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_watchdog_enabled</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     </para>
   </refsect1>

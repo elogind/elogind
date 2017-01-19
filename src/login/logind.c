@@ -1150,7 +1150,7 @@ int main(int argc, char *argv[]) {
                 goto finish;
         }
 
-        log_debug("systemd-logind running as pid "PID_FMT, getpid());
+        log_debug("logind running as pid "PID_FMT, getpid());
 
         sd_notify(false,
                   "READY=1\n"
@@ -1158,7 +1158,7 @@ int main(int argc, char *argv[]) {
 
         r = manager_run(m);
 
-        log_debug("systemd-logind stopped as pid "PID_FMT, getpid());
+        log_debug("logind stopped as pid "PID_FMT, getpid());
 
 finish:
         sd_notify(false,

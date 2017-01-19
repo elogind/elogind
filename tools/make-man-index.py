@@ -1,22 +1,22 @@
 #  -*- Mode: python; coding: utf-8; indent-tabs-mode: nil -*- */
 #
-#  This file is part of systemd.
+#  This file is part of elogind.
 #
 #  Copyright 2012 Lennart Poettering
 #  Copyright 2013 Zbigniew Jędrzejewski-Szmek
 #
-#  systemd is free software; you can redistribute it and/or modify it
+#  elogind is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 2.1 of the License, or
 #  (at your option) any later version.
 #
-#  systemd is distributed in the hope that it will be useful, but
+#  elogind is distributed in the hope that it will be useful, but
 #  WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  Lesser General Public License for more details.
 #
 #  You should have received a copy of the GNU Lesser General Public License
-#  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+#  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 import collections
 import sys
@@ -26,11 +26,11 @@ from xml_helper import *
 MDASH = ' — ' if sys.version_info.major >= 3 else ' -- '
 
 TEMPLATE = '''\
-<refentry id="systemd.index" conditional="HAVE_PYTHON">
+<refentry id="elogind.index" conditional="HAVE_PYTHON">
 
   <refentryinfo>
-    <title>systemd.index</title>
-    <productname>systemd</productname>
+    <title>elogind.index</title>
+    <productname>elogind</productname>
 
     <authorgroup>
       <author>
@@ -43,13 +43,13 @@ TEMPLATE = '''\
   </refentryinfo>
 
   <refmeta>
-    <refentrytitle>systemd.index</refentrytitle>
+    <refentrytitle>elogind.index</refentrytitle>
     <manvolnum>7</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>systemd.index</refname>
-    <refpurpose>List all manpages from the systemd project</refpurpose>
+    <refname>elogind.index</refname>
+    <refpurpose>List all manpages from the elogind project</refpurpose>
   </refnamediv>
 </refentry>
 '''
@@ -58,7 +58,7 @@ SUMMARY = '''\
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
     </para>
 
     <para id='counts' />
