@@ -26,7 +26,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
-#include <mqueue.h>
+//#include <mqueue.h>
 
 #include "util.h"
 #include "formats-util.h"
@@ -277,6 +277,8 @@ static int clean_posix_shm(uid_t uid) {
         return clean_posix_shm_internal(dir, uid);
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int clean_posix_mq(uid_t uid) {
         _cleanup_closedir_ DIR *dir = NULL;
         struct dirent *de;
@@ -328,6 +330,7 @@ fail:
         log_warning_errno(errno, "Failed to read /dev/mqueue: %m");
         return -errno;
 }
+#endif // 0
 
 int clean_ipc(uid_t uid) {
         int ret = 0, r;
@@ -352,9 +355,12 @@ int clean_ipc(uid_t uid) {
         if (r < 0)
                 ret = r;
 
+/// elogind does not use mq_open anywhere
+#if 0
         r = clean_posix_mq(uid);
         if (r < 0)
                 ret = r;
+#endif // 0
 
         return ret;
 }

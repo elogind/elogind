@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <limits.h>
-#include <mqueue.h>
+//#include <mqueue.h>
 
 #include "util.h"
 #include "path-util.h"

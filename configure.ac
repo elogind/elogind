@@ -287,8 +287,8 @@ AC_CHECK_HEADERS([linux/btrfs.h], [], [])
 AC_CHECK_HEADERS([linux/memfd.h], [], [])
 
 # unconditionally pull-in librt with old glibc versions
-AC_SEARCH_LIBS([clock_gettime], [rt], [], [])
-AC_SEARCH_LIBS([mq_unlink], [rt], [], [])
+dnl AC_SEARCH_LIBS([clock_gettime], [rt], [], [])
+dnl AC_SEARCH_LIBS([mq_unlink], [rt], [], [])
 
 AC_ARG_WITH([libcap],
             AS_HELP_STRING([--with-libcap=DIR], [Prefix for libcap]),
