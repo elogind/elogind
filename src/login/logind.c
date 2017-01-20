@@ -626,7 +626,7 @@ static int manager_connect_bus(Manager *m) {
                              "path='/org/freedesktop/systemd1'",
                              match_job_removed, m);
         if (r < 0)
-                return log_error_errno(r, "Failed to add match for JobRemoved: %m");
+                log_warning_errno(r, "Failed to add match for JobRemoved: %m");
 
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -637,7 +637,7 @@ static int manager_connect_bus(Manager *m) {
                              "path='/org/freedesktop/systemd1'",
                              match_unit_removed, m);
         if (r < 0)
-                return log_error_errno(r, "Failed to add match for UnitRemoved: %m");
+                log_warning_errno(r, "Failed to add match for UnitRemoved: %m");
 
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -647,7 +647,7 @@ static int manager_connect_bus(Manager *m) {
                              "member='PropertiesChanged'",
                              match_properties_changed, m);
         if (r < 0)
-                return log_error_errno(r, "Failed to add match for PropertiesChanged: %m");
+                log_warning_errno(r, "Failed to add match for PropertiesChanged: %m");
 
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -658,8 +658,8 @@ static int manager_connect_bus(Manager *m) {
                              "path='/org/freedesktop/systemd1'",
                              match_reloading, m);
         if (r < 0)
-                return log_error_errno(r, "Failed to add match for Reloading: %m");
-#if 0
+                log_warning_errno(r, "Failed to add match for Reloading: %m");
+
         r = sd_bus_call_method(
                         m->bus,
                         "org.freedesktop.systemd1",
@@ -668,11 +668,9 @@ static int manager_connect_bus(Manager *m) {
                         "Subscribe",
                         &error,
                         NULL, NULL);
-        if (r < 0) {
-                log_error("Failed to enable subscription: %s", bus_error_message(&error, r));
-                return r;
-        }
-#endif // 0
+        if (r < 0)
+                log_notice("Failed to enable subscription: %s", bus_error_message(&error, r));
+
         r = sd_bus_request_name(m->bus, "org.freedesktop.login1", 0);
         if (r < 0)
                 return log_error_errno(r, "Failed to register name: %m");
