@@ -65,8 +65,6 @@ static inline const char* enable_disable(bool b) {
         return b ? "enable" : "disable";
 }
 
-void execute_directories(const char* const* directories, usec_t timeout, char *argv[]);
-
 #if 0 /// UNNEEDED by elogind
 bool plymouth_running(void);
 #endif // 0
