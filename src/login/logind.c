@@ -50,10 +50,14 @@ static Manager *manager_new(void) {
         m->pin_cgroupfs_fd = -1;
 
         m->console_active_fd = -1;
+
+/// elogind does not support autospawning of vts
+#if 0
         m->reserve_vt_fd = -1;
 
         m->n_autovts = 6;
         m->reserve_vt = 6;
+#endif // 0
         m->remove_ipc = true;
         m->inhibit_delay_max = 5 * USEC_PER_SEC;
         m->handle_power_key = HANDLE_POWEROFF;
@@ -180,7 +184,10 @@ static void manager_free(Manager *m) {
         sd_bus_unref(m->bus);
         sd_event_unref(m->event);
 
+/// elogind does not support autospawning of vts
+#if 0
         safe_close(m->reserve_vt_fd);
+#endif // 0
 
         manager_shutdown_cgroup(m, true);
 
@@ -521,6 +528,8 @@ static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t rev
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
         _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         Manager *m = userdata;
@@ -542,6 +551,7 @@ static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t reven
 
         return 0;
 }
+#endif // 0
 
 static int manager_dispatch_button_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
         _cleanup_udev_device_unref_ struct udev_device *d = NULL;
@@ -568,6 +578,8 @@ static int manager_dispatch_console(sd_event_source *s, int fd, uint32_t revents
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int manager_reserve_vt(Manager *m) {
         _cleanup_free_ char *p = NULL;
 
@@ -590,6 +602,7 @@ static int manager_reserve_vt(Manager *m) {
 
         return 0;
 }
+#endif // 0
 
 static int manager_connect_bus(Manager *m) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -871,6 +884,8 @@ static int manager_connect_udev(Manager *m) {
         }
 
         /* Don't bother watching VCSA devices, if nobody cares */
+/// elogind does not support autospawning of vts
+#if 0
         if (m->n_autovts > 0 && m->console_active_fd >= 0) {
 
                 m->udev_vcsa_monitor = udev_monitor_new_from_netlink(m->udev, "udev");
@@ -889,6 +904,7 @@ static int manager_connect_udev(Manager *m) {
                 if (r < 0)
                         return r;
         }
+#endif // 0
 
         return 0;
 }
@@ -1068,7 +1084,10 @@ static int manager_startup(Manager *m) {
         manager_gc(m, false);
 
         /* Reserve the special reserved VT */
+/// elogind does not support autospawning of vts
+#if 0
         manager_reserve_vt(m);
+#endif // 0
 
         /* And start everything */
         HASHMAP_FOREACH(seat, m->seats, i)

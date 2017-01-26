@@ -374,6 +374,8 @@ bool manager_shall_kill(Manager *m, const char *user) {
         return strv_contains(m->kill_only_users, user);
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int vt_is_busy(unsigned int vtnr) {
         struct vt_stat vt_stat;
         int r = 0;
@@ -438,6 +440,7 @@ int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
 
         return r;
 }
+#endif // 0
 
 bool manager_is_docked(Manager *m) {
         Iterator i;

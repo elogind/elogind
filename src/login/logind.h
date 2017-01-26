@@ -78,10 +78,13 @@ struct Manager {
 
         int console_active_fd;
 
+/// elogind does not support autospawning of vts
+#if 0
         unsigned n_autovts;
 
         unsigned reserve_vt;
         int reserve_vt_fd;
+#endif // 0
 
         Seat *seat0;
 
@@ -160,7 +163,7 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 int manager_process_seat_device(Manager *m, struct udev_device *d);
 int manager_process_button_device(Manager *m, struct udev_device *d);
 
-int manager_spawn_autovt(Manager *m, unsigned int vtnr);
+// UNNEEDED int manager_spawn_autovt(Manager *m, unsigned int vtnr);
 
 bool manager_shall_kill(Manager *m, const char *user);
 
