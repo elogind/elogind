@@ -127,6 +127,7 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src/basic \
 	-I $(top_srcdir)/src/basic \
+	-I $(top_srcdir)/src/core \
 	-I $(top_srcdir)/src/shared \
 	-I $(top_builddir)/src/shared \
 	-I $(top_srcdir)/src/login \
@@ -606,7 +607,9 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-seat-dbus.c \
 	src/login/logind-user-dbus.c \
 	src/login/logind-utmp.c \
-	src/login/logind-acl.h
+	src/login/logind-acl.h \
+	src/core/cgroup.h \
+	src/core/cgroup.c
 
 libelogind_core_la_LIBADD = \
 	libshared.la
