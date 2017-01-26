@@ -115,6 +115,7 @@ CLEANFILES = $(BUILT_SOURCES) \
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
+	-DELOGIND_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
 	-DROOTPREFIX=\"$(rootprefix)\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
@@ -455,6 +456,16 @@ dist_factory_pam_DATA = \
 	factory/etc/pam.d/system-auth \
 	factory/etc/pam.d/other
 endif
+
+# ------------------------------------------------------------------------------
+rootlibexec_PROGRAMS += \
+       elogind-cgroups-agent
+
+elogind_cgroups_agent_SOURCES = \
+       src/cgroups-agent/cgroups-agent.c
+
+elogind_cgroups_agent_LDADD = \
+       libshared.la
 
 # ------------------------------------------------------------------------------
 libelogind_internal_la_SOURCES = \
