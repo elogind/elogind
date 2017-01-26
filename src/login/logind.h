@@ -27,6 +27,8 @@
 #include "config.h"
 #include "sd-event.h"
 #include "sd-bus.h"
+#include "cgroup-util.h"
+#include "path-lookup.h"
 #include "list.h"
 #include "hashmap.h"
 #include "set.h"
@@ -61,6 +63,18 @@ struct Manager {
         sd_event_source *udev_device_event_source;
         sd_event_source *udev_vcsa_event_source;
         sd_event_source *udev_button_event_source;
+
+        /* Make sure the user cannot accidentally unmount our cgroup
+         * file system */
+        int pin_cgroupfs_fd;
+
+        /* Flags */
+        ManagerRunningAs running_as;
+        bool test_run:1;
+
+        /* Data specific to the cgroup subsystem */
+        CGroupMask cgroup_supported;
+        char *cgroup_root;
 
         int console_active_fd;
 

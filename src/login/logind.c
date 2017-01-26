@@ -35,6 +35,7 @@
 #include "formats-util.h"
 #include "label.h"
 #include "label.h"
+#include "cgroup.h"
 
 static void manager_free(Manager *m);
 
@@ -45,6 +46,8 @@ static Manager *manager_new(void) {
         m = new0(Manager, 1);
         if (!m)
                 return NULL;
+
+        m->pin_cgroupfs_fd = -1;
 
         m->console_active_fd = -1;
         m->reserve_vt_fd = -1;
@@ -77,11 +80,19 @@ static Manager *manager_new(void) {
         m->user_units = hashmap_new(&string_hash_ops);
         m->session_units = hashmap_new(&string_hash_ops);
 
+        m->running_as = MANAGER_SYSTEM;
+        m->test_run   = false;
+
         if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
                 goto fail;
 
         m->kill_exclude_users = strv_new("root", NULL);
         if (!m->kill_exclude_users)
+                goto fail;
+
+        /* Make cgroups */
+        r = manager_setup_cgroup(m);
+        if (r < 0)
                 goto fail;
 
         m->udev = udev_new();
@@ -170,6 +181,8 @@ static void manager_free(Manager *m) {
         sd_event_unref(m->event);
 
         safe_close(m->reserve_vt_fd);
+
+        manager_shutdown_cgroup(m, true);
 
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);

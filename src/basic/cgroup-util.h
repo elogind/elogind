@@ -94,16 +94,16 @@ int cg_rmdir(const char *controller, const char *path);
 int cg_create(const char *controller, const char *path);
 int cg_attach(const char *controller, const char *path, pid_t pid);
 int cg_attach_fallback(const char *controller, const char *path, pid_t pid);
-// UNNEEDED int cg_create_and_attach(const char *controller, const char *path, pid_t pid);
+int cg_create_and_attach(const char *controller, const char *path, pid_t pid);
 
-// UNNEEDED int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value);
+int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value);
 // UNNEEDED int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret);
 
 // UNNEEDED int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 // UNNEEDED int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 
-// UNNEEDED int cg_install_release_agent(const char *controller, const char *agent);
-// UNNEEDED int cg_uninstall_release_agent(const char *controller);
+int cg_install_release_agent(const char *controller, const char *agent);
+int cg_uninstall_release_agent(const char *controller);
 
 int cg_is_empty(const char *controller, const char *path);
 int cg_is_empty_recursive(const char *controller, const char *path);
@@ -147,7 +147,7 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
 // UNNEEDED int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
 // UNNEEDED int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p);
 
-// UNNEEDED int cg_mask_supported(CGroupMask *ret);
+int cg_mask_supported(CGroupMask *ret);
 
 // UNNEEDED int cg_kernel_controllers(Set *controllers);
 

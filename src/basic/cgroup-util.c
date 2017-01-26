@@ -668,8 +668,6 @@ int cg_create(const char *controller, const char *path) {
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int cg_create_and_attach(const char *controller, const char *path, pid_t pid) {
         int r, q;
 
@@ -686,7 +684,6 @@ int cg_create_and_attach(const char *controller, const char *path, pid_t pid) {
         /* This does not remove the cgroup on failure */
         return r;
 }
-#endif // 0
 
 int cg_attach(const char *controller, const char *path, pid_t pid) {
         _cleanup_free_ char *fs = NULL;
@@ -879,8 +876,6 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         return -ENODATA;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int cg_install_release_agent(const char *controller, const char *agent) {
         _cleanup_free_ char *fs = NULL, *contents = NULL;
         const char *sc;
@@ -965,7 +960,6 @@ int cg_uninstall_release_agent(const char *controller) {
 
         return 0;
 }
-#endif // 0
 
 int cg_is_empty(const char *controller, const char *path) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -1810,6 +1804,7 @@ int cg_slice_to_path(const char *unit, char **ret) {
 
         return 0;
 }
+#endif // 0
 
 int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value) {
         _cleanup_free_ char *p = NULL;
@@ -1822,6 +1817,8 @@ int cg_set_attribute(const char *controller, const char *path, const char *attri
         return write_string_file_no_create(p, value);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -1832,10 +1829,7 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 
         return read_one_line_file(p, ret);
 }
-#endif // 0
 
-/// UNNEEDED by elogind
-#if 0
 int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path) {
         CGroupController c;
         int r, unified;
@@ -1985,6 +1979,7 @@ int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root)
 
         return 0;
 }
+#endif // 0
 
 int cg_mask_supported(CGroupMask *ret) {
         CGroupMask mask = 0;
@@ -2058,6 +2053,8 @@ int cg_mask_supported(CGroupMask *ret) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_kernel_controllers(Set *controllers) {
         _cleanup_fclose_ FILE *f = NULL;
         char buf[LINE_MAX];
@@ -2131,9 +2128,18 @@ int cg_unified(void) {
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
                 return -errno;
 
+/// elogind can not support the unified hierarchy as a controller,
+/// so always assume a classical hierarchy.
+/// If, ond only *if*, someone really wants to substitute systemd-login
+/// in an environment managed by systemd with elogin, we might have to
+/// add such a support.
+#if 0
         if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC))
                 unified_cache = true;
         else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
+#else
+        if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
+#endif // elogind
                 unified_cache = false;
         else
                 return -ENOEXEC;
