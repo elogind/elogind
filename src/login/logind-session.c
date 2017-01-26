@@ -125,7 +125,10 @@ void session_free(Session *s) {
                 free(s->scope);
         }
 
+/// elogind does not support systemd scope_jobs
+#if 0
         free(s->scope_job);
+#endif // 0
 
         sd_bus_message_unref(s->create_message);
 
@@ -196,8 +199,11 @@ int session_save(Session *s) {
 
         if (s->scope)
                 fprintf(f, "SCOPE=%s\n", s->scope);
+/// elogind does not support systemd scope_jobs
+#if 0
         if (s->scope_job)
                 fprintf(f, "SCOPE_JOB=%s\n", s->scope_job);
+#endif // 0
 
         if (s->fifo_path)
                 fprintf(f, "FIFO=%s\n", s->fifo_path);
@@ -324,7 +330,10 @@ int session_load(Session *s) {
         r = parse_env_file(s->state_file, NEWLINE,
                            "REMOTE",         &remote,
                            "SCOPE",          &s->scope,
+/// elogind does not support systemd scope_jobs
+#if 0
                            "SCOPE_JOB",      &s->scope_job,
+#endif // 0
                            "FIFO",           &s->fifo_path,
                            "SEAT",           &seat,
                            "TTY",            &s->tty,
@@ -500,7 +509,7 @@ int session_activate(Session *s) {
 }
 
 static int session_start_scope(Session *s) {
-        int r;
+        int r = 0;
 
         assert(s);
         assert(s->user);
@@ -509,7 +518,7 @@ static int session_start_scope(Session *s) {
         if (!s->scope) {
                 _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
                 _cleanup_free_ char *description = NULL;
-                char *scope, *job = NULL;
+                char *scope = NULL; //, *job = NULL;
 
                 description = strjoin("Session ", s->id, " of user ", s->user->name, NULL);
                 if (!description)
@@ -519,7 +528,10 @@ static int session_start_scope(Session *s) {
                 if (!scope)
                         return log_oom();
 
+/// elogind : Do not try to use dbus to call systemd
+#if 0
                 r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "logind.service", "systemd-user-sessions.service", &error, &job);
+#endif // 0
                 if (r < 0) {
                         log_error("Failed to start session scope %s: %s %s",
                                   scope, bus_error_message(&error, r), error.name);
@@ -527,9 +539,11 @@ static int session_start_scope(Session *s) {
                         return r;
                 } else {
                         s->scope = scope;
-
+/// elogind does not support scope jobs
+#if 0
                         free(s->scope_job);
                         s->scope_job = job;
+#endif // 0
                 }
         }
 
@@ -596,6 +610,8 @@ int session_start(Session *s) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int session_stop_scope(Session *s, bool force) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         char *job = NULL;
@@ -625,9 +641,10 @@ static int session_stop_scope(Session *s, bool force) {
 
         return 0;
 }
+#endif // 0
 
 int session_stop(Session *s, bool force) {
-        int r;
+        int r = 0;
 
         assert(s);
 
@@ -643,7 +660,12 @@ int session_stop(Session *s, bool force) {
         session_remove_fifo(s);
 
         /* Kill cgroup */
+/// @todo : Currently elogind does not start scopes. It remains to be seen
+///         whether this is really not needed, but then, elogind is not a
+///         systemd cgroups manager.
+#if 0
         r = session_stop_scope(s, force);
+#endif // 0
 
         s->stopping = true;
 
@@ -932,11 +954,14 @@ bool session_check_gc(Session *s, bool drop_not_started) {
                         return true;
         }
 
+/// elogind supports neither scopes nor jobs
+#if 0
         if (s->scope_job && manager_job_is_active(s->manager, s->scope_job))
                 return true;
 
         if (s->scope && manager_unit_is_active(s->manager, s->scope))
                 return true;
+#endif // 0
 
         return false;
 }
@@ -958,7 +983,12 @@ SessionState session_get_state(Session *s) {
         if (s->stopping || s->timer_event_source)
                 return SESSION_CLOSING;
 
+/// elogind does not support systemd scope_jobs
+#if 0
         if (s->scope_job || s->fifo_fd < 0)
+#else
+        if (s->fifo_fd < 0)
+#endif // 0
                 return SESSION_OPENING;
 
         if (session_is_active(s))
@@ -970,10 +1000,15 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
+/// FIXME: Without direct cgroup support, elogind can not kill sessions
+#if 0
         if (!s->scope)
                 return -ESRCH;
 
         return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
+#else
+        return -ESRCH;
+#endif // 0
 }
 
 static int session_open_vt(Session *s) {

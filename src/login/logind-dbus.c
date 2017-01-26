@@ -821,6 +821,15 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
          * created. We send the reply back from
          * session_send_create_reply(). */
 
+        /* Elogind note: replying directly, since we're not actually
+           starting slices and thus we aren't waiting on systemd.  */
+
+        r = session_send_create_reply(session, NULL);
+        if (r < 0)
+                goto fail;
+
+        session_save(session);
+
         return 1;
 
 fail:
@@ -2568,8 +2577,11 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
         session = hashmap_get(m->session_units, unit);
         if (session) {
 
+/// elogind does not support scope jobs
+#if 0
                 if (streq_ptr(path, session->scope_job))
                         session->scope_job = mfree(session->scope_job);
+#endif // 0
 
                 session_jobs_reply(session, unit, result);
 
@@ -2580,11 +2592,14 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
         user = hashmap_get(m->user_units, unit);
         if (user) {
 
+/// elogind does not support slice and service jobs
+#if 0
                 if (streq_ptr(path, user->service_job))
                         user->service_job = mfree(user->service_job);
 
                 if (streq_ptr(path, user->slice_job))
                         user->slice_job = mfree(user->slice_job);
+#endif // 0
 
                 LIST_FOREACH(sessions_by_user, session, user->sessions)
                         session_jobs_reply(session, unit, result);
@@ -2698,6 +2713,8 @@ int manager_send_changed(Manager *manager, const char *property, ...) {
                         l);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int manager_start_scope(
                 Manager *manager,
                 const char *scope,
@@ -3015,3 +3032,4 @@ int manager_job_is_active(Manager *manager, const char *path) {
 
         return true;
 }
+#endif //

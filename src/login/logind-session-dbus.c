@@ -704,8 +704,11 @@ int session_send_create_reply(Session *s, sd_bus_error *error) {
         if (!s->create_message)
                 return 0;
 
+/// elogind does not support scope and service jobs
+#if 0
         if (!sd_bus_error_is_set(error) && (s->scope_job || s->user->service_job))
                 return 0;
+#endif // 0
 
         c = s->create_message;
         s->create_message = NULL;

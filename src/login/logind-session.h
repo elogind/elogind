@@ -89,8 +89,12 @@ struct Session {
         char *service;
         char *desktop;
 
+        /* always NULL */
         char *scope;
+/// UNNEEDED (and unsupported) by elogind
+#if 0
         char *scope_job;
+#endif // 0
 
         Seat *seat;
         unsigned int vtnr;
