@@ -197,7 +197,6 @@ static void manager_free(Manager *m) {
         free(m->scheduled_shutdown_type);
         free(m->scheduled_shutdown_tty);
         free(m->wall_message);
-        free(m->action_job);
         free(m);
 }
 
@@ -643,6 +642,8 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to add user enumerator: %m");
 
+/// elogind does not support systemd action jobs
+#if 0
         r = sd_bus_add_match(m->bus,
                              NULL,
                              "type='signal',"
@@ -653,6 +654,7 @@ static int manager_connect_bus(Manager *m) {
                              match_job_removed, m);
         if (r < 0)
                 log_warning_errno(r, "Failed to add match for JobRemoved: %m");
+#endif // 0
 
         r = sd_bus_add_match(m->bus,
                              NULL,

@@ -394,7 +394,7 @@ DIR *xopendirat(int dirfd, const char *name, int flags);
 
 // UNNEEDED char *fstab_node_to_udev_node(const char *p);
 
-// UNNEEDED void execute_directories(const char* const* directories, usec_t timeout, char *argv[]);
+void execute_directories(const char* const* directories, usec_t timeout, char *argv[]);
 
 bool nulstr_contains(const char*nulstr, const char *needle);
 

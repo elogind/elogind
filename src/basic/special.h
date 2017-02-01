@@ -30,14 +30,14 @@
  * it to bring all services down that want to be brought down on
  * system shutdown. */
 #define SPECIAL_SHUTDOWN_TARGET "shutdown.target"
-#define SPECIAL_HALT_TARGET "halt.target"
-#define SPECIAL_POWEROFF_TARGET "poweroff.target"
-#define SPECIAL_REBOOT_TARGET "reboot.target"
-#define SPECIAL_KEXEC_TARGET "kexec.target"
+// #define SPECIAL_HALT_TARGET "halt.target"
+// #define SPECIAL_POWEROFF_TARGET "poweroff.target"
+// #define SPECIAL_REBOOT_TARGET "reboot.target"
+// #define SPECIAL_KEXEC_TARGET "kexec.target"
 #define SPECIAL_EXIT_TARGET "exit.target"
-#define SPECIAL_SUSPEND_TARGET "suspend.target"
-#define SPECIAL_HIBERNATE_TARGET "hibernate.target"
-#define SPECIAL_HYBRID_SLEEP_TARGET "hybrid-sleep.target"
+// #define SPECIAL_SUSPEND_TARGET "suspend.target"
+// #define SPECIAL_HIBERNATE_TARGET "hibernate.target"
+// #define SPECIAL_HYBRID_SLEEP_TARGET "hybrid-sleep.target"
 
 /* Special boot targets */
 #define SPECIAL_RESCUE_TARGET "rescue.target"

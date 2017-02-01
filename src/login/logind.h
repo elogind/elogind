@@ -103,6 +103,8 @@ struct Manager {
          * this is != 0 and encodes what is being done */
         InhibitWhat action_what;
 
+/// elogind does all relevant actions on its own. No systemd jobs and units.
+#if 0
         /* If a shutdown/suspend was delayed due to a inhibitor this
            contains the unit name we are supposed to start after the
            delay is over */
@@ -111,6 +113,13 @@ struct Manager {
         /* If a shutdown/suspend is currently executed, then this is
          * the job of it */
         char *action_job;
+#else
+        /* If a shutdown/suspend was delayed due to a inhibitor this
+           contains the action we are supposed to perform after the
+           delay is over */
+        HandleAction pending_action;
+#endif // 0
+
         sd_event_source *inhibit_timeout_source;
 
         char *scheduled_shutdown_type;
@@ -184,7 +193,12 @@ int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_err
 int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error);
 int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
 
+/// eloginds own version does the action itself
+#if 0
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, const char *unit_name, InhibitWhat w, sd_bus_error *error);
+#else
+int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
+#endif // 0
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 

@@ -52,6 +52,8 @@ pkgconfiglibdir=$(libdir)/pkgconfig
 polkitpolicydir=$(datadir)/polkit-1/actions
 bashcompletiondir=@bashcompletiondir@
 zshcompletiondir=@zshcompletiondir@
+systemsleepdir=$(pkglibexecdir)/sleep.d
+systemshutdowndir=$(pkglibexecdir)/shutdown.d
 
 # Our own, non-special dirs
 pkgsysconfdir=$(sysconfdir)/elogind
@@ -119,6 +121,10 @@ AM_CPPFLAGS = \
 	-DROOTPREFIX=\"$(rootprefix)\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
+	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
+	-DSYSTEM_SHUTDOWN_PATH=\"$(systemshutdowndir)\" \
+	-DHALT=\"$(HALT)\" \
+	-DREBOOT=\"$(REBOOT)\" \
 	-DKEXEC=\"$(KEXEC)\" \
 	-DLIBDIR=\"$(libdir)\" \
 	-DROOTLIBDIR=\"$(rootlibdir)\" \

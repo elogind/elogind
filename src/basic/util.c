@@ -79,7 +79,8 @@
 #include  "mkdir.h"
 #include  "path-util.h"
 // #include  "exit-status.h"
-// #include  "hashmap.h"
+#include  "hashmap.h"
+#include  "set.h"
 // #include  "env-util.h"
 #include  "fileio.h"
 // #include  "device-nodes.h"
@@ -2890,8 +2891,6 @@ bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) {
         return endswith(de->d_name, suffix);
 }
 
-/// UNNEEDED by elogind
-#if 0
 static int do_execute(char **directories, usec_t timeout, char *argv[]) {
         _cleanup_hashmap_free_free_ Hashmap *pids = NULL;
         _cleanup_set_free_free_ Set *seen = NULL;
@@ -3031,7 +3030,6 @@ void execute_directories(const char* const* directories, usec_t timeout, char *a
 
         wait_for_terminate_and_warn(name, executor_pid, true);
 }
-#endif // 0
 
 bool nulstr_contains(const char*nulstr, const char *needle) {
         const char *i;
