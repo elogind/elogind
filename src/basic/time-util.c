@@ -857,6 +857,8 @@ from_tm:
                 return -EINVAL;
 
 finish:
+        if (ret + plus < ret) /* overflow? */
+                return -EINVAL;
         ret += plus;
         if (ret > USEC_TIMESTAMP_FORMATTABLE_MAX)
                 return -EINVAL;
