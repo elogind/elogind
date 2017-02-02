@@ -730,7 +730,7 @@ dist_dbuspolicy_DATA += \
 	src/login/org.freedesktop.login1.conf
 
 dist_pkgsysconf_DATA += \
-	src/login/elogind.conf
+	src/login/logind.conf
 
 polkitpolicy_files += \
 	src/login/org.freedesktop.login1.policy
@@ -789,9 +789,6 @@ sysctl.d/%: sysctl.d/%.in
 	$(SED_PROCESS)
 
 %.pc: %.pc.in
-	$(SED_PROCESS)
-
-%.conf: %.conf.in
 	$(SED_PROCESS)
 
 shell-completion/%: shell-completion/%.in

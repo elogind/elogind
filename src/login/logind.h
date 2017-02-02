@@ -152,6 +152,10 @@ struct Manager {
 
         bool remove_ipc;
 
+        char **suspend_state,      **suspend_mode;
+        char **hibernate_state,    **hibernate_mode;
+        char **hybrid_sleep_state, **hybrid_sleep_mode;
+
         Hashmap *polkit_registry;
 
         usec_t holdoff_timeout_usec;

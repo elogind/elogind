@@ -1466,7 +1466,7 @@ static int execute_shutdown_or_sleep(
                         &reply,
                         "ss", NULL, "replace-irreversibly");
 #else
-        r = shutdown_or_sleep(action);
+        r = shutdown_or_sleep(m, action);
 #endif // 0
         if (r < 0)
                 return r;
