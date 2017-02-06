@@ -375,7 +375,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(cpu_set_t*, CPU_FREE);
 
 int files_same(const char *filea, const char *fileb);
 
-// UNNEEDED int running_in_chroot(void);
+int running_in_chroot(void);
 
 char *ellipsize(const char *s, size_t length, unsigned percent);
                                    /* bytes                 columns */

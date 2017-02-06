@@ -2568,8 +2568,6 @@ int files_same(const char *filea, const char *fileb) {
                a.st_ino == b.st_ino;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int running_in_chroot(void) {
         int ret;
 
@@ -2579,7 +2577,6 @@ int running_in_chroot(void) {
 
         return ret == 0;
 }
-#endif // 0
 
 static char *ascii_ellipsize_mem(const char *s, size_t old_length, size_t new_length, unsigned percent) {
         size_t x;
