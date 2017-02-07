@@ -55,6 +55,8 @@ zshcompletiondir=@zshcompletiondir@
 systemsleepdir=$(pkglibexecdir)/sleep.d
 systemshutdowndir=$(pkglibexecdir)/shutdown.d
 
+PKTTYAGENT=$(bindir)/pkttyagent
+
 # Our own, non-special dirs
 pkgsysconfdir=$(sysconfdir)/elogind
 pkgincludedir=$(includedir)/elogind
@@ -120,7 +122,7 @@ AM_CPPFLAGS = \
 	-DELOGIND_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
 	-DROOTPREFIX=\"$(rootprefix)\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
-	-DPOLKIT_AGENT_BINARY_PATH=\"$(bindir)/pkttyagent\" \
+	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
 	-DSYSTEM_SHUTDOWN_PATH=\"$(systemshutdowndir)\" \
 	-DHALT=\"$(HALT)\" \
