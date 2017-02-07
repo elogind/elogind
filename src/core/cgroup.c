@@ -24,7 +24,7 @@
 
 #include "process-util.h"
 #include "path-util.h"
-#include "special.h"
+// #include "special.h"
 #include "cgroup-util.h"
 #include "cgroup.h"
 
@@ -1233,6 +1233,8 @@ int manager_setup_cgroup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
 
+/// elogind does not support systemd scopes and slices
+#if 0
         /* Chop off the init scope, if we are already located in it */
         e = endswith(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
 
@@ -1247,6 +1249,7 @@ int manager_setup_cgroup(Manager *m) {
         }
         if (e)
                 *e = 0;
+#endif // 0
 
         /* And make sure to store away the root value without trailing
          * slash, even for the root dir, so that we can easily prepend
@@ -1313,9 +1316,15 @@ int manager_setup_cgroup(Manager *m) {
                                 log_debug("Release agent already installed.");
                 }
 
+/// elogind is not meant to run in systemd init scope
+#if 0
                 /* 4. Make sure we are in the special "init.scope" unit in the root slice. */
                 scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
                 r = cg_create_and_attach(ELOGIND_CGROUP_CONTROLLER, scope_path, 0);
+#else
+                scope_path = strjoina(m->cgroup_root, "/elogind");
+                r = cg_create_and_attach(ELOGIND_CGROUP_CONTROLLER, scope_path, 0);
+#endif // 0
                 if (r < 0)
                         return log_error_errno(r, "Failed to create %s control group: %m", scope_path);
 

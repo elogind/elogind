@@ -37,7 +37,7 @@
 #include "path-util.h"
 #include "unit-name.h"
 #include "fileio.h"
-#include "special.h"
+// #include "special.h"
 #include "mkdir.h"
 #include "login-util.h"
 #include "cgroup-util.h"
@@ -1155,7 +1155,7 @@ int cg_mangle_path(const char *path, char **result) {
 }
 
 int cg_get_root_path(char **path) {
-        char *p, *e;
+        char *p; //, *e;
         int r;
 
         assert(path);
@@ -1164,6 +1164,8 @@ int cg_get_root_path(char **path) {
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd scopes and slices
+#if 0
         e = endswith(p, "/" SPECIAL_INIT_SCOPE);
         if (!e)
                 e = endswith(p, "/" SPECIAL_SYSTEM_SLICE); /* legacy */
@@ -1171,6 +1173,7 @@ int cg_get_root_path(char **path) {
                 e = endswith(p, "/system"); /* even more legacy */
         if (e)
                 *e = 0;
+#endif // 0
 
         *path = p;
         return 0;

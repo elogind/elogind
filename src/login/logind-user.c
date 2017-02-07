@@ -30,7 +30,7 @@
 #include "hashmap.h"
 #include "fileio.h"
 #include "path-util.h"
-#include "special.h"
+// #include "special.h"
 #include "unit-name.h"
 #include "bus-util.h"
 #include "bus-error.h"
@@ -409,26 +409,26 @@ static int user_start_slice(User *u) {
                 char lu[DECIMAL_STR_MAX(uid_t) + 1], *slice;
                 sprintf(lu, UID_FMT, u->uid);
 
-                r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &slice);
+                r = slice_build_subslice("user", lu, &slice);
                 if (r < 0)
                         return r;
 
 /// elogind : Do not try to use dbus to ask systemd
 #if 0
                 r = manager_start_unit(u->manager, slice, &error, &job);
-#endif // 0
                 if (r < 0) {
                         log_error("Failed to start user slice: %s", bus_error_message(&error, r));
                         free(slice);
                 } else {
+#endif // 0
                         u->slice = slice;
 
 /// elogind does not support slice jobs
 #if 0
                         free(u->slice_job);
                         u->slice_job = job;
-#endif // 0
                 }
+#endif // 0
         }
 
         if (u->slice)
