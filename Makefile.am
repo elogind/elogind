@@ -375,6 +375,9 @@ libbasic_la_CFLAGS = \
 	$(CAP_CFLAGS) \
 	-pthread
 
+libbasic_la_LDFLAGS = \
+	$(CAP_LDFLAGS)
+
 libbasic_la_LIBADD = \
 	$(SELINUX_LIBS) \
 	$(CAP_LIBS) \
