@@ -1119,9 +1119,9 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
 int bus_message_map_all_properties(
                 sd_bus_message *m,
                 const struct bus_properties_map *map,
+                sd_bus_error *error,
                 void *userdata) {
 
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(m);
@@ -1159,9 +1159,9 @@ int bus_message_map_all_properties(
 
                         v = (uint8_t *)userdata + prop->offset;
                         if (map[i].set)
-                                r = prop->set(sd_bus_message_get_bus(m), member, m, &error, v);
+                                r = prop->set(sd_bus_message_get_bus(m), member, m, error, v);
                         else
-                                r = map_basic(sd_bus_message_get_bus(m), member, m, &error, v);
+                                r = map_basic(sd_bus_message_get_bus(m), member, m, error, v);
                         if (r < 0)
                                 return r;
 
@@ -1188,6 +1188,7 @@ int bus_message_map_all_properties(
 int bus_message_map_properties_changed(
                 sd_bus_message *m,
                 const struct bus_properties_map *map,
+                sd_bus_error *error,
                 void *userdata) {
 
         const char *member;
@@ -1196,7 +1197,7 @@ int bus_message_map_properties_changed(
         assert(m);
         assert(map);
 
-        r = bus_message_map_all_properties(m, map, userdata);
+        r = bus_message_map_all_properties(m, map, error, userdata);
         if (r < 0)
                 return r;
 
@@ -1227,10 +1228,10 @@ int bus_map_all_properties(
                 const char *destination,
                 const char *path,
                 const struct bus_properties_map *map,
+                sd_bus_error *error,
                 void *userdata) {
 
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(bus);
@@ -1244,13 +1245,13 @@ int bus_map_all_properties(
                         path,
                         "org.freedesktop.DBus.Properties",
                         "GetAll",
-                        &error,
+                        error,
                         &m,
                         "s", "");
         if (r < 0)
                 return r;
 
-        return bus_message_map_all_properties(m, map, userdata);
+        return bus_message_map_all_properties(m, map, error, userdata);
 }
 
 int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **ret) {
