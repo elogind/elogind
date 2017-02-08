@@ -860,6 +860,8 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
         if (r < 0)
                 return r;
 
+        session_add_to_gc_queue(session);
+
         return sd_bus_reply_method_return(message, NULL);
 }
 
