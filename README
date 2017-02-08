@@ -1,276 +1,152 @@
-systemd System and Service Manager
+Elogind User, Seat and Session Manager
 
-DETAILS:
-        http://0pointer.de/blog/projects/systemd.html
+Introduction
+------------
 
-WEB SITE:
-        http://www.freedesktop.org/wiki/Software/systemd
+Elogind is the systemd project's "logind", extracted out to be a
+standalone daemon.  It integrates with PAM to know the set of users
+that are logged in to a system and whether they are logged in
+graphically, on the console, or remotely.  Elogind exposes this
+information via the standard org.freedesktop.login1 D-Bus interface,
+as well as through the file system using systemd's standard
+/run/systemd layout.  Elogind also provides "libelogind", which is a
+subset of the facilities offered by "libsystemd".  There is a
+"libelogind.pc" pkg-config file as well.
 
-GIT:
-        git@github.com:systemd/systemd.git
-        https://github.com/systemd/systemd.git
+All of the credit for elogind should go to the systemd developers.
+For more on systemd, see
+http://www.freedesktop.org/wiki/Software/systemd.  All of the blame
+should go to Andy Wingo, who extracted elogind from systemd.
 
-GITWEB:
-        https://github.com/systemd/systemd
+Contributing
+------------
 
-MAILING LIST:
-        http://lists.freedesktop.org/mailman/listinfo/systemd-devel
-        http://lists.freedesktop.org/mailman/listinfo/systemd-commits
+Elogind was branched from systemd version 219, and preserves the git
+history of the systemd project.  The version of elogind is the
+upstream systemd version, followed by the patchlevel of elogind.  For
+example version 219.12 is the twelfth elogind release, which aims to
+provide a subset of the interfaces of systemd 219.
 
-IRC:
-        #systemd on irc.freenode.org
+To contribute to elogind, fork the current source code from github:
 
-BUG REPORTS:
-        https://github.com/systemd/systemd/issues
+  https://github.com/andywingo/elogind
 
-AUTHOR:
-        Lennart Poettering
-        Kay Sievers
-        ...and many others
+Send a pull request for the changes you like.
 
-LICENSE:
-        LGPLv2.1+ for all code
-        - except src/basic/MurmurHash2.c which is Public Domain
-        - except src/basic/siphash24.c which is CC0 Public Domain
-        - except src/journal/lookup3.c which is Public Domain
-        - except src/udev/* which is (currently still) GPLv2, GPLv2+
+To chat about elogind:
 
-REQUIREMENTS:
-        Linux kernel >= 3.11
-        Linux kernel >= 4.2 for unified cgroup hierarchy support
+  #guix on irc.freenode.org
 
-        Kernel Config Options:
-          CONFIG_DEVTMPFS
-          CONFIG_CGROUPS (it is OK to disable all controllers)
-          CONFIG_INOTIFY_USER
-          CONFIG_SIGNALFD
-          CONFIG_TIMERFD
-          CONFIG_EPOLL
-          CONFIG_NET
-          CONFIG_SYSFS
-          CONFIG_PROC_FS
-          CONFIG_FHANDLE (libudev, mount and bind mount handling)
+Finally, bug reports:
 
-        udev will fail to work with the legacy sysfs layout:
-          CONFIG_SYSFS_DEPRECATED=n
+  https://github.com/andywingo/elogind/issues
 
-        Legacy hotplug slows down the system and confuses udev:
-          CONFIG_UEVENT_HELPER_PATH=""
+Why bother?
+-----------
 
-        Userspace firmware loading is not supported and should
-        be disabled in the kernel:
-          CONFIG_FW_LOADER_USER_HELPER=n
+Elogind has been developed for use in GuixSD, the OS distribution of
+GNU Guix.  See http://gnu.org/s/guix for more on Guix.  GuixSD uses a
+specific init manager (DMD), for reasons that are not relevant here,
+but still aims to eventually be a full-featured distribution that can
+run GNOME and other desktop environments.  However, to run GNOME these
+days means that you need to have support for the login1 D-Bus
+interface, which is currently only provided by systemd.  That is the
+origin of this project: to take the excellent logind functionality
+from systemd and provide it as a standalone package.
 
-        Some udev rules and virtualization detection relies on it:
-          CONFIG_DMIID
+We like systemd.  We realize that there are people out there that hate
+it.  You're welcome to use elogind for whatever purpose you like --
+as-is, or as a jumping-off point for other things -- but please don't
+use it as part of some anti-systemd vendetta.  Systemd hackers are
+smart folks that are trying to solve interesting problems on the free
+desktop, and their large adoption is largely because they solve
+problems that users and developers of user-focused applications care
+about.  We are appreciative of their logind effort and think that
+everyone deserves to run it if they like, even if they use a different
+PID 1.
 
-        Support for some SCSI devices serial number retrieval, to
-        create additional symlinks in /dev/disk/ and /dev/tape:
-          CONFIG_BLK_DEV_BSG
+Differences relative to systemd
+-------------------------------
 
-        Required for PrivateNetwork and PrivateDevices in service units:
-          CONFIG_NET_NS
-          CONFIG_DEVPTS_MULTIPLE_INSTANCES
-        Note that systemd-localed.service and other systemd units use
-        PrivateNetwork and PrivateDevices so this is effectively required.
+The pkg-config file is called libelogind, not libsystemd or
+libsystemd-logind.
 
-        Optional but strongly recommended:
-          CONFIG_IPV6
-          CONFIG_AUTOFS4_FS
-          CONFIG_TMPFS_XATTR
-          CONFIG_{TMPFS,EXT4,XFS,BTRFS_FS,...}_POSIX_ACL
-          CONFIG_SECCOMP
-          CONFIG_CHECKPOINT_RESTORE (for the kcmp() syscall)
+The headers are in <elogind/...>, so like <elogind/sd-login.h> instead
+of <systemd/sd-login.h>.
 
-        Required for CPUShares= in resource control unit settings
-          CONFIG_CGROUP_SCHED
-          CONFIG_FAIR_GROUP_SCHED
+Libelogind just implements login-related functionality.  It also
+provides the sd-bus API.
 
-        Required for CPUQuota= in resource control unit settings
-          CONFIG_CFS_BANDWIDTH
+Unlike systemd, whose logind arranges to run user sessions in cgroups
+via RPC calls to systemd, in elogind there is no systemd so there are
+no cgroups.  This has a few implications:
 
-        For systemd-bootchart, several proc debug interfaces are required:
-          CONFIG_SCHEDSTATS
-          CONFIG_SCHED_DEBUG
+  * Elogind does not create "slices" for users.  Elogind will not
+    record that users are associated with slices.
 
-        For UEFI systems:
-          CONFIG_EFIVAR_FS
-          CONFIG_EFI_PARTITION
+  * Systemd's logind waits for all user jobs to stop before recording
+    that a user's session has gone away.  Since we have no cgroups,
+    elogind just removes the session directly when pam_elogind.so
+    indicates the user has logged out.
 
-        We recommend to turn off Real-Time group scheduling in the
-        kernel when using systemd. RT group scheduling effectively
-        makes RT scheduling unavailable for most userspace, since it
-        requires explicit assignment of RT budgets to each unit whose
-        processes making use of RT. As there's no sensible way to
-        assign these budgets automatically this cannot really be
-        fixed, and it's best to disable group scheduling hence.
-           CONFIG_RT_GROUP_SCHED=n
+  * The /run/systemd/slices directory will always be empty.
 
-        Note that kernel auditing is broken when used with systemd's
-        container code. When using systemd in conjunction with
-        containers, please make sure to either turn off auditing at
-        runtime using the kernel command line option "audit=0", or
-        turn it off at kernel compile time using:
-          CONFIG_AUDIT=n
-        If systemd is compiled with libseccomp support on
-        architectures which do not use socketcall() and where seccomp
-        is supported (this effectively means x86-64 and ARM, but
-        excludes 32-bit x86!), then nspawn will now install a
-        work-around seccomp filter that makes containers boot even
-        with audit being enabled. This works correctly only on kernels
-        3.14 and newer though. TL;DR: turn audit off, still.
+  * Support for lingering is not so great.
 
-        glibc >= 2.16
-        libcap
-        libmount >= 2.20 (from util-linux)
-        libseccomp >= 1.0.0 (optional)
-        libblkid >= 2.24 (from util-linux) (optional)
-        libkmod >= 15 (optional)
-        PAM >= 1.1.2 (optional)
-        libcryptsetup (optional)
-        libaudit (optional)
-        libacl (optional)
-        libselinux (optional)
-        liblzma (optional)
-        liblz4 >= 119 (optional)
-        libgcrypt (optional)
-        libqrencode (optional)
-        libmicrohttpd (optional)
-        libpython (optional)
-        libidn (optional)
-        elfutils >= 158 (optional)
-        make, gcc, and similar tools
+Elogind does not manage virtual terminals.
 
-        During runtime, you need the following additional
-        dependencies:
+Elogind does monitor power button and the lid switch, like systemd,
+but instead of doing RPC to systemd to suspend, poweroff, or restart
+the machine, elogind just does this directly.  For suspend, hibernate,
+and hybrid-sleep, elogind uses the same code as systemd-sleep.
+Instead of using a separate sleep.conf file to configure the sleep
+behavior, this is included in the [Sleep] section of
+/etc/elogind/login.conf.  See the example login.conf for more.  For
+shutdown, reboot, and kexec, elogind shells out to "halt", "reboot",
+and "kexec" binaries.
 
-        util-linux >= v2.26 required
-        dbus >= 1.4.0 (strictly speaking optional, but recommended)
-        dracut (optional)
-        PolicyKit (optional)
+The loginctl command has the poweroff, reboot, sleep, hibernate, and
+hybrid-sleep commands from systemd, as well as the --ignore-inhibitors
+flag.
 
-        When building from git, the following tools are needed:
+The PAM module is called pam_elogind.so, not pam_systemd.so.
 
-        pkg-config
-        docbook-xsl
-        xsltproc
-        automake
-        autoconf
-        libtool
-        intltool
-        gperf
-        python (optional)
-        python-lxml (optional, but required to build the indices)
-        sphinx (optional)
+License
+-------
 
-        The build system is initialized with ./autogen.sh. A tar ball
-        can be created with:
-          git archive --format=tar --prefix=systemd-222/ v222 | xz > systemd-222.tar.xz
+LGPLv2.1+ for all code
 
-        When systemd-hostnamed is used, it is strongly recommended to
-        install nss-myhostname to ensure that, in a world of
-        dynamically changing hostnames, the hostname stays resolvable
-        under all circumstances. In fact, systemd-hostnamed will warn
-        if nss-myhostname is not installed.
+  - except src/shared/MurmurHash2.c which is Public Domain
+  - except src/shared/siphash24.c which is CC0 Public Domain
+  - except src/journal/lookup3.c which is Public Domain
 
-        To build HTML documentation for python-systemd using sphinx,
-        please first install systemd (using 'make install'), and then
-        invoke sphinx-build with 'make sphinx-<target>', with <target>
-        being 'html' or 'latexpdf'. If using DESTDIR for installation,
-        pass the same DESTDIR to 'make sphinx-html' invocation.
+Dependencies
+------------
 
-USERS AND GROUPS:
-        Default udev rules use the following standard system group
-        names, which need to be resolvable by getgrnam() at any time,
-        even in the very early boot stages, where no other databases
-        and network are available:
+  glibc >= 2.14
+  libcap
+  libmount >= 2.20 (from util-linux)
+  libseccomp >= 1.0.0 (optional)
+  libblkid >= 2.24 (from util-linux) (optional)
+  PAM >= 1.1.2 (optional)
+  libacl (optional)
+  libselinux (optional)
+  make, gcc, and similar tools
 
-        audio, cdrom, dialout, disk, input, kmem, lp, tape, tty, video
+During runtime, you need the following additional dependencies:
 
-        During runtime, the journal daemon requires the
-        "systemd-journal" system group to exist. New journal files will
-        be readable by this group (but not writable), which may be used
-        to grant specific users read access. In addition, system
-        groups "wheel" and "adm" will be given read-only access to
-        journal files using systemd-tmpfiles.service.
+  dbus >= 1.4.0 (strictly speaking optional, but recommended)
+  PolicyKit (optional)
 
-        The journal gateway daemon requires the
-        "systemd-journal-gateway" system user and group to
-        exist. During execution this network facing service will drop
-        privileges and assume this uid/gid for security reasons.
+When building from git, you need the following additional
+dependencies:
 
-        Similarly, the NTP daemon requires the "systemd-timesync" system
-        user and group to exist.
-
-        Similarly, the network management daemon requires the
-        "systemd-network" system user and group to exist.
-
-        Similarly, the name resolution daemon requires the
-        "systemd-resolve" system user and group to exist.
-
-        Similarly, the kdbus dbus1 proxy daemon requires the
-        "systemd-bus-proxy" system user and group to exist.
-
-NSS:
-        systemd ships with three NSS modules:
-
-        nss-myhostname resolves the local hostname to locally
-        configured IP addresses, as well as "localhost" to
-        127.0.0.1/::1.
-
-        nss-resolve enables DNS resolution via the systemd-resolved
-        DNS/LLMNR caching stub resolver "systemd-resolved".
-
-        nss-mymachines enables resolution of all local containers
-        registered with machined to their respective IP addresses.
-
-        To make use of these NSS modules, please add them to the
-        "hosts: " line in /etc/nsswitch.conf. The "resolve" module
-        should replace the glibc "dns" module in this file.
-
-        The three modules should be used in the following order:
-
-                hosts: files mymachines resolve myhostname
-
-SYSV INIT.D SCRIPTS:
-        When calling "systemctl enable/disable/is-enabled" on a unit which is a
-        SysV init.d script, it calls /usr/lib/systemd/systemd-sysv-install;
-        this needs to translate the action into the distribution specific
-        mechanism such as chkconfig or update-rc.d. Packagers need to provide
-        this script if you need this functionality (you don't if you disabled
-        SysV init support).
-
-        Please see src/systemctl/systemd-sysv-install.SKELETON for how this
-        needs to look like, and provide an implementation at the marked places.
-
-WARNINGS:
-        systemd will warn you during boot if /etc/mtab is not a
-        symlink to /proc/mounts. Please ensure that /etc/mtab is a
-        proper symlink.
-
-        systemd will warn you during boot if /usr is on a different
-        file system than /. While in systemd itself very little will
-        break if /usr is on a separate partition, many of its
-        dependencies very likely will break sooner or later in one
-        form or another. For example, udev rules tend to refer to
-        binaries in /usr, binaries that link to libraries in /usr or
-        binaries that refer to data files in /usr. Since these
-        breakages are not always directly visible, systemd will warn
-        about this, since this kind of file system setup is not really
-        supported anymore by the basic set of Linux OS components.
-
-        systemd requires that the /run mount point exists. systemd also
-        requires that /var/run is a symlink to /run.
-
-        For more information on this issue consult
-        http://freedesktop.org/wiki/Software/systemd/separate-usr-is-broken
-
-        To run systemd under valgrind, compile with VALGRIND defined
-        (e.g. ./configure CPPFLAGS='... -DVALGRIND=1'). Otherwise,
-        false positives will be triggered by code which violates
-        some rules but is actually safe.
-
-        Currently, systemd-timesyncd defaults to use the Google NTP
-        servers if not specified otherwise at configure time. You
-        really should not ship an OS or device with this default
-        setting. See DISTRO_PORTING for details.
+  pkg-config
+  docbook-xsl
+  xsltproc
+  automake
+  autoconf
+  libtool
+  intltool
+  gperf
+  gtkdocize (optional)
