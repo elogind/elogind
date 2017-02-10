@@ -274,7 +274,12 @@ int manager_process_button_device(Manager *m, struct udev_device *d) {
 }
 
 int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
+/// elogind does not support systemd units, but its own session system
+#if 0
         _cleanup_free_ char *unit = NULL;
+#else
+        _cleanup_free_ char *session_name = NULL;
+#endif
         Session *s;
         int r;
 
@@ -284,11 +289,20 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
         if (pid < 1)
                 return -EINVAL;
 
+/// elogind does not support systemd units, but its own session system
+#if 0
         r = cg_pid_get_unit(pid, &unit);
         if (r < 0)
                 return 0;
 
         s = hashmap_get(m->session_units, unit);
+#else
+        r = cg_pid_get_session(pid, &session_name);
+        if (r < 0)
+                return 0;
+
+        s = hashmap_get(m->sessions, session_name);
+#endif
         if (!s)
                 return 0;
 
@@ -297,8 +311,13 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
 }
 
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
+/// elogind does not support systemd units, but its own session system
+#if 0
         _cleanup_free_ char *unit = NULL;
         User *u;
+#else
+        Session *s;
+#endif
         int r;
 
         assert(m);
@@ -307,6 +326,8 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
         if (pid < 1)
                 return -EINVAL;
 
+/// elogind does not support systemd units, but its own session system
+#if 0
         r = cg_pid_get_slice(pid, &unit);
         if (r < 0)
                 return 0;
@@ -316,6 +337,14 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
                 return 0;
 
         *user = u;
+#else
+        r = manager_get_session_by_pid (m, pid, &s);
+        if (r <= 0)
+                return r;
+
+        *user = s->user;
+#endif // 0
+
         return 1;
 }
 

@@ -508,6 +508,8 @@ int session_activate(Session *s) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int session_start_scope(Session *s) {
         int r = 0;
 
@@ -528,10 +530,7 @@ static int session_start_scope(Session *s) {
                 if (!scope)
                         return log_oom();
 
-/// elogind : Do not try to use dbus to call systemd
-#if 0
                 r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "logind.service", "systemd-user-sessions.service", &error, &job);
-#endif // 0
                 if (r < 0) {
                         log_error("Failed to start session scope %s: %s %s",
                                   scope, bus_error_message(&error, r), error.name);
@@ -539,11 +538,8 @@ static int session_start_scope(Session *s) {
                         return r;
                 } else {
                         s->scope = scope;
-/// elogind does not support scope jobs
-#if 0
                         free(s->scope_job);
                         s->scope_job = job;
-#endif // 0
                 }
         }
 
@@ -552,6 +548,27 @@ static int session_start_scope(Session *s) {
 
         return 0;
 }
+#endif // 0
+
+static int session_start_cgroup(Session *s) {
+        int r;
+
+        assert(s);
+        assert(s->user);
+        assert(s->leader > 0);
+
+        /* First, create our own group */
+        r = cg_create(ELOGIND_CGROUP_CONTROLLER, s->id);
+        if (r < 0)
+                return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
+
+        r = cg_attach(ELOGIND_CGROUP_CONTROLLER, s->id, s->leader);
+        if (r < 0)
+                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader, s->id);
+
+        return 0;
+}
+
 
 int session_start(Session *s) {
         int r;
@@ -569,7 +586,13 @@ int session_start(Session *s) {
                 return r;
 
         /* Create cgroup */
+/// elogind does its own session management without systemd units,
+/// slices and scopes
+#if 0
         r = session_start_scope(s);
+#else
+        r = session_start_cgroup(s);
+#endif // 0
         if (r < 0)
                 return r;
 
@@ -643,8 +666,23 @@ static int session_stop_scope(Session *s, bool force) {
 }
 #endif // 0
 
+static int session_stop_cgroup(Session *s, bool force) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r;
+
+        assert(s);
+
+        if (force || manager_shall_kill(s->manager, s->user->name)) {
+                r = session_kill(s, KILL_ALL, SIGTERM);
+                if (r < 0)
+                        return r;
+        }
+
+        return 0;
+}
+
 int session_stop(Session *s, bool force) {
-        int r = 0;
+        int r;
 
         assert(s);
 
@@ -660,11 +698,11 @@ int session_stop(Session *s, bool force) {
         session_remove_fifo(s);
 
         /* Kill cgroup */
-/// @todo : Currently elogind does not start scopes. It remains to be seen
-///         whether this is really not needed, but then, elogind is not a
-///         systemd cgroups manager.
+/// elogind does not start scopes, but sessions
 #if 0
         r = session_stop_scope(s, force);
+#else
+        r = session_stop_cgroup(s, force);
 #endif // 0
 
         s->stopping = true;
@@ -974,6 +1012,10 @@ bool session_check_gc(Session *s, bool drop_not_started) {
                 return true;
 #endif // 0
 
+        if ( s->user->manager
+          && (cg_is_empty_recursive (ELOGIND_CGROUP_CONTROLLER, s->user->manager->cgroup_root) > 0) )
+                return true;
+
         return false;
 }
 
@@ -1011,14 +1053,30 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
-/// FIXME: Without direct cgroup support, elogind can not kill sessions
+/// Without direct cgroup support, elogind can not kill sessions
 #if 0
         if (!s->scope)
                 return -ESRCH;
 
         return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
 #else
-        return -ESRCH;
+        if (who == KILL_LEADER) {
+                if (s->leader <= 0)
+                        return -ESRCH;
+
+                /* FIXME: verify that leader is in cgroup?  */
+
+                if (kill(s->leader, signo) < 0) {
+                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader, s->id);
+                }
+                return 0;
+        } else {
+                bool sigcont = false;
+                bool ignore_self = true;
+                bool rem = true;
+                return cg_kill_recursive (ELOGIND_CGROUP_CONTROLLER, s->id, signo,
+                                          sigcont, ignore_self, rem, NULL);
+        }
 #endif // 0
 }
 

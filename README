@@ -29,7 +29,7 @@ provide a subset of the interfaces of systemd 219.
 
 To contribute to elogind, fork the current source code from github:
 
-  https://github.com/andywingo/elogind
+  https://github.com/elogind/elogind
 
 Send a pull request for the changes you like.
 
@@ -39,7 +39,7 @@ To chat about elogind:
 
 Finally, bug reports:
 
-  https://github.com/andywingo/elogind/issues
+  https://github.com/elogind/elogind/issues
 
 Why bother?
 -----------
@@ -77,21 +77,26 @@ of <systemd/sd-login.h>.
 Libelogind just implements login-related functionality.  It also
 provides the sd-bus API.
 
-Unlike systemd, whose logind arranges to run user sessions in cgroups
-via RPC calls to systemd, in elogind there is no systemd so there are
-no cgroups.  This has a few implications:
+Unlike systemd, whose logind arranges to manage resources for user
+sessions via RPC calls to systemd, in elogind there is no systemd so
+there is no global cgroup-based resource management.  This has a few
+implications:
 
   * Elogind does not create "slices" for users.  Elogind will not
     record that users are associated with slices.
 
-  * Systemd's logind waits for all user jobs to stop before recording
-    that a user's session has gone away.  Since we have no cgroups,
-    elogind just removes the session directly when pam_elogind.so
-    indicates the user has logged out.
-
   * The /run/systemd/slices directory will always be empty.
 
-  * Support for lingering is not so great.
+  * Elogind does not have the concept of a "scope", internally, as
+    it's the same as a session.  Any API that refers to scopes will
+    always return an error code.
+
+On the other hand, elogind does use a similar strategy to systemd in
+that it places processes in a private cgroup for organizational
+purposes, without installing any controllers (see
+http://0pointer.de/blog/projects/cgroups-vs-cgroups.html).  This
+allows elogind to map arbitrary processes to sessions, even if the
+process does the usual double-fork to be reparented to PID 1.
 
 Elogind does not manage virtual terminals.
 

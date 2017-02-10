@@ -35,7 +35,7 @@
 #include "formats-util.h"
 #include "process-util.h"
 #include "path-util.h"
-#include "unit-name.h"
+// #include "unit-name.h"
 #include "fileio.h"
 // #include "special.h"
 #include "mkdir.h"
@@ -1155,7 +1155,9 @@ int cg_mangle_path(const char *path, char **result) {
 }
 
 int cg_get_root_path(char **path) {
-        char *p; //, *e;
+/// elogind does not support systemd scopes and slices
+#if 0
+        char *p, *e;
         int r;
 
         assert(path);
@@ -1164,8 +1166,6 @@ int cg_get_root_path(char **path) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd scopes and slices
-#if 0
         e = endswith(p, "/" SPECIAL_INIT_SCOPE);
         if (!e)
                 e = endswith(p, "/" SPECIAL_SYSTEM_SLICE); /* legacy */
@@ -1173,10 +1173,13 @@ int cg_get_root_path(char **path) {
                 e = endswith(p, "/system"); /* even more legacy */
         if (e)
                 *e = 0;
-#endif // 0
 
         *path = p;
         return 0;
+#else
+        assert(path);
+        return cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, 1, path);
+#endif // 0
 }
 
 int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {
@@ -1239,6 +1242,8 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_path_decode_unit(const char *cgroup, char **unit){
         char *c, *s;
         size_t n;
@@ -1487,8 +1492,12 @@ int cg_pid_get_machine_name(pid_t pid, char **machine) {
 
         return cg_path_get_machine_name(cgroup, machine);
 }
+#endif // 0
 
 int cg_path_get_session(const char *path, char **session) {
+        /* Elogind uses a flat hierarchy, just "/SESSION".  The only
+           wrinkle is that SESSION might be escaped.  */
+#if 0
         _cleanup_free_ char *unit = NULL;
         char *start, *end;
         int r;
@@ -1509,6 +1518,23 @@ int cg_path_get_session(const char *path, char **session) {
         *end = 0;
         if (!session_id_valid(start))
                 return -ENXIO;
+#else
+        const char *e, *n, *start;
+
+        assert(path);
+        assert(path[0] == '/');
+
+        e = path + 1;
+        n = strchrnul(e, '/');
+        if (e == n)
+                return -ENOENT;
+
+        start = strndupa(e, n - e);
+        start = cg_unescape(start);
+
+        if (!start[0])
+                return -ENOENT;
+#endif // 0
 
         if (session) {
                 char *rr;
@@ -1534,6 +1560,8 @@ int cg_pid_get_session(pid_t pid, char **session) {
         return cg_path_get_session(cgroup, session);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         _cleanup_free_ char *slice = NULL;
         char *start, *end;
@@ -1645,6 +1673,7 @@ int cg_pid_get_user_slice(pid_t pid, char **slice) {
 
         return cg_path_get_user_slice(cgroup, slice);
 }
+#endif // 0
 
 char *cg_escape(const char *p) {
         bool need_prefix = false;

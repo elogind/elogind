@@ -66,7 +66,7 @@ int bus_verify_polkit_async(sd_bus_message *call, int capability, const char *ac
 void bus_verify_polkit_async_registry_free(Hashmap *registry);
 
 int bus_open_system_systemd(sd_bus **_bus);
-int bus_open_user_systemd(sd_bus **_bus);
+// UNNEEDED int bus_open_user_systemd(sd_bus **_bus);
 
 int bus_open_transport(BusTransport transport, const char *host, bool user, sd_bus **bus);
 // UNNEEDED int bus_open_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);

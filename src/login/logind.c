@@ -635,6 +635,34 @@ static int manager_reserve_vt(Manager *m) {
 }
 #endif // 0
 
+static int signal_agent_released(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+        Session *s;
+        const char *cgroup;
+        int r;
+
+        assert(message);
+        assert(m);
+
+        r = sd_bus_message_read(message, "s", &cgroup);
+        if (r < 0) {
+                bus_log_parse_error(r);
+                return 0;
+        }
+
+        s = hashmap_get(m->sessions, cgroup);
+
+        if (!s) {
+                log_warning("Session not found: %s", cgroup);
+                return 0;
+        }
+
+        session_finalize(s);
+        session_free(s);
+
+        return 0;
+}
+
 static int manager_connect_bus(Manager *m) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
@@ -649,6 +677,14 @@ static int manager_connect_bus(Manager *m) {
         r = sd_bus_add_object_vtable(m->bus, NULL, "/org/freedesktop/login1", "org.freedesktop.login1.Manager", manager_vtable, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to add manager object vtable: %m");
+
+        /* elogind relies on signals from its release agent */
+        r = sd_bus_add_match(m->bus, NULL,
+                             "type='signal',"
+                             "interface='org.freedesktop.systemd1.Agent',"
+                             "member='Released',"
+                             "path='/org/freedesktop/systemd1/agent'",
+                             signal_agent_released, m);
 
         r = sd_bus_add_fallback_vtable(m->bus, NULL, "/org/freedesktop/login1/seat", "org.freedesktop.login1.Seat", seat_vtable, seat_object_find, m);
         if (r < 0)
@@ -674,7 +710,7 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to add user enumerator: %m");
 
-/// elogind does not support systemd action jobs
+/// elogind does not support systemd as PID 1
 #if 0
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -686,7 +722,6 @@ static int manager_connect_bus(Manager *m) {
                              match_job_removed, m);
         if (r < 0)
                 log_warning_errno(r, "Failed to add match for JobRemoved: %m");
-#endif // 0
 
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -730,6 +765,7 @@ static int manager_connect_bus(Manager *m) {
                         NULL, NULL);
         if (r < 0)
                 log_notice("Failed to enable subscription: %s", bus_error_message(&error, r));
+#endif // 0
 
         r = sd_bus_request_name(m->bus, "org.freedesktop.login1", 0);
         if (r < 0)

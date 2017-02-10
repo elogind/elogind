@@ -793,16 +793,27 @@ UserState user_get_state(User *u) {
 }
 
 int user_kill(User *u, int signo) {
+/// Without systemd unit support, elogind has to rely on its session system
+#if 0
         assert(u);
 
-/// FIXME: Without direct cgroup support, elogind can not kill users
-#if 0
         if (!u->slice)
                 return -ESRCH;
 
         return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);
 #else
-        return -ESRCH;
+        Session *s;
+        int res = 0;
+
+        assert(u);
+
+        LIST_FOREACH(sessions_by_user, s, u->sessions) {
+                int r = session_kill(s, KILL_ALL, signo);
+                if (res == 0 && r < 0)
+                        res = r;
+        }
+
+        return res;
 #endif // 0
 }
 

@@ -555,7 +555,13 @@ _public_ int sd_bus_creds_get_owner_uid(sd_bus_creds *c, uid_t *uid) {
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd slices
+#if 0
         return cg_path_get_owner_uid(shifted, uid);
+#else
+        *uid = c->uid;
+        return 0;
+#endif // 0
 }
 
 _public_ int sd_bus_creds_get_cmdline(sd_bus_creds *c, char ***cmdline) {
@@ -577,8 +583,6 @@ _public_ int sd_bus_creds_get_cmdline(sd_bus_creds *c, char ***cmdline) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 _public_ int sd_bus_creds_get_audit_session_id(sd_bus_creds *c, uint32_t *sessionid) {
         assert_return(c, -EINVAL);
         assert_return(sessionid, -EINVAL);
@@ -592,7 +596,6 @@ _public_ int sd_bus_creds_get_audit_session_id(sd_bus_creds *c, uint32_t *sessio
         *sessionid = c->audit_session_id;
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_creds_get_audit_login_uid(sd_bus_creds *c, uid_t *uid) {
         assert_return(c, -EINVAL);

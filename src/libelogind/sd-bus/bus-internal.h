@@ -384,7 +384,7 @@ char *bus_address_escape(const char *v);
         _cleanup_bus_unref_ _unused_ sd_bus *_dont_destroy_##bus = sd_bus_ref(bus)
 
 int bus_set_address_system(sd_bus *bus);
-int bus_set_address_user(sd_bus *bus);
+// UNNEEDED int bus_set_address_user(sd_bus *bus);
 int bus_set_address_system_remote(sd_bus *b, const char *host);
 int bus_set_address_system_machine(sd_bus *b, const char *machine);
 

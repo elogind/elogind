@@ -363,7 +363,7 @@ int sd_bus_creds_has_effective_cap(sd_bus_creds *c, int capability);
 // UNNEEDED int sd_bus_creds_has_inheritable_cap(sd_bus_creds *c, int capability);
 // UNNEEDED int sd_bus_creds_has_bounding_cap(sd_bus_creds *c, int capability);
 int sd_bus_creds_get_selinux_context(sd_bus_creds *c, const char **context);
-// UNNEEDED int sd_bus_creds_get_audit_session_id(sd_bus_creds *c, uint32_t *sessionid);
+int sd_bus_creds_get_audit_session_id(sd_bus_creds *c, uint32_t *sessionid);
 int sd_bus_creds_get_audit_login_uid(sd_bus_creds *c, uid_t *loginuid);
 int sd_bus_creds_get_tty(sd_bus_creds *c, const char **tty);
 // UNNEEDED int sd_bus_creds_get_unique_name(sd_bus_creds *c, const char **name);

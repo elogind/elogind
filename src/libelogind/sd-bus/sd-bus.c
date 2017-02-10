@@ -1162,15 +1162,21 @@ _public_ int sd_bus_open(sd_bus **ret) {
         if (e) {
                 if (streq(e, "system"))
                         return sd_bus_open_system(ret);
+/// elogind does not support systemd units
+#if 0
                 else if (STR_IN_SET(e, "session", "user"))
                         return sd_bus_open_user(ret);
+#endif // 0
         }
 
         e = secure_getenv("DBUS_STARTER_ADDRESS");
         if (!e) {
+/// elogind does not support systemd units
+#if 0
                 if (cg_pid_get_owner_uid(0, NULL) >= 0)
                         return sd_bus_open_user(ret);
                 else
+#endif // 0
                 return sd_bus_open_system(ret);
         }
 
@@ -1248,6 +1254,8 @@ fail:
         return r;
 }
 
+/// elogind can not open/use a user bus
+#if 0
 int bus_set_address_user(sd_bus *b) {
         const char *e;
         uid_t uid;
@@ -1280,8 +1288,11 @@ int bus_set_address_user(sd_bus *b) {
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_open_user(sd_bus **ret) {
+/// elogind does not support user buses
+#if 0
         sd_bus *b;
         int r;
 
@@ -1312,6 +1323,9 @@ _public_ int sd_bus_open_user(sd_bus **ret) {
 fail:
         bus_free(b);
         return r;
+#else
+        return sd_bus_open_system(ret);
+#endif // 0
 }
 
 int bus_set_address_system_remote(sd_bus *b, const char *host) {
@@ -3382,9 +3396,14 @@ _public_ int sd_bus_default_system(sd_bus **ret) {
 }
 
 _public_ int sd_bus_default_user(sd_bus **ret) {
+/// elogind does not support user buses
+#if 0
         static thread_local sd_bus *default_user_bus = NULL;
 
         return bus_default(sd_bus_open_user, &default_user_bus, ret);
+#else
+        return sd_bus_default_system(ret);
+#endif // 0
 }
 
 _public_ int sd_bus_default(sd_bus **ret) {
@@ -3401,8 +3420,11 @@ _public_ int sd_bus_default(sd_bus **ret) {
         if (e) {
                 if (streq(e, "system"))
                         return sd_bus_default_system(ret);
+/// elogind does not support systemd units
+#if 0
                 else if (STR_IN_SET(e, "user", "session"))
                         return sd_bus_default_user(ret);
+#endif // 0
         }
 
         /* No type is specified, so we have not other option than to
@@ -3417,10 +3439,12 @@ _public_ int sd_bus_default(sd_bus **ret) {
 
         /* Finally, if nothing is set use the cached connection for
          * the right scope */
-
+/// elogind does not support systemd units
+#if 0
         if (cg_pid_get_owner_uid(0, NULL) >= 0)
                 return sd_bus_default_user(ret);
         else
+#endif // 0
         return sd_bus_default_system(ret);
 }
 

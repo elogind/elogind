@@ -629,6 +629,8 @@ int bus_open_system_systemd(sd_bus **_bus) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_open_user_systemd(sd_bus **_bus) {
         _cleanup_bus_unref_ sd_bus *bus = NULL;
         _cleanup_free_ char *ee = NULL;
@@ -686,6 +688,7 @@ int bus_open_user_systemd(sd_bus **_bus) {
 
         return 0;
 }
+#endif // 0
 
 int bus_print_property(const char *name, sd_bus_message *property, bool all) {
         char type;
@@ -1226,9 +1229,12 @@ int bus_open_transport(BusTransport transport, const char *host, bool user, sd_b
         switch (transport) {
 
         case BUS_TRANSPORT_LOCAL:
+/// elogind does not support a user bus
+#if 0
                 if (user)
                         r = sd_bus_default_user(bus);
                 else
+#endif // 0
                         r = sd_bus_default_system(bus);
 
                 break;
