@@ -1436,6 +1436,28 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
         return r;
 }
 
+static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+
+        static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
+                [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
+                [INHIBIT_SLEEP] = "PrepareForSleep"
+        };
+
+        int active = _active;
+
+        assert(m);
+        assert(w >= 0);
+        assert(w < _INHIBIT_WHAT_MAX);
+        assert(signal_name[w]);
+
+        return sd_bus_emit_signal(m->bus,
+                                  "/org/freedesktop/login1",
+                                  "org.freedesktop.login1.Manager",
+                                  signal_name[w],
+                                  "b",
+                                  active);
+}
+
 static int execute_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
@@ -1488,6 +1510,12 @@ static int execute_shutdown_or_sleep(
         m->action_job = c;
         m->action_what = w;
 #endif // 0
+
+        if (w == INHIBIT_SLEEP)
+                /* And we're back. */
+                send_prepare_for(m, w, false);
+
+        m->action_what = 0;
 
         /* Make sure the lid switch is ignored for a while */
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
@@ -1567,28 +1595,6 @@ static int delay_shutdown_or_sleep(
         m->action_what = w;
 
         return 0;
-}
-
-static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
-
-        static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
-                [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
-                [INHIBIT_SLEEP] = "PrepareForSleep"
-        };
-
-        int active = _active;
-
-        assert(m);
-        assert(w >= 0);
-        assert(w < _INHIBIT_WHAT_MAX);
-        assert(signal_name[w]);
-
-        return sd_bus_emit_signal(m->bus,
-                                  "/org/freedesktop/login1",
-                                  "org.freedesktop.login1.Manager",
-                                  signal_name[w],
-                                  "b",
-                                  active);
 }
 
 int bus_manager_shutdown_or_sleep_now_or_later(
