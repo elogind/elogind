@@ -30,7 +30,6 @@
 
 #include "alloc-util.h"
 #include "ctype.h"
-#include "env-util.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -38,6 +37,7 @@
 #include "hexdecoct.h"
 //#include "log.h"
 //#include "macro.h"
+#include "missing.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "random-util.h"
@@ -586,9 +586,14 @@ fail:
         return r;
 }
 
-static int check_utf8ness_and_warn(
+static int parse_env_file_push(
                 const char *filename, unsigned line,
-                const char *key, char *value) {
+                const char *key, char *value,
+                void *userdata,
+                int *n_pushed) {
+
+        const char *k;
+        va_list aq, *ap = userdata;
 
         if (!utf8_is_valid(key)) {
                 _cleanup_free_ char *p = NULL;
@@ -605,23 +610,6 @@ static int check_utf8ness_and_warn(
                 log_error("%s:%u: invalid UTF-8 value for key %s: '%s', ignoring.", strna(filename), line, key, p);
                 return -EINVAL;
         }
-
-        return 0;
-}
-
-static int parse_env_file_push(
-                const char *filename, unsigned line,
-                const char *key, char *value,
-                void *userdata,
-                int *n_pushed) {
-
-        const char *k;
-        va_list aq, *ap = userdata;
-        int r;
-
-        r = check_utf8ness_and_warn(filename, line, key, value);
-        if (r < 0)
-                return r;
 
         va_copy(aq, *ap);
 
@@ -675,19 +663,27 @@ static int load_env_file_push(
         char *p;
         int r;
 
-        r = check_utf8ness_and_warn(filename, line, key, value);
-        if (r < 0)
-                return r;
+        if (!utf8_is_valid(key)) {
+                _cleanup_free_ char *t = utf8_escape_invalid(key);
 
-        p = strjoin(key, "=", value);
+                log_error("%s:%u: invalid UTF-8 for key '%s', ignoring.", strna(filename), line, t);
+                return -EINVAL;
+        }
+
+        if (value && !utf8_is_valid(value)) {
+                _cleanup_free_ char *t = utf8_escape_invalid(value);
+
+                log_error("%s:%u: invalid UTF-8 value for key %s: '%s', ignoring.", strna(filename), line, key, t);
+                return -EINVAL;
+        }
+
+        p = strjoin(key, "=", strempty(value));
         if (!p)
                 return -ENOMEM;
 
-        r = strv_env_replace(m, p);
-        if (r < 0) {
-                free(p);
+        r = strv_consume(m, p);
+        if (r < 0)
                 return r;
-        }
 
         if (n_pushed)
                 (*n_pushed)++;
@@ -721,9 +717,19 @@ static int load_env_file_push_pairs(
         char ***m = userdata;
         int r;
 
-        r = check_utf8ness_and_warn(filename, line, key, value);
-        if (r < 0)
-                return r;
+        if (!utf8_is_valid(key)) {
+                _cleanup_free_ char *t = utf8_escape_invalid(key);
+
+                log_error("%s:%u: invalid UTF-8 for key '%s', ignoring.", strna(filename), line, t);
+                return -EINVAL;
+        }
+
+        if (value && !utf8_is_valid(value)) {
+                _cleanup_free_ char *t = utf8_escape_invalid(value);
+
+                log_error("%s:%u: invalid UTF-8 value for key %s: '%s', ignoring.", strna(filename), line, key, t);
+                return -EINVAL;
+        }
 
         r = strv_extend(m, key);
         if (r < 0)
@@ -760,39 +766,6 @@ int load_env_file_pairs(FILE *f, const char *fname, const char *newline, char **
 
         *rl = m;
         return 0;
-}
-
-static int merge_env_file_push(
-                const char *filename, unsigned line,
-                const char *key, char *value,
-                void *userdata,
-                int *n_pushed) {
-
-        char ***env = userdata;
-        char *expanded_value;
-
-        assert(env);
-
-        expanded_value = replace_env(value, *env,
-                                     REPLACE_ENV_USE_ENVIRONMENT|REPLACE_ENV_ALLOW_BRACELESS);
-        if (!expanded_value)
-                return -ENOMEM;
-
-        free_and_replace(value, expanded_value);
-
-        return load_env_file_push(filename, line, key, value, env, n_pushed);
-}
-
-int merge_env_file(
-                char ***env,
-                FILE *f,
-                const char *fname) {
-
-        /* NOTE: this function supports braceful and braceless variable expansions,
-         * unlike other exported parsing functions.
-         */
-
-        return parse_env_file_internal(f, fname, NEWLINE, merge_env_file_push, env, NULL);
 }
 
 static void write_env_var(FILE *f, const char *v) {
