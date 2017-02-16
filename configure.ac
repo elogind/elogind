@@ -109,6 +109,16 @@ if test -z "$GPERF" ; then
         AC_MSG_ERROR([*** gperf not found])
 fi
 
+
+# ------------------------------------------------------------------------------
+# Find running cgroup controller
+with_cgroupctrl=
+AS_IF(  [test -f /proc/self/cgroup],
+        [with_cgroupctrl=`grep "^1:" /proc/self/cgroup | cut -d ':' -f 2`])
+AS_IF(  [test -z "$with_cgroupctrl"],
+        AC_MSG_ERROR([No running cgroup controller found]))
+
+
 # ------------------------------------------------------------------------------
 address_sanitizer_cflags=
 address_sanitizer_cppflags=
@@ -691,6 +701,7 @@ AC_SUBST([pamlibdir], [$with_pamlibdir])
 AC_SUBST([pamconfdir], [$with_pamconfdir])
 AC_SUBST([rootprefix], [$with_rootprefix])
 AC_SUBST([rootlibdir], [$with_rootlibdir])
+AC_SUBST([cgroup_controller], [$with_cgroupctrl])
 
 AC_CONFIG_FILES([
         Makefile
@@ -712,6 +723,7 @@ AC_MSG_RESULT([
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
         extra debugging:         ${enable_debug}
+        cgroup controller:       ${with_cgroupctrl}
 
         prefix:                  ${prefix}
         rootprefix:              ${with_rootprefix}

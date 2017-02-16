@@ -570,7 +570,7 @@ static int controller_is_accessible(const char *controller) {
                  * the unified hierarchy. */
 
                 if (streq(controller, ELOGIND_CGROUP_CONTROLLER))
-                return 0;
+                        return 0;
 
                 if (startswith(controller, "name="))
                         return -EOPNOTSUPP;
@@ -581,8 +581,8 @@ static int controller_is_accessible(const char *controller) {
                 dn = controller_to_dirname(controller);
                 cc = strjoina("/sys/fs/cgroup/", dn);
 
-        if (laccess(cc, F_OK) < 0)
-                return -errno;
+                if (laccess(cc, F_OK) < 0)
+                        return -errno;
         }
 
         return 0;
@@ -811,11 +811,11 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         if (unified < 0)
                 return unified;
         if (unified == 0) {
-        if (controller) {
-                if (!cg_controller_is_valid(controller))
-                        return -EINVAL;
-        } else
-                controller = ELOGIND_CGROUP_CONTROLLER;
+                if (controller) {
+                        if (!cg_controller_is_valid(controller))
+                                return -EINVAL;
+                } else
+                        controller = ELOGIND_CGROUP_CONTROLLER;
 
                 cs = strlen(controller);
         }
@@ -840,29 +840,29 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
                                 continue;
                 } else {
                         char *l;
-                size_t k;
-                const char *word, *state;
-                bool found = false;
+                        size_t k;
+                        const char *word, *state;
+                        bool found = false;
 
-                l = strchr(line, ':');
-                if (!l)
-                        continue;
+                        l = strchr(line, ':');
+                        if (!l)
+                                continue;
 
-                l++;
-                e = strchr(l, ':');
-                if (!e)
-                        continue;
+                        l++;
+                        e = strchr(l, ':');
+                        if (!e)
+                                continue;
 
-                *e = 0;
-                FOREACH_WORD_SEPARATOR(word, k, l, ",", state) {
-                        if (k == cs && memcmp(word, controller, cs) == 0) {
-                                found = true;
-                                break;
+                        *e = 0;
+                        FOREACH_WORD_SEPARATOR(word, k, l, ",", state) {
+                                if (k == cs && memcmp(word, controller, cs) == 0) {
+                                        found = true;
+                                        break;
+                                }
                         }
-                }
 
-                if (!found)
-                        continue;
+                        if (!found)
+                                continue;
                 }
 
                 p = strdup(e + 1);

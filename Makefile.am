@@ -55,6 +55,7 @@ zshcompletiondir=@zshcompletiondir@
 systemsleepdir=$(pkglibexecdir)/sleep.d
 systemshutdowndir=$(pkglibexecdir)/shutdown.d
 
+CGROUP_CONTROLLER=@cgroup_controller@
 PKTTYAGENT=$(bindir)/pkttyagent
 
 # Our own, non-special dirs
@@ -68,8 +69,10 @@ factory_pamdir = $(datadir)/factory/etc/pam.d
 
 # And these are the special ones for /
 rootprefix=@rootprefix@
+rootlibdir=@rootlibdir@
 rootbindir=$(rootprefix)/bin
 rootlibexecdir=$(rootprefix)/lib/elogind
+
 
 EXTRA_DIST =
 BUILT_SOURCES =
@@ -119,6 +122,7 @@ CLEANFILES = $(BUILT_SOURCES) \
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
+	-DELOGIND_CGROUP_CONTROLLER=\"$(CGROUP_CONTROLLER)\" \
 	-DELOGIND_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
 	-DROOTPREFIX=\"$(rootprefix)\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
