@@ -71,7 +71,6 @@ factory_pamdir = $(datadir)/factory/etc/pam.d
 rootprefix=@rootprefix@
 rootlibdir=@rootlibdir@
 rootbindir=$(rootprefix)/bin
-rootlibexecdir=$(rootprefix)/lib/elogind
 
 
 EXTRA_DIST =
@@ -123,8 +122,7 @@ AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
 	-DELOGIND_CGROUP_CONTROLLER=\"$(CGROUP_CONTROLLER)\" \
-	-DELOGIND_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
-	-DROOTPREFIX=\"$(rootprefix)\" \
+	-DELOGIND_CGROUP_AGENT_PATH=\"$(pkglibexecdir)/elogind-cgroups-agent\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
@@ -133,8 +131,6 @@ AM_CPPFLAGS = \
 	-DREBOOT=\"$(REBOOT)\" \
 	-DKEXEC=\"$(KEXEC)\" \
 	-DLIBDIR=\"$(libdir)\" \
-	-DROOTLIBDIR=\"$(rootlibdir)\" \
-	-DROOTLIBEXECDIR=\"$(rootlibexecdir)\" \
 	-DTEST_DIR=\"$(abs_top_srcdir)/test\" \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src/basic \
@@ -193,8 +189,7 @@ AM_V_RM_0 = @echo "  RM      " $@;
 
 # ------------------------------------------------------------------------------
 rootbin_PROGRAMS =
-bin_PROGRAMS =
-rootlibexec_PROGRAMS =
+pkglibexec_PROGRAMS =
 
 dist_doc_DATA = \
 	README \
@@ -474,7 +469,7 @@ dist_factory_pam_DATA = \
 endif
 
 # ------------------------------------------------------------------------------
-rootlibexec_PROGRAMS += \
+pkglibexec_PROGRAMS += \
        elogind-cgroups-agent
 
 elogind_cgroups_agent_SOURCES = \
@@ -637,7 +632,7 @@ endif
 noinst_LTLIBRARIES += \
 	libelogind-core.la
 
-rootlibexec_PROGRAMS += \
+pkglibexec_PROGRAMS += \
 	elogind
 
 loginctl_SOURCES = \
@@ -764,7 +759,6 @@ EXTRA_DIST += \
 
 # ------------------------------------------------------------------------------
 substitutions = \
-       '|rootlibexecdir=$(rootlibexecdir)|' \
        '|rootbindir=$(rootbindir)|' \
        '|bindir=$(bindir)|' \
        '|pkgsysconfdir=$(pkgsysconfdir)|' \
@@ -933,7 +927,7 @@ endif
 
 .PHONY: dist-check-help
 
-dist-check-help: $(rootbin_PROGRAMS) $(bin_PROGRAMS)
+dist-check-help: $(rootbin_PROGRAMS)
 	for i in $(abspath $^); do                                             \
             if $$i  --help | grep -v 'default:' | grep -E -q '.{80}.' ; then   \
 		echo "$(basename $$i) --help output is too wide:";             \
