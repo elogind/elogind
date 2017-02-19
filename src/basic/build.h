@@ -43,8 +43,11 @@
 #define _ACL_FEATURE_ "-ACL"
 #endif
 
+#define _CGROUP_HIEARCHY_ "default-hierarchy=" DEFAULT_HIERARCHY_NAME
+
 #define SYSTEMD_FEATURES                                                \
         _PAM_FEATURE_ " "                                               \
         _SELINUX_FEATURE_ " "                                           \
         _SMACK_FEATURE_ " "                                             \
-        _ACL_FEATURE_ " "
+        _ACL_FEATURE_ " "                                               \
+        _CGROUP_HIEARCHY_
