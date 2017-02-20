@@ -1203,10 +1203,11 @@ int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {
                         return r;
 
                 root = rt;
+                log_debug_elogind("Determined root path: \"%s\"", root);
         }
 
         p = path_startswith(cgroup, root);
-        if (p && p > cgroup)
+        if (p && p[0] && (p > cgroup))
                 *shifted = p - 1;
         else
                 *shifted = cgroup;
