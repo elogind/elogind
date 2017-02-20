@@ -409,7 +409,7 @@ static int user_start_slice(User *u) {
                 char lu[DECIMAL_STR_MAX(uid_t) + 1], *slice;
                 sprintf(lu, UID_FMT, u->uid);
 
-                r = slice_build_subslice("user", lu, &slice);
+                r = slice_build_subslice("user.slice", lu, &slice);
                 if (r < 0)
                         return r;
 
