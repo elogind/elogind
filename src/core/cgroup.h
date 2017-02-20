@@ -23,15 +23,17 @@
 
 #include <stdbool.h>
 
-#include "list.h"
-#include "time-util.h"
+// #include "list.h"
+// #include "time-util.h"
 #include "logind.h"
 
-typedef struct CGroupContext CGroupContext;
-typedef struct CGroupDeviceAllow CGroupDeviceAllow;
-typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
-typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
+// UNNEEDED typedef struct CGroupContext CGroupContext;
+// UNNEEDED Stypedef struct CGroupDeviceAllow CGroupDeviceAllow;
+// UNNEEDED typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
+// UNNEEDED typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
 
+/// UNNEEDED by elogind
+#if 0
 typedef enum CGroupDevicePolicy {
 
         /* When devices listed, will allow those, plus built-in ones,
@@ -90,20 +92,21 @@ struct CGroupContext {
 
         bool delegate;
 };
+#endif // 0
 
 // #include "unit.h"
-#include "cgroup-util.h"
+// #include "cgroup-util.h"
 
-void cgroup_context_init(CGroupContext *c);
-void cgroup_context_done(CGroupContext *c);
+// UNNNEEDE void cgroup_context_init(CGroupContext *c);
+// UNNEEDED void cgroup_context_done(CGroupContext *c);
 // UNNEEDED void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix);
 // UNNEEDED void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, ManagerState state);
 
-CGroupMask cgroup_context_get_mask(CGroupContext *c);
+// UNNEEDED CGroupMask cgroup_context_get_mask(CGroupContext *c);
 
-void cgroup_context_free_device_allow(CGroupContext *c, CGroupDeviceAllow *a);
-void cgroup_context_free_blockio_device_weight(CGroupContext *c, CGroupBlockIODeviceWeight *w);
-void cgroup_context_free_blockio_device_bandwidth(CGroupContext *c, CGroupBlockIODeviceBandwidth *b);
+// UNNEEDED void cgroup_context_free_device_allow(CGroupContext *c, CGroupDeviceAllow *a);
+// UNNEEDED void cgroup_context_free_blockio_device_weight(CGroupContext *c, CGroupBlockIODeviceWeight *w);
+// UNNEEDED void cgroup_context_free_blockio_device_bandwidth(CGroupContext *c, CGroupBlockIODeviceBandwidth *b);
 
 // UNNEEDED CGroupMask unit_get_own_mask(Unit *u);
 // UNNEEDED CGroupMask unit_get_siblings_mask(Unit *u);
@@ -146,5 +149,5 @@ void manager_shutdown_cgroup(Manager *m, bool delete);
 // UNNEEDED int unit_notify_cgroup_empty(Unit *u);
 // UNNEEDED int manager_notify_cgroup_empty(Manager *m, const char *group);
 
-const char* cgroup_device_policy_to_string(CGroupDevicePolicy i) _const_;
-CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;
+// UNNEEDED const char* cgroup_device_policy_to_string(CGroupDevicePolicy i) _const_;
+// UNNEEDED CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;

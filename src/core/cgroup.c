@@ -30,6 +30,8 @@
 
 #define CGROUP_CPU_QUOTA_PERIOD_USEC ((usec_t) 100 * USEC_PER_MSEC)
 
+// UNNEEDED by elogind
+#if 0
 void cgroup_context_init(CGroupContext *c) {
         assert(c);
 
@@ -85,8 +87,6 @@ void cgroup_context_done(CGroupContext *c) {
                 cgroup_context_free_device_allow(c, c->device_allow);
 }
 
-/// UNNEEDED by elogind
-#if 0
 void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
         CGroupBlockIODeviceBandwidth *b;
         CGroupBlockIODeviceWeight *w;
@@ -469,7 +469,6 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
                 }
         }
 }
-#endif // 0
 
 CGroupMask cgroup_context_get_mask(CGroupContext *c) {
         CGroupMask mask = 0;
@@ -500,8 +499,6 @@ CGroupMask cgroup_context_get_mask(CGroupContext *c) {
         return mask;
 }
 
-/// UNNEEDED by elogind
-#if 0
 CGroupMask unit_get_own_mask(Unit *u) {
         CGroupContext *c;
 
@@ -1563,7 +1560,6 @@ bool unit_cgroup_delegate(Unit *u) {
 
         return c->delegate;
 }
-#endif // 0
 
 static const char* const cgroup_device_policy_table[_CGROUP_DEVICE_POLICY_MAX] = {
         [CGROUP_AUTO] = "auto",
@@ -1572,3 +1568,4 @@ static const char* const cgroup_device_policy_table[_CGROUP_DEVICE_POLICY_MAX] =
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_device_policy, CGroupDevicePolicy);
+#endif // 0

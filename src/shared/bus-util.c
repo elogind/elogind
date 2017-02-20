@@ -19,27 +19,29 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/socket.h>
+// #include <sys/socket.h>
 
-#include "sd-daemon.h"
-#include "sd-event.h"
-#include "util.h"
+// #include "sd-daemon.h"
+// #include "sd-event.h"
+// #include "util.h"
 #include "strv.h"
-#include "macro.h"
-#include "def.h"
-#include "path-util.h"
-#include "missing.h"
-#include "set.h"
-#include "signal-util.h"
+// #include "macro.h"
+// #include "def.h"
+// #include "path-util.h"
+// #include "missing.h"
+// #include "set.h"
+// #include "signal-util.h"
 #include "unit-name.h"
 
-#include "sd-bus.h"
-#include "bus-error.h"
-#include "bus-label.h"
+// #include "sd-bus.h"
+// #include "bus-error.h"
+// #include "bus-label.h"
 #include "bus-message.h"
 #include "bus-util.h"
 #include "bus-internal.h"
 
+/// UNNEEDED by elogind
+#if 0
 static int name_owner_change_callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
         sd_event *e = userdata;
 
@@ -93,8 +95,6 @@ int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int bus_event_loop_with_idle(
                 sd_event *e,
                 sd_bus *bus,
@@ -551,6 +551,8 @@ void bus_verify_polkit_async_registry_free(Hashmap *registry) {
 #endif
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_check_peercred(sd_bus *c) {
         struct ucred ucred;
         socklen_t l;
@@ -629,8 +631,6 @@ int bus_open_system_systemd(sd_bus **_bus) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int bus_open_user_systemd(sd_bus **_bus) {
         _cleanup_bus_unref_ sd_bus *bus = NULL;
         _cleanup_free_ char *ee = NULL;
@@ -1356,12 +1356,12 @@ int bus_log_parse_error(int r) {
         return log_error_errno(r, "Failed to parse bus message: %m");
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_log_create_error(int r) {
         return log_error_errno(r, "Failed to create bus message: %m");
 }
 
-/// UNNEEDED by elogind
-#if 0
 int bus_parse_unit_info(sd_bus_message *message, UnitInfo *u) {
         assert(message);
         assert(u);
@@ -1680,7 +1680,6 @@ static int match_job_removed(sd_bus_message *m, void *userdata, sd_bus_error *er
 
         return 0;
 }
-#endif // 0
 
 void bus_wait_for_jobs_free(BusWaitForJobs *d) {
         if (!d)
@@ -1699,8 +1698,6 @@ void bus_wait_for_jobs_free(BusWaitForJobs *d) {
         free(d);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret) {
         _cleanup_(bus_wait_for_jobs_freep) BusWaitForJobs *d = NULL;
         int r;
@@ -1750,7 +1747,6 @@ int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret) {
 
         return 0;
 }
-#endif // 0
 
 static int bus_process_wait(sd_bus *bus) {
         int r;
@@ -1930,8 +1926,6 @@ int bus_wait_for_jobs_add(BusWaitForJobs *d, const char *path) {
         return set_put_strdup(d->jobs, path);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int bus_deserialize_and_dump_unit_file_changes(sd_bus_message *m, bool quiet, UnitFileChange **changes, unsigned *n_changes) {
         const char *type, *path, *source;
         int r;
@@ -1961,7 +1955,6 @@ int bus_deserialize_and_dump_unit_file_changes(sd_bus_message *m, bool quiet, Un
 
         return 0;
 }
-#endif // 0
 
 /**
  * bus_path_encode_unique() - encode unique object path
@@ -2089,6 +2082,7 @@ int bus_path_decode_unique(const char *path, const char *prefix, char **ret_send
         *ret_external = external;
         return 1;
 }
+#endif // 0
 
 bool is_kdbus_wanted(void) {
         _cleanup_free_ char *value = NULL;

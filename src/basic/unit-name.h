@@ -28,8 +28,8 @@
 #define UNIT_NAME_MAX 256
 
 typedef enum UnitType UnitType;
-typedef enum UnitLoadState UnitLoadState;
-typedef enum UnitDependency UnitDependency;
+// UNNEEDED typedef enum UnitLoadState UnitLoadState;
+// UNNNEEDED typedef enum UnitDependency UnitDependency;
 
 enum UnitType {
         UNIT_SERVICE = 0,
@@ -49,6 +49,8 @@ enum UnitType {
         _UNIT_TYPE_INVALID = -1
 };
 
+/// UNNEEDED by elogind
+#if 0
 enum UnitLoadState {
         UNIT_STUB = 0,
         UNIT_LOADED,
@@ -108,6 +110,7 @@ enum UnitDependency {
         _UNIT_DEPENDENCY_MAX,
         _UNIT_DEPENDENCY_INVALID = -1
 };
+#endif // 0
 
 typedef enum UnitNameFlags {
         UNIT_NAME_PLAIN = 1,      /* Allow foo.service */
@@ -126,7 +129,7 @@ static inline int unit_prefix_and_instance_is_valid(const char *p) {
         return unit_instance_is_valid(p);
 }
 
-int unit_name_to_prefix(const char *n, char **prefix);
+// UNNEEDED int unit_name_to_prefix(const char *n, char **prefix);
 // UNNEEDED int unit_name_to_instance(const char *n, char **instance);
 // UNNEEDED int unit_name_to_prefix_and_instance(const char *n, char **ret);
 
@@ -152,9 +155,11 @@ int unit_name_from_path(const char *path, const char *suffix, char **ret);
 char *unit_dbus_path_from_name(const char *name);
 int unit_name_from_dbus_path(const char *path, char **name);
 
-const char* unit_dbus_interface_from_type(UnitType t);
+// UNNEEDED const char* unit_dbus_interface_from_type(UnitType t);
 // UNNEEDED const char *unit_dbus_interface_from_name(const char *name);
 
+/// UNNEEDED by elogind
+#if 0
 typedef enum UnitNameMangle {
         UNIT_NAME_NOGLOB,
         UNIT_NAME_GLOB,
@@ -165,6 +170,7 @@ int unit_name_mangle_with_suffix(const char *name, UnitNameMangle allow_globs, c
 static inline int unit_name_mangle(const char *name, UnitNameMangle allow_globs, char **ret) {
         return unit_name_mangle_with_suffix(name, allow_globs, ".service", ret);
 }
+#endif // 0
 
 // UNNEEDED int slice_build_parent_slice(const char *slice, char **ret);
 int slice_build_subslice(const char *slice, const char*name, char **subslice);
@@ -173,8 +179,8 @@ bool slice_name_is_valid(const char *name);
 const char *unit_type_to_string(UnitType i) _const_;
 UnitType unit_type_from_string(const char *s) _pure_;
 
-const char *unit_load_state_to_string(UnitLoadState i) _const_;
-UnitLoadState unit_load_state_from_string(const char *s) _pure_;
+// UNNEEDED const char *unit_load_state_to_string(UnitLoadState i) _const_;
+// UNNEEDED UnitLoadState unit_load_state_from_string(const char *s) _pure_;
 
-const char *unit_dependency_to_string(UnitDependency i) _const_;
-UnitDependency unit_dependency_from_string(const char *s) _pure_;
+// UNNEEDED const char *unit_dependency_to_string(UnitDependency i) _const_;
+// UNNEEDED UnitDependency unit_dependency_from_string(const char *s) _pure_;

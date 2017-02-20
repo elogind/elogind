@@ -34,6 +34,8 @@ typedef enum ManagerRunningAs {
         _MANAGER_RUNNING_AS_INVALID = -1
 } ManagerRunningAs;
 
+/// UNNEEDED by elogind
+#if 0
 int user_config_home(char **config_home);
 int user_runtime_dir(char **runtime_dir);
 
@@ -55,3 +57,4 @@ int lookup_paths_init_from_scope(LookupPaths *paths,
 
 void lookup_paths_free(LookupPaths *p);
 #define _cleanup_lookup_paths_free_ _cleanup_(lookup_paths_free)
+#endif // 0

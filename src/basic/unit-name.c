@@ -118,6 +118,8 @@ bool unit_suffix_is_valid(const char *s) {
         return true;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int unit_name_to_prefix(const char *n, char **ret) {
         const char *p;
         char *s;
@@ -142,8 +144,6 @@ int unit_name_to_prefix(const char *n, char **ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int unit_name_to_instance(const char *n, char **instance) {
         const char *p, *d;
         char *i;
@@ -598,6 +598,8 @@ int unit_name_from_dbus_path(const char *path, char **name) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 const char* unit_dbus_interface_from_type(UnitType t) {
 
         static const char *const table[_UNIT_TYPE_MAX] = {
@@ -624,8 +626,6 @@ const char* unit_dbus_interface_from_type(UnitType t) {
         return table[t];
 }
 
-/// UNNEEDED by elogind
-#if 0
 const char *unit_dbus_interface_from_name(const char *name) {
         UnitType t;
 
@@ -635,7 +635,6 @@ const char *unit_dbus_interface_from_name(const char *name) {
 
         return unit_dbus_interface_from_type(t);
 }
-#endif // 0
 
 static char *do_escape_mangle(const char *f, UnitNameMangle allow_globs, char *t) {
         const char *valid_chars;
@@ -722,8 +721,6 @@ int unit_name_mangle_with_suffix(const char *name, UnitNameMangle allow_globs, c
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int slice_build_parent_slice(const char *slice, char **ret) {
         char *s, *dash;
         int r;
@@ -846,6 +843,8 @@ static const char* const unit_type_table[_UNIT_TYPE_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(unit_type, UnitType);
 
+/// UNNEEDED by elogind
+#if 0
 static const char* const unit_load_state_table[_UNIT_LOAD_STATE_MAX] = {
         [UNIT_STUB] = "stub",
         [UNIT_LOADED] = "loaded",
@@ -887,3 +886,4 @@ static const char* const unit_dependency_table[_UNIT_DEPENDENCY_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(unit_dependency, UnitDependency);
+#endif // 0
