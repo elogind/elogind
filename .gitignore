@@ -296,3 +296,6 @@ elogind_patches.lst
 /elogind.cbp
 /elogind.layout*
 *.bak
+/FIXME
+/create_dist.sh
+
