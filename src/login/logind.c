@@ -1235,6 +1235,10 @@ int main(int argc, char *argv[]) {
         log_parse_environment();
         log_open();
 
+#ifdef ENABLE_DEBUG_ELOGIND
+        log_set_max_level(LOG_DEBUG);
+#endif // ENABLE_DEBUG_ELOGIND
+
         umask(0022);
 
         if (argc != 1) {

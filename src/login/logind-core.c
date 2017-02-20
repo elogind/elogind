@@ -296,11 +296,14 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
 
         s = hashmap_get(m->session_units, unit);
 #else
+        log_debug_elogind("Searching session for PID %u", pid);
         r = cg_pid_get_session(pid, &session_name);
         if (r < 0)
                 return 0;
 
         s = hashmap_get(m->sessions, session_name);
+        log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
+                          session_name, s && s->id ? s->id : "NULL");
 #endif
         if (!s)
                 return 0;

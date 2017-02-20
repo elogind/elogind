@@ -526,10 +526,13 @@ _public_ int sd_bus_creds_get_session(sd_bus_creds *c, const char **ret) {
         if (!c->session) {
                 const char *shifted;
 
+                log_debug_elogind("Shifting cgroup \"%s\", root \"%s\"",
+                                  c->cgroup, c->cgroup_root ? c->cgroup_root : "NULL");
                 r = cg_shift_path(c->cgroup, c->cgroup_root, &shifted);
                 if (r < 0)
                         return r;
 
+                log_debug_elogind("Shifted: \"%s\"", shifted);
                 r = cg_path_get_session(shifted, (char**) &c->session);
                 if (r < 0)
                         return r;

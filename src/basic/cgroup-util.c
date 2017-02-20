@@ -297,6 +297,10 @@ int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char
 
         my_pid = getpid();
 
+        log_debug_elogind("Migrating \"%s\"/\"%s\" to \"%s\"/\"%s\" (%s)",
+                          cfrom, pfrom, cto, pto,
+                          ignore_self ? "ignoring self" : "watching self");
+
         do {
                 _cleanup_fclose_ FILE *f = NULL;
                 pid_t pid = 0;
@@ -1222,6 +1226,8 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         if (r < 0)
                 return r;
 
+        log_debug_elogind("Shifting path: \"%s\" (PID %u, root: \"%s\")",
+                          raw, pid, root ? root : "NULL");
         r = cg_shift_path(raw, root, &c);
         if (r < 0)
                 return r;
@@ -1238,6 +1244,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
 
                 *cgroup = n;
         }
+        log_debug_elogind("Resulting cgroup:\"%s\"", *cgroup);
 
         return 0;
 }
@@ -1522,6 +1529,7 @@ int cg_path_get_session(const char *path, char **session) {
         const char *e, *n, *start;
 
         assert(path);
+        log_debug_elogind("path is \"%s\"", path);
         assert(path[0] == '/');
 
         e = path + 1;
@@ -1539,6 +1547,7 @@ int cg_path_get_session(const char *path, char **session) {
         if (session) {
                 char *rr;
 
+                log_debug_elogind("found session: \"%s\"", start);
                 rr = strdup(start);
                 if (!rr)
                         return -ENOMEM;

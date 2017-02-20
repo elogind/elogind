@@ -1232,7 +1232,6 @@ int manager_setup_cgroup(Manager *m) {
         r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, 0, &m->cgroup_root);
         if (r < 0)
                 return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
-
 /// elogind does not support systemd scopes and slices
 #if 0
         /* Chop off the init scope, if we are already located in it */
@@ -1256,6 +1255,8 @@ int manager_setup_cgroup(Manager *m) {
          * it everywhere. */
         while ((e = endswith(m->cgroup_root, "/")))
                 *e = 0;
+        log_debug_elogind("Cgroup Controller \"%s\" -> root \"%s\"",
+                          ELOGIND_CGROUP_CONTROLLER, m->cgroup_root);
 
         /* 2. Show data */
         r = cg_get_path(ELOGIND_CGROUP_CONTROLLER, m->cgroup_root, NULL, &path);
@@ -1322,17 +1323,25 @@ int manager_setup_cgroup(Manager *m) {
                 scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
                 r = cg_create_and_attach(ELOGIND_CGROUP_CONTROLLER, scope_path, 0);
 #else
-                scope_path = strjoina(m->cgroup_root, "/elogind");
+                if (streq(m->cgroup_root, "/elogind"))
+                        // root already is our cgroup
+                        scope_path = strjoina(m->cgroup_root);
+                else
+                        // we have to create our own group
+                        scope_path = strjoina(m->cgroup_root, "/elogind");
                 r = cg_create_and_attach(ELOGIND_CGROUP_CONTROLLER, scope_path, 0);
 #endif // 0
                 if (r < 0)
                         return log_error_errno(r, "Failed to create %s control group: %m", scope_path);
+                log_debug_elogind("Created control group \"%s\"", scope_path);
 
                 /* also, move all other userspace processes remaining
                  * in the root cgroup into that scope. */
-                r = cg_migrate(ELOGIND_CGROUP_CONTROLLER, m->cgroup_root, ELOGIND_CGROUP_CONTROLLER, scope_path, false);
-                if (r < 0)
-                        log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
+                if (!streq(m->cgroup_root, scope_path)) {
+                        r = cg_migrate(ELOGIND_CGROUP_CONTROLLER, m->cgroup_root, ELOGIND_CGROUP_CONTROLLER, scope_path, false);
+                        if (r < 0)
+                                log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
+                }
 
                 /* 5. And pin it, so that it cannot be unmounted */
                 safe_close(m->pin_cgroupfs_fd);

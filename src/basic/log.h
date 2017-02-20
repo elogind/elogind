@@ -187,6 +187,12 @@ void log_assert_failed_return(
 #  define log_trace(...) do {} while(0)
 #endif
 
+#ifdef ENABLE_DEBUG_ELOGIND
+#  define log_debug_elogind(...) log_debug(__VA_ARGS__);usleep(25*USEC_PER_MSEC)
+#else
+#  define log_debug_elogind(...) do {} while(0)
+#endif // ENABLE_DEBUG_ELOGIND
+
 /* Structured logging */
 #define log_struct(level, ...) log_struct_internal(level, 0, __FILE__, __LINE__, __func__, __VA_ARGS__)
 #define log_struct_errno(level, error, ...) log_struct_internal(level, error, __FILE__, __LINE__, __func__, __VA_ARGS__)
