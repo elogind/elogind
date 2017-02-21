@@ -35,8 +35,11 @@ typedef enum LogTarget{
         LOG_TARGET_CONSOLE,
         LOG_TARGET_CONSOLE_PREFIXED,
         LOG_TARGET_KMSG,
+/// elogind does not support logging to systemd-journald
+#if 0
         LOG_TARGET_JOURNAL,
         LOG_TARGET_JOURNAL_OR_KMSG,
+#endif // 0
         LOG_TARGET_SYSLOG,
         LOG_TARGET_SYSLOG_OR_KMSG,
         LOG_TARGET_AUTO, /* console if stderr is tty, JOURNAL_OR_KMSG otherwise */
@@ -69,7 +72,7 @@ void log_close(void);
 // UNNEEDED void log_forget_fds(void);
 
 void log_close_syslog(void);
-void log_close_journal(void);
+// UNNEEDED void log_close_journal(void);
 void log_close_kmsg(void);
 void log_close_console(void);
 

@@ -56,7 +56,7 @@ static bool syslog_is_stream = false;
 static bool show_color = false;
 static bool show_location = false;
 
-static bool upgrade_syslog_to_journal = false;
+/// UNNEEDED by elogind  static bool upgrade_syslog_to_journal = false;
 
 /* Akin to glibc's __abort_msg; which is private and we hence cannot
  * use here. */
@@ -178,6 +178,8 @@ fail:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 void log_close_journal(void) {
         journal_fd = safe_close(journal_fd);
 }
@@ -211,6 +213,7 @@ fail:
         log_close_journal();
         return r;
 }
+#endif // 0
 
 int log_open(void) {
         int r;
@@ -222,7 +225,7 @@ int log_open(void) {
          * because there is no reason to close it. */
 
         if (log_target == LOG_TARGET_NULL) {
-                log_close_journal();
+                /// UNNEEDED by elogind log_close_journal();
                 log_close_syslog();
                 log_close_console();
                 return 0;
@@ -232,6 +235,8 @@ int log_open(void) {
             getpid() == 1 ||
             isatty(STDERR_FILENO) <= 0) {
 
+/// elogind does not support logging to systemd-journald
+#if 0
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_JOURNAL) {
@@ -242,12 +247,12 @@ int log_open(void) {
                                 return r;
                         }
                 }
-
+#endif // 0
                 if (log_target == LOG_TARGET_SYSLOG_OR_KMSG ||
                     log_target == LOG_TARGET_SYSLOG) {
                         r = log_open_syslog();
                         if (r >= 0) {
-                                log_close_journal();
+                                /// UNNEEDED by elogind log_close_journal();
                                 log_close_console();
                                 return r;
                         }
@@ -255,12 +260,12 @@ int log_open(void) {
 
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_SAFE ||
-                    log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
+                    /// UNNEEDED by elogind log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_SYSLOG_OR_KMSG ||
                     log_target == LOG_TARGET_KMSG) {
                         r = log_open_kmsg();
                         if (r >= 0) {
-                                log_close_journal();
+                                /// UNNEEDED by elogind log_close_journal();
                                 log_close_syslog();
                                 log_close_console();
                                 return r;
@@ -268,7 +273,7 @@ int log_open(void) {
                 }
         }
 
-        log_close_journal();
+        /// UNNEEDED by elogind log_close_journal();
         log_close_syslog();
 
         return log_open_console();
@@ -278,18 +283,21 @@ void log_set_target(LogTarget target) {
         assert(target >= 0);
         assert(target < _LOG_TARGET_MAX);
 
+/// elogind does not support logging to systemd-journald
+#if 0
         if (upgrade_syslog_to_journal) {
                 if (target == LOG_TARGET_SYSLOG)
                         target = LOG_TARGET_JOURNAL;
                 else if (target == LOG_TARGET_SYSLOG_OR_KMSG)
                         target = LOG_TARGET_JOURNAL_OR_KMSG;
         }
+#endif // 0
 
         log_target = target;
 }
 
 void log_close(void) {
-        log_close_journal();
+        /// UNNEDED by elogind log_close_journal();
         log_close_syslog();
         log_close_kmsg();
         log_close_console();
@@ -467,6 +475,8 @@ static int write_to_kmsg(
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int log_do_header(
                 char *header,
                 size_t size,
@@ -538,6 +548,7 @@ static int write_to_journal(
 
         return 1;
 }
+#endif // 0
 
 static int log_dispatch(
                 int level,
@@ -573,6 +584,8 @@ static int log_dispatch(
                 if ((e = strpbrk(buffer, NEWLINE)))
                         *(e++) = 0;
 
+/// elogind does not support logging to systemd-journald
+#if 0
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_JOURNAL) {
@@ -584,6 +597,7 @@ static int log_dispatch(
                                 log_open_kmsg();
                         }
                 }
+#endif // 0
 
                 if (log_target == LOG_TARGET_SYSLOG_OR_KMSG ||
                     log_target == LOG_TARGET_SYSLOG) {
@@ -600,7 +614,7 @@ static int log_dispatch(
                     (log_target == LOG_TARGET_AUTO ||
                      log_target == LOG_TARGET_SAFE ||
                      log_target == LOG_TARGET_SYSLOG_OR_KMSG ||
-                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
+                     /// UNNEEDED by elogind log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                      log_target == LOG_TARGET_KMSG)) {
 
                         k = write_to_kmsg(level, error, file, line, func, object_field, object, buffer);
@@ -816,6 +830,8 @@ int log_struct_internal(
         if ((level & LOG_FACMASK) == 0)
                 level = log_facility | LOG_PRI(level);
 
+/// elogind does not support logging to systemd-journald
+#if 0
         if ((log_target == LOG_TARGET_AUTO ||
              log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
              log_target == LOG_TARGET_JOURNAL) &&
@@ -878,6 +894,7 @@ int log_struct_internal(
                 if (!fallback)
                         return -error;
         }
+#endif // 0
 
         /* Fallback if journal logging is not available or didn't work. */
 
@@ -1053,8 +1070,11 @@ static const char *const log_target_table[_LOG_TARGET_MAX] = {
         [LOG_TARGET_CONSOLE] = "console",
         [LOG_TARGET_CONSOLE_PREFIXED] = "console-prefixed",
         [LOG_TARGET_KMSG] = "kmsg",
+/// elogind does not support logging to systemd-journald
+#if 0
         [LOG_TARGET_JOURNAL] = "journal",
         [LOG_TARGET_JOURNAL_OR_KMSG] = "journal-or-kmsg",
+#endif // 0
         [LOG_TARGET_SYSLOG] = "syslog",
         [LOG_TARGET_SYSLOG_OR_KMSG] = "syslog-or-kmsg",
         [LOG_TARGET_AUTO] = "auto",
