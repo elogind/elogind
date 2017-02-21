@@ -21,10 +21,10 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="logind.service">
+<refentry id="elogind">
 
   <refentryinfo>
-    <title>logind.service</title>
+    <title>elogind</title>
     <productname>elogind</productname>
 
     <authorgroup>
@@ -38,25 +38,23 @@
   </refentryinfo>
 
   <refmeta>
-    <refentrytitle>logind.service</refentrytitle>
+    <refentrytitle>elogind</refentrytitle>
     <manvolnum>8</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>logind.service</refname>
-    <refname>logind</refname>
+    <refname>elogind</refname>
     <refpurpose>Login manager</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
-    <para><filename>logind.service</filename></para>
-    <para><filename>/usr/lib/systemd/logind</filename></para>
+    <para><filename>/usr/libexec/elogind/elogind</filename></para>
   </refsynopsisdiv>
 
   <refsect1>
     <title>Description</title>
 
-    <para><command>logind</command> is a system service that
+    <para><command>elogind</command> is a system service that
     manages user logins. It is responsible for:</para>
 
     <itemizedlist>
@@ -79,12 +77,9 @@
       <listitem><para>Device access management for
       users</para></listitem>
 
-      <listitem><para>Automatic spawning of text logins (gettys) on
-      virtual console activation and user runtime directory
-      management</para></listitem>
     </itemizedlist>
 
-    <para>User sessions are registered in logind via the
+    <para>User sessions are registered in elogind via the
     <citerefentry><refentrytitle>pam_elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     PAM module.</para>
 
