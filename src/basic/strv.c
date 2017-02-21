@@ -572,6 +572,9 @@ int strv_extend_front(char ***l, const char *value) {
 
         /* Like strv_extend(), but prepends rather than appends the new entry */
 
+        if (!value)
+                return 0;
+
         n = strv_length(*l);
 
         /* Increase and overflow check. */
@@ -579,12 +582,9 @@ int strv_extend_front(char ***l, const char *value) {
         if (m < n)
                 return -ENOMEM;
 
-        if (value) {
-                v = strdup(value);
-                if (!v)
-                        return -ENOMEM;
-        } else
-                v = NULL;
+        v = strdup(value);
+        if (!v)
+                return -ENOMEM;
 
         c = realloc_multiply(*l, sizeof(char*), m);
         if (!c) {
