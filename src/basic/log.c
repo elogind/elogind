@@ -74,6 +74,7 @@ static bool show_location = false;
 #if 0 /// UNNEEDED by elogind
 static bool upgrade_syslog_to_journal = false;
 #endif // 0
+static bool always_reopen_console = false;
 
 /* Akin to glibc's __abort_msg; which is private and we hence cannot
  * use here. */
@@ -97,7 +98,7 @@ static int log_open_console(void) {
         if (console_fd >= 0)
                 return 0;
 
-        if (getpid() == 1) {
+        if (always_reopen_console) {
                 console_fd = open_terminal("/dev/console", O_WRONLY|O_NOCTTY|O_CLOEXEC);
                 if (console_fd < 0)
                         return console_fd;
@@ -999,24 +1000,30 @@ static int parse_proc_cmdline_item(const char *key, const char *value, void *dat
         if (streq(key, "debug") && !value)
                 log_set_max_level(LOG_DEBUG);
 
-        else if (streq(key, "systemd.log_target") && value) {
+        else if (proc_cmdline_key_streq(key, "systemd.log_target")) {
+
+                if (proc_cmdline_value_missing(key, value))
+                        return 0;
 
                 if (log_set_target_from_string(value) < 0)
                         log_warning("Failed to parse log target '%s'. Ignoring.", value);
 
-        } else if (streq(key, "systemd.log_level") && value) {
+        } else if (proc_cmdline_key_streq(key, "systemd.log_level")) {
+
+                if (proc_cmdline_value_missing(key, value))
+                        return 0;
 
                 if (log_set_max_level_from_string(value) < 0)
                         log_warning("Failed to parse log level '%s'. Ignoring.", value);
 
-        } else if (streq(key, "systemd.log_color") && value) {
+        } else if (proc_cmdline_key_streq(key, "systemd.log_color")) {
 
-                if (log_show_color_from_string(value) < 0)
+                if (log_show_color_from_string(value ?: "1") < 0)
                         log_warning("Failed to parse log color setting '%s'. Ignoring.", value);
 
-        } else if (streq(key, "systemd.log_location") && value) {
+        } else if (proc_cmdline_key_streq(key, "systemd.log_location")) {
 
-                if (log_show_location_from_string(value) < 0)
+                if (log_show_location_from_string(value ?: "1") < 0)
                         log_warning("Failed to parse log location setting '%s'. Ignoring.", value);
         }
 
@@ -1027,10 +1034,9 @@ void log_parse_environment(void) {
         const char *e;
 
         if (get_ctty_devnr(0, NULL) < 0)
-                /* Only try to read the command line in daemons.
-                   We assume that anything that has a controlling
-                   tty is user stuff. */
-                (void) parse_proc_cmdline(parse_proc_cmdline_item, NULL, true);
+                /* Only try to read the command line in daemons.  We assume that anything that has a controlling tty is
+                   user stuff. */
+                (void) proc_cmdline_parse(parse_proc_cmdline_item, NULL, PROC_CMDLINE_STRIP_RD_PREFIX);
 
         e = secure_getenv("SYSTEMD_LOG_TARGET");
         if (e && log_set_target_from_string(e) < 0)
@@ -1181,10 +1187,14 @@ int log_syntax_internal(
         return log_struct_internal(
                         level, error,
                         file, line, func,
-                        LOG_MESSAGE_ID(SD_MESSAGE_INVALID_CONFIGURATION),
+                        "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
                         "CONFIG_FILE=%s", config_file,
                         "CONFIG_LINE=%u", config_line,
                         LOG_MESSAGE("%s:%u: %s", config_file, config_line, buffer),
                         unit_fmt, unit,
                         NULL);
+}
+
+void log_set_always_reopen_console(bool b) {
+        always_reopen_console = b;
 }
