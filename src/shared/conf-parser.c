@@ -455,7 +455,7 @@ DEFINE_PARSER(uint32, uint32_t, safe_atou32)
 DEFINE_PARSER(uint64, uint64_t, safe_atou64)
 DEFINE_PARSER(unsigned, unsigned, safe_atou)
 DEFINE_PARSER(double, double, safe_atod)
-DEFINE_PARSER(nsec, nsec_t, parse_nsec)
+// UNNEEDED DEFINE_PARSER(nsec, nsec_t, parse_nsec)
 DEFINE_PARSER(sec, usec_t, parse_sec)
 
 int config_parse_iec_size(const char* unit,

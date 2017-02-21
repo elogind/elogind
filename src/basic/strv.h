@@ -81,7 +81,7 @@ char *strv_join(char **l, const char *separator);
 char **strv_parse_nulstr(const char *s, size_t l);
 char **strv_split_nulstr(const char *s);
 
-bool strv_overlap(char **a, char **b) _pure_;
+// UNNEEDED bool strv_overlap(char **a, char **b) _pure_;
 
 #define STRV_FOREACH(s, l)                      \
         for ((s) = (l); (s) && *(s); (s)++)
@@ -94,8 +94,8 @@ bool strv_overlap(char **a, char **b) _pure_;
 #define STRV_FOREACH_PAIR(x, y, l)               \
         for ((x) = (l), (y) = (x+1); (x) && *(x) && *(y); (x) += 2, (y) = (x + 1))
 
-char **strv_sort(char **l);
-void strv_print(char **l);
+// UNNEEDED char **strv_sort(char **l);
+// UNNEEDED void strv_print(char **l);
 
 #define STRV_MAKE(...) ((char**) ((const char*[]) { __VA_ARGS__, NULL }))
 

@@ -113,6 +113,8 @@ bool hostname_is_valid(const char *s, bool allow_trailing_dot) {
         return true;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char* hostname_cleanup(char *s) {
         char *p, *d;
         bool dot;
@@ -142,6 +144,7 @@ char* hostname_cleanup(char *s) {
 
         return s;
 }
+#endif // 0
 
 bool is_localhost(const char *hostname) {
         assert(hostname);

@@ -96,6 +96,8 @@ unsigned long cap_last_cap(void) {
         return p;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int capability_bounding_set_drop(uint64_t drop, bool right_now) {
         _cleanup_cap_free_ cap_t after_cap = NULL;
         cap_flag_value_t fv;
@@ -176,8 +178,6 @@ finish:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
 static int drop_from_file(const char *fn, uint64_t drop) {
         int r, k;
         uint32_t hi, lo;

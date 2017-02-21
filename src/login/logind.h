@@ -191,11 +191,11 @@ bool manager_is_docked_or_multiple_displays(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
-int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
-int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
-int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
-int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error);
-int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
 
 /// eloginds own version does the action itself
 #if 0

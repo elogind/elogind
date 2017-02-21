@@ -141,7 +141,7 @@ bool cg_controller_is_valid(const char *p);
 typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
 // UNNEEDED int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path);
-int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t callback, void *userdata);
+// UNNEEDED int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t callback, void *userdata);
 // UNNEEDED int cg_attach_many_everywhere(CGroupMask supported, const char *path, Set* pids, cg_migrate_callback_t callback, void *userdata);
 // UNNEEDED int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to, cg_migrate_callback_t callback, void *userdata);
 // UNNEEDED int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
@@ -154,7 +154,7 @@ int cg_mask_supported(CGroupMask *ret);
 int cg_unified(void);
 // UNNEEDED void cg_unified_flush(void);
 
-bool cg_is_unified_wanted(void);
+// UNNEEDED bool cg_is_unified_wanted(void);
 // UNNEEDED bool cg_is_legacy_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;

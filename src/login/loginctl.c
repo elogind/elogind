@@ -95,6 +95,8 @@ static void polkit_agent_open_if_enabled(void) {
         polkit_agent_open();
 }
 
+/// UNNEEDED by elogind
+#if 0
 static OutputFlags get_output_flags(void) {
 
         return
@@ -103,6 +105,7 @@ static OutputFlags get_output_flags(void) {
                 (!on_tty() || pager_have()) * OUTPUT_FULL_WIDTH |
                 on_tty() * OUTPUT_COLOR;
 }
+#endif // 0
 
 static int list_sessions(int argc, char *argv[], void *userdata) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -244,6 +247,8 @@ static int list_seats(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int show_unit_cgroup(sd_bus *bus, const char *interface, const char *unit, pid_t leader) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
@@ -291,6 +296,7 @@ static int show_unit_cgroup(sd_bus *bus, const char *interface, const char *unit
         show_cgroup_and_extra(ELOGIND_CGROUP_CONTROLLER, cgroup, "\t\t  ", c, false, &leader, leader > 0, get_output_flags());
         return 0;
 }
+#endif // 0
 
 typedef struct SessionStatusInfo {
         char *id;
@@ -547,8 +553,8 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
 
         if (i.scope) {
                 printf("\t    Unit: %s\n", i.scope);
-                show_unit_cgroup(bus, "org.freedesktop.systemd1.Scope", i.scope, i.leader);
 #if 0
+                show_unit_cgroup(bus, "org.freedesktop.systemd1.Scope", i.scope, i.leader);
                 if (arg_transport == BUS_TRANSPORT_LOCAL) {
 
                         show_journal_by_unit(
@@ -631,8 +637,8 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
 
         if (i.slice) {
                 printf("\t    Unit: %s\n", i.slice);
-                show_unit_cgroup(bus, "org.freedesktop.systemd1.Slice", i.slice, 0);
 #if 0
+                show_unit_cgroup(bus, "org.freedesktop.systemd1.Slice", i.slice, 0);
                 show_journal_by_unit(
                                 stdout,
                                 i.slice,

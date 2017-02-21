@@ -196,7 +196,6 @@ int unit_name_to_prefix_and_instance(const char *n, char **ret) {
         *ret = s;
         return 0;
 }
-#endif // 0
 
 UnitType unit_name_to_type(const char *n) {
         const char *e;
@@ -211,8 +210,6 @@ UnitType unit_name_to_type(const char *n) {
         return unit_type_from_string(e + 1);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int unit_name_change_suffix(const char *n, const char *suffix, char **ret) {
         char *e, *s;
         size_t a, b;
@@ -270,6 +267,8 @@ int unit_name_build(const char *prefix, const char *instance, const char *suffix
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static char *do_escape_char(char c, char *t) {
         assert(t);
 
@@ -443,8 +442,6 @@ int unit_name_path_unescape(const char *f, char **ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int unit_name_replace_instance(const char *f, const char *i, char **ret) {
         const char *p, *e;
         char *s;
@@ -500,7 +497,6 @@ int unit_name_template(const char *f, char **ret) {
         *ret = s;
         return 0;
 }
-#endif // 0
 
 int unit_name_from_path(const char *path, const char *suffix, char **ret) {
         _cleanup_free_ char *p = NULL;
@@ -526,8 +522,6 @@ int unit_name_from_path(const char *path, const char *suffix, char **ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int unit_name_from_path_instance(const char *prefix, const char *path, const char *suffix, char **ret) {
         _cleanup_free_ char *p = NULL;
         char *s;
@@ -568,7 +562,6 @@ int unit_name_to_path(const char *name, char **ret) {
 
         return unit_name_path_unescape(prefix, ret);
 }
-#endif // 0
 
 char *unit_dbus_path_from_name(const char *name) {
         _cleanup_free_ char *e = NULL;
@@ -598,8 +591,6 @@ int unit_name_from_dbus_path(const char *path, char **name) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 const char* unit_dbus_interface_from_type(UnitType t) {
 
         static const char *const table[_UNIT_TYPE_MAX] = {

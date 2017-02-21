@@ -28,7 +28,7 @@
 
 unsigned long cap_last_cap(void);
 // UNNEEDED int have_effective_cap(int value);
-int capability_bounding_set_drop(uint64_t drop, bool right_now);
+// UNNEEDED int capability_bounding_set_drop(uint64_t drop, bool right_now);
 // UNNEEDED int capability_bounding_set_drop_usermode(uint64_t drop);
 
 // UNNEEDED int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities);

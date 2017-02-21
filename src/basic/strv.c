@@ -633,6 +633,8 @@ char **strv_split_nulstr(const char *s) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool strv_overlap(char **a, char **b) {
         char **i;
 
@@ -658,8 +660,6 @@ char **strv_sort(char **l) {
         return l;
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool strv_equal(char **a, char **b) {
         if (!a || !b)
                 return a == b;
@@ -670,7 +670,6 @@ bool strv_equal(char **a, char **b) {
 
         return true;
 }
-#endif // 0
 
 void strv_print(char **l) {
         char **s;
@@ -679,8 +678,6 @@ void strv_print(char **l) {
                 puts(*s);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int strv_extendf(char ***l, const char *format, ...) {
         va_list ap;
         char *x;

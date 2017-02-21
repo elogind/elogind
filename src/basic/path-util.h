@@ -58,7 +58,7 @@ int path_is_mount_point(const char *path, int flags);
 int path_is_read_only_fs(const char *path);
 // UNNEEDED int path_is_os_tree(const char *path);
 
-int find_binary(const char *name, bool local, char **filename);
+// UNNEEDED int find_binary(const char *name, bool local, char **filename);
 
 // UNNEEDED bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
@@ -74,7 +74,7 @@ int find_binary(const char *name, bool local, char **filename);
 #define PATH_FOREACH_PREFIX_MORE(prefix, path) \
         for (char *_slash = ({ path_kill_slashes(strcpy(prefix, path)); if (streq(prefix, "/")) prefix[0] = 0; strrchr(prefix, 0); }); _slash && ((*_slash = 0), true); _slash = strrchr((prefix), '/'))
 
-char *prefix_root(const char *root, const char *path);
+// UNNEEDED char *prefix_root(const char *root, const char *path);
 
 /* Similar to prefix_root(), but returns an alloca() buffer, or
  * possibly a const pointer into the path parameter */

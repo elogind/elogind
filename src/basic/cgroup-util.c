@@ -1907,7 +1907,6 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
 
         return 0;
 }
-#endif // 0
 
 int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t path_callback, void *userdata) {
         CGroupController c;
@@ -1942,8 +1941,6 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int cg_attach_many_everywhere(CGroupMask supported, const char *path, Set* pids, cg_migrate_callback_t path_callback, void *userdata) {
         Iterator i;
         void *pidp;
@@ -2237,7 +2234,6 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
 
         return 0;
 }
-#endif // 0
 
 bool cg_is_unified_wanted(void) {
         static thread_local int wanted = -1;
@@ -2271,8 +2267,6 @@ bool cg_is_unified_wanted(void) {
         }
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool cg_is_legacy_wanted(void) {
         return !cg_is_unified_wanted();
 }

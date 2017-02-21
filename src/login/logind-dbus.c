@@ -2621,7 +2621,6 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
 
         return 0;
 }
-#endif // 0
 
 int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         const char *path, *unit;
@@ -2710,6 +2709,7 @@ int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error
 
         return 0;
 }
+#endif // 0
 
 int manager_send_changed(Manager *manager, const char *property, ...) {
         char **l;

@@ -41,6 +41,8 @@ union sockaddr_union {
         struct sockaddr_ll ll;
 };
 
+/// UNNEEDED by elogind
+#if 0
 typedef struct SocketAddress {
         union sockaddr_union sockaddr;
 
@@ -86,7 +88,7 @@ int socket_address_listen(
                 mode_t directory_mode,
                 mode_t socket_mode,
                 const char *label);
-// UNNEEDED int make_socket_fd(int log_level, const char* address, int flags);
+int make_socket_fd(int log_level, const char* address, int flags);
 
 bool socket_address_is(const SocketAddress *a, const char *s, int type);
 bool socket_address_is_netlink(const SocketAddress *a, const char *s);
@@ -103,10 +105,10 @@ int sockaddr_port(const struct sockaddr *_sa) _pure_;
 
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
 int getpeername_pretty(int fd, char **ret);
-// UNNEEDED int getsockname_pretty(int fd, char **ret);
+int getsockname_pretty(int fd, char **ret);
 
 int socknameinfo_pretty(union sockaddr_union *sa, socklen_t salen, char **_ret);
-// UNNEEDED int getnameinfo_pretty(int fd, char **ret);
+int getnameinfo_pretty(int fd, char **ret);
 
 const char* socket_address_bind_ipv6_only_to_string(SocketAddressBindIPv6Only b) _const_;
 SocketAddressBindIPv6Only socket_address_bind_ipv6_only_from_string(const char *s) _pure_;
@@ -114,8 +116,9 @@ SocketAddressBindIPv6Only socket_address_bind_ipv6_only_from_string(const char *
 int netlink_family_to_string_alloc(int b, char **s);
 int netlink_family_from_string(const char *s) _pure_;
 
-// UNNEEDED bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b);
+bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b);
 
 #define ETHER_ADDR_TO_STRING_MAX (3*6)
 
 char* ether_addr_to_string(const struct ether_addr *addr, char buffer[ETHER_ADDR_TO_STRING_MAX]);
+#endif // 0

@@ -719,7 +719,6 @@ int path_is_os_tree(const char *path) {
 
         return r >= 0;
 }
-#endif // 0
 
 int find_binary(const char *name, bool local, char **filename) {
         assert(name);
@@ -773,8 +772,6 @@ int find_binary(const char *name, bool local, char **filename) {
         }
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool paths_check_timestamp(const char* const* paths, usec_t *timestamp, bool update) {
         bool changed = false;
         const char* const* i;
@@ -833,7 +830,6 @@ int fsck_exists(const char *fstype) {
 
         return 0;
 }
-#endif // 0
 
 char *prefix_root(const char *root, const char *path) {
         char *n, *p;
@@ -868,3 +864,4 @@ char *prefix_root(const char *root, const char *path) {
         strcpy(p, path);
         return n;
 }
+#endif // 0

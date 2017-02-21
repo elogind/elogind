@@ -124,36 +124,39 @@ bool unit_prefix_is_valid(const char *p) _pure_;
 bool unit_instance_is_valid(const char *i) _pure_;
 bool unit_suffix_is_valid(const char *s) _pure_;
 
+/// UNNEEDED by elogind
+#if 0
 static inline int unit_prefix_and_instance_is_valid(const char *p) {
         /* For prefix+instance and instance the same rules apply */
         return unit_instance_is_valid(p);
 }
+#endif // 0
 
 // UNNEEDED int unit_name_to_prefix(const char *n, char **prefix);
 // UNNEEDED int unit_name_to_instance(const char *n, char **instance);
 // UNNEEDED int unit_name_to_prefix_and_instance(const char *n, char **ret);
 
-UnitType unit_name_to_type(const char *n) _pure_;
+// UNNEEDED UnitType unit_name_to_type(const char *n) _pure_;
 
 // UNNEEDED int unit_name_change_suffix(const char *n, const char *suffix, char **ret);
 
 int unit_name_build(const char *prefix, const char *instance, const char *suffix, char **ret);
 
-char *unit_name_escape(const char *f);
-int unit_name_unescape(const char *f, char **ret);
-int unit_name_path_escape(const char *f, char **ret);
-int unit_name_path_unescape(const char *f, char **ret);
+// UNNEEDED char *unit_name_escape(const char *f);
+// UNNEEDED int unit_name_unescape(const char *f, char **ret);
+// UNNEEDED int unit_name_path_escape(const char *f, char **ret);
+// UNNEEDED int unit_name_path_unescape(const char *f, char **ret);
 
 // UNNEEDED int unit_name_replace_instance(const char *f, const char *i, char **ret);
 
 // UNNEEDED int unit_name_template(const char *f, char **ret);
 
-int unit_name_from_path(const char *path, const char *suffix, char **ret);
+// UNNEEDED int unit_name_from_path(const char *path, const char *suffix, char **ret);
 // UNNEEDED int unit_name_from_path_instance(const char *prefix, const char *path, const char *suffix, char **ret);
 // UNNEEDED int unit_name_to_path(const char *name, char **ret);
 
-char *unit_dbus_path_from_name(const char *name);
-int unit_name_from_dbus_path(const char *path, char **name);
+// UNNEEDED char *unit_dbus_path_from_name(const char *name);
+// UNNEEDED int unit_name_from_dbus_path(const char *path, char **name);
 
 // UNNEEDED const char* unit_dbus_interface_from_type(UnitType t);
 // UNNEEDED const char *unit_dbus_interface_from_name(const char *name);

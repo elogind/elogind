@@ -72,7 +72,7 @@
 #include  "config.h"
 #include  "macro.h"
 #include  "util.h"
-#include  "ioprio.h"
+// #include  "ioprio.h"
 // #include  "missing.h"
 // #include  "log.h"
 #include  "strv.h"
@@ -3677,7 +3677,6 @@ int block_get_whole_disk(dev_t d, dev_t *ret) {
 
         return -ENOENT;
 }
-#endif // 0
 
 static const char *const ioprio_class_table[] = {
         [IOPRIO_CLASS_NONE] = "none",
@@ -3687,6 +3686,7 @@ static const char *const ioprio_class_table[] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ioprio_class, int, INT_MAX);
+#endif // 0
 
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
@@ -6671,7 +6671,6 @@ int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char
 
         return 0;
 }
-#endif // 0
 
 static char *strcpy_backslash_escaped(char *t, const char *s, const char *bad) {
         assert(bad);
@@ -6732,6 +6731,7 @@ char *shell_maybe_quote(const char *s) {
 
         return r;
 }
+#endif // 0
 
 int parse_mode(const char *s, mode_t *ret) {
         char *x;

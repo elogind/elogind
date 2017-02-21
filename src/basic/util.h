@@ -924,8 +924,8 @@ void sigkill_wait(pid_t *pid);
 
 // UNNEEDED int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
 
-char *shell_escape(const char *s, const char *bad);
-char *shell_maybe_quote(const char *s);
+// UNNEEDED char *shell_escape(const char *s, const char *bad);
+// UNNEEDED char *shell_maybe_quote(const char *s);
 
 int parse_mode(const char *s, mode_t *ret);
 

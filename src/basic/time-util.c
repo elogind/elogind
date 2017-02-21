@@ -800,6 +800,8 @@ int parse_sec(const char *t, usec_t *usec) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int parse_nsec(const char *t, nsec_t *nsec) {
         static const struct {
                 const char *suffix;
@@ -925,8 +927,6 @@ int parse_nsec(const char *t, nsec_t *nsec) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool ntp_synced(void) {
         struct timex txc = {};
 
@@ -1002,7 +1002,6 @@ int get_timezones(char ***ret) {
 
         return 0;
 }
-#endif // 0
 
 bool timezone_is_valid(const char *name) {
         bool slash = false;
@@ -1089,3 +1088,4 @@ int get_timezone(char **tz) {
         *tz = z;
         return 0;
 }
+#endif // 0

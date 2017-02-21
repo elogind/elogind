@@ -103,15 +103,15 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 // UNNEEDED int parse_timestamp(const char *t, usec_t *usec);
 
 int parse_sec(const char *t, usec_t *usec);
-int parse_nsec(const char *t, nsec_t *nsec);
+// UNNEEDED int parse_nsec(const char *t, nsec_t *nsec);
 
 // UNNEEDED bool ntp_synced(void);
 
 // UNNEEDED int get_timezones(char ***l);
-bool timezone_is_valid(const char *name);
+// UNNEEDED bool timezone_is_valid(const char *name);
 
-clockid_t clock_boottime_or_monotonic(void);
+// UNNEEDED clockid_t clock_boottime_or_monotonic(void);
 
 #define xstrftime(buf, fmt, tm) assert_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0)
 
-int get_timezone(char **timezone);
+// UNNEEDED int get_timezone(char **timezone);
