@@ -68,8 +68,8 @@ int main(int argc, char *argv[]) {
         }
 
         r = sd_bus_emit_signal(bus,
-                               "/org/freedesktop/systemd1/agent",
-                               "org.freedesktop.systemd1.Agent",
+                               "/org/freedesktop/elogind/agent",
+                               "org.freedesktop.elogind.Agent",
                                "Released",
                                "s", argv[1]);
         if (r < 0) {

@@ -681,9 +681,9 @@ static int manager_connect_bus(Manager *m) {
         /* elogind relies on signals from its release agent */
         r = sd_bus_add_match(m->bus, NULL,
                              "type='signal',"
-                             "interface='org.freedesktop.systemd1.Agent',"
+                             "interface='org.freedesktop.elogind.Agent',"
                              "member='Released',"
-                             "path='/org/freedesktop/systemd1/agent'",
+                             "path='/org/freedesktop/elogind/agent'",
                              signal_agent_released, m);
 
         r = sd_bus_add_fallback_vtable(m->bus, NULL, "/org/freedesktop/login1/seat", "org.freedesktop.login1.Seat", seat_vtable, seat_object_find, m);
