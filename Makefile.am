@@ -941,6 +941,26 @@ dist:
 git-tag:
 	git tag -s "v$(VERSION)" -m "elogind $(VERSION)"
 
+.PHONY: git-tar
+git-tar:
+	git archive --format=tar --prefix=elogind-$(VERSION)-raw/ HEAD | \
+		(cd /var/tmp/ && tar xf -) ; \
+	(cd /var/tmp && rm -rf elogind-$(VERSION) && $(MKDIR_P) elogind-$(VERSION) && \
+	 for f in `find elogind-$(VERSION)-raw/ -type f | cut -d '/' -f 2-` ; do \
+		$(MKDIR_P) elogind-$(VERSION)/`dirname $$f` ; \
+		$(AWK) '/^#if 0\s*$$/,/^#endif\s+\/\/\s+0\s*$$/{next}{print}' \
+			elogind-$(VERSION)-raw/$$f \
+		| $(SED) -e '/^\/\/\/ .*elogind.*$$/d' \
+		         -e '/^\/\/ #include.*$$/d' > elogind-$(VERSION)/$$f ; \
+	 done ; \
+	 for l in `find elogind-$(VERSION)-raw/ -type l | cut -d '/' -f 2-` ; do \
+		$(MKDIR_P) elogind-$(VERSION)/`dirname $$l` ; \
+		cp -P elogind-$(VERSION)-raw/$$l elogind-$(VERSION)/$$l ; \
+	 done ; \
+	 tar czf elogind-$(VERSION).tar.gz elogind-$(VERSION) ; \
+	 rm -rf elogind-$(VERSION) elogind-$(VERSION)-raw) ; \
+	mv /var/tmp/elogind-$(VERSION).tar.gz ./
+
 .PHONY: install-tree
 install-tree: all
 	rm -rf $(abs_srcdir)/install-tree
