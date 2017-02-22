@@ -243,7 +243,8 @@ AC_CHECK_SIZEOF(rlim_t,,[
 ])
 
 GPERF_TEST="$(echo foo,bar | ${GPERF} -L ANSI-C)"
-
+save_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -Wno-error"
 AC_COMPILE_IFELSE(
         [AC_LANG_PROGRAM([
                 #include <string.h>
@@ -261,6 +262,7 @@ AC_COMPILE_IFELSE(
                 [AC_MSG_ERROR([** unable to determine gperf len type])]
         )]
 )
+CFLAGS="$save_CFLAGS"
 
 AC_DEFINE_UNQUOTED([GPERF_LEN_TYPE], [$GPERF_LEN_TYPE], [gperf len type])
 
