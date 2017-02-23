@@ -1297,7 +1297,7 @@ int manager_setup_cgroup(Manager *m) {
 
 #else
                         return log_error_errno(EOPNOTSUPP, "Unified cgroup hierarchy not supported: %m");
-#endif // elogind
+#endif // 0
                 } else if (m->running_as == MANAGER_SYSTEM) {
                         /* On the legacy hierarchy we only get
                          * notifications via cgroup agents. (Which

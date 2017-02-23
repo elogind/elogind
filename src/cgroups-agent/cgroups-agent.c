@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
                 /* If dbus isn't running or responding, there is nothing
                  * we can do about it. */
                 log_debug_errno(r, "Failed to open system bus: %m");
-#endif
+#endif // 0
                 return EXIT_FAILURE;
         }
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
                 log_debug_errno(r, "Failed to send signal message on private connection: %m");
 #else
                 log_debug_errno(r, "Failed to send signal message: %m");
-#endif
+#endif // 0
                 return EXIT_FAILURE;
         }
 

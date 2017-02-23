@@ -2178,7 +2178,7 @@ int cg_unified(void) {
         else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
 #else
         if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
-#endif // elogind
+#endif // 0
                 unified_cache = false;
         else
                 return -ENOEXEC;

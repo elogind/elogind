@@ -1538,7 +1538,7 @@ static int parse_argv(int argc, char *argv[]) {
 #if 0
                 { "lines",           required_argument, NULL, 'n'                 },
                 { "output",          required_argument, NULL, 'o'                 },
-#endif //
+#endif // 0
                 { "ignore-inhibitors", no_argument,     NULL, 'i'                 },
                 {}
         };

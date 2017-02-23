@@ -943,15 +943,26 @@ git-tag:
 
 .PHONY: git-tar
 git-tar:
-	git archive --format=tar --prefix=elogind-$(VERSION)-raw/ HEAD | \
-		(cd /var/tmp/ && tar xf -) ; \
-	(cd /var/tmp && rm -rf elogind-$(VERSION) && $(MKDIR_P) elogind-$(VERSION) && \
+	$(AM_V_at)git archive --format=tar --prefix=elogind-$(VERSION)-raw/ HEAD | \
+		(cd /var/tmp/ && tar xf -)
+	$(AM_V_GEN)(cd /var/tmp && rm -rf elogind-$(VERSION) && $(MKDIR_P) elogind-$(VERSION) && \
 	 for f in `find elogind-$(VERSION)-raw/ -type f | cut -d '/' -f 2-` ; do \
-		$(MKDIR_P) elogind-$(VERSION)/`dirname $$f` ; \
-		$(AWK) '/^#if 0\s*$$/,/^#endif\s+\/\/\s+0\s*$$/{next}{print}' \
-			elogind-$(VERSION)-raw/$$f \
-		| $(SED) -e '/^\/\/\/ .*elogind.*$$/d' \
-		         -e '/^\/\/ #include.*$$/d' > elogind-$(VERSION)/$$f ; \
+		$(MKDIR_P) elogind-$(VERSION)/`dirname $$f` ;            \
+		$(AWK) 'BEGIN                    { i=0;e=0      }        \
+		        /^#if\s+0\s*$$/          { i=1;next     }        \
+		        /^#else\s*$$/            {                       \
+		            { if ( i==1 ) e=1; else print }{next}        \
+			}                                                \
+		        /^#endif\s*\/\/\s*0\s*$$/ {                      \
+		            { if ( i==1 ) { i=0;e=0 } else print }{next} \
+			}                                                \
+		        /^\s*\/\/\/.*elogind.*$$/{ next         }        \
+		        /^\s*\/\/\s*#include.+$$/{ next         }        \
+		        { if ( (i==0) || (e==1) ) print         }'       \
+		          elogind-$(VERSION)-raw/$$f                     \
+		        > elogind-$(VERSION)/$$f ;                       \
+		        chmod `stat -c '%a' elogind-$(VERSION)-raw/$$f`  \
+		                            elogind-$(VERSION)/$$f ;     \
 	 done ; \
 	 for l in `find elogind-$(VERSION)-raw/ -type l | cut -d '/' -f 2-` ; do \
 		$(MKDIR_P) elogind-$(VERSION)/`dirname $$l` ; \
@@ -959,7 +970,7 @@ git-tar:
 	 done ; \
 	 tar czf elogind-$(VERSION).tar.gz elogind-$(VERSION) ; \
 	 rm -rf elogind-$(VERSION) elogind-$(VERSION)-raw) ; \
-	mv /var/tmp/elogind-$(VERSION).tar.gz ./
+	$(AM_V_at)mv /var/tmp/elogind-$(VERSION).tar.gz ./
 
 .PHONY: install-tree
 install-tree: all

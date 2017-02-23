@@ -279,7 +279,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
         _cleanup_free_ char *unit = NULL;
 #else
         _cleanup_free_ char *session_name = NULL;
-#endif
+#endif // 0
         Session *s;
         int r;
 
@@ -304,7 +304,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
         s = hashmap_get(m->sessions, session_name);
         log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
                           session_name, s && s->id ? s->id : "NULL");
-#endif
+#endif // 0
         if (!s)
                 return 0;
 
@@ -320,7 +320,7 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
         User *u;
 #else
         Session *s;
-#endif
+#endif // 0
         int r;
 
         assert(m);
