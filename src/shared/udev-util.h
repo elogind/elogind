@@ -50,3 +50,5 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(struct udev_monitor*, udev_monitor_unref);
 #endif // 0
 #define _cleanup_udev_monitor_unref_ _cleanup_(udev_monitor_unrefp)
 #define _cleanup_udev_list_cleanup_ _cleanup_(udev_list_cleanup)
+
+int udev_parse_config(void);

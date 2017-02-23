@@ -456,6 +456,8 @@ noinst_LTLIBRARIES += \
 	libshared.la
 
 libshared_la_SOURCES = \
+	src/shared/udev-util.h \
+	src/shared/udev-util.c \
 	src/shared/bus-util.c \
 	src/shared/bus-util.h \
 	src/shared/clean-ipc.c \
