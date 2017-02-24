@@ -940,7 +940,7 @@ int cg_set_task_access(
         if (r < 0)
                 return r;
 
-        r = cg_unified(controller);
+        r = cg_unified_controller(controller);
         if (r < 0)
                 return r;
         if (r == 0) {
@@ -1016,7 +1016,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         } else
                 controller = SYSTEMD_CGROUP_CONTROLLER;
 
-        unified = cg_unified(controller);
+        unified = cg_unified_controller(controller);
         if (unified < 0)
                 return unified;
         if (unified == 0) {
@@ -1094,7 +1094,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
 
         assert(agent);
 
-        r = cg_unified(controller);
+        r = cg_unified_controller(controller);
         if (r < 0)
                 return r;
         if (r > 0) /* doesn't apply to unified hierarchy */
@@ -1145,7 +1145,7 @@ int cg_uninstall_release_agent(const char *controller) {
         _cleanup_free_ char *fs = NULL;
         int r;
 
-        r = cg_unified(controller);
+        r = cg_unified_controller(controller);
         if (r < 0)
                 return r;
         if (r > 0) /* Doesn't apply to unified hierarchy */
@@ -1201,7 +1201,7 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
         if (controller && (isempty(path) || path_equal(path, "/")))
                 return false;
 
-        r = cg_unified(controller);
+        r = cg_unified_controller(controller);
         if (r < 0)
                 return r;
         if (r > 0) {
@@ -2398,17 +2398,14 @@ int cg_kernel_controllers(Set *controllers) {
 
 static thread_local CGroupUnified unified_cache = CGROUP_UNIFIED_UNKNOWN;
 
-/* The hybrid mode was initially implemented in v232 and simply mounted
- * cgroup v2 on /sys/fs/cgroup/systemd.  This unfortunately broke other
- * tools (such as docker) which expected the v1 "name=systemd" hierarchy
- * on /sys/fs/cgroup/systemd.  From v233 and on, the hybrid mode mountnbs
- * v2 on /sys/fs/cgroup/unified and maintains "name=systemd" hierarchy
- * on /sys/fs/cgroup/systemd for compatibility with other tools.
+/* The hybrid mode was initially implemented in v232 and simply mounted cgroup v2 on /sys/fs/cgroup/systemd.  This
+ * unfortunately broke other tools (such as docker) which expected the v1 "name=systemd" hierarchy on
+ * /sys/fs/cgroup/systemd.  From v233 and on, the hybrid mode mountnbs v2 on /sys/fs/cgroup/unified and maintains
+ * "name=systemd" hierarchy on /sys/fs/cgroup/systemd for compatibility with other tools.
  *
- * To keep live upgrade working, we detect and support v232 layout.  When
- * v232 layout is detected, to keep cgroup v2 process management but
- * disable the compat dual layout, we return %true on
- * cg_unified(SYSTEMD_CGROUP_CONTROLLER) and %false on cg_hybrid_unified().
+ * To keep live upgrade working, we detect and support v232 layout.  When v232 layout is detected, to keep cgroup v2
+ * process management but disable the compat dual layout, we return %true on
+ * cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER) and %false on cg_hybrid_unified().
  */
 static thread_local bool unified_systemd_v232;
 
@@ -2460,7 +2457,7 @@ static int cg_update_unified(void) {
         return 0;
 }
 
-int cg_unified(const char *controller) {
+int cg_unified_controller(const char *controller) {
         int r;
 
         r = cg_update_unified();
@@ -2477,7 +2474,7 @@ int cg_unified(const char *controller) {
 }
 
 int cg_all_unified(void) {
-        return cg_unified(NULL);
+        return cg_unified_controller(NULL);
 }
 
 #if 0 /// UNNEEDED by elogind
