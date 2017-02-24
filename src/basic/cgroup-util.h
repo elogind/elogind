@@ -254,9 +254,9 @@ bool cg_ns_supported(void);
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-bool cg_all_unified(void);
-bool cg_hybrid_unified(void);
-bool cg_unified(const char *controller);
+int cg_all_unified(void);
+int cg_hybrid_unified(void);
+int cg_unified(const char *controller);
 int cg_unified_flush(void);
 
 bool cg_is_unified_wanted(void);
