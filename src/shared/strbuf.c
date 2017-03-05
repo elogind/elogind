@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "strbuf.h"
 

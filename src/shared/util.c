@@ -74,6 +74,7 @@
 #include <sys/auxv.h>
 #endif
 
+#include "basic/musl_missing.h"
 #include "config.h"
 #include "macro.h"
 #include "util.h"

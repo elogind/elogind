@@ -22,6 +22,7 @@
 #include <net/if_arp.h>
 #include <string.h>
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "arphrd-list.h"
 

@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <net/if.h>
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "macro.h"
 #include "path-util.h"

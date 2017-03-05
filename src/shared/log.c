@@ -27,7 +27,12 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <stddef.h>
+#if defined(__GLIBC__)
 #include <printf.h>
+#else
+#include "basic/musl_missing.h"
+#include "parse-printf-format.h"
+#endif
 
 #include "log.h"
 #include "util.h"

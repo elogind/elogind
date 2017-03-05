@@ -22,6 +22,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "path-util.h"
 #include "mkdir.h"
