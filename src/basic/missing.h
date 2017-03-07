@@ -37,6 +37,8 @@
 #include <linux/capability.h>
 #include <linux/neighbour.h>
 
+#include "musl_missing.h"
+
 #ifdef ARCH_MIPS
 #include <asm/sgidefs.h>
 #endif

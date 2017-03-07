@@ -114,9 +114,9 @@ fi
 # Find running cgroup controller
 with_cgroupctrl=
 AS_IF(  [test -f /proc/self/cgroup],
-        [with_cgroupctrl=`grep "^1:" /proc/self/cgroup | cut -d ':' -f 2`])
+        [with_cgroupctrl=`grep "^1:name=" /proc/self/cgroup | cut -d ':' -f 2`])
 AS_IF(  [test -z "$with_cgroupctrl"],
-        AC_MSG_ERROR([No running cgroup controller found]))
+        [with_cgroupctrl="name=elogind"])
 
 
 # ------------------------------------------------------------------------------
@@ -297,6 +297,13 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "x$have_python" = "xyes"])
 AC_CHECK_HEADERS([sys/capability.h], [], [AC_MSG_ERROR([*** POSIX caps headers not found])])
 AC_CHECK_HEADERS([linux/btrfs.h], [], [])
 AC_CHECK_HEADERS([linux/memfd.h], [], [])
+
+AC_CHECK_HEADERS([printf.h], [have_printf_h=yes], [have_printf_h=no])
+AS_IF([test x$have_printf_h = xyes], [
+        AC_DEFINE(HAVE_PRINTF_H, 1, [Define if printf.h was found])
+])
+
+
 
 # unconditionally pull-in librt with old glibc versions
 dnl AC_SEARCH_LIBS([clock_gettime], [rt], [], [])

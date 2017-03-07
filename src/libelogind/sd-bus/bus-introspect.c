@@ -207,6 +207,6 @@ void introspect_free(struct introspect *i) {
         if (i->f)
                 fclose(i->f);
 
-                free(i->introspection);
+        free(i->introspection);
         zero(*i);
 }

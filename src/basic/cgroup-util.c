@@ -461,7 +461,7 @@ static const char *controller_to_dirname(const char *controller) {
         if (e)
                 return e;
 
-                return controller;
+        return controller;
 }
 
 static int join_path_legacy(const char *controller, const char *path, const char *suffix, char **fs) {
@@ -546,8 +546,9 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
                 r = join_path_unified(path, suffix, fs);
         else
                 r = join_path_legacy(controller, path, suffix, fs);
-                if (r < 0)
-                        return r;
+
+        if (r < 0)
+                return r;
 
         path_kill_slashes(*fs);
         return 0;
@@ -825,6 +826,8 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         }
 
         fs = procfs_file_alloca(pid, "cgroup");
+        log_debug_elogind("Searching for PID %u in \"%s\" (controller \"%s\")",
+                          pid, fs, controller);
         f = fopen(fs, "re");
         if (!f)
                 return errno == ENOENT ? -ESRCH : -errno;
@@ -869,6 +872,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
                                 continue;
                 }
 
+                log_debug_elogind("Found %s:%s", line, e+1);
                 p = strdup(e + 1);
                 if (!p)
                         return -ENOMEM;
@@ -1005,8 +1009,8 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
                  * via the "cgroup.populated" attribute. */
 
                 r = cg_get_path(controller, path, "cgroup.populated", &populated);
-        if (r < 0)
-                return r;
+                if (r < 0)
+                        return r;
 
                 r = read_one_line_file(populated, &t);
                 if (r == -ENOENT)
@@ -1016,33 +1020,33 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
 
                 return streq(t, "0");
         } else {
-        _cleanup_closedir_ DIR *d = NULL;
-        char *fn;
+                _cleanup_closedir_ DIR *d = NULL;
+                char *fn;
 
                 r = cg_is_empty(controller, path);
-        if (r <= 0)
-                return r;
-
-        r = cg_enumerate_subgroups(controller, path, &d);
-                if (r == -ENOENT)
-                        return 1;
-        if (r < 0)
-                        return r;
-
-        while ((r = cg_read_subgroup(d, &fn)) > 0) {
-                _cleanup_free_ char *p = NULL;
-
-                p = strjoin(path, "/", fn, NULL);
-                free(fn);
-                if (!p)
-                        return -ENOMEM;
-
-                        r = cg_is_empty_recursive(controller, p);
                 if (r <= 0)
                         return r;
-        }
-        if (r < 0)
-                return r;
+
+                r = cg_enumerate_subgroups(controller, path, &d);
+                        if (r == -ENOENT)
+                                return 1;
+                if (r < 0)
+                        return r;
+
+                while ((r = cg_read_subgroup(d, &fn)) > 0) {
+                        _cleanup_free_ char *p = NULL;
+
+                        p = strjoin(path, "/", fn, NULL);
+                        free(fn);
+                        if (!p)
+                                return -ENOMEM;
+
+                        r = cg_is_empty_recursive(controller, p);
+                        if (r <= 0)
+                                return r;
+                }
+                if (r < 0)
+                        return r;
 
                 return true;
         }
@@ -1725,7 +1729,7 @@ char *cg_escape(const char *p) {
                                 if (memcmp(p, n, l) != 0)
                                         continue;
 
-                                        need_prefix = true;
+                                need_prefix = true;
                                 break;
                         }
                 }
@@ -1734,7 +1738,7 @@ char *cg_escape(const char *p) {
         if (need_prefix)
                 return strappend("_", p);
 
-                return strdup(p);
+        return strdup(p);
 }
 
 char *cg_unescape(const char *p) {

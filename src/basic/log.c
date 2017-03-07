@@ -27,8 +27,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <stddef.h>
-#include <printf.h>
 
+#include "parse-printf-format.h"
 #include "sd-messages.h"
 #include "log.h"
 #include "util.h"

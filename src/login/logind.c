@@ -1230,6 +1230,7 @@ int main(int argc, char *argv[]) {
         Manager *m = NULL;
         int r;
 
+        elogind_set_program_name(argv[0]);
         log_set_target(LOG_TARGET_AUTO);
         log_set_facility(LOG_AUTH);
         log_parse_environment();

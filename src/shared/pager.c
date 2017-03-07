@@ -153,10 +153,14 @@ void pager_close(void) {
 
         /* Inform pager that we are done */
         fclose(stdout);
+#if defined(__GLIBC__)
         stdout = NULL;
+#endif // in musl-libc this is a const
 
         fclose(stderr);
+#if defined(__GLIBC__)
         stderr = NULL;
+#endif // in musl-libc this is a const
 
         kill(pager_pid, SIGCONT);
         (void) wait_for_terminate(pager_pid, NULL);

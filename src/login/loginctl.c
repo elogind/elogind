@@ -1692,6 +1692,7 @@ int main(int argc, char *argv[]) {
         int r;
 
         setlocale(LC_ALL, "");
+        elogind_set_program_name(argv[0]);
         log_parse_environment();
         log_open();
 

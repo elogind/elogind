@@ -226,6 +226,7 @@ int main(int argc, char *argv[]) {
         _cleanup_bus_flush_close_unref_ sd_bus *bus = NULL;
         int r;
 
+        elogind_set_program_name(argv[0]);
         log_parse_environment();
         log_open();
 

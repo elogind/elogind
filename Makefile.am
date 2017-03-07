@@ -294,6 +294,8 @@ noinst_LTLIBRARIES += \
 
 libbasic_la_SOURCES = \
 	src/basic/missing.h \
+	src/basic/musl_missing.h \
+	src/basic/musl_missing.c \
 	src/basic/capability.c \
 	src/basic/capability.h \
 	src/basic/conf-files.c \
@@ -364,7 +366,9 @@ libbasic_la_SOURCES = \
 	src/basic/rm-rf.c \
 	src/basic/rm-rf.h \
 	src/basic/copy.c \
-	src/basic/copy.h
+	src/basic/copy.h \
+	src/basic/parse-printf-format.c \
+	src/basic/parse-printf-format.h
 
 nodist_libbasic_la_SOURCES = \
 	src/basic/errno-from-name.h \

@@ -254,6 +254,7 @@ static void test_login(void) {
 }
 
 int main(int argc, char* argv[]) {
+        elogind_set_program_name(argv[0]);
         log_parse_environment();
         log_open();
 
