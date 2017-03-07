@@ -1041,7 +1041,11 @@ union inotify_event_buffer {
         uint8_t raw[INOTIFY_EVENT_MAX];
 };
 
+#ifdef __GLIBC__
 #define laccess(path, mode) faccessat(AT_FDCWD, (path), (mode), AT_SYMLINK_NOFOLLOW)
+#else
+#define laccess(path, mode) faccessat(AT_FDCWD, (path), (mode), 0)
+#endif
 
 int ptsname_malloc(int fd, char **ret);
 

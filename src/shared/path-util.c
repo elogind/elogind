@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <sys/statvfs.h>
 
+#include "basic/musl_missing.h"
 #include "macro.h"
 #include "util.h"
 #include "log.h"

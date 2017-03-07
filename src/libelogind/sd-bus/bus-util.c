@@ -21,6 +21,7 @@
 
 #include <sys/socket.h>
 
+#include "basic/musl_missing.h"
 #include "sd-daemon.h"
 #include "sd-event.h"
 #include "util.h"

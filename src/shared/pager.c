@@ -25,6 +25,7 @@
 #include <string.h>
 #include <sys/prctl.h>
 
+#include "basic/musl_missing.h"
 #include "pager.h"
 #include "util.h"
 #include "macro.h"

@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <ftw.h>
 
+#include "basic/musl_missing.h"
 #include "cgroup-util.h"
 #include "set.h"
 #include "macro.h"

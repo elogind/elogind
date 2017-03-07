@@ -482,7 +482,9 @@ libelogind_shared_la_SOURCES = \
 	src/shared/import-util.c \
 	src/shared/import-util.h \
 	src/shared/sysctl-util.c \
-	src/shared/sysctl-util.h
+	src/shared/sysctl-util.h \
+	src/shared/parse-printf-format.c \
+	src/shared/parse-printf-format.h
 
 nodist_libelogind_shared_la_SOURCES = \
 	src/shared/errno-from-name.h \

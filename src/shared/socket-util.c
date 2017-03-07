@@ -29,6 +29,7 @@
 #include <stddef.h>
 #include <netdb.h>
 
+#include "basic/musl_missing.h"
 #include "macro.h"
 #include "path-util.h"
 #include "util.h"

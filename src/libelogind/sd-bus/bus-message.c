@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "utf8.h"
 #include "strv.h"

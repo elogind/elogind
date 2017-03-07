@@ -22,10 +22,11 @@
 #include <net/if_arp.h>
 #include <string.h>
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "arphrd-list.h"
 
-static const struct arphrd_name* lookup_arphrd(register const char *str, register unsigned int len);
+static const struct arphrd_name* lookup_arphrd(register const char *str, register size_t len);
 
 #include "arphrd-to-name.h"
 #include "arphrd-from-name.h"

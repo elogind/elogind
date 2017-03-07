@@ -27,6 +27,7 @@
 #include <sys/mman.h>
 #include <pthread.h>
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "macro.h"
 #include "strv.h"

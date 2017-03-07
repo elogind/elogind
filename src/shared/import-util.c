@@ -19,6 +19,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include "basic/musl_missing.h"
 #include "util.h"
 #include "import-util.h"
 

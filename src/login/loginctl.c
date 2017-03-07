@@ -1490,7 +1490,7 @@ static int parse_argv(int argc, char *argv[]) {
                 switch (c) {
 
                 case 'h':
-                        help(0, NULL, NULL);
+                        help(argc, argv, NULL);
                         return 0;
 
                 case ARG_VERSION:
