@@ -520,7 +520,7 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
                  * *below* the controllers, without any prefix. */
 
                 if (!path && !suffix)
-                return -EINVAL;
+                        return -EINVAL;
 
                 if (!suffix)
                         t = strdup(path);
@@ -552,7 +552,7 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
 
         path_kill_slashes(*fs);
         return 0;
-        }
+}
 
 static int controller_is_accessible(const char *controller) {
         int unified;
@@ -2273,6 +2273,10 @@ bool cg_is_unified_wanted(void) {
 
 bool cg_is_legacy_wanted(void) {
         return !cg_is_unified_wanted();
+}
+#else
+bool cg_is_legacy_wanted(void) {
+        return true;
 }
 #endif // 0
 

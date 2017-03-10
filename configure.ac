@@ -113,10 +113,17 @@ fi
 # ------------------------------------------------------------------------------
 # Find running cgroup controller
 with_cgroupctrl=
-AS_IF(  [test -f /proc/self/cgroup],
-        [with_cgroupctrl=`grep "^1:name=" /proc/self/cgroup | cut -d ':' -f 2`])
+AS_IF(  [test -f /proc/self/cgroup], [
+        # If the init system is a cgroup controler, it will be position 1.
+        # Secondary controllers, like cgmanager, do not work.
+        with_cgroupctrl=`grep "^1:name=" /proc/self/cgroup | cut -d ':' -f 2`
+        AS_IF(  [test -z "$with_cgroupctrl"], [
+                # Try to be our own cgroup controller
+                with_cgroupctrl="name=elogind"
+        ])
+])
 AS_IF(  [test -z "$with_cgroupctrl"],
-        [with_cgroupctrl="name=elogind"])
+        AC_MSG_ERROR([No running cgroup controller found]))
 
 
 # ------------------------------------------------------------------------------

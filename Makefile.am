@@ -623,7 +623,9 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-utmp.c \
 	src/login/logind-acl.h \
 	src/core/cgroup.h \
-	src/core/cgroup.c
+	src/core/cgroup.c \
+	src/core/mount-setup.h \
+	src/core/mount-setup.c
 
 libelogind_core_la_LIBADD = \
 	libshared.la

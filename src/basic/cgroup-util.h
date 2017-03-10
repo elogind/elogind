@@ -155,7 +155,7 @@ int cg_unified(void);
 // UNNEEDED void cg_unified_flush(void);
 
 // UNNEEDED bool cg_is_unified_wanted(void);
-// UNNEEDED bool cg_is_legacy_wanted(void);
+bool cg_is_legacy_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;

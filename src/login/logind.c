@@ -36,6 +36,7 @@
 #include "label.h"
 #include "label.h"
 #include "cgroup.h"
+#include "mount-setup.h"
 #include "virt.h"
 
 static void manager_free(Manager *m);
@@ -94,6 +95,13 @@ static Manager *manager_new(void) {
         m->kill_exclude_users = strv_new("root", NULL);
         if (!m->kill_exclude_users)
                 goto fail;
+
+        /* If elogind should be its own controller, mount its cgroup */
+        if (streq(ELOGIND_CGROUP_CONTROLLER, "name=elogind")) {
+                r = mount_setup(true);
+                if (r < 0)
+                        goto fail;
+        }
 
         /* Make cgroups */
         r = manager_setup_cgroup(m);

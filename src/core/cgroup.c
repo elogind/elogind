@@ -1229,6 +1229,7 @@ int manager_setup_cgroup(Manager *m) {
         r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, 0, &m->cgroup_root);
         if (r < 0)
                 return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
+
 /// elogind does not support systemd scopes and slices
 #if 0
         /* Chop off the init scope, if we are already located in it */
@@ -1320,7 +1321,10 @@ int manager_setup_cgroup(Manager *m) {
                 scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
                 r = cg_create_and_attach(ELOGIND_CGROUP_CONTROLLER, scope_path, 0);
 #else
-                if (streq(m->cgroup_root, "/elogind"))
+                if (streq(ELOGIND_CGROUP_CONTROLLER, "name=elogind"))
+                        // we are our own cgroup controller
+                        scope_path = strjoina("");
+                else if (streq(m->cgroup_root, "/elogind"))
                         // root already is our cgroup
                         scope_path = strjoina(m->cgroup_root);
                 else
