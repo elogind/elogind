@@ -829,8 +829,7 @@ static int parse_container_unix_address(sd_bus *b, const char **p, char **guid) 
                 b->machine = machine;
                 machine = NULL;
         } else {
-                free(b->machine);
-                b->machine = NULL;
+                b->machine = mfree(b->machine);
         }
 
         if (pid) {
@@ -889,8 +888,7 @@ static int parse_container_kernel_address(sd_bus *b, const char **p, char **guid
                 b->machine = machine;
                 machine = NULL;
         } else {
-                free(b->machine);
-                b->machine = NULL;
+                b->machine = mfree(b->machine);
         }
 
         if (pid) {
