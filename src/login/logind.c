@@ -30,11 +30,11 @@
 #include "conf-parser.h"
 #include "bus-util.h"
 #include "bus-error.h"
-#include "logind.h"
 #include "udev-util.h"
 #include "formats-util.h"
+#include "signal-util.h"
 #include "label.h"
-#include "label.h"
+#include "logind.h"
 #include "cgroup.h"
 #include "mount-setup.h"
 #include "virt.h"
@@ -203,7 +203,7 @@ static void manager_free(Manager *m) {
                 udev_unref(m->udev);
 
         if (m->unlink_nologin)
-                unlink("/run/nologin");
+                (void) unlink("/run/nologin");
 
         bus_verify_polkit_async_registry_free(m->polkit_registry);
 
@@ -869,13 +869,8 @@ static int manager_connect_console(Manager *m) {
                 return -EINVAL;
         }
 
-        r = ignore_signals(SIGRTMIN + 1, -1);
-        if (r < 0)
-                return log_error_errno(r, "Cannot ignore SIGRTMIN + 1: %m");
-
-        r = sigprocmask_many(SIG_BLOCK, SIGRTMIN, -1);
-        if (r < 0)
-                return log_error_errno(r, "Cannot block SIGRTMIN: %m");
+        assert_se(ignore_signals(SIGRTMIN + 1, -1) >= 0);
+        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGRTMIN, -1) >= 0);
 
         r = sd_event_add_signal(m->event, NULL, SIGRTMIN, manager_vt_switch, m);
         if (r < 0)
@@ -1201,6 +1196,12 @@ static int manager_run(Manager *m) {
                         return 0;
 
                 manager_gc(m, true);
+
+                r = manager_dispatch_delayed(m, false);
+                if (r < 0)
+                        return r;
+                if (r > 0)
+                        continue;
 
                 r = sd_event_run(m->event, (uint64_t) -1);
                 if (r < 0)

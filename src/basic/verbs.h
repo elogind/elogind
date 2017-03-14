@@ -21,45 +21,14 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "in-addr-util.h"
+#define VERB_ANY ((unsigned) -1)
+#define VERB_DEFAULT 1
 
-typedef struct DnsServer DnsServer;
-typedef enum DnsServerSource DnsServerSource;
+typedef struct {
+        const char *verb;
+        unsigned min_args, max_args;
+        unsigned flags;
+        int (* const dispatch)(int argc, char *argv[], void *userdata);
+} Verb;
 
-typedef enum DnsServerType {
-        DNS_SERVER_SYSTEM,
-        DNS_SERVER_FALLBACK,
-        DNS_SERVER_LINK,
-} DnsServerType;
-
-#include "resolved-link.h"
-
-struct DnsServer {
-        Manager *manager;
-
-        unsigned n_ref;
-
-        DnsServerType type;
-
-        Link *link;
-
-        int family;
-        union in_addr_union address;
-
-        bool marked:1;
-
-        LIST_FIELDS(DnsServer, servers);
-};
-
-int dns_server_new(
-                Manager *m,
-                DnsServer **s,
-                DnsServerType type,
-                Link *l,
-                int family,
-                const union in_addr_union *address);
-
-DnsServer* dns_server_ref(DnsServer *s);
-DnsServer* dns_server_unref(DnsServer *s);
-
-extern const struct hash_ops dns_server_hash_ops;
+int dispatch_verb(int argc, char *argv[], const Verb verbs[], void *userdata);

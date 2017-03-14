@@ -5,7 +5,7 @@
 /***
   This file is part of systemd.
 
-  Copyright 2014 Daniel Mack
+  Copyright 2012 Lennart Poettering
 
   systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
@@ -21,24 +21,26 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-typedef struct BusEndpoint BusEndpoint;
-typedef struct BusEndpointPolicy BusEndpointPolicy;
+typedef struct Button Button;
 
-#include "hashmap.h"
-#include "bus-policy.h"
+#include "logind.h"
 
-struct BusEndpointPolicy {
+struct Button {
+        Manager *manager;
+
+        sd_event_source *io_event_source;
+        sd_event_source *check_event_source;
+
         char *name;
-        BusPolicyAccess access;
+        char *seat;
+        int fd;
+
+        bool lid_closed;
+        bool docked;
 };
 
-struct BusEndpoint {
-        Hashmap *policy_hash;
-};
-
-// UNNEEDED int bus_endpoint_new(BusEndpoint **ep);
-void bus_endpoint_free(BusEndpoint *endpoint);
-
-// UNNEEDED int bus_endpoint_add_policy(BusEndpoint *ep, const char *name, BusPolicyAccess access);
-
-int bus_kernel_set_endpoint_policy(int fd, uid_t uid, BusEndpoint *ep);
+Button* button_new(Manager *m, const char *name);
+void button_free(Button*b);
+int button_open(Button *b);
+int button_set_seat(Button *b, const char *sn);
+int button_check_switches(Button *b);

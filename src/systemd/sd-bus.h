@@ -156,6 +156,7 @@ void sd_bus_close(sd_bus *bus);
 
 sd_bus *sd_bus_ref(sd_bus *bus);
 sd_bus *sd_bus_unref(sd_bus *bus);
+sd_bus *sd_bus_flush_close_unref(sd_bus *bus);
 
 // UNNEEDED int sd_bus_is_open(sd_bus *bus);
 
@@ -204,7 +205,7 @@ sd_bus_slot* sd_bus_slot_unref(sd_bus_slot *slot);
 // UNNEEDED void *sd_bus_slot_get_userdata(sd_bus_slot *slot);
 // UNNEEDED void *sd_bus_slot_set_userdata(sd_bus_slot *slot, void *userdata);
 // UNNEEDED int sd_bus_slot_set_description(sd_bus_slot *slot, const char *description);
-// UNNEEDED int sd_bus_slot_get_description(sd_bus_slot *slot, char **description);
+// UNNEEDED int sd_bus_slot_get_description(sd_bus_slot *slot, const char **description);
 
 // UNNEEDED sd_bus_message* sd_bus_slot_get_current_message(sd_bus_slot *slot);
 // UNNEEDED sd_bus_message_handler_t sd_bus_slot_get_current_handler(sd_bus_slot *bus);

@@ -22,7 +22,8 @@
 ***/
 
 #include "sd-bus.h"
-#include "bus-xml-policy.h"
-#include "proxy.h"
+#include "bus-internal.h"
 
-int bus_proxy_process_driver(Proxy *p, sd_bus *a, sd_bus *b, sd_bus_message *m, SharedPolicy *sp, const struct ucred *ucred, Set *owned_names);
+sd_bus_slot *bus_slot_allocate(sd_bus *bus, bool floating, BusSlotType type, size_t extra, void *userdata);
+
+void bus_slot_disconnect(sd_bus_slot *slot);

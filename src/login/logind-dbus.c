@@ -158,7 +158,7 @@ static int property_get_idle_since_hint(
                 sd_bus_error *error) {
 
         Manager *m = userdata;
-        dual_timestamp t;
+        dual_timestamp t = DUAL_TIMESTAMP_NULL;
 
         assert(bus);
         assert(reply);
@@ -242,6 +242,24 @@ static int property_get_scheduled_shutdown(
 }
 
 static BUS_DEFINE_PROPERTY_GET_ENUM(property_get_handle_action, handle_action, HandleAction);
+
+static int property_get_docked(
+                sd_bus *bus,
+                const char *path,
+                const char *interface,
+                const char *property,
+                sd_bus_message *reply,
+                void *userdata,
+                sd_bus_error *error) {
+
+        Manager *m = userdata;
+
+        assert(bus);
+        assert(reply);
+        assert(m);
+
+        return sd_bus_message_append(reply, "b", manager_is_docked_or_external_displays(m));
+}
 
 static int method_get_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *p = NULL;
@@ -671,45 +689,26 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                         return r;
         }
 
-        manager_get_session_by_pid(m, leader, &session);
-        if (session) {
-                _cleanup_free_ char *path = NULL;
-                _cleanup_close_ int fifo_fd = -1;
+        r = manager_get_session_by_pid(m, leader, NULL);
+        if (r > 0)
+                return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY, "Already running in a session");
 
-                /* Session already exists, client is probably
-                 * something like "su" which changes uid but is still
-                 * the same session */
-
-                fifo_fd = session_create_fifo(session);
-                if (fifo_fd < 0)
-                        return fifo_fd;
-
-                path = session_bus_path(session);
-                if (!path)
-                        return -ENOMEM;
-
-                log_debug("Sending reply about an existing session: "
-                          "id=%s object_path=%s uid=%u runtime_path=%s "
-                          "session_fd=%d seat=%s vtnr=%u",
-                          session->id,
-                          path,
-                          (uint32_t) session->user->uid,
-                          session->user->runtime_path,
-                          fifo_fd,
-                          session->seat ? session->seat->id : "",
-                          (uint32_t) session->vtnr);
-
-                return sd_bus_reply_method_return(
-                                message, "soshusub",
-                                session->id,
-                                path,
-                                session->user->runtime_path,
-                                fifo_fd,
-                                (uint32_t) session->user->uid,
-                                session->seat ? session->seat->id : "",
-                                (uint32_t) session->vtnr,
-                                true);
-        }
+        /*
+         * Old gdm and lightdm start the user-session on the same VT as
+         * the greeter session. But they destroy the greeter session
+         * after the user-session and want the user-session to take
+         * over the VT. We need to support this for
+         * backwards-compatibility, so make sure we allow new sessions
+         * on a VT that a greeter is running on. Furthermore, to allow
+         * re-logins, we have to allow a greeter to take over a used VT for
+         * the exact same reasons.
+         */
+        if (c != SESSION_GREETER &&
+            vtnr > 0 &&
+            vtnr < m->seat0->position_count &&
+            m->seat0->positions[vtnr] &&
+            m->seat0->positions[vtnr]->class != SESSION_GREETER)
+                return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY, "Already occupied by a session");
 
         audit_session_from_pid(leader, &audit_id);
         if (audit_id > 0) {
@@ -824,8 +823,6 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         r = session_send_create_reply(session, NULL);
         if (r < 0)
                 goto fail;
-
-        session_save(session);
 
         return 1;
 
@@ -1184,7 +1181,7 @@ static int trigger_device(Manager *m, struct udev_device *d) {
                 if (!t)
                         return -ENOMEM;
 
-                write_string_file(t, "change");
+                write_string_file(t, "change", WRITE_STRING_FILE_CREATE);
         }
 
         return 0;
@@ -1523,24 +1520,22 @@ static int execute_shutdown_or_sleep(
         return 0;
 }
 
-static int manager_inhibit_timeout_handler(
-                        sd_event_source *s,
-                        uint64_t usec,
-                        void *userdata) {
+int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         Inhibitor *offending = NULL;
-        Manager *manager = userdata;
         int r;
 
         assert(manager);
-        assert(manager->inhibit_timeout_source == s);
 
         if (manager->action_what == 0)
                 return 0;
 
         if (manager_is_inhibited(manager, manager->action_what, INHIBIT_DELAY, NULL, false, false, 0, &offending)) {
                 _cleanup_free_ char *comm = NULL, *u = NULL;
+
+                if (!timeout)
+                        return 0;
 
                 (void) get_process_comm(offending->pid, &comm);
                 u = uid_to_name(offending->uid);
@@ -1557,9 +1552,25 @@ static int manager_inhibit_timeout_handler(
 
                 manager->pending_action = HANDLE_IGNORE;
                 manager->action_what    = 0;
+                return r;
         }
 
-        return 0;
+        return 1;
+}
+
+static int manager_inhibit_timeout_handler(
+                        sd_event_source *s,
+                        uint64_t usec,
+                        void *userdata) {
+
+        Manager *manager = userdata;
+        int r;
+
+        assert(manager);
+        assert(manager->inhibit_timeout_source == s);
+
+        r = manager_dispatch_delayed(manager, true);
+        return (r < 0) ? r : 0;
 }
 
 static int delay_shutdown_or_sleep(
@@ -1790,7 +1801,7 @@ static int nologin_timeout_handler(
 
         log_info("Creating /run/nologin, blocking further logins...");
 
-        r = write_string_file_atomic("/run/nologin", "System is going down.");
+        r = write_string_file("/run/nologin", "System is going down.", WRITE_STRING_FILE_CREATE|WRITE_STRING_FILE_ATOMIC);
         if (r < 0)
                 log_error_errno(r, "Failed to create /run/nologin: %m");
         else
@@ -2000,6 +2011,11 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         m->nologin_timeout_source = sd_event_source_unref(m->nologin_timeout_source);
         m->scheduled_shutdown_type = mfree(m->scheduled_shutdown_type);
         m->scheduled_shutdown_timeout = 0;
+
+        if (m->unlink_nologin) {
+                (void) unlink("/run/nologin");
+                m->unlink_nologin = false;
+        }
 
         if (cancelled) {
                 _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
@@ -2483,6 +2499,7 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_PROPERTY("PreparingForShutdown", "b", property_get_preparing, 0, 0),
         SD_BUS_PROPERTY("PreparingForSleep", "b", property_get_preparing, 0, 0),
         SD_BUS_PROPERTY("ScheduledShutdown", "(st)", property_get_scheduled_shutdown, 0, 0),
+        SD_BUS_PROPERTY("Docked", "b", property_get_docked, 0, 0),
 
         SD_BUS_METHOD("GetSession", "s", "o", method_get_session, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("GetSessionByPID", "u", "o", method_get_session_by_pid, SD_BUS_VTABLE_UNPRIVILEGED),
@@ -2512,8 +2529,6 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_METHOD("PowerOff", "b", NULL, method_poweroff, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Reboot", "b", NULL, method_reboot, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Suspend", "b", NULL, method_suspend, SD_BUS_VTABLE_UNPRIVILEGED),
-        SD_BUS_METHOD("ScheduleShutdown", "st", NULL, method_schedule_shutdown, SD_BUS_VTABLE_UNPRIVILEGED),
-        SD_BUS_METHOD("CancelScheduledShutdown", NULL, "b", method_cancel_scheduled_shutdown, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Hibernate", "b", NULL, method_hibernate, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("HybridSleep", "b", NULL, method_hybrid_sleep, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanPowerOff", NULL, "s", method_can_poweroff, SD_BUS_VTABLE_UNPRIVILEGED),
@@ -2521,6 +2536,8 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_METHOD("CanSuspend", NULL, "s", method_can_suspend, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanHibernate", NULL, "s", method_can_hibernate, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanHybridSleep", NULL, "s", method_can_hybrid_sleep, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("ScheduleShutdown", "st", NULL, method_schedule_shutdown, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("CancelScheduledShutdown", NULL, "b", method_cancel_scheduled_shutdown, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Inhibit", "ssss", "h", method_inhibit, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanRebootToFirmwareSetup", NULL, "s", method_can_reboot_to_firmware_setup, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("SetRebootToFirmwareSetup", "b", NULL, method_set_reboot_to_firmware_setup, SD_BUS_VTABLE_UNPRIVILEGED),
@@ -2599,6 +2616,7 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
                 session_jobs_reply(session, unit, result);
 
                 session_save(session);
+                user_save(session->user);
                 session_add_to_gc_queue(session);
         }
 
