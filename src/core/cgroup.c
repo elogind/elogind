@@ -762,7 +762,7 @@ int unit_watch_cgroup(Unit *u) {
         if (r < 0)
                 return log_oom();
 
-        r = cg_get_path(ELOGIND_CGROUP_CONTROLLER, u->cgroup_path, "cgroup.populated", &populated);
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, "cgroup.populated", &populated);
         if (r < 0)
                 return log_oom();
 
@@ -1053,7 +1053,7 @@ int unit_search_main_pid(Unit *u, pid_t *ret) {
         if (!u->cgroup_path)
                 return -ENXIO;
 
-        r = cg_enumerate_processes(ELOGIND_CGROUP_CONTROLLER, u->cgroup_path, &f);
+        r = cg_enumerate_processes(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, &f);
         if (r < 0)
                 return r;
 
@@ -1090,7 +1090,7 @@ static int unit_watch_pids_in_path(Unit *u, const char *path) {
         assert(u);
         assert(path);
 
-        r = cg_enumerate_processes(ELOGIND_CGROUP_CONTROLLER, path, &f);
+        r = cg_enumerate_processes(SYSTEMD_CGROUP_CONTROLLER, path, &f);
         if (r < 0)
                 ret = r;
         else {
@@ -1106,7 +1106,7 @@ static int unit_watch_pids_in_path(Unit *u, const char *path) {
                         ret = r;
         }
 
-        r = cg_enumerate_subgroups(ELOGIND_CGROUP_CONTROLLER, path, &d);
+        r = cg_enumerate_subgroups(SYSTEMD_CGROUP_CONTROLLER, path, &d);
         if (r < 0) {
                 if (ret >= 0)
                         ret = r;
@@ -1159,7 +1159,7 @@ int unit_notify_cgroup_empty(Unit *u) {
         if (!u->cgroup_path)
                 return 0;
 
-        r = cg_is_empty_recursive(ELOGIND_CGROUP_CONTROLLER, u->cgroup_path);
+        r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path);
         if (r <= 0)
                 return r;
 
@@ -1226,7 +1226,7 @@ int manager_setup_cgroup(Manager *m) {
 
         /* 1. Determine hierarchy */
         m->cgroup_root = mfree(m->cgroup_root);
-        r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, 0, &m->cgroup_root);
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 0, &m->cgroup_root);
         if (r < 0)
                 return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
 
@@ -1254,10 +1254,10 @@ int manager_setup_cgroup(Manager *m) {
         while ((e = endswith(m->cgroup_root, "/")))
                 *e = 0;
         log_debug_elogind("Cgroup Controller \"%s\" -> root \"%s\"",
-                          ELOGIND_CGROUP_CONTROLLER, m->cgroup_root);
+                          SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root);
 
         /* 2. Show data */
-        r = cg_get_path(ELOGIND_CGROUP_CONTROLLER, m->cgroup_root, NULL, &path);
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, NULL, &path);
         if (r < 0)
                 return log_error_errno(r, "Cannot find cgroup mount point: %m");
 
@@ -1267,7 +1267,7 @@ int manager_setup_cgroup(Manager *m) {
         if (unified > 0)
                 log_debug("Unified cgroup hierarchy is located at %s.", path);
         else
-                log_debug("Using cgroup controller " ELOGIND_CGROUP_CONTROLLER ". File system hierarchy is at %s.", path);
+                log_debug("Using cgroup controller " SYSTEMD_CGROUP_CONTROLLER ". File system hierarchy is at %s.", path);
 
         if (!m->test_run) {
                 const char *scope_path;
@@ -1306,7 +1306,7 @@ int manager_setup_cgroup(Manager *m) {
                          * generate events when control groups with
                          * children run empty. */
 
-                        r = cg_install_release_agent(ELOGIND_CGROUP_CONTROLLER, ELOGIND_CGROUP_AGENT_PATH);
+                        r = cg_install_release_agent(SYSTEMD_CGROUP_CONTROLLER, ELOGIND_CGROUP_AGENT_PATH);
                         if (r < 0)
                                 log_warning_errno(r, "Failed to install release agent, ignoring: %m");
                         else if (r > 0)
@@ -1319,9 +1319,9 @@ int manager_setup_cgroup(Manager *m) {
 #if 0
                 /* 4. Make sure we are in the special "init.scope" unit in the root slice. */
                 scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
-                r = cg_create_and_attach(ELOGIND_CGROUP_CONTROLLER, scope_path, 0);
+                r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
 #else
-                if (streq(ELOGIND_CGROUP_CONTROLLER, "name=elogind"))
+                if (streq(SYSTEMD_CGROUP_CONTROLLER, "name=elogind"))
                         // we are our own cgroup controller
                         scope_path = strjoina("");
                 else if (streq(m->cgroup_root, "/elogind"))
@@ -1330,7 +1330,7 @@ int manager_setup_cgroup(Manager *m) {
                 else
                         // we have to create our own group
                         scope_path = strjoina(m->cgroup_root, "/elogind");
-                r = cg_create_and_attach(ELOGIND_CGROUP_CONTROLLER, scope_path, 0);
+                r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
 #endif // 0
                 if (r < 0)
                         return log_error_errno(r, "Failed to create %s control group: %m", scope_path);
@@ -1339,7 +1339,7 @@ int manager_setup_cgroup(Manager *m) {
                 /* also, move all other userspace processes remaining
                  * in the root cgroup into that scope. */
                 if (!streq(m->cgroup_root, scope_path)) {
-                        r = cg_migrate(ELOGIND_CGROUP_CONTROLLER, m->cgroup_root, ELOGIND_CGROUP_CONTROLLER, scope_path, false);
+                        r = cg_migrate(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, SYSTEMD_CGROUP_CONTROLLER, scope_path, false);
                         if (r < 0)
                                 log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
                 }
@@ -1372,7 +1372,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         /* We can't really delete the group, since we are in it. But
          * let's trim it. */
         if (delete && m->cgroup_root)
-                (void) cg_trim(ELOGIND_CGROUP_CONTROLLER, m->cgroup_root, false);
+                (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
 /// elogind does not support the unified hierarchy, yet.
 #if 0
@@ -1425,7 +1425,7 @@ Unit *manager_get_unit_by_pid_cgroup(Manager *m, pid_t pid) {
         if (pid <= 0)
                 return NULL;
 
-        r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, pid, &cgroup);
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, pid, &cgroup);
         if (r < 0)
                 return NULL;
 

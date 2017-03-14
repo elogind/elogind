@@ -558,11 +558,11 @@ static int session_start_cgroup(Session *s) {
         assert(s->leader > 0);
 
         /* First, create our own group */
-        r = cg_create(ELOGIND_CGROUP_CONTROLLER, s->id);
+        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
         if (r < 0)
                 return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
 
-        r = cg_attach(ELOGIND_CGROUP_CONTROLLER, s->id, s->leader);
+        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader);
         if (r < 0)
                 log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader, s->id);
 
@@ -1012,7 +1012,7 @@ bool session_check_gc(Session *s, bool drop_not_started) {
 #endif // 0
 
         if ( s->user->manager
-          && (cg_is_empty_recursive (ELOGIND_CGROUP_CONTROLLER, s->user->manager->cgroup_root) > 0) )
+          && (cg_is_empty_recursive (SYSTEMD_CGROUP_CONTROLLER, s->user->manager->cgroup_root) > 0) )
                 return true;
 
         return false;
@@ -1073,7 +1073,7 @@ int session_kill(Session *s, KillWho who, int signo) {
                 bool sigcont = false;
                 bool ignore_self = true;
                 bool rem = true;
-                return cg_kill_recursive (ELOGIND_CGROUP_CONTROLLER, s->id, signo,
+                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
                                           sigcont, ignore_self, rem, NULL);
         }
 #endif // 0

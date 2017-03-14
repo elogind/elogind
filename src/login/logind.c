@@ -97,7 +97,7 @@ static Manager *manager_new(void) {
                 goto fail;
 
         /* If elogind should be its own controller, mount its cgroup */
-        if (streq(ELOGIND_CGROUP_CONTROLLER, "name=elogind")) {
+        if (streq(SYSTEMD_CGROUP_CONTROLLER, "name=elogind")) {
                 r = mount_setup(true);
                 if (r < 0)
                         goto fail;
@@ -219,7 +219,7 @@ static void manager_free(Manager *m) {
          * kernel; at this point, we will not listen to the
          * signals anyway */
         if (detect_container(NULL) <= 0)
-                (void) cg_uninstall_release_agent(ELOGIND_CGROUP_CONTROLLER);
+                (void) cg_uninstall_release_agent(SYSTEMD_CGROUP_CONTROLLER);
 
         manager_shutdown_cgroup(m, true);
 

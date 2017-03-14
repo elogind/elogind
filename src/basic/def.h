@@ -35,8 +35,8 @@
  * the watchdog pings will keep the loop busy. */
 #define DEFAULT_EXIT_USEC (30*USEC_PER_SEC)
 
-#ifndef ELOGIND_CGROUP_CONTROLLER
-#  define ELOGIND_CGROUP_CONTROLLER "name=elogind"
+#ifndef SYSTEMD_CGROUP_CONTROLLER
+#  define SYSTEMD_CGROUP_CONTROLLER "name=elogind"
 #endif
 
 #define SIGNALS_CRASH_HANDLER SIGSEGV,SIGILL,SIGFPE,SIGBUS,SIGQUIT,SIGABRT

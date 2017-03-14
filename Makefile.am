@@ -121,7 +121,7 @@ CLEANFILES = $(BUILT_SOURCES) \
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
-	-DELOGIND_CGROUP_CONTROLLER=\"$(CGROUP_CONTROLLER)\" \
+	-DSYSTEMD_CGROUP_CONTROLLER=\"$(CGROUP_CONTROLLER)\" \
 	-DELOGIND_CGROUP_AGENT_PATH=\"$(pkglibexecdir)/elogind-cgroups-agent\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \

@@ -574,7 +574,7 @@ static int controller_is_accessible(const char *controller) {
                 /* We don't support named hierarchies if we are using
                  * the unified hierarchy. */
 
-                if (streq(controller, ELOGIND_CGROUP_CONTROLLER))
+                if (streq(controller, SYSTEMD_CGROUP_CONTROLLER))
                         return 0;
 
                 if (startswith(controller, "name="))
@@ -820,7 +820,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
                         if (!cg_controller_is_valid(controller))
                                 return -EINVAL;
                 } else
-                        controller = ELOGIND_CGROUP_CONTROLLER;
+                        controller = SYSTEMD_CGROUP_CONTROLLER;
 
                 cs = strlen(controller);
         }
@@ -1159,7 +1159,7 @@ int cg_mangle_path(const char *path, char **result) {
         if (r < 0)
                 return r;
 
-        return cg_get_path(c ? c : ELOGIND_CGROUP_CONTROLLER, p ? p : "/", NULL, result);
+        return cg_get_path(c ? c : SYSTEMD_CGROUP_CONTROLLER, p ? p : "/", NULL, result);
 }
 
 int cg_get_root_path(char **path) {
@@ -1170,7 +1170,7 @@ int cg_get_root_path(char **path) {
 
         assert(path);
 
-        r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, 1, &p);
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, &p);
         if (r < 0)
                 return r;
 
@@ -1186,7 +1186,7 @@ int cg_get_root_path(char **path) {
         return 0;
 #else
         assert(path);
-        return cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, 1, path);
+        return cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, path);
 #endif // 0
 }
 
@@ -1227,7 +1227,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         assert(pid >= 0);
         assert(cgroup);
 
-        r = cg_pid_get_path(ELOGIND_CGROUP_CONTROLLER, pid, &raw);
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, pid, &raw);
         if (r < 0)
                 return r;
 
@@ -1885,7 +1885,7 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
          * in all others */
 
         /* First create the cgroup in our own hierarchy. */
-        r = cg_create(ELOGIND_CGROUP_CONTROLLER, path);
+        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, path);
         if (r < 0)
                 return r;
 
@@ -1916,7 +1916,7 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
         CGroupController c;
         int r, unified;
 
-        r = cg_attach(ELOGIND_CGROUP_CONTROLLER, path, pid);
+        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, path, pid);
         if (r < 0)
                 return r;
 
@@ -1967,7 +1967,7 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
         int r = 0, unified;
 
         if (!path_equal(from, to))  {
-                r = cg_migrate_recursive(ELOGIND_CGROUP_CONTROLLER, from, ELOGIND_CGROUP_CONTROLLER, to, false, true);
+                r = cg_migrate_recursive(SYSTEMD_CGROUP_CONTROLLER, from, SYSTEMD_CGROUP_CONTROLLER, to, false, true);
                 if (r < 0)
                         return r;
         }
@@ -1991,7 +1991,7 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
                         if (!p)
                                 p = to;
 
-                (void) cg_migrate_recursive_fallback(ELOGIND_CGROUP_CONTROLLER, to, cgroup_controller_to_string(c), p, false, false);
+                (void) cg_migrate_recursive_fallback(SYSTEMD_CGROUP_CONTROLLER, to, cgroup_controller_to_string(c), p, false, false);
         }
 
         return 0;
@@ -2001,7 +2001,7 @@ int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root)
         CGroupController c;
         int r, unified;
 
-        r = cg_trim(ELOGIND_CGROUP_CONTROLLER, path, delete_root);
+        r = cg_trim(SYSTEMD_CGROUP_CONTROLLER, path, delete_root);
         if (r < 0)
                 return r;
 
@@ -2047,7 +2047,7 @@ int cg_mask_supported(CGroupMask *ret) {
                 if (r < 0)
                         return r;
 
-                r = cg_get_path(ELOGIND_CGROUP_CONTROLLER, root, "cgroup.controllers", &path);
+                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, root, "cgroup.controllers", &path);
                 if (r < 0)
                         return r;
 
@@ -2212,7 +2212,7 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
         if (!unified) /* on the legacy hiearchy there's no joining of controllers defined */
                 return 0;
 
-        r = cg_get_path(ELOGIND_CGROUP_CONTROLLER, p, "cgroup.subtree_control", &fs);
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, p, "cgroup.subtree_control", &fs);
         if (r < 0)
                 return r;
 
