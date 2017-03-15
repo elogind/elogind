@@ -69,18 +69,11 @@ typedef int (*sd_event_handler_t)(sd_event_source *s, void *userdata);
 typedef int (*sd_event_io_handler_t)(sd_event_source *s, int fd, uint32_t revents, void *userdata);
 typedef int (*sd_event_time_handler_t)(sd_event_source *s, uint64_t usec, void *userdata);
 typedef int (*sd_event_signal_handler_t)(sd_event_source *s, const struct signalfd_siginfo *si, void *userdata);
-#if 1 /// elogind is musl-libc compatible, which has other guards for siginfo_t
-#if ( defined(__GLIBC__) \
-   && ( defined(__USE_POSIX199309) || defined(__USE_XOPEN_EXTENDED) ) ) \
- || (!defined(__GLIBC__) \
-   && ( defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) \
-     || defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) \
-     || defined(_BSD_SOURCE) ) )
+#if defined _GNU_SOURCE || _POSIX_C_SOURCE >= 199309L
 typedef int (*sd_event_child_handler_t)(sd_event_source *s, const siginfo_t *si, void *userdata);
 #else
 typedef void* sd_event_child_handler_t;
 #endif
-#endif // 1
 
 int sd_event_default(sd_event **e);
 
