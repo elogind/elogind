@@ -24,13 +24,13 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined(__GLIBC__)
-#  include <xlocale.h>
 #endif // defined(__GLIBC__)
 
 #include "alloc-util.h"
 //#include "extract-word.h"
 #include "macro.h"
 #include "parse-util.h"
+//#include "process-util.h"
 #include "string-util.h"
 
 /// Additional includes needed by elogind
