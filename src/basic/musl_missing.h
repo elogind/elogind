@@ -66,8 +66,6 @@ extern char *program_invocation_short_name;
 #define canonicalize_file_name(path) \
         realpath(path, NULL)
 
-typedef int (*__compar_fn_t)(const void *, const void *);
-
 /* GLOB_BRACE is another glibc extension - ignore it for musl libc */
 #define GLOB_BRACE 0
 
