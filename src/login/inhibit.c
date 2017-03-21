@@ -31,6 +31,9 @@
 #include "util.h"
 #include "build.h"
 #include "strv.h"
+#include "formats-util.h"
+#include "process-util.h"
+#include "signal-util.h"
 
 static const char* arg_what = "idle:sleep:shutdown";
 static const char* arg_who = NULL;
@@ -220,9 +223,10 @@ static int parse_argv(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        _cleanup_bus_close_unref_ sd_bus *bus = NULL;
+        _cleanup_bus_flush_close_unref_ sd_bus *bus = NULL;
         int r;
 
+        elogind_set_program_name(argv[0]);
         log_parse_environment();
         log_open();
 
@@ -271,6 +275,9 @@ int main(int argc, char *argv[]) {
 
                 if (pid == 0) {
                         /* Child */
+
+                        (void) reset_all_signal_handlers();
+                        (void) reset_signal_mask();
 
                         close_all_fds(NULL, 0);
 

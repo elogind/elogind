@@ -28,7 +28,9 @@
 struct sd_bus_creds {
         bool allocated;
         unsigned n_ref;
+
         uint64_t mask;
+        uint64_t augmented;
 
         uid_t uid;
         uid_t euid;
@@ -42,6 +44,7 @@ struct sd_bus_creds {
         gid_t *supplementary_gids;
         unsigned n_supplementary_gids;
 
+        pid_t ppid;
         pid_t pid;
         pid_t tid;
 
@@ -58,6 +61,9 @@ struct sd_bus_creds {
         char *unit;
         char *user_unit;
         char *slice;
+        char *user_slice;
+
+        char *tty;
 
         uint32_t *capability;
 

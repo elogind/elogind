@@ -71,8 +71,8 @@ int bus_kernel_read_message(sd_bus *bus, bool hint_priority, int64_t priority);
 
 int bus_kernel_open_bus_fd(const char *bus, char **path);
 
-int bus_kernel_create_bus(const char *name, bool world, char **s);
-int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char **path);
+// UNNEEDED int bus_kernel_create_bus(const char *name, bool world, char **s);
+// UNNEEDED int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char **path);
 
 int bus_kernel_pop_memfd(sd_bus *bus, void **address, size_t *mapped, size_t *allocated);
 void bus_kernel_push_memfd(sd_bus *bus, int fd, void *address, size_t mapped, size_t allocated);
@@ -86,11 +86,9 @@ uint64_t attach_flags_to_kdbus(uint64_t sd_bus_flags);
 
 int bus_kernel_try_close(sd_bus *bus);
 
-int bus_kernel_drop_one(int fd);
+// UNNEEDED int bus_kernel_drop_one(int fd);
 
 int bus_kernel_realize_attach_flags(sd_bus *bus);
-
-int bus_kernel_fix_attach_mask(void);
 
 int bus_kernel_get_bus_name(sd_bus *bus, char **name);
 

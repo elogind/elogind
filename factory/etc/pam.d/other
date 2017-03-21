@@ -1,4 +1,4 @@
-# This file is part of systemd.
+# This file is part of elogind.
 
 auth     include system-auth
 account  include system-auth

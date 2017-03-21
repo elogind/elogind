@@ -31,6 +31,7 @@
 #include "bus-error.h"
 #include "udev-util.h"
 #include "logind.h"
+#include "terminal-util.h"
 
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_device) {
         Device *d;
@@ -182,44 +183,6 @@ int manager_add_button(Manager *m, const char *name, Button **_button) {
         return 0;
 }
 
-int manager_watch_busname(Manager *m, const char *name) {
-        char *n;
-        int r;
-
-        assert(m);
-        assert(name);
-
-        if (set_get(m->busnames, (char*) name))
-                return 0;
-
-        n = strdup(name);
-        if (!n)
-                return -ENOMEM;
-
-        r = set_put(m->busnames, n);
-        if (r < 0) {
-                free(n);
-                return r;
-        }
-
-        return 0;
-}
-
-void manager_drop_busname(Manager *m, const char *name) {
-        Session *session;
-        Iterator i;
-
-        assert(m);
-        assert(name);
-
-        /* keep it if the name still owns a controller */
-        HASHMAP_FOREACH(session, m->sessions, i)
-                if (session_is_controller(session, name))
-                        return;
-
-        free(set_remove(m->busnames, (char*) name));
-}
-
 int manager_process_seat_device(Manager *m, struct udev_device *d) {
         Device *device;
         int r;
@@ -311,47 +274,87 @@ int manager_process_button_device(Manager *m, struct udev_device *d) {
 }
 
 int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
+/// elogind does not support systemd units, but its own session system
+#if 0
+        _cleanup_free_ char *unit = NULL;
+#else
         _cleanup_free_ char *session_name = NULL;
+#endif // 0
         Session *s;
         int r;
 
         assert(m);
-        assert(session);
 
         if (pid < 1)
                 return -EINVAL;
 
+/// elogind does not support systemd units, but its own session system
+#if 0
+        r = cg_pid_get_unit(pid, &unit);
+        if (r < 0)
+                return 0;
+
+        s = hashmap_get(m->session_units, unit);
+#else
+        log_debug_elogind("Searching session for PID %u", pid);
         r = cg_pid_get_session(pid, &session_name);
         if (r < 0)
                 return 0;
 
         s = hashmap_get(m->sessions, session_name);
+        log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
+                          session_name, s && s->id ? s->id : "NULL");
+#endif // 0
         if (!s)
                 return 0;
 
-        *session = s;
+        if (session)
+                *session = s;
         return 1;
 }
 
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
+/// elogind does not support systemd units, but its own session system
+#if 0
+        _cleanup_free_ char *unit = NULL;
+        User *u;
+#else
         Session *s;
+#endif // 0
         int r;
 
         assert(m);
         assert(user);
 
+        if (pid < 1)
+                return -EINVAL;
+
+/// elogind does not support systemd units, but its own session system
+#if 0
+        r = cg_pid_get_slice(pid, &unit);
+        if (r < 0)
+                return 0;
+
+        u = hashmap_get(m->user_units, unit);
+        if (!u)
+                return 0;
+
+        *user = u;
+#else
         r = manager_get_session_by_pid (m, pid, &s);
         if (r <= 0)
                 return r;
 
         *user = s->user;
+#endif // 0
+
         return 1;
 }
 
 int manager_get_idle_hint(Manager *m, dual_timestamp *t) {
         Session *s;
         bool idle_hint;
-        dual_timestamp ts = { 0, 0 };
+        dual_timestamp ts = DUAL_TIMESTAMP_NULL;
         Iterator i;
 
         assert(m);
@@ -403,6 +406,8 @@ bool manager_shall_kill(Manager *m, const char *user) {
         return strv_contains(m->kill_only_users, user);
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int vt_is_busy(unsigned int vtnr) {
         struct vt_stat vt_stat;
         int r = 0;
@@ -428,7 +433,48 @@ static int vt_is_busy(unsigned int vtnr) {
         return r;
 }
 
-bool manager_is_docked(Manager *m) {
+int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        char name[sizeof("autovt@tty.service") + DECIMAL_STR_MAX(unsigned int)];
+        int r;
+
+        assert(m);
+        assert(vtnr >= 1);
+
+        if (vtnr > m->n_autovts &&
+            vtnr != m->reserve_vt)
+                return 0;
+
+        if (vtnr != m->reserve_vt) {
+                /* If this is the reserved TTY, we'll start the getty
+                 * on it in any case, but otherwise only if it is not
+                 * busy. */
+
+                r = vt_is_busy(vtnr);
+                if (r < 0)
+                        return r;
+                else if (r > 0)
+                        return -EBUSY;
+        }
+
+        snprintf(name, sizeof(name), "autovt@tty%u.service", vtnr);
+        r = sd_bus_call_method(
+                        m->bus,
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
+                        "StartUnit",
+                        &error,
+                        NULL,
+                        "ss", name, "fail");
+        if (r < 0)
+                log_error("Failed to start %s: %s", name, bus_error_message(&error, r));
+
+        return r;
+}
+#endif // 0
+
+static bool manager_is_docked(Manager *m) {
         Iterator i;
         Button *b;
 
@@ -439,7 +485,7 @@ bool manager_is_docked(Manager *m) {
         return false;
 }
 
-int manager_count_displays(Manager *m) {
+static int manager_count_external_displays(Manager *m) {
         _cleanup_udev_enumerate_unref_ struct udev_enumerate *e = NULL;
         struct udev_list_entry *item = NULL, *first = NULL;
         int r;
@@ -461,7 +507,8 @@ int manager_count_displays(Manager *m) {
         udev_list_entry_foreach(item, first) {
                 _cleanup_udev_device_unref_ struct udev_device *d = NULL;
                 struct udev_device *p;
-                const char *status;
+                const char *status, *enabled, *dash, *nn, *i;
+                bool external = false;
 
                 d = udev_device_new_from_syspath(m->udev, udev_list_entry_get_name(item));
                 if (!d)
@@ -477,6 +524,40 @@ int manager_count_displays(Manager *m) {
                 if (!streq_ptr(udev_device_get_subsystem(p), "drm"))
                         continue;
 
+                nn = udev_device_get_sysname(d);
+                if (!nn)
+                        continue;
+
+                /* Ignore internal displays: the type is encoded in
+                 * the sysfs name, as the second dash seperated item
+                 * (the first is the card name, the last the connector
+                 * number). We implement a whitelist of external
+                 * displays here, rather than a whitelist, to ensure
+                 * we don't block suspends too eagerly. */
+                dash = strchr(nn, '-');
+                if (!dash)
+                        continue;
+
+                dash++;
+                FOREACH_STRING(i, "VGA-", "DVI-I-", "DVI-D-", "DVI-A-"
+                               "Composite-", "SVIDEO-", "Component-",
+                               "DIN-", "DP-", "HDMI-A-", "HDMI-B-", "TV-") {
+
+                        if (startswith(dash, i)) {
+                                external = true;
+                                break;
+                        }
+                }
+                if (!external)
+                        continue;
+
+                /* Ignore ports that are not enabled */
+                enabled = udev_device_get_sysattr_value(d, "enabled");
+                if (!enabled)
+                        continue;
+                if (!streq_ptr(enabled, "enabled"))
+                        continue;
+
                 /* We count any connector which is not explicitly
                  * "disconnected" as connected. */
                 status = udev_device_get_sysattr_value(d, "status");
@@ -487,7 +568,7 @@ int manager_count_displays(Manager *m) {
         return n;
 }
 
-bool manager_is_docked_or_multiple_displays(Manager *m) {
+bool manager_is_docked_or_external_displays(Manager *m) {
         int n;
 
         /* If we are docked don't react to lid closing */
@@ -498,11 +579,11 @@ bool manager_is_docked_or_multiple_displays(Manager *m) {
 
         /* If we have more than one display connected,
          * assume that we are docked. */
-        n = manager_count_displays(m);
+        n = manager_count_external_displays(m);
         if (n < 0)
                 log_warning_errno(n, "Display counting failed: %m");
-        else if (n > 1) {
-                log_debug("Multiple (%i) displays connected.", n);
+        else if (n >= 1) {
+                log_debug("External (%i) displays connected.", n);
                 return true;
         }
 

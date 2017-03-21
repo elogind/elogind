@@ -19,6 +19,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include "bus-message.h"
 #include "bus-internal.h"
 
 bool object_path_is_valid(const char *p) {
@@ -166,6 +167,8 @@ bool service_name_is_valid(const char *p) {
         return true;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char* service_name_startswith(const char *a, const char *b) {
         const char *p;
 
@@ -185,6 +188,7 @@ char* service_name_startswith(const char *a, const char *b) {
 
         return NULL;
 }
+#endif // 0
 
 bool member_name_is_valid(const char *p) {
         const char *q;
@@ -211,6 +215,17 @@ bool member_name_is_valid(const char *p) {
         return true;
 }
 
+/*
+ * Complex pattern match
+ * This checks whether @a is a 'complex-prefix' of @b, or @b is a
+ * 'complex-prefix' of @a, based on strings that consist of labels with @c as
+ * spearator. This function returns true if:
+ *   - both strings are equal
+ *   - either is a prefix of the other and ends with @c
+ * The second rule makes sure that either string needs to be fully included in
+ * the other, and the string which is considered the prefix needs to end with a
+ * separator.
+ */
 static bool complex_pattern_check(char c, const char *a, const char *b) {
         bool separator = false;
 
@@ -222,9 +237,7 @@ static bool complex_pattern_check(char c, const char *a, const char *b) {
 
         for (;;) {
                 if (*a != *b)
-                        return (separator && (*a == 0 || *b == 0)) ||
-                                (*a == 0 && *b == c && b[1] == 0) ||
-                                (*b == 0 && *a == c && a[1] == 0);
+                        return (separator && (*a == 0 || *b == 0));
 
                 if (*a == 0)
                         return true;
@@ -243,7 +256,18 @@ bool path_complex_pattern(const char *pattern, const char *value) {
         return complex_pattern_check('/', pattern, value);
 }
 
+/*
+ * Simple pattern match
+ * This checks whether @a is a 'simple-prefix' of @b, based on strings that
+ * consist of labels with @c as separator. This function returns true, if:
+ *   - if @a and @b are equal
+ *   - if @a is a prefix of @b, and the first following character in @b (or the
+ *     last character in @a) is @c
+ * The second rule basically makes sure that if @a is a prefix of @b, then @b
+ * must follow with a new label separated by @c. It cannot extend the label.
+ */
 static bool simple_pattern_check(char c, const char *a, const char *b) {
+        bool separator = false;
 
         if (!a && !b)
                 return true;
@@ -253,10 +277,12 @@ static bool simple_pattern_check(char c, const char *a, const char *b) {
 
         for (;;) {
                 if (*a != *b)
-                        return *a == 0 && *b == c;
+                        return *a == 0 && (*b == c || separator);
 
                 if (*a == 0)
                         return true;
+
+                separator = *a == c;
 
                 a++, b++;
         }
@@ -322,4 +348,29 @@ char *bus_address_escape(const char *v) {
 
         *b = 0;
         return r;
+}
+
+int bus_maybe_reply_error(sd_bus_message *m, int r, sd_bus_error *error) {
+        assert(m);
+
+        if (r < 0) {
+                if (m->header->type == SD_BUS_MESSAGE_METHOD_CALL)
+                        sd_bus_reply_method_errno(m, r, error);
+
+        } else if (sd_bus_error_is_set(error)) {
+                if (m->header->type == SD_BUS_MESSAGE_METHOD_CALL)
+                        sd_bus_reply_method_error(m, error);
+        } else
+                return r;
+
+        log_debug("Failed to process message [type=%s sender=%s path=%s interface=%s member=%s signature=%s]: %s",
+                  bus_message_type_to_string(m->header->type),
+                  strna(m->sender),
+                  strna(m->path),
+                  strna(m->interface),
+                  strna(m->member),
+                  strna(m->root_container.signature),
+                  bus_error_message(error, r));
+
+        return 1;
 }

@@ -65,6 +65,8 @@ int acl_find_uid(acl_t acl, uid_t uid, acl_entry_t *entry) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int calc_acl_mask_if_needed(acl_t *acl_p) {
         acl_entry_t i;
         int r;
@@ -81,17 +83,18 @@ int calc_acl_mask_if_needed(acl_t *acl_p) {
 
                 if (tag == ACL_MASK)
                         return 0;
-                if (IN_SET(tag, ACL_USER, ACL_GROUP))
-                        goto calc;
+
+                if (IN_SET(tag, ACL_USER, ACL_GROUP)) {
+                        if (acl_calc_mask(acl_p) < 0)
+                                return -errno;
+
+                        return 1;
+                }
         }
         if (r < 0)
                 return -errno;
-        return 0;
 
-calc:
-        if (acl_calc_mask(acl_p) < 0)
-                return -errno;
-        return 1;
+        return 0;
 }
 
 int add_base_acls_if_needed(acl_t *acl_p, const char *path) {
@@ -158,62 +161,71 @@ int add_base_acls_if_needed(acl_t *acl_p, const char *path) {
         return 0;
 }
 
-int search_acl_groups(char*** dst, const char* path, bool* belong) {
-        acl_t acl;
+int acl_search_groups(const char *path, char ***ret_groups) {
+        _cleanup_strv_free_ char **g = NULL;
+        _cleanup_(acl_free) acl_t acl = NULL;
+        bool ret = false;
+        acl_entry_t entry;
+        int r;
 
         assert(path);
-        assert(belong);
 
         acl = acl_get_file(path, ACL_TYPE_DEFAULT);
-        if (acl) {
-                acl_entry_t entry;
-                int r;
+        if (!acl)
+                return -errno;
 
-                r = acl_get_entry(acl, ACL_FIRST_ENTRY, &entry);
-                while (r > 0) {
-                        acl_tag_t tag;
-                        gid_t *gid;
-                        char *name;
+        r = acl_get_entry(acl, ACL_FIRST_ENTRY, &entry);
+        for (;;) {
+                _cleanup_(acl_free_gid_tpp) gid_t *gid = NULL;
+                acl_tag_t tag;
 
-                        r = acl_get_tag_type(entry, &tag);
-                        if (r < 0)
-                                break;
+                if (r < 0)
+                        return -errno;
+                if (r == 0)
+                        break;
 
-                        if (tag != ACL_GROUP)
-                                goto next;
+                if (acl_get_tag_type(entry, &tag) < 0)
+                        return -errno;
 
-                        gid = acl_get_qualifier(entry);
-                        if (!gid)
-                                break;
+                if (tag != ACL_GROUP)
+                        goto next;
 
-                        if (in_gid(*gid) > 0) {
-                                *belong = true;
-                                break;
-                        }
+                gid = acl_get_qualifier(entry);
+                if (!gid)
+                        return -errno;
 
-                        name = gid_to_name(*gid);
-                        if (!name) {
-                                acl_free(acl);
-                                return log_oom();
-                        }
+                if (in_gid(*gid) > 0) {
+                        if (!ret_groups)
+                                return true;
 
-                        r = strv_consume(dst, name);
-                        if (r < 0) {
-                                acl_free(acl);
-                                return log_oom();
-                        }
-
-                next:
-                        r = acl_get_entry(acl, ACL_NEXT_ENTRY, &entry);
+                        ret = true;
                 }
 
-                acl_free(acl);
+                if (ret_groups) {
+                        char *name;
+
+                        name = gid_to_name(*gid);
+                        if (!name)
+                                return -ENOMEM;
+
+                        r = strv_consume(&g, name);
+                        if (r < 0)
+                                return r;
+                }
+
+        next:
+                r = acl_get_entry(acl, ACL_NEXT_ENTRY, &entry);
         }
 
-        return 0;
+        if (ret_groups) {
+                *ret_groups = g;
+                g = NULL;
+        }
+
+        return ret;
 }
 
-int parse_acl(char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask) {
+int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask) {
         _cleanup_free_ char **a = NULL, **d = NULL; /* strings are not be freed */
         _cleanup_strv_free_ char **split;
         char **entry;
@@ -222,7 +234,7 @@ int parse_acl(char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask)
 
         split = strv_split(text, ",");
         if (!split)
-                return log_oom();
+                return -ENOMEM;
 
         STRV_FOREACH(entry, split) {
                 char *p;
@@ -235,9 +247,9 @@ int parse_acl(char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask)
                         r = strv_push(&d, p);
                 else
                         r = strv_push(&a, *entry);
+                if (r < 0)
+                        return r;
         }
-        if (r < 0)
-                return r;
 
         if (!strv_isempty(a)) {
                 _cleanup_free_ char *join;
@@ -248,7 +260,7 @@ int parse_acl(char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask)
 
                 a_acl = acl_from_text(join);
                 if (!a_acl)
-                        return -EINVAL;
+                        return -errno;
 
                 if (want_mask) {
                         r = calc_acl_mask_if_needed(&a_acl);
@@ -266,7 +278,7 @@ int parse_acl(char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask)
 
                 d_acl = acl_from_text(join);
                 if (!d_acl)
-                        return -EINVAL;
+                        return -errno;
 
                 if (want_mask) {
                         r = calc_acl_mask_if_needed(&d_acl);
@@ -278,6 +290,7 @@ int parse_acl(char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask)
         *acl_access = a_acl;
         *acl_default = d_acl;
         a_acl = d_acl = NULL;
+
         return 0;
 }
 
@@ -384,3 +397,4 @@ int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *acl) {
         old = NULL;
         return 0;
 }
+#endif // 0

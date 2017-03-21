@@ -29,6 +29,8 @@
 #include "logind-acl.h"
 #include "util.h"
 #include "mkdir.h"
+#include "formats-util.h"
+#include "terminal-util.h"
 
 Seat *seat_new(Manager *m, const char *id) {
         Seat *s;
@@ -91,11 +93,11 @@ int seat_save(Seat *s) {
 
         r = mkdir_safe_label("/run/systemd/seats", 0755, 0, 0);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         r = fopen_temporary(s->state_file, &f, &temp_path);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         fchmod(fileno(f), 0644);
 
@@ -139,19 +141,24 @@ int seat_save(Seat *s) {
                                 i->sessions_by_seat_next ? ' ' : '\n');
         }
 
-        fflush(f);
+        r = fflush_and_check(f);
+        if (r < 0)
+                goto fail;
 
-        if (ferror(f) || rename(temp_path, s->state_file) < 0) {
+        if (rename(temp_path, s->state_file) < 0) {
                 r = -errno;
-                unlink(s->state_file);
-                unlink(temp_path);
+                goto fail;
         }
 
-finish:
-        if (r < 0)
-                log_error_errno(r, "Failed to save seat data %s: %m", s->state_file);
+        return 0;
 
-        return r;
+fail:
+        (void) unlink(s->state_file);
+
+        if (temp_path)
+                (void) unlink(temp_path);
+
+        return log_error_errno(r, "Failed to save seat data %s: %m", s->state_file);
 }
 
 int seat_load(Seat *s) {
@@ -162,6 +169,8 @@ int seat_load(Seat *s) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static int vt_allocate(unsigned int vtnr) {
         char p[sizeof("/dev/tty") + DECIMAL_STR_MAX(unsigned int)];
         _cleanup_close_ int fd = -1;
@@ -175,6 +184,35 @@ static int vt_allocate(unsigned int vtnr) {
 
         return 0;
 }
+
+int seat_preallocate_vts(Seat *s) {
+        int r = 0;
+        unsigned i;
+
+        assert(s);
+        assert(s->manager);
+
+        log_debug("Preallocating VTs...");
+
+        if (s->manager->n_autovts <= 0)
+                return 0;
+
+        if (!seat_has_vts(s))
+                return 0;
+
+        for (i = 1; i <= s->manager->n_autovts; i++) {
+                int q;
+
+                q = vt_allocate(i);
+                if (q < 0) {
+                        log_error_errno(q, "Failed to preallocate VT %u: %m", i);
+                        r = q;
+                }
+        }
+
+        return r;
+}
+#endif // 0
 
 int seat_apply_acls(Seat *s, Session *old_active) {
         int r;
@@ -239,7 +277,7 @@ int seat_set_active(Seat *s, Session *session) {
 int seat_switch_to(Seat *s, unsigned int num) {
         /* Public session positions skip 0 (there is only F1-F12). Maybe it
          * will get reassigned in the future, so return error for now. */
-        if (!num)
+        if (num == 0)
                 return -EINVAL;
 
         if (num >= s->position_count || !s->positions[num]) {
@@ -256,12 +294,12 @@ int seat_switch_to(Seat *s, unsigned int num) {
 int seat_switch_to_next(Seat *s) {
         unsigned int start, i;
 
-        if (!s->position_count)
+        if (s->position_count == 0)
                 return -EINVAL;
 
         start = 1;
-        if (s->active && s->active->pos > 0)
-                start = s->active->pos;
+        if (s->active && s->active->position > 0)
+                start = s->active->position;
 
         for (i = start + 1; i < s->position_count; ++i)
                 if (s->positions[i])
@@ -277,12 +315,12 @@ int seat_switch_to_next(Seat *s) {
 int seat_switch_to_previous(Seat *s) {
         unsigned int start, i;
 
-        if (!s->position_count)
+        if (s->position_count == 0)
                 return -EINVAL;
 
         start = 1;
-        if (s->active && s->active->pos > 0)
-                start = s->active->pos;
+        if (s->active && s->active->position > 0)
+                start = s->active->position;
 
         for (i = start - 1; i > 0; --i)
                 if (s->positions[i])
@@ -326,6 +364,11 @@ int seat_active_vt_changed(Seat *s, unsigned int vtnr) {
         }
 
         r = seat_set_active(s, new_active);
+
+/// elogind does not spawn autovt
+#if 0
+        manager_spawn_autovt(s->manager, vtnr);
+#endif // 0
 
         return r;
 }
@@ -383,6 +426,12 @@ int seat_start(Seat *s) {
                    LOG_MESSAGE("New seat %s.", s->id),
                    NULL);
 
+        /* Initialize VT magic stuff */
+/// elogind does not support autospawning vts
+#if 0
+        seat_preallocate_vts(s);
+#endif // 0
+
         /* Read current VT */
         seat_read_active_vt(s);
 
@@ -438,21 +487,21 @@ int seat_stop_sessions(Seat *s, bool force) {
 
 void seat_evict_position(Seat *s, Session *session) {
         Session *iter;
-        unsigned int pos = session->pos;
+        unsigned int pos = session->position;
 
-        session->pos = 0;
+        session->position = 0;
 
-        if (!pos)
+        if (pos == 0)
                 return;
 
         if (pos < s->position_count && s->positions[pos] == session) {
                 s->positions[pos] = NULL;
 
                 /* There might be another session claiming the same
-                 * position (eg., during gdm->session transition), so lets look
+                 * position (eg., during gdm->session transition), so let's look
                  * for it and set it on the free slot. */
                 LIST_FOREACH(sessions_by_seat, iter, s->sessions) {
-                        if (iter->pos == pos) {
+                        if (iter->position == pos && session_get_state(iter) != SESSION_CLOSING) {
                                 s->positions[pos] = iter;
                                 break;
                         }
@@ -470,15 +519,15 @@ void seat_claim_position(Seat *s, Session *session, unsigned int pos) {
 
         seat_evict_position(s, session);
 
-        session->pos = pos;
-        if (pos > 0 && !s->positions[pos])
+        session->position = pos;
+        if (pos > 0)
                 s->positions[pos] = session;
 }
 
 static void seat_assign_position(Seat *s, Session *session) {
         unsigned int pos;
 
-        if (session->pos > 0)
+        if (session->position > 0)
                 return;
 
         for (pos = 1; pos < s->position_count; ++pos)
@@ -565,7 +614,7 @@ bool seat_can_graphical(Seat *s) {
 int seat_get_idle_hint(Seat *s, dual_timestamp *t) {
         Session *session;
         bool idle_hint = true;
-        dual_timestamp ts = { 0, 0 };
+        dual_timestamp ts = DUAL_TIMESTAMP_NULL;
 
         assert(s);
 

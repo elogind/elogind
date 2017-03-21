@@ -30,7 +30,9 @@
     the vendor, the recommended way is to place a symlink to
     <filename>/dev/null</filename> in the configuration directory in
     <filename>/etc/</filename>, with the same filename as the vendor
-    configuration file.</para>
+    configuration file. If the vendor configuration file is included in
+    the initrd image, the image has to be regenerated.</para>
+
   </refsection>
 
   <refsection id='main-conf'>
@@ -39,14 +41,14 @@
     <para>Default configuration is defined during compilation, so a
     configuration file is only needed when it is necessary to deviate
     from those defaults. By default the configuration file in
-    <filename>/etc/systemd/</filename> contains commented out entries
+    <filename>/etc/elogind/</filename> contains commented out entries
     showing the defaults as a guide to the administrator. This file
     can be edited to create local overrides.
     </para>
 
     <para>When packages need to customize the configuration, they can
     install configuration snippets in
-    <filename>/usr/lib/systemd/*.conf.d/</filename>. Files in
+    <filename>/usr/lib/elogind/*.conf.d/</filename>. Files in
     <filename>/etc/</filename> are reserved for the local
     administrator, who may use this logic to override the
     configuration files installed by vendor packages. The main

@@ -25,10 +25,13 @@
 #include <errno.h>
 
 #include "util.h"
+#include "formats-util.h"
+#include "process-util.h"
 #include "macro.h"
 #include "path-util.h"
 #include "cgroup-util.h"
 #include "cgroup-show.h"
+#include "terminal-util.h"
 
 static int compare(const void *a, const void *b) {
         const pid_t *p = a, *q = b;
@@ -149,7 +152,7 @@ int show_cgroup_by_path(const char *path, const char *prefix, unsigned n_columns
                 if (!k)
                         return -ENOMEM;
 
-                if (!(flags & OUTPUT_SHOW_ALL) && cg_is_empty_recursive(NULL, k, false) > 0)
+                if (!(flags & OUTPUT_SHOW_ALL) && cg_is_empty_recursive(NULL, k) > 0)
                         continue;
 
                 if (!shown_pids) {
@@ -158,8 +161,7 @@ int show_cgroup_by_path(const char *path, const char *prefix, unsigned n_columns
                 }
 
                 if (last) {
-                        printf("%s%s%s\n", prefix, draw_special_char(DRAW_TREE_BRANCH),
-                                           basename(last));
+                        printf("%s%s%s\n", prefix, draw_special_char(DRAW_TREE_BRANCH), cg_unescape(basename(last)));
 
                         if (!p1) {
                                 p1 = strappend(prefix, draw_special_char(DRAW_TREE_VERTICAL));
@@ -182,8 +184,7 @@ int show_cgroup_by_path(const char *path, const char *prefix, unsigned n_columns
                 show_cgroup_one_by_path(path, prefix, n_columns, !!last, kernel_threads, flags);
 
         if (last) {
-                printf("%s%s%s\n", prefix, draw_special_char(DRAW_TREE_RIGHT),
-                                   basename(last));
+                printf("%s%s%s\n", prefix, draw_special_char(DRAW_TREE_RIGHT), cg_unescape(basename(last)));
 
                 if (!p2) {
                         p2 = strappend(prefix, "  ");
@@ -259,6 +260,8 @@ int show_cgroup_and_extra(const char *controller, const char *path, const char *
         return show_extra_pids(controller, path, prefix, n_columns, extra_pids, n_extra_pids, flags);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int show_cgroup_and_extra_by_spec(const char *spec, const char *prefix, unsigned n_columns, bool kernel_threads, const pid_t extra_pids[], unsigned n_extra_pids, OutputFlags flags) {
         _cleanup_free_ char *controller = NULL, *path = NULL;
         int r;
@@ -271,3 +274,4 @@ int show_cgroup_and_extra_by_spec(const char *spec, const char *prefix, unsigned
 
         return show_cgroup_and_extra(controller, path, prefix, n_columns, kernel_threads, extra_pids, n_extra_pids, flags);
 }
+#endif // 0

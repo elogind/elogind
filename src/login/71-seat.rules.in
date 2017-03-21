@@ -11,10 +11,16 @@ TAG=="uaccess", SUBSYSTEM!="sound", TAG+="seat"
 SUBSYSTEM=="sound", KERNEL=="card*", TAG+="seat"
 SUBSYSTEM=="input", KERNEL=="input*", TAG+="seat"
 SUBSYSTEM=="graphics", KERNEL=="fb[0-9]*", TAG+="seat", TAG+="master-of-seat"
+SUBSYSTEM=="drm", KERNEL=="card[0-9]*", TAG+="seat", TAG+="master-of-seat"
 SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", TAG+="seat"
 
 # 'Plugable' USB hub, sound, network, graphics adapter
 SUBSYSTEM=="usb", ATTR{idVendor}=="2230", ATTR{idProduct}=="000[13]", ENV{ID_AUTOSEAT}="1"
+
+# qemu (version 2.4+) has a PCI-PCI bridge (-device pci-bridge-seat) to group
+# devices belonging to one seat. See:
+#     http://git.qemu.org/?p=qemu.git;a=blob;f=docs/multiseat.txt
+SUBSYSTEM=="pci", ATTR{vendor}=="0x1b36", ATTR{device}=="0x000a", TAG+="seat", ENV{ID_AUTOSEAT}="1"
 
 # Mimo 720, with integrated USB hub, displaylink graphics, and e2i
 # touchscreen. This device carries no proper VID/PID in the USB hub,
@@ -38,11 +44,11 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="17e9", ATTR{idProduct}=="401a", ATTR{product}
 SUBSYSTEM=="usb", ATTR{idVendor}=="17e9", ATTR{idProduct}=="401a", ATTR{product}=="mimo inc", \
                   ATTR{../idVendor}=="058f", ATTR{../idProduct}=="6254", \
                   ENV{ID_AVOID_LOOP}=="", \
-                  RUN+="@udevbindir@/udevadm trigger --parent-match=%p/.."
+                  RUN+="@rootbindir@/udevadm trigger --parent-match=%p/.."
 
 TAG=="seat", ENV{ID_PATH}=="", IMPORT{builtin}="path_id"
 TAG=="seat", ENV{ID_FOR_SEAT}=="", ENV{ID_PATH_TAG}!="", ENV{ID_FOR_SEAT}="$env{SUBSYSTEM}-$env{ID_PATH_TAG}"
 
-SUBSYSTEM=="input", ATTR{name}=="Wiebetech LLC Wiebetech", RUN+="@bindir@/loginctl lock-sessions"
+SUBSYSTEM=="input", ATTR{name}=="Wiebetech LLC Wiebetech", RUN+="@rootbindir@/loginctl lock-sessions"
 
 LABEL="seat_end"

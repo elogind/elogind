@@ -26,7 +26,7 @@ typedef enum KillWho KillWho;
 
 #include "list.h"
 #include "logind-user.h"
-#include "login-shared.h"
+#include "login-util.h"
 
 typedef enum SessionState {
         SESSION_OPENING,  /* Session scope is being created */
@@ -70,7 +70,7 @@ struct Session {
         Manager *manager;
 
         const char *id;
-        unsigned int pos;
+        unsigned int position;
         SessionType type;
         SessionClass class;
 
@@ -89,8 +89,12 @@ struct Session {
         char *service;
         char *desktop;
 
-        /* Always NULL.  */
+        /* always NULL */
         char *scope;
+/// UNNEEDED (and unsupported) by elogind
+#if 0
+        char *scope_job;
+#endif // 0
 
         Seat *seat;
         unsigned int vtnr;
@@ -117,6 +121,7 @@ struct Session {
 
         char *controller;
         Hashmap *devices;
+        sd_bus_track *track;
 
         LIST_FIELDS(Session, sessions_by_user);
         LIST_FIELDS(Session, sessions_by_seat);
@@ -176,7 +181,7 @@ bool session_is_controller(Session *s, const char *sender);
 int session_set_controller(Session *s, const char *sender, bool force);
 void session_drop_controller(Session *s);
 
-int bus_session_method_activate(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error);
-int bus_session_method_lock(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error);
-int bus_session_method_terminate(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error);
-int bus_session_method_kill(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error);
+int bus_session_method_activate(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int bus_session_method_lock(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int bus_session_method_terminate(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int bus_session_method_kill(sd_bus_message *message, void *userdata, sd_bus_error *error);

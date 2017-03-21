@@ -30,8 +30,20 @@
 #include "macro.h"
 #include "strv.h"
 #include "fileio.h"
-#include "login-shared.h"
+#include "login-util.h"
+#include "formats-util.h"
+#include "hostname-util.h"
 #include "sd-login.h"
+
+/* Error codes:
+ *
+ *    invalid input parameters                → -EINVAL
+ *    invalid fd                              → -EBADF
+ *    process does not exist                  → -ESRCH
+ *    cgroup does not exist                   → -ENOENT
+ *    machine, session does not exist         → -ENXIO
+ *    requested metadata on object is missing → -ENODATA
+ */
 
 _public_ int sd_pid_get_session(pid_t pid, char **session) {
 
@@ -46,7 +58,12 @@ _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
+/// elogind does not support systemd units
+#if 0
+        return cg_pid_get_unit(pid, unit);
+#else
         return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
@@ -54,7 +71,12 @@ _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
+/// elogind does not support systemd units
+#if 0
+        return cg_pid_get_user_unit(pid, unit);
+#else
         return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
@@ -62,7 +84,12 @@ _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(name, -EINVAL);
 
+/// elogind does not support systemd units
+#if 0
+        return cg_pid_get_machine_name(pid, name);
+#else
         return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
@@ -70,7 +97,25 @@ _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
+/// elogind does not support systemd slices
+#if 0
+        return cg_pid_get_slice(pid, slice);
+#else
         return -ESRCH;
+#endif // 0
+}
+
+_public_ int sd_pid_get_user_slice(pid_t pid, char **slice) {
+
+        assert_return(pid >= 0, -EINVAL);
+        assert_return(slice, -EINVAL);
+
+/// elogind does not support systemd slices
+#if 0
+        return cg_pid_get_user_slice(pid, slice);
+#else
+        return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
@@ -78,94 +123,190 @@ _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(uid, -EINVAL);
 
+/// elogind does not support systemd slices
+#if 0
+        return cg_pid_get_owner_uid(pid, uid);
+#else
         return -ESRCH;
+#endif // 0
+}
+
+_public_ int sd_pid_get_cgroup(pid_t pid, char **cgroup) {
+        char *c;
+        int r;
+
+        assert_return(pid >= 0, -EINVAL);
+        assert_return(cgroup, -EINVAL);
+
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, pid, &c);
+        if (r < 0)
+                return r;
+
+        /* The internal APIs return the empty string for the root
+         * cgroup, let's return the "/" in the public APIs instead, as
+         * that's easier and less ambigious for people to grok. */
+        if (isempty(c)) {
+                free(c);
+                c = strdup("/");
+                if (!c)
+                        return -ENOMEM;
+
+        }
+
+        *cgroup = c;
+        return 0;
 }
 
 _public_ int sd_peer_get_session(int fd, char **session) {
         struct ucred ucred = {};
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(session, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd scopes
+#if 0
         return cg_pid_get_session(ucred.pid, session);
+#else
+        return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(uid, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd units
+#if 0
+        return cg_pid_get_owner_uid(ucred.pid, uid);
+#else
         return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_peer_get_unit(int fd, char **unit) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(unit, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd units
+#if 0
+        return cg_pid_get_unit(ucred.pid, unit);
+#else
         return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_peer_get_user_unit(int fd, char **unit) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(unit, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd units
+#if 0
+        return cg_pid_get_user_unit(ucred.pid, unit);
+#else
         return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_peer_get_machine_name(int fd, char **machine) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(machine, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd units
+#if 0
+        return cg_pid_get_machine_name(ucred.pid, machine);
+#else
         return -ESRCH;
+#endif // 0
 }
 
 _public_ int sd_peer_get_slice(int fd, char **slice) {
         struct ucred ucred;
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(slice, -EINVAL);
 
         r = getpeercred(fd, &ucred);
         if (r < 0)
                 return r;
 
+/// elogind does not support systemd slices
+#if 0
+        return cg_pid_get_slice(ucred.pid, slice);
+#else
         return -ESRCH;
+#endif // 0
+}
+
+_public_ int sd_peer_get_user_slice(int fd, char **slice) {
+        struct ucred ucred;
+        int r;
+
+        assert_return(fd >= 0, -EBADF);
+        assert_return(slice, -EINVAL);
+
+        r = getpeercred(fd, &ucred);
+        if (r < 0)
+                return r;
+
+/// elogind does not support systemd slices
+#if 0
+        return cg_pid_get_user_slice(ucred.pid, slice);
+#else
+        return -ESRCH;
+#endif // 0
+}
+
+_public_ int sd_peer_get_cgroup(int fd, char **cgroup) {
+        struct ucred ucred;
+        int r;
+
+        assert_return(fd >= 0, -EBADF);
+        assert_return(cgroup, -EINVAL);
+
+        r = getpeercred(fd, &ucred);
+        if (r < 0)
+                return r;
+
+        return sd_pid_get_cgroup(ucred.pid, cgroup);
 }
 
 static int file_of_uid(uid_t uid, char **p) {
+
+        assert_return(uid_is_valid(uid), -EINVAL);
         assert(p);
 
         if (asprintf(p, "/run/systemd/users/" UID_FMT, uid) < 0)
@@ -192,11 +333,15 @@ _public_ int sd_uid_get_state(uid_t uid, char**state) {
                 if (!s)
                         return -ENOMEM;
 
-        } else if (r < 0) {
+        }
+        if (r < 0) {
                 free(s);
                 return r;
-        } else if (!s)
+        }
+        if (isempty(s)) {
+                free(s);
                 return -EIO;
+        }
 
         *state = s;
         return 0;
@@ -213,15 +358,45 @@ _public_ int sd_uid_get_display(uid_t uid, char **session) {
                 return r;
 
         r = parse_env_file(p, NEWLINE, "DISPLAY", &s, NULL);
+        if (r == -ENOENT)
+                return -ENODATA;
         if (r < 0)
                 return r;
-
         if (isempty(s))
-                return -ENOENT;
+                return -ENODATA;
 
         *session = s;
         s = NULL;
 
+        return 0;
+}
+
+static int file_of_seat(const char *seat, char **_p) {
+        char *p;
+        int r;
+
+        assert(_p);
+
+        if (seat) {
+                if (!filename_is_valid(seat))
+                        return -EINVAL;
+
+                p = strappend("/run/systemd/seats/", seat);
+        } else {
+                _cleanup_free_ char *buf = NULL;
+
+                r = sd_session_get_seat(NULL, &buf);
+                if (r < 0)
+                        return r;
+
+                p = strappend("/run/systemd/seats/", buf);
+        }
+
+        if (!p)
+                return -ENOMEM;
+
+        *_p = p;
+        p = NULL;
         return 0;
 }
 
@@ -231,29 +406,28 @@ _public_ int sd_uid_is_on_seat(uid_t uid, int require_active, const char *seat) 
         int r;
         const char *word, *variable, *state;
 
-        assert_return(seat, -EINVAL);
+        assert_return(uid_is_valid(uid), -EINVAL);
 
-        variable = require_active ? "ACTIVE_UID" : "UIDS";
-
-        p = strappend("/run/systemd/seats/", seat);
-        if (!p)
-                return -ENOMEM;
-
-        r = parse_env_file(p, NEWLINE, variable, &s, NULL);
-
+        r = file_of_seat(seat, &p);
         if (r < 0)
                 return r;
 
-        if (!s)
-                return -EIO;
+        variable = require_active ? "ACTIVE_UID" : "UIDS";
+
+        r = parse_env_file(p, NEWLINE, variable, &s, NULL);
+        if (r == -ENOENT)
+                return 0;
+        if (r < 0)
+                return r;
+        if (isempty(s))
+                return 0;
 
         if (asprintf(&t, UID_FMT, uid) < 0)
                 return -ENOMEM;
 
-        FOREACH_WORD(word, l, s, state) {
+        FOREACH_WORD(word, l, s, state)
                 if (strneq(t, word, l))
                         return 1;
-        }
 
         return 0;
 }
@@ -263,31 +437,22 @@ static int uid_get_array(uid_t uid, const char *variable, char ***array) {
         char **a;
         int r;
 
+        assert(variable);
+
         r = file_of_uid(uid, &p);
         if (r < 0)
                 return r;
 
-        r = parse_env_file(p, NEWLINE,
-                           variable, &s,
-                           NULL);
-        if (r < 0) {
-                if (r == -ENOENT) {
-                        if (array)
-                                *array = NULL;
-                        return 0;
-                }
-
-                return r;
-        }
-
-        if (!s) {
+        r = parse_env_file(p, NEWLINE, variable, &s, NULL);
+        if (r == -ENOENT || (r >= 0 && isempty(s))) {
                 if (array)
                         *array = NULL;
                 return 0;
         }
+        if (r < 0)
+                return r;
 
         a = strv_split(s, " ");
-
         if (!a)
                 return -ENOMEM;
 
@@ -349,37 +514,39 @@ static int file_of_session(const char *session, char **_p) {
 }
 
 _public_ int sd_session_is_active(const char *session) {
-        int r;
         _cleanup_free_ char *p = NULL, *s = NULL;
+        int r;
 
         r = file_of_session(session, &p);
         if (r < 0)
                 return r;
 
         r = parse_env_file(p, NEWLINE, "ACTIVE", &s, NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
-
-        if (!s)
+        if (isempty(s))
                 return -EIO;
 
         return parse_boolean(s);
 }
 
 _public_ int sd_session_is_remote(const char *session) {
-        int r;
         _cleanup_free_ char *p = NULL, *s = NULL;
+        int r;
 
         r = file_of_session(session, &p);
         if (r < 0)
                 return r;
 
         r = parse_env_file(p, NEWLINE, "REMOTE", &s, NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
-
-        if (!s)
-                return -EIO;
+        if (isempty(s))
+                return -ENODATA;
 
         return parse_boolean(s);
 }
@@ -395,9 +562,11 @@ _public_ int sd_session_get_state(const char *session, char **state) {
                 return r;
 
         r = parse_env_file(p, NEWLINE, "STATE", &s, NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
-        else if (!s)
+        if (isempty(s))
                 return -EIO;
 
         *state = s;
@@ -417,10 +586,11 @@ _public_ int sd_session_get_uid(const char *session, uid_t *uid) {
                 return r;
 
         r = parse_env_file(p, NEWLINE, "UID", &s, NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
-
-        if (!s)
+        if (isempty(s))
                 return -EIO;
 
         return parse_uid(s, uid);
@@ -431,17 +601,19 @@ static int session_get_string(const char *session, const char *field, char **val
         int r;
 
         assert_return(value, -EINVAL);
+        assert(field);
 
         r = file_of_session(session, &p);
         if (r < 0)
                 return r;
 
         r = parse_env_file(p, NEWLINE, field, &s, NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
-
         if (isempty(s))
-                return -ENOENT;
+                return -ENODATA;
 
         *value = s;
         s = NULL;
@@ -460,6 +632,8 @@ _public_ int sd_session_get_vt(const char *session, unsigned *vtnr) {
         _cleanup_free_ char *vtnr_string = NULL;
         unsigned u;
         int r;
+
+        assert_return(vtnr, -EINVAL);
 
         r = session_get_string(session, "VTNR", &vtnr_string);
         if (r < 0)
@@ -496,9 +670,9 @@ _public_ int sd_session_get_desktop(const char *session, char **desktop) {
         if (r < 0)
                 return r;
 
-        t = cunescape(escaped);
-        if (!t)
-                return -ENOMEM;
+        r = cunescape(escaped, 0, &t);
+        if (r < 0)
+                return r;
 
         *desktop = t;
         return 0;
@@ -516,32 +690,6 @@ _public_ int sd_session_get_remote_host(const char *session, char **remote_host)
         return session_get_string(session, "REMOTE_HOST", remote_host);
 }
 
-static int file_of_seat(const char *seat, char **_p) {
-        char *p;
-        int r;
-
-        assert(_p);
-
-        if (seat)
-                p = strappend("/run/systemd/seats/", seat);
-        else {
-                _cleanup_free_ char *buf = NULL;
-
-                r = sd_session_get_seat(NULL, &buf);
-                if (r < 0)
-                        return r;
-
-                p = strappend("/run/systemd/seats/", buf);
-        }
-
-        if (!p)
-                return -ENOMEM;
-
-        *_p = p;
-        p = NULL;
-        return 0;
-}
-
 _public_ int sd_seat_get_active(const char *seat, char **session, uid_t *uid) {
         _cleanup_free_ char *p = NULL, *s = NULL, *t = NULL;
         int r;
@@ -556,14 +704,16 @@ _public_ int sd_seat_get_active(const char *seat, char **session, uid_t *uid) {
                            "ACTIVE", &s,
                            "ACTIVE_UID", &t,
                            NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
 
         if (session && !s)
-                return -ENOENT;
+                return -ENODATA;
 
         if (uid && !t)
-                return -ENOENT;
+                return -ENODATA;
 
         if (uid && t) {
                 r = parse_uid(t, uid);
@@ -594,7 +744,8 @@ _public_ int sd_seat_get_sessions(const char *seat, char ***sessions, uid_t **ui
                            "SESSIONS", &s,
                            "ACTIVE_SESSIONS", &t,
                            NULL);
-
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
 
@@ -626,7 +777,6 @@ _public_ int sd_seat_get_sessions(const char *seat, char ***sessions, uid_t **ui
                                         return -ENOMEM;
 
                                 r = parse_uid(k, b + i);
-
                                 if (r < 0)
                                         continue;
 
@@ -657,7 +807,7 @@ static int seat_get_can(const char *seat, const char *variable) {
         _cleanup_free_ char *p = NULL, *s = NULL;
         int r;
 
-        assert_return(variable, -EINVAL);
+        assert(variable);
 
         r = file_of_seat(seat, &p);
         if (r < 0)
@@ -666,10 +816,12 @@ static int seat_get_can(const char *seat, const char *variable) {
         r = parse_env_file(p, NEWLINE,
                            variable, &s,
                            NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
-        if (!s)
-                return 0;
+        if (isempty(s))
+                return -ENODATA;
 
         return parse_boolean(s);
 }
@@ -767,7 +919,7 @@ _public_ int sd_get_machine_names(char ***machines) {
 
                 /* Filter out the unit: symlinks */
                 for (a = l, b = l; *a; a++) {
-                        if (startswith(*a, "unit:"))
+                        if (startswith(*a, "unit:") || !machine_name_is_valid(*a))
                                 free(*a);
                         else {
                                 *b = *a;
@@ -793,6 +945,8 @@ _public_ int sd_machine_get_class(const char *machine, char **class) {
 
         p = strjoina("/run/systemd/machines/", machine);
         r = parse_env_file(p, NEWLINE, "CLASS", &c, NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
         if (!c)
@@ -816,6 +970,8 @@ _public_ int sd_machine_get_ifindices(const char *machine, int **ifindices) {
 
         p = strjoina("/run/systemd/machines/", machine);
         r = parse_env_file(p, NEWLINE, "NETIF", &netif, NULL);
+        if (r == -ENOENT)
+                return -ENXIO;
         if (r < 0)
                 return r;
         if (!netif) {

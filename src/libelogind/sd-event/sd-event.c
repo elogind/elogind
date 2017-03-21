@@ -33,6 +33,7 @@
 #include "missing.h"
 #include "set.h"
 #include "list.h"
+#include "signal-util.h"
 
 #include "sd-event.h"
 
@@ -55,9 +56,22 @@ typedef enum EventSourceType {
         _SOURCE_EVENT_SOURCE_TYPE_INVALID = -1
 } EventSourceType;
 
+/* All objects we use in epoll events start with this value, so that
+ * we know how to dispatch it */
+typedef enum WakeupType {
+        WAKEUP_NONE,
+        WAKEUP_EVENT_SOURCE,
+        WAKEUP_CLOCK_DATA,
+        WAKEUP_SIGNAL_DATA,
+        _WAKEUP_TYPE_MAX,
+        _WAKEUP_TYPE_INVALID = -1,
+} WakeupType;
+
 #define EVENT_SOURCE_IS_TIME(t) IN_SET((t), SOURCE_TIME_REALTIME, SOURCE_TIME_BOOTTIME, SOURCE_TIME_MONOTONIC, SOURCE_TIME_REALTIME_ALARM, SOURCE_TIME_BOOTTIME_ALARM)
 
 struct sd_event_source {
+        WakeupType wakeup;
+
         unsigned n_ref;
 
         sd_event *event;
@@ -119,6 +133,7 @@ struct sd_event_source {
 };
 
 struct clock_data {
+        WakeupType wakeup;
         int fd;
 
         /* For all clocks we maintain two priority queues each, one
@@ -135,11 +150,23 @@ struct clock_data {
         bool needs_rearm:1;
 };
 
+struct signal_data {
+        WakeupType wakeup;
+
+        /* For each priority we maintain one signal fd, so that we
+         * only have to dequeue a single event per priority at a
+         * time. */
+
+        int fd;
+        int64_t priority;
+        sigset_t sigset;
+        sd_event_source *current;
+};
+
 struct sd_event {
         unsigned n_ref;
 
         int epoll_fd;
-        int signal_fd;
         int watchdog_fd;
 
         Prioq *pending;
@@ -156,8 +183,8 @@ struct sd_event {
 
         usec_t perturb;
 
-        sigset_t sigset;
-        sd_event_source **signal_sources;
+        sd_event_source **signal_sources; /* indexed by signal number */
+        Hashmap *signal_data; /* indexed by priority */
 
         Hashmap *child_sources;
         unsigned n_enabled_child_sources;
@@ -354,6 +381,7 @@ static int exit_prioq_compare(const void *a, const void *b) {
 
 static void free_clock_data(struct clock_data *d) {
         assert(d);
+        assert(d->wakeup == WAKEUP_CLOCK_DATA);
 
         safe_close(d->fd);
         prioq_free(d->earliest);
@@ -377,7 +405,6 @@ static void event_free(sd_event *e) {
                 *(e->default_event_ptr) = NULL;
 
         safe_close(e->epoll_fd);
-        safe_close(e->signal_fd);
         safe_close(e->watchdog_fd);
 
         free_clock_data(&e->realtime);
@@ -391,6 +418,7 @@ static void event_free(sd_event *e) {
         prioq_free(e->exit);
 
         free(e->signal_sources);
+        hashmap_free(e->signal_data);
 
         hashmap_free(e->child_sources);
         set_free(e->post_sources);
@@ -408,12 +436,11 @@ _public_ int sd_event_new(sd_event** ret) {
                 return -ENOMEM;
 
         e->n_ref = 1;
-        e->signal_fd = e->watchdog_fd = e->epoll_fd = e->realtime.fd = e->boottime.fd = e->monotonic.fd = e->realtime_alarm.fd = e->boottime_alarm.fd = -1;
+        e->watchdog_fd = e->epoll_fd = e->realtime.fd = e->boottime.fd = e->monotonic.fd = e->realtime_alarm.fd = e->boottime_alarm.fd = -1;
         e->realtime.next = e->boottime.next = e->monotonic.next = e->realtime_alarm.next = e->boottime_alarm.next = USEC_INFINITY;
+        e->realtime.wakeup = e->boottime.wakeup = e->monotonic.wakeup = e->realtime_alarm.wakeup = e->boottime_alarm.wakeup = WAKEUP_CLOCK_DATA;
         e->original_pid = getpid();
         e->perturb = USEC_INFINITY;
-
-        assert_se(sigemptyset(&e->sigset) == 0);
 
         e->pending = prioq_new(pending_prioq_compare);
         if (!e->pending) {
@@ -467,21 +494,23 @@ static bool event_pid_changed(sd_event *e) {
         return e->original_pid != getpid();
 }
 
-static int source_io_unregister(sd_event_source *s) {
+static void source_io_unregister(sd_event_source *s) {
         int r;
 
         assert(s);
         assert(s->type == SOURCE_IO);
 
+        if (event_pid_changed(s->event))
+                return;
+
         if (!s->io.registered)
-                return 0;
+                return;
 
         r = epoll_ctl(s->event->epoll_fd, EPOLL_CTL_DEL, s->io.fd, NULL);
         if (r < 0)
-                return -errno;
+                log_debug_errno(errno, "Failed to remove source %s from epoll: %m", strna(s->description));
 
         s->io.registered = false;
-        return 0;
 }
 
 static int source_io_register(
@@ -506,7 +535,6 @@ static int source_io_register(
                 r = epoll_ctl(s->event->epoll_fd, EPOLL_CTL_MOD, s->io.fd, &ev);
         else
                 r = epoll_ctl(s->event->epoll_fd, EPOLL_CTL_ADD, s->io.fd, &ev);
-
         if (r < 0)
                 return -errno;
 
@@ -515,6 +543,8 @@ static int source_io_register(
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static clockid_t event_source_type_to_clock(EventSourceType t) {
 
         switch (t) {
@@ -538,6 +568,7 @@ static clockid_t event_source_type_to_clock(EventSourceType t) {
                 return (clockid_t) -1;
         }
 }
+#endif // 0
 
 static EventSourceType clock_to_event_source_type(clockid_t clock) {
 
@@ -588,42 +619,171 @@ static struct clock_data* event_get_clock_data(sd_event *e, EventSourceType t) {
         }
 }
 
-static bool need_signal(sd_event *e, int signal) {
-        return (e->signal_sources && e->signal_sources[signal] &&
-                e->signal_sources[signal]->enabled != SD_EVENT_OFF)
-                ||
-               (signal == SIGCHLD &&
-                e->n_enabled_child_sources > 0);
-}
+static int event_make_signal_data(
+                sd_event *e,
+                int sig,
+                struct signal_data **ret) {
 
-static int event_update_signal_fd(sd_event *e) {
         struct epoll_event ev = {};
-        bool add_to_epoll;
+        struct signal_data *d;
+        bool added = false;
+        sigset_t ss_copy;
+        int64_t priority;
         int r;
 
         assert(e);
 
-        add_to_epoll = e->signal_fd < 0;
+        if (event_pid_changed(e))
+                return -ECHILD;
 
-        r = signalfd(e->signal_fd, &e->sigset, SFD_NONBLOCK|SFD_CLOEXEC);
-        if (r < 0)
-                return -errno;
+        if (e->signal_sources && e->signal_sources[sig])
+                priority = e->signal_sources[sig]->priority;
+        else
+                priority = 0;
 
-        e->signal_fd = r;
-
-        if (!add_to_epoll)
+        d = hashmap_get(e->signal_data, &priority);
+        if (d) {
+                if (sigismember(&d->sigset, sig) > 0) {
+                        if (ret)
+                                *ret = d;
                 return 0;
+                }
+        } else {
+                r = hashmap_ensure_allocated(&e->signal_data, &uint64_hash_ops);
+                if (r < 0)
+                        return r;
 
-        ev.events = EPOLLIN;
-        ev.data.ptr = INT_TO_PTR(SOURCE_SIGNAL);
+                d = new0(struct signal_data, 1);
+                if (!d)
+                        return -ENOMEM;
 
-        r = epoll_ctl(e->epoll_fd, EPOLL_CTL_ADD, e->signal_fd, &ev);
-        if (r < 0) {
-                e->signal_fd = safe_close(e->signal_fd);
-                return -errno;
+                d->wakeup = WAKEUP_SIGNAL_DATA;
+                d->fd  = -1;
+                d->priority = priority;
+
+                r = hashmap_put(e->signal_data, &d->priority, d);
+        if (r < 0)
+                        return r;
+
+                added = true;
         }
 
+        ss_copy = d->sigset;
+        assert_se(sigaddset(&ss_copy, sig) >= 0);
+
+        r = signalfd(d->fd, &ss_copy, SFD_NONBLOCK|SFD_CLOEXEC);
+        if (r < 0) {
+                r = -errno;
+                goto fail;
+        }
+
+        d->sigset = ss_copy;
+
+        if (d->fd >= 0) {
+                if (ret)
+                        *ret = d;
+                return 0;
+        }
+
+        d->fd = r;
+
+        ev.events = EPOLLIN;
+        ev.data.ptr = d;
+
+        r = epoll_ctl(e->epoll_fd, EPOLL_CTL_ADD, d->fd, &ev);
+        if (r < 0) {
+                r = -errno;
+                goto fail;
+        }
+
+        if (ret)
+                *ret = d;
+
         return 0;
+
+fail:
+        if (added) {
+                d->fd = safe_close(d->fd);
+                hashmap_remove(e->signal_data, &d->priority);
+                free(d);
+        }
+
+        return r;
+}
+
+static void event_unmask_signal_data(sd_event *e, struct signal_data *d, int sig) {
+        assert(e);
+        assert(d);
+
+        /* Turns off the specified signal in the signal data
+         * object. If the signal mask of the object becomes empty that
+         * way removes it. */
+
+        if (sigismember(&d->sigset, sig) == 0)
+                return;
+
+        assert_se(sigdelset(&d->sigset, sig) >= 0);
+
+        if (sigisemptyset(&d->sigset)) {
+
+                /* If all the mask is all-zero we can get rid of the structure */
+                hashmap_remove(e->signal_data, &d->priority);
+                assert(!d->current);
+                safe_close(d->fd);
+                free(d);
+                return;
+        }
+
+        assert(d->fd >= 0);
+
+        if (signalfd(d->fd, &d->sigset, SFD_NONBLOCK|SFD_CLOEXEC) < 0)
+                log_debug_errno(errno, "Failed to unset signal bit, ignoring: %m");
+}
+
+static void event_gc_signal_data(sd_event *e, const int64_t *priority, int sig) {
+        struct signal_data *d;
+        static const int64_t zero_priority = 0;
+
+        assert(e);
+
+        /* Rechecks if the specified signal is still something we are
+         * interested in. If not, we'll unmask it, and possibly drop
+         * the signalfd for it. */
+
+        if (sig == SIGCHLD &&
+            e->n_enabled_child_sources > 0)
+                return;
+
+        if (e->signal_sources &&
+            e->signal_sources[sig] &&
+            e->signal_sources[sig]->enabled != SD_EVENT_OFF)
+                return;
+
+        /*
+         * The specified signal might be enabled in three different queues:
+         *
+         * 1) the one that belongs to the priority passed (if it is non-NULL)
+         * 2) the one that belongs to the priority of the event source of the signal (if there is one)
+         * 3) the 0 priority (to cover the SIGCHLD case)
+         *
+         * Hence, let's remove it from all three here.
+         */
+
+        if (priority) {
+                d = hashmap_get(e->signal_data, priority);
+                if (d)
+                        event_unmask_signal_data(e, d, sig);
+        }
+
+        if (e->signal_sources && e->signal_sources[sig]) {
+                d = hashmap_get(e->signal_data, &e->signal_sources[sig]->priority);
+                if (d)
+                        event_unmask_signal_data(e, d, sig);
+        }
+
+        d = hashmap_get(e->signal_data, &zero_priority);
+        if (d)
+                event_unmask_signal_data(e, d, sig);
 }
 
 static void source_disconnect(sd_event_source *s) {
@@ -662,17 +822,11 @@ static void source_disconnect(sd_event_source *s) {
 
         case SOURCE_SIGNAL:
                 if (s->signal.sig > 0) {
+
                         if (s->event->signal_sources)
                                 s->event->signal_sources[s->signal.sig] = NULL;
 
-                        /* If the signal was on and now it is off... */
-                        if (s->enabled != SD_EVENT_OFF && !need_signal(s->event, s->signal.sig)) {
-                                assert_se(sigdelset(&s->event->sigset, s->signal.sig) == 0);
-
-                                (void) event_update_signal_fd(s->event);
-                                /* If disabling failed, we might get a spurious event,
-                                 * but otherwise nothing bad should happen. */
-                        }
+                        event_gc_signal_data(s->event, &s->priority, s->signal.sig);
                 }
 
                 break;
@@ -682,18 +836,10 @@ static void source_disconnect(sd_event_source *s) {
                         if (s->enabled != SD_EVENT_OFF) {
                                 assert(s->event->n_enabled_child_sources > 0);
                                 s->event->n_enabled_child_sources--;
-
-                                /* We know the signal was on, if it is off now... */
-                                if (!need_signal(s->event, SIGCHLD)) {
-                                        assert_se(sigdelset(&s->event->sigset, SIGCHLD) == 0);
-
-                                        (void) event_update_signal_fd(s->event);
-                                        /* If disabling failed, we might get a spurious event,
-                                         * but otherwise nothing bad should happen. */
-                                }
                         }
 
-                        hashmap_remove(s->event->child_sources, INT_TO_PTR(s->child.pid));
+                        (void) hashmap_remove(s->event->child_sources, INT_TO_PTR(s->child.pid));
+                        event_gc_signal_data(s->event, &s->priority, SIGCHLD);
                 }
 
                 break;
@@ -772,6 +918,14 @@ static int source_set_pending(sd_event_source *s, bool b) {
                 d->needs_rearm = true;
         }
 
+        if (s->type == SOURCE_SIGNAL && !b) {
+                struct signal_data *d;
+
+                d = hashmap_get(s->event->signal_data, &s->priority);
+                if (d && d->current == s)
+                        d->current = NULL;
+        }
+
         return 0;
 }
 
@@ -811,7 +965,7 @@ _public_ int sd_event_add_io(
         int r;
 
         assert_return(e, -EINVAL);
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(!(events & ~(EPOLLIN|EPOLLOUT|EPOLLRDHUP|EPOLLPRI|EPOLLERR|EPOLLHUP|EPOLLET)), -EINVAL);
         assert_return(callback, -EINVAL);
         assert_return(e->state != SD_EVENT_FINISHED, -ESTALE);
@@ -821,6 +975,7 @@ _public_ int sd_event_add_io(
         if (!s)
                 return -ENOMEM;
 
+        s->wakeup = WAKEUP_EVENT_SOURCE;
         s->io.fd = fd;
         s->io.events = events;
         s->io.callback = callback;
@@ -877,7 +1032,7 @@ static int event_setup_timer_fd(
                 return -errno;
 
         ev.events = EPOLLIN;
-        ev.data.ptr = INT_TO_PTR(clock_to_event_source_type(clock));
+        ev.data.ptr = d;
 
         r = epoll_ctl(e->epoll_fd, EPOLL_CTL_ADD, fd, &ev);
         if (r < 0) {
@@ -987,9 +1142,9 @@ _public_ int sd_event_add_signal(
                 void *userdata) {
 
         sd_event_source *s;
+        struct signal_data *d;
         sigset_t ss;
         int r;
-        bool previous;
 
         assert_return(e, -EINVAL);
         assert_return(sig > 0, -EINVAL);
@@ -1014,8 +1169,6 @@ _public_ int sd_event_add_signal(
         } else if (e->signal_sources[sig])
                 return -EBUSY;
 
-        previous = need_signal(e, sig);
-
         s = source_new(e, !ret, SOURCE_SIGNAL);
         if (!s)
                 return -ENOMEM;
@@ -1027,15 +1180,11 @@ _public_ int sd_event_add_signal(
 
         e->signal_sources[sig] = s;
 
-        if (!previous) {
-                assert_se(sigaddset(&e->sigset, sig) == 0);
-
-                r = event_update_signal_fd(e);
+        r = event_make_signal_data(e, sig, &d);
                 if (r < 0) {
                         source_free(s);
                         return r;
                 }
-        }
 
         /* Use the signal name as description for the event source by default */
         (void) sd_event_source_set_description(s, signal_to_string(sig));
@@ -1056,7 +1205,6 @@ _public_ int sd_event_add_child(
 
         sd_event_source *s;
         int r;
-        bool previous;
 
         assert_return(e, -EINVAL);
         assert_return(pid > 1, -EINVAL);
@@ -1072,8 +1220,6 @@ _public_ int sd_event_add_child(
 
         if (hashmap_contains(e->child_sources, INT_TO_PTR(pid)))
                 return -EBUSY;
-
-        previous = need_signal(e, SIGCHLD);
 
         s = source_new(e, !ret, SOURCE_CHILD);
         if (!s)
@@ -1093,15 +1239,12 @@ _public_ int sd_event_add_child(
 
         e->n_enabled_child_sources ++;
 
-        if (!previous) {
-                assert_se(sigaddset(&e->sigset, SIGCHLD) == 0);
-
-                r = event_update_signal_fd(e);
+        r = event_make_signal_data(e, SIGCHLD, NULL);
                 if (r < 0) {
+                e->n_enabled_child_sources--;
                         source_free(s);
                         return r;
                 }
-        }
 
         e->need_process_child = true;
 
@@ -1224,6 +1367,8 @@ _public_ int sd_event_add_exit(
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ sd_event_source* sd_event_source_ref(sd_event_source *s) {
         assert_return(s, NULL);
 
@@ -1232,6 +1377,7 @@ _public_ sd_event_source* sd_event_source_ref(sd_event_source *s) {
 
         return s;
 }
+#endif // 0
 
 _public_ sd_event_source* sd_event_source_unref(sd_event_source *s) {
 
@@ -1269,6 +1415,8 @@ _public_ int sd_event_source_set_description(sd_event_source *s, const char *des
         return free_and_strdup(&s->description, description);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_description(sd_event_source *s, const char **description) {
         assert_return(s, -EINVAL);
         assert_return(description, -EINVAL);
@@ -1278,6 +1426,7 @@ _public_ int sd_event_source_get_description(sd_event_source *s, const char **de
         *description = s->description;
         return 0;
 }
+#endif // 0
 
 _public_ sd_event *sd_event_source_get_event(sd_event_source *s) {
         assert_return(s, NULL);
@@ -1285,6 +1434,8 @@ _public_ sd_event *sd_event_source_get_event(sd_event_source *s) {
         return s->event;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_pending(sd_event_source *s) {
         assert_return(s, -EINVAL);
         assert_return(s->type != SOURCE_EXIT, -EDOM);
@@ -1301,12 +1452,13 @@ _public_ int sd_event_source_get_io_fd(sd_event_source *s) {
 
         return s->io.fd;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_io_fd(sd_event_source *s, int fd) {
         int r;
 
         assert_return(s, -EINVAL);
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(s->type == SOURCE_IO, -EDOM);
         assert_return(!event_pid_changed(s->event), -ECHILD);
 
@@ -1338,6 +1490,8 @@ _public_ int sd_event_source_set_io_fd(sd_event_source *s, int fd) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_io_events(sd_event_source *s, uint32_t* events) {
         assert_return(s, -EINVAL);
         assert_return(events, -EINVAL);
@@ -1347,6 +1501,7 @@ _public_ int sd_event_source_get_io_events(sd_event_source *s, uint32_t* events)
         *events = s->io.events;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_io_events(sd_event_source *s, uint32_t events) {
         int r;
@@ -1373,6 +1528,8 @@ _public_ int sd_event_source_set_io_events(sd_event_source *s, uint32_t events) 
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_io_revents(sd_event_source *s, uint32_t* revents) {
         assert_return(s, -EINVAL);
         assert_return(revents, -EINVAL);
@@ -1398,8 +1555,11 @@ _public_ int sd_event_source_get_priority(sd_event_source *s, int64_t *priority)
 
         return s->priority;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_priority(sd_event_source *s, int64_t priority) {
+        int r;
+
         assert_return(s, -EINVAL);
         assert_return(s->event->state != SD_EVENT_FINISHED, -ESTALE);
         assert_return(!event_pid_changed(s->event), -ECHILD);
@@ -1407,6 +1567,24 @@ _public_ int sd_event_source_set_priority(sd_event_source *s, int64_t priority) 
         if (s->priority == priority)
                 return 0;
 
+        if (s->type == SOURCE_SIGNAL && s->enabled != SD_EVENT_OFF) {
+                struct signal_data *old, *d;
+
+                /* Move us from the signalfd belonging to the old
+                 * priority to the signalfd of the new priority */
+
+                assert_se(old = hashmap_get(s->event->signal_data, &s->priority));
+
+                s->priority = priority;
+
+                r = event_make_signal_data(s->event, s->signal.sig, &d);
+                if (r < 0) {
+                        s->priority = old->priority;
+                        return r;
+                }
+
+                event_unmask_signal_data(s->event, old, s->signal.sig);
+        } else
         s->priority = priority;
 
         if (s->pending)
@@ -1421,6 +1599,8 @@ _public_ int sd_event_source_set_priority(sd_event_source *s, int64_t priority) 
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_enabled(sd_event_source *s, int *m) {
         assert_return(s, -EINVAL);
         assert_return(m, -EINVAL);
@@ -1429,6 +1609,7 @@ _public_ int sd_event_source_get_enabled(sd_event_source *s, int *m) {
         *m = s->enabled;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
         int r;
@@ -1450,10 +1631,7 @@ _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
                 switch (s->type) {
 
                 case SOURCE_IO:
-                        r = source_io_unregister(s);
-                        if (r < 0)
-                                return r;
-
+                        source_io_unregister(s);
                         s->enabled = m;
                         break;
 
@@ -1475,34 +1653,18 @@ _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
                 }
 
                 case SOURCE_SIGNAL:
-                        assert(need_signal(s->event, s->signal.sig));
-
                         s->enabled = m;
 
-                        if (!need_signal(s->event, s->signal.sig)) {
-                                assert_se(sigdelset(&s->event->sigset, s->signal.sig) == 0);
-
-                                (void) event_update_signal_fd(s->event);
-                                /* If disabling failed, we might get a spurious event,
-                                 * but otherwise nothing bad should happen. */
-                        }
-
+                        event_gc_signal_data(s->event, &s->priority, s->signal.sig);
                         break;
 
                 case SOURCE_CHILD:
-                        assert(need_signal(s->event, SIGCHLD));
-
                         s->enabled = m;
 
                         assert(s->event->n_enabled_child_sources > 0);
                         s->event->n_enabled_child_sources--;
 
-                        if (!need_signal(s->event, SIGCHLD)) {
-                                assert_se(sigdelset(&s->event->sigset, SIGCHLD) == 0);
-
-                                (void) event_update_signal_fd(s->event);
-                        }
-
+                        event_gc_signal_data(s->event, &s->priority, SIGCHLD);
                         break;
 
                 case SOURCE_EXIT:
@@ -1548,37 +1710,33 @@ _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
                 }
 
                 case SOURCE_SIGNAL:
-                        /* Check status before enabling. */
-                        if (!need_signal(s->event, s->signal.sig)) {
-                                assert_se(sigaddset(&s->event->sigset, s->signal.sig) == 0);
-
-                                r = event_update_signal_fd(s->event);
-                                if (r < 0) {
-                                        s->enabled = SD_EVENT_OFF;
-                                        return r;
-                                }
-                        }
 
                         s->enabled = m;
+
+                        r = event_make_signal_data(s->event, s->signal.sig, NULL);
+                                if (r < 0) {
+                                        s->enabled = SD_EVENT_OFF;
+                                event_gc_signal_data(s->event, &s->priority, s->signal.sig);
+                                        return r;
+                                }
+
                         break;
 
                 case SOURCE_CHILD:
-                        /* Check status before enabling. */
-                        if (s->enabled == SD_EVENT_OFF) {
-                                if (!need_signal(s->event, SIGCHLD)) {
-                                        assert_se(sigaddset(&s->event->sigset, s->signal.sig) == 0);
 
-                                        r = event_update_signal_fd(s->event);
-                                        if (r < 0) {
-                                                s->enabled = SD_EVENT_OFF;
-                                                return r;
-                                        }
-                                }
-
+                        if (s->enabled == SD_EVENT_OFF)
                                 s->event->n_enabled_child_sources++;
-                        }
 
                         s->enabled = m;
+
+                        r = event_make_signal_data(s->event, SIGCHLD, NULL);
+                                        if (r < 0) {
+                                                s->enabled = SD_EVENT_OFF;
+                                s->event->n_enabled_child_sources--;
+                                event_gc_signal_data(s->event, &s->priority, SIGCHLD);
+                                                return r;
+                                        }
+
                         break;
 
                 case SOURCE_EXIT:
@@ -1638,6 +1796,8 @@ _public_ int sd_event_source_set_time(sd_event_source *s, uint64_t usec) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_source_get_time_accuracy(sd_event_source *s, uint64_t *usec) {
         assert_return(s, -EINVAL);
         assert_return(usec, -EINVAL);
@@ -1692,6 +1852,7 @@ _public_ int sd_event_source_get_child_pid(sd_event_source *s, pid_t *pid) {
         *pid = s->child.pid;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_source_set_prepare(sd_event_source *s, sd_event_handler_t callback) {
         int r;
@@ -1725,6 +1886,8 @@ _public_ int sd_event_source_set_prepare(sd_event_source *s, sd_event_handler_t 
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ void* sd_event_source_get_userdata(sd_event_source *s) {
         assert_return(s, NULL);
 
@@ -1741,6 +1904,7 @@ _public_ void *sd_event_source_set_userdata(sd_event_source *s, void *userdata) 
 
         return ret;
 }
+#endif // 0
 
 static usec_t sleep_between(sd_event *e, usec_t a, usec_t b) {
         usec_t c;
@@ -2022,20 +2186,35 @@ static int process_child(sd_event *e) {
         return 0;
 }
 
-static int process_signal(sd_event *e, uint32_t events) {
+static int process_signal(sd_event *e, struct signal_data *d, uint32_t events) {
         bool read_one = false;
         int r;
 
         assert(e);
-
         assert_return(events == EPOLLIN, -EIO);
+
+        /* If there's a signal queued on this priority and SIGCHLD is
+           on this priority too, then make sure to recheck the
+           children we watch. This is because we only ever dequeue
+           the first signal per priority, and if we dequeue one, and
+           SIGCHLD might be enqueued later we wouldn't know, but we
+           might have higher priority children we care about hence we
+           need to check that explicitly. */
+
+        if (sigismember(&d->sigset, SIGCHLD))
+                e->need_process_child = true;
+
+        /* If there's already an event source pending for this
+         * priority we don't read another */
+        if (d->current)
+                return 0;
 
         for (;;) {
                 struct signalfd_siginfo si;
                 ssize_t n;
                 sd_event_source *s = NULL;
 
-                n = read(e->signal_fd, &si, sizeof(si));
+                n = read(d->fd, &si, sizeof(si));
                 if (n < 0) {
                         if (errno == EAGAIN || errno == EINTR)
                                 return read_one;
@@ -2050,24 +2229,21 @@ static int process_signal(sd_event *e, uint32_t events) {
 
                 read_one = true;
 
-                if (si.ssi_signo == SIGCHLD) {
-                        r = process_child(e);
-                        if (r < 0)
-                                return r;
-                        if (r > 0)
-                                continue;
-                }
-
                 if (e->signal_sources)
                         s = e->signal_sources[si.ssi_signo];
-
                 if (!s)
+                        continue;
+                if (s->pending)
                         continue;
 
                 s->signal.siginfo = si;
+                d->current = s;
+
                 r = source_set_pending(s, true);
                 if (r < 0)
                         return r;
+
+                return 1;
         }
 }
 
@@ -2377,7 +2553,6 @@ _public_ int sd_event_wait(sd_event *e, uint64_t timeout) {
                 }
 
                 r = -errno;
-
                 goto finish;
         }
 
@@ -2386,23 +2561,31 @@ _public_ int sd_event_wait(sd_event *e, uint64_t timeout) {
 
         for (i = 0; i < m; i++) {
 
-                if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_TIME_REALTIME))
-                        r = flush_timer(e, e->realtime.fd, ev_queue[i].events, &e->realtime.next);
-                else if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_TIME_BOOTTIME))
-                        r = flush_timer(e, e->boottime.fd, ev_queue[i].events, &e->boottime.next);
-                else if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_TIME_MONOTONIC))
-                        r = flush_timer(e, e->monotonic.fd, ev_queue[i].events, &e->monotonic.next);
-                else if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_TIME_REALTIME_ALARM))
-                        r = flush_timer(e, e->realtime_alarm.fd, ev_queue[i].events, &e->realtime_alarm.next);
-                else if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_TIME_BOOTTIME_ALARM))
-                        r = flush_timer(e, e->boottime_alarm.fd, ev_queue[i].events, &e->boottime_alarm.next);
-                else if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_SIGNAL))
-                        r = process_signal(e, ev_queue[i].events);
-                else if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_WATCHDOG))
+                if (ev_queue[i].data.ptr == INT_TO_PTR(SOURCE_WATCHDOG))
                         r = flush_timer(e, e->watchdog_fd, ev_queue[i].events, NULL);
-                else
-                        r = process_io(e, ev_queue[i].data.ptr, ev_queue[i].events);
+                else {
+                        WakeupType *t = ev_queue[i].data.ptr;
 
+                        switch (*t) {
+
+                        case WAKEUP_EVENT_SOURCE:
+                        r = process_io(e, ev_queue[i].data.ptr, ev_queue[i].events);
+                                break;
+
+                        case WAKEUP_CLOCK_DATA: {
+                                struct clock_data *d = ev_queue[i].data.ptr;
+                                r = flush_timer(e, d->fd, ev_queue[i].events, &d->next);
+                                break;
+                        }
+
+                        case WAKEUP_SIGNAL_DATA:
+                                r = process_signal(e, ev_queue[i].data.ptr, ev_queue[i].events);
+                                break;
+
+                        default:
+                                assert_not_reached("Invalid wake-up pointer");
+                        }
+                }
                 if (r < 0)
                         goto finish;
         }
@@ -2490,26 +2673,24 @@ _public_ int sd_event_run(sd_event *e, uint64_t timeout) {
         assert_return(e->state == SD_EVENT_INITIAL, -EBUSY);
 
         r = sd_event_prepare(e);
-        if (r > 0) {
-                r = sd_event_dispatch(e);
-                if (r < 0)
-                        return r;
-                else
-                        return 1;
-        } else if (r < 0)
-                return r;
+        if (r == 0)
+                /* There was nothing? Then wait... */
+                r = sd_event_wait(e, timeout);
 
-        r = sd_event_wait(e, timeout);
         if (r > 0) {
+                /* There's something now, then let's dispatch it */
                 r = sd_event_dispatch(e);
                 if (r < 0)
                         return r;
-                else
-                        return 1;
-        } else
-                return r;
+
+                return 1;
+        }
+
+        return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_loop(sd_event *e) {
         int r;
 
@@ -2539,6 +2720,7 @@ _public_ int sd_event_get_fd(sd_event *e) {
 
         return e->epoll_fd;
 }
+#endif // 0
 
 _public_ int sd_event_get_state(sd_event *e) {
         assert_return(e, -EINVAL);
@@ -2570,14 +2752,19 @@ _public_ int sd_event_exit(sd_event *e, int code) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
         assert_return(e, -EINVAL);
         assert_return(usec, -EINVAL);
         assert_return(!event_pid_changed(e), -ECHILD);
 
-        /* If we haven't run yet, just get the actual time */
-        if (!dual_timestamp_is_set(&e->timestamp))
-                return -ENODATA;
+        if (!dual_timestamp_is_set(&e->timestamp)) {
+                /* Implicitly fall back to now() if we never ran
+                 * before and thus have no cached time. */
+                *usec = now(clock);
+                return 1;
+        }
 
         switch (clock) {
 
@@ -2598,6 +2785,7 @@ _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_default(sd_event **ret) {
 
@@ -2690,9 +2878,12 @@ fail:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_get_watchdog(sd_event *e) {
         assert_return(e, -EINVAL);
         assert_return(!event_pid_changed(e), -ECHILD);
 
         return e->watchdog;
 }
+#endif // 0

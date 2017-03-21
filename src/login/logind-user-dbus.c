@@ -26,6 +26,7 @@
 #include "bus-util.h"
 #include "logind.h"
 #include "logind-user.h"
+#include "formats-util.h"
 
 static int property_get_display(
                 sd_bus *bus,
@@ -102,11 +103,7 @@ static int property_get_sessions(
 
         }
 
-        r = sd_bus_message_close_container(reply);
-        if (r < 0)
-                return r;
-
-        return 1;
+        return sd_bus_message_close_container(reply);
 }
 
 static int property_get_idle_hint(
@@ -137,7 +134,7 @@ static int property_get_idle_since_hint(
                 sd_bus_error *error) {
 
         User *u = userdata;
-        dual_timestamp t;
+        dual_timestamp t = DUAL_TIMESTAMP_NULL;
         uint64_t k;
 
         assert(bus);
@@ -171,11 +168,10 @@ static int property_get_linger(
         return sd_bus_message_append(reply, "b", r > 0);
 }
 
-int bus_user_method_terminate(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error) {
+int bus_user_method_terminate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         User *u = userdata;
         int r;
 
-        assert(bus);
         assert(message);
         assert(u);
 
@@ -183,6 +179,7 @@ int bus_user_method_terminate(sd_bus *bus, sd_bus_message *message, void *userda
                         message,
                         CAP_KILL,
                         "org.freedesktop.login1.manage",
+                        NULL,
                         false,
                         u->uid,
                         &u->manager->polkit_registry,
@@ -199,12 +196,11 @@ int bus_user_method_terminate(sd_bus *bus, sd_bus_message *message, void *userda
         return sd_bus_reply_method_return(message, NULL);
 }
 
-int bus_user_method_kill(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error) {
+int bus_user_method_kill(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         User *u = userdata;
         int32_t signo;
         int r;
 
-        assert(bus);
         assert(message);
         assert(u);
 
@@ -212,6 +208,7 @@ int bus_user_method_kill(sd_bus *bus, sd_bus_message *message, void *userdata, s
                         message,
                         CAP_KILL,
                         "org.freedesktop.login1.manage",
+                        NULL,
                         false,
                         u->uid,
                         &u->manager->polkit_registry,

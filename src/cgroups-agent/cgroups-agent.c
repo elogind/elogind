@@ -26,7 +26,7 @@
 #include "bus-util.h"
 
 int main(int argc, char *argv[]) {
-        _cleanup_bus_close_unref_ sd_bus *bus = NULL;
+        _cleanup_bus_flush_close_unref_ sd_bus *bus = NULL;
         int r;
 
         if (argc != 2) {
@@ -34,27 +34,51 @@ int main(int argc, char *argv[]) {
                 return EXIT_FAILURE;
         }
 
+        elogind_set_program_name(argv[0]);
         log_set_target(LOG_TARGET_AUTO);
         log_parse_environment();
         log_open();
 
+#if 0
+        /* We send this event to the private D-Bus socket and then the
+         * system instance will forward this to the system bus. We do
+         * this to avoid an activation loop when we start dbus when we
+         * are called when the dbus service is shut down. */
+
+        r = bus_open_system_systemd(&bus);
+#else
         /* Unlike in systemd where this has to use a private socket,
-           since logind doesn't associate control groups with services
+           since elogind doesn't associate control groups with services
            and doesn't manage the dbus service, we can just use the
            system bus.  */
         r = sd_bus_open_system(&bus);
+#endif // 0
+
         if (r < 0) {
+#if 0
+                /* If we couldn't connect we assume this was triggered
+                 * while systemd got restarted/transitioned from
+                 * initrd to the system, so let's ignore this */
+                log_debug_errno(r, "Failed to get D-Bus connection: %m");
+#else
+                /* If dbus isn't running or responding, there is nothing
+                 * we can do about it. */
                 log_debug_errno(r, "Failed to open system bus: %m");
+#endif // 0
                 return EXIT_FAILURE;
         }
 
         r = sd_bus_emit_signal(bus,
-                               "/org/freedesktop/systemd1/agent",
-                               "org.freedesktop.systemd1.Agent",
+                               "/org/freedesktop/elogind/agent",
+                               "org.freedesktop.elogind.Agent",
                                "Released",
                                "s", argv[1]);
         if (r < 0) {
+#if 0
+                log_debug_errno(r, "Failed to send signal message on private connection: %m");
+#else
                 log_debug_errno(r, "Failed to send signal message: %m");
+#endif // 0
                 return EXIT_FAILURE;
         }
 

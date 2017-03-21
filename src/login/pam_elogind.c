@@ -31,6 +31,7 @@
 #include <security/pam_ext.h>
 #include <security/pam_misc.h>
 
+#include "bus-common-errors.h"
 #include "util.h"
 #include "audit.h"
 #include "macro.h"
@@ -40,6 +41,9 @@
 #include "socket-util.h"
 #include "fileio.h"
 #include "bus-error.h"
+#include "formats-util.h"
+#include "terminal-util.h"
+#include "hostname-util.h"
 
 static int parse_argv(
                 pam_handle_t *handle,
@@ -174,26 +178,38 @@ static int export_legacy_dbus_address(
                 uid_t uid,
                 const char *runtime) {
 
-#ifdef ENABLE_KDBUS
         _cleanup_free_ char *s = NULL;
-        int r;
+        int r = PAM_BUF_ERR;
 
-        /* skip export if kdbus is not active */
-        if (access("/sys/fs/kdbus", F_OK) < 0)
-                return PAM_SUCCESS;
+        if (is_kdbus_available()) {
+                if (asprintf(&s, KERNEL_USER_BUS_ADDRESS_FMT ";" UNIX_USER_BUS_ADDRESS_FMT, uid, runtime) < 0)
+                        goto error;
+        } else {
+                /* FIXME: We *really* should move the access() check into the
+                 * daemons that spawn dbus-daemon, instead of forcing
+                 * DBUS_SESSION_BUS_ADDRESS= here. */
 
-        if (asprintf(&s, KERNEL_USER_BUS_ADDRESS_FMT ";" UNIX_USER_BUS_ADDRESS_FMT, uid, runtime) < 0) {
-                pam_syslog(handle, LOG_ERR, "Failed to set bus variable.");
-                return PAM_BUF_ERR;
+                s = strjoin(runtime, "/bus", NULL);
+                if (!s)
+                        goto error;
+
+                if (access(s, F_OK) < 0)
+                        return PAM_SUCCESS;
+
+                s = mfree(s);
+                if (asprintf(&s, UNIX_USER_BUS_ADDRESS_FMT, runtime) < 0)
+                        goto error;
         }
 
         r = pam_misc_setenv(handle, "DBUS_SESSION_BUS_ADDRESS", s, 0);
-        if (r != PAM_SUCCESS) {
-                pam_syslog(handle, LOG_ERR, "Failed to set bus variable.");
-                return r;
-        }
-#endif
+        if (r != PAM_SUCCESS)
+                goto error;
+
         return PAM_SUCCESS;
+
+error:
+        pam_syslog(handle, LOG_ERR, "Failed to set bus variable.");
+        return r;
 }
 
 _public_ PAM_EXTERN int pam_sm_open_session(
@@ -211,7 +227,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 *seat = NULL,
                 *type = NULL, *class = NULL,
                 *class_pam = NULL, *type_pam = NULL, *cvtnr = NULL, *desktop = NULL;
-        _cleanup_bus_close_unref_ sd_bus *bus = NULL;
+        _cleanup_bus_flush_close_unref_ sd_bus *bus = NULL;
         int session_fd = -1, existing, r;
         bool debug = false, remote;
         struct passwd *pw;
@@ -334,7 +350,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         /* If this fails vtnr will be 0, that's intended */
         if (!isempty(cvtnr))
-                safe_atou32(cvtnr, &vtnr);
+                (void) safe_atou32(cvtnr, &vtnr);
 
         if (!isempty(display) && !vtnr) {
                 if (isempty(seat))
@@ -397,8 +413,13 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                                remote_host,
                                0);
         if (r < 0) {
-                pam_syslog(handle, LOG_ERR, "Failed to create session: %s", bus_error_message(&error, r));
-                return PAM_SYSTEM_ERR;
+                if (sd_bus_error_has_name(&error, BUS_ERROR_SESSION_BUSY)) {
+                        pam_syslog(handle, LOG_DEBUG, "Cannot create session: %s", bus_error_message(&error, r));
+                        return PAM_SUCCESS;
+                } else {
+                        pam_syslog(handle, LOG_ERR, "Failed to create session: %s", bus_error_message(&error, r));
+                        return PAM_SYSTEM_ERR;
+                }
         }
 
         r = sd_bus_message_read(reply,
@@ -494,7 +515,7 @@ _public_ PAM_EXTERN int pam_sm_close_session(
                 int argc, const char **argv) {
 
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        _cleanup_bus_close_unref_ sd_bus *bus = NULL;
+        _cleanup_bus_flush_close_unref_ sd_bus *bus = NULL;
         const void *existing = NULL;
         const char *id;
         int r;

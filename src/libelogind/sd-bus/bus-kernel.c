@@ -29,8 +29,8 @@
 #include <sys/prctl.h>
 
 /* When we include libgen.h because we need dirname() we immediately
- * undefine basename() since libgen.h defines it as a macro to the XDG
- * version which is really broken. */
+ * undefine basename() since libgen.h defines it as a macro to the POSIX
+ * version which is really broken. We prefer GNU basename(). */
 #include <libgen.h>
 #undef basename
 
@@ -39,6 +39,7 @@
 #include "memfd-util.h"
 #include "capability.h"
 #include "fileio.h"
+#include "formats-util.h"
 
 #include "bus-internal.h"
 #include "bus-message.h"
@@ -167,6 +168,27 @@ static void add_bloom_arg(void *data, size_t size, unsigned n_hash, unsigned i, 
         bloom_add_prefixes(data, size, n_hash, buf, t, '/');
 }
 
+static void add_bloom_arg_has(void *data, size_t size, unsigned n_hash, unsigned i, const char *t) {
+        char buf[sizeof("arg")-1 + 2 + sizeof("-has")];
+        char *e;
+
+        assert(data);
+        assert(size > 0);
+        assert(i < 64);
+        assert(t);
+
+        e = stpcpy(buf, "arg");
+        if (i < 10)
+                *(e++) = '0' + (char) i;
+        else {
+                *(e++) = '0' + (char) (i / 10);
+                *(e++) = '0' + (char) (i % 10);
+        }
+
+        strcpy(e, "-has");
+        bloom_add_pair(data, size, n_hash, buf, t);
+}
+
 static int bus_message_setup_bloom(sd_bus_message *m, struct kdbus_bloom_filter *bloom) {
         void *data;
         unsigned i;
@@ -211,7 +233,9 @@ static int bus_message_setup_bloom(sd_bus_message *m, struct kdbus_bloom_filter 
                                 return r;
 
                         add_bloom_arg(data, m->bus->bloom_size, m->bus->bloom_n_hash, i, t);
-                } if (type == SD_BUS_TYPE_ARRAY && STR_IN_SET(contents, "s", "o", "g")) {
+                }
+
+                if (type == SD_BUS_TYPE_ARRAY && STR_IN_SET(contents, "s", "o", "g")) {
 
                         /* As well as array of simple strings of any kinds */
                         r = sd_bus_message_enter_container(m, type, contents);
@@ -219,7 +243,7 @@ static int bus_message_setup_bloom(sd_bus_message *m, struct kdbus_bloom_filter 
                                 return r;
 
                         while ((r = sd_bus_message_read_basic(m, contents[0], &t)) > 0)
-                                add_bloom_arg(data, m->bus->bloom_size, m->bus->bloom_n_hash, i, t);
+                                add_bloom_arg_has(data, m->bus->bloom_size, m->bus->bloom_n_hash, i, t);
                         if (r < 0)
                                 return r;
 
@@ -497,7 +521,6 @@ static int bus_kernel_make_message(sd_bus *bus, struct kdbus_msg *k) {
                         footer, footer_size,
                         n_bytes,
                         fds, n_fds,
-                        NULL,
                         seclabel, 0, &m);
         if (r < 0)
                 return r;
@@ -594,6 +617,14 @@ static int bus_kernel_make_message(sd_bus *bus, struct kdbus_msg *k) {
                                 m->creds.mask |= SD_BUS_CREDS_TID & bus->creds_mask;
                         }
 
+                        if (d->pids.ppid > 0) {
+                                m->creds.ppid = (pid_t) d->pids.ppid;
+                                m->creds.mask |= SD_BUS_CREDS_PPID & bus->creds_mask;
+                        } else if (d->pids.pid == 1) {
+                                m->creds.ppid = 0;
+                                m->creds.mask |= SD_BUS_CREDS_PPID & bus->creds_mask;
+                        }
+
                         break;
 
                 case KDBUS_ITEM_CREDS:
@@ -680,15 +711,11 @@ static int bus_kernel_make_message(sd_bus *bus, struct kdbus_msg *k) {
                         break;
 
                 case KDBUS_ITEM_AUDIT:
-                        if ((uint32_t) d->audit.sessionid != (uint32_t) -1) {
-                                m->creds.audit_session_id = (uint32_t) d->audit.sessionid;
-                                m->creds.mask |= SD_BUS_CREDS_AUDIT_SESSION_ID & bus->creds_mask;
-                        }
+                        m->creds.audit_session_id = (uint32_t) d->audit.sessionid;
+                        m->creds.mask |= SD_BUS_CREDS_AUDIT_SESSION_ID & bus->creds_mask;
 
-                        if ((uid_t) d->audit.loginuid != UID_INVALID) {
-                                m->creds.audit_login_uid = (uid_t) d->audit.loginuid;
-                                m->creds.mask |= SD_BUS_CREDS_AUDIT_LOGIN_UID & bus->creds_mask;
-                        }
+                        m->creds.audit_login_uid = (uid_t) d->audit.loginuid;
+                        m->creds.mask |= SD_BUS_CREDS_AUDIT_LOGIN_UID & bus->creds_mask;
                         break;
 
                 case KDBUS_ITEM_CAPS:
@@ -770,6 +797,7 @@ static int bus_kernel_make_message(sd_bus *bus, struct kdbus_msg *k) {
 
                 case KDBUS_ITEM_FDS:
                 case KDBUS_ITEM_SECLABEL:
+                case KDBUS_ITEM_BLOOM_FILTER:
                         break;
 
                 default:
@@ -957,8 +985,16 @@ int bus_kernel_take_fd(sd_bus *b) {
         }
 
         r = ioctl(b->input_fd, KDBUS_CMD_HELLO, hello);
-        if (r < 0)
+        if (r < 0) {
+                if (errno == ENOTTY)
+                        /* If the ioctl is not supported we assume that the
+                         * API version changed in a major incompatible way,
+                         * let's indicate an API incompatibility in this
+                         * case. */
+                        return -ESOCKTNOSUPPORT;
+
                 return -errno;
+        }
 
         if (!b->kdbus_buffer) {
                 b->kdbus_buffer = mmap(NULL, KDBUS_POOL_SIZE, PROT_READ, MAP_SHARED, b->input_fd, 0);
@@ -972,7 +1008,7 @@ int bus_kernel_take_fd(sd_bus *b) {
         /* The higher 32bit of the bus_flags fields are considered
          * 'incompatible flags'. Refuse them all for now. */
         if (hello->bus_flags > 0xFFFFFFFFULL) {
-                r = -EOPNOTSUPP;
+                r = -ESOCKTNOSUPPORT;
                 goto fail;
         }
 
@@ -1320,8 +1356,7 @@ static int bus_kernel_translate_message(sd_bus *bus, struct kdbus_msg *k) {
         KDBUS_ITEM_FOREACH(d, k, items) {
                 if (d->type == KDBUS_ITEM_TIMESTAMP)
                         ts = &d->timestamp;
-
-                if (d->type >= _KDBUS_ITEM_KERNEL_BASE && d->type < _KDBUS_ITEM_KERNEL_BASE + ELEMENTSOF(translate)) {
+                else if (d->type >= _KDBUS_ITEM_KERNEL_BASE && d->type < _KDBUS_ITEM_KERNEL_BASE + ELEMENTSOF(translate)) {
                         if (found)
                                 return -EBADMSG;
                         found = d;
@@ -1373,15 +1408,16 @@ int bus_kernel_read_message(sd_bus *bus, bool hint_priority, int64_t priority) {
                         r = 0;
                 }
 
-        } else if (k->payload_type == KDBUS_PAYLOAD_KERNEL)
+                if (r <= 0)
+                        close_kdbus_msg(bus, k);
+        } else if (k->payload_type == KDBUS_PAYLOAD_KERNEL) {
                 r = bus_kernel_translate_message(bus, k);
-        else {
+                close_kdbus_msg(bus, k);
+        } else {
                 log_debug("Ignoring message with unknown payload type %llu.", (unsigned long long) k->payload_type);
                 r = 0;
-        }
-
-        if (r <= 0)
                 close_kdbus_msg(bus, k);
+        }
 
         return r < 0 ? r : 1;
 }
@@ -1505,7 +1541,7 @@ uint64_t attach_flags_to_kdbus(uint64_t mask) {
                     SD_BUS_CREDS_GID|SD_BUS_CREDS_EGID|SD_BUS_CREDS_SGID|SD_BUS_CREDS_FSGID))
                 m |= KDBUS_ATTACH_CREDS;
 
-        if (mask & (SD_BUS_CREDS_PID|SD_BUS_CREDS_TID))
+        if (mask & (SD_BUS_CREDS_PID|SD_BUS_CREDS_TID|SD_BUS_CREDS_PPID))
                 m |= KDBUS_ATTACH_PIDS;
 
         if (mask & SD_BUS_CREDS_COMM)
@@ -1544,6 +1580,8 @@ uint64_t attach_flags_to_kdbus(uint64_t mask) {
         return m;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_kernel_create_bus(const char *name, bool world, char **s) {
         struct kdbus_cmd *make;
         struct kdbus_item *n;
@@ -1561,7 +1599,6 @@ int bus_kernel_create_bus(const char *name, bool world, char **s) {
         make = alloca0_align(offsetof(struct kdbus_cmd, items) +
                              ALIGN8(offsetof(struct kdbus_item, bloom_parameter) + sizeof(struct kdbus_bloom_parameter)) +
                              ALIGN8(offsetof(struct kdbus_item, data64) + sizeof(uint64_t)) +
-                             ALIGN8(offsetof(struct kdbus_item, data64) + sizeof(uint64_t)) +
                              ALIGN8(offsetof(struct kdbus_item, str) + DECIMAL_STR_MAX(uid_t) + 1 + l + 1),
                              8);
 
@@ -1578,14 +1615,6 @@ int bus_kernel_create_bus(const char *name, bool world, char **s) {
         assert_cc(DEFAULT_BLOOM_SIZE > 0);
         assert_cc(DEFAULT_BLOOM_N_HASH > 0);
 
-        make->size += ALIGN8(n->size);
-
-        /* The busses we create make no restrictions on what metadata
-         * peers can read from incoming messages. */
-        n = KDBUS_ITEM_NEXT(n);
-        n->type = KDBUS_ITEM_ATTACH_FLAGS_RECV;
-        n->size = offsetof(struct kdbus_item, data64) + sizeof(uint64_t);
-        n->data64[0] = _KDBUS_ATTACH_ANY;
         make->size += ALIGN8(n->size);
 
         /* Provide all metadata via bus-owner queries */
@@ -1606,6 +1635,11 @@ int bus_kernel_create_bus(const char *name, bool world, char **s) {
 
         if (ioctl(fd, KDBUS_CMD_BUS_MAKE, make) < 0) {
                 safe_close(fd);
+
+                /* Major API change? then the ioctls got shuffled around. */
+                if (errno == ENOTTY)
+                        return -ESOCKTNOSUPPORT;
+
                 return -errno;
         }
 
@@ -1623,6 +1657,7 @@ int bus_kernel_create_bus(const char *name, bool world, char **s) {
 
         return fd;
 }
+#endif // 0
 
 int bus_kernel_open_bus_fd(const char *bus, char **path) {
         char *p;
@@ -1656,6 +1691,8 @@ int bus_kernel_open_bus_fd(const char *bus, char **path) {
         return fd;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char **ep_path) {
         _cleanup_free_ char *path = NULL;
         struct kdbus_cmd *make;
@@ -1699,6 +1736,7 @@ int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char *
 
         return fd;
 }
+#endif // 0
 
 int bus_kernel_try_close(sd_bus *bus) {
         struct kdbus_cmd byebye = { .size = sizeof(byebye) };
@@ -1712,6 +1750,8 @@ int bus_kernel_try_close(sd_bus *bus) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int bus_kernel_drop_one(int fd) {
         struct kdbus_cmd_recv recv = {
                 .size = sizeof(recv),
@@ -1725,6 +1765,7 @@ int bus_kernel_drop_one(int fd) {
 
         return 0;
 }
+#endif // 0
 
 int bus_kernel_realize_attach_flags(sd_bus *bus) {
         struct kdbus_cmd *update;
@@ -1748,32 +1789,6 @@ int bus_kernel_realize_attach_flags(sd_bus *bus) {
 
         if (ioctl(bus->input_fd, KDBUS_CMD_UPDATE, update) < 0)
                 return -errno;
-
-        return 0;
-}
-
-int bus_kernel_fix_attach_mask(void) {
-        _cleanup_free_ char *mask = NULL;
-        uint64_t m = (uint64_t) -1;
-        char buf[2+16+2];
-        int r;
-
-        /* By default we don't want any kdbus metadata fields to be
-         * suppressed, hence we reset the kernel mask for it to
-         * (uint64_t) -1. If the module argument was overwritten by
-         * the kernel cmdline, we leave it as is. */
-
-        r = get_proc_cmdline_key("kdbus.attach_flags_mask=", &mask);
-        if (r < 0)
-                return log_warning_errno(r, "Failed to read kernel command line: %m");
-
-        if (r == 0) {
-                sprintf(buf, "0x%" PRIx64 "\n", m);
-                r = write_string_file("/sys/module/kdbus/parameters/attach_flags_mask", buf);
-                if (r < 0)
-                        return log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
-                                              "Failed to write kdbus attach mask: %m");
-        }
 
         return 0;
 }

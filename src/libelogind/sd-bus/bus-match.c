@@ -62,12 +62,13 @@
  */
 
 static inline bool BUS_MATCH_IS_COMPARE(enum bus_match_node_type t) {
-        return t >= BUS_MATCH_SENDER && t <= BUS_MATCH_ARG_NAMESPACE_LAST;
+        return t >= BUS_MATCH_SENDER && t <= BUS_MATCH_ARG_HAS_LAST;
 }
 
 static inline bool BUS_MATCH_CAN_HASH(enum bus_match_node_type t) {
         return (t >= BUS_MATCH_MESSAGE_TYPE && t <= BUS_MATCH_PATH) ||
-                (t >= BUS_MATCH_ARG && t <= BUS_MATCH_ARG_LAST);
+                (t >= BUS_MATCH_ARG && t <= BUS_MATCH_ARG_LAST) ||
+                (t >= BUS_MATCH_ARG_HAS && t <= BUS_MATCH_ARG_HAS_LAST);
 }
 
 static void bus_match_node_free(struct bus_match_node *node) {
@@ -179,11 +180,15 @@ static bool value_node_test(
         case BUS_MATCH_INTERFACE:
         case BUS_MATCH_MEMBER:
         case BUS_MATCH_PATH:
-        case BUS_MATCH_ARG ... BUS_MATCH_ARG_LAST: {
-                char **i;
+        case BUS_MATCH_ARG ... BUS_MATCH_ARG_LAST:
 
                 if (value_str)
                         return streq_ptr(node->value.str, value_str);
+
+                return false;
+
+        case BUS_MATCH_ARG_HAS ... BUS_MATCH_ARG_HAS_LAST: {
+                char **i;
 
                 STRV_FOREACH(i, value_strv)
                         if (streq_ptr(node->value.str, *i))
@@ -192,33 +197,20 @@ static bool value_node_test(
                 return false;
         }
 
-        case BUS_MATCH_ARG_NAMESPACE ... BUS_MATCH_ARG_NAMESPACE_LAST: {
-                char **i;
-
+        case BUS_MATCH_ARG_NAMESPACE ... BUS_MATCH_ARG_NAMESPACE_LAST:
                 if (value_str)
                         return namespace_simple_pattern(node->value.str, value_str);
 
-                STRV_FOREACH(i, value_strv)
-                        if (namespace_simple_pattern(node->value.str, *i))
-                                return true;
                 return false;
-        }
 
         case BUS_MATCH_PATH_NAMESPACE:
                 return path_simple_pattern(node->value.str, value_str);
 
-        case BUS_MATCH_ARG_PATH ... BUS_MATCH_ARG_PATH_LAST: {
-                char **i;
-
+        case BUS_MATCH_ARG_PATH ... BUS_MATCH_ARG_PATH_LAST:
                 if (value_str)
                         return path_complex_pattern(node->value.str, value_str);
 
-                STRV_FOREACH(i, value_strv)
-                        if (path_complex_pattern(node->value.str, *i))
-                                return true;
-
                 return false;
-        }
 
         default:
                 assert_not_reached("Invalid node type");
@@ -249,6 +241,7 @@ static bool value_node_same(
         case BUS_MATCH_MEMBER:
         case BUS_MATCH_PATH:
         case BUS_MATCH_ARG ... BUS_MATCH_ARG_LAST:
+        case BUS_MATCH_ARG_HAS ... BUS_MATCH_ARG_HAS_LAST:
         case BUS_MATCH_ARG_NAMESPACE ... BUS_MATCH_ARG_NAMESPACE_LAST:
         case BUS_MATCH_PATH_NAMESPACE:
         case BUS_MATCH_ARG_PATH ... BUS_MATCH_ARG_PATH_LAST:
@@ -328,7 +321,7 @@ int bus_match_run(
                                 bus->current_handler = node->leaf.callback->callback;
                                 bus->current_userdata = slot->userdata;
                         }
-                        r = node->leaf.callback->callback(bus, m, slot->userdata, &error_buffer);
+                        r = node->leaf.callback->callback(m, slot->userdata, &error_buffer);
                         if (bus) {
                                 bus->current_userdata = NULL;
                                 bus->current_handler = NULL;
@@ -372,15 +365,19 @@ int bus_match_run(
                 break;
 
         case BUS_MATCH_ARG ... BUS_MATCH_ARG_LAST:
-                (void) bus_message_get_arg(m, node->type - BUS_MATCH_ARG, &test_str, &test_strv);
+                (void) bus_message_get_arg(m, node->type - BUS_MATCH_ARG, &test_str);
                 break;
 
         case BUS_MATCH_ARG_PATH ... BUS_MATCH_ARG_PATH_LAST:
-                (void) bus_message_get_arg(m, node->type - BUS_MATCH_ARG_PATH, &test_str, &test_strv);
+                (void) bus_message_get_arg(m, node->type - BUS_MATCH_ARG_PATH, &test_str);
                 break;
 
         case BUS_MATCH_ARG_NAMESPACE ... BUS_MATCH_ARG_NAMESPACE_LAST:
-                (void) bus_message_get_arg(m, node->type - BUS_MATCH_ARG_NAMESPACE, &test_str, &test_strv);
+                (void) bus_message_get_arg(m, node->type - BUS_MATCH_ARG_NAMESPACE, &test_str);
+                break;
+
+        case BUS_MATCH_ARG_HAS ... BUS_MATCH_ARG_HAS_LAST:
+                (void) bus_message_get_arg_strv(m, node->type - BUS_MATCH_ARG_HAS, &test_strv);
                 break;
 
         default:
@@ -743,6 +740,32 @@ enum bus_match_node_type bus_match_node_type_from_string(const char *k, size_t n
                 return t;
         }
 
+        if (n == 7 && startswith(k, "arg") && startswith(k + 4, "has")) {
+                int j;
+
+                j = undecchar(k[3]);
+                if (j < 0)
+                        return -EINVAL;
+
+                return BUS_MATCH_ARG_HAS + j;
+        }
+
+        if (n == 8 && startswith(k, "arg") && startswith(k + 5, "has")) {
+                enum bus_match_node_type t;
+                int a, b;
+
+                a = undecchar(k[3]);
+                b = undecchar(k[4]);
+                if (a <= 0 || b < 0)
+                        return -EINVAL;
+
+                t = BUS_MATCH_ARG_HAS + a * 10 + b;
+                if (t > BUS_MATCH_ARG_HAS_LAST)
+                        return -EINVAL;
+
+                return t;
+        }
+
         return -EINVAL;
 }
 
@@ -861,8 +884,7 @@ int bus_match_parse(
                         if (r < 0)
                                 goto fail;
 
-                        free(value);
-                        value = NULL;
+                        value = mfree(value);
                 } else
                         u = 0;
 
@@ -909,11 +931,14 @@ fail:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char *bus_match_to_string(struct bus_match_component *components, unsigned n_components) {
-        _cleanup_free_ FILE *f = NULL;
+        _cleanup_fclose_ FILE *f = NULL;
         char *buffer = NULL;
         size_t size = 0;
         unsigned i;
+		int r;
 
         if (n_components <= 0)
                 return strdup("");
@@ -942,12 +967,13 @@ char *bus_match_to_string(struct bus_match_component *components, unsigned n_com
                 fputc('\'', f);
         }
 
-        fflush(f);
-        if (ferror(f))
+        r = fflush_and_check(f);
+        if (r < 0)
                 return NULL;
 
         return buffer;
 }
+#endif // 0
 
 int bus_match_add(
                 struct bus_match_node *root,
@@ -1111,6 +1137,10 @@ const char* bus_match_node_type_to_string(enum bus_match_node_type t, char buf[]
                 snprintf(buf, l, "arg%inamespace", t - BUS_MATCH_ARG_NAMESPACE);
                 return buf;
 
+        case BUS_MATCH_ARG_HAS ... BUS_MATCH_ARG_HAS_LAST:
+                snprintf(buf, l, "arg%ihas", t - BUS_MATCH_ARG_HAS);
+                return buf;
+
         default:
                 return NULL;
         }
@@ -1148,4 +1178,41 @@ void bus_match_dump(struct bus_match_node *node, unsigned level) {
 
         for (c = node->child; c; c = c->next)
                 bus_match_dump(c, level + 1);
+}
+
+enum bus_match_scope bus_match_get_scope(const struct bus_match_component *components, unsigned n_components) {
+        bool found_driver = false;
+        unsigned i;
+
+        if (n_components <= 0)
+                return BUS_MATCH_GENERIC;
+
+        assert(components);
+
+        /* Checks whether the specified match can only match the
+         * pseudo-service for local messages, which we detect by
+         * sender, interface or path. If a match is not restricted to
+         * local messages, then we check if it only matches on the
+         * driver. */
+
+        for (i = 0; i < n_components; i++) {
+                const struct bus_match_component *c = components + i;
+
+                if (c->type == BUS_MATCH_SENDER) {
+                        if (streq_ptr(c->value_str, "org.freedesktop.DBus.Local"))
+                                return BUS_MATCH_LOCAL;
+
+                        if (streq_ptr(c->value_str, "org.freedesktop.DBus"))
+                                found_driver = true;
+                }
+
+                if (c->type == BUS_MATCH_INTERFACE && streq_ptr(c->value_str, "org.freedesktop.DBus.Local"))
+                        return BUS_MATCH_LOCAL;
+
+                if (c->type == BUS_MATCH_PATH && streq_ptr(c->value_str, "/org/freedesktop/DBus/Local"))
+                        return BUS_MATCH_LOCAL;
+        }
+
+        return found_driver ? BUS_MATCH_DRIVER : BUS_MATCH_GENERIC;
+
 }

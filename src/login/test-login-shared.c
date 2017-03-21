@@ -20,7 +20,8 @@
 ***/
 
 #include "macro.h"
-#include "login-shared.h"
+#include "login-util.h"
+#include "musl_missing.h"
 
 static void test_session_id_valid(void) {
         assert_se(session_id_valid("c1"));
@@ -32,6 +33,7 @@ static void test_session_id_valid(void) {
 }
 
 int main(int argc, char* argv[]) {
+        elogind_set_program_name(argv[0]);
         log_parse_environment();
         log_open();
 

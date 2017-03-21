@@ -141,6 +141,7 @@ struct sd_bus_slot {
         void *userdata;
         BusSlotType type:5;
         bool floating:1;
+        bool match_added:1;
         char *description;
 
         LIST_FIELDS(sd_bus_slot, slots);
@@ -261,7 +262,7 @@ struct sd_bus {
         usec_t auth_timeout;
 
         struct ucred ucred;
-        char label[NAME_MAX];
+        char *label;
 
         uint64_t creds_mask;
 
@@ -343,7 +344,7 @@ struct sd_bus {
 
 bool interface_name_is_valid(const char *p) _pure_;
 bool service_name_is_valid(const char *p) _pure_;
-char* service_name_startswith(const char *a, const char *b);
+// UNNEEDED char* service_name_startswith(const char *a, const char *b);
 bool member_name_is_valid(const char *p) _pure_;
 bool object_path_is_valid(const char *p) _pure_;
 char *object_path_startswith(const char *a, const char *b) _pure_;
@@ -383,10 +384,18 @@ char *bus_address_escape(const char *v);
         _cleanup_bus_unref_ _unused_ sd_bus *_dont_destroy_##bus = sd_bus_ref(bus)
 
 int bus_set_address_system(sd_bus *bus);
-int bus_set_address_user(sd_bus *bus);
+// UNNEEDED int bus_set_address_user(sd_bus *bus);
 int bus_set_address_system_remote(sd_bus *b, const char *host);
 int bus_set_address_system_machine(sd_bus *b, const char *machine);
 
-int bus_remove_match_by_string(sd_bus *bus, const char *match, sd_bus_message_handler_t callback, void *userdata);
+// UNNEEDED int bus_remove_match_by_string(sd_bus *bus, const char *match, sd_bus_message_handler_t callback, void *userdata);
 
 int bus_get_root_path(sd_bus *bus);
+
+int bus_maybe_reply_error(sd_bus_message *m, int r, sd_bus_error *error);
+
+#define bus_assert_return(expr, r, error)                               \
+        do {                                                            \
+                if (!assert_log(expr))                                  \
+                        return sd_bus_error_set_errno(error, r);        \
+        } while (false)

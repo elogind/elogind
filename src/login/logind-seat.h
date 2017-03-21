@@ -60,7 +60,7 @@ int seat_switch_to_next(Seat *s);
 int seat_switch_to_previous(Seat *s);
 int seat_active_vt_changed(Seat *s, unsigned int vtnr);
 int seat_read_active_vt(Seat *s);
-int seat_preallocate_vts(Seat *s);
+// UNNEEDED int seat_preallocate_vts(Seat *s);
 
 int seat_attach_session(Seat *s, Session *session);
 void seat_complete_switch(Seat *s);
@@ -94,4 +94,4 @@ char *seat_bus_path(Seat *s);
 int seat_send_signal(Seat *s, bool new_seat);
 int seat_send_changed(Seat *s, const char *properties, ...) _sentinel_;
 
-int bus_seat_method_terminate(sd_bus *bus, sd_bus_message *message, void *userdata, sd_bus_error *error);
+int bus_seat_method_terminate(sd_bus_message *message, void *userdata, sd_bus_error *error);

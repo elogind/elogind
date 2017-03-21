@@ -26,17 +26,20 @@
 
 #include "util.h"
 #include "mkdir.h"
+#include "rm-rf.h"
 #include "hashmap.h"
 #include "fileio.h"
 #include "path-util.h"
-#include "special.h"
+// #include "special.h"
 #include "unit-name.h"
 #include "bus-util.h"
 #include "bus-error.h"
 #include "conf-parser.h"
 #include "clean-ipc.h"
-#include "logind-user.h"
 #include "smack-util.h"
+#include "formats-util.h"
+#include "label.h"
+#include "logind-user.h"
 
 User* user_new(Manager *m, uid_t uid, gid_t gid, const char *name) {
         User *u;
@@ -81,6 +84,22 @@ void user_free(User *u) {
         while (u->sessions)
                 session_free(u->sessions);
 
+        if (u->slice) {
+                hashmap_remove(u->manager->user_units, u->slice);
+                free(u->slice);
+        }
+
+        if (u->service) {
+                hashmap_remove(u->manager->user_units, u->service);
+                free(u->service);
+        }
+
+/// elogind does not support slice and service jobs
+#if 0
+        free(u->slice_job);
+        free(u->service_job);
+#endif // 0
+
         free(u->runtime_path);
 
         hashmap_remove(u->manager->users, UID_TO_PTR(u->uid));
@@ -90,7 +109,7 @@ void user_free(User *u) {
         free(u);
 }
 
-int user_save(User *u) {
+static int user_save_internal(User *u) {
         _cleanup_free_ char *temp_path = NULL;
         _cleanup_fclose_ FILE *f = NULL;
         int r;
@@ -98,16 +117,13 @@ int user_save(User *u) {
         assert(u);
         assert(u->state_file);
 
-        if (!u->started)
-                return 0;
-
         r = mkdir_safe_label("/run/systemd/users", 0755, 0, 0);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         r = fopen_temporary(u->state_file, &f, &temp_path);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         fchmod(fileno(f), 0644);
 
@@ -120,6 +136,22 @@ int user_save(User *u) {
 
         if (u->runtime_path)
                 fprintf(f, "RUNTIME=%s\n", u->runtime_path);
+
+        if (u->service)
+                fprintf(f, "SERVICE=%s\n", u->service);
+/// elogind does not support service jobs
+#if 0
+        if (u->service_job)
+                fprintf(f, "SERVICE_JOB=%s\n", u->service_job);
+#endif // 0
+
+        if (u->slice)
+                fprintf(f, "SLICE=%s\n", u->slice);
+/// elogind does not support slice jobs
+#if 0
+        if (u->slice_job)
+                fprintf(f, "SLICE_JOB=%s\n", u->slice_job);
+#endif // 0
 
         if (u->display)
                 fprintf(f, "DISPLAY=%s\n", u->display->id);
@@ -218,19 +250,33 @@ int user_save(User *u) {
                 fputc('\n', f);
         }
 
-        fflush(f);
+        r = fflush_and_check(f);
+        if (r < 0)
+                goto fail;
 
-        if (ferror(f) || rename(temp_path, u->state_file) < 0) {
+        if (rename(temp_path, u->state_file) < 0) {
                 r = -errno;
-                unlink(u->state_file);
-                unlink(temp_path);
+                goto fail;
         }
 
-finish:
-        if (r < 0)
-                log_error_errno(r, "Failed to save user data %s: %m", u->state_file);
+        return 0;
 
-        return r;
+fail:
+        (void) unlink(u->state_file);
+
+        if (temp_path)
+                (void) unlink(temp_path);
+
+        return log_error_errno(r, "Failed to save user data %s: %m", u->state_file);
+}
+
+int user_save(User *u) {
+        assert(u);
+
+        if (!u->started)
+                return 0;
+
+        return user_save_internal (u);
 }
 
 int user_load(User *u) {
@@ -242,6 +288,16 @@ int user_load(User *u) {
 
         r = parse_env_file(u->state_file, NEWLINE,
                            "RUNTIME",     &u->runtime_path,
+                           "SERVICE",     &u->service,
+/// elogind does not support service jobs
+#if 0
+                           "SERVICE_JOB", &u->service_job,
+#endif // 0
+                           "SLICE",       &u->slice,
+/// elogind does not support slice jobs
+#if 0
+                           "SLICE_JOB",   &u->slice_job,
+#endif // 0
                            "DISPLAY",     &display,
                            "REALTIME",    &realtime,
                            "MONOTONIC",   &monotonic,
@@ -291,10 +347,10 @@ static int user_mkdir_runtime_path(User *u) {
         } else
                 p = u->runtime_path;
 
-        if (path_is_mount_point(p, false) <= 0) {
+        if (path_is_mount_point(p, 0) <= 0) {
                 _cleanup_free_ char *t = NULL;
 
-                (void) mkdir(p, 0700);
+                (void) mkdir_label(p, 0700);
 
                 if (mac_smack_use())
                         r = asprintf(&t, "mode=0700,smackfsroot=*,uid=" UID_FMT ",gid=" GID_FMT ",size=%zu", u->uid, u->gid, u->manager->runtime_dir_size);
@@ -322,6 +378,10 @@ static int user_mkdir_runtime_path(User *u) {
                                 goto fail;
                         }
                 }
+
+                r = label_fix(p, false, false);
+                if (r < 0)
+                        log_warning_errno(r, "Failed to fix label of '%s', ignoring: %m", p);
         }
 
         u->runtime_path = p;
@@ -336,6 +396,84 @@ fail:
 
         u->runtime_path = NULL;
         return r;
+}
+
+static int user_start_slice(User *u) {
+        // char *job;
+        int r;
+
+        assert(u);
+
+        if (!u->slice) {
+                _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+                char lu[DECIMAL_STR_MAX(uid_t) + 1], *slice;
+                sprintf(lu, UID_FMT, u->uid);
+
+                r = slice_build_subslice("user.slice", lu, &slice);
+                if (r < 0)
+                        return r;
+
+/// elogind : Do not try to use dbus to ask systemd
+#if 0
+                r = manager_start_unit(u->manager, slice, &error, &job);
+                if (r < 0) {
+                        log_error("Failed to start user slice: %s", bus_error_message(&error, r));
+                        free(slice);
+                } else {
+#endif // 0
+                        u->slice = slice;
+
+/// elogind does not support slice jobs
+#if 0
+                        free(u->slice_job);
+                        u->slice_job = job;
+                }
+#endif // 0
+        }
+
+        if (u->slice)
+                hashmap_put(u->manager->user_units, u->slice, u);
+
+        return 0;
+}
+
+static int user_start_service(User *u) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        // char *job;
+        int r;
+
+        assert(u);
+
+        if (!u->service) {
+                char lu[DECIMAL_STR_MAX(uid_t) + 1], *service;
+                sprintf(lu, UID_FMT, u->uid);
+
+                r = unit_name_build("user", lu, ".service", &service);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to build service name: %m");
+
+/// elogind : Do not try to use dbus to ask systemd
+#if 0
+                r = manager_start_unit(u->manager, service, &error, &job);
+#endif // 0
+                if (r < 0) {
+                        log_error("Failed to start user service: %s", bus_error_message(&error, r));
+                        free(service);
+                } else {
+                        u->service = service;
+
+/// elogind does not support service jobs
+#if 0
+                        free(u->service_job);
+                        u->service_job = job;
+#endif // 0
+                }
+        }
+
+        if (u->service)
+                hashmap_put(u->manager->user_units, u->service, u);
+
+        return 0;
 }
 
 int user_start(User *u) {
@@ -353,6 +491,22 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 
+        /* Create cgroup */
+        r = user_start_slice(u);
+        if (r < 0)
+                return r;
+
+        /* Save the user data so far, because pam_systemd will read the
+         * XDG_RUNTIME_DIR out of it while starting up systemd --user.
+         * We need to do user_save_internal() because we have not
+         * "officially" started yet. */
+        user_save_internal(u);
+
+        /* Spawn user systemd */
+        r = user_start_service(u);
+        if (r < 0)
+                return r;
+
         if (!dual_timestamp_is_set(&u->timestamp))
                 dual_timestamp_get(&u->timestamp);
 
@@ -366,6 +520,53 @@ int user_start(User *u) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
+static int user_stop_slice(User *u) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        // char *job;
+        int r = 0;
+
+        assert(u);
+
+        if (!u->slice)
+                return 0;
+
+        r = manager_stop_unit(u->manager, u->slice, &error, &job);
+        if (r < 0) {
+                log_error("Failed to stop user slice: %s", bus_error_message(&error, r));
+                return r;
+        }
+
+        free(u->slice_job);
+        u->slice_job = job;
+
+        return r;
+}
+
+static int user_stop_service(User *u) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        // char *job;
+        int r = 0;
+
+        assert(u);
+
+        if (!u->service)
+                return 0;
+
+        r = manager_stop_unit(u->manager, u->service, &error, &job);
+        if (r < 0) {
+                log_error("Failed to stop user service: %s", bus_error_message(&error, r));
+                return r;
+        }
+
+        free(u->service_job);
+        u->service_job = job;
+
+        return r;
+}
+#endif // 0
+
 static int user_remove_runtime_path(User *u) {
         int r;
 
@@ -374,7 +575,7 @@ static int user_remove_runtime_path(User *u) {
         if (!u->runtime_path)
                 return 0;
 
-        r = rm_rf(u->runtime_path, false, false, false);
+        r = rm_rf(u->runtime_path, 0);
         if (r < 0)
                 log_error_errno(r, "Failed to remove runtime directory %s: %m", u->runtime_path);
 
@@ -385,12 +586,11 @@ static int user_remove_runtime_path(User *u) {
         if (r < 0 && errno != EINVAL && errno != ENOENT)
                 log_error_errno(errno, "Failed to unmount user runtime directory %s: %m", u->runtime_path);
 
-        r = rm_rf(u->runtime_path, false, true, false);
+        r = rm_rf(u->runtime_path, REMOVE_ROOT);
         if (r < 0)
                 log_error_errno(r, "Failed to remove runtime directory %s: %m", u->runtime_path);
 
-        free(u->runtime_path);
-        u->runtime_path = NULL;
+        u->runtime_path = mfree(u->runtime_path);
 
         return r;
 }
@@ -411,6 +611,19 @@ int user_stop(User *u, bool force) {
                 if (k < 0)
                         r = k;
         }
+
+        /* Kill systemd */
+/// elogind does not support service or slice jobs
+#if 0
+        k = user_stop_service(u);
+        if (k < 0)
+                r = k;
+
+        /* Kill cgroup */
+        k = user_stop_slice(u);
+        if (k < 0)
+                r = k;
+#endif // 0
 
         u->stopping = true;
 
@@ -460,7 +673,7 @@ int user_finalize(User *u) {
 int user_get_idle_hint(User *u, dual_timestamp *t) {
         Session *s;
         bool idle_hint = true;
-        dual_timestamp ts = { 0, 0 };
+        dual_timestamp ts = DUAL_TIMESTAMP_NULL;
 
         assert(u);
 
@@ -518,6 +731,15 @@ bool user_check_gc(User *u, bool drop_not_started) {
         if (user_check_linger_file(u) > 0)
                 return true;
 
+/// elogind does not support systemd services and slices
+#if 0
+        if (u->slice_job && manager_job_is_active(u->manager, u->slice_job))
+                return true;
+
+        if (u->service_job && manager_job_is_active(u->manager, u->service_job))
+                return true;
+#endif // 0
+
         return false;
 }
 
@@ -538,6 +760,14 @@ UserState user_get_state(User *u) {
 
         if (u->stopping)
                 return USER_CLOSING;
+
+/// elogind does not support slice and service jobs
+#if 0
+        if (!u->started || u->slice_job || u->service_job)
+#else
+        if (!u->started)
+#endif // 0
+                return USER_OPENING;
 
         if (u->sessions) {
                 bool all_closing = true;
@@ -562,6 +792,15 @@ UserState user_get_state(User *u) {
 }
 
 int user_kill(User *u, int signo) {
+/// Without systemd unit support, elogind has to rely on its session system
+#if 0
+        assert(u);
+
+        if (!u->slice)
+                return -ESRCH;
+
+        return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);
+#else
         Session *s;
         int res = 0;
 
@@ -574,56 +813,76 @@ int user_kill(User *u, int signo) {
         }
 
         return res;
+#endif // 0
+}
+
+static bool elect_display_filter(Session *s) {
+        /* Return true if the session is a candidate for the user’s ‘primary
+         * session’ or ‘display’. */
+        assert(s);
+
+        return (s->class == SESSION_USER && !s->stopping);
+}
+
+static int elect_display_compare(Session *s1, Session *s2) {
+        /* Indexed by SessionType. Lower numbers mean more preferred. */
+        const int type_ranks[_SESSION_TYPE_MAX] = {
+                [SESSION_UNSPECIFIED] = 0,
+                [SESSION_TTY] = -2,
+                [SESSION_X11] = -3,
+                [SESSION_WAYLAND] = -3,
+                [SESSION_MIR] = -3,
+                [SESSION_WEB] = -1,
+        };
+
+        /* Calculate the partial order relationship between s1 and s2,
+         * returning < 0 if s1 is preferred as the user’s ‘primary session’,
+         * 0 if s1 and s2 are equally preferred or incomparable, or > 0 if s2
+         * is preferred.
+         *
+         * s1 or s2 may be NULL. */
+        if (!s1 && !s2)
+                return 0;
+
+        if ((s1 == NULL) != (s2 == NULL))
+                return (s1 == NULL) - (s2 == NULL);
+
+        if (s1->stopping != s2->stopping)
+                return s1->stopping - s2->stopping;
+
+        if ((s1->class != SESSION_USER) != (s2->class != SESSION_USER))
+                return (s1->class != SESSION_USER) - (s2->class != SESSION_USER);
+
+        if ((s1->type == _SESSION_TYPE_INVALID) != (s2->type == _SESSION_TYPE_INVALID))
+                return (s1->type == _SESSION_TYPE_INVALID) - (s2->type == _SESSION_TYPE_INVALID);
+
+        if (s1->type != s2->type)
+                return type_ranks[s1->type] - type_ranks[s2->type];
+
+        return 0;
 }
 
 void user_elect_display(User *u) {
-        Session *graphical = NULL, *text = NULL, *other = NULL, *s;
+        Session *s;
 
         assert(u);
 
         /* This elects a primary session for each user, which we call
          * the "display". We try to keep the assignment stable, but we
          * "upgrade" to better choices. */
+        log_debug("Electing new display for user %s", u->name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
-
-                if (s->class != SESSION_USER)
+                if (!elect_display_filter(s)) {
+                        log_debug("Ignoring session %s", s->id);
                         continue;
+                }
 
-                if (s->stopping)
-                        continue;
-
-                if (SESSION_TYPE_IS_GRAPHICAL(s->type))
-                        graphical = s;
-                else if (s->type == SESSION_TTY)
-                        text = s;
-                else
-                        other = s;
+                if (elect_display_compare(s, u->display) < 0) {
+                        log_debug("Choosing session %s in preference to %s", s->id, u->display ? u->display->id : "-");
+                        u->display = s;
+                }
         }
-
-        if (graphical &&
-            (!u->display ||
-             u->display->class != SESSION_USER ||
-             u->display->stopping ||
-             !SESSION_TYPE_IS_GRAPHICAL(u->display->type))) {
-                u->display = graphical;
-                return;
-        }
-
-        if (text &&
-            (!u->display ||
-             u->display->class != SESSION_USER ||
-             u->display->stopping ||
-             u->display->type != SESSION_TTY)) {
-                u->display = text;
-                return;
-        }
-
-        if (other &&
-            (!u->display ||
-             u->display->class != SESSION_USER ||
-             u->display->stopping))
-                u->display = other;
 }
 
 static const char* const user_state_table[_USER_STATE_MAX] = {

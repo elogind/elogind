@@ -74,7 +74,7 @@ _SD_BEGIN_DECLARATIONS;
 
   See sd_listen_fds(3) for more information.
 */
-int sd_listen_fds(int unset_environment);
+// UNNEEDED int sd_listen_fds(int unset_environment);
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
@@ -86,7 +86,7 @@ int sd_listen_fds(int unset_environment);
 
   See sd_is_fifo(3) for more information.
 */
-int sd_is_fifo(int fd, const char *path);
+// UNNEEDED int sd_is_fifo(int fd, const char *path);
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
@@ -98,7 +98,7 @@ int sd_is_fifo(int fd, const char *path);
 
   See sd_is_special(3) for more information.
 */
-int sd_is_special(int fd, const char *path);
+// UNNEEDED int sd_is_special(int fd, const char *path);
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
@@ -128,7 +128,7 @@ int sd_is_socket(int fd, int family, int type, int listening);
 
   See sd_is_socket_inet(3) for more information.
 */
-int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port);
+// UNNEEDED int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port);
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
@@ -144,7 +144,17 @@ int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port
 
   See sd_is_socket_unix(3) for more information.
 */
-int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t length);
+// UNNEEDED int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t length);
+
+/*
+  Helper call for identifying a passed file descriptor. Returns 1 if
+  the file descriptor is a POSIX Message Queue of the specified name,
+  0 otherwise. If path is NULL a message queue name check is not
+  done. Returns a negative errno style error code on failure.
+
+  See sd_is_mq(3) for more information.
+*/
+// UNNEEDED int sd_is_mq(int fd, const char *path);
 
 /*
   Informs systemd about changed daemon state. This takes a number of
@@ -224,7 +234,7 @@ int sd_notify(int unset_environment, const char *state);
 
   See sd_notifyf(3) for more information.
 */
-int sd_notifyf(int unset_environment, const char *format, ...) _sd_printf_(2,3);
+// UNNEEDED int sd_notifyf(int unset_environment, const char *format, ...) _sd_printf_(2,3);
 
 /*
   Similar to sd_notify(), but send the message on behalf of another
@@ -236,7 +246,7 @@ int sd_pid_notify(pid_t pid, int unset_environment, const char *state);
   Similar to sd_notifyf(), but send the message on behalf of another
   process, if the appropriate permissions are available.
 */
-int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) _sd_printf_(3,4);
+// UNNEEDED int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) _sd_printf_(3,4);
 
 /*
   Similar to sd_pid_notify(), but also passes the specified fd array
@@ -256,7 +266,7 @@ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, 
 
   See sd_booted(3) for more information.
 */
-int sd_booted(void);
+// UNNEEDED int sd_booted(void);
 
 /*
   Returns > 0 if the service manager expects watchdog keep-alive

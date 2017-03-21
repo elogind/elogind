@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: systemd\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-15 22:59+0100\n"
-"PO-Revision-Date: 2015-03-15 23:00+0100\n"
+"POT-Creation-Date: 2015-09-06 20:39+0200\n"
+"PO-Revision-Date: 2015-09-06 20:40+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "Language: pl\n"
@@ -418,6 +418,26 @@ msgid "Authentication is required to lock or unlock active sessions."
 msgstr ""
 "Wymagane jest uwierzytelnienie, aby zablokować lub odblokować aktywne sesje."
 
+#: ../src/login/org.freedesktop.login1.policy.in.h:53
+msgid "Allow indication to the firmware to boot to setup interface"
+msgstr "Wskazanie oprogramowaniu sprzętowemu, aby uruchomić interfejs ustawień"
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:54
+msgid ""
+"Authentication is required to indicate to the firmware to boot to setup "
+"interface."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby wskazać oprogramowaniu sprzętowemu, że "
+"należy uruchomić interfejs ustawień."
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:55
+msgid "Set a wall message"
+msgstr "Ustawienie komunikatu wall"
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:56
+msgid "Authentication is required to set a wall message"
+msgstr "Wymagane jest uwierzytelnienie, aby ustawić komunikat wall"
+
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 msgid "Log into a local container"
 msgstr "Logowanie do lokalnego kontenera"
@@ -428,21 +448,68 @@ msgstr ""
 "Wymagane jest uwierzytelnienie, aby zalogować się do lokalnego kontenera."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
+msgid "Log into the local host"
+msgstr "Logowanie do lokalnego komputera"
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:4
+msgid "Authentication is required to log into the local host."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby zalogować się do lokalnego komputera."
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:5
+msgid "Acquire a shell in a local container"
+msgstr "Uzyskanie powłoki w lokalnym kontenerze"
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:6
+msgid "Authentication is required to acquire a shell in a local container."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby uzyskać powłokę w lokalnym kontenerze."
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:7
+msgid "Acquire a shell on the local host"
+msgstr "Uzyskanie powłoki na lokalnym komputerze"
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:8
+msgid "Authentication is required to acquire a shell on the local host."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby uzyskać powłokę na lokalnym komputerze."
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:9
+msgid "Acquire a pseudo TTY in a local container"
+msgstr "Uzyskanie pseudo-TTY w lokalnym kontenerze"
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:10
+msgid ""
+"Authentication is required to acquire a pseudo TTY in a local container."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby uzyskać pseudo-TTY w lokalnym kontenerze."
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:11
+msgid "Acquire a pseudo TTY on the local host"
+msgstr "Uzyskanie pseudo-TTY na lokalnym komputerze"
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:12
+msgid "Authentication is required to acquire a pseudo TTY on the local host."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby uzyskać pseudo-TTY na lokalnym "
+"komputerze."
+
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 msgid "Manage local virtual machines and containers"
 msgstr "Zarządzanie lokalnymi maszynami wirtualnymi i kontenerami"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:4
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:14
 msgid ""
 "Authentication is required to manage local virtual machines and containers."
 msgstr ""
 "Wymagane jest uwierzytelnienie, aby zarządzać lokalnymi maszynami "
 "wirtualnymi i kontenerami."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:5
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 msgid "Manage local virtual machine and container images"
 msgstr "Zarządzanie lokalnymi obrazami maszyn wirtualnych i kontenerów"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:6
+#: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 msgid ""
 "Authentication is required to manage local virtual machine and container "
 "images."
@@ -490,16 +557,47 @@ msgstr ""
 "Wymagane jest uwierzytelnienie, aby kontrolować, czy włączyć synchronizację "
 "czasu przez sieć."
 
-#: ../src/fsckd/fsckd.c:291
-msgid "Press Ctrl+C to cancel all filesystem checks in progress"
-msgstr ""
-"Naciśnięcie klawiszy Ctrl+C anuluje wszystkie trwające procesy sprawdzania "
-"systemów plików"
+#: ../src/core/dbus-unit.c:428
+msgid "Authentication is required to start '$(unit)'."
+msgstr "Wymagane jest uwierzytelnienie, aby uruchomić jednostkę „$(unit)”."
 
-#: ../src/fsckd/fsckd.c:336
-#, c-format
-msgid "Checking in progress on %d disk (%3.1f%% complete)"
-msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
-msgstr[0] "Trwa sprawdzanie %d dysku (ukończono %3.1f%%)"
-msgstr[1] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"
-msgstr[2] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"
+#: ../src/core/dbus-unit.c:429
+msgid "Authentication is required to stop '$(unit)'."
+msgstr "Wymagane jest uwierzytelnienie, aby zatrzymać jednostkę „$(unit)”."
+
+#: ../src/core/dbus-unit.c:430
+msgid "Authentication is required to reload '$(unit)'."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby ponownie wczytać jednostkę „$(unit)”."
+
+#: ../src/core/dbus-unit.c:431 ../src/core/dbus-unit.c:432
+msgid "Authentication is required to restart '$(unit)'."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby ponownie uruchomić jednostkę „$(unit)”."
+
+#: ../src/core/dbus-unit.c:535
+msgid "Authentication is required to kill '$(unit)'."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby wymusić wyłączenie jednostki „$(unit)”."
+
+#: ../src/core/dbus-unit.c:565
+msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby przywrócić stan „failed” (niepowodzenia) "
+"jednostki „$(unit)”."
+
+#: ../src/core/dbus-unit.c:597
+msgid "Authentication is required to set properties on '$(unit)'."
+msgstr ""
+"Wymagane jest uwierzytelnienie, aby ustawić właściwości jednostki „$(unit)”."
+
+#~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
+#~ msgstr ""
+#~ "Naciśnięcie klawiszy Ctrl+C anuluje wszystkie trwające procesy "
+#~ "sprawdzania systemów plików"
+
+#~ msgid "Checking in progress on %d disk (%3.1f%% complete)"
+#~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
+#~ msgstr[0] "Trwa sprawdzanie %d dysku (ukończono %3.1f%%)"
+#~ msgstr[1] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"
+#~ msgstr[2] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"

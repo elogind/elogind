@@ -36,9 +36,11 @@
 #include "audit.h"
 #include "bus-util.h"
 #include "bus-error.h"
-#include "cgroup-util.h"
-#include "def.h"
 #include "logind-session.h"
+#include "formats-util.h"
+#include "terminal-util.h"
+
+// #define RELEASE_USEC (20*USEC_PER_SEC)
 
 static void session_remove_fifo(Session *s);
 
@@ -118,6 +120,16 @@ void session_free(Session *s) {
                 LIST_REMOVE(sessions_by_seat, s->seat->sessions, s);
         }
 
+        if (s->scope) {
+                hashmap_remove(s->manager->session_units, s->scope);
+                free(s->scope);
+        }
+
+/// elogind does not support systemd scope_jobs
+#if 0
+        free(s->scope_job);
+#endif // 0
+
         sd_bus_message_unref(s->create_message);
 
         free(s->tty);
@@ -156,11 +168,11 @@ int session_save(Session *s) {
 
         r = mkdir_safe_label("/run/systemd/sessions", 0755, 0, 0);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         r = fopen_temporary(s->state_file, &f, &temp_path);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         assert(s->user);
 
@@ -185,6 +197,14 @@ int session_save(Session *s) {
         if (s->class >= 0)
                 fprintf(f, "CLASS=%s\n", session_class_to_string(s->class));
 
+        if (s->scope)
+                fprintf(f, "SCOPE=%s\n", s->scope);
+/// elogind does not support systemd scope_jobs
+#if 0
+        if (s->scope_job)
+                fprintf(f, "SCOPE_JOB=%s\n", s->scope_job);
+#endif // 0
+
         if (s->fifo_path)
                 fprintf(f, "FIFO=%s\n", s->fifo_path);
 
@@ -203,7 +223,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->remote_host);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "REMOTE_HOST=%s\n", escaped);
@@ -215,7 +235,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->remote_user);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "REMOTE_USER=%s\n", escaped);
@@ -227,7 +247,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->service);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "SERVICE=%s\n", escaped);
@@ -240,7 +260,7 @@ int session_save(Session *s) {
                 escaped = cescape(s->desktop);
                 if (!escaped) {
                         r = -ENOMEM;
-                        goto finish;
+                        goto fail;
                 }
 
                 fprintf(f, "DESKTOP=%s\n", escaped);
@@ -250,7 +270,7 @@ int session_save(Session *s) {
                 fprintf(f, "VTNR=%u\n", s->vtnr);
 
         if (!s->vtnr)
-                fprintf(f, "POS=%u\n", s->pos);
+                fprintf(f, "POSITION=%u\n", s->position);
 
         if (s->leader > 0)
                 fprintf(f, "LEADER="PID_FMT"\n", s->leader);
@@ -268,27 +288,33 @@ int session_save(Session *s) {
         if (s->controller)
                 fprintf(f, "CONTROLLER=%s\n", s->controller);
 
-        fflush(f);
+        r = fflush_and_check(f);
+        if (r < 0)
+                goto fail;
 
-        if (ferror(f) || rename(temp_path, s->state_file) < 0) {
+        if (rename(temp_path, s->state_file) < 0) {
                 r = -errno;
-                unlink(s->state_file);
-                unlink(temp_path);
+                goto fail;
         }
 
-finish:
-        if (r < 0)
-                log_error_errno(r, "Failed to save session data %s: %m", s->state_file);
+        return 0;
 
-        return r;
+fail:
+        (void) unlink(s->state_file);
+
+        if (temp_path)
+                (void) unlink(temp_path);
+
+        return log_error_errno(r, "Failed to save session data %s: %m", s->state_file);
 }
+
 
 int session_load(Session *s) {
         _cleanup_free_ char *remote = NULL,
                 *seat = NULL,
                 *vtnr = NULL,
                 *state = NULL,
-                *pos = NULL,
+                *position = NULL,
                 *leader = NULL,
                 *type = NULL,
                 *class = NULL,
@@ -303,6 +329,11 @@ int session_load(Session *s) {
 
         r = parse_env_file(s->state_file, NEWLINE,
                            "REMOTE",         &remote,
+                           "SCOPE",          &s->scope,
+/// elogind does not support systemd scope_jobs
+#if 0
+                           "SCOPE_JOB",      &s->scope_job,
+#endif // 0
                            "FIFO",           &s->fifo_path,
                            "SEAT",           &seat,
                            "TTY",            &s->tty,
@@ -313,7 +344,7 @@ int session_load(Session *s) {
                            "DESKTOP",        &s->desktop,
                            "VTNR",           &vtnr,
                            "STATE",          &state,
-                           "POS",            &pos,
+                           "POSITION",       &position,
                            "LEADER",         &leader,
                            "TYPE",           &type,
                            "CLASS",          &class,
@@ -372,10 +403,10 @@ int session_load(Session *s) {
         if (!s->seat || !seat_has_vts(s->seat))
                 s->vtnr = 0;
 
-        if (pos && s->seat) {
+        if (position && s->seat) {
                 unsigned int npos;
 
-                safe_atou(pos, &npos);
+                safe_atou(position, &npos);
                 seat_claim_position(s->seat, s, npos);
         }
 
@@ -477,6 +508,48 @@ int session_activate(Session *s) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
+static int session_start_scope(Session *s) {
+        int r = 0;
+
+        assert(s);
+        assert(s->user);
+        assert(s->user->slice);
+
+        if (!s->scope) {
+                _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+                _cleanup_free_ char *description = NULL;
+                char *scope = NULL; //, *job = NULL;
+
+                description = strjoin("Session ", s->id, " of user ", s->user->name, NULL);
+                if (!description)
+                        return log_oom();
+
+                scope = strjoin("session-", s->id, ".scope", NULL);
+                if (!scope)
+                        return log_oom();
+
+                r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "logind.service", "systemd-user-sessions.service", &error, &job);
+                if (r < 0) {
+                        log_error("Failed to start session scope %s: %s %s",
+                                  scope, bus_error_message(&error, r), error.name);
+                        free(scope);
+                        return r;
+                } else {
+                        s->scope = scope;
+                        free(s->scope_job);
+                        s->scope_job = job;
+                }
+        }
+
+        if (s->scope)
+                hashmap_put(s->manager->session_units, s->scope, s);
+
+        return 0;
+}
+#endif // 0
+
 static int session_start_cgroup(Session *s) {
         int r;
 
@@ -496,6 +569,7 @@ static int session_start_cgroup(Session *s) {
         return 0;
 }
 
+
 int session_start(Session *s) {
         int r;
 
@@ -511,7 +585,14 @@ int session_start(Session *s) {
         if (r < 0)
                 return r;
 
+        /* Create cgroup */
+/// elogind does its own session management without systemd units,
+/// slices and scopes
+#if 0
+        r = session_start_scope(s);
+#else
         r = session_start_cgroup(s);
+#endif // 0
         if (r < 0)
                 return r;
 
@@ -552,6 +633,39 @@ int session_start(Session *s) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
+static int session_stop_scope(Session *s, bool force) {
+        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job = NULL;
+        int r;
+
+        assert(s);
+
+        if (!s->scope)
+                return 0;
+
+        if (force || manager_shall_kill(s->manager, s->user->name)) {
+                r = manager_stop_unit(s->manager, s->scope, &error, &job);
+                if (r < 0) {
+                        log_error("Failed to stop session scope: %s", bus_error_message(&error, r));
+                        return r;
+                }
+
+                free(s->scope_job);
+                s->scope_job = job;
+        } else {
+                r = manager_abandon_scope(s->manager, s->scope, &error);
+                if (r < 0) {
+                        log_error("Failed to abandon session scope: %s", bus_error_message(&error, r));
+                        return r;
+                }
+        }
+
+        return 0;
+}
+#endif // 0
+
 static int session_stop_cgroup(Session *s, bool force) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
@@ -577,11 +691,19 @@ int session_stop(Session *s, bool force) {
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 
+        if (s->seat)
+                seat_evict_position(s->seat, s);
+
         /* We are going down, don't care about FIFOs anymore */
         session_remove_fifo(s);
 
         /* Kill cgroup */
+/// elogind does not start scopes, but sessions
+#if 0
+        r = session_stop_scope(s, force);
+#else
         r = session_stop_cgroup(s, force);
+#endif // 0
 
         s->stopping = true;
 
@@ -594,7 +716,6 @@ int session_stop(Session *s, bool force) {
 }
 
 int session_finalize(Session *s) {
-        int r = 0;
         SessionDevice *sd;
 
         assert(s);
@@ -613,11 +734,14 @@ int session_finalize(Session *s) {
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 
+        if (s->seat)
+                seat_evict_position(s->seat, s);
+
         /* Kill session devices */
         while ((sd = hashmap_first(s->devices)))
                 session_device_free(sd);
 
-        unlink(s->state_file);
+        (void) unlink(s->state_file);
         session_add_to_gc_queue(s);
         user_add_to_gc_queue(s->user);
 
@@ -637,8 +761,21 @@ int session_finalize(Session *s) {
         user_save(s->user);
         user_send_changed(s->user, "Sessions", "Display", NULL);
 
-        return r;
+        return 0;
 }
+
+/// UNNEEDED by elogind
+#if 0
+static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *userdata) {
+        Session *s = userdata;
+
+        assert(es);
+        assert(s);
+
+        session_stop(s, false);
+        return 0;
+}
+#endif // 0
 
 int session_release(Session *s) {
         assert(s);
@@ -652,7 +789,16 @@ int session_release(Session *s) {
         /* In systemd, session release is triggered by user jobs
            dying.  In elogind we don't have that so go ahead and stop
            now.  */
+#if 0
+        return sd_event_add_time(s->manager->event,
+                                 &s->timer_event_source,
+                                 CLOCK_MONOTONIC,
+                                 now(CLOCK_MONOTONIC) + RELEASE_USEC, 0,
+                                 release_timeout_callback, s);
+
+#else
         return session_stop(s, false);
+#endif // 0
 }
 
 bool session_is_active(Session *s) {
@@ -838,8 +984,7 @@ static void session_remove_fifo(Session *s) {
 
         if (s->fifo_path) {
                 unlink(s->fifo_path);
-                free(s->fifo_path);
-                s->fifo_path = NULL;
+                s->fifo_path = mfree(s->fifo_path);
         }
 }
 
@@ -857,7 +1002,17 @@ bool session_check_gc(Session *s, bool drop_not_started) {
                         return true;
         }
 
-        if (cg_is_empty_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, false) > 0)
+/// elogind supports neither scopes nor jobs
+#if 0
+        if (s->scope_job && manager_job_is_active(s->manager, s->scope_job))
+                return true;
+
+        if (s->scope && manager_unit_is_active(s->manager, s->scope))
+                return true;
+#endif // 0
+
+        if ( s->user->manager
+          && (cg_is_empty_recursive (SYSTEMD_CGROUP_CONTROLLER, s->user->manager->cgroup_root) > 0) )
                 return true;
 
         return false;
@@ -880,7 +1035,12 @@ SessionState session_get_state(Session *s) {
         if (s->stopping || s->timer_event_source)
                 return SESSION_CLOSING;
 
+/// elogind does not support systemd scope_jobs
+#if 0
+        if (s->scope_job || s->fifo_fd < 0)
+#else
         if (s->fifo_fd < 0)
+#endif // 0
                 return SESSION_OPENING;
 
         if (session_is_active(s))
@@ -892,6 +1052,13 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
+/// Without direct cgroup support, elogind can not kill sessions
+#if 0
+        if (!s->scope)
+                return -ESRCH;
+
+        return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
+#else
         if (who == KILL_LEADER) {
                 if (s->leader <= 0)
                         return -ESRCH;
@@ -909,6 +1076,7 @@ int session_kill(Session *s, KillWho who, int signo) {
                 return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
                                           sigcont, ignore_self, rem, NULL);
         }
+#endif // 0
 }
 
 static int session_open_vt(Session *s) {
@@ -921,7 +1089,7 @@ static int session_open_vt(Session *s) {
                 return s->vtfd;
 
         sprintf(path, "/dev/tty%u", s->vtnr);
-        s->vtfd = open(path, O_RDWR | O_CLOEXEC | O_NONBLOCK | O_NOCTTY);
+        s->vtfd = open_terminal(path, O_RDWR | O_CLOEXEC | O_NONBLOCK | O_NOCTTY);
         if (s->vtfd < 0)
                 return log_error_errno(errno, "cannot open VT %s of session %s: %m", path, s->id);
 
@@ -985,7 +1153,18 @@ void session_restore_vt(Session *s) {
         int vt, kb = K_XLATE;
         struct vt_mode mode = { 0 };
 
+        /* We need to get a fresh handle to the virtual terminal,
+         * since the old file-descriptor is potentially in a hung-up
+         * state after the controlling process exited; we do a
+         * little dance to avoid having the terminal be available
+         * for reuse before we've cleaned it up.
+         */
+        int old_fd = s->vtfd;
+        s->vtfd = -1;
+
         vt = session_open_vt(s);
+        safe_close(old_fd);
+
         if (vt < 0)
                 return;
 
@@ -1054,7 +1233,18 @@ static void session_release_controller(Session *s, bool notify) {
                 session_device_free(sd);
 
         s->controller = NULL;
-        manager_drop_busname(s->manager, name);
+        s->track = sd_bus_track_unref(s->track);
+}
+
+static int on_bus_track(sd_bus_track *track, void *userdata) {
+        Session *s = userdata;
+
+        assert(track);
+        assert(s);
+
+        session_drop_controller(s);
+
+        return 0;
 }
 
 int session_set_controller(Session *s, const char *sender, bool force) {
@@ -1073,8 +1263,13 @@ int session_set_controller(Session *s, const char *sender, bool force) {
         if (!name)
                 return -ENOMEM;
 
-        r = manager_watch_busname(s->manager, name);
-        if (r)
+        s->track = sd_bus_track_unref(s->track);
+        r = sd_bus_track_new(s->manager->bus, &s->track, on_bus_track, s);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_track_add_name(s->track, name);
+        if (r < 0)
                 return r;
 
         /* When setting a session controller, we forcibly mute the VT and set
@@ -1087,7 +1282,7 @@ int session_set_controller(Session *s, const char *sender, bool force) {
          * or reset the VT in case it crashed/exited, too. */
         r = session_prepare_vt(s);
         if (r < 0) {
-                manager_drop_busname(s->manager, name);
+                s->track = sd_bus_track_unref(s->track);
                 return r;
         }
 
@@ -1105,6 +1300,7 @@ void session_drop_controller(Session *s) {
         if (!s->controller)
                 return;
 
+        s->track = sd_bus_track_unref(s->track);
         session_release_controller(s, false);
         session_save(s);
         session_restore_vt(s);

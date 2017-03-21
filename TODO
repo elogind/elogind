@@ -6,15 +6,11 @@ Bugfixes:
   automount points even when the original .automount file did not exist
   anymore. Only the .mount unit was still around.
 
-* ExecStart with unicode characters fails in strv_split_quoted:
+* ExecStart with unicode characters fails in strv_split_extract:
 
           [Service]
           Environment=ONE='one' "TWO='two two' too" THREE=
           ExecStart=/bin/python3 -c 'import sys;print(sys.argv)' $ONE $TWO $THREE
-
-* MEMORY return code is overloaded for syntax errors in the command line.
-  str_split_quoted() should return a real return code, so spawn_child can
-  report the failure properly.
 
 * When systemctl --host is used, underlying ssh connection can remain open.
   bus_close does not kill children?
@@ -23,45 +19,115 @@ External:
 
 * Fedora: add an rpmlint check that verifies that all unit files in the RPM are listed in %systemd_post macros.
 
-* Fedora: move kernel image to /usr/lib/modules/, kernel-install will take care of populating /boot
-
-* Fedora: remove /etc/resolv.conf tmpfiles hack
-
 * wiki: update journal format documentation for lz4 additions
 
 * When lz4 gets an API for lz4 command output, make use of it to
   compress coredumps in a way compatible with /usr/bin/lz4.
 
-Before 220:
-
-* rework fsckd/fsck's connection logic or remove fsck entirely
-
-* fix userns support in nspawn, or remove it entirely
-
-* make unmount-on-eject work again
-
-* bus-proxy: GetConnectionSELinuxSecurityContext() is completely broken
-
-* logind: make sure the syncrhonous polkit checks are not interactive, i.e. supporess client side interactive bus message header flag for them
-
-* timer units triggering services with failing conditions run busy:
-  http://lists.freedesktop.org/archives/systemd-devel/2015-April/030095.html
-
 Features:
 
-* the default stop timeout for units is not documented anywhere.
+* sd-event: maybe add support for inotify events
+
+* PID 1 should send out sd_notify("WATCHDOG=1") messages (for usage in the --user mode, and when run via nspawn)
+
+* nspawn should send out sd_notify("WATCHDOG=1") messages
+
+* nspawn should optionally support receiving WATCHDOG=1 messages from its payload PID 1...
+
+* consider throwing a warning if a service declares it wants to be "Before=" a .device unit.
+
+* "systemctl edit" should know a mode to create a new unit file
+
+* there's probably something wrong with having user mounts below /sys,
+  as we have for debugfs. for exmaple, src/core/mount.c handles mounts
+  prefixed with /sys generally special.
+  http://lists.freedesktop.org/archives/systemd-devel/2015-June/032962.html
+
+* Add PassEnvironment= setting to service units, to import select env vars from PID 1 into the service env block
+
+* nspawn: fix logic always print a final newline on output.
+  https://github.com/systemd/systemd/pull/272#issuecomment-113153176
+
+* make nspawn's --network-veth switch more powerful:
+  http://lists.freedesktop.org/archives/systemd-devel/2015-June/033121.html
+
+* man: document that unless you use StandardError=null the shell >/dev/stderr won't work in shell scripts in services
+
+* man: clarify that "machinectl show" shows different information than "machinectl status" (no cgroup tree, no IP addresses, ...)
+
+* "systemctl daemon-reload" should result in /etc/systemd/system.conf being reloaded by systemd
+
+* install: include generator dirs in unit file search paths
+
+* stop using off_t, it's a crazy type. Use uint64_t instead.
+
+* logind: follow PropertiesChanged state more closely, to deal with quick logouts and relogins
+
+* invent a better systemd-run scheme for naming scopes, that works with remoting
+
+* add journalctl -H that talks via ssh to a remote peer and passes through binary logs data
+
+* change journalctl -M to acquire fd to journal directory via machined, and then operate on that via openat() instead of absolute paths
+
+* add a version of --merge which also merges /var/log/journal/remote
+
+* log accumulated resource usage after each service invocation
+
+* nspawn: a nice way to boot up without machine id set, so that it is set at boot automatically for supporting --ephemeral. Maybe hash the host machine id together with the machine name to generate the machine id for the container
+
+* logind: rename session scope so that it includes the UID. THat way
+  the session scope can be arranged freely in slices and we don't have
+  make assumptions about their slice anymore.
+
+* journalctl: -m should access container journals directly by enumerating them via machined, and also watch containers coming and going. Benefit: nspawn --ephemeral would start working nicely with the journal.
+
+* nspawn: don't copy /etc/resolv.conf from host into container unless we are in shared-network mode
+
+* nspawn: optionally automatically add FORWARD rules to iptables whenever nspawn is running, remove them when shut down.
+
+* importd: generate a nice warning if mkfs.btrfs is missing
+
+* nspawn: add a logic for cleaning up read-only, hidden container images in /var/lib/machines that are not ancestors of any non-hidden containers
+
+* nspawn: Improve error message when --bind= is used on a non-existing source directory
+
+* nspawn: maybe make copying of /etc/resolv.conf optional, and skip it if --read-only is used
+
+* man: document how update dkr images works with machinectl
+  http://lists.freedesktop.org/archives/systemd-devel/2015-February/028630.html
+
+* nspawn: as soon as networkd has a bus interface, hook up --network-interface=, --network-bridge= with networkd, to trigger netdev creation should an interface be missing
+
+* rework C11 utf8.[ch] to use char32_t instead of uint32_t when referring
+  to unicode chars, to make things more expressive.
+
+* "machinectl migrate" or similar to copy a container from or to a
+  difference host, via ssh
+
+* tmpfiles: creating new directories/subvolumes/fifos/device nodes
+  should not follow symlinks. None of the other adjustment or creation
+  calls follow symlinks.
+
+* fstab-generator: default to tmpfs-as-root if only usr= is specified on the kernel cmdline
+
+* docs: bring http://www.freedesktop.org/wiki/Software/systemd/MyServiceCantGetRealtime up to date
+
+* mounting and unmounting mount points manually with different source
+  devices will result in collected collected on all devices used.
+  http://lists.freedesktop.org/archives/systemd-devel/2015-April/030225.html
+
+* add a job mode that will fail if a transaction would mean stopping
+  running units. Use this in timedated to manage the NTP service
+  state.
+  http://lists.freedesktop.org/archives/systemd-devel/2015-April/030229.html
+
+* Maybe add support for the equivalent of "ethtool advertise" to .link files?
+  http://lists.freedesktop.org/archives/systemd-devel/2015-April/030112.html
 
 * .timer units should optionally support CLOCK_BOOTTIME in addition to CLOCK_MONOTONIC
 
-* rm_rf() should be able to remove subvolumes
-
-* systemd-run should support a mode where we wait for the unit to be started up
-
 * create a btrfs qgroup for /var/lib/machines, and add all container
   subvolumes we create to it.
-
-* nspawn: add --overlay= to support overlay file systems, similar to
-  --tmpfs= and --bind=.
 
 * When logging about multiple units (stopping BoundTo units, conflicts, etc.),
   log both units as UNIT=, so that journalctl -u triggers on both.
@@ -85,14 +151,8 @@ Features:
   that are not supported...
   http://lists.freedesktop.org/archives/systemd-devel/2015-February/028076.html
 
-* PID 1: when invoking systemctl preset-all on first boots, operate in
-  an exclusively additive way, i.e. never remove any pre-existing
-  symlinks, only add new ones.
-
 * Introduce $LISTEN_NAMES to complement $LISTEN_FDS, containing a
   colon separated list of identifiers for the fds passed.
-
-* when the fstab-generator runs in the initrd, it should create a /dev/null mask for systemd-fsck-root.service, to avoid that the the root fs is fsck'ed twice.
 
 * maybe introduce WantsMountsFor=? Usecase:
   http://lists.freedesktop.org/archives/systemd-devel/2015-January/027729.html
@@ -125,7 +185,7 @@ Features:
 
 * logind: maybe allow configuration of the StopTimeout for session scopes
 
-* Set NoNewPriviliges= on all of our own services, where that makes sense
+* Set NoNewPrivileges= on all of our own services, where that makes sense
 
 * Rework systemctl's GetAll property parsing to use the generic bus_map_all_properties() API
 
@@ -142,8 +202,6 @@ Features:
 * "machinectl status" should also show internal logs of the container in question
 
 * "machinectl list-images" should show os-release data, as well as machine-info data (including deployment level)
-
-* nspawn: when start a container "foobar" look for its configuration in a file "foobar.nspawn" in /etc/systemd/nspawn/ as well as next to the actualy directory or image to boot
 
 * Port various tools to make use of verbs.[ch], where applicable
 
@@ -190,8 +248,6 @@ Features:
 
 * figure out when we can use the coarse timers
 
-* sd-resolve: drop res_query wrapping, people should call via the bus to resolved instead
-
 * add "systemctl start -v foobar.service" that shows logs of a service
   while the start command runs. This is non-trivial to do without
   races though, since we should flush out all journal messages before
@@ -207,7 +263,7 @@ Features:
 
 * maybe add support for specifier expansion in user.conf, specifically DefaultEnvironment=
 
-* code cleanup: retire FOREACH_WORD_QUOTED, port to unquote_first_word() loops instead
+* code cleanup: retire FOREACH_WORD_QUOTED, port to extract_first_word() loops instead
 
 * introduce systemd-timesync-wait.service or so to sync on an NTP fix?
 
@@ -243,7 +299,7 @@ Features:
 
 * exponential backoff in timesyncd and resolved when we cannot reach a server
 
-* unquote_many_words() should probably be used by a lot of code that
+* extract_many_words() should probably be used by a lot of code that
   currently uses FOREACH_WORD and friends. For example, most conf
   parsing callbacks should use it.
 
@@ -259,40 +315,35 @@ Features:
   - add LLDP client side support
   - the DHCP lease data (such as NTP/DNS) is still made available when
     a carrier is lost on a link. It should be removed instantly.
-  - .network setting that allows overriding of the hostname to send to the dhcp server
-    http://lists.freedesktop.org/archives/systemd-devel/2014-July/021550.html
   - expose in the API the following bits:
         - option 15, domain name and/or option 119, search list
         - option 12, host name and/or option 81, fqdn
-        - option 100, 101, timezone
         - option 123, 144, geolocation
         - option 252, configure http proxy (PAC/wpad)
-  - networkd's dhcp server should transparently pass on the DNS and
-    NTP server list it got from user configuration and its dhcp client
-    to clients. It should also pass on its own timezone information.
   - provide a way to define a per-network interface default metric value
     for all routes to it. possibly a second default for DHCP routes.
   - allow Name= to be specified repeatedly in the [Match] section. Maybe also
     support Name=foo*|bar*|baz ?
   - duplicate address check for static IPs (like ARPCHECK in network-scripts)
+  - allow DUID/IAID to be customized, see issue #394.
+  - support configuration option for TSO (tcp segmentation offload)
+  - networkd: whenever uplink info changes, make DHCP server send out FORCERENEW
 
 * resolved:
   - put networkd events and rtnl events at a higher priority, so that
     we always process them before we process client requests
   - DNSSEC
-        - use base64 for key presentation?
         - add display of private key types (http://tools.ietf.org/html/rfc4034#appendix-A.1.1)?
-        - add nice formatting of DNS timestamps
   - DNS
         - search paths
   - mDNS/DNS-SD
         - avahi compat
   - DNS-SD service registration from socket units
   - edns0
-  - dname
+  - dname: Not necessary for plain DNS as synthesized cname is handed out instead if we do not
+           announce dname support. However, for DNSSEC it is necessary as the synthesized cname
+           will not be signed.
   - cname on PTR (?)
-  - maybe randomize DNS UDP source ports
-  - maybe compare query section of DNS replies
 
 * Allow multiple ExecStart= for all Type= settings, so that we can cover rescue.service nicely
 
@@ -407,6 +458,7 @@ Features:
   ReadOnlyDirectories=... for whitelisting files for a service.
 
 * sd-bus:
+  - EBADSLT handling
   - GetAllProperties() on a non-existing object does not result in a failure currently
   - kdbus: process fd=-1 for incoming msgs
   - port to sd-resolve for connecting to TCP dbus servers
@@ -499,8 +551,6 @@ Features:
   - change bootctl to be backed by systemd-bootd to control temporary and persistent default boot goal plus efi variables
 
 * maybe do not install getty@tty1.service symlink in /etc but in /usr?
-
-* re-enable "make check" for gtk-doc (broken for unknown reason)
 
 * fstab: add new mount option x-systemd-after=/foobar/waldo to allow manual dependencies to other mount points
   https://bugzilla.redhat.com/show_bug.cgi?id=812826
@@ -639,10 +689,6 @@ Features:
 
 * If we show an error about a unit (such as not showing up) and it has no Description string, then show a description string generated form the reverse of unit_name_mangle().
 
-* fedup: add --unit to systemctl switch-root somehow
-* fedup: do not delete initrd on switch-root
-* fedup: generator
-
 * clean up date formatting and parsing so that all absolute/relative timestamps we format can also be parsed
 
 * on shutdown: move utmp, wall, audit logic all into PID 1 (or logind?), get rid of systemd-update-utmp-runlevel
@@ -699,17 +745,6 @@ Features:
 * change Requires=basic.target to RequisiteOverride=basic.target
 
 * when breaking cycles drop sysv services first, then services from /run, then from /etc, then from /usr
-
-* automount: implement expire:
-   - set superblock timeout AUTOFS_DEV_IOCTL_TIMEOUT_CMD
-   - periodically run AUTOFS_DEV_IOCTL_EXPIRE_CMD
-     - every timeout/4 (original autofs logic)
-     - blocking, needs a thread
-     - run until -EAGAIN
-   - receive expire packet on pipe if kernel tells the timeout is over
-     - call umount
-     - answer expire packet on pipe with AUTOFS_DEV_IOCTL_{READY,FAIL}_CMD
-   - AUTOFS_DEV_IOCTL_EXPIRE_CMD returns
 
 * ExecOnFailure=/usr/bin/foo
 
@@ -845,7 +880,6 @@ Features:
 
 * dhcp:
    - figure out how much we can increase Maximum Message Size
-   - export timezone information
    - support RFC4702 (pass FQDN)
 
 * dhcp6:

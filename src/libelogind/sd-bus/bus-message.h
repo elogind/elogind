@@ -193,7 +193,7 @@ static inline bool BUS_MESSAGE_IS_GVARIANT(sd_bus_message *m) {
 }
 
 int bus_message_seal(sd_bus_message *m, uint64_t serial, usec_t timeout);
-int bus_message_get_blob(sd_bus_message *m, void **buffer, size_t *sz);
+// UNNEEDED int bus_message_get_blob(sd_bus_message *m, void **buffer, size_t *sz);
 int bus_message_read_strv_extend(sd_bus_message *m, char ***l);
 
 int bus_message_from_header(
@@ -205,7 +205,6 @@ int bus_message_from_header(
                 size_t message_size,
                 int *fds,
                 unsigned n_fds,
-                const struct ucred *ucred,
                 const char *label,
                 size_t extra,
                 sd_bus_message **ret);
@@ -216,11 +215,11 @@ int bus_message_from_malloc(
                 size_t length,
                 int *fds,
                 unsigned n_fds,
-                const struct ucred *ucred,
                 const char *label,
                 sd_bus_message **ret);
 
-int bus_message_get_arg(sd_bus_message *m, unsigned i, const char **str, char ***strv);
+int bus_message_get_arg(sd_bus_message *m, unsigned i, const char **str);
+int bus_message_get_arg_strv(sd_bus_message *m, unsigned i, char ***strv);
 
 int bus_message_append_ap(sd_bus_message *m, const char *types, va_list ap);
 
@@ -240,7 +239,7 @@ int bus_message_new_synthetic_error(sd_bus *bus, uint64_t serial, const sd_bus_e
 
 int bus_message_remarshal(sd_bus *bus, sd_bus_message **m);
 
-int bus_message_append_sender(sd_bus_message *m, const char *sender);
+// UNNEEDED int bus_message_append_sender(sd_bus_message *m, const char *sender);
 
 void bus_message_set_sender_driver(sd_bus *bus, sd_bus_message *m);
 void bus_message_set_sender_local(sd_bus *bus, sd_bus_message *m);

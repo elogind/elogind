@@ -89,7 +89,7 @@ void bus_slot_disconnect(sd_bus_slot *slot) {
 
         case BUS_MATCH_CALLBACK:
 
-                if (slot->bus->bus_client)
+                if (slot->match_added)
                         bus_remove_match_internal(slot->bus, slot->match_callback.match_string, slot->match_callback.cookie);
 
                 slot->bus->match_callbacks_modified = true;
@@ -214,6 +214,8 @@ _public_ sd_bus_slot* sd_bus_slot_unref(sd_bus_slot *slot) {
         return NULL;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ sd_bus* sd_bus_slot_get_bus(sd_bus_slot *slot) {
         assert_return(slot, NULL);
 
@@ -273,7 +275,7 @@ _public_ int sd_bus_slot_set_description(sd_bus_slot *slot, const char *descript
         return free_and_strdup(&slot->description, description);
 }
 
-_public_ int sd_bus_slot_get_description(sd_bus_slot *slot, char **description) {
+_public_ int sd_bus_slot_get_description(sd_bus_slot *slot, const char **description) {
         assert_return(slot, -EINVAL);
         assert_return(description, -EINVAL);
         assert_return(slot->description, -ENXIO);
@@ -281,3 +283,4 @@ _public_ int sd_bus_slot_get_description(sd_bus_slot *slot, char **description) 
         *description = slot->description;
         return 0;
 }
+#endif // 0

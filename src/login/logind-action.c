@@ -20,21 +20,20 @@
 ***/
 
 #include <unistd.h>
-#include <stdio.h>
-#include <errno.h>
 
 #include "sd-messages.h"
-#include "log.h"
 #include "util.h"
 #include "strv.h"
 #include "fileio.h"
-#include "build.h"
-#include "def.h"
 #include "conf-parser.h"
+// #include "special.h"
 #include "sleep-config.h"
 #include "bus-error.h"
 #include "bus-util.h"
 #include "logind-action.h"
+// #include "formats-util.h"
+#include "process-util.h"
+#include "terminal-util.h"
 
 int manager_handle_action(
                 Manager *m,
@@ -52,6 +51,19 @@ int manager_handle_action(
                 [HANDLE_HIBERNATE] = "Hibernating...",
                 [HANDLE_HYBRID_SLEEP] = "Hibernating and suspending..."
         };
+
+/// elogind does this itself. No target table required
+#if 0
+        static const char * const target_table[_HANDLE_ACTION_MAX] = {
+                [HANDLE_POWEROFF] = SPECIAL_POWEROFF_TARGET,
+                [HANDLE_REBOOT] = SPECIAL_REBOOT_TARGET,
+                [HANDLE_HALT] = SPECIAL_HALT_TARGET,
+                [HANDLE_KEXEC] = SPECIAL_KEXEC_TARGET,
+                [HANDLE_SUSPEND] = SPECIAL_SUSPEND_TARGET,
+                [HANDLE_HIBERNATE] = SPECIAL_HIBERNATE_TARGET,
+                [HANDLE_HYBRID_SLEEP] = SPECIAL_HYBRID_SLEEP_TARGET
+        };
+#endif // 0
 
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         InhibitWhat inhibit_operation;
@@ -148,7 +160,12 @@ int manager_handle_action(
 
         log_info("%s", message_table[handle]);
 
+/// elogind uses its own variant, which can use the handle directly.
+#if 0
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, target_table[handle], inhibit_operation, &error);
+#else
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
+#endif // 0
         if (r < 0) {
                 log_error("Failed to execute operation: %s", bus_error_message(&error, r));
                 return r;
@@ -183,7 +200,7 @@ static int write_mode(char **modes) {
         STRV_FOREACH(mode, modes) {
                 int k;
 
-                k = write_string_file("/sys/power/disk", *mode);
+                k = write_string_file("/sys/power/disk", *mode, 0);
                 if (k == 0)
                         return 0;
 
@@ -206,7 +223,7 @@ static int write_state(FILE **f, char **states) {
         STRV_FOREACH(state, states) {
                 int k;
 
-                k = write_string_stream(*f, *state);
+                k = write_string_stream(*f, *state, true);
                 if (k == 0)
                         return 0;
                 log_debug_errno(k, "Failed to write '%s' to /sys/power/state: %m",
@@ -223,14 +240,15 @@ static int write_state(FILE **f, char **states) {
         return r;
 }
 
-static int do_sleep(const char *arg_verb, const char **modes, const char **states) {
+static int do_sleep(const char *arg_verb, char **modes, char **states) {
         char *arguments[] = {
                 NULL,
                 (char*) "pre",
                 (char*) arg_verb,
                 NULL
         };
-        static const char* const dirs[] = { SYSTEM_SLEEP_PATH, NULL};
+        static const char* const dirs[] = {SYSTEM_SLEEP_PATH, NULL};
+
         int r;
         _cleanup_fclose_ FILE *f = NULL;
 
@@ -270,6 +288,9 @@ static int do_sleep(const char *arg_verb, const char **modes, const char **state
 }
 
 int shutdown_or_sleep(Manager *m, HandleAction action) {
+
+        assert(m);
+
         switch (action) {
         case HANDLE_POWEROFF:
                 return run_helper(HALT);

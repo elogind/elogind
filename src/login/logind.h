@@ -24,8 +24,11 @@
 #include <stdbool.h>
 #include <libudev.h>
 
+#include "config.h"
 #include "sd-event.h"
 #include "sd-bus.h"
+#include "cgroup-util.h"
+#include "path-lookup.h"
 #include "list.h"
 #include "hashmap.h"
 #include "set.h"
@@ -48,8 +51,6 @@ struct Manager {
         Hashmap *inhibitors;
         Hashmap *buttons;
 
-        Set *busnames;
-
         LIST_HEAD(Seat, seat_gc_queue);
         LIST_HEAD(Session, session_gc_queue);
         LIST_HEAD(User, user_gc_queue);
@@ -67,10 +68,23 @@ struct Manager {
          * file system */
         int pin_cgroupfs_fd;
 
+        /* Flags */
+        ManagerRunningAs running_as;
+        bool test_run:1;
+
         /* Data specific to the cgroup subsystem */
+        CGroupMask cgroup_supported;
         char *cgroup_root;
 
         int console_active_fd;
+
+/// elogind does not support autospawning of vts
+#if 0
+        unsigned n_autovts;
+
+        unsigned reserve_vt;
+        int reserve_vt_fd;
+#endif // 0
 
         Seat *seat0;
 
@@ -80,17 +94,45 @@ struct Manager {
         unsigned long session_counter;
         unsigned long inhibit_counter;
 
+        Hashmap *session_units;
+        Hashmap *user_units;
+
         usec_t inhibit_delay_max;
 
         /* If an action is currently being executed or is delayed,
          * this is != 0 and encodes what is being done */
         InhibitWhat action_what;
 
+/// elogind does all relevant actions on its own. No systemd jobs and units.
+#if 0
+        /* If a shutdown/suspend was delayed due to a inhibitor this
+           contains the unit name we are supposed to start after the
+           delay is over */
+        const char *action_unit;
+
+        /* If a shutdown/suspend is currently executed, then this is
+         * the job of it */
+        char *action_job;
+#else
         /* If a shutdown/suspend was delayed due to a inhibitor this
            contains the action we are supposed to perform after the
            delay is over */
         HandleAction pending_action;
-        usec_t action_timestamp;
+#endif // 0
+
+        sd_event_source *inhibit_timeout_source;
+
+        char *scheduled_shutdown_type;
+        usec_t scheduled_shutdown_timeout;
+        sd_event_source *scheduled_shutdown_timeout_source;
+        uid_t scheduled_shutdown_uid;
+        char *scheduled_shutdown_tty;
+        sd_event_source *nologin_timeout_source;
+        bool unlink_nologin;
+
+        char *wall_message;
+        unsigned enable_wall_messages;
+        sd_event_source *wall_message_timeout_source;
 
         sd_event_source *idle_action_event_source;
         usec_t idle_action_usec;
@@ -110,8 +152,8 @@ struct Manager {
 
         bool remove_ipc;
 
-        char **suspend_state, **suspend_mode;
-        char **hibernate_state, **hibernate_mode;
+        char **suspend_state,      **suspend_mode;
+        char **hibernate_state,    **hibernate_mode;
         char **hybrid_sleep_state, **hybrid_sleep_mode;
 
         Hashmap *polkit_registry;
@@ -121,9 +163,6 @@ struct Manager {
 
         size_t runtime_dir_size;
 };
-
-Manager *manager_new(void);
-void manager_free(Manager *m);
 
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_device);
 int manager_add_button(Manager *m, const char *name, Button **_button);
@@ -137,10 +176,7 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 int manager_process_seat_device(Manager *m, struct udev_device *d);
 int manager_process_button_device(Manager *m, struct udev_device *d);
 
-int manager_startup(Manager *m);
-int manager_run(Manager *m);
-
-void manager_gc(Manager *m, bool drop_not_started);
+// UNNEEDED int manager_spawn_autovt(Manager *m, unsigned int vtnr);
 
 bool manager_shall_kill(Manager *m, const char *user);
 
@@ -149,24 +185,35 @@ int manager_get_idle_hint(Manager *m, dual_timestamp *t);
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **user);
 int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session);
 
-bool manager_is_docked(Manager *m);
-int manager_count_displays(Manager *m);
-bool manager_is_docked_or_multiple_displays(Manager *m);
+bool manager_is_docked_or_external_displays(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
+// UNNEEDED int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error);
+// UNNEEDED int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+
+/// eloginds own version does the action itself
+#if 0
+int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, const char *unit_name, InhibitWhat w, sd_bus_error *error);
+#else
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
-int shutdown_or_sleep(Manager *m, HandleAction action);
+#endif // 0
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 
-int manager_dispatch_delayed(Manager *manager);
+// UNNEEDED int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
+// UNNEEDED int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
+// UNNEEDED int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
+// UNNEEDED int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
+// UNNEEDED int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
+// UNNEEDED int manager_unit_is_active(Manager *manager, const char *unit);
+// UNNEEDED int manager_job_is_active(Manager *manager, const char *path);
 
 /* gperf lookup function */
-const struct ConfigPerfItem* logind_gperf_lookup(const char *key, unsigned length);
-
-int manager_watch_busname(Manager *manager, const char *name);
-void manager_drop_busname(Manager *manager, const char *name);
+const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
 
 int manager_set_lid_switch_ignore(Manager *m, usec_t until);
 
@@ -175,3 +222,8 @@ int config_parse_tmpfs_size(const char *unit, const char *filename, unsigned lin
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret);
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);
+
+int manager_setup_wall_message_timer(Manager *m);
+bool logind_wall_tty_filter(const char *tty, void *userdata);
+
+int manager_dispatch_delayed(Manager *manager, bool timeout);

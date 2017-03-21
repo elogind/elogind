@@ -5,8 +5,8 @@
  * your option) any later version.
  */
 
-#ifndef _KDBUS_UAPI_H_
-#define _KDBUS_UAPI_H_
+#ifndef _UAPI_KDBUS_H_
+#define _UAPI_KDBUS_H_
 
 #include <linux/ioctl.h>
 #include <linux/types.h>
@@ -374,6 +374,7 @@ enum kdbus_item_type {
 	KDBUS_ITEM_ATTACH_FLAGS_RECV,
 	KDBUS_ITEM_ID,
 	KDBUS_ITEM_NAME,
+	KDBUS_ITEM_DST_ID,
 
 	/* keep these item types in sync with KDBUS_ATTACH_* flags */
 	_KDBUS_ITEM_ATTACH_BASE	= 0x1000,
@@ -544,7 +545,7 @@ struct kdbus_msg_info {
  *				reply to this message. The
  *				KDBUS_CMD_SEND ioctl() will block
  *				until the reply is received, and
- *				offset_reply in struct kdbus_msg will
+ *				reply in struct kdbus_cmd_send will
  *				yield the offset in the sender's pool
  *				where the reply can be found.
  *				This flag is only valid if
@@ -976,4 +977,4 @@ enum kdbus_ioctl_type {
 					     struct kdbus_cmd_match),
 };
 
-#endif /* _KDBUS_UAPI_H_ */
+#endif /* _UAPI_KDBUS_H_ */

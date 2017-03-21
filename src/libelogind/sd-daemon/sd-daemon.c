@@ -31,13 +31,15 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <limits.h>
-#include <mqueue.h>
+//#include <mqueue.h>
 
 #include "util.h"
 #include "path-util.h"
 #include "socket-util.h"
 #include "sd-daemon.h"
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_listen_fds(int unset_environment) {
         const char *e;
         unsigned n;
@@ -90,7 +92,7 @@ finish:
 _public_ int sd_is_fifo(int fd, const char *path) {
         struct stat st_fd;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
 
         if (fstat(fd, &st_fd) < 0)
                 return -errno;
@@ -120,7 +122,7 @@ _public_ int sd_is_fifo(int fd, const char *path) {
 _public_ int sd_is_special(int fd, const char *path) {
         struct stat st_fd;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
 
         if (fstat(fd, &st_fd) < 0)
                 return -errno;
@@ -151,11 +153,12 @@ _public_ int sd_is_special(int fd, const char *path) {
 
         return 1;
 }
+#endif // 0
 
 static int sd_is_socket_internal(int fd, int type, int listening) {
         struct stat st_fd;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(type >= 0, -EINVAL);
 
         if (fstat(fd, &st_fd) < 0)
@@ -198,7 +201,7 @@ static int sd_is_socket_internal(int fd, int type, int listening) {
 _public_ int sd_is_socket(int fd, int family, int type, int listening) {
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(family >= 0, -EINVAL);
 
         r = sd_is_socket_internal(fd, type, listening);
@@ -221,12 +224,14 @@ _public_ int sd_is_socket(int fd, int family, int type, int listening) {
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port) {
         union sockaddr_union sockaddr = {};
         socklen_t l = sizeof(sockaddr);
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
         assert_return(IN_SET(family, 0, AF_INET, AF_INET6), -EINVAL);
 
         r = sd_is_socket_internal(fd, type, listening);
@@ -269,7 +274,7 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
         socklen_t l = sizeof(sockaddr);
         int r;
 
-        assert_return(fd >= 0, -EINVAL);
+        assert_return(fd >= 0, -EBADF);
 
         r = sd_is_socket_internal(fd, type, listening);
         if (r <= 0)
@@ -306,6 +311,38 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
 
         return 1;
 }
+
+_public_ int sd_is_mq(int fd, const char *path) {
+        struct mq_attr attr;
+
+        assert_return(fd >= 0, -EBADF);
+
+        if (mq_getattr(fd, &attr) < 0)
+                return -errno;
+
+        if (path) {
+                char fpath[PATH_MAX];
+                struct stat a, b;
+
+                assert_return(path_is_absolute(path), -EINVAL);
+
+                if (fstat(fd, &a) < 0)
+                        return -errno;
+
+                strncpy(stpcpy(fpath, "/dev/mqueue"), path, sizeof(fpath) - 12);
+                fpath[sizeof(fpath)-1] = 0;
+
+                if (stat(fpath, &b) < 0)
+                        return -errno;
+
+                if (a.st_dev != b.st_dev ||
+                    a.st_ino != b.st_ino)
+                        return 0;
+        }
+
+        return 1;
+}
+#endif // 0
 
 _public_ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, const int *fds, unsigned n_fds) {
         union sockaddr_union sockaddr = {
@@ -429,6 +466,8 @@ _public_ int sd_notify(int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(0, unset_environment, state, NULL, 0);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -477,6 +516,7 @@ _public_ int sd_booted(void) {
 
         return !!S_ISDIR(st.st_mode);
 }
+#endif // 0
 
 _public_ int sd_watchdog_enabled(int unset_environment, uint64_t *usec) {
         const char *s, *p = ""; /* p is set to dummy value to do unsetting */

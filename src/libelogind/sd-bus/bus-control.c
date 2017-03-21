@@ -42,6 +42,9 @@ _public_ int sd_bus_get_unique_name(sd_bus *bus, const char **unique) {
         assert_return(unique, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
+        if (!bus->bus_client)
+                return -EINVAL;
+
         r = bus_ensure_running(bus);
         if (r < 0)
                 return r;
@@ -130,11 +133,13 @@ static int bus_request_name_dbus1(sd_bus *bus, const char *name, uint64_t flags)
 _public_ int sd_bus_request_name(sd_bus *bus, const char *name, uint64_t flags) {
         assert_return(bus, -EINVAL);
         assert_return(name, -EINVAL);
-        assert_return(bus->bus_client, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
         assert_return(!(flags & ~(SD_BUS_NAME_ALLOW_REPLACEMENT|SD_BUS_NAME_REPLACE_EXISTING|SD_BUS_NAME_QUEUE)), -EINVAL);
         assert_return(service_name_is_valid(name), -EINVAL);
         assert_return(name[0] != ':', -EINVAL);
+
+        if (!bus->bus_client)
+                return -EINVAL;
 
         /* Don't allow requesting the special driver and local names */
         if (STR_IN_SET(name, "org.freedesktop.DBus", "org.freedesktop.DBus.Local"))
@@ -213,10 +218,12 @@ static int bus_release_name_dbus1(sd_bus *bus, const char *name) {
 _public_ int sd_bus_release_name(sd_bus *bus, const char *name) {
         assert_return(bus, -EINVAL);
         assert_return(name, -EINVAL);
-        assert_return(bus->bus_client, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
         assert_return(service_name_is_valid(name), -EINVAL);
         assert_return(name[0] != ':', -EINVAL);
+
+        if (!bus->bus_client)
+                return -EINVAL;
 
         /* Don't allow releasing the special driver and local names */
         if (STR_IN_SET(name, "org.freedesktop.DBus", "org.freedesktop.DBus.Local"))
@@ -249,11 +256,9 @@ static int kernel_get_list(sd_bus *bus, uint64_t flags, char ***x) {
         name_list = (struct kdbus_info *) ((uint8_t *) bus->kdbus_buffer + cmd.offset);
 
         KDBUS_FOREACH(name, name_list, cmd.list_size) {
-
                 struct kdbus_item *item;
-                const char *entry_name = NULL;
 
-                if ((flags & KDBUS_LIST_UNIQUE) && name->id != previous_id) {
+                if ((flags & KDBUS_LIST_UNIQUE) && name->id != previous_id && !(name->flags & KDBUS_HELLO_ACTIVATOR)) {
                         char *n;
 
                         if (asprintf(&n, ":1.%llu", (unsigned long long) name->id) < 0) {
@@ -268,15 +273,15 @@ static int kernel_get_list(sd_bus *bus, uint64_t flags, char ***x) {
                         previous_id = name->id;
                 }
 
-                KDBUS_ITEM_FOREACH(item, name, items)
-                        if (item->type == KDBUS_ITEM_OWNED_NAME)
-                                entry_name = item->name.name;
-
-                if (entry_name && service_name_is_valid(entry_name)) {
-                        r = strv_extend(x, entry_name);
-                        if (r < 0) {
-                                r = -ENOMEM;
-                                goto fail;
+                KDBUS_ITEM_FOREACH(item, name, items) {
+                        if (item->type == KDBUS_ITEM_OWNED_NAME) {
+                                if (service_name_is_valid(item->name.name)) {
+                                        r = strv_extend(x, item->name.name);
+                                        if (r < 0) {
+                                                r = -ENOMEM;
+                                                goto fail;
+                                        }
+                                }
                         }
                 }
         }
@@ -374,6 +379,9 @@ _public_ int sd_bus_list_names(sd_bus *bus, char ***acquired, char ***activatabl
         assert_return(acquired || activatable, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
+        if (!bus->bus_client)
+                return -EINVAL;
+
         if (!BUS_IS_OPEN(bus->state))
                 return -ENOTCONN;
 
@@ -411,6 +419,26 @@ static int bus_populate_creds_from_items(
                         if (mask & SD_BUS_CREDS_TID && item->pids.tid > 0) {
                                 c->tid = (pid_t) item->pids.tid;
                                 c->mask |= SD_BUS_CREDS_TID;
+                        }
+
+                        if (mask & SD_BUS_CREDS_PPID) {
+                                if (item->pids.ppid > 0) {
+                                        c->ppid = (pid_t) item->pids.ppid;
+                                        c->mask |= SD_BUS_CREDS_PPID;
+                                } else if (item->pids.pid == 1) {
+                                        /* The structure doesn't
+                                         * really distinguish the case
+                                         * where a process has no
+                                         * parent and where we don't
+                                         * know it because it could
+                                         * not be translated due to
+                                         * namespaces. However, we
+                                         * know that PID 1 has no
+                                         * parent process, hence let's
+                                         * patch that in, manually. */
+                                        c->ppid = 0;
+                                        c->mask |= SD_BUS_CREDS_PPID;
+                                }
                         }
 
                         break;
@@ -550,12 +578,12 @@ static int bus_populate_creds_from_items(
                         break;
 
                 case KDBUS_ITEM_AUDIT:
-                        if (mask & SD_BUS_CREDS_AUDIT_SESSION_ID && (uint32_t) item->audit.sessionid != (uint32_t) -1) {
+                        if (mask & SD_BUS_CREDS_AUDIT_SESSION_ID) {
                                 c->audit_session_id = (uint32_t) item->audit.sessionid;
                                 c->mask |= SD_BUS_CREDS_AUDIT_SESSION_ID;
                         }
 
-                        if (mask & SD_BUS_CREDS_AUDIT_LOGIN_UID && (uid_t) item->audit.loginuid != UID_INVALID) {
+                        if (mask & SD_BUS_CREDS_AUDIT_LOGIN_UID) {
                                 c->audit_login_uid = (uid_t) item->audit.loginuid;
                                 c->mask |= SD_BUS_CREDS_AUDIT_LOGIN_UID;
                         }
@@ -644,7 +672,8 @@ int bus_get_name_creds_kdbus(
          * the bits we want, then ask for the PID/TID so that we
          * can read the rest from /proc. */
         if ((mask & SD_BUS_CREDS_AUGMENT) &&
-            (mask & (SD_BUS_CREDS_UID|SD_BUS_CREDS_EUID|SD_BUS_CREDS_SUID|SD_BUS_CREDS_FSUID|
+            (mask & (SD_BUS_CREDS_PPID|
+                     SD_BUS_CREDS_UID|SD_BUS_CREDS_EUID|SD_BUS_CREDS_SUID|SD_BUS_CREDS_FSUID|
                      SD_BUS_CREDS_GID|SD_BUS_CREDS_EGID|SD_BUS_CREDS_SGID|SD_BUS_CREDS_FSGID|
                      SD_BUS_CREDS_COMM|SD_BUS_CREDS_TID_COMM|SD_BUS_CREDS_EXE|SD_BUS_CREDS_CMDLINE|
                      SD_BUS_CREDS_CGROUP|SD_BUS_CREDS_UNIT|SD_BUS_CREDS_USER_UNIT|SD_BUS_CREDS_SLICE|SD_BUS_CREDS_SESSION|SD_BUS_CREDS_OWNER_UID|
@@ -879,7 +908,9 @@ _public_ int sd_bus_get_name_creds(
         assert_return(mask == 0 || creds, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
         assert_return(service_name_is_valid(name), -EINVAL);
-        assert_return(bus->bus_client, -ENODATA);
+
+        if (!bus->bus_client)
+                return -EINVAL;
 
         if (streq(name, "org.freedesktop.DBus.Local"))
                 return -EINVAL;
@@ -910,7 +941,8 @@ static int bus_get_owner_creds_kdbus(sd_bus *bus, uint64_t mask, sd_bus_creds **
          * to get the bits we want, then ask for the PID/TID so that we
          * can read the rest from /proc. */
         if ((mask & SD_BUS_CREDS_AUGMENT) &&
-            (mask & (SD_BUS_CREDS_UID|SD_BUS_CREDS_EUID|SD_BUS_CREDS_SUID|SD_BUS_CREDS_FSUID|
+            (mask & (SD_BUS_CREDS_PPID|
+                     SD_BUS_CREDS_UID|SD_BUS_CREDS_EUID|SD_BUS_CREDS_SUID|SD_BUS_CREDS_FSUID|
                      SD_BUS_CREDS_GID|SD_BUS_CREDS_EGID|SD_BUS_CREDS_SGID|SD_BUS_CREDS_FSGID|
                      SD_BUS_CREDS_COMM|SD_BUS_CREDS_TID_COMM|SD_BUS_CREDS_EXE|SD_BUS_CREDS_CMDLINE|
                      SD_BUS_CREDS_CGROUP|SD_BUS_CREDS_UNIT|SD_BUS_CREDS_USER_UNIT|SD_BUS_CREDS_SLICE|SD_BUS_CREDS_SESSION|SD_BUS_CREDS_OWNER_UID|
@@ -945,8 +977,10 @@ static int bus_get_owner_creds_dbus1(sd_bus *bus, uint64_t mask, sd_bus_creds **
         _cleanup_bus_creds_unref_ sd_bus_creds *c = NULL;
         pid_t pid = 0;
         int r;
+        bool do_label = bus->label && (mask & SD_BUS_CREDS_SELINUX_CONTEXT);
 
-        if (!bus->ucred_valid && !isempty(bus->label))
+        /* Avoid allocating anything if we have no chance of returning useful data */
+        if (!bus->ucred_valid && !do_label)
                 return -ENODATA;
 
         c = bus_creds_new();
@@ -970,7 +1004,7 @@ static int bus_get_owner_creds_dbus1(sd_bus *bus, uint64_t mask, sd_bus_creds **
                 }
         }
 
-        if (!isempty(bus->label) && (mask & SD_BUS_CREDS_SELINUX_CONTEXT)) {
+        if (do_label) {
                 c->label = strdup(bus->label);
                 if (!c->label)
                         return -ENOMEM;
@@ -1095,7 +1129,7 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If the old name is unset or empty, then
                  * this can match against added names */
-                if (!old_owner || old_owner[0] == 0) {
+                if (isempty(old_owner)) {
                         item->type = KDBUS_ITEM_NAME_ADD;
 
                         r = ioctl(bus->input_fd, KDBUS_CMD_MATCH_ADD, m);
@@ -1105,7 +1139,7 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If the new name is unset or empty, then
                  * this can match against removed names */
-                if (!new_owner || new_owner[0] == 0) {
+                if (isempty(new_owner)) {
                         item->type = KDBUS_ITEM_NAME_REMOVE;
 
                         r = ioctl(bus->input_fd, KDBUS_CMD_MATCH_ADD, m);
@@ -1149,8 +1183,10 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If the old name is unset or empty, then this can
                  * match against added ids */
-                if (!old_owner || old_owner[0] == 0) {
+                if (isempty(old_owner)) {
                         item->type = KDBUS_ITEM_ID_ADD;
+                        if (!isempty(new_owner))
+                                item->id_change.id = new_owner_id;
 
                         r = ioctl(bus->input_fd, KDBUS_CMD_MATCH_ADD, m);
                         if (r < 0)
@@ -1159,8 +1195,10 @@ static int add_name_change_match(sd_bus *bus,
 
                 /* If thew new name is unset or empty, then this can
                  * match against removed ids */
-                if (!new_owner || new_owner[0] == 0) {
+                if (isempty(new_owner)) {
                         item->type = KDBUS_ITEM_ID_REMOVE;
+                        if (!isempty(old_owner))
+                                item->id_change.id = old_owner_id;
 
                         r = ioctl(bus->input_fd, KDBUS_CMD_MATCH_ADD, m);
                         if (r < 0)
@@ -1183,7 +1221,7 @@ int bus_add_match_internal_kernel(
         size_t sz;
         const char *sender = NULL;
         size_t sender_length = 0;
-        uint64_t src_id = KDBUS_MATCH_ID_ANY;
+        uint64_t src_id = KDBUS_MATCH_ID_ANY, dst_id = KDBUS_MATCH_ID_ANY;
         bool using_bloom = false;
         unsigned i;
         bool matches_name_change = true;
@@ -1255,10 +1293,8 @@ int bus_add_match_internal_kernel(
                         break;
 
                 case BUS_MATCH_PATH_NAMESPACE:
-                        if (!streq(c->value_str, "/")) {
-                                bloom_add_pair(bloom, bus->bloom_size, bus->bloom_n_hash, "path-slash-prefix", c->value_str);
-                                using_bloom = true;
-                        }
+                        bloom_add_pair(bloom, bus->bloom_size, bus->bloom_n_hash, "path-slash-prefix", c->value_str);
+                        using_bloom = true;
                         break;
 
                 case BUS_MATCH_ARG...BUS_MATCH_ARG_LAST: {
@@ -1273,14 +1309,29 @@ int bus_add_match_internal_kernel(
                         break;
                 }
 
-                case BUS_MATCH_ARG_PATH...BUS_MATCH_ARG_PATH_LAST: {
-                        char buf[sizeof("arg")-1 + 2 + sizeof("-slash-prefix")];
+                case BUS_MATCH_ARG_HAS...BUS_MATCH_ARG_HAS_LAST: {
+                        char buf[sizeof("arg")-1 + 2 + sizeof("-has")];
 
-                        xsprintf(buf, "arg%i-slash-prefix", c->type - BUS_MATCH_ARG_PATH);
+                        xsprintf(buf, "arg%i-has", c->type - BUS_MATCH_ARG_HAS);
                         bloom_add_pair(bloom, bus->bloom_size, bus->bloom_n_hash, buf, c->value_str);
                         using_bloom = true;
                         break;
                 }
+
+                case BUS_MATCH_ARG_PATH...BUS_MATCH_ARG_PATH_LAST:
+                        /*
+                         * XXX: DBus spec defines arg[0..63]path= matching to be
+                         * a two-way glob. That is, if either string is a prefix
+                         * of the other, it matches.
+                         * This is really hard to realize in bloom-filters, as
+                         * we would have to create a bloom-match for each prefix
+                         * of @c->value_str. This is excessive, hence we just
+                         * ignore all those matches and accept everything from
+                         * the kernel. People should really avoid those matches.
+                         * If they're used in real-life some day, we will have
+                         * to properly support multiple-matches here.
+                         */
+                        break;
 
                 case BUS_MATCH_ARG_NAMESPACE...BUS_MATCH_ARG_NAMESPACE_LAST: {
                         char buf[sizeof("arg")-1 + 2 + sizeof("-dot-prefix")];
@@ -1292,11 +1343,22 @@ int bus_add_match_internal_kernel(
                 }
 
                 case BUS_MATCH_DESTINATION:
-                        /* The bloom filter does not include
-                           the destination, since it is only
-                           available for broadcast messages
-                           which do not carry a destination
-                           since they are undirected. */
+                        /*
+                         * Kernel only supports matching on destination IDs, but
+                         * not on destination names. So just skip the
+                         * destination name restriction and verify it in
+                         * user-space on retrieval.
+                         */
+                        r = bus_kernel_parse_unique_name(c->value_str, &dst_id);
+                        if (r < 0)
+                                return r;
+                        else if (r > 0)
+                                sz += ALIGN8(offsetof(struct kdbus_item, id) + sizeof(uint64_t));
+
+                        /* if not a broadcast, it cannot be a name-change */
+                        if (r <= 0 || dst_id != KDBUS_DST_ID_BROADCAST)
+                                matches_name_change = false;
+
                         break;
 
                 case BUS_MATCH_ROOT:
@@ -1321,6 +1383,13 @@ int bus_add_match_internal_kernel(
                 item->size = offsetof(struct kdbus_item, id) + sizeof(uint64_t);
                 item->type = KDBUS_ITEM_ID;
                 item->id = src_id;
+                item = KDBUS_ITEM_NEXT(item);
+        }
+
+        if (dst_id != KDBUS_MATCH_ID_ANY) {
+                item->size = offsetof(struct kdbus_item, id) + sizeof(uint64_t);
+                item->type = KDBUS_ITEM_DST_ID;
+                item->id = dst_id;
                 item = KDBUS_ITEM_NEXT(item);
         }
 
@@ -1393,6 +1462,9 @@ int bus_add_match_internal(
 
         assert(bus);
 
+        if (!bus->bus_client)
+                return -EINVAL;
+
         if (bus->is_kernel)
                 return bus_add_match_internal_kernel(bus, components, n_components, cookie);
         else
@@ -1452,12 +1524,17 @@ int bus_remove_match_internal(
 
         assert(bus);
 
+        if (!bus->bus_client)
+                return -EINVAL;
+
         if (bus->is_kernel)
                 return bus_remove_match_internal_kernel(bus, cookie);
         else
                 return bus_remove_match_internal_dbus1(bus, match);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_get_name_machine_id(sd_bus *bus, const char *name, sd_id128_t *machine) {
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL, *m = NULL;
         const char *mid;
@@ -1468,6 +1545,9 @@ _public_ int sd_bus_get_name_machine_id(sd_bus *bus, const char *name, sd_id128_
         assert_return(machine, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
         assert_return(service_name_is_valid(name), -EINVAL);
+
+        if (!bus->bus_client)
+                return -EINVAL;
 
         if (!BUS_IS_OPEN(bus->state))
                 return -ENOTCONN;
@@ -1499,3 +1579,4 @@ _public_ int sd_bus_get_name_machine_id(sd_bus *bus, const char *name, sd_id128_
 
         return sd_id128_from_string(mid, machine);
 }
+#endif // 0

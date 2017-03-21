@@ -28,6 +28,7 @@
 #include "mkdir.h"
 #include "logind-inhibit.h"
 #include "fileio.h"
+#include "formats-util.h"
 
 Inhibitor* inhibitor_new(Manager *m, const char* id) {
         Inhibitor *i;
@@ -85,11 +86,11 @@ int inhibitor_save(Inhibitor *i) {
 
         r = mkdir_safe_label("/run/systemd/inhibit", 0755, 0, 0);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         r = fopen_temporary(i->state_file, &f, &temp_path);
         if (r < 0)
-                goto finish;
+                goto fail;
 
         fchmod(fileno(f), 0644);
 
@@ -108,38 +109,47 @@ int inhibitor_save(Inhibitor *i) {
                 _cleanup_free_ char *cc = NULL;
 
                 cc = cescape(i->who);
-                if (!cc)
+                if (!cc) {
                         r = -ENOMEM;
-                else
-                        fprintf(f, "WHO=%s\n", cc);
+                        goto fail;
+                }
+
+                fprintf(f, "WHO=%s\n", cc);
         }
 
         if (i->why) {
                 _cleanup_free_ char *cc = NULL;
 
                 cc = cescape(i->why);
-                if (!cc)
+                if (!cc) {
                         r = -ENOMEM;
-                else
-                        fprintf(f, "WHY=%s\n", cc);
+                        goto fail;
+                }
+
+                fprintf(f, "WHY=%s\n", cc);
         }
 
         if (i->fifo_path)
                 fprintf(f, "FIFO=%s\n", i->fifo_path);
 
-        fflush(f);
+        r = fflush_and_check(f);
+        if (r < 0)
+                goto fail;
 
-        if (ferror(f) || rename(temp_path, i->state_file) < 0) {
+        if (rename(temp_path, i->state_file) < 0) {
                 r = -errno;
-                unlink(i->state_file);
-                unlink(temp_path);
+                goto fail;
         }
 
-finish:
-        if (r < 0)
-                log_error_errno(r, "Failed to save inhibit data %s: %m", i->state_file);
+        return 0;
 
-        return r;
+fail:
+        (void) unlink(i->state_file);
+
+        if (temp_path)
+                (void) unlink(temp_path);
+
+        return log_error_errno(r, "Failed to save inhibit data %s: %m", i->state_file);
 }
 
 int inhibitor_start(Inhibitor *i) {
@@ -231,18 +241,18 @@ int inhibitor_load(Inhibitor *i) {
         }
 
         if (who) {
-                cc = cunescape(who);
-                if (!cc)
-                        return -ENOMEM;
+                r = cunescape(who, 0, &cc);
+                if (r < 0)
+                        return r;
 
                 free(i->who);
                 i->who = cc;
         }
 
         if (why) {
-                cc = cunescape(why);
-                if (!cc)
-                        return -ENOMEM;
+                r = cunescape(why, 0, &cc);
+                if (r < 0)
+                        return r;
 
                 free(i->why);
                 i->why = cc;
@@ -323,8 +333,7 @@ void inhibitor_remove_fifo(Inhibitor *i) {
 
         if (i->fifo_path) {
                 unlink(i->fifo_path);
-                free(i->fifo_path);
-                i->fifo_path = NULL;
+                i->fifo_path = mfree(i->fifo_path);
         }
 }
 
@@ -370,7 +379,7 @@ bool manager_is_inhibited(
 
         Inhibitor *i;
         Iterator j;
-        struct dual_timestamp ts = { 0, 0 };
+        struct dual_timestamp ts = DUAL_TIMESTAMP_NULL;
         bool inhibited = false;
 
         assert(m);
