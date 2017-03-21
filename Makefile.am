@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=11
+LIBELOGIND_CURRENT=12
 LIBELOGIND_REVISION=0
-LIBELOGIND_AGE=11
+LIBELOGIND_AGE=12
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -52,8 +52,6 @@ pkgconfiglibdir=$(libdir)/pkgconfig
 polkitpolicydir=$(datadir)/polkit-1/actions
 bashcompletiondir=@bashcompletiondir@
 zshcompletiondir=@zshcompletiondir@
-systemsleepdir=$(pkglibexecdir)/sleep.d
-systemshutdowndir=$(pkglibexecdir)/shutdown.d
 
 CGROUP_CONTROLLER=@cgroup_controller@
 PKTTYAGENT=$(bindir)/pkttyagent
@@ -65,13 +63,14 @@ udevrulesdir=@udevrulesdir@
 udevbindir=@udevbindir@
 udevlibexecdir=$(udevbindir)
 udevhomedir=$(udevlibexecdir)
+systemshutdowndir=$(rootlibexecdir)/system-shutdown
+systemsleepdir=$(rootlibexecdir)/system-sleep
 factory_pamdir = $(datadir)/factory/etc/pam.d
 
 # And these are the special ones for /
 rootprefix=@rootprefix@
-rootlibdir=@rootlibdir@
 rootbindir=$(rootprefix)/bin
-
+rootlibexecdir=$(rootprefix)/lib/elogind
 
 EXTRA_DIST =
 BUILT_SOURCES =
@@ -122,7 +121,7 @@ AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
 	-DSYSTEMD_CGROUP_CONTROLLER=\"$(CGROUP_CONTROLLER)\" \
-	-DELOGIND_CGROUP_AGENT_PATH=\"$(pkglibexecdir)/elogind-cgroups-agent\" \
+	-DELOGIND_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
@@ -131,6 +130,8 @@ AM_CPPFLAGS = \
 	-DREBOOT=\"$(REBOOT)\" \
 	-DKEXEC=\"$(KEXEC)\" \
 	-DLIBDIR=\"$(libdir)\" \
+	-DROOTLIBDIR=\"$(rootlibdir)\" \
+	-DROOTLIBEXECDIR=\"$(rootlibexecdir)\" \
 	-DTEST_DIR=\"$(abs_top_srcdir)/test\" \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src/basic \
@@ -767,6 +768,7 @@ EXTRA_DIST += \
 
 # ------------------------------------------------------------------------------
 substitutions = \
+       '|rootlibexecdir=$(rootlibexecdir)|' \
        '|rootbindir=$(rootbindir)|' \
        '|bindir=$(bindir)|' \
        '|pkgsysconfdir=$(pkgsysconfdir)|' \

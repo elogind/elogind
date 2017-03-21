@@ -1,5 +1,209 @@
 systemd System and Service Manager
 
+CHANGES WITH 227:
+
+        * systemd now depends on util-linux v2.27. More specifically,
+          the newly added mount monitor feature in libmount now
+          replaces systemd's former own implementation.
+
+        * libmount mandates /etc/mtab not to be regular file, and
+          systemd now enforces this condition at early boot.
+          /etc/mtab has been deprecated and warned about for a very
+          long time, so systems running systemd should already have
+          stopped having this file around as anything else than a
+          symlink to /proc/self/mounts.
+
+        * Support for the "pids" cgroup controller has been added.  It
+          allows accounting the number of tasks in a cgroup and
+          enforcing limits on it. This adds two new setting
+          TasksAccounting= and TasksMax= to each unit, as well as a
+          global option DefaultTasksAccounting=.
+
+        * Support for the "net_cls" cgroup controller has been added.
+          It allows assigning a net class ID to each task in the
+          cgroup, which can then be used in firewall rules and traffic
+          shaping configurations. Note that the kernel netfilter net
+          class code does not currently work reliably for ingress
+          packets on unestablished sockets.
+
+          This adds a new config directive called NetClass= to CGroup
+          enabled units. Allowed values are positive numbers for fixed
+          assignments and "auto" for picking a free value
+          automatically.
+
+        * 'systemctl is-system-running' now returns 'offline' if the
+          system is not booted with systemd. This command can now be
+          used as a substitute for 'systemd-notify --booted'.
+
+        * Watchdog timeouts have been increased to 3 minutes for all
+          in-tree service files. Apparently, disk IO issues are more
+          frequent than we hoped, and user reported >1 minute waiting
+          for disk IO.
+
+        * 'machine-id-commit' functionality has been merged into
+          'machine-id-setup --commit'. The separate binary has been
+          removed.
+
+        * The WorkingDirectory= directive in unit files may now be set
+          to the special value '~'. In this case, the working
+          directory is set to the home directory of the user
+          configured in User=.
+
+        * "machinectl shell" will now open the shell in the home
+          directory of the selected user by default.
+
+        * The CrashChVT= configuration file setting is renamed to
+          CrashChangeVT=, following our usual logic of not
+          abbreviating unnecessarily. The old directive is still
+          supported for compat reasons. Also, this directive now takes
+          an integer value between 1 and 63, or a boolean value. The
+          formerly supported '-1' value for disabling stays around for
+          compat reasons.
+
+        * The PrivateTmp=, PrivateDevices=, PrivateNetwork=,
+          NoNewPrivileges=, TTYPath=, WorkingDirectory= and
+          RootDirectory= properties can now be set for transient
+          units.
+
+        * The systemd-analyze tool gained a new "set-log-target" verb
+          to change the logging target the system manager logs to
+          dynamically during runtime. This is similar to how
+          "systemd-analyze set-log-level" already changes the log
+          level.
+
+        * In nspawn /sys is now mounted as tmpfs, with only a selected
+          set of subdirectories mounted in from the real sysfs. This
+          enhances security slightly, and is useful for ensuring user
+          namespaces work correctly.
+
+        * Support for USB FunctionFS activation has been added. This
+          allows implementation of USB gadget services that are
+          activated as soon as they are requested, so that they don't
+          have to run continously, similar to classic socket
+          activation.
+
+        * The "systemctl exit" command now optionally takes an
+          additional parameter that sets the exit code to return from
+          the systemd manager when exiting. This is only relevant when
+          running the systemd user instance, or when running the
+          system instance in a container.
+
+        * sd-bus gained the new API calls sd_bus_path_encode_many()
+          and sd_bus_path_decode_many() that allow easy encoding and
+          decoding of multiple identifier strings inside a D-Bus
+          object path. Another new call sd_bus_default_flush_close()
+          has been added to flush and close per-thread default
+          connections.
+
+        * systemd-cgtop gained support for a -M/--machine= switch to
+          show the control groups within a certain container only.
+
+        * "systemctl kill" gained support for an optional --fail
+          switch. If specified the requested operation will fail of no
+          processes have been killed, because the unit had no
+          processes attached, or similar.
+
+        * A new systemd.crash_reboot=1 kernel command line option has
+          been added that triggers a reboot after crashing. This can
+          also be set through CrashReboot= in systemd.conf.
+
+        * The RuntimeDirectory= setting now understands unit
+          specifiers like %i or %f.
+
+        * A new (still internal) libary API sd-ipv4acd has been added,
+          that implements address conflict detection for IPv4. It's
+          based on code from sd-ipv4ll, and will be useful for
+          detecting DHCP address conflicts.
+
+        * File descriptors passed during socket activation may now be
+          named. A new API sd_listen_fds_with_names() is added to
+          access the names.  The default names may be overriden,
+          either in the .socket file using the FileDescriptorName=
+          parameter, or by passing FDNAME= when storing the file
+          descriptors using sd_notify().
+
+        * systemd-networkd gained support for:
+
+            - Setting the IPv6 Router Advertisment settings via
+              IPv6AcceptRouterAdvertisements= in .network files.
+
+            - Configuring the HelloTimeSec=, MaxAgeSec= and
+              ForwardDelaySec= bridge parameters in .netdev files.
+
+            - Configuring PreferredSource= for static routes in
+              .network files.
+
+        * The "ask-password" framework used to query for LUKS harddisk
+          passwords or SSL passwords during boot gained support for
+          caching passwords in the kernel keyring, if it is
+          available. This makes sure that the user only has to type in
+          a passphrase once if there are multiple objects to unlock
+          with the same one. Previously, such password caching was
+          available only when Plymouth was used; this moves the
+          caching logic into the systemd codebase itself. The
+          "systemd-ask-password" utility gained a new --keyname=
+          switch to control which kernel keyring key to use for
+          caching a password in. This functionality is also useful for
+          enabling display managers such as gdm to automatically
+          unlock the user's GNOME keyring if its passphrase, the
+          user's password and the harddisk password are the same, if
+          gdm-autologin is used.
+
+        * When downloading tar or raw images using "machinectl
+          pull-tar" or "machinectl pull-raw", a matching ".nspawn"
+          file is now also downloaded, if it is available and stored
+          next to the image file.
+
+        * Units of type ".socket" gained a new boolean setting
+          Writable= which is only useful in conjunction with
+          ListenSpecial=. If true, enables opening the specified
+          special file in O_RDWR mode rather than O_RDONLY mode.
+
+        * systemd-rfkill has been reworked to become a singleton
+          service that is activated through /dev/rfkill on each rfkill
+          state change and saves the settings to disk. This way,
+          systemd-rfkill is now compatible with devices that exist
+          only intermittendly, and even restores state if the previous
+          system shutdown was abrupt rather than clean.
+
+        * The journal daemon gained support for vacuuming old journal
+          files controlled by the number of files that shall remain,
+          in addition to the already existing control by size and by
+          date. This is useful as journal interleaving performance
+          degrades with too many seperate journal files, and allows
+          putting an effective limit on them. The new setting defaults
+          to 100, but this may be changed by setting SystemMaxFiles=
+          and RuntimeMaxFiles= in journald.conf. Also, the
+          "journalctl" tool gained the new --vacuum-files= switch to
+          manually vacuum journal files to leave only the specified
+          number of files in place.
+
+        * udev will now create /dev/disk/by-path links for ATA devices
+          on kernels where that is supported.
+
+        * Galician, Serbian, Turkish and Korean translations were added.
+
+        Contributions from: Aaro Koskinen, Alban Crequy, Beniamino
+        Galvani, Benjamin Robin, Branislav Blaskovic, Chen-Han Hsiao
+        (Stanley), Daniel Buch, Daniel Machon, Daniel Mack, David
+        Herrmann, David Milburn, doubleodoug, Evgeny Vereshchagin,
+        Felipe Franciosi, Filipe Brandenburger, Fran Dieguez, Gabriel
+        de Perthuis, Georg Müller, Hans de Goede, Hendrik Brueckner,
+        Ivan Shapovalov, Jacob Keller, Jan Engelhardt, Jan Janssen,
+        Jan Synacek, Jens Kuske, Karel Zak, Kay Sievers, Krzesimir
+        Nowak, Krzysztof Kotlenga, Lars Uebernickel, Lennart
+        Poettering, Lukas Nykryn, Łukasz Stelmach, Maciej Wereski,
+        Marcel Holtmann, Marius Thesing, Martin Pitt, Michael Biebl,
+        Michael Gebetsroither, Michal Schmidt, Michal Sekletar, Mike
+        Gilbert, Muhammet Kara, nazgul77, Nicolas Cornu, NoXPhasma,
+        Olof Johansson, Patrik Flykt, Pawel Szewczyk, reverendhomer,
+        Ronny Chevalier, Sangjung Woo, Seong-ho Cho, Susant Sahani,
+        Sylvain Plantefève, Thomas Haller, Thomas Hindoe Paaboel
+        Andersen, Tom Gundersen, Tom Lyon, Viktar Vauchkevich,
+        Zbigniew Jędrzejewski-Szmek, Марко М. Костић
+
+        -- Berlin, 2015-10-07
+
 CHANGES WITH 226:
 
         * The DHCP implementation of systemd-networkd gained a set of

@@ -298,4 +298,3 @@ elogind_patches.lst
 *.bak
 /FIXME
 /create_dist.sh
-

@@ -26,6 +26,16 @@ External:
 
 Features:
 
+* add a concept of RemainAfterExit= to scope units
+
+* add journal vacuum by max number of files
+
+* add a new command "systemctl revert" or so, that removes all dropin
+  snippets in /run and /etc, and all unit files with counterparts in
+  /usr, and thus undoes what "systemctl set-property" and "systemctl
+  edit" create. Maybe even add "systemctl revert -a" to do this for
+  all units.
+
 * sd-event: maybe add support for inotify events
 
 * PID 1 should send out sd_notify("WATCHDOG=1") messages (for usage in the --user mode, and when run via nspawn)
@@ -58,8 +68,6 @@ Features:
 * "systemctl daemon-reload" should result in /etc/systemd/system.conf being reloaded by systemd
 
 * install: include generator dirs in unit file search paths
-
-* stop using off_t, it's a crazy type. Use uint64_t instead.
 
 * logind: follow PropertiesChanged state more closely, to deal with quick logouts and relogins
 
