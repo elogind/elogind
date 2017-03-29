@@ -181,7 +181,7 @@ static int mount_one(const MountPoint *p, bool relabel) {
                 return 0;
 
         /* Skip securityfs in a container */
-        if (!(p->mode & MNT_IN_CONTAINER) && detect_container(NULL) > 0)
+        if (!(p->mode & MNT_IN_CONTAINER) && detect_container() > 0)
                 return 0;
 
         /* The access mode here doesn't really matter too much, since
@@ -412,7 +412,7 @@ int mount_setup(bool loaded_policy) {
          * nspawn and the container tools work out of the box. If
          * specific setups need other settings they can reset the
          * propagation mode to private if needed. */
-        if (detect_container(NULL) <= 0)
+        if (detect_container() <= 0)
                 if (mount(NULL, "/", NULL, MS_REC|MS_SHARED, NULL) < 0)
                         log_warning_errno(errno, "Failed to set up the root directory for shared mount propagation: %m");
 

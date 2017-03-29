@@ -32,6 +32,16 @@
 // UNNEEDED typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
 // UNNEEDED typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
 
+/* Maximum value for fixed (manual) net class ID assignment,
+ * and also the value at which the range of automatic assignments starts
+ */
+// UNNEEDED #define CGROUP_NETCLASS_FIXED_MAX UINT32_C(65535)
+
+// UNNEEDED typedef struct CGroupContext CGroupContext;
+// UNNEEDED typedef struct CGroupDeviceAllow CGroupDeviceAllow;
+// UNNEEDED typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
+// UNNEEDED typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
+
 /// UNNEEDED by elogind
 #if 0
 typedef enum CGroupDevicePolicy {
@@ -50,6 +60,17 @@ typedef enum CGroupDevicePolicy {
         _CGROUP_DEVICE_POLICY_INVALID = -1
 } CGroupDevicePolicy;
 
+typedef enum CGroupNetClassType {
+        /* Default - do not assign a net class */
+        CGROUP_NETCLASS_TYPE_NONE,
+
+        /* Automatically assign a net class */
+        CGROUP_NETCLASS_TYPE_AUTO,
+
+        /* Assign the net class that was provided by the user */
+        CGROUP_NETCLASS_TYPE_FIXED,
+} CGroupNetClassType;
+
 struct CGroupDeviceAllow {
         LIST_FIELDS(CGroupDeviceAllow, device_allow);
         char *path;
@@ -61,7 +82,7 @@ struct CGroupDeviceAllow {
 struct CGroupBlockIODeviceWeight {
         LIST_FIELDS(CGroupBlockIODeviceWeight, device_weights);
         char *path;
-        unsigned long weight;
+        uint64_t weight;
 };
 
 struct CGroupBlockIODeviceBandwidth {
@@ -76,12 +97,12 @@ struct CGroupContext {
         bool blockio_accounting;
         bool memory_accounting;
 
-        unsigned long cpu_shares;
-        unsigned long startup_cpu_shares;
+        uint64_t cpu_shares;
+        uint64_t startup_cpu_shares;
         usec_t cpu_quota_per_sec_usec;
 
-        unsigned long blockio_weight;
-        unsigned long startup_blockio_weight;
+        uint64_t blockio_weight;
+        uint64_t startup_blockio_weight;
         LIST_HEAD(CGroupBlockIODeviceWeight, blockio_device_weights);
         LIST_HEAD(CGroupBlockIODeviceBandwidth, blockio_device_bandwidths);
 
@@ -89,6 +110,11 @@ struct CGroupContext {
 
         CGroupDevicePolicy device_policy;
         LIST_HEAD(CGroupDeviceAllow, device_allow);
+
+        CGroupNetClassType netclass_type;
+        uint32_t netclass_id;
+
+        uint64_t tasks_max;
 
         bool delegate;
 };
@@ -128,6 +154,9 @@ struct CGroupContext {
 
 // UNNEEDED int unit_attach_pids_to_cgroup(Unit *u);
 
+// UNNEEDED int unit_add_to_netclass_cgroup(Unit *u);
+// UNNEEDED int unit_remove_from_netclass_cgroup(Unit *u);
+
 int manager_setup_cgroup(Manager *m);
 void manager_shutdown_cgroup(Manager *m, bool delete);
 
@@ -141,6 +170,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete);
 // UNNEEDED int unit_watch_all_pids(Unit *u);
 
 // UNNEEDED int unit_get_memory_current(Unit *u, uint64_t *ret);
+// UNNEEDED int unit_get_tasks_current(Unit *u, uint64_t *ret);
 // UNNEEDED int unit_get_cpu_usage(Unit *u, nsec_t *ret);
 // UNNEEDED int unit_reset_cpu_usage(Unit *u);
 
@@ -148,6 +178,10 @@ void manager_shutdown_cgroup(Manager *m, bool delete);
 
 // UNNEEDED int unit_notify_cgroup_empty(Unit *u);
 // UNNEEDED int manager_notify_cgroup_empty(Manager *m, const char *group);
+
+// UNNEEDED void unit_invalidate_cgroup(Unit *u, CGroupMask m);
+
+// UNNEEDED void manager_invalidate_startup_units(Manager *m);
 
 // UNNEEDED const char* cgroup_device_policy_to_string(CGroupDevicePolicy i) _const_;
 // UNNEEDED CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;

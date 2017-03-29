@@ -22,10 +22,11 @@
 #include <fcntl.h>
 #include <fnmatch.h>
 
-#include "process-util.h"
-#include "path-util.h"
-// #include "special.h"
 #include "cgroup-util.h"
+#include "path-util.h"
+#include "process-util.h"
+//#include "special.h"
+
 #include "cgroup.h"
 
 #define CGROUP_CPU_QUOTA_PERIOD_USEC ((usec_t) 100 * USEC_PER_MSEC)
@@ -38,13 +39,18 @@ void cgroup_context_init(CGroupContext *c) {
         /* Initialize everything to the kernel defaults, assuming the
          * structure is preinitialized to 0 */
 
-        c->cpu_shares = (unsigned long) -1;
-        c->startup_cpu_shares = (unsigned long) -1;
-        c->memory_limit = (uint64_t) -1;
-        c->blockio_weight = (unsigned long) -1;
-        c->startup_blockio_weight = (unsigned long) -1;
-
+        c->cpu_shares = CGROUP_CPU_SHARES_INVALID;
+        c->startup_cpu_shares = CGROUP_CPU_SHARES_INVALID;
         c->cpu_quota_per_sec_usec = USEC_INFINITY;
+
+        c->memory_limit = (uint64_t) -1;
+
+        c->blockio_weight = CGROUP_BLKIO_WEIGHT_INVALID;
+        c->startup_blockio_weight = CGROUP_BLKIO_WEIGHT_INVALID;
+
+        c->tasks_max = (uint64_t) -1;
+
+        c->netclass_type = CGROUP_NETCLASS_TYPE_NONE;
 }
 
 void cgroup_context_free_device_allow(CGroupContext *c, CGroupDeviceAllow *a) {
@@ -102,23 +108,27 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 "%sCPUAccounting=%s\n"
                 "%sBlockIOAccounting=%s\n"
                 "%sMemoryAccounting=%s\n"
-                "%sCPUShares=%lu\n"
-                "%sStartupCPUShares=%lu\n"
+                "%sTasksAccounting=%s\n"
+                "%sCPUShares=%" PRIu64 "\n"
+                "%sStartupCPUShares=%" PRIu64 "\n"
                 "%sCPUQuotaPerSecSec=%s\n"
-                "%sBlockIOWeight=%lu\n"
-                "%sStartupBlockIOWeight=%lu\n"
+                "%sBlockIOWeight=%" PRIu64 "\n"
+                "%sStartupBlockIOWeight=%" PRIu64 "\n"
                 "%sMemoryLimit=%" PRIu64 "\n"
+                "%sTasksMax=%" PRIu64 "\n"
                 "%sDevicePolicy=%s\n"
                 "%sDelegate=%s\n",
                 prefix, yes_no(c->cpu_accounting),
                 prefix, yes_no(c->blockio_accounting),
                 prefix, yes_no(c->memory_accounting),
+                prefix, yes_no(c->tasks_accounting),
                 prefix, c->cpu_shares,
                 prefix, c->startup_cpu_shares,
                 prefix, format_timespan(u, sizeof(u), c->cpu_quota_per_sec_usec, 1),
                 prefix, c->blockio_weight,
                 prefix, c->startup_blockio_weight,
                 prefix, c->memory_limit,
+                prefix, c->tasks_max,
                 prefix, cgroup_device_policy_to_string(c->device_policy),
                 prefix, yes_no(c->delegate));
 
@@ -131,7 +141,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
 
         LIST_FOREACH(device_weights, w, c->blockio_device_weights)
                 fprintf(f,
-                        "%sBlockIODeviceWeight=%s %lu",
+                        "%sBlockIODeviceWeight=%s %" PRIu64,
                         prefix,
                         w->path,
                         w->weight);
@@ -285,7 +295,7 @@ fail:
         return -errno;
 }
 
-void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, ManagerState state) {
+void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, uint32_t netclass, ManagerState state) {
         bool is_root;
         int r;
 
@@ -307,11 +317,11 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
          * and missing cgroups, i.e. EROFS and ENOENT. */
 
         if ((mask & CGROUP_MASK_CPU) && !is_root) {
-                char buf[MAX(DECIMAL_STR_MAX(unsigned long), DECIMAL_STR_MAX(usec_t)) + 1];
+                char buf[MAX(DECIMAL_STR_MAX(uint64_t), DECIMAL_STR_MAX(usec_t)) + 1];
 
-                sprintf(buf, "%lu\n",
-                        IN_SET(state, MANAGER_STARTING, MANAGER_INITIALIZING) && c->startup_cpu_shares != (unsigned long) -1 ? c->startup_cpu_shares :
-                        c->cpu_shares != (unsigned long) -1 ? c->cpu_shares : 1024);
+                sprintf(buf, "%" PRIu64 "\n",
+                        IN_SET(state, MANAGER_STARTING, MANAGER_INITIALIZING) && c->startup_cpu_shares != CGROUP_CPU_SHARES_INVALID ? c->startup_cpu_shares :
+                        c->cpu_shares != CGROUP_CPU_SHARES_INVALID ? c->cpu_shares : CGROUP_CPU_SHARES_DEFAULT);
                 r = cg_set_attribute("cpu", path, "cpu.shares", buf);
                 if (r < 0)
                         log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
@@ -334,15 +344,15 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
         }
 
         if (mask & CGROUP_MASK_BLKIO) {
-                char buf[MAX3(DECIMAL_STR_MAX(unsigned long)+1,
-                              DECIMAL_STR_MAX(dev_t)*2+2+DECIMAL_STR_MAX(unsigned long)*1,
+                char buf[MAX(DECIMAL_STR_MAX(uint64_t)+1,
                               DECIMAL_STR_MAX(dev_t)*2+2+DECIMAL_STR_MAX(uint64_t)+1)];
                 CGroupBlockIODeviceWeight *w;
                 CGroupBlockIODeviceBandwidth *b;
 
                 if (!is_root) {
-                        sprintf(buf, "%lu\n", IN_SET(state, MANAGER_STARTING, MANAGER_INITIALIZING) && c->startup_blockio_weight != (unsigned long) -1 ? c->startup_blockio_weight :
-                                c->blockio_weight != (unsigned long) -1 ? c->blockio_weight : 1000);
+                        sprintf(buf, "%" PRIu64 "\n",
+                                IN_SET(state, MANAGER_STARTING, MANAGER_INITIALIZING) && c->startup_blockio_weight != CGROUP_BLKIO_WEIGHT_INVALID ? c->startup_blockio_weight :
+                                c->blockio_weight != CGROUP_BLKIO_WEIGHT_INVALID ? c->blockio_weight : CGROUP_BLKIO_WEIGHT_DEFAULT);
                         r = cg_set_attribute("blkio", path, "blkio.weight", buf);
                         if (r < 0)
                                 log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
@@ -356,7 +366,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
                                 if (r < 0)
                                         continue;
 
-                                sprintf(buf, "%u:%u %lu", major(dev), minor(dev), w->weight);
+                                sprintf(buf, "%u:%u %" PRIu64 "\n", major(dev), minor(dev), w->weight);
                                 r = cg_set_attribute("blkio", path, "blkio.weight_device", buf);
                                 if (r < 0)
                                         log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
@@ -406,7 +416,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
                                        "Failed to set memory.limit_in_bytes/memory.max on %s: %m", path);
         }
 
-        if ((mask & CGROUP_MASK_DEVICE) && !is_root) {
+        if ((mask & CGROUP_MASK_DEVICES) && !is_root) {
                 CGroupDeviceAllow *a;
 
                 /* Changing the devices list of a populated cgroup
@@ -468,6 +478,32 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
                                 log_debug("Ignoring device %s while writing cgroup attribute.", a->path);
                 }
         }
+
+        if ((mask & CGROUP_MASK_PIDS) && !is_root) {
+
+                if (c->tasks_max != (uint64_t) -1) {
+                        char buf[DECIMAL_STR_MAX(uint64_t) + 2];
+
+                        sprintf(buf, "%" PRIu64 "\n", c->tasks_max);
+                        r = cg_set_attribute("pids", path, "pids.max", buf);
+                } else
+                        r = cg_set_attribute("pids", path, "pids.max", "max");
+
+                if (r < 0)
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                                       "Failed to set pids.max on %s: %m", path);
+        }
+
+        if (mask & CGROUP_MASK_NET_CLS) {
+                char buf[DECIMAL_STR_MAX(uint32_t)];
+
+                sprintf(buf, "%" PRIu32, netclass);
+
+                r = cg_set_attribute("net_cls", path, "net_cls.classid", buf);
+                if (r < 0)
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                                       "Failed to set net_cls.classid on %s: %m", path);
+        }
 }
 
 CGroupMask cgroup_context_get_mask(CGroupContext *c) {
@@ -476,14 +512,14 @@ CGroupMask cgroup_context_get_mask(CGroupContext *c) {
         /* Figure out which controllers we need */
 
         if (c->cpu_accounting ||
-            c->cpu_shares != (unsigned long) -1 ||
-            c->startup_cpu_shares != (unsigned long) -1 ||
+            c->cpu_shares != CGROUP_CPU_SHARES_INVALID ||
+            c->startup_cpu_shares != CGROUP_CPU_SHARES_INVALID ||
             c->cpu_quota_per_sec_usec != USEC_INFINITY)
                 mask |= CGROUP_MASK_CPUACCT | CGROUP_MASK_CPU;
 
         if (c->blockio_accounting ||
-            c->blockio_weight != (unsigned long) -1 ||
-            c->startup_blockio_weight != (unsigned long) -1 ||
+            c->blockio_weight != CGROUP_BLKIO_WEIGHT_INVALID ||
+            c->startup_blockio_weight != CGROUP_BLKIO_WEIGHT_INVALID ||
             c->blockio_device_weights ||
             c->blockio_device_bandwidths)
                 mask |= CGROUP_MASK_BLKIO;
@@ -494,7 +530,14 @@ CGroupMask cgroup_context_get_mask(CGroupContext *c) {
 
         if (c->device_allow ||
             c->device_policy != CGROUP_AUTO)
-                mask |= CGROUP_MASK_DEVICE;
+                mask |= CGROUP_MASK_DEVICES;
+
+        if (c->tasks_accounting ||
+            c->tasks_max != (uint64_t) -1)
+                mask |= CGROUP_MASK_PIDS;
+
+        if (c->netclass_type != CGROUP_NETCLASS_TYPE_NONE)
+                mask |= CGROUP_MASK_NET_CLS;
 
         return mask;
 }
@@ -863,6 +906,103 @@ static bool unit_has_mask_realized(Unit *u, CGroupMask target_mask) {
         return u->cgroup_realized && u->cgroup_realized_mask == target_mask;
 }
 
+static int unit_find_free_netclass_cgroup(Unit *u, uint32_t *ret) {
+
+        uint32_t start, i;
+        Manager *m;
+
+        assert(u);
+
+        m = u->manager;
+
+        i = start = m->cgroup_netclass_registry_last;
+
+        do {
+                i++;
+
+                if (!hashmap_get(m->cgroup_netclass_registry, UINT_TO_PTR(i))) {
+                        m->cgroup_netclass_registry_last = i;
+                        *ret = i;
+                        return 0;
+                }
+
+                if (i == UINT32_MAX)
+                        i = CGROUP_NETCLASS_FIXED_MAX;
+
+        } while (i != start);
+
+        return -ENOBUFS;
+}
+
+int unit_add_to_netclass_cgroup(Unit *u) {
+
+        CGroupContext *cc;
+        Unit *first;
+        void *key;
+        int r;
+
+        assert(u);
+
+        cc = unit_get_cgroup_context(u);
+        if (!cc)
+                return 0;
+
+        switch (cc->netclass_type) {
+        case CGROUP_NETCLASS_TYPE_NONE:
+                return 0;
+
+        case CGROUP_NETCLASS_TYPE_FIXED:
+                u->cgroup_netclass_id = cc->netclass_id;
+                break;
+
+        case CGROUP_NETCLASS_TYPE_AUTO:
+                /* Allocate a new ID in case it was requested and not done yet */
+                if (u->cgroup_netclass_id == 0) {
+                        r = unit_find_free_netclass_cgroup(u, &u->cgroup_netclass_id);
+                        if (r < 0)
+                                return r;
+
+                        log_debug("Dynamically assigned netclass cgroup id %" PRIu32 " to %s", u->cgroup_netclass_id, u->id);
+                }
+
+                break;
+        }
+
+        r = hashmap_ensure_allocated(&u->manager->cgroup_netclass_registry, &trivial_hash_ops);
+        if (r < 0)
+                return r;
+
+        key = UINT32_TO_PTR(u->cgroup_netclass_id);
+        first = hashmap_get(u->manager->cgroup_netclass_registry, key);
+
+        if (first) {
+                LIST_PREPEND(cgroup_netclass, first, u);
+                return hashmap_replace(u->manager->cgroup_netclass_registry, key, u);
+        }
+
+        return hashmap_put(u->manager->cgroup_netclass_registry, key, u);
+}
+
+int unit_remove_from_netclass_cgroup(Unit *u) {
+
+        Unit *head;
+        void *key;
+
+        assert(u);
+
+        key = UINT32_TO_PTR(u->cgroup_netclass_id);
+
+        LIST_FIND_HEAD(cgroup_netclass, u, head);
+        LIST_REMOVE(cgroup_netclass, head, u);
+
+        if (head)
+                return hashmap_replace(u->manager->cgroup_netclass_registry, key, head);
+
+        hashmap_remove(u->manager->cgroup_netclass_registry, key);
+
+        return 0;
+}
+
 /* Check if necessary controllers and attributes for a unit are in place.
  *
  * If so, do nothing.
@@ -898,7 +1038,7 @@ static int unit_realize_cgroup_now(Unit *u, ManagerState state) {
                 return r;
 
         /* Finally, apply the necessary attributes. */
-        cgroup_context_apply(unit_get_cgroup_context(u), target_mask, u->cgroup_path, state);
+        cgroup_context_apply(unit_get_cgroup_context(u), target_mask, u->cgroup_path, u->cgroup_netclass_id, state);
 
         return 0;
 }
@@ -1239,7 +1379,7 @@ int manager_setup_cgroup(Manager *m) {
          * it. This is to support live upgrades from older systemd
          * versions where PID 1 was moved there. Also see
          * cg_get_root_path(). */
-        if (!e) {
+        if (!e && m->running_as == MANAGER_SYSTEM) {
                 e = endswith(m->cgroup_root, "/" SPECIAL_SYSTEM_SLICE);
                 if (!e)
                         e = endswith(m->cgroup_root, "/system"); /* even more legacy */
@@ -1277,6 +1417,7 @@ int manager_setup_cgroup(Manager *m) {
 
                         /* In the unified hierarchy we can can get
                          * cgroup empty notifications via inotify. */
+
 /// elogind does not support the unified hierarchy, yet.
 #if 0
                         m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
@@ -1300,6 +1441,7 @@ int manager_setup_cgroup(Manager *m) {
                         return log_error_errno(EOPNOTSUPP, "Unified cgroup hierarchy not supported: %m");
 #endif // 0
                 } else if (m->running_as == MANAGER_SYSTEM) {
+
                         /* On the legacy hierarchy we only get
                          * notifications via cgroup agents. (Which
                          * isn't really reliable, since it does not
@@ -1492,6 +1634,28 @@ int unit_get_memory_current(Unit *u, uint64_t *ret) {
         return safe_atou64(v, ret);
 }
 
+int unit_get_tasks_current(Unit *u, uint64_t *ret) {
+        _cleanup_free_ char *v = NULL;
+        int r;
+
+        assert(u);
+        assert(ret);
+
+        if (!u->cgroup_path)
+                return -ENODATA;
+
+        if ((u->cgroup_realized_mask & CGROUP_MASK_PIDS) == 0)
+                return -ENODATA;
+
+        r = cg_get_attribute("pids", u->cgroup_path, "pids.current", &v);
+        if (r == -ENOENT)
+                return -ENODATA;
+        if (r < 0)
+                return r;
+
+        return safe_atou64(v, ret);
+}
+
 static int unit_get_cpu_usage_raw(Unit *u, nsec_t *ret) {
         _cleanup_free_ char *v = NULL;
         uint64_t ns;
@@ -1563,6 +1727,32 @@ bool unit_cgroup_delegate(Unit *u) {
                 return false;
 
         return c->delegate;
+}
+
+void unit_invalidate_cgroup(Unit *u, CGroupMask m) {
+        assert(u);
+
+        if (!UNIT_HAS_CGROUP_CONTEXT(u))
+                return;
+
+        if (m == 0)
+                return;
+
+        if ((u->cgroup_realized_mask & m) == 0)
+                return;
+
+        u->cgroup_realized_mask &= ~m;
+        unit_add_to_cgroup_queue(u);
+}
+
+void manager_invalidate_startup_units(Manager *m) {
+        Iterator i;
+        Unit *u;
+
+        assert(m);
+
+        SET_FOREACH(u, m->startup_units, i)
+                unit_invalidate_cgroup(u, CGROUP_MASK_CPU|CGROUP_MASK_BLKIO);
 }
 
 static const char* const cgroup_device_policy_table[_CGROUP_DEVICE_POLICY_MAX] = {

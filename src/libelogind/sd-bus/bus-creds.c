@@ -109,8 +109,7 @@ _public_ sd_bus_creds *sd_bus_creds_unref(sd_bus_creds *c) {
 
                         c->supplementary_gids = mfree(c->supplementary_gids);
 
-                        strv_free(c->well_known_names);
-                        c->well_known_names = NULL;
+                        c->well_known_names = strv_free(c->well_known_names);
 
                         bus_creds_done(c);
 
@@ -1047,9 +1046,8 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
                         if (r != -EPERM && r != -EACCES)
                                 return r;
                 } else {
-                        if (c->cmdline_size == 0) {
+                        if (c->cmdline_size == 0)
                                 c->cmdline = mfree(c->cmdline);
-                        }
 
                         c->mask |= SD_BUS_CREDS_CMDLINE;
                 }

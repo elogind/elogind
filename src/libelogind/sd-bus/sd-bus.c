@@ -69,6 +69,10 @@ static int bus_poll(sd_bus *bus, bool need_more, uint64_t timeout_usec);
 static int attach_io_events(sd_bus *b);
 static void detach_io_events(sd_bus *b);
 
+static thread_local sd_bus *default_system_bus = NULL;
+static thread_local sd_bus *default_user_bus = NULL;
+static thread_local sd_bus *default_starter_bus = NULL;
+
 static void bus_close_fds(sd_bus *b) {
         assert(b);
 
@@ -3386,16 +3390,13 @@ static int bus_default(int (*bus_open)(sd_bus **), sd_bus **default_bus, sd_bus 
 }
 
 _public_ int sd_bus_default_system(sd_bus **ret) {
-        static thread_local sd_bus *default_system_bus = NULL;
-
         return bus_default(sd_bus_open_system, &default_system_bus, ret);
 }
+
 
 _public_ int sd_bus_default_user(sd_bus **ret) {
 /// elogind does not support user buses
 #if 0
-        static thread_local sd_bus *default_user_bus = NULL;
-
         return bus_default(sd_bus_open_user, &default_user_bus, ret);
 #else
         return sd_bus_default_system(ret);
@@ -3428,13 +3429,13 @@ _public_ int sd_bus_default(sd_bus **ret) {
 
         e = secure_getenv("DBUS_STARTER_ADDRESS");
         if (e) {
-                static thread_local sd_bus *default_starter_bus = NULL;
 
                 return bus_default(sd_bus_open, &default_starter_bus, ret);
         }
 
         /* Finally, if nothing is set use the cached connection for
          * the right scope */
+
 /// elogind does not support systemd units
 #if 0
         if (cg_pid_get_owner_uid(0, NULL) >= 0)
@@ -3501,6 +3502,171 @@ _public_ int sd_bus_path_decode(const char *path, const char *prefix, char **ext
                 return -ENOMEM;
 
         *external_id = ret;
+        return 1;
+}
+
+_public_ int sd_bus_path_encode_many(char **out, const char *path_template, ...) {
+        _cleanup_strv_free_ char **labels = NULL;
+        char *path, *path_pos, **label_pos;
+        const char *sep, *template_pos;
+        size_t path_length;
+        va_list list;
+        int r;
+
+        assert_return(out, -EINVAL);
+        assert_return(path_template, -EINVAL);
+
+        path_length = strlen(path_template);
+
+        va_start(list, path_template);
+        for (sep = strchr(path_template, '%'); sep; sep = strchr(sep + 1, '%')) {
+                const char *arg;
+                char *label;
+
+                arg = va_arg(list, const char *);
+                if (!arg) {
+                        va_end(list);
+                        return -EINVAL;
+                }
+
+                label = bus_label_escape(arg);
+                if (!label) {
+                        va_end(list);
+                        return -ENOMEM;
+                }
+
+                r = strv_consume(&labels, label);
+                if (r < 0) {
+                        va_end(list);
+                        return r;
+                }
+
+                /* add label length, but account for the format character */
+                path_length += strlen(label) - 1;
+        }
+        va_end(list);
+
+        path = malloc(path_length + 1);
+        if (!path)
+                return -ENOMEM;
+
+        path_pos = path;
+        label_pos = labels;
+
+        for (template_pos = path_template; *template_pos; ) {
+                sep = strchrnul(template_pos, '%');
+                path_pos = mempcpy(path_pos, template_pos, sep - template_pos);
+                if (!*sep)
+                        break;
+
+                path_pos = stpcpy(path_pos, *label_pos++);
+                template_pos = sep + 1;
+        }
+
+        *path_pos = 0;
+        *out = path;
+        return 0;
+}
+
+_public_ int sd_bus_path_decode_many(const char *path, const char *path_template, ...) {
+        _cleanup_strv_free_ char **labels = NULL;
+        const char *template_pos, *path_pos;
+        char **label_pos;
+        va_list list;
+        int r;
+
+        /*
+         * This decodes an object-path based on a template argument. The
+         * template consists of a verbatim path, optionally including special
+         * directives:
+         *
+         *   - Each occurrence of '%' in the template matches an arbitrary
+         *     substring of a label in the given path. At most one such
+         *     directive is allowed per label. For each such directive, the
+         *     caller must provide an output parameter (char **) via va_arg. If
+         *     NULL is passed, the given label is verified, but not returned.
+         *     For each matched label, the *decoded* label is stored in the
+         *     passed output argument, and the caller is responsible to free
+         *     it. Note that the output arguments are only modified if the
+         *     actualy path matched the template. Otherwise, they're left
+         *     untouched.
+         *
+         * This function returns <0 on error, 0 if the path does not match the
+         * template, 1 if it matched.
+         */
+
+        assert_return(path, -EINVAL);
+        assert_return(path_template, -EINVAL);
+
+        path_pos = path;
+
+        for (template_pos = path_template; *template_pos; ) {
+                const char *sep;
+                size_t length;
+                char *label;
+
+                /* verify everything until the next '%' matches verbatim */
+                sep = strchrnul(template_pos, '%');
+                length = sep - template_pos;
+                if (strncmp(path_pos, template_pos, length))
+                        return 0;
+
+                path_pos += length;
+                template_pos += length;
+
+                if (!*template_pos)
+                        break;
+
+                /* We found the next '%' character. Everything up until here
+                 * matched. We now skip ahead to the end of this label and make
+                 * sure it matches the tail of the label in the path. Then we
+                 * decode the string in-between and save it for later use. */
+
+                ++template_pos; /* skip over '%' */
+
+                sep = strchrnul(template_pos, '/');
+                length = sep - template_pos; /* length of suffix to match verbatim */
+
+                /* verify the suffixes match */
+                sep = strchrnul(path_pos, '/');
+                if (sep - path_pos < (ssize_t)length ||
+                    strncmp(sep - length, template_pos, length))
+                        return 0;
+
+                template_pos += length; /* skip over matched label */
+                length = sep - path_pos - length; /* length of sub-label to decode */
+
+                /* store unescaped label for later use */
+                label = bus_label_unescape_n(path_pos, length);
+                if (!label)
+                        return -ENOMEM;
+
+                r = strv_consume(&labels, label);
+                if (r < 0)
+                        return r;
+
+                path_pos = sep; /* skip decoded label and suffix */
+        }
+
+        /* end of template must match end of path */
+        if (*path_pos)
+                return 0;
+
+        /* copy the labels over to the caller */
+        va_start(list, path_template);
+        for (label_pos = labels; label_pos && *label_pos; ++label_pos) {
+                char **arg;
+
+                arg = va_arg(list, char **);
+                if (arg)
+                        *arg = *label_pos;
+                else
+                        free(*label_pos);
+        }
+        va_end(list);
+
+        free(labels);
+        labels = NULL;
         return 1;
 }
 #endif // 0
@@ -3662,3 +3828,20 @@ _public_ int sd_bus_is_monitor(sd_bus *bus) {
         return !!(bus->hello_flags & KDBUS_HELLO_MONITOR);
 }
 #endif // 0
+
+static void flush_close(sd_bus *bus) {
+        if (!bus)
+                return;
+
+        /* Flushes and closes the specified bus. We take a ref before,
+         * to ensure the flushing does not cause the bus to be
+         * unreferenced. */
+
+        sd_bus_flush_close_unref(sd_bus_ref(bus));
+}
+
+_public_ void sd_bus_default_flush_close(void) {
+        flush_close(default_starter_bus);
+        flush_close(default_user_bus);
+        flush_close(default_system_bus);
+}

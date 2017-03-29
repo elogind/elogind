@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
          * this to avoid an activation loop when we start dbus when we
          * are called when the dbus service is shut down. */
 
-        r = bus_open_system_systemd(&bus);
+        r = bus_connect_system_systemd(&bus);
 #else
         /* Unlike in systemd where this has to use a private socket,
            since elogind doesn't associate control groups with services
