@@ -158,7 +158,7 @@ sd_bus *sd_bus_ref(sd_bus *bus);
 sd_bus *sd_bus_unref(sd_bus *bus);
 sd_bus *sd_bus_flush_close_unref(sd_bus *bus);
 
-// UNNEEDED int sd_bus_is_open(sd_bus *bus);
+void sd_bus_default_flush_close(void);
 
 // UNNEEDED int sd_bus_get_bus_id(sd_bus *bus, sd_id128_t *id);
 // UNNEEDED int sd_bus_get_scope(sd_bus *bus, const char **scope);
@@ -418,7 +418,9 @@ int sd_bus_error_add_map(const sd_bus_error_map *map);
 /* Label escaping */
 
 // UNNEEDED int sd_bus_path_encode(const char *prefix, const char *external_id, char **ret_path);
+// UNNEEDED int sd_bus_path_encode_many(char **out, const char *path_template, ...);
 // UNNEEDED int sd_bus_path_decode(const char *path, const char *prefix, char **ret_external_id);
+// UNNEEDED int sd_bus_path_decode_many(const char *path, const char *path_template, ...);
 
 /* Tracking peers */
 
