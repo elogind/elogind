@@ -19,82 +19,85 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-// #include  <string.h>
-// #include  <unistd.h>
-#include  <errno.h>
-// #include  <stdlib.h>
-// #include  <signal.h>
-// #include  <libintl.h>
-// #include  <stdio.h>
-// #include  <syslog.h>
-// #include  <sched.h>
-// #include  <sys/resource.h>
-// #include  <linux/sched.h>
-// #include  <sys/types.h>
-// #include  <sys/stat.h>
-// #include  <fcntl.h>
-// #include  <dirent.h>
-// #include  <sys/ioctl.h>
-// #include  <stdarg.h>
-#include  <poll.h>
-// #include  <ctype.h>
-#include  <sys/prctl.h>
-// #include  <sys/utsname.h>
-#include  <pwd.h>
-#include  <netinet/ip.h>
-// #include  <sys/wait.h>
-// #include  <sys/time.h>
-// #include  <glob.h>
-#include  <grp.h>
-// #include  <sys/mman.h>
-// #include  <sys/vfs.h>
-// #include  <sys/mount.h>
-#include  <linux/magic.h>
-// #include  <limits.h>
-#include  <langinfo.h>
-// #include  <locale.h>
-// #include  <sys/personality.h>
-#include  <sys/xattr.h>
-// #include  <sys/statvfs.h>
-// #include  <sys/file.h>
-#include  <linux/fs.h>
+//#include <ctype.h>
+//#include <dirent.h>
+//#include <errno.h>
+//#include <fcntl.h>
+//#include <glob.h>
+#include <grp.h>
+#include <langinfo.h>
+//#include <libintl.h>
+//#include <limits.h>
+#include <linux/magic.h>
+//#include <linux/sched.h>
+//#include <locale.h>
+#include <netinet/ip.h>
+#include <poll.h>
+#include <pwd.h>
+#include <sched.h>
+//#include <signal.h>
+//#include <stdarg.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <sys/file.h>
+//#include <sys/ioctl.h>
+//#include <sys/mman.h>
+//#include <sys/mount.h>
+//#include <sys/personality.h>
+#include <sys/prctl.h>
+//#include <sys/resource.h>
+//#include <sys/stat.h>
+//#include <sys/statvfs.h>
+//#include <sys/time.h>
+//#include <sys/types.h>
+//#include <sys/utsname.h>
+//#include <sys/vfs.h>
+//#include <sys/wait.h>
+#include <sys/xattr.h>
+//#include <syslog.h>
+//#include <unistd.h>
 
 /* When we include libgen.h because we need dirname() we immediately
- * undefine basename() since libgen.h defines it as a macro to the POSIX
- * version which is really broken. We prefer GNU basename(). */
-// #include <libgen.h>
-// #undef basename
+ * undefine basename() since libgen.h defines it as a macro to the
+ * POSIX version which is really broken. We prefer GNU basename(). */
+//#include <libgen.h>
+//#undef basename
 
 #ifdef HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
 #endif
 
-#include  "config.h"
-#include  "macro.h"
-#include  "util.h"
-// #include  "ioprio.h"
-// #include  "missing.h"
-// #include  "log.h"
-#include  "strv.h"
-#include  "mkdir.h"
-#include  "path-util.h"
-// #include  "exit-status.h"
-#include  "hashmap.h"
-#include  "set.h"
-// #include  "env-util.h"
-#include  "fileio.h"
-// #include  "device-nodes.h"
-#include  "utf8.h"
-#include  "gunicode.h"
-#include  "virt.h"
-// #include  "def.h"
-#include  "sparse-endian.h"
-// #include  "formats-util.h"
-#include  "process-util.h"
-#include  "random-util.h"
-// #include  "terminal-util.h"
-#include  "hostname-util.h"
-#include  "signal-util.h"
+/* We include linux/fs.h as last of the system headers, as it
+ * otherwise conflicts with sys/mount.h. Yay, Linux is great! */
+//#include <linux/fs.h>
+
+#include "build.h"
+//#include "def.h"
+//#include "device-nodes.h"
+//#include "env-util.h"
+//#include "exit-status.h"
+#include "fileio.h"
+//#include "formats-util.h"
+#include "gunicode.h"
+#include "hashmap.h"
+#include "hostname-util.h"
+//#include "ioprio.h"
+//#include "log.h"
+//#include "macro.h"
+//#include "missing.h"
+#include "mkdir.h"
+#include "path-util.h"
+#include "process-util.h"
+#include "random-util.h"
+#include "signal-util.h"
+#include "sparse-endian.h"
+#include "strv.h"
+//#include "terminal-util.h"
+#include "utf8.h"
+#include "util.h"
+#include "virt.h"
+#include "set.h"
 
 /* Put this test here for a lack of better place */
 assert_cc(EAGAIN == EWOULDBLOCK);
@@ -326,6 +329,44 @@ void close_many(const int fds[], unsigned n_fd) {
 
         for (i = 0; i < n_fd; i++)
                 safe_close(fds[i]);
+}
+
+int fclose_nointr(FILE *f) {
+        assert(f);
+
+        /* Same as close_nointr(), but for fclose() */
+
+        if (fclose(f) == 0)
+                return 0;
+
+        if (errno == EINTR)
+                return 0;
+
+        return -errno;
+}
+
+FILE* safe_fclose(FILE *f) {
+
+        /* Same as safe_close(), but for fclose() */
+
+        if (f) {
+                PROTECT_ERRNO;
+
+                assert_se(fclose_nointr(f) != EBADF);
+        }
+
+        return NULL;
+}
+
+DIR* safe_closedir(DIR *d) {
+
+        if (d) {
+                PROTECT_ERRNO;
+
+                assert_se(closedir(d) >= 0 || errno != EBADF);
+        }
+
+        return NULL;
 }
 
 int unlink_noerrno(const char *path) {
@@ -2218,7 +2259,7 @@ int loop_write(int fd, const void *buf, size_t nbytes, bool do_poll) {
         return 0;
 }
 
-int parse_size(const char *t, off_t base, off_t *size) {
+int parse_size(const char *t, uint64_t base, uint64_t *size) {
 
         /* Soo, sometimes we want to parse IEC binary suffixes, and
          * sometimes SI decimal suffixes. This function can parse
@@ -2246,8 +2287,8 @@ int parse_size(const char *t, off_t base, off_t *size) {
                 { "G", 1024ULL*1024ULL*1024ULL },
                 { "M", 1024ULL*1024ULL },
                 { "K", 1024ULL },
-                { "B", 1 },
-                { "", 1 },
+                { "B", 1ULL },
+                { "",  1ULL },
         };
 
         static const struct table si[] = {
@@ -2257,8 +2298,8 @@ int parse_size(const char *t, off_t base, off_t *size) {
                 { "G", 1000ULL*1000ULL*1000ULL },
                 { "M", 1000ULL*1000ULL },
                 { "K", 1000ULL },
-                { "B", 1 },
-                { "", 1 },
+                { "B", 1ULL },
+                { "",  1ULL },
         };
 
         const struct table *table;
@@ -2280,33 +2321,32 @@ int parse_size(const char *t, off_t base, off_t *size) {
 
         p = t;
         do {
-                long long l;
-                unsigned long long l2;
+                unsigned long long l, tmp;
                 double frac = 0;
                 char *e;
                 unsigned i;
 
-                errno = 0;
-                l = strtoll(p, &e, 10);
-
-                if (errno > 0)
-                        return -errno;
-
-                if (l < 0)
+                p += strspn(p, WHITESPACE);
+                if (*p == '-')
                         return -ERANGE;
 
+                errno = 0;
+                l = strtoull(p, &e, 10);
+                if (errno > 0)
+                        return -errno;
                 if (e == p)
                         return -EINVAL;
 
                 if (*e == '.') {
                         e++;
+
+                        /* strtoull() itself would accept space/+/- */
                         if (*e >= '0' && *e <= '9') {
+                                unsigned long long l2;
                                 char *e2;
 
-                                /* strotoull itself would accept space/+/- */
                                 l2 = strtoull(e, &e2, 10);
-
-                                if (errno == ERANGE)
+                                if (errno > 0)
                                         return -errno;
 
                                 /* Ignore failure. E.g. 10.M is valid */
@@ -2319,26 +2359,26 @@ int parse_size(const char *t, off_t base, off_t *size) {
                 e += strspn(e, WHITESPACE);
 
                 for (i = start_pos; i < n_entries; i++)
-                        if (startswith(e, table[i].suffix)) {
-                                unsigned long long tmp;
-                                if ((unsigned long long) l + (frac > 0) > ULLONG_MAX / table[i].factor)
+                        if (startswith(e, table[i].suffix))
+                                break;
+
+                if (i >= n_entries)
+                        return -EINVAL;
+
+                if (l + (frac > 0) > ULLONG_MAX / table[i].factor)
                                         return -ERANGE;
+
                                 tmp = l * table[i].factor + (unsigned long long) (frac * table[i].factor);
                                 if (tmp > ULLONG_MAX - r)
                                         return -ERANGE;
 
                                 r += tmp;
-                                if ((unsigned long long) (off_t) r != r)
+                if ((unsigned long long) (uint64_t) r != r)
                                         return -ERANGE;
 
                                 p = e + strlen(table[i].suffix);
 
                                 start_pos = i + 1;
-                                break;
-                        }
-
-                if (i >= n_entries)
-                        return -EINVAL;
 
         } while (*p);
 
@@ -2538,33 +2578,6 @@ int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid) {
         return 0;
 }
 
-cpu_set_t* cpu_set_malloc(unsigned *ncpus) {
-        cpu_set_t *r;
-        unsigned n = 1024;
-
-        /* Allocates the cpuset in the right size */
-
-        for (;;) {
-                if (!(r = CPU_ALLOC(n)))
-                        return NULL;
-
-                if (sched_getaffinity(0, CPU_ALLOC_SIZE(n), r) >= 0) {
-                        CPU_ZERO_S(CPU_ALLOC_SIZE(n), r);
-
-                        if (ncpus)
-                                *ncpus = n;
-
-                        return r;
-                }
-
-                CPU_FREE(r);
-
-                if (errno != EINVAL)
-                        return NULL;
-
-                n *= 2;
-        }
-}
 #endif // 0
 
 int files_same(const char *filea, const char *fileb) {
@@ -3698,7 +3711,6 @@ static const char *const ioprio_class_table[] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ioprio_class, int, INT_MAX);
-#endif // 0
 
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
@@ -3735,6 +3747,7 @@ static const char *const log_facility_unshifted_table[LOG_NFACILITIES] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(log_facility_unshifted, int, LOG_FAC(~0));
+#endif // 0
 
 static const char *const log_level_table[] = {
         [LOG_EMERG] = "emerg",
@@ -3749,6 +3762,8 @@ static const char *const log_level_table[] = {
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(log_level, int, LOG_DEBUG);
 
+/// UNNEEDED by elogind
+#if 0
 static const char* const sched_policy_table[] = {
         [SCHED_OTHER] = "other",
         [SCHED_BATCH] = "batch",
@@ -3758,6 +3773,7 @@ static const char* const sched_policy_table[] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(sched_policy, int, INT_MAX);
+#endif // 0
 
 static const char* const rlimit_table[_RLIMIT_MAX] = {
         [RLIMIT_CPU] = "LimitCPU",
@@ -3780,6 +3796,8 @@ static const char* const rlimit_table[_RLIMIT_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(rlimit, int);
 
+/// UNNEEDED by elogind
+#if 0
 static const char* const ip_tos_table[] = {
         [IPTOS_LOWDELAY] = "low-delay",
         [IPTOS_THROUGHPUT] = "throughput",
@@ -3801,8 +3819,6 @@ bool kexec_loaded(void) {
        return loaded;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int prot_from_flags(int flags) {
 
         switch (flags & O_ACCMODE) {
@@ -3821,38 +3837,38 @@ int prot_from_flags(int flags) {
         }
 }
 
-char *format_bytes(char *buf, size_t l, off_t t) {
+char *format_bytes(char *buf, size_t l, uint64_t t) {
         unsigned i;
 
         static const struct {
                 const char *suffix;
-                off_t factor;
+                uint64_t factor;
         } table[] = {
-                { "E", 1024ULL*1024ULL*1024ULL*1024ULL*1024ULL*1024ULL },
-                { "P", 1024ULL*1024ULL*1024ULL*1024ULL*1024ULL },
-                { "T", 1024ULL*1024ULL*1024ULL*1024ULL },
-                { "G", 1024ULL*1024ULL*1024ULL },
-                { "M", 1024ULL*1024ULL },
-                { "K", 1024ULL },
+                { "E", UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024) },
+                { "P", UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024) },
+                { "T", UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024) },
+                { "G", UINT64_C(1024)*UINT64_C(1024)*UINT64_C(1024) },
+                { "M", UINT64_C(1024)*UINT64_C(1024) },
+                { "K", UINT64_C(1024) },
         };
 
-        if (t == (off_t) -1)
+        if (t == (uint64_t) -1)
                 return NULL;
 
         for (i = 0; i < ELEMENTSOF(table); i++) {
 
                 if (t >= table[i].factor) {
                         snprintf(buf, l,
-                                 "%llu.%llu%s",
-                                 (unsigned long long) (t / table[i].factor),
-                                 (unsigned long long) (((t*10ULL) / table[i].factor) % 10ULL),
+                                 "%" PRIu64 ".%" PRIu64 "%s",
+                                 t / table[i].factor,
+                                 ((t*UINT64_C(10)) / table[i].factor) % UINT64_C(10),
                                  table[i].suffix);
 
                         goto finish;
                 }
         }
 
-        snprintf(buf, l, "%lluB", (unsigned long long) t);
+        snprintf(buf, l, "%" PRIu64 "B", t);
 
 finish:
         buf[l-1] = 0;
@@ -4899,7 +4915,7 @@ int shall_restore_state(void) {
 int proc_cmdline(char **ret) {
         assert(ret);
 
-        if (detect_container(NULL) > 0)
+        if (detect_container() > 0)
                 return get_process_cmdline(1, 0, false, ret);
         else
                 return read_one_line_file("/proc/cmdline", ret);
@@ -5297,6 +5313,19 @@ unsigned long personality_from_string(const char *p) {
 
         if (streq(p, "x86"))
                 return PER_LINUX;
+
+#elif defined(__s390x__)
+
+        if (streq(p, "s390"))
+                return PER_LINUX32;
+
+        if (streq(p, "s390x"))
+                return PER_LINUX;
+
+#elif defined(__s390__)
+
+        if (streq(p, "s390"))
+                return PER_LINUX;
 #endif
 
         return PERSONALITY_INVALID;
@@ -5316,6 +5345,20 @@ const char* personality_to_string(unsigned long p) {
 
         if (p == PER_LINUX)
                 return "x86";
+
+#elif defined(__s390x__)
+
+        if (p == PER_LINUX)
+                return "s390x";
+
+        if (p == PER_LINUX32)
+                return "s390";
+
+#elif defined(__s390__)
+
+        if (p == PER_LINUX)
+                return "s390";
+
 #endif
 
         return NULL;
@@ -5383,15 +5426,13 @@ int update_reboot_param_file(const char *param) {
         int r = 0;
 
         if (param) {
-
                 r = write_string_file(REBOOT_PARAM_FILE, param, WRITE_STRING_FILE_CREATE);
                 if (r < 0)
-                        log_error("Failed to write reboot param to "
-                                  REBOOT_PARAM_FILE": %s", strerror(-r));
+                        return log_error_errno(r, "Failed to write reboot param to "REBOOT_PARAM_FILE": %m");
         } else
-                unlink(REBOOT_PARAM_FILE);
+                (void) unlink(REBOOT_PARAM_FILE);
 
-        return r;
+        return 0;
 }
 
 int umount_recursive(const char *prefix, int flags) {
@@ -6034,6 +6075,7 @@ int extract_first_word_and_warn(
                 const char *filename,
                 unsigned line,
                 const char *rvalue) {
+
         /* Try to unquote it, if it fails, warn about it and try again but this
          * time using EXTRACT_CUNESCAPE_RELAX to keep the backslashes verbatim
          * in invalid escape sequences. */
@@ -6043,16 +6085,16 @@ int extract_first_word_and_warn(
         save = *p;
         r = extract_first_word(p, ret, separators, flags);
         if (r < 0 && !(flags&EXTRACT_CUNESCAPE_RELAX)) {
+
                 /* Retry it with EXTRACT_CUNESCAPE_RELAX. */
                 *p = save;
                 r = extract_first_word(p, ret, separators, flags|EXTRACT_CUNESCAPE_RELAX);
                 if (r < 0)
-                        log_syntax(unit, LOG_ERR, filename, line, EINVAL,
-                                   "Unbalanced quoting in command line, ignoring: \"%s\"", rvalue);
+                        log_syntax(unit, LOG_ERR, filename, line, r, "Unbalanced quoting in command line, ignoring: \"%s\"", rvalue);
                 else
-                        log_syntax(unit, LOG_WARNING, filename, line, EINVAL,
-                                   "Invalid escape sequences in command line: \"%s\"", rvalue);
+                        log_syntax(unit, LOG_WARNING, filename, line, 0, "Invalid escape sequences in command line: \"%s\"", rvalue);
         }
+
         return r;
 }
 
@@ -6169,15 +6211,6 @@ int ptsname_malloc(int fd, char **ret) {
 int openpt_in_namespace(pid_t pid, int flags) {
         _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, usernsfd = -1, rootfd = -1;
         _cleanup_close_pair_ int pair[2] = { -1, -1 };
-        union {
-                struct cmsghdr cmsghdr;
-                uint8_t buf[CMSG_SPACE(sizeof(int))];
-        } control = {};
-        struct msghdr mh = {
-                .msg_control = &control,
-                .msg_controllen = sizeof(control),
-        };
-        struct cmsghdr *cmsg;
         siginfo_t si;
         pid_t child;
         int r;
@@ -6211,15 +6244,7 @@ int openpt_in_namespace(pid_t pid, int flags) {
                 if (unlockpt(master) < 0)
                         _exit(EXIT_FAILURE);
 
-                cmsg = CMSG_FIRSTHDR(&mh);
-                cmsg->cmsg_level = SOL_SOCKET;
-                cmsg->cmsg_type = SCM_RIGHTS;
-                cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-                memcpy(CMSG_DATA(cmsg), &master, sizeof(int));
-
-                mh.msg_controllen = cmsg->cmsg_len;
-
-                if (sendmsg(pair[1], &mh, MSG_NOSIGNAL) < 0)
+                if (send_one_fd(pair[1], master, 0) < 0)
                         _exit(EXIT_FAILURE);
 
                 _exit(EXIT_SUCCESS);
@@ -6233,40 +6258,24 @@ int openpt_in_namespace(pid_t pid, int flags) {
         if (si.si_code != CLD_EXITED || si.si_status != EXIT_SUCCESS)
                 return -EIO;
 
-        if (recvmsg(pair[0], &mh, MSG_NOSIGNAL|MSG_CMSG_CLOEXEC) < 0)
-                return -errno;
-
-        CMSG_FOREACH(cmsg, &mh)
-                if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
-                        int *fds;
-                        unsigned n_fds;
-
-                        fds = (int*) CMSG_DATA(cmsg);
-                        n_fds = (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(int);
-
-                        if (n_fds != 1) {
-                                close_many(fds, n_fds);
-                                return -EIO;
-                        }
-
-                        return fds[0];
-                }
-
-        return -EIO;
+        return receive_one_fd(pair[0], 0);
 }
 #endif // 0
 
 ssize_t fgetxattrat_fake(int dirfd, const char *filename, const char *attribute, void *value, size_t size, int flags) {
+        char fn[strlen("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
         _cleanup_close_ int fd = -1;
         ssize_t l;
 
         /* The kernel doesn't have a fgetxattrat() command, hence let's emulate one */
 
-        fd = openat(dirfd, filename, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NOATIME|(flags & AT_SYMLINK_NOFOLLOW ? O_NOFOLLOW : 0));
+        fd = openat(dirfd, filename, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_PATH|(flags & AT_SYMLINK_NOFOLLOW ? O_NOFOLLOW : 0));
         if (fd < 0)
                 return -errno;
 
-        l = fgetxattr(fd, attribute, value, size);
+        xsprintf(fn, "/proc/self/fd/%i", fd);
+
+        l = getxattr(fn, attribute, value, size);
         if (l < 0)
                 return -errno;
 
@@ -6415,7 +6424,6 @@ int same_fd(int a, int b) {
 
         return fa == fb;
 }
-#endif // 0
 
 int chattr_fd(int fd, unsigned value, unsigned mask) {
         unsigned old_attr, new_attr;
@@ -6451,8 +6459,6 @@ int chattr_fd(int fd, unsigned value, unsigned mask) {
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int chattr_path(const char *p, unsigned value, unsigned mask) {
         _cleanup_close_ int fd = -1;
 
@@ -6467,7 +6473,6 @@ int chattr_path(const char *p, unsigned value, unsigned mask) {
 
         return chattr_fd(fd, value, mask);
 }
-#endif // 0
 
 int read_attr_fd(int fd, unsigned *ret) {
         struct stat st;
@@ -6486,8 +6491,6 @@ int read_attr_fd(int fd, unsigned *ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int read_attr_path(const char *p, unsigned *ret) {
         _cleanup_close_ int fd = -1;
 
@@ -6870,3 +6873,115 @@ int fgetxattr_malloc(int fd, const char *name, char **value) {
                         return -errno;
         }
 }
+
+int send_one_fd(int transport_fd, int fd, int flags) {
+        union {
+                struct cmsghdr cmsghdr;
+                uint8_t buf[CMSG_SPACE(sizeof(int))];
+        } control = {};
+        struct msghdr mh = {
+                .msg_control = &control,
+                .msg_controllen = sizeof(control),
+        };
+        struct cmsghdr *cmsg;
+
+        assert(transport_fd >= 0);
+        assert(fd >= 0);
+
+        cmsg = CMSG_FIRSTHDR(&mh);
+        cmsg->cmsg_level = SOL_SOCKET;
+        cmsg->cmsg_type = SCM_RIGHTS;
+        cmsg->cmsg_len = CMSG_LEN(sizeof(int));
+        memcpy(CMSG_DATA(cmsg), &fd, sizeof(int));
+
+        mh.msg_controllen = CMSG_SPACE(sizeof(int));
+        if (sendmsg(transport_fd, &mh, MSG_NOSIGNAL | flags) < 0)
+                return -errno;
+
+        return 0;
+}
+
+/// UNNEEDED by elogind
+#if 0
+int receive_one_fd(int transport_fd, int flags) {
+        union {
+                struct cmsghdr cmsghdr;
+                uint8_t buf[CMSG_SPACE(sizeof(int))];
+        } control = {};
+        struct msghdr mh = {
+                .msg_control = &control,
+                .msg_controllen = sizeof(control),
+        };
+        struct cmsghdr *cmsg, *found = NULL;
+
+        assert(transport_fd >= 0);
+
+        /*
+         * Receive a single FD via @transport_fd. We don't care for
+         * the transport-type. We retrieve a single FD at most, so for
+         * packet-based transports, the caller must ensure to send
+         * only a single FD per packet.  This is best used in
+         * combination with send_one_fd().
+         */
+
+        if (recvmsg(transport_fd, &mh, MSG_NOSIGNAL | MSG_CMSG_CLOEXEC | flags) < 0)
+                return -errno;
+
+        CMSG_FOREACH(cmsg, &mh) {
+                if (cmsg->cmsg_level == SOL_SOCKET &&
+                    cmsg->cmsg_type == SCM_RIGHTS &&
+                    cmsg->cmsg_len == CMSG_LEN(sizeof(int))) {
+                        assert(!found);
+                        found = cmsg;
+                        break;
+                }
+        }
+
+        if (!found) {
+                cmsg_close_all(&mh);
+                return -EIO;
+        }
+
+        return *(int*) CMSG_DATA(found);
+}
+
+void nop_signal_handler(int sig) {
+        /* nothing here */
+}
+#endif // 0
+
+int version(void) {
+        puts(PACKAGE_STRING "\n"
+             SYSTEMD_FEATURES);
+        return 0;
+}
+
+/// UNNEEDED by elogind
+#if 0
+bool fdname_is_valid(const char *s) {
+        const char *p;
+
+        /* Validates a name for $LISTEN_FDNAMES. We basically allow
+         * everything ASCII that's not a control character. Also, as
+         * special exception the ":" character is not allowed, as we
+         * use that as field separator in $LISTEN_FDNAMES.
+         *
+         * Note that the empty string is explicitly allowed
+         * here. However, we limit the length of the names to 255
+         * characters. */
+
+        if (!s)
+                return false;
+
+        for (p = s; *p; p++) {
+                if (*p < ' ')
+                        return false;
+                if (*p >= 127)
+                        return false;
+                if (*p == ':')
+                        return false;
+        }
+
+        return p - s < 256;
+}
+#endif // 0

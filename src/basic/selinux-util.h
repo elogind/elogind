@@ -21,9 +21,10 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <stdbool.h>
+
+#include "macro.h"
 
 bool mac_selinux_use(void);
 // UNNEEDED void mac_selinux_retest(void);

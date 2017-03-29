@@ -48,7 +48,7 @@ int chvt(int vt) {
         if (fd < 0)
                 return -errno;
 
-        if (vt < 0) {
+        if (vt <= 0) {
                 int tiocl[2] = {
                         TIOCL_GETKMSGREDIRECT,
                         0
@@ -141,14 +141,14 @@ int ask_char(char *ret, const char *replies, const char *text, ...) {
                 bool need_nl = true;
 
                 if (on_tty())
-                        fputs(ANSI_HIGHLIGHT_ON, stdout);
+                        fputs(ANSI_HIGHLIGHT, stdout);
 
                 va_start(ap, text);
                 vprintf(text, ap);
                 va_end(ap);
 
                 if (on_tty())
-                        fputs(ANSI_HIGHLIGHT_OFF, stdout);
+                        fputs(ANSI_NORMAL, stdout);
 
                 fflush(stdout);
 
@@ -185,14 +185,14 @@ int ask_string(char **ret, const char *text, ...) {
                 va_list ap;
 
                 if (on_tty())
-                        fputs(ANSI_HIGHLIGHT_ON, stdout);
+                        fputs(ANSI_HIGHLIGHT, stdout);
 
                 va_start(ap, text);
                 vprintf(text, ap);
                 va_end(ap);
 
                 if (on_tty())
-                        fputs(ANSI_HIGHLIGHT_OFF, stdout);
+                        fputs(ANSI_NORMAL, stdout);
 
                 fflush(stdout);
 
@@ -611,27 +611,6 @@ int vt_disallocate(const char *name) {
         safe_close(fd);
 
         return 0;
-}
-
-void warn_melody(void) {
-        _cleanup_close_ int fd = -1;
-
-        fd = open("/dev/console", O_WRONLY|O_CLOEXEC|O_NOCTTY);
-        if (fd < 0)
-                return;
-
-        /* Yeah, this is synchronous. Kinda sucks. But well... */
-
-        (void) ioctl(fd, KIOCSOUND, (int)(1193180/440));
-        usleep(125*USEC_PER_MSEC);
-
-        (void) ioctl(fd, KIOCSOUND, (int)(1193180/220));
-        usleep(125*USEC_PER_MSEC);
-
-        (void) ioctl(fd, KIOCSOUND, (int)(1193180/220));
-        usleep(125*USEC_PER_MSEC);
-
-        (void) ioctl(fd, KIOCSOUND, 0);
 }
 
 /// UNNEEDED by elogind

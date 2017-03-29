@@ -40,7 +40,7 @@ void strv_clear(char **l);
 char **strv_copy(char * const *l);
 unsigned strv_length(char * const *l) _pure_;
 
-int strv_extend_strv(char ***a, char **b);
+int strv_extend_strv(char ***a, char **b, bool filter_duplicates);
 // UNNEEDED int strv_extend_strv_concat(char ***a, char **b, const char *suffix);
 int strv_extend(char ***l, const char *value);
 // UNNEEDED int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
@@ -80,6 +80,7 @@ char *strv_join(char **l, const char *separator);
 
 char **strv_parse_nulstr(const char *s, size_t l);
 char **strv_split_nulstr(const char *s);
+int strv_make_nulstr(char **l, char **p, size_t *n);
 
 // UNNEEDED bool strv_overlap(char **a, char **b) _pure_;
 
@@ -154,3 +155,9 @@ static inline bool strv_fnmatch_or_empty(char* const* patterns, const char *s, i
         return strv_isempty(patterns) ||
                strv_fnmatch(patterns, s, flags);
 }
+
+char ***strv_free_free(char ***l);
+
+char **strv_skip(char **l, size_t n);
+
+int strv_extend_n(char ***l, const char *value, size_t n);
