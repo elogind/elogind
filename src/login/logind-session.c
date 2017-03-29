@@ -530,7 +530,7 @@ static int session_start_scope(Session *s) {
                 if (!scope)
                         return log_oom();
 
-                r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "logind.service", "systemd-user-sessions.service", &error, &job);
+                r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "systemd-logind.service", "systemd-user-sessions.service", &error, &job);
                 if (r < 0) {
                         log_error("Failed to start session scope %s: %s %s",
                                   scope, bus_error_message(&error, r), error.name);
@@ -538,6 +538,7 @@ static int session_start_scope(Session *s) {
                         return r;
                 } else {
                         s->scope = scope;
+
                         free(s->scope_job);
                         s->scope_job = job;
                 }
@@ -1109,22 +1110,25 @@ int session_prepare_vt(Session *s) {
 
         r = fchown(vt, s->user->uid, -1);
         if (r < 0) {
-                r = -errno;
-                log_error_errno(errno, "Cannot change owner of /dev/tty%u: %m", s->vtnr);
+                r = log_error_errno(errno,
+                                    "Cannot change owner of /dev/tty%u: %m",
+                                    s->vtnr);
                 goto error;
         }
 
         r = ioctl(vt, KDSKBMODE, K_OFF);
         if (r < 0) {
-                r = -errno;
-                log_error_errno(errno, "Cannot set K_OFF on /dev/tty%u: %m", s->vtnr);
+                r = log_error_errno(errno,
+                                    "Cannot set K_OFF on /dev/tty%u: %m",
+                                    s->vtnr);
                 goto error;
         }
 
         r = ioctl(vt, KDSETMODE, KD_GRAPHICS);
         if (r < 0) {
-                r = -errno;
-                log_error_errno(errno, "Cannot set KD_GRAPHICS on /dev/tty%u: %m", s->vtnr);
+                r = log_error_errno(errno,
+                                    "Cannot set KD_GRAPHICS on /dev/tty%u: %m",
+                                    s->vtnr);
                 goto error;
         }
 
@@ -1136,8 +1140,9 @@ int session_prepare_vt(Session *s) {
         mode.acqsig = SIGRTMIN + 1;
         r = ioctl(vt, VT_SETMODE, &mode);
         if (r < 0) {
-                r = -errno;
-                log_error_errno(errno, "Cannot set VT_PROCESS on /dev/tty%u: %m", s->vtnr);
+                r = log_error_errno(errno,
+                                    "Cannot set VT_PROCESS on /dev/tty%u: %m",
+                                    s->vtnr);
                 goto error;
         }
 

@@ -746,7 +746,7 @@ static int print_property(const char *name, sd_bus_message *m, const char *conte
                         if (r < 0)
                                 return bus_log_parse_error(r);
 
-                        if (UID_IS_INVALID(uid)) {
+                        if (!uid_is_valid(uid)) {
                                 log_error("Invalid user ID: " UID_FMT, uid);
                                 return -EINVAL;
                         }
@@ -1703,9 +1703,7 @@ static int parse_argv(int argc, char *argv[]) {
                         return 0;
 
                 case ARG_VERSION:
-                        puts(PACKAGE_STRING);
-                        puts(SYSTEMD_FEATURES);
-                        return 0;
+                        return version();
 
                 case 'p': {
                         r = strv_extend(&arg_property, optarg);
@@ -1846,7 +1844,7 @@ int main(int argc, char *argv[]) {
         if (r <= 0)
                 goto finish;
 
-        r = bus_open_transport(arg_transport, arg_host, false, &bus);
+        r = bus_connect_transport(arg_transport, arg_host, false, &bus);
         if (r < 0) {
                 log_error_errno(r, "Failed to create bus connection: %m");
                 goto finish;
