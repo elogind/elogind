@@ -30,6 +30,6 @@
 // UNNEEDED int copy_tree(const char *from, const char *to, bool merge);
 // UNNEEDED int copy_tree_at(int fdf, const char *from, int fdt, const char *to, bool merge);
 // UNNEEDED int copy_directory_fd(int dirfd, const char *to, bool merge);
-int copy_bytes(int fdf, int fdt, off_t max_bytes, bool try_reflink);
+int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink);
 // UNNEEDED int copy_times(int fdf, int fdt);
 // UNNEEDED int copy_xattr(int fdf, int fdt);

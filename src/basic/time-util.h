@@ -112,6 +112,8 @@ int parse_sec(const char *t, usec_t *usec);
 
 // UNNEEDED clockid_t clock_boottime_or_monotonic(void);
 
-#define xstrftime(buf, fmt, tm) assert_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0)
+#define xstrftime(buf, fmt, tm) \
+        assert_message_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0, \
+                          "xstrftime: " #buf "[] must be big enough")
 
 // UNNEEDED int get_timezone(char **timezone);

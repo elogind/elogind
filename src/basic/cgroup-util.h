@@ -34,7 +34,9 @@ typedef enum CGroupController {
         CGROUP_CONTROLLER_CPUACCT,
         CGROUP_CONTROLLER_BLKIO,
         CGROUP_CONTROLLER_MEMORY,
-        CGROUP_CONTROLLER_DEVICE,
+        CGROUP_CONTROLLER_DEVICES,
+        CGROUP_CONTROLLER_PIDS,
+        CGROUP_CONTROLLER_NET_CLS,
         _CGROUP_CONTROLLER_MAX,
         _CGROUP_CONTROLLER_INVALID = -1,
 } CGroupController;
@@ -47,9 +49,35 @@ typedef enum CGroupMask {
         CGROUP_MASK_CPUACCT = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_CPUACCT),
         CGROUP_MASK_BLKIO = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_BLKIO),
         CGROUP_MASK_MEMORY = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_MEMORY),
-        CGROUP_MASK_DEVICE = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_DEVICE),
+        CGROUP_MASK_DEVICES = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_DEVICES),
+        CGROUP_MASK_PIDS = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_PIDS),
+        CGROUP_MASK_NET_CLS = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_NET_CLS),
         _CGROUP_MASK_ALL = CGROUP_CONTROLLER_TO_MASK(_CGROUP_CONTROLLER_MAX) - 1
 } CGroupMask;
+
+/* Special values for the cpu.shares attribute */
+#define CGROUP_CPU_SHARES_INVALID ((uint64_t) -1)
+#define CGROUP_CPU_SHARES_MIN UINT64_C(2)
+#define CGROUP_CPU_SHARES_MAX UINT64_C(262144)
+#define CGROUP_CPU_SHARES_DEFAULT UINT64_C(1024)
+
+static inline bool CGROUP_CPU_SHARES_IS_OK(uint64_t x) {
+        return
+            x == CGROUP_CPU_SHARES_INVALID ||
+            (x >= CGROUP_CPU_SHARES_MIN && x <= CGROUP_CPU_SHARES_MAX);
+}
+
+/* Special values for the blkio.weight attribute */
+#define CGROUP_BLKIO_WEIGHT_INVALID ((uint64_t) -1)
+#define CGROUP_BLKIO_WEIGHT_MIN UINT64_C(10)
+#define CGROUP_BLKIO_WEIGHT_MAX UINT64_C(1000)
+#define CGROUP_BLKIO_WEIGHT_DEFAULT UINT64_C(500)
+
+static inline bool CGROUP_BLKIO_WEIGHT_IS_OK(uint64_t x) {
+        return
+            x == CGROUP_BLKIO_WEIGHT_INVALID ||
+            (x >= CGROUP_BLKIO_WEIGHT_MIN && x <= CGROUP_BLKIO_WEIGHT_MAX);
+}
 
 /*
  * General rules:
@@ -159,3 +187,6 @@ bool cg_is_legacy_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
+
+int cg_cpu_shares_parse(const char *s, uint64_t *ret);
+int cg_blkio_weight_parse(const char *s, uint64_t *ret);
