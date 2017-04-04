@@ -28,7 +28,37 @@ cd $topdir
 #        chmod +x .git/hooks/pre-commit && \
 #        echo "Activated pre-commit hook." || :
 #fi
+
 intltoolize --force --automake
 autoreconf --force --install --symlink
 
+libdir() {
+        echo $(cd "$1/$(gcc -print-multi-os-directory)"; pwd)
+}
+
+args="\
+--sysconfdir=/etc \
+--localstatedir=/var \
+--libdir=$(libdir /usr/lib) \
+"
+
+if [ -f "$topdir/.config.args" ]; then
+        args="$args $(cat $topdir/.config.args)"
+fi
+
+if [ ! -L /bin ]; then
+args="$args \
+--with-rootprefix=/ \
+--with-rootlibdir=$(libdir /lib) \
+"
+fi
+
 cd $oldpwd
+
+echo
+echo "----------------------------------------------------------------"
+echo "Initialized build system. For a common configuration please run:"
+echo "----------------------------------------------------------------"
+echo
+echo "$topdir/configure CFLAGS='-g -O0 -ftrapv' --enable-kdbus $args"
+echo
