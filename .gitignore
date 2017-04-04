@@ -289,6 +289,13 @@ config.status
 configure
 stamp-*
 
+# elogind specific
+/elogind
+/elogind-cgroups-agent
+/elogind-inhibit
+/test-libelogind*
+
+
 # Local Helper Scripts and Tools - Not for distribution
 check_tree.sh
 cleanup*.sh

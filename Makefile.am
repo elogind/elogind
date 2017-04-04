@@ -305,6 +305,7 @@ libbasic_la_SOURCES = \
 	src/basic/hostname-util.c \
 	src/basic/unit-name.c \
 	src/basic/unit-name.h \
+	src/basic/unaligned.h \
 	src/basic/util.c \
 	src/basic/util.h \
 	src/basic/path-util.c \
