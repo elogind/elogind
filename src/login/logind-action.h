@@ -22,7 +22,7 @@
 ***/
 
 typedef enum HandleAction {
-        HANDLE_IGNORE,
+        HANDLE_IGNORE = 0,
         HANDLE_POWEROFF,
         HANDLE_REBOOT,
         HANDLE_HALT,

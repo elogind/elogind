@@ -1528,7 +1528,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
         assert(manager);
 
-        if (manager->action_what == 0 && manager->pending_action == 0)
+        if ( (0 == manager->action_what) || (HANDLE_IGNORE == manager->pending_action) )
                 return 0;
 
         if (manager_is_inhibited(manager, manager->action_what, INHIBIT_DELAY, NULL, false, false, 0, &offending)) {
