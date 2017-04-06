@@ -19,21 +19,27 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <getopt.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "sd-bus.h"
-#include "bus-util.h"
+
+#include "alloc-util.h"
 #include "bus-error.h"
-#include "util.h"
-#include "build.h"
-#include "strv.h"
+#include "bus-util.h"
+#include "fd-util.h"
 #include "formats-util.h"
 #include "process-util.h"
 #include "signal-util.h"
+#include "strv.h"
+#include "user-util.h"
+#include "util.h"
+
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 static const char* arg_what = "idle:sleep:shutdown";
 static const char* arg_who = NULL;

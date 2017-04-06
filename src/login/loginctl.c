@@ -19,33 +19,40 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <unistd.h>
 #include <errno.h>
-#include <string.h>
 #include <getopt.h>
 #include <locale.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "sd-bus.h"
-#include "sd-login.h"
-#include "bus-util.h"
+
+#include "alloc-util.h"
 #include "bus-error.h"
-#include "log.h"
-#include "util.h"
-#include "macro.h"
-#include "pager.h"
-#include "build.h"
-#include "strv.h"
-#include "unit-name.h"
-#include "sysfs-show.h"
-//#include "logs-show.h"
+#include "bus-util.h"
 //#include "cgroup-show.h"
 #include "cgroup-util.h"
-#include "spawn-polkit-agent.h"
-#include "verbs.h"
+#include "log.h"
+//#include "logs-show.h"
+#include "macro.h"
+#include "pager.h"
+#include "parse-util.h"
 #include "process-util.h"
-#include "terminal-util.h"
 #include "signal-util.h"
+#include "spawn-polkit-agent.h"
+#include "strv.h"
+#include "sysfs-show.h"
+#include "terminal-util.h"
+#include "unit-name.h"
+#include "user-util.h"
+#include "util.h"
+#include "verbs.h"
+
+/// Additional includes for elogind
 #include "logind-action.h"
+#include "musl_missing.h"
+#include "sd-login.h"
+#include "virt.h"
 
 static char **arg_property = NULL;
 static bool arg_all = false;
@@ -1694,7 +1701,7 @@ static int parse_argv(int argc, char *argv[]) {
         assert(argc >= 0);
         assert(argv);
 
-        while ((c = getopt_long(argc, argv, "hp:als:H:M:ci", options, NULL)) >= 0)
+        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:ci", options, NULL)) >= 0)
 
                 switch (c) {
 

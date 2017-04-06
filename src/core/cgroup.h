@@ -96,6 +96,7 @@ struct CGroupContext {
         bool cpu_accounting;
         bool blockio_accounting;
         bool memory_accounting;
+        bool tasks_accounting;
 
         uint64_t cpu_shares;
         uint64_t startup_cpu_shares;
@@ -126,7 +127,7 @@ struct CGroupContext {
 // UNNNEEDE void cgroup_context_init(CGroupContext *c);
 // UNNEEDED void cgroup_context_done(CGroupContext *c);
 // UNNEEDED void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix);
-// UNNEEDED void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, ManagerState state);
+// UNNEEDED void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, uint32_t netclass_id, ManagerState state);
 
 // UNNEEDED CGroupMask cgroup_context_get_mask(CGroupContext *c);
 

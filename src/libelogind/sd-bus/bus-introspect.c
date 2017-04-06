@@ -19,11 +19,14 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "util.h"
-#include "bus-introspect.h"
-#include "bus-signature.h"
 #include "bus-internal.h"
+#include "bus-introspect.h"
 #include "bus-protocol.h"
+#include "bus-signature.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "string-util.h"
+#include "util.h"
 
 int introspect_begin(struct introspect *i, bool trusted) {
         assert(i);
@@ -82,7 +85,7 @@ static void introspect_write_flags(struct introspect *i, int type, int flags) {
 
         if (type == _SD_BUS_VTABLE_PROPERTY || type == _SD_BUS_VTABLE_WRITABLE_PROPERTY) {
                 if (flags & SD_BUS_VTABLE_PROPERTY_EXPLICIT)
-                        fputs("   <annotation name=\"org.freedesktop.login1.Explicit\" value=\"true\"/>\n", i->f);
+                        fputs("   <annotation name=\"org.freedesktop.systemd1.Explicit\" value=\"true\"/>\n", i->f);
 
                 if (flags & SD_BUS_VTABLE_PROPERTY_CONST)
                         fputs("   <annotation name=\"org.freedesktop.DBus.Property.EmitsChangedSignal\" value=\"const\"/>\n", i->f);
@@ -95,7 +98,7 @@ static void introspect_write_flags(struct introspect *i, int type, int flags) {
         if (!i->trusted &&
             (type == _SD_BUS_VTABLE_METHOD || type == _SD_BUS_VTABLE_WRITABLE_PROPERTY) &&
             !(flags & SD_BUS_VTABLE_UNPRIVILEGED))
-                fputs("   <annotation name=\"org.freedesktop.login1.Privileged\" value=\"true\"/>\n", i->f);
+                fputs("   <annotation name=\"org.freedesktop.systemd1.Privileged\" value=\"true\"/>\n", i->f);
 }
 
 static int introspect_write_arguments(struct introspect *i, const char *signature, const char *direction) {

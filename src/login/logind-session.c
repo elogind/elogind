@@ -21,24 +21,32 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/vt.h>
 #include <linux/kd.h>
+#include <linux/vt.h>
 #include <signal.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "sd-messages.h"
-#include "util.h"
-#include "mkdir.h"
-#include "path-util.h"
-#include "fileio.h"
-#include "audit.h"
-#include "bus-util.h"
+
+#include "alloc-util.h"
+#include "audit-util.h"
 #include "bus-error.h"
-#include "logind-session.h"
+#include "bus-util.h"
+#include "escape.h"
+#include "fd-util.h"
+#include "fileio.h"
 #include "formats-util.h"
+#include "io-util.h"
+#include "logind-session.h"
+#include "mkdir.h"
+#include "parse-util.h"
+#include "path-util.h"
+#include "string-table.h"
 #include "terminal-util.h"
+#include "user-util.h"
+#include "util.h"
 
 // #define RELEASE_USEC (20*USEC_PER_SEC)
 
@@ -511,28 +519,35 @@ int session_activate(Session *s) {
 /// UNNEEDED by elogind
 #if 0
 static int session_start_scope(Session *s) {
-        int r = 0;
+        int r;
 
         assert(s);
         assert(s->user);
 
         if (!s->scope) {
                 _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-                _cleanup_free_ char *description = NULL;
-                char *scope = NULL; //, *job = NULL;
-
-                description = strjoin("Session ", s->id, " of user ", s->user->name, NULL);
-                if (!description)
-                        return log_oom();
+                char *scope, *job = NULL;
+                const char *description;
 
                 scope = strjoin("session-", s->id, ".scope", NULL);
                 if (!scope)
                         return log_oom();
 
-                r = manager_start_scope(s->manager, scope, s->leader, s->user->slice, description, "systemd-logind.service", "systemd-user-sessions.service", &error, &job);
+                description = strjoina("Session ", s->id, " of user ", s->user->name, NULL);
+
+                r = manager_start_scope(
+                                s->manager,
+                                scope,
+                                s->leader,
+                                s->user->slice,
+                                description,
+                                "systemd-logind.service",
+                                "systemd-user-sessions.service",
+                                (uint64_t) -1, /* disable TasksMax= for the scope, rely on the slice setting for it */
+                                &error,
+                                &job);
                 if (r < 0) {
-                        log_error("Failed to start session scope %s: %s %s",
-                                  scope, bus_error_message(&error, r), error.name);
+                        log_error_errno(r, "Failed to start session scope %s: %s", scope, bus_error_message(&error, r));
                         free(scope);
                         return r;
                 } else {
@@ -544,7 +559,7 @@ static int session_start_scope(Session *s) {
         }
 
         if (s->scope)
-                hashmap_put(s->manager->session_units, s->scope, s);
+                (void) hashmap_put(s->manager->session_units, s->scope, s);
 
         return 0;
 }
@@ -1091,7 +1106,7 @@ static int session_open_vt(Session *s) {
         sprintf(path, "/dev/tty%u", s->vtnr);
         s->vtfd = open_terminal(path, O_RDWR | O_CLOEXEC | O_NONBLOCK | O_NOCTTY);
         if (s->vtfd < 0)
-                return log_error_errno(errno, "cannot open VT %s of session %s: %m", path, s->id);
+                return log_error_errno(s->vtfd, "cannot open VT %s of session %s: %m", path, s->id);
 
         return s->vtfd;
 }

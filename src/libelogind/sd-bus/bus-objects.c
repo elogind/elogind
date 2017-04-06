@@ -19,16 +19,18 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "strv.h"
-#include "set.h"
+#include "alloc-util.h"
 #include "bus-internal.h"
-#include "bus-message.h"
-#include "bus-type.h"
-#include "bus-signature.h"
 #include "bus-introspect.h"
-#include "bus-util.h"
-#include "bus-slot.h"
+#include "bus-message.h"
 #include "bus-objects.h"
+#include "bus-signature.h"
+#include "bus-slot.h"
+#include "bus-type.h"
+#include "bus-util.h"
+#include "set.h"
+#include "string-util.h"
+#include "strv.h"
 
 static int node_vtable_get_userdata(
                 sd_bus *bus,

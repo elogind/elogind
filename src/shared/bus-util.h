@@ -21,15 +21,13 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/types.h>
-#include <inttypes.h>
-#include <stdbool.h>
-
-// #include "sd-event.h"
 #include "sd-bus.h"
+#include "sd-event.h"
+
 #include "hashmap.h"
-// #include "install.h"
-// #include "time-util.h"
+//#include "install.h"
+#include "string-util.h"
+#include "time-util.h"
 
 typedef enum BusTransport {
         BUS_TRANSPORT_LOCAL,
@@ -207,3 +205,5 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus_track*, sd_bus_track_unref);
 
 bool is_kdbus_wanted(void);
 bool is_kdbus_available(void);
+
+// UNNEEDED int bus_property_get_rlimit(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);

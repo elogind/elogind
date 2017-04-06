@@ -21,7 +21,7 @@
 
 #include <errno.h>
 #include <limits.h>
-//#include <mqueue.h>
+#include <mqueue.h>
 #include <netinet/in.h>
 #include <stdarg.h>
 #include <stddef.h>
@@ -33,12 +33,18 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include "sd-daemon.h"
+
+#include "alloc-util.h"
+#include "fd-util.h"
+//#include "fs-util.h"
+#include "parse-util.h"
 #include "path-util.h"
 #include "socket-util.h"
-//#include "strv.h"
+#include "strv.h"
 #include "util.h"
 
-#include "sd-daemon.h"
+#define SNDBUF_SIZE (8*1024*1024)
 
 /// UNNEEDED by elogind
 #if 0
@@ -451,6 +457,8 @@ _public_ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char
                 r = -errno;
                 goto finish;
         }
+
+        fd_inc_sndbuf(fd, SNDBUF_SIZE);
 
         iovec.iov_len = strlen(state);
 

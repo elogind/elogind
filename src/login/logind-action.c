@@ -21,19 +21,25 @@
 
 #include <unistd.h>
 
-#include "sd-messages.h"
-#include "util.h"
-#include "strv.h"
-#include "fileio.h"
-#include "conf-parser.h"
-// #include "special.h"
-#include "sleep-config.h"
+#include "alloc-util.h"
 #include "bus-error.h"
 #include "bus-util.h"
+#include "conf-parser.h"
+#include "formats-util.h"
 #include "logind-action.h"
-// #include "formats-util.h"
 #include "process-util.h"
+#include "sleep-config.h"
+//#include "special.h"
+#include "string-table.h"
 #include "terminal-util.h"
+#include "user-util.h"
+
+// Additional includes needed by elogind
+#include "fd-util.h"
+#include "fileio.h"
+#include "sd-messages.h"
+#include "strv.h"
+
 
 int manager_handle_action(
                 Manager *m,
