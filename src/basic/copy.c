@@ -22,10 +22,20 @@
 #include <sys/sendfile.h>
 #include <sys/xattr.h>
 
-#include "util.h"
-// #include "btrfs-util.h"
-#include "strv.h"
+//#include "alloc-util.h"
+//#include "btrfs-util.h"
+//#include "chattr-util.h"
 #include "copy.h"
+//#include "dirent-util.h"
+//#include "fd-util.h"
+//#include "fileio.h"
+//#include "fs-util.h"
+#include "io-util.h"
+//#include "string-util.h"
+#include "strv.h"
+//#include "umask-util.h"
+#include "util.h"
+//#include "xattr-util.h"
 
 #define COPY_BUFFER_SIZE (16*1024)
 
@@ -35,6 +45,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
 
         assert(fdf >= 0);
         assert(fdt >= 0);
+// UNNEEDED by elogind
 #if 0
         /* Try btrfs reflinks first. */
         if (try_reflink &&

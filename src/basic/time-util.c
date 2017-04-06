@@ -19,15 +19,19 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <time.h>
 #include <string.h>
-#include <sys/timex.h>
 #include <sys/timerfd.h>
+#include <sys/timex.h>
 
-#include "util.h"
-#include "time-util.h"
+#include "alloc-util.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "fs-util.h"
 #include "path-util.h"
+#include "string-util.h"
 #include "strv.h"
+#include "time-util.h"
+#include "util.h"
 
 usec_t now(clockid_t clock_id) {
         struct timespec ts;
@@ -210,11 +214,8 @@ static char *format_timestamp_internal(char *buf, size_t l, usec_t t, bool utc) 
                 return NULL;
 
         sec = (time_t) (t / USEC_PER_SEC);
+        localtime_or_gmtime_r(&sec, &tm, utc);
 
-        if (utc)
-                gmtime_r(&sec, &tm);
-        else
-                localtime_r(&sec, &tm);
         if (strftime(buf, l, "%a %Y-%m-%d %H:%M:%S %Z", &tm) <= 0)
                 return NULL;
 
@@ -243,10 +244,7 @@ static char *format_timestamp_internal_us(char *buf, size_t l, usec_t t, bool ut
                 return NULL;
 
         sec = (time_t) (t / USEC_PER_SEC);
-        if (utc)
-                gmtime_r(&sec, &tm);
-        else
-                localtime_r(&sec, &tm);
+        localtime_or_gmtime_r(&sec, &tm, utc);
 
         if (strftime(buf, l, "%a %Y-%m-%d %H:%M:%S", &tm) <= 0)
                 return NULL;
@@ -497,7 +495,7 @@ int parse_timestamp(const char *t, usec_t *usec) {
         };
 
         const char *k;
-        bool utc;
+        const char *utc;
         struct tm tm, copy;
         time_t x;
         usec_t x_usec, plus = 0, minus = 0, ret;
@@ -547,8 +545,8 @@ int parse_timestamp(const char *t, usec_t *usec) {
 
                 goto finish;
 
-        } else if (endswith(t, " ago")) {
-                t = strndupa(t, strlen(t) - strlen(" ago"));
+        } else if ((k = endswith(t, " ago"))) {
+                t = strndupa(t, k - t);
 
                 r = parse_sec(t, &minus);
                 if (r < 0)
@@ -556,8 +554,8 @@ int parse_timestamp(const char *t, usec_t *usec) {
 
                 goto finish;
 
-        } else if (endswith(t, " left")) {
-                t = strndupa(t, strlen(t) - strlen(" left"));
+        } else if ((k = endswith(t, " left"))) {
+                t = strndupa(t, k - t);
 
                 r = parse_sec(t, &plus);
                 if (r < 0)
@@ -568,7 +566,7 @@ int parse_timestamp(const char *t, usec_t *usec) {
 
         utc = endswith_no_case(t, " UTC");
         if (utc)
-                t = strndupa(t, strlen(t) - strlen(" UTC"));
+                t = strndupa(t, utc - t);
 
         x = ret / USEC_PER_SEC;
         x_usec = 0;
@@ -721,7 +719,8 @@ finish:
 }
 #endif // 0
 
-int parse_sec(const char *t, usec_t *usec) {
+int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
+
         static const struct {
                 const char *suffix;
                 usec_t usec;
@@ -735,6 +734,7 @@ int parse_sec(const char *t, usec_t *usec) {
                 { "min", USEC_PER_MINUTE },
                 { "months", USEC_PER_MONTH },
                 { "month", USEC_PER_MONTH },
+                { "M",       USEC_PER_MONTH  },
                 { "msec", USEC_PER_MSEC },
                 { "ms", USEC_PER_MSEC },
                 { "m", USEC_PER_MINUTE },
@@ -753,7 +753,6 @@ int parse_sec(const char *t, usec_t *usec) {
                 { "y", USEC_PER_YEAR },
                 { "usec", 1ULL },
                 { "us", 1ULL },
-                { "", USEC_PER_SEC }, /* default is sec */
         };
 
         const char *p, *s;
@@ -762,6 +761,7 @@ int parse_sec(const char *t, usec_t *usec) {
 
         assert(t);
         assert(usec);
+        assert(default_unit > 0);
 
         p = t;
 
@@ -780,6 +780,7 @@ int parse_sec(const char *t, usec_t *usec) {
                 long long l, z = 0;
                 char *e;
                 unsigned i, n = 0;
+                usec_t multiplier, k;
 
                 p += strspn(p, WHITESPACE);
 
@@ -822,26 +823,33 @@ int parse_sec(const char *t, usec_t *usec) {
 
                 for (i = 0; i < ELEMENTSOF(table); i++)
                         if (startswith(e, table[i].suffix)) {
-                                usec_t k = (usec_t) z * table[i].usec;
-
-                                for (; n > 0; n--)
-                                        k /= 10;
-
-                                r += (usec_t) l * table[i].usec + k;
+                                multiplier = table[i].usec;
                                 p = e + strlen(table[i].suffix);
-
-                                something = true;
                                 break;
                         }
 
-                if (i >= ELEMENTSOF(table))
-                        return -EINVAL;
+                if (i >= ELEMENTSOF(table)) {
+                        multiplier = default_unit;
+                        p = e;
+                }
 
+                something = true;
+
+                k = (usec_t) z * multiplier;
+
+                for (; n > 0; n--)
+                        k /= 10;
+
+                r += (usec_t) l * multiplier + k;
         }
 
         *usec = r;
 
         return 0;
+}
+
+int parse_sec(const char *t, usec_t *usec) {
+        return parse_time(t, usec, USEC_PER_SEC);
 }
 
 /// UNNEEDED by elogind
@@ -1131,5 +1139,30 @@ int get_timezone(char **tz) {
 
         *tz = z;
         return 0;
+}
+
+time_t mktime_or_timegm(struct tm *tm, bool utc) {
+        return utc ? timegm(tm) : mktime(tm);
+}
+#endif // 0
+
+struct tm *localtime_or_gmtime_r(const time_t *t, struct tm *tm, bool utc) {
+        return utc ? gmtime_r(t, tm) : localtime_r(t, tm);
+}
+
+/// UNNEEDED by elogind
+#if 0
+unsigned long usec_to_jiffies(usec_t u) {
+        static thread_local unsigned long hz = 0;
+        long r;
+
+        if (hz == 0) {
+                r = sysconf(_SC_CLK_TCK);
+
+                assert(r > 0);
+                hz = (unsigned long) r;
+        }
+
+        return DIV_ROUND_UP(u , USEC_PER_SEC / hz);
 }
 #endif // 0

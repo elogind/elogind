@@ -1,5 +1,5 @@
 #include <string.h>
-#include "util.h"
+#include "alloc-util.h"
 
 #ifndef __GLIBC__
 char *program_invocation_name       = NULL;

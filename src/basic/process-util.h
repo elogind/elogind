@@ -27,6 +27,7 @@
 #include <signal.h>
 
 #include "formats-util.h"
+#include "macro.h"
 
 #define procfs_file_alloca(pid, field)                                  \
         ({                                                              \
@@ -51,15 +52,48 @@ int get_process_exe(pid_t pid, char **name);
 // UNNEEDED int get_process_cwd(pid_t pid, char **cwd);
 // UNNEEDED int get_process_root(pid_t pid, char **root);
 // UNNEEDED int get_process_environ(pid_t pid, char **environ);
+// UNNEEDED int get_process_ppid(pid_t pid, pid_t *ppid);
 
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_code);
 
+void sigkill_wait(pid_t *pid);
+#define _cleanup_sigkill_wait_ _cleanup_(sigkill_wait)
+
 // UNNEEDED int kill_and_sigcont(pid_t pid, int sig);
-// UNNEEDED pid_t get_parent_of_pid(pid_t pid, pid_t *ppid);
+
 // UNNEEDED void rename_process(const char name[8]);
 int is_kernel_thread(pid_t pid);
+
 int getenv_for_pid(pid_t pid, const char *field, char **_value);
 
 bool pid_is_alive(pid_t pid);
 bool pid_is_unwaited(pid_t pid);
+
+bool is_main_thread(void);
+
+// UNNEEDED noreturn void freeze(void);
+
+// UNNEEDED bool oom_score_adjust_is_valid(int oa);
+
+#ifndef PERSONALITY_INVALID
+/* personality(7) documents that 0xffffffffUL is used for querying the
+ * current personality, hence let's use that here as error
+ * indicator. */
+#define PERSONALITY_INVALID 0xffffffffLU
+#endif
+
+// UNNEEDED unsigned long personality_from_string(const char *p);
+// UNNEEDED const char *personality_to_string(unsigned long);
+
+// UNNEEDED int ioprio_class_to_string_alloc(int i, char **s);
+// UNNEEDED int ioprio_class_from_string(const char *s);
+
+// UNNEEDED const char *sigchld_code_to_string(int i) _const_;
+// UNNEEDED int sigchld_code_from_string(const char *s) _pure_;
+
+// UNNEEDED int sched_policy_to_string_alloc(int i, char **s);
+// UNNEEDED int sched_policy_from_string(const char *s);
+
+#define PTR_TO_PID(p) ((pid_t) ((uintptr_t) p))
+#define PID_TO_PTR(p) ((void*) ((uintptr_t) p))

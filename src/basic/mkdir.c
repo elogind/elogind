@@ -19,12 +19,15 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <string.h>
 #include <errno.h>
+#include <string.h>
 
-#include "util.h"
-#include "path-util.h"
+#include "fs-util.h"
 #include "mkdir.h"
+#include "path-util.h"
+#include "stat-util.h"
+#include "user-util.h"
+#include "util.h"
 
 int mkdir_safe_internal(const char *path, mode_t mode, uid_t uid, gid_t gid, mkdir_func_t _mkdir) {
         struct stat st;

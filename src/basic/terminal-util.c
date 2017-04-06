@@ -17,26 +17,34 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <termios.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <time.h>
 #include <assert.h>
-#include <poll.h>
-#include <linux/vt.h>
-#include <linux/tiocl.h>
+#include <fcntl.h>
 #include <linux/kd.h>
+#include <linux/tiocl.h>
+#include <linux/vt.h>
+#include <poll.h>
+#include <signal.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <termios.h>
+#include <time.h>
+#include <unistd.h>
 
+#include "alloc-util.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "fs-util.h"
+#include "io-util.h"
+#include "parse-util.h"
+#include "path-util.h"
+#include "process-util.h"
+#include "socket-util.h"
+#include "stat-util.h"
+#include "string-util.h"
 #include "terminal-util.h"
 #include "time-util.h"
-#include "process-util.h"
 #include "util.h"
-#include "fileio.h"
-#include "path-util.h"
 
 static volatile unsigned cached_columns = 0;
 static volatile unsigned cached_lines = 0;
@@ -415,7 +423,7 @@ int acquire_terminal(
 
                 assert_se(sigaction(SIGHUP, &sa_old, NULL) == 0);
 
-                /* Sometimes it makes sense to ignore TIOCSCTTY
+                /* Sometimes, it makes sense to ignore TIOCSCTTY
                  * returning EPERM, i.e. when very likely we already
                  * are have this controlling terminal. */
                 if (r < 0 && r == -EPERM && ignore_tiocstty_eperm)
@@ -482,10 +490,6 @@ int acquire_terminal(
         }
 
         safe_close(notify);
-
-        r = reset_terminal_fd(fd, true);
-        if (r < 0)
-                log_warning_errno(r, "Failed to reset terminal: %m");
 
         return fd;
 
@@ -621,6 +625,10 @@ int make_console_stdio(void) {
         if (fd < 0)
                 return log_error_errno(fd, "Failed to acquire terminal: %m");
 
+        r = reset_terminal_fd(fd, true);
+        if (r < 0)
+                log_warning_errno(r, "Failed to reset terminal, ignoring: %m");
+
         r = make_stdio(fd);
         if (r < 0)
                 return log_error_errno(r, "Failed to duplicate terminal fd: %m");
@@ -628,84 +636,6 @@ int make_console_stdio(void) {
         return 0;
 }
 #endif // 0
-
-int status_vprintf(const char *status, bool ellipse, bool ephemeral, const char *format, va_list ap) {
-        static const char status_indent[] = "         "; /* "[" STATUS "] " */
-        _cleanup_free_ char *s = NULL;
-        _cleanup_close_ int fd = -1;
-        struct iovec iovec[6] = {};
-        int n = 0;
-        static bool prev_ephemeral;
-
-        assert(format);
-
-        /* This is independent of logging, as status messages are
-         * optional and go exclusively to the console. */
-
-        if (vasprintf(&s, format, ap) < 0)
-                return log_oom();
-
-        fd = open_terminal("/dev/console", O_WRONLY|O_NOCTTY|O_CLOEXEC);
-        if (fd < 0)
-                return fd;
-
-        if (ellipse) {
-                char *e;
-                size_t emax, sl;
-                int c;
-
-                c = fd_columns(fd);
-                if (c <= 0)
-                        c = 80;
-
-                sl = status ? sizeof(status_indent)-1 : 0;
-
-                emax = c - sl - 1;
-                if (emax < 3)
-                        emax = 3;
-
-                e = ellipsize(s, emax, 50);
-                if (e) {
-                        free(s);
-                        s = e;
-                }
-        }
-
-        if (prev_ephemeral)
-                IOVEC_SET_STRING(iovec[n++], "\r" ANSI_ERASE_TO_END_OF_LINE);
-        prev_ephemeral = ephemeral;
-
-        if (status) {
-                if (!isempty(status)) {
-                        IOVEC_SET_STRING(iovec[n++], "[");
-                        IOVEC_SET_STRING(iovec[n++], status);
-                        IOVEC_SET_STRING(iovec[n++], "] ");
-                } else
-                        IOVEC_SET_STRING(iovec[n++], status_indent);
-        }
-
-        IOVEC_SET_STRING(iovec[n++], s);
-        if (!ephemeral)
-                IOVEC_SET_STRING(iovec[n++], "\n");
-
-        if (writev(fd, iovec, n) < 0)
-                return -errno;
-
-        return 0;
-}
-
-int status_printf(const char *status, bool ellipse, bool ephemeral, const char *format, ...) {
-        va_list ap;
-        int r;
-
-        assert(format);
-
-        va_start(ap, format);
-        r = status_vprintf(status, ellipse, ephemeral, format, ap);
-        va_end(ap);
-
-        return r;
-}
 
 bool tty_is_vc(const char *tty) {
         assert(tty);
@@ -925,6 +855,8 @@ int make_null_stdio(void) {
         return make_stdio(null_fd);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int getttyname_malloc(int fd, char **ret) {
         size_t l = 100;
         int r;
@@ -958,8 +890,6 @@ int getttyname_malloc(int fd, char **ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int getttyname_harder(int fd, char **r) {
         int k;
         char *s = NULL;
@@ -1071,6 +1001,33 @@ int get_ctty(pid_t pid, dev_t *_devnr, char **r) {
 
 /// UNNEEDED by elogind
 #if 0
+int ptsname_malloc(int fd, char **ret) {
+        size_t l = 100;
+
+        assert(fd >= 0);
+        assert(ret);
+
+        for (;;) {
+                char *c;
+
+                c = new(char, l);
+                if (!c)
+                        return -ENOMEM;
+
+                if (ptsname_r(fd, c, l) == 0) {
+                        *ret = c;
+                        return 0;
+                }
+                if (errno != ERANGE) {
+                        free(c);
+                        return -errno;
+                }
+
+                free(c);
+                l *= 2;
+        }
+}
+
 int ptsname_namespace(int pty, char **ret) {
         int no = -1, r;
 
@@ -1088,5 +1045,106 @@ int ptsname_namespace(int pty, char **ret) {
                 return -ENOMEM;
 
         return 0;
+}
+
+int openpt_in_namespace(pid_t pid, int flags) {
+        _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, usernsfd = -1, rootfd = -1;
+        _cleanup_close_pair_ int pair[2] = { -1, -1 };
+        siginfo_t si;
+        pid_t child;
+        int r;
+
+        assert(pid > 0);
+
+        r = namespace_open(pid, &pidnsfd, &mntnsfd, NULL, &usernsfd, &rootfd);
+        if (r < 0)
+                return r;
+
+        if (socketpair(AF_UNIX, SOCK_DGRAM, 0, pair) < 0)
+                return -errno;
+
+        child = fork();
+        if (child < 0)
+                return -errno;
+
+        if (child == 0) {
+                int master;
+
+                pair[0] = safe_close(pair[0]);
+
+                r = namespace_enter(pidnsfd, mntnsfd, -1, usernsfd, rootfd);
+                if (r < 0)
+                        _exit(EXIT_FAILURE);
+
+                master = posix_openpt(flags|O_NOCTTY|O_CLOEXEC);
+                if (master < 0)
+                        _exit(EXIT_FAILURE);
+
+                if (unlockpt(master) < 0)
+                        _exit(EXIT_FAILURE);
+
+                if (send_one_fd(pair[1], master, 0) < 0)
+                        _exit(EXIT_FAILURE);
+
+                _exit(EXIT_SUCCESS);
+        }
+
+        pair[1] = safe_close(pair[1]);
+
+        r = wait_for_terminate(child, &si);
+        if (r < 0)
+                return r;
+        if (si.si_code != CLD_EXITED || si.si_status != EXIT_SUCCESS)
+                return -EIO;
+
+        return receive_one_fd(pair[0], 0);
+}
+
+int open_terminal_in_namespace(pid_t pid, const char *name, int mode) {
+        _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, usernsfd = -1, rootfd = -1;
+        _cleanup_close_pair_ int pair[2] = { -1, -1 };
+        siginfo_t si;
+        pid_t child;
+        int r;
+
+        r = namespace_open(pid, &pidnsfd, &mntnsfd, NULL, &usernsfd, &rootfd);
+        if (r < 0)
+                return r;
+
+        if (socketpair(AF_UNIX, SOCK_DGRAM, 0, pair) < 0)
+                return -errno;
+
+        child = fork();
+        if (child < 0)
+                return -errno;
+
+        if (child == 0) {
+                int master;
+
+                pair[0] = safe_close(pair[0]);
+
+                r = namespace_enter(pidnsfd, mntnsfd, -1, usernsfd, rootfd);
+                if (r < 0)
+                        _exit(EXIT_FAILURE);
+
+                master = open_terminal(name, mode|O_NOCTTY|O_CLOEXEC);
+                if (master < 0)
+                        _exit(EXIT_FAILURE);
+
+                if (send_one_fd(pair[1], master, 0) < 0)
+                        _exit(EXIT_FAILURE);
+
+                _exit(EXIT_SUCCESS);
+        }
+
+        pair[1] = safe_close(pair[1]);
+
+        r = wait_for_terminate(child, &si);
+        if (r < 0)
+                return r;
+        if (si.si_code != CLD_EXITED || si.si_status != EXIT_SUCCESS)
+                return -EIO;
+
+        return receive_one_fd(pair[0], 0);
 }
 #endif // 0

@@ -19,14 +19,20 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <string.h>
 #include <errno.h>
+#include <string.h>
 #include <unistd.h>
 
-#include "util.h"
-#include "process-util.h"
-#include "virt.h"
+#include "alloc-util.h"
+#include "dirent-util.h"
+#include "fd-util.h"
 #include "fileio.h"
+#include "process-util.h"
+#include "stat-util.h"
+#include "string-table.h"
+#include "string-util.h"
+#include "util.h"
+#include "virt.h"
 
 static int detect_vm_cpuid(void) {
 
@@ -325,6 +331,7 @@ int detect_container(void) {
                 { "lxc-libvirt",    VIRTUALIZATION_LXC_LIBVIRT    },
                 { "systemd-nspawn", VIRTUALIZATION_SYSTEMD_NSPAWN },
                 { "docker",         VIRTUALIZATION_DOCKER         },
+                { "rkt",            VIRTUALIZATION_RKT            },
         };
 
         static thread_local int cached_found = _VIRTUALIZATION_INVALID;
@@ -415,6 +422,16 @@ int detect_virtualization(void) {
 }
 #endif // 0
 
+int running_in_chroot(void) {
+        int ret;
+
+        ret = files_same("/proc/1/root", "/");
+        if (ret < 0)
+                return ret;
+
+        return ret == 0;
+}
+
 static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_NONE] = "none",
         [VIRTUALIZATION_KVM] = "kvm",
@@ -434,6 +451,7 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_LXC] = "lxc",
         [VIRTUALIZATION_OPENVZ] = "openvz",
         [VIRTUALIZATION_DOCKER] = "docker",
+        [VIRTUALIZATION_RKT] = "rkt",
         [VIRTUALIZATION_CONTAINER_OTHER] = "container-other",
 };
 

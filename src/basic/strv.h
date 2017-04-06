@@ -21,10 +21,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <fnmatch.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <fnmatch.h>
 
+#include "extract-word.h"
 #include "util.h"
 
 char *strv_find(char **l, const char *name) _pure_;
@@ -34,6 +35,10 @@ char *strv_find_startswith(char **l, const char *name) _pure_;
 char **strv_free(char **l);
 DEFINE_TRIVIAL_CLEANUP_FUNC(char**, strv_free);
 #define _cleanup_strv_free_ _cleanup_(strv_freep)
+
+char **strv_free_erase(char **l);
+DEFINE_TRIVIAL_CLEANUP_FUNC(char**, strv_free_erase);
+#define _cleanup_strv_free_erase_ _cleanup_(strv_free_erasep)
 
 void strv_clear(char **l);
 
@@ -73,14 +78,14 @@ static inline bool strv_isempty(char * const *l) {
 char **strv_split(const char *s, const char *separator);
 // UNNEEDED char **strv_split_newlines(const char *s);
 
-// UNNEEDED int strv_split_quoted(char ***t, const char *s, UnquoteFlags flags);
+// UNNEEDED int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
 
 char *strv_join(char **l, const char *separator);
 // UNNEEDED char *strv_join_quoted(char **l);
 
 char **strv_parse_nulstr(const char *s, size_t l);
 char **strv_split_nulstr(const char *s);
-int strv_make_nulstr(char **l, char **p, size_t *n);
+// UNNEEDED int strv_make_nulstr(char **l, char **p, size_t *n);
 
 // UNNEEDED bool strv_overlap(char **a, char **b) _pure_;
 
@@ -95,7 +100,7 @@ int strv_make_nulstr(char **l, char **p, size_t *n);
 #define STRV_FOREACH_PAIR(x, y, l)               \
         for ((x) = (l), (y) = (x+1); (x) && *(x) && *(y); (x) += 2, (y) = (x + 1))
 
-// UNNEEDED char **strv_sort(char **l);
+char **strv_sort(char **l);
 // UNNEEDED void strv_print(char **l);
 
 #define STRV_MAKE(...) ((char**) ((const char*[]) { __VA_ARGS__, NULL }))
@@ -148,16 +153,19 @@ int strv_make_nulstr(char **l, char **p, size_t *n);
 // UNNEEDED char **strv_reverse(char **l);
 // UNNEEDED char **strv_shell_escape(char **l, const char *bad);
 
-bool strv_fnmatch(char* const* patterns, const char *s, int flags);
+// UNNEEDED bool strv_fnmatch(char* const* patterns, const char *s, int flags);
 
+/// UNNEEDED by elogind
+#if 0
 static inline bool strv_fnmatch_or_empty(char* const* patterns, const char *s, int flags) {
         assert(s);
         return strv_isempty(patterns) ||
                strv_fnmatch(patterns, s, flags);
 }
+#endif // 0
 
-char ***strv_free_free(char ***l);
+// UNNEEDED char ***strv_free_free(char ***l);
 
-char **strv_skip(char **l, size_t n);
+// UNNEEDED char **strv_skip(char **l, size_t n);
 
-int strv_extend_n(char ***l, const char *value, size_t n);
+// UNNEEDED int strv_extend_n(char ***l, const char *value, size_t n);

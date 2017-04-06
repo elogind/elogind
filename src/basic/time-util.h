@@ -21,8 +21,9 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdio.h>
 #include <inttypes.h>
+#include <stdio.h>
+#include <time.h>
 
 typedef uint64_t usec_t;
 typedef uint64_t nsec_t;
@@ -103,6 +104,7 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 // UNNEEDED int parse_timestamp(const char *t, usec_t *usec);
 
 int parse_sec(const char *t, usec_t *usec);
+int parse_time(const char *t, usec_t *usec, usec_t default_unit);
 // UNNEEDED int parse_nsec(const char *t, nsec_t *nsec);
 
 // UNNEEDED bool ntp_synced(void);
@@ -117,3 +119,8 @@ int parse_sec(const char *t, usec_t *usec);
                           "xstrftime: " #buf "[] must be big enough")
 
 // UNNEEDED int get_timezone(char **timezone);
+
+// UNNEEDED time_t mktime_or_timegm(struct tm *tm, bool utc);
+struct tm *localtime_or_gmtime_r(const time_t *t, struct tm *tm, bool utc);
+
+// UNNEEDED unsigned long usec_to_jiffies(usec_t usec);

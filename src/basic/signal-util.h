@@ -30,7 +30,7 @@ int reset_signal_mask(void);
 
 int ignore_signals(int sig, ...);
 // UNNEEDED int default_signals(int sig, ...);
-int sigaction_many(const struct sigaction *sa, ...);
+// UNNEEDED int sigaction_many(const struct sigaction *sa, ...);
 
 int sigset_add_many(sigset_t *ss, ...);
 int sigprocmask_many(int how, sigset_t *old, ...);
@@ -39,3 +39,5 @@ const char *signal_to_string(int i) _const_;
 int signal_from_string(const char *s) _pure_;
 
 int signal_from_string_try_harder(const char *s);
+
+// UNNEEDED void nop_signal_handler(int sig);

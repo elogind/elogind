@@ -71,9 +71,6 @@ int make_stdio(int fd);
 int make_null_stdio(void);
 // UNNEEDED int make_console_stdio(void);
 
-int status_vprintf(const char *status, bool ellipse, bool ephemeral, const char *format, va_list ap) _printf_(4,0);
-int status_printf(const char *status, bool ellipse, bool ephemeral, const char *format, ...) _printf_(4,5);
-
 int fd_columns(int fd);
 unsigned columns(void);
 int fd_lines(int fd);
@@ -117,7 +114,11 @@ static inline const char *ansi_normal(void) {
 int get_ctty_devnr(pid_t pid, dev_t *d);
 int get_ctty(pid_t, dev_t *_devnr, char **r);
 
-int getttyname_malloc(int fd, char **r);
+// UNNEEDED int getttyname_malloc(int fd, char **r);
 // UNNEEDED int getttyname_harder(int fd, char **r);
 
+// UNNEEDED int ptsname_malloc(int fd, char **ret);
 // UNNEEDED int ptsname_namespace(int pty, char **ret);
+
+// UNNEEDED int openpt_in_namespace(pid_t pid, int flags);
+// UNNEEDED int open_terminal_in_namespace(pid_t pid, const char *name, int mode);

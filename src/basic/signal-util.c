@@ -19,8 +19,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "util.h"
+#include "parse-util.h"
 #include "signal-util.h"
+#include "string-table.h"
+#include "string-util.h"
+#include "util.h"
 
 int reset_all_signal_handlers(void) {
         static const struct sigaction sa = {
@@ -84,6 +87,8 @@ static int sigaction_many_ap(const struct sigaction *sa, int sig, va_list ap) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int sigaction_many(const struct sigaction *sa, ...) {
         va_list ap;
         int r;
@@ -94,6 +99,7 @@ int sigaction_many(const struct sigaction *sa, ...) {
 
         return r;
 }
+#endif // 0
 
 int ignore_signals(int sig, ...) {
 
@@ -269,3 +275,10 @@ int signal_from_string_try_harder(const char *s) {
 
         return signo;
 }
+
+/// UNNEEDED by elogind
+#if 0
+void nop_signal_handler(int sig) {
+        /* nothing here */
+}
+#endif // 0
