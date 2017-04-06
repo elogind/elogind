@@ -22,24 +22,17 @@
 ***/
 
 #include <stdbool.h>
-#include <sys/capability.h>
+#include <sys/types.h>
 
-#include "util.h"
+#include "time-util.h"
 
-unsigned long cap_last_cap(void);
-// UNNEEDED int have_effective_cap(int value);
-// UNNEEDED int capability_bounding_set_drop(uint64_t drop, bool right_now);
-// UNNEEDED int capability_bounding_set_drop_usermode(uint64_t drop);
+int getxattr_malloc(const char *path, const char *name, char **value, bool allow_symlink);
+int fgetxattr_malloc(int fd, const char *name, char **value);
 
-// UNNEEDED int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities);
+ssize_t fgetxattrat_fake(int dirfd, const char *filename, const char *attribute, void *value, size_t size, int flags);
 
-// UNNEEDED int drop_capability(cap_value_t cv);
+// UNNEEDED int fd_setcrtime(int fd, usec_t usec);
 
-DEFINE_TRIVIAL_CLEANUP_FUNC(cap_t, cap_free);
-#define _cleanup_cap_free_ _cleanup_(cap_freep)
-
-static inline void cap_free_charpp(char **p) {
-        if (*p)
-                cap_free(*p);
-}
-#define _cleanup_cap_free_charp_ _cleanup_(cap_free_charpp)
+// UNNEEDED int fd_getcrtime(int fd, usec_t *usec);
+// UNNEEDED int path_getcrtime(const char *p, usec_t *usec);
+// UNNEEDED int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags);

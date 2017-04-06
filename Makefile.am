@@ -297,10 +297,11 @@ libbasic_la_SOURCES = \
 	src/basic/missing.h \
 	src/basic/musl_missing.h \
 	src/basic/musl_missing.c \
-	src/basic/capability.c \
-	src/basic/capability.h \
+	src/basic/capability-util.c \
+	src/basic/capability-util.h \
 	src/basic/conf-files.c \
 	src/basic/conf-files.h \
+	src/basic/stdio-util.h \
 	src/basic/hostname-util.h \
 	src/basic/hostname-util.c \
 	src/basic/unit-name.c \
@@ -308,12 +309,47 @@ libbasic_la_SOURCES = \
 	src/basic/unaligned.h \
 	src/basic/util.c \
 	src/basic/util.h \
+	src/basic/io-util.c \
+	src/basic/io-util.h \
+	src/basic/string-util.c \
+	src/basic/string-util.h \
+	src/basic/parse-util.c \
+	src/basic/parse-util.h \
+	src/basic/fd-util.c \
+	src/basic/fd-util.h \
+	src/basic/user-util.c \
+	src/basic/user-util.h \
+	src/basic/dirent-util.c \
+	src/basic/dirent-util.h \
+	src/basic/xattr-util.c \
+	src/basic/xattr-util.h \
+	src/basic/proc-cmdline.c \
+	src/basic/proc-cmdline.h \
+	src/basic/fs-util.c \
+	src/basic/fs-util.h \
+	src/basic/syslog-util.c \
+	src/basic/syslog-util.h \
+	src/basic/stat-util.c \
+	src/basic/stat-util.h \
+	src/basic/mount-util.c \
+	src/basic/mount-util.h \
+	src/basic/hexdecoct.c \
+	src/basic/hexdecoct.h \
+	src/basic/extract-word.c \
+	src/basic/extract-word.h \
+	src/basic/escape.c \
+	src/basic/escape.h \
 	src/basic/path-util.c \
 	src/basic/path-util.h \
 	src/basic/time-util.c \
 	src/basic/time-util.h \
+	src/basic/locale-util.c \
+	src/basic/locale-util.h \
+	src/basic/umask-util.h \
 	src/basic/signal-util.c \
 	src/basic/signal-util.h \
+	src/basic/string-table.c \
+	src/basic/string-table.h \
 	src/basic/mempool.c \
 	src/basic/mempool.h \
 	src/basic/hashmap.c \
@@ -336,6 +372,8 @@ libbasic_la_SOURCES = \
 	src/basic/utf8.h \
 	src/basic/gunicode.c \
 	src/basic/gunicode.h \
+	src/basic/socket-util.c \
+	src/basic/socket-util.h \
 	src/basic/fileio.c \
 	src/basic/fileio.h \
 	src/basic/mkdir.c \
@@ -348,8 +386,8 @@ libbasic_la_SOURCES = \
 	src/basic/terminal-util.h \
 	src/basic/login-util.h \
 	src/basic/login-util.c \
-	src/basic/audit.c \
-	src/basic/audit.h \
+	src/basic/audit-util.c \
+	src/basic/audit-util.h \
 	src/basic/memfd-util.c \
 	src/basic/memfd-util.h \
 	src/basic/process-util.c \
@@ -369,6 +407,8 @@ libbasic_la_SOURCES = \
 	src/basic/rm-rf.h \
 	src/basic/copy.c \
 	src/basic/copy.h \
+	src/basic/alloc-util.h \
+	src/basic/alloc-util.c \
 	src/basic/parse-printf-format.c \
 	src/basic/parse-printf-format.h
 

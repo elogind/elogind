@@ -297,10 +297,14 @@ stamp-*
 
 
 # Local Helper Scripts and Tools - Not for distribution
-check_tree.sh
-cleanup*.sh
-elogind.*
-get_build_file_diff.sh
-pwx_*.*
-rebuild_all.sh
-
+patches/
+/check_*.*
+/cleanup*.sh
+/elogind.*
+/get_build_file_diff.sh
+/pwx_*.*
+/rebuild_all.sh
+*.orig
+*.rej
+*.remote
+*.bak

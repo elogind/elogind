@@ -22,11 +22,15 @@
 #include <errno.h>
 #include <stdio.h>
 
-#include "macro.h"
-#include "audit.h"
-#include "util.h"
-#include "process-util.h"
+#include "alloc-util.h"
+#include "audit-util.h"
+#include "fd-util.h"
 #include "fileio.h"
+#include "macro.h"
+#include "parse-util.h"
+#include "process-util.h"
+#include "user-util.h"
+#include "util.h"
 
 int audit_session_from_pid(pid_t pid, uint32_t *id) {
         _cleanup_free_ char *s = NULL;
@@ -82,8 +86,6 @@ int audit_loginuid_from_pid(pid_t pid, uid_t *uid) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool use_audit(void) {
         static int cached_use = -1;
 
@@ -101,4 +103,3 @@ bool use_audit(void) {
 
         return cached_use;
 }
-#endif // 0

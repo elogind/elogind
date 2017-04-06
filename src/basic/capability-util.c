@@ -19,21 +19,21 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <unistd.h>
 #include <errno.h>
+#include <grp.h>
 #include <stdio.h>
 #include <sys/capability.h>
 #include <sys/prctl.h>
-#include "grp.h"
+#include <unistd.h>
 
-#include "macro.h"
-#include "util.h"
-#include "log.h"
+#include "alloc-util.h"
+#include "capability-util.h"
 #include "fileio.h"
-#include "capability.h"
+#include "log.h"
+#include "macro.h"
+#include "parse-util.h"
+#include "util.h"
 
-/// UNNEEDED by elogind
-#if 0
 int have_effective_cap(int value) {
         _cleanup_cap_free_ cap_t cap;
         cap_flag_value_t fv;
@@ -47,7 +47,6 @@ int have_effective_cap(int value) {
         else
                 return fv == CAP_SET;
 }
-#endif // 0
 
 unsigned long cap_last_cap(void) {
         static thread_local unsigned long saved;
@@ -96,8 +95,6 @@ unsigned long cap_last_cap(void) {
         return p;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int capability_bounding_set_drop(uint64_t drop, bool right_now) {
         _cleanup_cap_free_ cap_t after_cap = NULL;
         cap_flag_value_t fv;
@@ -281,10 +278,8 @@ int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities) {
                 assert(keep_capabilities & (1ULL << (i - 1)));
 
                 if (cap_set_flag(d, CAP_EFFECTIVE, j, bits, CAP_SET) < 0 ||
-                    cap_set_flag(d, CAP_PERMITTED, j, bits, CAP_SET) < 0) {
-                        log_error_errno(errno, "Failed to enable capabilities bits: %m");
-                        return -errno;
-                }
+                    cap_set_flag(d, CAP_PERMITTED, j, bits, CAP_SET) < 0)
+                        return log_error_errno(errno, "Failed to enable capabilities bits: %m");
 
                 if (cap_set_proc(d) < 0)
                         return log_error_errno(errno, "Failed to increase capabilities: %m");
@@ -310,4 +305,3 @@ int drop_capability(cap_value_t cv) {
 
         return 0;
 }
-#endif // 0
