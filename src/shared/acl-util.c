@@ -23,8 +23,11 @@
 #include <stdbool.h>
 
 #include "acl-util.h"
-#include "util.h"
+#include "alloc-util.h"
+#include "string-util.h"
 #include "strv.h"
+#include "user-util.h"
+#include "util.h"
 
 int acl_find_uid(acl_t acl, uid_t uid, acl_entry_t *entry) {
         acl_entry_t i;
