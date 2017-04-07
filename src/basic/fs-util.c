@@ -194,7 +194,6 @@ int readlink_value(const char *p, char **ret) {
 
         return 0;
 }
-#endif // 0
 
 int readlink_and_make_absolute(const char *p, char **r) {
         _cleanup_free_ char *target = NULL;
@@ -216,8 +215,6 @@ int readlink_and_make_absolute(const char *p, char **r) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int readlink_and_canonicalize(const char *p, char **r) {
         char *t, *s;
         int j;
@@ -280,6 +277,8 @@ int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid) {
         assert(fd >= 0);
 
@@ -297,6 +296,7 @@ int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid) {
 
         return 0;
 }
+#endif // 0
 
 int fchmod_umask(int fd, mode_t m) {
         mode_t u;
@@ -370,6 +370,8 @@ int touch(const char *path) {
         return touch_file(path, false, USEC_INFINITY, UID_INVALID, GID_INVALID, MODE_INVALID);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int symlink_idempotent(const char *from, const char *to) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -455,6 +457,7 @@ int mkfifo_atomic(const char *path, mode_t mode) {
 
         return 0;
 }
+#endif // 0
 
 int get_files_in_directory(const char *path, char ***list) {
         _cleanup_closedir_ DIR *d = NULL;

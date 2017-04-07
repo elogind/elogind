@@ -42,27 +42,27 @@
 /* Set cursor to top left corner and clear screen */
 #define ANSI_HOME_CLEAR "\x1B[H\x1B[2J"
 
-int reset_terminal_fd(int fd, bool switch_to_text);
-int reset_terminal(const char *name);
+// UNNEEDED int reset_terminal_fd(int fd, bool switch_to_text);
+// UNNEEDED int reset_terminal(const char *name);
 
 int open_terminal(const char *name, int mode);
-int acquire_terminal(const char *name, bool fail, bool force, bool ignore_tiocstty_eperm, usec_t timeout);
+// UNNEEDED int acquire_terminal(const char *name, bool fail, bool force, bool ignore_tiocstty_eperm, usec_t timeout);
 // UNNEEDED int release_terminal(void);
 
-int terminal_vhangup_fd(int fd);
-int terminal_vhangup(const char *name);
+// UNNEEDED int terminal_vhangup_fd(int fd);
+// UNNEEDED int terminal_vhangup(const char *name);
 
 int chvt(int vt);
 
-int read_one_char(FILE *f, char *ret, usec_t timeout, bool *need_nl);
+// UNNEEDED int read_one_char(FILE *f, char *ret, usec_t timeout, bool *need_nl);
 // UNNEEDED int ask_char(char *ret, const char *replies, const char *text, ...) _printf_(3, 4);
 // UNNEEDED int ask_string(char **ret, const char *text, ...) _printf_(2, 3);
 
-int vt_disallocate(const char *name);
+// UNNEEDED int vt_disallocate(const char *name);
 
-char *resolve_dev_console(char **active);
+// UNNEEDED char *resolve_dev_console(char **active);
 bool tty_is_vc(const char *tty);
-bool tty_is_vc_resolve(const char *tty);
+// UNNEEDED bool tty_is_vc_resolve(const char *tty);
 bool tty_is_console(const char *tty) _pure_;
 int vtnr_from_tty(const char *tty);
 // UNNEEDED const char *default_term_for_tty(const char *tty);

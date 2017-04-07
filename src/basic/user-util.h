@@ -36,8 +36,8 @@ static inline int parse_gid(const char *s, gid_t *ret_gid) {
         return parse_uid(s, (uid_t*) ret_gid);
 }
 
-char* getlogname_malloc(void);
-char* getusername_malloc(void);
+// UNNEEDED char* getlogname_malloc(void);
+// UNNEEDED char* getusername_malloc(void);
 
 int get_user_creds(const char **username, uid_t *uid, gid_t *gid, const char **home, const char **shell);
 int get_group_creds(const char **groupname, gid_t *gid);
@@ -45,15 +45,15 @@ int get_group_creds(const char **groupname, gid_t *gid);
 char* uid_to_name(uid_t uid);
 char* gid_to_name(gid_t gid);
 
-int in_gid(gid_t gid);
-int in_group(const char *name);
+// UNNEEDED int in_gid(gid_t gid);
+// UNNEEDED int in_group(const char *name);
 
-int get_home_dir(char **ret);
-int get_shell(char **_ret);
+// UNNEEDED int get_home_dir(char **ret);
+// UNNEEDED int get_shell(char **_ret);
 
 int reset_uid_gid(void);
 
-int take_etc_passwd_lock(const char *root);
+// UNNEEDED int take_etc_passwd_lock(const char *root);
 
 #define UID_INVALID ((uid_t) -1)
 #define GID_INVALID ((gid_t) -1)

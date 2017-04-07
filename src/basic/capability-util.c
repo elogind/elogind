@@ -34,6 +34,8 @@
 #include "parse-util.h"
 #include "util.h"
 
+/// UNNEEDED by elogind
+#if 0
 int have_effective_cap(int value) {
         _cleanup_cap_free_ cap_t cap;
         cap_flag_value_t fv;
@@ -47,6 +49,7 @@ int have_effective_cap(int value) {
         else
                 return fv == CAP_SET;
 }
+#endif // 0
 
 unsigned long cap_last_cap(void) {
         static thread_local unsigned long saved;
@@ -95,6 +98,8 @@ unsigned long cap_last_cap(void) {
         return p;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int capability_bounding_set_drop(uint64_t drop, bool right_now) {
         _cleanup_cap_free_ cap_t after_cap = NULL;
         cap_flag_value_t fv;
@@ -305,3 +310,4 @@ int drop_capability(cap_value_t cv) {
 
         return 0;
 }
+#endif // 0

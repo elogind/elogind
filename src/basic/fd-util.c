@@ -120,6 +120,8 @@ FILE* safe_fclose(FILE *f) {
         return NULL;
 }
 
+/// UNNEEDED by elogind
+#if 0
 DIR* safe_closedir(DIR *d) {
 
         if (d) {
@@ -130,6 +132,7 @@ DIR* safe_closedir(DIR *d) {
 
         return NULL;
 }
+#endif // 0
 
 int fd_nonblock(int fd, bool nonblock) {
         int flags, nflags;
@@ -248,6 +251,8 @@ int close_all_fds(const int except[], unsigned n_except) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int same_fd(int a, int b) {
         struct stat sta, stb;
         pid_t pid;
@@ -349,3 +354,4 @@ bool fdname_is_valid(const char *s) {
 
         return p - s < 256;
 }
+#endif // 0

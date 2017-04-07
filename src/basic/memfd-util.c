@@ -111,6 +111,8 @@ int memfd_set_sealed(int fd) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int memfd_get_sealed(int fd) {
         int r;
 

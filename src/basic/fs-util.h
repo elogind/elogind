@@ -38,12 +38,12 @@ int unlink_noerrno(const char *path);
 int readlinkat_malloc(int fd, const char *p, char **ret);
 int readlink_malloc(const char *p, char **r);
 // UNNEEDED int readlink_value(const char *p, char **ret);
-int readlink_and_make_absolute(const char *p, char **r);
+// UNNEEDED int readlink_and_make_absolute(const char *p, char **r);
 // UNNEEDED int readlink_and_canonicalize(const char *p, char **r);
 // UNNEEDED int readlink_and_make_absolute_root(const char *root, const char *path, char **ret);
 
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid);
-int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid);
+// UNNEEDED int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid);
 
 int fchmod_umask(int fd, mode_t mode);
 
@@ -54,14 +54,16 @@ int fd_warn_permissions(const char *path, int fd);
 int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gid, mode_t mode);
 int touch(const char *path);
 
-int symlink_idempotent(const char *from, const char *to);
+// UNNEEDED int symlink_idempotent(const char *from, const char *to);
 
-int symlink_atomic(const char *from, const char *to);
-int mknod_atomic(const char *path, mode_t mode, dev_t dev);
-int mkfifo_atomic(const char *path, mode_t mode);
+// UNNEEDED int symlink_atomic(const char *from, const char *to);
+// UNNEEDED int mknod_atomic(const char *path, mode_t mode, dev_t dev);
+// UNNEEDED int mkfifo_atomic(const char *path, mode_t mode);
 
 int get_files_in_directory(const char *path, char ***list);
 
+/// UNNEEDED by elogind
+#if 0
 #define INOTIFY_EVENT_MAX (sizeof(struct inotify_event) + NAME_MAX + 1)
 
 #define FOREACH_INOTIFY_EVENT(e, buffer, sz) \
@@ -73,3 +75,4 @@ union inotify_event_buffer {
         struct inotify_event ev;
         uint8_t raw[INOTIFY_EVENT_MAX];
 };
+#endif // 0

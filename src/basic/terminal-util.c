@@ -74,6 +74,8 @@ int chvt(int vt) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int read_one_char(FILE *f, char *ret, usec_t t, bool *need_nl) {
         struct termios old_termios, new_termios;
         char c, line[LINE_MAX];
@@ -134,8 +136,6 @@ int read_one_char(FILE *f, char *ret, usec_t t, bool *need_nl) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int ask_char(char *ret, const char *replies, const char *text, ...) {
         int r;
 
@@ -226,7 +226,6 @@ int ask_string(char **ret, const char *text, ...) {
                 }
         }
 }
-#endif // 0
 
 int reset_terminal_fd(int fd, bool switch_to_text) {
         struct termios termios;
@@ -305,6 +304,7 @@ int reset_terminal(const char *name) {
 
         return reset_terminal_fd(fd, true);
 }
+#endif // 0
 
 int open_terminal(const char *name, int mode) {
         int fd, r;
@@ -352,6 +352,8 @@ int open_terminal(const char *name, int mode) {
         return fd;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int acquire_terminal(
                 const char *name,
                 bool fail,
@@ -499,6 +501,7 @@ fail:
 
         return r;
 }
+#endif // 0
 
 /// UNNEEDED by elogind
 #if 0
@@ -527,7 +530,6 @@ int release_terminal(void) {
 
         return r;
 }
-#endif // 0
 
 int terminal_vhangup_fd(int fd) {
         assert(fd >= 0);
@@ -614,8 +616,6 @@ int vt_disallocate(const char *name) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int make_console_stdio(void) {
         int fd, r;
 
@@ -676,6 +676,8 @@ int vtnr_from_tty(const char *tty) {
         return i;
 }
 
+/// UNNEEDED by elogind
+#if 0
 char *resolve_dev_console(char **active) {
         char *tty;
 
@@ -726,8 +728,6 @@ bool tty_is_vc_resolve(const char *tty) {
         return tty_is_vc(tty);
 }
 
-/// UNNEEDED by elogind
-#if 0
 const char *default_term_for_tty(const char *tty) {
         assert(tty);
 

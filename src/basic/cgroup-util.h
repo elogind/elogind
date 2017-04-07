@@ -166,7 +166,7 @@ bool cg_controller_is_valid(const char *p);
 
 // UNNEEDED int cg_slice_to_path(const char *unit, char **ret);
 
-typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
+// UNNEEDED typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
 // UNNEEDED int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path);
 // UNNEEDED int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t callback, void *userdata);

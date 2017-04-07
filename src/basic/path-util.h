@@ -38,7 +38,7 @@
 bool is_path(const char *p) _pure_;
 // UNNEEDED int path_split_and_make_absolute(const char *p, char ***ret);
 bool path_is_absolute(const char *p) _pure_;
-char* path_make_absolute(const char *p, const char *prefix);
+// UNNEEDED char* path_make_absolute(const char *p, const char *prefix);
 int path_make_absolute_cwd(const char *p, char **ret);
 // UNNEEDED int path_make_relative(const char *from_dir, const char *to_path, char **_r);
 char* path_kill_slashes(char *path);
@@ -57,7 +57,7 @@ char** path_strv_resolve_uniq(char **l, const char *prefix);
 // UNNEEDED bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
 // UNNEEDED int fsck_exists(const char *fstype);
-int mkfs_exists(const char *fstype);
+// UNNEEDED int mkfs_exists(const char *fstype);
 
 /* Iterates through the path prefixes of the specified path, going up
  * the tree, to root. Also returns "" (and not "/"!) for the root
@@ -96,7 +96,7 @@ int mkfs_exists(const char *fstype);
                 _ret;                                                   \
         })
 
-int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg);
+// UNNEEDED int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg);
 
 char* dirname_malloc(const char *path);
 
@@ -108,4 +108,4 @@ char *file_in_same_dir(const char *path, const char *filename);
 bool hidden_file_allow_backup(const char *filename);
 bool hidden_file(const char *filename) _pure_;
 
-bool is_device_path(const char *path);
+// UNNEEDED bool is_device_path(const char *path);

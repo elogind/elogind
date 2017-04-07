@@ -77,7 +77,6 @@ int path_split_and_make_absolute(const char *p, char ***ret) {
         *ret = l;
         return r;
 }
-#endif // 0
 
 char *path_make_absolute(const char *p, const char *prefix) {
         assert(p);
@@ -90,6 +89,7 @@ char *path_make_absolute(const char *p, const char *prefix) {
 
         return strjoin(prefix, "/", p, NULL);
 }
+#endif // 0
 
 int path_make_absolute_cwd(const char *p, char **ret) {
         char *c;
@@ -647,7 +647,6 @@ char *prefix_root(const char *root, const char *path) {
         strcpy(p, path);
         return n;
 }
-#endif // 0
 
 int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg) {
         char *p;
@@ -680,6 +679,7 @@ int parse_path_argument_and_warn(const char *path, bool suppress_root, char **ar
         *arg = p;
         return 0;
 }
+#endif // 0
 
 char* dirname_malloc(const char *path) {
         char *d, *dir, *dir2;
@@ -802,6 +802,8 @@ bool hidden_file(const char *filename) {
         return hidden_file_allow_backup(filename);
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool is_device_path(const char *path) {
 
         /* Returns true on paths that refer to a device, either in
@@ -811,3 +813,4 @@ bool is_device_path(const char *path) {
                 path_startswith(path, "/dev/") ||
                 path_startswith(path, "/sys/");
 }
+#endif // 0

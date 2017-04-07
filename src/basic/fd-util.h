@@ -40,7 +40,7 @@ void close_many(const int fds[], unsigned n_fd);
 
 int fclose_nointr(FILE *f);
 FILE* safe_fclose(FILE *f);
-DIR* safe_closedir(DIR *f);
+// UNNEEDED DIR* safe_closedir(DIR *f);
 
 static inline void closep(int *fd) {
         safe_close(*fd);
@@ -68,8 +68,8 @@ int fd_cloexec(int fd, bool cloexec);
 
 int close_all_fds(const int except[], unsigned n_except);
 
-int same_fd(int a, int b);
+// UNNEEDED int same_fd(int a, int b);
 
-void cmsg_close_all(struct msghdr *mh);
+// UNNEEDED void cmsg_close_all(struct msghdr *mh);
 
-bool fdname_is_valid(const char *s);
+// UNNEEDED bool fdname_is_valid(const char *s);

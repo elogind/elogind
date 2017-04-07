@@ -44,6 +44,8 @@
 #include "user-util.h"
 #include "util.h"
 
+/// UNNEEDED by elogind
+#if 0
 int socket_address_parse(SocketAddress *a, const char *s) {
         char *e, *n;
         unsigned u;
@@ -435,6 +437,7 @@ const char* socket_address_get_path(const SocketAddress *a) {
 
         return a->sockaddr.un.sun_path;
 }
+#endif // 0
 
 bool socket_ipv6_is_supported(void) {
         _cleanup_free_ char *l = NULL;
@@ -450,6 +453,8 @@ bool socket_ipv6_is_supported(void) {
         return l[0] == '0';
 }
 
+/// UNNEEDED by elogind
+#if 0
 bool socket_address_matches_fd(const SocketAddress *a, int fd) {
         SocketAddress b;
         socklen_t solen;
@@ -755,6 +760,7 @@ bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b
 
         return false;
 }
+#endif // 0
 
 int fd_inc_sndbuf(int fd, size_t n) {
         int r, value;
@@ -791,6 +797,8 @@ int fd_inc_rcvbuf(int fd, size_t n) {
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static const char* const ip_tos_table[] = {
         [IPTOS_LOWDELAY] = "low-delay",
         [IPTOS_THROUGHPUT] = "throughput",
@@ -799,6 +807,7 @@ static const char* const ip_tos_table[] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ip_tos, int, 0xff);
+#endif // 0
 
 int getpeercred(int fd, struct ucred *ucred) {
         socklen_t n = sizeof(struct ucred);
@@ -894,6 +903,8 @@ int send_one_fd(int transport_fd, int fd, int flags) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int receive_one_fd(int transport_fd, int flags) {
         union {
                 struct cmsghdr cmsghdr;
@@ -935,3 +946,4 @@ int receive_one_fd(int transport_fd, int flags) {
 
         return *(int*) CMSG_DATA(found);
 }
+#endif // 0
