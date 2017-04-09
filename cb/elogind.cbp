@@ -62,12 +62,10 @@
 		</Unit>
 		<Unit filename="../src/basic/copy.h" />
 		<Unit filename="../src/basic/def.h" />
-		<Unit filename="../src/basic/errno-from-name.h" />
 		<Unit filename="../src/basic/errno-list.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/errno-list.h" />
-		<Unit filename="../src/basic/errno-to-name.h" />
 		<Unit filename="../src/basic/fileio-label.c">
 			<Option compilerVar="CC" />
 		</Unit>

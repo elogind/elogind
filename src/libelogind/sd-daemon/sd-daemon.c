@@ -513,9 +513,12 @@ finish:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_pid_notify(pid_t pid, int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(pid, unset_environment, state, NULL, 0);
 }
+#endif // 0
 
 _public_ int sd_notify(int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(0, unset_environment, state, NULL, 0);

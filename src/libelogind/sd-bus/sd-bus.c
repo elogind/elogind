@@ -70,7 +70,7 @@ static int attach_io_events(sd_bus *b);
 static void detach_io_events(sd_bus *b);
 
 static thread_local sd_bus *default_system_bus = NULL;
-static thread_local sd_bus *default_user_bus = NULL;
+// UNNEEDED static thread_local sd_bus *default_user_bus = NULL;
 static thread_local sd_bus *default_starter_bus = NULL;
 
 static void bus_close_fds(sd_bus *b) {
@@ -303,7 +303,6 @@ _public_ int sd_bus_negotiate_timestamp(sd_bus *bus, int b) {
 
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t mask) {
         uint64_t new_flags;
@@ -344,8 +343,6 @@ _public_ int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t server_id) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 _public_ int sd_bus_set_anonymous(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
         assert_return(bus->state == BUS_UNSET, -EPERM);
@@ -1847,6 +1844,8 @@ _public_ int sd_bus_send(sd_bus *bus, sd_bus_message *m, uint64_t *cookie) {
         return bus_send_internal(bus, m, cookie, false);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_send_to(sd_bus *bus, sd_bus_message *m, const char *destination, uint64_t *cookie) {
         int r;
 
@@ -1872,6 +1871,7 @@ _public_ int sd_bus_send_to(sd_bus *bus, sd_bus_message *m, const char *destinat
 
         return sd_bus_send(bus, m, cookie);
 }
+#endif // 0
 
 static usec_t calc_elapse(uint64_t usec) {
         if (usec == (uint64_t) -1)
@@ -2156,6 +2156,8 @@ fail:
         return sd_bus_error_set_errno(error, r);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_get_fd(sd_bus *bus) {
 
         assert_return(bus, -EINVAL);
@@ -2164,6 +2166,7 @@ _public_ int sd_bus_get_fd(sd_bus *bus) {
 
         return bus->input_fd;
 }
+#endif // 0
 
 _public_ int sd_bus_get_events(sd_bus *bus) {
         int flags = 0;
@@ -2961,6 +2964,8 @@ _public_ int sd_bus_flush(sd_bus *bus) {
         }
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_add_filter(
                 sd_bus *bus,
                 sd_bus_slot **slot,
@@ -2987,6 +2992,7 @@ _public_ int sd_bus_add_filter(
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_add_match(
                 sd_bus *bus,
@@ -3669,7 +3675,6 @@ _public_ int sd_bus_path_decode_many(const char *path, const char *path_template
         labels = NULL;
         return 1;
 }
-#endif // 0
 
 _public_ int sd_bus_try_close(sd_bus *bus) {
         int r;
@@ -3697,8 +3702,6 @@ _public_ int sd_bus_try_close(sd_bus *bus) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 _public_ int sd_bus_get_description(sd_bus *bus, const char **description) {
         assert_return(bus, -EINVAL);
         assert_return(description, -EINVAL);
@@ -3827,7 +3830,6 @@ _public_ int sd_bus_is_monitor(sd_bus *bus) {
 
         return !!(bus->hello_flags & KDBUS_HELLO_MONITOR);
 }
-#endif // 0
 
 static void flush_close(sd_bus *bus) {
         if (!bus)
@@ -3845,3 +3847,4 @@ _public_ void sd_bus_default_flush_close(void) {
         flush_close(default_user_bus);
         flush_close(default_system_bus);
 }
+#endif // 0

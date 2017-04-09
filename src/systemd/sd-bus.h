@@ -131,7 +131,7 @@ int sd_bus_set_fd(sd_bus *bus, int input_fd, int output_fd);
 // UNNEEDED int sd_bus_get_address(sd_bus *bus, const char **address);
 // UNNEEDED int sd_bus_set_bus_client(sd_bus *bus, int b);
 // UNNEEDED int sd_bus_is_bus_client(sd_bus *bus);
-int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t bus_id);
+// UNNEEDED int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t bus_id);
 // UNNEEDED int sd_bus_is_server(sd_bus *bus);
 // UNNEEDED int sd_bus_set_anonymous(sd_bus *bus, int b);
 // UNNEEDED int sd_bus_is_anonymous(sd_bus *bus);
@@ -141,7 +141,7 @@ int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t bus_id);
 // UNNEEDED int sd_bus_is_monitor(sd_bus *bus);
 // UNNEEDED int sd_bus_set_description(sd_bus *bus, const char *description);
 // UNNEEDED int sd_bus_get_description(sd_bus *bus, const char **description);
-int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t creds_mask);
+// UNNEEDED int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t creds_mask);
 // UNNEEDED int sd_bus_negotiate_timestamp(sd_bus *bus, int b);
 // UNNEEDED int sd_bus_negotiate_fds(sd_bus *bus, int b);
 int sd_bus_can_send(sd_bus *bus, char type);
@@ -151,14 +151,14 @@ int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b);
 
 int sd_bus_start(sd_bus *ret);
 
-int sd_bus_try_close(sd_bus *bus);
+// UNNEEDED int sd_bus_try_close(sd_bus *bus);
 void sd_bus_close(sd_bus *bus);
 
 sd_bus *sd_bus_ref(sd_bus *bus);
 sd_bus *sd_bus_unref(sd_bus *bus);
 sd_bus *sd_bus_flush_close_unref(sd_bus *bus);
 
-void sd_bus_default_flush_close(void);
+// UNNEEDED void sd_bus_default_flush_close(void);
 
 // UNNEEDED int sd_bus_get_bus_id(sd_bus *bus, sd_id128_t *id);
 // UNNEEDED int sd_bus_get_scope(sd_bus *bus, const char **scope);
@@ -166,11 +166,11 @@ void sd_bus_default_flush_close(void);
 int sd_bus_get_owner_creds(sd_bus *bus, uint64_t creds_mask, sd_bus_creds **ret);
 
 int sd_bus_send(sd_bus *bus, sd_bus_message *m, uint64_t *cookie);
-int sd_bus_send_to(sd_bus *bus, sd_bus_message *m, const char *destination, uint64_t *cookie);
+// UNNEEDED int sd_bus_send_to(sd_bus *bus, sd_bus_message *m, const char *destination, uint64_t *cookie);
 int sd_bus_call(sd_bus *bus, sd_bus_message *m, uint64_t usec, sd_bus_error *ret_error, sd_bus_message **reply);
 int sd_bus_call_async(sd_bus *bus, sd_bus_slot **slot, sd_bus_message *m, sd_bus_message_handler_t callback, void *userdata, uint64_t usec);
 
-int sd_bus_get_fd(sd_bus *bus);
+// UNNEEDED int sd_bus_get_fd(sd_bus *bus);
 int sd_bus_get_events(sd_bus *bus);
 int sd_bus_get_timeout(sd_bus *bus, uint64_t *timeout_usec);
 int sd_bus_process(sd_bus *bus, sd_bus_message **r);
@@ -187,7 +187,7 @@ int sd_bus_attach_event(sd_bus *bus, sd_event *e, int priority);
 int sd_bus_detach_event(sd_bus *bus);
 sd_event *sd_bus_get_event(sd_bus *bus);
 
-int sd_bus_add_filter(sd_bus *bus, sd_bus_slot **slot, sd_bus_message_handler_t callback, void *userdata);
+// UNNEEDED int sd_bus_add_filter(sd_bus *bus, sd_bus_slot **slot, sd_bus_message_handler_t callback, void *userdata);
 int sd_bus_add_match(sd_bus *bus, sd_bus_slot **slot, const char *match, sd_bus_message_handler_t callback, void *userdata);
 int sd_bus_add_object(sd_bus *bus, sd_bus_slot **slot, const char *path, sd_bus_message_handler_t callback, void *userdata);
 int sd_bus_add_fallback(sd_bus *bus, sd_bus_slot **slot, const char *prefix, sd_bus_message_handler_t callback, void *userdata);
@@ -256,7 +256,7 @@ int sd_bus_message_is_method_error(sd_bus_message *m, const char *name);
 // UNNEEDED int sd_bus_message_has_signature(sd_bus_message *m, const char *signature);
 
 // UNNEEDED int sd_bus_message_set_expect_reply(sd_bus_message *m, int b);
-int sd_bus_message_set_auto_start(sd_bus_message *m, int b);
+// UNNEEDED int sd_bus_message_set_auto_start(sd_bus_message *m, int b);
 // UNNEEDED int sd_bus_message_set_allow_interactive_authorization(sd_bus_message *m, int b);
 
 int sd_bus_message_set_destination(sd_bus_message *m, const char *destination);
@@ -264,11 +264,11 @@ int sd_bus_message_set_destination(sd_bus_message *m, const char *destination);
 
 int sd_bus_message_append(sd_bus_message *m, const char *types, ...);
 int sd_bus_message_append_basic(sd_bus_message *m, char type, const void *p);
-int sd_bus_message_append_array(sd_bus_message *m, char type, const void *ptr, size_t size);
-int sd_bus_message_append_array_space(sd_bus_message *m, char type, size_t size, void **ptr);
+// UNNEEDED int sd_bus_message_append_array(sd_bus_message *m, char type, const void *ptr, size_t size);
+// UNNEEDED int sd_bus_message_append_array_space(sd_bus_message *m, char type, size_t size, void **ptr);
 // UNNEEDED int sd_bus_message_append_array_iovec(sd_bus_message *m, char type, const struct iovec *iov, unsigned n);
 // UNNEEDED int sd_bus_message_append_array_memfd(sd_bus_message *m, char type, int memfd, uint64_t offset, uint64_t size);
-int sd_bus_message_append_string_space(sd_bus_message *m, size_t size, char **s);
+// UNNEEDED int sd_bus_message_append_string_space(sd_bus_message *m, size_t size, char **s);
 // UNNEEDED int sd_bus_message_append_string_iovec(sd_bus_message *m, const struct iovec *iov, unsigned n);
 // UNNEEDED int sd_bus_message_append_string_memfd(sd_bus_message *m, int memfd, uint64_t offset, uint64_t size);
 int sd_bus_message_append_strv(sd_bus_message *m, char **l);

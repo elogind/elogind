@@ -242,7 +242,7 @@ int sd_notify(int unset_environment, const char *state);
   Similar to sd_notify(), but send the message on behalf of another
   process, if the appropriate permissions are available.
 */
-int sd_pid_notify(pid_t pid, int unset_environment, const char *state);
+// UNNEEDED int sd_pid_notify(pid_t pid, int unset_environment, const char *state);
 
 /*
   Similar to sd_notifyf(), but send the message on behalf of another

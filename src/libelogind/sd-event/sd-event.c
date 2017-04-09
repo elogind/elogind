@@ -1165,6 +1165,8 @@ _public_ int sd_event_add_signal(
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_add_child(
                 sd_event *e,
                 sd_event_source **ret,
@@ -1257,6 +1259,7 @@ _public_ int sd_event_add_defer(
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_add_post(
                 sd_event *e,
@@ -2699,6 +2702,8 @@ _public_ int sd_event_get_state(sd_event *e) {
         return e->state;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_get_exit_code(sd_event *e, int *code) {
         assert_return(e, -EINVAL);
         assert_return(code, -EINVAL);
@@ -2710,6 +2715,7 @@ _public_ int sd_event_get_exit_code(sd_event *e, int *code) {
         *code = e->exit_code;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_exit(sd_event *e, int code) {
         assert_return(e, -EINVAL);
@@ -2783,6 +2789,8 @@ _public_ int sd_event_default(sd_event **ret) {
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_get_tid(sd_event *e, pid_t *tid) {
         assert_return(e, -EINVAL);
         assert_return(tid, -EINVAL);
@@ -2795,6 +2803,7 @@ _public_ int sd_event_get_tid(sd_event *e, pid_t *tid) {
 
         return -ENXIO;
 }
+#endif // 0
 
 _public_ int sd_event_set_watchdog(sd_event *e, int b) {
         int r;
