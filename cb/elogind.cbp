@@ -36,19 +36,23 @@
 		<Unit filename="../Makefile.am" />
 		<Unit filename="../config.h.in" />
 		<Unit filename="../configure.ac" />
-		<Unit filename="../src/basic/audit.c">
+		<Unit filename="../src/basic/alloc-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/basic/audit.h" />
+		<Unit filename="../src/basic/alloc-util.h" />
+		<Unit filename="../src/basic/audit-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/audit-util.h" />
 		<Unit filename="../src/basic/build.h" />
 		<Unit filename="../src/basic/bus-label.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/bus-label.h" />
-		<Unit filename="../src/basic/capability.c">
+		<Unit filename="../src/basic/capability-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/basic/capability.h" />
+		<Unit filename="../src/basic/capability-util.h" />
 		<Unit filename="../src/basic/cgroup-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -62,10 +66,26 @@
 		</Unit>
 		<Unit filename="../src/basic/copy.h" />
 		<Unit filename="../src/basic/def.h" />
+		<Unit filename="../src/basic/dirent-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/dirent-util.h" />
 		<Unit filename="../src/basic/errno-list.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/errno-list.h" />
+		<Unit filename="../src/basic/escape.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/escape.h" />
+		<Unit filename="../src/basic/extract-word.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/extract-word.h" />
+		<Unit filename="../src/basic/fd-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/fd-util.h" />
 		<Unit filename="../src/basic/fileio-label.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -74,6 +94,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/fileio.h" />
+		<Unit filename="../src/basic/formats-util.h" />
+		<Unit filename="../src/basic/fs-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/fs-util.h" />
 		<Unit filename="../src/basic/gunicode.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -82,15 +107,27 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/hashmap.h" />
+		<Unit filename="../src/basic/hexdecoct.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/hexdecoct.h" />
 		<Unit filename="../src/basic/hostname-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/hostname-util.h" />
+		<Unit filename="../src/basic/io-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/io-util.h" />
 		<Unit filename="../src/basic/label.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/label.h" />
 		<Unit filename="../src/basic/list.h" />
+		<Unit filename="../src/basic/locale-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/locale-util.h" />
 		<Unit filename="../src/basic/log.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -116,6 +153,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mkdir.h" />
+		<Unit filename="../src/basic/mount-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/mount-util.h" />
 		<Unit filename="../src/basic/musl_missing.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -124,6 +165,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/parse-printf-format.h" />
+		<Unit filename="../src/basic/parse-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/parse-util.h" />
 		<Unit filename="../src/basic/path-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -132,6 +177,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/prioq.h" />
+		<Unit filename="../src/basic/proc-cmdline.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/proc-cmdline.h" />
 		<Unit filename="../src/basic/process-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -162,12 +211,32 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/smack-util.h" />
+		<Unit filename="../src/basic/socket-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/basic/socket-util.h" />
 		<Unit filename="../src/basic/sparse-endian.h" />
+		<Unit filename="../src/basic/stat-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/stat-util.h" />
+		<Unit filename="../src/basic/stdio-util.h" />
+		<Unit filename="../src/basic/string-table.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/string-table.h" />
+		<Unit filename="../src/basic/string-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/string-util.h" />
 		<Unit filename="../src/basic/strv.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/strv.h" />
+		<Unit filename="../src/basic/syslog-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/syslog-util.h" />
 		<Unit filename="../src/basic/terminal-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -176,10 +245,16 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/time-util.h" />
+		<Unit filename="../src/basic/umask-util.h" />
+		<Unit filename="../src/basic/unaligned.h" />
 		<Unit filename="../src/basic/unit-name.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/unit-name.h" />
+		<Unit filename="../src/basic/user-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/user-util.h" />
 		<Unit filename="../src/basic/utf8.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -196,6 +271,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/virt.h" />
+		<Unit filename="../src/basic/xattr-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/xattr-util.h" />
 		<Unit filename="../src/cgroups-agent/cgroups-agent.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -403,7 +482,6 @@
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
 		<Unit filename="../src/shared/efivars.h" />
-		<Unit filename="../src/shared/formats-util.h" />
 		<Unit filename="../src/shared/output-mode.h" />
 		<Unit filename="../src/shared/pager.c">
 			<Option compilerVar="CC" />
