@@ -39,6 +39,8 @@ bool mac_smack_use(void) {
         return cached_use;
 }
 
+/// UNNEEDED by elogind
+#if 0
 static const char* const smack_attr_table[_SMACK_ATTR_MAX] = {
         [SMACK_ATTR_ACCESS]     = "security.SMACK64",
         [SMACK_ATTR_EXEC]       = "security.SMACK64EXEC",
@@ -126,6 +128,7 @@ int mac_smack_apply_pid(pid_t pid, const char *label) {
 
         return r;
 }
+#endif // 0
 
 int mac_smack_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
         struct stat st;
@@ -182,6 +185,8 @@ int mac_smack_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int mac_smack_copy(const char *dest, const char *src) {
         int r = 0;
         _cleanup_free_ char *label = NULL;
@@ -199,12 +204,15 @@ int mac_smack_copy(const char *dest, const char *src) {
 
         return r;
 }
+#endif // 0
 
 #else
 bool mac_smack_use(void) {
         return false;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int mac_smack_read(const char *path, SmackAttr attr, char **label) {
         return -EOPNOTSUPP;
 }
@@ -224,12 +232,16 @@ int mac_smack_apply_fd(int fd, SmackAttr attr, const char *label) {
 int mac_smack_apply_pid(pid_t pid, const char *label) {
         return 0;
 }
+#endif // 0
 
 int mac_smack_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int mac_smack_copy(const char *dest, const char *src) {
         return 0;
 }
+#endif // 0
 #endif

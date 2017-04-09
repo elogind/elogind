@@ -188,5 +188,5 @@ bool cg_is_legacy_wanted(void);
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
 
-int cg_cpu_shares_parse(const char *s, uint64_t *ret);
-int cg_blkio_weight_parse(const char *s, uint64_t *ret);
+// UNNEEDED int cg_cpu_shares_parse(const char *s, uint64_t *ret);
+// UNNEEDED int cg_blkio_weight_parse(const char *s, uint64_t *ret);

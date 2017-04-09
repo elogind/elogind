@@ -4,6 +4,7 @@
 	<Project>
 		<Option title="elogind" />
 		<Option makefile_is_custom="1" />
+		<Option execution_dir="../../elogind" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>

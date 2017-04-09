@@ -70,6 +70,8 @@ int memfd_new(const char *name) {
         return fd;
 }
 
+/// UNNEEDED by elogind
+#if 0
 int memfd_map(int fd, uint64_t offset, size_t size, void **p) {
         void *q;
         int sealed;
@@ -93,6 +95,7 @@ int memfd_map(int fd, uint64_t offset, size_t size, void **p) {
         *p = q;
         return 0;
 }
+#endif // 0
 
 int memfd_set_sealed(int fd) {
         int r;
@@ -118,6 +121,8 @@ int memfd_get_sealed(int fd) {
         return r == (F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE | F_SEAL_SEAL);
 }
 
+/// UNNEEDED by elogind
+#if 0
 int memfd_get_size(int fd, uint64_t *sz) {
         struct stat stat;
         int r;
@@ -132,6 +137,7 @@ int memfd_get_size(int fd, uint64_t *sz) {
         *sz = stat.st_size;
         return 0;
 }
+#endif // 0
 
 int memfd_set_size(int fd, uint64_t sz) {
         int r;

@@ -368,7 +368,6 @@ int get_process_environ(pid_t pid, char **env) {
 
         return 0;
 }
-#endif // 0
 
 int get_parent_of_pid(pid_t pid, pid_t *_ppid) {
         int r;
@@ -414,6 +413,7 @@ int get_parent_of_pid(pid_t pid, pid_t *_ppid) {
 
         return 0;
 }
+#endif // 0
 
 int wait_for_terminate(pid_t pid, siginfo_t *status) {
         siginfo_t dummy;

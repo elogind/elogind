@@ -2281,6 +2281,8 @@ bool cg_is_legacy_wanted(void) {
 }
 #endif // 0
 
+/// UNNEEDED by elogind
+#if 0
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;
@@ -2319,7 +2321,8 @@ int cg_blkio_weight_parse(const char *s, uint64_t *ret) {
 
         *ret = u;
         return 0;
- }
+}
+#endif // 0
 
 static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_CPU] = "cpu",
