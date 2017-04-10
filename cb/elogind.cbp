@@ -478,7 +478,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
-		<Unit filename="../src/shared/efivars.h" />
 		<Unit filename="../src/shared/output-mode.h" />
 		<Unit filename="../src/shared/pager.c">
 			<Option compilerVar="CC" />

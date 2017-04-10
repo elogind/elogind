@@ -32,7 +32,7 @@
 #include "bus-error.h"
 #include "bus-util.h"
 #include "dirent-util.h"
-#include "efivars.h"
+//#include "efivars.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio-label.h"
@@ -2294,6 +2294,8 @@ static int property_get_reboot_to_firmware_setup(
                 sd_bus_message *reply,
                 void *userdata,
                 sd_bus_error *error) {
+/// elogind does not support EFI
+#if 0
         int r;
 
         assert(bus);
@@ -2305,6 +2307,9 @@ static int property_get_reboot_to_firmware_setup(
                 return r;
 
         return sd_bus_message_append(reply, "b", r > 0);
+#else
+        return sd_bus_message_append(reply, "b", -EOPNOTSUPP);
+#endif // 0
 }
 
 static int method_set_reboot_to_firmware_setup(
@@ -2335,9 +2340,12 @@ static int method_set_reboot_to_firmware_setup(
         if (r == 0)
                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
 
+/// elogind does not support EFI
+#if 0
         r = efi_set_reboot_to_firmware(b);
         if (r < 0)
                 return r;
+#endif // 0
 
         return sd_bus_reply_method_return(message, NULL);
 }
@@ -2347,6 +2355,8 @@ static int method_can_reboot_to_firmware_setup(
                 void *userdata,
                 sd_bus_error *error) {
 
+/// elogind does not support EFI
+#if 0
         int r;
         bool challenge;
         const char *result;
@@ -2379,6 +2389,9 @@ static int method_can_reboot_to_firmware_setup(
                 result = "no";
 
         return sd_bus_reply_method_return(message, "s", result);
+#else
+        return sd_bus_reply_method_return(message, "s", "na");
+#endif // 0
 }
 
 static int method_set_wall_message(
