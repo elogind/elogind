@@ -446,7 +446,6 @@ libshared_la_SOURCES = \
 	src/shared/spawn-polkit-agent.h \
 	src/shared/clean-ipc.c \
 	src/shared/clean-ipc.h \
-	src/shared/utmp-wtmp.h \
 	src/shared/bus-util.c \
 	src/shared/bus-util.h
 
@@ -660,7 +659,6 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-session-dbus.c \
 	src/login/logind-seat-dbus.c \
 	src/login/logind-user-dbus.c \
-	src/login/logind-utmp.c \
 	src/login/logind-acl.h \
 	src/core/cgroup.h \
 	src/core/cgroup.c \

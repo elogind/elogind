@@ -226,7 +226,7 @@ int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const ch
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);
 
-int manager_setup_wall_message_timer(Manager *m);
-bool logind_wall_tty_filter(const char *tty, void *userdata);
+// UNNEEDED int manager_setup_wall_message_timer(Manager *m);
+// UNNEEDED bool logind_wall_tty_filter(const char *tty, void *userdata);
 
 int manager_dispatch_delayed(Manager *manager, bool timeout);

@@ -442,9 +442,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-user.h" />
-		<Unit filename="../src/login/logind-utmp.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/login/logind.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -498,7 +495,6 @@
 		<Unit filename="../src/shared/spawn-polkit-agent.h" />
 		<Unit filename="../src/shared/test-tables.h" />
 		<Unit filename="../src/shared/udev-util.h" />
-		<Unit filename="../src/shared/utmp-wtmp.h" />
 		<Unit filename="../src/systemd/_sd-common.h" />
 		<Unit filename="../src/systemd/sd-bus-protocol.h" />
 		<Unit filename="../src/systemd/sd-bus-vtable.h" />

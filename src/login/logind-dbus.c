@@ -50,7 +50,7 @@
 #include "udev-util.h"
 #include "unit-name.h"
 #include "user-util.h"
-#include "utmp-wtmp.h"
+//#include "utmp-wtmp.h"
 
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret) {
         _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
@@ -2052,9 +2052,12 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
                 }
         }
 
+/// elogind does not support utmp-wtmp
+#if 0
         r = manager_setup_wall_message_timer(m);
         if (r < 0)
                 return r;
+#endif // 0
 
         if (!isempty(type)) {
                 r = update_schedule_file(m);
@@ -2076,6 +2079,8 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         cancelled = m->scheduled_shutdown_type != NULL;
         reset_scheduled_shutdown(m);
 
+/// elogind does not support utmp-wtmp
+#if 0
         if (cancelled) {
                 _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
                 const char *tty = NULL;
@@ -2091,6 +2096,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                 utmp_wall("The system shutdown has been cancelled",
                           uid_to_name(uid), tty, logind_wall_tty_filter, m);
         }
+#endif // 0
 
         return sd_bus_reply_method_return(message, "b", cancelled);
 }

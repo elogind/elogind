@@ -125,8 +125,6 @@ int memfd_get_sealed(int fd) {
         return r == (F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE | F_SEAL_SEAL);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int memfd_get_size(int fd, uint64_t *sz) {
         struct stat stat;
         int r;
