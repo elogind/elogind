@@ -394,10 +394,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/bus-util.h" />
-		<Unit filename="../src/shared/cgroup-show.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/cgroup-show.h" />
 		<Unit filename="../src/shared/clean-ipc.c">
 			<Option compilerVar="CC" />
 		</Unit>

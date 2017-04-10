@@ -405,8 +405,6 @@ libshared_la_SOURCES = \
 	src/shared/spawn-polkit-agent.h \
 	src/shared/clean-ipc.c \
 	src/shared/clean-ipc.h \
-	src/shared/cgroup-show.c \
-	src/shared/cgroup-show.h \
 	src/shared/utmp-wtmp.h \
 	src/shared/bus-util.c \
 	src/shared/bus-util.h
