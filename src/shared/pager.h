@@ -29,4 +29,7 @@ int pager_open(bool jump_to_end);
 void pager_close(void);
 bool pager_have(void) _pure_;
 
-// UNNEEDED int show_man_page(const char *page, bool null_stdio);
+/// UNNEEDED by elogind
+#if 0
+int show_man_page(const char *page, bool null_stdio);
+#endif // 0

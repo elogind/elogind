@@ -459,7 +459,10 @@ DEFINE_PARSER(uint32, uint32_t, safe_atou32);
 DEFINE_PARSER(uint64, uint64_t, safe_atou64);
 DEFINE_PARSER(unsigned, unsigned, safe_atou);
 DEFINE_PARSER(double, double, safe_atod);
-// UNNEEDED DEFINE_PARSER(nsec, nsec_t, parse_nsec);
+/// UNNEEDED by elogind
+#if 0
+DEFINE_PARSER(nsec, nsec_t, parse_nsec);
+#endif // 0
 DEFINE_PARSER(sec, usec_t, parse_sec);
 DEFINE_PARSER(mode, mode_t, parse_mode);
 

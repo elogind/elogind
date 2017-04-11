@@ -179,7 +179,10 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 int manager_process_seat_device(Manager *m, struct udev_device *d);
 int manager_process_button_device(Manager *m, struct udev_device *d);
 
-// UNNEEDED int manager_spawn_autovt(Manager *m, unsigned int vtnr);
+/// UNNEEDED by elogind
+#if 0
+int manager_spawn_autovt(Manager *m, unsigned int vtnr);
+#endif // 0
 
 bool manager_shall_kill(Manager *m, const char *user);
 
@@ -192,28 +195,32 @@ bool manager_is_docked_or_external_displays(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
-// UNNEEDED int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
-// UNNEEDED int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
-// UNNEEDED int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
-// UNNEEDED int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error);
-// UNNEEDED int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
-
-/// eloginds own version does the action itself
+/// UNNEEDED by elogind
 #if 0
+int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error);
+int match_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
+
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, const char *unit_name, InhibitWhat w, sd_bus_error *error);
 #else
+/// eloginds own version does the action itself
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
 #endif // 0
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 
-// UNNEEDED int manager_start_slice(Manager *manager, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);// UNNEEDED int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
-// UNNEEDED int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
-// UNNEEDED int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
-// UNNEEDED int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
-// UNNEEDED int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
-// UNNEEDED int manager_unit_is_active(Manager *manager, const char *unit);
-// UNNEEDED int manager_job_is_active(Manager *manager, const char *path);
+/// UNNEEDED by elogind
+#if 0
+int manager_start_slice(Manager *manager, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);// UNNEEDED int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
+int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
+int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
+int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
+int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
+int manager_unit_is_active(Manager *manager, const char *unit);
+int manager_job_is_active(Manager *manager, const char *path);
+#endif // 0
 
 /* gperf lookup function */
 const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
@@ -226,7 +233,10 @@ int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const ch
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);
 
-// UNNEEDED int manager_setup_wall_message_timer(Manager *m);
-// UNNEEDED bool logind_wall_tty_filter(const char *tty, void *userdata);
+/// UNNEEDED by elogind
+#if 0
+int manager_setup_wall_message_timer(Manager *m);
+bool logind_wall_tty_filter(const char *tty, void *userdata);
+#endif // 0
 
 int manager_dispatch_delayed(Manager *manager, bool timeout);

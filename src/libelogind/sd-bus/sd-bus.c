@@ -75,7 +75,10 @@ static int attach_io_events(sd_bus *b);
 static void detach_io_events(sd_bus *b);
 
 static thread_local sd_bus *default_system_bus = NULL;
-// UNNEEDED static thread_local sd_bus *default_user_bus = NULL;
+/// UNNEEDED by elogind
+#if 0
+static thread_local sd_bus *default_user_bus = NULL;
+#endif // 0
 static thread_local sd_bus *default_starter_bus = NULL;
 
 static void bus_close_fds(sd_bus *b) {
