@@ -26,6 +26,10 @@
 #include "fileio.h"
 
 int write_string_file_atomic_label(const char *fn, const char *line);
-// UNNEEDED int write_env_file_label(const char *fname, char **l);
-// UNNEEDED int fopen_temporary_label(const char *target,
-// UNNEEDED                           const char *path, FILE **f, char **temp_path);
+
+/// UNNEEDED by elogind
+#if 0
+int write_env_file_label(const char *fname, char **l);
+int fopen_temporary_label(const char *target,
+                          const char *path, FILE **f, char **temp_path);
+#endif // 0

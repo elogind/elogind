@@ -5,7 +5,7 @@
 /***
   This file is part of systemd.
 
-  Copyright 2014 Lennart Poettering
+  Copyright 2010 Lennart Poettering
 
   systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
@@ -21,22 +21,13 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <inttypes.h>
 #include <stdbool.h>
 #include <sys/types.h>
 
+int label_fix(const char *path, bool ignore_enoent, bool ignore_erofs);
+
+int mkdir_label(const char *path, mode_t mode);
 /// UNNEEDED by elogind
 #if 0
-int copy_file_fd(const char *from, int to, bool try_reflink);
-int copy_file(const char *from, const char *to, int flags, mode_t mode, unsigned chattr_flags);
-int copy_file_atomic(const char *from, const char *to, mode_t mode, bool replace, unsigned chattr_flags);
-int copy_tree(const char *from, const char *to, bool merge);
-int copy_tree_at(int fdf, const char *from, int fdt, const char *to, bool merge);
-int copy_directory_fd(int dirfd, const char *to, bool merge);
-#endif // 0
-int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink);
-/// UNNEEDED by elogind
-#if 0
-int copy_times(int fdf, int fdt);
-int copy_xattr(int fdf, int fdt);
+int symlink_label(const char *old_path, const char *new_path);
 #endif // 0

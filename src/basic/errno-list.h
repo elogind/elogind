@@ -24,4 +24,7 @@
 const char *errno_to_name(int id);
 int errno_from_name(const char *name);
 
-// UNNEEDED int errno_max(void);
+/// UNNEEDED by elogind
+#if 0
+int errno_max(void);
+#endif // 0

@@ -30,21 +30,26 @@
 #include "time-util.h"
 
 int unlink_noerrno(const char *path);
+/// UNNEEDED by elogind
+#if 0
+int rmdir_parents(const char *path, const char *stop);
 
-// UNNEEDED int rmdir_parents(const char *path, const char *stop);
-
-// UNNEEDED int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
-
+int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
+#endif // 0
 int readlinkat_malloc(int fd, const char *p, char **ret);
 int readlink_malloc(const char *p, char **r);
-// UNNEEDED int readlink_value(const char *p, char **ret);
-// UNNEEDED int readlink_and_make_absolute(const char *p, char **r);
-// UNNEEDED int readlink_and_canonicalize(const char *p, char **r);
-// UNNEEDED int readlink_and_make_absolute_root(const char *root, const char *path, char **ret);
-
+/// UNNEEDED by elogind
+#if 0
+int readlink_value(const char *p, char **ret);
+int readlink_and_make_absolute(const char *p, char **r);
+int readlink_and_canonicalize(const char *p, char **r);
+int readlink_and_make_absolute_root(const char *root, const char *path, char **ret);
+#endif // 0
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid);
-// UNNEEDED int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid);
-
+/// UNNEEDED by elogind
+#if 0
+int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid);
+#endif // 0
 int fchmod_umask(int fd, mode_t mode);
 
 int fd_warn_permissions(const char *path, int fd);
@@ -53,13 +58,14 @@ int fd_warn_permissions(const char *path, int fd);
 
 int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gid, mode_t mode);
 int touch(const char *path);
+/// UNNEEDED by elogind
+#if 0
+int symlink_idempotent(const char *from, const char *to);
 
-// UNNEEDED int symlink_idempotent(const char *from, const char *to);
-
-// UNNEEDED int symlink_atomic(const char *from, const char *to);
-// UNNEEDED int mknod_atomic(const char *path, mode_t mode, dev_t dev);
-// UNNEEDED int mkfifo_atomic(const char *path, mode_t mode);
-
+int symlink_atomic(const char *from, const char *to);
+int mknod_atomic(const char *path, mode_t mode, dev_t dev);
+int mkfifo_atomic(const char *path, mode_t mode);
+#endif // 0
 int get_files_in_directory(const char *path, char ***list);
 
 /// UNNEEDED by elogind

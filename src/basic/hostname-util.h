@@ -25,18 +25,26 @@
 
 #include "macro.h"
 
-// UNNEEDED bool hostname_is_set(void);
+/// UNNEEDED by elogind
+#if 0
+bool hostname_is_set(void);
 
-// UNNEEDED char* gethostname_malloc(void);
-
+char* gethostname_malloc(void);
+#endif // 0
 bool hostname_is_valid(const char *s, bool allow_trailing_dot) _pure_;
-// UNNEEDED char* hostname_cleanup(char *s);
+/// UNNEEDED by elogind
+#if 0
+char* hostname_cleanup(char *s);
+#endif // 0
 
 #define machine_name_is_valid(s) hostname_is_valid(s, false)
 
 bool is_localhost(const char *hostname);
-// UNNEEDED bool is_gateway_hostname(const char *hostname);
+/// UNNEEDED by elogind
+#if 0
+bool is_gateway_hostname(const char *hostname);
 
-// UNNEEDED int sethostname_idempotent(const char *s);
+int sethostname_idempotent(const char *s);
 
-// UNNEEDED int read_hostname_config(const char *path, char **hostname);
+int read_hostname_config(const char *path, char **hostname);
+#endif // 0

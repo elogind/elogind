@@ -45,7 +45,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
 
         assert(fdf >= 0);
         assert(fdt >= 0);
-// UNNEEDED by elogind
+/// UNNEEDED by elogind
 #if 0
         /* Try btrfs reflinks first. */
         if (try_reflink &&
@@ -129,7 +129,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
         return 0; /* return 0 if we hit EOF earlier than the size limit */
 }
 
-// UNNEEDED by elogind
+/// UNNEEDED by elogind
 #if 0
 static int fd_copy_symlink(int df, const char *from, const struct stat *st, int dt, const char *to) {
         _cleanup_free_ char *target = NULL;
