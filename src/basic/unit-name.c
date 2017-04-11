@@ -122,8 +122,7 @@ bool unit_suffix_is_valid(const char *s) {
         return true;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int unit_name_to_prefix(const char *n, char **ret) {
         const char *p;
         char *s;
@@ -271,8 +270,7 @@ int unit_name_build(const char *prefix, const char *instance, const char *suffix
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static char *do_escape_char(char c, char *t) {
         assert(t);
 
@@ -836,8 +834,7 @@ static const char* const unit_type_table[_UNIT_TYPE_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(unit_type, UnitType);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static const char* const unit_load_state_table[_UNIT_LOAD_STATE_MAX] = {
         [UNIT_STUB] = "stub",
         [UNIT_LOADED] = "loaded",

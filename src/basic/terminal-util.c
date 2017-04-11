@@ -74,8 +74,7 @@ int chvt(int vt) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int read_one_char(FILE *f, char *ret, usec_t t, bool *need_nl) {
         struct termios old_termios, new_termios;
         char c, line[LINE_MAX];
@@ -352,8 +351,7 @@ int open_terminal(const char *name, int mode) {
         return fd;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int acquire_terminal(
                 const char *name,
                 bool fail,
@@ -503,8 +501,7 @@ fail:
 }
 #endif // 0
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int release_terminal(void) {
         static const struct sigaction sa_new = {
                 .sa_handler = SIG_IGN,
@@ -676,8 +673,7 @@ int vtnr_from_tty(const char *tty) {
         return i;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *resolve_dev_console(char **active) {
         char *tty;
 
@@ -804,8 +800,7 @@ unsigned lines(void) {
 }
 
 /* intended to be used as a SIGWINCH sighandler */
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void columns_lines_cache_reset(int signum) {
         cached_columns = 0;
         cached_lines = 0;
@@ -855,8 +850,7 @@ int make_null_stdio(void) {
         return make_stdio(null_fd);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int getttyname_malloc(int fd, char **ret) {
         size_t l = 100;
         int r;
@@ -999,8 +993,7 @@ int get_ctty(pid_t pid, dev_t *_devnr, char **r) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int ptsname_malloc(int fd, char **ret) {
         size_t l = 100;
 

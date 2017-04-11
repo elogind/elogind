@@ -37,8 +37,7 @@
 
 #define CGROUP_CPU_QUOTA_PERIOD_USEC ((usec_t) 100 * USEC_PER_MSEC)
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void cgroup_context_init(CGroupContext *c) {
         assert(c);
 
@@ -1535,8 +1534,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         m->cgroup_root = mfree(m->cgroup_root);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 Unit* manager_get_unit_by_cgroup(Manager *m, const char *cgroup) {
         char *p;
         Unit *u;

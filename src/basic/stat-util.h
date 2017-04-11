@@ -28,13 +28,11 @@
 
 #include "macro.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int is_symlink(const char *path);
 #endif // 0
 int is_dir(const char *path, bool follow);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int is_device_node(const char *path);
 
 int dir_is_empty(const char *path);
@@ -50,14 +48,12 @@ static inline int dir_is_populated(const char *path) {
 
 bool null_or_empty(struct stat *st) _pure_;
 int null_or_empty_path(const char *fn);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int null_or_empty_fd(int fd);
 #endif // 0
 
 int path_is_read_only_fs(const char *path);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int path_is_os_tree(const char *path);
 #endif // 0
 
@@ -69,8 +65,7 @@ int files_same(const char *filea, const char *fileb);
 typedef long statfs_f_type_t;
 
 bool is_fs_type(const struct statfs *s, statfs_f_type_t magic_value) _pure_;
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int fd_check_fstype(int fd, statfs_f_type_t magic_value);
 int path_check_fstype(const char *path, statfs_f_type_t magic_value);
 #endif // 0

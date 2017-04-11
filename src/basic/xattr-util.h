@@ -29,8 +29,7 @@
 int getxattr_malloc(const char *path, const char *name, char **value, bool allow_symlink);
 int fgetxattr_malloc(int fd, const char *name, char **value);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 ssize_t fgetxattrat_fake(int dirfd, const char *filename, const char *attribute, void *value, size_t size, int flags);
 
 int fd_setcrtime(int fd, usec_t usec);

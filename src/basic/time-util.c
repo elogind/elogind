@@ -41,8 +41,7 @@ usec_t now(clockid_t clock_id) {
         return timespec_load(&ts);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 nsec_t now_nsec(clockid_t clock_id) {
         struct timespec ts;
 
@@ -83,8 +82,7 @@ dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u) {
         return ts;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u) {
         int64_t delta;
         assert(ts);
@@ -226,8 +224,7 @@ char *format_timestamp(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal(buf, l, t, false);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *format_timestamp_utc(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal(buf, l, t, true);
 }
@@ -259,8 +256,7 @@ char *format_timestamp_us(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal_us(buf, l, t, false);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *format_timestamp_us_utc(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal_us(buf, l, t, true);
 }
@@ -439,8 +435,7 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
         return buf;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t) {
 
         assert(f);
@@ -852,8 +847,7 @@ int parse_sec(const char *t, usec_t *usec) {
         return parse_time(t, usec, USEC_PER_SEC);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int parse_nsec(const char *t, nsec_t *nsec) {
         static const struct {
                 const char *suffix;
@@ -1150,8 +1144,7 @@ struct tm *localtime_or_gmtime_r(const time_t *t, struct tm *tm, bool utc) {
         return utc ? gmtime_r(t, tm) : localtime_r(t, tm);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 unsigned long usec_to_jiffies(usec_t u) {
         static thread_local unsigned long hz = 0;
         long r;

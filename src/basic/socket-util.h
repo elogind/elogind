@@ -41,8 +41,7 @@ union sockaddr_union {
         struct sockaddr_ll ll;
 };
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef struct SocketAddress {
         union sockaddr_union sockaddr;
 
@@ -102,8 +101,7 @@ const char* socket_address_get_path(const SocketAddress *a);
 
 bool socket_ipv6_is_supported(void);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sockaddr_port(const struct sockaddr *_sa) _pure_;
 
 Sint sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
@@ -124,8 +122,7 @@ bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b
 
 int fd_inc_sndbuf(int fd, size_t n);
 int fd_inc_rcvbuf(int fd, size_t n);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int ip_tos_to_string_alloc(int i, char **s);
 int ip_tos_from_string(const char *s);
 #endif // 0
@@ -134,8 +131,7 @@ int getpeercred(int fd, struct ucred *ucred);
 int getpeersec(int fd, char **ret);
 
 int send_one_fd(int transport_fd, int fd, int flags);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int receive_one_fd(int transport_fd, int flags);
 #endif // 0
 

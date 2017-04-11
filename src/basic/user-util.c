@@ -67,8 +67,7 @@ int parse_uid(const char *s, uid_t *ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* getlogname_malloc(void) {
         uid_t uid;
         struct stat st;
@@ -286,8 +285,7 @@ char* gid_to_name(gid_t gid) {
         return ret;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int in_gid(gid_t gid) {
         gid_t *gids;
         int ngroups_max, r, i;
@@ -437,8 +435,7 @@ int reset_uid_gid(void) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int take_etc_passwd_lock(const char *root) {
 
         struct flock flock = {

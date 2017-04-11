@@ -66,8 +66,7 @@ static inline bool VIRTUALIZATION_IS_CONTAINER(int x) {
 
 int detect_vm(void);
 int detect_container(void);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int detect_virtualization(void);
 #endif // 0
 

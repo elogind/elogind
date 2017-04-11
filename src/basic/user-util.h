@@ -36,8 +36,7 @@ static inline int parse_gid(const char *s, gid_t *ret_gid) {
         return parse_uid(s, (uid_t*) ret_gid);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* getlogname_malloc(void);
 char* getusername_malloc(void);
 #endif // 0
@@ -48,8 +47,7 @@ int get_group_creds(const char **groupname, gid_t *gid);
 char* uid_to_name(uid_t uid);
 char* gid_to_name(gid_t gid);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int in_gid(gid_t gid);
 int in_group(const char *name);
 
@@ -59,8 +57,7 @@ int get_shell(char **_ret);
 
 int reset_uid_gid(void);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int take_etc_passwd_lock(const char *root);
 #endif // 0
 

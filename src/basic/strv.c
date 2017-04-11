@@ -244,8 +244,7 @@ rollback:
         return -ENOMEM;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_extend_strv_concat(char ***a, char **b, const char *suffix) {
         int r;
         char **s;
@@ -299,8 +298,7 @@ char **strv_split(const char *s, const char *separator) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char **strv_split_newlines(const char *s) {
         char **l;
         unsigned n;
@@ -397,8 +395,7 @@ char *strv_join(char **l, const char *separator) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *strv_join_quoted(char **l) {
         char *buf = NULL;
         char **s;
@@ -530,8 +527,7 @@ int strv_consume(char ***l, char *value) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_consume_pair(char ***l, char *a, char *b) {
         int r;
 
@@ -580,8 +576,7 @@ char **strv_uniq(char **l) {
         return l;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool strv_is_uniq(char **l) {
         char **i;
 
@@ -676,8 +671,7 @@ char **strv_split_nulstr(const char *s) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_make_nulstr(char **l, char **p, size_t *q) {
         size_t n_allocated = 0, n = 0;
         _cleanup_free_ char *m = NULL;
@@ -739,8 +733,7 @@ char **strv_sort(char **l) {
         return l;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool strv_equal(char **a, char **b) {
 
         if (strv_isempty(a))

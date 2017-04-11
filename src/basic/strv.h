@@ -46,29 +46,25 @@ char **strv_copy(char * const *l);
 unsigned strv_length(char * const *l) _pure_;
 
 int strv_extend_strv(char ***a, char **b, bool filter_duplicates);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_extend_strv_concat(char ***a, char **b, const char *suffix);
 #endif // 0
 int strv_extend(char ***l, const char *value);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
 #endif // 0
 int strv_push(char ***l, char *value);
 int strv_push_pair(char ***l, char *a, char *b);
 int strv_push_prepend(char ***l, char *value);
 int strv_consume(char ***l, char *value);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_consume_pair(char ***l, char *a, char *b);
 #endif // 0
 int strv_consume_prepend(char ***l, char *value);
 
 char **strv_remove(char **l, const char *s);
 char **strv_uniq(char **l);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool strv_is_uniq(char **l);
 
 bool strv_equal(char **a, char **b);
@@ -88,22 +84,19 @@ static inline bool strv_isempty(char * const *l) {
 }
 
 char **strv_split(const char *s, const char *separator);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char **strv_split_newlines(const char *s);
 
 int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
 #endif // 0
 char *strv_join(char **l, const char *separator);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *strv_join_quoted(char **l);
 #endif // 0
 
 char **strv_parse_nulstr(const char *s, size_t l);
 char **strv_split_nulstr(const char *s);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_make_nulstr(char **l, char **p, size_t *n);
 
 bool strv_overlap(char **a, char **b) _pure_;
@@ -120,8 +113,7 @@ bool strv_overlap(char **a, char **b) _pure_;
         for ((x) = (l), (y) = (x+1); (x) && *(x) && *(y); (x) += 2, (y) = (x + 1))
 
 char **strv_sort(char **l);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void strv_print(char **l);
 #endif // 0
 
@@ -172,8 +164,7 @@ void strv_print(char **l);
                 _l[0];                                       \
         }))
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char **strv_reverse(char **l);
 char **strv_shell_escape(char **l, const char *bad);
 

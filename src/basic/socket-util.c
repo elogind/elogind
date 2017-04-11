@@ -44,8 +44,7 @@
 #include "user-util.h"
 #include "util.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int socket_address_parse(SocketAddress *a, const char *s) {
         char *e, *n;
         unsigned u;
@@ -453,8 +452,7 @@ bool socket_ipv6_is_supported(void) {
         return l[0] == '0';
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool socket_address_matches_fd(const SocketAddress *a, int fd) {
         SocketAddress b;
         socklen_t solen;
@@ -797,8 +795,7 @@ int fd_inc_rcvbuf(int fd, size_t n) {
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static const char* const ip_tos_table[] = {
         [IPTOS_LOWDELAY] = "low-delay",
         [IPTOS_THROUGHPUT] = "throughput",
@@ -903,8 +900,7 @@ int send_one_fd(int transport_fd, int fd, int flags) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int receive_one_fd(int transport_fd, int flags) {
         union {
                 struct cmsghdr cmsghdr;

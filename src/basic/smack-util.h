@@ -30,8 +30,7 @@
 #define SMACK_FLOOR_LABEL "_"
 #define SMACK_STAR_LABEL  "*"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef enum SmackAttr {
         SMACK_ATTR_ACCESS = 0,
         SMACK_ATTR_EXEC = 1,
@@ -48,8 +47,7 @@ bool mac_smack_use(void);
 
 int mac_smack_fix(const char *path, bool ignore_enoent, bool ignore_erofs);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 const char* smack_attr_to_string(SmackAttr i) _const_;
 SmackAttr smack_attr_from_string(const char *s) _pure_;
 int mac_smack_read(const char *path, SmackAttr attr, char **label);

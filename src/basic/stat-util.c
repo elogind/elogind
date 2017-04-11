@@ -31,8 +31,7 @@
 #include "stat-util.h"
 #include "string-util.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int is_symlink(const char *path) {
         struct stat info;
 
@@ -61,8 +60,7 @@ int is_dir(const char* path, bool follow) {
         return !!S_ISDIR(st.st_mode);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int is_device_node(const char *path) {
         struct stat info;
 
@@ -115,8 +113,7 @@ int null_or_empty_path(const char *fn) {
         return null_or_empty(&st);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int null_or_empty_fd(int fd) {
         struct stat st;
 
@@ -149,8 +146,7 @@ int path_is_read_only_fs(const char *path) {
         return false;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int path_is_os_tree(const char *path) {
         char *p;
         int r;
@@ -194,8 +190,7 @@ bool is_fs_type(const struct statfs *s, statfs_f_type_t magic_value) {
         return F_TYPE_EQUAL(s->f_type, magic_value);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int fd_check_fstype(int fd, statfs_f_type_t magic_value) {
         struct statfs s;
 

@@ -98,8 +98,7 @@ int fgetxattr_malloc(int fd, const char *name, char **value) {
         }
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 ssize_t fgetxattrat_fake(int dirfd, const char *filename, const char *attribute, void *value, size_t size, int flags) {
         char fn[strlen("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
         _cleanup_close_ int fd = -1;

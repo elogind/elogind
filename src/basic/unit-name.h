@@ -44,8 +44,7 @@ typedef enum UnitType {
         _UNIT_TYPE_INVALID = -1
 } UnitType;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef enum UnitLoadState {
         UNIT_STUB = 0,
         UNIT_LOADED,
@@ -275,8 +274,7 @@ bool unit_prefix_is_valid(const char *p) _pure_;
 bool unit_instance_is_valid(const char *i) _pure_;
 bool unit_suffix_is_valid(const char *s) _pure_;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static inline int unit_prefix_and_instance_is_valid(const char *p) {
         /* For prefix+instance and instance the same rules apply */
         return unit_instance_is_valid(p);
@@ -293,8 +291,7 @@ int unit_name_change_suffix(const char *n, const char *suffix, char **ret);
 
 int unit_name_build(const char *prefix, const char *instance, const char *suffix, char **ret);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *unit_name_escape(const char *f);
 int unit_name_unescape(const char *f, char **ret);
 int unit_name_path_escape(const char *f, char **ret);
@@ -333,8 +330,7 @@ bool slice_name_is_valid(const char *name);
 const char *unit_type_to_string(UnitType i) _const_;
 UnitType unit_type_from_string(const char *s) _pure_;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 const char *unit_load_state_to_string(UnitLoadState i) _const_;
 UnitLoadState unit_load_state_from_string(const char *s) _pure_;
 

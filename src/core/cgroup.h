@@ -27,8 +27,7 @@
 // #include "time-util.h"
 #include "logind.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef struct CGroupContext CGroupContext;
 Stypedef struct CGroupDeviceAllow CGroupDeviceAllow;
 typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
@@ -161,8 +160,7 @@ int unit_remove_from_netclass_cgroup(Unit *u);
 int manager_setup_cgroup(Manager *m);
 void manager_shutdown_cgroup(Manager *m, bool delete);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 unsigned manager_dispatch_cgroup_queue(Manager *m);
 
 Unit *manager_get_unit_by_cgroup(Manager *m, const char *cgroup);

@@ -409,8 +409,7 @@ finish:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int detect_virtualization(void) {
         int r;
 

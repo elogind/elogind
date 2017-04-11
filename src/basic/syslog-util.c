@@ -26,8 +26,7 @@
 #include "string-table.h"
 #include "syslog-util.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int syslog_parse_priority(const char **p, int *priority, bool with_facility) {
         int a = 0, b = 0, c = 0;
         int k;
@@ -96,8 +95,7 @@ static const char *const log_facility_unshifted_table[LOG_NFACILITIES] = {
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(log_facility_unshifted, int, LOG_FAC(~0));
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool log_facility_unshifted_is_valid(int facility) {
         return facility >= 0 && facility <= LOG_FAC(~0);
 }
@@ -116,8 +114,7 @@ static const char *const log_level_table[] = {
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(log_level, int, LOG_DEBUG);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool log_level_is_valid(int level) {
         return level >= 0 && level <= LOG_DEBUG;
 }
