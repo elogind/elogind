@@ -410,8 +410,7 @@ bool manager_shall_kill(Manager *m, const char *user) {
         return strv_contains(m->kill_only_users, user);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int vt_is_busy(unsigned int vtnr) {
         struct vt_stat vt_stat;
         int r = 0;

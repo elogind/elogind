@@ -71,8 +71,7 @@ int bus_kernel_read_message(sd_bus *bus, bool hint_priority, int64_t priority);
 
 int bus_kernel_open_bus_fd(const char *bus, char **path);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_bus(const char *name, bool world, char **s);
 int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char **path);
 #endif // 0
@@ -89,8 +88,7 @@ uint64_t attach_flags_to_kdbus(uint64_t sd_bus_flags);
 
 int bus_kernel_try_close(sd_bus *bus);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_drop_one(int fd);
 #endif // 0
 

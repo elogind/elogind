@@ -1584,8 +1584,7 @@ uint64_t attach_flags_to_kdbus(uint64_t mask) {
         return m;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_bus(const char *name, bool world, char **s) {
         struct kdbus_cmd *make;
         struct kdbus_item *n;
@@ -1695,8 +1694,7 @@ int bus_kernel_open_bus_fd(const char *bus, char **path) {
         return fd;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char **ep_path) {
         _cleanup_free_ char *path = NULL;
         struct kdbus_cmd *make;
@@ -1754,8 +1752,7 @@ int bus_kernel_try_close(sd_bus *bus) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_drop_one(int fd) {
         struct kdbus_cmd_recv recv = {
                 .size = sizeof(recv),

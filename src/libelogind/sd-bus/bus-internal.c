@@ -170,8 +170,7 @@ bool service_name_is_valid(const char *p) {
         return true;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* service_name_startswith(const char *a, const char *b) {
         const char *p;
 

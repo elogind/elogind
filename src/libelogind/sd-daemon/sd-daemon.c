@@ -46,8 +46,7 @@
 
 #define SNDBUF_SIZE (8*1024*1024)
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static void unsetenv_all(bool unset_environment) {
 
         if (!unset_environment)
@@ -284,8 +283,7 @@ _public_ int sd_is_socket(int fd, int family, int type, int listening) {
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port) {
         union sockaddr_union sockaddr = {};
         socklen_t l = sizeof(sockaddr);
@@ -533,8 +531,7 @@ finish:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_pid_notify(pid_t pid, int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(pid, unset_environment, state, NULL, 0);
 }
@@ -544,8 +541,7 @@ _public_ int sd_notify(int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(0, unset_environment, state, NULL, 0);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) {
         _cleanup_free_ char *p = NULL;
         int r;

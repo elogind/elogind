@@ -73,8 +73,7 @@ typedef struct MountPoint {
 #endif
 
 static const MountPoint mount_table[] = {
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
         { "sysfs",       "/sys",                      "sysfs",      NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
         { "proc",        "/proc",                     "proc",       NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
@@ -104,8 +103,7 @@ static const MountPoint mount_table[] = {
 #endif // 0
         { "tmpfs",       "/sys/fs/cgroup",            "tmpfs",      "mode=755",                MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_STRICTATIME,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER           },
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
@@ -116,8 +114,7 @@ static const MountPoint mount_table[] = {
         { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
         { "pstore",      "/sys/fs/pstore",            "pstore",     NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE                   },
 #ifdef ENABLE_EFI
@@ -129,8 +126,7 @@ static const MountPoint mount_table[] = {
 #endif // 0
 };
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 /* These are API file systems that might be mounted by other software,
  * we just list them here so that we know that we should ignore them */
 
@@ -217,8 +213,7 @@ static int mount_one(const MountPoint *p, bool relabel) {
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int mount_setup_early(void) {
         unsigned i;
         int r = 0;

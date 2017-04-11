@@ -936,8 +936,7 @@ fail:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *bus_match_to_string(struct bus_match_component *components, unsigned n_components) {
         _cleanup_fclose_ FILE *f = NULL;
         char *buffer = NULL;

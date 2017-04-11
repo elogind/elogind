@@ -2633,8 +2633,7 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_VTABLE_END
 };
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int session_jobs_reply(Session *s, const char *unit, const char *result) {
         int r = 0;
 
@@ -2819,8 +2818,7 @@ int manager_send_changed(Manager *manager, const char *property, ...) {
                         l);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int manager_start_slice(
                 Manager *manager,
                 const char *slice,

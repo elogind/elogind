@@ -59,8 +59,7 @@ _public_ int sd_bus_emit_signal(
         return sd_bus_send(bus, m, NULL);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_call_method_async(
                 sd_bus *bus,
                 sd_bus_slot **slot,
@@ -258,8 +257,7 @@ _public_ int sd_bus_reply_method_errno(
         return sd_bus_reply_method_error(call, &berror);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_reply_method_errnof(
                 sd_bus_message *call,
                 int error,
@@ -331,8 +329,7 @@ fail:
         return sd_bus_error_set_errno(error, r);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_property_trivial(
                 sd_bus *bus,
                 const char *destination,
@@ -426,8 +423,7 @@ fail:
         return sd_bus_error_set_errno(error, r);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_property_strv(
                 sd_bus *bus,
                 const char *destination,

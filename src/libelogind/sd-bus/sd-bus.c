@@ -75,8 +75,7 @@ static int attach_io_events(sd_bus *b);
 static void detach_io_events(sd_bus *b);
 
 static thread_local sd_bus *default_system_bus = NULL;
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static thread_local sd_bus *default_user_bus = NULL;
 #endif // 0
 static thread_local sd_bus *default_starter_bus = NULL;
@@ -236,8 +235,7 @@ _public_ int sd_bus_set_fd(sd_bus *bus, int input_fd, int output_fd) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_set_exec(sd_bus *bus, const char *path, char *const argv[]) {
         char *p, **a;
 
@@ -386,8 +384,7 @@ _public_ int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_allow_interactive_authorization(sd_bus *bus) {
         assert_return(bus, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
@@ -1524,8 +1521,7 @@ _public_ sd_bus *sd_bus_unref(sd_bus *bus) {
         return NULL;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_is_open(sd_bus *bus) {
 
         assert_return(bus, -EINVAL);
@@ -1559,8 +1555,7 @@ _public_ int sd_bus_can_send(sd_bus *bus, char type) {
         return bus_type_is_valid(type);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_bus_id(sd_bus *bus, sd_id128_t *id) {
         int r;
 
@@ -1852,8 +1847,7 @@ _public_ int sd_bus_send(sd_bus *bus, sd_bus_message *m, uint64_t *cookie) {
         return bus_send_internal(bus, m, cookie, false);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_send_to(sd_bus *bus, sd_bus_message *m, const char *destination, uint64_t *cookie) {
         int r;
 
@@ -2164,8 +2158,7 @@ fail:
         return sd_bus_error_set_errno(error, r);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_fd(sd_bus *bus) {
 
         assert_return(bus, -EINVAL);
@@ -2850,8 +2843,7 @@ _public_ int sd_bus_process(sd_bus *bus, sd_bus_message **ret) {
         return bus_process_internal(bus, false, 0, ret);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_process_priority(sd_bus *bus, int64_t priority, sd_bus_message **ret) {
         return bus_process_internal(bus, true, priority, ret);
 }
@@ -2972,8 +2964,7 @@ _public_ int sd_bus_flush(sd_bus *bus) {
         }
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_add_filter(
                 sd_bus *bus,
                 sd_bus_slot **slot,
@@ -3077,8 +3068,7 @@ finish:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_remove_match_by_string(
                 sd_bus *bus,
                 const char *match,
@@ -3355,8 +3345,7 @@ _public_ sd_bus_message* sd_bus_get_current_message(sd_bus *bus) {
         return bus->current_message;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ sd_bus_slot* sd_bus_get_current_slot(sd_bus *bus) {
         assert_return(bus, NULL);
 
@@ -3459,8 +3448,7 @@ _public_ int sd_bus_default(sd_bus **ret) {
         return sd_bus_default_system(ret);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_tid(sd_bus *b, pid_t *tid) {
         assert_return(b, -EINVAL);
         assert_return(tid, -EINVAL);
@@ -3739,8 +3727,7 @@ int bus_get_root_path(sd_bus *bus) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_scope(sd_bus *bus, const char **scope) {
         int r;
 

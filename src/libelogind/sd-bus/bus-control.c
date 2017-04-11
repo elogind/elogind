@@ -1542,8 +1542,7 @@ int bus_remove_match_internal(
                 return bus_remove_match_internal_dbus1(bus, match);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_name_machine_id(sd_bus *bus, const char *name, sd_id128_t *machine) {
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL, *m = NULL;
         const char *mid;

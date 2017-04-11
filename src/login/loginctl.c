@@ -102,8 +102,7 @@ static void polkit_agent_open_if_enabled(void) {
         polkit_agent_open();
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static OutputFlags get_output_flags(void) {
 
         return
@@ -254,8 +253,7 @@ static int list_seats(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int show_unit_cgroup(sd_bus *bus, const char *interface, const char *unit, pid_t leader) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
