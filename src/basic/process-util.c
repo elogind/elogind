@@ -185,8 +185,7 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void rename_process(const char name[8]) {
         assert(name);
 
@@ -251,8 +250,7 @@ int is_kernel_thread(pid_t pid) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int get_process_capeff(pid_t pid, char **capeff) {
         const char *p;
         int r;
@@ -304,8 +302,7 @@ int get_process_exe(pid_t pid, char **name) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
         _cleanup_fclose_ FILE *f = NULL;
         char line[LINE_MAX];
@@ -537,8 +534,7 @@ void sigkill_wait(pid_t *pid) {
                 (void) wait_for_terminate(*pid, NULL);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int kill_and_sigcont(pid_t pid, int sig) {
         int r;
 
@@ -650,8 +646,7 @@ bool is_main_thread(void) {
         return cached > 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 noreturn void freeze(void) {
 
         /* Make sure nobody waits for us on a socket anymore */

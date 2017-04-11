@@ -47,8 +47,7 @@ int get_process_comm(pid_t pid, char **name);
 int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char **line);
 int get_process_exe(pid_t pid, char **name);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int get_process_uid(pid_t pid, uid_t *uid);
 int get_process_gid(pid_t pid, gid_t *gid);
 int get_process_capeff(pid_t pid, char **capeff);
@@ -64,8 +63,7 @@ int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_cod
 void sigkill_wait(pid_t *pid);
 #define _cleanup_sigkill_wait_ _cleanup_(sigkill_wait)
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int kill_and_sigcont(pid_t pid, int sig);
 
 void rename_process(const char name[8]);
@@ -80,8 +78,7 @@ bool pid_is_unwaited(pid_t pid);
 
 bool is_main_thread(void);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 noreturn void freeze(void);
 
 bool oom_score_adjust_is_valid(int oa);
@@ -94,8 +91,7 @@ bool oom_score_adjust_is_valid(int oa);
 #define PERSONALITY_INVALID 0xffffffffLU
 #endif
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 unsigned long personality_from_string(const char *p);
 const char *personality_to_string(unsigned long);
 

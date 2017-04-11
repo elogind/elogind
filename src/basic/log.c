@@ -188,8 +188,7 @@ fail:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_close_journal(void) {
         journal_fd = safe_close(journal_fd);
 }
@@ -313,8 +312,7 @@ void log_close(void) {
         log_close_console();
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_forget_fds(void) {
         console_fd = kmsg_fd = syslog_fd = journal_fd = -1;
 }
@@ -485,8 +483,7 @@ static int write_to_kmsg(
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int log_do_header(
                 char *header,
                 size_t size,
@@ -1094,8 +1091,7 @@ static const char *const log_target_table[_LOG_TARGET_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(log_target, LogTarget);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_received_signal(int level, const struct signalfd_siginfo *si) {
         if (si->ssi_pid > 0) {
                 _cleanup_free_ char *p = NULL;

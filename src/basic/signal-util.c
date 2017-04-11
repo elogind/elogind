@@ -87,8 +87,7 @@ static int sigaction_many_ap(const struct sigaction *sa, int sig, va_list ap) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sigaction_many(const struct sigaction *sa, ...) {
         va_list ap;
         int r;
@@ -118,8 +117,7 @@ int ignore_signals(int sig, ...) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int default_signals(int sig, ...) {
 
         static const struct sigaction sa = {
@@ -276,8 +274,7 @@ int signal_from_string_try_harder(const char *s) {
         return signo;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void nop_signal_handler(int sig) {
         /* nothing here */
 }

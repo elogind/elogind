@@ -36,18 +36,15 @@
 #endif
 
 bool is_path(const char *p) _pure_;
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int path_split_and_make_absolute(const char *p, char ***ret);
 #endif // 0
 bool path_is_absolute(const char *p) _pure_;
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* path_make_absolute(const char *p, const char *prefix);
 #endif // 0
 int path_make_absolute_cwd(const char *p, char **ret);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int path_make_relative(const char *from_dir, const char *to_path, char **_r);
 #endif // 0
 char* path_kill_slashes(char *path);
@@ -55,8 +52,7 @@ char* path_startswith(const char *path, const char *prefix) _pure_;
 int path_compare(const char *a, const char *b) _pure_;
 bool path_equal(const char *a, const char *b) _pure_;
 bool path_equal_or_files_same(const char *a, const char *b);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* path_join(const char *root, const char *path, const char *rest);
 
 int path_strv_make_absolute_cwd(char **l);
@@ -64,8 +60,7 @@ int path_strv_make_absolute_cwd(char **l);
 char** path_strv_resolve(char **l, const char *prefix);
 char** path_strv_resolve_uniq(char **l, const char *prefix);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int find_binary(const char *name, char **filename);
 
 bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
@@ -111,8 +106,7 @@ char *prefix_root(const char *root, const char *path);
                 _ret;                                                   \
         })
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg);
 #endif // 0
 
@@ -126,7 +120,6 @@ char *file_in_same_dir(const char *path, const char *filename);
 bool hidden_file_allow_backup(const char *filename);
 bool hidden_file(const char *filename) _pure_;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool is_device_path(const char *path);
 #endif // 0

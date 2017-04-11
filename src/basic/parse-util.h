@@ -35,8 +35,7 @@ int parse_ifindex(const char *s, int *ret);
 
 int parse_size(const char *t, uint64_t base, uint64_t *size);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int parse_range(const char *t, unsigned *lower, unsigned *upper);
 
 #define FORMAT_BYTES_MAX 8

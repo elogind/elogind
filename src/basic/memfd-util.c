@@ -72,8 +72,7 @@ int memfd_new(const char *name) {
         return fd;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int memfd_map(int fd, uint64_t offset, size_t size, void **p) {
         void *q;
         int sealed;
@@ -111,8 +110,7 @@ int memfd_set_sealed(int fd) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int memfd_get_sealed(int fd) {
         int r;
 
@@ -153,8 +151,7 @@ int memfd_set_size(int fd, uint64_t sz) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int memfd_new_and_map(const char *name, size_t sz, void **p) {
         _cleanup_close_ int fd = -1;
         int r;

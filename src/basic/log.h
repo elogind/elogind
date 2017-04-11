@@ -70,13 +70,11 @@ int log_get_max_level(void) _pure_;
 
 int log_open(void);
 void log_close(void);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_forget_fds(void);
 #endif // 0
 void log_close_syslog(void);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_close_journal(void);
 #endif // 0
 void log_close_kmsg(void);
@@ -220,8 +218,7 @@ LogTarget log_target_from_string(const char *s) _pure_;
 #define LOG_MESSAGE(fmt, ...) "MESSAGE=" fmt, ##__VA_ARGS__
 #define LOG_MESSAGE_ID(x) "MESSAGE_ID=" SD_ID128_FORMAT_STR, SD_ID128_FORMAT_VAL(x)
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_received_signal(int level, const struct signalfd_siginfo *si);
 
 void log_set_upgrade_syslog_to_journal(bool b);

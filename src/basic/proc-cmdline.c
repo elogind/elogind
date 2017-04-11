@@ -132,8 +132,7 @@ int get_proc_cmdline_key(const char *key, char **value) {
 
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int shall_restore_state(void) {
         _cleanup_free_ char *value = NULL;
         int r;

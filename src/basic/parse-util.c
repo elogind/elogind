@@ -225,8 +225,7 @@ int parse_size(const char *t, uint64_t base, uint64_t *size) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int parse_range(const char *t, unsigned *lower, unsigned *upper) {
         _cleanup_free_ char *word = NULL;
         unsigned l, u;

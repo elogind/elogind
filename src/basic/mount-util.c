@@ -235,8 +235,7 @@ int path_is_mount_point(const char *t, int flags) {
         return fd_is_mount_point(fd, basename(t), flags);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int umount_recursive(const char *prefix, int flags) {
         bool again;
         int n = 0, r;

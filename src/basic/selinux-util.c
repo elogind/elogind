@@ -58,8 +58,7 @@ bool mac_selinux_use(void) {
 #endif
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void mac_selinux_retest(void) {
 #ifdef HAVE_SELINUX
         cached_use = -1;
@@ -113,8 +112,7 @@ int mac_selinux_init(const char *prefix) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void mac_selinux_finish(void) {
 
 #ifdef HAVE_SELINUX
@@ -376,8 +374,7 @@ void mac_selinux_create_file_clear(void) {
 #endif
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int mac_selinux_create_socket_prepare(const char *label) {
 
 #ifdef HAVE_SELINUX

@@ -55,8 +55,7 @@ bool is_path(const char *p) {
         return !!strchr(p, '/');
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int path_split_and_make_absolute(const char *p, char ***ret) {
         char **l;
         int r;
@@ -118,8 +117,7 @@ int path_make_absolute_cwd(const char *p, char **ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int path_make_relative(const char *from_dir, const char *to_path, char **_r) {
         char *r, *p;
         unsigned n_parents;
@@ -447,8 +445,7 @@ bool path_equal_or_files_same(const char *a, const char *b) {
         return path_equal(a, b) || files_same(a, b) > 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* path_join(const char *root, const char *path, const char *rest) {
         assert(path);
 
@@ -465,8 +462,7 @@ char* path_join(const char *root, const char *path, const char *rest) {
                                NULL);
 }
 #endif // 0
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 
 int find_binary(const char *name, char **ret) {
         int last_error, r;
@@ -802,8 +798,7 @@ bool hidden_file(const char *filename) {
         return hidden_file_allow_backup(filename);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool is_device_path(const char *path) {
 
         /* Returns true on paths that refer to a device, either in

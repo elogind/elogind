@@ -32,8 +32,7 @@
 int fd_is_mount_point(int fd, const char *filename, int flags);
 int path_is_mount_point(const char *path, int flags);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int repeat_unmount(const char *path, int flags);
 
 int umount_recursive(const char *target, int flags);
@@ -45,8 +44,7 @@ int mount_move_root(const char *path);
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, endmntent);
 #define _cleanup_endmntent_ _cleanup_(endmntentp)
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool fstype_is_network(const char *fstype);
 #endif // 0
 

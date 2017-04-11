@@ -25,15 +25,13 @@
 #include <inttypes.h>
 
 int memfd_new(const char *name);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int memfd_new_and_map(const char *name, size_t sz, void **p);
 
 int memfd_map(int fd, uint64_t offset, size_t size, void **p);
 #endif // 0
 int memfd_set_sealed(int fd);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int memfd_get_sealed(int fd);
 
 int memfd_get_size(int fd, uint64_t *sz);
