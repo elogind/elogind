@@ -28,14 +28,17 @@
 
 #include "macro.h"
 
-// UNNEEDED int is_symlink(const char *path);
-int is_dir(const char *path, bool follow);
-// UNNEEDED int is_device_node(const char *path);
-
-// UNNEEDED int dir_is_empty(const char *path);
-
 /// UNNEEDED by elogind
 #if 0
+int is_symlink(const char *path);
+#endif // 0
+int is_dir(const char *path, bool follow);
+/// UNNEEDED by elogind
+#if 0
+int is_device_node(const char *path);
+
+int dir_is_empty(const char *path);
+
 static inline int dir_is_populated(const char *path) {
         int r;
         r = dir_is_empty(path);
@@ -47,10 +50,16 @@ static inline int dir_is_populated(const char *path) {
 
 bool null_or_empty(struct stat *st) _pure_;
 int null_or_empty_path(const char *fn);
-// UNNEEDED int null_or_empty_fd(int fd);
+/// UNNEEDED by elogind
+#if 0
+int null_or_empty_fd(int fd);
+#endif // 0
 
 int path_is_read_only_fs(const char *path);
-// UNNEEDED int path_is_os_tree(const char *path);
+/// UNNEEDED by elogind
+#if 0
+int path_is_os_tree(const char *path);
+#endif // 0
 
 int files_same(const char *filea, const char *fileb);
 
@@ -60,8 +69,11 @@ int files_same(const char *filea, const char *fileb);
 typedef long statfs_f_type_t;
 
 bool is_fs_type(const struct statfs *s, statfs_f_type_t magic_value) _pure_;
-// UNNEEDED int fd_check_fstype(int fd, statfs_f_type_t magic_value);
-// UNNEEDED int path_check_fstype(const char *path, statfs_f_type_t magic_value);
+/// UNNEEDED by elogind
+#if 0
+int fd_check_fstype(int fd, statfs_f_type_t magic_value);
+int path_check_fstype(const char *path, statfs_f_type_t magic_value);
+#endif // 0
 
 bool is_temporary_fs(const struct statfs *s) _pure_;
 int fd_is_temporary_fs(int fd);

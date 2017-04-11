@@ -27,23 +27,23 @@
 // #include "time-util.h"
 #include "logind.h"
 
-// UNNEEDED typedef struct CGroupContext CGroupContext;
-// UNNEEDED Stypedef struct CGroupDeviceAllow CGroupDeviceAllow;
-// UNNEEDED typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
-// UNNEEDED typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
+/// UNNEEDED by elogind
+#if 0
+typedef struct CGroupContext CGroupContext;
+Stypedef struct CGroupDeviceAllow CGroupDeviceAllow;
+typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
+typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
 
 /* Maximum value for fixed (manual) net class ID assignment,
  * and also the value at which the range of automatic assignments starts
  */
-// UNNEEDED #define CGROUP_NETCLASS_FIXED_MAX UINT32_C(65535)
+#define CGROUP_NETCLASS_FIXED_MAX UINT32_C(65535)
 
-// UNNEEDED typedef struct CGroupContext CGroupContext;
-// UNNEEDED typedef struct CGroupDeviceAllow CGroupDeviceAllow;
-// UNNEEDED typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
-// UNNEEDED typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
+typedef struct CGroupContext CGroupContext;
+typedef struct CGroupDeviceAllow CGroupDeviceAllow;
+typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
+typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
 
-/// UNNEEDED by elogind
-#if 0
 typedef enum CGroupDevicePolicy {
 
         /* When devices listed, will allow those, plus built-in ones,
@@ -119,70 +119,73 @@ struct CGroupContext {
 
         bool delegate;
 };
+
+#include "unit.h"
+#include "cgroup-util.h"
+
+void cgroup_context_init(CGroupContext *c);
+void cgroup_context_done(CGroupContext *c);
+void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix);
+void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, uint32_t netclass_id, ManagerState state);
+
+CGroupMask cgroup_context_get_mask(CGroupContext *c);
+
+void cgroup_context_free_device_allow(CGroupContext *c, CGroupDeviceAllow *a);
+void cgroup_context_free_blockio_device_weight(CGroupContext *c, CGroupBlockIODeviceWeight *w);
+void cgroup_context_free_blockio_device_bandwidth(CGroupContext *c, CGroupBlockIODeviceBandwidth *b);
+
+CGroupMask unit_get_own_mask(Unit *u);
+CGroupMask unit_get_siblings_mask(Unit *u);
+CGroupMask unit_get_members_mask(Unit *u);
+CGroupMask unit_get_subtree_mask(Unit *u);
+
+vCGroupMask unit_get_target_mask(Unit *u);
+CGroupMask unit_get_enable_mask(Unit *u);
+
+void unit_update_cgroup_members_masks(Unit *u);
+
+har *unit_default_cgroup_path(Unit *u);
+int unit_set_cgroup_path(Unit *u, const char *path);
+
+int unit_realize_cgroup(Unit *u);
+void unit_release_cgroup(Unit *u);
+void unit_prune_cgroup(Unit *u);
+int unit_watch_cgroup(Unit *u);
+
+int unit_attach_pids_to_cgroup(Unit *u);
+
+int unit_add_to_netclass_cgroup(Unit *u);
+int unit_remove_from_netclass_cgroup(Unit *u);
 #endif // 0
-
-// #include "unit.h"
-// #include "cgroup-util.h"
-
-// UNNNEEDE void cgroup_context_init(CGroupContext *c);
-// UNNEEDED void cgroup_context_done(CGroupContext *c);
-// UNNEEDED void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix);
-// UNNEEDED void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, uint32_t netclass_id, ManagerState state);
-
-// UNNEEDED CGroupMask cgroup_context_get_mask(CGroupContext *c);
-
-// UNNEEDED void cgroup_context_free_device_allow(CGroupContext *c, CGroupDeviceAllow *a);
-// UNNEEDED void cgroup_context_free_blockio_device_weight(CGroupContext *c, CGroupBlockIODeviceWeight *w);
-// UNNEEDED void cgroup_context_free_blockio_device_bandwidth(CGroupContext *c, CGroupBlockIODeviceBandwidth *b);
-
-// UNNEEDED CGroupMask unit_get_own_mask(Unit *u);
-// UNNEEDED CGroupMask unit_get_siblings_mask(Unit *u);
-// UNNEEDED CGroupMask unit_get_members_mask(Unit *u);
-// UNNEEDED CGroupMask unit_get_subtree_mask(Unit *u);
-
-// UNNEEDED vCGroupMask unit_get_target_mask(Unit *u);
-// UNNEEDED CGroupMask unit_get_enable_mask(Unit *u);
-
-// UNNEEDED void unit_update_cgroup_members_masks(Unit *u);
-
-// UNNEEDED har *unit_default_cgroup_path(Unit *u);
-// UNNEEDED int unit_set_cgroup_path(Unit *u, const char *path);
-
-// UNNEEDED int unit_realize_cgroup(Unit *u);
-// UNNEEDED void unit_release_cgroup(Unit *u);
-// UNNEEDED void unit_prune_cgroup(Unit *u);
-// UNNEEDED int unit_watch_cgroup(Unit *u);
-
-// UNNEEDED int unit_attach_pids_to_cgroup(Unit *u);
-
-// UNNEEDED int unit_add_to_netclass_cgroup(Unit *u);
-// UNNEEDED int unit_remove_from_netclass_cgroup(Unit *u);
 
 int manager_setup_cgroup(Manager *m);
 void manager_shutdown_cgroup(Manager *m, bool delete);
 
-// UNNEEDED unsigned manager_dispatch_cgroup_queue(Manager *m);
+/// UNNEEDED by elogind
+#if 0
+unsigned manager_dispatch_cgroup_queue(Manager *m);
 
-// UNNEEDED Unit *manager_get_unit_by_cgroup(Manager *m, const char *cgroup);
-// UNNEEDED Unit *manager_get_unit_by_pid_cgroup(Manager *m, pid_t pid);
-// UNNEEDED Unit* manager_get_unit_by_pid(Manager *m, pid_t pid);
+Unit *manager_get_unit_by_cgroup(Manager *m, const char *cgroup);
+Unit *manager_get_unit_by_pid_cgroup(Manager *m, pid_t pid);
+Unit* manager_get_unit_by_pid(Manager *m, pid_t pid);
 
-// UNNEEDED int unit_search_main_pid(Unit *u, pid_t *ret);
-// UNNEEDED int unit_watch_all_pids(Unit *u);
+int unit_search_main_pid(Unit *u, pid_t *ret);
+int unit_watch_all_pids(Unit *u);
 
-// UNNEEDED int unit_get_memory_current(Unit *u, uint64_t *ret);
-// UNNEEDED int unit_get_tasks_current(Unit *u, uint64_t *ret);
-// UNNEEDED int unit_get_cpu_usage(Unit *u, nsec_t *ret);
-// UNNEEDED int unit_reset_cpu_usage(Unit *u);
+int unit_get_memory_current(Unit *u, uint64_t *ret);
+int unit_get_tasks_current(Unit *u, uint64_t *ret);
+int unit_get_cpu_usage(Unit *u, nsec_t *ret);
+int unit_reset_cpu_usage(Unit *u);
 
-// UNNEEDED bool unit_cgroup_delegate(Unit *u);
+bool unit_cgroup_delegate(Unit *u);
 
-// UNNEEDED int unit_notify_cgroup_empty(Unit *u);
-// UNNEEDED int manager_notify_cgroup_empty(Manager *m, const char *group);
+int unit_notify_cgroup_empty(Unit *u);
+int manager_notify_cgroup_empty(Manager *m, const char *group);
 
-// UNNEEDED void unit_invalidate_cgroup(Unit *u, CGroupMask m);
+void unit_invalidate_cgroup(Unit *u, CGroupMask m);
 
-// UNNEEDED void manager_invalidate_startup_units(Manager *m);
+void manager_invalidate_startup_units(Manager *m);
 
-// UNNEEDED const char* cgroup_device_policy_to_string(CGroupDevicePolicy i) _const_;
-// UNNEEDED CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;
+const char* cgroup_device_policy_to_string(CGroupDevicePolicy i) _const_;
+CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;
+#endif // 0

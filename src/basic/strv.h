@@ -46,21 +46,33 @@ char **strv_copy(char * const *l);
 unsigned strv_length(char * const *l) _pure_;
 
 int strv_extend_strv(char ***a, char **b, bool filter_duplicates);
-// UNNEEDED int strv_extend_strv_concat(char ***a, char **b, const char *suffix);
+/// UNNEEDED by elogind
+#if 0
+int strv_extend_strv_concat(char ***a, char **b, const char *suffix);
+#endif // 0
 int strv_extend(char ***l, const char *value);
-// UNNEEDED int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
+/// UNNEEDED by elogind
+#if 0
+int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
+#endif // 0
 int strv_push(char ***l, char *value);
 int strv_push_pair(char ***l, char *a, char *b);
 int strv_push_prepend(char ***l, char *value);
 int strv_consume(char ***l, char *value);
-// UNNEEDED int strv_consume_pair(char ***l, char *a, char *b);
+/// UNNEEDED by elogind
+#if 0
+int strv_consume_pair(char ***l, char *a, char *b);
+#endif // 0
 int strv_consume_prepend(char ***l, char *value);
 
 char **strv_remove(char **l, const char *s);
 char **strv_uniq(char **l);
-// UNNEEDED bool strv_is_uniq(char **l);
+/// UNNEEDED by elogind
+#if 0
+bool strv_is_uniq(char **l);
 
-// UNNEEDED bool strv_equal(char **a, char **b);
+bool strv_equal(char **a, char **b);
+#endif // 0
 
 #define strv_contains(l, s) (!!strv_find((l), (s)))
 
@@ -76,19 +88,26 @@ static inline bool strv_isempty(char * const *l) {
 }
 
 char **strv_split(const char *s, const char *separator);
-// UNNEEDED char **strv_split_newlines(const char *s);
+/// UNNEEDED by elogind
+#if 0
+char **strv_split_newlines(const char *s);
 
-// UNNEEDED int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
-
+int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
+#endif // 0
 char *strv_join(char **l, const char *separator);
-// UNNEEDED char *strv_join_quoted(char **l);
+/// UNNEEDED by elogind
+#if 0
+char *strv_join_quoted(char **l);
+#endif // 0
 
 char **strv_parse_nulstr(const char *s, size_t l);
 char **strv_split_nulstr(const char *s);
-// UNNEEDED int strv_make_nulstr(char **l, char **p, size_t *n);
+/// UNNEEDED by elogind
+#if 0
+int strv_make_nulstr(char **l, char **p, size_t *n);
 
-// UNNEEDED bool strv_overlap(char **a, char **b) _pure_;
-
+bool strv_overlap(char **a, char **b) _pure_;
+#endif // 0
 #define STRV_FOREACH(s, l)                      \
         for ((s) = (l); (s) && *(s); (s)++)
 
@@ -101,7 +120,10 @@ char **strv_split_nulstr(const char *s);
         for ((x) = (l), (y) = (x+1); (x) && *(x) && *(y); (x) += 2, (y) = (x + 1))
 
 char **strv_sort(char **l);
-// UNNEEDED void strv_print(char **l);
+/// UNNEEDED by elogind
+#if 0
+void strv_print(char **l);
+#endif // 0
 
 #define STRV_MAKE(...) ((char**) ((const char*[]) { __VA_ARGS__, NULL }))
 
@@ -150,22 +172,22 @@ char **strv_sort(char **l);
                 _l[0];                                       \
         }))
 
-// UNNEEDED char **strv_reverse(char **l);
-// UNNEEDED char **strv_shell_escape(char **l, const char *bad);
-
-// UNNEEDED bool strv_fnmatch(char* const* patterns, const char *s, int flags);
-
 /// UNNEEDED by elogind
 #if 0
+char **strv_reverse(char **l);
+char **strv_shell_escape(char **l, const char *bad);
+
+bool strv_fnmatch(char* const* patterns, const char *s, int flags);
+
 static inline bool strv_fnmatch_or_empty(char* const* patterns, const char *s, int flags) {
         assert(s);
         return strv_isempty(patterns) ||
                strv_fnmatch(patterns, s, flags);
 }
+
+char ***strv_free_free(char ***l);
+
+char **strv_skip(char **l, size_t n);
+
+int strv_extend_n(char ***l, const char *value, size_t n);
 #endif // 0
-
-// UNNEEDED char ***strv_free_free(char ***l);
-
-// UNNEEDED char **strv_skip(char **l, size_t n);
-
-// UNNEEDED int strv_extend_n(char ***l, const char *value, size_t n);

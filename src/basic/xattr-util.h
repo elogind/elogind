@@ -29,10 +29,13 @@
 int getxattr_malloc(const char *path, const char *name, char **value, bool allow_symlink);
 int fgetxattr_malloc(int fd, const char *name, char **value);
 
-// UNNEEDED ssize_t fgetxattrat_fake(int dirfd, const char *filename, const char *attribute, void *value, size_t size, int flags);
+/// UNNEEDED by elogind
+#if 0
+ssize_t fgetxattrat_fake(int dirfd, const char *filename, const char *attribute, void *value, size_t size, int flags);
 
-// UNNEEDED int fd_setcrtime(int fd, usec_t usec);
+int fd_setcrtime(int fd, usec_t usec);
 
-// UNNEEDED int fd_getcrtime(int fd, usec_t *usec);
-// UNNEEDED int path_getcrtime(const char *p, usec_t *usec);
-// UNNEEDED int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags);
+int fd_getcrtime(int fd, usec_t *usec);
+int path_getcrtime(const char *p, usec_t *usec);
+int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags);
+#endif // 0

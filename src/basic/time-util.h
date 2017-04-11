@@ -71,12 +71,18 @@ typedef struct dual_timestamp {
 #define DUAL_TIMESTAMP_NULL ((struct dual_timestamp) { 0ULL, 0ULL })
 
 usec_t now(clockid_t clock);
-// UNNEEDED nsec_t now_nsec(clockid_t clock);
+/// UNNEEDED by elogind
+#if 0
+nsec_t now_nsec(clockid_t clock);
+#endif // 0
 
 dual_timestamp* dual_timestamp_get(dual_timestamp *ts);
 dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u);
-// UNNEEDED dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
-// UNNEEDED dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, usec_t u);
+/// UNNEEDED by elogind
+#if 0
+dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
+dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, usec_t u);
+#endif // 0
 
 static inline bool dual_timestamp_is_set(dual_timestamp *ts) {
         return ((ts->realtime > 0 && ts->realtime != USEC_INFINITY) ||
@@ -92,35 +98,53 @@ struct timeval *timeval_store(struct timeval *tv, usec_t u);
 nsec_t timespec_load_nsec(const struct timespec *ts) _pure_;
 
 char *format_timestamp(char *buf, size_t l, usec_t t);
-// UNNEEDED char *format_timestamp_utc(char *buf, size_t l, usec_t t);
+/// UNNEEDED by elogind
+#if 0
+char *format_timestamp_utc(char *buf, size_t l, usec_t t);
+#endif // 0
 char *format_timestamp_us(char *buf, size_t l, usec_t t);
-// UNNEEDED char *format_timestamp_us_utc(char *buf, size_t l, usec_t t);
+/// UNNEEDED by elogind
+#if 0
+char *format_timestamp_us_utc(char *buf, size_t l, usec_t t);
+#endif // 0
 char *format_timestamp_relative(char *buf, size_t l, usec_t t);
 char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 
-// UNNEEDED void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t);
-// UNNEEDED int dual_timestamp_deserialize(const char *value, dual_timestamp *t);
+/// UNNEEDED by elogind
+#if 0
+void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t);
+int dual_timestamp_deserialize(const char *value, dual_timestamp *t);
 
-// UNNEEDED int parse_timestamp(const char *t, usec_t *usec);
+int parse_timestamp(const char *t, usec_t *usec);
+#endif // 0
 
 int parse_sec(const char *t, usec_t *usec);
 int parse_time(const char *t, usec_t *usec, usec_t default_unit);
-// UNNEEDED int parse_nsec(const char *t, nsec_t *nsec);
+/// UNNEEDED by elogind
+#if 0
+int parse_nsec(const char *t, nsec_t *nsec);
 
-// UNNEEDED bool ntp_synced(void);
+bool ntp_synced(void);
 
-// UNNEEDED int get_timezones(char ***l);
-// UNNEEDED bool timezone_is_valid(const char *name);
+int get_timezones(char ***l);
+bool timezone_is_valid(const char *name);
 
-// UNNEEDED clockid_t clock_boottime_or_monotonic(void);
+clockid_t clock_boottime_or_monotonic(void);
+#endif // 0
 
 #define xstrftime(buf, fmt, tm) \
         assert_message_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0, \
                           "xstrftime: " #buf "[] must be big enough")
 
-// UNNEEDED int get_timezone(char **timezone);
+/// UNNEEDED by elogind
+#if 0
+int get_timezone(char **timezone);
 
-// UNNEEDED time_t mktime_or_timegm(struct tm *tm, bool utc);
+time_t mktime_or_timegm(struct tm *tm, bool utc);
+#endif // 0
 struct tm *localtime_or_gmtime_r(const time_t *t, struct tm *tm, bool utc);
 
-// UNNEEDED unsigned long usec_to_jiffies(usec_t usec);
+/// UNNEEDED by elogind
+#if 0
+unsigned long usec_to_jiffies(usec_t usec);
+#endif // 0

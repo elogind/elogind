@@ -37,7 +37,7 @@
 
 #define CGROUP_CPU_QUOTA_PERIOD_USEC ((usec_t) 100 * USEC_PER_MSEC)
 
-// UNNEEDED by elogind
+/// UNNEEDED by elogind
 #if 0
 void cgroup_context_init(CGroupContext *c) {
         assert(c);

@@ -42,40 +42,61 @@
 /* Set cursor to top left corner and clear screen */
 #define ANSI_HOME_CLEAR "\x1B[H\x1B[2J"
 
-// UNNEEDED int reset_terminal_fd(int fd, bool switch_to_text);
-// UNNEEDED int reset_terminal(const char *name);
+/// UNNEEDED by elogind
+#if 0
+int reset_terminal_fd(int fd, bool switch_to_text);
+int reset_terminal(const char *name);
+#endif // 0
 
 int open_terminal(const char *name, int mode);
-// UNNEEDED int acquire_terminal(const char *name, bool fail, bool force, bool ignore_tiocstty_eperm, usec_t timeout);
-// UNNEEDED int release_terminal(void);
+/// UNNEEDED by elogind
+#if 0
+int acquire_terminal(const char *name, bool fail, bool force, bool ignore_tiocstty_eperm, usec_t timeout);
+int release_terminal(void);
 
-// UNNEEDED int terminal_vhangup_fd(int fd);
-// UNNEEDED int terminal_vhangup(const char *name);
+int terminal_vhangup_fd(int fd);
+int terminal_vhangup(const char *name);
+#endif // 0
 
 int chvt(int vt);
 
-// UNNEEDED int read_one_char(FILE *f, char *ret, usec_t timeout, bool *need_nl);
-// UNNEEDED int ask_char(char *ret, const char *replies, const char *text, ...) _printf_(3, 4);
-// UNNEEDED int ask_string(char **ret, const char *text, ...) _printf_(2, 3);
+/// UNNEEDED by elogind
+#if 0
+int read_one_char(FILE *f, char *ret, usec_t timeout, bool *need_nl);
+int ask_char(char *ret, const char *replies, const char *text, ...) _printf_(3, 4);
+int ask_string(char **ret, const char *text, ...) _printf_(2, 3);
 
-// UNNEEDED int vt_disallocate(const char *name);
+int vt_disallocate(const char *name);
 
-// UNNEEDED char *resolve_dev_console(char **active);
+char *resolve_dev_console(char **active);
+#endif // 0
 bool tty_is_vc(const char *tty);
-// UNNEEDED bool tty_is_vc_resolve(const char *tty);
+/// UNNEEDED by elogind
+#if 0
+bool tty_is_vc_resolve(const char *tty);
+#endif // 0
 bool tty_is_console(const char *tty) _pure_;
 int vtnr_from_tty(const char *tty);
-// UNNEEDED const char *default_term_for_tty(const char *tty);
+/// UNNEEDED by elogind
+#if 0
+const char *default_term_for_tty(const char *tty);
+#endif // 0
 
 int make_stdio(int fd);
 int make_null_stdio(void);
-// UNNEEDED int make_console_stdio(void);
+/// UNNEEDED by elogind
+#if 0
+int make_console_stdio(void);
+#endif // 0
 
 int fd_columns(int fd);
 unsigned columns(void);
 int fd_lines(int fd);
 unsigned lines(void);
-// UNNEEDED void columns_lines_cache_reset(int _unused_ signum);
+/// UNNEEDED by elogind
+#if 0
+void columns_lines_cache_reset(int _unused_ signum);
+#endif // 0
 
 bool on_tty(void);
 
@@ -114,11 +135,14 @@ static inline const char *ansi_normal(void) {
 int get_ctty_devnr(pid_t pid, dev_t *d);
 int get_ctty(pid_t, dev_t *_devnr, char **r);
 
-// UNNEEDED int getttyname_malloc(int fd, char **r);
-// UNNEEDED int getttyname_harder(int fd, char **r);
+/// UNNEEDED by elogind
+#if 0
+int getttyname_malloc(int fd, char **r);
+int getttyname_harder(int fd, char **r);
 
-// UNNEEDED int ptsname_malloc(int fd, char **ret);
-// UNNEEDED int ptsname_namespace(int pty, char **ret);
+int ptsname_malloc(int fd, char **ret);
+int ptsname_namespace(int pty, char **ret);
 
-// UNNEEDED int openpt_in_namespace(pid_t pid, int flags);
-// UNNEEDED int open_terminal_in_namespace(pid_t pid, const char *name, int mode);
+int openpt_in_namespace(pid_t pid, int flags);
+int open_terminal_in_namespace(pid_t pid, const char *name, int mode);
+#endif // 0
