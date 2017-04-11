@@ -747,8 +747,7 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_set_group_access(
                 const char *controller,
                 const char *path,
@@ -1265,8 +1264,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit){
         char *c, *s;
         size_t n;
@@ -1585,8 +1583,7 @@ int cg_pid_get_session(pid_t pid, char **session) {
         return cg_path_get_session(cgroup, session);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         _cleanup_free_ char *slice = NULL;
         char *start, *end;
@@ -1791,8 +1788,7 @@ bool cg_controller_is_valid(const char *p) {
         return true;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_slice_to_path(const char *unit, char **ret) {
         _cleanup_free_ char *p = NULL, *s = NULL, *e = NULL;
         const char *dash;
@@ -1874,8 +1870,7 @@ int cg_set_attribute(const char *controller, const char *path, const char *attri
         return write_string_file(p, value, 0);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -2108,8 +2103,7 @@ int cg_mask_supported(CGroupMask *ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set *controllers) {
         _cleanup_fclose_ FILE *f = NULL;
         char buf[LINE_MAX];
@@ -2202,8 +2196,7 @@ int cg_unified(void) {
         return unified_cache;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void) {
         unified_cache = -1;
 }
@@ -2292,8 +2285,7 @@ bool cg_is_legacy_wanted(void) {
 }
 #endif // 0
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;

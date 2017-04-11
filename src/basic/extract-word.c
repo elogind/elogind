@@ -190,8 +190,7 @@ finish_force_next:
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int extract_first_word_and_warn(
                 const char **p,
                 char **ret,

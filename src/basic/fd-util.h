@@ -40,8 +40,7 @@ void close_many(const int fds[], unsigned n_fd);
 
 int fclose_nointr(FILE *f);
 FILE* safe_fclose(FILE *f);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 DIR* safe_closedir(DIR *f);
 #endif // 0
 
@@ -71,8 +70,7 @@ int fd_cloexec(int fd, bool cloexec);
 
 int close_all_fds(const int except[], unsigned n_except);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int same_fd(int a, int b);
 
 void cmsg_close_all(struct msghdr *mh);

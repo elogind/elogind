@@ -368,8 +368,7 @@ static inline void *hashmap_first(Hashmap *h) {
 static inline void *ordered_hashmap_first(OrderedHashmap *h) {
         return internal_hashmap_first(HASHMAP_BASE(h));
 }
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 /* no hashmap_next */
 void *ordered_hashmap_next(OrderedHashmap *h, const void *key);
 #endif // 0

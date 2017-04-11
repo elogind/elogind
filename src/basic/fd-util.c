@@ -120,8 +120,7 @@ FILE* safe_fclose(FILE *f) {
         return NULL;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 DIR* safe_closedir(DIR *d) {
 
         if (d) {
@@ -251,8 +250,7 @@ int close_all_fds(const int except[], unsigned n_except) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int same_fd(int a, int b) {
         struct stat sta, stb;
         pid_t pid;

@@ -38,8 +38,7 @@ int write_string_file_atomic_label(const char *fn, const char *line) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int write_env_file_label(const char *fname, char **l) {
         int r;
 

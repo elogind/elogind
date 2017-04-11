@@ -43,8 +43,7 @@ int unlink_noerrno(const char *path) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int rmdir_parents(const char *path, const char *stop) {
         size_t l;
         int r = 0;
@@ -171,8 +170,7 @@ int readlink_malloc(const char *p, char **ret) {
         return readlinkat_malloc(AT_FDCWD, p, ret);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int readlink_value(const char *p, char **ret) {
         _cleanup_free_ char *link = NULL;
         char *value;
@@ -277,8 +275,7 @@ int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid) {
         assert(fd >= 0);
 
@@ -370,8 +367,7 @@ int touch(const char *path) {
         return touch_file(path, false, USEC_INFINITY, UID_INVALID, GID_INVALID, MODE_INVALID);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int symlink_idempotent(const char *from, const char *to) {
         _cleanup_free_ char *p = NULL;
         int r;

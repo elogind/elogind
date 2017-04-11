@@ -813,8 +813,7 @@ int write_env_file(const char *fname, char **l) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int executable_is_script(const char *path, char **interpreter) {
         int r;
         _cleanup_free_ char *line = NULL;
@@ -997,8 +996,7 @@ int search_and_fopen(const char *path, const char *mode, const char *root, const
         return search_and_fopen_internal(path, mode, root, copy, _f);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **_f) {
         _cleanup_strv_free_ char **s = NULL;
 
@@ -1083,8 +1081,7 @@ int mkostemp_safe(char *pattern, int flags) {
         return fd;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int open_tmpfile(const char *path, int flags) {
         char *p;
         int fd;
@@ -1184,8 +1181,7 @@ int tempfn_random(const char *p, const char *extra, char **ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int tempfn_random_child(const char *p, const char *extra, char **ret) {
         char *t, *x;
         uint64_t u;

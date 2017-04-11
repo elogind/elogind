@@ -55,8 +55,7 @@ int errno_from_name(const char *name) {
         return sc->id;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int errno_max(void) {
         return ELEMENTSOF(errno_names);
 }

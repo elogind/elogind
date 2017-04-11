@@ -1458,8 +1458,7 @@ int hashmap_remove_and_put(Hashmap *h, const void *old_key, const void *new_key,
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int set_remove_and_put(Set *s, const void *old_key, const void *new_key) {
         struct swap_entries swap;
         struct hashmap_base_entry *e;
@@ -1806,8 +1805,7 @@ char **internal_hashmap_get_strv(HashmapBase *h) {
         return sv;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void *ordered_hashmap_next(OrderedHashmap *h, const void *key) {
         struct ordered_hashmap_entry *e;
         unsigned hash, idx;
@@ -1855,8 +1853,7 @@ int set_put_strdup(Set *s, const char *p) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int set_put_strdupv(Set *s, char **l) {
         int n = 0, r;
         char **i;
