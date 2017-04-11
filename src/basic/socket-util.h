@@ -66,19 +66,16 @@ typedef enum SocketAddressBindIPv6Only {
 } SocketAddressBindIPv6Only;
 
 #define socket_address_family(a) ((a)->sockaddr.sa.sa_family)
-#endif // 0
 
-// UNNEEDED int socket_address_parse(SocketAddress *a, const char *s);
-// UNNEEDED int socket_address_parse_and_warn(SocketAddress *a, const char *s);
-// UNNEEDED int socket_address_parse_netlink(SocketAddress *a, const char *s);
-// UNNEEDED int socket_address_print(const SocketAddress *a, char **p);
-// UNNEEDED int socket_address_verify(const SocketAddress *a) _pure_;
-// UNNEEDED int socket_address_unlink(SocketAddress *a);
+int socket_address_parse(SocketAddress *a, const char *s);
+int socket_address_parse_and_warn(SocketAddress *a, const char *s);
+int socket_address_parse_netlink(SocketAddress *a, const char *s);
+int socket_address_print(const SocketAddress *a, char **p);
+int socket_address_verify(const SocketAddress *a) _pure_;
+int socket_address_unlink(SocketAddress *a);
 
-// UNNEEDED bool socket_address_can_accept(const SocketAddress *a) _pure_;
+bool socket_address_can_accept(const SocketAddress *a) _pure_;
 
-/// UNNEEDED by elogind
-#if 0
 int socket_address_listen(
                 const SocketAddress *a,
                 int flags,
@@ -92,47 +89,55 @@ int socket_address_listen(
                 mode_t socket_mode,
                 const char *label);
 int make_socket_fd(int log_level, const char* address, int flags);
+
+bool socket_address_is(const SocketAddress *a, const char *s, int type);
+bool socket_address_is_netlink(const SocketAddress *a, const char *s);
+
+bool socket_address_matches_fd(const SocketAddress *a, int fd);
+
+bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) _pure_;
+
+const char* socket_address_get_path(const SocketAddress *a);
 #endif // 0
-
-// UNNEEDED bool socket_address_is(const SocketAddress *a, const char *s, int type);
-// UNNEEDED bool socket_address_is_netlink(const SocketAddress *a, const char *s);
-
-// UNNEEDED bool socket_address_matches_fd(const SocketAddress *a, int fd);
-
-// UNNEEDED bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) _pure_;
-
-// UNNEEDED const char* socket_address_get_path(const SocketAddress *a);
 
 bool socket_ipv6_is_supported(void);
 
-// UNNEEDED int sockaddr_port(const struct sockaddr *_sa) _pure_;
+/// UNNEEDED by elogind
+#if 0
+int sockaddr_port(const struct sockaddr *_sa) _pure_;
 
-// UNNEEDED Sint sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
-// UNNEEDED int getpeername_pretty(int fd, char **ret);
-// UNNEEDED int getsockname_pretty(int fd, char **ret);
+Sint sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
+int getpeername_pretty(int fd, char **ret);
+int getsockname_pretty(int fd, char **ret);
 
-// UNNEEDED int socknameinfo_pretty(union sockaddr_union *sa, socklen_t salen, char **_ret);
-// UNNEEDED int getnameinfo_pretty(int fd, char **ret);
+int socknameinfo_pretty(union sockaddr_union *sa, socklen_t salen, char **_ret);
+int getnameinfo_pretty(int fd, char **ret);
 
-// UNNEEDED const char* socket_address_bind_ipv6_only_to_string(SocketAddressBindIPv6Only b) _const_;
-// UNNEEDED SocketAddressBindIPv6Only socket_address_bind_ipv6_only_from_string(const char *s) _pure_;
+const char* socket_address_bind_ipv6_only_to_string(SocketAddressBindIPv6Only b) _const_;
+SocketAddressBindIPv6Only socket_address_bind_ipv6_only_from_string(const char *s) _pure_;
 
-// UNNEEDED int netlink_family_to_string_alloc(int b, char **s);
-// UNNEEDED int netlink_family_from_string(const char *s) _pure_;
+int netlink_family_to_string_alloc(int b, char **s);
+int netlink_family_from_string(const char *s) _pure_;
 
-// UNNEEDED bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b);
+bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b);
+#endif // 0
 
 int fd_inc_sndbuf(int fd, size_t n);
 int fd_inc_rcvbuf(int fd, size_t n);
-
-// UNNEEDED int ip_tos_to_string_alloc(int i, char **s);
-// UNNEEDED int ip_tos_from_string(const char *s);
+/// UNNEEDED by elogind
+#if 0
+int ip_tos_to_string_alloc(int i, char **s);
+int ip_tos_from_string(const char *s);
+#endif // 0
 
 int getpeercred(int fd, struct ucred *ucred);
 int getpeersec(int fd, char **ret);
 
 int send_one_fd(int transport_fd, int fd, int flags);
-// UNNEEDED int receive_one_fd(int transport_fd, int flags);
+/// UNNEEDED by elogind
+#if 0
+int receive_one_fd(int transport_fd, int flags);
+#endif // 0
 
 #define CMSG_FOREACH(cmsg, mh)                                          \
         for ((cmsg) = CMSG_FIRSTHDR(mh); (cmsg); (cmsg) = CMSG_NXTHDR((mh), (cmsg)))

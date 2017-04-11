@@ -36,28 +36,43 @@
 #endif
 
 bool is_path(const char *p) _pure_;
-// UNNEEDED int path_split_and_make_absolute(const char *p, char ***ret);
+/// UNNEEDED by elogind
+#if 0
+int path_split_and_make_absolute(const char *p, char ***ret);
+#endif // 0
 bool path_is_absolute(const char *p) _pure_;
-// UNNEEDED char* path_make_absolute(const char *p, const char *prefix);
+/// UNNEEDED by elogind
+#if 0
+char* path_make_absolute(const char *p, const char *prefix);
+#endif // 0
 int path_make_absolute_cwd(const char *p, char **ret);
-// UNNEEDED int path_make_relative(const char *from_dir, const char *to_path, char **_r);
+/// UNNEEDED by elogind
+#if 0
+int path_make_relative(const char *from_dir, const char *to_path, char **_r);
+#endif // 0
 char* path_kill_slashes(char *path);
 char* path_startswith(const char *path, const char *prefix) _pure_;
 int path_compare(const char *a, const char *b) _pure_;
 bool path_equal(const char *a, const char *b) _pure_;
 bool path_equal_or_files_same(const char *a, const char *b);
-// UNNEEDED char* path_join(const char *root, const char *path, const char *rest);
+/// UNNEEDED by elogind
+#if 0
+char* path_join(const char *root, const char *path, const char *rest);
 
-// UNNEEDED int path_strv_make_absolute_cwd(char **l);
+int path_strv_make_absolute_cwd(char **l);
+#endif // 0
 char** path_strv_resolve(char **l, const char *prefix);
 char** path_strv_resolve_uniq(char **l, const char *prefix);
 
-// UNNEEDED int find_binary(const char *name, char **filename);
+/// UNNEEDED by elogind
+#if 0
+int find_binary(const char *name, char **filename);
 
-// UNNEEDED bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
+bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
-// UNNEEDED int fsck_exists(const char *fstype);
-// UNNEEDED int mkfs_exists(const char *fstype);
+int fsck_exists(const char *fstype);
+int mkfs_exists(const char *fstype);
+#endif // 0
 
 /* Iterates through the path prefixes of the specified path, going up
  * the tree, to root. Also returns "" (and not "/"!) for the root
@@ -69,7 +84,7 @@ char** path_strv_resolve_uniq(char **l, const char *prefix);
 #define PATH_FOREACH_PREFIX_MORE(prefix, path) \
         for (char *_slash = ({ path_kill_slashes(strcpy(prefix, path)); if (streq(prefix, "/")) prefix[0] = 0; strrchr(prefix, 0); }); _slash && ((*_slash = 0), true); _slash = strrchr((prefix), '/'))
 
-// UNNEEDED char *prefix_root(const char *root, const char *path);
+char *prefix_root(const char *root, const char *path);
 
 /* Similar to prefix_root(), but returns an alloca() buffer, or
  * possibly a const pointer into the path parameter */
@@ -96,7 +111,10 @@ char** path_strv_resolve_uniq(char **l, const char *prefix);
                 _ret;                                                   \
         })
 
-// UNNEEDED int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg);
+/// UNNEEDED by elogind
+#if 0
+int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg);
+#endif // 0
 
 char* dirname_malloc(const char *path);
 
@@ -108,4 +126,7 @@ char *file_in_same_dir(const char *path, const char *filename);
 bool hidden_file_allow_backup(const char *filename);
 bool hidden_file(const char *filename) _pure_;
 
-// UNNEEDED bool is_device_path(const char *path);
+/// UNNEEDED by elogind
+#if 0
+bool is_device_path(const char *path);
+#endif // 0

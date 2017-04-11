@@ -34,10 +34,14 @@ int parse_mode(const char *s, mode_t *ret);
 int parse_ifindex(const char *s, int *ret);
 
 int parse_size(const char *t, uint64_t base, uint64_t *size);
-// UNNEEDED int parse_range(const char *t, unsigned *lower, unsigned *upper);
 
-// UNNEEDED #define FORMAT_BYTES_MAX 8
-// UNNEEDED char *format_bytes(char *buf, size_t l, uint64_t t);
+/// UNNEEDED by elogind
+#if 0
+int parse_range(const char *t, unsigned *lower, unsigned *upper);
+
+#define FORMAT_BYTES_MAX 8
+char *format_bytes(char *buf, size_t l, uint64_t t);
+#endif // 0
 
 int safe_atou(const char *s, unsigned *ret_u);
 int safe_atoi(const char *s, int *ret_i);

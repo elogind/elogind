@@ -25,5 +25,8 @@ int proc_cmdline(char **ret);
 int parse_proc_cmdline(int (*parse_word)(const char *key, const char *value));
 int get_proc_cmdline_key(const char *parameter, char **value);
 
-// UNNEEDED int shall_restore_state(void);
-// UNNEEDED const char* runlevel_to_target(const char *rl);
+/// UNNEEDED by elogind
+#if 0
+int shall_restore_state(void);
+const char* runlevel_to_target(const char *rl);
+#endif // 0

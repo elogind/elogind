@@ -45,5 +45,5 @@ struct mempool pool_name = { \
 
 
 #ifdef VALGRIND
-// UNNEEDED void mempool_drop(struct mempool *mp);
+void mempool_drop(struct mempool *mp);
 #endif

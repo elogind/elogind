@@ -32,17 +32,23 @@
 int fd_is_mount_point(int fd, const char *filename, int flags);
 int path_is_mount_point(const char *path, int flags);
 
-// UNNEEDED int repeat_unmount(const char *path, int flags);
+/// UNNEEDED by elogind
+#if 0
+int repeat_unmount(const char *path, int flags);
 
-// UNNEEDED int umount_recursive(const char *target, int flags);
-// UNNEEDED int bind_remount_recursive(const char *prefix, bool ro);
+int umount_recursive(const char *target, int flags);
+int bind_remount_recursive(const char *prefix, bool ro);
 
-// UNNEEDED int mount_move_root(const char *path);
+int mount_move_root(const char *path);
+#endif // 0
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, endmntent);
 #define _cleanup_endmntent_ _cleanup_(endmntentp)
 
-// UNNEEDED bool fstype_is_network(const char *fstype);
+/// UNNEEDED by elogind
+#if 0
+bool fstype_is_network(const char *fstype);
+#endif // 0
 
 union file_handle_union {
         struct file_handle handle;
