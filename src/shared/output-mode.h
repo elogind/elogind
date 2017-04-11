@@ -21,8 +21,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef enum OutputMode {
         OUTPUT_SHORT,
         OUTPUT_SHORT_ISO,

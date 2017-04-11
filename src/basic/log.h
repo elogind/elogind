@@ -36,8 +36,7 @@ typedef enum LogTarget{
         LOG_TARGET_CONSOLE,
         LOG_TARGET_CONSOLE_PREFIXED,
         LOG_TARGET_KMSG,
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         LOG_TARGET_JOURNAL,
         LOG_TARGET_JOURNAL_OR_KMSG,
 #endif // 0

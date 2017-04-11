@@ -691,8 +691,7 @@ int load_env_file(FILE *f, const char *fname, const char *newline, char ***rl) {
         return 0;
 }
 
-/// UNNEDED by elogind
-#if 0
+#if 0 /// UNNEDED by elogind
 static int load_env_file_push_pairs(
                 const char *filename, unsigned line,
                 const char *key, char *value,

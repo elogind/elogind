@@ -1367,8 +1367,7 @@ static int have_multiple_sessions(
 static int bus_manager_log_shutdown(
                 Manager *m,
                 InhibitWhat w,
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
                 const char *unit_name) {
 
         const char *p, *q;
@@ -1504,8 +1503,7 @@ static int execute_shutdown_or_sleep(
                 HandleAction action,
                 sd_bus_error *error) {
 
-/// elogind does not need these, we do it ourselves
-#if 0
+#if 0 /// elogind does not need these, we do it ourselves
         _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
         char *c = NULL;
         const char *p;
@@ -1518,8 +1516,7 @@ static int execute_shutdown_or_sleep(
 
         bus_manager_log_shutdown(m, w, action);
 
-/// elogind does it directly without depending on systemd running the system
-#if 0
+#if 0 /// elogind does it directly without depending on systemd running the system
         if (m->shutdown_dry_run) {
                 log_info("Running in dry run, suppressing action.");
                 reset_scheduled_shutdown(m);
@@ -1539,8 +1536,7 @@ static int execute_shutdown_or_sleep(
         if (r < 0)
                 return r;
 
-/// elogind neither needs a dbus reply, nor supports systemd action jobs
-#if 0
+#if 0 /// elogind neither needs a dbus reply, nor supports systemd action jobs
         r = sd_bus_message_read(reply, "o", &p);
         if (r < 0)
                 return r;
@@ -2052,8 +2048,7 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
                 }
         }
 
-/// elogind does not support utmp-wtmp
-#if 0
+#if 0 /// elogind does not support utmp-wtmp
         r = manager_setup_wall_message_timer(m);
         if (r < 0)
                 return r;
@@ -2079,8 +2074,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         cancelled = m->scheduled_shutdown_type != NULL;
         reset_scheduled_shutdown(m);
 
-/// elogind does not support utmp-wtmp
-#if 0
+#if 0 /// elogind does not support utmp-wtmp
         if (cancelled) {
                 _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
                 const char *tty = NULL;
@@ -2294,8 +2288,7 @@ static int property_get_reboot_to_firmware_setup(
                 sd_bus_message *reply,
                 void *userdata,
                 sd_bus_error *error) {
-/// elogind does not support EFI
-#if 0
+#if 0 /// elogind does not support EFI
         int r;
 
         assert(bus);
@@ -2340,8 +2333,7 @@ static int method_set_reboot_to_firmware_setup(
         if (r == 0)
                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
 
-/// elogind does not support EFI
-#if 0
+#if 0 /// elogind does not support EFI
         r = efi_set_reboot_to_firmware(b);
         if (r < 0)
                 return r;
@@ -2355,8 +2347,7 @@ static int method_can_reboot_to_firmware_setup(
                 void *userdata,
                 sd_bus_error *error) {
 
-/// elogind does not support EFI
-#if 0
+#if 0 /// elogind does not support EFI
         int r;
         bool challenge;
         const char *result;

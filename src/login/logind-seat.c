@@ -175,8 +175,7 @@ int seat_load(Seat *s) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int vt_allocate(unsigned int vtnr) {
         char p[sizeof("/dev/tty") + DECIMAL_STR_MAX(unsigned int)];
         _cleanup_close_ int fd = -1;
@@ -371,8 +370,7 @@ int seat_active_vt_changed(Seat *s, unsigned int vtnr) {
 
         r = seat_set_active(s, new_active);
 
-/// elogind does not spawn autovt
-#if 0
+#if 0 /// elogind does not spawn autovt
         manager_spawn_autovt(s->manager, vtnr);
 #endif // 0
 
@@ -433,8 +431,7 @@ int seat_start(Seat *s) {
                    NULL);
 
         /* Initialize VT magic stuff */
-/// elogind does not support autospawning vts
-#if 0
+#if 0 /// elogind does not support autospawning vts
         seat_preallocate_vts(s);
 #endif // 0
 

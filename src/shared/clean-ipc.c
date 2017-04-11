@@ -277,8 +277,7 @@ static int clean_posix_shm(uid_t uid) {
         return clean_posix_shm_internal(dir, uid);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int clean_posix_mq(uid_t uid) {
         _cleanup_closedir_ DIR *dir = NULL;
         struct dirent *de;
@@ -355,8 +354,8 @@ int clean_ipc(uid_t uid) {
         if (r < 0)
                 ret = r;
 
-/// elogind does not use mq_open anywhere
-#if 0
+
+#if 0 /// elogind does not use mq_open anywhere
         r = clean_posix_mq(uid);
         if (r < 0)
                 ret = r;

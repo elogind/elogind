@@ -49,28 +49,24 @@ struct bus_properties_map {
 int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata);
 
 int bus_message_map_all_properties(sd_bus_message *m, const struct bus_properties_map *map,  void *userdata);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_message_map_properties_changed(sd_bus_message *m, const struct bus_properties_map *map, void *userdata);
 #endif // 0
 int bus_map_all_properties(sd_bus *bus, const char *destination, const char *path, const struct bus_properties_map *map, void *userdata);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name);
 #endif // 0
 
 typedef bool (*check_idle_t)(void *userdata);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t timeout, check_idle_t check_idle, void *userdata);
 #endif // 0
 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c);
 #endif // 0
 
@@ -79,15 +75,13 @@ int bus_test_polkit(sd_bus_message *call, int capability, const char *action, co
 int bus_verify_polkit_async(sd_bus_message *call, int capability, const char *action, const char **details, bool interactive, uid_t good_user, Hashmap **registry, sd_bus_error *error);
 void bus_verify_polkit_async_registry_free(Hashmap *registry);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_open_system_systemd(sd_bus **_bus);
 int bus_open_user_systemd(sd_bus **_bus);
 #endif // 0
 
 int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **bus);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #endif // 0
 
@@ -139,8 +133,7 @@ assert_cc(sizeof(mode_t) == sizeof(uint32_t));
 int bus_log_parse_error(int r);
 int bus_log_create_error(int r);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef struct UnitInfo {
         const char *machine;
         const char *id;
@@ -204,8 +197,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus_track*, sd_bus_track_unref);
         SD_BUS_PROPERTY(name, "t", bus_property_get_usec, (offset) + offsetof(struct dual_timestamp, realtime), (flags)), \
         SD_BUS_PROPERTY(name "Monotonic", "t", bus_property_get_usec, (offset) + offsetof(struct dual_timestamp, monotonic), (flags))
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignment);
 
 typedef struct BusWaitForJobs BusWaitForJobs;
@@ -227,7 +219,6 @@ int bus_path_decode_unique(const char *path, const char *prefix, char **ret_send
 bool is_kdbus_wanted(void);
 bool is_kdbus_available(void);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_property_get_rlimit(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
 #endif // 0

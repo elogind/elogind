@@ -170,8 +170,7 @@ bool pager_have(void) {
         return pager_pid > 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int show_man_page(const char *desc, bool null_stdio) {
         const char *args[4] = { "man", NULL, NULL, NULL };
         char *e = NULL;

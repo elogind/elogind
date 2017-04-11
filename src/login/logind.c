@@ -60,8 +60,7 @@ static Manager *manager_new(void) {
 
         m->console_active_fd = -1;
 
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         m->reserve_vt_fd = -1;
 
         m->n_autovts = 6;
@@ -218,8 +217,7 @@ static void manager_free(Manager *m) {
         sd_bus_unref(m->bus);
         sd_event_unref(m->event);
 
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         safe_close(m->reserve_vt_fd);
 #endif // 0
 
@@ -564,8 +562,7 @@ static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t rev
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
         _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         Manager *m = userdata;
@@ -614,8 +611,7 @@ static int manager_dispatch_console(sd_event_source *s, int fd, uint32_t revents
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int manager_reserve_vt(Manager *m) {
         _cleanup_free_ char *p = NULL;
 
@@ -715,8 +711,7 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to add user enumerator: %m");
 
-/// elogind does not support systemd as PID 1
-#if 0
+#if 0 /// elogind does not support systemd as PID 1
         r = sd_bus_add_match(m->bus,
                              NULL,
                              "type='signal',"
@@ -955,8 +950,7 @@ static int manager_connect_udev(Manager *m) {
         }
 
         /* Don't bother watching VCSA devices, if nobody cares */
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         if (m->n_autovts > 0 && m->console_active_fd >= 0) {
 
                 m->udev_vcsa_monitor = udev_monitor_new_from_netlink(m->udev, "udev");
@@ -1155,8 +1149,7 @@ static int manager_startup(Manager *m) {
         manager_gc(m, false);
 
         /* Reserve the special reserved VT */
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         manager_reserve_vt(m);
 #endif // 0
 
@@ -1208,8 +1201,7 @@ static int manager_run(Manager *m) {
 }
 
 static int manager_parse_config_file(Manager *m) {
-/// elogind parses its own config file
-#if 0
+#if 0 /// elogind parses its own config file
 
         assert(m);
 
@@ -1263,8 +1255,7 @@ int main(int argc, char *argv[]) {
          * existence of /run/systemd/seats/ to determine whether
          * logind is available, so please always make sure this check
          * stays in. */
-/// elogind can not rely on systemd to help, so we need a bit more effort than this
-#if 0
+#if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         mkdir_label("/run/systemd/seats", 0755);
         mkdir_label("/run/systemd/users", 0755);
         mkdir_label("/run/systemd/sessions", 0755);

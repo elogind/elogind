@@ -91,8 +91,7 @@ struct Session {
 
         /* always NULL */
         char *scope;
-/// UNNEEDED (and unsupported) by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
         char *scope_job;
 #endif // 0
 

@@ -70,8 +70,7 @@ _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
         return cg_pid_get_unit(pid, unit);
 #else
         return -ESRCH;
@@ -83,8 +82,7 @@ _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
         return cg_pid_get_user_unit(pid, unit);
 #else
         return -ESRCH;
@@ -96,8 +94,7 @@ _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(name, -EINVAL);
 
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
         return cg_pid_get_machine_name(pid, name);
 #else
         return -ESRCH;
@@ -109,8 +106,7 @@ _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
-/// elogind does not support systemd slices
-#if 0
+#if 0 /// elogind does not support systemd slices
         return cg_pid_get_slice(pid, slice);
 #else
         return -ESRCH;
@@ -122,8 +118,7 @@ _public_ int sd_pid_get_user_slice(pid_t pid, char **slice) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
-/// elogind does not support systemd slices
-#if 0
+#if 0 /// elogind does not support systemd slices
         return cg_pid_get_user_slice(pid, slice);
 #else
         return -ESRCH;
@@ -135,8 +130,7 @@ _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(uid, -EINVAL);
 
-/// elogind does not support systemd slices
-#if 0
+#if 0 /// elogind does not support systemd slices
         return cg_pid_get_owner_uid(pid, uid);
 #else
         return -ESRCH;
@@ -180,8 +174,7 @@ _public_ int sd_peer_get_session(int fd, char **session) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd scopes
-#if 0
+#if 0 /// elogind does not support systemd scopes
         return cg_pid_get_session(ucred.pid, session);
 #else
         return -ESRCH;
@@ -199,8 +192,7 @@ _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
         return cg_pid_get_owner_uid(ucred.pid, uid);
 #else
         return -ESRCH;
@@ -218,8 +210,7 @@ _public_ int sd_peer_get_unit(int fd, char **unit) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
         return cg_pid_get_unit(ucred.pid, unit);
 #else
         return -ESRCH;
@@ -237,8 +228,7 @@ _public_ int sd_peer_get_user_unit(int fd, char **unit) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
         return cg_pid_get_user_unit(ucred.pid, unit);
 #else
         return -ESRCH;
@@ -256,8 +246,7 @@ _public_ int sd_peer_get_machine_name(int fd, char **machine) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd units
-#if 0
+#if 0 /// elogind does not support systemd units
         return cg_pid_get_machine_name(ucred.pid, machine);
 #else
         return -ESRCH;
@@ -275,8 +264,7 @@ _public_ int sd_peer_get_slice(int fd, char **slice) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd slices
-#if 0
+#if 0 /// elogind does not support systemd slices
         return cg_pid_get_slice(ucred.pid, slice);
 #else
         return -ESRCH;
@@ -294,8 +282,7 @@ _public_ int sd_peer_get_user_slice(int fd, char **slice) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd slices
-#if 0
+#if 0 /// elogind does not support systemd slices
         return cg_pid_get_user_slice(ucred.pid, slice);
 #else
         return -ESRCH;

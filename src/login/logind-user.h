@@ -51,8 +51,8 @@ struct User {
         char *slice;
         char *service;
 
-/// UNNEEDED (and unsupported) by elogind
-#if 0
+
+#if 0 /// UNNEEDED by elogind
         char *service_job;
         char *slice_job;
 #endif // 0

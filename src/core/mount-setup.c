@@ -377,8 +377,8 @@ int mount_setup(bool loaded_policy) {
         if (r < 0)
                 return r;
 
-/// elogind does not control /, /dev, /run and /run/systemd/* are setup elsewhere.
-#if 0
+
+#if 0 /// elogind does not control /, /dev, /run and /run/systemd/* are setup elsewhere.
 #if defined(HAVE_SELINUX) || defined(HAVE_SMACK)
         /* Nodes in devtmpfs and /run need to be manually updated for
          * the appropriate labels, after mounting. The other virtual

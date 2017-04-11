@@ -59,8 +59,7 @@ _SD_BEGIN_DECLARATIONS;
 /* The first passed file descriptor is fd 3 */
 #define SD_LISTEN_FDS_START 3
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 /*
   Returns how many file descriptors have been passed, or a negative
   errno code on failure. Optionally, removes the $LISTEN_FDS and
@@ -121,8 +120,7 @@ int sd_is_special(int fd, const char *path);
 */
 int sd_is_socket(int fd, int family, int type, int listening);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is an Internet socket, of the specified family
@@ -222,8 +220,7 @@ int sd_is_mq(int fd, const char *path);
 */
 int sd_notify(int unset_environment, const char *state);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 /*
   Similar to sd_notify() but takes a format string.
 
@@ -266,8 +263,7 @@ int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) _s
 */
 int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, const int *fds, unsigned n_fds);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 /*
   Returns > 0 if the system was booted with systemd. Returns < 0 on
   error. Returns 0 if the system was not booted with systemd. Note

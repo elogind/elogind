@@ -133,8 +133,7 @@ void session_free(Session *s) {
                 free(s->scope);
         }
 
-/// elogind does not support systemd scope_jobs
-#if 0
+#if 0 /// elogind does not support systemd scope_jobs
         free(s->scope_job);
 #endif // 0
 
@@ -207,8 +206,7 @@ int session_save(Session *s) {
 
         if (s->scope)
                 fprintf(f, "SCOPE=%s\n", s->scope);
-/// elogind does not support systemd scope_jobs
-#if 0
+#if 0 /// elogind does not support systemd scope_jobs
         if (s->scope_job)
                 fprintf(f, "SCOPE_JOB=%s\n", s->scope_job);
 #endif // 0
@@ -338,8 +336,7 @@ int session_load(Session *s) {
         r = parse_env_file(s->state_file, NEWLINE,
                            "REMOTE",         &remote,
                            "SCOPE",          &s->scope,
-/// elogind does not support systemd scope_jobs
-#if 0
+#if 0 /// elogind does not support systemd scope_jobs
                            "SCOPE_JOB",      &s->scope_job,
 #endif // 0
                            "FIFO",           &s->fifo_path,
@@ -516,8 +513,7 @@ int session_activate(Session *s) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int session_start_scope(Session *s) {
         int r;
 
@@ -648,8 +644,7 @@ int session_start(Session *s) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int session_stop_scope(Session *s, bool force) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         char *job = NULL;
@@ -713,8 +708,7 @@ int session_stop(Session *s, bool force) {
         session_remove_fifo(s);
 
         /* Kill cgroup */
-/// elogind does not start scopes, but sessions
-#if 0
+#if 0 /// elogind does not start scopes, but sessions
         r = session_stop_scope(s, force);
 #else
         r = session_stop_cgroup(s, force);
@@ -779,8 +773,7 @@ int session_finalize(Session *s) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *userdata) {
         Session *s = userdata;
 
@@ -1017,8 +1010,7 @@ bool session_check_gc(Session *s, bool drop_not_started) {
                         return true;
         }
 
-/// elogind supports neither scopes nor jobs
-#if 0
+#if 0 /// elogind supports neither scopes nor jobs
         if (s->scope_job && manager_job_is_active(s->manager, s->scope_job))
                 return true;
 
@@ -1050,8 +1042,7 @@ SessionState session_get_state(Session *s) {
         if (s->stopping || s->timer_event_source)
                 return SESSION_CLOSING;
 
-/// elogind does not support systemd scope_jobs
-#if 0
+#if 0 /// elogind does not support systemd scope_jobs
         if (s->scope_job || s->fifo_fd < 0)
 #else
         if (s->fifo_fd < 0)
@@ -1067,8 +1058,7 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
-/// Without direct cgroup support, elogind can not kill sessions
-#if 0
+#if 0 /// Without direct cgroup support, elogind can not kill sessions
         if (!s->scope)
                 return -ESRCH;
 

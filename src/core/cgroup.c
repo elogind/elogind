@@ -1375,8 +1375,7 @@ int manager_setup_cgroup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
 
-/// elogind does not support systemd scopes and slices
-#if 0
+#if 0 /// elogind does not support systemd scopes and slices
         /* Chop off the init scope, if we are already located in it */
         e = endswith(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
 
@@ -1423,8 +1422,7 @@ int manager_setup_cgroup(Manager *m) {
                         /* In the unified hierarchy we can can get
                          * cgroup empty notifications via inotify. */
 
-/// elogind does not support the unified hierarchy, yet.
-#if 0
+#if 0 /// elogind does not support the unified hierarchy, yet.
                         m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
                         safe_close(m->cgroup_inotify_fd);
 
@@ -1462,8 +1460,7 @@ int manager_setup_cgroup(Manager *m) {
                                 log_debug("Release agent already installed.");
                 }
 
-/// elogind is not meant to run in systemd init scope
-#if 0
+#if 0 /// elogind is not meant to run in systemd init scope
                 /* 4. Make sure we are in the special "init.scope" unit in the root slice. */
                 scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
                 r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
@@ -1521,8 +1518,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         if (delete && m->cgroup_root)
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
-/// elogind does not support the unified hierarchy, yet.
-#if 0
+#if 0 /// elogind does not support the unified hierarchy, yet.
         m->cgroup_inotify_wd_unit = hashmap_free(m->cgroup_inotify_wd_unit);
 
         m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);

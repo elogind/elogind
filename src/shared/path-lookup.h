@@ -34,8 +34,7 @@ typedef enum ManagerRunningAs {
         _MANAGER_RUNNING_AS_INVALID = -1
 } ManagerRunningAs;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int user_config_home(char **config_home);
 int user_runtime_dir(char **runtime_dir);
 

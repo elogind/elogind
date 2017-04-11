@@ -173,8 +173,7 @@ int mac_selinux_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
         return 0;
 }
 
-/// UNNEDED by elogind
-#if 0
+#if 0 /// UNNEDED by elogind
 int mac_selinux_apply(const char *path, const char *label) {
 
 #ifdef HAVE_SELINUX

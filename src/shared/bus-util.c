@@ -54,8 +54,7 @@
 #include "utf8.h"
 #include "util.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int name_owner_change_callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
         sd_event *e = userdata;
 
@@ -565,8 +564,7 @@ void bus_verify_polkit_async_registry_free(Hashmap *registry) {
 #endif
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c) {
         struct ucred ucred;
         socklen_t l;
@@ -1160,8 +1158,7 @@ int bus_message_map_all_properties(
         return sd_bus_message_exit_container(m);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_message_map_properties_changed(
                 sd_bus_message *m,
                 const struct bus_properties_map *map,
@@ -1243,8 +1240,7 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         switch (transport) {
 
         case BUS_TRANSPORT_LOCAL:
-/// elogind does not support a user bus
-#if 0
+#if 0 /// elogind does not support a user bus
                 if (user)
                         r = sd_bus_default_user(bus);
                 else
@@ -1268,8 +1264,7 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus) {
         int r;
 
@@ -1370,8 +1365,7 @@ int bus_log_parse_error(int r) {
         return log_error_errno(r, "Failed to parse bus message: %m");
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_log_create_error(int r) {
         return log_error_errno(r, "Failed to create bus message: %m");
 }
@@ -1870,8 +1864,7 @@ typedef struct BusWaitForJobs {
         sd_bus_slot *slot_disconnected;
 } BusWaitForJobs;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int match_disconnected(sd_bus_message *m, void *userdata, sd_bus_error *error) {
         assert(m);
 
@@ -2356,8 +2349,7 @@ bool is_kdbus_available(void) {
         return ioctl(fd, KDBUS_CMD_BUS_MAKE, &cmd) >= 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_property_get_rlimit(
                 sd_bus *bus,
                 const char *path,

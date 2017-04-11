@@ -1173,8 +1173,7 @@ int cg_mangle_path(const char *path, char **result) {
 }
 
 int cg_get_root_path(char **path) {
-/// elogind does not support systemd scopes and slices
-#if 0
+#if 0 /// elogind does not support systemd scopes and slices
         char *p, *e;
         int r;
 

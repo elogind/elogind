@@ -459,8 +459,7 @@ DEFINE_PARSER(uint32, uint32_t, safe_atou32);
 DEFINE_PARSER(uint64, uint64_t, safe_atou64);
 DEFINE_PARSER(unsigned, unsigned, safe_atou);
 DEFINE_PARSER(double, double, safe_atod);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(nsec, nsec_t, parse_nsec);
 #endif // 0
 DEFINE_PARSER(sec, usec_t, parse_sec);
@@ -496,8 +495,7 @@ int config_parse_iec_size(const char* unit,
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_si_size(const char* unit,
                             const char *filename,
                             unsigned line,
@@ -584,8 +582,7 @@ int config_parse_bool(const char* unit,
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_tristate(
                 const char* unit,
                 const char *filename,
@@ -759,8 +756,7 @@ int config_parse_strv(const char *unit,
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_log_facility(
                 const char *unit,
                 const char *filename,
@@ -852,8 +848,7 @@ int config_parse_signal(
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_personality(
                 const char *unit,
                 const char *filename,

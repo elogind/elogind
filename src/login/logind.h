@@ -78,8 +78,7 @@ struct Manager {
 
         int console_active_fd;
 
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         unsigned n_autovts;
 
         unsigned reserve_vt;
@@ -103,8 +102,7 @@ struct Manager {
          * this is != 0 and encodes what is being done */
         InhibitWhat action_what;
 
-/// elogind does all relevant actions on its own. No systemd jobs and units.
-#if 0
+#if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
         /* If a shutdown/suspend was delayed due to a inhibitor this
            contains the unit name we are supposed to start after the
            delay is over */
@@ -179,8 +177,7 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 int manager_process_seat_device(Manager *m, struct udev_device *d);
 int manager_process_button_device(Manager *m, struct udev_device *d);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int manager_spawn_autovt(Manager *m, unsigned int vtnr);
 #endif // 0
 
@@ -195,8 +192,7 @@ bool manager_is_docked_or_external_displays(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
 int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
 int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error);
@@ -211,9 +207,9 @@ int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, 
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 
-/// UNNEEDED by elogind
-#if 0
-int manager_start_slice(Manager *manager, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);// UNNEEDED int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
+#if 0 /// UNNEEDED by elogind
+int manager_start_slice(Manager *manager, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);
+int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
 int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
@@ -233,8 +229,7 @@ int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const ch
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int manager_setup_wall_message_timer(Manager *m);
 bool logind_wall_tty_filter(const char *tty, void *userdata);
 #endif // 0

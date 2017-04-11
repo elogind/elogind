@@ -996,7 +996,7 @@ git-tar:
 	 for f in `find elogind-$(VERSION)-raw/ -type f | cut -d '/' -f 2-` ; do \
 		$(MKDIR_P) elogind-$(VERSION)/`dirname $$f` ;            \
 		$(AWK) 'BEGIN                    { i=0;e=0      }        \
-		        /^#if\s+0\s*$$/          { i=1;next     }        \
+		        /^#if\s+0.*elogind.*$$/  { i=1;next     }        \
 		        /^#else\s*$$/            {                       \
 		            { if ( i==1 ) e=1; else print }{next}        \
 			}                                                \

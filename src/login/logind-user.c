@@ -122,8 +122,7 @@ User *user_free(User *u) {
 
         hashmap_remove_value(u->manager->users, UID_TO_PTR(u->uid), u);
 
-/// elogind neither supports slice nor service jobs.
-#if 0
+#if 0 /// elogind neither supports slice nor service jobs.
         u->slice_job = mfree(u->slice_job);
         u->service_job = mfree(u->service_job);
 #endif // 0
@@ -165,8 +164,7 @@ static int user_save_internal(User *u) {
         if (u->runtime_path)
                 fprintf(f, "RUNTIME=%s\n", u->runtime_path);
 
-/// elogind neither supports service nor slice jobs
-#if 0
+#if 0 /// elogind neither supports service nor slice jobs
         if (u->service_job)
                 fprintf(f, "SERVICE_JOB=%s\n", u->service_job);
 
@@ -308,8 +306,7 @@ int user_load(User *u) {
         assert(u);
 
         r = parse_env_file(u->state_file, NEWLINE,
-/// elogind neither supports service nor slice jobs
-#if 0
+#if 0 /// elogind neither supports service nor slice jobs
                            "SERVICE_JOB", &u->service_job,
                            "SLICE_JOB",   &u->slice_job,
 #endif // 0
@@ -401,8 +398,7 @@ fail:
 }
 
 static int user_start_slice(User *u) {
-/// elogind can not ask systemd via dbus to start user services
-#if 0
+#if 0 /// elogind can not ask systemd via dbus to start user services
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         const char *description;
         char *job;
@@ -439,8 +435,7 @@ static int user_start_slice(User *u) {
 }
 
 static int user_start_service(User *u) {
-/// elogind can not ask systemd via dbus to start user services
-#if 0
+#if 0 /// elogind can not ask systemd via dbus to start user services
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         char *job;
         int r;
@@ -530,8 +525,7 @@ int user_start(User *u) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int user_stop_slice(User *u) {
         _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
         char *job;
@@ -612,8 +606,7 @@ int user_stop(User *u, bool force) {
         }
 
         /* Kill systemd */
-/// elogind does not support service or slice jobs
-#if 0
+#if 0 /// elogind does not support service or slice jobs
         k = user_stop_service(u);
         if (k < 0)
                 r = k;
@@ -730,8 +723,7 @@ bool user_check_gc(User *u, bool drop_not_started) {
         if (user_check_linger_file(u) > 0)
                 return true;
 
-/// elogind neither supports service nor slice jobs
-#if 0
+#if 0 /// elogind neither supports service nor slice jobs
         if (u->slice_job && manager_job_is_active(u->manager, u->slice_job))
                 return true;
 
@@ -760,8 +752,7 @@ UserState user_get_state(User *u) {
         if (u->stopping)
                 return USER_CLOSING;
 
-/// elogind neither supports service nor slice jobs.
-#if 0
+#if 0 /// elogind neither supports service nor slice jobs.
         if (!u->started || u->slice_job || u->service_job)
 #else
         if (!u->started)
@@ -791,8 +782,7 @@ UserState user_get_state(User *u) {
 }
 
 int user_kill(User *u, int signo) {
-/// Without systemd unit support, elogind has to rely on its session system
-#if 0
+#if 0 /// Without systemd unit support, elogind has to rely on its session system
         assert(u);
 
         return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);

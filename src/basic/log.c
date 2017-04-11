@@ -244,8 +244,7 @@ int log_open(void) {
             getpid() == 1 ||
             isatty(STDERR_FILENO) <= 0) {
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_JOURNAL) {
@@ -292,8 +291,7 @@ void log_set_target(LogTarget target) {
         assert(target >= 0);
         assert(target < _LOG_TARGET_MAX);
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         if (upgrade_syslog_to_journal) {
                 if (target == LOG_TARGET_SYSLOG)
                         target = LOG_TARGET_JOURNAL;
@@ -591,8 +589,7 @@ static int log_dispatch(
                 if ((e = strpbrk(buffer, NEWLINE)))
                         *(e++) = 0;
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_JOURNAL) {
@@ -837,8 +834,7 @@ int log_struct_internal(
         if ((level & LOG_FACMASK) == 0)
                 level = log_facility | LOG_PRI(level);
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         if ((log_target == LOG_TARGET_AUTO ||
              log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
              log_target == LOG_TARGET_JOURNAL) &&
@@ -1077,8 +1073,7 @@ static const char *const log_target_table[_LOG_TARGET_MAX] = {
         [LOG_TARGET_CONSOLE] = "console",
         [LOG_TARGET_CONSOLE_PREFIXED] = "console-prefixed",
         [LOG_TARGET_KMSG] = "kmsg",
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         [LOG_TARGET_JOURNAL] = "journal",
         [LOG_TARGET_JOURNAL_OR_KMSG] = "journal-or-kmsg",
 #endif // 0

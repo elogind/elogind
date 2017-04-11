@@ -556,8 +556,7 @@ _public_ int sd_bus_creds_get_owner_uid(sd_bus_creds *c, uid_t *uid) {
         if (r < 0)
                 return r;
 
-/// elogind does not support systemd slices
-#if 0
+#if 0 /// elogind does not support systemd slices
         return cg_path_get_owner_uid(shifted, uid);
 #else
         *uid = c->uid;

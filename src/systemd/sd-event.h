@@ -81,8 +81,7 @@ sd_event* sd_event_unref(sd_event *e);
 int sd_event_add_io(sd_event *e, sd_event_source **s, int fd, uint32_t events, sd_event_io_handler_t callback, void *userdata);
 int sd_event_add_time(sd_event *e, sd_event_source **s, clockid_t clock, uint64_t usec, uint64_t accuracy, sd_event_time_handler_t callback, void *userdata);
 int sd_event_add_signal(sd_event *e, sd_event_source **s, int sig, sd_event_signal_handler_t callback, void *userdata);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_add_child(sd_event *e, sd_event_source **s, pid_t pid, int options, sd_event_child_handler_t callback, void *userdata);
 int sd_event_add_defer(sd_event *e, sd_event_source **s, sd_event_handler_t callback, void *userdata);
 #endif // 0
@@ -93,27 +92,23 @@ int sd_event_prepare(sd_event *e);
 int sd_event_wait(sd_event *e, uint64_t timeout);
 int sd_event_dispatch(sd_event *e);
 int sd_event_run(sd_event *e, uint64_t timeout);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_loop(sd_event *e);
 #endif // 0
 int sd_event_exit(sd_event *e, int code);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec);
 
 int sd_event_get_fd(sd_event *e);
 #endif // 0
 int sd_event_get_state(sd_event *e);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_get_tid(sd_event *e, pid_t *tid);
 int sd_event_get_exit_code(sd_event *e, int *code);
 #endif // 0
 int sd_event_set_watchdog(sd_event *e, int b);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_get_watchdog(sd_event *e);
 
 sd_event_source* sd_event_source_ref(sd_event_source *s);
@@ -121,47 +116,39 @@ sd_event_source* sd_event_source_ref(sd_event_source *s);
 sd_event_source* sd_event_source_unref(sd_event_source *s);
 
 sd_event *sd_event_source_get_event(sd_event_source *s);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void* sd_event_source_get_userdata(sd_event_source *s);
 void* sd_event_source_set_userdata(sd_event_source *s, void *userdata);
 #endif // 0
 
 int sd_event_source_set_description(sd_event_source *s, const char *description);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_description(sd_event_source *s, const char **description);
 #endif // 0
 int sd_event_source_set_prepare(sd_event_source *s, sd_event_handler_t callback);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_pending(sd_event_source *s);
 int sd_event_source_get_priority(sd_event_source *s, int64_t *priority);
 #endif // 0
 int sd_event_source_set_priority(sd_event_source *s, int64_t priority);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_enabled(sd_event_source *s, int *enabled);
 #endif // 0
 int sd_event_source_set_enabled(sd_event_source *s, int enabled);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_io_fd(sd_event_source *s);
 #endif // 0
 int sd_event_source_set_io_fd(sd_event_source *s, int fd);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_io_events(sd_event_source *s, uint32_t* events);
 #endif // 0
 int sd_event_source_set_io_events(sd_event_source *s, uint32_t events);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_io_revents(sd_event_source *s, uint32_t* revents);
 #endif // 0
 int sd_event_source_get_time(sd_event_source *s, uint64_t *usec);
 int sd_event_source_set_time(sd_event_source *s, uint64_t usec);
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_time_accuracy(sd_event_source *s, uint64_t *usec);
 int sd_event_source_set_time_accuracy(sd_event_source *s, uint64_t usec);
 int sd_event_source_get_time_clock(sd_event_source *s, clockid_t *clock);

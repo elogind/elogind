@@ -68,8 +68,7 @@ int acl_find_uid(acl_t acl, uid_t uid, acl_entry_t *entry) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int calc_acl_mask_if_needed(acl_t *acl_p) {
         acl_entry_t i;
         int r;
