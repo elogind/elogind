@@ -922,7 +922,7 @@ int config_parse_tmpfs_size(
 
                 *sz = PAGE_ALIGN((size_t) ((physical_memory() * (uint64_t) ul) / (uint64_t) 100));
         } else {
-                uint64_t k;
+                uint64_t k = 0;
 
                 r = parse_size(rvalue, 1024, &k);
                 if (r < 0 || (uint64_t) (size_t) k != k) {

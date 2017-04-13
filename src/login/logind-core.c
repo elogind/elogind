@@ -117,8 +117,8 @@ int manager_add_user(Manager *m, uid_t uid, gid_t gid, const char *name, User **
 }
 
 int manager_add_user_by_name(Manager *m, const char *name, User **_user) {
-        uid_t uid;
-        gid_t gid;
+        uid_t uid = 1000;
+        gid_t gid = 1000;
         int r;
 
         assert(m);

@@ -2036,7 +2036,7 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
 
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_AUGMENT|SD_BUS_CREDS_TTY|SD_BUS_CREDS_UID, &creds);
         if (r >= 0) {
-                const char *tty;
+                const char *tty = NULL;
 
                 (void) sd_bus_creds_get_uid(creds, &m->scheduled_shutdown_uid);
                 (void) sd_bus_creds_get_tty(creds, &tty);
