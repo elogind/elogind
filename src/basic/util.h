@@ -61,12 +61,16 @@ static inline const char* one_zero(bool b) {
 
 void execute_directories(const char* const* directories, usec_t timeout, char *argv[]);
 
+#if 0 /// UNNEEDED by elogind
 bool plymouth_running(void);
+#endif // 0
 
 bool display_is_local(const char *display) _pure_;
 int socket_from_display(const char *display, char **path);
 
+#if 0 /// UNNEEDED by elogind
 int block_get_whole_disk(dev_t d, dev_t *ret);
+#endif // 0
 
 #define NULSTR_FOREACH(i, l)                                    \
         for ((i) = (l); (i) && *(i); (i) = strchr((i), 0)+1)
@@ -77,17 +81,21 @@ int block_get_whole_disk(dev_t d, dev_t *ret);
 extern int saved_argc;
 extern char **saved_argv;
 
+#if 0 /// UNNEEDED by elogind
 bool kexec_loaded(void);
 
 int prot_from_flags(int flags) _const_;
+#endif // 0
 
 int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *path, ...);
 
 bool in_initrd(void);
 
+#if 0 /// UNNEEDED by elogind
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
                  int (*compar) (const void *, const void *, void *),
                  void *arg);
+#endif // 0
 
 /**
  * Normal qsort requires base to be nonnull. Here were require
@@ -101,7 +109,9 @@ static inline void qsort_safe(void *base, size_t nmemb, size_t size, comparison_
         qsort(base, nmemb, size, compar);
 }
 
+#if 0 /// UNNEEDED by elogind
 int on_ac_power(void);
+#endif // 0
 
 #define memzero(x,l) (memset((x), 0, (l)))
 #define zero(x) (memzero(&(x), sizeof(x)))
@@ -117,6 +127,7 @@ static inline void _reset_errno_(int *saved_errno) {
 
 #define PROTECT_ERRNO _cleanup_(_reset_errno_) __attribute__((unused)) int _saved_errno_ = errno
 
+#if 0 /// UNNEEDED by elogind
 static inline int negative_errno(void) {
         /* This helper should be used to shut up gcc if you know 'errno' is
          * negative. Instead of "return -errno;", use "return negative_errno();"
@@ -125,6 +136,7 @@ static inline int negative_errno(void) {
         assert_return(errno > 0, -EINVAL);
         return -errno;
 }
+#endif // 0
 
 static inline unsigned u64log2(uint64_t n) {
 #if __SIZEOF_LONG_LONG__ == 8
@@ -163,7 +175,9 @@ static inline unsigned log2u_round_up(unsigned x) {
         return log2u(x - 1) + 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool id128_is_valid(const char *s) _pure_;
+#endif // 0
 
 int container_get_leader(const char *machine, pid_t *pid);
 
@@ -172,6 +186,8 @@ int namespace_enter(int pidns_fd, int mntns_fd, int netns_fd, int userns_fd, int
 
 uint64_t physical_memory(void);
 
+#if 0 /// UNNEEDED by elogind
 int update_reboot_param_file(const char *param);
+#endif // 0
 
 int version(void);

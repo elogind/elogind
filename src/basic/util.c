@@ -19,47 +19,47 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <ctype.h>
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <grp.h>
-#include <langinfo.h>
-#include <libintl.h>
-#include <limits.h>
-#include <linux/magic.h>
-#include <linux/oom.h>
-#include <linux/sched.h>
-#include <locale.h>
-#include <poll.h>
-#include <pwd.h>
+//#include <ctype.h>
+//#include <dirent.h>
+//#include <errno.h>
+//#include <fcntl.h>
+//#include <grp.h>
+//#include <langinfo.h>
+//#include <libintl.h>
+//#include <limits.h>
+//#include <linux/magic.h>
+//#include <linux/oom.h>
+//#include <linux/sched.h>
+//#include <locale.h>
+//#include <poll.h>
+//#include <pwd.h>
 #include <sched.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/file.h>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
-#include <sys/mount.h>
-#include <sys/personality.h>
+//#include <signal.h>
+//#include <stdarg.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <sys/file.h>
+//#include <sys/ioctl.h>
+//#include <sys/mman.h>
+//#include <sys/mount.h>
+//#include <sys/personality.h>
 #include <sys/prctl.h>
-#include <sys/stat.h>
-#include <sys/statvfs.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/utsname.h>
-#include <sys/vfs.h>
-#include <sys/wait.h>
-#include <syslog.h>
-#include <unistd.h>
+//#include <sys/stat.h>
+//#include <sys/statvfs.h>
+//#include <sys/time.h>
+//#include <sys/types.h>
+//#include <sys/utsname.h>
+//#include <sys/vfs.h>
+//#include <sys/wait.h>
+//#include <syslog.h>
+//#include <unistd.h>
 
 /* When we include libgen.h because we need dirname() we immediately
  * undefine basename() since libgen.h defines it as a macro to the
  * POSIX version which is really broken. We prefer GNU basename(). */
-#include <libgen.h>
-#undef basename
+//#include <libgen.h>
+//#undef basename
 
 #ifdef HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
@@ -67,44 +67,44 @@
 
 /* We include linux/fs.h as last of the system headers, as it
  * otherwise conflicts with sys/mount.h. Yay, Linux is great! */
-#include <linux/fs.h>
+//#include <linux/fs.h>
 
 #include "alloc-util.h"
 #include "build.h"
-#include "def.h"
+//#include "def.h"
 //#include "device-nodes.h"
 #include "dirent-util.h"
 //#include "env-util.h"
-#include "escape.h"
+//#include "escape.h"
 //#include "exit-status.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "formats-util.h"
-#include "gunicode.h"
+//#include "formats-util.h"
+//#include "gunicode.h"
 #include "hashmap.h"
-#include "hexdecoct.h"
+//#include "hexdecoct.h"
 #include "hostname-util.h"
 //#include "ioprio.h"
-#include "log.h"
+//#include "log.h"
 #include "macro.h"
-#include "missing.h"
-#include "mkdir.h"
+//#include "missing.h"
+//#include "mkdir.h"
 #include "parse-util.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "process-util.h"
-#include "random-util.h"
+//#include "random-util.h"
 #include "signal-util.h"
 #include "set.h"
-#include "sparse-endian.h"
+//#include "sparse-endian.h"
 #include "stat-util.h"
-#include "string-table.h"
+//#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
-#include "terminal-util.h"
+//#include "terminal-util.h"
 #include "user-util.h"
-#include "utf8.h"
+//#include "utf8.h"
 #include "util.h"
-#include "virt.h"
+//#include "virt.h"
 
 /* Put this test here for a lack of better place */
 assert_cc(EAGAIN == EWOULDBLOCK);
@@ -266,9 +266,11 @@ void execute_directories(const char* const* directories, usec_t timeout, char *a
         wait_for_terminate_and_warn(name, executor_pid, true);
 }
 
+#if 0 /// UNNEEDED by elogind
 bool plymouth_running(void) {
         return access("/run/plymouth/pid", F_OK) >= 0;
 }
+#endif // 0
 
 bool display_is_local(const char *display) {
         assert(display);
@@ -304,6 +306,7 @@ int socket_from_display(const char *display, char **path) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int block_get_whole_disk(dev_t d, dev_t *ret) {
         char *p, *s;
         int r;
@@ -393,6 +396,7 @@ int prot_from_flags(int flags) {
                 return -EINVAL;
         }
 }
+#endif // 0
 
 int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *path, ...) {
         bool stdout_is_tty, stderr_is_tty;
@@ -520,6 +524,7 @@ bool in_initrd(void) {
         return saved;
 }
 
+#if 0 /// UNNEEDED by elogind
 /* hey glibc, APIs with callbacks without a user pointer are so useless */
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
                  int (*compar) (const void *, const void *, void *), void *arg) {
@@ -659,6 +664,7 @@ bool id128_is_valid(const char *s) {
 
         return true;
 }
+#endif // 0
 
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;
@@ -821,6 +827,7 @@ uint64_t physical_memory(void) {
         return (uint64_t) mem * (uint64_t) page_size();
 }
 
+#if 0 /// UNNEEDED by elogind
 int update_reboot_param_file(const char *param) {
         int r = 0;
 
@@ -833,6 +840,7 @@ int update_reboot_param_file(const char *param) {
 
         return 0;
 }
+#endif // 0
 
 int version(void) {
         puts(PACKAGE_STRING "\n"
