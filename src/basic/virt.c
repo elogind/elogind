@@ -34,6 +34,7 @@
 #include "util.h"
 #include "virt.h"
 
+#if 0 /// UNNEEDED by elogind
 static int detect_vm_cpuid(void) {
 
         /* CPUID is an x86 specific interface. */
@@ -320,6 +321,7 @@ finish:
         cached_found = r;
         return r;
 }
+#endif // 0
 
 int detect_container(void) {
 
@@ -431,6 +433,7 @@ int running_in_chroot(void) {
         return ret == 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_NONE] = "none",
         [VIRTUALIZATION_KVM] = "kvm",
@@ -455,3 +458,4 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(virtualization, int);
+#endif // 0

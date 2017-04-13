@@ -461,8 +461,6 @@ char* path_join(const char *root, const char *path, const char *rest) {
                                rest && rest[0] == '/' ? rest+1 : rest,
                                NULL);
 }
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 
 int find_binary(const char *name, char **ret) {
         int last_error, r;

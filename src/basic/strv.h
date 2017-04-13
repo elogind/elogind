@@ -45,8 +45,8 @@ void strv_clear(char **l);
 char **strv_copy(char * const *l);
 unsigned strv_length(char * const *l) _pure_;
 
-int strv_extend_strv(char ***a, char **b, bool filter_duplicates);
 #if 0 /// UNNEEDED by elogind
+int strv_extend_strv(char ***a, char **b, bool filter_duplicates);
 int strv_extend_strv_concat(char ***a, char **b, const char *suffix);
 #endif // 0
 int strv_extend(char ***l, const char *value);

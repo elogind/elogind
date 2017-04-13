@@ -58,8 +58,8 @@ int get_proc_field(const char *filename, const char *pattern, const char *termin
 
 DIR *xopendirat(int dirfd, const char *name, int flags);
 
-int search_and_fopen(const char *path, const char *mode, const char *root, const char **search, FILE **_f);
 #if 0 /// UNNEEDED by elogind
+int search_and_fopen(const char *path, const char *mode, const char *root, const char **search, FILE **_f);
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **_f);
 #endif // 0
 #define FOREACH_LINE(line, f, on_error)                         \
@@ -80,8 +80,8 @@ int open_tmpfile(const char *path, int flags);
 #endif // 0
 
 int tempfn_xxxxxx(const char *p, const char *extra, char **ret);
-int tempfn_random(const char *p, const char *extra, char **ret);
 #if 0 /// UNNEEDED by elogind
+int tempfn_random(const char *p, const char *extra, char **ret);
 int tempfn_random_child(const char *p, const char *extra, char **ret);
 
 int write_timestamp_file_atomic(const char *fn, usec_t n);

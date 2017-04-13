@@ -935,6 +935,7 @@ DIR *xopendirat(int fd, const char *name, int flags) {
         return d;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int search_and_fopen_internal(const char *path, const char *mode, const char *root, char **search, FILE **_f) {
         char **i;
 
@@ -995,7 +996,6 @@ int search_and_fopen(const char *path, const char *mode, const char *root, const
         return search_and_fopen_internal(path, mode, root, copy, _f);
 }
 
-#if 0 /// UNNEEDED by elogind
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **_f) {
         _cleanup_strv_free_ char **s = NULL;
 
@@ -1138,6 +1138,7 @@ int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int tempfn_random(const char *p, const char *extra, char **ret) {
         const char *fn;
         char *t, *x;
@@ -1180,7 +1181,6 @@ int tempfn_random(const char *p, const char *extra, char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int tempfn_random_child(const char *p, const char *extra, char **ret) {
         char *t, *x;
         uint64_t u;

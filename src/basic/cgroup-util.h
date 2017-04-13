@@ -55,6 +55,7 @@ typedef enum CGroupMask {
         _CGROUP_MASK_ALL = CGROUP_CONTROLLER_TO_MASK(_CGROUP_CONTROLLER_MAX) - 1
 } CGroupMask;
 
+#if 0 /// UNNEEDED by elogind
 /* Special values for the cpu.shares attribute */
 #define CGROUP_CPU_SHARES_INVALID ((uint64_t) -1)
 #define CGROUP_CPU_SHARES_MIN UINT64_C(2)
@@ -78,6 +79,7 @@ static inline bool CGROUP_BLKIO_WEIGHT_IS_OK(uint64_t x) {
             x == CGROUP_BLKIO_WEIGHT_INVALID ||
             (x >= CGROUP_BLKIO_WEIGHT_MIN && x <= CGROUP_BLKIO_WEIGHT_MAX);
 }
+#endif // 0
 
 /*
  * General rules:

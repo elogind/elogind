@@ -56,6 +56,7 @@ enum {
         _VIRTUALIZATION_INVALID = -1
 };
 
+#if 0 /// UNNEEDED by elogind
 static inline bool VIRTUALIZATION_IS_VM(int x) {
         return x >= VIRTUALIZATION_VM_FIRST && x <= VIRTUALIZATION_VM_LAST;
 }
@@ -65,6 +66,7 @@ static inline bool VIRTUALIZATION_IS_CONTAINER(int x) {
 }
 
 int detect_vm(void);
+#endif // 0
 int detect_container(void);
 #if 0 /// UNNEEDED by elogind
 int detect_virtualization(void);
@@ -72,5 +74,7 @@ int detect_virtualization(void);
 
 int running_in_chroot(void);
 
+#if 0 /// UNNEEDED by elogind
 const char *virtualization_to_string(int v) _const_;
 int virtualization_from_string(const char *s) _pure_;
+#endif // 0

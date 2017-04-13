@@ -200,6 +200,7 @@ char **strv_new(const char *x, ...) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_extend_strv(char ***a, char **b, bool filter_duplicates) {
         char **s, **t;
         size_t p, q, i = 0, j;
@@ -244,7 +245,6 @@ rollback:
         return -ENOMEM;
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_extend_strv_concat(char ***a, char **b, const char *suffix) {
         int r;
         char **s;
