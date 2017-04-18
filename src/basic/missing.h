@@ -73,8 +73,6 @@ struct sockaddr_vm {
 #endif /* !HAVE_LINUX_VM_SOCKETS_H */
 #endif // 0
 
-#include "macro.h"
-
 #ifndef RLIMIT_RTTIME
 #define RLIMIT_RTTIME 15
 #endif
