@@ -33,5 +33,5 @@ typedef enum ExtractFlags {
 int extract_first_word(const char **p, char **ret, const char *separators, ExtractFlags flags);
 #if 0 /// UNNEEDED by elogind
 int extract_first_word_and_warn(const char **p, char **ret, const char *separators, ExtractFlags flags, const char *unit, const char *filename, unsigned line, const char *rvalue);
-int extract_many_words(const char **p, const char *separators, ExtractFlags flags, ...) _sentinel_;
 #endif // 0
+int extract_many_words(const char **p, const char *separators, unsigned flags, ...) _sentinel_;
