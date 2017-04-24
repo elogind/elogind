@@ -308,3 +308,4 @@ patches/
 *.rej
 *.remote
 *.bak
+*.layout
