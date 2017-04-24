@@ -39,6 +39,10 @@
 
 #include "musl_missing.h"
 
+#ifdef HAVE_AUDIT
+#include <libaudit.h>
+#endif
+
 #ifdef ARCH_MIPS
 #include <asm/sgidefs.h>
 #endif
@@ -137,6 +141,8 @@ static inline int pivot_root(const char *new_root, const char *put_old) {
 #    define __NR_memfd_create 385
 #  elif defined __aarch64__
 #    define __NR_memfd_create 279
+#  elif defined __s390__
+#    define __NR_memfd_create 350
 #  elif defined _MIPS_SIM
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
 #      define __NR_memfd_create 4354
@@ -838,6 +844,19 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
 #endif
 
+#if !HAVE_DECL_IFLA_BR_PRIORITY
+#define IFLA_BR_UNSPEC 0
+#define IFLA_BR_FORWARD_DELAY 1
+#define IFLA_BR_HELLO_TIME 2
+#define IFLA_BR_MAX_AGE 3
+#define IFLA_BR_AGEING_TIME 4
+#define IFLA_BR_STP_STATE 5
+#define IFLA_BR_PRIORITY 6
+#define __IFLA_BR_MAX 7
+
+#define IFLA_BR_MAX (__IFLA_BR_MAX - 1)
+#endif
+
 #if !HAVE_DECL_IFLA_BRPORT_LEARNING_SYNC
 #define IFLA_BRPORT_UNSPEC 0
 #define IFLA_BRPORT_STATE 1
@@ -1026,7 +1045,12 @@ static inline int renameat2(int oldfd, const char *oldname, int newfd, const cha
 
 #if !HAVE_DECL_KCMP
 static inline int kcmp(pid_t pid1, pid_t pid2, int type, unsigned long idx1, unsigned long idx2) {
+#if defined(__NR_kcmp)
         return syscall(__NR_kcmp, pid1, pid2, type, idx1, idx2);
+#else
+        errno = ENOSYS;
+        return -1;
+#endif
 }
 #endif
 
@@ -1040,4 +1064,49 @@ static inline int kcmp(pid_t pid1, pid_t pid2, int type, unsigned long idx1, uns
 
 #ifndef INPUT_PROP_ACCELEROMETER
 #define INPUT_PROP_ACCELEROMETER  0x06
+#endif
+
+#if !HAVE_DECL_KEY_SERIAL_T
+typedef int32_t key_serial_t;
+#endif
+
+#if !HAVE_DECL_KEYCTL
+static inline long keyctl(int cmd, unsigned long arg2, unsigned long arg3, unsigned long arg4,unsigned long arg5) {
+#if defined(__NR_keyctl)
+        return syscall(__NR_keyctl, cmd, arg2, arg3, arg4, arg5);
+#else
+        errno = ENOSYS;
+        return -1;
+#endif
+}
+
+static inline key_serial_t add_key(const char *type, const char *description, const void *payload, size_t plen, key_serial_t ringid) {
+#if defined (__NR_add_key)
+        return syscall(__NR_add_key, type, description, payload, plen, ringid);
+#else
+        errno = ENOSYS;
+        return -1;
+#endif
+}
+
+static inline key_serial_t request_key(const char *type, const char *description, const char * callout_info, key_serial_t destringid) {
+#if defined (__NR_request_key)
+        return syscall(__NR_request_key, type, description, callout_info, destringid);
+#else
+        errno = ENOSYS;
+        return -1;
+#endif
+}
+#endif
+
+#ifndef KEYCTL_READ
+#define KEYCTL_READ 11
+#endif
+
+#ifndef KEYCTL_SET_TIMEOUT
+#define KEYCTL_SET_TIMEOUT 15
+#endif
+
+#ifndef KEY_SPEC_USER_KEYRING
+#define KEY_SPEC_USER_KEYRING -4
 #endif

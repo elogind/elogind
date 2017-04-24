@@ -351,10 +351,10 @@ static int write_to_console(
         }
 
         if (highlight)
-                IOVEC_SET_STRING(iovec[n++], ANSI_HIGHLIGHT_RED_ON);
+                IOVEC_SET_STRING(iovec[n++], ANSI_HIGHLIGHT_RED);
         IOVEC_SET_STRING(iovec[n++], buffer);
         if (highlight)
-                IOVEC_SET_STRING(iovec[n++], ANSI_HIGHLIGHT_OFF);
+                IOVEC_SET_STRING(iovec[n++], ANSI_NORMAL);
         IOVEC_SET_STRING(iovec[n++], "\n");
 
         if (writev(console_fd, iovec, n) < 0) {
@@ -942,7 +942,7 @@ int log_set_max_level_from_string(const char *e) {
 
         t = log_level_from_string(e);
         if (t < 0)
-                return t;
+                return -EINVAL;
 
         log_set_max_level(t);
         return 0;

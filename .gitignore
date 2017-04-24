@@ -293,9 +293,7 @@ stamp-*
 /get_build_file_diff.sh
 elogind_patches.lst
 /patches/
-/elogind.cbp
-/elogind.layout*
+/cb/elogind.layout*
 *.bak
 /FIXME
 /create_dist.sh
-

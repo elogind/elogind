@@ -219,7 +219,6 @@ int path_make_relative(const char *from_dir, const char *to_path, char **_r) {
         *_r = r;
         return 0;
 }
-#endif // 0
 
 char **path_strv_make_absolute_cwd(char **l) {
         char **s;
@@ -241,6 +240,7 @@ char **path_strv_make_absolute_cwd(char **l) {
 
         return l;
 }
+#endif // 0
 
 char **path_strv_resolve(char **l, const char *prefix) {
         char **s;

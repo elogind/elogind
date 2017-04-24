@@ -19,27 +19,39 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/stat.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-#include <stdlib.h>
 #include <errno.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stddef.h>
 #include <limits.h>
 //#include <mqueue.h>
+#include <netinet/in.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/un.h>
+#include <unistd.h>
 
-#include "util.h"
 #include "path-util.h"
 #include "socket-util.h"
+//#include "strv.h"
+#include "util.h"
+
 #include "sd-daemon.h"
 
 /// UNNEEDED by elogind
 #if 0
+static void unsetenv_all(bool unset_environment) {
+
+        if (!unset_environment)
+                return;
+
+        unsetenv("LISTEN_PID");
+        unsetenv("LISTEN_FDS");
+        unsetenv("LISTEN_FDNAMES");
+}
+
 _public_ int sd_listen_fds(int unset_environment) {
         const char *e;
         unsigned n;
@@ -81,12 +93,49 @@ _public_ int sd_listen_fds(int unset_environment) {
         r = (int) n;
 
 finish:
-        if (unset_environment) {
-                unsetenv("LISTEN_PID");
-                unsetenv("LISTEN_FDS");
+        unsetenv_all(unset_environment);
+        return r;
         }
 
+_public_ int sd_listen_fds_with_names(int unset_environment, char ***names) {
+        _cleanup_strv_free_ char **l = NULL;
+        bool have_names;
+        int n_names = 0, n_fds;
+        const char *e;
+        int r;
+
+        if (!names)
+                return sd_listen_fds(unset_environment);
+
+        e = getenv("LISTEN_FDNAMES");
+        if (e) {
+                n_names = strv_split_extract(&l, e, ":", EXTRACT_DONT_COALESCE_SEPARATORS);
+                if (n_names < 0) {
+                        unsetenv_all(unset_environment);
+                        return n_names;
+                }
+
+                have_names = true;
+        } else
+                have_names = false;
+
+        n_fds = sd_listen_fds(unset_environment);
+        if (n_fds <= 0)
+                return n_fds;
+
+        if (have_names) {
+                if (n_names != n_fds)
+                        return -EINVAL;
+        } else {
+                r = strv_extend_n(&l, "unknown", n_fds);
+                if (r < 0)
         return r;
+}
+
+        *names = l;
+        l = NULL;
+
+        return n_fds;
 }
 
 _public_ int sd_is_fifo(int fd, const char *path) {
@@ -315,10 +364,15 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
 _public_ int sd_is_mq(int fd, const char *path) {
         struct mq_attr attr;
 
-        assert_return(fd >= 0, -EBADF);
+        /* Check that the fd is valid */
+        assert_return(fcntl(fd, F_GETFD) >= 0, -errno);
 
-        if (mq_getattr(fd, &attr) < 0)
+        if (mq_getattr(fd, &attr) < 0) {
+                if (errno == EBADF)
+                        /* A non-mq fd (or an invalid one, but we ruled that out above) */
+                        return 0;
                 return -errno;
+        }
 
         if (path) {
                 char fpath[PATH_MAX];
@@ -401,8 +455,9 @@ _public_ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char
         have_pid = pid != 0 && pid != getpid();
 
         if (n_fds > 0 || have_pid) {
-                msghdr.msg_controllen = CMSG_SPACE(sizeof(int) * n_fds) +
-                                        CMSG_SPACE(sizeof(struct ucred) * have_pid);
+                /* CMSG_SPACE(0) may return value different then zero, which results in miscalculated controllen. */
+                msghdr.msg_controllen = (n_fds ? CMSG_SPACE(sizeof(int) * n_fds) : 0) +
+                                        CMSG_SPACE(sizeof(struct ucred)) * have_pid;
                 msghdr.msg_control = alloca(msghdr.msg_controllen);
 
                 cmsg = CMSG_FIRSTHDR(&msghdr);
@@ -458,9 +513,12 @@ finish:
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_pid_notify(pid_t pid, int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(pid, unset_environment, state, NULL, 0);
 }
+#endif // 0
 
 _public_ int sd_notify(int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(0, unset_environment, state, NULL, 0);
@@ -505,16 +563,11 @@ _public_ int sd_notifyf(int unset_environment, const char *format, ...) {
 }
 
 _public_ int sd_booted(void) {
-        struct stat st;
-
         /* We test whether the runtime unit file directory has been
          * created. This takes place in mount-setup.c, so is
          * guaranteed to happen very early during boot. */
 
-        if (lstat("/run/systemd/system/", &st) < 0)
-                return 0;
-
-        return !!S_ISDIR(st.st_mode);
+        return laccess("/run/systemd/system/", F_OK) >= 0;
 }
 #endif // 0
 

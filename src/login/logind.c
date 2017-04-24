@@ -218,7 +218,7 @@ static void manager_free(Manager *m) {
         /* Avoid the creation of new processes forked by the
          * kernel; at this point, we will not listen to the
          * signals anyway */
-        if (detect_container(NULL) <= 0)
+        if (detect_container() <= 0)
                 (void) cg_uninstall_release_agent(SYSTEMD_CGROUP_CONTROLLER);
 
         manager_shutdown_cgroup(m, true);

@@ -381,7 +381,7 @@ static int file_of_seat(const char *seat, char **_p) {
                 if (!filename_is_valid(seat))
                         return -EINVAL;
 
-                p = strappend("/run/systemd/seats/", seat);
+        p = strappend("/run/systemd/seats/", seat);
         } else {
                 _cleanup_free_ char *buf = NULL;
 
@@ -445,10 +445,10 @@ static int uid_get_array(uid_t uid, const char *variable, char ***array) {
 
         r = parse_env_file(p, NEWLINE, variable, &s, NULL);
         if (r == -ENOENT || (r >= 0 && isempty(s))) {
-                if (array)
-                        *array = NULL;
-                return 0;
-        }
+                        if (array)
+                                *array = NULL;
+                        return 0;
+                }
         if (r < 0)
                 return r;
 

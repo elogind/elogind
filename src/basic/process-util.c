@@ -217,7 +217,7 @@ int get_process_capeff(pid_t pid, char **capeff) {
 
         p = procfs_file_alloca(pid, "status");
 
-        r = get_status_field(p, "\nCapEff:", capeff);
+        r = get_proc_field(p, "CapEff", WHITESPACE, capeff);
         if (r == -ENOENT)
                 return -ESRCH;
 
@@ -368,7 +368,6 @@ int get_process_environ(pid_t pid, char **env) {
 
         return 0;
 }
-#endif // 0
 
 int get_parent_of_pid(pid_t pid, pid_t *_ppid) {
         int r;
@@ -414,6 +413,7 @@ int get_parent_of_pid(pid_t pid, pid_t *_ppid) {
 
         return 0;
 }
+#endif // 0
 
 int wait_for_terminate(pid_t pid, siginfo_t *status) {
         siginfo_t dummy;

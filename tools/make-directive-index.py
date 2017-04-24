@@ -51,20 +51,20 @@ TEMPLATE = '''\
         </refnamediv>
 
         <refsect1>
+                <title>Environment variables</title>
+
+                <para>Environment variables understood by the elogind
+                manager and other programs.</para>
+
+                <variablelist id='environment-variables' />
+        </refsect1>
+
+        <refsect1>
                 <title>PAM configuration directives</title>
 
                 <para>Directives for configuring PAM behaviour.</para>
 
                 <variablelist id='pam-directives' />
-        </refsect1>
-
-        <refsect1>
-                <title>elogind manager directives</title>
-
-                <para>Directives for configuring the behaviour of the
-                elogind process.</para>
-
-                <variablelist id='elogind-directives' />
         </refsect1>
 
         <refsect1>

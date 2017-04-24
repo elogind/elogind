@@ -49,7 +49,7 @@ bool path_equal(const char *a, const char *b) _pure_;
 // UNNEEDED bool path_equal_or_files_same(const char *a, const char *b);
 // UNNEEDED char* path_join(const char *root, const char *path, const char *rest);
 
-char** path_strv_make_absolute_cwd(char **l);
+// UNNEEDED char** path_strv_make_absolute_cwd(char **l);
 char** path_strv_resolve(char **l, const char *prefix);
 char** path_strv_resolve_uniq(char **l, const char *prefix);
 

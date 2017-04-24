@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [226.5],
+        [227.2],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -175,7 +175,6 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
         -Werror=implicit-function-declaration \
         -Werror=missing-declarations \
         -Werror=return-type \
-        -Werror=shadow \
         -Wstrict-prototypes \
         -Wredundant-decls \
         -Wmissing-noreturn \
@@ -200,17 +199,28 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
         -fPIE \
         --param=ssp-buffer-size=4])
 
+CC_CHECK_FLAG_APPEND([with_cflags], [CFLAGS], [-Werror=shadow], [
+#include <time.h>
+#include <inttypes.h>
+typedef uint64_t usec_t;
+usec_t now(clockid_t clock);
+int main(void) {
+        struct timespec now;
+        return 0;
+}
+])
+
 AS_CASE([$CC], [*clang*],
         [CC_CHECK_FLAGS_APPEND([with_cppflags], [CPPFLAGS], [\
                -Wno-typedef-redefinition \
                -Wno-gnu-variable-sized-type-not-at-end \
         ])])
 
-dnl AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
-dnl         [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
-dnl                -flto])],
-dnl         [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
-dnl AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
+AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
+        [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
+               -flto])],
+        [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
+AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
         [CC_CHECK_FLAGS_APPEND([with_cppflags], [CPPFLAGS], [\
@@ -296,7 +306,6 @@ AS_IF([test "$have_python" != "yes"], [
       AS_IF([test "$with_python" != "no"],
             [AC_MSG_WARN([*** python support not found, some documentation cannot be built])])
 ])
-
 AM_CONDITIONAL([HAVE_PYTHON], [test "x$have_python" = "xyes"])
 
 # ------------------------------------------------------------------------------
@@ -316,24 +325,15 @@ AS_IF([test x$have_printf_h = xyes], [
 dnl AC_SEARCH_LIBS([clock_gettime], [rt], [], [])
 dnl AC_SEARCH_LIBS([mq_unlink], [rt], [], [])
 
-AC_ARG_WITH([libcap],
-            AS_HELP_STRING([--with-libcap=DIR], [Prefix for libcap]),
-            [CAP_LDFLAGS="-L$with_libcap/lib"],
-            [CAP_LDFLAGS=""])
 save_LIBS="$LIBS"
-save_LDFLAGS="$LDFLAGS"
 LIBS=
-LDFLAGS="$LDFLAGS $CAP_LDFLAGS"
 AC_SEARCH_LIBS([cap_init], [cap], [], [AC_MSG_ERROR([*** POSIX caps library not found])])
 CAP_LIBS="$LIBS"
 AC_SUBST(CAP_LIBS)
-AC_SUBST(CAP_LDFLAGS)
-LIBS="$save_LIBS"
-LDFLAGS="$save_LDFLAGS"
 
 AC_CHECK_FUNCS([memfd_create])
 AC_CHECK_FUNCS([__secure_getenv secure_getenv])
-AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renameat2, kcmp, LO_FLAGS_PARTSCAN],
+AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renameat2, kcmp, keyctl, key_serial_t, LO_FLAGS_PARTSCAN],
                [], [], [[
 #include <sys/types.h>
 #include <unistd.h>
@@ -352,11 +352,11 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
                 IFLA_BOND_AD_INFO,
                 IFLA_VLAN_PROTOCOL,
                 IFLA_VXLAN_REMCSUM_NOPARTIAL,
-                IFLA_VXLAN_LOCAL6,
                 IFLA_IPTUN_ENCAP_DPORT,
                 IFLA_GRE_ENCAP_DPORT,
                 IFLA_BRIDGE_VLAN_INFO,
                 IFLA_BRPORT_LEARNING_SYNC,
+                IFLA_BR_PRIORITY,
                 NDA_IFINDEX,
                 IFA_FLAGS],
 [], [], [[
@@ -522,11 +522,16 @@ if test "x${have_smack}" = xauto; then
         have_smack=yes
 fi
 
+have_smack_run_label=no
 AC_ARG_WITH(smack-run-label,
 AS_HELP_STRING([--with-smack-run-label=STRING],
-        [run elogind --system itself with a specific SMACK label]),
-        [AC_DEFINE_UNQUOTED(SMACK_RUN_LABEL, ["$withval"], [Run elogind itself with SMACK label])],
+        [run systemd --system itself with a specific SMACK label]),
+        [AC_DEFINE_UNQUOTED(SMACK_RUN_LABEL, ["$withval"], [Run systemd itself with SMACK label]) have_smack_run_label=yes],
         [])
+
+if test "x${have_smack_run_label}" = xyes; then
+        M4_DEFINES="$M4_DEFINES -DHAVE_SMACK_RUN_LABEL"
+fi
 
 AC_ARG_WITH(smack-default-process-label,
 AS_HELP_STRING([--with-smack-default-process-label=STRING],
@@ -581,11 +586,6 @@ AM_CONDITIONAL(ENABLE_KDBUS, [test "$have_kdbus" = "yes"])
 
 # ------------------------------------------------------------------------------
 AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
-
-# ------------------------------------------------------------------------------
-PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.22.0 gobject-2.0 >= 2.22.0 gio-2.0],
-                  [have_glib=yes], [have_glib=no])
-AS_IF([test "x$have_glib" = "xyes"], [ AC_DEFINE(HAVE_GLIB, 1, [Define if glib is available]) ])
 
 # ------------------------------------------------------------------------------
 have_manpages=no

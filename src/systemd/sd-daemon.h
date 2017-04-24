@@ -76,6 +76,8 @@ _SD_BEGIN_DECLARATIONS;
 */
 // UNNEEDED int sd_listen_fds(int unset_environment);
 
+// UNNEEDED int sd_listen_fds_with_names(int unset_environment, char ***names);
+
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is a FIFO in the file system stored under the
@@ -240,7 +242,7 @@ int sd_notify(int unset_environment, const char *state);
   Similar to sd_notify(), but send the message on behalf of another
   process, if the appropriate permissions are available.
 */
-int sd_pid_notify(pid_t pid, int unset_environment, const char *state);
+// UNNEEDED int sd_pid_notify(pid_t pid, int unset_environment, const char *state);
 
 /*
   Similar to sd_notifyf(), but send the message on behalf of another

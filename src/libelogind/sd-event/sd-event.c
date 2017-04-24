@@ -242,12 +242,6 @@ static int pending_prioq_compare(const void *a, const void *b) {
         if (x->pending_iteration > y->pending_iteration)
                 return 1;
 
-        /* Stability for the rest */
-        if (x < y)
-                return -1;
-        if (x > y)
-                return 1;
-
         return 0;
 }
 
@@ -257,6 +251,12 @@ static int prepare_prioq_compare(const void *a, const void *b) {
         assert(x->prepare);
         assert(y->prepare);
 
+        /* Enabled ones first */
+        if (x->enabled != SD_EVENT_OFF && y->enabled == SD_EVENT_OFF)
+                return -1;
+        if (x->enabled == SD_EVENT_OFF && y->enabled != SD_EVENT_OFF)
+                return 1;
+
         /* Move most recently prepared ones last, so that we can stop
          * preparing as soon as we hit one that has already been
          * prepared in the current iteration */
@@ -265,22 +265,10 @@ static int prepare_prioq_compare(const void *a, const void *b) {
         if (x->prepare_iteration > y->prepare_iteration)
                 return 1;
 
-        /* Enabled ones first */
-        if (x->enabled != SD_EVENT_OFF && y->enabled == SD_EVENT_OFF)
-                return -1;
-        if (x->enabled == SD_EVENT_OFF && y->enabled != SD_EVENT_OFF)
-                return 1;
-
         /* Lower priority values first */
         if (x->priority < y->priority)
                 return -1;
         if (x->priority > y->priority)
-                return 1;
-
-        /* Stability for the rest */
-        if (x < y)
-                return -1;
-        if (x > y)
                 return 1;
 
         return 0;
@@ -310,12 +298,6 @@ static int earliest_time_prioq_compare(const void *a, const void *b) {
         if (x->time.next > y->time.next)
                 return 1;
 
-        /* Stability for the rest */
-        if (x < y)
-                return -1;
-        if (x > y)
-                return 1;
-
         return 0;
 }
 
@@ -343,12 +325,6 @@ static int latest_time_prioq_compare(const void *a, const void *b) {
         if (x->time.next + x->time.accuracy > y->time.next + y->time.accuracy)
                 return 1;
 
-        /* Stability for the rest */
-        if (x < y)
-                return -1;
-        if (x > y)
-                return 1;
-
         return 0;
 }
 
@@ -368,12 +344,6 @@ static int exit_prioq_compare(const void *a, const void *b) {
         if (x->priority < y->priority)
                 return -1;
         if (x->priority > y->priority)
-                return 1;
-
-        /* Stability for the rest */
-        if (x < y)
-                return -1;
-        if (x > y)
                 return 1;
 
         return 0;
@@ -1195,6 +1165,8 @@ _public_ int sd_event_add_signal(
         return 0;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_add_child(
                 sd_event *e,
                 sd_event_source **ret,
@@ -1287,6 +1259,7 @@ _public_ int sd_event_add_defer(
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_add_post(
                 sd_event *e,
@@ -2729,6 +2702,8 @@ _public_ int sd_event_get_state(sd_event *e) {
         return e->state;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_get_exit_code(sd_event *e, int *code) {
         assert_return(e, -EINVAL);
         assert_return(code, -EINVAL);
@@ -2740,6 +2715,7 @@ _public_ int sd_event_get_exit_code(sd_event *e, int *code) {
         *code = e->exit_code;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_event_exit(sd_event *e, int code) {
         assert_return(e, -EINVAL);
@@ -2813,6 +2789,8 @@ _public_ int sd_event_default(sd_event **ret) {
         return 1;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_event_get_tid(sd_event *e, pid_t *tid) {
         assert_return(e, -EINVAL);
         assert_return(tid, -EINVAL);
@@ -2825,6 +2803,7 @@ _public_ int sd_event_get_tid(sd_event *e, pid_t *tid) {
 
         return -ENXIO;
 }
+#endif // 0
 
 _public_ int sd_event_set_watchdog(sd_event *e, int b) {
         int r;

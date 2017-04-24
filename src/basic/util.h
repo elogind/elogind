@@ -22,31 +22,30 @@
 ***/
 
 #include <alloca.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <time.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sched.h>
 #include <limits.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <stddef.h>
-#include <unistd.h>
 #include <locale.h>
 #include <mntent.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/inotify.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/statfs.h>
 #include <sys/sysmacros.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 
+#include "formats-util.h"
 #include "macro.h"
 #include "missing.h"
 #include "time-util.h"
-#include "formats-util.h"
 
 /* What is interpreted as whitespace? */
 #define WHITESPACE " \t\n\r"
@@ -150,7 +149,11 @@ void safe_close_pair(int p[]);
 
 void close_many(const int fds[], unsigned n_fd);
 
-int parse_size(const char *t, off_t base, off_t *size);
+int fclose_nointr(FILE *f);
+FILE* safe_fclose(FILE *f);
+DIR* safe_closedir(DIR *f);
+
+int parse_size(const char *t, uint64_t base, uint64_t *size);
 
 int parse_boolean(const char *v) _pure_;
 int parse_pid(const char *s, pid_t* ret_pid);
@@ -158,7 +161,10 @@ int parse_uid(const char *s, uid_t* ret_uid);
 #define parse_gid(s, ret_gid) parse_uid(s, ret_gid)
 
 bool uid_is_valid(uid_t uid);
-#define gid_is_valid(gid) uid_is_valid(gid)
+
+static inline bool gid_is_valid(gid_t gid) {
+        return uid_is_valid((uid_t) gid);
+}
 
 int safe_atou(const char *s, unsigned *ret_u);
 int safe_atoi(const char *s, int *ret_i);
@@ -287,9 +293,9 @@ bool chars_intersect(const char *a, const char *b) _pure_;
 
 ssize_t string_table_lookup(const char * const *table, size_t len, const char *key);
 
-#define _DEFINE_STRING_TABLE_LOOKUP_FROM_STRING(name,type,scope)                                \
-        scope inline type name##_from_string(const char *s) {                                   \
-                return (type)string_table_lookup(name##_table, ELEMENTSOF(name##_table), s);    \
+#define _DEFINE_STRING_TABLE_LOOKUP_FROM_STRING(name,type,scope)        \
+        scope type name##_from_string(const char *s) {                  \
+                return (type) string_table_lookup(name##_table, ELEMENTSOF(name##_table), s); \
         }
 
 #define _DEFINE_STRING_TABLE_LOOKUP(name,type,scope)                    \
@@ -306,17 +312,15 @@ ssize_t string_table_lookup(const char * const *table, size_t len, const char *k
 #define DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(name,type,max)         \
         int name##_to_string_alloc(type i, char **str) {                \
                 char *s;                                                \
-                int r;                                                  \
                 if (i < 0 || i > max)                                   \
                         return -ERANGE;                                 \
                 if (i < (type) ELEMENTSOF(name##_table)) {              \
                         s = strdup(name##_table[i]);                    \
                         if (!s)                                         \
-                                return log_oom();                       \
+                                return -ENOMEM;                         \
                 } else {                                                \
-                        r = asprintf(&s, "%i", i);                      \
-                        if (r < 0)                                      \
-                                return log_oom();                       \
+                        if (asprintf(&s, "%i", i) < 0)                  \
+                                return -ENOMEM;                         \
                 }                                                       \
                 *str = s;                                               \
                 return 0;                                               \
@@ -324,10 +328,10 @@ ssize_t string_table_lookup(const char * const *table, size_t len, const char *k
         type name##_from_string(const char *s) {                        \
                 type i;                                                 \
                 unsigned u = 0;                                         \
-                assert(s);                                              \
-                for (i = 0; i < (type)ELEMENTSOF(name##_table); i++)    \
-                        if (name##_table[i] &&                          \
-                            streq(name##_table[i], s))                  \
+                if (!s)                                                 \
+                        return (type) -1;                               \
+                for (i = 0; i < (type) ELEMENTSOF(name##_table); i++)   \
+                        if (streq_ptr(name##_table[i], s))              \
                                 return i;                               \
                 if (safe_atou(s, &u) >= 0 && u <= max)                  \
                         return (type) u;                                \
@@ -367,12 +371,9 @@ int fd_is_temporary_fs(int fd);
 
 int pipe_eof(int fd);
 
-DEFINE_TRIVIAL_CLEANUP_FUNC(cpu_set_t*, CPU_FREE);
-#define _cleanup_cpu_free_ _cleanup_(CPU_FREEp)
-
-// UNNEEDED cpu_set_t* cpu_set_malloc(unsigned *ncpus);
-
-#define xsprintf(buf, fmt, ...) assert_se((size_t) snprintf(buf, ELEMENTSOF(buf), fmt, __VA_ARGS__) < ELEMENTSOF(buf))
+#define xsprintf(buf, fmt, ...) \
+        assert_message_se((size_t) snprintf(buf, ELEMENTSOF(buf), fmt, __VA_ARGS__) < ELEMENTSOF(buf), \
+                          "xsprintf: " #buf "[] must be big enough")
 
 int files_same(const char *filea, const char *fileb);
 
@@ -451,28 +452,28 @@ static inline bool _pure_ in_charset(const char *s, const char* charset) {
 int ioprio_class_to_string_alloc(int i, char **s);
 int ioprio_class_from_string(const char *s);
 
-const char *sigchld_code_to_string(int i) _const_;
-int sigchld_code_from_string(const char *s) _pure_;
+// UNNEEDED const char *sigchld_code_to_string(int i) _const_;
+// UNNEEDED int sigchld_code_from_string(const char *s) _pure_;
 
-int log_facility_unshifted_to_string_alloc(int i, char **s);
-int log_facility_unshifted_from_string(const char *s);
+// UNNEEDED int log_facility_unshifted_to_string_alloc(int i, char **s);
+// UNNEEDED int log_facility_unshifted_from_string(const char *s);
 
 int log_level_to_string_alloc(int i, char **s);
 int log_level_from_string(const char *s);
 
-int sched_policy_to_string_alloc(int i, char **s);
-int sched_policy_from_string(const char *s);
+// UNNEEDED int sched_policy_to_string_alloc(int i, char **s);
+// UNNEEDED int sched_policy_from_string(const char *s);
 
 const char *rlimit_to_string(int i) _const_;
 int rlimit_from_string(const char *s) _pure_;
 
-int ip_tos_to_string_alloc(int i, char **s);
-int ip_tos_from_string(const char *s);
+// UNNEEDED int ip_tos_to_string_alloc(int i, char **s);
+// UNNEEDED int ip_tos_from_string(const char *s);
 
 extern int saved_argc;
 extern char **saved_argv;
 
-bool kexec_loaded(void);
+// UNNEEDED bool kexec_loaded(void);
 
 // UNNEEDED int prot_from_flags(int flags) _const_;
 
@@ -515,7 +516,10 @@ static inline void close_pairp(int (*p)[2]) {
         safe_close_pair(*p);
 }
 
-DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, fclose);
+static inline void fclosep(FILE **f) {
+        safe_fclose(*f);
+}
+
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, pclose);
 DEFINE_TRIVIAL_CLEANUP_FUNC(DIR*, closedir);
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, endmntent);
@@ -872,11 +876,6 @@ int extract_first_word(const char **p, char **ret, const char *separators, Extra
 // UNNEEDED int extract_first_word_and_warn(const char **p, char **ret, const char *separators, ExtractFlags flags, const char *unit, const char *filename, unsigned line, const char *rvalue);
 // UNNEEDED int extract_many_words(const char **p, const char *separators, ExtractFlags flags, ...) _sentinel_;
 
-static inline void free_and_replace(char **s, char *v) {
-        free(*s);
-        *s = v;
-}
-
 int free_and_strdup(char **p, const char *s);
 
 #define INOTIFY_EVENT_MAX (sizeof(struct inotify_event) + NAME_MAX + 1)
@@ -910,10 +909,10 @@ int fd_getcrtime(int fd, usec_t *usec);
 
 // UNNEEDED int same_fd(int a, int b);
 
-int chattr_fd(int fd, unsigned value, unsigned mask);
+// UNNEEDED int chattr_fd(int fd, unsigned value, unsigned mask);
 // UNNEEDED int chattr_path(const char *p, unsigned value, unsigned mask);
 
-int read_attr_fd(int fd, unsigned *ret);
+// UNNEEDED int read_attr_fd(int fd, unsigned *ret);
 // UNNEEDED int read_attr_path(const char *p, unsigned *ret);
 
 #define RLIMIT_MAKE_CONST(lim) ((struct rlimit) { lim, lim })
@@ -940,3 +939,12 @@ int reset_uid_gid(void);
 
 int getxattr_malloc(const char *path, const char *name, char **value, bool allow_symlink);
 int fgetxattr_malloc(int fd, const char *name, char **value);
+
+int send_one_fd(int transport_fd, int fd, int flags);
+// UNNEEDED int receive_one_fd(int transport_fd, int flags);
+
+// UNNEEDED void nop_signal_handler(int sig);
+
+int version(void);
+
+// UNNEEDED bool fdname_is_valid(const char *s);

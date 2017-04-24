@@ -1148,7 +1148,6 @@ _public_ int sd_bus_message_set_expect_reply(sd_bus_message *m, int b) {
 
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_message_set_auto_start(sd_bus_message *m, int b) {
         assert_return(m, -EINVAL);
@@ -1162,8 +1161,6 @@ _public_ int sd_bus_message_set_auto_start(sd_bus_message *m, int b) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 _public_ int sd_bus_message_set_allow_interactive_authorization(sd_bus_message *m, int b) {
         assert_return(m, -EINVAL);
         assert_return(!m->sealed, -EPERM);
@@ -1670,6 +1667,8 @@ _public_ int sd_bus_message_append_basic(sd_bus_message *m, char type, const voi
         return message_append_basic(m, type, p, NULL);
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_message_append_string_space(
                 sd_bus_message *m,
                 size_t size,
@@ -1727,8 +1726,6 @@ _public_ int sd_bus_message_append_string_space(
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 _public_ int sd_bus_message_append_string_iovec(
                 sd_bus_message *m,
                 const struct iovec *iov,
@@ -2587,6 +2584,8 @@ _public_ int sd_bus_message_append(sd_bus_message *m, const char *types, ...) {
         return r;
 }
 
+/// UNNEEDED by elogind
+#if 0
 _public_ int sd_bus_message_append_array_space(
                 sd_bus_message *m,
                 char type,
@@ -2654,8 +2653,6 @@ _public_ int sd_bus_message_append_array(
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 _public_ int sd_bus_message_append_array_iovec(
                 sd_bus_message *m,
                 char type,

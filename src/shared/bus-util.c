@@ -577,14 +577,14 @@ int bus_check_peercred(sd_bus *c) {
         return 1;
 }
 
-int bus_open_system_systemd(sd_bus **_bus) {
+int bus_connect_system_systemd(sd_bus **_bus) {
         _cleanup_bus_unref_ sd_bus *bus = NULL;
         int r;
 
         assert(_bus);
 
         if (geteuid() != 0)
-                return sd_bus_open_system(_bus);
+                return sd_bus_default_system(_bus);
 
         /* If we are root and kdbus is not available, then let's talk
          * directly to the system instance, instead of going via the
@@ -619,7 +619,7 @@ int bus_open_system_systemd(sd_bus **_bus) {
 
         r = sd_bus_start(bus);
         if (r < 0)
-                return sd_bus_open_system(_bus);
+                return sd_bus_default_system(_bus);
 
         r = bus_check_peercred(bus);
         if (r < 0)
@@ -631,7 +631,7 @@ int bus_open_system_systemd(sd_bus **_bus) {
         return 0;
 }
 
-int bus_open_user_systemd(sd_bus **_bus) {
+int bus_connect_user_systemd(sd_bus **_bus) {
         _cleanup_bus_unref_ sd_bus *bus = NULL;
         _cleanup_free_ char *ee = NULL;
         const char *e;
@@ -661,7 +661,7 @@ int bus_open_user_systemd(sd_bus **_bus) {
 
         e = secure_getenv("XDG_RUNTIME_DIR");
         if (!e)
-                return sd_bus_open_user(_bus);
+                return sd_bus_default_user(_bus);
 
         ee = bus_address_escape(e);
         if (!ee)
@@ -677,7 +677,7 @@ int bus_open_user_systemd(sd_bus **_bus) {
 
         r = sd_bus_start(bus);
         if (r < 0)
-                return sd_bus_open_user(_bus);
+                return sd_bus_default_user(_bus);
 
         r = bus_check_peercred(bus);
         if (r < 0)
@@ -1216,7 +1216,7 @@ int bus_map_all_properties(
         return bus_message_map_all_properties(m, map, userdata);
 }
 
-int bus_open_transport(BusTransport transport, const char *host, bool user, sd_bus **bus) {
+int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **bus) {
         int r;
 
         assert(transport >= 0);
@@ -1256,7 +1256,7 @@ int bus_open_transport(BusTransport transport, const char *host, bool user, sd_b
 
 /// UNNEEDED by elogind
 #if 0
-int bus_open_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus) {
+int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus) {
         int r;
 
         assert(transport >= 0);
@@ -1270,9 +1270,9 @@ int bus_open_transport_systemd(BusTransport transport, const char *host, bool us
 
         case BUS_TRANSPORT_LOCAL:
                 if (user)
-                        r = bus_open_user_systemd(bus);
+                        r = bus_connect_user_systemd(bus);
                 else
-                        r = bus_open_system_systemd(bus);
+                        r = bus_connect_system_systemd(bus);
 
                 break;
 
@@ -1438,9 +1438,10 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                 return bus_log_create_error(r);
 
         if (STR_IN_SET(field,
-                       "CPUAccounting", "MemoryAccounting", "BlockIOAccounting",
+                       "CPUAccounting", "MemoryAccounting", "BlockIOAccounting", "TasksAccounting",
                        "SendSIGHUP", "SendSIGKILL", "WakeSystem", "DefaultDependencies",
-                       "IgnoreSIGPIPE", "TTYVHangup", "TTYReset", "RemainAfterExit")) {
+                       "IgnoreSIGPIPE", "TTYVHangup", "TTYReset", "RemainAfterExit",
+                       "PrivateTmp", "PrivateDevices", "PrivateNetwork", "NoNewPrivileges")) {
 
                 r = parse_boolean(eq);
                 if (r < 0) {
@@ -1451,20 +1452,50 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                 r = sd_bus_message_append(m, "v", "b", r);
 
         } else if (streq(field, "MemoryLimit")) {
-                off_t bytes;
+                uint64_t bytes;
 
+                if (isempty(eq) || streq(eq, "infinity"))
+                        bytes = (uint64_t) -1;
+                else {
                 r = parse_size(eq, 1024, &bytes);
                 if (r < 0) {
                         log_error("Failed to parse bytes specification %s", assignment);
                         return -EINVAL;
                 }
+                }
 
-                r = sd_bus_message_append(m, "v", "t", (uint64_t) bytes);
+                r = sd_bus_message_append(m, "v", "t", bytes);
 
-        } else if (STR_IN_SET(field, "CPUShares", "BlockIOWeight")) {
+        } else if (streq(field, "TasksMax")) {
+                uint64_t n;
+
+                if (isempty(eq) || streq(eq, "infinity"))
+                        n = (uint64_t) -1;
+                else {
+                        r = safe_atou64(eq, &n);
+                        if (r < 0) {
+                                log_error("Failed to parse maximum tasks specification %s", assignment);
+                                return -EINVAL;
+                        }
+                }
+
+                r = sd_bus_message_append(m, "v", "t", n);
+
+        } else if (STR_IN_SET(field, "CPUShares", "StartupCPUShares")) {
                 uint64_t u;
 
-                r = safe_atou64(eq, &u);
+                r = cg_cpu_shares_parse(eq, &u);
+                if (r < 0) {
+                        log_error("Failed to parse %s value %s.", field, eq);
+                        return -EINVAL;
+                }
+
+                r = sd_bus_message_append(m, "v", "t", u);
+
+        } else if (STR_IN_SET(field, "BlockIOWeight", "StartupBlockIOWeight")) {
+                uint64_t u;
+
+                r = cg_cpu_shares_parse(eq, &u);
                 if (r < 0) {
                         log_error("Failed to parse %s value %s.", field, eq);
                         return -EINVAL;
@@ -1476,7 +1507,8 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                               "User", "Group", "DevicePolicy", "KillMode",
                               "UtmpIdentifier", "UtmpMode", "PAMName", "TTYPath",
                               "StandardInput", "StandardOutput", "StandardError",
-                              "Description", "Slice", "Type"))
+                              "Description", "Slice", "Type", "WorkingDirectory",
+                              "RootDirectory"))
                 r = sd_bus_message_append(m, "v", "s", eq);
 
         else if (streq(field, "DeviceAllow")) {
@@ -1509,7 +1541,7 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                         r = sd_bus_message_append(m, "v", "a(st)", 0);
                 else {
                         const char *path, *bandwidth, *e;
-                        off_t bytes;
+                        uint64_t bytes;
 
                         e = strchr(eq, ' ');
                         if (e) {
@@ -1531,7 +1563,7 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                                 return -EINVAL;
                         }
 
-                        r = sd_bus_message_append(m, "v", "a(st)", 1, path, (uint64_t) bytes);
+                        r = sd_bus_message_append(m, "v", "a(st)", 1, path, bytes);
                 }
 
         } else if (streq(field, "BlockIODeviceWeight")) {
@@ -1905,7 +1937,6 @@ int bus_wait_for_jobs(BusWaitForJobs *d, bool quiet) {
                 }
 
                 d->name = mfree(d->name);
-
                 d->result = mfree(d->result);
         }
 

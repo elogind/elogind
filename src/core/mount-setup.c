@@ -181,7 +181,7 @@ static int mount_one(const MountPoint *p, bool relabel) {
                 return 0;
 
         /* Skip securityfs in a container */
-        if (!(p->mode & MNT_IN_CONTAINER) && detect_container(NULL) > 0)
+        if (!(p->mode & MNT_IN_CONTAINER) && detect_container() > 0)
                 return 0;
 
         /* The access mode here doesn't really matter too much, since
@@ -227,7 +227,7 @@ int mount_setup_early(void) {
                 int j;
 
                 j = mount_one(mount_table + i, false);
-                if (r == 0)
+                if (j != 0 && r >= 0)
                         r = j;
         }
 
@@ -322,6 +322,11 @@ int mount_cgroup_controllers(char ***join_controllers) {
                                 r = symlink(options, t);
                                 if (r < 0 && errno != EEXIST)
                                         return log_error_errno(errno, "Failed to create symlink %s: %m", t);
+#ifdef SMACK_RUN_LABEL
+                                r = mac_smack_copy(t, options);
+                                if (r < 0 && r != -EOPNOTSUPP)
+                                        return log_error_errno(r, "Failed to copy smack label from %s to %s: %m", options, t);
+#endif
                         }
                 }
         }
@@ -366,7 +371,7 @@ int mount_setup(bool loaded_policy) {
                 int j;
 
                 j = mount_one(mount_table + i, loaded_policy);
-                if (r == 0)
+                if (j != 0 && r >= 0)
                         r = j;
         }
 
@@ -407,7 +412,7 @@ int mount_setup(bool loaded_policy) {
          * nspawn and the container tools work out of the box. If
          * specific setups need other settings they can reset the
          * propagation mode to private if needed. */
-        if (detect_container(NULL) <= 0)
+        if (detect_container() <= 0)
                 if (mount(NULL, "/", NULL, MS_REC|MS_SHARED, NULL) < 0)
                         log_warning_errno(errno, "Failed to set up the root directory for shared mount propagation: %m");
 

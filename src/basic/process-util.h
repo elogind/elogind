@@ -56,7 +56,7 @@ int wait_for_terminate(pid_t pid, siginfo_t *status);
 int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_code);
 
 // UNNEEDED int kill_and_sigcont(pid_t pid, int sig);
-pid_t get_parent_of_pid(pid_t pid, pid_t *ppid);
+// UNNEEDED pid_t get_parent_of_pid(pid_t pid, pid_t *ppid);
 // UNNEEDED void rename_process(const char name[8]);
 int is_kernel_thread(pid_t pid);
 int getenv_for_pid(pid_t pid, const char *field, char **_value);
