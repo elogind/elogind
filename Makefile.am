@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=13
+LIBELOGIND_CURRENT=14
 LIBELOGIND_REVISION=0
-LIBELOGIND_AGE=13
+LIBELOGIND_AGE=14
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -102,6 +102,13 @@ TESTS = $(tests)
 else
 noinst_PROGRAMS =
 TESTS =
+endif
+
+if ENABLE_BASH_COMPLETION
+dist_bashcompletion_DATA = $(dist_bashcompletion_data)
+endif
+if ENABLE_ZSH_COMPLETION
+dist_zshcompletion_DATA = $(dist_zshcompletion_data)
 endif
 
 in_files = $(filter %.in,$(EXTRA_DIST))
@@ -224,29 +231,27 @@ man_MANS = \
 
 noinst_DATA += \
 	$(HTML_FILES) \
-	$(HTML_ALIAS)
+	$(HTML_ALIAS) \
+	docs/html/man
+endif
 
 CLEANFILES += \
 	$(man_MANS) \
 	$(HTML_FILES) \
-	$(HTML_ALIAS)
+	$(HTML_ALIAS) \
+	docs/html/man
 
 docs/html/man:
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
 	$(AM_V_LN)$(LN_S) -f ../../man $@
 
-noinst_DATA += \
-	docs/html/man
-
-CLEANFILES += \
-	docs/html/man
-
-if HAVE_PYTHON
 man/index.html: man/elogind.index.html
 	$(AM_V_LN)$(LN_S) -f elogind.index.html $@
 
+if HAVE_PYTHON
 noinst_DATA += \
        man/index.html
+endif
 
 CLEANFILES += \
        man/index.html
@@ -258,10 +263,10 @@ SOURCE_XML_FILES = ${patsubst %,$(top_srcdir)/%,$(filter-out man/elogind.directi
 # This target should only be run manually. It recreates Makefile-man.am
 # file in the source directory based on all man/*.xml files. Run it after
 # adding, removing, or changing the conditional in a man page.
-update-man-list: $(top_srcdir)/tools/make-man-rules.py $(XML_GLOB)
-	$(AM_V_GEN)$(PYTHON) $^ > $(top_srcdir)/Makefile-man.tmp
+update-man-list: $(top_srcdir)/tools/make-man-rules.py $(XML_GLOB) man/custom-entities.ent
+	$(AM_V_GEN)$(PYTHON) $< $(XML_GLOB) > $(top_srcdir)/Makefile-man.tmp
 	$(AM_V_at)mv $(top_srcdir)/Makefile-man.tmp $(top_srcdir)/Makefile-man.am
-		@echo "Makefile-man.am has been regenerated"
+	@echo "Makefile-man.am has been regenerated"
 
 man/elogind.index.xml: $(top_srcdir)/tools/make-man-index.py $(NON_INDEX_XML_FILES)
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
@@ -276,18 +281,12 @@ CLEANFILES += \
        man/elogind.directives.xml
 
 EXTRA_DIST += \
-       tools/make-man-rules.py
-
-endif
-
-endif
-
-EXTRA_DIST += \
-	$(filter-out man/elogind.directives.xml,$(XML_FILES)) \
-	$(HTML_FILES) \
-	$(HTML_ALIAS) \
-	$(man_MANS) \
-	$(NULL)
+	$(filter-out man/elogind.directives.xml man/elogind.index.xml,$(XML_FILES)) \
+	tools/make-man-index.py \
+	tools/make-man-rules.py \
+	tools/make-directive-index.py \
+	tools/xml_helper.py \
+	man/glib-event-glue.c
 
 # ------------------------------------------------------------------------------
 noinst_LTLIBRARIES += \
@@ -354,6 +353,8 @@ libbasic_la_SOURCES = \
 	src/basic/mempool.h \
 	src/basic/hashmap.c \
 	src/basic/hashmap.h \
+	src/basic/hash-funcs.c \
+	src/basic/hash-funcs.h \
 	src/basic/siphash24.c \
 	src/basic/siphash24.h \
 	src/basic/prioq.c \
@@ -690,16 +691,12 @@ loginctl_LDADD = \
 rootbin_PROGRAMS += \
 	loginctl
 
-if ENABLE_BASH_COMPLETION
-dist_bashcompletion_DATA = \
+dist_bashcompletion_data = \
 	shell-completion/bash/loginctl
-endif
 
-if ENABLE_ZSH_COMPLETION
-dist_zshcompletion_DATA = \
+dist_zshcompletion_data = \
 	shell-completion/zsh/_loginctl \
 	shell-completion/zsh/_elogind-inhibit
-endif
 
 elogind_inhibit_SOURCES = \
 	src/login/inhibit.c

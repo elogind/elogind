@@ -103,6 +103,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/gunicode.h" />
+		<Unit filename="../src/basic/hash-funcs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/hash-funcs.h" />
 		<Unit filename="../src/basic/hashmap.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -33,6 +33,19 @@ Janitorial Clean-ups:
 
 Features:
 
+* delay activation of logind until somebody logs in, or when /dev/tty0 pulls it
+  in or lingering is on (so that containers don't bother with it until PAM is used). also exit-on-idle
+
+* cache sd_event_now() result from before the first iteration...
+
+* remove Capabilities=, after all AmbientCapabilities= and CapabilityBoundingSet= should be enough.
+
+* support for the new copy_file_range() syscall
+
+* add systemctl stop --job-mode=triggering that follows TRIGGERED_BY deps and adds them to the same transaction
+
+* Maybe add a way how users can "pin" units into memory, so that they are not subject to automatic GC?
+
 * PID1: find a way how we can reload unit file configuration for
   specific units only, without reloading the whole of systemd
 
@@ -58,8 +71,6 @@ Features:
 
 * consider throwing a warning if a service declares it wants to be "Before=" a .device unit.
 
-* "systemctl edit" should know a mode to create a new unit file
-
 * there's probably something wrong with having user mounts below /sys,
   as we have for debugfs. for exmaple, src/core/mount.c handles mounts
   prefixed with /sys generally special.
@@ -67,11 +78,7 @@ Features:
 
 * man: document that unless you use StandardError=null the shell >/dev/stderr won't work in shell scripts in services
 
-* "systemctl daemon-reload" should result in /etc/systemd/system.conf being reloaded by systemd
-
 * install: include generator dirs in unit file search paths
-
-* invent a better systemd-run scheme for naming scopes, that works with remoting
 
 * rework C11 utf8.[ch] to use char32_t instead of uint32_t when referring
   to unicode chars, to make things more expressive.
@@ -103,7 +110,7 @@ Features:
 
 * Rework systemctl's GetAll property parsing to use the generic bus_map_all_properties() API
 
-* core/cgroup: support net_cls modules, and support automatically allocating class ids, then add support for making firewall changes depending on it, to implement a per-service firewall
+* implement a per-service firewall based on net_cls
 
 * Port various tools to make use of verbs.[ch], where applicable
 
@@ -155,8 +162,6 @@ Features:
 
 * maybe provide an API to allow migration of foreign PIDs into existing scopes.
 
-* maybe support a new very "soft" reboot mode, that simply kills all processes, disassembles everything, flushes /run and sysvipc, and then reexecs systemd again
-
 * man: maybe use the word "inspect" rather than "introspect"?
 
 * systemctl: if some operation fails, show log output?
@@ -166,9 +171,9 @@ Features:
 - use equvalent of cat() to insert existing config as a comment, prepended with #.
   Upon editor exit, lines with one # are removed, lines with two # are left with one #, etc.
 
-* exponential backoff in timesyncd and resolved when we cannot reach a server
+* exponential backoff in timesyncd when we cannot reach a server
 
-* timesyncd + resolved: add ugly bus calls to set NTP and DNS servers per-interface, for usage by NM
+* timesyncd: add ugly bus calls to set NTP servers per-interface, for usage by NM
 
 * extract_many_words() should probably be used by a lot of code that
   currently uses FOREACH_WORD and friends. For example, most conf
@@ -183,23 +188,16 @@ Features:
   (throughout the codebase, not only PID1)
 
 * resolved:
-  - put networkd events and rtnl events at a higher priority, so that
-    we always process them before we process client requests
-  - DNSSEC
-        - add display of private key types (http://tools.ietf.org/html/rfc4034#appendix-A.1.1)?
-  - DNS
-        - search paths
   - mDNS/DNS-SD
+        - service registration
+        - service/domain/types browsing
         - avahi compat
   - DNS-SD service registration from socket units
-  - edns0
-  - dname: Not necessary for plain DNS as synthesized cname is handed out instead if we do not
-           announce dname support. However, for DNSSEC it is necessary as the synthesized cname
-           will not be signed.
-  - cname on PTR (?)
   - resolved should optionally register additional per-interface LLMNR
     names, so that for the container case we can establish the same name
     (maybe "host") for referencing the server, everywhere.
+  - enable DNSSEC by default
+  - allow clients to request DNSSEC for a single lookup even if DNSSEC is off (?)
 
 * refcounting in sd-resolve is borked
 
@@ -212,8 +210,6 @@ Features:
   - fstab-generator: support systemd.volatile=yes|no|state on the kernel cmdline, too, similar to nspawn's --volatile=
 
 * generator that automatically discovers btrfs subvolumes, identifies their purpose based on some xattr on them.
-
-* timer units: actually add extra delays to timer units with high AccuracySec values, don't start them already when we are awake...
 
 * a way for container managers to turn off getty starting via $container_headless= or so...
 
@@ -338,10 +334,6 @@ Features:
   - define more intervals where we will shift wakeup intervals around in, 1h, 6h, 24h, ...
   - generate a failure of a default event loop is executed out-of-thread
   - maybe add support for inotify events
-
-* in the final killing spree, detect processes from the root directory, and
-  complain loudly if they have argv[0][0] == '@' set.
-  https://bugzilla.redhat.com/show_bug.cgi?id=961044
 
 * investigate endianness issues of UUID vs. GUID
 
@@ -491,10 +483,6 @@ Features:
   - journal-or-kmsg is currently broken? See reverted
     commit 4a01181e460686d8b4a543b1dfa7f77c9e3c5ab8.
   - man: document that corrupted journal files is nothing to act on
-  - systemd-journal-upload (or a new, related tool): allow pushing out
-    journal messages onto the network in BSD syslog protocol,
-    continuously. Default to some link-local IP mcast group, to make this
-    useful as a one-stop debugging tool.
   - rework journald sigbus stuff to use mutex
   - Set RLIMIT_NPROC for systemd-journal-xyz, and all other of our
     services that run under their own user ids, and use User= (but only
@@ -609,8 +597,6 @@ Features:
     removed or added to an existing machine
   - "machinectl migrate" or similar to copy a container from or to a
     difference host, via ssh
-  - man: document how update dkr images works with machinectl
-    http://lists.freedesktop.org/archives/systemd-devel/2015-February/028630.html
   - introduce systemd-nspawn-ephemeral@.service, and hook it into
     "machinectl start" with a new --ephemeral switch
   - "machinectl status" should also show internal logs of the container in
@@ -623,8 +609,6 @@ Features:
     shell in it, and marks it read-only after use
 
 * importd:
-  - dkr: support tarsum checksum verification, if it becomes reality one day...
-  - dkr: convert json bits to nspawn configuration
   - generate a nice warning if mkfs.btrfs is missing
 
 * cryptsetup:
@@ -661,10 +645,6 @@ Features:
 * coredump:
   - save coredump in Windows/Mozilla minidump format
   - move PID 1 segfaults to /var/lib/systemd/coredump?
-  - make the handler check /proc/$PID/rlimits for RLIMIT_CORE,
-    and supress coredump if turned off. Then change RLIMIT_CORE to
-    infinity by default for all services. This then allows per-service
-    control of coredumping.
 
 * support crash reporting operation modes (https://live.gnome.org/GnomeOS/Design/Whiteboards/ProblemReporting)
 
@@ -736,7 +716,6 @@ Features:
   - Support --test based on current system state
   - If we show an error about a unit (such as not showing up) and it has no Description string, then show a description string generated form the reverse of unit_name_mangle().
   - after deserializing sockets in socket.c we should reapply sockopts and things
-  - make timer units go away after they elapsed
   - drop PID 1 reloading, only do reexecing (difficult: Reload()
     currently is properly synchronous, Reexec() is weird, because we
     cannot delay the response properly until we are back, so instead of

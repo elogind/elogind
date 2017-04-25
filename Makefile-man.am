@@ -11,31 +11,160 @@ MANPAGES += \
 	man/elogind.8 \
 	man/loginctl.1 \
 	man/logind.conf.5 \
+	man/sd-event.3 \
+	man/sd_event_add_io.3 \
+	man/sd_event_exit.3 \
+	man/sd_event_now.3 \
+	man/sd_event_set_watchdog.3 \
+	man/sd_event_source_get_event.3 \
+	man/sd_event_source_get_pending.3 \
+	man/sd_event_source_set_description.3 \
+	man/sd_event_source_set_enabled.3 \
+	man/sd_event_source_set_prepare.3 \
+	man/sd_event_source_set_priority.3 \
+	man/sd_event_source_set_userdata.3 \
+	man/sd_event_source_unref.3 \
 	man/sd_id128_get_machine.3 \
 	man/sd_id128_randomize.3 \
 	man/sd_id128_to_string.3 \
+	man/sd_journal_enumerate_fields.3 \
 	man/sd_machine_get_class.3 \
 	man/sd_notify.3 \
 	man/sd_watchdog_enabled.3
 MANPAGES_ALIAS += \
+	man/SD_EVENT_OFF.3 \
+	man/SD_EVENT_ON.3 \
+	man/SD_EVENT_ONESHOT.3 \
+	man/SD_EVENT_PRIORITY_IDLE.3 \
+	man/SD_EVENT_PRIORITY_IMPORTANT.3 \
+	man/SD_EVENT_PRIORITY_NORMAL.3 \
+	man/SD_JOURNAL_FOREACH_FIELD.3 \
+	man/sd_event_get_exit_code.3 \
+	man/sd_event_get_watchdog.3 \
+	man/sd_event_io_handler_t.3 \
+	man/sd_event_source.3 \
+	man/sd_event_source_get_description.3 \
+	man/sd_event_source_get_enabled.3 \
+	man/sd_event_source_get_io_events.3 \
+	man/sd_event_source_get_io_fd.3 \
+	man/sd_event_source_get_io_revents.3 \
+	man/sd_event_source_get_priority.3 \
+	man/sd_event_source_get_userdata.3 \
+	man/sd_event_source_ref.3 \
+	man/sd_event_source_set_io_events.3 \
+	man/sd_event_source_set_io_fd.3 \
+	man/sd_event_source_unrefp.3 \
 	man/sd_id128_from_string.3 \
 	man/sd_id128_get_boot.3 \
+	man/sd_journal_restart_fields.3 \
 	man/sd_machine_get_ifindices.3 \
 	man/sd_notifyf.3 \
 	man/sd_pid_notify.3 \
 	man/sd_pid_notify_with_fds.3 \
 	man/sd_pid_notifyf.3
+man/SD_EVENT_OFF.3: man/sd_event_source_set_enabled.3
+man/SD_EVENT_ON.3: man/sd_event_source_set_enabled.3
+man/SD_EVENT_ONESHOT.3: man/sd_event_source_set_enabled.3
+man/SD_EVENT_PRIORITY_IDLE.3: man/sd_event_source_set_priority.3
+man/SD_EVENT_PRIORITY_IMPORTANT.3: man/sd_event_source_set_priority.3
+man/SD_EVENT_PRIORITY_NORMAL.3: man/sd_event_source_set_priority.3
+man/SD_JOURNAL_FOREACH_FIELD.3: man/sd_journal_enumerate_fields.3
+man/sd_event_get_exit_code.3: man/sd_event_exit.3
+man/sd_event_get_watchdog.3: man/sd_event_set_watchdog.3
+man/sd_event_io_handler_t.3: man/sd_event_add_io.3
+man/sd_event_source.3: man/sd_event_add_io.3
+man/sd_event_source_get_description.3: man/sd_event_source_set_description.3
+man/sd_event_source_get_enabled.3: man/sd_event_source_set_enabled.3
+man/sd_event_source_get_io_events.3: man/sd_event_add_io.3
+man/sd_event_source_get_io_fd.3: man/sd_event_add_io.3
+man/sd_event_source_get_io_revents.3: man/sd_event_add_io.3
+man/sd_event_source_get_priority.3: man/sd_event_source_set_priority.3
+man/sd_event_source_get_userdata.3: man/sd_event_source_set_userdata.3
+man/sd_event_source_ref.3: man/sd_event_source_unref.3
+man/sd_event_source_set_io_events.3: man/sd_event_add_io.3
+man/sd_event_source_set_io_fd.3: man/sd_event_add_io.3
+man/sd_event_source_unrefp.3: man/sd_event_source_unref.3
 man/sd_id128_from_string.3: man/sd_id128_to_string.3
 man/sd_id128_get_boot.3: man/sd_id128_get_machine.3
+man/sd_journal_restart_fields.3: man/sd_journal_enumerate_fields.3
 man/sd_machine_get_ifindices.3: man/sd_machine_get_class.3
 man/sd_notifyf.3: man/sd_notify.3
 man/sd_pid_notify.3: man/sd_notify.3
 man/sd_pid_notify_with_fds.3: man/sd_notify.3
 man/sd_pid_notifyf.3: man/sd_notify.3
+man/SD_EVENT_OFF.html: man/sd_event_source_set_enabled.html
+	$(html-alias)
+
+man/SD_EVENT_ON.html: man/sd_event_source_set_enabled.html
+	$(html-alias)
+
+man/SD_EVENT_ONESHOT.html: man/sd_event_source_set_enabled.html
+	$(html-alias)
+
+man/SD_EVENT_PRIORITY_IDLE.html: man/sd_event_source_set_priority.html
+	$(html-alias)
+
+man/SD_EVENT_PRIORITY_IMPORTANT.html: man/sd_event_source_set_priority.html
+	$(html-alias)
+
+man/SD_EVENT_PRIORITY_NORMAL.html: man/sd_event_source_set_priority.html
+	$(html-alias)
+
+man/SD_JOURNAL_FOREACH_FIELD.html: man/sd_journal_enumerate_fields.html
+	$(html-alias)
+
+man/sd_event_get_exit_code.html: man/sd_event_exit.html
+	$(html-alias)
+
+man/sd_event_get_watchdog.html: man/sd_event_set_watchdog.html
+	$(html-alias)
+
+man/sd_event_io_handler_t.html: man/sd_event_add_io.html
+	$(html-alias)
+
+man/sd_event_source.html: man/sd_event_add_io.html
+	$(html-alias)
+
+man/sd_event_source_get_description.html: man/sd_event_source_set_description.html
+	$(html-alias)
+
+man/sd_event_source_get_enabled.html: man/sd_event_source_set_enabled.html
+	$(html-alias)
+
+man/sd_event_source_get_io_events.html: man/sd_event_add_io.html
+	$(html-alias)
+
+man/sd_event_source_get_io_fd.html: man/sd_event_add_io.html
+	$(html-alias)
+
+man/sd_event_source_get_io_revents.html: man/sd_event_add_io.html
+	$(html-alias)
+
+man/sd_event_source_get_priority.html: man/sd_event_source_set_priority.html
+	$(html-alias)
+
+man/sd_event_source_get_userdata.html: man/sd_event_source_set_userdata.html
+	$(html-alias)
+
+man/sd_event_source_ref.html: man/sd_event_source_unref.html
+	$(html-alias)
+
+man/sd_event_source_set_io_events.html: man/sd_event_add_io.html
+	$(html-alias)
+
+man/sd_event_source_set_io_fd.html: man/sd_event_add_io.html
+	$(html-alias)
+
+man/sd_event_source_unrefp.html: man/sd_event_source_unref.html
+	$(html-alias)
+
 man/sd_id128_from_string.html: man/sd_id128_to_string.html
 	$(html-alias)
 
 man/sd_id128_get_boot.html: man/sd_id128_get_machine.html
+	$(html-alias)
+
+man/sd_journal_restart_fields.html: man/sd_journal_enumerate_fields.html
 	$(html-alias)
 
 man/sd_machine_get_ifindices.html: man/sd_machine_get_class.html
@@ -163,15 +292,6 @@ man/sd_session_is_remote.html: man/sd_session_is_active.html
 
 endif
 
-if HAVE_PYTHON
-MANPAGES += \
-	man/elogind.index.7
-MANPAGES_ALIAS += \
-	#
-
-
-endif
-
 # Really, do not edit this file.
 
 EXTRA_DIST += \
@@ -181,10 +301,24 @@ EXTRA_DIST += \
 	man/loginctl.xml \
 	man/logind.conf.xml \
 	man/pam_elogind.xml \
+	man/sd-event.xml \
+	man/sd_event_add_io.xml \
+	man/sd_event_exit.xml \
+	man/sd_event_now.xml \
+	man/sd_event_set_watchdog.xml \
+	man/sd_event_source_get_event.xml \
+	man/sd_event_source_get_pending.xml \
+	man/sd_event_source_set_description.xml \
+	man/sd_event_source_set_enabled.xml \
+	man/sd_event_source_set_prepare.xml \
+	man/sd_event_source_set_priority.xml \
+	man/sd_event_source_set_userdata.xml \
+	man/sd_event_source_unref.xml \
 	man/sd_get_seats.xml \
 	man/sd_id128_get_machine.xml \
 	man/sd_id128_randomize.xml \
 	man/sd_id128_to_string.xml \
+	man/sd_journal_enumerate_fields.xml \
 	man/sd_machine_get_class.xml \
 	man/sd_notify.xml \
 	man/sd_seat_get_active.xml \

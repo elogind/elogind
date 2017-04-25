@@ -1,5 +1,224 @@
 systemd System and Service Manager
 
+CHANGES WITH 229:
+
+        * The systemd-resolved DNS resolver service has gained a substantial
+          set of new features, most prominently it may now act as a DNSSEC
+          validating stub resolver. DNSSEC mode is currently turned off by
+          default, but it is expected that this is turned on by default in one
+          of the next releases. For now, we invite everybody to test the DNSSEC
+          logic by setting DNSSEC=allow-downgrade in
+          /etc/systemd/resolved.conf. The service also gained a full set of
+          D-Bus interfaces, including calls to configure DNS and DNSSEC
+          settings per link (for consumption by external network management
+          software). systemd-resolved (and systemd-networkd along with it) now
+          know to distinguish between "search" and "routing" domains. The
+          former are used to qualify single-label names, the latter are purely
+          used for routing lookups within certain domains to specific
+          links. resolved will now also synthesize RRs for all entries from
+          /etc/hosts.
+
+        * The systemd-resolve tool (which is a client utility for
+          systemd-resolved, and previously experimental) has been improved
+          considerably and is now fully supported and documented. Hence it has
+          moved from /usr/lib/systemd to /usr/bin.
+
+        * /dev/disk/by-path/ symlink support has been (re-)added for virtio
+          devices.
+
+        * The coredump collection logic has been reworked: when a coredump is
+          collected it is now written to disk, compressed and processed
+          (including stacktrace extraction) from a new instantiated service
+          systemd-coredump@.service, instead of directly from the
+          /proc/sys/kernel/core_pattern hook we provide. This is beneficial as
+          processing large coredumps can take up a substantial amount of
+          resources and time, and this previously happened entirely outside of
+          systemd's service supervision. With the new logic the core_pattern
+          hook only does minimal metadata collection before passing off control
+          to the new instantiated service, which is configured with a time
+          limit, a nice level and other settings to minimize negative impact on
+          the rest of the system. Also note that the new logic will honour the
+          RLIMIT_CORE setting of the crashed process, which now allows users
+          and processes to turn off coredumping for their processes by setting
+          this limit.
+
+        * The RLIMIT_CORE resource limit now defaults to "unlimited" for PID 1
+          and all forked processes by default. Previously, PID 1 would leave
+          the setting at "0" for all processes, as set by the kernel. Note that
+          the resource limit traditionally has no effect on the generated
+          coredumps on the system if the /proc/sys/kernel/core_pattern hook
+          logic is used. Since the limit is now honoured (see above) its
+          default has been changed so that the coredumping logic is enabled by
+          default for all processes, while allowing specific opt-out.
+
+        * When the stacktrace is extracted from processes of system users, this
+          is now done as "systemd-coredump" user, in order to sandbox this
+          potentially security sensitive parsing operation. (Note that when
+          processing coredumps of normal users this is done under the user ID
+          of process that crashed, as before.) Packagers should take notice
+          that it is now necessary to create the "systemd-coredump" system user
+          and group at package installation time.
+
+        * The systemd-activate socket activation testing tool gained support
+          for SOCK_DGRAM and SOCK_SEQPACKET sockets using the new --datagram
+          and --seqpacket switches. It also has been extended to support both
+          new-style and inetd-style file descriptor passing. Use the new
+          --inetd switch to request inetd-style file descriptor passing.
+
+        * Most systemd tools now honor a new $SYSTEMD_COLORS environment
+          variable, which takes a boolean value. If set to false, ANSI color
+          output is disabled in the tools even when run on a terminal that
+          supports it.
+
+        * The VXLAN support in networkd now supports two new settings
+          DestinationPort= and PortRange=.
+
+        * A new systemd.machine_id= kernel command line switch has been added,
+          that may be used to set the machine ID in /etc/machine-id if it is
+          not initialized yet. This command line option has no effect if the
+          file is already initialized.
+
+        * systemd-nspawn gained a new --as-pid2 switch that invokes any
+          specified command line as PID 2 rather than PID 1 in the
+          container. In this mode PID 1 will be a minimal stub init process
+          that implements the special POSIX and Linux semantics of PID 1
+          regarding signal and child process management. Note that this stub
+          init process is implemented in nspawn itself and requires no support
+          from the container image. This new logic is useful to support running
+          arbitrary command lines in the container, as normal processes are
+          generally not prepared to run as PID 1.
+
+        * systemd-nspawn gained a new --chdir= switch for setting the current
+          working directory for the process started in the container.
+
+        * "journalctl /dev/sda" will now output all kernel log messages from
+          the specified device, in addition to all devices that are parents of
+          it. This should make log output about devices pretty useful, as long
+          as kernel drivers attach enough metadata to the log messages. (The
+          usual SATA drivers do.)
+
+        * The sd-journal API gained two new calls
+          sd_journal_has_runtime_files() and sd_journal_has_persistent_files()
+          that report whether log data from /run or /var has been found.
+
+        * journalctl gained a new switch "--fields" that prints all journal
+          record field names currently in use in the journal.  This is backed
+          by two new sd-journal API calls sd_journal_enumerate_fields() and
+          sd_journal_restart_fields().
+
+        * Most configurable timeouts in systemd now expect an argument of
+          "infinity" to turn them off, instead of "0" as before. The semantics
+          from now on is that a timeout of "0" means "now", and "infinity"
+          means "never". To maintain backwards compatibility, "0" continues to
+          turn off previously existing timeout settings.
+
+        * "systemctl reload-or-try-restart" has been renamed to "systemctl
+          try-reload-or-restart" to clarify what it actually does: the "try"
+          logic applies to both reloading and restarting, not just restarting.
+          The old name continues to be accepted for compatibility.
+
+        * On boot-up, when PID 1 detects that the system clock is behind the
+          release date of the systemd version in use, the clock is now set
+          to the latter. Previously, this was already done in timesyncd, in order
+          to avoid running with clocks set to the various clock epochs such as
+          1902, 1938 or 1970. With this change the logic is now done in PID 1
+          in addition to timesyncd during early boot-up, so that it is enforced
+          before the first process is spawned by systemd. Note that the logic
+          in timesyncd remains, as it is more comprehensive and ensures
+          montonic clocks by maintaining a persistant timestamp file in
+          /var. Since /var is generally not available in earliest boot or the
+          initrd, this part of the logic remains in timesyncd, and is not done
+          by PID 1.
+
+        * Support for tweaking details in net_cls.class_id through the
+          NetClass= configuration directive has been removed, as the kernel
+          people have decided to deprecate that controller in cgroup v2.
+          Userspace tools such as nftables are moving over to setting rules
+          that are specific to the full cgroup path of a task, which obsoletes
+          these controllers anyway. The NetClass= directive is kept around for
+          legacy compatibility reasons. For a more in-depth description of the
+          kernel change, please refer to the respective upstream commit:
+
+            https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=bd1060a1d671
+
+        * A new service setting RuntimeMaxSec= has been added that may be used
+          to specify a maximum runtime for a service. If the timeout is hit, the
+          service is terminated and put into a failure state.
+
+        * A new service setting AmbientCapabilities= has been added. It allows
+          configuration of additional Linux process capabilities that are
+          passed to the activated processes. This is only available on very
+          recent kernels.
+
+        * The process resource limit settings in service units may now be used
+          to configure hard and soft limits individually.
+
+        * The various libsystemd APIs such as sd-bus or sd-event now publicly
+          expose support for gcc's __attribute__((cleanup())) C
+          extension. Specifically, for many object destructor functions
+          alternative versions whose names are suffixed with "p" have been
+          added, which take a pointer to a pointer to the object to destroy,
+          instead of just a pointer to the object itself. This is useful because
+          these destructor functions may be used directly as parameters to the
+          cleanup construct. Internally, systemd has been a heavy user of the
+          GCC extension since a long time, and with this change similar support
+          is now available to consumers of the library outside of systemd. Note
+          that by using this extension in your sources compatibility with old
+          and strictly ANSI compatible C compilers is lost. However, any gcc or
+          LLVM version of recent years have supported this extension.
+
+        * Timer units gained support for a new setting RandomizedDelaySec= that
+          allows configuring some additional randomized delay to the configured
+          time. This is useful to spread out timer events to avoid load peaks in
+          clusters or larger setups.
+
+        * Calendar time specifications now support sub-second accuracy.
+
+        * Socket units now support listening on SCTP and UDP-lite protocol
+          sockets.
+
+        * The sd-event API now comes with a full set of man pages.
+
+        * Older versions of systemd contained experimental support for
+          compressing journal files and coredumps with the LZ4 compressor that
+          was not compatible with the lz4 binary (due to API limitations of the
+          lz4 library). This support has been removed; only support for files
+          compatible with the lz4 binary remains. This LZ4 logic is now
+          officially supported and no longer considered experimental.
+
+        * The dkr image import logic has been removed again from importd. dkr's
+          micro-services focus doesn't fit into the machine image focus of
+          importd, and quickly got out of date with the upstream dkr API.
+
+        * Creation of the /run/lock/lockdev/ directory was dropped from
+          tmpfiles.d/legacy.conf. Better locking mechanisms like flock() have
+          been available for many years. If you still need this, you need to
+          create your own tmpfiles.d config file with:
+
+                  d /run/lock/lockdev 0775 root lock -
+
+        Contributions from: Abdo Roig-Maranges, Alban Crequy, Aleksander
+        Adamowski, Alexander Kuleshov, Andreas Pokorny, Andrei Borzenkov,
+        Andrew Wilcox, Arthur Clement, Beniamino Galvani, Casey Schaufler,
+        Chris Atkinson, Chris Mayo, Christian Hesse, Damjan Georgievski, Dan
+        Dedrick, Daniele Medri, Daniel J Walsh, Daniel Korostil, Daniel Mack,
+        David Herrmann, Dimitri John Ledkov, Dominik Hannen, Douglas Christman,
+        Evgeny Vereshchagin, Filipe Brandenburger, Franck Bui, Gabor Kelemen,
+        Harald Hoyer, Hayden Walles, Helmut Grohne, Henrik Kaare Poulsen,
+        Hristo Venev, Hui Wang, Indrajit Raychaudhuri, Ismo Puustinen, Jakub
+        Wilk, Jan Alexander Steffens (heftig), Jan Engelhardt, Jan Synacek,
+        Joost Bremmer, Jorgen Schaefer, Karel Zak, Klearchos Chaloulos,
+        lc85446, Lennart Poettering, Lukas Nykryn, Mantas Mikulėnas, Marcel
+        Holtmann, Martin Pitt, Michael Biebl, Michael Olbrich, Michael Scherer,
+        Michał Górny, Michal Sekletar, Nicolas Cornu, Nicolas Iooss, Nils
+        Carlson, nmartensen, nnz1024, Patrick Ohly, Peter Hutterer, Phillip Sz,
+        Ronny Chevalier, Samu Kallio, Shawn Landden, Stef Walter, Susant
+        Sahani, Sylvain Plantefève, Tadej Janež, Thomas Hindoe Paaboel
+        Andersen, Tom Gundersen, Torstein Husebø, Umut Tezduyar Lindskog, Vito
+        Caputo, WaLyong Cho, Yu Watanabe, Zbigniew Jędrzejewski-Szmek
+
+        -- Berlin, 2016-02-11
+
 CHANGES WITH 228:
 
         * A number of properties previously only settable in unit
@@ -87,6 +306,14 @@ CHANGES WITH 228:
           added that allows importing select environment variables
           from PID1's environment block into the environment block of
           the service.
+
+        * Timer units gained support for a new RemainAfterElapse=
+          setting which takes a boolean argument. It defaults on on,
+          exposing behaviour unchanged to previous releases. If set to
+          off, timer units are unloaded after they elapsed if they
+          cannot elapse again. This is particularly useful for
+          transient timer units, which shall not stay around longer
+          than until they first elapse.
 
         * systemd will now bump the net.unix.max_dgram_qlen to 512 by
           default now (the kernel default is 16). This is beneficial
