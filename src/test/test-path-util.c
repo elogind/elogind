@@ -104,6 +104,38 @@ static void test_path(void) {
         assert_se(!path_equal_ptr(NULL, "/a"));
 }
 
+static void test_path_equal_root(void) {
+        /* Nail down the details of how path_equal("/", ...) works. */
+
+        assert_se(path_equal("/", "/"));
+        assert_se(path_equal("/", "//"));
+
+        assert_se(!path_equal("/", "/./"));
+        assert_se(!path_equal("/", "/../"));
+
+        assert_se(!path_equal("/", "/.../"));
+
+        /* Make sure that files_same works as expected. */
+
+        assert_se(files_same("/", "/") > 0);
+        assert_se(files_same("/", "//") > 0);
+
+        assert_se(files_same("/", "/./") > 0);
+        assert_se(files_same("/", "/../") > 0);
+
+        assert_se(files_same("/", "/.../") == -ENOENT);
+
+        /* The same for path_equal_or_files_same. */
+
+        assert_se(path_equal_or_files_same("/", "/"));
+        assert_se(path_equal_or_files_same("/", "//"));
+
+        assert_se(path_equal_or_files_same("/", "/./"));
+        assert_se(path_equal_or_files_same("/", "/../"));
+
+        assert_se(!path_equal_or_files_same("/", "/.../"));
+}
+
 static void test_find_binary(const char *self) {
         char *p;
 
@@ -555,6 +587,7 @@ int main(int argc, char **argv) {
         log_open();
 
         test_path();
+        test_path_equal_root();
         test_find_binary(argv[0]);
         test_prefixes();
         test_path_join();
