@@ -59,7 +59,7 @@ SET_ARCH(IA32, i*86*)
 SET_ARCH(MIPS, mips*)
 SET_ARCH(AARCH64, aarch64*)
 
-# i18n stuff for the PolicyKit policy files, heck whether intltool can be found, disable NLS otherwise
+# i18n stuff for the PolicyKit policy files, check whether intltool can be found, disable NLS otherwise
 AC_CHECK_PROG(intltool_found, [intltool-merge], [yes], [no])
 AS_IF([test x"$intltool_found" != xyes],
       [AS_IF([test x"$enable_nls" = xyes],
@@ -216,12 +216,25 @@ AS_CASE([$CC], [*clang*],
                -Wno-gnu-variable-sized-type-not-at-end \
         ])])
 
-AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
-        [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
-               -flto])],
-        [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
-AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
+# ------------------------------------------------------------------------------
+# On some distributions -flto, even if available, leads to linking errors.
+# We therefore make it optional
+have_lto=no
+AC_ARG_ENABLE([lto],
+        [AS_HELP_STRING([--disable-lto], [Disable link time optimization (default: test)])])
+
+AS_IF([test "x$enable_lto" != "xno"], [
+        AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
+                [have_lto=yes],
+                [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
+        AS_IF([test "$have_lto" != "no"],
+                [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [-flto])]
+        )
+        AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
+])
+
+# ------------------------------------------------------------------------------
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
         [CC_CHECK_FLAGS_APPEND([with_cppflags], [CPPFLAGS], [\
                -Wp,-D_FORTIFY_SOURCE=2])],
@@ -745,6 +758,7 @@ AC_MSG_RESULT([
         man pages:               ${have_manpages}
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
+        Link time optimization:  ${have_lto}
         extra debugging:         ${enable_debug}
         cgroup controller:       ${with_cgroupctrl}
 
