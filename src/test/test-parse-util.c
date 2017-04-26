@@ -530,6 +530,19 @@ static void test_parse_nice(void) {
 }
 #endif // 0
 
+static void test_parse_dev(void) {
+        dev_t dev;
+
+        assert_se(parse_dev("0", &dev) == -EINVAL);
+        assert_se(parse_dev("5", &dev) == -EINVAL);
+        assert_se(parse_dev("5:", &dev) == -EINVAL);
+        assert_se(parse_dev(":5", &dev) == -EINVAL);
+#if SIZEOF_DEV_T < 8
+        assert_se(parse_dev("4294967295:4294967295", &dev) == -EINVAL);
+#endif
+        assert_se(parse_dev("8:11", &dev) >= 0 && major(dev) == 8 && minor(dev) == 11);
+}
+
 int main(int argc, char *argv[]) {
         log_parse_environment();
         log_open();
@@ -550,6 +563,7 @@ int main(int argc, char *argv[]) {
 #if 0 /// UNNEEDED by elogind
         test_parse_nice();
 #endif // 0
+        test_parse_dev();
 
         return 0;
 }
