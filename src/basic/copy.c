@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,8 +17,18 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+//#include <dirent.h>
+//#include <errno.h>
+//#include <fcntl.h>
+//#include <stddef.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
 #include <sys/sendfile.h>
+//#include <sys/stat.h>
 #include <sys/xattr.h>
+//#include <time.h>
+//#include <unistd.h>
 
 //#include "alloc-util.h"
 //#include "btrfs-util.h"
@@ -31,10 +39,11 @@
 //#include "fileio.h"
 //#include "fs-util.h"
 #include "io-util.h"
+//#include "macro.h"
 //#include "string-util.h"
 #include "strv.h"
+#include "time-util.h"
 //#include "umask-util.h"
-#include "util.h"
 //#include "xattr-util.h"
 
 #define COPY_BUFFER_SIZE (16*1024)
@@ -64,7 +73,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
                 if (max_bytes != (uint64_t) -1) {
 
                         if (max_bytes <= 0)
-                                return -EFBIG;
+                                return 1; /* return > 0 if we hit the max_bytes limit */
 
                         if ((uint64_t) m > max_bytes)
                                 m = (size_t) max_bytes;

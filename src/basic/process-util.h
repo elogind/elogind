@@ -19,12 +19,13 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdbool.h>
-#include <sys/types.h>
 #include <alloca.h>
+#include <signal.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <signal.h>
+#include <sys/types.h>
 
 #include "formats-util.h"
 #include "macro.h"
@@ -75,7 +76,9 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value);
 
 bool pid_is_alive(pid_t pid);
 bool pid_is_unwaited(pid_t pid);
+#if 0 /// UNNEEDED by elogind
 int pid_from_same_root_fs(pid_t pid);
+#endif // 0
 
 bool is_main_thread(void);
 

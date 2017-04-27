@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -20,9 +18,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <sys/stat.h>
+
 #include "fileio-label.h"
+//#include "fileio.h"
 #include "selinux-util.h"
-#include "util.h"
 
 int write_string_file_atomic_label(const char *fn, const char *line) {
         int r;

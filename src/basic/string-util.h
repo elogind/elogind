@@ -19,7 +19,9 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <alloca.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 
 #include "macro.h"

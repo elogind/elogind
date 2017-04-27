@@ -27,7 +27,7 @@
 
 #include "alloc-util.h"
 #include "bus-label.h"
-#include "glob-util.h"
+//#include "glob-util.h"
 #include "hexdecoct.h"
 #include "macro.h"
 #include "path-util.h"

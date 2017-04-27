@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,11 +17,19 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <inttypes.h>
+#include <locale.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <xlocale.h>
+
 #include "alloc-util.h"
 //#include "extract-word.h"
+#include "macro.h"
 #include "parse-util.h"
 #include "string-util.h"
-#include "util.h"
 
 int parse_boolean(const char *v) {
         assert(v);

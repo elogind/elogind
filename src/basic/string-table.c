@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -20,6 +18,7 @@
 ***/
 
 #include "string-table.h"
+#include "string-util.h"
 
 ssize_t string_table_lookup(const char * const *table, size_t len, const char *key) {
         size_t i;

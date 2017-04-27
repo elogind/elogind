@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,14 +17,19 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <ctype.h>
+#include <bits/local_lim.h>
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/utsname.h>
+#include <unistd.h>
 
 //#include "fd-util.h"
 #include "fileio.h"
 #include "hostname-util.h"
+//#include "macro.h"
 #include "string-util.h"
-#include "util.h"
 
 #if 0 /// UNNEEDED by elogind
 bool hostname_is_set(void) {

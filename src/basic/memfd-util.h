@@ -19,8 +19,10 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/types.h>
 #include <inttypes.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <sys/types.h>
 
 int memfd_new(const char *name);
 #if 0 /// UNNEEDED by elogind

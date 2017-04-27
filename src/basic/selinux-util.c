@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -55,7 +53,7 @@ static struct selabel_handle *label_hnd = NULL;
 #define log_enforcing(...) log_full(security_getenforce() == 1 ? LOG_ERR : LOG_DEBUG, __VA_ARGS__)
 #endif
 
-bool mac_selinux_use(void) {
+bool mac_selinux_have(void) {
 #ifdef HAVE_SELINUX
         if (cached_use < 0)
                 cached_use = is_selinux_enabled() > 0;
@@ -64,6 +62,16 @@ bool mac_selinux_use(void) {
 #else
         return false;
 #endif
+}
+
+bool mac_selinux_use(void) {
+        if (!mac_selinux_have())
+                return false;
+
+        /* Never try to configure SELinux features if we aren't
+         * root */
+
+        return getuid() == 0;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -210,7 +218,7 @@ int mac_selinux_get_create_label_from_exe(const char *exe, char **label) {
         assert(exe);
         assert(label);
 
-        if (!mac_selinux_use())
+        if (!mac_selinux_have())
                 return -EOPNOTSUPP;
 
         r = getcon_raw(&mycon);
@@ -236,7 +244,7 @@ int mac_selinux_get_our_label(char **label) {
         assert(label);
 
 #ifdef HAVE_SELINUX
-        if (!mac_selinux_use())
+        if (!mac_selinux_have())
                 return -EOPNOTSUPP;
 
         r = getcon_raw(label);
@@ -260,7 +268,7 @@ int mac_selinux_get_child_mls_label(int socket_fd, const char *exe, const char *
         assert(exe);
         assert(label);
 
-        if (!mac_selinux_use())
+        if (!mac_selinux_have())
                 return -EOPNOTSUPP;
 
         r = getcon_raw(&mycon);
@@ -315,7 +323,7 @@ char* mac_selinux_free(char *label) {
         if (!label)
                 return NULL;
 
-        if (!mac_selinux_use())
+        if (!mac_selinux_have())
                 return NULL;
 
 

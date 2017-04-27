@@ -21,6 +21,7 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <sys/types.h>
 
 #if 0 /// UNNEEDED by elogind

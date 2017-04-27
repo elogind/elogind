@@ -19,9 +19,12 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <netinet/ether.h>
+#include <netinet/in.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <sys/un.h>
 #include <linux/netlink.h>
 #include <linux/if_packet.h>
@@ -102,8 +105,8 @@ bool socket_ipv6_is_supported(void);
 #if 0 /// UNNEEDED by elogind
 int sockaddr_port(const struct sockaddr *_sa) _pure_;
 
-Sint sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
-int getpeername_pretty(int fd, char **ret);
+int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
+int getpeername_pretty(int fd, bool include_port, char **ret);
 int getsockname_pretty(int fd, char **ret);
 
 int socknameinfo_pretty(union sockaddr_union *sa, socklen_t salen, char **_ret);
@@ -121,6 +124,7 @@ bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b
 int fd_inc_sndbuf(int fd, size_t n);
 int fd_inc_rcvbuf(int fd, size_t n);
 #if 0 /// UNNEEDED by elogind
+
 int ip_tos_to_string_alloc(int i, char **s);
 int ip_tos_from_string(const char *s);
 #endif // 0
@@ -128,7 +132,11 @@ int ip_tos_from_string(const char *s);
 int getpeercred(int fd, struct ucred *ucred);
 int getpeersec(int fd, char **ret);
 
-int send_one_fd(int transport_fd, int fd, int flags);
+int send_one_fd_sa(int transport_fd,
+                   int fd,
+                   const struct sockaddr *sa, socklen_t len,
+                   int flags);
+#define send_one_fd(transport_fd, fd, flags) send_one_fd_sa(transport_fd, fd, NULL, 0, flags)
 #if 0 /// UNNEEDED by elogind
 int receive_one_fd(int transport_fd, int flags);
 #endif // 0

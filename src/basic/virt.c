@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -20,6 +18,8 @@
 ***/
 
 #include <errno.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -27,11 +27,11 @@
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "fileio.h"
+#include "macro.h"
 #include "process-util.h"
 #include "stat-util.h"
 #include "string-table.h"
 #include "string-util.h"
-#include "util.h"
 #include "virt.h"
 
 #if 0 /// UNNEEDED by elogind

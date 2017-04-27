@@ -17,19 +17,25 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
+#include <linux/oom.h>
 #include <sched.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/personality.h>
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <syslog.h>
 #include <unistd.h>
+#ifdef HAVE_VALGRIND_VALGRIND_H
+#include <valgrind/valgrind.h>
+#endif
 
 #include "alloc-util.h"
 #include "escape.h"
@@ -38,8 +44,11 @@
 #include "fs-util.h"
 //#include "ioprio.h"
 #include "log.h"
+#include "macro.h"
+#include "missing.h"
 #include "process-util.h"
 #include "signal-util.h"
+//#include "stat-util.h"
 #include "string-table.h"
 #include "string-util.h"
 #include "user-util.h"
@@ -637,6 +646,19 @@ bool pid_is_alive(pid_t pid) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
+int pid_from_same_root_fs(pid_t pid) {
+        const char *root;
+
+        if (pid < 0)
+                return 0;
+
+        root = procfs_file_alloca(pid, "root");
+
+        return files_same(root, "/proc/1/root");
+}
+#endif // 0
+
 bool is_main_thread(void) {
         static thread_local int cached = 0;
 
@@ -732,6 +754,23 @@ const char* personality_to_string(unsigned long p) {
 #endif
 
         return NULL;
+}
+
+void valgrind_summary_hack(void) {
+#ifdef HAVE_VALGRIND_VALGRIND_H
+        if (getpid() == 1 && RUNNING_ON_VALGRIND) {
+                pid_t pid;
+                pid = raw_clone(SIGCHLD, NULL);
+                if (pid < 0)
+                        log_emergency_errno(errno, "Failed to fork off valgrind helper: %m");
+                else if (pid == 0)
+                        exit(EXIT_SUCCESS);
+                else {
+                        log_info("Spawned valgrind helper as PID "PID_FMT".", pid);
+                        (void) wait_for_terminate(pid, NULL);
+                }
+        }
+#endif
 }
 
 static const char *const ioprio_class_table[] = {

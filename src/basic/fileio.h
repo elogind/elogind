@@ -49,9 +49,11 @@ int load_env_file(FILE *f, const char *fname, const char *separator, char ***l);
 int load_env_file_pairs(FILE *f, const char *fname, const char *separator, char ***l);
 
 int write_env_file(const char *fname, char **l);
+
 #if 0 /// UNNEEDED by elogind
 int executable_is_script(const char *path, char **interpreter);
 #endif // 0
+
 int get_proc_field(const char *filename, const char *pattern, const char *terminator, char **field);
 
 DIR *xopendirat(int dirfd, const char *name, int flags);
@@ -84,4 +86,6 @@ int tempfn_random_child(const char *p, const char *extra, char **ret);
 
 int write_timestamp_file_atomic(const char *fn, usec_t n);
 int read_timestamp_file(const char *fn, usec_t *ret);
+
+int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space);
 #endif // 0

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,9 +17,16 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <getopt.h>
+#include <stdbool.h>
+#include <stddef.h>
+
+#include "log.h"
+#include "macro.h"
 #include "string-util.h"
-#include "util.h"
 #include "verbs.h"
+#include "virt.h"
 
 int dispatch_verb(int argc, char *argv[], const Verb verbs[], void *userdata) {
         const Verb *verb;
@@ -76,6 +81,11 @@ int dispatch_verb(int argc, char *argv[], const Verb verbs[], void *userdata) {
             (unsigned) left > verb->max_args) {
                 log_error("Too many arguments.");
                 return -EINVAL;
+        }
+
+        if ((verb->flags & VERB_NOCHROOT) && running_in_chroot() > 0) {
+                log_info("Running in chroot, ignoring request.");
+                return 0;
         }
 
         if (name)

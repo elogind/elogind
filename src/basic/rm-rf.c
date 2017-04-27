@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,14 +17,24 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <sys/stat.h>
+#include <sys/statfs.h>
+#include <unistd.h>
+
 //#include "btrfs-util.h"
 #include "fd-util.h"
+#include "log.h"
+#include "macro.h"
 #include "mount-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
 #include "stat-util.h"
 #include "string-util.h"
-#include "util.h"
 
 int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
         _cleanup_closedir_ DIR *d = NULL;
@@ -125,7 +133,7 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
 
                                 /* This could be a subvolume, try to remove it */
 
-                                r =  btrfs_subvol_remove_fd(fd, de->d_name, BTRFS_REMOVE_RECURSIVE|BTRFS_REMOVE_QUOTA);;
+                                r = btrfs_subvol_remove_fd(fd, de->d_name, BTRFS_REMOVE_RECURSIVE|BTRFS_REMOVE_QUOTA);
                                 if (r < 0) {
                                         if (r != -ENOTTY && r != -EINVAL) {
                                                 if (ret == 0)
