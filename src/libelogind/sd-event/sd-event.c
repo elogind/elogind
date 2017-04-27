@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -466,7 +464,9 @@ fail:
 }
 
 _public_ sd_event* sd_event_ref(sd_event *e) {
-        assert_return(e, NULL);
+
+        if (!e)
+                return NULL;
 
         assert(e->n_ref >= 1);
         e->n_ref++;
@@ -665,8 +665,10 @@ static int event_make_signal_data(
                 d->priority = priority;
 
                 r = hashmap_put(e->signal_data, &d->priority, d);
-        if (r < 0)
+                if (r < 0) {
+                        free(d);
                         return r;
+                }
 
                 added = true;
         }
@@ -1367,7 +1369,9 @@ _public_ int sd_event_add_exit(
 
 #if 0 /// UNNEEDED by elogind
 _public_ sd_event_source* sd_event_source_ref(sd_event_source *s) {
-        assert_return(s, NULL);
+
+        if (!s)
+                return NULL;
 
         assert(s->n_ref >= 1);
         s->n_ref++;
