@@ -410,9 +410,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-device.h" />
-		<Unit filename="../src/login/logind-gperf.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/login/logind-inhibit.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -36,6 +34,7 @@
 #include "fd-util.h"
 #include "formats-util.h"
 #include "logind.h"
+#include "selinux-util.h"
 #include "signal-util.h"
 #include "strv.h"
 #include "udev-util.h"
@@ -1247,6 +1246,12 @@ int main(int argc, char *argv[]) {
         if (argc != 1) {
                 log_error("This program takes no arguments.");
                 r = -EINVAL;
+                goto finish;
+        }
+
+        r = mac_selinux_init("/run");
+        if (r < 0) {
+                log_error_errno(r, "Could not initialize labelling: %m");
                 goto finish;
         }
 

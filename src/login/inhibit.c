@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -52,7 +50,7 @@ static enum {
 } arg_action = ACTION_INHIBIT;
 
 static int inhibit(sd_bus *bus, sd_bus_error *error) {
-        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         int r;
         int fd;
 
@@ -80,7 +78,7 @@ static int inhibit(sd_bus *bus, sd_bus_error *error) {
 }
 
 static int print_inhibitors(sd_bus *bus, sd_bus_error *error) {
-        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         const char *what, *who, *why, *mode;
         unsigned int uid, pid;
         unsigned n = 0;
@@ -226,8 +224,8 @@ static int parse_argv(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
-        _cleanup_bus_flush_close_unref_ sd_bus *bus = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         int r;
 
         elogind_set_program_name(argv[0]);

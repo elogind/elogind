@@ -521,7 +521,7 @@ static int session_start_scope(Session *s) {
         assert(s->user);
 
         if (!s->scope) {
-                _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
                 char *scope, *job = NULL;
                 const char *description;
 
@@ -646,7 +646,7 @@ int session_start(Session *s) {
 
 #if 0 /// UNNEEDED by elogind
 static int session_stop_scope(Session *s, bool force) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         char *job = NULL;
         int r;
 
@@ -677,7 +677,7 @@ static int session_stop_scope(Session *s, bool force) {
 #endif // 0
 
 static int session_stop_cgroup(Session *s, bool force) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(s);

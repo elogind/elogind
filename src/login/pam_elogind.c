@@ -272,15 +272,15 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 if (asprintf(&rt, "/run/user/"UID_FMT, pw->pw_uid) < 0)
                         return PAM_BUF_ERR;
 
-                        r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", rt, 0);
-                        if (r != PAM_SUCCESS) {
-                                pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
-                                return r;
-                        }
+                r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", rt, 0);
+                if (r != PAM_SUCCESS) {
+                        pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
+                        return r;
+                }
 
-                        r = export_legacy_dbus_address(handle, pw->pw_uid, rt);
-                        if (r != PAM_SUCCESS)
-                                return r;
+                r = export_legacy_dbus_address(handle, pw->pw_uid, rt);
+                if (r != PAM_SUCCESS)
+                        return r;
 
                 return PAM_SUCCESS;
         }
