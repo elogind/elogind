@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #ifndef foosddaemonhfoo
 #define foosddaemonhfoo
 
@@ -22,8 +20,8 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/types.h>
 #include <inttypes.h>
+#include <sys/types.h>
 
 #include "_sd-common.h"
 
