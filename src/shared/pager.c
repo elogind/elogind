@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,7 +17,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <fcntl.h>
+#include <errno.h>
+#include <signal.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/prctl.h>
@@ -28,13 +30,13 @@
 #include "copy.h"
 #include "fd-util.h"
 #include "locale-util.h"
+#include "log.h"
 #include "macro.h"
 #include "pager.h"
 #include "process-util.h"
 #include "signal-util.h"
 #include "string-util.h"
 #include "terminal-util.h"
-#include "util.h"
 
 static pid_t pager_pid = 0;
 
