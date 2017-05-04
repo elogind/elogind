@@ -21,21 +21,21 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/socket.h>
 #include <pthread.h>
-
-#include "hashmap.h"
-#include "prioq.h"
-#include "list.h"
-#include "util.h"
-#include "refcnt.h"
-#include "socket-util.h"
+#include <sys/socket.h>
 
 #include "sd-bus.h"
+
 #include "bus-error.h"
-#include "bus-match.h"
 #include "bus-kernel.h"
+#include "bus-match.h"
+#include "hashmap.h"
 #include "kdbus.h"
+#include "list.h"
+#include "prioq.h"
+#include "refcnt.h"
+#include "socket-util.h"
+#include "util.h"
 
 struct reply_callback {
         sd_bus_message_handler_t callback;
@@ -344,7 +344,9 @@ struct sd_bus {
 
 bool interface_name_is_valid(const char *p) _pure_;
 bool service_name_is_valid(const char *p) _pure_;
-// UNNEEDED char* service_name_startswith(const char *a, const char *b);
+#if 0 /// UNNEEDED by elogind
+char* service_name_startswith(const char *a, const char *b);
+#endif // 0
 bool member_name_is_valid(const char *p) _pure_;
 bool object_path_is_valid(const char *p) _pure_;
 char *object_path_startswith(const char *a, const char *b) _pure_;
@@ -384,11 +386,15 @@ char *bus_address_escape(const char *v);
         _cleanup_bus_unref_ _unused_ sd_bus *_dont_destroy_##bus = sd_bus_ref(bus)
 
 int bus_set_address_system(sd_bus *bus);
-// UNNEEDED int bus_set_address_user(sd_bus *bus);
+#if 0 /// UNNEEDED by elogind
+int bus_set_address_user(sd_bus *bus);
+#endif // 0
 int bus_set_address_system_remote(sd_bus *b, const char *host);
 int bus_set_address_system_machine(sd_bus *b, const char *machine);
 
-// UNNEEDED int bus_remove_match_by_string(sd_bus *bus, const char *match, sd_bus_message_handler_t callback, void *userdata);
+#if 0 /// UNNEEDED by elogind
+int bus_remove_match_by_string(sd_bus *bus, const char *match, sd_bus_message_handler_t callback, void *userdata);
+#endif // 0
 
 int bus_get_root_path(sd_bus *bus);
 

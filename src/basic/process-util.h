@@ -27,6 +27,7 @@
 #include <signal.h>
 
 #include "formats-util.h"
+#include "macro.h"
 
 #define procfs_file_alloca(pid, field)                                  \
         ({                                                              \
@@ -45,21 +46,64 @@ int get_process_state(pid_t pid);
 int get_process_comm(pid_t pid, char **name);
 int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char **line);
 int get_process_exe(pid_t pid, char **name);
-// UNNEEDED int get_process_uid(pid_t pid, uid_t *uid);
-// UNNEEDED int get_process_gid(pid_t pid, gid_t *gid);
-// UNNEEDED int get_process_capeff(pid_t pid, char **capeff);
-// UNNEEDED int get_process_cwd(pid_t pid, char **cwd);
-// UNNEEDED int get_process_root(pid_t pid, char **root);
-// UNNEEDED int get_process_environ(pid_t pid, char **environ);
+
+#if 0 /// UNNEEDED by elogind
+int get_process_uid(pid_t pid, uid_t *uid);
+int get_process_gid(pid_t pid, gid_t *gid);
+int get_process_capeff(pid_t pid, char **capeff);
+int get_process_cwd(pid_t pid, char **cwd);
+int get_process_root(pid_t pid, char **root);
+int get_process_environ(pid_t pid, char **environ);
+int get_process_ppid(pid_t pid, pid_t *ppid);
+#endif // 0
 
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_code);
 
-// UNNEEDED int kill_and_sigcont(pid_t pid, int sig);
-// UNNEEDED pid_t get_parent_of_pid(pid_t pid, pid_t *ppid);
-// UNNEEDED void rename_process(const char name[8]);
+void sigkill_wait(pid_t *pid);
+#define _cleanup_sigkill_wait_ _cleanup_(sigkill_wait)
+
+#if 0 /// UNNEEDED by elogind
+int kill_and_sigcont(pid_t pid, int sig);
+
+void rename_process(const char name[8]);
+#endif // 0
+
 int is_kernel_thread(pid_t pid);
+
 int getenv_for_pid(pid_t pid, const char *field, char **_value);
 
 bool pid_is_alive(pid_t pid);
 bool pid_is_unwaited(pid_t pid);
+
+bool is_main_thread(void);
+
+#if 0 /// UNNEEDED by elogind
+noreturn void freeze(void);
+
+bool oom_score_adjust_is_valid(int oa);
+#endif // 0
+
+#ifndef PERSONALITY_INVALID
+/* personality(7) documents that 0xffffffffUL is used for querying the
+ * current personality, hence let's use that here as error
+ * indicator. */
+#define PERSONALITY_INVALID 0xffffffffLU
+#endif
+
+#if 0 /// UNNEEDED by elogind
+unsigned long personality_from_string(const char *p);
+const char *personality_to_string(unsigned long);
+
+int ioprio_class_to_string_alloc(int i, char **s);
+int ioprio_class_from_string(const char *s);
+
+const char *sigchld_code_to_string(int i) _const_;
+int sigchld_code_from_string(const char *s) _pure_;
+
+int sched_policy_to_string_alloc(int i, char **s);
+int sched_policy_from_string(const char *s);
+#endif // 0
+
+#define PTR_TO_PID(p) ((pid_t) ((uintptr_t) p))
+#define PID_TO_PTR(p) ((void*) ((uintptr_t) p))

@@ -30,11 +30,13 @@
 #include "macro.h"
 
 int acl_find_uid(acl_t acl, uid_t uid, acl_entry_t *entry);
-// UNNEEDED int calc_acl_mask_if_needed(acl_t *acl_p);
-// UNNEEDED int add_base_acls_if_needed(acl_t *acl_p, const char *path);
-// UNNEEDED int acl_search_groups(const char* path, char ***ret_groups);
-// UNNEEDED int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask);
-// UNNEEDED int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *acl);
+#if 0 /// UNNEEDED by elogind
+int calc_acl_mask_if_needed(acl_t *acl_p);
+int add_base_acls_if_needed(acl_t *acl_p, const char *path);
+int acl_search_groups(const char* path, char ***ret_groups);
+int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask);
+int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *acl);
+#endif // 0
 
 /* acl_free takes multiple argument types.
  * Multiple cleanup functions are necessary. */

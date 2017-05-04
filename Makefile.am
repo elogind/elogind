@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=12
+LIBELOGIND_CURRENT=13
 LIBELOGIND_REVISION=0
-LIBELOGIND_AGE=12
+LIBELOGIND_AGE=13
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -297,22 +297,59 @@ libbasic_la_SOURCES = \
 	src/basic/missing.h \
 	src/basic/musl_missing.h \
 	src/basic/musl_missing.c \
-	src/basic/capability.c \
-	src/basic/capability.h \
+	src/basic/capability-util.c \
+	src/basic/capability-util.h \
 	src/basic/conf-files.c \
 	src/basic/conf-files.h \
+	src/basic/stdio-util.h \
 	src/basic/hostname-util.h \
 	src/basic/hostname-util.c \
 	src/basic/unit-name.c \
 	src/basic/unit-name.h \
+	src/basic/unaligned.h \
 	src/basic/util.c \
 	src/basic/util.h \
+	src/basic/io-util.c \
+	src/basic/io-util.h \
+	src/basic/string-util.c \
+	src/basic/string-util.h \
+	src/basic/parse-util.c \
+	src/basic/parse-util.h \
+	src/basic/fd-util.c \
+	src/basic/fd-util.h \
+	src/basic/user-util.c \
+	src/basic/user-util.h \
+	src/basic/dirent-util.c \
+	src/basic/dirent-util.h \
+	src/basic/xattr-util.c \
+	src/basic/xattr-util.h \
+	src/basic/proc-cmdline.c \
+	src/basic/proc-cmdline.h \
+	src/basic/fs-util.c \
+	src/basic/fs-util.h \
+	src/basic/syslog-util.c \
+	src/basic/syslog-util.h \
+	src/basic/stat-util.c \
+	src/basic/stat-util.h \
+	src/basic/mount-util.c \
+	src/basic/mount-util.h \
+	src/basic/hexdecoct.c \
+	src/basic/hexdecoct.h \
+	src/basic/extract-word.c \
+	src/basic/extract-word.h \
+	src/basic/escape.c \
+	src/basic/escape.h \
 	src/basic/path-util.c \
 	src/basic/path-util.h \
 	src/basic/time-util.c \
 	src/basic/time-util.h \
+	src/basic/locale-util.c \
+	src/basic/locale-util.h \
+	src/basic/umask-util.h \
 	src/basic/signal-util.c \
 	src/basic/signal-util.h \
+	src/basic/string-table.c \
+	src/basic/string-table.h \
 	src/basic/mempool.c \
 	src/basic/mempool.h \
 	src/basic/hashmap.c \
@@ -335,6 +372,8 @@ libbasic_la_SOURCES = \
 	src/basic/utf8.h \
 	src/basic/gunicode.c \
 	src/basic/gunicode.h \
+	src/basic/socket-util.c \
+	src/basic/socket-util.h \
 	src/basic/fileio.c \
 	src/basic/fileio.h \
 	src/basic/mkdir.c \
@@ -347,8 +386,8 @@ libbasic_la_SOURCES = \
 	src/basic/terminal-util.h \
 	src/basic/login-util.h \
 	src/basic/login-util.c \
-	src/basic/audit.c \
-	src/basic/audit.h \
+	src/basic/audit-util.c \
+	src/basic/audit-util.h \
 	src/basic/memfd-util.c \
 	src/basic/memfd-util.h \
 	src/basic/process-util.c \
@@ -368,6 +407,8 @@ libbasic_la_SOURCES = \
 	src/basic/rm-rf.h \
 	src/basic/copy.c \
 	src/basic/copy.h \
+	src/basic/alloc-util.h \
+	src/basic/alloc-util.c \
 	src/basic/parse-printf-format.c \
 	src/basic/parse-printf-format.h
 
@@ -405,7 +446,6 @@ libshared_la_SOURCES = \
 	src/shared/spawn-polkit-agent.h \
 	src/shared/clean-ipc.c \
 	src/shared/clean-ipc.h \
-	src/shared/utmp-wtmp.h \
 	src/shared/bus-util.c \
 	src/shared/bus-util.h
 
@@ -619,7 +659,6 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-session-dbus.c \
 	src/login/logind-seat-dbus.c \
 	src/login/logind-user-dbus.c \
-	src/login/logind-utmp.c \
 	src/login/logind-acl.h \
 	src/core/cgroup.h \
 	src/core/cgroup.c \
@@ -957,7 +996,7 @@ git-tar:
 	 for f in `find elogind-$(VERSION)-raw/ -type f | cut -d '/' -f 2-` ; do \
 		$(MKDIR_P) elogind-$(VERSION)/`dirname $$f` ;            \
 		$(AWK) 'BEGIN                    { i=0;e=0      }        \
-		        /^#if\s+0\s*$$/          { i=1;next     }        \
+		        /^#if\s+0.*elogind.*$$/  { i=1;next     }        \
 		        /^#else\s*$$/            {                       \
 		            { if ( i==1 ) e=1; else print }{next}        \
 			}                                                \

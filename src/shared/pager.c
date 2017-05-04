@@ -21,17 +21,20 @@
 
 #include <fcntl.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <sys/prctl.h>
+#include <unistd.h>
 
-#include "pager.h"
-#include "util.h"
-#include "process-util.h"
-#include "macro.h"
-#include "terminal-util.h"
-#include "signal-util.h"
 #include "copy.h"
+#include "fd-util.h"
+#include "locale-util.h"
+#include "macro.h"
+#include "pager.h"
+#include "process-util.h"
+#include "signal-util.h"
+#include "string-util.h"
+#include "terminal-util.h"
+#include "util.h"
 
 static pid_t pager_pid = 0;
 
@@ -167,8 +170,7 @@ bool pager_have(void) {
         return pager_pid > 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int show_man_page(const char *desc, bool null_stdio) {
         const char *args[4] = { "man", NULL, NULL, NULL };
         char *e = NULL;

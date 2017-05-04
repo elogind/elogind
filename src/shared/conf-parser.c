@@ -19,21 +19,29 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <string.h>
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "sd-messages.h"
+
+#include "alloc-util.h"
 #include "conf-files.h"
-#include "util.h"
-#include "macro.h"
-#include "strv.h"
-#include "log.h"
-#include "utf8.h"
-#include "path-util.h"
-#include "signal-util.h"
 #include "conf-parser.h"
+#include "fd-util.h"
+#include "fs-util.h"
+#include "log.h"
+#include "macro.h"
+#include "parse-util.h"
+#include "path-util.h"
+#include "process-util.h"
+#include "signal-util.h"
+#include "string-util.h"
+#include "strv.h"
+#include "syslog-util.h"
+#include "utf8.h"
+#include "util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -451,7 +459,9 @@ DEFINE_PARSER(uint32, uint32_t, safe_atou32);
 DEFINE_PARSER(uint64, uint64_t, safe_atou64);
 DEFINE_PARSER(unsigned, unsigned, safe_atou);
 DEFINE_PARSER(double, double, safe_atod);
-// UNNEEDED DEFINE_PARSER(nsec, nsec_t, parse_nsec);
+#if 0 /// UNNEEDED by elogind
+DEFINE_PARSER(nsec, nsec_t, parse_nsec);
+#endif // 0
 DEFINE_PARSER(sec, usec_t, parse_sec);
 DEFINE_PARSER(mode, mode_t, parse_mode);
 
@@ -485,8 +495,7 @@ int config_parse_iec_size(const char* unit,
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_si_size(const char* unit,
                             const char *filename,
                             unsigned line,
@@ -573,8 +582,7 @@ int config_parse_bool(const char* unit,
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_tristate(
                 const char* unit,
                 const char *filename,
@@ -700,9 +708,6 @@ int config_parse_strv(const char *unit,
                       void *userdata) {
 
         char ***sv = data;
-        const char *word, *state;
-        size_t l;
-        int r;
 
         assert(filename);
         assert(lvalue);
@@ -725,31 +730,33 @@ int config_parse_strv(const char *unit,
                 return 0;
         }
 
-        FOREACH_WORD_QUOTED(word, l, rvalue, state) {
-                char *n;
-
-                n = strndup(word, l);
-                if (!n)
+        for (;;) {
+                char *word = NULL;
+                int r;
+                r = extract_first_word(&rvalue, &word, WHITESPACE, EXTRACT_QUOTES);
+                if (r == 0)
+                        break;
+                if (r == -ENOMEM)
                         return log_oom();
-
-                if (!utf8_is_valid(n)) {
-                        log_syntax_invalid_utf8(unit, LOG_ERR, filename, line, rvalue);
-                        free(n);
-                        continue;
+                if (r < 0) {
+                        log_syntax(unit, LOG_ERR, filename, line, r, "Invalid syntax, ignoring: %s", rvalue);
+                        break;
                 }
 
-                r = strv_consume(sv, n);
+                if (!utf8_is_valid(word)) {
+                        log_syntax_invalid_utf8(unit, LOG_ERR, filename, line, rvalue);
+                        free(word);
+                        continue;
+                }
+                r = strv_consume(sv, word);
                 if (r < 0)
                         return log_oom();
         }
-        if (!isempty(state))
-                log_syntax(unit, LOG_ERR, filename, line, 0, "Trailing garbage, ignoring.");
 
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_log_facility(
                 const char *unit,
                 const char *filename,
@@ -841,8 +848,7 @@ int config_parse_signal(
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int config_parse_personality(
                 const char *unit,
                 const char *filename,

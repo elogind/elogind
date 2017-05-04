@@ -19,26 +19,36 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdarg.h>
-#include <stdio.h>
 #include <errno.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <printf.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdio.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <stddef.h>
+#include <unistd.h>
 
-#include "parse-printf-format.h"
 #include "sd-messages.h"
-#include "log.h"
-#include "util.h"
-#include "missing.h"
-#include "macro.h"
-#include "socket-util.h"
+
+#include "alloc-util.h"
+#include "fd-util.h"
 #include "formats-util.h"
+#include "io-util.h"
+#include "log.h"
+#include "macro.h"
+#include "missing.h"
+#include "parse-util.h"
+#include "proc-cmdline.h"
 #include "process-util.h"
-#include "terminal-util.h"
 #include "signal-util.h"
+#include "socket-util.h"
+#include "stdio-util.h"
+#include "string-table.h"
+#include "string-util.h"
+#include "syslog-util.h"
+#include "terminal-util.h"
+#include "util.h"
 
 #define SNDBUF_SIZE (8*1024*1024)
 
@@ -178,8 +188,7 @@ fail:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_close_journal(void) {
         journal_fd = safe_close(journal_fd);
 }
@@ -235,8 +244,7 @@ int log_open(void) {
             getpid() == 1 ||
             isatty(STDERR_FILENO) <= 0) {
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_JOURNAL) {
@@ -283,8 +291,7 @@ void log_set_target(LogTarget target) {
         assert(target >= 0);
         assert(target < _LOG_TARGET_MAX);
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         if (upgrade_syslog_to_journal) {
                 if (target == LOG_TARGET_SYSLOG)
                         target = LOG_TARGET_JOURNAL;
@@ -303,8 +310,7 @@ void log_close(void) {
         log_close_console();
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_forget_fds(void) {
         console_fd = kmsg_fd = syslog_fd = journal_fd = -1;
 }
@@ -446,7 +452,7 @@ static int write_to_syslog(
 static int write_to_kmsg(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
@@ -475,8 +481,7 @@ static int write_to_kmsg(
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int log_do_header(
                 char *header,
                 size_t size,
@@ -519,7 +524,7 @@ static int log_do_header(
 static int write_to_journal(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
@@ -584,8 +589,7 @@ static int log_dispatch(
                 if ((e = strpbrk(buffer, NEWLINE)))
                         *(e++) = 0;
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_JOURNAL) {
@@ -657,7 +661,7 @@ int log_dump_internal(
 int log_internalv(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *format,
@@ -684,7 +688,7 @@ int log_internalv(
 int log_internal(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *format, ...) {
@@ -702,7 +706,7 @@ int log_internal(
 int log_object_internalv(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
@@ -746,7 +750,7 @@ int log_object_internalv(
 int log_object_internal(
                 int level,
                 int error,
-                const char*file,
+                const char *file,
                 int line,
                 const char *func,
                 const char *object_field,
@@ -830,8 +834,7 @@ int log_struct_internal(
         if ((level & LOG_FACMASK) == 0)
                 level = log_facility | LOG_PRI(level);
 
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         if ((log_target == LOG_TARGET_AUTO ||
              log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
              log_target == LOG_TARGET_JOURNAL) &&
@@ -1070,8 +1073,7 @@ static const char *const log_target_table[_LOG_TARGET_MAX] = {
         [LOG_TARGET_CONSOLE] = "console",
         [LOG_TARGET_CONSOLE_PREFIXED] = "console-prefixed",
         [LOG_TARGET_KMSG] = "kmsg",
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         [LOG_TARGET_JOURNAL] = "journal",
         [LOG_TARGET_JOURNAL_OR_KMSG] = "journal-or-kmsg",
 #endif // 0
@@ -1084,8 +1086,7 @@ static const char *const log_target_table[_LOG_TARGET_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(log_target, LogTarget);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void log_received_signal(int level, const struct signalfd_siginfo *si) {
         if (si->ssi_pid > 0) {
                 _cleanup_free_ char *p = NULL;

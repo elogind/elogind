@@ -21,13 +21,36 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdint.h>
+#include <fcntl.h>
+#include <mntent.h>
 #include <stdbool.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
-#define AUDIT_SESSION_INVALID ((uint32_t) -1)
+#include "missing.h"
 
-int audit_session_from_pid(pid_t pid, uint32_t *id);
-int audit_loginuid_from_pid(pid_t pid, uid_t *uid);
+int fd_is_mount_point(int fd, const char *filename, int flags);
+int path_is_mount_point(const char *path, int flags);
 
-// UNNEEDED bool use_audit(void);
+#if 0 /// UNNEEDED by elogind
+int repeat_unmount(const char *path, int flags);
+
+int umount_recursive(const char *target, int flags);
+int bind_remount_recursive(const char *prefix, bool ro);
+
+int mount_move_root(const char *path);
+#endif // 0
+
+DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, endmntent);
+#define _cleanup_endmntent_ _cleanup_(endmntentp)
+
+#if 0 /// UNNEEDED by elogind
+bool fstype_is_network(const char *fstype);
+#endif // 0
+
+union file_handle_union {
+        struct file_handle handle;
+        char padding[sizeof(struct file_handle) + MAX_HANDLE_SZ];
+};
+
+#define FILE_HANDLE_INIT { .handle.handle_bytes = MAX_HANDLE_SZ }

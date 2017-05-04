@@ -20,8 +20,8 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <unistd.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "label.h"
 #include "mkdir.h"
@@ -30,8 +30,7 @@ int mkdir_safe_label(const char *path, mode_t mode, uid_t uid, gid_t gid) {
         return mkdir_safe_internal(path, mode, uid, gid, mkdir_label);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int mkdir_parents_label(const char *path, mode_t mode) {
         return mkdir_parents_internal(NULL, path, mode, mkdir_label);
 }

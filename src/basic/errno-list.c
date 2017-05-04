@@ -22,15 +22,15 @@
 #include <string.h>
 
 #include "config.h"
-#include "util.h"
 #include "errno-list.h"
+#include "util.h"
 
 static const struct errno_name* lookup_errno(register const char *str,
                                              register GPERF_LEN_TYPE len);
 
 
-#include "errno-to-name.h"
 #include "errno-from-name.h"
+#include "errno-to-name.h"
 
 const char *errno_to_name(int id) {
 
@@ -55,8 +55,7 @@ int errno_from_name(const char *name) {
         return sc->id;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int errno_max(void) {
         return ELEMENTSOF(errno_names);
 }

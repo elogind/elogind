@@ -23,19 +23,20 @@
 
 /* Missing glibc definitions to access certain kernel APIs */
 
-#include <sys/resource.h>
-#include <sys/syscall.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
-#include <linux/oom.h>
-#include <linux/input.h>
-#include <linux/if_link.h>
-#include <linux/loop.h>
+#include <fcntl.h>
 #include <linux/audit.h>
 #include <linux/capability.h>
+#include <linux/if_link.h>
+#include <linux/input.h>
+#include <linux/loop.h>
 #include <linux/neighbour.h>
+#include <linux/oom.h>
+#include <linux/rtnetlink.h>
+#include <stdlib.h>
+#include <sys/resource.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 
 #include "musl_missing.h"
 
@@ -126,6 +127,10 @@
 
 #ifndef SOL_NETLINK
 #define SOL_NETLINK 270
+#endif
+
+#ifndef NETLINK_LIST_MEMBERSHIPS
+#define NETLINK_LIST_MEMBERSHIPS 9
 #endif
 
 #if !HAVE_DECL_PIVOT_ROOT
@@ -250,6 +255,11 @@ static inline int getrandom(void *buffer, size_t count, unsigned flags) {
 #define BTRFS_SEARCH_ARGS_BUFSIZE (4096 - sizeof(struct btrfs_ioctl_search_key))
 #endif
 
+#ifndef BTRFS_QGROUP_LEVEL_SHIFT
+#define BTRFS_QGROUP_LEVEL_SHIFT 48
+#endif
+
+#if 0 /// UNNEEDED by elogind (It can not support BTRFS at all)
 #ifndef HAVE_LINUX_BTRFS_H
 struct btrfs_ioctl_vol_args {
         int64_t fd;
@@ -488,6 +498,10 @@ struct btrfs_ioctl_quota_ctl_args {
 #define BTRFS_QGROUP_LIMIT_KEY 244
 #endif
 
+#ifndef BTRFS_QGROUP_RELATION_KEY
+#define BTRFS_QGROUP_RELATION_KEY 246
+#endif
+
 #ifndef BTRFS_ROOT_BACKREF_KEY
 #define BTRFS_ROOT_BACKREF_KEY 144
 #endif
@@ -495,6 +509,8 @@ struct btrfs_ioctl_quota_ctl_args {
 #ifndef BTRFS_SUPER_MAGIC
 #define BTRFS_SUPER_MAGIC 0x9123683E
 #endif
+
+#endif // 0
 
 #ifndef CGROUP_SUPER_MAGIC
 #define CGROUP_SUPER_MAGIC 0x27e0eb
@@ -890,6 +906,10 @@ static inline int setns(int fd, int nstype) {
 #define NDA_MAX (__NDA_MAX - 1)
 #endif
 
+#ifndef RTA_PREF
+#define RTA_PREF 20
+#endif
+
 #ifndef IPV6_UNICAST_IF
 #define IPV6_UNICAST_IF 76
 #endif
@@ -1009,7 +1029,10 @@ static inline pid_t raw_getpid(void) {
 #endif
 }
 
+#if 0 /// UNNEEDED by elogind
+
 #if !HAVE_DECL_RENAMEAT2
+
 
 #ifndef __NR_renameat2
 #  if defined __x86_64__
@@ -1110,3 +1133,4 @@ static inline key_serial_t request_key(const char *type, const char *description
 #ifndef KEY_SPEC_USER_KEYRING
 #define KEY_SPEC_USER_KEYRING -4
 #endif
+#endif // 0

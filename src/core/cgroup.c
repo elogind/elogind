@@ -22,17 +22,22 @@
 #include <fcntl.h>
 #include <fnmatch.h>
 
+#include "alloc-util.h"
 #include "cgroup-util.h"
+#include "cgroup.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "fs-util.h"
+#include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
 //#include "special.h"
-
-#include "cgroup.h"
+#include "string-table.h"
+#include "string-util.h"
 
 #define CGROUP_CPU_QUOTA_PERIOD_USEC ((usec_t) 100 * USEC_PER_MSEC)
 
-// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void cgroup_context_init(CGroupContext *c) {
         assert(c);
 
@@ -213,7 +218,7 @@ static int whitelist_device(const char *path, const char *node, const char *acc)
 
         r = cg_set_attribute("devices", path, "devices.allow", buf);
         if (r < 0)
-                log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EINVAL) ? LOG_DEBUG : LOG_WARNING, r,
+                log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EINVAL, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                "Failed to set devices.allow on %s: %m", path);
 
         return r;
@@ -284,7 +289,7 @@ static int whitelist_major(const char *path, const char *name, char type, const 
 
                 r = cg_set_attribute("devices", path, "devices.allow", buf);
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EINVAL) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EINVAL, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to set devices.allow on %s: %m", path);
         }
 
@@ -324,13 +329,13 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                         c->cpu_shares != CGROUP_CPU_SHARES_INVALID ? c->cpu_shares : CGROUP_CPU_SHARES_DEFAULT);
                 r = cg_set_attribute("cpu", path, "cpu.shares", buf);
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to set cpu.shares on %s: %m", path);
 
                 sprintf(buf, USEC_FMT "\n", CGROUP_CPU_QUOTA_PERIOD_USEC);
                 r = cg_set_attribute("cpu", path, "cpu.cfs_period_us", buf);
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to set cpu.cfs_period_us on %s: %m", path);
 
                 if (c->cpu_quota_per_sec_usec != USEC_INFINITY) {
@@ -339,7 +344,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                 } else
                         r = cg_set_attribute("cpu", path, "cpu.cfs_quota_us", "-1");
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to set cpu.cfs_quota_us on %s: %m", path);
         }
 
@@ -355,7 +360,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                                 c->blockio_weight != CGROUP_BLKIO_WEIGHT_INVALID ? c->blockio_weight : CGROUP_BLKIO_WEIGHT_DEFAULT);
                         r = cg_set_attribute("blkio", path, "blkio.weight", buf);
                         if (r < 0)
-                                log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                                log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                                "Failed to set blkio.weight on %s: %m", path);
 
                         /* FIXME: no way to reset this list */
@@ -369,7 +374,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                                 sprintf(buf, "%u:%u %" PRIu64 "\n", major(dev), minor(dev), w->weight);
                                 r = cg_set_attribute("blkio", path, "blkio.weight_device", buf);
                                 if (r < 0)
-                                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                                        "Failed to set blkio.weight_device on %s: %m", path);
                         }
                 }
@@ -388,7 +393,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                         sprintf(buf, "%u:%u %" PRIu64 "\n", major(dev), minor(dev), b->bandwidth);
                         r = cg_set_attribute("blkio", path, a, buf);
                         if (r < 0)
-                                log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                                log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                                "Failed to set %s on %s: %m", a, path);
                 }
         }
@@ -412,7 +417,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                 }
 
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to set memory.limit_in_bytes/memory.max on %s: %m", path);
         }
 
@@ -428,7 +433,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                 else
                         r = cg_set_attribute("devices", path, "devices.allow", "a");
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EINVAL) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EINVAL, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to reset devices.list on %s: %m", path);
 
                 if (c->device_policy == CGROUP_CLOSED ||
@@ -490,7 +495,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
                         r = cg_set_attribute("pids", path, "pids.max", "max");
 
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to set pids.max on %s: %m", path);
         }
 
@@ -501,7 +506,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, u
 
                 r = cg_set_attribute("net_cls", path, "net_cls.classid", buf);
                 if (r < 0)
-                        log_full_errno(IN_SET(r, -ENOENT, -EROFS) ? LOG_DEBUG : LOG_WARNING, r,
+                        log_full_errno(IN_SET(r, -ENOENT, -EROFS, -EACCES) ? LOG_DEBUG : LOG_WARNING, r,
                                        "Failed to set net_cls.classid on %s: %m", path);
         }
 }
@@ -1205,7 +1210,7 @@ int unit_search_main_pid(Unit *u, pid_t *ret) {
                         continue;
 
                 /* Ignore processes that aren't our kids */
-                if (get_parent_of_pid(npid, &ppid) >= 0 && ppid != mypid)
+                if (get_process_ppid(npid, &ppid) >= 0 && ppid != mypid)
                         continue;
 
                 if (pid != 0)
@@ -1370,8 +1375,7 @@ int manager_setup_cgroup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
 
-/// elogind does not support systemd scopes and slices
-#if 0
+#if 0 /// elogind does not support systemd scopes and slices
         /* Chop off the init scope, if we are already located in it */
         e = endswith(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
 
@@ -1418,8 +1422,7 @@ int manager_setup_cgroup(Manager *m) {
                         /* In the unified hierarchy we can can get
                          * cgroup empty notifications via inotify. */
 
-/// elogind does not support the unified hierarchy, yet.
-#if 0
+#if 0 /// elogind does not support the unified hierarchy, yet.
                         m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
                         safe_close(m->cgroup_inotify_fd);
 
@@ -1457,8 +1460,7 @@ int manager_setup_cgroup(Manager *m) {
                                 log_debug("Release agent already installed.");
                 }
 
-/// elogind is not meant to run in systemd init scope
-#if 0
+#if 0 /// elogind is not meant to run in systemd init scope
                 /* 4. Make sure we are in the special "init.scope" unit in the root slice. */
                 scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
                 r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
@@ -1516,8 +1518,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         if (delete && m->cgroup_root)
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
-/// elogind does not support the unified hierarchy, yet.
-#if 0
+#if 0 /// elogind does not support the unified hierarchy, yet.
         m->cgroup_inotify_wd_unit = hashmap_free(m->cgroup_inotify_wd_unit);
 
         m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
@@ -1529,8 +1530,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         m->cgroup_root = mfree(m->cgroup_root);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 Unit* manager_get_unit_by_cgroup(Manager *m, const char *cgroup) {
         char *p;
         Unit *u;

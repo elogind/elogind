@@ -19,16 +19,18 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "strv.h"
-#include "set.h"
+#include "alloc-util.h"
 #include "bus-internal.h"
-#include "bus-message.h"
-#include "bus-type.h"
-#include "bus-signature.h"
 #include "bus-introspect.h"
-#include "bus-util.h"
-#include "bus-slot.h"
+#include "bus-message.h"
 #include "bus-objects.h"
+#include "bus-signature.h"
+#include "bus-slot.h"
+#include "bus-type.h"
+#include "bus-util.h"
+#include "set.h"
+#include "string-util.h"
+#include "strv.h"
 
 static int node_vtable_get_userdata(
                 sd_bus *bus,
@@ -2363,8 +2365,7 @@ _public_ int sd_bus_emit_object_added(sd_bus *bus, const char *path) {
         return sd_bus_send(bus, m, NULL);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int object_removed_append_all_prefix(
                 sd_bus *bus,
                 sd_bus_message *m,
@@ -2773,8 +2774,7 @@ _public_ int sd_bus_emit_interfaces_removed(sd_bus *bus, const char *path, const
         return sd_bus_emit_interfaces_removed_strv(bus, path, interfaces);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_add_object_manager(sd_bus *bus, sd_bus_slot **slot, const char *path) {
         sd_bus_slot *s;
         struct node *n;

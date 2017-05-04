@@ -55,6 +55,7 @@ typedef enum CGroupMask {
         _CGROUP_MASK_ALL = CGROUP_CONTROLLER_TO_MASK(_CGROUP_CONTROLLER_MAX) - 1
 } CGroupMask;
 
+#if 0 /// UNNEEDED by elogind
 /* Special values for the cpu.shares attribute */
 #define CGROUP_CPU_SHARES_INVALID ((uint64_t) -1)
 #define CGROUP_CPU_SHARES_MIN UINT64_C(2)
@@ -78,6 +79,7 @@ static inline bool CGROUP_BLKIO_WEIGHT_IS_OK(uint64_t x) {
             x == CGROUP_BLKIO_WEIGHT_INVALID ||
             (x >= CGROUP_BLKIO_WEIGHT_MIN && x <= CGROUP_BLKIO_WEIGHT_MAX);
 }
+#endif // 0
 
 /*
  * General rules:
@@ -125,11 +127,12 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid);
 int cg_create_and_attach(const char *controller, const char *path, pid_t pid);
 
 int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value);
-// UNNEEDED int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret);
+#if 0 /// UNNEEDED by elogind
+int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret);
 
-// UNNEEDED int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
-// UNNEEDED int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
-
+int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
+int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
+#endif // 0
 int cg_install_release_agent(const char *controller, const char *agent);
 int cg_uninstall_release_agent(const char *controller);
 
@@ -139,54 +142,59 @@ int cg_is_empty_recursive(const char *controller, const char *path);
 int cg_get_root_path(char **path);
 
 int cg_path_get_session(const char *path, char **session);
-// UNNEEDED int cg_path_get_owner_uid(const char *path, uid_t *uid);
-// UNNEEDED int cg_path_get_unit(const char *path, char **unit);
-// UNNEEDED int cg_path_get_user_unit(const char *path, char **unit);
-// UNNEEDED int cg_path_get_machine_name(const char *path, char **machine);
-// UNNEEDED int cg_path_get_slice(const char *path, char **slice);
-// UNNEEDED int cg_path_get_user_slice(const char *path, char **slice);
-
+#if 0 /// UNNEEDED by elogind
+int cg_path_get_owner_uid(const char *path, uid_t *uid);
+int cg_path_get_unit(const char *path, char **unit);
+int cg_path_get_user_unit(const char *path, char **unit);
+int cg_path_get_machine_name(const char *path, char **machine);
+int cg_path_get_slice(const char *path, char **slice);
+int cg_path_get_user_slice(const char *path, char **slice);
+#endif // 0
 int cg_shift_path(const char *cgroup, const char *cached_root, const char **shifted);
 int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
 int cg_pid_get_session(pid_t pid, char **session);
-// UNNEEDED int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
-// UNNEEDED int cg_pid_get_unit(pid_t pid, char **unit);
-// UNNEEDED int cg_pid_get_user_unit(pid_t pid, char **unit);
-// UNNEEDED int cg_pid_get_machine_name(pid_t pid, char **machine);
-// UNNEEDED int cg_pid_get_slice(pid_t pid, char **slice);
-// UNNEEDED int cg_pid_get_user_slice(pid_t pid, char **slice);
+#if 0 /// UNNEEDED by elogind
+int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
+int cg_pid_get_unit(pid_t pid, char **unit);
+int cg_pid_get_user_unit(pid_t pid, char **unit);
+int cg_pid_get_machine_name(pid_t pid, char **machine);
+int cg_pid_get_slice(pid_t pid, char **slice);
+int cg_pid_get_user_slice(pid_t pid, char **slice);
 
-// UNNEEDED int cg_path_decode_unit(const char *cgroup, char **unit);
-
+int cg_path_decode_unit(const char *cgroup, char **unit);
+#endif // 0
 char *cg_escape(const char *p);
 char *cg_unescape(const char *p) _pure_;
 
 bool cg_controller_is_valid(const char *p);
-
-// UNNEEDED int cg_slice_to_path(const char *unit, char **ret);
+#if 0 /// UNNEEDED by elogind
+int cg_slice_to_path(const char *unit, char **ret);
 
 typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
-// UNNEEDED int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path);
-// UNNEEDED int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t callback, void *userdata);
-// UNNEEDED int cg_attach_many_everywhere(CGroupMask supported, const char *path, Set* pids, cg_migrate_callback_t callback, void *userdata);
-// UNNEEDED int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to, cg_migrate_callback_t callback, void *userdata);
-// UNNEEDED int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
-// UNNEEDED int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p);
-
+int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path);
+int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t callback, void *userdata);
+int cg_attach_many_everywhere(CGroupMask supported, const char *path, Set* pids, cg_migrate_callback_t callback, void *userdata);
+int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to, cg_migrate_callback_t callback, void *userdata);
+int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
+int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p);
+#endif // 0
 int cg_mask_supported(CGroupMask *ret);
-
-// UNNEEDED int cg_kernel_controllers(Set *controllers);
-
+#if 0 /// UNNEEDED by elogind
+int cg_kernel_controllers(Set *controllers);
+#endif // 0
 int cg_unified(void);
-// UNNEEDED void cg_unified_flush(void);
+#if 0 /// UNNEEDED by elogind
+void cg_unified_flush(void);
 
-// UNNEEDED bool cg_is_unified_wanted(void);
+bool cg_is_unified_wanted(void);
+#endif // 0
 bool cg_is_legacy_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
-
-// UNNEEDED int cg_cpu_shares_parse(const char *s, uint64_t *ret);
-// UNNEEDED int cg_blkio_weight_parse(const char *s, uint64_t *ret);
+#if 0 /// UNNEEDED by elogind
+int cg_cpu_shares_parse(const char *s, uint64_t *ret);
+int cg_blkio_weight_parse(const char *s, uint64_t *ret);
+#endif // 0

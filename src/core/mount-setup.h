@@ -23,10 +23,14 @@
 
 #include <stdbool.h>
 
-// UNNEEDED int mount_setup_early(void);
+#if 0 /// UNNEEDED by elogind
+int mount_setup_early(void);
+#endif // 0
 int mount_setup(bool loaded_policy);
 
-// UNNEEDED int mount_cgroup_controllers(char ***join_controllers);
+#if 0 /// UNNEEDED by elogind
+int mount_cgroup_controllers(char ***join_controllers);
 
-// UNNEEDED bool mount_point_is_api(const char *path);
-// UNNEEDED bool mount_point_ignore(const char *path);
+bool mount_point_is_api(const char *path);
+bool mount_point_ignore(const char *path);
+#endif // 0

@@ -19,8 +19,10 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "macro.h"
 #include "login-util.h"
+#include "macro.h"
+
+/// Additional includes needed by elogind
 #include "musl_missing.h"
 
 static void test_session_id_valid(void) {

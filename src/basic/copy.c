@@ -22,10 +22,20 @@
 #include <sys/sendfile.h>
 #include <sys/xattr.h>
 
-#include "util.h"
-// #include "btrfs-util.h"
-#include "strv.h"
+//#include "alloc-util.h"
+//#include "btrfs-util.h"
+//#include "chattr-util.h"
 #include "copy.h"
+//#include "dirent-util.h"
+//#include "fd-util.h"
+//#include "fileio.h"
+//#include "fs-util.h"
+#include "io-util.h"
+//#include "string-util.h"
+#include "strv.h"
+//#include "umask-util.h"
+#include "util.h"
+//#include "xattr-util.h"
 
 #define COPY_BUFFER_SIZE (16*1024)
 
@@ -35,7 +45,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
 
         assert(fdf >= 0);
         assert(fdt >= 0);
-#if 0
+#if 0 /// UNNEEDED by elogind
         /* Try btrfs reflinks first. */
         if (try_reflink &&
             max_bytes == (uint64_t) -1 &&
@@ -118,8 +128,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
         return 0; /* return 0 if we hit EOF earlier than the size limit */
 }
 
-// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int fd_copy_symlink(int df, const char *from, const struct stat *st, int dt, const char *to) {
         _cleanup_free_ char *target = NULL;
         int r;

@@ -19,10 +19,10 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include "label.h"
 #include "selinux-util.h"
 #include "smack-util.h"
 #include "util.h"
-#include "label.h"
 
 int label_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
         int r, q;
@@ -58,8 +58,7 @@ int mkdir_label(const char *path, mode_t mode) {
         return mac_smack_fix(path, false, false);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int symlink_label(const char *old_path, const char *new_path) {
         int r;
 

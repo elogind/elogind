@@ -22,24 +22,33 @@
 ***/
 
 #include <stdbool.h>
-#include <sys/capability.h>
+#include <stdio.h>
+#include <sys/types.h>
 
-#include "util.h"
+#include "macro.h"
 
-unsigned long cap_last_cap(void);
-// UNNEEDED int have_effective_cap(int value);
-// UNNEEDED int capability_bounding_set_drop(uint64_t drop, bool right_now);
-// UNNEEDED int capability_bounding_set_drop_usermode(uint64_t drop);
+char octchar(int x) _const_;
+int unoctchar(char c) _const_;
 
-// UNNEEDED int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities);
+char decchar(int x) _const_;
+int undecchar(char c) _const_;
 
-// UNNEEDED int drop_capability(cap_value_t cv);
+char hexchar(int x) _const_;
+int unhexchar(char c) _const_;
 
-DEFINE_TRIVIAL_CLEANUP_FUNC(cap_t, cap_free);
-#define _cleanup_cap_free_ _cleanup_(cap_freep)
+char *hexmem(const void *p, size_t l);
+int unhexmem(const char *p, size_t l, void **mem, size_t *len);
 
-static inline void cap_free_charpp(char **p) {
-        if (*p)
-                cap_free(*p);
-}
-#define _cleanup_cap_free_charp_ _cleanup_(cap_free_charpp)
+char base32hexchar(int x) _const_;
+int unbase32hexchar(char c) _const_;
+
+char base64char(int x) _const_;
+int unbase64char(char c) _const_;
+
+char *base32hexmem(const void *p, size_t l, bool padding);
+int unbase32hexmem(const char *p, size_t l, bool padding, void **mem, size_t *len);
+
+char *base64mem(const void *p, size_t l);
+int unbase64mem(const char *p, size_t l, void **mem, size_t *len);
+
+void hexdump(FILE *f, const void *p, size_t s);

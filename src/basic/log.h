@@ -21,22 +21,22 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdbool.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <syslog.h>
-#include <sys/signalfd.h>
 #include <errno.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <sys/signalfd.h>
+#include <syslog.h>
 
 #include "sd-id128.h"
+
 #include "macro.h"
 
 typedef enum LogTarget{
         LOG_TARGET_CONSOLE,
         LOG_TARGET_CONSOLE_PREFIXED,
         LOG_TARGET_KMSG,
-/// elogind does not support logging to systemd-journald
-#if 0
+#if 0 /// elogind does not support logging to systemd-journald
         LOG_TARGET_JOURNAL,
         LOG_TARGET_JOURNAL_OR_KMSG,
 #endif // 0
@@ -69,10 +69,13 @@ int log_get_max_level(void) _pure_;
 
 int log_open(void);
 void log_close(void);
-// UNNEEDED void log_forget_fds(void);
-
+#if 0 /// UNNEEDED by elogind
+void log_forget_fds(void);
+#endif // 0
 void log_close_syslog(void);
-// UNNEEDED void log_close_journal(void);
+#if 0 /// UNNEEDED by elogind
+void log_close_journal(void);
+#endif // 0
 void log_close_kmsg(void);
 void log_close_console(void);
 
@@ -214,9 +217,11 @@ LogTarget log_target_from_string(const char *s) _pure_;
 #define LOG_MESSAGE(fmt, ...) "MESSAGE=" fmt, ##__VA_ARGS__
 #define LOG_MESSAGE_ID(x) "MESSAGE_ID=" SD_ID128_FORMAT_STR, SD_ID128_FORMAT_VAL(x)
 
-// UNNEEDED void log_received_signal(int level, const struct signalfd_siginfo *si);
+#if 0 /// UNNEEDED by elogind
+void log_received_signal(int level, const struct signalfd_siginfo *si);
 
-// UNNEEDED void log_set_upgrade_syslog_to_journal(bool b);
+void log_set_upgrade_syslog_to_journal(bool b);
+#endif // 0
 
 int log_syntax_internal(
                 const char *unit,

@@ -60,7 +60,9 @@ int seat_switch_to_next(Seat *s);
 int seat_switch_to_previous(Seat *s);
 int seat_active_vt_changed(Seat *s, unsigned int vtnr);
 int seat_read_active_vt(Seat *s);
-// UNNEEDED int seat_preallocate_vts(Seat *s);
+#if 0 /// UNNEEDED by elogind
+int seat_preallocate_vts(Seat *s);
+#endif // 0
 
 int seat_attach_session(Seat *s, Session *session);
 void seat_complete_switch(Seat *s);

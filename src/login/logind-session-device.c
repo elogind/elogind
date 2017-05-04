@@ -20,16 +20,19 @@
 ***/
 
 #include <fcntl.h>
-#include <libudev.h>
 #include <linux/input.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
-#include "util.h"
-#include "missing.h"
+#include "libudev.h"
+
+#include "alloc-util.h"
 #include "bus-util.h"
+#include "fd-util.h"
 #include "logind-session-device.h"
+#include "missing.h"
+#include "util.h"
 
 enum SessionDeviceNotifications {
         SESSION_DEVICE_RESUME,

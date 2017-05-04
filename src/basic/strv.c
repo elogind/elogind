@@ -19,13 +19,16 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
 #include <errno.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "util.h"
+#include "alloc-util.h"
+#include "escape.h"
+#include "string-util.h"
 #include "strv.h"
+#include "util.h"
 
 char *strv_find(char **l, const char *name) {
         char **i;
@@ -84,6 +87,15 @@ char **strv_free(char **l) {
         strv_clear(l);
         free(l);
         return NULL;
+}
+
+char **strv_free_erase(char **l) {
+        char **i;
+
+        STRV_FOREACH(i, l)
+                string_erase(*i);
+
+        return strv_free(l);
 }
 
 char **strv_copy(char * const *l) {
@@ -188,6 +200,7 @@ char **strv_new(const char *x, ...) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_extend_strv(char ***a, char **b, bool filter_duplicates) {
         char **s, **t;
         size_t p, q, i = 0, j;
@@ -232,8 +245,6 @@ rollback:
         return -ENOMEM;
 }
 
-/// UNNEEDED by elogind
-#if 0
 int strv_extend_strv_concat(char ***a, char **b, const char *suffix) {
         int r;
         char **s;
@@ -287,8 +298,7 @@ char **strv_split(const char *s, const char *separator) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char **strv_split_newlines(const char *s) {
         char **l;
         unsigned n;
@@ -385,8 +395,7 @@ char *strv_join(char **l, const char *separator) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *strv_join_quoted(char **l) {
         char *buf = NULL;
         char **s;
@@ -518,8 +527,7 @@ int strv_consume(char ***l, char *value) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int strv_consume_pair(char ***l, char *a, char *b) {
         int r;
 
@@ -568,8 +576,7 @@ char **strv_uniq(char **l) {
         return l;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool strv_is_uniq(char **l) {
         char **i;
 
@@ -664,6 +671,7 @@ char **strv_split_nulstr(const char *s) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_make_nulstr(char **l, char **p, size_t *q) {
         size_t n_allocated = 0, n = 0;
         _cleanup_free_ char *m = NULL;
@@ -699,8 +707,6 @@ int strv_make_nulstr(char **l, char **p, size_t *q) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
 bool strv_overlap(char **a, char **b) {
         char **i;
 
@@ -710,6 +716,7 @@ bool strv_overlap(char **a, char **b) {
 
         return false;
 }
+#endif // 0
 
 static int str_compare(const void *_a, const void *_b) {
         const char **a = (const char**) _a, **b = (const char**) _b;
@@ -726,6 +733,7 @@ char **strv_sort(char **l) {
         return l;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool strv_equal(char **a, char **b) {
 
         if (strv_isempty(a))
@@ -800,7 +808,6 @@ char **strv_shell_escape(char **l, const char *bad) {
 
         return l;
 }
-#endif // 0
 
 bool strv_fnmatch(char* const* patterns, const char *s, int flags) {
         char* const* p;
@@ -874,3 +881,4 @@ rollback:
         nl[k] = NULL;
         return -ENOMEM;
 }
+#endif // 0

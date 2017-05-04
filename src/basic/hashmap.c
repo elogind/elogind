@@ -20,18 +20,20 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdlib.h>
 #include <errno.h>
 #include <pthread.h>
+#include <stdlib.h>
 
-#include "util.h"
+#include "alloc-util.h"
 #include "hashmap.h"
-#include "set.h"
 #include "macro.h"
+#include "mempool.h"
+#include "process-util.h"
+#include "random-util.h"
+#include "set.h"
 #include "siphash24.h"
 #include "strv.h"
-#include "mempool.h"
-#include "random-util.h"
+#include "util.h"
 
 #ifdef ENABLE_DEBUG_HASHMAP
 #include "list.h"
@@ -378,7 +380,7 @@ static unsigned base_bucket_hash(HashmapBase *h, const void *p) {
 
         h->hash_ops->hash(p, &state);
 
-        siphash24_finalize((uint8_t*)&hash, &state);
+        hash = siphash24_finalize(&state);
 
         return (unsigned) (hash % n_buckets(h));
 }
@@ -1456,8 +1458,7 @@ int hashmap_remove_and_put(Hashmap *h, const void *old_key, const void *new_key,
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int set_remove_and_put(Set *s, const void *old_key, const void *new_key) {
         struct swap_entries swap;
         struct hashmap_base_entry *e;
@@ -1804,8 +1805,7 @@ char **internal_hashmap_get_strv(HashmapBase *h) {
         return sv;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void *ordered_hashmap_next(OrderedHashmap *h, const void *key) {
         struct ordered_hashmap_entry *e;
         unsigned hash, idx;
@@ -1853,8 +1853,7 @@ int set_put_strdup(Set *s, const char *p) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int set_put_strdupv(Set *s, char **l) {
         int n = 0, r;
         char **i;

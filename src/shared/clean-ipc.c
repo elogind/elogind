@@ -19,19 +19,23 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/sem.h>
-#include <sys/msg.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <dirent.h>
-//#include <mqueue.h>
+#include <fcntl.h>
+#include <mqueue.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/sem.h>
+#include <sys/shm.h>
+#include <sys/stat.h>
 
-#include "util.h"
-#include "formats-util.h"
-#include "strv.h"
 #include "clean-ipc.h"
+#include "dirent-util.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "formats-util.h"
+#include "string-util.h"
+#include "strv.h"
+#include "util.h"
 
 static int clean_sysvipc_shm(uid_t delete_uid) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -44,8 +48,7 @@ static int clean_sysvipc_shm(uid_t delete_uid) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_warning_errno(errno, "Failed to open /proc/sysvipc/shm: %m");
-                return -errno;
+                return log_warning_errno(errno, "Failed to open /proc/sysvipc/shm: %m");
         }
 
         FOREACH_LINE(line, f, goto fail) {
@@ -87,8 +90,7 @@ static int clean_sysvipc_shm(uid_t delete_uid) {
         return ret;
 
 fail:
-        log_warning_errno(errno, "Failed to read /proc/sysvipc/shm: %m");
-        return -errno;
+        return log_warning_errno(errno, "Failed to read /proc/sysvipc/shm: %m");
 }
 
 static int clean_sysvipc_sem(uid_t delete_uid) {
@@ -102,8 +104,7 @@ static int clean_sysvipc_sem(uid_t delete_uid) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_warning_errno(errno, "Failed to open /proc/sysvipc/sem: %m");
-                return -errno;
+                return log_warning_errno(errno, "Failed to open /proc/sysvipc/sem: %m");
         }
 
         FOREACH_LINE(line, f, goto fail) {
@@ -140,8 +141,7 @@ static int clean_sysvipc_sem(uid_t delete_uid) {
         return ret;
 
 fail:
-        log_warning_errno(errno, "Failed to read /proc/sysvipc/sem: %m");
-        return -errno;
+        return log_warning_errno(errno, "Failed to read /proc/sysvipc/sem: %m");
 }
 
 static int clean_sysvipc_msg(uid_t delete_uid) {
@@ -155,8 +155,7 @@ static int clean_sysvipc_msg(uid_t delete_uid) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_warning_errno(errno, "Failed to open /proc/sysvipc/msg: %m");
-                return -errno;
+                return log_warning_errno(errno, "Failed to open /proc/sysvipc/msg: %m");
         }
 
         FOREACH_LINE(line, f, goto fail) {
@@ -194,8 +193,7 @@ static int clean_sysvipc_msg(uid_t delete_uid) {
         return ret;
 
 fail:
-        log_warning_errno(errno, "Failed to read /proc/sysvipc/msg: %m");
-        return -errno;
+        return log_warning_errno(errno, "Failed to read /proc/sysvipc/msg: %m");
 }
 
 static int clean_posix_shm_internal(DIR *dir, uid_t uid) {
@@ -273,15 +271,13 @@ static int clean_posix_shm(uid_t uid) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_warning_errno(errno, "Failed to open /dev/shm: %m");
-                return -errno;
+                return log_warning_errno(errno, "Failed to open /dev/shm: %m");
         }
 
         return clean_posix_shm_internal(dir, uid);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int clean_posix_mq(uid_t uid) {
         _cleanup_closedir_ DIR *dir = NULL;
         struct dirent *de;
@@ -292,8 +288,7 @@ static int clean_posix_mq(uid_t uid) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_warning_errno(errno, "Failed to open /dev/mqueue: %m");
-                return -errno;
+                return log_warning_errno(errno, "Failed to open /dev/mqueue: %m");
         }
 
         FOREACH_DIRENT(de, dir, goto fail) {
@@ -332,8 +327,7 @@ static int clean_posix_mq(uid_t uid) {
         return ret;
 
 fail:
-        log_warning_errno(errno, "Failed to read /dev/mqueue: %m");
-        return -errno;
+        return log_warning_errno(errno, "Failed to read /dev/mqueue: %m");
 }
 #endif // 0
 
@@ -360,8 +354,8 @@ int clean_ipc(uid_t uid) {
         if (r < 0)
                 ret = r;
 
-/// elogind does not use mq_open anywhere
-#if 0
+
+#if 0 /// elogind does not use mq_open anywhere
         r = clean_posix_mq(uid);
         if (r < 0)
                 ret = r;

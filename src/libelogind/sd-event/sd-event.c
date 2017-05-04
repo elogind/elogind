@@ -23,19 +23,23 @@
 #include <sys/timerfd.h>
 #include <sys/wait.h>
 
-#include "sd-id128.h"
 #include "sd-daemon.h"
-#include "macro.h"
-#include "prioq.h"
-#include "hashmap.h"
-#include "util.h"
-#include "time-util.h"
-#include "missing.h"
-#include "set.h"
-#include "list.h"
-#include "signal-util.h"
-
 #include "sd-event.h"
+#include "sd-id128.h"
+
+#include "alloc-util.h"
+#include "fd-util.h"
+#include "hashmap.h"
+#include "list.h"
+#include "macro.h"
+#include "missing.h"
+#include "prioq.h"
+#include "process-util.h"
+#include "set.h"
+#include "signal-util.h"
+#include "string-util.h"
+#include "time-util.h"
+#include "util.h"
 
 #define DEFAULT_ACCURACY_USEC (250 * USEC_PER_MSEC)
 
@@ -513,8 +517,7 @@ static int source_io_register(
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static clockid_t event_source_type_to_clock(EventSourceType t) {
 
         switch (t) {
@@ -808,7 +811,7 @@ static void source_disconnect(sd_event_source *s) {
                                 s->event->n_enabled_child_sources--;
                         }
 
-                        (void) hashmap_remove(s->event->child_sources, INT_TO_PTR(s->child.pid));
+                        (void) hashmap_remove(s->event->child_sources, PID_TO_PTR(s->child.pid));
                         event_gc_signal_data(s->event, &s->priority, SIGCHLD);
                 }
 
@@ -1126,8 +1129,8 @@ _public_ int sd_event_add_signal(
                 callback = signal_exit_callback;
 
         r = pthread_sigmask(SIG_SETMASK, NULL, &ss);
-        if (r < 0)
-                return -errno;
+        if (r != 0)
+                return -r;
 
         if (!sigismember(&ss, sig))
                 return -EBUSY;
@@ -1165,8 +1168,7 @@ _public_ int sd_event_add_signal(
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_add_child(
                 sd_event *e,
                 sd_event_source **ret,
@@ -1190,7 +1192,7 @@ _public_ int sd_event_add_child(
         if (r < 0)
                 return r;
 
-        if (hashmap_contains(e->child_sources, INT_TO_PTR(pid)))
+        if (hashmap_contains(e->child_sources, PID_TO_PTR(pid)))
                 return -EBUSY;
 
         s = source_new(e, !ret, SOURCE_CHILD);
@@ -1203,7 +1205,7 @@ _public_ int sd_event_add_child(
         s->userdata = userdata;
         s->enabled = SD_EVENT_ONESHOT;
 
-        r = hashmap_put(e->child_sources, INT_TO_PTR(pid), s);
+        r = hashmap_put(e->child_sources, PID_TO_PTR(pid), s);
         if (r < 0) {
                 source_free(s);
                 return r;
@@ -1340,8 +1342,7 @@ _public_ int sd_event_add_exit(
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ sd_event_source* sd_event_source_ref(sd_event_source *s) {
         assert_return(s, NULL);
 
@@ -1388,8 +1389,7 @@ _public_ int sd_event_source_set_description(sd_event_source *s, const char *des
         return free_and_strdup(&s->description, description);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_source_get_description(sd_event_source *s, const char **description) {
         assert_return(s, -EINVAL);
         assert_return(description, -EINVAL);
@@ -1407,8 +1407,7 @@ _public_ sd_event *sd_event_source_get_event(sd_event_source *s) {
         return s->event;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_source_get_pending(sd_event_source *s) {
         assert_return(s, -EINVAL);
         assert_return(s->type != SOURCE_EXIT, -EDOM);
@@ -1463,8 +1462,7 @@ _public_ int sd_event_source_set_io_fd(sd_event_source *s, int fd) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_source_get_io_events(sd_event_source *s, uint32_t* events) {
         assert_return(s, -EINVAL);
         assert_return(events, -EINVAL);
@@ -1501,8 +1499,7 @@ _public_ int sd_event_source_set_io_events(sd_event_source *s, uint32_t events) 
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_source_get_io_revents(sd_event_source *s, uint32_t* revents) {
         assert_return(s, -EINVAL);
         assert_return(revents, -EINVAL);
@@ -1572,8 +1569,7 @@ _public_ int sd_event_source_set_priority(sd_event_source *s, int64_t priority) 
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_source_get_enabled(sd_event_source *s, int *m) {
         assert_return(s, -EINVAL);
         assert_return(m, -EINVAL);
@@ -1769,8 +1765,7 @@ _public_ int sd_event_source_set_time(sd_event_source *s, uint64_t usec) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_source_get_time_accuracy(sd_event_source *s, uint64_t *usec) {
         assert_return(s, -EINVAL);
         assert_return(usec, -EINVAL);
@@ -1859,8 +1854,7 @@ _public_ int sd_event_source_set_prepare(sd_event_source *s, sd_event_handler_t 
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ void* sd_event_source_get_userdata(sd_event_source *s) {
         assert_return(s, NULL);
 
@@ -2662,8 +2656,7 @@ _public_ int sd_event_run(sd_event *e, uint64_t timeout) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_loop(sd_event *e) {
         int r;
 
@@ -2702,8 +2695,7 @@ _public_ int sd_event_get_state(sd_event *e) {
         return e->state;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_get_exit_code(sd_event *e, int *code) {
         assert_return(e, -EINVAL);
         assert_return(code, -EINVAL);
@@ -2728,8 +2720,7 @@ _public_ int sd_event_exit(sd_event *e, int code) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
         assert_return(e, -EINVAL);
         assert_return(usec, -EINVAL);
@@ -2789,8 +2780,7 @@ _public_ int sd_event_default(sd_event **ret) {
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_get_tid(sd_event *e, pid_t *tid) {
         assert_return(e, -EINVAL);
         assert_return(tid, -EINVAL);
@@ -2857,8 +2847,7 @@ fail:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_get_watchdog(sd_event *e) {
         assert_return(e, -EINVAL);
         assert_return(!event_pid_changed(e), -ECHILD);

@@ -19,8 +19,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "bus-message.h"
+#include "alloc-util.h"
 #include "bus-internal.h"
+#include "bus-message.h"
+#include "hexdecoct.h"
+#include "string-util.h"
 
 bool object_path_is_valid(const char *p) {
         const char *q;
@@ -167,8 +170,7 @@ bool service_name_is_valid(const char *p) {
         return true;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* service_name_startswith(const char *a, const char *b) {
         const char *p;
 

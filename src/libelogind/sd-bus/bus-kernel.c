@@ -34,19 +34,23 @@
 #include <libgen.h>
 #undef basename
 
-#include "util.h"
-#include "strv.h"
-#include "memfd-util.h"
-#include "capability.h"
+#include "alloc-util.h"
+#include "bus-bloom.h"
+#include "bus-internal.h"
+#include "bus-kernel.h"
+#include "bus-label.h"
+#include "bus-message.h"
+#include "bus-util.h"
+#include "capability-util.h"
+#include "fd-util.h"
 #include "fileio.h"
 #include "formats-util.h"
-
-#include "bus-internal.h"
-#include "bus-message.h"
-#include "bus-kernel.h"
-#include "bus-bloom.h"
-#include "bus-util.h"
-#include "bus-label.h"
+#include "memfd-util.h"
+#include "parse-util.h"
+#include "string-util.h"
+#include "strv.h"
+#include "user-util.h"
+#include "util.h"
 
 #define UNIQUE_NAME_MAX (3+DECIMAL_STR_MAX(uint64_t))
 
@@ -1433,12 +1437,12 @@ int bus_kernel_pop_memfd(sd_bus *bus, void **address, size_t *mapped, size_t *al
         if (!bus || !bus->is_kernel)
                 return -EOPNOTSUPP;
 
-        assert_se(pthread_mutex_lock(&bus->memfd_cache_mutex) >= 0);
+        assert_se(pthread_mutex_lock(&bus->memfd_cache_mutex) == 0);
 
         if (bus->n_memfd_cache <= 0) {
                 int r;
 
-                assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) >= 0);
+                assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) == 0);
 
                 r = memfd_new(bus->description);
                 if (r < 0)
@@ -1460,7 +1464,7 @@ int bus_kernel_pop_memfd(sd_bus *bus, void **address, size_t *mapped, size_t *al
         *allocated = c->allocated;
         fd = c->fd;
 
-        assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) >= 0);
+        assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) == 0);
 
         return fd;
 }
@@ -1484,10 +1488,10 @@ void bus_kernel_push_memfd(sd_bus *bus, int fd, void *address, size_t mapped, si
                 return;
         }
 
-        assert_se(pthread_mutex_lock(&bus->memfd_cache_mutex) >= 0);
+        assert_se(pthread_mutex_lock(&bus->memfd_cache_mutex) == 0);
 
         if (bus->n_memfd_cache >= ELEMENTSOF(bus->memfd_cache)) {
-                assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) >= 0);
+                assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) == 0);
 
                 close_and_munmap(fd, address, mapped);
                 return;
@@ -1507,7 +1511,7 @@ void bus_kernel_push_memfd(sd_bus *bus, int fd, void *address, size_t mapped, si
                 c->allocated = allocated;
         }
 
-        assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) >= 0);
+        assert_se(pthread_mutex_unlock(&bus->memfd_cache_mutex) == 0);
 }
 
 void bus_kernel_flush_memfd(sd_bus *b) {
@@ -1580,8 +1584,7 @@ uint64_t attach_flags_to_kdbus(uint64_t mask) {
         return m;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_bus(const char *name, bool world, char **s) {
         struct kdbus_cmd *make;
         struct kdbus_item *n;
@@ -1691,8 +1694,7 @@ int bus_kernel_open_bus_fd(const char *bus, char **path) {
         return fd;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char **ep_path) {
         _cleanup_free_ char *path = NULL;
         struct kdbus_cmd *make;
@@ -1750,8 +1752,7 @@ int bus_kernel_try_close(sd_bus *bus) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_drop_one(int fd) {
         struct kdbus_cmd_recv recv = {
                 .size = sizeof(recv),

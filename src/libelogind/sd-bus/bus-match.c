@@ -19,10 +19,15 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include "alloc-util.h"
 #include "bus-internal.h"
-#include "bus-message.h"
 #include "bus-match.h"
+#include "bus-message.h"
 #include "bus-util.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "hexdecoct.h"
+#include "string-util.h"
 #include "strv.h"
 
 /* Example:
@@ -931,8 +936,7 @@ fail:
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char *bus_match_to_string(struct bus_match_component *components, unsigned n_components) {
         _cleanup_fclose_ FILE *f = NULL;
         char *buffer = NULL;

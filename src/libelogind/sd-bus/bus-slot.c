@@ -20,9 +20,12 @@
 ***/
 
 #include "sd-bus.h"
+
+#include "alloc-util.h"
 #include "bus-control.h"
 #include "bus-objects.h"
 #include "bus-slot.h"
+#include "string-util.h"
 
 sd_bus_slot *bus_slot_allocate(
                 sd_bus *bus,
@@ -214,8 +217,7 @@ _public_ sd_bus_slot* sd_bus_slot_unref(sd_bus_slot *slot) {
         return NULL;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 _public_ sd_bus* sd_bus_slot_get_bus(sd_bus_slot *slot) {
         assert_return(slot, NULL);
 

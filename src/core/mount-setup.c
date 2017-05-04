@@ -19,28 +19,32 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/mount.h>
 #include <errno.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <ftw.h>
+#include <stdlib.h>
+#include <sys/mount.h>
+#include <unistd.h>
 
-#include "mount-setup.h"
-//#include "dev-setup.h"
+#include "alloc-util.h"
 //#include "bus-util.h"
+#include "cgroup-util.h"
+//#include "dev-setup.h"
+//#include "efivars.h"
+#include "label.h"
 //#include "log.h"
 #include "macro.h"
-//#include "util.h"
-#include "label.h"
-//#include "set.h"
-//#include "strv.h"
-#include "mkdir.h"
-#include "path-util.h"
 //#include "missing.h"
-#include "virt.h"
-//#include "efivars.h"
+#include "mkdir.h"
+#include "mount-setup.h"
+#include "mount-util.h"
+#include "path-util.h"
+//#include "set.h"
 //#include "smack-util.h"
-#include "cgroup-util.h"
+//#include "strv.h"
+#include "string-util.h"
+#include "user-util.h"
+//#include "util.h"
+#include "virt.h"
 
 typedef enum MountMode {
         MNT_NONE  =        0,
@@ -69,8 +73,7 @@ typedef struct MountPoint {
 #endif
 
 static const MountPoint mount_table[] = {
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
         { "sysfs",       "/sys",                      "sysfs",      NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
         { "proc",        "/proc",                     "proc",       NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
@@ -100,8 +103,7 @@ static const MountPoint mount_table[] = {
 #endif // 0
         { "tmpfs",       "/sys/fs/cgroup",            "tmpfs",      "mode=755",                MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_STRICTATIME,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER           },
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
@@ -112,8 +114,7 @@ static const MountPoint mount_table[] = {
         { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
         { "pstore",      "/sys/fs/pstore",            "pstore",     NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE                   },
 #ifdef ENABLE_EFI
@@ -125,8 +126,7 @@ static const MountPoint mount_table[] = {
 #endif // 0
 };
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 /* These are API file systems that might be mounted by other software,
  * we just list them here so that we know that we should ignore them */
 
@@ -213,8 +213,7 @@ static int mount_one(const MountPoint *p, bool relabel) {
         return 1;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int mount_setup_early(void) {
         unsigned i;
         int r = 0;
@@ -378,8 +377,8 @@ int mount_setup(bool loaded_policy) {
         if (r < 0)
                 return r;
 
-/// elogind does not control /, /dev, /run and /run/systemd/* are setup elsewhere.
-#if 0
+
+#if 0 /// elogind does not control /, /dev, /run and /run/systemd/* are setup elsewhere.
 #if defined(HAVE_SELINUX) || defined(HAVE_SMACK)
         /* Nodes in devtmpfs and /run need to be manually updated for
          * the appropriate labels, after mounting. The other virtual

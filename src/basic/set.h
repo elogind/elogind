@@ -65,7 +65,9 @@ static inline void *set_remove(Set *s, const void *key) {
 
 /* no set_remove2 */
 /* no set_remove_value */
-// UNNEEDED int set_remove_and_put(Set *s, const void *old_key, const void *new_key);
+#if 0 /// UNNEEDED by elogind
+int set_remove_and_put(Set *s, const void *old_key, const void *new_key);
+#endif // 0
 /* no set_remove_and_replace */
 int set_merge(Set *s, Set *other);
 
@@ -124,7 +126,9 @@ static inline char **set_get_strv(Set *s) {
 
 int set_consume(Set *s, void *value);
 int set_put_strdup(Set *s, const char *p);
-// UNNEEDED int set_put_strdupv(Set *s, char **l);
+#if 0 /// UNNEEDED by elogind
+int set_put_strdupv(Set *s, char **l);
+#endif // 0
 
 #define SET_FOREACH(e, s, i) \
         for ((i) = ITERATOR_FIRST; set_iterate((s), &(i), (void**)&(e)); )

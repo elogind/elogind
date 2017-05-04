@@ -19,29 +19,42 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-// #include <sys/socket.h>
+#include <sys/socket.h>
 
-// #include "sd-daemon.h"
-// #include "sd-event.h"
-// #include "util.h"
-#include "strv.h"
-// #include "macro.h"
-// #include "def.h"
-// #include "path-util.h"
-// #include "missing.h"
-// #include "set.h"
-// #include "signal-util.h"
-#include "unit-name.h"
+#include "sd-bus.h"
+#include "sd-daemon.h"
+#include "sd-event.h"
 
-// #include "sd-bus.h"
-// #include "bus-error.h"
-// #include "bus-label.h"
+#include "alloc-util.h"
+#include "bus-error.h"
+#include "bus-internal.h"
+#include "bus-label.h"
 #include "bus-message.h"
 #include "bus-util.h"
-#include "bus-internal.h"
+#include "cgroup-util.h"
+#include "def.h"
+//#include "env-util.h"
+#include "escape.h"
+#include "fd-util.h"
+#include "macro.h"
+#include "missing.h"
+#include "parse-util.h"
+#include "path-util.h"
+#include "proc-cmdline.h"
+#include "process-util.h"
+//#include "rlimit-util.h"
+#include "set.h"
+#include "signal-util.h"
+#include "stdio-util.h"
+#include "string-util.h"
+#include "strv.h"
+#include "syslog-util.h"
+#include "unit-name.h"
+#include "user-util.h"
+#include "utf8.h"
+#include "util.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int name_owner_change_callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
         sd_event *e = userdata;
 
@@ -551,8 +564,7 @@ void bus_verify_polkit_async_registry_free(Hashmap *registry) {
 #endif
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c) {
         struct ucred ucred;
         socklen_t l;
@@ -1146,8 +1158,7 @@ int bus_message_map_all_properties(
         return sd_bus_message_exit_container(m);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_message_map_properties_changed(
                 sd_bus_message *m,
                 const struct bus_properties_map *map,
@@ -1229,8 +1240,7 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         switch (transport) {
 
         case BUS_TRANSPORT_LOCAL:
-/// elogind does not support a user bus
-#if 0
+#if 0 /// elogind does not support a user bus
                 if (user)
                         r = sd_bus_default_user(bus);
                 else
@@ -1254,8 +1264,7 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus) {
         int r;
 
@@ -1356,8 +1365,7 @@ int bus_log_parse_error(int r) {
         return log_error_errno(r, "Failed to parse bus message: %m");
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int bus_log_create_error(int r) {
         return log_error_errno(r, "Failed to create bus message: %m");
 }
@@ -1431,6 +1439,17 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                         return bus_log_create_error(r);
 
                 return 0;
+        } else if (streq(field, "EnvironmentFile")) {
+                r = sd_bus_message_append_basic(m, SD_BUS_TYPE_STRING, "EnvironmentFiles");
+                if (r < 0)
+                        return r;
+
+                r = sd_bus_message_append(m, "v", "a(sb)", 1,
+                                          eq[0] == '-' ? eq + 1 : eq,
+                                          eq[0] == '-');
+                if (r < 0)
+                        return r;
+                return 0;
         }
 
         r = sd_bus_message_append_basic(m, SD_BUS_TYPE_STRING, field);
@@ -1441,7 +1460,8 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                        "CPUAccounting", "MemoryAccounting", "BlockIOAccounting", "TasksAccounting",
                        "SendSIGHUP", "SendSIGKILL", "WakeSystem", "DefaultDependencies",
                        "IgnoreSIGPIPE", "TTYVHangup", "TTYReset", "RemainAfterExit",
-                       "PrivateTmp", "PrivateDevices", "PrivateNetwork", "NoNewPrivileges")) {
+                       "PrivateTmp", "PrivateDevices", "PrivateNetwork", "NoNewPrivileges",
+                       "SyslogLevelPrefix", "Delegate")) {
 
                 r = parse_boolean(eq);
                 if (r < 0) {
@@ -1508,10 +1528,33 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                               "UtmpIdentifier", "UtmpMode", "PAMName", "TTYPath",
                               "StandardInput", "StandardOutput", "StandardError",
                               "Description", "Slice", "Type", "WorkingDirectory",
-                              "RootDirectory"))
+                              "RootDirectory", "SyslogIdentifier", "ProtectSystem",
+                              "ProtectHome"))
                 r = sd_bus_message_append(m, "v", "s", eq);
 
-        else if (streq(field, "DeviceAllow")) {
+        else if (streq(field, "SyslogLevel")) {
+                int level;
+
+                level = log_level_from_string(eq);
+                if (level < 0) {
+                        log_error("Failed to parse %s value %s.", field, eq);
+                        return -EINVAL;
+                }
+
+                r = sd_bus_message_append(m, "v", "i", level);
+
+        } else if (streq(field, "SyslogFacility")) {
+                int facility;
+
+                facility = log_facility_unshifted_from_string(eq);
+                if (facility < 0) {
+                        log_error("Failed to parse %s value %s.", field, eq);
+                        return -EINVAL;
+                }
+
+                r = sd_bus_message_append(m, "v", "i", facility);
+
+        } else if (streq(field, "DeviceAllow")) {
 
                 if (isempty(eq))
                         r = sd_bus_message_append(m, "v", "a(ss)", 0);
@@ -1622,9 +1665,52 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
 
                 r = sd_bus_message_append(m, "v", "i", i);
 
-        } else if (streq(field, "Environment")) {
+        } else if (STR_IN_SET(field, "Environment", "PassEnvironment")) {
+                const char *p;
 
-                r = sd_bus_message_append(m, "v", "as", 1, eq);
+                r = sd_bus_message_open_container(m, 'v', "as");
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_open_container(m, 'a', "s");
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                p = eq;
+
+                for (;;) {
+                        _cleanup_free_ char *word = NULL;
+
+                        r = extract_first_word(&p, &word, NULL, EXTRACT_QUOTES|EXTRACT_CUNESCAPE);
+                        if (r < 0) {
+                                log_error("Failed to parse Environment value %s", eq);
+                                return -EINVAL;
+                        }
+                        if (r == 0)
+                                break;
+
+                        if (streq(field, "Environment")) {
+                                if (!env_assignment_is_valid(word)) {
+                                        log_error("Invalid environment assignment: %s", word);
+                                        return -EINVAL;
+                                }
+                        } else {  /* PassEnvironment */
+                                if (!env_name_is_valid(word)) {
+                                        log_error("Invalid environment variable name: %s", word);
+                                        return -EINVAL;
+                                }
+                        }
+
+                        r = sd_bus_message_append_basic(m, 's', word);
+                        if (r < 0)
+                                return bus_log_create_error(r);
+                }
+
+                r = sd_bus_message_close_container(m);
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_close_container(m);
 
         } else if (streq(field, "KillSignal")) {
                 int sig;
@@ -1647,6 +1733,113 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                 }
 
                 r = sd_bus_message_append(m, "v", "t", u);
+        } else if (streq(field, "TimerSlackNSec")) {
+                nsec_t n;
+
+                r = parse_nsec(eq, &n);
+                if (r < 0) {
+                        log_error("Failed to parse %s value %s", field, eq);
+                        return -EINVAL;
+                }
+
+                r = sd_bus_message_append(m, "v", "t", n);
+        } else if (streq(field, "OOMScoreAdjust")) {
+                int oa;
+
+                r = safe_atoi(eq, &oa);
+                if (r < 0) {
+                        log_error("Failed to parse %s value %s", field, eq);
+                        return -EINVAL;
+                }
+
+                if (!oom_score_adjust_is_valid(oa)) {
+                        log_error("OOM score adjust value out of range");
+                        return -EINVAL;
+                }
+
+                r = sd_bus_message_append(m, "v", "i", oa);
+        } else if (STR_IN_SET(field, "ReadWriteDirectories", "ReadOnlyDirectories", "InaccessibleDirectories")) {
+                const char *p;
+
+                r = sd_bus_message_open_container(m, 'v', "as");
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_open_container(m, 'a', "s");
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                p = eq;
+
+                for (;;) {
+                        _cleanup_free_ char *word = NULL;
+                        int offset;
+
+                        r = extract_first_word(&p, &word, NULL, EXTRACT_QUOTES);
+                        if (r < 0) {
+                                log_error("Failed to parse %s value %s", field, eq);
+                                return -EINVAL;
+                        }
+                        if (r == 0)
+                                break;
+
+                        if (!utf8_is_valid(word)) {
+                                log_error("Failed to parse %s value %s", field, eq);
+                                return -EINVAL;
+                        }
+
+                        offset = word[0] == '-';
+                        if (!path_is_absolute(word + offset)) {
+                                log_error("Failed to parse %s value %s", field, eq);
+                                return -EINVAL;
+                        }
+
+                        path_kill_slashes(word + offset);
+
+                        r = sd_bus_message_append_basic(m, 's', word);
+                        if (r < 0)
+                                return bus_log_create_error(r);
+                }
+
+                r = sd_bus_message_close_container(m);
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_close_container(m);
+
+        } else if (streq(field, "RuntimeDirectory")) {
+                const char *p;
+
+                r = sd_bus_message_open_container(m, 'v', "as");
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_open_container(m, 'a', "s");
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                p = eq;
+
+                for (;;) {
+                        _cleanup_free_ char *word = NULL;
+
+                        r = extract_first_word(&p, &word, NULL, EXTRACT_QUOTES);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to parse %s value %s", field, eq);
+
+                        if (r == 0)
+                                break;
+
+                        r = sd_bus_message_append_basic(m, 's', word);
+                        if (r < 0)
+                                return bus_log_create_error(r);
+                }
+
+                r = sd_bus_message_close_container(m);
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_close_container(m);
 
         } else {
                 log_error("Unknown assignment %s.", assignment);
@@ -1671,8 +1864,7 @@ typedef struct BusWaitForJobs {
         sd_bus_slot *slot_disconnected;
 } BusWaitForJobs;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int match_disconnected(sd_bus_message *m, void *userdata, sd_bus_error *error) {
         assert(m);
 
@@ -2156,3 +2348,44 @@ bool is_kdbus_available(void) {
 
         return ioctl(fd, KDBUS_CMD_BUS_MAKE, &cmd) >= 0;
 }
+
+#if 0 /// UNNEEDED by elogind
+int bus_property_get_rlimit(
+                sd_bus *bus,
+                const char *path,
+                const char *interface,
+                const char *property,
+                sd_bus_message *reply,
+                void *userdata,
+                sd_bus_error *error) {
+
+        struct rlimit *rl;
+        uint64_t u;
+        rlim_t x;
+
+        assert(bus);
+        assert(reply);
+        assert(userdata);
+
+        rl = *(struct rlimit**) userdata;
+        if (rl)
+                x = rl->rlim_max;
+        else {
+                struct rlimit buf = {};
+                int z;
+
+                z = rlimit_from_string(strstr(property, "Limit"));
+                assert(z >= 0);
+
+                getrlimit(z, &buf);
+                x = buf.rlim_max;
+        }
+
+        /* rlim_t might have different sizes, let's map
+         * RLIMIT_INFINITY to (uint64_t) -1, so that it is the same on
+         * all archs */
+        u = x == RLIM_INFINITY ? (uint64_t) -1 : (uint64_t) x;
+
+        return sd_bus_message_append(reply, "t", u);
+}
+#endif // 0

@@ -21,15 +21,20 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <sys/types.h>
 
-// UNNEEDED int copy_file_fd(const char *from, int to, bool try_reflink);
-// UNNEEDED int copy_file(const char *from, const char *to, int flags, mode_t mode, unsigned chattr_flags);
-// UNNEEDED int copy_file_atomic(const char *from, const char *to, mode_t mode, bool replace, unsigned chattr_flags);
-// UNNEEDED int copy_tree(const char *from, const char *to, bool merge);
-// UNNEEDED int copy_tree_at(int fdf, const char *from, int fdt, const char *to, bool merge);
-// UNNEEDED int copy_directory_fd(int dirfd, const char *to, bool merge);
+#if 0 /// UNNEEDED by elogind
+int copy_file_fd(const char *from, int to, bool try_reflink);
+int copy_file(const char *from, const char *to, int flags, mode_t mode, unsigned chattr_flags);
+int copy_file_atomic(const char *from, const char *to, mode_t mode, bool replace, unsigned chattr_flags);
+int copy_tree(const char *from, const char *to, bool merge);
+int copy_tree_at(int fdf, const char *from, int fdt, const char *to, bool merge);
+int copy_directory_fd(int dirfd, const char *to, bool merge);
+#endif // 0
 int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink);
-// UNNEEDED int copy_times(int fdf, int fdt);
-// UNNEEDED int copy_xattr(int fdf, int fdt);
+#if 0 /// UNNEEDED by elogind
+int copy_times(int fdf, int fdt);
+int copy_xattr(int fdf, int fdt);
+#endif // 0

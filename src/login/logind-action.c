@@ -21,19 +21,25 @@
 
 #include <unistd.h>
 
-#include "sd-messages.h"
-#include "util.h"
-#include "strv.h"
-#include "fileio.h"
-#include "conf-parser.h"
-// #include "special.h"
-#include "sleep-config.h"
+#include "alloc-util.h"
 #include "bus-error.h"
 #include "bus-util.h"
+#include "conf-parser.h"
+#include "formats-util.h"
 #include "logind-action.h"
-// #include "formats-util.h"
 #include "process-util.h"
+#include "sleep-config.h"
+//#include "special.h"
+#include "string-table.h"
 #include "terminal-util.h"
+#include "user-util.h"
+
+// Additional includes needed by elogind
+#include "fd-util.h"
+#include "fileio.h"
+#include "sd-messages.h"
+#include "strv.h"
+
 
 int manager_handle_action(
                 Manager *m,
@@ -52,8 +58,7 @@ int manager_handle_action(
                 [HANDLE_HYBRID_SLEEP] = "Hibernating and suspending..."
         };
 
-/// elogind does this itself. No target table required
-#if 0
+#if 0 /// elogind does this itself. No target table required
         static const char * const target_table[_HANDLE_ACTION_MAX] = {
                 [HANDLE_POWEROFF] = SPECIAL_POWEROFF_TARGET,
                 [HANDLE_REBOOT] = SPECIAL_REBOOT_TARGET,
@@ -159,8 +164,7 @@ int manager_handle_action(
 
         log_info("%s", message_table[handle]);
 
-/// elogind uses its own variant, which can use the handle directly.
-#if 0
+#if 0 /// elogind uses its own variant, which can use the handle directly.
         r = bus_manager_shutdown_or_sleep_now_or_later(m, target_table[handle], inhibit_operation, &error);
 #else
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);

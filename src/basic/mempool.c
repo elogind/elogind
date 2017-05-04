@@ -20,8 +20,8 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "mempool.h"
 #include "macro.h"
+#include "mempool.h"
 #include "util.h"
 
 struct pool {
@@ -88,8 +88,6 @@ void mempool_free_tile(struct mempool *mp, void *p) {
         mp->freelist = p;
 }
 
-/// UNNEEDED by elogind
-#if 0
 #ifdef VALGRIND
 
 void mempool_drop(struct mempool *mp) {
@@ -103,4 +101,3 @@ void mempool_drop(struct mempool *mp) {
 }
 
 #endif
-#endif // 0

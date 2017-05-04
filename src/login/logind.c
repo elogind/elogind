@@ -20,24 +20,31 @@
 ***/
 
 #include <errno.h>
-#include <libudev.h>
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
 
+#include "libudev.h"
 #include "sd-daemon.h"
-#include "strv.h"
-#include "conf-parser.h"
-#include "bus-util.h"
+
+#include "alloc-util.h"
 #include "bus-error.h"
-#include "udev-util.h"
+#include "bus-util.h"
+#include "conf-parser.h"
+#include "def.h"
+#include "dirent-util.h"
+#include "fd-util.h"
 #include "formats-util.h"
-#include "signal-util.h"
-#include "label.h"
 #include "logind.h"
-#include "cgroup.h"
-#include "mount-setup.h"
-#include "virt.h"
+#include "signal-util.h"
+#include "strv.h"
+#include "udev-util.h"
+
+/// additional includes elogind needs
+#include "cgroup.h"       // From src/core/
+#include "label.h"
+#include "mount-setup.h"  // From src/core
+#include "musl_missing.h"
 
 static void manager_free(Manager *m);
 
@@ -53,8 +60,7 @@ static Manager *manager_new(void) {
 
         m->console_active_fd = -1;
 
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         m->reserve_vt_fd = -1;
 
         m->n_autovts = 6;
@@ -75,6 +81,7 @@ static Manager *manager_new(void) {
         m->idle_action_not_before_usec = now(CLOCK_MONOTONIC);
 
         m->runtime_dir_size = PAGE_ALIGN((size_t) (physical_memory() / 10)); /* 10% */
+        m->user_tasks_max = UINT64_C(4096);
 
         m->devices = hashmap_new(&string_hash_ops);
         m->seats = hashmap_new(&string_hash_ops);
@@ -210,16 +217,9 @@ static void manager_free(Manager *m) {
         sd_bus_unref(m->bus);
         sd_event_unref(m->event);
 
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         safe_close(m->reserve_vt_fd);
 #endif // 0
-
-        /* Avoid the creation of new processes forked by the
-         * kernel; at this point, we will not listen to the
-         * signals anyway */
-        if (detect_container() <= 0)
-                (void) cg_uninstall_release_agent(SYSTEMD_CGROUP_CONTROLLER);
 
         manager_shutdown_cgroup(m, true);
 
@@ -352,8 +352,7 @@ static int manager_enumerate_seats(Manager *m) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_error_errno(errno, "Failed to open /run/systemd/seats: %m");
-                return -errno;
+                return log_error_errno(errno, "Failed to open /run/systemd/seats: %m");
         }
 
         FOREACH_DIRENT(de, d, return -errno) {
@@ -389,8 +388,7 @@ static int manager_enumerate_linger_users(Manager *m) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_error_errno(errno, "Failed to open /var/lib/systemd/linger/: %m");
-                return -errno;
+                return log_error_errno(errno, "Failed to open /var/lib/systemd/linger/: %m");
         }
 
         FOREACH_DIRENT(de, d, return -errno) {
@@ -425,8 +423,7 @@ static int manager_enumerate_users(Manager *m) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_error_errno(errno, "Failed to open /run/systemd/users: %m");
-                return -errno;
+                return log_error_errno(errno, "Failed to open /run/systemd/users: %m");
         }
 
         FOREACH_DIRENT(de, d, return -errno) {
@@ -466,8 +463,7 @@ static int manager_enumerate_sessions(Manager *m) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_error_errno(errno, "Failed to open /run/systemd/sessions: %m");
-                return -errno;
+                return log_error_errno(errno, "Failed to open /run/systemd/sessions: %m");
         }
 
         FOREACH_DIRENT(de, d, return -errno) {
@@ -513,8 +509,7 @@ static int manager_enumerate_inhibitors(Manager *m) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_error_errno(errno, "Failed to open /run/systemd/inhibit: %m");
-                return -errno;
+                return log_error_errno(errno, "Failed to open /run/systemd/inhibit: %m");
         }
 
         FOREACH_DIRENT(de, d, return -errno) {
@@ -567,8 +562,7 @@ static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t rev
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
         _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         Manager *m = userdata;
@@ -617,8 +611,7 @@ static int manager_dispatch_console(sd_event_source *s, int fd, uint32_t revents
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static int manager_reserve_vt(Manager *m) {
         _cleanup_free_ char *p = NULL;
 
@@ -718,8 +711,7 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to add user enumerator: %m");
 
-/// elogind does not support systemd as PID 1
-#if 0
+#if 0 /// elogind does not support systemd as PID 1
         r = sd_bus_add_match(m->bus,
                              NULL,
                              "type='signal',"
@@ -729,7 +721,7 @@ static int manager_connect_bus(Manager *m) {
                              "path='/org/freedesktop/systemd1'",
                              match_job_removed, m);
         if (r < 0)
-                log_warning_errno(r, "Failed to add match for JobRemoved: %m");
+                return log_error_errno(r, "Failed to add match for JobRemoved: %m");
 
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -740,7 +732,7 @@ static int manager_connect_bus(Manager *m) {
                              "path='/org/freedesktop/systemd1'",
                              match_unit_removed, m);
         if (r < 0)
-                log_warning_errno(r, "Failed to add match for UnitRemoved: %m");
+                return log_error_errno(r, "Failed to add match for UnitRemoved: %m");
 
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -750,7 +742,7 @@ static int manager_connect_bus(Manager *m) {
                              "member='PropertiesChanged'",
                              match_properties_changed, m);
         if (r < 0)
-                log_warning_errno(r, "Failed to add match for PropertiesChanged: %m");
+                return log_error_errno(r, "Failed to add match for PropertiesChanged: %m");
 
         r = sd_bus_add_match(m->bus,
                              NULL,
@@ -761,7 +753,7 @@ static int manager_connect_bus(Manager *m) {
                              "path='/org/freedesktop/systemd1'",
                              match_reloading, m);
         if (r < 0)
-                log_warning_errno(r, "Failed to add match for Reloading: %m");
+                return log_error_errno(r, "Failed to add match for Reloading: %m");
 
         r = sd_bus_call_method(
                         m->bus,
@@ -771,8 +763,10 @@ static int manager_connect_bus(Manager *m) {
                         "Subscribe",
                         &error,
                         NULL, NULL);
-        if (r < 0)
-                log_notice("Failed to enable subscription: %s", bus_error_message(&error, r));
+        if (r < 0) {
+                log_error("Failed to enable subscription: %s", bus_error_message(&error, r));
+                return r;
+        }
 #endif // 0
 
         r = sd_bus_request_name(m->bus, "org.freedesktop.login1", 0);
@@ -847,8 +841,7 @@ static int manager_connect_console(Manager *m) {
                 if (errno == ENOENT)
                         return 0;
 
-                log_error_errno(errno, "Failed to open /sys/class/tty/tty0/active: %m");
-                return -errno;
+                return log_error_errno(errno, "Failed to open /sys/class/tty/tty0/active: %m");
         }
 
         r = sd_event_add_io(m->event, &m->console_active_event_source, m->console_active_fd, 0, manager_dispatch_console, m);
@@ -957,8 +950,7 @@ static int manager_connect_udev(Manager *m) {
         }
 
         /* Don't bother watching VCSA devices, if nobody cares */
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         if (m->n_autovts > 0 && m->console_active_fd >= 0) {
 
                 m->udev_vcsa_monitor = udev_monitor_new_from_netlink(m->udev, "udev");
@@ -1157,8 +1149,7 @@ static int manager_startup(Manager *m) {
         manager_gc(m, false);
 
         /* Reserve the special reserved VT */
-/// elogind does not support autospawning of vts
-#if 0
+#if 0 /// elogind does not support autospawning of vts
         manager_reserve_vt(m);
 #endif // 0
 
@@ -1210,20 +1201,21 @@ static int manager_run(Manager *m) {
 }
 
 static int manager_parse_config_file(Manager *m) {
+#if 0 /// elogind parses its own config file
+
+        assert(m);
+
+        return config_parse_many(PKGSYSCONFDIR "/logind.conf",
+                                 CONF_PATHS_NULSTR("systemd/logind.conf.d"),
+                                 "Login\0",
+                                 config_item_perf_lookup, logind_gperf_lookup,
+                                 false, m);
+#else
         const char *unit = NULL, *logind_conf, *sections;
         FILE *file = NULL;
         bool relaxed = false, allow_include = false, warn = true;
 
         assert(m);
-
-/// elogind parses its own config file
-#if 0
-        return config_parse_many("/etc/systemd/logind.conf",
-                                 CONF_DIRS_NULSTR("systemd/logind.conf"),
-                                 "Login\0",
-                                 config_item_perf_lookup, logind_gperf_lookup,
-                                 false, m);
-#endif // 0
 
         logind_conf = getenv("ELOGIND_CONF_FILE");
         if (!logind_conf)
@@ -1233,6 +1225,7 @@ static int manager_parse_config_file(Manager *m) {
         return config_parse(unit, logind_conf, file, sections,
                             config_item_perf_lookup, logind_gperf_lookup,
                             relaxed, allow_include, warn, m);
+#endif // 0
 }
 
 int main(int argc, char *argv[]) {
@@ -1262,6 +1255,11 @@ int main(int argc, char *argv[]) {
          * existence of /run/systemd/seats/ to determine whether
          * logind is available, so please always make sure this check
          * stays in. */
+#if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
+        mkdir_label("/run/systemd/seats", 0755);
+        mkdir_label("/run/systemd/users", 0755);
+        mkdir_label("/run/systemd/sessions", 0755);
+#else
         r = mkdir_label("/run/systemd", 0755);
         if ( (r < 0) && (-EEXIST != r) )
                 return log_error_errno(r, "Failed to create /run/systemd : %m");
@@ -1277,6 +1275,7 @@ int main(int argc, char *argv[]) {
         r = mkdir_label("/run/systemd/machines", 0755);
         if ( r < 0 && (-EEXIST != r) )
                 return log_error_errno(r, "Failed to create /run/systemd/machines : %m");
+#endif // 0
 
         m = manager_new();
         if (!m) {
@@ -1292,7 +1291,7 @@ int main(int argc, char *argv[]) {
                 goto finish;
         }
 
-        log_debug("logind running as pid "PID_FMT, getpid());
+        log_debug("elogind running as pid "PID_FMT, getpid());
 
         sd_notify(false,
                   "READY=1\n"
@@ -1300,7 +1299,7 @@ int main(int argc, char *argv[]) {
 
         r = manager_run(m);
 
-        log_debug("logind stopped as pid "PID_FMT, getpid());
+        log_debug("elogind stopped as pid "PID_FMT, getpid());
 
 finish:
         sd_notify(false,

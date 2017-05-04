@@ -19,14 +19,16 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/utsname.h>
 #include <ctype.h>
+#include <sys/utsname.h>
 
-#include "util.h"
+//#include "fd-util.h"
+#include "fileio.h"
 #include "hostname-util.h"
+#include "string-util.h"
+#include "util.h"
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool hostname_is_set(void) {
         struct utsname u;
 
@@ -113,8 +115,7 @@ bool hostname_is_valid(const char *s, bool allow_trailing_dot) {
         return true;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 char* hostname_cleanup(char *s) {
         char *p, *d;
         bool dot;
@@ -162,8 +163,7 @@ bool is_localhost(const char *hostname) {
                endswith_no_case(hostname, ".localdomain.");
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 bool is_gateway_hostname(const char *hostname) {
         assert(hostname);
 

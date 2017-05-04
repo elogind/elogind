@@ -32,7 +32,6 @@ typedef enum UnitType {
         UNIT_SOCKET,
         UNIT_BUSNAME,
         UNIT_TARGET,
-        UNIT_SNAPSHOT,
         UNIT_DEVICE,
         UNIT_MOUNT,
         UNIT_AUTOMOUNT,
@@ -45,8 +44,7 @@ typedef enum UnitType {
         _UNIT_TYPE_INVALID = -1
 } UnitType;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef enum UnitLoadState {
         UNIT_STUB = 0,
         UNIT_LOADED,
@@ -167,13 +165,6 @@ typedef enum SliceState {
         _SLICE_STATE_INVALID = -1
 } SliceState;
 
-typedef enum SnapshotState {
-        SNAPSHOT_DEAD,
-        SNAPSHOT_ACTIVE,
-        _SNAPSHOT_STATE_MAX,
-        _SNAPSHOT_STATE_INVALID = -1
-} SnapshotState;
-
 typedef enum SocketState {
         SOCKET_DEAD,
         SOCKET_START_PRE,
@@ -228,18 +219,14 @@ typedef enum TimerState {
 typedef enum UnitDependency {
         /* Positive dependencies */
         UNIT_REQUIRES,
-        UNIT_REQUIRES_OVERRIDABLE,
         UNIT_REQUISITE,
-        UNIT_REQUISITE_OVERRIDABLE,
         UNIT_WANTS,
         UNIT_BINDS_TO,
         UNIT_PART_OF,
 
         /* Inverse of the above */
         UNIT_REQUIRED_BY,             /* inverse of 'requires' is 'required_by' */
-        UNIT_REQUIRED_BY_OVERRIDABLE, /* inverse of 'requires_overridable' is 'required_by_overridable' */
         UNIT_REQUISITE_OF,            /* inverse of 'requisite' is 'requisite_of' */
-        UNIT_REQUISITE_OF_OVERRIDABLE,/* inverse of 'requisite_overridable' is 'requisite_of_overridable' */
         UNIT_WANTED_BY,               /* inverse of 'wants' */
         UNIT_BOUND_BY,                /* inverse of 'binds_to' */
         UNIT_CONSISTS_OF,             /* inverse of 'part_of' */
@@ -287,45 +274,43 @@ bool unit_prefix_is_valid(const char *p) _pure_;
 bool unit_instance_is_valid(const char *i) _pure_;
 bool unit_suffix_is_valid(const char *s) _pure_;
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 static inline int unit_prefix_and_instance_is_valid(const char *p) {
         /* For prefix+instance and instance the same rules apply */
         return unit_instance_is_valid(p);
 }
+
+int unit_name_to_prefix(const char *n, char **prefix);
+int unit_name_to_instance(const char *n, char **instance);
+int unit_name_to_prefix_and_instance(const char *n, char **ret);
+
+UnitType unit_name_to_type(const char *n) _pure_;
+
+int unit_name_change_suffix(const char *n, const char *suffix, char **ret);
 #endif // 0
-
-// UNNEEDED int unit_name_to_prefix(const char *n, char **prefix);
-// UNNEEDED int unit_name_to_instance(const char *n, char **instance);
-// UNNEEDED int unit_name_to_prefix_and_instance(const char *n, char **ret);
-
-// UNNEEDED UnitType unit_name_to_type(const char *n) _pure_;
-
-// UNNEEDED int unit_name_change_suffix(const char *n, const char *suffix, char **ret);
 
 int unit_name_build(const char *prefix, const char *instance, const char *suffix, char **ret);
 
-// UNNEEDED char *unit_name_escape(const char *f);
-// UNNEEDED int unit_name_unescape(const char *f, char **ret);
-// UNNEEDED int unit_name_path_escape(const char *f, char **ret);
-// UNNEEDED int unit_name_path_unescape(const char *f, char **ret);
+#if 0 /// UNNEEDED by elogind
+char *unit_name_escape(const char *f);
+int unit_name_unescape(const char *f, char **ret);
+int unit_name_path_escape(const char *f, char **ret);
+int unit_name_path_unescape(const char *f, char **ret);
 
-// UNNEEDED int unit_name_replace_instance(const char *f, const char *i, char **ret);
+int unit_name_replace_instance(const char *f, const char *i, char **ret);
 
-// UNNEEDED int unit_name_template(const char *f, char **ret);
+int unit_name_template(const char *f, char **ret);
 
-// UNNEEDED int unit_name_from_path(const char *path, const char *suffix, char **ret);
-// UNNEEDED int unit_name_from_path_instance(const char *prefix, const char *path, const char *suffix, char **ret);
-// UNNEEDED int unit_name_to_path(const char *name, char **ret);
+int unit_name_from_path(const char *path, const char *suffix, char **ret);
+int unit_name_from_path_instance(const char *prefix, const char *path, const char *suffix, char **ret);
+int unit_name_to_path(const char *name, char **ret);
 
-// UNNEEDED char *unit_dbus_path_from_name(const char *name);
-// UNNEEDED int unit_name_from_dbus_path(const char *path, char **name);
+char *unit_dbus_path_from_name(const char *name);
+int unit_name_from_dbus_path(const char *path, char **name);
 
-// UNNEEDED const char* unit_dbus_interface_from_type(UnitType t);
-// UNNEEDED const char *unit_dbus_interface_from_name(const char *name);
+const char* unit_dbus_interface_from_type(UnitType t);
+const char *unit_dbus_interface_from_name(const char *name);
 
-/// UNNEEDED by elogind
-#if 0
 typedef enum UnitNameMangle {
         UNIT_NAME_NOGLOB,
         UNIT_NAME_GLOB,
@@ -336,59 +321,58 @@ int unit_name_mangle_with_suffix(const char *name, UnitNameMangle allow_globs, c
 static inline int unit_name_mangle(const char *name, UnitNameMangle allow_globs, char **ret) {
         return unit_name_mangle_with_suffix(name, allow_globs, ".service", ret);
 }
-#endif // 0
 
-// UNNEEDED int slice_build_parent_slice(const char *slice, char **ret);
+int slice_build_parent_slice(const char *slice, char **ret);
+#endif // 0
 int slice_build_subslice(const char *slice, const char*name, char **subslice);
 bool slice_name_is_valid(const char *name);
 
 const char *unit_type_to_string(UnitType i) _const_;
 UnitType unit_type_from_string(const char *s) _pure_;
 
-// UNNEEDED const char *unit_load_state_to_string(UnitLoadState i) _const_;
-// UNNEEDED UnitLoadState unit_load_state_from_string(const char *s) _pure_;
+#if 0 /// UNNEEDED by elogind
+const char *unit_load_state_to_string(UnitLoadState i) _const_;
+UnitLoadState unit_load_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char *unit_active_state_to_string(UnitActiveState i) _const_;
-// UNNEEDED UnitActiveState unit_active_state_from_string(const char *s) _pure_;
+const char *unit_active_state_to_string(UnitActiveState i) _const_;
+UnitActiveState unit_active_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* automount_state_to_string(AutomountState i) _const_;
-// UNNEEDED AutomountState automount_state_from_string(const char *s) _pure_;
+const char* automount_state_to_string(AutomountState i) _const_;
+AutomountState automount_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* busname_state_to_string(BusNameState i) _const_;
-// UNNEEDED BusNameState busname_state_from_string(const char *s) _pure_;
+const char* busname_state_to_string(BusNameState i) _const_;
+BusNameState busname_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* device_state_to_string(DeviceState i) _const_;
-// UNNEEDED DeviceState device_state_from_string(const char *s) _pure_;
+const char* device_state_to_string(DeviceState i) _const_;
+DeviceState device_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* mount_state_to_string(MountState i) _const_;
-// UNNEEDED MountState mount_state_from_string(const char *s) _pure_;
+const char* mount_state_to_string(MountState i) _const_;
+MountState mount_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* path_state_to_string(PathState i) _const_;
-// UNNEEDED PathState path_state_from_string(const char *s) _pure_;
+const char* path_state_to_string(PathState i) _const_;
+PathState path_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* scope_state_to_string(ScopeState i) _const_;
-// UNNEEDED ScopeState scope_state_from_string(const char *s) _pure_;
+const char* scope_state_to_string(ScopeState i) _const_;
+ScopeState scope_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* service_state_to_string(ServiceState i) _const_;
-// UNNEEDED ServiceState service_state_from_string(const char *s) _pure_;
+const char* service_state_to_string(ServiceState i) _const_;
+ServiceState service_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* slice_state_to_string(SliceState i) _const_;
-// UNNEEDED SliceState slice_state_from_string(const char *s) _pure_;
+const char* slice_state_to_string(SliceState i) _const_;
+SliceState slice_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* snapshot_state_to_string(SnapshotState i) _const_;
-// UNNEEDED SnapshotState snapshot_state_from_string(const char *s) _pure_;
+const char* socket_state_to_string(SocketState i) _const_;
+SocketState socket_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* socket_state_to_string(SocketState i) _const_;
-// UNNEEDED SocketState socket_state_from_string(const char *s) _pure_;
+const char* swap_state_to_string(SwapState i) _const_;
+SwapState swap_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* swap_state_to_string(SwapState i) _const_;
-// UNNEEDED SwapState swap_state_from_string(const char *s) _pure_;
+const char* target_state_to_string(TargetState i) _const_;
+TargetState target_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char* target_state_to_string(TargetState i) _const_;
-// UNNEEDED TargetState target_state_from_string(const char *s) _pure_;
+const char *timer_state_to_string(TimerState i) _const_;
+TimerState timer_state_from_string(const char *s) _pure_;
 
-// UNNEEDED const char *timer_state_to_string(TimerState i) _const_;
-// UNNEEDED TimerState timer_state_from_string(const char *s) _pure_;
-
-// UNNEEDED const char *unit_dependency_to_string(UnitDependency i) _const_;
-// UNNEEDED UnitDependency unit_dependency_from_string(const char *s) _pure_;
+const char *unit_dependency_to_string(UnitDependency i) _const_;
+UnitDependency unit_dependency_from_string(const char *s) _pure_;
+#endif // 0

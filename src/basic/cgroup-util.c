@@ -19,28 +19,39 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <errno.h>
-#include <unistd.h>
-#include <signal.h>
-#include <string.h>
-#include <stdlib.h>
 #include <dirent.h>
+#include <errno.h>
+#include <ftw.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <ftw.h>
+#include <unistd.h>
 
-#include "set.h"
-#include "macro.h"
-#include "util.h"
-#include "formats-util.h"
-#include "process-util.h"
-#include "path-util.h"
-// #include "unit-name.h"
-#include "fileio.h"
-// #include "special.h"
-#include "mkdir.h"
-#include "login-util.h"
+#include "alloc-util.h"
 #include "cgroup-util.h"
+#include "dirent-util.h"
+#include "extract-word.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "formats-util.h"
+#include "fs-util.h"
+#include "login-util.h"
+#include "macro.h"
+#include "mkdir.h"
+#include "parse-util.h"
+#include "path-util.h"
+#include "proc-cmdline.h"
+#include "process-util.h"
+#include "set.h"
+//#include "special.h"
+#include "stat-util.h"
+#include "string-table.h"
+#include "string-util.h"
+#include "unit-name.h"
+#include "user-util.h"
+#include "util.h"
 
 int cg_enumerate_processes(const char *controller, const char *path, FILE **_f) {
         _cleanup_free_ char *fs = NULL;
@@ -736,8 +747,7 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
         return r;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_set_group_access(
                 const char *controller,
                 const char *path,
@@ -1159,12 +1169,11 @@ int cg_mangle_path(const char *path, char **result) {
         if (r < 0)
                 return r;
 
-        return cg_get_path(c ? c : SYSTEMD_CGROUP_CONTROLLER, p ? p : "/", NULL, result);
+        return cg_get_path(c ?: SYSTEMD_CGROUP_CONTROLLER, p ?: "/", NULL, result);
 }
 
 int cg_get_root_path(char **path) {
-/// elogind does not support systemd scopes and slices
-#if 0
+#if 0 /// elogind does not support systemd scopes and slices
         char *p, *e;
         int r;
 
@@ -1254,8 +1263,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit){
         char *c, *s;
         size_t n;
@@ -1574,8 +1582,7 @@ int cg_pid_get_session(pid_t pid, char **session) {
         return cg_path_get_session(cgroup, session);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         _cleanup_free_ char *slice = NULL;
         char *start, *end;
@@ -1780,8 +1787,7 @@ bool cg_controller_is_valid(const char *p) {
         return true;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_slice_to_path(const char *unit, char **ret) {
         _cleanup_free_ char *p = NULL, *s = NULL, *e = NULL;
         const char *dash;
@@ -1863,8 +1869,7 @@ int cg_set_attribute(const char *controller, const char *path, const char *attri
         return write_string_file(p, value, 0);
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -2097,8 +2102,7 @@ int cg_mask_supported(CGroupMask *ret) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set *controllers) {
         _cleanup_fclose_ FILE *f = NULL;
         char buf[LINE_MAX];
@@ -2191,8 +2195,7 @@ int cg_unified(void) {
         return unified_cache;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void) {
         unified_cache = -1;
 }
@@ -2281,8 +2284,7 @@ bool cg_is_legacy_wanted(void) {
 }
 #endif // 0
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;

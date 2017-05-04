@@ -19,19 +19,21 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdio.h>
 #include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/prctl.h>
-
 #ifdef HAVE_LINUX_MEMFD_H
 #  include <linux/memfd.h>
 #endif
+#include <stdio.h>
+#include <sys/mman.h>
+#include <sys/prctl.h>
 
-#include "util.h"
+#include "alloc-util.h"
+#include "fd-util.h"
 #include "memfd-util.h"
-#include "utf8.h"
 #include "missing.h"
+#include "string-util.h"
+#include "utf8.h"
+#include "util.h"
 
 int memfd_new(const char *name) {
         _cleanup_free_ char *g = NULL;
@@ -70,8 +72,7 @@ int memfd_new(const char *name) {
         return fd;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int memfd_map(int fd, uint64_t offset, size_t size, void **p) {
         void *q;
         int sealed;
@@ -109,6 +110,7 @@ int memfd_set_sealed(int fd) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int memfd_get_sealed(int fd) {
         int r;
 
@@ -121,8 +123,6 @@ int memfd_get_sealed(int fd) {
         return r == (F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE | F_SEAL_SEAL);
 }
 
-/// UNNEEDED by elogind
-#if 0
 int memfd_get_size(int fd, uint64_t *sz) {
         struct stat stat;
         int r;
@@ -151,8 +151,7 @@ int memfd_set_size(int fd, uint64_t sz) {
         return 0;
 }
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 int memfd_new_and_map(const char *name, size_t sz, void **p) {
         _cleanup_close_ int fd = -1;
         int r;

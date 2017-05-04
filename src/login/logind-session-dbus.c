@@ -22,15 +22,16 @@
 #include <errno.h>
 #include <string.h>
 
-#include "util.h"
-#include "strv.h"
-#include "bus-util.h"
+#include "alloc-util.h"
 #include "bus-common-errors.h"
 #include "bus-label.h"
-
-#include "logind.h"
-#include "logind-session.h"
+#include "bus-util.h"
+#include "fd-util.h"
 #include "logind-session-device.h"
+#include "logind-session.h"
+#include "logind.h"
+#include "strv.h"
+#include "util.h"
 
 static int property_get_user(
                 sd_bus *bus,
@@ -704,8 +705,7 @@ int session_send_create_reply(Session *s, sd_bus_error *error) {
         if (!s->create_message)
                 return 0;
 
-/// elogind does not support scope and service jobs
-#if 0
+#if 0 /// elogind does not support scope and service jobs
         if (!sd_bus_error_is_set(error) && (s->scope_job || s->user->service_job))
                 return 0;
 #endif // 0

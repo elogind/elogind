@@ -21,15 +21,13 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/types.h>
-#include <inttypes.h>
-#include <stdbool.h>
-
-// #include "sd-event.h"
 #include "sd-bus.h"
+#include "sd-event.h"
+
 #include "hashmap.h"
-// #include "install.h"
-// #include "time-util.h"
+//#include "install.h"
+#include "string-util.h"
+#include "time-util.h"
 
 typedef enum BusTransport {
         BUS_TRANSPORT_LOCAL,
@@ -51,29 +49,41 @@ struct bus_properties_map {
 int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata);
 
 int bus_message_map_all_properties(sd_bus_message *m, const struct bus_properties_map *map,  void *userdata);
-// UNNEEDED int bus_message_map_properties_changed(sd_bus_message *m, const struct bus_properties_map *map, void *userdata);
+#if 0 /// UNNEEDED by elogind
+int bus_message_map_properties_changed(sd_bus_message *m, const struct bus_properties_map *map, void *userdata);
+#endif // 0
 int bus_map_all_properties(sd_bus *bus, const char *destination, const char *path, const struct bus_properties_map *map, void *userdata);
 
-// UNNEEDED int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name);
+#if 0 /// UNNEEDED by elogind
+int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name);
+#endif // 0
 
 typedef bool (*check_idle_t)(void *userdata);
 
-// UNNEEDED int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t timeout, check_idle_t check_idle, void *userdata);
+#if 0 /// UNNEEDED by elogind
+int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t timeout, check_idle_t check_idle, void *userdata);
+#endif // 0
 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
 
-// UNNEEDED int bus_check_peercred(sd_bus *c);
+#if 0 /// UNNEEDED by elogind
+int bus_check_peercred(sd_bus *c);
+#endif // 0
 
 int bus_test_polkit(sd_bus_message *call, int capability, const char *action, const char **details, uid_t good_user, bool *_challenge, sd_bus_error *e);
 
 int bus_verify_polkit_async(sd_bus_message *call, int capability, const char *action, const char **details, bool interactive, uid_t good_user, Hashmap **registry, sd_bus_error *error);
 void bus_verify_polkit_async_registry_free(Hashmap *registry);
 
-// UNNEEDED int bus_open_system_systemd(sd_bus **_bus);
-// UNNEEDED int bus_open_user_systemd(sd_bus **_bus);
+#if 0 /// UNNEEDED by elogind
+int bus_open_system_systemd(sd_bus **_bus);
+int bus_open_user_systemd(sd_bus **_bus);
+#endif // 0
 
 int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **bus);
-// UNNEEDED bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
+#if 0 /// UNNEEDED by elogind
+bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
+#endif // 0
 
 int bus_print_property(const char *name, sd_bus_message *property, bool all);
 int bus_print_all_properties(sd_bus *bus, const char *dest, const char *path, char **filter, bool all);
@@ -121,10 +131,9 @@ assert_cc(sizeof(mode_t) == sizeof(uint32_t));
 #define bus_property_get_mode ((sd_bus_property_get_t) NULL)
 
 int bus_log_parse_error(int r);
-// UNNEEDED int bus_log_create_error(int r);
+int bus_log_create_error(int r);
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef struct UnitInfo {
         const char *machine;
         const char *id;
@@ -138,9 +147,9 @@ typedef struct UnitInfo {
         const char *job_type;
         const char *job_path;
 } UnitInfo;
-#endif // 0
 
-// UNNEEDED int bus_parse_unit_info(sd_bus_message *message, UnitInfo *u);
+int bus_parse_unit_info(sd_bus_message *message, UnitInfo *u);
+#endif // 0
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus*, sd_bus_unref);
 DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus*, sd_bus_flush_close_unref);
@@ -188,22 +197,28 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(sd_bus_track*, sd_bus_track_unref);
         SD_BUS_PROPERTY(name, "t", bus_property_get_usec, (offset) + offsetof(struct dual_timestamp, realtime), (flags)), \
         SD_BUS_PROPERTY(name "Monotonic", "t", bus_property_get_usec, (offset) + offsetof(struct dual_timestamp, monotonic), (flags))
 
-// UNNEEDED int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignment);
+#if 0 /// UNNEEDED by elogind
+int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignment);
 
-// UNNEEDED typedef struct BusWaitForJobs BusWaitForJobs;
+typedef struct BusWaitForJobs BusWaitForJobs;
 
-// UNNEEDED int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret);
-// UNNEEDED void bus_wait_for_jobs_free(BusWaitForJobs *d);
-// UNNEEDED int bus_wait_for_jobs_add(BusWaitForJobs *d, const char *path);
-// UNNEEDED int bus_wait_for_jobs(BusWaitForJobs *d, bool quiet);
-// UNNEEDED int bus_wait_for_jobs_one(BusWaitForJobs *d, const char *path, bool quiet);
+int bus_wait_for_jobs_new(sd_bus *bus, BusWaitForJobs **ret);
+void bus_wait_for_jobs_free(BusWaitForJobs *d);
+int bus_wait_for_jobs_add(BusWaitForJobs *d, const char *path);
+int bus_wait_for_jobs(BusWaitForJobs *d, bool quiet);
+int bus_wait_for_jobs_one(BusWaitForJobs *d, const char *path, bool quiet);
 
-// UNNEEDED DEFINE_TRIVIAL_CLEANUP_FUNC(BusWaitForJobs*, bus_wait_for_jobs_free);
+DEFINE_TRIVIAL_CLEANUP_FUNC(BusWaitForJobs*, bus_wait_for_jobs_free);
 
-// UNNEEDED int bus_deserialize_and_dump_unit_file_changes(sd_bus_message *m, bool quiet, UnitFileChange **changes, unsigned *n_changes);
+int bus_deserialize_and_dump_unit_file_changes(sd_bus_message *m, bool quiet, UnitFileChange **changes, unsigned *n_changes);
 
-// UNNEEDED int bus_path_encode_unique(sd_bus *b, const char *prefix, const char *sender_id, const char *external_id, char **ret_path);
-// UNNEEDED int bus_path_decode_unique(const char *path, const char *prefix, char **ret_sender, char **ret_external);
+int bus_path_encode_unique(sd_bus *b, const char *prefix, const char *sender_id, const char *external_id, char **ret_path);
+int bus_path_decode_unique(const char *path, const char *prefix, char **ret_sender, char **ret_external);
+#endif // 0
 
 bool is_kdbus_wanted(void);
 bool is_kdbus_available(void);
+
+#if 0 /// UNNEEDED by elogind
+int bus_property_get_rlimit(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
+#endif // 0

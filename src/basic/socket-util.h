@@ -41,8 +41,7 @@ union sockaddr_union {
         struct sockaddr_ll ll;
 };
 
-/// UNNEEDED by elogind
-#if 0
+#if 0 /// UNNEEDED by elogind
 typedef struct SocketAddress {
         union sockaddr_union sockaddr;
 
@@ -98,12 +97,14 @@ bool socket_address_matches_fd(const SocketAddress *a, int fd);
 bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) _pure_;
 
 const char* socket_address_get_path(const SocketAddress *a);
+#endif // 0
 
 bool socket_ipv6_is_supported(void);
 
+#if 0 /// UNNEEDED by elogind
 int sockaddr_port(const struct sockaddr *_sa) _pure_;
 
-int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
+Sint sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
 int getpeername_pretty(int fd, char **ret);
 int getsockname_pretty(int fd, char **ret);
 
@@ -117,8 +118,22 @@ int netlink_family_to_string_alloc(int b, char **s);
 int netlink_family_from_string(const char *s) _pure_;
 
 bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b);
-
-#define ETHER_ADDR_TO_STRING_MAX (3*6)
-
-char* ether_addr_to_string(const struct ether_addr *addr, char buffer[ETHER_ADDR_TO_STRING_MAX]);
 #endif // 0
+
+int fd_inc_sndbuf(int fd, size_t n);
+int fd_inc_rcvbuf(int fd, size_t n);
+#if 0 /// UNNEEDED by elogind
+int ip_tos_to_string_alloc(int i, char **s);
+int ip_tos_from_string(const char *s);
+#endif // 0
+
+int getpeercred(int fd, struct ucred *ucred);
+int getpeersec(int fd, char **ret);
+
+int send_one_fd(int transport_fd, int fd, int flags);
+#if 0 /// UNNEEDED by elogind
+int receive_one_fd(int transport_fd, int flags);
+#endif // 0
+
+#define CMSG_FOREACH(cmsg, mh)                                          \
+        for ((cmsg) = CMSG_FIRSTHDR(mh); (cmsg); (cmsg) = CMSG_NXTHDR((mh), (cmsg)))
