@@ -1411,8 +1411,10 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -s --signal=SIGNAL       Which signal to send\n"
 #if 0 /// UNNEEDED by elogind
                "  -n --lines=INTEGER       Number of journal entries to show\n"
-               "  -o --output=STRING       Change journal output mode (short, short-monotonic,\n"
-               "                           verbose, export, json, json-pretty, json-sse, cat)\n\n"
+               "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
+               "                             short-iso, short-iso-precise, short-full,\n"
+               "                             short-monotonic, short-unix, verbose, export,\n"
+               "                             json, json-pretty, json-sse, cat)\n"
 #else
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
