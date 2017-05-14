@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [228],
+        [228.1],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
