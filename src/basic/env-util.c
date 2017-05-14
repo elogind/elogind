@@ -800,8 +800,10 @@ int deserialize_environment(char ***environment, const char *line) {
         if (r < 0)
                 return r;
 
-        if (!env_assignment_is_valid(uce))
+        if (!env_assignment_is_valid(uce)) {
+                free(uce);
                 return -EINVAL;
+        }
 
         return strv_env_replace(environment, uce);
 }
