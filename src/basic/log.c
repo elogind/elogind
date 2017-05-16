@@ -21,7 +21,11 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#ifdef __GLIBC__
 #include <printf.h>
+#else
+#include "parse-printf-format.h"
+#endif
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>

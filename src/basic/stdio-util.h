@@ -21,7 +21,9 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#ifdef __GLIBC__
 #include <printf.h>
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/types.h>
