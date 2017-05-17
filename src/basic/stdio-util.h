@@ -21,6 +21,8 @@
 
 #ifdef __GLIBC__
 #include <printf.h>
+#else
+#include "parse-printf-format.h"
 #endif
 #include <stdarg.h>
 #include <stdio.h>
