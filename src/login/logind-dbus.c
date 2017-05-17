@@ -1532,6 +1532,10 @@ static int execute_shutdown_or_sleep(
                         "ss", NULL, "replace-irreversibly");
 #else
         r = shutdown_or_sleep(m, action);
+
+        /* no more pending actions, whether this failed or not */
+        m->pending_action = HANDLE_IGNORE;
+        m->action_what    = 0;
 #endif // 0
         if (r < 0)
                 return r;
