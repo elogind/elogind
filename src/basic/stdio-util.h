@@ -19,7 +19,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#ifdef __GLIBC__
+#if defined(__GLIBC__) && defined(HAVE_PRINTF_H)
 #include <printf.h>
 #else
 #include "parse-printf-format.h"
