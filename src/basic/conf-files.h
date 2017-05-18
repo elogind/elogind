@@ -20,6 +20,8 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_list(char ***ret, const char *suffix, const char *root, const char *dir, ...);
 int conf_files_list_strv(char ***ret, const char *suffix, const char *root, const char* const* dirs);
+#endif // 0
 int conf_files_list_nulstr(char ***ret, const char *suffix, const char *root, const char *dirs);

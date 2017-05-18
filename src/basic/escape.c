@@ -413,6 +413,7 @@ char *xescape(const char *s, const char *bad) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 static char *strcpy_backslash_escaped(char *t, const char *s, const char *bad) {
         assert(bad);
 
@@ -472,3 +473,4 @@ char *shell_maybe_quote(const char *s) {
 
         return r;
 }
+#endif // 0

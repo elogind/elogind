@@ -645,6 +645,7 @@ int parse_env_file(
         return r < 0 ? r : n_pushed;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int load_env_file_push(
                 const char *filename, unsigned line,
                 const char *key, char *value,
@@ -700,7 +701,6 @@ int load_env_file(FILE *f, const char *fname, const char *newline, char ***rl) {
         return 0;
 }
 
-#if 0 /// UNNEDED by elogind
 static int load_env_file_push_pairs(
                 const char *filename, unsigned line,
                 const char *key, char *value,
@@ -759,7 +759,6 @@ int load_env_file_pairs(FILE *f, const char *fname, const char *newline, char **
         *rl = m;
         return 0;
 }
-#endif // 0
 
 static void write_env_var(FILE *f, const char *v) {
         const char *p;
@@ -821,7 +820,6 @@ int write_env_file(const char *fname, char **l) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int executable_is_script(const char *path, char **interpreter) {
         int r;
         _cleanup_free_ char *line = NULL;
