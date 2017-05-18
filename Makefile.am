@@ -256,32 +256,35 @@ endif
 CLEANFILES += \
        man/index.html
 
-XML_GLOB = $(wildcard $(top_srcdir)/man/*.xml)
-NON_INDEX_XML_FILES = $(filter-out man/elogind.index.xml,$(XML_FILES))
-SOURCE_XML_FILES = ${patsubst %,$(top_srcdir)/%,$(filter-out man/elogind.directives.xml,$(NON_INDEX_XML_FILES))}
+XML_GLOB            := $(wildcard $(top_srcdir)/man/*.xml)
+DIRECTIVE_FILE      := man/elogind.directives.xml
+INDEX_XML_FILE      := man/elogind.index.xml
+NON_INDEX_XML_FILES := $(DIRECTIVE_FILE) $(filter-out $(INDEX_XML_FILE) $(DIRECTIVE_FILE),$(XML_FILES))
+ALL_XML_FILES       := $(INDEX_XML_FILE) $(DIRECTIVE_FILE) $(filter-out $(INDEX_XML_FILE) $(DIRECTIVE_FILE),$(XML_GLOB))
+SOURCE_XML_FILES    := ${patsubst %,$(top_srcdir)/%,$(filter-out $(DIRECTIVE_FILE),$(NON_INDEX_XML_FILES))}
 
 # This target should only be run manually. It recreates Makefile-man.am
 # file in the source directory based on all man/*.xml files. Run it after
 # adding, removing, or changing the conditional in a man page.
-update-man-list: $(top_srcdir)/tools/make-man-rules.py $(XML_GLOB) man/custom-entities.ent
-	$(AM_V_GEN)$(PYTHON) $< $(XML_GLOB) > $(top_srcdir)/Makefile-man.tmp
+update-man-list: $(top_srcdir)/tools/make-man-rules.py $(ALL_XML_FILES) man/custom-entities.ent
+	$(AM_V_GEN)$(PYTHON) $< $(ALL_XML_FILES) > $(top_srcdir)/Makefile-man.tmp
 	$(AM_V_at)mv $(top_srcdir)/Makefile-man.tmp $(top_srcdir)/Makefile-man.am
 	@echo "Makefile-man.am has been regenerated"
 
-man/elogind.index.xml: $(top_srcdir)/tools/make-man-index.py $(NON_INDEX_XML_FILES)
+$(INDEX_XML_FILE): $(top_srcdir)/tools/make-man-index.py $(NON_INDEX_XML_FILES)
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
 	$(AM_V_GEN)$(PYTHON) $< $@ $(filter-out $<,$^)
 
-man/elogind.directives.xml: $(top_srcdir)/tools/make-directive-index.py man/custom-entities.ent $(SOURCE_XML_FILES)
+$(DIRECTIVE_FILE): $(top_srcdir)/tools/make-directive-index.py man/custom-entities.ent $(SOURCE_XML_FILES)
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
 	$(AM_V_GEN)$(PYTHON) $< $@ $(SOURCE_XML_FILES)
 
 CLEANFILES += \
-       man/elogind.index.xml \
-       man/elogind.directives.xml
+       $(INDEX_XML_FILE) \
+       $(DIRECTIVE_FILE)
 
 EXTRA_DIST += \
-	$(filter-out man/elogind.directives.xml man/elogind.index.xml,$(XML_FILES)) \
+	$(filter-out $(DIRECTIVE_FILE) $(INDEX_XML_FILE),$(XML_FILES)) \
 	tools/make-man-index.py \
 	tools/make-man-rules.py \
 	tools/make-directive-index.py \
