@@ -39,8 +39,12 @@
 
 #define USE(x, y) do{ (x) = (y); (y) = NULL; } while(0)
 
+#if 0 /// UNNEEDED by elogind
 int parse_sleep_config(const char *verb, char ***_modes, char ***_states) {
-
+#else
+/// really only used in here.
+static int parse_sleep_config(const char *verb, char ***_modes, char ***_states) {
+#endif // 0
         _cleanup_strv_free_ char
                 **suspend_mode = NULL, **suspend_state = NULL,
                 **hibernate_mode = NULL, **hibernate_state = NULL,
@@ -57,10 +61,19 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states) {
                 {}
         };
 
+#if 0 /// elogind has its own config file
         config_parse_many(PKGSYSCONFDIR "/sleep.conf",
                           CONF_PATHS_NULSTR("systemd/sleep.conf.d"),
                           "Sleep\0", config_item_table_lookup, items,
                           false, NULL);
+#else
+        const char* logind_conf = getenv("ELOGIND_CONF_FILE");
+        if (!logind_conf)
+                logind_conf = PKGSYSCONFDIR "/logind.conf";
+        config_parse(NULL, logind_conf, NULL, "Sleep\0",
+                     config_item_table_lookup, items, false,
+                     false, true, NULL);
+#endif // 0
 
         if (streq(verb, "suspend")) {
                 /* empty by default */

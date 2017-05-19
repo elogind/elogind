@@ -19,7 +19,9 @@
 
 #pragma once
 
+#if 0 /// UNNEEDED by elogind
 int parse_sleep_config(const char *verb, char ***modes, char ***states);
+#endif // 0
 
 int can_sleep(const char *verb);
 int can_sleep_disk(char **types);

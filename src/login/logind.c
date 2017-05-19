@@ -46,8 +46,12 @@
 #include "musl_missing.h"
 
 static void manager_free(Manager *m);
+static int  manager_parse_config_file(Manager *m);
 
 static Manager *manager_new(void) {
+#ifdef ENABLE_DEBUG_ELOGIND
+        int dbg_cnt;
+#endif // ENABLE_DEBUG_ELOGIND
         Manager *m;
         int r;
 
@@ -114,22 +118,68 @@ static Manager *manager_new(void) {
         if (r < 0)
                 goto fail;
 
-        m->suspend_mode = NULL;
-        m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
-        if (!m->suspend_state)
-                goto fail;
-        m->hibernate_mode = strv_new("platform", "shutdown", NULL);
-        if (!m->hibernate_mode)
-                goto fail;
-        m->hibernate_state = strv_new("disk", NULL);
-        if (!m->hibernate_state)
-                goto fail;
-        m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
-        if (!m->hybrid_sleep_mode)
-                goto fail;
-        m->hybrid_sleep_state = strv_new("disk", NULL);
-        if (!m->hybrid_sleep_state)
-                goto fail;
+        m->suspend_mode       = NULL;
+        m->suspend_state      = NULL;
+        m->hibernate_mode     = NULL;
+        m->hibernate_state    = NULL;
+        m->hybrid_sleep_mode  = NULL;
+        m->hybrid_sleep_state = NULL;
+
+        manager_parse_config_file(m);
+
+        /* Set default Sleep config if not already set by logind.conf */
+        if (!m->suspend_state) {
+                m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
+                if (!m->suspend_state)
+                        goto fail;
+        }
+        if (!m->hibernate_mode) {
+                m->hibernate_mode = strv_new("platform", "shutdown", NULL);
+                if (!m->hibernate_mode)
+                        goto fail;
+        }
+        if (!m->hibernate_state) {
+                m->hibernate_state = strv_new("disk", NULL);
+                if (!m->hibernate_state)
+                        goto fail;
+        }
+        if (!m->hybrid_sleep_mode) {
+                m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
+                if (!m->hybrid_sleep_mode)
+                        goto fail;
+        }
+        if (!m->hybrid_sleep_state) {
+                m->hybrid_sleep_state = strv_new("disk", NULL);
+                if (!m->hybrid_sleep_state)
+                        goto fail;
+        }
+
+#ifdef ENABLE_DEBUG_ELOGIND
+        dbg_cnt = -1;
+        while (m->suspend_mode && m->suspend_mode[++dbg_cnt])
+                log_debug_elogind("suspend_mode[%d] = %s",
+                                  dbg_cnt, m->suspend_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->suspend_state[++dbg_cnt])
+                log_debug_elogind("suspend_state[%d] = %s",
+                                  dbg_cnt, m->suspend_state[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hibernate_mode[++dbg_cnt])
+                log_debug_elogind("hibernate_mode[%d] = %s",
+                                  dbg_cnt, m->hibernate_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hibernate_state[++dbg_cnt])
+                log_debug_elogind("hibernate_state[%d] = %s",
+                                  dbg_cnt, m->hibernate_state[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hybrid_sleep_mode[++dbg_cnt])
+                log_debug_elogind("hybrid_sleep_mode[%d] = %s",
+                                  dbg_cnt, m->hybrid_sleep_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hybrid_sleep_state[++dbg_cnt])
+                log_debug_elogind("hybrid_sleep_state[%d] = %s",
+                                  dbg_cnt, m->hybrid_sleep_state[dbg_cnt]);
+#endif // ENABLE_DEBUG_ELOGIND
 
         m->udev = udev_new();
         if (!m->udev)
@@ -1210,20 +1260,16 @@ static int manager_parse_config_file(Manager *m) {
                                  config_item_perf_lookup, logind_gperf_lookup,
                                  false, m);
 #else
-        const char *unit = NULL, *logind_conf, *sections;
-        FILE *file = NULL;
-        bool relaxed = false, allow_include = false, warn = true;
+        const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
         assert(m);
 
-        logind_conf = getenv("ELOGIND_CONF_FILE");
         if (!logind_conf)
                 logind_conf = PKGSYSCONFDIR "/logind.conf";
-        sections = "Login\0Sleep\0";
 
-        return config_parse(unit, logind_conf, file, sections,
+        return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
                             config_item_perf_lookup, logind_gperf_lookup,
-                            relaxed, allow_include, warn, m);
+                            false, false, true, m);
 #endif // 0
 }
 
@@ -1287,8 +1333,6 @@ int main(int argc, char *argv[]) {
                 r = log_oom();
                 goto finish;
         }
-
-        manager_parse_config_file(m);
 
         r = manager_startup(m);
         if (r < 0) {
