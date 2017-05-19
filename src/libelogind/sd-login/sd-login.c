@@ -66,12 +66,16 @@ _public_ int sd_pid_get_session(pid_t pid, char **session) {
 }
 
 _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
+#if 0 /// UNNEEDED by elogind
+        int r;
+#endif // 0
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(unit, -EINVAL);
 
 #if 0 /// elogind does not support systemd units
-        return cg_pid_get_unit(pid, unit);
+        r = cg_pid_get_unit(pid, unit);
+        return r == -ENXIO ? -ENODATA : r;
 #else
         return -ESRCH;
 #endif // 0
