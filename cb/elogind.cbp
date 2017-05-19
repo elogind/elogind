@@ -446,6 +446,7 @@
 		<Unit filename="../src/login/logind.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/logind.conf" />
 		<Unit filename="../src/login/logind.h" />
 		<Unit filename="../src/login/pam_elogind.c">
 			<Option compilerVar="CC" />
