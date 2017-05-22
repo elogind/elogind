@@ -436,6 +436,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-session.h" />
+		<Unit filename="../src/login/logind-sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/logind-sleep.h" />
 		<Unit filename="../src/login/logind-user-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -485,10 +489,6 @@
 		</Unit>
 		<Unit filename="../src/shared/pager.h" />
 		<Unit filename="../src/shared/path-lookup.h" />
-		<Unit filename="../src/shared/sleep-config.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/sleep-config.h" />
 		<Unit filename="../src/shared/spawn-polkit-agent.c">
 			<Option compilerVar="CC" />
 		</Unit>

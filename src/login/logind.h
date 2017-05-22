@@ -37,6 +37,7 @@ typedef struct Manager Manager;
 #include "logind-button.h"
 #include "logind-device.h"
 #include "logind-inhibit.h"
+#include "logind-sleep.h"
 
 struct Manager {
         sd_event *event;

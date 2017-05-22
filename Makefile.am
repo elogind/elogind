@@ -440,8 +440,6 @@ noinst_LTLIBRARIES += \
 	libshared.la
 
 libshared_la_SOURCES = \
-	src/shared/sleep-config.c \
-	src/shared/sleep-config.h \
 	src/shared/conf-parser.c \
 	src/shared/conf-parser.h \
 	src/shared/pager.c \
@@ -655,6 +653,8 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-session.h \
 	src/login/logind-session-device.c \
 	src/login/logind-session-device.h \
+	src/login/logind-sleep.c \
+	src/login/logind-sleep.h \
 	src/login/logind-user.c \
 	src/login/logind-user.h \
 	src/login/logind-inhibit.c \

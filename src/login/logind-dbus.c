@@ -41,7 +41,7 @@
 #include "path-util.h"
 #include "process-util.h"
 #include "selinux-util.h"
-#include "sleep-config.h"
+//#include "sleep-config.h"
 //#include "special.h"
 #include "strv.h"
 #include "terminal-util.h"
@@ -1789,7 +1789,7 @@ static int method_do_shutdown_or_sleep(
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
 
         if (sleep_verb) {
-                r = can_sleep(sleep_verb);
+                r = can_sleep(m, sleep_verb);
                 if (r < 0)
                         return r;
 
@@ -2148,7 +2148,7 @@ static int method_can_shutdown_or_sleep(
         assert(action_ignore_inhibit);
 
         if (sleep_verb) {
-                r = can_sleep(sleep_verb);
+                r = can_sleep(m, sleep_verb);
                 if (r < 0)
                         return r;
                 if (r == 0)
