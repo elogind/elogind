@@ -24,6 +24,7 @@
 
 #include "fs-util.h"
 #include "macro.h"
+#include "missing.h"
 #include "mkdir.h"
 #include "path-util.h"
 #include "stat-util.h"

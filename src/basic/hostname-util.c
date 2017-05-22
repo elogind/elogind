@@ -17,7 +17,9 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <bits/local_lim.h>
+#if defined(__GLIBC__)
+# include <bits/local_lim.h>
+#endif // defined(__GLIBC__)
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
