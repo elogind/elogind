@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -24,6 +22,7 @@
 #include <stdio.h>
 
 #include "sd-bus.h"
+
 #include "set.h"
 
 struct introspect {

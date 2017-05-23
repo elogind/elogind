@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -21,9 +19,14 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/types.h>
 #include <stdbool.h>
+#include <sys/types.h>
+
+#if 0 /// elogind needs the systems udev header
+#include "libudev.h"
+#else
 #include <libudev.h>
+#endif // 0
 
 #ifdef HAVE_ACL
 

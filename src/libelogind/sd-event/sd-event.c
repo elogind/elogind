@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -37,6 +35,7 @@
 #include "process-util.h"
 #include "set.h"
 #include "signal-util.h"
+#include "string-table.h"
 #include "string-util.h"
 #include "time-util.h"
 #include "util.h"
@@ -59,6 +58,23 @@ typedef enum EventSourceType {
         _SOURCE_EVENT_SOURCE_TYPE_MAX,
         _SOURCE_EVENT_SOURCE_TYPE_INVALID = -1
 } EventSourceType;
+
+static const char* const event_source_type_table[_SOURCE_EVENT_SOURCE_TYPE_MAX] = {
+        [SOURCE_IO] = "io",
+        [SOURCE_TIME_REALTIME] = "realtime",
+        [SOURCE_TIME_BOOTTIME] = "bootime",
+        [SOURCE_TIME_MONOTONIC] = "monotonic",
+        [SOURCE_TIME_REALTIME_ALARM] = "realtime-alarm",
+        [SOURCE_TIME_BOOTTIME_ALARM] = "boottime-alarm",
+        [SOURCE_SIGNAL] = "signal",
+        [SOURCE_CHILD] = "child",
+        [SOURCE_DEFER] = "defer",
+        [SOURCE_POST] = "post",
+        [SOURCE_EXIT] = "exit",
+        [SOURCE_WATCHDOG] = "watchdog",
+};
+
+DEFINE_PRIVATE_STRING_TABLE_LOOKUP_TO_STRING(event_source_type, int);
 
 /* All objects we use in epoll events start with this value, so that
  * we know how to dispatch it */
@@ -207,6 +223,7 @@ struct sd_event {
         bool exit_requested:1;
         bool need_process_child:1;
         bool watchdog:1;
+        bool profile_delays:1;
 
         int exit_code;
 
@@ -218,6 +235,9 @@ struct sd_event {
         unsigned n_sources;
 
         LIST_HEAD(sd_event_source, sources);
+
+        usec_t last_run, last_log;
+        unsigned delays[sizeof(usec_t) * 8];
 };
 
 static void source_disconnect(sd_event_source *s);
@@ -305,6 +325,10 @@ static int earliest_time_prioq_compare(const void *a, const void *b) {
         return 0;
 }
 
+static usec_t time_event_source_latest(const sd_event_source *s) {
+        return usec_add(s->time.next, s->time.accuracy);
+}
+
 static int latest_time_prioq_compare(const void *a, const void *b) {
         const sd_event_source *x = a, *y = b;
 
@@ -324,9 +348,9 @@ static int latest_time_prioq_compare(const void *a, const void *b) {
                 return 1;
 
         /* Order by time */
-        if (x->time.next + x->time.accuracy < y->time.next + y->time.accuracy)
+        if (time_event_source_latest(x) < time_event_source_latest(y))
                 return -1;
-        if (x->time.next + x->time.accuracy > y->time.next + y->time.accuracy)
+        if (time_event_source_latest(x) > time_event_source_latest(y))
                 return 1;
 
         return 0;
@@ -416,16 +440,19 @@ _public_ int sd_event_new(sd_event** ret) {
         e->original_pid = getpid();
         e->perturb = USEC_INFINITY;
 
-        e->pending = prioq_new(pending_prioq_compare);
-        if (!e->pending) {
-                r = -ENOMEM;
+        r = prioq_ensure_allocated(&e->pending, pending_prioq_compare);
+        if (r < 0)
                 goto fail;
-        }
 
         e->epoll_fd = epoll_create1(EPOLL_CLOEXEC);
         if (e->epoll_fd < 0) {
                 r = -errno;
                 goto fail;
+        }
+
+        if (secure_getenv("SD_EVENT_PROFILE_DELAYS")) {
+                log_debug("Event loop profiling enabled. Logarithmic histogram of event loop iterations in the range 2^0 ... 2^63 us will be logged every 5s.");
+                e->profile_delays = true;
         }
 
         *ret = e;
@@ -437,7 +464,9 @@ fail:
 }
 
 _public_ sd_event* sd_event_ref(sd_event *e) {
-        assert_return(e, NULL);
+
+        if (!e)
+                return NULL;
 
         assert(e->n_ref >= 1);
         e->n_ref++;
@@ -482,7 +511,8 @@ static void source_io_unregister(sd_event_source *s) {
 
         r = epoll_ctl(s->event->epoll_fd, EPOLL_CTL_DEL, s->io.fd, NULL);
         if (r < 0)
-                log_debug_errno(errno, "Failed to remove source %s from epoll: %m", strna(s->description));
+                log_debug_errno(errno, "Failed to remove source %s (type %s) from epoll: %m",
+                                strna(s->description), event_source_type_to_string(s->type));
 
         s->io.registered = false;
 }
@@ -635,8 +665,10 @@ static int event_make_signal_data(
                 d->priority = priority;
 
                 r = hashmap_put(e->signal_data, &d->priority, d);
-        if (r < 0)
+                if (r < 0) {
+                        free(d);
                         return r;
+                }
 
                 added = true;
         }
@@ -1038,7 +1070,6 @@ _public_ int sd_event_add_time(
         int r;
 
         assert_return(e, -EINVAL);
-        assert_return(usec != (uint64_t) -1, -EINVAL);
         assert_return(accuracy != (uint64_t) -1, -EINVAL);
         assert_return(e->state != SD_EVENT_FINISHED, -ESTALE);
         assert_return(!event_pid_changed(e), -ECHILD);
@@ -1052,17 +1083,13 @@ _public_ int sd_event_add_time(
         d = event_get_clock_data(e, type);
         assert(d);
 
-        if (!d->earliest) {
-                d->earliest = prioq_new(earliest_time_prioq_compare);
-                if (!d->earliest)
-                        return -ENOMEM;
-        }
+        r = prioq_ensure_allocated(&d->earliest, earliest_time_prioq_compare);
+        if (r < 0)
+                return r;
 
-        if (!d->latest) {
-                d->latest = prioq_new(latest_time_prioq_compare);
-                if (!d->latest)
-                        return -ENOMEM;
-        }
+        r = prioq_ensure_allocated(&d->latest, latest_time_prioq_compare);
+        if (r < 0)
+                return r;
 
         if (d->fd < 0) {
                 r = event_setup_timer_fd(e, d, clock);
@@ -1315,11 +1342,9 @@ _public_ int sd_event_add_exit(
         assert_return(e->state != SD_EVENT_FINISHED, -ESTALE);
         assert_return(!event_pid_changed(e), -ECHILD);
 
-        if (!e->exit) {
-                e->exit = prioq_new(exit_prioq_compare);
-                if (!e->exit)
-                        return -ENOMEM;
-        }
+        r = prioq_ensure_allocated(&e->exit, exit_prioq_compare);
+        if (r < 0)
+                return r;
 
         s = source_new(e, !ret, SOURCE_EXIT);
         if (!s)
@@ -1344,7 +1369,9 @@ _public_ int sd_event_add_exit(
 
 #if 0 /// UNNEEDED by elogind
 _public_ sd_event_source* sd_event_source_ref(sd_event_source *s) {
-        assert_return(s, NULL);
+
+        if (!s)
+                return NULL;
 
         assert(s->n_ref >= 1);
         s->n_ref++;
@@ -1746,7 +1773,6 @@ _public_ int sd_event_source_set_time(sd_event_source *s, uint64_t usec) {
         struct clock_data *d;
 
         assert_return(s, -EINVAL);
-        assert_return(usec != (uint64_t) -1, -EINVAL);
         assert_return(EVENT_SOURCE_IS_TIME(s->type), -EDOM);
         assert_return(s->event->state != SD_EVENT_FINISHED, -ESTALE);
         assert_return(!event_pid_changed(s->event), -ECHILD);
@@ -1880,6 +1906,8 @@ static usec_t sleep_between(sd_event *e, usec_t a, usec_t b) {
 
         if (a <= 0)
                 return 0;
+        if (a >= USEC_INFINITY)
+                return USEC_INFINITY;
 
         if (b <= a + 1)
                 return a;
@@ -1969,7 +1997,7 @@ static int event_arm_timer(
                 d->needs_rearm = false;
 
         a = prioq_peek(d->earliest);
-        if (!a || a->enabled == SD_EVENT_OFF) {
+        if (!a || a->enabled == SD_EVENT_OFF || a->time.next == USEC_INFINITY) {
 
                 if (d->fd < 0)
                         return 0;
@@ -1989,7 +2017,7 @@ static int event_arm_timer(
         b = prioq_peek(d->latest);
         assert_se(b && b->enabled != SD_EVENT_OFF);
 
-        t = sleep_between(e, a->time.next, b->time.next + b->time.accuracy);
+        t = sleep_between(e, a->time.next, time_event_source_latest(b));
         if (d->next == t)
                 return 0;
 
@@ -2305,12 +2333,9 @@ static int source_dispatch(sd_event_source *s) {
 
         s->dispatching = false;
 
-        if (r < 0) {
-                if (s->description)
-                        log_debug_errno(r, "Event source '%s' returned error, disabling: %m", s->description);
-                else
-                        log_debug_errno(r, "Event source %p returned error, disabling: %m", s);
-        }
+        if (r < 0)
+                log_debug_errno(r, "Event source %s (type %s) returned error, disabling: %m",
+                                strna(s->description), event_source_type_to_string(s->type));
 
         if (s->n_ref == 0)
                 source_free(s);
@@ -2343,12 +2368,9 @@ static int event_prepare(sd_event *e) {
                 r = s->prepare(s, s->userdata);
                 s->dispatching = false;
 
-                if (r < 0) {
-                        if (s->description)
-                                log_debug_errno(r, "Prepare callback of event source '%s' returned error, disabling: %m", s->description);
-                        else
-                                log_debug_errno(r, "Prepare callback of event source %p returned error, disabling: %m", s);
-                }
+                if (r < 0)
+                        log_debug_errno(r, "Prepare callback of event source %s (type %s) returned error, disabling: %m",
+                                        strna(s->description), event_source_type_to_string(s->type));
 
                 if (s->n_ref == 0)
                         source_free(s);
@@ -2453,7 +2475,9 @@ _public_ int sd_event_prepare(sd_event *e) {
 
         e->iteration++;
 
+        e->state = SD_EVENT_PREPARING;
         r = event_prepare(e);
+        e->state = SD_EVENT_INITIAL;
         if (r < 0)
                 return r;
 
@@ -2631,6 +2655,18 @@ _public_ int sd_event_dispatch(sd_event *e) {
         return 1;
 }
 
+static void event_log_delays(sd_event *e) {
+        char b[ELEMENTSOF(e->delays) * DECIMAL_STR_MAX(unsigned) + 1];
+        unsigned i;
+        int o;
+
+        for (i = o = 0; i < ELEMENTSOF(e->delays); i++) {
+                o += snprintf(&b[o], sizeof(b) - o, "%u ", e->delays[i]);
+                e->delays[i] = 0;
+        }
+        log_debug("Event loop iterations: %.*s", o, b);
+}
+
 _public_ int sd_event_run(sd_event *e, uint64_t timeout) {
         int r;
 
@@ -2639,10 +2675,29 @@ _public_ int sd_event_run(sd_event *e, uint64_t timeout) {
         assert_return(e->state != SD_EVENT_FINISHED, -ESTALE);
         assert_return(e->state == SD_EVENT_INITIAL, -EBUSY);
 
+        if (e->profile_delays && e->last_run) {
+                usec_t this_run;
+                unsigned l;
+
+                this_run = now(CLOCK_MONOTONIC);
+
+                l = u64log2(this_run - e->last_run);
+                assert(l < sizeof(e->delays));
+                e->delays[l]++;
+
+                if (this_run - e->last_log >= 5*USEC_PER_SEC) {
+                        event_log_delays(e);
+                        e->last_log = this_run;
+                }
+        }
+
         r = sd_event_prepare(e);
         if (r == 0)
                 /* There was nothing? Then wait... */
                 r = sd_event_wait(e, timeout);
+
+        if (e->profile_delays)
+                e->last_run = now(CLOCK_MONOTONIC);
 
         if (r > 0) {
                 /* There's something now, then let's dispatch it */
@@ -2725,6 +2780,12 @@ _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
         assert_return(e, -EINVAL);
         assert_return(usec, -EINVAL);
         assert_return(!event_pid_changed(e), -ECHILD);
+        assert_return(IN_SET(clock,
+                             CLOCK_REALTIME,
+                             CLOCK_REALTIME_ALARM,
+                             CLOCK_MONOTONIC,
+                             CLOCK_BOOTTIME,
+                             CLOCK_BOOTTIME_ALARM), -EOPNOTSUPP);
 
         if (!dual_timestamp_is_set(&e->timestamp)) {
                 /* Implicitly fall back to now() if we never ran
@@ -2744,8 +2805,7 @@ _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
                 *usec = e->timestamp.monotonic;
                 break;
 
-        case CLOCK_BOOTTIME:
-        case CLOCK_BOOTTIME_ALARM:
+        default:
                 *usec = e->timestamp_boottime;
                 break;
         }

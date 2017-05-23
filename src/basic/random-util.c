@@ -17,23 +17,24 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <sys/time.h>
 #include <linux/random.h>
 #include <stdint.h>
+
 #ifdef HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
 #endif
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <time.h>
 
 #include "fd-util.h"
 #include "io-util.h"
 #include "missing.h"
 #include "random-util.h"
 #include "time-util.h"
-#include "util.h"
 
 int dev_urandom(void *p, size_t n) {
         static int have_syscall = -1;
@@ -94,17 +95,18 @@ void initialize_srand(void) {
         if (srand_called)
                 return;
 
-        x = 0;
-
 #ifdef HAVE_SYS_AUXV_H
-        /* The kernel provides us with a bit of entropy in auxv, so
-         * let's try to make use of that to seed the pseudo-random
-         * generator. It's better than nothing... */
+        /* The kernel provides us with 16 bytes of entropy in auxv, so let's try to make use of that to seed the
+         * pseudo-random generator. It's better than nothing... */
 
         auxv = (void*) getauxval(AT_RANDOM);
-        if (auxv)
-                x ^= *(unsigned*) auxv;
+        if (auxv) {
+                assert_cc(sizeof(x) < 16);
+                memcpy(&x, auxv, sizeof(x));
+        } else
 #endif
+                x = 0;
+
 
         x ^= (unsigned) now(CLOCK_REALTIME);
         x ^= (unsigned) gettid();

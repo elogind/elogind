@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -23,9 +21,9 @@
 
 #ifdef HAVE_ACL
 
+#include <acl/libacl.h>
 #include <stdbool.h>
 #include <sys/acl.h>
-#include <acl/libacl.h>
 
 #include "macro.h"
 
@@ -36,6 +34,7 @@ int add_base_acls_if_needed(acl_t *acl_p, const char *path);
 int acl_search_groups(const char* path, char ***ret_groups);
 int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask);
 int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *acl);
+int add_acls_for_user(int fd, uid_t uid);
 #endif // 0
 
 /* acl_free takes multiple argument types.

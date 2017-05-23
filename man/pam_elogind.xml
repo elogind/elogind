@@ -55,9 +55,8 @@
     <title>Description</title>
 
     <para><command>pam_elogind</command> registers user sessions with
-    the elogind login manager
-    <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-    and hence the elogind control group hierarchy.</para>
+    the elogind login manager and hence the elogind control group
+    hierarchy.</para>
 
     <para>On login, this module ensures the following:</para>
 
@@ -74,14 +73,6 @@
       initialized from the auditing session id
       (<filename>/proc/self/sessionid</filename>). Otherwise, an
       independent session counter is used.</para></listitem>
-
-      <listitem><para>A new elogind scope unit is created for the
-      session. If this is the first concurrent session of the user, an
-      implicit slice below <filename>user.slice</filename> is
-      automatically created and the scope placed into it. An instance
-      of the system service <filename>user@.service</filename>, which
-      runs the elogind user manager instance, is started.
-      </para></listitem>
     </orderedlist>
 
     <para>On logout, this module ensures the following:</para>
@@ -90,18 +81,12 @@
       <listitem><para>If enabled in
       <citerefentry><refentrytitle>logind.conf</refentrytitle>
       <manvolnum>5</manvolnum></citerefentry>, all processes of the
-      session are terminated. If the last concurrent session of a user
-      ends, the user's elogind instance will be terminated too, and so
-      will the user's slice unit.</para></listitem>
+      session are terminated.</para></listitem>
 
       <listitem><para>If the last concurrent session of a user ends,
       the <varname>$XDG_RUNTIME_DIR</varname> directory and all its
       contents are removed, too.</para></listitem>
     </orderedlist>
-
-    <para>If the system was not booted up with elogind as init system,
-    this module does nothing and immediately returns
-    <constant>PAM_SUCCESS</constant>.</para>
 
   </refsect1>
 
@@ -279,17 +264,13 @@ session    required     pam_elogind.so</programlisting>
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <citerefentry project='man-pages'><refentrytitle>pam_loginuid</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <citerefentry project='man-pages'><refentrytitle>pam_loginuid</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     </para>
   </refsect1>
 

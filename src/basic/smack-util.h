@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -24,6 +22,7 @@
 ***/
 
 #include <stdbool.h>
+#include <sys/types.h>
 
 #include "macro.h"
 

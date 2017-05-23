@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,14 +17,24 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/resource.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
+#include "sd-bus-protocol.h"
 #include "sd-bus.h"
 #include "sd-daemon.h"
 #include "sd-event.h"
+#include "sd-id128.h"
 
 #include "alloc-util.h"
-#include "bus-error.h"
 #include "bus-internal.h"
 #include "bus-label.h"
 #include "bus-message.h"
@@ -35,7 +43,12 @@
 #include "def.h"
 //#include "env-util.h"
 #include "escape.h"
+#include "extract-word.h"
 #include "fd-util.h"
+#include "hashmap.h"
+//#include "install.h"
+#include "kdbus.h"
+#include "log.h"
 #include "macro.h"
 #include "missing.h"
 #include "parse-util.h"
@@ -49,6 +62,7 @@
 #include "string-util.h"
 #include "strv.h"
 #include "syslog-util.h"
+#include "time-util.h"
 #include "unit-name.h"
 #include "user-util.h"
 #include "utf8.h"
@@ -183,7 +197,7 @@ int bus_event_loop_with_idle(
 #endif // 0
 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error) {
-        _cleanup_bus_message_unref_ sd_bus_message *rep = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *rep = NULL;
         int r, has_owner = 0;
 
         assert(c);
@@ -209,7 +223,7 @@ int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error) {
 }
 
 static int check_good_user(sd_bus_message *m, uid_t good_user) {
-        _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
+        _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
         uid_t sender_uid;
         int r;
 
@@ -259,8 +273,8 @@ int bus_test_polkit(
                 return 1;
 #ifdef ENABLE_POLKIT
         else {
-                _cleanup_bus_message_unref_ sd_bus_message *request = NULL;
-                _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+                _cleanup_(sd_bus_message_unrefp) sd_bus_message *request = NULL;
+                _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
                 int authorized = false, challenge = false;
                 const char *sender, **k, **v;
 
@@ -363,7 +377,7 @@ static void async_polkit_query_free(AsyncPolkitQuery *q) {
 }
 
 static int async_polkit_callback(sd_bus_message *reply, void *userdata, sd_bus_error *error) {
-        _cleanup_bus_error_free_ sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
         AsyncPolkitQuery *q = userdata;
         int r;
 
@@ -401,7 +415,7 @@ int bus_verify_polkit_async(
                 sd_bus_error *error) {
 
 #ifdef ENABLE_POLKIT
-        _cleanup_bus_message_unref_ sd_bus_message *pk = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *pk = NULL;
         AsyncPolkitQuery *q;
         const char *sender, **k, **v;
         sd_bus_message_handler_t callback;
@@ -590,7 +604,7 @@ int bus_check_peercred(sd_bus *c) {
 }
 
 int bus_connect_system_systemd(sd_bus **_bus) {
-        _cleanup_bus_unref_ sd_bus *bus = NULL;
+        _cleanup_(sd_bus_unrefp) sd_bus *bus = NULL;
         int r;
 
         assert(_bus);
@@ -644,7 +658,7 @@ int bus_connect_system_systemd(sd_bus **_bus) {
 }
 
 int bus_connect_user_systemd(sd_bus **_bus) {
-        _cleanup_bus_unref_ sd_bus *bus = NULL;
+        _cleanup_(sd_bus_unrefp) sd_bus *bus = NULL;
         _cleanup_free_ char *ee = NULL;
         const char *e;
         int r;
@@ -911,8 +925,8 @@ int bus_print_property(const char *name, sd_bus_message *property, bool all) {
 }
 
 int bus_print_all_properties(sd_bus *bus, const char *dest, const char *path, char **filter, bool all) {
-        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(bus);
@@ -1095,7 +1109,7 @@ int bus_message_map_all_properties(
                 const struct bus_properties_map *map,
                 void *userdata) {
 
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(m);
@@ -1203,8 +1217,8 @@ int bus_map_all_properties(
                 const struct bus_properties_map *map,
                 void *userdata) {
 
-        _cleanup_bus_message_unref_ sd_bus_message *m = NULL;
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(bus);
@@ -1393,7 +1407,7 @@ int bus_parse_unit_info(sd_bus_message *message, UnitInfo *u) {
 
 int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignment) {
         const char *eq, *field;
-        int r;
+        int r, rl;
 
         assert(m);
         assert(assignment);
@@ -1404,20 +1418,18 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                 return -EINVAL;
         }
 
+        r = sd_bus_message_open_container(m, SD_BUS_TYPE_STRUCT, "sv");
+        if (r < 0)
+                return bus_log_create_error(r);
+
         field = strndupa(assignment, eq - assignment);
         eq ++;
 
         if (streq(field, "CPUQuota")) {
 
-                if (isempty(eq)) {
-
-                        r = sd_bus_message_append_basic(m, SD_BUS_TYPE_STRING, "CPUQuotaPerSecUSec");
-                        if (r < 0)
-                                return bus_log_create_error(r);
-
-                        r = sd_bus_message_append(m, "v", "t", USEC_INFINITY);
-
-                } else if (endswith(eq, "%")) {
+                if (isempty(eq))
+                        r = sd_bus_message_append(m, "sv", "CPUQuotaPerSecUSec", "t", USEC_INFINITY);
+                else if (endswith(eq, "%")) {
                         double percent;
 
                         if (sscanf(eq, "%lf%%", &percent) != 1 || percent <= 0) {
@@ -1425,49 +1437,78 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                                 return -EINVAL;
                         }
 
-                        r = sd_bus_message_append_basic(m, SD_BUS_TYPE_STRING, "CPUQuotaPerSecUSec");
-                        if (r < 0)
-                                return bus_log_create_error(r);
-
-                        r = sd_bus_message_append(m, "v", "t", (usec_t) percent * USEC_PER_SEC / 100);
+                        r = sd_bus_message_append(m, "sv", "CPUQuotaPerSecUSec", "t", (usec_t) percent * USEC_PER_SEC / 100);
                 } else {
                         log_error("CPU quota needs to be in percent.");
                         return -EINVAL;
                 }
 
-                if (r < 0)
-                        return bus_log_create_error(r);
+                goto finish;
 
-                return 0;
         } else if (streq(field, "EnvironmentFile")) {
-                r = sd_bus_message_append_basic(m, SD_BUS_TYPE_STRING, "EnvironmentFiles");
-                if (r < 0)
-                        return r;
 
-                r = sd_bus_message_append(m, "v", "a(sb)", 1,
+                r = sd_bus_message_append(m, "sv", "EnvironmentFiles", "a(sb)", 1,
                                           eq[0] == '-' ? eq + 1 : eq,
                                           eq[0] == '-');
+                goto finish;
+
+        } else if (STR_IN_SET(field, "AccuracySec", "RandomizedDelaySec", "RuntimeMaxSec")) {
+                char *n;
+                usec_t t;
+                size_t l;
+                r = parse_sec(eq, &t);
                 if (r < 0)
-                        return r;
-                return 0;
+                        return log_error_errno(r, "Failed to parse %s= parameter: %s", field, eq);
+
+                l = strlen(field);
+                n = newa(char, l + 2);
+                if (!n)
+                        return log_oom();
+
+                /* Change suffix Sec → USec */
+                strcpy(mempcpy(n, field, l - 3), "USec");
+                r = sd_bus_message_append(m, "sv", n, "t", t);
+                goto finish;
         }
 
         r = sd_bus_message_append_basic(m, SD_BUS_TYPE_STRING, field);
         if (r < 0)
                 return bus_log_create_error(r);
 
-        if (STR_IN_SET(field,
+        rl = rlimit_from_string(field);
+        if (rl >= 0) {
+                const char *sn;
+                struct rlimit l;
+
+                r = rlimit_parse(rl, eq, &l);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to parse resource limit: %s", eq);
+
+                r = sd_bus_message_append(m, "v", "t", l.rlim_max);
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_close_container(m);
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                r = sd_bus_message_open_container(m, SD_BUS_TYPE_STRUCT, "sv");
+                if (r < 0)
+                        return bus_log_create_error(r);
+
+                sn = strjoina(field, "Soft");
+                r = sd_bus_message_append(m, "sv", sn, "t", l.rlim_cur);
+
+        } else if (STR_IN_SET(field,
                        "CPUAccounting", "MemoryAccounting", "BlockIOAccounting", "TasksAccounting",
                        "SendSIGHUP", "SendSIGKILL", "WakeSystem", "DefaultDependencies",
                        "IgnoreSIGPIPE", "TTYVHangup", "TTYReset", "RemainAfterExit",
                        "PrivateTmp", "PrivateDevices", "PrivateNetwork", "NoNewPrivileges",
-                       "SyslogLevelPrefix", "Delegate")) {
+                       "SyslogLevelPrefix", "Delegate", "RemainAfterElapse")) {
 
                 r = parse_boolean(eq);
-                if (r < 0) {
-                        log_error("Failed to parse boolean assignment %s.", assignment);
-                        return -EINVAL;
-                }
+                if (r < 0)
+                        return log_error_errno(r, "Failed to parse boolean assignment %s.", assignment);
 
                 r = sd_bus_message_append(m, "v", "b", r);
 
@@ -1639,21 +1680,6 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                         r = sd_bus_message_append(m, "v", "a(st)", path, u);
                 }
 
-        } else if (rlimit_from_string(field) >= 0) {
-                uint64_t rl;
-
-                if (streq(eq, "infinity"))
-                        rl = (uint64_t) -1;
-                else {
-                        r = safe_atou64(eq, &rl);
-                        if (r < 0) {
-                                log_error("Invalid resource limit: %s", eq);
-                                return -EINVAL;
-                        }
-                }
-
-                r = sd_bus_message_append(m, "v", "t", rl);
-
         } else if (streq(field, "Nice")) {
                 int32_t i;
 
@@ -1723,16 +1749,6 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
 
                 r = sd_bus_message_append(m, "v", "i", sig);
 
-        } else if (streq(field, "AccuracySec")) {
-                usec_t u;
-
-                r = parse_sec(eq, &u);
-                if (r < 0) {
-                        log_error("Failed to parse %s value %s", field, eq);
-                        return -EINVAL;
-                }
-
-                r = sd_bus_message_append(m, "v", "t", u);
         } else if (streq(field, "TimerSlackNSec")) {
                 nsec_t n;
 
@@ -1846,6 +1862,11 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                 return -EINVAL;
         }
 
+finish:
+        if (r < 0)
+                return bus_log_create_error(r);
+
+        r = sd_bus_message_close_container(m);
         if (r < 0)
                 return bus_log_create_error(r);
 
@@ -2020,12 +2041,20 @@ static const struct {
         { "start-limit", "start of the service was attempted too often" }
 };
 
-static void log_job_error_with_service_result(const char* service, const char *result) {
-        _cleanup_free_ char *service_shell_quoted = NULL;
+static void log_job_error_with_service_result(const char* service, const char *result, const char *extra_args) {
+        _cleanup_free_ char *service_shell_quoted = NULL, *systemctl_extra_args = NULL;
 
         assert(service);
 
         service_shell_quoted = shell_maybe_quote(service);
+
+        systemctl_extra_args = strjoin("systemctl ", extra_args, " ", NULL);
+        if (!systemctl_extra_args) {
+                log_oom();
+                return;
+        }
+
+        systemctl_extra_args = strstrip(systemctl_extra_args);
 
         if (!isempty(result)) {
                 unsigned i;
@@ -2035,27 +2064,30 @@ static void log_job_error_with_service_result(const char* service, const char *r
                                 break;
 
                 if (i < ELEMENTSOF(explanations)) {
-                        log_error("Job for %s failed because %s. See \"systemctl status %s\" and \"journalctl -xe\" for details.\n",
+                        log_error("Job for %s failed because %s. See \"%s status %s\" and \"journalctl -xe\" for details.\n",
                                   service,
                                   explanations[i].explanation,
+                                  systemctl_extra_args,
                                   strna(service_shell_quoted));
 
                         goto finish;
                 }
         }
 
-        log_error("Job for %s failed. See \"systemctl status %s\" and \"journalctl -xe\" for details.\n",
+        log_error("Job for %s failed. See \"%s status %s\" and \"journalctl -xe\" for details.\n",
                   service,
+                  systemctl_extra_args,
                   strna(service_shell_quoted));
 
 finish:
         /* For some results maybe additional explanation is required */
         if (streq_ptr(result, "start-limit"))
-                log_info("To force a start use \"systemctl reset-failed %1$s\" followed by \"systemctl start %1$s\" again.",
+                log_info("To force a start use \"%1$s reset-failed %2$s\" followed by \"%1$s start %2$s\" again.",
+                         systemctl_extra_args,
                          strna(service_shell_quoted));
 }
 
-static int check_wait_response(BusWaitForJobs *d, bool quiet) {
+static int check_wait_response(BusWaitForJobs *d, bool quiet, const char *extra_args) {
         int r = 0;
 
         assert(d->result);
@@ -2068,7 +2100,7 @@ static int check_wait_response(BusWaitForJobs *d, bool quiet) {
                 else if (streq(d->result, "dependency"))
                         log_error("A dependency job for %s failed. See 'journalctl -xe' for details.", strna(d->name));
                 else if (streq(d->result, "invalid"))
-                        log_error("Job for %s invalid.", strna(d->name));
+                        log_error("%s is not active, cannot reload.", strna(d->name));
                 else if (streq(d->result, "assert"))
                         log_error("Assertion failed on job for %s.", strna(d->name));
                 else if (streq(d->result, "unsupported"))
@@ -2082,7 +2114,7 @@ static int check_wait_response(BusWaitForJobs *d, bool quiet) {
                                 if (q < 0)
                                         log_debug_errno(q, "Failed to get Result property of service %s: %m", d->name);
 
-                                log_job_error_with_service_result(d->name, result);
+                                log_job_error_with_service_result(d->name, result, extra_args);
                         } else
                                 log_error("Job failed. See \"journalctl -xe\" for details.");
                 }
@@ -2106,7 +2138,7 @@ static int check_wait_response(BusWaitForJobs *d, bool quiet) {
         return r;
 }
 
-int bus_wait_for_jobs(BusWaitForJobs *d, bool quiet) {
+int bus_wait_for_jobs(BusWaitForJobs *d, bool quiet, const char *extra_args) {
         int r = 0;
 
         assert(d);
@@ -2119,7 +2151,7 @@ int bus_wait_for_jobs(BusWaitForJobs *d, bool quiet) {
                         return log_error_errno(q, "Failed to wait for response: %m");
 
                 if (d->result) {
-                        q = check_wait_response(d, quiet);
+                        q = check_wait_response(d, quiet, extra_args);
                         /* Return the first error as it is most likely to be
                          * meaningful. */
                         if (q < 0 && r == 0)
@@ -2154,7 +2186,7 @@ int bus_wait_for_jobs_one(BusWaitForJobs *d, const char *path, bool quiet) {
         if (r < 0)
                 return log_oom();
 
-        return bus_wait_for_jobs(d, quiet);
+        return bus_wait_for_jobs(d, quiet, NULL);
 }
 
 int bus_deserialize_and_dump_unit_file_changes(sd_bus_message *m, bool quiet, UnitFileChange **changes, unsigned *n_changes) {
@@ -2362,23 +2394,28 @@ int bus_property_get_rlimit(
         struct rlimit *rl;
         uint64_t u;
         rlim_t x;
+        const char *is_soft;
 
         assert(bus);
         assert(reply);
         assert(userdata);
 
+        is_soft = endswith(property, "Soft");
         rl = *(struct rlimit**) userdata;
         if (rl)
-                x = rl->rlim_max;
+                x = is_soft ? rl->rlim_cur : rl->rlim_max;
         else {
                 struct rlimit buf = {};
                 int z;
+                const char *s;
 
-                z = rlimit_from_string(strstr(property, "Limit"));
+                s = is_soft ? strndupa(property, is_soft - property) : property;
+
+                z = rlimit_from_string(strstr(s, "Limit"));
                 assert(z >= 0);
 
                 getrlimit(z, &buf);
-                x = buf.rlim_max;
+                x = is_soft ? buf.rlim_cur : buf.rlim_max;
         }
 
         /* rlim_t might have different sizes, let's map

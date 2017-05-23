@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,12 +17,22 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <langinfo.h>
+#include <libintl.h>
 #include <locale.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 
 #include "dirent-util.h"
 #include "fd-util.h"
+#include "hashmap.h"
 #include "locale-util.h"
 #include "path-util.h"
 #include "set.h"
@@ -32,7 +40,6 @@
 #include "string-util.h"
 #include "strv.h"
 #include "utf8.h"
-#include "util.h"
 
 static int add_locales_from_archive(Set *locales) {
         /* Stolen from glibc... */

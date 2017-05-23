@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -22,7 +20,10 @@
 ***/
 
 #include <dirent.h>
+#include <errno.h>
+#include <stdbool.h>
 
+#include "macro.h"
 #include "path-util.h"
 
 int dirent_ensure_type(DIR *d, struct dirent *de);

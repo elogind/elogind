@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,10 +17,15 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <limits.h>
 #include <poll.h>
+#include <stdio.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "io-util.h"
+#include "time-util.h"
 
 int flush_fd(int fd) {
         struct pollfd pollfd = {

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -22,23 +20,29 @@
 #include <dirent.h>
 #include <errno.h>
 #include <ftw.h>
+//#include <limits.h>
 #include <signal.h>
+//#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+//#include <sys/statfs.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
 #include "cgroup-util.h"
+//#include "def.h"
 #include "dirent-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "formats-util.h"
 #include "fs-util.h"
+//#include "log.h"
 #include "login-util.h"
 #include "macro.h"
+//#include "missing.h"
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
@@ -47,11 +51,11 @@
 #include "set.h"
 //#include "special.h"
 #include "stat-util.h"
+#include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
 #include "unit-name.h"
 #include "user-util.h"
-#include "util.h"
 
 int cg_enumerate_processes(const char *controller, const char *path, FILE **_f) {
         _cleanup_free_ char *fs = NULL;
@@ -87,7 +91,7 @@ int cg_read_pid(FILE *f, pid_t *_pid) {
                 if (feof(f))
                         return 0;
 
-                return errno ? -errno : -EIO;
+                return errno > 0 ? -errno : -EIO;
         }
 
         if (ul <= 0)
@@ -557,7 +561,6 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
                 r = join_path_unified(path, suffix, fs);
         else
                 r = join_path_legacy(controller, path, suffix, fs);
-
         if (r < 0)
                 return r;
 
@@ -647,7 +650,7 @@ int cg_trim(const char *controller, const char *path, bool delete_root) {
         if (nftw(fs, trim_cb, 64, FTW_DEPTH|FTW_MOUNT|FTW_PHYS) != 0) {
                 if (errno == ENOENT)
                         r = 0;
-                else if (errno != 0)
+                else if (errno > 0)
                         r = -errno;
                 else
                         r = -EIO;
@@ -716,7 +719,7 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
         if (pid == 0)
                 pid = getpid();
 
-        snprintf(c, sizeof(c), PID_FMT"\n", pid);
+        xsprintf(c, PID_FMT "\n", pid);
 
         return write_string_file(fs, c, 0);
 }
@@ -2135,7 +2138,7 @@ int cg_kernel_controllers(Set *controllers) {
                         if (feof(f))
                                 break;
 
-                        if (ferror(f) && errno != 0)
+                        if (ferror(f) && errno > 0)
                                 return -errno;
 
                         return -EBADMSG;
@@ -2333,7 +2336,6 @@ static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_MEMORY] = "memory",
         [CGROUP_CONTROLLER_DEVICES] = "devices",
         [CGROUP_CONTROLLER_PIDS] = "pids",
-        [CGROUP_CONTROLLER_NET_CLS] = "net_cls",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_controller, CGroupController);

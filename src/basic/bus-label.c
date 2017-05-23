@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -25,7 +23,6 @@
 #include "bus-label.h"
 #include "hexdecoct.h"
 #include "macro.h"
-#include "util.h"
 
 char *bus_label_escape(const char *s) {
         char *r, *t;

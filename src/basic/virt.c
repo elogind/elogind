@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -20,6 +18,8 @@
 ***/
 
 #include <errno.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -27,11 +27,11 @@
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "fileio.h"
+#include "macro.h"
 #include "process-util.h"
 #include "stat-util.h"
 #include "string-table.h"
 #include "string-util.h"
-#include "util.h"
 #include "virt.h"
 
 #if 0 /// UNNEEDED by elogind
@@ -270,13 +270,20 @@ int detect_vm(void) {
         if (cached_found >= 0)
                 return cached_found;
 
-        r = detect_vm_cpuid();
+        /* We have to use the correct order here:
+         * Some virtualization technologies do use KVM hypervisor but are
+         * expected to be detected as something else. So detect DMI first.
+         *
+         * An example is Virtualbox since version 5.0, which uses KVM backend.
+         * Detection via DMI works corretly, the CPU ID would find KVM
+         * only. */
+        r = detect_vm_dmi();
         if (r < 0)
                 return r;
         if (r != VIRTUALIZATION_NONE)
                 goto finish;
 
-        r = detect_vm_dmi();
+        r = detect_vm_cpuid();
         if (r < 0)
                 return r;
         if (r != VIRTUALIZATION_NONE)

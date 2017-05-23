@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -24,9 +22,11 @@
 #include <fcntl.h>
 #include <mntent.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "macro.h"
 #include "missing.h"
 
 int fd_is_mount_point(int fd, const char *filename, int flags);

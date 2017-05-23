@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -36,6 +34,7 @@
 #include "fd-util.h"
 #include "formats-util.h"
 #include "logind.h"
+#include "selinux-util.h"
 #include "signal-util.h"
 #include "strv.h"
 #include "udev-util.h"
@@ -47,8 +46,12 @@
 #include "musl_missing.h"
 
 static void manager_free(Manager *m);
+static int  manager_parse_config_file(Manager *m);
 
 static Manager *manager_new(void) {
+#ifdef ENABLE_DEBUG_ELOGIND
+        int dbg_cnt;
+#endif // ENABLE_DEBUG_ELOGIND
         Manager *m;
         int r;
 
@@ -81,7 +84,7 @@ static Manager *manager_new(void) {
         m->idle_action_not_before_usec = now(CLOCK_MONOTONIC);
 
         m->runtime_dir_size = PAGE_ALIGN((size_t) (physical_memory() / 10)); /* 10% */
-        m->user_tasks_max = UINT64_C(4096);
+        m->user_tasks_max = UINT64_C(12288);
 
         m->devices = hashmap_new(&string_hash_ops);
         m->seats = hashmap_new(&string_hash_ops);
@@ -115,22 +118,68 @@ static Manager *manager_new(void) {
         if (r < 0)
                 goto fail;
 
-        m->suspend_mode = NULL;
-        m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
-        if (!m->suspend_state)
-                goto fail;
-        m->hibernate_mode = strv_new("platform", "shutdown", NULL);
-        if (!m->hibernate_mode)
-                goto fail;
-        m->hibernate_state = strv_new("disk", NULL);
-        if (!m->hibernate_state)
-                goto fail;
-        m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
-        if (!m->hybrid_sleep_mode)
-                goto fail;
-        m->hybrid_sleep_state = strv_new("disk", NULL);
-        if (!m->hybrid_sleep_state)
-                goto fail;
+        m->suspend_mode       = NULL;
+        m->suspend_state      = NULL;
+        m->hibernate_mode     = NULL;
+        m->hibernate_state    = NULL;
+        m->hybrid_sleep_mode  = NULL;
+        m->hybrid_sleep_state = NULL;
+
+        manager_parse_config_file(m);
+
+        /* Set default Sleep config if not already set by logind.conf */
+        if (!m->suspend_state) {
+                m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
+                if (!m->suspend_state)
+                        goto fail;
+        }
+        if (!m->hibernate_mode) {
+                m->hibernate_mode = strv_new("platform", "shutdown", NULL);
+                if (!m->hibernate_mode)
+                        goto fail;
+        }
+        if (!m->hibernate_state) {
+                m->hibernate_state = strv_new("disk", NULL);
+                if (!m->hibernate_state)
+                        goto fail;
+        }
+        if (!m->hybrid_sleep_mode) {
+                m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
+                if (!m->hybrid_sleep_mode)
+                        goto fail;
+        }
+        if (!m->hybrid_sleep_state) {
+                m->hybrid_sleep_state = strv_new("disk", NULL);
+                if (!m->hybrid_sleep_state)
+                        goto fail;
+        }
+
+#ifdef ENABLE_DEBUG_ELOGIND
+        dbg_cnt = -1;
+        while (m->suspend_mode && m->suspend_mode[++dbg_cnt])
+                log_debug_elogind("suspend_mode[%d] = %s",
+                                  dbg_cnt, m->suspend_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->suspend_state[++dbg_cnt])
+                log_debug_elogind("suspend_state[%d] = %s",
+                                  dbg_cnt, m->suspend_state[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hibernate_mode[++dbg_cnt])
+                log_debug_elogind("hibernate_mode[%d] = %s",
+                                  dbg_cnt, m->hibernate_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hibernate_state[++dbg_cnt])
+                log_debug_elogind("hibernate_state[%d] = %s",
+                                  dbg_cnt, m->hibernate_state[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hybrid_sleep_mode[++dbg_cnt])
+                log_debug_elogind("hybrid_sleep_mode[%d] = %s",
+                                  dbg_cnt, m->hybrid_sleep_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hybrid_sleep_state[++dbg_cnt])
+                log_debug_elogind("hybrid_sleep_state[%d] = %s",
+                                  dbg_cnt, m->hybrid_sleep_state[dbg_cnt]);
+#endif // ENABLE_DEBUG_ELOGIND
 
         m->udev = udev_new();
         if (!m->udev)
@@ -665,7 +714,7 @@ static int signal_agent_released(sd_bus_message *message, void *userdata, sd_bus
 }
 
 static int manager_connect_bus(Manager *m) {
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(m);
@@ -1211,20 +1260,16 @@ static int manager_parse_config_file(Manager *m) {
                                  config_item_perf_lookup, logind_gperf_lookup,
                                  false, m);
 #else
-        const char *unit = NULL, *logind_conf, *sections;
-        FILE *file = NULL;
-        bool relaxed = false, allow_include = false, warn = true;
+        const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
         assert(m);
 
-        logind_conf = getenv("ELOGIND_CONF_FILE");
         if (!logind_conf)
                 logind_conf = PKGSYSCONFDIR "/logind.conf";
-        sections = "Login\0Sleep\0";
 
-        return config_parse(unit, logind_conf, file, sections,
+        return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
                             config_item_perf_lookup, logind_gperf_lookup,
-                            relaxed, allow_include, warn, m);
+                            false, false, true, m);
 #endif // 0
 }
 
@@ -1247,6 +1292,12 @@ int main(int argc, char *argv[]) {
         if (argc != 1) {
                 log_error("This program takes no arguments.");
                 r = -EINVAL;
+                goto finish;
+        }
+
+        r = mac_selinux_init("/run");
+        if (r < 0) {
+                log_error_errno(r, "Could not initialize labelling: %m");
                 goto finish;
         }
 
@@ -1282,8 +1333,6 @@ int main(int argc, char *argv[]) {
                 r = log_oom();
                 goto finish;
         }
-
-        manager_parse_config_file(m);
 
         r = manager_startup(m);
         if (r < 0) {

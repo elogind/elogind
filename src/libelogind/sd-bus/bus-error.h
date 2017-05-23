@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -24,6 +22,7 @@
 #include <stdbool.h>
 
 #include "sd-bus.h"
+
 #include "macro.h"
 
 bool bus_error_is_dirty(sd_bus_error *e);

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -21,6 +19,7 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +39,7 @@
 static int files_add(Hashmap *h, const char *root, const char *path, const char *suffix) {
         _cleanup_closedir_ DIR *dir = NULL;
         const char *dirpath;
+        struct dirent *de;
         int r;
 
         assert(path);
@@ -54,17 +54,8 @@ static int files_add(Hashmap *h, const char *root, const char *path, const char 
                 return -errno;
         }
 
-        for (;;) {
-                struct dirent *de;
+        FOREACH_DIRENT(de, dir, return -errno) {
                 char *p;
-
-                errno = 0;
-                de = readdir(dir);
-                if (!de && errno != 0)
-                        return -errno;
-
-                if (!de)
-                        break;
 
                 if (!dirent_is_file_with_suffix(de, suffix))
                         continue;
@@ -115,17 +106,15 @@ static int conf_files_list_strv_internal(char ***strv, const char *suffix, const
 
         STRV_FOREACH(p, dirs) {
                 r = files_add(fh, root, *p, suffix);
-                if (r == -ENOMEM) {
+                if (r == -ENOMEM)
                         return r;
-                } else if (r < 0)
-                        log_debug_errno(r, "Failed to search for files in %s: %m",
-                                        *p);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to search for files in %s, ignoring: %m", *p);
         }
 
         files = hashmap_get_strv(fh);
-        if (files == NULL) {
+        if (!files)
                 return -ENOMEM;
-        }
 
         qsort_safe(files, hashmap_size(fh), sizeof(char *), base_cmp);
         *strv = files;
@@ -133,6 +122,7 @@ static int conf_files_list_strv_internal(char ***strv, const char *suffix, const
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_list_strv(char ***strv, const char *suffix, const char *root, const char* const* dirs) {
         _cleanup_strv_free_ char **copy = NULL;
 
@@ -162,6 +152,7 @@ int conf_files_list(char ***strv, const char *suffix, const char *root, const ch
 
         return conf_files_list_strv_internal(strv, suffix, root, dirs);
 }
+#endif // 0
 
 int conf_files_list_nulstr(char ***strv, const char *suffix, const char *root, const char *d) {
         _cleanup_strv_free_ char **dirs = NULL;

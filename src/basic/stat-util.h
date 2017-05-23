@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -22,7 +20,9 @@
 ***/
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <sys/stat.h>
+#include <sys/statfs.h>
 #include <sys/types.h>
 #include <sys/vfs.h>
 
@@ -60,9 +60,8 @@ int path_is_os_tree(const char *path);
 int files_same(const char *filea, const char *fileb);
 
 /* The .f_type field of struct statfs is really weird defined on
- * different archs. Let's use our own type we know is sufficiently
- * larger to store the possible values. */
-typedef long statfs_f_type_t;
+ * different archs. Let's give its type a name. */
+typedef typeof(((struct statfs*)NULL)->f_type) statfs_f_type_t;
 
 bool is_fs_type(const struct statfs *s, statfs_f_type_t magic_value) _pure_;
 #if 0 /// UNNEEDED by elogind

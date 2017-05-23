@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [228.3],
+        [229],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -300,7 +300,7 @@ AC_DEFINE_UNQUOTED([GPERF_LEN_TYPE], [$GPERF_LEN_TYPE], [gperf len type])
 # we use python to build the man page index
 have_python=no
 AC_ARG_WITH([python],
-        [AS_HELP_STRING([--without-python], [Disable building the man page index (default: test)])])
+        [AS_HELP_STRING([--without-python], [Disable building the man page index and systemd-python (default: test)])])
 
 have_lxml=no
 AS_IF([test "x$with_python" != "xno"], [
@@ -345,7 +345,8 @@ AC_SUBST(CAP_LIBS)
 
 AC_CHECK_FUNCS([memfd_create])
 AC_CHECK_FUNCS([__secure_getenv secure_getenv])
-AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renameat2, kcmp, LO_FLAGS_PARTSCAN],
+AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renameat2,
+                char16_t, char32_t, LO_FLAGS_PARTSCAN],
                [], [], [[
 #include <sys/types.h>
 #include <unistd.h>
@@ -529,10 +530,13 @@ AC_ARG_ENABLE([smack], AS_HELP_STRING([--disable-smack],[Disable optional SMACK 
                 esac],
                 [have_smack=auto])
 
-if test "x${have_smack}" = xauto; then
+if test "x${have_smack}" != xno; then
+        AC_DEFINE(HAVE_SMACK, 1, [Define if SMACK is available])
         M4_DEFINES="$M4_DEFINES -DHAVE_SMACK"
         have_smack=yes
 fi
+
+AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 have_smack_run_label=no
 AC_ARG_WITH(smack-run-label,
@@ -550,12 +554,6 @@ AS_HELP_STRING([--with-smack-default-process-label=STRING],
         [default SMACK label for executed processes]),
         [AC_DEFINE_UNQUOTED(SMACK_DEFAULT_PROCESS_LABEL, ["$withval"], [Default SMACK label for executed processes])],
         [])
-
-if test "x${have_smack}" = xyes ; then
-        AC_DEFINE(HAVE_SMACK, 1, [Define if SMACK is available])
-fi
-
-AM_CONDITIONAL([HAVE_SMACK], [test "x$have_smack" = "xyes"])
 
 # ------------------------------------------------------------------------------
 AC_ARG_WITH(system-uid-max,
@@ -602,6 +600,7 @@ AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
 # ------------------------------------------------------------------------------
 have_manpages=no
 AC_ARG_ENABLE(manpages, AS_HELP_STRING([--disable-manpages], [disable manpages]))
+AC_PATH_PROG([XSLTPROC], [xsltproc])
 AS_IF([test "x$enable_manpages" != xno], [have_manpages=yes])
 AM_CONDITIONAL(ENABLE_MANPAGES, [test "x$have_manpages" = "xyes"])
 

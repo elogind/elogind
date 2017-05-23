@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -22,10 +20,12 @@
 ***/
 
 #include <fcntl.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <sys/inotify.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <limits.h>
 
 #include "time-util.h"
 

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,17 +17,27 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <alloca.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <grp.h>
 #include <pwd.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "alloc-util.h"
 #include "fd-util.h"
+#include "formats-util.h"
 #include "macro.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "string-util.h"
 #include "user-util.h"
-#include "util.h"
 
 bool uid_is_valid(uid_t uid) {
 
@@ -58,7 +66,7 @@ int parse_uid(const char *s, uid_t *ret) {
         if (!uid_is_valid(uid))
                 return -ENXIO; /* we return ENXIO instead of EINVAL
                                 * here, to make it easy to distuingish
-                                * invalid numeric uids invalid
+                                * invalid numeric uids from invalid
                                 * strings. */
 
         if (ret)

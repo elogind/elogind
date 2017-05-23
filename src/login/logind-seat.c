@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -34,6 +32,7 @@
 #include "logind-seat.h"
 #include "mkdir.h"
 #include "parse-util.h"
+#include "stdio-util.h"
 #include "string-util.h"
 #include "terminal-util.h"
 #include "util.h"
@@ -182,7 +181,7 @@ static int vt_allocate(unsigned int vtnr) {
 
         assert(vtnr >= 1);
 
-        snprintf(p, sizeof(p), "/dev/tty%u", vtnr);
+        xsprintf(p, "/dev/tty%u", vtnr);
         fd = open_terminal(p, O_RDWR|O_NOCTTY|O_CLOEXEC);
         if (fd < 0)
                 return -errno;

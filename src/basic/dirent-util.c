@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -21,10 +19,9 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include "dirent-util.h"
+#include "path-util.h"
 #include "string-util.h"
 
 int dirent_ensure_type(DIR *d, struct dirent *de) {

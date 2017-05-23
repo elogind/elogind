@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -21,19 +19,22 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <limits.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/ip.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "formats-util.h"
+#include "log.h"
 #include "macro.h"
 #include "missing.h"
 #include "parse-util.h"
@@ -439,17 +440,10 @@ const char* socket_address_get_path(const SocketAddress *a) {
 #endif // 0
 
 bool socket_ipv6_is_supported(void) {
-        _cleanup_free_ char *l = NULL;
-
-        if (access("/sys/module/ipv6", F_OK) != 0)
+        if (access("/proc/net/sockstat6", F_OK) != 0)
                 return false;
 
-        /* If we can't check "disable" parameter, assume enabled */
-        if (read_one_line_file("/sys/module/ipv6/parameters/disable", &l) < 0)
-                return true;
-
-        /* If module was loaded with disable=1 no IPv6 available */
-        return l[0] == '0';
+        return true;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -608,7 +602,7 @@ int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_
         return 0;
 }
 
-int getpeername_pretty(int fd, char **ret) {
+int getpeername_pretty(int fd, bool include_port, char **ret) {
         union sockaddr_union sa;
         socklen_t salen = sizeof(sa);
         int r;
@@ -638,7 +632,7 @@ int getpeername_pretty(int fd, char **ret) {
         /* For remote sockets we translate IPv6 addresses back to IPv4
          * if applicable, since that's nicer. */
 
-        return sockaddr_pretty(&sa.sa, salen, true, true, ret);
+        return sockaddr_pretty(&sa.sa, salen, true, include_port, ret);
 }
 
 int getsockname_pretty(int fd, char **ret) {
@@ -873,12 +867,19 @@ int getpeersec(int fd, char **ret) {
         return 0;
 }
 
-int send_one_fd(int transport_fd, int fd, int flags) {
+int send_one_fd_sa(
+                int transport_fd,
+                int fd,
+                const struct sockaddr *sa, socklen_t len,
+                int flags) {
+
         union {
                 struct cmsghdr cmsghdr;
                 uint8_t buf[CMSG_SPACE(sizeof(int))];
         } control = {};
         struct msghdr mh = {
+                .msg_name = (struct sockaddr*) sa,
+                .msg_namelen = len,
                 .msg_control = &control,
                 .msg_controllen = sizeof(control),
         };

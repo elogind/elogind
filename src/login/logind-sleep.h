@@ -1,4 +1,4 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
+#pragma once
 
 /***
   This file is part of systemd.
@@ -19,10 +19,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#pragma once
+#include "logind.h"
 
-int parse_sleep_config(const char *verb, char ***modes, char ***states);
-
-int can_sleep(const char *verb);
-int can_sleep_disk(char **types);
-int can_sleep_state(char **types);
+int can_sleep(Manager *m, const char *verb);
+int do_sleep(const char *arg_verb, char **modes, char **states);

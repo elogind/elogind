@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,16 +17,30 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <dirent.h>
+#include <errno.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
+
 #include "alloc-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
+//#include "log.h"
+//#include "macro.h"
+//#include "missing.h"
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "string-util.h"
 #include "strv.h"
+//#include "time-util.h"
 #include "user-util.h"
 #include "util.h"
 
@@ -333,7 +345,8 @@ int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gi
         if (parents)
                 mkdir_parents(path, 0755);
 
-        fd = open(path, O_WRONLY|O_CREAT|O_CLOEXEC|O_NOCTTY, mode > 0 ? mode : 0644);
+        fd = open(path, O_WRONLY|O_CREAT|O_CLOEXEC|O_NOCTTY,
+                        (mode == 0 || mode == MODE_INVALID) ? 0644 : mode);
         if (fd < 0)
                 return -errno;
 
@@ -475,7 +488,7 @@ int get_files_in_directory(const char *path, char ***list) {
 
                 errno = 0;
                 de = readdir(d);
-                if (!de && errno != 0)
+                if (!de && errno > 0)
                         return -errno;
                 if (!de)
                         break;

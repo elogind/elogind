@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -23,6 +21,7 @@
 ***/
 
 #include <stdio.h>
+
 #include "fileio.h"
 
 int write_string_file_atomic_label(const char *fn, const char *line);

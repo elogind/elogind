@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -112,7 +110,9 @@ _public_ int sd_bus_track_new(
 }
 
 _public_ sd_bus_track* sd_bus_track_ref(sd_bus_track *track) {
-        assert_return(track, NULL);
+
+        if (!track)
+                return NULL;
 
         assert(track->n_ref > 0);
 
@@ -162,7 +162,7 @@ static int on_name_owner_changed(sd_bus_message *message, void *userdata, sd_bus
 }
 
 _public_ int sd_bus_track_add_name(sd_bus_track *track, const char *name) {
-        _cleanup_bus_slot_unref_ sd_bus_slot *slot = NULL;
+        _cleanup_(sd_bus_slot_unrefp) sd_bus_slot *slot = NULL;
         _cleanup_free_ char *n = NULL;
         const char *match;
         int r;
@@ -208,7 +208,7 @@ _public_ int sd_bus_track_add_name(sd_bus_track *track, const char *name) {
 }
 
 _public_ int sd_bus_track_remove_name(sd_bus_track *track, const char *name) {
-        _cleanup_bus_slot_unref_ sd_bus_slot *slot = NULL;
+        _cleanup_(sd_bus_slot_unrefp) sd_bus_slot *slot = NULL;
         _cleanup_free_ char *n = NULL;
 
         assert_return(name, -EINVAL);

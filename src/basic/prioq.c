@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -29,9 +27,12 @@
  * The underlying algorithm used in this implementation is a Heap.
  */
 
+#include <errno.h>
+#include <stdlib.h>
+
 #include "alloc-util.h"
+#include "hashmap.h"
 #include "prioq.h"
-#include "util.h"
 
 struct prioq_item {
         void *data;

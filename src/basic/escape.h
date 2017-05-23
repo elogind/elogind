@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -21,8 +19,14 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <sys/types.h>
 #include <inttypes.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <uchar.h>
+
+#include "string-util.h"
+#include "missing.h"
 
 /* What characters are special in the shell? */
 /* must be escaped outside and inside double-quotes */
@@ -35,14 +39,17 @@ typedef enum UnescapeFlags {
 } UnescapeFlags;
 
 char *cescape(const char *s);
+char *cescape_length(const char *s, size_t n);
 size_t cescape_char(char c, char *buf);
 
 int cunescape(const char *s, UnescapeFlags flags, char **ret);
 int cunescape_length(const char *s, size_t length, UnescapeFlags flags, char **ret);
 int cunescape_length_with_prefix(const char *s, size_t length, const char *prefix, UnescapeFlags flags, char **ret);
-int cunescape_one(const char *p, size_t length, char *ret, uint32_t *ret_unicode);
+int cunescape_one(const char *p, size_t length, char32_t *ret, bool *eight_bit);
 
 char *xescape(const char *s, const char *bad);
 
+#if 0 /// UNNEEDED by elogind
 char *shell_escape(const char *s, const char *bad);
 char *shell_maybe_quote(const char *s);
+#endif // 0

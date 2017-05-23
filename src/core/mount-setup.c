@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -40,8 +38,8 @@
 #include "path-util.h"
 //#include "set.h"
 //#include "smack-util.h"
-//#include "strv.h"
 #include "string-util.h"
+//#include "strv.h"
 #include "user-util.h"
 //#include "util.h"
 #include "virt.h"
@@ -172,11 +170,13 @@ static int mount_one(const MountPoint *p, bool relabel) {
 
         /* Relabel first, just in case */
         if (relabel)
-                label_fix(p->where, true, true);
+                (void) label_fix(p->where, true, true);
 
         r = path_is_mount_point(p->where, AT_SYMLINK_FOLLOW);
-        if (r < 0 && r != -ENOENT)
-                return r;
+        if (r < 0 && r != -ENOENT) {
+                log_full_errno((p->mode & MNT_FATAL) ? LOG_ERR : LOG_DEBUG, r, "Failed to determine whether %s is a mount point: %m", p->where);
+                return (p->mode & MNT_FATAL) ? r : 0;
+        }
         if (r > 0)
                 return 0;
 
@@ -187,9 +187,9 @@ static int mount_one(const MountPoint *p, bool relabel) {
         /* The access mode here doesn't really matter too much, since
          * the mounted file system will take precedence anyway. */
         if (relabel)
-                mkdir_p_label(p->where, 0755);
+                (void) mkdir_p_label(p->where, 0755);
         else
-                mkdir_p(p->where, 0755);
+                (void) mkdir_p(p->where, 0755);
 
         log_debug("Mounting %s to %s of type %s with options %s.",
                   p->what,
@@ -202,35 +202,39 @@ static int mount_one(const MountPoint *p, bool relabel) {
                   p->type,
                   p->flags,
                   p->options) < 0) {
-                log_full((p->mode & MNT_FATAL) ? LOG_ERR : LOG_DEBUG, "Failed to mount %s at %s: %m", p->type, p->where);
+                log_full_errno((p->mode & MNT_FATAL) ? LOG_ERR : LOG_DEBUG, errno, "Failed to mount %s at %s: %m", p->type, p->where);
                 return (p->mode & MNT_FATAL) ? -errno : 0;
         }
 
         /* Relabel again, since we now mounted something fresh here */
         if (relabel)
-                label_fix(p->where, false, false);
+                (void) label_fix(p->where, false, false);
 
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
-int mount_setup_early(void) {
+static int mount_points_setup(unsigned n, bool loaded_policy) {
         unsigned i;
         int r = 0;
 
-        assert_cc(N_EARLY_MOUNT <= ELEMENTSOF(mount_table));
-
-        /* Do a minimal mount of /proc and friends to enable the most
-         * basic stuff, such as SELinux */
-        for (i = 0; i < N_EARLY_MOUNT; i ++)  {
+        for (i = 0; i < n; i ++) {
                 int j;
 
-                j = mount_one(mount_table + i, false);
+                j = mount_one(mount_table + i, loaded_policy);
                 if (j != 0 && r >= 0)
                         r = j;
         }
 
         return r;
+}
+
+#if 0 /// UNNEEDED by elogind
+int mount_setup_early(void) {
+        assert_cc(N_EARLY_MOUNT <= ELEMENTSOF(mount_table));
+
+        /* Do a minimal mount of /proc and friends to enable the most
+         * basic stuff, such as SELinux */
+        return mount_points_setup(N_EARLY_MOUNT, false);
 }
 
 int mount_cgroup_controllers(char ***join_controllers) {
@@ -319,13 +323,18 @@ int mount_cgroup_controllers(char ***join_controllers) {
                                         return log_oom();
 
                                 r = symlink(options, t);
-                                if (r < 0 && errno != EEXIST)
-                                        return log_error_errno(errno, "Failed to create symlink %s: %m", t);
+                                if (r >= 0) {
 #ifdef SMACK_RUN_LABEL
-                                r = mac_smack_copy(t, options);
-                                if (r < 0 && r != -EOPNOTSUPP)
-                                        return log_error_errno(r, "Failed to copy smack label from %s to %s: %m", options, t);
+                                        _cleanup_free_ char *src;
+                                        src = strappend("/sys/fs/cgroup/", options);
+                                        if (!src)
+                                                return log_oom();
+                                        r = mac_smack_copy(t, src);
+                                        if (r < 0 && r != -EOPNOTSUPP)
+                                                return log_error_errno(r, "Failed to copy smack label from %s to %s: %m", src, t);
 #endif
+                                } else if (errno != EEXIST)
+                                        return log_error_errno(errno, "Failed to create symlink %s: %m", t);
                         }
                 }
         }
@@ -363,20 +372,12 @@ static int nftw_cb(
 #endif // 0
 
 int mount_setup(bool loaded_policy) {
-        unsigned i;
         int r = 0;
 
-        for (i = 0; i < ELEMENTSOF(mount_table); i ++) {
-                int j;
-
-                j = mount_one(mount_table + i, loaded_policy);
-                if (j != 0 && r >= 0)
-                        r = j;
-        }
+        r = mount_points_setup(ELEMENTSOF(mount_table), loaded_policy);
 
         if (r < 0)
                 return r;
-
 
 #if 0 /// elogind does not control /, /dev, /run and /run/systemd/* are setup elsewhere.
 #if defined(HAVE_SELINUX) || defined(HAVE_SMACK)

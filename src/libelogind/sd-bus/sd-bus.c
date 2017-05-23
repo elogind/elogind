@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -425,7 +423,7 @@ static int hello_callback(sd_bus_message *reply, void *userdata, sd_bus_error *e
 }
 
 static int bus_send_hello(sd_bus *bus) {
-        _cleanup_bus_message_unref_ sd_bus_message *m = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         int r;
 
         assert(bus);
@@ -1496,7 +1494,9 @@ static void bus_enter_closing(sd_bus *bus) {
 }
 
 _public_ sd_bus *sd_bus_ref(sd_bus *bus) {
-        assert_return(bus, NULL);
+
+        if (!bus)
+                return NULL;
 
         assert_se(REFCNT_INC(bus->n_ref) >= 2);
 
@@ -1754,7 +1754,7 @@ static int dispatch_rqueue(sd_bus *bus, bool hint_priority, int64_t priority, sd
 }
 
 static int bus_send_internal(sd_bus *bus, sd_bus_message *_m, uint64_t *cookie, bool hint_sync_call) {
-        _cleanup_bus_message_unref_ sd_bus_message *m = sd_bus_message_ref(_m);
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = sd_bus_message_ref(_m);
         int r;
 
         assert_return(m, -EINVAL);
@@ -1904,8 +1904,8 @@ _public_ int sd_bus_call_async(
                 void *userdata,
                 uint64_t usec) {
 
-        _cleanup_bus_message_unref_ sd_bus_message *m = sd_bus_message_ref(_m);
-        _cleanup_bus_slot_unref_ sd_bus_slot *s = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = sd_bus_message_ref(_m);
+        _cleanup_(sd_bus_slot_unrefp) sd_bus_slot *s = NULL;
         int r;
 
         assert_return(m, -EINVAL);
@@ -2003,7 +2003,7 @@ _public_ int sd_bus_call(
                 sd_bus_error *error,
                 sd_bus_message **reply) {
 
-        _cleanup_bus_message_unref_ sd_bus_message *m = sd_bus_message_ref(_m);
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = sd_bus_message_ref(_m);
         usec_t timeout;
         uint64_t cookie;
         unsigned i;
@@ -2244,8 +2244,8 @@ _public_ int sd_bus_get_timeout(sd_bus *bus, uint64_t *timeout_usec) {
 }
 
 static int process_timeout(sd_bus *bus) {
-        _cleanup_bus_error_free_ sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
-        _cleanup_bus_message_unref_ sd_bus_message* m = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message* m = NULL;
         struct reply_callback *c;
         sd_bus_slot *slot;
         usec_t n;
@@ -2326,8 +2326,8 @@ static int process_hello(sd_bus *bus, sd_bus_message *m) {
 }
 
 static int process_reply(sd_bus *bus, sd_bus_message *m) {
-        _cleanup_bus_message_unref_ sd_bus_message *synthetic_reply = NULL;
-        _cleanup_bus_error_free_ sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *synthetic_reply = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
         struct reply_callback *c;
         sd_bus_slot *slot;
         int r;
@@ -2406,7 +2406,7 @@ static int process_reply(sd_bus *bus, sd_bus_message *m) {
 }
 
 static int process_filter(sd_bus *bus, sd_bus_message *m) {
-        _cleanup_bus_error_free_ sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
         struct filter_callback *l;
         int r;
 
@@ -2472,7 +2472,7 @@ static int process_match(sd_bus *bus, sd_bus_message *m) {
 }
 
 static int process_builtin(sd_bus *bus, sd_bus_message *m) {
-        _cleanup_bus_message_unref_ sd_bus_message *reply = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         int r;
 
         assert(bus);
@@ -2604,7 +2604,7 @@ static int dispatch_track(sd_bus *bus) {
 }
 
 static int process_running(sd_bus *bus, bool hint_priority, int64_t priority, sd_bus_message **ret) {
-        _cleanup_bus_message_unref_ sd_bus_message *m = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         int r;
 
         assert(bus);
@@ -2668,7 +2668,7 @@ null_message:
 }
 
 static int process_closing(sd_bus *bus, sd_bus_message **ret) {
-        _cleanup_bus_message_unref_ sd_bus_message *m = NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         struct reply_callback *c;
         int r;
 
@@ -2677,7 +2677,7 @@ static int process_closing(sd_bus *bus, sd_bus_message **ret) {
 
         c = ordered_hashmap_first(bus->reply_callbacks);
         if (c) {
-                _cleanup_bus_error_free_ sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
+                _cleanup_(sd_bus_error_free) sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
                 sd_bus_slot *slot;
 
                 /* First, fail all outstanding method calls */

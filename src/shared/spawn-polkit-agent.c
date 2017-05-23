@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -28,9 +26,11 @@
 #include "fd-util.h"
 #include "io-util.h"
 #include "log.h"
+#include "macro.h"
 #include "process-util.h"
 #include "spawn-polkit-agent.h"
 #include "stdio-util.h"
+#include "time-util.h"
 #include "util.h"
 
 #ifdef ENABLE_POLKIT

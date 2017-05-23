@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,12 +17,22 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+
 #include "alloc-util.h"
 #include "escape.h"
 #include "extract-word.h"
+#include "log.h"
+#include "macro.h"
 #include "string-util.h"
 #include "utf8.h"
-#include "util.h"
 
 int extract_first_word(const char **p, char **ret, const char *separators, ExtractFlags flags) {
         _cleanup_free_ char *s = NULL;
@@ -97,9 +105,10 @@ int extract_first_word(const char **p, char **ret, const char *separators, Extra
                         }
 
                         if (flags & EXTRACT_CUNESCAPE) {
-                                uint32_t u;
+                                bool eight_bit = false;
+                                char32_t u;
 
-                                r = cunescape_one(*p, (size_t) -1, &c, &u);
+                                r = cunescape_one(*p, (size_t) -1, &u, &eight_bit);
                                 if (r < 0) {
                                         if (flags & EXTRACT_CUNESCAPE_RELAX) {
                                                 s[sz++] = '\\';
@@ -109,10 +118,10 @@ int extract_first_word(const char **p, char **ret, const char *separators, Extra
                                 } else {
                                         (*p) += r - 1;
 
-                                        if (c != 0)
-                                                s[sz++] = c; /* normal explicit char */
+                                        if (eight_bit)
+                                                s[sz++] = u;
                                         else
-                                                sz += utf8_encode_unichar(s + sz, u); /* unicode chars we'll encode as utf8 */
+                                                sz += utf8_encode_unichar(s + sz, u);
                                 }
                         } else
                                 s[sz++] = c;

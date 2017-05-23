@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -21,15 +19,20 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <sys/xattr.h>
+#include <unistd.h>
 
 #include "alloc-util.h"
 #include "fileio.h"
+#include "log.h"
+#include "macro.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "smack-util.h"
 #include "string-table.h"
-#include "util.h"
 #include "xattr-util.h"
 
 #ifdef HAVE_SMACK

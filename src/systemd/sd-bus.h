@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #ifndef foosdbushfoo
 #define foosdbushfoo
 
@@ -27,8 +25,9 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 
-#include "sd-id128.h"
 #include "sd-event.h"
+#include "sd-id128.h"
+
 #include "_sd-common.h"
 
 _SD_BEGIN_DECLARATIONS;
@@ -166,6 +165,8 @@ sd_bus *sd_bus_flush_close_unref(sd_bus *bus);
 
 #if 0 /// UNNEEDED by elogind
 void sd_bus_default_flush_close(void);
+
+int sd_bus_is_open(sd_bus *bus);
 
 int sd_bus_get_bus_id(sd_bus *bus, sd_id128_t *id);
 int sd_bus_get_scope(sd_bus *bus, const char **scope);
@@ -511,6 +512,14 @@ unsigned sd_bus_track_count(sd_bus_track *track);
 const char* sd_bus_track_contains(sd_bus_track *track, const char *names);
 const char* sd_bus_track_first(sd_bus_track *track);
 const char* sd_bus_track_next(sd_bus_track *track);
+
+/* Define helpers so that __attribute__((cleanup(sd_bus_unrefp))) and similar may be used. */
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_bus, sd_bus_unref);
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_bus, sd_bus_flush_close_unref);
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_bus_slot, sd_bus_slot_unref);
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_bus_message, sd_bus_message_unref);
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_bus_creds, sd_bus_creds_unref);
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_bus_track, sd_bus_track_unref);
 
 _SD_END_DECLARATIONS;
 

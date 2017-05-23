@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,6 +17,15 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
@@ -28,15 +35,17 @@
 #include "fileio.h"
 #include "fs-util.h"
 #include "hexdecoct.h"
+//#include "log.h"
+//#include "macro.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "random-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
+//#include "time-util.h"
 #include "umask-util.h"
 #include "utf8.h"
-#include "util.h"
 
 int write_string_stream(FILE *f, const char *line, bool enforce_newline) {
 
@@ -154,7 +163,7 @@ int read_one_line_file(const char *fn, char **line) {
         if (!fgets(t, sizeof(t), f)) {
 
                 if (ferror(f))
-                        return errno ? -errno : -EIO;
+                        return errno > 0 ? -errno : -EIO;
 
                 t[0] = 0;
         }
@@ -636,6 +645,7 @@ int parse_env_file(
         return r < 0 ? r : n_pushed;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int load_env_file_push(
                 const char *filename, unsigned line,
                 const char *key, char *value,
@@ -691,7 +701,6 @@ int load_env_file(FILE *f, const char *fname, const char *newline, char ***rl) {
         return 0;
 }
 
-#if 0 /// UNNEDED by elogind
 static int load_env_file_push_pairs(
                 const char *filename, unsigned line,
                 const char *key, char *value,
@@ -750,7 +759,6 @@ int load_env_file_pairs(FILE *f, const char *fname, const char *newline, char **
         *rl = m;
         return 0;
 }
-#endif // 0
 
 static void write_env_var(FILE *f, const char *v) {
         const char *p;
@@ -812,7 +820,6 @@ int write_env_file(const char *fname, char **l) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int executable_is_script(const char *path, char **interpreter) {
         int r;
         _cleanup_free_ char *line = NULL;
@@ -1059,7 +1066,7 @@ int fflush_and_check(FILE *f) {
         fflush(f);
 
         if (ferror(f))
-                return errno ? -errno : -EIO;
+                return errno > 0 ? -errno : -EIO;
 
         return 0;
 }
@@ -1248,5 +1255,34 @@ int read_timestamp_file(const char *fn, usec_t *ret) {
 
         *ret = (usec_t) t;
         return 0;
+}
+
+int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space) {
+        int r;
+
+        assert(s);
+
+        /* Outputs the specified string with fputs(), but optionally prefixes it with a separator. The *space parameter
+         * when specified shall initially point to a boolean variable initialized to false. It is set to true after the
+         * first invocation. This call is supposed to be use in loops, where a separator shall be inserted between each
+         * element, but not before the first one. */
+
+        if (!f)
+                f = stdout;
+
+        if (space) {
+                if (!separator)
+                        separator = " ";
+
+                if (*space) {
+                        r = fputs(separator, f);
+                        if (r < 0)
+                                return r;
+                }
+
+                *space = true;
+        }
+
+        return fputs(s, f);
 }
 #endif // 0

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -57,7 +55,9 @@ sd_bus_slot *bus_slot_allocate(
 }
 
 _public_ sd_bus_slot* sd_bus_slot_ref(sd_bus_slot *slot) {
-        assert_return(slot, NULL);
+
+        if (!slot)
+                return NULL;
 
         assert(slot->n_ref > 0);
 

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,19 +17,32 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/timerfd.h>
 #include <sys/timex.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
+#include "log.h"
+#include "macro.h"
+#include "parse-util.h"
 #include "path-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
-#include "util.h"
+
+#if 0 /// UNNEEDED by elogind
+static nsec_t timespec_load_nsec(const struct timespec *ts);
+#endif // 0
 
 usec_t now(clockid_t clock_id) {
         struct timespec ts;
@@ -72,12 +83,7 @@ dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u) {
         ts->realtime = u;
 
         delta = (int64_t) now(CLOCK_REALTIME) - (int64_t) u;
-        ts->monotonic = now(CLOCK_MONOTONIC);
-
-        if ((int64_t) ts->monotonic > delta)
-                ts->monotonic -= delta;
-        else
-                ts->monotonic = 0;
+        ts->monotonic = usec_sub(now(CLOCK_MONOTONIC), delta);
 
         return ts;
 }
@@ -94,12 +100,7 @@ dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u) {
 
         ts->monotonic = u;
         delta = (int64_t) now(CLOCK_MONOTONIC) - (int64_t) u;
-
-        ts->realtime = now(CLOCK_REALTIME);
-        if ((int64_t) ts->realtime > delta)
-                ts->realtime -= delta;
-        else
-                ts->realtime = 0;
+        ts->realtime = usec_sub(now(CLOCK_REALTIME), delta);
 
         return ts;
 }
@@ -111,20 +112,11 @@ dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, us
                 ts->realtime = ts->monotonic = USEC_INFINITY;
                 return ts;
         }
-        ts->realtime = now(CLOCK_REALTIME);
-        ts->monotonic = now(CLOCK_MONOTONIC);
 
+        dual_timestamp_get(ts);
         delta = (int64_t) now(clock_boottime_or_monotonic()) - (int64_t) u;
-
-        if ((int64_t) ts->realtime > delta)
-                ts->realtime -= delta;
-        else
-                ts->realtime = 0;
-
-        if ((int64_t) ts->monotonic > delta)
-                ts->monotonic -= delta;
-        else
-                ts->monotonic = 0;
+        ts->realtime = usec_sub(ts->realtime, delta);
+        ts->monotonic = usec_sub(ts->monotonic, delta);
 
         return ts;
 }
@@ -145,7 +137,8 @@ usec_t timespec_load(const struct timespec *ts) {
                 (usec_t) ts->tv_nsec / NSEC_PER_USEC;
 }
 
-nsec_t timespec_load_nsec(const struct timespec *ts) {
+#if 0 /// UNNEEDED by elogind
+static nsec_t timespec_load_nsec(const struct timespec *ts) {
         assert(ts);
 
         if (ts->tv_sec == (time_t) -1 &&
@@ -156,6 +149,7 @@ nsec_t timespec_load_nsec(const struct timespec *ts) {
                 (nsec_t) ts->tv_sec * NSEC_PER_SEC +
                 (nsec_t) ts->tv_nsec;
 }
+#endif // 0
 
 struct timespec *timespec_store(struct timespec *ts, usec_t u)  {
         assert(ts);
@@ -201,9 +195,11 @@ struct timeval *timeval_store(struct timeval *tv, usec_t u) {
         return tv;
 }
 
-static char *format_timestamp_internal(char *buf, size_t l, usec_t t, bool utc) {
+static char *format_timestamp_internal(char *buf, size_t l, usec_t t,
+                                       bool utc, bool us) {
         struct tm tm;
         time_t sec;
+        int k;
 
         assert(buf);
         assert(l > 0);
@@ -214,51 +210,39 @@ static char *format_timestamp_internal(char *buf, size_t l, usec_t t, bool utc) 
         sec = (time_t) (t / USEC_PER_SEC);
         localtime_or_gmtime_r(&sec, &tm, utc);
 
-        if (strftime(buf, l, "%a %Y-%m-%d %H:%M:%S %Z", &tm) <= 0)
+        if (us)
+                k = strftime(buf, l, "%a %Y-%m-%d %H:%M:%S", &tm);
+        else
+                k = strftime(buf, l, "%a %Y-%m-%d %H:%M:%S %Z", &tm);
+
+        if (k <= 0)
                 return NULL;
+        if (us) {
+                snprintf(buf + strlen(buf), l - strlen(buf), ".%06llu", (unsigned long long) (t % USEC_PER_SEC));
+                if (strftime(buf + strlen(buf), l - strlen(buf), " %Z", &tm) <= 0)
+                        return NULL;
+        }
 
         return buf;
 }
 
 char *format_timestamp(char *buf, size_t l, usec_t t) {
-        return format_timestamp_internal(buf, l, t, false);
+        return format_timestamp_internal(buf, l, t, false, false);
 }
 
 #if 0 /// UNNEEDED by elogind
 char *format_timestamp_utc(char *buf, size_t l, usec_t t) {
-        return format_timestamp_internal(buf, l, t, true);
+        return format_timestamp_internal(buf, l, t, true, false);
 }
 #endif // 0
 
-static char *format_timestamp_internal_us(char *buf, size_t l, usec_t t, bool utc) {
-        struct tm tm;
-        time_t sec;
-
-        assert(buf);
-        assert(l > 0);
-
-        if (t <= 0 || t == USEC_INFINITY)
-                return NULL;
-
-        sec = (time_t) (t / USEC_PER_SEC);
-        localtime_or_gmtime_r(&sec, &tm, utc);
-
-        if (strftime(buf, l, "%a %Y-%m-%d %H:%M:%S", &tm) <= 0)
-                return NULL;
-        snprintf(buf + strlen(buf), l - strlen(buf), ".%06llu", (unsigned long long) (t % USEC_PER_SEC));
-        if (strftime(buf + strlen(buf), l - strlen(buf), " %Z", &tm) <= 0)
-                return NULL;
-
-        return buf;
-}
-
 char *format_timestamp_us(char *buf, size_t l, usec_t t) {
-        return format_timestamp_internal_us(buf, l, t, false);
+        return format_timestamp_internal(buf, l, t, false, true);
 }
 
 #if 0 /// UNNEEDED by elogind
 char *format_timestamp_us_utc(char *buf, size_t l, usec_t t) {
-        return format_timestamp_internal_us(buf, l, t, true);
+        return format_timestamp_internal(buf, l, t, true, true);
 }
 #endif // 0
 
@@ -666,29 +650,18 @@ int parse_timestamp(const char *t, usec_t *usec) {
 
 parse_usec:
         {
-                char *end;
-                unsigned long long val;
-                size_t l;
+                unsigned add;
 
                 k++;
-                if (*k < '0' || *k > '9')
+                r = parse_fractional_part_u(&k, 6, &add);
+                if (r < 0)
                         return -EINVAL;
 
-                /* base 10 instead of base 0, .09 is not base 8 */
-                errno = 0;
-                val = strtoull(k, &end, 10);
-                if (*end || errno)
+                if (*k)
                         return -EINVAL;
 
-                l = end-k;
+                x_usec = add;
 
-                /* val has l digits, make them 6 */
-                for (; l < 6; l++)
-                        val *= 10;
-                for (; l > 6; l--)
-                        val /= 10;
-
-                x_usec = val;
         }
 
 from_tm:

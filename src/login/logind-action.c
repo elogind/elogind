@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -28,7 +26,7 @@
 #include "formats-util.h"
 #include "logind-action.h"
 #include "process-util.h"
-#include "sleep-config.h"
+//#include "sleep-config.h"
 //#include "special.h"
 #include "string-table.h"
 #include "terminal-util.h"
@@ -70,7 +68,7 @@ int manager_handle_action(
         };
 #endif // 0
 
-        _cleanup_bus_error_free_ sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         InhibitWhat inhibit_operation;
         Inhibitor *offending = NULL;
         bool supported;
@@ -115,11 +113,11 @@ int manager_handle_action(
         }
 
         if (handle == HANDLE_SUSPEND)
-                supported = can_sleep("suspend") > 0;
+                supported = can_sleep(m, "suspend") > 0;
         else if (handle == HANDLE_HIBERNATE)
-                supported = can_sleep("hibernate") > 0;
+                supported = can_sleep(m, "hibernate") > 0;
         else if (handle == HANDLE_HYBRID_SLEEP)
-                supported = can_sleep("hybrid-sleep") > 0;
+                supported = can_sleep(m, "hybrid-sleep") > 0;
         else if (handle == HANDLE_KEXEC)
                 supported = access(KEXEC, X_OK) >= 0;
         else
@@ -194,100 +192,6 @@ static int run_helper(const char *helper) {
         }
 
         return wait_for_terminate_and_warn(helper, pid, true);
-}
-
-static int write_mode(char **modes) {
-        int r = 0;
-        char **mode;
-
-        STRV_FOREACH(mode, modes) {
-                int k;
-
-                k = write_string_file("/sys/power/disk", *mode, 0);
-                if (k == 0)
-                        return 0;
-
-                log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m",
-                                *mode);
-                if (r == 0)
-                        r = k;
-        }
-
-        if (r < 0)
-                log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
-
-        return r;
-}
-
-static int write_state(FILE **f, char **states) {
-        char **state;
-        int r = 0;
-
-        STRV_FOREACH(state, states) {
-                int k;
-
-                k = write_string_stream(*f, *state, true);
-                if (k == 0)
-                        return 0;
-                log_debug_errno(k, "Failed to write '%s' to /sys/power/state: %m",
-                                *state);
-                if (r == 0)
-                        r = k;
-
-                fclose(*f);
-                *f = fopen("/sys/power/state", "we");
-                if (!*f)
-                        return log_error_errno(errno, "Failed to open /sys/power/state: %m");
-        }
-
-        return r;
-}
-
-static int do_sleep(const char *arg_verb, char **modes, char **states) {
-        char *arguments[] = {
-                NULL,
-                (char*) "pre",
-                (char*) arg_verb,
-                NULL
-        };
-        static const char* const dirs[] = {SYSTEM_SLEEP_PATH, NULL};
-
-        int r;
-        _cleanup_fclose_ FILE *f = NULL;
-
-        /* This file is opened first, so that if we hit an error,
-         * we can abort before modifying any state. */
-        f = fopen("/sys/power/state", "we");
-        if (!f)
-                return log_error_errno(errno, "Failed to open /sys/power/state: %m");
-
-        /* Configure the hibernation mode */
-        r = write_mode(modes);
-        if (r < 0)
-                return r;
-
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, arguments);
-
-        log_struct(LOG_INFO,
-                   LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
-                   LOG_MESSAGE("Suspending system..."),
-                   "SLEEP=%s", arg_verb,
-                   NULL);
-
-        r = write_state(&f, states);
-        if (r < 0)
-                return r;
-
-        log_struct(LOG_INFO,
-                   LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_STOP),
-                   LOG_MESSAGE("System resumed."),
-                   "SLEEP=%s", arg_verb,
-                   NULL);
-
-        arguments[1] = (char*) "post";
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, arguments);
-
-        return r;
 }
 
 int shutdown_or_sleep(Manager *m, HandleAction action) {

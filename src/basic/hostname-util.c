@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,14 +17,21 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <ctype.h>
+#if defined(__GLIBC__)
+# include <bits/local_lim.h>
+#endif // defined(__GLIBC__)
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/utsname.h>
+#include <unistd.h>
 
 //#include "fd-util.h"
 #include "fileio.h"
 #include "hostname-util.h"
+//#include "macro.h"
 #include "string-util.h"
-#include "util.h"
 
 #if 0 /// UNNEEDED by elogind
 bool hostname_is_set(void) {
@@ -74,7 +79,7 @@ static bool hostname_valid_char(char c) {
  * allow_trailing_dot is true and at least two components are present
  * in the name. Note that due to the restricted charset and length
  * this call is substantially more conservative than
- * dns_domain_is_valid().
+ * dns_name_is_valid().
  */
 bool hostname_is_valid(const char *s, bool allow_trailing_dot) {
         unsigned n_dots = 0;

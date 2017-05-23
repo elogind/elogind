@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -862,7 +860,7 @@ _public_ int sd_get_uids(uid_t **users) {
 
                 errno = 0;
                 de = readdir(d);
-                if (!de && errno != 0)
+                if (!de && errno > 0)
                         return -errno;
 
                 if (!de)
@@ -1069,7 +1067,8 @@ _public_ int sd_login_monitor_new(const char *category, sd_login_monitor **m) {
 _public_ sd_login_monitor* sd_login_monitor_unref(sd_login_monitor *m) {
         int fd;
 
-        assert_return(m, NULL);
+        if (!m)
+                return NULL;
 
         fd = MONITOR_TO_FD(m);
         close_nointr(fd);

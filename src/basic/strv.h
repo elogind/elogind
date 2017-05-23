@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -24,8 +22,11 @@
 #include <fnmatch.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <stddef.h>
 
+#include "alloc-util.h"
 #include "extract-word.h"
+#include "macro.h"
 #include "util.h"
 
 char *strv_find(char **l, const char *name) _pure_;
@@ -181,4 +182,6 @@ char ***strv_free_free(char ***l);
 char **strv_skip(char **l, size_t n);
 
 int strv_extend_n(char ***l, const char *value, size_t n);
+
+int fputstrv(FILE *f, char **l, const char *separator, bool *space);
 #endif // 0

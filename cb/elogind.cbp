@@ -103,6 +103,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/gunicode.h" />
+		<Unit filename="../src/basic/hash-funcs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/hash-funcs.h" />
 		<Unit filename="../src/basic/hashmap.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -410,9 +414,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-device.h" />
-		<Unit filename="../src/login/logind-gperf.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/login/logind-inhibit.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -435,6 +436,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-session.h" />
+		<Unit filename="../src/login/logind-sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/logind-sleep.h" />
 		<Unit filename="../src/login/logind-user-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -445,6 +450,7 @@
 		<Unit filename="../src/login/logind.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/logind.conf" />
 		<Unit filename="../src/login/logind.h" />
 		<Unit filename="../src/login/pam_elogind.c">
 			<Option compilerVar="CC" />
@@ -478,16 +484,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
-		<Unit filename="../src/shared/output-mode.h" />
 		<Unit filename="../src/shared/pager.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/pager.h" />
 		<Unit filename="../src/shared/path-lookup.h" />
-		<Unit filename="../src/shared/sleep-config.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/sleep-config.h" />
 		<Unit filename="../src/shared/spawn-polkit-agent.c">
 			<Option compilerVar="CC" />
 		</Unit>

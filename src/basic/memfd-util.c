@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -19,7 +17,10 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include <errno.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #ifdef HAVE_LINUX_MEMFD_H
 #  include <linux/memfd.h>
 #endif
@@ -29,11 +30,11 @@
 
 #include "alloc-util.h"
 #include "fd-util.h"
+#include "macro.h"
 #include "memfd-util.h"
 #include "missing.h"
 #include "string-util.h"
 #include "utf8.h"
-#include "util.h"
 
 int memfd_new(const char *name) {
         _cleanup_free_ char *g = NULL;

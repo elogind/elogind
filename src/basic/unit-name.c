@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -20,22 +18,37 @@
 ***/
 
 #include <errno.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "alloc-util.h"
 #include "bus-label.h"
-#include "def.h"
+//#include "glob-util.h"
 #include "hexdecoct.h"
+#include "macro.h"
 #include "path-util.h"
 #include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
 #include "unit-name.h"
-#include "util.h"
 
+/* Characters valid in a unit name. */
 #define VALID_CHARS                             \
-        DIGITS LETTERS                          \
+        DIGITS                                  \
+        LETTERS                                 \
         ":-_.\\"
+
+/* The same, but also permits the single @ character that may appear */
+#define VALID_CHARS_WITH_AT                     \
+        "@"                                     \
+        VALID_CHARS
+
+/* All chars valid in a unit name glob */
+#define VALID_CHARS_GLOB                        \
+        VALID_CHARS_WITH_AT                     \
+        "[]!-*?"
 
 bool unit_name_is_valid(const char *n, UnitNameFlags flags) {
         const char *e, *i, *at;
@@ -638,7 +651,7 @@ static char *do_escape_mangle(const char *f, UnitNameMangle allow_globs, char *t
         /* We'll only escape the obvious characters here, to play
          * safe. */
 
-        valid_chars = allow_globs == UNIT_NAME_GLOB ? "@" VALID_CHARS "[]!-*?" : "@" VALID_CHARS;
+        valid_chars = allow_globs == UNIT_NAME_GLOB ? VALID_CHARS_GLOB : VALID_CHARS_WITH_AT;
 
         for (; *f; f++) {
                 if (*f == '/')
@@ -673,15 +686,15 @@ int unit_name_mangle_with_suffix(const char *name, UnitNameMangle allow_globs, c
         if (!unit_suffix_is_valid(suffix))
                 return -EINVAL;
 
-        if (unit_name_is_valid(name, UNIT_NAME_ANY)) {
-                /* No mangling necessary... */
-                s = strdup(name);
-                if (!s)
-                        return -ENOMEM;
+        /* Already a fully valid unit name? If so, no mangling is necessary... */
+        if (unit_name_is_valid(name, UNIT_NAME_ANY))
+                goto good;
 
-                *ret = s;
-                return 0;
-        }
+        /* Already a fully valid globbing expression? If so, no mangling is necessary either... */
+        if (allow_globs == UNIT_NAME_GLOB &&
+            string_is_glob(name) &&
+            in_charset(name, VALID_CHARS_GLOB))
+                goto good;
 
         if (is_device_path(name)) {
                 r = unit_name_from_path(name, ".device", ret);
@@ -706,11 +719,21 @@ int unit_name_mangle_with_suffix(const char *name, UnitNameMangle allow_globs, c
         t = do_escape_mangle(name, allow_globs, s);
         *t = 0;
 
-        if (unit_name_to_type(s) < 0)
+        /* Append a suffix if it doesn't have any, but only if this is not a glob, so that we can allow "foo.*" as a
+         * valid glob. */
+        if ((allow_globs != UNIT_NAME_GLOB || !string_is_glob(s)) && unit_name_to_type(s) < 0)
                 strcpy(t, suffix);
 
         *ret = s;
         return 1;
+
+good:
+        s = strdup(name);
+        if (!s)
+                return -ENOMEM;
+
+        *ret = s;
+        return 0;
 }
 
 int slice_build_parent_slice(const char *slice, char **ret) {
