@@ -121,9 +121,9 @@ bool ntp_synced(void);
 
 int get_timezones(char ***l);
 bool timezone_is_valid(const char *name);
+#endif // 0
 
 clockid_t clock_boottime_or_monotonic(void);
-#endif // 0
 
 #define xstrftime(buf, fmt, tm) \
         assert_message_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0, \

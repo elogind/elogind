@@ -1086,6 +1086,7 @@ bool timezone_is_valid(const char *name) {
         return true;
 }
 
+#endif // 0
 clockid_t clock_boottime_or_monotonic(void) {
         static clockid_t clock = -1;
         int fd;
@@ -1103,6 +1104,7 @@ clockid_t clock_boottime_or_monotonic(void) {
 
         return clock;
 }
+#if 0 /// UNNEEDED by elogind
 
 int get_timezone(char **tz) {
         _cleanup_free_ char *t = NULL;
