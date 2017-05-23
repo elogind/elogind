@@ -128,7 +128,6 @@ static inline void _reset_errno_(int *saved_errno) {
 
 #define PROTECT_ERRNO _cleanup_(_reset_errno_) __attribute__((unused)) int _saved_errno_ = errno
 
-#if 0 /// UNNEEDED by elogind
 static inline int negative_errno(void) {
         /* This helper should be used to shut up gcc if you know 'errno' is
          * negative. Instead of "return -errno;", use "return negative_errno();"
@@ -137,7 +136,6 @@ static inline int negative_errno(void) {
         assert_return(errno > 0, -EINVAL);
         return -errno;
 }
-#endif // 0
 
 static inline unsigned u64log2(uint64_t n) {
 #if __SIZEOF_LONG_LONG__ == 8
