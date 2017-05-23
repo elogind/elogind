@@ -1,611 +1,609 @@
-# Italian translations for systemd package
-# Traduzione in italiano per il pacchetto systemd
+# Danish translation for systemd.
+# Copyright (C) 2014 systemd's COPYRIGHT HOLDER
 # This file is distributed under the same license as the systemd package.
-# Daniele Medri <dmedri@gmail.com>, 2013-2015.
+# Daniel Machon <dmachon.dev@gmail.com>, 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-07 04:45+0200\n"
-"PO-Revision-Date: 2016-05-07 04:55+0200\n"
-"Last-Translator: Daniele Medri <dmedri@gmail.com>\n"
-"Language-Team: Italian\n"
-"Language: it\n"
+"Project-Id-Version: systemd master\n"
+"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"POT-Creation-Date: 2015-10-07 19:30+0000\n"
+"PO-Revision-Date: 2015-10-07 19:30+0200\n"
+"Last-Translator: Daniel Machon <dmachon.dev@gmail.com>\n"
+"Language-Team: danish\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.7.1\n"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 msgid "Send passphrase back to system"
-msgstr "Invia la frase segreta (passphrase) al sistema"
+msgstr "Send adgangssætning tilbage til systemet"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
 msgid ""
 "Authentication is required to send the entered passphrase back to the system."
 msgstr ""
-"Autenticazione richiesta per inviare la frase segreta (passphrase) al "
-"sistema."
+"Autentificering er nødvendig for at sende adgangssætning tilbage til systemet."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 msgid "Manage system services or other units"
-msgstr "Gestisci i servizi o le altre unità di sistema"
+msgstr "Håndtér system services eller andre enheder"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 msgid "Authentication is required to manage system services or other units."
 msgstr ""
-"Autenticazione richiesta per gestire i servizi o le altre unità di sistema."
+"Autentificering er nødvendig for at håndtere system services og andre enheder."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 msgid "Manage system service or unit files"
-msgstr "Gestisci i file dei servizi o delle unità di sistema"
+msgstr "Håndtér system services eller enhedsfiler"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 msgid "Authentication is required to manage system service or unit files."
 msgstr ""
-"Autenticazione richiesta per gestire i file dei servizi o delle unità di "
-"sistema."
+"Autentificering er nødvendig for at håndtere system service eller enhedsfiler."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 msgid "Set or unset system and service manager environment variables"
 msgstr ""
-"Configura le variabili d'ambiente per la gestione dei servizi e del sistema"
+"Sæt eller fjern system- og service-forvalter miljøvariabler"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 msgid ""
 "Authentication is required to set or unset system and service manager "
 "environment variables."
-msgstr ""
-"Autenticazione richiesta per configurare le variabili d'ambiente per la "
-"gestione dei servizi e del sistema"
+msgstr "Autentificering er nødvendig for at sætte eller fjerne system- "
+"og service-forvalter miljøvariabler."
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 msgid "Reload the systemd state"
-msgstr "Riavvia lo stato di systemd"
+msgstr "Genindlæs systemd tilstand"
 
 #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 msgid "Authentication is required to reload the systemd state."
-msgstr "Autenticazione richiesta per riavviare lo stato di sistemd."
+msgstr "Autentificering er nødvendig for at genindlæse systemd tilstanden."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 msgid "Set host name"
-msgstr "Configura il nome host"
+msgstr "Sæt værtsnavn"
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
 msgid "Authentication is required to set the local host name."
-msgstr "Autenticazione richiesta per configurare il nome host locale."
+msgstr "Autentificering er nødvendig for at sætte værtsnavn."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 msgid "Set static host name"
-msgstr "Configura il nome host statico"
+msgstr "Sæt statisk værstnavn"
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 msgid ""
 "Authentication is required to set the statically configured local host name, "
 "as well as the pretty host name."
 msgstr ""
-"Autenticazione richiesta per configurare staticamente il nome host locale e "
-"il nome host descrittivo."
+"Autentificering er nødvendig for at sætte det statisk konfigurerede lokale "
+"værtsnavn, lige så vel som det pæne værtsnavn."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
 msgid "Set machine information"
-msgstr "Configura le informazioni sulla macchina"
+msgstr "Sæt maskininformation."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
 msgid "Authentication is required to set local machine information."
-msgstr ""
-"Autenticazione richiesta per configurare le informazioni sulla macchina "
-"locale."
+msgstr "Autentificering er nødvendig for at sætte lokal maskininformation."
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:1
 msgid "Import a VM or container image"
-msgstr "Importa un'immagine VM o un container"
+msgstr "Importér en VM eller container billede"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:2
 msgid "Authentication is required to import a VM or container image"
-msgstr "Autenticazione richiesta per importare un'immagine VM o un container"
+msgstr ""
+"Autentificering er nødvendig for at importére en VM eller "
+"container billeder."
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:3
 msgid "Export a VM or container image"
-msgstr "Esporta un'immagine VM o un container"
+msgstr "Exportér en VM eller container billede"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:4
 msgid "Authentication is required to export a VM or container image"
-msgstr "Autenticazione richiesta per esportare un'immagine VM o un container"
+msgstr "Autentificering er nødvendig for at exportére en VM eller container billede"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:5
 msgid "Download a VM or container image"
-msgstr "Scarica un'immagine VM o un container"
+msgstr "Hent en VM eller container billede"
 
 #: ../src/import/org.freedesktop.import1.policy.in.h:6
 msgid "Authentication is required to download a VM or container image"
-msgstr "Autenticazione richiesta per scaricare un'immagine VM o un container"
+msgstr "Autentificering er nødvendig for at hente en VM eller container billede"
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
 msgid "Set system locale"
-msgstr "Configura le impostazioni regionali di sistema"
+msgstr "Sæt sprogindstillinger for systemet"
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
 msgid "Authentication is required to set the system locale."
 msgstr ""
-"Autenticazione richiesta per configurare le impostazioni regionali di "
-"sistema."
+"Autentificering er nødvendig for at sætte sprogindstillinger "
+"for systemet."
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
 msgid "Set system keyboard settings"
-msgstr "Configura la tastiera di sistema"
+msgstr "Sæt tastaturindstillinger for systemet."
 
 #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 msgid "Authentication is required to set the system keyboard settings."
-msgstr "Autenticazione richiesta per configurare la tastiera di sistema."
+msgstr ""
+"Autentificering er nødvendig for at sætte tastaturindstillinger "
+"for systemet."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
-msgstr "Consenti alle applicazioni di inibire lo spegnimento del sistema"
+msgstr "Tillad applikationer at hæmme system nedlukning"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:2
 msgid ""
 "Authentication is required for an application to inhibit system shutdown."
 msgstr ""
-"Autenticazione richiesta per un'applicazione per inibire lo spegnimento del "
-"sistema."
+"Autentificering er nødvendig for at en applikation kan hæmme "
+"system nedlukning."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:3
 msgid "Allow applications to delay system shutdown"
-msgstr "Consenti alle applicazioni di ritardare lo spegnimento del sistema"
+msgstr "Tillad applikationer at forsinke system nedlukning"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:4
 msgid "Authentication is required for an application to delay system shutdown."
 msgstr ""
-"Autenticazione richiesta per un'applicazione per ritardare lo spegnimento "
-"del sistema."
+"Autentificering er nødvendig for at en applikation kan forsinke "
+"system nedlukning."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:5
 msgid "Allow applications to inhibit system sleep"
-msgstr "Consenti alle applicazioni di inibire il sistema in pausa"
+msgstr "Tillad applikationer at hæmme system dvale"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:6
-msgid "Authentication is required for an application to inhibit system sleep."
-msgstr ""
-"Autenticazione richiesta per un'applicazione per inibire il sistema in pausa."
+msgid "Authentication is required for an application to inhibit system sleep"
+msgstr "Autentificering er nødvendig for at en applikation kan hæmme system dvale"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:7
 msgid "Allow applications to delay system sleep"
-msgstr "Consenti alle applicazioni di ritardare il sistema in pausa"
+msgstr "Tillad applikationer at forsinke system dvale"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:8
 msgid "Authentication is required for an application to delay system sleep."
 msgstr ""
-"Autenticazione richiesta per un'applicazione per ritardare il sistema in "
-"pausa."
+"Autentificering er nødvendig for at en applikation kan forsinke system "
+"dvale."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:9
 msgid "Allow applications to inhibit automatic system suspend"
-msgstr ""
-"Consenti alle applicazioni di inibire la sospesione automatica del sistema"
+msgstr "Tillad applikationer at hæmme automatisk system standby"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:10
 msgid ""
 "Authentication is required for an application to inhibit automatic system "
 "suspend."
 msgstr ""
-"Autenticazione richiesta per un'applicazione per inibire la sospensione "
-"automatica del sistema."
+"Autentificering er nødvendig for at en applikation kan hæmme automatisk "
+"system standby."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:11
 msgid "Allow applications to inhibit system handling of the power key"
-msgstr ""
-"Consenti alle applicazioni di inibire la gestione di sistema del tasto di "
-"accensione"
+msgstr "Tillad applikationer at hæmme systemhåndtering af tænd/sluk-knappen"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:12
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the power key."
 msgstr ""
-"Autenticazione richiesta per un'applicazione per inibire la gestione di "
-"sistema del tasto di accensione."
+"Autentificering er nødvendig for at en applikation kan hæmme systemhåndtering "
+"af tænd/sluk-knappen."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:13
 msgid "Allow applications to inhibit system handling of the suspend key"
-msgstr ""
-"Consenti alle applicazioni di inibire la gestione di sistema del tasto di "
-"sospensione"
+msgstr "Tillad applikationer at hæmme systemhåndtering af standby-knappen"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:14
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the suspend key."
 msgstr ""
-"Autenticazione richiesta per un'applicazione per inibire la gestione di "
-"sistema del tasto di sospensione."
+"Autentificering er nødvendig for at en applikation kan hæmme systemhåndtering "
+"af standby-knappen."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:15
 msgid "Allow applications to inhibit system handling of the hibernate key"
-msgstr ""
-"Consenti alle applicazioni di inibire la gestione di sistema del tasto di "
-"ibernazione"
+msgstr "Tillad applikationer at hæmme systemhåndtering af dvale-knappen"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:16
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the hibernate key."
 msgstr ""
-"Autenticazione richiesta per un'applicazione per inibire la gestione di "
-"sistema del tasto di ibernazione."
+"Autentificering er nødvendig for at en applikation kan hæmme "
+"systemhåndtering af dvale-knappen."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:17
 msgid "Allow applications to inhibit system handling of the lid switch"
 msgstr ""
-"Consenti alle applicazioni di inibire la gestione di sistema alla apertura/"
-"chiusura del portatile"
+"Tillad applikationer at hæmme systemhåndtering af skærmlukning"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:18
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the lid switch."
 msgstr ""
-"Autenticazione richiesta per consentire ad un'applicazione di inibire la "
-"gestione di sistema alla apertura/chiusura del portatile."
+"Autentificering er nødvendig for at en applikation kan hæmme systemhåndtering "
+"af skærmlukning."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:19
-msgid "Allow non-logged-in user to run programs"
-msgstr "Consenti agli utenti non connessi di eseguire programmi"
+msgid "Allow non-logged-in users to run programs"
+msgstr "Tillad brugere der ikke er logget ind, at køre programmer"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:20
-msgid "Explicit request is required to run programs as a non-logged-in user."
-msgstr ""
-"E' necessaria un'esplicita richiesta per eseguire programmi come utenti non "
-"connessi."
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:21
-msgid "Allow non-logged-in users to run programs"
-msgstr "Consenti agli utenti non connessi di eseguire programmi"
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:22
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr ""
-"Autenticazione richiesta per consentire agli utenti non connessi di eseguire "
-"programmi."
+"Autentificering er nødvendig for at brugere, som ikke er logget ind, kan "
+"køre programmer."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:23
+# www.freedesktop.org/wiki/Software/systemd/multiseat/
+#: ../src/login/org.freedesktop.login1.policy.in.h:21
 msgid "Allow attaching devices to seats"
-msgstr "Consenti di collegare dispositivi alle postazioni"
+msgstr "Tillad at montere af enheder til arbejdsstationer"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:24
+# www.freedesktop.org/wiki/Software/systemd/multiseat/
+#: ../src/login/org.freedesktop.login1.policy.in.h:22
 msgid "Authentication is required for attaching a device to a seat."
 msgstr ""
-"Autenticazione richiesta per collegare un dispositivo ad una postazione."
+"Autentificering er nødvendig for at montere en enhed til en "
+"arbejdsstation."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:25
+# www.freedesktop.org/wiki/Software/systemd/multiseat/
+#: ../src/login/org.freedesktop.login1.policy.in.h:23
 msgid "Flush device to seat attachments"
-msgstr "Scollega i dispositivi dalla postazione"
+msgstr "Nulstil enhed monteret til en arbejdsstation"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:26
+# www.freedesktop.org/wiki/Software/systemd/multiseat/
+#: ../src/login/org.freedesktop.login1.policy.in.h:24
 msgid ""
 "Authentication is required for resetting how devices are attached to seats."
 msgstr ""
-"Autenticazione richiesta per ripristinare come i dispositivi sono collegati "
-"alle postazioni."
+"Autentificering er nødvendig for at nulstille måden enheder er monteret "
+"arbejdsstationer."
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:25
+msgid "Power off the system"
+msgstr "Sluk for systemet"
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:26
+msgid "Authentication is required for powering off the system."
+msgstr "Autentificering er nødvendig for at slukke systemet"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:27
-msgid "Power off the system"
-msgstr "Spegni il sistema (power off)"
+msgid "Power off the system while other users are logged in"
+msgstr "Sluk systemet mens andre brugere er logget på"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:28
-msgid "Authentication is required for powering off the system."
-msgstr "Autenticazione richiesta per spegnere il sistema."
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:29
-msgid "Power off the system while other users are logged in"
-msgstr "Spegni il sistema (power off) mentre altri utenti sono connessi"
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:30
 msgid ""
 "Authentication is required for powering off the system while other users are "
 "logged in."
 msgstr ""
-"Autenticazione richiesta per spegnere il sistema mentre altri utenti sono "
-"connessi."
+"Autentificering er nødvendig for at slukke systemet mens andre brugere "
+"er logget på."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:31
+#: ../src/login/org.freedesktop.login1.policy.in.h:29
 msgid "Power off the system while an application asked to inhibit it"
 msgstr ""
-"Spegni il sistema (power off) mentre un'applicazione chiede di inibirne "
-"l'azione"
+"Sluk for systemet mens en applikation har forespurgt at hæmme det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:32
+#: ../src/login/org.freedesktop.login1.policy.in.h:30
 msgid ""
 "Authentication is required for powering off the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Autenticazione richiesta per spegnere il sistema mentre un'applicazione "
-"chiede di inibirne l'azione."
+"Autentificering er nødvendig for at slukke systemet mens en applikation har "
+"forespurgt at hæmme det."
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:31
+msgid "Reboot the system"
+msgstr "Genstart systemet"
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:32
+msgid "Authentication is required for rebooting the system."
+msgstr "Autentificering er nødvendig for at genstarte systemet."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:33
-msgid "Reboot the system"
-msgstr "Riavvia il sistema (reboot)"
+msgid "Reboot the system while other users are logged in"
+msgstr "Genstart systemet mens andre brugere er logget ind"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:34
-msgid "Authentication is required for rebooting the system."
-msgstr "Autenticazione richiesta per riavviare il sistema."
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:35
-msgid "Reboot the system while other users are logged in"
-msgstr "Riavvia il sistema (reboot) mentre altri utenti sono connessi"
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:36
 msgid ""
 "Authentication is required for rebooting the system while other users are "
 "logged in."
 msgstr ""
-"Autenticazione richiesta per riavviare il sistema mentre altri utenti sono "
-"connessi."
+"Autentificering er nødvendig for at genstarte systemet mens andre brugere "
+"er logget ind."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:37
+#: ../src/login/org.freedesktop.login1.policy.in.h:35
 msgid "Reboot the system while an application asked to inhibit it"
 msgstr ""
-"Riavvia il sistema (reboot) mentre un'applicazione chiede di inibirne "
-"l'azione"
+"Genstart systemet mens en applikation har forespurgt at hæmme det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:38
+#: ../src/login/org.freedesktop.login1.policy.in.h:36
 msgid ""
 "Authentication is required for rebooting the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Autenticazione richiesta per riavviare il sistema mentre un'applicazione "
-"chiede di inibirne l'azione."
+"Autentificering er nødvendig for at genstarte systemet mens en applikation "
+"har forespurgt at hæmme det."
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:37
+msgid "Suspend the system"
+msgstr "Sæt systemet på standby"
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:38
+msgid "Authentication is required for suspending the system."
+msgstr "Autentificering er nødvendig for at sætte systemet på standby"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:39
-msgid "Suspend the system"
-msgstr "Sospendi il sistema (suspend)"
+msgid "Suspend the system while other users are logged in"
+msgstr "Sæt systemet på standby mens andre brugere er logget på"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:40
-msgid "Authentication is required for suspending the system."
-msgstr "Autenticazione richiesta per sospendere il sistema."
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:41
-msgid "Suspend the system while other users are logged in"
-msgstr "Sospendi il sistema (suspend) mentre altri utenti sono connessi"
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:42
 msgid ""
 "Authentication is required for suspending the system while other users are "
 "logged in."
 msgstr ""
-"Autenticazione richiesta per sospendere il sistema mentre altri utenti sono "
-"connessi."
+"Autentificering er nødvendig for at sætte systemet på standby, mens andre "
+"brugere er logget på."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:43
+#: ../src/login/org.freedesktop.login1.policy.in.h:41
 msgid "Suspend the system while an application asked to inhibit it"
 msgstr ""
-"Sospendi il sistema (suspend) mentre un'applicazione chiede di inibirne "
-"l'azione"
+"Sæt systemet på standby mens en applikation har forespurgt at hæmme"
+"det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:44
+#: ../src/login/org.freedesktop.login1.policy.in.h:42
 msgid ""
 "Authentication is required for suspending the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Autenticazione richiesta per sospendere il sistema mentre un'applicazione "
-"chiede di inibirne l'azione."
+"Autentificering er nødvendig for at sætte systemet på standby, mens en "
+"applikation har forespurgt at hæmme det."
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:43
+msgid "Hibernate the system"
+msgstr "Sæt systemet i dvale"
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:44
+msgid "Authentication is required for hibernating the system."
+msgstr ""
+"Autentificering er nødvendig for at sætte systemet i dvale-tilstand."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:45
-msgid "Hibernate the system"
-msgstr "Iberna il sistema (hibernate)"
+msgid "Hibernate the system while other users are logged in"
+msgstr ""
+"Sæt systemet i dvale-tilstand mens andre brugere er logget på"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:46
-msgid "Authentication is required for hibernating the system."
-msgstr "Autenticazione richiesta per ibernare il sistema."
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:47
-msgid "Hibernate the system while other users are logged in"
-msgstr "Iberna il sistema (hibernate) mentre altri utenti sono connessi"
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:48
 msgid ""
 "Authentication is required for hibernating the system while other users are "
 "logged in."
 msgstr ""
-"Autenticazione richiesta per ibernare il sistema mentre altri utenti sono "
-"connessi."
+"Autentificering er nødvendig for at sætte systemet i dvale-tilstand, mens "
+"andre brugere er logget på."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:49
+#: ../src/login/org.freedesktop.login1.policy.in.h:47
 msgid "Hibernate the system while an application asked to inhibit it"
-msgstr ""
-"Iberna il sistema (hibernate) mentre un'applicazione chiede di inibirne "
-"l'azione"
+msgstr "Sæt systemet i dvale-tilstand mens en applikation har forespurgt at "
+"hæmme det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:50
+#: ../src/login/org.freedesktop.login1.policy.in.h:48
 msgid ""
 "Authentication is required for hibernating the system while an application "
 "asked to inhibit it."
 msgstr ""
-"Autenticazione richiesta per ibernare il sistema mentre un'applicazione "
-"chiede di inibirne l'azione."
+"Autentificering er nødvendig for at sætte systemet i dvale tilstand, mens "
+"en applikation har forespurgt at hæmme det."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:51
+#: ../src/login/org.freedesktop.login1.policy.in.h:49
 msgid "Manage active sessions, users and seats"
-msgstr "Gestione delle sessioni attive, utenti e postazioni"
+msgstr "Håndtér aktive sessioner, brugere og arbejdsstationer"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:52
+# www.freedesktop.org/wiki/Software/systemd/multiseat/
+#: ../src/login/org.freedesktop.login1.policy.in.h:50
 msgid ""
 "Authentication is required for managing active sessions, users and seats."
 msgstr ""
-"Autenticazione richiesta per gestire le sessioni attive, gli utenti e le "
-"postazioni."
+"Autentificering er nødvendig for at håndtere aktive sessioner, brugere "
+"og arbejdsstationer."
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:51
+msgid "Lock or unlock active sessions"
+msgstr "Lås eller oplås aktive sessioner"
+
+#: ../src/login/org.freedesktop.login1.policy.in.h:52
+msgid "Authentication is required to lock or unlock active sessions."
+msgstr ""
+"Autentificering er nødvendig for at låse eller oplåse aktive sessioner."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:53
-msgid "Lock or unlock active sessions"
-msgstr "Blocca/sblocca sessioni attive"
+msgid "Allow indication to the firmware to boot to setup interface"
+msgstr "Tillad meddelelse til firmwaren om at starte op i opsætningsgrænseflade"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:54
-msgid "Authentication is required to lock or unlock active sessions."
-msgstr "Autenticazione richiesta per bloccare o sbloccare le sessioni attive."
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:55
-msgid "Allow indication to the firmware to boot to setup interface"
-msgstr ""
-"Permette indicazioni per il firmware per avviare l'interfaccia di "
-"configurazione"
-
-#: ../src/login/org.freedesktop.login1.policy.in.h:56
 msgid ""
 "Authentication is required to indicate to the firmware to boot to setup "
 "interface."
-msgstr ""
-"Autenticazione richiesta per indicare al firmware di avviare l'interfaccia "
-"di configurazione."
+msgstr "Autentificering er nødvendig for at meddele firmwaren om at starte "
+"op i opsætningsgrænseflade."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:57
+#: ../src/login/org.freedesktop.login1.policy.in.h:55
 msgid "Set a wall message"
-msgstr "Configura un messaggio per gli utenti"
+msgstr "Sæt broadcast-besked"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:58
+#: ../src/login/org.freedesktop.login1.policy.in.h:56
 msgid "Authentication is required to set a wall message"
-msgstr "Autenticazione richiesta per configurare un messaggio per gli utenti"
+msgstr "Autentificering er nødvendig for at sætte en broadcast-besked"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 msgid "Log into a local container"
-msgstr "Accedi in un container locale"
+msgstr "Log på en lokal container"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
 msgid "Authentication is required to log into a local container."
-msgstr "Autenticazione richiesta per accedere in un container locale."
+msgstr "Autentificering er nødvendig for at logge på en lokal container."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
 msgid "Log into the local host"
-msgstr "Accedi in un host locale"
+msgstr "Log på den lokale vært"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
 msgid "Authentication is required to log into the local host."
-msgstr "Autenticazione richiesta per accedere in un host locale."
+msgstr "Auitentificering er nødvendig for at logge på den lokale vært."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
 msgid "Acquire a shell in a local container"
-msgstr "Apri una shell in un container locale"
+msgstr "Anskaf en shell i en lokal container"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
 msgid "Authentication is required to acquire a shell in a local container."
-msgstr "Autenticazione richiesta per aprire una shell in un container locale."
+msgstr ""
+"Autentificering er nødvendig for at anskaffe en shell i en lokal "
+"container."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
 msgid "Acquire a shell on the local host"
-msgstr "Apri una shell in un host locale"
+msgstr "Anskaf en shell på den lokale vært"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
 msgid "Authentication is required to acquire a shell on the local host."
-msgstr "Autenticazione richiesta per aprire una shell in un host locale."
+msgstr ""
+"Autentificering er nødvendig for at anskaffe en shell på den lokale vært."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
 msgid "Acquire a pseudo TTY in a local container"
-msgstr "Apri un pseudo TTY in un container locale"
+msgstr "Anskaf en pseudo-TTY i en lokal container"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
 msgid ""
 "Authentication is required to acquire a pseudo TTY in a local container."
 msgstr ""
-"Autenticazione richiesta per aprire un pseudo TTY in un container locale."
+"Autentificering er nødvendig for at anskaffe en pseudo-TTY i en lokal "
+"container."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
 msgid "Acquire a pseudo TTY on the local host"
-msgstr "Apri un pseudo TTY in un host locale"
+msgstr "Anskaf en pseudo-TTY på den lokale vært"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
 msgid "Authentication is required to acquire a pseudo TTY on the local host."
-msgstr "Autenticazione richiesta per aprire un pseudo TTY in un host locale."
+msgstr ""
+"Autentificering er nødvendig for at anskaffe en pseudo-TTY på den "
+"lokale vært."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 msgid "Manage local virtual machines and containers"
-msgstr "Gestisci le virtual machine e i container locali"
+msgstr "Håndtér lokale virtuelle maskiner og containere"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
 msgid ""
 "Authentication is required to manage local virtual machines and containers."
 msgstr ""
-"Autenticazione richiesta per gestire le virtual machine e i container locali."
+"Autentificering er nødvendig for at håndtere lokale virtuelle maskiner og "
+"containere."
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 msgid "Manage local virtual machine and container images"
-msgstr "Gestisci le immagini locali delle virtual machine e dei container"
+msgstr "Håndtér lokal virtuel maskine- og container billeder"
 
 #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 msgid ""
 "Authentication is required to manage local virtual machine and container "
 "images."
 msgstr ""
-"Autenticazione richiesta per gestire le immagini delle virtual machine e dei "
-"container locali."
+"Autentificering er nødvendig for at håndtere lokal virtuel maskine- og "
+"container billeder."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
 msgid "Set system time"
-msgstr "Configura l'orario di sistema"
+msgstr "Sæt tiden for systemet"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
 msgid "Authentication is required to set the system time."
-msgstr "Autenticazione richiesta per configurare l'orario di sistema."
+msgstr "Autentificering er nødvendig for at sætte tiden for systemet."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
 msgid "Set system timezone"
-msgstr "Configura il fuso orario di sistema"
+msgstr "Sæt tidszone for systemet"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
 msgid "Authentication is required to set the system timezone."
-msgstr "Autenticazione richiesta per configurare il fuso orario di sistema."
+msgstr "Autentificering er nødvendig for at sætte tidszonen for systemet."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
 msgid "Set RTC to local timezone or UTC"
-msgstr ""
-"Configura l'orologio di sistema (RTC) al fuso orario locale o al tempo "
-"civile (UTC)"
+msgstr "Sæt RTC til lokal tidszone eller UTC"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
 msgid ""
 "Authentication is required to control whether the RTC stores the local or "
 "UTC time."
 msgstr ""
-"Autenticazione richiesta per verificare se l'orologio di sistema (RTC) è "
-"configurato all'orario locale o al tempo civile (UTC)."
+"Autentificering er nødvendig for at kontrollere hvorvidt RTC'en gemmer "
+"den lokale tid eller UTC tid."
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
 msgid "Turn network time synchronization on or off"
-msgstr "Abilita o meno la sincronizzazione dell'orario in rete"
+msgstr "Slå synkronisering af netværkstid til eller fra"
 
 #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
 msgid ""
 "Authentication is required to control whether network time synchronization "
 "shall be enabled."
 msgstr ""
-"Autenticazione richiesta per verificare se la sincronizzazione dell'orario "
-"in rete possa essere attivata."
+"Autentificering er nødvendig for at kontrollere hvorvidt synkronisering af "
+"netværkstid skal aktiveres"
 
-#: ../src/core/dbus-unit.c:450
+#: ../src/core/dbus-unit.c:428
 msgid "Authentication is required to start '$(unit)'."
-msgstr "Autenticazione richiesta per avviare '$(unit)'."
+msgstr "Autentificering er nødvendig for at starte '$(unit)'."
 
-#: ../src/core/dbus-unit.c:451
+#: ../src/core/dbus-unit.c:429
 msgid "Authentication is required to stop '$(unit)'."
-msgstr "Autenticazione richiesta per fermare '$(unit)'."
+msgstr "Autentificering er nødvendig for at stoppe '$(unit)'."
 
-#: ../src/core/dbus-unit.c:452
+#: ../src/core/dbus-unit.c:430
 msgid "Authentication is required to reload '$(unit)'."
-msgstr "Autenticazione richiesta per ricaricare '$(unit)'."
+msgstr "Autentificering er nødvendig for at genindlæse '$(unit)'."
 
-#: ../src/core/dbus-unit.c:453 ../src/core/dbus-unit.c:454
+#: ../src/core/dbus-unit.c:431 ../src/core/dbus-unit.c:432
 msgid "Authentication is required to restart '$(unit)'."
-msgstr "Autenticazione richiesta per riavviare '$(unit)'."
+msgstr "Autentificering at nødvendig for at genstarte '$(unit)'."
 
-#: ../src/core/dbus-unit.c:560
+#: ../src/core/dbus-unit.c:535
 msgid "Authentication is required to kill '$(unit)'."
-msgstr "Autenticazione richiesta per terminare '$(unit)'."
+msgstr "Autentificering er nødvendig for at eliminere '$(unit)'."
 
-#: ../src/core/dbus-unit.c:590
+#: ../src/core/dbus-unit.c:565
 msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 msgstr ""
-"Autenticazione richiesta per riconfigurare lo stato \"fallito\" di '$(unit)'."
+"Autentificering er nødvendig for at nulstille \"fejl\" tilstanden på '$(unit)'."
 
-#: ../src/core/dbus-unit.c:622
+#: ../src/core/dbus-unit.c:597
 msgid "Authentication is required to set properties on '$(unit)'."
-msgstr "Autenticazione richiesta per configurare le proprietà di '$(unit)'."
+msgstr ""
+"Autentificering er nødvendig for at sætte egenskaber på '$(unit)'."
+
+#~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
+#~ msgstr ""
+#~ "Tryk Ctrl-C for at annulere alle igangværende kontrolleringer af "
+#~ "filsystemet"
+
+#~ msgid "Checking in progress on %d disk (%3.1f%% complete)"
+#~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
+#~ msgstr[0] "Igangværende kontrollering på %d disk (%3.1f%% færdig)"
+#~ msgstr[1] "Igangværende kontrollering på %d diske (%3.1f%% færdig)"

@@ -1,11 +1,11 @@
-# Bulgarian translation of elogind po-file.
+# Bulgarian translation of systemd po-file.
 # Copyright (C) 2016 Alexander Shopov <ash@kambanaria.org>
-# This file is distributed under the same license as the elogind package.
+# This file is distributed under the same license as the systemd package.
 # Alexander Shopov <ash@kambanaria.org>, 2016.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: elogind master\n"
+"Project-Id-Version: systemd master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-14 13:28+0300\n"
 "PO-Revision-Date: 2016-05-14 13:28+0300\n"
@@ -17,41 +17,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:1
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 msgid "Send passphrase back to system"
 msgstr "Изпращане на паролата към системата"
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:2
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
 msgid ""
 "Authentication is required to send the entered passphrase back to the system."
 msgstr "За изпращане на паролата към системата е необходима идентификация."
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:3
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 msgid "Manage system services or other units"
 msgstr "Управление на услугите или другите модули"
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:4
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 msgid "Authentication is required to manage system services or other units."
 msgstr ""
 "За управление на услугите или другите модули е необходима идентификация."
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:5
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 msgid "Manage system service or unit files"
 msgstr "Управление на файловете за услугите или другите модули"
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:6
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 msgid "Authentication is required to manage system service or unit files."
 msgstr ""
 "За управление на файловете за услугите или другите модули е необходима "
 "идентификация."
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:7
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 msgid "Set or unset system and service manager environment variables"
 msgstr ""
 "Задаване или изтриване на променливи на средата за системата и управлението "
 "на услугите"
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:8
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 msgid ""
 "Authentication is required to set or unset system and service manager "
 "environment variables."
@@ -59,13 +59,13 @@ msgstr ""
 "За задаване или изтриване на променливи на средата за системата и "
 "управлението на услугите е необходима идентификация."
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:9
-msgid "Reload the elogind state"
-msgstr "Презареждане на състоянието на elogind"
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
+msgid "Reload the systemd state"
+msgstr "Презареждане на състоянието на systemd"
 
-#: ../src/core/org.freedesktop.elogind1.policy.in.in.h:10
-msgid "Authentication is required to reload the elogind state."
-msgstr "За презареждане на състоянието на elogind е необходима идентификация."
+#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
+msgid "Authentication is required to reload the systemd state."
+msgstr "За презареждане на състоянието на systemd е необходима идентификация."
 
 #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 msgid "Set host name"
