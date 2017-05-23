@@ -2193,7 +2193,7 @@ int cg_unified(void) {
 #endif // 0
                 unified_cache = false;
         else
-                return -ENOEXEC;
+                return -ENOMEDIUM;
 
         return unified_cache;
 }

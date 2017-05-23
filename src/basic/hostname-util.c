@@ -127,6 +127,8 @@ char* hostname_cleanup(char *s) {
 
         assert(s);
 
+        strshorten(s, HOST_NAME_MAX);
+
         for (p = s, d = s, dot = true; *p; p++) {
                 if (*p == '.') {
                         if (dot)
@@ -145,8 +147,6 @@ char* hostname_cleanup(char *s) {
                 d[-1] = 0;
         else
                 *d = 0;
-
-        strshorten(s, HOST_NAME_MAX);
 
         return s;
 }

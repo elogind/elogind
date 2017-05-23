@@ -23,7 +23,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <xlocale.h>
+#if defined(__GLIBC__)
+#  include <xlocale.h>
+#endif // defined(__GLIBC__)
 
 #include "alloc-util.h"
 //#include "extract-word.h"
