@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [229.1],
+        [230],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -343,11 +343,20 @@ AC_SEARCH_LIBS([cap_init], [cap], [], [AC_MSG_ERROR([*** POSIX caps library not 
 CAP_LIBS="$LIBS"
 AC_SUBST(CAP_LIBS)
 
-AC_CHECK_FUNCS([memfd_create])
 AC_CHECK_FUNCS([__secure_getenv secure_getenv])
-AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renameat2,
-                char16_t, char32_t, LO_FLAGS_PARTSCAN],
-               [], [], [[
+AC_CHECK_DECLS([
+        memfd_create,
+        gettid,
+        pivot_root,
+        name_to_handle_at,
+        setns,
+        getrandom,
+        renameat2,
+        kcmp,
+        keyctl,
+        LO_FLAGS_PARTSCAN,
+        copy_file_range],
+                [], [], [[
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/mount.h>
@@ -355,6 +364,11 @@ AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renamea
 #include <sched.h>
 #include <linux/loop.h>
 #include <linux/random.h>
+]])
+
+AC_CHECK_TYPES([char16_t, char32_t, key_serial_t],
+               [], [], [[
+#include <uchar.h>
 ]])
 
 AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
@@ -368,8 +382,9 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
                 IFLA_IPTUN_ENCAP_DPORT,
                 IFLA_GRE_ENCAP_DPORT,
                 IFLA_BRIDGE_VLAN_INFO,
+                IFLA_BRPORT_PROXYARP,
                 IFLA_BRPORT_LEARNING_SYNC,
-                IFLA_BR_PRIORITY,
+                IFLA_BR_VLAN_DEFAULT_PVID,
                 NDA_IFINDEX,
                 IFA_FLAGS],
 [], [], [[
@@ -442,6 +457,17 @@ if test "x$enable_selinux" != "xno"; then
         fi
 fi
 AM_CONDITIONAL(HAVE_SELINUX, [test "$have_selinux" = "yes"])
+
+# ------------------------------------------------------------------------------
+AC_ARG_WITH([kill-user-processes],
+        [AS_HELP_STRING([--without-kill-user-processes], [Set elogind's KillUserProcesses=no by default])])
+AS_IF([test "$with_kill_user_processes" != "no"],
+       [kill_user_processes=true
+        KILL_USER_PROCESSES=yes],
+       [kill_user_processes=false
+        KILL_USER_PROCESSES=no])
+AC_DEFINE_UNQUOTED(KILL_USER_PROCESSES, [$kill_user_processes], [Default KillUserProcesses setting])
+AC_SUBST(KILL_USER_PROCESSES)
 
 # ------------------------------------------------------------------------------
 AC_ARG_ENABLE([pam],
@@ -750,6 +776,7 @@ AC_MSG_RESULT([
         SELinux:                 ${have_selinux}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
+        KillUserProcesses default: ${KILL_USER_PROCESSES}
         polkit:                  ${have_polkit}
         kdbus:                   ${have_kdbus}
         Python:                  ${have_python}

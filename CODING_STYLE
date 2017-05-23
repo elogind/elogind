@@ -163,7 +163,7 @@
   programming error with assert_return() and return a sensible return
   code. In all other calls, it is recommended to check for programming
   errors with a more brutal assert(). We are more forgiving to public
-  users then for ourselves! Note that assert() and assert_return()
+  users than for ourselves! Note that assert() and assert_return()
   really only should be used for detecting programming errors, not for
   runtime errors. assert() and assert_return() by usage of _likely_()
   inform the compiler that he should not expect these checks to fail,
@@ -213,6 +213,7 @@
   b) socket() and socketpair() must get SOCK_CLOEXEC passed
   c) recvmsg() must get MSG_CMSG_CLOEXEC set
   d) F_DUPFD_CLOEXEC should be used instead of F_DUPFD, and so on
+  f) invocations of fopen() should take "e"
 
 - We never use the POSIX version of basename() (which glibc defines it in
   libgen.h), only the GNU version (which glibc defines in string.h).
@@ -238,6 +239,11 @@
   instead of just this:
 
       unlink("/foo/bar/baz");
+
+  Don't cast function calls to (void) that return no error
+  conditions. Specifically, the various xyz_unref() calls that return a NULL
+  object shouldn't be cast to (void), since not using the return value does not
+  hide any errors.
 
 - Don't invoke exit(), ever. It is not replacement for proper error
   handling. Please escalate errors up your call chain, and use normal

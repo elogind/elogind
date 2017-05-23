@@ -33,14 +33,54 @@ Janitorial Clean-ups:
 
 Features:
 
+* make sure bash completion uses journalctl --fields to get fields list
+
+* use phyical_memory() to allow MemoryLimit= configuration based on available system memory
+
+* ProtectKernelLogs= (drops CAP_SYSLOG, add seccomp for syslog() syscall, and DeviceAllow to /dev/kmsg) in service files
+
+* ProtectClock= (drops CAP_SYS_TIMES, adds seecomp filters for settimeofday, adjtimex), sets DeviceAllow o /dev/rtc
+
+* ProtectMount= (drop mount/umount/pivot_root from seccomp, disallow fuse via DeviceAllow, imply Mountflags=slave)
+
+* ProtectDevices= should also take iopl/ioperm/pciaccess away
+
+* ProtectKeyRing= to take keyring calls away
+
+* RestrictNamespaces= or so in services (taking away the ability to create namespaces, with setns, unshare, clone)
+
+* IAID field must move from [Link] to [DHCP] section in .network files
+
+* make sure the ratelimit object can deal with USEC_INFINITY as way to turn off things
+
+* journalctl: make sure -f ends when the container indicated by -M terminates
+
+* rework fopen_temporary() to make use of open_tmpfile_linkable() (problem: the
+  kernel doesn't support linkat() that replaces existing files, currently)
+
+* check if DeviceAllow= should split first, resolve specifiers later
+
+* transient units: don't bother with actually setting unit properties, we
+  reload the unit file anyway
+
+* make sure resolved can be restarted without losing pushed-in dns config
+
+* journald: sigbus API via a signal-handler safe function that people may call
+  from the SIGBUS handler
+
+* when using UTF8, ellipsize with "…" rather than "...", so that we can show more contents before truncating
+
+* move specifier expansion from service_spawn() into load-fragment.c
+
+* optionally, also require WATCHDOG=1 notifications during service start-up and shutdown
+
+* resolved: maybe, after all, implement local listening for DNS packets on port
+  127.0.0.53:53.
+
 * delay activation of logind until somebody logs in, or when /dev/tty0 pulls it
   in or lingering is on (so that containers don't bother with it until PAM is used). also exit-on-idle
 
 * cache sd_event_now() result from before the first iteration...
-
-* remove Capabilities=, after all AmbientCapabilities= and CapabilityBoundingSet= should be enough.
-
-* support for the new copy_file_range() syscall
 
 * add systemctl stop --job-mode=triggering that follows TRIGGERED_BY deps and adds them to the same transaction
 
@@ -49,23 +89,15 @@ Features:
 * PID1: find a way how we can reload unit file configuration for
   specific units only, without reloading the whole of systemd
 
-* add an explicit parser for LimitNICE= and LimitRTPRIO= that verifies
+* add an explicit parser for LimitRTPRIO= that verifies
   the specified range and generates sane error messages for incorrect
-  specifications. Also, for LimitNICE= maybe introduce a syntax such
-  as "+5" or "-7" in order to make the limits more readable as they
-  are otherwise shifted by 20.
+  specifications.
 
 * do something about "/control" subcgroups in the unified cgroup hierarchy
 
 * when we detect that there are waiting jobs but no running jobs, do something
 
 * push CPUAffinity= also into the "cpuset" cgroup controller (only after the cpuset controller got ported to the unified hierarchy)
-
-* add a new command "systemctl revert" or so, that removes all dropin
-  snippets in /run and /etc, and all unit files with counterparts in
-  /usr, and thus undoes what "systemctl set-property" and "systemctl
-  edit" create. Maybe even add "systemctl revert -a" to do this for
-  all units.
 
 * PID 1 should send out sd_notify("WATCHDOG=1") messages (for usage in the --user mode, and when run via nspawn)
 
@@ -79,9 +111,6 @@ Features:
 * man: document that unless you use StandardError=null the shell >/dev/stderr won't work in shell scripts in services
 
 * install: include generator dirs in unit file search paths
-
-* rework C11 utf8.[ch] to use char32_t instead of uint32_t when referring
-  to unicode chars, to make things more expressive.
 
 * fstab-generator: default to tmpfs-as-root if only usr= is specified on the kernel cmdline
 
@@ -112,7 +141,8 @@ Features:
 
 * implement a per-service firewall based on net_cls
 
-* Port various tools to make use of verbs.[ch], where applicable
+* Port various tools to make use of verbs.[ch], where applicable: busctl,
+  bootctl, coredumpctl, hostnamectl, localectl, systemd-analyze, timedatectl
 
 * hostnamectl: show root image uuid
 
@@ -132,8 +162,6 @@ Features:
 * as soon as we have kdbus, and sender timestamps, revisit coalescing multiple parallel daemon reloads:
   http://lists.freedesktop.org/archives/systemd-devel/2014-December/025862.html
 
-* the install state probably shouldn't get confused by generated units, think dbus1/kdbus compat!
-
 * in systemctl list-unit-files: show the install value the presets would suggest for a service in a third column
 
 * figure out when we can use the coarse timers
@@ -144,8 +172,6 @@ Features:
   returning from the "systemctl stop".
 
 * firstboot: make it useful to be run immediately after yum --installroot to set up a machine. (most specifically, make --copy-root-password work even if /etc/passwd already exists
-
-* add infrastructure to allocate dynamic/transient users and UID ranges, for use in user-namespaced containers, per-seat gdm login screens and gdm guest sessions
 
 * maybe add support for specifier expansion in user.conf, specifically DefaultEnvironment=
 
@@ -233,7 +259,7 @@ Features:
   CAP_NET_ADMIN is set, more than the loopback device is defined, even
   when it is otherwise off
 
-* MessageQueueMessageSize= and RLimitFSIZE= (and suchlike) should use parse_iec_size().
+* MessageQueueMessageSize= (and suchlike) should use parse_iec_size().
 
 * "busctl status" works only as root on dbus1, since we cannot read
   /proc/$PID/exe
@@ -248,7 +274,7 @@ Features:
   and passes this back to PID1 via SCM_RIGHTS. This also could be used
   to allow Chown/chgrp on sockets without requiring NSS in PID 1.
 
-* New service property: maximum CPU and wallclock runtime for a service
+* New service property: maximum CPU runtime for a service
 
 * introduce bus call FreezeUnit(s, b), as well as "systemctl freeze
   $UNIT" and "systemctl thaw $UNIT" as wrappers around this. The calls
@@ -277,8 +303,6 @@ Features:
 * libsystemd-journal, libsystemd-login, libudev: add calls to easily attach these objects to sd-event event loops
 
 * be more careful what we export on the bus as (usec_t) 0 and (usec_t) -1
-
-* unify dispatch table in systemctl_main() and friends
 
 * rfkill,backlight: we probably should run the load tools inside of the udev rules so that the state is properly initialized by the time other software sees it
 
@@ -321,10 +345,6 @@ Features:
        - path escaping
   - update systemd.special(7) to mention that dbus.socket is only about the compatibility socket now
   - test bloom filter generation indexes
-  - bus-proxy: when passing messages from kdbus, make sure we properly
-    handle the case where a large number of fds is appended that we
-    cannot pass into sendmsg() of the AF_UNIX sokcet (which only accepts
-    253 messages)
   - kdbus: introduce a concept of "send-only" connections
   - kdbus: add counter for refused unicast messages that is passed out via the RECV ioctl. SImilar to the counter for dropped multicast messages we already have.
 
@@ -374,7 +394,7 @@ Features:
 
 * systemd-inhibit: make taking delay locks useful: support sending SIGINT or SIGTERM on PrepareForSleep()
 
-* remove any syslog support from log.c -- we probably cannot do this before split-off udev is gone for good
+* remove any syslog support from log.c — we probably cannot do this before split-off udev is gone for good
 
 * shutdown logging: store to EFI var, and store to USB stick?
 
@@ -494,8 +514,6 @@ Features:
     written to as FAIL, but instead show that their are being written to.
   - add journalctl -H that talks via ssh to a remote peer and passes through
     binary logs data
-  - change journalctl -M to acquire fd to journal directory via machined, and
-    then operate on that via openat() instead of absolute paths
   - add a version of --merge which also merges /var/log/journal/remote
   - log accumulated resource usage after each service invocation
   - journalctl: -m should access container journals directly by enumerating
@@ -534,7 +552,6 @@ Features:
 * unit install:
   - "systemctl mask" should find all names by which a unit is accessible
     (i.e. by scanning for symlinks to it) and link them all to /dev/null
-  - systemctl list-unit-files should list generated files (and probably with a new state "generated" for them, or so)
 
 * timer units:
   - timer units should get the ability to trigger when:
@@ -561,8 +578,6 @@ Features:
   - to allow "linking" of nspawn containers, extend --network-bridge= so
     that it can dynamically create bridge interfaces that are refcounted
     by the containers on them. For each group of containers to link together
-  - refuses to boot containers without /etc/machine-id (OK?), and with empty
-    /etc/machine-id (not OK).
   - nspawn -x should support ephemeral instances of gpt images
   - emulate /dev/kmsg using CUSE and turn off the syslog syscall
     with seccomp. That should provide us with a useful log buffer that
@@ -583,8 +598,6 @@ Features:
   - should send out sd_notify("WATCHDOG=1") messages
   - optionally automatically add FORWARD rules to iptables whenever nspawn is
     running, remove them when shut down.
-  - add a logic for cleaning up read-only, hidden container images in
-    /var/lib/machines that are not ancestors of any non-hidden containers
   - Improve error message when --bind= is used on a non-existing source
     directory
   - maybe make copying of /etc/resolv.conf optional, and skip it if --read-only
@@ -627,8 +640,6 @@ Features:
 * properly handle loop back mounts via fstab, especially regards to fsck/passno
 
 * initialize the hostname from the fs label of /, if /etc/hostname does not exist?
-
-* rename "userspace" to "core-os"
 
 * udev:
   - move to LGPL
@@ -744,17 +755,6 @@ Features:
   - Allow multiple ExecStart= for all Type= settings, so that we can cover rescue.service nicely
   - consider adding RuntimeDirectoryUser= + RuntimeDirectoryGroup=
 
-* systemd-python:
-   - figure out a simple way to wait for journal events in a way that
-     works with ^C
-   - add documentation to systemd.daemon
-
-* bootchart:
-   - plot per-process IO utilization
-   - group processes based on service association (cgroups)
-   - document initcall_debug
-   - kernel cmdline "bootchart" option for simplicity?
-
 * udev-link-config:
    - Make sure ID_PATH is always exported and complete for
      network devices where possible, so we can safely rely
@@ -776,7 +776,6 @@ Features:
    - work with non-Ethernet devices
    - add support for more bond options
    - dhcp: do we allow configuring dhcp routes on interfaces that are not the one we got the dhcp info from?
-   - add LLDP client side support
    - the DHCP lease data (such as NTP/DNS) is still made available when
      a carrier is lost on a link. It should be removed instantly.
    - expose in the API the following bits:

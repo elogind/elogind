@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=14
+LIBELOGIND_CURRENT=15
 LIBELOGIND_REVISION=0
-LIBELOGIND_AGE=14
+LIBELOGIND_AGE=15
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -90,6 +90,7 @@ polkitpolicy_files =
 dist_udevrules_DATA =
 nodist_udevrules_DATA =
 dist_pkgsysconf_DATA =
+nodist_pkgsysconf_DATA =
 dist_dbuspolicy_DATA =
 dist_dbussystemservice_DATA =
 check_PROGRAMS =
@@ -128,7 +129,7 @@ AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
 	-DSYSTEMD_CGROUP_CONTROLLER=\"$(CGROUP_CONTROLLER)\" \
-	-DELOGIND_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
+	-DSYSTEMD_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
@@ -779,7 +780,7 @@ dist_dbussystemservice_DATA += \
 dist_dbuspolicy_DATA += \
 	src/login/org.freedesktop.login1.conf
 
-dist_pkgsysconf_DATA += \
+nodist_pkgsysconf_DATA += \
 	src/login/logind.conf
 
 polkitpolicy_files += \
@@ -801,7 +802,8 @@ gperf_gperf_sources = \
 
 EXTRA_DIST += \
 	src/login/71-seat.rules.in \
-	src/login/73-seat-late.rules.in
+	src/login/73-seat-late.rules.in \
+	src/login/logind.conf.in
 
 # ------------------------------------------------------------------------------
 substitutions = \
@@ -823,6 +825,7 @@ substitutions = \
        '|udevlibexecdir=$(udevlibexecdir)|' \
        '|KILL=$(KILL)|' \
        '|MKDIR_P=$(MKDIR_P)|' \
+       '|KILL_USER_PROCESSES=$(KILL_USER_PROCESSES)|' \
        '|systemuidmax=$(SYSTEM_UID_MAX)|' \
        '|systemgidmax=$(SYSTEM_GID_MAX)|' \
        '|TTY_GID=$(TTY_GID)|'
@@ -973,7 +976,6 @@ DISTCHECK_CONFIGURE_FLAGS += \
 endif
 
 .PHONY: dist-check-help
-
 dist-check-help: $(rootbin_PROGRAMS)
 	for i in $(abspath $^); do                                             \
             if $$i  --help | grep -v 'default:' | grep -E -q '.{80}.' ; then   \
@@ -981,6 +983,18 @@ dist-check-help: $(rootbin_PROGRAMS)
 	        $$i  --help | awk 'length > 80' | grep -E --color=yes '.{80}'; \
 	        exit 1;                                                        \
             fi; done
+
+include_compilers = "$(CC)" "$(CC) -ansi" "$(CC) -std=iso9899:1990"
+public_headers = $(filter-out src/systemd/_sd-common.h, $(pkginclude_HEADERS) $(include_HEADERS))
+.PHONY: dist-check-includes
+dist-check-includes: $(public_headers)
+	@res=0;                                                        	        \
+	for i in $(abspath $^); do	                                        \
+	    for cc in $(include_compilers); do                                  \
+	        echo "$$cc -o/dev/null -c -x c -include "$$i" - </dev/null";    \
+	        $$cc -o/dev/null -c -x c -include "$$i" - </dev/null || res=1;  \
+	    done;                                                               \
+	done; exit $$res
 
 dist:
 
