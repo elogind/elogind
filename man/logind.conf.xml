@@ -54,9 +54,7 @@
     <title>Description</title>
 
     <para>These files configure various parameters of the elogind
-    login manager,
-    <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
-    </para>
+    login manager.</para>
   </refsect1>
 
   <xi:include href="standard-conf.xml" xpointer="main-conf" />
@@ -64,195 +62,272 @@
   <refsect1>
     <title>Options</title>
 
-    <para>All options are configured in the
-    <literal>[Login]</literal> section:</para>
+    <para>All login options are configured in the
+    <literal>[Login]</literal> section, system sleep options are
+    configured in the <literal>[Sleep]</literal> section.</para>
 
-    <variablelist>
+    <refsect2><title>[Login] section:</title>
+      <variablelist>
 
-      <varlistentry>
-        <term><varname>KillUserProcesses=</varname></term>
+        <varlistentry>
+          <term><varname>KillUserProcesses=</varname></term>
 
-        <listitem><para>Takes a boolean argument. Configures whether
-        the processes of a user should be killed when the user
-        completely logs out (i.e. after the user's last session
-        ended). Defaults to <literal>no</literal>.</para>
+          <listitem><para>Takes a boolean argument. Configures whether
+          the processes of a user should be killed when the user
+          completely logs out (i.e. after the user's last session
+          ended). Defaults to <literal>no</literal>.</para>
 
-        <para>Note that setting <varname>KillUserProcesses=1</varname>
-        will break tools like
-        <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
-      </varlistentry>
+          <para>Note that setting <varname>KillUserProcesses=1</varname>
+          will break tools like
+          <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>KillOnlyUsers=</varname></term>
-        <term><varname>KillExcludeUsers=</varname></term>
+        <varlistentry>
+          <term><varname>KillOnlyUsers=</varname></term>
+          <term><varname>KillExcludeUsers=</varname></term>
 
-        <listitem><para>These settings take space-separated lists of
-        usernames that influence the effect of
-        <varname>KillUserProcesses=</varname>. If not empty, only
-        processes of users listed in <varname>KillOnlyUsers=</varname>
-        will be killed when they log out entirely. Processes of users
-        listed in <varname>KillExcludeUsers=</varname> are excluded
-        from being killed. <varname>KillExcludeUsers=</varname>
-        defaults to <literal>root</literal> and takes precedence over
-        <varname>KillOnlyUsers=</varname>, which defaults to the empty
-        list.</para></listitem>
-      </varlistentry>
+          <listitem><para>These settings take space-separated lists of
+          usernames that influence the effect of
+          <varname>KillUserProcesses=</varname>. If not empty, only
+          processes of users listed in <varname>KillOnlyUsers=</varname>
+          will be killed when they log out entirely. Processes of users
+          listed in <varname>KillExcludeUsers=</varname> are excluded
+          from being killed. <varname>KillExcludeUsers=</varname>
+          defaults to <literal>root</literal> and takes precedence over
+          <varname>KillOnlyUsers=</varname>, which defaults to the empty
+          list.</para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>IdleAction=</varname></term>
+        <varlistentry>
+          <term><varname>IdleAction=</varname></term>
 
-        <listitem><para>Configures the action to take when the system
-        is idle. Takes one of
-        <literal>ignore</literal>,
-        <literal>poweroff</literal>,
-        <literal>reboot</literal>,
-        <literal>halt</literal>,
-        <literal>kexec</literal>,
-        <literal>suspend</literal>,
-        <literal>hibernate</literal>,
-        <literal>hybrid-sleep</literal>, and
-        <literal>lock</literal>.
-        Defaults to <literal>ignore</literal>.</para>
+          <listitem><para>Configures the action to take when the system
+          is idle. Takes one of
+          <literal>ignore</literal>,
+          <literal>poweroff</literal>,
+          <literal>reboot</literal>,
+          <literal>halt</literal>,
+          <literal>kexec</literal>,
+          <literal>suspend</literal>,
+          <literal>hibernate</literal>,
+          <literal>hybrid-sleep</literal>, and
+          <literal>lock</literal>.
+          Defaults to <literal>ignore</literal>.</para>
 
-        <para>Note that this requires that user sessions correctly
-        report the idle status to the system. The system will execute
-        the action after all sessions report that they are idle, no
-        idle inhibitor lock is active, and subsequently, the time
-        configured with <varname>IdleActionSec=</varname> (see below)
-        has expired.</para>
-        </listitem>
-      </varlistentry>
+          <para>Note that this requires that user sessions correctly
+          report the idle status to the system. The system will execute
+          the action after all sessions report that they are idle, no
+          idle inhibitor lock is active, and subsequently, the time
+          configured with <varname>IdleActionSec=</varname> (see below)
+          has expired.</para>
+          </listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>IdleActionSec=</varname></term>
+        <varlistentry>
+          <term><varname>IdleActionSec=</varname></term>
 
-        <listitem><para>Configures the delay after which the action
-        configured in <varname>IdleAction=</varname> (see above) is
-        taken after the system is idle.</para></listitem>
-      </varlistentry>
+          <listitem><para>Configures the delay after which the action
+          configured in <varname>IdleAction=</varname> (see above) is
+          taken after the system is idle.</para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>InhibitDelayMaxSec=</varname></term>
+        <varlistentry>
+          <term><varname>InhibitDelayMaxSec=</varname></term>
 
-        <listitem><para>Specifies the maximum time a system shutdown
-        or sleep request is delayed due to an inhibitor lock of type
-        <literal>delay</literal> being active before the inhibitor is
-        ignored and the operation executes anyway. Defaults to
-        5.</para></listitem>
-      </varlistentry>
+          <listitem><para>Specifies the maximum time a system shutdown
+          or sleep request is delayed due to an inhibitor lock of type
+          <literal>delay</literal> being active before the inhibitor is
+          ignored and the operation executes anyway. Defaults to
+          5.</para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>HandlePowerKey=</varname></term>
-        <term><varname>HandleSuspendKey=</varname></term>
-        <term><varname>HandleHibernateKey=</varname></term>
-        <term><varname>HandleLidSwitch=</varname></term>
-        <term><varname>HandleLidSwitchDocked=</varname></term>
+        <varlistentry>
+          <term><varname>HandlePowerKey=</varname></term>
+          <term><varname>HandleSuspendKey=</varname></term>
+          <term><varname>HandleHibernateKey=</varname></term>
+          <term><varname>HandleLidSwitch=</varname></term>
+          <term><varname>HandleLidSwitchDocked=</varname></term>
 
-        <listitem><para>Controls whether logind shall handle the
-        system power and sleep keys and the lid switch to trigger
-        actions such as system power-off or suspend. Can be one of
-        <literal>ignore</literal>,
-        <literal>poweroff</literal>,
-        <literal>reboot</literal>,
-        <literal>halt</literal>,
-        <literal>kexec</literal>,
-        <literal>suspend</literal>,
-        <literal>hibernate</literal>,
-        <literal>hybrid-sleep</literal>, and
-        <literal>lock</literal>.
-        If <literal>ignore</literal>, logind will never handle these
-        keys. If <literal>lock</literal>, all running sessions will be
-        screen-locked; otherwise, the specified action will be taken
-        in the respective event. Only input devices with the
-        <literal>power-switch</literal> udev tag will be watched for
-        key/lid switch events. <varname>HandlePowerKey=</varname>
-        defaults to <literal>poweroff</literal>.
-        <varname>HandleSuspendKey=</varname> and
-        <varname>HandleLidSwitch=</varname> default to
-        <literal>suspend</literal>.
-        <varname>HandleLidSwitchDocked=</varname> defaults to
-        <literal>ignore</literal>.
-        <varname>HandleHibernateKey=</varname> defaults to
-        <literal>hibernate</literal>. If the system is inserted in a
-        docking station, or if more than one display is connected, the
-        action specified by <varname>HandleLidSwitchDocked=</varname>
-        occurs; otherwise the <varname>HandleLidSwitch=</varname>
-        action occurs.</para></listitem>
-      </varlistentry>
+          <listitem><para>Controls whether logind shall handle the
+          system power and sleep keys and the lid switch to trigger
+          actions such as system power-off or suspend. Can be one of
+          <literal>ignore</literal>,
+          <literal>poweroff</literal>,
+          <literal>reboot</literal>,
+          <literal>halt</literal>,
+          <literal>kexec</literal>,
+          <literal>suspend</literal>,
+          <literal>hibernate</literal>,
+          <literal>hybrid-sleep</literal>, and
+          <literal>lock</literal>.
+          If <literal>ignore</literal>, logind will never handle these
+          keys. If <literal>lock</literal>, all running sessions will be
+          screen-locked; otherwise, the specified action will be taken
+          in the respective event. Only input devices with the
+          <literal>power-switch</literal> udev tag will be watched for
+          key/lid switch events. <varname>HandlePowerKey=</varname>
+          defaults to <literal>poweroff</literal>.
+          <varname>HandleSuspendKey=</varname> and
+          <varname>HandleLidSwitch=</varname> default to
+          <literal>suspend</literal>.
+          <varname>HandleLidSwitchDocked=</varname> defaults to
+          <literal>ignore</literal>.
+          <varname>HandleHibernateKey=</varname> defaults to
+          <literal>hibernate</literal>. If the system is inserted in a
+          docking station, or if more than one display is connected, the
+          action specified by <varname>HandleLidSwitchDocked=</varname>
+          occurs; otherwise the <varname>HandleLidSwitch=</varname>
+          action occurs.</para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>PowerKeyIgnoreInhibited=</varname></term>
-        <term><varname>SuspendKeyIgnoreInhibited=</varname></term>
-        <term><varname>HibernateKeyIgnoreInhibited=</varname></term>
-        <term><varname>LidSwitchIgnoreInhibited=</varname></term>
+        <varlistentry>
+          <term><varname>PowerKeyIgnoreInhibited=</varname></term>
+          <term><varname>SuspendKeyIgnoreInhibited=</varname></term>
+          <term><varname>HibernateKeyIgnoreInhibited=</varname></term>
+          <term><varname>LidSwitchIgnoreInhibited=</varname></term>
 
-        <listitem><para>Controls whether actions triggered by the
-        power and sleep keys and the lid switch are subject to
-        inhibitor locks. These settings take boolean arguments. If
-        <literal>no</literal>, the inhibitor locks taken by
-        applications in order to block the requested operation are
-        respected. If <literal>yes</literal>, the requested operation
-        is executed in any case.
-        <varname>PowerKeyIgnoreInhibited=</varname>,
-        <varname>SuspendKeyIgnoreInhibited=</varname> and
-        <varname>HibernateKeyIgnoreInhibited=</varname> default to
-        <literal>no</literal>.
-        <varname>LidSwitchIgnoreInhibited=</varname> defaults to
-        <literal>yes</literal>. This means that the lid switch does
-        not respect suspend blockers by default, but the power and
-        sleep keys do. </para></listitem>
-      </varlistentry>
+          <listitem><para>Controls whether actions triggered by the
+          power and sleep keys and the lid switch are subject to
+          inhibitor locks. These settings take boolean arguments. If
+          <literal>no</literal>, the inhibitor locks taken by
+          applications in order to block the requested operation are
+          respected. If <literal>yes</literal>, the requested operation
+          is executed in any case.
+          <varname>PowerKeyIgnoreInhibited=</varname>,
+          <varname>SuspendKeyIgnoreInhibited=</varname> and
+          <varname>HibernateKeyIgnoreInhibited=</varname> default to
+          <literal>no</literal>.
+          <varname>LidSwitchIgnoreInhibited=</varname> defaults to
+          <literal>yes</literal>. This means that the lid switch does
+          not respect suspend blockers by default, but the power and
+          sleep keys do. </para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>HoldoffTimeoutSec=</varname></term>
+        <varlistentry>
+          <term><varname>HoldoffTimeoutSec=</varname></term>
 
-        <listitem><para>Specifies the timeout after system startup or
-        system resume in which elogind will hold off on reacting to
-        LID events. This is required for the system to properly
-        detect any hotplugged devices so elogind can ignore LID events
-        if external monitors, or docks, are connected. If set to 0,
-        elogind will always react immediately, possibly before the
-        kernel fully probed all hotplugged devices. This is safe, as
-        long as you do not care for elogind to account for devices
-        that have been plugged or unplugged while the system was off.
-        Defaults to 30s.</para></listitem>
-      </varlistentry>
+          <listitem><para>Specifies the timeout after system startup or
+          system resume in which elogind will hold off on reacting to
+          LID events. This is required for the system to properly
+          detect any hotplugged devices so elogind can ignore LID events
+          if external monitors, or docks, are connected. If set to 0,
+          elogind will always react immediately, possibly before the
+          kernel fully probed all hotplugged devices. This is safe, as
+          long as you do not care for elogind to account for devices
+          that have been plugged or unplugged while the system was off.
+          Defaults to 30s.</para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>RuntimeDirectorySize=</varname></term>
+        <varlistentry>
+          <term><varname>RuntimeDirectorySize=</varname></term>
 
-        <listitem><para>Sets the size limit on the
-        <varname>$XDG_RUNTIME_DIR</varname> runtime directory for each
-        user who logs in. Takes a size in bytes, optionally suffixed
-        with the usual K, G, M, and T suffixes, to the base 1024
-        (IEC). Alternatively, a numerical percentage suffixed by
-        <literal>%</literal> may be specified, which sets the size
-        limit relative to the amount of physical RAM. Defaults to 10%.
-        Note that this size is a safety limit only. As each runtime
-        directory is a tmpfs file system, it will only consume as much
-        memory as is needed. </para></listitem>
-      </varlistentry>
+          <listitem><para>Sets the size limit on the
+          <varname>$XDG_RUNTIME_DIR</varname> runtime directory for each
+          user who logs in. Takes a size in bytes, optionally suffixed
+          with the usual K, G, M, and T suffixes, to the base 1024
+          (IEC). Alternatively, a numerical percentage suffixed by
+          <literal>%</literal> may be specified, which sets the size
+          limit relative to the amount of physical RAM. Defaults to 10%.
+          Note that this size is a safety limit only. As each runtime
+          directory is a tmpfs file system, it will only consume as much
+          memory as is needed. </para></listitem>
+        </varlistentry>
 
-      <varlistentry>
-        <term><varname>RemoveIPC=</varname></term>
+        <varlistentry>
+          <term><varname>RemoveIPC=</varname></term>
 
-        <listitem><para>Controls whether System V and POSIX IPC objects belonging to the user shall be removed when the
-        user fully logs out. Takes a boolean argument. If enabled, the user may not consume IPC resources after the
-        last of the user's sessions terminated. This covers System V semaphores, shared memory and message queues, as
-        well as POSIX shared memory and message queues. Note that IPC objects of the root user and other system users
-        are excluded from the effect of this setting. Defaults to <literal>yes</literal>.</para></listitem>
-      </varlistentry>
+          <listitem><para>Controls whether System V and POSIX IPC objects belonging to the user shall be removed when the
+          user fully logs out. Takes a boolean argument. If enabled, the user may not consume IPC resources after the
+          last of the user's sessions terminated. This covers System V semaphores, shared memory and message queues, as
+          well as POSIX shared memory and message queues. Note that IPC objects of the root user and other system users
+          are excluded from the effect of this setting. Defaults to <literal>yes</literal>.</para></listitem>
+        </varlistentry>
 
-    </variablelist>
+      </variablelist>
+    </refsect2>
+
+    <refsect2><title>[Sleep] section:</title>
+
+      <para><command>elogind</command> supports three general
+      power-saving modes:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>suspend</term>
+
+          <listitem><para>a low-power state
+          where execution of the OS is paused,
+          and complete power loss might result
+          in lost data, and which is fast to
+          enter and exit. This corresponds to
+          suspend, standby, or freeze states as
+          understood by the kernel.
+          </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>hibernate</term>
+
+          <listitem><para>a low-power state
+          where execution of the OS is paused,
+          and complete power loss does not
+          result in lost data, and which might
+          be slow to enter and exit. This
+          corresponds to the hibernation as
+          understood by the kernel.
+          </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>hybrid-sleep</term>
+
+          <listitem><para>a low-power state
+          where execution of the OS is paused,
+          which might be slow to enter, and on
+          complete power loss does not result in
+          lost data but might be slower to exit
+          in that case. This mode is called
+          suspend-to-both by the kernel.
+          </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><varname>SuspendMode=</varname></term>
+          <term><varname>HibernateMode=</varname></term>
+          <term><varname>HybridSleepMode=</varname></term>
+
+          <listitem><para>The string to be written to
+          <filename>/sys/power/disk</filename> by elogind.
+          More than one value can be specified by separating
+          multiple values with whitespace. They will be tried
+          in turn, until one is written without error. If
+          neither succeeds, the operation will be aborted.
+          </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><varname>SuspendState=</varname></term>
+          <term><varname>HibernateState=</varname></term>
+          <term><varname>HybridSleepState=</varname></term>
+
+          <listitem><para>The string to be written to
+          <filename>/sys/power/state</filename> by elogind.
+          More than one value can be specified by separating
+          multiple values with whitespace. They will be tried
+          in turn, until one is written without error. If
+          neither succeeds, the operation will be aborted.
+          </para></listitem>
+        </varlistentry>
+
+      </variablelist>
+    </refsect2>
   </refsect1>
 
   <refsect1>
       <title>See Also</title>
       <para>
-        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-        <citerefentry><refentrytitle>logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-        <citerefentry><refentrytitle>elogind-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       </para>
   </refsect1>
 

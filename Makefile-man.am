@@ -27,7 +27,6 @@ MANPAGES += \
 	man/sd_id128_get_machine.3 \
 	man/sd_id128_randomize.3 \
 	man/sd_id128_to_string.3 \
-	man/sd_journal_enumerate_fields.3 \
 	man/sd_machine_get_class.3 \
 	man/sd_notify.3 \
 	man/sd_watchdog_enabled.3
@@ -38,7 +37,6 @@ MANPAGES_ALIAS += \
 	man/SD_EVENT_PRIORITY_IDLE.3 \
 	man/SD_EVENT_PRIORITY_IMPORTANT.3 \
 	man/SD_EVENT_PRIORITY_NORMAL.3 \
-	man/SD_JOURNAL_FOREACH_FIELD.3 \
 	man/sd_event_get_exit_code.3 \
 	man/sd_event_get_watchdog.3 \
 	man/sd_event_io_handler_t.3 \
@@ -56,7 +54,6 @@ MANPAGES_ALIAS += \
 	man/sd_event_source_unrefp.3 \
 	man/sd_id128_from_string.3 \
 	man/sd_id128_get_boot.3 \
-	man/sd_journal_restart_fields.3 \
 	man/sd_machine_get_ifindices.3 \
 	man/sd_notifyf.3 \
 	man/sd_pid_notify.3 \
@@ -68,7 +65,6 @@ man/SD_EVENT_ONESHOT.3: man/sd_event_source_set_enabled.3
 man/SD_EVENT_PRIORITY_IDLE.3: man/sd_event_source_set_priority.3
 man/SD_EVENT_PRIORITY_IMPORTANT.3: man/sd_event_source_set_priority.3
 man/SD_EVENT_PRIORITY_NORMAL.3: man/sd_event_source_set_priority.3
-man/SD_JOURNAL_FOREACH_FIELD.3: man/sd_journal_enumerate_fields.3
 man/sd_event_get_exit_code.3: man/sd_event_exit.3
 man/sd_event_get_watchdog.3: man/sd_event_set_watchdog.3
 man/sd_event_io_handler_t.3: man/sd_event_add_io.3
@@ -86,7 +82,6 @@ man/sd_event_source_set_io_fd.3: man/sd_event_add_io.3
 man/sd_event_source_unrefp.3: man/sd_event_source_unref.3
 man/sd_id128_from_string.3: man/sd_id128_to_string.3
 man/sd_id128_get_boot.3: man/sd_id128_get_machine.3
-man/sd_journal_restart_fields.3: man/sd_journal_enumerate_fields.3
 man/sd_machine_get_ifindices.3: man/sd_machine_get_class.3
 man/sd_notifyf.3: man/sd_notify.3
 man/sd_pid_notify.3: man/sd_notify.3
@@ -108,9 +103,6 @@ man/SD_EVENT_PRIORITY_IMPORTANT.html: man/sd_event_source_set_priority.html
 	$(html-alias)
 
 man/SD_EVENT_PRIORITY_NORMAL.html: man/sd_event_source_set_priority.html
-	$(html-alias)
-
-man/SD_JOURNAL_FOREACH_FIELD.html: man/sd_journal_enumerate_fields.html
 	$(html-alias)
 
 man/sd_event_get_exit_code.html: man/sd_event_exit.html
@@ -162,9 +154,6 @@ man/sd_id128_from_string.html: man/sd_id128_to_string.html
 	$(html-alias)
 
 man/sd_id128_get_boot.html: man/sd_id128_get_machine.html
-	$(html-alias)
-
-man/sd_journal_restart_fields.html: man/sd_journal_enumerate_fields.html
 	$(html-alias)
 
 man/sd_machine_get_ifindices.html: man/sd_machine_get_class.html
@@ -328,7 +317,6 @@ EXTRA_DIST += \
 	man/sd_id128_get_machine.xml \
 	man/sd_id128_randomize.xml \
 	man/sd_id128_to_string.xml \
-	man/sd_journal_enumerate_fields.xml \
 	man/sd_machine_get_class.xml \
 	man/sd_notify.xml \
 	man/sd_seat_get_active.xml \

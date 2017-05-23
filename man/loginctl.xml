@@ -61,7 +61,7 @@
 
     <para><command>loginctl</command> may be used to introspect and
     control the state of the
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     login manager.</para>
   </refsect1>
 
@@ -132,29 +132,6 @@
         <constant>SIGTERM</constant>.</para></listitem>
       </varlistentry>
 
-      <varlistentry>
-        <term><option>-n</option></term>
-        <term><option>--lines=</option></term>
-
-        <listitem><para>When used with <command>user-status</command>
-        and <command>session-status</command>, controls the number of
-        journal lines to show, counting from the most recent ones.
-        Takes a positive integer argument. Defaults to 10.</para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>-o</option></term>
-        <term><option>--output=</option></term>
-
-        <listitem><para>When used with <command>user-status</command>
-        and <command>session-status</command>, controls the formatting
-        of the journal entries that are shown. For the available
-        choices, see
-        <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
-        Defaults to <literal>short</literal>.</para></listitem>
-      </varlistentry>
-
       <xi:include href="user-system-options.xml" xpointer="host" />
       <xi:include href="user-system-options.xml" xpointer="machine" />
 
@@ -182,8 +159,7 @@
         <term><command>session-status</command> <optional><replaceable>ID</replaceable>...</optional></term>
 
         <listitem><para>Show terse runtime status information about
-        one or more sessions, followed by the most recent log data
-        from the journal. Takes one or more session identifiers as
+        one or more sessions. Takes one or more session identifiers as
         parameters. If no session identifiers are passed the status of
         the caller's session is shown. This function is intended to
         generate human-readable output. If you are looking for
@@ -265,8 +241,7 @@
         <term><command>user-status</command> <optional><replaceable>USER</replaceable>...</optional></term>
 
         <listitem><para>Show terse runtime status information about
-        one or more logged in users, followed by the most recent log
-        data from the journal. Takes one or more user names or numeric
+        one or more logged in users. Takes one or more user names or numeric
         user IDs as parameters. If no parameters are passed the status
         of the caller's user is shown. This function is intended to
         generate human-readable output. If you are looking for
@@ -389,8 +364,61 @@
       </varlistentry>
     </variablelist></refsect2>
 
-  </refsect1>
+    <refsect2><title>System Commands</title><variablelist>
+    </variablelist></refsect2>
+    <varlistentry>
+      <term><command>poweroff</command></term>
 
+      <listitem>
+        <para>Print a wall message to all users, shut down and
+          power-off the system.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><command>reboot <optional><replaceable>arg</replaceable></optional></command></term>
+
+      <listitem>
+        <para>Print a wall message to all users, shut down and
+          reboot the system.</para>
+
+        <para>If the optional argument
+        <replaceable>arg</replaceable> is given, it will be passed
+        as the optional argument to the
+        <citerefentry><refentrytitle>reboot</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+        system call. The value is architecture and firmware
+        specific. As an example, <literal>recovery</literal> might
+        be used to trigger system recovery, and
+        <literal>fota</literal> might be used to trigger a
+        <quote>firmware over the air</quote> update.</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><command>suspend</command></term>
+
+      <listitem>
+        <para>Suspend the system.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><command>hibernate</command></term>
+
+      <listitem>
+        <para>Hibernate the system.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><command>hybrid-sleep</command></term>
+
+      <listitem>
+        <para>Hibernate and suspend the system.</para>
+      </listitem>
+    </varlistentry>
+  </refsect1>
   <refsect1>
     <title>Exit status</title>
 
@@ -403,7 +431,7 @@
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     </para>
