@@ -348,7 +348,6 @@ int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char
         log_debug_elogind("Migrating \"%s\"/\"%s\" to \"%s\"/\"%s\" (%s)",
                           cfrom, pfrom, cto, pto,
                           ignore_self ? "ignoring self" : "watching self");
-
         do {
                 _cleanup_fclose_ FILE *f = NULL;
                 pid_t pid = 0;
@@ -443,7 +442,7 @@ int cg_migrate_recursive(
                 p = strjoin(pfrom, "/", fn, NULL);
                 free(fn);
                 if (!p)
-                                return -ENOMEM;
+                        return -ENOMEM;
 
                 r = cg_migrate_recursive(cfrom, p, cto, pto, ignore_self, rem);
                 if (r != 0 && ret >= 0)
@@ -527,14 +526,14 @@ static int join_path_legacy(const char *controller, const char *path, const char
                 t = strjoin("/sys/fs/cgroup/", dn, "/", suffix, NULL);
         else if (isempty(suffix))
                 t = strjoin("/sys/fs/cgroup/", dn, "/", path, NULL);
-                else
+        else
                 t = strjoin("/sys/fs/cgroup/", dn, "/", path, "/", suffix, NULL);
         if (!t)
                 return -ENOMEM;
 
         *fs = t;
         return 0;
-        }
+}
 
 static int join_path_unified(const char *path, const char *suffix, char **fs) {
         char *t;
@@ -1068,8 +1067,8 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
                         return r;
 
                 r = cg_enumerate_subgroups(controller, path, &d);
-                        if (r == -ENOENT)
-                                return 1;
+                if (r == -ENOENT)
+                        return 1;
                 if (r < 0)
                         return r;
 
@@ -1294,7 +1293,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int cg_path_decode_unit(const char *cgroup, char **unit){
+int cg_path_decode_unit(const char *cgroup, char **unit) {
         char *c, *s;
         size_t n;
 
@@ -1545,9 +1544,7 @@ int cg_pid_get_machine_name(pid_t pid, char **machine) {
 #endif // 0
 
 int cg_path_get_session(const char *path, char **session) {
-        /* Elogind uses a flat hierarchy, just "/SESSION".  The only
-           wrinkle is that SESSION might be escaped.  */
-#if 0
+#if 0 /// UNNEEDED by elogind
         _cleanup_free_ char *unit = NULL;
         char *start, *end;
         int r;
@@ -1569,6 +1566,8 @@ int cg_path_get_session(const char *path, char **session) {
         if (!session_id_valid(start))
                 return -ENXIO;
 #else
+        /* Elogind uses a flat hierarchy, just "/SESSION".  The only
+           wrinkle is that SESSION might be escaped.  */
         const char *e, *n, *start;
 
         assert(path);
@@ -1963,16 +1962,16 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
 
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
-                        const char *p = NULL;
+                const char *p = NULL;
 
                 if (!(supported & bit))
                         continue;
 
-                        if (path_callback)
-                                p = path_callback(bit, userdata);
+                if (path_callback)
+                        p = path_callback(bit, userdata);
 
-                        if (!p)
-                                p = path;
+                if (!p)
+                        p = path;
 
                 (void) cg_attach_fallback(cgroup_controller_to_string(c), p, pid);
         }
@@ -2015,16 +2014,16 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
 
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
-                        const char *p = NULL;
+                const char *p = NULL;
 
                 if (!(supported & bit))
                         continue;
 
-                        if (to_callback)
-                                p = to_callback(bit, userdata);
+                if (to_callback)
+                        p = to_callback(bit, userdata);
 
-                        if (!p)
-                                p = to;
+                if (!p)
+                        p = to;
 
                 (void) cg_migrate_recursive_fallback(SYSTEMD_CGROUP_CONTROLLER, to, cgroup_controller_to_string(c), p, false, false);
         }
@@ -2106,12 +2105,12 @@ int cg_mask_supported(CGroupMask *ret) {
                                 continue;
 
                         mask |= CGROUP_CONTROLLER_TO_MASK(v);
-        }
+                }
 
-                /* Currently, we only support the memory and pids
+                /* Currently, we only support the memory, io and pids
                  * controller in the unified hierarchy, mask
                  * everything else off. */
-                mask &= CGROUP_MASK_MEMORY | CGROUP_MASK_PIDS;
+                mask &= CGROUP_MASK_MEMORY | CGROUP_MASK_IO | CGROUP_MASK_PIDS;
 
         } else {
                 CGroupController c;
@@ -2206,21 +2205,21 @@ int cg_unified(void) {
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
                 return -errno;
 
-/// elogind can not support the unified hierarchy as a controller,
-/// so always assume a classical hierarchy.
-/// If, ond only *if*, someone really wants to substitute systemd-login
-/// in an environment managed by systemd with elogin, we might have to
-/// add such a support.
-#if 0
-        if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC))
+#if 0 /// UNNEEDED by elogind
+        if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC))
                 unified_cache = true;
         else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
 #else
+        /* elogind can not support the unified hierarchy as a controller,
+         * so always assume a classical hierarchy.
+         * If, ond only *if*, someone really wants to substitute systemd-login
+         * in an environment managed by systemd with elogin, we might have to
+         * add such a support. */
         if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
 #endif // 0
                 unified_cache = false;
         else
-                return -ENOEXEC;
+                return -ENOMEDIUM;
 
         return unified_cache;
 }
@@ -2315,6 +2314,42 @@ bool cg_is_legacy_wanted(void) {
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
+int cg_weight_parse(const char *s, uint64_t *ret) {
+        uint64_t u;
+        int r;
+
+        if (isempty(s)) {
+                *ret = CGROUP_WEIGHT_INVALID;
+                return 0;
+        }
+
+        r = safe_atou64(s, &u);
+        if (r < 0)
+                return r;
+
+        if (u < CGROUP_WEIGHT_MIN || u > CGROUP_WEIGHT_MAX)
+                return -ERANGE;
+
+        *ret = u;
+        return 0;
+}
+
+const uint64_t cgroup_io_limit_defaults[_CGROUP_IO_LIMIT_TYPE_MAX] = {
+        [CGROUP_IO_RBPS_MAX]    = CGROUP_LIMIT_MAX,
+        [CGROUP_IO_WBPS_MAX]    = CGROUP_LIMIT_MAX,
+        [CGROUP_IO_RIOPS_MAX]   = CGROUP_LIMIT_MAX,
+        [CGROUP_IO_WIOPS_MAX]   = CGROUP_LIMIT_MAX,
+};
+
+static const char* const cgroup_io_limit_type_table[_CGROUP_IO_LIMIT_TYPE_MAX] = {
+        [CGROUP_IO_RBPS_MAX]    = "IOReadBandwidthMax",
+        [CGROUP_IO_WBPS_MAX]    = "IOWriteBandwidthMax",
+        [CGROUP_IO_RIOPS_MAX]   = "IOReadIOPSMax",
+        [CGROUP_IO_WIOPS_MAX]   = "IOWriteIOPSMax",
+};
+
+DEFINE_STRING_TABLE_LOOKUP(cgroup_io_limit_type, CGroupIOLimitType);
+
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;
@@ -2359,6 +2394,7 @@ int cg_blkio_weight_parse(const char *s, uint64_t *ret) {
 static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_CPU] = "cpu",
         [CGROUP_CONTROLLER_CPUACCT] = "cpuacct",
+        [CGROUP_CONTROLLER_IO] = "io",
         [CGROUP_CONTROLLER_BLKIO] = "blkio",
         [CGROUP_CONTROLLER_MEMORY] = "memory",
         [CGROUP_CONTROLLER_DEVICES] = "devices",

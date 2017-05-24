@@ -47,7 +47,6 @@ int get_process_state(pid_t pid);
 int get_process_comm(pid_t pid, char **name);
 int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char **line);
 int get_process_exe(pid_t pid, char **name);
-
 #if 0 /// UNNEEDED by elogind
 int get_process_uid(pid_t pid, uid_t *uid);
 int get_process_gid(pid_t pid, gid_t *gid);
@@ -61,15 +60,14 @@ int get_process_ppid(pid_t pid, pid_t *ppid);
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_code);
 
-void sigkill_wait(pid_t *pid);
-#define _cleanup_sigkill_wait_ _cleanup_(sigkill_wait)
-
 #if 0 /// UNNEEDED by elogind
+void sigkill_wait(pid_t pid);
+void sigkill_waitp(pid_t *pid);
+
 int kill_and_sigcont(pid_t pid, int sig);
 
 void rename_process(const char name[8]);
 #endif // 0
-
 int is_kernel_thread(pid_t pid);
 
 int getenv_for_pid(pid_t pid, const char *field, char **_value);

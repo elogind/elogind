@@ -35,10 +35,8 @@ typedef enum LogTarget{
         LOG_TARGET_CONSOLE,
         LOG_TARGET_CONSOLE_PREFIXED,
         LOG_TARGET_KMSG,
-#if 0 /// elogind does not support logging to systemd-journald
         LOG_TARGET_JOURNAL,
         LOG_TARGET_JOURNAL_OR_KMSG,
-#endif // 0
         LOG_TARGET_SYSLOG,
         LOG_TARGET_SYSLOG_OR_KMSG,
         LOG_TARGET_AUTO, /* console if stderr is tty, JOURNAL_OR_KMSG otherwise */
@@ -71,10 +69,9 @@ void log_close(void);
 #if 0 /// UNNEEDED by elogind
 void log_forget_fds(void);
 #endif // 0
+
 void log_close_syslog(void);
-#if 0 /// UNNEEDED by elogind
 void log_close_journal(void);
-#endif // 0
 void log_close_kmsg(void);
 void log_close_console(void);
 
@@ -198,13 +195,13 @@ void log_assert_failed_return(
 #ifdef LOG_TRACE
 #  define log_trace(...) log_debug(__VA_ARGS__)
 #else
-#  define log_trace(...) do {} while(0)
+#  define log_trace(...) do {} while (0)
 #endif
 
 #ifdef ENABLE_DEBUG_ELOGIND
 #  define log_debug_elogind(...) log_debug(__VA_ARGS__);usleep(25*USEC_PER_MSEC)
 #else
-#  define log_debug_elogind(...) do {} while(0)
+#  define log_debug_elogind(...) do {} while (0)
 #endif // ENABLE_DEBUG_ELOGIND
 
 /* Structured logging */

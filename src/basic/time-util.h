@@ -108,7 +108,10 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 #if 0 /// UNNEEDED by elogind
 void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t);
 int dual_timestamp_deserialize(const char *value, dual_timestamp *t);
+#endif // 0
+int timestamp_deserialize(const char *value, usec_t *timestamp);
 
+#if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec);
 #endif // 0
 
@@ -122,6 +125,9 @@ bool ntp_synced(void);
 int get_timezones(char ***l);
 bool timezone_is_valid(const char *name);
 
+#endif // 0
+bool clock_boottime_supported(void);
+#if 0 /// UNNEEDED by elogind
 clockid_t clock_boottime_or_monotonic(void);
 #endif // 0
 

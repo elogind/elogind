@@ -55,6 +55,25 @@ bool path_equal_or_files_same(const char *a, const char *b);
 #if 0 /// UNNEEDED by elogind
 char* path_join(const char *root, const char *path, const char *rest);
 
+static inline bool path_equal_ptr(const char *a, const char *b) {
+        return !!a == !!b && (!a || path_equal(a, b));
+}
+#endif // 0
+
+/* Note: the search terminates on the first NULL item. */
+#define PATH_IN_SET(p, ...)                                     \
+        ({                                                      \
+                char **s;                                       \
+                bool _found = false;                            \
+                STRV_FOREACH(s, STRV_MAKE(__VA_ARGS__))         \
+                        if (path_equal(p, *s)) {                \
+                               _found = true;                   \
+                               break;                           \
+                        }                                       \
+                _found;                                         \
+        })
+
+#if 0 /// UNNEEDED by elogind
 int path_strv_make_absolute_cwd(char **l);
 #endif // 0
 char** path_strv_resolve(char **l, const char *prefix);
@@ -117,8 +136,7 @@ bool path_is_safe(const char *p) _pure_;
 
 char *file_in_same_dir(const char *path, const char *filename);
 
-bool hidden_file_allow_backup(const char *filename);
-bool hidden_file(const char *filename) _pure_;
+bool hidden_or_backup_file(const char *filename) _pure_;
 
 #if 0 /// UNNEEDED by elogind
 bool is_device_path(const char *path);

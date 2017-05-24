@@ -31,6 +31,7 @@ int copy_file_atomic(const char *from, const char *to, mode_t mode, bool replace
 int copy_tree(const char *from, const char *to, bool merge);
 int copy_tree_at(int fdf, const char *from, int fdt, const char *to, bool merge);
 int copy_directory_fd(int dirfd, const char *to, bool merge);
+int copy_directory(const char *from, const char *to, bool merge);
 #endif // 0
 int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink);
 #if 0 /// UNNEEDED by elogind

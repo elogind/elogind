@@ -31,7 +31,7 @@ bool mac_selinux_have(void);
 void mac_selinux_retest(void);
 #endif // 0
 
-int mac_selinux_init(const char *prefix);
+int mac_selinux_init(void);
 #if 0 /// UNNEEDED by elogind
 void mac_selinux_finish(void);
 #endif // 0

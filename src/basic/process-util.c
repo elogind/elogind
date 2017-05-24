@@ -38,7 +38,7 @@
 #endif
 
 #include "alloc-util.h"
-#include "architecture.h"
+//#include "architecture.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -207,7 +207,7 @@ void rename_process(const char name[8]) {
          * "systemd"). If you pass a longer string it will be
          * truncated */
 
-        prctl(PR_SET_NAME, name);
+        (void) prctl(PR_SET_NAME, name);
 
         if (program_invocation_name)
                 strncpy(program_invocation_name, name, strlen(program_invocation_name));
@@ -413,7 +413,7 @@ int get_process_environ(pid_t pid, char **env) {
                 if (!outcome)
                         return -ENOMEM;
         } else
-        outcome[sz] = '\0';
+                outcome[sz] = '\0';
 
         *env = outcome;
         outcome = NULL;
@@ -534,17 +534,23 @@ int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_cod
         return -EPROTO;
 }
 
-void sigkill_wait(pid_t *pid) {
+#if 0 /// UNNEEDED by elogind
+void sigkill_wait(pid_t pid) {
+        assert(pid > 1);
+
+        if (kill(pid, SIGKILL) > 0)
+                (void) wait_for_terminate(pid, NULL);
+}
+
+void sigkill_waitp(pid_t *pid) {
         if (!pid)
                 return;
         if (*pid <= 1)
                 return;
 
-        if (kill(*pid, SIGKILL) > 0)
-                (void) wait_for_terminate(*pid, NULL);
+        sigkill_wait(*pid);
 }
 
-#if 0 /// UNNEEDED by elogind
 int kill_and_sigcont(pid_t pid, int sig) {
         int r;
 
@@ -671,6 +677,8 @@ bool is_main_thread(void) {
 
 #if 0 /// UNNEEDED by elogind
 noreturn void freeze(void) {
+
+        log_close();
 
         /* Make sure nobody waits for us on a socket anymore */
         close_all_fds(NULL, 0);

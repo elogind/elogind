@@ -42,6 +42,7 @@
 #include "socket-util.h"
 #include "string-table.h"
 #include "string-util.h"
+#include "strv.h"
 #include "user-util.h"
 #include "util.h"
 
@@ -800,6 +801,42 @@ static const char* const ip_tos_table[] = {
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ip_tos, int, 0xff);
 #endif // 0
 
+bool ifname_valid(const char *p) {
+        bool numeric = true;
+
+        /* Checks whether a network interface name is valid. This is inspired by dev_valid_name() in the kernel sources
+         * but slightly stricter, as we only allow non-control, non-space ASCII characters in the interface name. We
+         * also don't permit names that only container numbers, to avoid confusion with numeric interface indexes. */
+
+        if (isempty(p))
+                return false;
+
+        if (strlen(p) >= IFNAMSIZ)
+                return false;
+
+        if (STR_IN_SET(p, ".", ".."))
+                return false;
+
+        while (*p) {
+                if ((unsigned char) *p >= 127U)
+                        return false;
+
+                if ((unsigned char) *p <= 32U)
+                        return false;
+
+                if (*p == ':' || *p == '/')
+                        return false;
+
+                numeric = numeric && (*p >= '0' && *p <= '9');
+                p++;
+        }
+
+        if (numeric)
+                return false;
+
+        return true;
+}
+
 int getpeercred(int fd, struct ucred *ucred) {
         socklen_t n = sizeof(struct ucred);
         struct ucred u;
@@ -942,5 +979,78 @@ int receive_one_fd(int transport_fd, int flags) {
         }
 
         return *(int*) CMSG_DATA(found);
+}
+
+ssize_t next_datagram_size_fd(int fd) {
+        ssize_t l;
+        int k;
+
+        /* This is a bit like FIONREAD/SIOCINQ, however a bit more powerful. The difference being: recv(MSG_PEEK) will
+         * actually cause the next datagram in the queue to be validated regarding checksums, which FIONREAD doesn't
+         * do. This difference is actually of major importance as we need to be sure that the size returned here
+         * actually matches what we will read with recvmsg() next, as otherwise we might end up allocating a buffer of
+         * the wrong size. */
+
+        l = recv(fd, NULL, 0, MSG_PEEK|MSG_TRUNC);
+        if (l < 0) {
+                if (errno == EOPNOTSUPP)
+                        goto fallback;
+
+                return -errno;
+        }
+        if (l == 0)
+                goto fallback;
+
+        return l;
+
+fallback:
+        k = 0;
+
+        /* Some sockets (AF_PACKET) do not support null-sized recv() with MSG_TRUNC set, let's fall back to FIONREAD
+         * for them. Checksums don't matter for raw sockets anyway, hence this should be fine. */
+
+        if (ioctl(fd, FIONREAD, &k) < 0)
+                return -errno;
+
+        return (ssize_t) k;
+}
+
+int flush_accept(int fd) {
+
+        struct pollfd pollfd = {
+                .fd = fd,
+                .events = POLLIN,
+        };
+        int r;
+
+
+        /* Similar to flush_fd() but flushes all incoming connection by accepting them and immediately closing them. */
+
+        for (;;) {
+                int cfd;
+
+                r = poll(&pollfd, 1, 0);
+                if (r < 0) {
+                        if (errno == EINTR)
+                                continue;
+
+                        return -errno;
+
+                } else if (r == 0)
+                        return 0;
+
+                cfd = accept4(fd, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC);
+                if (cfd < 0) {
+                        if (errno == EINTR)
+                                continue;
+
+                        if (errno == EAGAIN)
+                                return 0;
+
+                        return -errno;
+                }
+
+                close(cfd);
+        }
 }
 #endif // 0

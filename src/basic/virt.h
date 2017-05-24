@@ -72,7 +72,5 @@ int detect_virtualization(void);
 
 int running_in_chroot(void);
 
-#if 0 /// UNNEEDED by elogind
 const char *virtualization_to_string(int v) _const_;
 int virtualization_from_string(const char *s) _pure_;
-#endif // 0

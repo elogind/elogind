@@ -62,6 +62,7 @@ DIR *xopendirat(int dirfd, const char *name, int flags);
 int search_and_fopen(const char *path, const char *mode, const char *root, const char **search, FILE **_f);
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **_f);
 #endif // 0
+
 #define FOREACH_LINE(line, f, on_error)                         \
         for (;;)                                                \
                 if (!fgets(line, sizeof(line), f)) {            \
@@ -75,17 +76,19 @@ int fflush_and_check(FILE *f);
 
 int fopen_temporary(const char *path, FILE **_f, char **_temp_path);
 int mkostemp_safe(char *pattern, int flags);
-#if 0 /// UNNEEDED by elogind
-int open_tmpfile(const char *path, int flags);
-#endif // 0
 
 int tempfn_xxxxxx(const char *p, const char *extra, char **ret);
-#if 0 /// UNNEEDED by elogind
 int tempfn_random(const char *p, const char *extra, char **ret);
+#if 0 /// UNNEEDED by elogind
 int tempfn_random_child(const char *p, const char *extra, char **ret);
 
 int write_timestamp_file_atomic(const char *fn, usec_t n);
 int read_timestamp_file(const char *fn, usec_t *ret);
 
 int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space);
+
+int open_tmpfile_unlinkable(const char *directory, int flags);
+int open_tmpfile_linkable(const char *target, int flags, char **ret_path);
+
+int link_tmpfile(int fd, const char *path, const char *target);
 #endif // 0

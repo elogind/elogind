@@ -1,32 +1,34 @@
 #pragma once
 
 /***
-  This file is part of elogind.
+  This file is part of systemd.
 
   Copyright 2010 Lennart Poettering
   Copyright 2016 Zbigniew Jędrzejewski-Szmek
 
-  elogind is free software; you can redistribute it and/or modify it
+  systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
 
-  elogind is distributed in the hope that it will be useful, but
+  systemd is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with elogind; If not, see <http://www.gnu.org/licenses/>.
+  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 /* Missing glibc definitions to access certain kernel APIs */
 
+#if 0 /// UNNEEDED by elogind
 #if !HAVE_DECL_PIVOT_ROOT
 static inline int pivot_root(const char *new_root, const char *put_old) {
         return syscall(SYS_pivot_root, new_root, put_old);
 }
 #endif
+#endif // 0
 
 /* ======================================================================= */
 
@@ -178,6 +180,7 @@ static inline int setns(int fd, int nstype) {
 
 /* ======================================================================= */
 
+#if 0 /// UNNEEDED by elogind
 static inline int raw_clone(unsigned long flags, void *child_stack) {
 #if defined(__s390__) || defined(__CRIS__)
         /* On s390 and cris the order of the first and second arguments
@@ -276,6 +279,7 @@ static inline key_serial_t request_key(const char *type, const char *description
 #  endif
 }
 #endif
+#endif // 0
 
 /* ======================================================================= */
 

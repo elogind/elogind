@@ -287,26 +287,6 @@ int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
-int fchmod_and_fchown(int fd, mode_t mode, uid_t uid, gid_t gid) {
-        assert(fd >= 0);
-
-        /* Under the assumption that we are running privileged we
-         * first change the access mode and only then hand out
-         * ownership to avoid a window where access is too open. */
-
-        if (mode != MODE_INVALID)
-                if (fchmod(fd, mode) < 0)
-                        return -errno;
-
-        if (uid != UID_INVALID || gid != GID_INVALID)
-                if (fchown(fd, uid, gid) < 0)
-                        return -errno;
-
-        return 0;
-}
-#endif // 0
-
 int fchmod_umask(int fd, mode_t m) {
         mode_t u;
         int r;
@@ -519,3 +499,19 @@ int get_files_in_directory(const char *path, char ***list) {
 
         return n;
 }
+
+#if 0 /// UNNEEDED by elogind
+int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
+        char path[strlen("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
+        int r;
+
+        /* This is like inotify_add_watch(), except that the file to watch is not referenced by a path, but by an fd */
+        xsprintf(path, "/proc/self/fd/%i", what);
+
+        r = inotify_add_watch(fd, path, mask);
+        if (r < 0)
+                return -errno;
+
+        return r;
+}
+#endif // 0

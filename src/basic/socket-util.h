@@ -129,6 +129,8 @@ int ip_tos_to_string_alloc(int i, char **s);
 int ip_tos_from_string(const char *s);
 #endif // 0
 
+bool ifname_valid(const char *p);
+
 int getpeercred(int fd, struct ucred *ucred);
 int getpeersec(int fd, char **ret);
 
@@ -139,6 +141,10 @@ int send_one_fd_sa(int transport_fd,
 #define send_one_fd(transport_fd, fd, flags) send_one_fd_sa(transport_fd, fd, NULL, 0, flags)
 #if 0 /// UNNEEDED by elogind
 int receive_one_fd(int transport_fd, int flags);
+
+ssize_t next_datagram_size_fd(int fd);
+
+int flush_accept(int fd);
 #endif // 0
 
 #define CMSG_FOREACH(cmsg, mh)                                          \

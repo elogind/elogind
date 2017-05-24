@@ -74,6 +74,8 @@ int same_fd(int a, int b);
 void cmsg_close_all(struct msghdr *mh);
 
 bool fdname_is_valid(const char *s);
+
+int fd_get_path(int fd, char **ret);
 #endif // 0
 
 /* Hint: ENETUNREACH happens if we try to connect to "non-existing" special IP addresses, such as ::5 */
