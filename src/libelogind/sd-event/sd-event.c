@@ -649,7 +649,7 @@ static int event_make_signal_data(
                 if (sigismember(&d->sigset, sig) > 0) {
                         if (ret)
                                 *ret = d;
-                return 0;
+                        return 0;
                 }
         } else {
                 r = hashmap_ensure_allocated(&e->signal_data, &uint64_hash_ops);
@@ -696,7 +696,7 @@ static int event_make_signal_data(
         ev.data.ptr = d;
 
         r = epoll_ctl(e->epoll_fd, EPOLL_CTL_ADD, d->fd, &ev);
-        if (r < 0) {
+        if (r < 0)  {
                 r = -errno;
                 goto fail;
         }
@@ -953,7 +953,7 @@ static sd_event_source *source_new(sd_event *e, bool floating, EventSourceType t
                 sd_event_ref(e);
 
         LIST_PREPEND(sources, e->sources, s);
-        e->n_sources ++;
+        e->n_sources++;
 
         return s;
 }
@@ -1184,10 +1184,10 @@ _public_ int sd_event_add_signal(
         e->signal_sources[sig] = s;
 
         r = event_make_signal_data(e, sig, &d);
-                if (r < 0) {
-                        source_free(s);
-                        return r;
-                }
+        if (r < 0) {
+                source_free(s);
+                return r;
+        }
 
         /* Use the signal name as description for the event source by default */
         (void) sd_event_source_set_description(s, signal_to_string(sig));
@@ -1241,14 +1241,14 @@ _public_ int sd_event_add_child(
                 return r;
         }
 
-        e->n_enabled_child_sources ++;
+        e->n_enabled_child_sources++;
 
         r = event_make_signal_data(e, SIGCHLD, NULL);
-                if (r < 0) {
+        if (r < 0) {
                 e->n_enabled_child_sources--;
-                        source_free(s);
-                        return r;
-                }
+                source_free(s);
+                return r;
+        }
 
         e->need_process_child = true;
 
@@ -1585,7 +1585,7 @@ _public_ int sd_event_source_set_priority(sd_event_source *s, int64_t priority) 
 
                 event_unmask_signal_data(s->event, old, s->signal.sig);
         } else
-        s->priority = priority;
+                s->priority = priority;
 
         if (s->pending)
                 prioq_reshuffle(s->event->pending, s, &s->pending_index);
@@ -1713,11 +1713,11 @@ _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
                         s->enabled = m;
 
                         r = event_make_signal_data(s->event, s->signal.sig, NULL);
-                                if (r < 0) {
-                                        s->enabled = SD_EVENT_OFF;
+                        if (r < 0) {
+                                s->enabled = SD_EVENT_OFF;
                                 event_gc_signal_data(s->event, &s->priority, s->signal.sig);
-                                        return r;
-                                }
+                                return r;
+                        }
 
                         break;
 
@@ -1729,12 +1729,12 @@ _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
                         s->enabled = m;
 
                         r = event_make_signal_data(s->event, SIGCHLD, NULL);
-                                        if (r < 0) {
-                                                s->enabled = SD_EVENT_OFF;
+                        if (r < 0) {
+                                s->enabled = SD_EVENT_OFF;
                                 s->event->n_enabled_child_sources--;
                                 event_gc_signal_data(s->event, &s->priority, SIGCHLD);
-                                                return r;
-                                        }
+                                return r;
+                        }
 
                         break;
 
@@ -2564,7 +2564,7 @@ _public_ int sd_event_wait(sd_event *e, uint64_t timeout) {
                         switch (*t) {
 
                         case WAKEUP_EVENT_SOURCE:
-                        r = process_io(e, ev_queue[i].data.ptr, ev_queue[i].events);
+                                r = process_io(e, ev_queue[i].data.ptr, ev_queue[i].events);
                                 break;
 
                         case WAKEUP_CLOCK_DATA: {

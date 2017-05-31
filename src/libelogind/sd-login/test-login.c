@@ -25,7 +25,6 @@
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "formats-util.h"
-#include "musl_missing.h"
 #include "string-util.h"
 #include "strv.h"
 #include "util.h"
@@ -256,7 +255,6 @@ static void test_login(void) {
 }
 
 int main(int argc, char* argv[]) {
-        elogind_set_program_name(argv[0]);
         log_parse_environment();
         log_open();
 

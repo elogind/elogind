@@ -5676,8 +5676,8 @@ int bus_message_get_arg(sd_bus_message *m, unsigned i, const char **str) {
         assert(str);
 
         r = bus_message_get_arg_skip(m, i, &type, NULL);
-                if (r < 0)
-                        return r;
+        if (r < 0)
+                return r;
 
         if (!IN_SET(type, SD_BUS_TYPE_STRING, SD_BUS_TYPE_OBJECT_PATH, SD_BUS_TYPE_SIGNATURE))
                 return -ENXIO;
@@ -5694,8 +5694,8 @@ int bus_message_get_arg_strv(sd_bus_message *m, unsigned i, char ***strv) {
         assert(strv);
 
         r = bus_message_get_arg_skip(m, i, &type, &contents);
-                if (r < 0)
-                        return r;
+        if (r < 0)
+                return r;
 
         if (type != SD_BUS_TYPE_ARRAY)
                 return -ENXIO;

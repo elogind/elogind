@@ -103,7 +103,7 @@ _public_ int sd_listen_fds(int unset_environment) {
 finish:
         unsetenv_all(unset_environment);
         return r;
-        }
+}
 
 _public_ int sd_listen_fds_with_names(int unset_environment, char ***names) {
         _cleanup_strv_free_ char **l = NULL;
@@ -137,8 +137,8 @@ _public_ int sd_listen_fds_with_names(int unset_environment, char ***names) {
         } else {
                 r = strv_extend_n(&l, "unknown", n_fds);
                 if (r < 0)
-        return r;
-}
+                        return r;
+        }
 
         *names = l;
         l = NULL;

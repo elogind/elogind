@@ -1172,7 +1172,7 @@ _public_ int sd_bus_open(sd_bus **ret) {
                         return sd_bus_open_user(ret);
                 else
 #endif // 0
-                return sd_bus_open_system(ret);
+                        return sd_bus_open_system(ret);
         }
 
         r = sd_bus_new(&b);
@@ -2074,8 +2074,8 @@ _public_ int sd_bus_call(
 
                                 } else if (incoming->header->type == SD_BUS_MESSAGE_METHOD_ERROR) {
                                         r = sd_bus_error_copy(error, &incoming->error);
-                                sd_bus_message_unref(incoming);
-                                return r;
+                                        sd_bus_message_unref(incoming);
+                                        return r;
                                 } else {
                                         r = -EIO;
                                         goto fail;
@@ -3435,7 +3435,7 @@ _public_ int sd_bus_default(sd_bus **ret) {
                 return sd_bus_default_user(ret);
         else
 #endif // 0
-        return sd_bus_default_system(ret);
+                return sd_bus_default_system(ret);
 }
 
 #if 0 /// UNNEEDED by elogind
