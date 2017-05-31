@@ -23,7 +23,11 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
+#if 0 /// elogind needs the systems udev header
 #include "libudev.h"
+#else
+#include <libudev.h>
+#endif // 0
 
 #include "alloc-util.h"
 #include "bus-util.h"

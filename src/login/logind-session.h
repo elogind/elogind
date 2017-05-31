@@ -87,7 +87,6 @@ struct Session {
         char *service;
         char *desktop;
 
-        /* always NULL */
         char *scope;
 #if 0 /// UNNEEDED by elogind
         char *scope_job;

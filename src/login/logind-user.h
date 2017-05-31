@@ -42,13 +42,8 @@ struct User {
         char *name;
         char *state_file;
         char *runtime_path;
-
-        /* These are always NULL, and here just for logind-user-dbus.c
-           to easily provide a NULL value for the user's service and
-           slice properties. */
         char *slice;
         char *service;
-
 
 #if 0 /// UNNEEDED by elogind
         char *service_job;

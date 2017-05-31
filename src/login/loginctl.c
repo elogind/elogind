@@ -57,21 +57,26 @@ static bool arg_all = false;
 static bool arg_value = false;
 static bool arg_full = false;
 static bool arg_no_pager = false;
+static bool arg_no_wall = false;
 static bool arg_legend = true;
 static const char *arg_kill_who = NULL;
 static int arg_signal = SIGTERM;
 static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
+static usec_t arg_when = 0;
+static char **arg_wall = NULL;
 static bool arg_ask_password = true;
 static bool arg_ignore_inhibitors = false;
-#if 0
+#if 0 /// UNNEEDED by elogind
 static unsigned arg_lines = 10;
 static OutputMode arg_output = OUTPUT_SHORT;
 #endif // 0
 static enum action {
         _ACTION_INVALID,
+        ACTION_HALT,
         ACTION_POWEROFF,
         ACTION_REBOOT,
+        ACTION_KEXEC,
         ACTION_SUSPEND,
         ACTION_HIBERNATE,
         ACTION_HYBRID_SLEEP,
@@ -79,14 +84,6 @@ static enum action {
         _ACTION_MAX
 } arg_action;
 
-
-static void pager_open_if_enabled(void) {
-
-        if (arg_no_pager)
-                return;
-
-        pager_open(false);
-}
 
 static void polkit_agent_open_if_enabled(void) {
 
@@ -124,7 +121,7 @@ static int list_sessions(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        pager_open_if_enabled();
+        pager_open(arg_no_pager, false);
 
         r = sd_bus_call_method(
                         bus,
@@ -171,7 +168,7 @@ static int list_users(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        pager_open_if_enabled();
+        pager_open(arg_no_pager, false);
 
         r = sd_bus_call_method(
                         bus,
@@ -217,7 +214,7 @@ static int list_seats(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        pager_open_if_enabled();
+        pager_open(arg_no_pager, false);
 
         r = sd_bus_call_method(
                         bus,
@@ -258,18 +255,15 @@ static int show_unit_cgroup(sd_bus *bus, const char *interface, const char *unit
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         _cleanup_free_ char *path = NULL;
         const char *cgroup;
-        int r;
         unsigned c;
+        int r;
 
         assert(bus);
         assert(unit);
 
-        if (arg_transport != BUS_TRANSPORT_LOCAL)
-                return 0;
-
         path = unit_dbus_path_from_name(unit);
         if (!path)
-                return -ENOMEM;
+                return log_oom();
 
         r = sd_bus_get_property(
                         bus,
@@ -277,18 +271,17 @@ static int show_unit_cgroup(sd_bus *bus, const char *interface, const char *unit
                         path,
                         interface,
                         "ControlGroup",
-                        &error, &reply, "s");
+                        &error,
+                        &reply,
+                        "s");
         if (r < 0)
-                return r;
+                return log_error_errno(r, "Failed to query ControlGroup: %s", bus_error_message(&error, r));
 
         r = sd_bus_message_read(reply, "s", &cgroup);
         if (r < 0)
-                return r;
+                return bus_log_parse_error(r);
 
         if (isempty(cgroup))
-                return 0;
-
-        if (cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, cgroup) != 0 && leader <= 0)
                 return 0;
 
         c = columns();
@@ -297,7 +290,21 @@ static int show_unit_cgroup(sd_bus *bus, const char *interface, const char *unit
         else
                 c = 0;
 
-        show_cgroup_and_extra(SYSTEMD_CGROUP_CONTROLLER, cgroup, "\t\t  ", c, false, &leader, leader > 0, get_output_flags());
+        r = unit_show_processes(bus, unit, cgroup, "\t\t  ", c, get_output_flags(), &error);
+        if (r == -EBADR) {
+
+                if (arg_transport == BUS_TRANSPORT_REMOTE)
+                        return 0;
+
+                /* Fallback for older systemd versions where the GetUnitProcesses() call is not yet available */
+
+                if (cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, cgroup) != 0 && leader <= 0)
+                        return 0;
+
+                show_cgroup_and_extra(SYSTEMD_CGROUP_CONTROLLER, cgroup, "\t\t  ", c, &leader, leader > 0, get_output_flags());
+        } else if (r < 0)
+                return log_error_errno(r, "Failed to dump process list: %s", bus_error_message(&error, r));
+
         return 0;
 }
 #endif // 0
@@ -325,6 +332,7 @@ typedef struct SessionStatusInfo {
 
 typedef struct UserStatusInfo {
         uid_t uid;
+        bool linger;
         char *name;
         struct dual_timestamp timestamp;
         char *state;
@@ -557,8 +565,9 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
 
         if (i.scope) {
                 printf("\t    Unit: %s\n", i.scope);
-#if 0
+#if 0 /// UNNEEDED by elogind
                 show_unit_cgroup(bus, "org.freedesktop.systemd1.Scope", i.scope, i.leader);
+
                 if (arg_transport == BUS_TRANSPORT_LOCAL) {
 
                         show_journal_by_unit(
@@ -574,7 +583,6 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
                                         true,
                                         NULL);
                 }
-
 #endif // 0
         }
 
@@ -585,6 +593,7 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
 
         static const struct bus_properties_map map[]  = {
                 { "Name",               "s",     NULL,                     offsetof(UserStatusInfo, name)                },
+                { "Linger",             "b",     NULL,                     offsetof(UserStatusInfo, linger)              },
                 { "Slice",              "s",     NULL,                     offsetof(UserStatusInfo, slice)               },
                 { "State",              "s",     NULL,                     offsetof(UserStatusInfo, state)               },
                 { "UID",                "u",     NULL,                     offsetof(UserStatusInfo, uid)                 },
@@ -629,20 +638,21 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
                 char **l;
                 printf("\tSessions:");
 
-                STRV_FOREACH(l, i.sessions) {
-                        if (streq_ptr(*l, i.display))
-                                printf(" *%s", *l);
-                        else
-                                printf(" %s", *l);
-                }
+                STRV_FOREACH(l, i.sessions)
+                        printf(" %s%s",
+                               streq_ptr(*l, i.display) ? "*" : "",
+                               *l);
 
                 printf("\n");
         }
 
+        printf("\t  Linger: %s\n", yes_no(i.linger));
+
         if (i.slice) {
                 printf("\t    Unit: %s\n", i.slice);
-#if 0
+#if 0 /// UNNEEDED by elogind
                 show_unit_cgroup(bus, "org.freedesktop.systemd1.Slice", i.slice, 0);
+
                 show_journal_by_unit(
                                 stdout,
                                 i.slice,
@@ -655,7 +665,6 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
                                 SD_JOURNAL_LOCAL_ONLY,
                                 true,
                                 NULL);
-
 #endif // 0
         }
 
@@ -896,7 +905,7 @@ static int show_session(int argc, char *argv[], void *userdata) {
 
         properties = !strstr(argv[0], "status");
 
-        pager_open_if_enabled();
+        pager_open(arg_no_pager, false);
 
         if (argc <= 1) {
                 /* If not argument is specified inspect the manager
@@ -952,7 +961,7 @@ static int show_user(int argc, char *argv[], void *userdata) {
 
         properties = !strstr(argv[0], "status");
 
-        pager_open_if_enabled();
+        pager_open(arg_no_pager, false);
 
         if (argc <= 1) {
                 /* If not argument is specified inspect the manager
@@ -1012,7 +1021,7 @@ static int show_seat(int argc, char *argv[], void *userdata) {
 
         properties = !strstr(argv[0], "status");
 
-        pager_open_if_enabled();
+        pager_open(arg_no_pager, false);
 
         if (argc <= 1) {
                 /* If not argument is specified inspect the manager
@@ -1363,9 +1372,39 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
+static int logind_set_wall_message(sd_bus* bus, const char* msg) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_free_ char *m = NULL;
+        int r;
+
+        if (strv_extend(&arg_wall, msg) < 0)
+                return log_oom();
+
+        m = strv_join(arg_wall, " ");
+        if (!m)
+                return log_oom();
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "SetWallMessage",
+                        &error,
+                        NULL,
+                        "sb",
+                        m,
+                        !arg_no_wall);
+
+        if (r < 0)
+                return log_warning_errno(r, "Failed to set wall message, ignoring: %s", bus_error_message(&error, r));
+
+        return 0;
+}
+
 /* Ask elogind, which might grant access to unprivileged users
  * through PolicyKit */
-static int reboot_with_logind(sd_bus *bus, enum action a) {
+static int elogind_reboot(sd_bus *bus, enum action a) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         const char *method;
         int r;
@@ -1410,26 +1449,12 @@ static int reboot_with_logind(sd_bus *bus, enum action a) {
                 return -EINVAL;
         }
 
-        if (table[a]) {
-                r = sd_bus_call_method(
-                               bus,
-                               "org.freedesktop.login1",
-                               "/org/freedesktop/login1",
-                               "org.freedesktop.login1.Manager",
-                               "SetWallMessage",
-                               &error,
-                               NULL,
-                               "sb",
-                               table[a],
-                               true);
-
-                if (r < 0) {
-                        log_warning_errno(r, "Failed to set wall message, ignoring: %s",
-                                          bus_error_message(&error, r));
-                        sd_bus_error_free(&error);
-                }
+        r = logind_set_wall_message(bus, table[a]);
+        if (r < 0) {
+                log_warning_errno(r, "Failed to set wall message, ignoring: %s",
+                                  bus_error_message(&error, r));
+                sd_bus_error_free(&error);
         }
-
 
         r = sd_bus_call_method(
                         bus,
@@ -1467,7 +1492,56 @@ static enum action verb_to_action(const char *verb) {
         return _ACTION_INVALID;
 }
 
-static int check_inhibitors(sd_bus *bus, enum action a) {
+static int parse_shutdown_time_spec(const char *t, usec_t *_u) {
+        assert(t);
+        assert(_u);
+
+        if (streq(t, "now"))
+                *_u = 0;
+        else if (!strchr(t, ':')) {
+                uint64_t u;
+
+                if (safe_atou64(t, &u) < 0)
+                        return -EINVAL;
+
+                *_u = now(CLOCK_REALTIME) + USEC_PER_MINUTE * u;
+        } else {
+                char *e = NULL;
+                long hour, minute;
+                struct tm tm = {};
+                time_t s;
+                usec_t n;
+
+                errno = 0;
+                hour = strtol(t, &e, 10);
+                if (errno > 0 || *e != ':' || hour < 0 || hour > 23)
+                        return -EINVAL;
+
+                minute = strtol(e+1, &e, 10);
+                if (errno > 0 || *e != 0 || minute < 0 || minute > 59)
+                        return -EINVAL;
+
+                n = now(CLOCK_REALTIME);
+                s = (time_t) (n / USEC_PER_SEC);
+
+                assert_se(localtime_r(&s, &tm));
+
+                tm.tm_hour = (int) hour;
+                tm.tm_min = (int) minute;
+                tm.tm_sec = 0;
+
+                assert_se(s = mktime(&tm));
+
+                *_u = (usec_t) s * USEC_PER_SEC;
+
+                while (*_u <= n)
+                        *_u += USEC_PER_DAY;
+        }
+
+        return 0;
+}
+
+static int check_inhibitors(sd_bus* bus, enum action a) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         _cleanup_strv_free_ char **sessions = NULL;
         const char *what, *who, *why, *mode;
@@ -1476,10 +1550,10 @@ static int check_inhibitors(sd_bus *bus, enum action a) {
         char **s;
         int r;
 
-        if (!bus)
+        if (arg_ignore_inhibitors)
                 return 0;
 
-        if (arg_ignore_inhibitors)
+        if (arg_when > 0)
                 return 0;
 
         if (geteuid() == 0)
@@ -1520,8 +1594,11 @@ static int check_inhibitors(sd_bus *bus, enum action a) {
                         return log_error_errno(ERANGE, "Bad PID %"PRIu32": %m", pid);
 
                 if (!strv_contains(sv,
-                                  a == ACTION_POWEROFF ||
-                                  a == ACTION_REBOOT ? "shutdown" : "sleep"))
+                                   IN_SET(a,
+                                          ACTION_HALT,
+                                          ACTION_POWEROFF,
+                                          ACTION_REBOOT,
+                                          ACTION_KEXEC) ? "shutdown" : "sleep"))
                         continue;
 
                 get_process_comm(pid, &comm);
@@ -1565,8 +1642,7 @@ static int check_inhibitors(sd_bus *bus, enum action a) {
         if (c <= 0)
                 return 0;
 
-        log_error("Please retry operation after closing inhibitors and logging out other users.\n"
-                  "Alternatively, ignore inhibitors and users with 'loginctl %s -i'.",
+        log_error("Please retry operation after closing inhibitors and logging out other users.\nAlternatively, ignore inhibitors and users with 'systemctl %s -i'.",
                   action_table[a].verb);
 
         return -EPERM;
@@ -1598,7 +1674,7 @@ static int start_special(int argc, char *argv[], void *userdata) {
         if ((a == ACTION_POWEROFF ||
              a == ACTION_REBOOT) &&
             (arg_action == ACTION_CANCEL_SHUTDOWN))
-                return reboot_with_logind(bus, arg_action);
+                return elogind_reboot(bus, arg_action);
 
         /* Otherwise perform requested action */
         if (a == ACTION_POWEROFF ||
@@ -1606,7 +1682,7 @@ static int start_special(int argc, char *argv[], void *userdata) {
             a == ACTION_SUSPEND ||
             a == ACTION_HIBERNATE ||
             a == ACTION_HYBRID_SLEEP)
-                return reboot_with_logind(bus, a);
+                return elogind_reboot(bus, a);
 
         return -EOPNOTSUPP;
 }
@@ -1618,6 +1694,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -h --help                Show this help\n"
                "     --version             Show package version\n"
                "     --no-pager            Do not pipe output into a pager\n"
+               "     --no-wall             Do not print any wall message\n"
                "     --no-legend           Do not show the headers and footers\n"
                "     --no-ask-password     Don't prompt for password\n"
                "  -H --host=[USER@]HOST    Operate on remote host\n"
@@ -1628,7 +1705,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -l --full                Do not ellipsize output\n"
                "     --kill-who=WHO        Who to send signal to\n"
                "  -s --signal=SIGNAL       Which signal to send\n"
-#if 0
+#if 0 /// UNNEEDED by elogind
                "  -n --lines=INTEGER       Number of journal entries to show\n"
                "  -o --output=STRING       Change journal output mode (short, short-monotonic,\n"
                "                           verbose, export, json, json-pretty, json-sse, cat)\n\n"
@@ -1678,6 +1755,7 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_VERSION = 0x100,
                 ARG_VALUE,
                 ARG_NO_PAGER,
+                ARG_NO_WALL,
                 ARG_NO_LEGEND,
                 ARG_KILL_WHO,
                 ARG_NO_ASK_PASSWORD,
@@ -1691,13 +1769,14 @@ static int parse_argv(int argc, char *argv[]) {
                 { "value",           no_argument,       NULL, ARG_VALUE           },
                 { "full",            no_argument,       NULL, 'l'                 },
                 { "no-pager",        no_argument,       NULL, ARG_NO_PAGER        },
+                { "no-wall",         no_argument,       NULL, ARG_NO_WALL         },
                 { "no-legend",       no_argument,       NULL, ARG_NO_LEGEND       },
                 { "kill-who",        required_argument, NULL, ARG_KILL_WHO        },
                 { "signal",          required_argument, NULL, 's'                 },
                 { "host",            required_argument, NULL, 'H'                 },
                 { "machine",         required_argument, NULL, 'M'                 },
                 { "no-ask-password", no_argument,       NULL, ARG_NO_ASK_PASSWORD },
-#if 0
+#if 0 /// UNNEEDED by elogind
                 { "lines",           required_argument, NULL, 'n'                 },
                 { "output",          required_argument, NULL, 'o'                 },
 #endif // 0
@@ -1705,6 +1784,7 @@ static int parse_argv(int argc, char *argv[]) {
                 {}
         };
 
+        char **wall = NULL;
         int c, r;
 
         assert(argc >= 0);
@@ -1744,7 +1824,8 @@ static int parse_argv(int argc, char *argv[]) {
                 case 'l':
                         arg_full = true;
                         break;
-#if 0
+
+#if 0 /// UNNEEDED by elogind
                 case 'n':
                         if (safe_atou(optarg, &arg_lines) < 0) {
                                 log_error("Failed to parse lines '%s'", optarg);
@@ -1760,8 +1841,13 @@ static int parse_argv(int argc, char *argv[]) {
                         }
                         break;
 #endif // 0
+
                 case ARG_NO_PAGER:
                         arg_no_pager = true;
+                        break;
+
+                case ARG_NO_WALL:
+                        arg_no_wall = true;
                         break;
 
                 case ARG_NO_LEGEND:
@@ -1808,6 +1894,30 @@ static int parse_argv(int argc, char *argv[]) {
                 default:
                         assert_not_reached("Unhandled option");
                 }
+
+        if (argc > optind && arg_action != ACTION_CANCEL_SHUTDOWN) {
+                r = parse_shutdown_time_spec(argv[optind], &arg_when);
+                if (r < 0) {
+                        log_error("Failed to parse time specification: %s", argv[optind]);
+                        return r;
+                }
+        } else
+                arg_when = now(CLOCK_REALTIME) + USEC_PER_MINUTE;
+
+        if (argc > optind && arg_action == ACTION_CANCEL_SHUTDOWN)
+                /* No time argument for shutdown cancel */
+                wall = argv + optind;
+        else if (argc > optind + 1)
+                /* We skip the time argument */
+                wall = argv + optind + 1;
+
+        if (wall) {
+                arg_wall = strv_copy(wall);
+                if (!arg_wall)
+                        return log_oom();
+        }
+
+        optind = argc;
 
         return 1;
 }
@@ -1879,6 +1989,7 @@ finish:
         polkit_agent_close();
 
         strv_free(arg_property);
+        strv_free(arg_wall);
 
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

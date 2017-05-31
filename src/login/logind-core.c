@@ -115,8 +115,8 @@ int manager_add_user(Manager *m, uid_t uid, gid_t gid, const char *name, User **
 }
 
 int manager_add_user_by_name(Manager *m, const char *name, User **_user) {
-        uid_t uid = 1000;
-        gid_t gid = 1000;
+        uid_t uid;
+        gid_t gid;
         int r;
 
         assert(m);
@@ -345,7 +345,6 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
 
         *user = s->user;
 #endif // 0
-
         return 1;
 }
 
@@ -392,19 +391,16 @@ bool manager_shall_kill(Manager *m, const char *user) {
         assert(m);
         assert(user);
 
-        if (!m->kill_user_processes)
-                return false;
-
         if (!m->kill_exclude_users && streq(user, "root"))
                 return false;
 
         if (strv_contains(m->kill_exclude_users, user))
                 return false;
 
-        if (strv_isempty(m->kill_only_users))
-                return true;
+        if (!strv_isempty(m->kill_only_users))
+                return strv_contains(m->kill_only_users, user);
 
-        return strv_contains(m->kill_only_users, user);
+        return m->kill_user_processes;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -462,7 +458,7 @@ int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
                         m->bus,
                         "org.freedesktop.systemd1",
                         "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
+                        "org.freedesktop.systemd.Manager",
                         "StartUnit",
                         &error,
                         NULL,

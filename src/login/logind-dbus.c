@@ -870,13 +870,17 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
 
         session->create_message = sd_bus_message_ref(message);
 
-        /* Here upstream systemd starts cgroups and the user systemd,
-           and arranges to reply asynchronously.  We reply
-           directly.  */
+#if 0 /// UNNEEDED by elogind
+        /* Now, let's wait until the slice unit and stuff got
+         * created. We send the reply back from
+         * session_send_create_reply(). */
+#else
+        /* We reply directly. */
 
         r = session_send_create_reply(session, NULL);
         if (r < 0)
                 goto fail;
+#endif // 0
 
         return 1;
 
@@ -1558,39 +1562,39 @@ static int execute_shutdown_or_sleep(
                 log_info("Running in dry run, suppressing action.");
                 reset_scheduled_shutdown(m);
         } else {
-        r = sd_bus_call_method(
-                        m->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "StartUnit",
-                        error,
-                        &reply,
-                        "ss", unit_name, "replace-irreversibly");
+                r = sd_bus_call_method(
+                                m->bus,
+                                "org.freedesktop.systemd1",
+                                "/org/freedesktop/systemd1",
+                                "org.freedesktop.systemd1.Manager",
+                                "StartUnit",
+                                error,
+                                &reply,
+                                "ss", unit_name, "replace-irreversibly");
+                if (r < 0)
+                        return r;
+
+                r = sd_bus_message_read(reply, "o", &p);
+                if (r < 0)
+                        return r;
+
+                c = strdup(p);
+                if (!c)
+                        return -ENOMEM;
+
+                m->action_unit = unit_name;
+                free(m->action_job);
+                m->action_job = c;
+                m->action_what = w;
+        }
 #else
         r = shutdown_or_sleep(m, action);
 
         /* no more pending actions, whether this failed or not */
         m->pending_action = HANDLE_IGNORE;
         m->action_what    = 0;
-#endif // 0
         if (r < 0)
                 return r;
-
-#if 0 /// elogind neither needs a dbus reply, nor supports systemd action jobs
-        r = sd_bus_message_read(reply, "o", &p);
-        if (r < 0)
-                return r;
-
-        c = strdup(p);
-        if (!c)
-                return -ENOMEM;
-        }
-
-        m->action_unit = unit_name;
-        free(m->action_job);
-        m->action_job = c;
-        m->action_what = w;
 #endif // 0
 
         /* Make sure the lid switch is ignored for a while */
@@ -1960,8 +1964,8 @@ static int update_schedule_file(Manager *m) {
         return 0;
 
 fail:
-                (void) unlink(temp_path);
-                (void) unlink("/run/systemd/shutdown/scheduled");
+        (void) unlink(temp_path);
+        (void) unlink("/run/systemd/shutdown/scheduled");
 
         return log_error_errno(r, "Failed to write information about scheduled shutdowns: %m");
 }
