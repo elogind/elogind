@@ -62,7 +62,7 @@ _public_ int sd_pid_get_session(pid_t pid, char **session) {
         assert_return(session, -EINVAL);
 
         r = cg_pid_get_session(pid, session);
-        return r == -ENXIO ? -ENODATA : r;
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 }
 
 _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
@@ -75,7 +75,7 @@ _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
 
 #if 0 /// elogind does not support systemd units
         r = cg_pid_get_unit(pid, unit);
-        return r == -ENXIO ? -ENODATA : r;
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 #else
         return -ESRCH;
 #endif // 0
@@ -91,55 +91,71 @@ _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
 
 #if 0 /// elogind does not support systemd units
         r = cg_pid_get_user_unit(pid, unit);
-        return r == -ENXIO ? -ENODATA : r;
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 #else
         return -ESRCH;
 #endif // 0
 }
 
 _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
+#if 0 /// UNNEEDED by elogind
+        int r;
+#endif // 0
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(name, -EINVAL);
 
 #if 0 /// elogind does not support systemd units
-        return cg_pid_get_machine_name(pid, name);
+        r = cg_pid_get_machine_name(pid, name);
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 #else
         return -ESRCH;
 #endif // 0
 }
 
 _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
+#if 0 /// UNNEEDED by elogind
+        int r;
+#endif // 0
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
 #if 0 /// elogind does not support systemd slices
-        return cg_pid_get_slice(pid, slice);
+        r = cg_pid_get_slice(pid, slice);
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 #else
         return -ESRCH;
 #endif // 0
 }
 
 _public_ int sd_pid_get_user_slice(pid_t pid, char **slice) {
+#if 0 /// UNNEEDED by elogind
+        int r;
+#endif // 0
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
 #if 0 /// elogind does not support systemd slices
-        return cg_pid_get_user_slice(pid, slice);
+        r = cg_pid_get_user_slice(pid, slice);
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 #else
         return -ESRCH;
 #endif // 0
 }
 
 _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
+#if 0 /// UNNEEDED by elogind
+        int r;
+#endif // 0
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(uid, -EINVAL);
 
 #if 0 /// elogind does not support systemd slices
-        return cg_pid_get_owner_uid(pid, uid);
+        r = cg_pid_get_owner_uid(pid, uid);
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 #else
         return -ESRCH;
 #endif // 0
