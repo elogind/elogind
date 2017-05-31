@@ -942,14 +942,13 @@ _public_ int sd_get_uids(uid_t **users) {
 }
 
 _public_ int sd_get_machine_names(char ***machines) {
-        char **l = NULL, **a, **b;
+        char **l, **a, **b;
         int r;
-
-        assert_return(machines, -EINVAL);
 
         r = get_files_in_directory("/run/systemd/machines/", &l);
         if (r == -ENOENT) {
-                *machines = NULL;
+                if (machines)
+                        *machines = NULL;
                 return 0;
         }
         if (r < 0)
@@ -959,7 +958,7 @@ _public_ int sd_get_machine_names(char ***machines) {
                 r = 0;
 
                 /* Filter out the unit: symlinks */
-                for (a = l, b = l; *a; a++) {
+                for (a = b = l; *a; a++) {
                         if (startswith(*a, "unit:") || !machine_name_is_valid(*a))
                                 free(*a);
                         else {
@@ -972,7 +971,8 @@ _public_ int sd_get_machine_names(char ***machines) {
                 *b = NULL;
         }
 
-        *machines = l;
+        if (machines)
+                *machines = l;
         return r;
 }
 
