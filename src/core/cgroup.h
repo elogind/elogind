@@ -22,12 +22,14 @@
 #include <stdbool.h>
 
 //#include "list.h"
-#include "logind.h"
 //#include "time-util.h"
+#include "cgroup-util.h"
 
 #if 0 /// UNNEEDED by elogind
 typedef struct CGroupContext CGroupContext;
 typedef struct CGroupDeviceAllow CGroupDeviceAllow;
+typedef struct CGroupIODeviceWeight CGroupIODeviceWeight;
+typedef struct CGroupIODeviceLimit CGroupIODeviceLimit;
 typedef struct CGroupBlockIODeviceWeight CGroupBlockIODeviceWeight;
 typedef struct CGroupBlockIODeviceBandwidth CGroupBlockIODeviceBandwidth;
 
@@ -55,6 +57,18 @@ struct CGroupDeviceAllow {
         bool m:1;
 };
 
+struct CGroupIODeviceWeight {
+        LIST_FIELDS(CGroupIODeviceWeight, device_weights);
+        char *path;
+        uint64_t weight;
+};
+
+struct CGroupIODeviceLimit {
+        LIST_FIELDS(CGroupIODeviceLimit, device_limits);
+        char *path;
+        uint64_t limits[_CGROUP_IO_LIMIT_TYPE_MAX];
+};
+
 struct CGroupBlockIODeviceWeight {
         LIST_FIELDS(CGroupBlockIODeviceWeight, device_weights);
         char *path;
@@ -70,10 +84,18 @@ struct CGroupBlockIODeviceBandwidth {
 
 struct CGroupContext {
         bool cpu_accounting;
+        bool io_accounting;
         bool blockio_accounting;
         bool memory_accounting;
         bool tasks_accounting;
 
+        /* For unified hierarchy */
+        uint64_t io_weight;
+        uint64_t startup_io_weight;
+        LIST_HEAD(CGroupIODeviceWeight, io_device_weights);
+        LIST_HEAD(CGroupIODeviceLimit, io_device_limits);
+
+        /* For legacy hierarchies */
         uint64_t cpu_shares;
         uint64_t startup_cpu_shares;
         usec_t cpu_quota_per_sec_usec;
@@ -88,6 +110,7 @@ struct CGroupContext {
         CGroupDevicePolicy device_policy;
         LIST_HEAD(CGroupDeviceAllow, device_allow);
 
+        /* Common */
         uint64_t tasks_max;
 
         bool delegate;
@@ -104,6 +127,8 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
 CGroupMask cgroup_context_get_mask(CGroupContext *c);
 
 void cgroup_context_free_device_allow(CGroupContext *c, CGroupDeviceAllow *a);
+void cgroup_context_free_io_device_weight(CGroupContext *c, CGroupIODeviceWeight *w);
+void cgroup_context_free_io_device_limit(CGroupContext *c, CGroupIODeviceLimit *l);
 void cgroup_context_free_blockio_device_weight(CGroupContext *c, CGroupBlockIODeviceWeight *w);
 void cgroup_context_free_blockio_device_bandwidth(CGroupContext *c, CGroupBlockIODeviceBandwidth *b);
 
@@ -126,8 +151,11 @@ void unit_prune_cgroup(Unit *u);
 int unit_watch_cgroup(Unit *u);
 
 int unit_attach_pids_to_cgroup(Unit *u);
-
+#else
+# include "logind.h"
+# define MANAGER_IS_SYSTEM(m) (1)
 #endif // 0
+
 int manager_setup_cgroup(Manager *m);
 void manager_shutdown_cgroup(Manager *m, bool delete);
 

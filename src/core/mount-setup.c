@@ -96,7 +96,7 @@ static const MountPoint mount_table[] = {
 #endif
         { "tmpfs",       "/run",                      "tmpfs",      "mode=755",                MS_NOSUID|MS_NODEV|MS_STRICTATIME,
           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
-        { "cgroup",      "/sys/fs/cgroup",            "cgroup",     "__DEVEL__sane_behavior",  MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup",            "cgroup2",    NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_unified_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
         { "tmpfs",       "/sys/fs/cgroup",            "tmpfs",      "mode=755",                MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_STRICTATIME,
