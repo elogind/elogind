@@ -494,7 +494,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/pager.h" />
-		<Unit filename="../src/shared/path-lookup.h" />
 		<Unit filename="../src/shared/spawn-polkit-agent.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -430,15 +430,15 @@ int config_parse_many(const char *conf_file,
 #define DEFINE_PARSER(type, vartype, conv_func)                         \
         int config_parse_##type(                                        \
                         const char *unit,                               \
-                                const char *filename,                   \
-                                unsigned line,                          \
-                                const char *section,                    \
-                                unsigned section_line,                  \
-                                const char *lvalue,                     \
-                                int ltype,                              \
-                                const char *rvalue,                     \
-                                void *data,                             \
-                                void *userdata) {                       \
+                        const char *filename,                           \
+                        unsigned line,                                  \
+                        const char *section,                            \
+                        unsigned section_line,                          \
+                        const char *lvalue,                             \
+                        int ltype,                                      \
+                        const char *rvalue,                             \
+                        void *data,                                     \
+                        void *userdata) {                               \
                                                                         \
                 vartype *i = data;                                      \
                 int r;                                                  \
@@ -880,6 +880,43 @@ int config_parse_personality(
         }
 
         *personality = p;
+        return 0;
+}
+
+int config_parse_ifname(
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
+
+        char **s = data;
+        int r;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+        assert(data);
+
+        if (isempty(rvalue)) {
+                *s = mfree(*s);
+                return 0;
+        }
+
+        if (!ifname_valid(rvalue)) {
+                log_syntax(unit, LOG_ERR, filename, line, 0, "Interface name is not valid or too long, ignoring assignment: %s", rvalue);
+                return 0;
+        }
+
+        r = free_and_strdup(s, rvalue);
+        if (r < 0)
+                return log_oom();
+
         return 0;
 }
 #endif // 0

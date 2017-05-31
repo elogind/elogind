@@ -64,7 +64,7 @@ int pager_open(bool no_pager, bool jump_to_end) {
                 return 1;
 
         if (!on_tty())
-                        return 0;
+                return 0;
 
         pager = getenv("SYSTEMD_PAGER");
         if (!pager)
@@ -158,13 +158,8 @@ void pager_close(void) {
                 return;
 
         /* Inform pager that we are done */
-#if defined(__GLIBC__)
         stdout = safe_fclose(stdout);
         stderr = safe_fclose(stderr);
-#else
-        (void) safe_fclose(stdout);
-        (void) safe_fclose(stderr);
-#endif // in musl-libc these are const
 
         (void) kill(pager_pid, SIGCONT);
         (void) wait_for_terminate(pager_pid, NULL);
