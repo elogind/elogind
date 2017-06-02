@@ -58,7 +58,7 @@ PKTTYAGENT=$(bindir)/pkttyagent
 
 # Our own, non-special dirs
 pkgsysconfdir=$(sysconfdir)/elogind
-pkgincludedir=$(includedir)/elogind
+pkgincludedir=$(includedir)/elogind/systemd
 udevrulesdir=@udevrulesdir@
 udevbindir=@udevbindir@
 udevlibexecdir=$(udevbindir)
@@ -624,6 +624,18 @@ pkginclude_HEADERS += \
 	src/systemd/sd-id128.h \
 	src/systemd/_sd-common.h
 
+header-install-hook:
+	$(MKDIR_P) $(DESTDIR)/$(pkgincludedir)
+	cd $(DESTDIR)/$(includedir)/elogind && \
+		for hdr in $(notdir $(pkginclude_HEADERS)) ; do \
+			$(LN_S) systemd/$$hdr $$hdr ; \
+		done
+
+header-uninstall-hook:
+	m -f $(DESTDIR)/$(includedir)/elogind/*.h
+
+INSTALL_EXEC_HOOKS += header-install-hook
+UNINSTALL_EXEC_HOOKS += header-uninstall-hook
 
 lib_LTLIBRARIES += \
 	libelogind.la
