@@ -56,11 +56,14 @@ static char **arg_property = NULL;
 static bool arg_all = false;
 static bool arg_full = false;
 static bool arg_no_pager = false;
+static bool arg_no_wall = false;
 static bool arg_legend = true;
 static const char *arg_kill_who = NULL;
 static int arg_signal = SIGTERM;
 static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
+static usec_t arg_when = 0;
+static char **arg_wall = NULL;
 static bool arg_ask_password = true;
 static bool arg_ignore_inhibitors = false;
 #if 0
@@ -1353,16 +1356,112 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
-/* Ask elogind, which might grant access to unprivileged users
- * through PolicyKit */
-static int reboot_with_logind(sd_bus *bus, enum action a) {
+static int logind_set_wall_message(sd_bus* bus, const char* msg) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        const char *method;
+        _cleanup_free_ char *m = NULL;
+        int r;
+
+        if (strv_extend(&arg_wall, msg) < 0)
+                return log_oom();
+
+        m = strv_join(arg_wall, " ");
+        if (!m)
+                return log_oom();
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "SetWallMessage",
+                        &error,
+                        NULL,
+                        "sb",
+                        m,
+                        !arg_no_wall);
+
+        if (r < 0)
+                return log_warning_errno(r, "Failed to set wall message, ignoring: %s", bus_error_message(&error, r));
+
+        return 0;
+}
+
+static int elogind_cancel_shutdown(sd_bus *bus) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r;
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "CancelScheduledShutdown",
+                        &error,
+                        NULL, NULL);
+        if (r < 0)
+                return log_warning_errno(r, "Failed to talk to elogind, shutdown hasn't been cancelled: %s", bus_error_message(&error, r));
+
+        return 0;
+}
+
+static int elogind_schedule_shutdown(sd_bus *bus, enum action a) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        const char *method  = NULL;
+        int r;
+
+        if (!bus)
+                return -EIO;
+
+        polkit_agent_open_if_enabled();
+
+        switch (a) {
+
+        case ACTION_POWEROFF:
+                method = "poweroff";
+                break;
+
+        case ACTION_REBOOT:
+                method = "reboot";
+                break;
+
+        default:
+                return -EINVAL;
+        }
+
+        r = logind_set_wall_message(bus, NULL);
+
+        if (r < 0) {
+                log_warning_errno(r, "Failed to set wall message, ignoring: %s",
+                                  bus_error_message(&error, r));
+                sd_bus_error_free(&error);
+        }
+
+        /* Now call elogind itself to request the operation */
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "ScheduleShutdown",
+                        &error,
+                        NULL,
+                        "st",
+                        method,
+                        arg_when);
+
+        if (r < 0)
+                log_error("Failed to execute operation: %s", bus_error_message(&error, r));
+
+        return r;
+}
+
+static int elogind_reboot(sd_bus *bus, enum action a) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        const char *method = NULL;
         int r;
         static const char *table[_ACTION_MAX] = {
                 [ACTION_REBOOT]          = "The system is going down for reboot NOW!",
-                [ACTION_POWEROFF]        = "The system is going down for power-off NOW!",
-                [ACTION_CANCEL_SHUTDOWN] = "The system shutdown has been cancelled NOW!"
+                [ACTION_POWEROFF]        = "The system is going down for power-off NOW!"
         };
 
         if (!bus)
@@ -1390,10 +1489,6 @@ static int reboot_with_logind(sd_bus *bus, enum action a) {
 
         case ACTION_HYBRID_SLEEP:
                 method = "HybridSleep";
-                break;
-
-        case ACTION_CANCEL_SHUTDOWN:
-                method = "CancelScheduledShutdown";
                 break;
 
         default:
@@ -1429,7 +1524,9 @@ static int reboot_with_logind(sd_bus *bus, enum action a) {
                         method,
                         &error,
                         NULL,
-                        "b", arg_ask_password);
+                        "b",
+                        arg_ask_password);
+
         if (r < 0)
                 log_error("Failed to execute operation: %s", bus_error_message(&error, r));
 
@@ -1457,6 +1554,55 @@ static enum action verb_to_action(const char *verb) {
         return _ACTION_INVALID;
 }
 
+static int parse_shutdown_time_spec(const char *t, usec_t *_u) {
+        assert(t);
+        assert(_u);
+
+        if (streq(t, "now"))
+                *_u = 0;
+        else if (!strchr(t, ':')) {
+                uint64_t u;
+
+                if (safe_atou64(t, &u) < 0)
+                        return -EINVAL;
+
+                *_u = now(CLOCK_REALTIME) + USEC_PER_MINUTE * u;
+        } else {
+                char *e = NULL;
+                long hour, minute;
+                struct tm tm = {};
+                time_t s;
+                usec_t n;
+
+                errno = 0;
+                hour = strtol(t, &e, 10);
+                if (errno > 0 || *e != ':' || hour < 0 || hour > 23)
+                        return -EINVAL;
+
+                minute = strtol(e+1, &e, 10);
+                if (errno > 0 || *e != 0 || minute < 0 || minute > 59)
+                        return -EINVAL;
+
+                n = now(CLOCK_REALTIME);
+                s = (time_t) (n / USEC_PER_SEC);
+
+                assert_se(localtime_r(&s, &tm));
+
+                tm.tm_hour = (int) hour;
+                tm.tm_min = (int) minute;
+                tm.tm_sec = 0;
+
+                assert_se(s = mktime(&tm));
+
+                *_u = (usec_t) s * USEC_PER_SEC;
+
+                while (*_u <= n)
+                        *_u += USEC_PER_DAY;
+        }
+
+        return 0;
+}
+
 static int check_inhibitors(sd_bus *bus, enum action a) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         _cleanup_strv_free_ char **sessions = NULL;
@@ -1466,10 +1612,10 @@ static int check_inhibitors(sd_bus *bus, enum action a) {
         char **s;
         int r;
 
-        if (!bus)
+        if (arg_ignore_inhibitors)
                 return 0;
 
-        if (arg_ignore_inhibitors)
+        if (arg_when > 0)
                 return 0;
 
         if (geteuid() == 0)
@@ -1555,8 +1701,7 @@ static int check_inhibitors(sd_bus *bus, enum action a) {
         if (c <= 0)
                 return 0;
 
-        log_error("Please retry operation after closing inhibitors and logging out other users.\n"
-                  "Alternatively, ignore inhibitors and users with 'loginctl %s -i'.",
+        log_error("Please retry operation after closing inhibitors and logging out other users.\nAlternatively, ignore inhibitors and users with 'loginctl -i %s'.",
                   action_table[a].verb);
 
         return -EPERM;
@@ -1566,6 +1711,7 @@ static int start_special(int argc, char *argv[], void *userdata) {
         sd_bus *bus = userdata;
         enum action a;
         int r;
+        char** wall = NULL;
 
         assert(argv);
 
@@ -1575,7 +1721,7 @@ static int start_special(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return r;
 
-        /* Now power off actions in chroot environments */
+        /* No power off actions in chroot environments */
         if ((a == ACTION_POWEROFF ||
              a == ACTION_REBOOT) &&
             (running_in_chroot() > 0) ) {
@@ -1583,20 +1729,44 @@ static int start_special(int argc, char *argv[], void *userdata) {
                 return 0;
         }
 
-        /* Switch to cancel shutdown, if a shutdown action was requested,
-           and the option to cancel it was set: */
-        if ((a == ACTION_POWEROFF ||
-             a == ACTION_REBOOT) &&
-            (arg_action == ACTION_CANCEL_SHUTDOWN))
-                return reboot_with_logind(bus, arg_action);
+        /* Check time arguments */
+        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
+          && (argc > 1)
+          && (arg_action != ACTION_CANCEL_SHUTDOWN) ) {
+                r = parse_shutdown_time_spec(argv[1], &arg_when);
+                if (r < 0) {
+                        log_error("Failed to parse time specification: %s", argv[optind]);
+                        return r;
+                }
+        } else
+                arg_when = now(CLOCK_REALTIME) + USEC_PER_MINUTE;
 
-        /* Otherwise perform requested action */
-        if (a == ACTION_POWEROFF ||
-            a == ACTION_REBOOT ||
-            a == ACTION_SUSPEND ||
-            a == ACTION_HIBERNATE ||
-            a == ACTION_HYBRID_SLEEP)
-                return reboot_with_logind(bus, a);
+        /* The optional user wall message must be set */
+        if ((argc > 1) && (arg_action == ACTION_CANCEL_SHUTDOWN) )
+                /* No time argument for shutdown cancel */
+                wall = argv + 1;
+        else if (argc > 2)
+                /* We skip the time argument */
+                wall = argv + 2;
+
+        if (wall) {
+                arg_wall = strv_copy(wall);
+                if (!arg_wall)
+                        return log_oom();
+        }
+
+        /* Perform requested action */
+        if (IN_SET(a,
+                   ACTION_POWEROFF,
+                   ACTION_REBOOT,
+                   ACTION_SUSPEND,
+                   ACTION_HIBERNATE,
+                   ACTION_HYBRID_SLEEP)) {
+                if (arg_when > 0)
+                        return elogind_schedule_shutdown(bus, a);
+                else
+                        return elogind_reboot(bus, a);
+        }
 
         return -EOPNOTSUPP;
 }
@@ -1622,40 +1792,40 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -o --output=STRING       Change journal output mode (short, short-monotonic,\n"
                "                           verbose, export, json, json-pretty, json-sse, cat)\n\n"
 #endif // 0
-               "  -c                       Cancel a pending shutdown\n"
-               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n"
+               "  -c                        Cancel a pending shutdown or reboot\n"
+               "  -i --ignore-inhibitors    When shutting down or sleeping, ignore inhibitors\n"
                "Session Commands:\n"
-               "  list-sessions            List sessions\n"
-               "  session-status [ID...]   Show session status\n"
-               "  show-session [ID...]     Show properties of sessions or the manager\n"
-               "  activate [ID]            Activate a session\n"
-               "  lock-session [ID...]     Screen lock one or more sessions\n"
-               "  unlock-session [ID...]   Screen unlock one or more sessions\n"
-               "  lock-sessions            Screen lock all current sessions\n"
-               "  unlock-sessions          Screen unlock all current sessions\n"
-               "  terminate-session ID...  Terminate one or more sessions\n"
-               "  kill-session ID...       Send signal to processes of a session\n\n"
+               "  list-sessions             List sessions\n"
+               "  session-status [ID...]    Show session status\n"
+               "  show-session [ID...]      Show properties of sessions or the manager\n"
+               "  activate [ID]             Activate a session\n"
+               "  lock-session [ID...]      Screen lock one or more sessions\n"
+               "  unlock-session [ID...]    Screen unlock one or more sessions\n"
+               "  lock-sessions             Screen lock all current sessions\n"
+               "  unlock-sessions           Screen unlock all current sessions\n"
+               "  terminate-session ID...   Terminate one or more sessions\n"
+               "  kill-session ID...        Send signal to processes of a session\n\n"
                "User Commands:\n"
-               "  list-users               List users\n"
-               "  user-status [USER...]    Show user status\n"
-               "  show-user [USER...]      Show properties of users or the manager\n"
-               "  enable-linger [USER...]  Enable linger state of one or more users\n"
-               "  disable-linger [USER...] Disable linger state of one or more users\n"
-               "  terminate-user USER...   Terminate all sessions of one or more users\n"
-               "  kill-user USER...        Send signal to processes of a user\n\n"
+               "  list-users                List users\n"
+               "  user-status [USER...]     Show user status\n"
+               "  show-user [USER...]       Show properties of users or the manager\n"
+               "  enable-linger [USER...]   Enable linger state of one or more users\n"
+               "  disable-linger [USER...]  Disable linger state of one or more users\n"
+               "  terminate-user USER...    Terminate all sessions of one or more users\n"
+               "  kill-user USER...         Send signal to processes of a user\n\n"
                "Seat Commands:\n"
-               "  list-seats               List seats\n"
-               "  seat-status [NAME...]    Show seat status\n"
-               "  show-seat [NAME...]      Show properties of seats or the manager\n"
-               "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
-               "  flush-devices            Flush all device associations\n"
-               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+               "  list-seats                List seats\n"
+               "  seat-status [NAME...]     Show seat status\n"
+               "  show-seat   [NAME...]     Show properties of seats or the manager\n"
+               "  attach NAME DEVICE...     Attach one or more devices to a seat\n"
+               "  flush-devices             Flush all device associations\n"
+               "  terminate-seat NAME...    Terminate all sessions on one or more seats\n"
                "System Commands:\n"
-               "  poweroff                 Turn off the machine\n"
-               "  reboot                   Reboot the machine\n"
-               "  suspend                  Suspend the machine to memory\n"
-               "  hibernate                Suspend the machine to disk\n"
-               "  hybrid-sleep             Suspend the machine to memory and disk\n"
+               "  poweroff [TIME] [WALL...] Turn off the machine\n"
+               "  reboot   [TIME] [WALL...] Reboot the machine\n"
+               "  suspend                   Suspend the machine to memory\n"
+               "  hibernate                 Suspend the machine to disk\n"
+               "  hybrid-sleep              Suspend the machine to memory and disk\n"
                , program_invocation_short_name);
 
         return 0;
@@ -1665,7 +1835,9 @@ static int parse_argv(int argc, char *argv[]) {
 
         enum {
                 ARG_VERSION = 0x100,
+                ARG_VALUE,
                 ARG_NO_PAGER,
+                ARG_NO_WALL,
                 ARG_NO_LEGEND,
                 ARG_KILL_WHO,
                 ARG_NO_ASK_PASSWORD,
@@ -1676,8 +1848,10 @@ static int parse_argv(int argc, char *argv[]) {
                 { "version",         no_argument,       NULL, ARG_VERSION         },
                 { "property",        required_argument, NULL, 'p'                 },
                 { "all",             no_argument,       NULL, 'a'                 },
+                { "value",           no_argument,       NULL, ARG_VALUE           },
                 { "full",            no_argument,       NULL, 'l'                 },
                 { "no-pager",        no_argument,       NULL, ARG_NO_PAGER        },
+                { "no-wall",         no_argument,       NULL, ARG_NO_WALL         },
                 { "no-legend",       no_argument,       NULL, ARG_NO_LEGEND       },
                 { "kill-who",        required_argument, NULL, ARG_KILL_WHO        },
                 { "signal",          required_argument, NULL, 's'                 },
@@ -1697,7 +1871,7 @@ static int parse_argv(int argc, char *argv[]) {
         assert(argc >= 0);
         assert(argv);
 
-        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:ci", options, NULL)) >= 0)
+        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:ci", options, NULL)) >= 0) {
 
                 switch (c) {
 
@@ -1747,6 +1921,10 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_no_pager = true;
                         break;
 
+                case ARG_NO_WALL:
+                        arg_no_wall = true;
+                        break;
+
                 case ARG_NO_LEGEND:
                         arg_legend = false;
                         break;
@@ -1791,6 +1969,7 @@ static int parse_argv(int argc, char *argv[]) {
                 default:
                         assert_not_reached("Unhandled option");
                 }
+        }
 
         return 1;
 }
@@ -1822,14 +2001,17 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "attach",            3,        VERB_ANY, 0,            attach            },
                 { "flush-devices",     VERB_ANY, 1,        0,            flush_devices     },
                 { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
-                { "poweroff",          VERB_ANY, 1,        0,            start_special     },
-                { "reboot",            VERB_ANY, 1,        0,            start_special     },
+                { "poweroff",          VERB_ANY, VERB_ANY, 0,            start_special     },
+                { "reboot",            VERB_ANY, VERB_ANY, 0,            start_special     },
                 { "suspend",           VERB_ANY, 1,        0,            start_special     },
                 { "hibernate",         VERB_ANY, 1,        0,            start_special     },
                 { "hybrid-sleep",      VERB_ANY, 1,        0,            start_special     },
                 { "cancel-shutdown",   VERB_ANY, 1,        0,            start_special     },
                 {}
         };
+
+        if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
+                return elogind_cancel_shutdown(bus);
 
         return dispatch_verb(argc, argv, verbs, bus);
 }
@@ -1854,7 +2036,6 @@ int main(int argc, char *argv[]) {
         }
 
         sd_bus_set_allow_interactive_authorization(bus, arg_ask_password);
-
         r = loginctl_main(argc, argv, bus);
 
 finish:
@@ -1864,6 +2045,7 @@ finish:
         polkit_agent_close();
 
         strv_free(arg_property);
+        strv_free(arg_wall);
 
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
