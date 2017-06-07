@@ -164,14 +164,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mount-util.h" />
-		<Unit filename="../src/basic/musl_missing.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/musl_missing.h" />
-		<Unit filename="../src/basic/parse-printf-format.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/parse-printf-format.h" />
 		<Unit filename="../src/basic/parse-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -490,10 +482,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
+		<Unit filename="../src/shared/musl_missing.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/musl_missing.h" />
 		<Unit filename="../src/shared/pager.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/pager.h" />
+		<Unit filename="../src/shared/parse-printf-format.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/parse-printf-format.h" />
 		<Unit filename="../src/shared/spawn-polkit-agent.c">
 			<Option compilerVar="CC" />
 		</Unit>

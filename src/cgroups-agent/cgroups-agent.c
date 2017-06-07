@@ -21,9 +21,11 @@
 #include <sys/socket.h>
 
 #include "fd-util.h"
-#include "musl_missing.h"
 #include "log.h"
 #include "socket-util.h"
+
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 int main(int argc, char *argv[]) {
 
