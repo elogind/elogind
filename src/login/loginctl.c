@@ -50,6 +50,7 @@
 #include "logind-action.h"
 #include "musl_missing.h"
 #include "sd-login.h"
+#include "stdio-util.h"
 #include "virt.h"
 
 static char **arg_property = NULL;
@@ -1402,16 +1403,99 @@ static int logind_set_wall_message(sd_bus* bus, const char* msg) {
         return 0;
 }
 
-/* Ask elogind, which might grant access to unprivileged users
- * through PolicyKit */
+static int elogind_cancel_shutdown(sd_bus *bus, enum action a) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r;
+        static const char *table[_ACTION_MAX] = {
+                [ACTION_REBOOT]   = "The system reboot has been cancelled!",
+                [ACTION_POWEROFF] = "The system shutdown has been cancelled!"
+        };
+
+        r = logind_set_wall_message(bus, table[a]);
+
+        if (r < 0) {
+                log_warning_errno(r, "Failed to set wall message, ignoring: %s",
+                                  bus_error_message(&error, r));
+                sd_bus_error_free(&error);
+        }
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "CancelScheduledShutdown",
+                        &error,
+                        NULL, NULL);
+        if (r < 0)
+                return log_warning_errno(r, "Failed to talk to logind, shutdown hasn't been cancelled: %s", bus_error_message(&error, r));
+
+        return 0;
+}
+
+static int elogind_schedule_shutdown(sd_bus *bus, enum action a) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        const char *method  = NULL;
+        char date[FORMAT_TIMESTAMP_MAX];
+        char sched_wall[128] = { 0x0 };
+        int r;
+
+        if (!bus)
+                return -EIO;
+
+        polkit_agent_open_if_enabled();
+
+        switch (a) {
+
+        case ACTION_POWEROFF:
+                method = "poweroff";
+                break;
+
+        case ACTION_REBOOT:
+                method = "reboot";
+                break;
+
+        default:
+                return -EINVAL;
+        }
+
+        xsprintf(sched_wall,
+                 "%s scheduled for %s, use 'loginctl -c' to cancel.",
+                 ACTION_POWEROFF == a ? "Shutdown" : "Reboot",
+                 format_timestamp(date, sizeof(date), arg_when));
+        r = logind_set_wall_message(bus, sched_wall);
+
+        if (r < 0) {
+                log_warning_errno(r, "Failed to set wall message, ignoring: %s",
+                                  bus_error_message(&error, r));
+                sd_bus_error_free(&error);
+        }
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "ScheduleShutdown",
+                        &error,
+                        NULL,
+                        "st",
+                        method,
+                        arg_when);
+
+        if (r < 0)
+                log_error("Failed to execute operation: %s", bus_error_message(&error, r));
+
+        return r;
+}
+
 static int elogind_reboot(sd_bus *bus, enum action a) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        const char *method;
+        const char *method  = NULL;
         int r;
         static const char *table[_ACTION_MAX] = {
                 [ACTION_REBOOT]          = "The system is going down for reboot NOW!",
-                [ACTION_POWEROFF]        = "The system is going down for power-off NOW!",
-                [ACTION_CANCEL_SHUTDOWN] = "The system shutdown has been cancelled NOW!"
+                [ACTION_POWEROFF]        = "The system is going down for power-off NOW!"
         };
 
         if (!bus)
@@ -1441,15 +1525,12 @@ static int elogind_reboot(sd_bus *bus, enum action a) {
                 method = "HybridSleep";
                 break;
 
-        case ACTION_CANCEL_SHUTDOWN:
-                method = "CancelScheduledShutdown";
-                break;
-
         default:
                 return -EINVAL;
         }
 
         r = logind_set_wall_message(bus, table[a]);
+
         if (r < 0) {
                 log_warning_errno(r, "Failed to set wall message, ignoring: %s",
                                   bus_error_message(&error, r));
@@ -1464,7 +1545,9 @@ static int elogind_reboot(sd_bus *bus, enum action a) {
                         method,
                         &error,
                         NULL,
-                        "b", arg_ask_password);
+                        "b",
+                        arg_ask_password);
+
         if (r < 0)
                 log_error("Failed to execute operation: %s", bus_error_message(&error, r));
 
@@ -1652,16 +1735,23 @@ static int start_special(int argc, char *argv[], void *userdata) {
         sd_bus *bus = userdata;
         enum action a;
         int r;
+        char** wall = NULL;
 
         assert(argv);
 
         a = verb_to_action(argv[0]);
 
+        /* Switch to cancel shutdown, if a shutdown action was requested,
+           and the option to cancel it was set: */
+        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
+          && (arg_action == ACTION_CANCEL_SHUTDOWN) )
+                return elogind_cancel_shutdown(bus, a);
+
         r = check_inhibitors(bus, a);
         if (r < 0)
                 return r;
 
-        /* Now power off actions in chroot environments */
+        /* No power off actions in chroot environments */
         if ((a == ACTION_POWEROFF ||
              a == ACTION_REBOOT) &&
             (running_in_chroot() > 0) ) {
@@ -1669,20 +1759,44 @@ static int start_special(int argc, char *argv[], void *userdata) {
                 return 0;
         }
 
-        /* Switch to cancel shutdown, if a shutdown action was requested,
-           and the option to cancel it was set: */
-        if ((a == ACTION_POWEROFF ||
-             a == ACTION_REBOOT) &&
-            (arg_action == ACTION_CANCEL_SHUTDOWN))
-                return elogind_reboot(bus, arg_action);
+        /* Check time arguments */
+        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
+          && (argc > 1)
+          && (arg_action != ACTION_CANCEL_SHUTDOWN) ) {
+                r = parse_shutdown_time_spec(argv[1], &arg_when);
+                if (r < 0) {
+                        log_error("Failed to parse time specification: %s", argv[optind]);
+                        return r;
+                }
+        } else
+                arg_when = now(CLOCK_REALTIME) + USEC_PER_MINUTE;
 
-        /* Otherwise perform requested action */
-        if (a == ACTION_POWEROFF ||
-            a == ACTION_REBOOT ||
-            a == ACTION_SUSPEND ||
-            a == ACTION_HIBERNATE ||
-            a == ACTION_HYBRID_SLEEP)
-                return elogind_reboot(bus, a);
+        /* The optional user wall message must be set */
+        if ((argc > 1) && (arg_action == ACTION_CANCEL_SHUTDOWN) )
+                /* No time argument for shutdown cancel */
+                wall = argv + 1;
+        else if (argc > 2)
+                /* We skip the time argument */
+                wall = argv + 2;
+
+        if (wall) {
+                arg_wall = strv_copy(wall);
+                if (!arg_wall)
+                        return log_oom();
+        }
+
+        /* Perform requested action */
+        if (IN_SET(a,
+                   ACTION_POWEROFF,
+                   ACTION_REBOOT,
+                   ACTION_SUSPEND,
+                   ACTION_HIBERNATE,
+                   ACTION_HYBRID_SLEEP)) {
+                if (arg_when > 0)
+                        return elogind_schedule_shutdown(bus, a);
+                else
+                        return elogind_reboot(bus, a);
+        }
 
         return -EOPNOTSUPP;
 }
@@ -1784,13 +1898,12 @@ static int parse_argv(int argc, char *argv[]) {
                 {}
         };
 
-        char **wall = NULL;
         int c, r;
 
         assert(argc >= 0);
         assert(argv);
 
-        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:ci", options, NULL)) >= 0)
+        while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:ci", options, NULL)) >= 0) {
 
                 switch (c) {
 
@@ -1894,30 +2007,7 @@ static int parse_argv(int argc, char *argv[]) {
                 default:
                         assert_not_reached("Unhandled option");
                 }
-
-        if (argc > optind && arg_action != ACTION_CANCEL_SHUTDOWN) {
-                r = parse_shutdown_time_spec(argv[optind], &arg_when);
-                if (r < 0) {
-                        log_error("Failed to parse time specification: %s", argv[optind]);
-                        return r;
-                }
-        } else
-                arg_when = now(CLOCK_REALTIME) + USEC_PER_MINUTE;
-
-        if (argc > optind && arg_action == ACTION_CANCEL_SHUTDOWN)
-                /* No time argument for shutdown cancel */
-                wall = argv + optind;
-        else if (argc > optind + 1)
-                /* We skip the time argument */
-                wall = argv + optind + 1;
-
-        if (wall) {
-                arg_wall = strv_copy(wall);
-                if (!arg_wall)
-                        return log_oom();
         }
-
-        optind = argc;
 
         return 1;
 }
@@ -1949,14 +2039,17 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "attach",            3,        VERB_ANY, 0,            attach            },
                 { "flush-devices",     VERB_ANY, 1,        0,            flush_devices     },
                 { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
-                { "poweroff",          VERB_ANY, 1,        0,            start_special     },
-                { "reboot",            VERB_ANY, 1,        0,            start_special     },
+                { "poweroff",          VERB_ANY, VERB_ANY, 0,            start_special     },
+                { "reboot",            VERB_ANY, VERB_ANY, 0,            start_special     },
                 { "suspend",           VERB_ANY, 1,        0,            start_special     },
                 { "hibernate",         VERB_ANY, 1,        0,            start_special     },
                 { "hybrid-sleep",      VERB_ANY, 1,        0,            start_special     },
                 { "cancel-shutdown",   VERB_ANY, 1,        0,            start_special     },
                 {}
         };
+
+        if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
+                return elogind_cancel_shutdown(bus, ACTION_POWEROFF);
 
         return dispatch_verb(argc, argv, verbs, bus);
 }
@@ -1981,7 +2074,6 @@ int main(int argc, char *argv[]) {
         }
 
         sd_bus_set_allow_interactive_authorization(bus, arg_ask_password);
-
         r = loginctl_main(argc, argv, bus);
 
 finish:
