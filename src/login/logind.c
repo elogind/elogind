@@ -1355,6 +1355,7 @@ finish:
                   "STOPPING=1\n"
                   "STATUS=Shutting down...");
 
+        if (m)
                 manager_free(m);
 
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
