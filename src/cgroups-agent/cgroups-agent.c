@@ -21,8 +21,10 @@
 
 #include "sd-bus.h"
 #include "bus-util.h"
-#include "musl_missing.h"
 #include "log.h"
+
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 int main(int argc, char *argv[]) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;

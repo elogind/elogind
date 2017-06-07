@@ -297,8 +297,6 @@ noinst_LTLIBRARIES += \
 
 libbasic_la_SOURCES = \
 	src/basic/missing.h \
-	src/basic/musl_missing.h \
-	src/basic/musl_missing.c \
 	src/basic/capability-util.c \
 	src/basic/capability-util.h \
 	src/basic/conf-files.c \
@@ -412,9 +410,7 @@ libbasic_la_SOURCES = \
 	src/basic/copy.c \
 	src/basic/copy.h \
 	src/basic/alloc-util.h \
-	src/basic/alloc-util.c \
-	src/basic/parse-printf-format.c \
-	src/basic/parse-printf-format.h
+	src/basic/alloc-util.c
 
 nodist_libbasic_la_SOURCES = \
 	src/basic/errno-from-name.h \
@@ -440,16 +436,20 @@ noinst_LTLIBRARIES += \
 	libshared.la
 
 libshared_la_SOURCES = \
-	src/shared/conf-parser.c \
-	src/shared/conf-parser.h \
-	src/shared/pager.c \
-	src/shared/pager.h \
-	src/shared/spawn-polkit-agent.c \
-	src/shared/spawn-polkit-agent.h \
+	src/shared/bus-util.c \
+	src/shared/bus-util.h \
 	src/shared/clean-ipc.c \
 	src/shared/clean-ipc.h \
-	src/shared/bus-util.c \
-	src/shared/bus-util.h
+	src/shared/conf-parser.c \
+	src/shared/conf-parser.h \
+	src/shared/musl_missing.h \
+	src/shared/musl_missing.c \
+	src/shared/pager.c \
+	src/shared/pager.h \
+	src/shared/parse-printf-format.c \
+	src/shared/parse-printf-format.h \
+	src/shared/spawn-polkit-agent.c \
+	src/shared/spawn-polkit-agent.h
 
 if HAVE_ACL
 libshared_la_SOURCES += \
