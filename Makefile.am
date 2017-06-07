@@ -628,6 +628,7 @@ header-install-hook:
 	$(MKDIR_P) $(DESTDIR)/$(pkgincludedir)
 	cd $(DESTDIR)/$(includedir)/elogind && \
 		for hdr in $(notdir $(pkginclude_HEADERS)) ; do \
+		        rm -f $$hdr ; \
 			$(LN_S) systemd/$$hdr $$hdr ; \
 		done
 
