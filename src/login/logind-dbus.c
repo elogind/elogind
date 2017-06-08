@@ -2301,7 +2301,7 @@ static int property_get_reboot_to_firmware_setup(
 
         return sd_bus_message_append(reply, "b", r > 0);
 #else
-        return sd_bus_message_append(reply, "b", -EOPNOTSUPP);
+        return sd_bus_message_append(reply, "b", false);
 #endif // 0
 }
 
@@ -2381,7 +2381,7 @@ static int method_can_reboot_to_firmware_setup(
 
         return sd_bus_reply_method_return(message, "s", result);
 #else
-        return sd_bus_reply_method_return(message, "s", "na");
+        return sd_bus_reply_method_return(message, "s", "no");
 #endif // 0
 }
 
