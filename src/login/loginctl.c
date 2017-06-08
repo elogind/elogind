@@ -50,7 +50,6 @@
 #include "logind-action.h"
 #include "musl_missing.h"
 #include "sd-login.h"
-#include "stdio-util.h"
 #include "virt.h"
 
 static char **arg_property = NULL;
@@ -1403,21 +1402,9 @@ static int logind_set_wall_message(sd_bus* bus, const char* msg) {
         return 0;
 }
 
-static int elogind_cancel_shutdown(sd_bus *bus, enum action a) {
+static int elogind_cancel_shutdown(sd_bus *bus) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
-        static const char *table[_ACTION_MAX] = {
-                [ACTION_REBOOT]   = "The system reboot has been cancelled!",
-                [ACTION_POWEROFF] = "The system shutdown has been cancelled!"
-        };
-
-        r = logind_set_wall_message(bus, table[a]);
-
-        if (r < 0) {
-                log_warning_errno(r, "Failed to set wall message, ignoring: %s",
-                                  bus_error_message(&error, r));
-                sd_bus_error_free(&error);
-        }
 
         r = sd_bus_call_method(
                         bus,
@@ -1428,7 +1415,7 @@ static int elogind_cancel_shutdown(sd_bus *bus, enum action a) {
                         &error,
                         NULL, NULL);
         if (r < 0)
-                return log_warning_errno(r, "Failed to talk to logind, shutdown hasn't been cancelled: %s", bus_error_message(&error, r));
+                return log_warning_errno(r, "Failed to talk to elogind, shutdown hasn't been cancelled: %s", bus_error_message(&error, r));
 
         return 0;
 }
@@ -1436,8 +1423,6 @@ static int elogind_cancel_shutdown(sd_bus *bus, enum action a) {
 static int elogind_schedule_shutdown(sd_bus *bus, enum action a) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         const char *method  = NULL;
-        char date[FORMAT_TIMESTAMP_MAX];
-        char sched_wall[128] = { 0x0 };
         int r;
 
         if (!bus)
@@ -1459,11 +1444,7 @@ static int elogind_schedule_shutdown(sd_bus *bus, enum action a) {
                 return -EINVAL;
         }
 
-        xsprintf(sched_wall,
-                 "%s scheduled for %s, use 'loginctl -c' to cancel.",
-                 ACTION_POWEROFF == a ? "Shutdown" : "Reboot",
-                 format_timestamp(date, sizeof(date), arg_when));
-        r = logind_set_wall_message(bus, sched_wall);
+        r = logind_set_wall_message(bus, NULL);
 
         if (r < 0) {
                 log_warning_errno(r, "Failed to set wall message, ignoring: %s",
@@ -1745,7 +1726,7 @@ static int start_special(int argc, char *argv[], void *userdata) {
            and the option to cancel it was set: */
         if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
           && (arg_action == ACTION_CANCEL_SHUTDOWN) )
-                return elogind_cancel_shutdown(bus, a);
+                return elogind_cancel_shutdown(bus);
 
         r = check_inhibitors(bus, a);
         if (r < 0)
@@ -2049,7 +2030,7 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
         };
 
         if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
-                return elogind_cancel_shutdown(bus, ACTION_POWEROFF);
+                return elogind_cancel_shutdown(bus);
 
         return dispatch_verb(argc, argv, verbs, bus);
 }
