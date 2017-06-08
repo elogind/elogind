@@ -413,10 +413,10 @@ int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *pa
 
                 /* Detach from stdout/stderr. and reopen
                  * /dev/tty for them. This is important to
-                 * ensure that when systemctl is started via
+                 * ensure that when loginctl is started via
                  * popen() or a similar call that expects to
                  * read EOF we actually do generate EOF and
-                 * not delay this indefinitely by because we
+                 * not delay this indefinitely because we
                  * keep an unused copy of stdin around. */
                 fd = open("/dev/tty", O_WRONLY);
                 if (fd < 0) {

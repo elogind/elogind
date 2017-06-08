@@ -234,9 +234,7 @@ int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const ch
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);
 
-#if 0 /// UNNEEDED by elogind
 int manager_setup_wall_message_timer(Manager *m);
 bool logind_wall_tty_filter(const char *tty, void *userdata);
-#endif // 0
 
 int manager_dispatch_delayed(Manager *manager, bool timeout);

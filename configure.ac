@@ -421,6 +421,16 @@ AC_ARG_WITH([udevbindir],
 AC_SUBST([udevbindir], [$with_udevbindir])
 
 # ------------------------------------------------------------------------------
+have_utmp=yes
+AC_ARG_ENABLE([utmp], AS_HELP_STRING([--disable-utmp], [disable utmp/wtmp log handling]),
+        AS_CASE("x${enableval}",
+                [xyes], [have_utmp=yes],
+                [xno],  [have_utmp=no],
+                AC_MSG_ERROR(bad value ${enableval} for --enable-utmp)))
+AS_IF([test "x$have_utmp" = "xyes"], [AC_DEFINE(HAVE_UTMP, 1, [Define if utmp/wtmp support is enabled])])
+AM_CONDITIONAL([HAVE_UTMP], [test "x$have_utmp" = "xyes"])
+
+# ------------------------------------------------------------------------------
 have_coverage=no
 AC_ARG_ENABLE(coverage, AS_HELP_STRING([--enable-coverage], [enable test coverage]))
 if test "x$enable_coverage" = "xyes" ; then
@@ -783,6 +793,7 @@ AC_MSG_RESULT([
         man pages:               ${have_manpages}
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
+        utmp/wtmp support:       ${have_utmp}
         Link time optimization:  ${have_lto}
         extra debugging:         ${enable_debug}
         cgroup controller:       ${with_cgroupctrl}

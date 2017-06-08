@@ -152,6 +152,7 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/libelogind/sd-bus \
 	-I $(top_srcdir)/src/libelogind/sd-event \
 	-I $(top_srcdir)/src/libelogind/sd-login \
+	-I $(top_srcdir)/src/update-utmp \
 	$(OUR_CPPFLAGS)
 
 AM_CFLAGS = $(OUR_CFLAGS)
@@ -452,6 +453,12 @@ libshared_la_SOURCES = \
 	src/shared/spawn-polkit-agent.c \
 	src/shared/spawn-polkit-agent.h
 
+if HAVE_UTMP
+libshared_la_SOURCES += \
+	src/shared/utmp-wtmp.c \
+	src/update-utmp/update-utmp.c
+endif
+
 if HAVE_ACL
 libshared_la_SOURCES += \
 	src/shared/acl-util.c \
@@ -677,6 +684,7 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-session-dbus.c \
 	src/login/logind-seat-dbus.c \
 	src/login/logind-user-dbus.c \
+	src/login/logind-utmp.c \
 	src/login/logind-acl.h \
 	src/core/cgroup.h \
 	src/core/cgroup.c \

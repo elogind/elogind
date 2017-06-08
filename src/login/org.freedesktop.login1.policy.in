@@ -3,9 +3,9 @@
         "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 
 <!--
-  This file is part of systemd.
+  This file is part of elogind.
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
@@ -13,8 +13,8 @@
 
 <policyconfig>
 
-        <vendor>The systemd Project</vendor>
-        <vendor_url>http://www.freedesktop.org/wiki/Software/systemd</vendor_url>
+        <vendor>The systemd project's "logind", extracted to a standalone package</vendor>
+        <vendor_url>https://github.com/elogind/elogind</vendor_url>
 
         <action id="org.freedesktop.login1.inhibit-block-shutdown">
                 <_description>Allow applications to inhibit system shutdown</_description>

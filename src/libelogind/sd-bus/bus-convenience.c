@@ -327,7 +327,6 @@ fail:
         return sd_bus_error_set_errno(error, r);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_property_trivial(
                 sd_bus *bus,
                 const char *destination,
@@ -369,7 +368,6 @@ _public_ int sd_bus_get_property_trivial(
 fail:
         return sd_bus_error_set_errno(error, r);
 }
-#endif // 0
 
 _public_ int sd_bus_get_property_string(
                 sd_bus *bus,

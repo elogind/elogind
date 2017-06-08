@@ -70,12 +70,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/dirent-util.h" />
-		<Unit filename="../src/basic/errno-from-name.h" />
 		<Unit filename="../src/basic/errno-list.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/errno-list.h" />
-		<Unit filename="../src/basic/errno-to-name.h" />
 		<Unit filename="../src/basic/escape.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -445,6 +443,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-user.h" />
+		<Unit filename="../src/login/logind-utmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/login/logind.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -500,6 +501,10 @@
 		<Unit filename="../src/shared/spawn-polkit-agent.h" />
 		<Unit filename="../src/shared/test-tables.h" />
 		<Unit filename="../src/shared/udev-util.h" />
+		<Unit filename="../src/shared/utmp-wtmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/utmp-wtmp.h" />
 		<Unit filename="../src/systemd/_sd-common.h" />
 		<Unit filename="../src/systemd/sd-bus-protocol.h" />
 		<Unit filename="../src/systemd/sd-bus-vtable.h" />
@@ -509,6 +514,10 @@
 		<Unit filename="../src/systemd/sd-id128.h" />
 		<Unit filename="../src/systemd/sd-login.h" />
 		<Unit filename="../src/systemd/sd-messages.h" />
+		<Unit filename="../src/update-utmp/update-utmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/update-utmp/update-utmp.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />
