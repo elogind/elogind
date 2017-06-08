@@ -130,10 +130,10 @@ static inline const char *ansi_normal(void) {
 int get_ctty_devnr(pid_t pid, dev_t *d);
 int get_ctty(pid_t, dev_t *_devnr, char **r);
 
-#if 0 /// UNNEEDED by elogind
 int getttyname_malloc(int fd, char **r);
 int getttyname_harder(int fd, char **r);
 
+#if 0 /// UNNEEDED by elogind
 int ptsname_malloc(int fd, char **ret);
 int ptsname_namespace(int pty, char **ret);
 

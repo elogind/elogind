@@ -48,7 +48,10 @@
 #include "udev-util.h"
 #include "unit-name.h"
 #include "user-util.h"
-//#include "utmp-wtmp.h"
+#include "utmp-wtmp.h"
+
+/// Includes needed by elogind:
+#include "update-utmp.h"
 
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
@@ -1503,6 +1506,9 @@ static int execute_shutdown_or_sleep(
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         char *c = NULL;
         const char *p;
+#else
+        /* needed for update-utmp */
+        char** argv_utmp = NULL;
 #endif // 0
         int r;
 
@@ -1527,6 +1533,29 @@ static int execute_shutdown_or_sleep(
                         &reply,
                         "ss", unit_name, "replace-irreversibly");
 #else
+        if (IN_SET(action, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
+
+                /* As we have no systemd update-utmp daemon running, we have to
+                 * set the relevant utmp/wtmp entries ourselves.
+                 */
+
+                if (strv_extend(&argv_utmp, "elogind") < 0)
+                        return log_oom();
+
+                if (HANDLE_REBOOT == action) {
+                        if (strv_extend(&argv_utmp, "reboot") < 0)
+                                return log_oom();
+                } else {
+                        if (strv_extend(&argv_utmp, "shutdown") < 0)
+                                return log_oom();
+                }
+
+                 /* This comes from our patched update-utmp/update-utmp.c */
+                update_utmp(2, argv_utmp, m->bus);
+                strv_free(argv_utmp);
+        }
+
+        /* Now perform the requested action */
         r = shutdown_or_sleep(m, action);
 
         /* no more pending actions, whether this failed or not */
@@ -2048,11 +2077,9 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
                 }
         }
 
-#if 0 /// elogind does not support utmp-wtmp
         r = manager_setup_wall_message_timer(m);
         if (r < 0)
                 return r;
-#endif // 0
 
         if (!isempty(type)) {
                 r = update_schedule_file(m);
@@ -2074,7 +2101,6 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         cancelled = m->scheduled_shutdown_type != NULL;
         reset_scheduled_shutdown(m);
 
-#if 0 /// elogind does not support utmp-wtmp
         if (cancelled) {
                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
                 const char *tty = NULL;
@@ -2090,7 +2116,6 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                 utmp_wall("The system shutdown has been cancelled",
                           uid_to_name(uid), tty, logind_wall_tty_filter, m);
         }
-#endif // 0
 
         return sd_bus_reply_method_return(message, "b", cancelled);
 }

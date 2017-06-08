@@ -856,7 +856,6 @@ int make_null_stdio(void) {
         return make_stdio(null_fd);
 }
 
-#if 0 /// UNNEEDED by elogind
 int getttyname_malloc(int fd, char **ret) {
         size_t l = 100;
         int r;
@@ -906,7 +905,6 @@ int getttyname_harder(int fd, char **r) {
         *r = s;
         return 0;
 }
-#endif // 0
 
 int get_ctty_devnr(pid_t pid, dev_t *d) {
         int r;

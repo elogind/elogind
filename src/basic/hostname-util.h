@@ -25,9 +25,9 @@
 
 #if 0 /// UNNEEDED by elogind
 bool hostname_is_set(void);
+#endif // 0
 
 char* gethostname_malloc(void);
-#endif // 0
 bool hostname_is_valid(const char *s, bool allow_trailing_dot) _pure_;
 #if 0 /// UNNEEDED by elogind
 char* hostname_cleanup(char *s);

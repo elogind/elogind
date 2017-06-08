@@ -34,8 +34,8 @@ static inline int parse_gid(const char *s, gid_t *ret_gid) {
         return parse_uid(s, (uid_t*) ret_gid);
 }
 
-#if 0 /// UNNEEDED by elogind
 char* getlogname_malloc(void);
+#if 0 /// UNNEEDED by elogind
 char* getusername_malloc(void);
 #endif // 0
 

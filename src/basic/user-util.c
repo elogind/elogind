@@ -75,7 +75,6 @@ int parse_uid(const char *s, uid_t *ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 char* getlogname_malloc(void) {
         uid_t uid;
         struct stat st;
@@ -88,6 +87,7 @@ char* getlogname_malloc(void) {
         return uid_to_name(uid);
 }
 
+#if 0 /// UNNEEDED by elogind
 char *getusername_malloc(void) {
         const char *e;
 

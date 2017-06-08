@@ -48,6 +48,7 @@ bool hostname_is_set(void) {
 
         return true;
 }
+#endif // 0
 
 char* gethostname_malloc(void) {
         struct utsname u;
@@ -59,7 +60,6 @@ char* gethostname_malloc(void) {
 
         return strdup(u.nodename);
 }
-#endif // 0
 
 static bool hostname_valid_char(char c) {
         return
