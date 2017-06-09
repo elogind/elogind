@@ -1518,6 +1518,7 @@ static int elogind_reboot(sd_bus *bus, enum action a) {
                 sd_bus_error_free(&error);
         }
 
+        /* Now call elogind itself to request the operation */
         r = sd_bus_call_method(
                         bus,
                         "org.freedesktop.login1",
@@ -1706,7 +1707,7 @@ static int check_inhibitors(sd_bus* bus, enum action a) {
         if (c <= 0)
                 return 0;
 
-        log_error("Please retry operation after closing inhibitors and logging out other users.\nAlternatively, ignore inhibitors and users with 'systemctl %s -i'.",
+        log_error("Please retry operation after closing inhibitors and logging out other users.\nAlternatively, ignore inhibitors and users with 'loginctl -i %s'.",
                   action_table[a].verb);
 
         return -EPERM;
@@ -1805,40 +1806,40 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -o --output=STRING       Change journal output mode (short, short-monotonic,\n"
                "                           verbose, export, json, json-pretty, json-sse, cat)\n\n"
 #endif // 0
-               "  -c                       Cancel a pending shutdown\n"
-               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n"
+               "  -c                        Cancel a pending shutdown or reboot\n"
+               "  -i --ignore-inhibitors    When shutting down or sleeping, ignore inhibitors\n"
                "Session Commands:\n"
-               "  list-sessions            List sessions\n"
-               "  session-status [ID...]   Show session status\n"
-               "  show-session [ID...]     Show properties of sessions or the manager\n"
-               "  activate [ID]            Activate a session\n"
-               "  lock-session [ID...]     Screen lock one or more sessions\n"
-               "  unlock-session [ID...]   Screen unlock one or more sessions\n"
-               "  lock-sessions            Screen lock all current sessions\n"
-               "  unlock-sessions          Screen unlock all current sessions\n"
-               "  terminate-session ID...  Terminate one or more sessions\n"
-               "  kill-session ID...       Send signal to processes of a session\n\n"
+               "  list-sessions             List sessions\n"
+               "  session-status [ID...]    Show session status\n"
+               "  show-session [ID...]      Show properties of sessions or the manager\n"
+               "  activate [ID]             Activate a session\n"
+               "  lock-session [ID...]      Screen lock one or more sessions\n"
+               "  unlock-session [ID...]    Screen unlock one or more sessions\n"
+               "  lock-sessions             Screen lock all current sessions\n"
+               "  unlock-sessions           Screen unlock all current sessions\n"
+               "  terminate-session ID...   Terminate one or more sessions\n"
+               "  kill-session ID...        Send signal to processes of a session\n\n"
                "User Commands:\n"
-               "  list-users               List users\n"
-               "  user-status [USER...]    Show user status\n"
-               "  show-user [USER...]      Show properties of users or the manager\n"
-               "  enable-linger [USER...]  Enable linger state of one or more users\n"
-               "  disable-linger [USER...] Disable linger state of one or more users\n"
-               "  terminate-user USER...   Terminate all sessions of one or more users\n"
-               "  kill-user USER...        Send signal to processes of a user\n\n"
+               "  list-users                List users\n"
+               "  user-status [USER...]     Show user status\n"
+               "  show-user [USER...]       Show properties of users or the manager\n"
+               "  enable-linger [USER...]   Enable linger state of one or more users\n"
+               "  disable-linger [USER...]  Disable linger state of one or more users\n"
+               "  terminate-user USER...    Terminate all sessions of one or more users\n"
+               "  kill-user USER...         Send signal to processes of a user\n\n"
                "Seat Commands:\n"
-               "  list-seats               List seats\n"
-               "  seat-status [NAME...]    Show seat status\n"
-               "  show-seat [NAME...]      Show properties of seats or the manager\n"
-               "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
-               "  flush-devices            Flush all device associations\n"
-               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+               "  list-seats                List seats\n"
+               "  seat-status [NAME...]     Show seat status\n"
+               "  show-seat   [NAME...]     Show properties of seats or the manager\n"
+               "  attach NAME DEVICE...     Attach one or more devices to a seat\n"
+               "  flush-devices             Flush all device associations\n"
+               "  terminate-seat NAME...    Terminate all sessions on one or more seats\n"
                "System Commands:\n"
-               "  poweroff                 Turn off the machine\n"
-               "  reboot                   Reboot the machine\n"
-               "  suspend                  Suspend the machine to memory\n"
-               "  hibernate                Suspend the machine to disk\n"
-               "  hybrid-sleep             Suspend the machine to memory and disk\n"
+               "  poweroff [TIME] [WALL...] Turn off the machine\n"
+               "  reboot   [TIME] [WALL...] Reboot the machine\n"
+               "  suspend                   Suspend the machine to memory\n"
+               "  hibernate                 Suspend the machine to disk\n"
+               "  hybrid-sleep              Suspend the machine to memory and disk\n"
                , program_invocation_short_name);
 
         return 0;
