@@ -304,3 +304,18 @@ patches/
 *.remote
 *.bak
 *.layout
+
+# directories not needed by elogind
+/sysusers.d
+/hwdb
+/catalog
+/xorg
+/network
+/system-preset
+/tmpfiles.d
+/units
+/rules
+/test
+/.github
+/sysctl.d
+/coccinelle
