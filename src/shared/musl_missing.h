@@ -85,6 +85,18 @@ typedef int (*__compar_fn_t) (const void *, const void *);
 typedef __compar_fn_t comparison_fn_t;
 #endif
 
+/* Make musl utmp/wtmp stubs visible if needed. */
+#ifdef HAVE_UTMP
+# include <paths.h>
+# include <utmp.h>
+# include <utmpx.h>
+# if defined(_PATH_UTMP) && !defined(_PATH_UTMPX)
+#   define _PATH_UTMPX _PATH_UTMP
+# endif
+# if defined(_PATH_WTMP) && !defined(_PATH_WTMPX)
+#   define _PATH_WTMPX _PATH_WTMP
+# endif
+#endif // HAVE_UTMP
 
 #endif // !defined(__GLIBC__)
 
