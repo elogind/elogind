@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=15
+LIBELOGIND_CURRENT=16
 LIBELOGIND_REVISION=0
-LIBELOGIND_AGE=15
+LIBELOGIND_AGE=16
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -83,6 +83,7 @@ CLEAN_LOCAL_HOOKS =
 pkginclude_HEADERS =
 noinst_LTLIBRARIES =
 lib_LTLIBRARIES =
+rootlibexec_LTLIBRARIES =
 noinst_DATA =
 pkgconfiglib_DATA =
 polkitpolicy_in_files =
@@ -95,6 +96,7 @@ dist_dbuspolicy_DATA =
 dist_dbussystemservice_DATA =
 check_PROGRAMS =
 check_DATA =
+dist_rootlibexec_DATA =
 tests=
 manual_tests =
 if ENABLE_TESTS
@@ -152,6 +154,7 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/libelogind/sd-bus \
 	-I $(top_srcdir)/src/libelogind/sd-event \
 	-I $(top_srcdir)/src/libelogind/sd-login \
+	-I $(top_srcdir)/src/libelogind/sd-id128 \
 	-I $(top_srcdir)/src/update-utmp \
 	$(OUR_CPPFLAGS)
 
@@ -471,9 +474,47 @@ libshared_la_CFLAGS = \
 
 libshared_la_LIBADD = \
 	libelogind-internal.la \
+	libbasic.la \
 	$(UDEV_LIBS) \
 	$(ACL_LIBS)
 
+rootlibexec_LTLIBRARIES += \
+	libelogind-shared.la
+
+libelogind_shared_la_SOURCES = \
+	$(libbasic_la_SOURCES) \
+	$(libshared_la_SOURCES) \
+	$(libelogind_internal_la_SOURCES) \
+	$(libelogind_journal_internal_la_SOURCES) \
+	$(libudev_internal_la_SOURCES)
+
+libelogind_shared_la_CFLAGS = \
+	$(AM_CFLAGS) \
+	$(libbasic_la_CFLAGS) \
+	$(libshared_la_CFLAGS) \
+	$(libelogind_internal_la_CFLAGS) \
+	$(libelogind_journal_internal_la_CFLAGS) \
+	$(libudev_internal_la_CFLAGS) \
+	$(ACL_CFLAGS) \
+	$(LIBIDN_CFLAGS) \
+	$(SECCOMP_CFLAGS) \
+	-fvisibility=default
+
+# We can't use libshared_la_LIBADD here because it would
+# pull in libelogind*-internal.la
+libelogind_shared_la_LIBADD = \
+	$(libbasic_la_LIBADD) \
+	$(libelogind_internal_la_LIBADD) \
+	$(UDEV_LIBS) \
+	$(ACL_LIBS) \
+	$(LIBIDN_LIBS) \
+	$(SECCOMP_LIBS)
+
+libelogind_shared_la_LDFLAGS = \
+	$(AM_LDFLAGS) \
+	-release $(PACKAGE_VERSION)
+
+ # -----------------------------------------------------------------------------
 gperf_txt_sources = \
 	src/basic/errno-list.txt
 
@@ -529,7 +570,7 @@ elogind_cgroups_agent_SOURCES = \
        src/cgroups-agent/cgroups-agent.c
 
 elogind_cgroups_agent_LDADD = \
-       libshared.la
+       libelogind-shared.la
 
 # ------------------------------------------------------------------------------
 libelogind_internal_la_SOURCES = \
@@ -582,11 +623,12 @@ libelogind_internal_la_SOURCES = \
 	src/libelogind/sd-bus/bus-protocol.h \
 	src/libelogind/sd-event/sd-event.c \
 	src/libelogind/sd-id128/sd-id128.c \
+	src/libelogind/sd-id128/id128-util.h \
+	src/libelogind/sd-id128/id128-util.c \
 	src/libelogind/sd-daemon/sd-daemon.c \
 	src/libelogind/sd-login/sd-login.c
 
 libelogind_internal_la_LIBADD = \
-	libbasic.la \
 	-lresolv
 
 noinst_LTLIBRARIES += \
@@ -597,14 +639,7 @@ EXTRA_DIST += \
 	src/libelogind/sd-bus/DIFFERENCES \
 	src/libelogind/sd-bus/GVARIANT-SERIALIZATION
 
-libelogind_la_SOURCES = \
-	$(libelogind_internal_la_SOURCES)
-
-nodist_libelogind_la_SOURCES = \
-	$(nodist_libelogind_internal_la_SOURCES)
-
-libelogind_la_CFLAGS = \
-	$(libelogind_internal_la_CFLAGS)
+libelogind_la_SOURCES =
 
 libelogind_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
@@ -612,7 +647,8 @@ libelogind_la_LDFLAGS = \
 	-Wl,--version-script=$(top_srcdir)/src/libelogind/libelogind.sym
 
 libelogind_la_LIBADD = \
-	$(libelogind_internal_la_LIBADD)
+	libelogind-internal.la \
+	libbasic.la
 
 libelogind-install-hook:
 	libname=libelogind.so && $(move-to-rootlibdir)
@@ -692,7 +728,7 @@ libelogind_core_la_SOURCES = \
 	src/core/mount-setup.c
 
 libelogind_core_la_LIBADD = \
-	libshared.la
+	libelogind-shared.la
 
 if HAVE_ACL
 libelogind_core_la_SOURCES += \
@@ -711,7 +747,7 @@ loginctl_SOURCES = \
 	src/login/sysfs-show.c
 
 loginctl_LDADD = \
-	libshared.la
+	libelogind-shared.la
 
 rootbin_PROGRAMS += \
 	loginctl
@@ -727,7 +763,7 @@ elogind_inhibit_SOURCES = \
 	src/login/inhibit.c
 
 elogind_inhibit_LDADD = \
-	libshared.la
+	libelogind-shared.la
 
 rootbin_PROGRAMS += \
 	elogind-inhibit
@@ -736,19 +772,19 @@ test_login_SOURCES = \
 	src/libelogind/sd-login/test-login.c
 
 test_login_LDADD = \
-	libshared.la
+	libelogind-shared.la
 
 test_login_shared_SOURCES = \
 	src/login/test-login-shared.c
 
 test_login_shared_LDADD = \
-	libshared.la
+	libelogind-shared.la
 
 test_inhibit_SOURCES = \
 	src/login/test-inhibit.c
 
 test_inhibit_LDADD = \
-	libshared.la
+	libelogind-shared.la
 
 test_login_tables_SOURCES = \
 	src/login/test-login-tables.c
@@ -782,7 +818,7 @@ pam_elogind_la_LDFLAGS = \
 	-Wl,--version-script=$(top_srcdir)/src/login/pam_elogind.sym
 
 pam_elogind_la_LIBADD = \
-	libshared.la \
+	libelogind-shared.la \
 	$(PAM_LIBS)
 
 pamlib_LTLIBRARIES = \
@@ -1065,7 +1101,7 @@ install-tree: all
 .PHONY: valgrind-tests
 valgrind-tests: $(TESTS)
 	$(AM_V_GEN)for f in $(filter-out %.pl, $^); do \
-		if file $$f | grep -q shell; then \
+		if $(LIBTOOL) --mode=execute file $$f | grep -q shell; then \
 		echo -e "$${x}Skipping non-binary $$f"; else \
 		echo -e "$${x}Running $$f"; \
 		libtool --mode=execute valgrind -q --leak-check=full --max-stackframe=5242880 --error-exitcode=55 $(builddir)/$$f ; fi; \

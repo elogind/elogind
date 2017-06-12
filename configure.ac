@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [230],
+        [231],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -267,6 +267,7 @@ AC_CHECK_SIZEOF(uid_t)
 AC_CHECK_SIZEOF(gid_t)
 AC_CHECK_SIZEOF(time_t)
 AC_CHECK_SIZEOF(dev_t)
+AC_CHECK_SIZEOF(ino_t)
 AC_CHECK_SIZEOF(rlim_t,,[
        #include <sys/time.h>
        #include <sys/resource.h>
@@ -372,6 +373,8 @@ AC_CHECK_TYPES([char16_t, char32_t, key_serial_t],
 ]])
 
 AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
+                IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
+                IFLA_VRF_TABLE,
                 IFLA_MACVLAN_FLAGS,
                 IFLA_IPVLAN_MODE,
                 IFLA_VTI_REMOTE,

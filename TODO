@@ -33,10 +33,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* make sure bash completion uses journalctl --fields to get fields list
-
-* use phyical_memory() to allow MemoryLimit= configuration based on available system memory
-
 * ProtectKernelLogs= (drops CAP_SYSLOG, add seccomp for syslog() syscall, and DeviceAllow to /dev/kmsg) in service files
 
 * ProtectClock= (drops CAP_SYS_TIMES, adds seecomp filters for settimeofday, adjtimex), sets DeviceAllow o /dev/rtc
@@ -47,13 +43,33 @@ Features:
 
 * ProtectKeyRing= to take keyring calls away
 
+* PrivateUsers= which maps the all user ids except root and the one specified
+  in User= to nobody
+
+* Add AllocateUser= for allowing dynamic user ids per-service
+
+* Add DataDirectory=, CacheDirectory= and LogDirectory= to match
+  RuntimeDirectory=, and create it as necessary when starting a service, owned by the right user.
+
+* Add BindDirectory= for allowing arbitrary, private bind mounts for services
+
+* Beef up RootDirectory= to use namespacing/bind mounts as soon as fs
+  namespaces are enabled by the service
+
+* Add RootImage= for mounting a disk image or file as root directory
+
 * RestrictNamespaces= or so in services (taking away the ability to create namespaces, with setns, unshare, clone)
 
-* IAID field must move from [Link] to [DHCP] section in .network files
+* nspawn: make /proc/sys/net writable?
 
 * make sure the ratelimit object can deal with USEC_INFINITY as way to turn off things
 
 * journalctl: make sure -f ends when the container indicated by -M terminates
+
+* expose the "privileged" flag of ExecCommand on the bus, and open it up to
+  transient units
+
+* allow attaching additional journald log fields to cgroups
 
 * rework fopen_temporary() to make use of open_tmpfile_linkable() (problem: the
   kernel doesn't support linkat() that replaces existing files, currently)
@@ -62,8 +78,6 @@ Features:
 
 * transient units: don't bother with actually setting unit properties, we
   reload the unit file anyway
-
-* make sure resolved can be restarted without losing pushed-in dns config
 
 * journald: sigbus API via a signal-handler safe function that people may call
   from the SIGBUS handler
@@ -74,8 +88,7 @@ Features:
 
 * optionally, also require WATCHDOG=1 notifications during service start-up and shutdown
 
-* resolved: maybe, after all, implement local listening for DNS packets on port
-  127.0.0.53:53.
+* resolved: when routing queries, make sure only look for the *longest* suffix...
 
 * delay activation of logind until somebody logs in, or when /dev/tty0 pulls it
   in or lingering is on (so that containers don't bother with it until PAM is used). also exit-on-idle
@@ -110,14 +123,12 @@ Features:
 
 * man: document that unless you use StandardError=null the shell >/dev/stderr won't work in shell scripts in services
 
-* install: include generator dirs in unit file search paths
-
 * fstab-generator: default to tmpfs-as-root if only usr= is specified on the kernel cmdline
 
 * docs: bring http://www.freedesktop.org/wiki/Software/systemd/MyServiceCantGetRealtime up to date
 
 * mounting and unmounting mount points manually with different source
-  devices will result in collected collected on all devices used.
+  devices will result in collected on all devices used.
   http://lists.freedesktop.org/archives/systemd-devel/2015-April/030225.html
 
 * add a job mode that will fail if a transaction would mean stopping
@@ -192,9 +203,7 @@ Features:
 
 * systemctl: if some operation fails, show log output?
 
-* systemctl edit:
-- allow creation of units from scratch
-- use equvalent of cat() to insert existing config as a comment, prepended with #.
+* systemctl edit: use equvalent of cat() to insert existing config as a comment, prepended with #.
   Upon editor exit, lines with one # are removed, lines with two # are left with one #, etc.
 
 * exponential backoff in timesyncd when we cannot reach a server
@@ -222,8 +231,8 @@ Features:
   - resolved should optionally register additional per-interface LLMNR
     names, so that for the container case we can establish the same name
     (maybe "host") for referencing the server, everywhere.
-  - enable DNSSEC by default
   - allow clients to request DNSSEC for a single lookup even if DNSSEC is off (?)
+  - hook up resolved with machined-based address resolution
 
 * refcounting in sd-resolve is borked
 
@@ -547,7 +556,7 @@ Features:
   - systemctl enable: fail if target to alias into does not exist? maybe show how many units are enabled afterwards?
   - systemctl: "Journal has been rotated since unit was started." message is misleading
   - better error message if you run systemctl without systemd running
-  - systemctl status output should should include list of triggering units and their status
+  - systemctl status output should include list of triggering units and their status
 
 * unit install:
   - "systemctl mask" should find all names by which a unit is accessible
@@ -558,7 +567,6 @@ Features:
     o CLOCK_REALTIME makes jumps (TFD_TIMER_CANCEL_ON_SET)
     o DST changes
   - Support 2012-02~4 as syntax for specifying the fourth to last day of the month.
-  - calendarspec: support value ranges with ".." notation. Example: 2013-4..8-1
   - Modulate timer frequency based on battery state
 
 * add libsystemd-password or so to query passwords during boot using the password agent logic
