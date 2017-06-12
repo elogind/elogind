@@ -343,6 +343,8 @@ libbasic_la_SOURCES = \
 	src/basic/escape.h \
 	src/basic/path-util.c \
 	src/basic/path-util.h \
+	src/basic/parse-printf-format.c \
+	src/basic/parse-printf-format.h \
 	src/basic/time-util.c \
 	src/basic/time-util.h \
 	src/basic/locale-util.c \
@@ -448,8 +450,6 @@ libshared_la_SOURCES = \
 	src/shared/musl_missing.c \
 	src/shared/pager.c \
 	src/shared/pager.h \
-	src/shared/parse-printf-format.c \
-	src/shared/parse-printf-format.h \
 	src/shared/spawn-polkit-agent.c \
 	src/shared/spawn-polkit-agent.h
 
