@@ -2,5 +2,5 @@ POTFILES
 Makefile.in.in
 .intltool-merge-cache
 Makefile
-elogind.pot
+systemd.pot
 /*.gmo
