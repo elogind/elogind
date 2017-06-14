@@ -458,7 +458,7 @@ int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
                         m->bus,
                         "org.freedesktop.systemd1",
                         "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd.Manager",
+                        "org.freedesktop.systemd1.Manager",
                         "StartUnit",
                         &error,
                         NULL,

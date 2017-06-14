@@ -22,7 +22,6 @@
 
 /// Additional includes needed by elogind
 #include "musl_missing.h"
-
 static void test_session_id_valid(void) {
         assert_se(session_id_valid("c1"));
         assert_se(session_id_valid("1234"));
