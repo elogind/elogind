@@ -113,7 +113,10 @@ int sd_event_get_exit_code(sd_event *e, int *code);
 int sd_event_set_watchdog(sd_event *e, int b);
 #if 0 /// UNNEEDED by elogind
 int sd_event_get_watchdog(sd_event *e);
+#endif // 0
+int sd_event_get_iteration(sd_event *e, uint64_t *ret);
 
+#if 0 /// UNNEEDED by elogind
 sd_event_source* sd_event_source_ref(sd_event_source *s);
 #endif // 0
 sd_event_source* sd_event_source_unref(sd_event_source *s);
