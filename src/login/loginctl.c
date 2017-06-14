@@ -1388,7 +1388,7 @@ static int help(int argc, char *argv[], void *userdata) {
 #else
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
-               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n"
+               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
 #endif // 0
                "Session Commands:\n"
                "  list-sessions            List sessions\n"
@@ -1415,7 +1415,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  show-seat [NAME...]      Show properties of seats or the manager\n"
                "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
                "  flush-devices            Flush all device associations\n"
-               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
 #if 1 /// elogind adds some system commands to loginctl
                "System Commands:\n"
                "  poweroff [TIME] [WALL...] Turn off the machine\n"
