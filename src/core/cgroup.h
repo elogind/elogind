@@ -155,7 +155,6 @@ int unit_watch_cgroup(Unit *u);
 int unit_attach_pids_to_cgroup(Unit *u);
 #else
 # include "logind.h"
-# define MANAGER_IS_SYSTEM(m) (1)
 #endif // 0
 
 int manager_setup_cgroup(Manager *m);
@@ -179,8 +178,11 @@ int unit_reset_cpu_usage(Unit *u);
 bool unit_cgroup_delegate(Unit *u);
 
 int unit_notify_cgroup_empty(Unit *u);
+#endif // 0
+
 int manager_notify_cgroup_empty(Manager *m, const char *group);
 
+#if 0 /// UNNEEDED by elogind
 void unit_invalidate_cgroup(Unit *u, CGroupMask m);
 
 void manager_invalidate_startup_units(Manager *m);

@@ -28,6 +28,7 @@
 #include "cgroup-util.h"
 //#include "dev-setup.h"
 //#include "efivars.h"
+#include "fs-util.h"
 #include "label.h"
 //#include "log.h"
 #include "macro.h"
@@ -38,11 +39,13 @@
 #include "path-util.h"
 //#include "set.h"
 //#include "smack-util.h"
-#include "string-util.h"
 //#include "strv.h"
 #include "user-util.h"
 //#include "util.h"
 #include "virt.h"
+
+/// Additional includes needed by elogind
+#include "string-util.h"
 
 typedef enum MountMode {
         MNT_NONE  =        0,
@@ -119,8 +122,6 @@ static const MountPoint mount_table[] = {
         { "efivarfs",    "/sys/firmware/efi/efivars", "efivarfs",   NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           is_efi_boot,   MNT_NONE                   },
 #endif
-        { "kdbusfs",    "/sys/fs/kdbus",             "kdbusfs",    NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          is_kdbus_wanted,       MNT_IN_CONTAINER },
 #endif // 0
 };
 
@@ -422,10 +423,17 @@ int mount_setup(bool loaded_policy) {
          * really needs to stay for good, otherwise software that
          * copied sd-daemon.c into their sources will misdetect
          * systemd. */
-        mkdir_label("/run/systemd", 0755);
-        mkdir_label("/run/systemd/system", 0755);
-        mkdir_label("/run/systemd/inaccessible", 0000);
 #endif // 0
+        (void) mkdir_label("/run/systemd", 0755);
+        (void) mkdir_label("/run/systemd/system", 0755);
+        (void) mkdir_label("/run/systemd/inaccessible", 0000);
+        /* Set up inaccessible items */
+        (void) mknod("/run/systemd/inaccessible/reg", S_IFREG | 0000, 0);
+        (void) mkdir_label("/run/systemd/inaccessible/dir", 0000);
+        (void) mknod("/run/systemd/inaccessible/chr", S_IFCHR | 0000, makedev(0, 0));
+        (void) mknod("/run/systemd/inaccessible/blk", S_IFBLK | 0000, makedev(0, 0));
+        (void) mkfifo("/run/systemd/inaccessible/fifo", 0000);
+        (void) mknod("/run/systemd/inaccessible/sock", S_IFSOCK | 0000, 0);
 
         return 0;
 }
