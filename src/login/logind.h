@@ -29,7 +29,6 @@
 #include "sd-bus.h"
 #include "sd-event.h"
 
-#include "cgroup-util.h"
 #include "hashmap.h"
 #include "list.h"
 #include "set.h"
@@ -40,7 +39,14 @@ typedef struct Manager Manager;
 #include "logind-button.h"
 #include "logind-device.h"
 #include "logind-inhibit.h"
-#include "logind-sleep.h"
+
+/// Additional includes needed by elogind
+#include "cgroup-util.h"
+
+#if 1 /// elogind has to ident itself
+#define MANAGER_IS_SYSTEM(m) ((m)->is_system)
+#define MANAGER_IS_USER(m) (!((m)->is_system))
+#endif // 1
 
 struct Manager {
         sd_event *event;
@@ -78,8 +84,13 @@ struct Manager {
          * file system */
         int pin_cgroupfs_fd;
 
+        /* fd for handling cgroup socket if elogind is its own cgroups manager */
+        int cgroups_agent_fd;
+        sd_event_source *cgroups_agent_event_source;
+
         /* Flags */
         bool test_run:1;
+        bool is_system:1; /* true if elogind is its own cgroups manager */
 
         /* Data specific to the cgroup subsystem */
         CGroupMask cgroup_supported;
