@@ -91,6 +91,16 @@ dual_timestamp* dual_timestamp_get(dual_timestamp *ts) {
         return ts;
 }
 
+triple_timestamp* triple_timestamp_get(triple_timestamp *ts) {
+        assert(ts);
+
+        ts->realtime = now(CLOCK_REALTIME);
+        ts->monotonic = now(CLOCK_MONOTONIC);
+        ts->boottime = clock_boottime_supported() ? now(CLOCK_BOOTTIME) : USEC_INFINITY;
+
+        return ts;
+}
+
 dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u) {
         int64_t delta;
         assert(ts);
@@ -109,6 +119,24 @@ dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u) {
 }
 
 #if 0 /// UNNEEDED by elogind
+triple_timestamp* triple_timestamp_from_realtime(triple_timestamp *ts, usec_t u) {
+        int64_t delta;
+
+        assert(ts);
+
+        if (u == USEC_INFINITY || u <= 0) {
+                ts->realtime = ts->monotonic = ts->boottime = u;
+                return ts;
+        }
+
+        ts->realtime = u;
+        delta = (int64_t) now(CLOCK_REALTIME) - (int64_t) u;
+        ts->monotonic = usec_sub(now(CLOCK_MONOTONIC), delta);
+        ts->boottime = clock_boottime_supported() ? usec_sub(now(CLOCK_BOOTTIME), delta) : USEC_INFINITY;
+
+        return ts;
+}
+
 dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u) {
         int64_t delta;
         assert(ts);
@@ -141,6 +169,26 @@ dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, us
         return ts;
 }
 #endif // 0
+
+usec_t triple_timestamp_by_clock(triple_timestamp *ts, clockid_t clock) {
+
+        switch (clock) {
+
+        case CLOCK_REALTIME:
+        case CLOCK_REALTIME_ALARM:
+                return ts->realtime;
+
+        case CLOCK_MONOTONIC:
+                return ts->monotonic;
+
+        case CLOCK_BOOTTIME:
+        case CLOCK_BOOTTIME_ALARM:
+                return ts->boottime;
+
+        default:
+                return USEC_INFINITY;
+        }
+}
 
 usec_t timespec_load(const struct timespec *ts) {
         assert(ts);
@@ -1125,7 +1173,33 @@ clockid_t clock_boottime_or_monotonic(void) {
         else
                 return CLOCK_MONOTONIC;
 }
+#endif // 0
 
+bool clock_supported(clockid_t clock) {
+        struct timespec ts;
+
+        switch (clock) {
+
+        case CLOCK_MONOTONIC:
+        case CLOCK_REALTIME:
+                return true;
+
+        case CLOCK_BOOTTIME:
+                return clock_boottime_supported();
+
+        case CLOCK_BOOTTIME_ALARM:
+                if (!clock_boottime_supported())
+                        return false;
+
+                /* fall through, after checking the cached value for CLOCK_BOOTTIME. */
+
+        default:
+                /* For everything else, check properly */
+                return clock_gettime(clock, &ts) >= 0;
+        }
+}
+
+#if 0 /// UNNEEDED by elogind
 int get_timezone(char **tz) {
         _cleanup_free_ char *t = NULL;
         const char *e;

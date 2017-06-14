@@ -376,7 +376,8 @@ int cg_migrate(
 
         log_debug_elogind("Migrating \"%s\"/\"%s\" to \"%s\"/\"%s\" (%s)",
                           cfrom, pfrom, cto, pto,
-                          ignore_self ? "ignoring self" : "watching self");
+                          (flags & CGROUP_IGNORE_SELF)
+                          ? "ignoring self" : "watching self");
         do {
                 _cleanup_fclose_ FILE *f = NULL;
                 pid_t pid = 0;
@@ -1925,7 +1926,6 @@ int cg_set_attribute(const char *controller, const char *path, const char *attri
         return write_string_file(p, value, 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -1937,6 +1937,7 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
         return read_one_line_file(p, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path) {
         CGroupController c;
         int r, unified;

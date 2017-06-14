@@ -68,6 +68,7 @@ int vt_disallocate(const char *name);
 
 char *resolve_dev_console(char **active);
 #endif // 0
+int get_kernel_consoles(char ***consoles);
 bool tty_is_vc(const char *tty);
 #if 0 /// UNNEEDED by elogind
 bool tty_is_vc_resolve(const char *tty);
@@ -93,6 +94,7 @@ void columns_lines_cache_reset(int _unused_ signum);
 #endif // 0
 
 bool on_tty(void);
+bool terminal_is_dumb(void);
 bool colors_enabled(void);
 
 static inline const char *ansi_underline(void) {

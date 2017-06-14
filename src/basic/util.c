@@ -36,6 +36,7 @@
 
 #include "alloc-util.h"
 #include "build.h"
+#include "cgroup-util.h"
 //#include "def.h"
 #include "dirent-util.h"
 #include "fd-util.h"
@@ -64,6 +65,7 @@ assert_cc(EAGAIN == EWOULDBLOCK);
 
 int saved_argc = 0;
 char **saved_argv = NULL;
+static int saved_in_initrd = -1;
 
 size_t page_size(void) {
         static thread_local size_t pgsz = 0;
@@ -413,10 +415,10 @@ int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *pa
 
                 /* Detach from stdout/stderr. and reopen
                  * /dev/tty for them. This is important to
-                 * ensure that when loginctl is started via
+                 * ensure that when systemctl is started via
                  * popen() or a similar call that expects to
                  * read EOF we actually do generate EOF and
-                 * not delay this indefinitely because we
+                 * not delay this indefinitely by because we
                  * keep an unused copy of stdin around. */
                 fd = open("/dev/tty", O_WRONLY);
                 if (fd < 0) {
@@ -458,11 +460,10 @@ int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *pa
 }
 
 bool in_initrd(void) {
-        static int saved = -1;
         struct statfs s;
 
-        if (saved >= 0)
-                return saved;
+        if (saved_in_initrd >= 0)
+                return saved_in_initrd;
 
         /* We make two checks here:
          *
@@ -474,11 +475,15 @@ bool in_initrd(void) {
          * emptying when transititioning to the main systemd.
          */
 
-        saved = access("/etc/initrd-release", F_OK) >= 0 &&
-                statfs("/", &s) >= 0 &&
-                is_temporary_fs(&s);
+        saved_in_initrd = access("/etc/initrd-release", F_OK) >= 0 &&
+                          statfs("/", &s) >= 0 &&
+                          is_temporary_fs(&s);
 
-        return saved;
+        return saved_in_initrd;
+}
+
+void in_initrd_force(bool value) {
+        saved_in_initrd = value;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -581,48 +586,7 @@ int on_ac_power(void) {
         return found_online || !found_offline;
 }
 
-bool id128_is_valid(const char *s) {
-        size_t i, l;
-
-        l = strlen(s);
-        if (l == 32) {
-
-                /* Simple formatted 128bit hex string */
-
-                for (i = 0; i < l; i++) {
-                        char c = s[i];
-
-                        if (!(c >= '0' && c <= '9') &&
-                            !(c >= 'a' && c <= 'z') &&
-                            !(c >= 'A' && c <= 'Z'))
-                                return false;
-                }
-
-        } else if (l == 36) {
-
-                /* Formatted UUID */
-
-                for (i = 0; i < l; i++) {
-                        char c = s[i];
-
-                        if ((i == 8 || i == 13 || i == 18 || i == 23)) {
-                                if (c != '-')
-                                        return false;
-                        } else {
-                                if (!(c >= '0' && c <= '9') &&
-                                    !(c >= 'a' && c <= 'z') &&
-                                    !(c >= 'A' && c <= 'Z'))
-                                        return false;
-                        }
-                }
-
-        } else
-                return false;
-
-        return true;
-}
 #endif // 0
-
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;
         const char *p;
@@ -773,15 +737,119 @@ int namespace_enter(int pidns_fd, int mntns_fd, int netns_fd, int userns_fd, int
 }
 
 uint64_t physical_memory(void) {
-        long mem;
+        _cleanup_free_ char *root = NULL, *value = NULL;
+        uint64_t mem, lim;
+        size_t ps;
+        long sc;
 
-        /* We return this as uint64_t in case we are running as 32bit
-         * process on a 64bit kernel with huge amounts of memory */
+        /* We return this as uint64_t in case we are running as 32bit process on a 64bit kernel with huge amounts of
+         * memory.
+         *
+         * In order to support containers nicely that have a configured memory limit we'll take the minimum of the
+         * physically reported amount of memory and the limit configured for the root cgroup, if there is any. */
 
-        mem = sysconf(_SC_PHYS_PAGES);
-        assert(mem > 0);
+        sc = sysconf(_SC_PHYS_PAGES);
+        assert(sc > 0);
 
-        return (uint64_t) mem * (uint64_t) page_size();
+        ps = page_size();
+        mem = (uint64_t) sc * (uint64_t) ps;
+
+        if (cg_get_root_path(&root) < 0)
+                return mem;
+
+        if (cg_get_attribute("memory", root, "memory.limit_in_bytes", &value))
+                return mem;
+
+        if (safe_atou64(value, &lim) < 0)
+                return mem;
+
+        /* Make sure the limit is a multiple of our own page size */
+        lim /= ps;
+        lim *= ps;
+
+        return MIN(mem, lim);
+}
+
+uint64_t physical_memory_scale(uint64_t v, uint64_t max) {
+        uint64_t p, m, ps, r;
+
+        assert(max > 0);
+
+        /* Returns the physical memory size, multiplied by v divided by max. Returns UINT64_MAX on overflow. On success
+         * the result is a multiple of the page size (rounds down). */
+
+        ps = page_size();
+        assert(ps > 0);
+
+        p = physical_memory() / ps;
+        assert(p > 0);
+
+        m = p * v;
+        if (m / p != v)
+                return UINT64_MAX;
+
+        m /= max;
+
+        r = m * ps;
+        if (r / ps != m)
+                return UINT64_MAX;
+
+        return r;
+}
+
+uint64_t system_tasks_max(void) {
+
+#if SIZEOF_PID_T == 4
+#define TASKS_MAX ((uint64_t) (INT32_MAX-1))
+#elif SIZEOF_PID_T == 2
+#define TASKS_MAX ((uint64_t) (INT16_MAX-1))
+#else
+#error "Unknown pid_t size"
+#endif
+
+        _cleanup_free_ char *value = NULL, *root = NULL;
+        uint64_t a = TASKS_MAX, b = TASKS_MAX;
+
+        /* Determine the maximum number of tasks that may run on this system. We check three sources to determine this
+         * limit:
+         *
+         * a) the maximum value for the pid_t type
+         * b) the cgroups pids_max attribute for the system
+         * c) the kernel's configure maximum PID value
+         *
+         * And then pick the smallest of the three */
+
+        if (read_one_line_file("/proc/sys/kernel/pid_max", &value) >= 0)
+                (void) safe_atou64(value, &a);
+
+        if (cg_get_root_path(&root) >= 0) {
+                value = mfree(value);
+
+                if (cg_get_attribute("pids", root, "pids.max", &value) >= 0)
+                        (void) safe_atou64(value, &b);
+        }
+
+        return MIN3(TASKS_MAX,
+                    a <= 0 ? TASKS_MAX : a,
+                    b <= 0 ? TASKS_MAX : b);
+}
+
+uint64_t system_tasks_max_scale(uint64_t v, uint64_t max) {
+        uint64_t t, m;
+
+        assert(max > 0);
+
+        /* Multiply the system's task value by the fraction v/max. Hence, if max==100 this calculates percentages
+         * relative to the system's maximum number of tasks. Returns UINT64_MAX on overflow. */
+
+        t = system_tasks_max();
+        assert(t > 0);
+
+        m = t * v;
+        if (m / t != v) /* overflow? */
+                return UINT64_MAX;
+
+        return m / max;
 }
 
 #if 0 /// UNNEEDED by elogind

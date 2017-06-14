@@ -38,6 +38,7 @@
 #include <uchar.h>
 #include <unistd.h>
 
+/// Additional includes needed by elogind
 #include "musl_missing.h"
 
 #ifdef HAVE_AUDIT
@@ -990,11 +991,13 @@ struct btrfs_ioctl_quota_ctl_args {
 #ifndef INPUT_PROP_ACCELEROMETER
 #define INPUT_PROP_ACCELEROMETER  0x06
 #endif
+#endif // 0
 
 #ifndef HAVE_KEY_SERIAL_T
 typedef int32_t key_serial_t;
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #ifndef KEYCTL_READ
 #define KEYCTL_READ 11
 #endif

@@ -501,6 +501,34 @@ int get_files_in_directory(const char *path, char ***list) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int var_tmp(char **ret) {
+        const char *tmp_dir = NULL;
+        const char *env_tmp_dir = NULL;
+        char *c = NULL;
+        int r;
+
+        assert(ret);
+
+        env_tmp_dir = getenv("TMPDIR");
+        if (env_tmp_dir != NULL) {
+                r = is_dir(env_tmp_dir, true);
+                if (r < 0 && r != -ENOENT)
+                        return r;
+                if (r > 0)
+                        tmp_dir = env_tmp_dir;
+        }
+
+        if (!tmp_dir)
+                tmp_dir = "/var/tmp";
+
+        c = strdup(tmp_dir);
+        if (!c)
+                return -ENOMEM;
+        *ret = c;
+
+        return 0;
+}
+
 int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
         char path[strlen("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
         int r;
