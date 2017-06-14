@@ -31,7 +31,6 @@ org.freedesktop.systemd1.policy
 /journal
 /socket-proxy
 /test
-/sleep
 /cgtop
 /locale
 /cryptsetup

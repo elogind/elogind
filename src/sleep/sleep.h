@@ -1,25 +1,26 @@
 #pragma once
+#ifndef ELOGIND_SRC_SLEEP_SLEEP_H_INCLUDED
+#define ELOGIND_SRC_SLEEP_SLEEP_H_INCLUDED
 
 /***
-  This file is part of systemd.
+  This file is part of elogind.
 
-  Copyright 2013 Zbigniew Jędrzejewski-Szmek
+  Copyright 2017 Sven Eden
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
 
-  systemd is distributed in the hope that it will be useful, but
+  elogind is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "logind.h"
+int do_sleep(const char *verb, char **modes, char **states);
 
-int can_sleep(Manager *m, const char *verb);
-int do_sleep(const char *arg_verb, char **modes, char **states);
+#endif // ELOGIND_SRC_SLEEP_SLEEP_H_INCLUDED

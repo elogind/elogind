@@ -26,13 +26,13 @@
 #include "formats-util.h"
 #include "logind-action.h"
 #include "process-util.h"
-//#include "sleep-config.h"
+#include "sleep-config.h"
 //#include "special.h"
 #include "string-table.h"
 #include "terminal-util.h"
 #include "user-util.h"
 
-// Additional includes needed by elogind
+/// Additional includes needed by elogind
 #include "fd-util.h"
 #include "fileio.h"
 #include "sd-messages.h"
@@ -173,49 +173,6 @@ int manager_handle_action(
         }
 
         return 1;
-}
-
-static int run_helper(const char *helper) {
-        int pid = fork();
-        if (pid < 0) {
-                return log_error_errno(errno, "Failed to fork: %m");
-        }
-
-        if (pid == 0) {
-                /* Child */
-
-                close_all_fds(NULL, 0);
-
-                execlp(helper, helper, NULL);
-                log_error_errno(errno, "Failed to execute %s: %m", helper);
-                _exit(EXIT_FAILURE);
-        }
-
-        return wait_for_terminate_and_warn(helper, pid, true);
-}
-
-int shutdown_or_sleep(Manager *m, HandleAction action) {
-
-        assert(m);
-
-        switch (action) {
-        case HANDLE_POWEROFF:
-                return run_helper(HALT);
-        case HANDLE_REBOOT:
-                return run_helper(REBOOT);
-        case HANDLE_HALT:
-                return run_helper(HALT);
-        case HANDLE_KEXEC:
-                return run_helper(KEXEC);
-        case HANDLE_SUSPEND:
-                return do_sleep("suspend", m->suspend_mode, m->suspend_state);
-        case HANDLE_HIBERNATE:
-                return do_sleep("hibernate", m->hibernate_mode, m->hibernate_state);
-        case HANDLE_HYBRID_SLEEP:
-                return do_sleep("hybrid-sleep", m->hybrid_sleep_mode, m->hybrid_sleep_state);
-        default:
-                return -EINVAL;
-        }
 }
 
 static const char* const handle_action_table[_HANDLE_ACTION_MAX] = {
