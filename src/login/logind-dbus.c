@@ -41,7 +41,7 @@
 #include "path-util.h"
 #include "process-util.h"
 #include "selinux-util.h"
-//#include "sleep-config.h"
+#include "sleep-config.h"
 //#include "special.h"
 #include "strv.h"
 #include "terminal-util.h"
@@ -50,7 +50,7 @@
 #include "user-util.h"
 #include "utmp-wtmp.h"
 
-/// Includes needed by elogind:
+/// Additional includes needed by elogind
 #include "update-utmp.h"
 
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret) {
@@ -918,7 +918,9 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
         if (r < 0)
                 return r;
 
+#if 1 /// elogind must queue this session
         session_add_to_gc_queue(session);
+#endif // 1
 
         return sd_bus_reply_method_return(message, NULL);
 }
