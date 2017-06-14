@@ -383,6 +383,18 @@
 		<Unit filename="../src/libelogind/sd-login/test-login.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/eloginctl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/eloginctl.h" />
+		<Unit filename="../src/login/elogind-action.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/elogind-action.h" />
+		<Unit filename="../src/login/elogind.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/elogind.h" />
 		<Unit filename="../src/login/inhibit.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -414,6 +426,7 @@
 		<Unit filename="../src/login/logind-gperf.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/logind-gperf.gperf" />
 		<Unit filename="../src/login/logind-inhibit.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -436,10 +449,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-session.h" />
-		<Unit filename="../src/login/logind-sleep.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/login/logind-sleep.h" />
 		<Unit filename="../src/login/logind-user-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -453,7 +462,7 @@
 		<Unit filename="../src/login/logind.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/login/logind.conf" />
+		<Unit filename="../src/login/logind.conf.in" />
 		<Unit filename="../src/login/logind.h" />
 		<Unit filename="../src/login/pam_elogind.c">
 			<Option compilerVar="CC" />
@@ -495,6 +504,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/pager.h" />
+		<Unit filename="../src/shared/sleep-config.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/sleep-config.h" />
 		<Unit filename="../src/shared/spawn-polkit-agent.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -505,6 +518,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/utmp-wtmp.h" />
+		<Unit filename="../src/sleep/sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/sleep/sleep.h" />
 		<Unit filename="../src/systemd/_sd-common.h" />
 		<Unit filename="../src/systemd/sd-bus-protocol.h" />
 		<Unit filename="../src/systemd/sd-bus-vtable.h" />

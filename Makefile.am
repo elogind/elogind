@@ -156,6 +156,7 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/libelogind/sd-login \
 	-I $(top_srcdir)/src/libelogind/sd-id128 \
 	-I $(top_srcdir)/src/update-utmp \
+	-I $(top_srcdir)/src/sleep \
 	$(OUR_CPPFLAGS)
 
 AM_CFLAGS = $(OUR_CFLAGS)
@@ -453,14 +454,10 @@ libshared_la_SOURCES = \
 	src/shared/musl_missing.c \
 	src/shared/pager.c \
 	src/shared/pager.h \
+	src/shared/sleep-config.c \
+	src/shared/sleep-config.h \
 	src/shared/spawn-polkit-agent.c \
 	src/shared/spawn-polkit-agent.h
-
-if HAVE_UTMP
-libshared_la_SOURCES += \
-	src/shared/utmp-wtmp.c \
-	src/update-utmp/update-utmp.c
-endif
 
 if HAVE_ACL
 libshared_la_SOURCES += \
@@ -697,6 +694,14 @@ elogind_LDADD = \
 	libelogind-core.la
 
 libelogind_core_la_SOURCES = \
+	src/core/cgroup.h \
+	src/core/cgroup.c \
+	src/core/mount-setup.h \
+	src/core/mount-setup.c \
+        src/login/elogind.c \
+        src/login/elogind.h \
+        src/login/elogind-action.c \
+        src/login/elogind-action.h \
 	src/login/logind-core.c \
 	src/login/logind-device.c \
 	src/login/logind-device.h \
@@ -710,8 +715,6 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-session.h \
 	src/login/logind-session-device.c \
 	src/login/logind-session-device.h \
-	src/login/logind-sleep.c \
-	src/login/logind-sleep.h \
 	src/login/logind-user.c \
 	src/login/logind-user.h \
 	src/login/logind-inhibit.c \
@@ -722,10 +725,14 @@ libelogind_core_la_SOURCES = \
 	src/login/logind-user-dbus.c \
 	src/login/logind-utmp.c \
 	src/login/logind-acl.h \
-	src/core/cgroup.h \
-	src/core/cgroup.c \
-	src/core/mount-setup.h \
-	src/core/mount-setup.c
+	src/sleep/sleep.c \
+	src/sleep/sleep.h
+
+if HAVE_UTMP
+libelogind_core_la_SOURCES += \
+	src/shared/utmp-wtmp.c \
+	src/update-utmp/update-utmp.c
+endif
 
 libelogind_core_la_LIBADD = \
 	libelogind-shared.la
@@ -742,6 +749,8 @@ pkglibexec_PROGRAMS += \
 	elogind
 
 loginctl_SOURCES = \
+	src/login/eloginctl.c \
+	src/login/eloginctl.h \
 	src/login/loginctl.c \
 	src/login/sysfs-show.h \
 	src/login/sysfs-show.c
