@@ -165,6 +165,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/parse-printf-format.h" />
+		<Unit filename="../src/basic/parse-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/basic/parse-util.h" />
 		<Unit filename="../src/basic/path-util.c">
 			<Option compilerVar="CC" />
@@ -481,9 +484,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/musl_missing.h" />
-		<Unit filename="../src/shared/parse-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/shared/pager.c">
 			<Option compilerVar="CC" />
 		</Unit>
