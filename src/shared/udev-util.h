@@ -19,7 +19,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#if 0 /// elogind has to use system udev
+#include "udev.h"
+#else
 #include <libudev.h>
+#endif // 0
 #include "util.h"
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(struct udev*, udev_unref);

@@ -425,15 +425,15 @@ int config_parse_many(const char *conf_file,
 #define DEFINE_PARSER(type, vartype, conv_func)                         \
         int config_parse_##type(                                        \
                         const char *unit,                               \
-                                const char *filename,                   \
-                                unsigned line,                          \
-                                const char *section,                    \
-                                unsigned section_line,                  \
-                                const char *lvalue,                     \
-                                int ltype,                              \
-                                const char *rvalue,                     \
-                                void *data,                             \
-                                void *userdata) {                       \
+                        const char *filename,                           \
+                        unsigned line,                                  \
+                        const char *section,                            \
+                        unsigned section_line,                          \
+                        const char *lvalue,                             \
+                        int ltype,                                      \
+                        const char *rvalue,                             \
+                        void *data,                                     \
+                        void *userdata) {                               \
                                                                         \
                 vartype *i = data;                                      \
                 int r;                                                  \

@@ -1044,8 +1044,8 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
         }
 
         case SD_BUS_TYPE_ARRAY: {
-               _cleanup_strv_free_ char **l = NULL;
-               char ***p = userdata;
+                _cleanup_strv_free_ char **l = NULL;
+                char ***p = userdata;
 
                 r = bus_message_read_strv_extend(m, &l);
                 if (r < 0)
@@ -1518,11 +1518,11 @@ int bus_append_unit_property_assignment(sd_bus_message *m, const char *assignmen
                 if (isempty(eq) || streq(eq, "infinity"))
                         bytes = (uint64_t) -1;
                 else {
-                r = parse_size(eq, 1024, &bytes);
-                if (r < 0) {
-                        log_error("Failed to parse bytes specification %s", assignment);
-                        return -EINVAL;
-                }
+                        r = parse_size(eq, 1024, &bytes);
+                        if (r < 0) {
+                                log_error("Failed to parse bytes specification %s", assignment);
+                                return -EINVAL;
+                        }
                 }
 
                 r = sd_bus_message_append(m, "v", "t", bytes);

@@ -81,13 +81,13 @@ int bus_verify_polkit_async(sd_bus_message *call, int capability, const char *ac
 void bus_verify_polkit_async_registry_free(Hashmap *registry);
 
 #if 0 /// UNNEEDED by elogind
-int bus_open_system_systemd(sd_bus **_bus);
-int bus_open_user_systemd(sd_bus **_bus);
+int bus_connect_system_systemd(sd_bus **_bus);
+int bus_connect_user_systemd(sd_bus **_bus);
 #endif // 0
 
 int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #if 0 /// UNNEEDED by elogind
-bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
+int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #endif // 0
 
 int bus_print_property(const char *name, sd_bus_message *property, bool all);

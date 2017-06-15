@@ -359,7 +359,6 @@ int clean_ipc(uid_t uid) {
         if (r < 0)
                 ret = r;
 
-
 #if 0 /// elogind does not use mq_open anywhere
         r = clean_posix_mq(uid);
         if (r < 0)
