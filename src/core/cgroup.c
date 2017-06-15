@@ -346,7 +346,7 @@ void cgroup_context_apply(CGroupContext *c, CGroupMask mask, const char *path, M
 
         if (mask & CGROUP_MASK_BLKIO) {
                 char buf[MAX(DECIMAL_STR_MAX(uint64_t)+1,
-                              DECIMAL_STR_MAX(dev_t)*2+2+DECIMAL_STR_MAX(uint64_t)+1)];
+                             DECIMAL_STR_MAX(dev_t)*2+2+DECIMAL_STR_MAX(uint64_t)+1)];
                 CGroupBlockIODeviceWeight *w;
                 CGroupBlockIODeviceBandwidth *b;
 
@@ -1336,7 +1336,7 @@ int manager_setup_cgroup(Manager *m) {
                          * generate events when control groups with
                          * children run empty. */
 
-                        r = cg_install_release_agent(SYSTEMD_CGROUP_CONTROLLER, ELOGIND_CGROUP_AGENT_PATH);
+                        r = cg_install_release_agent(SYSTEMD_CGROUP_CONTROLLER, SYSTEMD_CGROUP_AGENT_PATH);
                         if (r < 0)
                                 log_warning_errno(r, "Failed to install release agent, ignoring: %m");
                         else if (r > 0)
@@ -1367,12 +1367,15 @@ int manager_setup_cgroup(Manager *m) {
 
                 /* also, move all other userspace processes remaining
                  * in the root cgroup into that scope. */
+#if 1 /// elogind needs an extra check, as it might be its own controller
                 if (!streq(m->cgroup_root, scope_path)) {
-                        r = cg_migrate(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, SYSTEMD_CGROUP_CONTROLLER, scope_path, false);
-                        if (r < 0)
-                                log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
+#endif // 1
+                r = cg_migrate(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, SYSTEMD_CGROUP_CONTROLLER, scope_path, false);
+                if (r < 0)
+                        log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
+#if 1 /// end of elogind extra check
                 }
-
+#endif // 0
                 /* 5. And pin it, so that it cannot be unmounted */
                 safe_close(m->pin_cgroupfs_fd);
                 m->pin_cgroupfs_fd = open(path, O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOCTTY|O_NONBLOCK);

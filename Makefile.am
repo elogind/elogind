@@ -128,7 +128,7 @@ AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
 	-DSYSTEMD_CGROUP_CONTROLLER=\"$(CGROUP_CONTROLLER)\" \
-	-DELOGIND_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
+	-DSYSTEMD_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
