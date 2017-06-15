@@ -25,10 +25,8 @@
 #include "sd-bus.h"
 #include "sd-event.h"
 
-#include "cgroup-util.h"
 #include "hashmap.h"
 #include "list.h"
-#include "path-lookup.h"
 #include "set.h"
 
 typedef struct Manager Manager;
@@ -37,7 +35,11 @@ typedef struct Manager Manager;
 #include "logind-button.h"
 #include "logind-device.h"
 #include "logind-inhibit.h"
+
+/// Additional includes needed by elogind
+#include "cgroup-util.h"
 #include "logind-sleep.h"
+#include "path-lookup.h"
 
 struct Manager {
         sd_event *event;
@@ -63,6 +65,7 @@ struct Manager {
         sd_event_source *udev_vcsa_event_source;
         sd_event_source *udev_button_event_source;
 
+#if 1 /// elogind has some extra values
         /* Make sure the user cannot accidentally unmount our cgroup
          * file system */
         int pin_cgroupfs_fd;
@@ -74,7 +77,7 @@ struct Manager {
         /* Data specific to the cgroup subsystem */
         CGroupMask cgroup_supported;
         char *cgroup_root;
-
+#endif // 1
         int console_active_fd;
 
 #if 0 /// elogind does not support autospawning of vts
@@ -116,7 +119,6 @@ struct Manager {
            delay is over */
         HandleAction pending_action;
 #endif // 0
-
         sd_event_source *inhibit_timeout_source;
 
         char *scheduled_shutdown_type;
@@ -151,10 +153,11 @@ struct Manager {
 
         bool remove_ipc;
 
+#if 1 /// elogind can do suspend/sleep
         char **suspend_state,      **suspend_mode;
         char **hibernate_state,    **hibernate_mode;
         char **hybrid_sleep_state, **hybrid_sleep_mode;
-
+#endif // 1
         Hashmap *polkit_registry;
 
         usec_t holdoff_timeout_usec;
@@ -208,7 +211,7 @@ int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_
 
 #if 0 /// UNNEEDED by elogind
 int manager_start_slice(Manager *manager, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);
-int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
+int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);
 int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);

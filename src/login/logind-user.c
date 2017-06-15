@@ -124,6 +124,7 @@ User *user_free(User *u) {
         u->slice_job = mfree(u->slice_job);
         u->service_job = mfree(u->service_job);
 #endif // 0
+
         u->service = mfree(u->service);
         u->slice = mfree(u->slice);
         u->runtime_path = mfree(u->runtime_path);
@@ -390,7 +391,7 @@ static int user_mkdir_runtime_path(User *u) {
         return 0;
 
 fail:
-                /* Try to clean up, but ignore errors */
+        /* Try to clean up, but ignore errors */
         (void) rmdir(u->runtime_path);
         return r;
 }
@@ -446,11 +447,11 @@ static int user_start_service(User *u) {
                         u->service,
                         &error,
                         &job);
-                if (r < 0) {
+        if (r < 0) {
                 /* we don't fail due to this, let's try to continue */
                 log_error_errno(r, "Failed to start user service, ignoring: %s", bus_error_message(&error, r));
-                } else {
-                        u->service_job = job;
+        } else {
+                u->service_job = job;
         }
 #else
         assert(u);

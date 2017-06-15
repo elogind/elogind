@@ -1523,15 +1523,15 @@ static int execute_shutdown_or_sleep(
                 log_info("Running in dry run, suppressing action.");
                 reset_scheduled_shutdown(m);
         } else {
-        r = sd_bus_call_method(
-                        m->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "StartUnit",
-                        error,
-                        &reply,
-                        "ss", unit_name, "replace-irreversibly");
+                r = sd_bus_call_method(
+                                m->bus,
+                                "org.freedesktop.systemd1",
+                                "/org/freedesktop/systemd1",
+                                "org.freedesktop.systemd1.Manager",
+                                "StartUnit",
+                                error,
+                                &reply,
+                                "ss", unit_name, "replace-irreversibly");
 #else
         if (IN_SET(action, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
 

@@ -39,7 +39,7 @@
 #include "strv.h"
 #include "udev-util.h"
 
-/// additional includes elogind needs
+/// Additional includes needed by elogind
 #include "cgroup.h"       // From src/core/
 #include "label.h"
 #include "mount-setup.h"  // From src/core
@@ -252,12 +252,12 @@ static void manager_free(Manager *m) {
 
         safe_close(m->console_active_fd);
 
-                udev_monitor_unref(m->udev_seat_monitor);
-                udev_monitor_unref(m->udev_device_monitor);
-                udev_monitor_unref(m->udev_vcsa_monitor);
-                udev_monitor_unref(m->udev_button_monitor);
+        udev_monitor_unref(m->udev_seat_monitor);
+        udev_monitor_unref(m->udev_device_monitor);
+        udev_monitor_unref(m->udev_vcsa_monitor);
+        udev_monitor_unref(m->udev_button_monitor);
 
-                udev_unref(m->udev);
+        udev_unref(m->udev);
 
         if (m->unlink_nologin)
                 (void) unlink("/run/nologin");
@@ -1356,8 +1356,7 @@ finish:
                   "STOPPING=1\n"
                   "STATUS=Shutting down...");
 
-        if (m)
-                manager_free(m);
+        manager_free(m);
 
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

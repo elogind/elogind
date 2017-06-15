@@ -46,7 +46,7 @@
 #include "util.h"
 #include "verbs.h"
 
-/// Additional includes for elogind
+/// Additional includes needed by elogind
 #include "logind-action.h"
 #include "musl_missing.h"
 #include "sd-login.h"
@@ -66,7 +66,7 @@ static usec_t arg_when = 0;
 static char **arg_wall = NULL;
 static bool arg_ask_password = true;
 static bool arg_ignore_inhibitors = false;
-#if 0
+#if 0 /// UNNEEDED by elogind
 static unsigned arg_lines = 10;
 static OutputMode arg_output = OUTPUT_SHORT;
 #endif // 0
@@ -559,7 +559,7 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
 
         if (i.scope) {
                 printf("\t    Unit: %s\n", i.scope);
-#if 0
+#if 0 /// UNNEEDED by elogind
                 show_unit_cgroup(bus, "org.freedesktop.systemd1.Scope", i.scope, i.leader);
                 if (arg_transport == BUS_TRANSPORT_LOCAL) {
 
@@ -643,7 +643,7 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
 
         if (i.slice) {
                 printf("\t    Unit: %s\n", i.slice);
-#if 0
+#if 0 /// UNNEEDED by elogind
                 show_unit_cgroup(bus, "org.freedesktop.systemd1.Slice", i.slice, 0);
                 show_journal_by_unit(
                                 stdout,
@@ -1787,7 +1787,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -l --full                Do not ellipsize output\n"
                "     --kill-who=WHO        Who to send signal to\n"
                "  -s --signal=SIGNAL       Which signal to send\n"
-#if 0
+#if 0 /// UNNEEDED by elogind
                "  -n --lines=INTEGER       Number of journal entries to show\n"
                "  -o --output=STRING       Change journal output mode (short, short-monotonic,\n"
                "                           verbose, export, json, json-pretty, json-sse, cat)\n\n"
@@ -1858,7 +1858,7 @@ static int parse_argv(int argc, char *argv[]) {
                 { "host",            required_argument, NULL, 'H'                 },
                 { "machine",         required_argument, NULL, 'M'                 },
                 { "no-ask-password", no_argument,       NULL, ARG_NO_ASK_PASSWORD },
-#if 0
+#if 0 /// UNNEEDED by elogind
                 { "lines",           required_argument, NULL, 'n'                 },
                 { "output",          required_argument, NULL, 'o'                 },
 #endif // 0
@@ -1901,7 +1901,7 @@ static int parse_argv(int argc, char *argv[]) {
                 case 'l':
                         arg_full = true;
                         break;
-#if 0
+#if 0 /// UNNEEDED by elogind
                 case 'n':
                         if (safe_atou(optarg, &arg_lines) < 0) {
                                 log_error("Failed to parse lines '%s'", optarg);

@@ -43,8 +43,9 @@ int manager_handle_action(
                 bool ignore_inhibited,
                 bool is_edge);
 
+#if 1 /// elogind can do shutdown and sleep itself
 int shutdown_or_sleep(Manager *m, HandleAction action);
-
+#endif // 1
 const char* handle_action_to_string(HandleAction h) _const_;
 HandleAction handle_action_from_string(const char *s) _pure_;
 

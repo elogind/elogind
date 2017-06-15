@@ -32,12 +32,11 @@
 #include "terminal-util.h"
 #include "user-util.h"
 
-// Additional includes needed by elogind
+/// Additional includes needed by elogind
 #include "fd-util.h"
 #include "fileio.h"
 #include "sd-messages.h"
 #include "strv.h"
-
 
 int manager_handle_action(
                 Manager *m,
