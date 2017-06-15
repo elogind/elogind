@@ -940,7 +940,7 @@ char *bus_match_to_string(struct bus_match_component *components, unsigned n_com
         char *buffer = NULL;
         size_t size = 0;
         unsigned i;
-		int r;
+        int r;
 
         if (n_components <= 0)
                 return strdup("");
