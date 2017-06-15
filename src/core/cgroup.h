@@ -22,8 +22,10 @@
 #include <stdbool.h>
 
 //#include "list.h"
-#include "logind.h"
 //#include "time-util.h"
+
+/// Additional includes needed by elogind
+#include "logind.h"
 
 #if 0 /// UNNEEDED by elogind
 typedef struct CGroupContext CGroupContext;

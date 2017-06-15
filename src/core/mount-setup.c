@@ -38,11 +38,13 @@
 #include "path-util.h"
 //#include "set.h"
 //#include "smack-util.h"
-#include "string-util.h"
 //#include "strv.h"
 #include "user-util.h"
 //#include "util.h"
 #include "virt.h"
+
+/// Additional includes needed by elogind
+#include "string-util.h"
 
 typedef enum MountMode {
         MNT_NONE  =        0,
