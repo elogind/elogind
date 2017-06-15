@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "sd-bus.h"
+
 #include "bus-util.h"
 #include "log.h"
 
@@ -35,12 +36,14 @@ int main(int argc, char *argv[]) {
                 return EXIT_FAILURE;
         }
 
+#if 1 /// elogind explicitly sets program_invocation_name when needed
         elogind_set_program_name(argv[0]);
+#endif // 1
         log_set_target(LOG_TARGET_AUTO);
         log_parse_environment();
         log_open();
 
-#if 0
+#if 0 /// elogind does not attach to systemd
         /* We send this event to the private D-Bus socket and then the
          * system instance will forward this to the system bus. We do
          * this to avoid an activation loop when we start dbus when we
@@ -54,9 +57,8 @@ int main(int argc, char *argv[]) {
            system bus.  */
         r = sd_bus_open_system(&bus);
 #endif // 0
-
         if (r < 0) {
-#if 0
+#if 0 /// elogind does not attach to systemd
                 /* If we couldn't connect we assume this was triggered
                  * while systemd got restarted/transitioned from
                  * initrd to the system, so let's ignore this */
@@ -75,7 +77,7 @@ int main(int argc, char *argv[]) {
                                "Released",
                                "s", argv[1]);
         if (r < 0) {
-#if 0
+#if 0 /// elogind does not attach to systemd
                 log_debug_errno(r, "Failed to send signal message on private connection: %m");
 #else
                 log_debug_errno(r, "Failed to send signal message: %m");
