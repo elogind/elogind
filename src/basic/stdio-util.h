@@ -23,7 +23,7 @@
 #include <printf.h>
 #else
 #include "parse-printf-format.h"
-#endif
+#endif // __GLIBC__
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/types.h>

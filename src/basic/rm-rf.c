@@ -128,7 +128,7 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                                 continue;
                         }
 
-#if 0
+#if 0 /// BTRFS is not supported by elogind
                         if ((flags & REMOVE_SUBVOLUME) && st.st_ino == 256) {
 
                                 /* This could be a subvolume, try to remove it */
@@ -190,7 +190,7 @@ int rm_rf(const char *path, RemoveFlags flags) {
                 return -EPERM;
         }
 
-#if 0
+#if 0 /// BTRFS is not supported by elogind
         if ((flags & (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) == (REMOVE_SUBVOLUME|REMOVE_ROOT|REMOVE_PHYSICAL)) {
                 /* Try to remove as subvolume first */
                 r = btrfs_subvol_remove(path, BTRFS_REMOVE_RECURSIVE|BTRFS_REMOVE_QUOTA);

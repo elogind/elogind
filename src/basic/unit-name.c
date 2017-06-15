@@ -761,7 +761,7 @@ int slice_build_parent_slice(const char *slice, char **ret) {
         else {
                 r = free_and_strdup(&s, "-.slice");
                 if (r < 0) {
-                free(s);
+                        free(s);
                         return r;
                 }
         }

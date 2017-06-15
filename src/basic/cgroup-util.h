@@ -133,6 +133,7 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 #endif // 0
+
 int cg_install_release_agent(const char *controller, const char *agent);
 int cg_uninstall_release_agent(const char *controller);
 
@@ -150,6 +151,7 @@ int cg_path_get_machine_name(const char *path, char **machine);
 int cg_path_get_slice(const char *path, char **slice);
 int cg_path_get_user_slice(const char *path, char **slice);
 #endif // 0
+
 int cg_shift_path(const char *cgroup, const char *cached_root, const char **shifted);
 int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
@@ -164,10 +166,12 @@ int cg_pid_get_user_slice(pid_t pid, char **slice);
 
 int cg_path_decode_unit(const char *cgroup, char **unit);
 #endif // 0
+
 char *cg_escape(const char *p);
 char *cg_unescape(const char *p) _pure_;
 
 bool cg_controller_is_valid(const char *p);
+
 #if 0 /// UNNEEDED by elogind
 int cg_slice_to_path(const char *unit, char **ret);
 
@@ -180,10 +184,13 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
 int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
 int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p);
 #endif // 0
+
 int cg_mask_supported(CGroupMask *ret);
+
 #if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set *controllers);
 #endif // 0
+
 int cg_unified(void);
 #if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void);

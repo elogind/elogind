@@ -54,6 +54,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
 
         assert(fdf >= 0);
         assert(fdt >= 0);
+
 #if 0 /// UNNEEDED by elogind
         /* Try btrfs reflinks first. */
         if (try_reflink &&
@@ -66,6 +67,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
                         return 0; /* we copied the whole thing, hence hit EOF, return 0 */
         }
 #endif // 0
+
         for (;;) {
                 size_t m = COPY_BUFFER_SIZE;
                 ssize_t n;
@@ -98,7 +100,7 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
 
                 /* The try splice, unless we already tried */
                 if (try_splice) {
-                        n  = splice(fdf, NULL, fdt, NULL, m, 0);
+                        n = splice(fdf, NULL, fdt, NULL, m, 0);
                         if (n < 0) {
                                 if (errno != EINVAL && errno != ENOSYS)
                                         return -errno;

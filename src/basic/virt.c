@@ -180,10 +180,10 @@ static int detect_vm_dmi(void) {
                 r = read_one_line_file(dmi_vendors[i], &s);
                 if (r < 0) {
                         if (r == -ENOENT)
-                        continue;
+                                continue;
 
                         return r;
-                        }
+                }
 
                 for (j = 0; j < ELEMENTSOF(dmi_vendor_table); j++)
                         if (startswith(s, dmi_vendor_table[j].vendor))
@@ -204,18 +204,18 @@ static int detect_vm_xen(void) {
                 return VIRTUALIZATION_NONE;
 
         i = domcap;
-                while ((cap = strsep(&i, ",")))
-                        if (streq(cap, "control_d"))
-                                break;
+        while ((cap = strsep(&i, ",")))
+                if (streq(cap, "control_d"))
+                        break;
 
         return cap ? VIRTUALIZATION_NONE : VIRTUALIZATION_XEN;
-                }
+}
 
 static int detect_vm_hypervisor(void) {
-                _cleanup_free_ char *hvtype = NULL;
+        _cleanup_free_ char *hvtype = NULL;
         int r;
 
-                r = read_one_line_file("/sys/hypervisor/type", &hvtype);
+        r = read_one_line_file("/sys/hypervisor/type", &hvtype);
         if (r == -ENOENT)
                 return VIRTUALIZATION_NONE;
         if (r < 0)
@@ -260,7 +260,7 @@ static int detect_vm_zvm(void) {
 #else
         return VIRTUALIZATION_NONE;
 #endif
-        }
+}
 
 /* Returns a short identifier for the various VM implementations */
 int detect_vm(void) {
@@ -318,7 +318,7 @@ int detect_vm(void) {
         if (r < 0)
                 return r;
         if (r != VIRTUALIZATION_NONE)
-                        goto finish;
+                goto finish;
 
         r = detect_vm_zvm();
         if (r < 0)

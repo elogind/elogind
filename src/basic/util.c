@@ -415,7 +415,7 @@ int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *pa
                  * ensure that when loginctl is started via
                  * popen() or a similar call that expects to
                  * read EOF we actually do generate EOF and
-                 * not delay this indefinitely because we
+                 * not delay this indefinitely by because we
                  * keep an unused copy of stdin around. */
                 fd = open("/dev/tty", O_WRONLY);
                 if (fd < 0) {

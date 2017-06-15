@@ -412,7 +412,7 @@ int get_process_environ(pid_t pid, char **env) {
                 if (!outcome)
                         return -ENOMEM;
         } else
-        outcome[sz] = '\0';
+                outcome[sz] = '\0';
 
         *env = outcome;
         outcome = NULL;

@@ -100,8 +100,8 @@ int path_make_absolute_cwd(const char *p, char **ret) {
         else {
                 _cleanup_free_ char *cwd = NULL;
 
-        cwd = get_current_dir_name();
-        if (!cwd)
+                cwd = get_current_dir_name();
+                if (!cwd)
                         return negative_errno();
 
                 c = strjoin(cwd, "/", p, NULL);
@@ -477,10 +477,10 @@ int find_binary(const char *name, char **ret) {
                 return 0;
         }
 
-                /**
-                 * Plain getenv, not secure_getenv, because we want
-                 * to actually allow the user to pick the binary.
-                 */
+        /**
+         * Plain getenv, not secure_getenv, because we want
+         * to actually allow the user to pick the binary.
+         */
         p = getenv("PATH");
         if (!p)
                 p = DEFAULT_PATH;
@@ -497,7 +497,7 @@ int find_binary(const char *name, char **ret) {
                         break;
 
                 if (!path_is_absolute(element))
-                                continue;
+                        continue;
 
                 j = strjoin(element, "/", name, NULL);
                 if (!j)

@@ -319,7 +319,7 @@ char **strv_split_newlines(const char *s) {
                 return l;
 
         if (isempty(l[n - 1]))
-                l[n-1] = mfree(l[n-1]);
+                l[n - 1] = mfree(l[n - 1]);
 
         return l;
 }

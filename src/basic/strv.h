@@ -90,6 +90,7 @@ char **strv_split_newlines(const char *s);
 
 int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
 #endif // 0
+
 char *strv_join(char **l, const char *separator);
 #if 0 /// UNNEEDED by elogind
 char *strv_join_quoted(char **l);
@@ -102,6 +103,7 @@ int strv_make_nulstr(char **l, char **p, size_t *n);
 
 bool strv_overlap(char **a, char **b) _pure_;
 #endif // 0
+
 #define STRV_FOREACH(s, l)                      \
         for ((s) = (l); (s) && *(s); (s)++)
 

@@ -880,13 +880,13 @@ int get_proc_field(const char *filename, const char *pattern, const char *termin
 
                 do {
                         t = strstr(t, pattern);
-        if (!t)
-                return -ENOENT;
+                        if (!t)
+                                return -ENOENT;
 
                         /* Check that pattern occurs in beginning of line. */
                         pattern_ok = (t == status || t[-1] == '\n');
 
-        t += strlen(pattern);
+                        t += strlen(pattern);
 
                 } while (!pattern_ok);
 

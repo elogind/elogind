@@ -37,8 +37,9 @@
 #include <uchar.h>
 #include <unistd.h>
 
+#if 1 /// elogind is musl-libc compatible
 #include "musl_missing.h"
-
+#endif // 1
 #ifdef HAVE_AUDIT
 #include <libaudit.h>
 #endif
@@ -514,7 +515,6 @@ struct btrfs_ioctl_quota_ctl_args {
 #endif
 
 #endif // 0
-
 #ifndef CGROUP_SUPER_MAGIC
 #define CGROUP_SUPER_MAGIC 0x27e0eb
 #endif
@@ -1041,9 +1041,7 @@ static inline pid_t raw_getpid(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-
 #if !HAVE_DECL_RENAMEAT2
-
 
 #ifndef __NR_renameat2
 #  if defined __x86_64__

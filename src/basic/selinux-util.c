@@ -99,7 +99,6 @@ int mac_selinux_init(void) {
         before_timestamp = now(CLOCK_MONOTONIC);
 
         label_hnd = selabel_open(SELABEL_CTX_FILE, NULL, 0);
-
         if (!label_hnd) {
                 log_enforcing("Failed to initialize SELinux context: %m");
                 r = security_getenforce() == 1 ? -errno : 0;
@@ -351,16 +350,16 @@ int mac_selinux_create_file_prepare(const char *path, mode_t mode) {
         }
 
         if (r < 0) {
-        /* No context specified by the policy? Proceed without setting it. */
+                /* No context specified by the policy? Proceed without setting it. */
                 if (errno == ENOENT)
-                return 0;
+                        return 0;
 
                 log_enforcing("Failed to determine SELinux security context for %s: %m", path);
         } else {
                 if (setfscreatecon_raw(filecon) >= 0)
                         return 0; /* Success! */
 
-                        log_enforcing("Failed to set SELinux security context %s for %s: %m", filecon, path);
+                log_enforcing("Failed to set SELinux security context %s for %s: %m", filecon, path);
         }
 
         if (security_getenforce() > 0)
@@ -480,7 +479,7 @@ int mac_selinux_bind(int fd, const struct sockaddr *addr, socklen_t addrlen) {
         r = bind(fd, addr, addrlen) < 0 ? -errno : 0;
 
         if (context_changed)
-        setfscreatecon(NULL);
+                setfscreatecon(NULL);
 
         return r;
 
