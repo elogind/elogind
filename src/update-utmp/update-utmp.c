@@ -43,7 +43,6 @@
 #include "time-util.h"
 #include "update-utmp.h"
 
-
 typedef struct Context {
         sd_bus *bus;
 #ifdef HAVE_AUDIT
@@ -270,7 +269,6 @@ void update_utmp(int argc, char* argv[], sd_bus *bus) {
         if (c.audit_fd < 0 && errno != EAFNOSUPPORT && errno != EPROTONOSUPPORT)
                 log_error_errno(errno, "Failed to connect to audit log: %m");
 #endif
-
 #if 0 /// UNNEEDED by elogind
         r = bus_connect_system_systemd(&c.bus);
         if (r < 0) {
@@ -302,14 +300,12 @@ finish:
         else if (streq(argv[1], "shutdown"))
                 (void)on_shutdown(&c);
 #endif // 0
-
 #ifdef HAVE_AUDIT
         if (c.audit_fd >= 0)
                 audit_close(c.audit_fd);
 #endif
 
         sd_bus_flush_close_unref(c.bus);
-
 #if 0 /// UNNEEDED by elogind
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 #endif // 0
