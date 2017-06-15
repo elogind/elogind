@@ -258,7 +258,6 @@ int sd_bus_message_get_priority(sd_bus_message *m, int64_t *priority);
 int sd_bus_message_get_expect_reply(sd_bus_message *m);
 int sd_bus_message_get_auto_start(sd_bus_message *m);
 #endif // 0
-
 int sd_bus_message_get_allow_interactive_authorization(sd_bus_message *m);
 
 const char *sd_bus_message_get_signature(sd_bus_message *m, int complete);
@@ -338,6 +337,7 @@ int sd_bus_get_name_creds(sd_bus *bus, const char *name, uint64_t mask, sd_bus_c
 #if 0 /// UNNEEDED by elogind
 int sd_bus_get_name_machine_id(sd_bus *bus, const char *name, sd_id128_t *machine);
 #endif // 0
+
 /* Convenience calls */
 
 int sd_bus_call_method(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, sd_bus_message **reply, const char *types, ...);
