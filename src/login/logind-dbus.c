@@ -53,6 +53,10 @@
 /// Additional includes needed by elogind
 #include "update-utmp.h"
 
+#if 1 /// elogind needs this prototype
+static int send_prepare_for(Manager *m, InhibitWhat w, bool _active);
+#endif // 1
+
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
         Session *session;
@@ -1623,9 +1627,17 @@ static int execute_shutdown_or_sleep(
 
         /* no more pending actions, whether this failed or not */
         m->pending_action = HANDLE_IGNORE;
-        m->action_what    = 0;
         if (r < 0)
                 return r;
+
+        /* As elogind can not rely on a systemd manager to call all
+         * sleeping processes to wake up, we have to tell them all
+         * by ourselves. */
+        if (w == INHIBIT_SLEEP) {
+                send_prepare_for(m, w, false);
+                m->action_what = 0;
+        } else
+                m->action_what = w;
 #endif // 0
 
         /* Make sure the lid switch is ignored for a while */
