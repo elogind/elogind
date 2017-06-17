@@ -579,7 +579,7 @@ int running_in_chroot(void) {
                 return 0;
 #endif // 0
 
-        ret = files_same("/proc/1/root", "/");
+        ret = files_same("/proc/1/root", "/", 0);
         if (ret < 0)
                 return ret;
 

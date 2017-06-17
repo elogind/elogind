@@ -57,7 +57,7 @@ int path_is_read_only_fs(const char *path);
 int path_is_os_tree(const char *path);
 #endif // 0
 
-int files_same(const char *filea, const char *fileb);
+int files_same(const char *filea, const char *fileb, int flags);
 
 /* The .f_type field of struct statfs is really weird defined on
  * different archs. Let's give its type a name. */

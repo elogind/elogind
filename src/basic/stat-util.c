@@ -176,16 +176,16 @@ int path_is_os_tree(const char *path) {
 }
 #endif // 0
 
-int files_same(const char *filea, const char *fileb) {
+int files_same(const char *filea, const char *fileb, int flags) {
         struct stat a, b;
 
         assert(filea);
         assert(fileb);
 
-        if (stat(filea, &a) < 0)
+        if (fstatat(AT_FDCWD, filea, &a, flags) < 0)
                 return -errno;
 
-        if (stat(fileb, &b) < 0)
+        if (fstatat(AT_FDCWD, fileb, &b, flags) < 0)
                 return -errno;
 
         return a.st_dev == b.st_dev &&
