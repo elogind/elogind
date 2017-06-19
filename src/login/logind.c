@@ -52,7 +52,6 @@
 static void manager_free(Manager *m);
 
 static void manager_reset_config(Manager *m) {
-
 #if 0 /// elogind does not support autospawning of vts
         m->n_autovts = 6;
         m->reserve_vt = 6;
@@ -83,7 +82,6 @@ static void manager_reset_config(Manager *m) {
 
         m->kill_only_users = strv_free(m->kill_only_users);
         m->kill_exclude_users = strv_free(m->kill_exclude_users);
-
 #if 1 /// elogind needs an Add-On for sleep configuration
         elogind_manager_reset_config(m);
 #endif // 1
@@ -122,7 +120,6 @@ static Manager *manager_new(void) {
         if (r < 0)
                 goto fail;
 #endif // 1
-
         m->udev = udev_new();
         if (!m->udev)
                 goto fail;
@@ -214,7 +211,6 @@ static void manager_free(Manager *m) {
 #if 0 /// elogind does not support autospawning of vts
         safe_close(m->reserve_vt_fd);
 #endif // 0
-
 #if 1 /// elogind has to free its own data
         elogind_manager_free(m);
 #endif // 1
@@ -732,12 +728,14 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to attach bus to event loop: %m");
 
-#if 1 /// elogind has to setup its release agent
+#if 0 /// elogind has to setup its release agent
+        return 0;
+#else
         elogind_bus_setup_system(m);
         r = elogind_setup_cgroups_agent(m);
-#endif // 1
 
         return r;
+#endif // 0
 }
 
 static int manager_vt_switch(sd_event_source *src, const struct signalfd_siginfo *si, void *data) {
@@ -1287,8 +1285,7 @@ finish:
                   "STOPPING=1\n"
                   "STATUS=Shutting down...");
 
-        if (m)
-                manager_free(m);
+        manager_free(m);
 
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

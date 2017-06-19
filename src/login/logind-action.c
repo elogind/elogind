@@ -38,7 +38,6 @@
 #include "sd-messages.h"
 #include "strv.h"
 
-
 int manager_handle_action(
                 Manager *m,
                 InhibitWhat inhibit_key,

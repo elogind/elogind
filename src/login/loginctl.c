@@ -1630,7 +1630,6 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
         if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
                 return elogind_cancel_shutdown(bus);
 #endif // 1
-
         return dispatch_verb(argc, argv, verbs, bus);
 }
 
@@ -1670,6 +1669,5 @@ finish:
 #if 1 /// elogind has some own cleanups to do
         elogind_cleanup();
 #endif // 1
-
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

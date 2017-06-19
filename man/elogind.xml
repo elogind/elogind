@@ -21,7 +21,8 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="elogind">
+<refentry id="elogind"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <refentryinfo>
     <title>elogind</title>

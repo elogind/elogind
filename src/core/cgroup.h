@@ -179,7 +179,6 @@ bool unit_cgroup_delegate(Unit *u);
 
 int unit_notify_cgroup_empty(Unit *u);
 #endif // 0
-
 int manager_notify_cgroup_empty(Manager *m, const char *group);
 
 #if 0 /// UNNEEDED by elogind
