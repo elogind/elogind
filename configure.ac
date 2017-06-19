@@ -624,16 +624,6 @@ fi
 AM_CONDITIONAL(ENABLE_POLKIT, [test "x$have_polkit" = "xyes"])
 
 # ------------------------------------------------------------------------------
-have_kdbus=no
-AC_ARG_ENABLE(kdbus, AS_HELP_STRING([--disable-kdbus], [do not connect to kdbus by default]))
-if test "x$enable_kdbus" != "xno"; then
-        AC_DEFINE(ENABLE_KDBUS, 1, [Define if kdbus is to be connected to by default])
-        have_kdbus=yes
-        M4_DEFINES="$M4_DEFINES -DENABLE_KDBUS"
-fi
-AM_CONDITIONAL(ENABLE_KDBUS, [test "$have_kdbus" = "yes"])
-
-# ------------------------------------------------------------------------------
 AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
 
 # ------------------------------------------------------------------------------
@@ -791,7 +781,6 @@ AC_MSG_RESULT([
         ACL:                     ${have_acl}
         KillUserProcesses default: ${KILL_USER_PROCESSES}
         polkit:                  ${have_polkit}
-        kdbus:                   ${have_kdbus}
         Python:                  ${have_python}
         man pages:               ${have_manpages}
         test coverage:           ${have_coverage}
