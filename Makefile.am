@@ -481,9 +481,7 @@ rootlibexec_LTLIBRARIES += \
 libelogind_shared_la_SOURCES = \
 	$(libbasic_la_SOURCES) \
 	$(libshared_la_SOURCES) \
-	$(libelogind_internal_la_SOURCES) \
-	$(libelogind_journal_internal_la_SOURCES) \
-	$(libudev_internal_la_SOURCES)
+	$(libelogind_internal_la_SOURCES)
 
 libelogind_shared_la_CFLAGS = \
 	$(AM_CFLAGS) \
@@ -827,7 +825,7 @@ pam_elogind_la_LDFLAGS = \
 	-Wl,--version-script=$(top_srcdir)/src/login/pam_elogind.sym
 
 pam_elogind_la_LIBADD = \
-	libelogind-shared.la \
+	libshared.la \
 	$(PAM_LIBS)
 
 pamlib_LTLIBRARIES = \
