@@ -33,6 +33,9 @@
 #include "parse-util.h"
 #include "string-util.h"
 
+/// Additional includes needed by elogind
+#include "musl_missing.h"
+
 int parse_boolean(const char *v) {
         assert(v);
 
