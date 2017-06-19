@@ -19,7 +19,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#if 0 /// elogind is musl-libc compatible and does not directly include printf.h
 #include <printf.h>
+#else
+#include "parse-printf-format.h"
+#endif // 0
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/types.h>
