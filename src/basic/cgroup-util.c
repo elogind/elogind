@@ -2240,8 +2240,8 @@ int cg_unified(void) {
 #else
         /* elogind can not support the unified hierarchy as a controller,
          * so always assume a classical hierarchy.
-         * If, ond only *if*, someone really wants to substitute systemd-login
-         * in an environment managed by systemd with elogin, we might have to
+         * If, and only *if*, someone really wants to substitute systemd-login
+         * in an environment managed by systemd with elogind, we might have to
          * add such a support. */
         if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
 #endif // 0

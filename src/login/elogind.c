@@ -64,6 +64,7 @@ static int signal_agent_released(sd_bus_message *message, void *userdata, sd_bus
 }
 
 /// Add-On for manager_connect_bus()
+/// Original: src/core/dbus.c:bus_setup_system()
 void elogind_bus_setup_system(Manager* m) {
         int r;
 
@@ -85,32 +86,6 @@ void elogind_bus_setup_system(Manager* m) {
         }
 
         log_debug("Successfully connected to system bus.");
-}
-
-static int bus_forward_agent_released(Manager *m, const char *path) {
-        int r;
-
-        assert(m);
-        assert(path);
-
-        if (!MANAGER_IS_SYSTEM(m))
-                return 0;
-
-        if (!m->bus)
-                return 0;
-
-        /* If we are running a system instance we forward the agent message on the system bus, so that the user
-         * instances get notified about this, too */
-
-        r = sd_bus_emit_signal(m->bus,
-                               "/org/freedesktop/elogind/agent",
-                               "org.freedesktop.elogind.Agent",
-                               "Released",
-                               "s", path);
-        if (r < 0)
-                return log_warning_errno(r, "Failed to propagate agent release message: %m");
-
-        return 1;
 }
 
 static int manager_dispatch_cgroups_agent_fd(sd_event_source *source, int fd, uint32_t revents, void *userdata) {
@@ -137,19 +112,19 @@ static int manager_dispatch_cgroups_agent_fd(sd_event_source *source, int fd, ui
         buf[n] = 0;
 
         manager_notify_cgroup_empty(m, buf);
-        bus_forward_agent_released(m, buf);
 
         return 0;
 }
 
 /// Add-On for manager_connect_bus()
+/// Original: src/core/manager.c:manager_setup_cgroups_agent()
 int elogind_setup_cgroups_agent(Manager *m) {
 
         static const union sockaddr_union sa = {
                 .un.sun_family = AF_UNIX,
                 .un.sun_path = "/run/systemd/cgroups-agent",
         };
-        int r;
+        int r = 0;
 
         /* This creates a listening socket we receive cgroups agent messages on. We do not use D-Bus for delivering
          * these messages from the cgroups agent binary to PID 1, as the cgroups agent binary is very short-living, and
