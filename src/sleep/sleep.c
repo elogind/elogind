@@ -220,9 +220,6 @@ finish:
 #else
 int do_sleep(const char *verb, char **modes, char **states) {
         assert(verb);
-        assert(modes);
-        assert(states);
-
         arg_verb = (char*)verb;
         return execute(modes, states);
 }
