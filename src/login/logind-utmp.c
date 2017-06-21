@@ -74,7 +74,7 @@ bool logind_wall_tty_filter(const char *tty, void *userdata) {
 static int warn_wall(Manager *m, usec_t n) {
         char date[FORMAT_TIMESTAMP_MAX] = {};
         _cleanup_free_ char *l = NULL;
-        usec_t left;
+        bool left;
         int r;
 
         assert(m);
@@ -136,9 +136,18 @@ static int wall_message_timeout_handler(
 int manager_setup_wall_message_timer(Manager *m) {
 
         usec_t n, elapse;
+#if 1 /// let's fix double wall messages in elogind - they suck.
+        usec_t left;
+#endif // 1
         int r;
 
         assert(m);
+
+#if 1 /// Make elogind more aware of the possibility to disable wall messages
+        /* Do not do anything if wall messages aren't enabled */
+        if (!m->enable_wall_messages)
+                return 0;
+#endif // 1
 
         n = now(CLOCK_REALTIME);
         elapse = m->scheduled_shutdown_timeout;
@@ -153,6 +162,7 @@ int manager_setup_wall_message_timer(Manager *m) {
         if (elapse < n)
                 return 0;
 
+#if 0 /// let's fix double wall messages in elogind - they suck.
         /* Warn immediately if less than 15 minutes are left */
         if (elapse - n < 15 * USEC_PER_MINUTE) {
                 r = warn_wall(m, n);
@@ -163,6 +173,23 @@ int manager_setup_wall_message_timer(Manager *m) {
         elapse = when_wall(n, elapse);
         if (elapse == 0)
                 return 0;
+#else
+        left = elapse - n;
+        elapse = when_wall(n, elapse);
+
+        /* Warn immediately if less than 15 minutes are left, but not if
+         * there aren't more than three seconds to the next timeout. */
+        if ( (left   < 15 * USEC_PER_MINUTE)
+          && (elapse >  3 * USEC_PER_SEC) ) {
+                r = warn_wall(m, n);
+                if (r == 0)
+                        return 0;
+        }
+
+        /* If the next timeout is within on second, delay it by 3 seconds */
+        if (USEC_PER_SEC > elapse)
+                elapse = 3 * USEC_PER_SEC;
+#endif // 0
 
         if (m->wall_message_timeout_source) {
                 r = sd_event_source_set_time(m->wall_message_timeout_source, n + elapse);
