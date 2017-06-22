@@ -25,6 +25,7 @@
 #include "parse-util.h"
 #include "process-util.h"
 #include "sd-login.h"
+#include "sd-messages.h"
 #include "spawn-polkit-agent.h"
 #include "string-util.h"
 #include "strv.h"
@@ -192,6 +193,59 @@ int elogind_cancel_shutdown(sd_bus *bus) {
 void elogind_cleanup(void) {
         polkit_agent_close();
         strv_free(arg_wall);
+}
+
+static void elogind_log_special(enum elogind_action a) {
+        switch (a) {
+        case ACTION_HALT:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Halt action called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           NULL);
+                break;
+        case ACTION_POWEROFF:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Poweroff action called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           NULL);
+                break;
+        case ACTION_REBOOT:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Reboot action called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           NULL);
+                break;
+        case ACTION_KEXEC:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("KExec action called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           NULL);
+                break;
+        case ACTION_SUSPEND:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Suspend action called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
+                           NULL);
+                break;
+        case ACTION_HIBERNATE:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Hibernate action called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
+                           NULL);
+        case ACTION_HYBRID_SLEEP:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Hybrid-Sleep action called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
+                           NULL);
+        case ACTION_CANCEL_SHUTDOWN:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Cancel Shutdown called."),
+                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           NULL);
+                break;
+        default:
+                break;
+        }
 }
 
 static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
@@ -411,6 +465,8 @@ int start_special(int argc, char *argv[], void *userdata) {
         assert(argv);
 
         a = verb_to_action(argv[0]);
+
+        elogind_log_special(a);
 
         /* Switch to cancel shutdown, if a shutdown action was requested,
            and the option to cancel it was set: */
