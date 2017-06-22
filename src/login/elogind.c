@@ -42,7 +42,7 @@ static int signal_agent_released(sd_bus_message *message, void *userdata, sd_bus
         assert(message);
         assert(m);
 
-        /* only accept org.freedesktop.elogind.Agent from UID=0 */
+        /* only accept org.freedesktop.login1.Agent from UID=0 */
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
         if (r < 0)
                 return r;
@@ -77,9 +77,9 @@ void elogind_bus_setup_system(Manager* m) {
                                 m->bus,
                                 NULL,
                                 "type='signal',"
-                                "interface='org.freedesktop.elogind.Agent',"
+                                "interface='org.freedesktop.login1.Agent',"
                                 "member='Released',"
-                                "path='/org/freedesktop/elogind/agent'",
+                                "path='/org/freedesktop.login1/agent'",
                                 signal_agent_released, m);
                 if (r < 0)
                         log_warning_errno(r, "Failed to register Released match on system bus: %m");
