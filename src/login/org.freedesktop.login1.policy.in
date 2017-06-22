@@ -13,7 +13,7 @@
 
 <policyconfig>
 
-        <vendor>The systemd project's "logind", extracted to a standalone package</vendor>
+        <vendor>The elogind Project</vendor>
         <vendor_url>https://github.com/elogind/elogind</vendor_url>
 
         <action id="org.freedesktop.login1.inhibit-block-shutdown">
