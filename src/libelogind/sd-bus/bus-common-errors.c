@@ -25,6 +25,7 @@
 #include "bus-error.h"
 
 BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
+#if 0 /// UNNEEDED by elogind
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_UNIT,                 ENOENT),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_UNIT_FOR_PID,              ESRCH),
         SD_BUS_ERROR_MAP(BUS_ERROR_UNIT_EXISTS,                  EEXIST),
@@ -50,6 +51,7 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_MACHINE_FOR_PID,           ENXIO),
         SD_BUS_ERROR_MAP(BUS_ERROR_MACHINE_EXISTS,               EEXIST),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_PRIVATE_NETWORKING,        ENOSYS),
+#endif // 0
 
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_SESSION,              ENXIO),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SESSION_FOR_PID,           ENXIO),
@@ -63,6 +65,7 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
         SD_BUS_ERROR_MAP(BUS_ERROR_OPERATION_IN_PROGRESS,        EINPROGRESS),
         SD_BUS_ERROR_MAP(BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,     EOPNOTSUPP),
 
+#if 0 /// UNNEEDED by elogind
         SD_BUS_ERROR_MAP(BUS_ERROR_AUTOMATIC_TIME_SYNC_ENABLED,  EALREADY),
 
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_PROCESS,              ESRCH),
@@ -82,6 +85,7 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
 
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_TRANSFER,             ENXIO),
         SD_BUS_ERROR_MAP(BUS_ERROR_TRANSFER_IN_PROGRESS,         EBUSY),
+#endif // 0
 
         SD_BUS_ERROR_MAP_END
 };

@@ -21,6 +21,7 @@
 
 #include "bus-error.h"
 
+#if 0 /// only system command elogind knows are needed
 #define BUS_ERROR_NO_SUCH_UNIT "org.freedesktop.systemd1.NoSuchUnit"
 #define BUS_ERROR_NO_UNIT_FOR_PID "org.freedesktop.systemd1.NoUnitForPID"
 #define BUS_ERROR_UNIT_EXISTS "org.freedesktop.systemd1.UnitExists"
@@ -40,7 +41,9 @@
 #define BUS_ERROR_NO_ISOLATION "org.freedesktop.systemd1.NoIsolation"
 #define BUS_ERROR_SHUTTING_DOWN "org.freedesktop.systemd1.ShuttingDown"
 #define BUS_ERROR_SCOPE_NOT_RUNNING "org.freedesktop.systemd1.ScopeNotRunning"
+#endif // 0
 
+#if 0 /// no machined in elogind
 #define BUS_ERROR_NO_SUCH_MACHINE "org.freedesktop.machine1.NoSuchMachine"
 #define BUS_ERROR_NO_SUCH_IMAGE "org.freedesktop.machine1.NoSuchImage"
 #define BUS_ERROR_NO_MACHINE_FOR_PID "org.freedesktop.machine1.NoMachineForPID"
@@ -48,6 +51,7 @@
 #define BUS_ERROR_NO_PRIVATE_NETWORKING "org.freedesktop.machine1.NoPrivateNetworking"
 #define BUS_ERROR_NO_SUCH_USER_MAPPING "org.freedesktop.machine1.NoSuchUserMapping"
 #define BUS_ERROR_NO_SUCH_GROUP_MAPPING "org.freedesktop.machine1.NoSuchGroupMapping"
+#endif // 0
 
 #define BUS_ERROR_NO_SUCH_SESSION "org.freedesktop.login1.NoSuchSession"
 #define BUS_ERROR_NO_SESSION_FOR_PID "org.freedesktop.login1.NoSessionForPID"
@@ -62,6 +66,7 @@
 #define BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED "org.freedesktop.login1.SleepVerbNotSupported"
 #define BUS_ERROR_SESSION_BUSY "org.freedesktop.login1.SessionBusy"
 
+#if 0 /// more services unsupported by elogind
 #define BUS_ERROR_AUTOMATIC_TIME_SYNC_ENABLED "org.freedesktop.timedate1.AutomaticTimeSyncEnabled"
 
 #define BUS_ERROR_NO_SUCH_PROCESS "org.freedesktop.systemd1.NoSuchProcess"
@@ -82,5 +87,6 @@
 
 #define BUS_ERROR_NO_SUCH_TRANSFER "org.freedesktop.import1.NoSuchTransfer"
 #define BUS_ERROR_TRANSFER_IN_PROGRESS "org.freedesktop.import1.TransferInProgress"
+#endif // 0
 
 BUS_ERROR_MAP_ELF_USE(bus_common_errors);
