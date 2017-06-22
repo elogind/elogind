@@ -161,6 +161,8 @@ bool clock_boottime_supported(void);
 bool clock_supported(clockid_t clock);
 #if 0 /// UNNEEDED by elogind
 clockid_t clock_boottime_or_monotonic(void);
+
+usec_t usec_shift_clock(usec_t, clockid_t from, clockid_t to);
 #endif // 0
 
 #define xstrftime(buf, fmt, tm) \
