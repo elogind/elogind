@@ -25,10 +25,11 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/resource.h>
+#include <sys/types.h>
 
 #include "format-util.h"
+#include "ioprio.h"
 #include "macro.h"
 
 #define procfs_file_alloca(pid, field)                                  \
@@ -120,3 +121,13 @@ static inline bool nice_is_valid(int n) {
         return n >= PRIO_MIN && n < PRIO_MAX;
 }
 #endif // 0
+
+static inline bool ioprio_class_is_valid(int i) {
+        return IN_SET(i, IOPRIO_CLASS_NONE, IOPRIO_CLASS_RT, IOPRIO_CLASS_BE, IOPRIO_CLASS_IDLE);
+}
+
+static inline bool ioprio_priority_is_valid(int i) {
+        return i >= 0 && i < IOPRIO_BE_NR;
+}
+
+int ioprio_parse_priority(const char *s, int *ret);
