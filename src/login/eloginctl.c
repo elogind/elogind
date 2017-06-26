@@ -241,11 +241,13 @@ static void elogind_log_special(enum elogind_action a) {
                            LOG_MESSAGE("Hibernate action called."),
                            LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
                            NULL);
+                break;
         case ACTION_HYBRID_SLEEP:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Hybrid-Sleep action called."),
                            LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
                            NULL);
+                break;
         case ACTION_CANCEL_SHUTDOWN:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Cancel Shutdown called."),
