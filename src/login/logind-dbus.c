@@ -2153,6 +2153,9 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
 static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
         bool cancelled;
+#if 1 /// elogind needs to construct the message to allow extra wall messages
+        _cleanup_free_ char *l = NULL;
+#endif // 1
 
         assert(m);
         assert(message);
@@ -2172,8 +2175,20 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                         (void) sd_bus_creds_get_tty(creds, &tty);
                 }
 
+#if 0 /// elogind wants to allow extra cancellation messages
                 utmp_wall("The system shutdown has been cancelled",
                           uid_to_name(uid), tty, logind_wall_tty_filter, m);
+#else
+                r = asprintf(&l, "%s%sThe system shutdown has been cancelled!",
+                             strempty(m->wall_message),
+                             isempty(m->wall_message) ? "" : "\n");
+                if (r < 0) {
+                        log_oom();
+                        return 0;
+                }
+
+                utmp_wall(l, uid_to_name(uid), tty, logind_wall_tty_filter, m);
+#endif // 0
         }
 
         return sd_bus_reply_method_return(message, "b", cancelled);

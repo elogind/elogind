@@ -176,6 +176,14 @@ int elogind_cancel_shutdown(sd_bus *bus) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
+        r = elogind_set_wall_message(bus, NULL);
+
+        if (r < 0) {
+                log_warning_errno(r, "Failed to set wall message, ignoring: %s",
+                                  bus_error_message(&error, r));
+                sd_bus_error_free(&error);
+        }
+
         r = sd_bus_call_method(
                         bus,
                         "org.freedesktop.login1",
