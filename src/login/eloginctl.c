@@ -196,6 +196,7 @@ void elogind_cleanup(void) {
 }
 
 static void elogind_log_special(enum elogind_action a) {
+#ifdef ENABLE_DEBUG_ELOGIND
         switch (a) {
         case ACTION_HALT:
                 log_struct(LOG_INFO,
@@ -246,6 +247,7 @@ static void elogind_log_special(enum elogind_action a) {
         default:
                 break;
         }
+#endif // ENABLE_DEBUG_ELOGIND
 }
 
 static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
@@ -259,8 +261,6 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
 
         if (!bus)
                 return -EIO;
-
-        polkit_agent_open_if_enabled();
 
         switch (a) {
 
@@ -288,6 +288,7 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
                 return -EINVAL;
         }
 
+        polkit_agent_open_if_enabled();
         r = elogind_set_wall_message(bus, table[a]);
 
         if (r < 0) {
@@ -305,8 +306,7 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
                         method,
                         &error,
                         NULL,
-                        "b",
-                        arg_ask_password);
+                        "b", arg_ask_password);
 
         if (r < 0)
                 log_error("Failed to execute operation: %s", bus_error_message(&error, r));
@@ -321,8 +321,6 @@ static int elogind_schedule_shutdown(sd_bus *bus, enum elogind_action a) {
 
         if (!bus)
                 return -EIO;
-
-        polkit_agent_open_if_enabled();
 
         switch (a) {
 
@@ -468,20 +466,9 @@ int start_special(int argc, char *argv[], void *userdata) {
 
         elogind_log_special(a);
 
-        /* Switch to cancel shutdown, if a shutdown action was requested,
-           and the option to cancel it was set: */
-        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
-          && (arg_action == ACTION_CANCEL_SHUTDOWN) )
-                return elogind_cancel_shutdown(bus);
-
-        r = check_inhibitors(bus, a);
-        if (r < 0)
-                return r;
-
         /* No power off actions in chroot environments */
-        if ((a == ACTION_POWEROFF ||
-             a == ACTION_REBOOT) &&
-            (running_in_chroot() > 0) ) {
+        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
+          && (running_in_chroot() > 0) ) {
                 log_info("Running in chroot, ignoring request.");
                 return 0;
         }
@@ -511,6 +498,16 @@ int start_special(int argc, char *argv[], void *userdata) {
                 if (!arg_wall)
                         return log_oom();
         }
+
+        /* Switch to cancel shutdown, if a shutdown action was requested,
+           and the option to cancel it was set: */
+        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
+          && (arg_action == ACTION_CANCEL_SHUTDOWN) )
+                return elogind_cancel_shutdown(bus);
+
+        r = check_inhibitors(bus, a);
+        if (r < 0)
+                return r;
 
         /* Perform requested action */
         if (IN_SET(a,
