@@ -476,37 +476,40 @@ int start_special(int argc, char *argv[], void *userdata) {
 
         elogind_log_special(a);
 
-        /* No power off actions in chroot environments */
-        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
-          && (running_in_chroot() > 0) ) {
-                log_info("Running in chroot, ignoring request.");
-                return 0;
-        }
+        /* For poweroff and reboot, some extra checks are performed: */
+        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT) ) {
 
-        /* Check time arguments */
-        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT)
-          && (argc > 1)
-          && (arg_action != ACTION_CANCEL_SHUTDOWN) ) {
-                r = parse_shutdown_time_spec(argv[1], &arg_when);
-                if (r < 0) {
-                        log_error("Failed to parse time specification: %s", argv[optind]);
-                        return r;
+                /* No power off actions in chroot environments */
+                if ( running_in_chroot() > 0 ) {
+                        log_info("Running in chroot, ignoring request.");
+                        return 0;
                 }
-        } else
-                arg_when = now(CLOCK_REALTIME) + USEC_PER_MINUTE;
 
-        /* The optional user wall message must be set */
-        if ((argc > 1) && (arg_action == ACTION_CANCEL_SHUTDOWN) )
-                /* No time argument for shutdown cancel */
-                wall = argv + 1;
-        else if (argc > 2)
-                /* We skip the time argument */
-                wall = argv + 2;
+                /* Check time argument */
+                if ( (argc > 1) && (ACTION_CANCEL_SHUTDOWN != arg_action)) {
+                        r = parse_shutdown_time_spec(argv[1], &arg_when);
+                        if (r < 0) {
+                                log_error("Failed to parse time specification: %s", argv[optind]);
+                                return r;
+                        }
+                }
 
-        if (wall) {
-                arg_wall = strv_copy(wall);
-                if (!arg_wall)
-                        return log_oom();
+                /* The optional user wall message must be set */
+                if ( (argc > 1)
+                  && ( (arg_action == ACTION_CANCEL_SHUTDOWN)
+                    || (0 == arg_when) ) )
+                        /* No time argument for shutdown cancel, or no
+                         * time argument given. */
+                        wall = argv + 1;
+                else if (argc > 2)
+                        /* We skip the time argument */
+                        wall = argv + 2;
+
+                if (wall) {
+                        arg_wall = strv_copy(wall);
+                        if (!arg_wall)
+                                return log_oom();
+                }
         }
 
         /* Switch to cancel shutdown, if a shutdown action was requested,
