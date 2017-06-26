@@ -1776,6 +1776,10 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 m->inhibit_delay_max > 0 &&
                 manager_is_inhibited(m, w, INHIBIT_DELAY, NULL, false, false, 0, NULL);
 
+        log_debug_elogind("%s called for %s (%sdelayed)", __FUNCTION__,
+                          handle_action_to_string(action),
+                          delayed ? "" : "NOT ");
+
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
@@ -1872,6 +1876,10 @@ static int method_do_shutdown_or_sleep(
         if (r < 0)
                 return r;
 
+        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
+                          __FUNCTION__, action, sleep_verb,
+                          interactive ? "" : "NOT ");
+
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
@@ -1887,6 +1895,7 @@ static int method_do_shutdown_or_sleep(
 
         r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
                                   action_ignore_inhibit, error);
+        log_debug_elogind("verify_shutdown_creds() returned %d", r);
         if (r != 0)
                 return r;
 
@@ -1899,6 +1908,8 @@ static int method_do_shutdown_or_sleep(
 
 static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
+
+        log_debug_elogind("%s called", __FUNCTION__);
 
         return method_do_shutdown_or_sleep(
                         m, message,
@@ -1914,6 +1925,8 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
 static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
                         HANDLE_REBOOT,
@@ -1927,6 +1940,8 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
 
 static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
+
+        log_debug_elogind("%s called", __FUNCTION__);
 
         return method_do_shutdown_or_sleep(
                         m, message,
@@ -2055,6 +2070,8 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
         assert(m);
         assert(message);
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         r = sd_bus_message_read(message, "st", &type, &elapse);
         if (r < 0)
                 return r;
@@ -2160,6 +2177,8 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         assert(m);
         assert(message);
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         cancelled = m->scheduled_shutdown_type != NULL;
         reset_scheduled_shutdown(m);
 
@@ -2197,6 +2216,8 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
 static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
                         HANDLE_HIBERNATE,
@@ -2210,6 +2231,8 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
 
 static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
+
+        log_debug_elogind("%s called", __FUNCTION__);
 
         return method_do_shutdown_or_sleep(
                         m, message,
