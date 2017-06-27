@@ -1679,7 +1679,9 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
                 manager->pending_action = HANDLE_IGNORE;
                 manager->action_what    = 0;
+#if 0 /// It is not a critical error for elogind if suspending fails
                 return r;
+#endif // 0
         }
 
         return 1;
