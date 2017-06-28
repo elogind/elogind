@@ -69,6 +69,7 @@ static usec_t get_startup_time(Context *c) {
                 log_error_errno(r, "Failed to get timestamp: %s", bus_error_message(&error, r));
                 return 0;
         }
+
         return t;
 }
 

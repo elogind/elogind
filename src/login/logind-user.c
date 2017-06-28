@@ -49,6 +49,10 @@
 #include "user-util.h"
 #include "util.h"
 
+#if 1 /// elogind uses a static value here
+#  define SPECIAL_USER_SLICE "user.slice"
+#endif // 1
+
 int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
@@ -77,7 +81,7 @@ int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         if (asprintf(&u->runtime_path, "/run/user/"UID_FMT, uid) < 0)
                 return -ENOMEM;
 
-        r = slice_build_subslice("user.slice", lu, &u->slice);
+        r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &u->slice);
         if (r < 0)
                 return r;
 

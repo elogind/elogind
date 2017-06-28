@@ -111,12 +111,21 @@ int manager_handle_action(
                 return 1;
         }
 
+#if 0 /// elogind needs its own can_sleep() variant.
+        if (handle == HANDLE_SUSPEND)
+                supported = can_sleep("suspend") > 0;
+        else if (handle == HANDLE_HIBERNATE)
+                supported = can_sleep("hibernate") > 0;
+        else if (handle == HANDLE_HYBRID_SLEEP)
+                supported = can_sleep("hybrid-sleep") > 0;
+#else
         if (handle == HANDLE_SUSPEND)
                 supported = can_sleep(m, "suspend") > 0;
         else if (handle == HANDLE_HIBERNATE)
                 supported = can_sleep(m, "hibernate") > 0;
         else if (handle == HANDLE_HYBRID_SLEEP)
                 supported = can_sleep(m, "hybrid-sleep") > 0;
+#endif // 0
         else if (handle == HANDLE_KEXEC)
                 supported = access(KEXEC, X_OK) >= 0;
         else
