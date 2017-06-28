@@ -700,6 +700,8 @@ libelogind_core_la_SOURCES = \
         src/login/elogind.h \
         src/login/elogind-action.c \
         src/login/elogind-action.h \
+	src/login/elogind-dbus.c \
+	src/login/elogind-dbus.h \
 	src/login/logind-core.c \
 	src/login/logind-device.c \
 	src/login/logind-device.h \
