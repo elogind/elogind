@@ -299,12 +299,15 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
         }
 
         polkit_agent_open_if_enabled();
-        r = elogind_set_wall_message(bus, table[a]);
 
-        if (r < 0) {
-                log_warning_errno(r, "Failed to set wall message, ignoring: %s",
-                                  bus_error_message(&error, r));
-                sd_bus_error_free(&error);
+        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT) ) {
+                r = elogind_set_wall_message(bus, table[a]);
+
+                if (r < 0) {
+                        log_warning_errno(r, "Failed to set wall message, ignoring: %s",
+                                          bus_error_message(&error, r));
+                        sd_bus_error_free(&error);
+                }
         }
 
         /* Now call elogind itself to request the operation */
