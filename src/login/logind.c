@@ -1209,11 +1209,14 @@ int main(int argc, char *argv[]) {
         log_set_target(LOG_TARGET_AUTO);
         log_set_facility(LOG_AUTH);
         log_parse_environment();
-        log_open();
 
 #ifdef ENABLE_DEBUG_ELOGIND
         log_set_max_level(LOG_DEBUG);
+        log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
+
+        log_open();
+
 
         umask(0022);
 
