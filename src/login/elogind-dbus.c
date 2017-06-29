@@ -404,11 +404,13 @@ static int method_do_shutdown_or_sleep(
                         return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Sleep verb not supported");
         }
 
-        r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
-                                  action_ignore_inhibit, error);
-        log_debug_elogind("verify_shutdown_creds() returned %d", r);
-        if (r != 0)
-                return r;
+        if (IN_SET(sleep_action, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
+                r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
+                                          action_ignore_inhibit, error);
+                log_debug_elogind("verify_shutdown_creds() returned %d", r);
+                if (r != 0)
+                        return r;
+        }
 
         r = bus_manager_shutdown_or_sleep_now_or_later(m, sleep_action, w, error);
         if (r < 0)
