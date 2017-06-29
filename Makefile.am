@@ -83,7 +83,6 @@ CLEAN_LOCAL_HOOKS =
 pkginclude_HEADERS =
 noinst_LTLIBRARIES =
 lib_LTLIBRARIES =
-rootlibexec_LTLIBRARIES =
 noinst_DATA =
 pkgconfiglib_DATA =
 polkitpolicy_in_files =
@@ -475,7 +474,7 @@ libshared_la_LIBADD = \
 	$(UDEV_LIBS) \
 	$(ACL_LIBS)
 
-rootlibexec_LTLIBRARIES += \
+noinst_LTLIBRARIES += \
 	libelogind-shared.la
 
 libelogind_shared_la_SOURCES = \
