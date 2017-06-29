@@ -623,9 +623,6 @@ libelogind_internal_la_SOURCES = \
 	src/libelogind/sd-daemon/sd-daemon.c \
 	src/libelogind/sd-login/sd-login.c
 
-libelogind_internal_la_LIBADD = \
-	-lresolv
-
 noinst_LTLIBRARIES += \
 	libelogind-internal.la
 
