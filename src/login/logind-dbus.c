@@ -2450,6 +2450,7 @@ static int method_set_wall_message(
         if (r < 0)
                 return r;
 
+#if 0 /// elogind only calls this for shutdown/reboot, which already needs authorization.
         r = bus_verify_polkit_async(message,
                                     CAP_SYS_ADMIN,
                                     "org.freedesktop.login1.set-wall-message",
@@ -2462,6 +2463,7 @@ static int method_set_wall_message(
                 return r;
         if (r == 0)
                 return 1; /* Will call us back */
+#endif // 0
 
         if (isempty(wall_message))
                 m->wall_message = mfree(m->wall_message);
