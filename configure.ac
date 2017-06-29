@@ -111,20 +111,52 @@ fi
 
 
 # ------------------------------------------------------------------------------
-# Find running cgroup controller
+# Let users set the cgroup controller to use, in case the target controller
+# isn't currently running the show.
+# Example: Gentoo Linux, user wants to switch from systemd to openrc+elogind,
+#          and emerges elogind before having booted the machine with openrc.
+#          See: https://github.com/elogind/elogind/issues/18
 with_cgroupctrl=
-AS_IF(  [test -f /proc/self/cgroup], [
-        # If the init system is a cgroup controler, it will be position 1.
-        # Secondary controllers, like cgmanager, do not work.
-        with_cgroupctrl=`grep "^1:name=" /proc/self/cgroup | cut -d ':' -f 2`
-        AS_IF(  [test -z "$with_cgroupctrl"], [
-                # Try to be our own cgroup controller
-                with_cgroupctrl="name=elogind"
+AC_ARG_WITH([cgroup-controller],
+            AS_HELP_STRING([--with-cgroup-controller=name],
+            [Set the name of the cgroup controller to use.
+             Use this when the autodetection fails, or you plan to use your system with a different controller than the one in place now.
+             The value 'auto' (default) detects the running controller.
+             The values 'none' and 'elogind' will cause elogind to be its own (very limited) controller.
+             When elogind shall be its own controller, there *MUST NOT* be any other controller running!
+             Another popular controller would be 'openrc'.]),
+            [with_cgroupctrl=$withval],
+            [with_cgroupctrl=auto])
+
+# ------------------------------------------------------------------------------
+# Find running cgroup controller, if none was set
+AS_IF(  [test "x$with_cgroupctrl" = "xauto"], [
+        AS_IF([test -f /proc/self/cgroup], [
+                # If the init system is a cgroup controler, it will be position 1.
+                # Secondary controllers, like cgmanager, do not work.
+                with_cgroupctrl=`grep "^1:name=" /proc/self/cgroup | \
+                        sed -n 's/.*=//p' | sed -e 's/:.*$//'`
+                AS_IF(  [test -z "$with_cgroupctrl"], [
+                        # Try to be our own cgroup controller
+                        with_cgroupctrl="elogind"
+                        ])
+        ], [
+                # 'auto' but no cgroup fs is a problem.
+                with_cgroupctrl=""
         ])
 ])
-AS_IF(  [test -z "$with_cgroupctrl"],
-        AC_MSG_ERROR([No running cgroup controller found]))
 
+# If the user specified 'none', switch to 'elogind'.
+# 'none' is allowed, as this means "there is no controller now"
+AS_IF(  [test "x$with_cgroupctrl" = "xnone"], [with_cgroupctrl=elogind])
+
+# If this was not possible, /proc/self/cgroup not mounted yet, and 'auto'
+# chosen, error out.
+AS_IF(  [test -z "$with_cgroupctrl"],
+        AC_MSG_ERROR([No running cgroup controller found]), [
+        # Otherwise add the 'name=' prefix
+        with_cgroupctrl="name=$with_cgroupctrl"
+])
 
 # ------------------------------------------------------------------------------
 address_sanitizer_cflags=

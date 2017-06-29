@@ -116,6 +116,32 @@ flag.
 
 The PAM module is called pam_elogind.so, not pam_systemd.so.
 
+Elogind and the running cgroup controller
+-----------------------------------------
+While 'configure' runs, it will detect which controller is in place.
+If no controller is in place, configure will determine, that elogind
+should be its own controller, which will be a very limited one.
+
+This approach shoudl generally work, but if you just have no cgroup
+controller in place, yet, or if you are currently switching to
+another one, this approach will fail.
+
+In this case you can do one of the two following things:
+
+ 1) Boot your system with the target init system and cgroup
+    controller, before configuring and building elogind, or
+ 2) Use the --with-cgroup-controller=name option.
+
+Example: If you plan to use openrc, but openrc has not yet booted
+         the machine, you can use
+         --with-cgroup-controller=openrc
+         to let elogind know that openrc will be the controller
+         in charge.
+
+However, if you set the controller at configure time to something
+different than is in place, elogind will not start until that
+controller is actively used as the primary controller.
+
 License
 -------
 
