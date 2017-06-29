@@ -122,7 +122,7 @@ While 'configure' runs, it will detect which controller is in place.
 If no controller is in place, configure will determine, that elogind
 should be its own controller, which will be a very limited one.
 
-This approach shoudl generally work, but if you just have no cgroup
+This approach should generally work, but if you just have no cgroup
 controller in place, yet, or if you are currently switching to
 another one, this approach will fail.
 
@@ -139,7 +139,7 @@ Example: If you plan to use openrc, but openrc has not yet booted
          in charge.
 
 However, if you set the controller at configure time to something
-different than is in place, elogind will not start until that
+different than what is in place, elogind will not start until that
 controller is actively used as the primary controller.
 
 License
