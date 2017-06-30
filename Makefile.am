@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=16
-LIBELOGIND_REVISION=4
-LIBELOGIND_AGE=16
+LIBELOGIND_CURRENT=17
+LIBELOGIND_REVISION=0
+LIBELOGIND_AGE=17
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -76,8 +76,6 @@ EXTRA_DIST =
 BUILT_SOURCES =
 INSTALL_EXEC_HOOKS =
 UNINSTALL_EXEC_HOOKS =
-INSTALL_DATA_HOOKS =
-UNINSTALL_DATA_HOOKS =
 DISTCLEAN_LOCAL_HOOKS =
 CLEAN_LOCAL_HOOKS =
 pkginclude_HEADERS =
@@ -96,6 +94,7 @@ dist_dbussystemservice_DATA =
 check_PROGRAMS =
 check_DATA =
 dist_rootlibexec_DATA =
+rootlib_LTLIBRARIES =
 tests=
 manual_tests =
 if ENABLE_TESTS
@@ -123,7 +122,6 @@ CLEANFILES = $(BUILT_SOURCES) \
 	$(m4_files:.m4=)
 
 .PHONY: $(INSTALL_EXEC_HOOKS) $(UNINSTALL_EXEC_HOOKS) \
-	$(INSTALL_DATA_HOOKS) $(UNINSTALL_DATA_HOOKS) \
 	$(DISTCLEAN_LOCAL_HOOKS) $(CLEAN_LOCAL_HOOKS)
 
 AM_CPPFLAGS = \
@@ -162,16 +160,6 @@ AM_CFLAGS = $(OUR_CFLAGS)
 AM_LDFLAGS = $(OUR_LDFLAGS)
 
 # ------------------------------------------------------------------------------
-define move-to-rootlibdir
-	if test "$(libdir)" != "$(rootlibdir)"; then \
-		$(MKDIR_P) $(DESTDIR)$(rootlibdir) && \
-		so_img_name=$$(readlink $(DESTDIR)$(libdir)/$$libname) && \
-		rm -f $(DESTDIR)$(libdir)/$$libname && \
-		$(LN_S) --relative -f $(DESTDIR)$(rootlibdir)/$$so_img_name $(DESTDIR)$(libdir)/$$libname && \
-		mv $(DESTDIR)$(libdir)/$$libname.* $(DESTDIR)$(rootlibdir); \
-	fi
-endef
-
 install-touch-usr-hook:
 	touch -c $(DESTDIR)/$(prefix)
 
@@ -505,9 +493,7 @@ libelogind_shared_la_LIBADD = \
 	$(SECCOMP_LIBS)
 
 libelogind_shared_la_LDFLAGS = \
-	$(AM_LDFLAGS) \
-	-release $(PACKAGE_VERSION)
-
+	$(AM_LDFLAGS)
  # -----------------------------------------------------------------------------
 gperf_txt_sources = \
 	src/basic/errno-list.txt
@@ -641,15 +627,6 @@ libelogind_la_LIBADD = \
 	libelogind-internal.la \
 	libbasic.la
 
-libelogind-install-hook:
-	libname=libelogind.so && $(move-to-rootlibdir)
-
-libelogind-uninstall-hook:
-	rm -f $(DESTDIR)$(rootlibdir)/libelogind.so*
-
-INSTALL_EXEC_HOOKS += libelogind-install-hook
-UNINSTALL_EXEC_HOOKS += libelogind-uninstall-hook
-
 pkgconfiglib_DATA += \
 	src/libelogind/libelogind.pc
 
@@ -673,7 +650,7 @@ header-uninstall-hook:
 INSTALL_EXEC_HOOKS += header-install-hook
 UNINSTALL_EXEC_HOOKS += header-uninstall-hook
 
-lib_LTLIBRARIES += \
+rootlib_LTLIBRARIES += \
 	libelogind.la
 
 # ------------------------------------------------------------------------------
@@ -829,8 +806,10 @@ pam_elogind_la_LIBADD = \
 pamlib_LTLIBRARIES = \
 	pam_elogind.la
 
+if ENABLE_PAM_CONFIG
 dist_pamconf_DATA = \
 	src/login/elogind-user
+endif
 
 EXTRA_DIST += \
 	src/login/elogind-user.m4
@@ -1009,9 +988,7 @@ EXTRA_DIST += \
 
 install-exec-hook: $(INSTALL_EXEC_HOOKS)
 
-uninstall-hook: $(UNINSTALL_DATA_HOOKS) $(UNINSTALL_EXEC_HOOKS)
-
-install-data-hook: $(INSTALL_DATA_HOOKS)
+uninstall-hook: $(UNINSTALL_EXEC_HOOKS)
 
 distclean-local: $(DISTCLEAN_LOCAL_HOOKS)
 
@@ -1193,7 +1170,7 @@ print-%:
 	@echo $($*)
 
 git-contrib:
-	@git shortlog -s `git describe --abbrev=0`.. | cut -c8- | awk '{ print $$0 "," }' | sort -u
+	@git shortlog -s `git describe --abbrev=0`.. | cut -c8- | sed 's/ / /g' | awk '{ print $$0 "," }' | sort -u
 
 EXTRA_DIST += \
         tools/gdb-sd_dump_hashmaps.py

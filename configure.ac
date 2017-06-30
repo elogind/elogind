@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [231.4],
+        [232],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -248,23 +248,14 @@ AS_CASE([$CC], [*clang*],
                -Wno-gnu-variable-sized-type-not-at-end \
         ])])
 
-
-# ------------------------------------------------------------------------------
-# On some distributions -flto, even if available, leads to linking errors.
-# We therefore make it optional
-have_lto=no
-AC_ARG_ENABLE([lto],
-        [AS_HELP_STRING([--disable-lto], [Disable link time optimization (default: test)])])
-
-AS_IF([test "x$enable_lto" != "xno"], [
-        AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
-                [have_lto=yes],
-                [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
-        AS_IF([test "$have_lto" != "no"],
-                [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [-flto])]
-        )
-        AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
-])
+AC_ARG_ENABLE([lto], [AS_HELP_STRING([--disable-lto], [disable -flto])],
+                     [], [enable_lto=yes])
+AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
+        [AS_IF([test "x$enable_lto" = "xyes"],
+               [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [-flto])],
+               [AC_MSG_RESULT([disabling -flto as requested])])],
+        [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
+AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
 # ------------------------------------------------------------------------------
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
@@ -722,9 +713,10 @@ AC_ARG_WITH([pamlibdir],
 AX_NORMALIZE_PATH([with_pamlibdir])
 
 AC_ARG_WITH([pamconfdir],
-        AS_HELP_STRING([--with-pamconfdir=DIR], [Directory for PAM configuration]),
+        AS_HELP_STRING([--with-pamconfdir=DIR], [Directory for PAM configuration (pass no to disable installing)]),
         [],
         [with_pamconfdir=${sysconfdir}/pam.d])
+AM_CONDITIONAL(ENABLE_PAM_CONFIG, [test "$with_pamconfdir" != "no"])
 AX_NORMALIZE_PATH([with_pamconfdir])
 
 AC_ARG_ENABLE([split-usr],
@@ -818,7 +810,6 @@ AC_MSG_RESULT([
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
         utmp/wtmp support:       ${have_utmp}
-        Link time optimization:  ${have_lto}
         extra debugging:         ${enable_debug}
         cgroup controller:       ${with_cgroupctrl}
 
