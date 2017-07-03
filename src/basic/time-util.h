@@ -147,6 +147,9 @@ int parse_timestamp(const char *t, usec_t *usec);
 #endif // 0
 
 int parse_sec(const char *t, usec_t *usec);
+#if 0 /// UNNEEDED by elogind
+int parse_sec_fix_0(const char *t, usec_t *usec);
+#endif // 0
 int parse_time(const char *t, usec_t *usec, usec_t default_unit);
 #if 0 /// UNNEEDED by elogind
 int parse_nsec(const char *t, nsec_t *nsec);
