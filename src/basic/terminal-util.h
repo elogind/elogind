@@ -68,6 +68,7 @@ int vt_disallocate(const char *name);
 
 char *resolve_dev_console(char **active);
 #endif // 0
+int get_kernel_consoles(char ***consoles);
 bool tty_is_vc(const char *tty);
 #if 0 /// UNNEEDED by elogind
 bool tty_is_vc_resolve(const char *tty);
@@ -93,6 +94,7 @@ void columns_lines_cache_reset(int _unused_ signum);
 #endif // 0
 
 bool on_tty(void);
+bool terminal_is_dumb(void);
 bool colors_enabled(void);
 
 static inline const char *ansi_underline(void) {
@@ -130,10 +132,10 @@ static inline const char *ansi_normal(void) {
 int get_ctty_devnr(pid_t pid, dev_t *d);
 int get_ctty(pid_t, dev_t *_devnr, char **r);
 
-#if 0 /// UNNEEDED by elogind
 int getttyname_malloc(int fd, char **r);
 int getttyname_harder(int fd, char **r);
 
+#if 0 /// UNNEEDED by elogind
 int ptsname_malloc(int fd, char **ret);
 int ptsname_namespace(int pty, char **ret);
 

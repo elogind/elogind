@@ -17,29 +17,103 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <errno.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
+//#include <errno.h>
+//#include <stdbool.h>
+//#include <stddef.h>
+//#include <stdio.h>
+//#include <string.h>
 //#include <syslog.h>
 //#include <unistd.h>
 
-#include "sd-messages.h"
-
-//#include "alloc-util.h"
+#include "alloc-util.h"
 //#include "conf-parser.h"
 //#include "def.h"
+//#include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "log.h"
-#include "logind-sleep.h"
+//#include "log.h"
 //#include "macro.h"
 #include "parse-util.h"
+#include "sleep-config.h"
 #include "string-util.h"
 #include "strv.h"
 
-static int can_sleep_state(char **types) {
+#if 0 /// UNNEEDED by elogind
+#define USE(x, y) do { (x) = (y); (y) = NULL; } while (0)
+
+int parse_sleep_config(const char *verb, char ***_modes, char ***_states) {
+
+        _cleanup_strv_free_ char
+                **suspend_mode = NULL, **suspend_state = NULL,
+                **hibernate_mode = NULL, **hibernate_state = NULL,
+                **hybrid_mode = NULL, **hybrid_state = NULL;
+        char **modes, **states;
+
+        const ConfigTableItem items[] = {
+                { "Sleep",   "SuspendMode",      config_parse_strv,  0, &suspend_mode  },
+                { "Sleep",   "SuspendState",     config_parse_strv,  0, &suspend_state },
+                { "Sleep",   "HibernateMode",    config_parse_strv,  0, &hibernate_mode  },
+                { "Sleep",   "HibernateState",   config_parse_strv,  0, &hibernate_state },
+                { "Sleep",   "HybridSleepMode",  config_parse_strv,  0, &hybrid_mode  },
+                { "Sleep",   "HybridSleepState", config_parse_strv,  0, &hybrid_state },
+                {}
+        };
+
+        config_parse_many(PKGSYSCONFDIR "/sleep.conf",
+                          CONF_PATHS_NULSTR("systemd/sleep.conf.d"),
+                          "Sleep\0", config_item_table_lookup, items,
+                          false, NULL);
+
+        if (streq(verb, "suspend")) {
+                /* empty by default */
+                USE(modes, suspend_mode);
+
+                if (suspend_state)
+                        USE(states, suspend_state);
+                else
+                        states = strv_new("mem", "standby", "freeze", NULL);
+
+        } else if (streq(verb, "hibernate")) {
+                if (hibernate_mode)
+                        USE(modes, hibernate_mode);
+                else
+                        modes = strv_new("platform", "shutdown", NULL);
+
+                if (hibernate_state)
+                        USE(states, hibernate_state);
+                else
+                        states = strv_new("disk", NULL);
+
+        } else if (streq(verb, "hybrid-sleep")) {
+                if (hybrid_mode)
+                        USE(modes, hybrid_mode);
+                else
+                        modes = strv_new("suspend", "platform", "shutdown", NULL);
+
+                if (hybrid_state)
+                        USE(states, hybrid_state);
+                else
+                        states = strv_new("disk", NULL);
+
+        } else
+                assert_not_reached("what verb");
+
+        if ((!modes && !streq(verb, "suspend")) || !states) {
+                strv_free(modes);
+                strv_free(states);
+                return log_oom();
+        }
+
+        *_modes = modes;
+        *_states = states;
+        return 0;
+}
+#endif // 0
+
+#if 1 /// Only available in this file for elogind
+static
+#endif // 0
+int can_sleep_state(char **types) {
         char **type;
         int r;
         _cleanup_free_ char *p = NULL;
@@ -68,7 +142,10 @@ static int can_sleep_state(char **types) {
         return false;
 }
 
-static int can_sleep_disk(char **types) {
+#if 1 /// Only available in this file for elogind
+static
+#endif // 0
+int can_sleep_disk(char **types) {
         char **type;
         int r;
         _cleanup_free_ char *p = NULL;
@@ -163,6 +240,11 @@ static bool enough_memory_for_hibernation(void) {
         size_t size = 0, used = 0;
         int r;
 
+#if 0 /// elogind does not allow any bypass, we are never init!
+        if (getenv_bool("SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK") > 0)
+                return true;
+#endif // 0
+
         r = hibernation_partition_size(&size, &used);
         if (r < 0)
                 return false;
@@ -187,6 +269,25 @@ static bool enough_memory_for_hibernation(void) {
         return r;
 }
 
+#if 0 /// elogind has to do, or better, *can* do it differently
+int can_sleep(const char *verb) {
+        _cleanup_strv_free_ char **modes = NULL, **states = NULL;
+        int r;
+
+        assert(streq(verb, "suspend") ||
+               streq(verb, "hibernate") ||
+               streq(verb, "hybrid-sleep"));
+
+        r = parse_sleep_config(verb, &modes, &states);
+        if (r < 0)
+                return false;
+
+        if (!can_sleep_state(states) || !can_sleep_disk(modes))
+                return false;
+
+        return streq(verb, "suspend") || enough_memory_for_hibernation();
+}
+#else
 int can_sleep(Manager *m, const char *verb) {
 
         assert(streq(verb, "suspend") ||
@@ -211,99 +312,4 @@ int can_sleep(Manager *m, const char *verb) {
 
         return streq(verb, "suspend") || enough_memory_for_hibernation();
 }
-
-static int write_mode(char **modes) {
-        int r = 0;
-        char **mode;
-
-        STRV_FOREACH(mode, modes) {
-                int k;
-
-                k = write_string_file("/sys/power/disk", *mode, 0);
-                if (k == 0)
-                        return 0;
-
-                log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m",
-                                *mode);
-                if (r == 0)
-                        r = k;
-        }
-
-        if (r < 0)
-                log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
-
-        return r;
-}
-
-static int write_state(FILE **f, char **states) {
-        char **state;
-        int r = 0;
-
-        STRV_FOREACH(state, states) {
-                int k;
-
-                k = write_string_stream(*f, *state, true);
-                if (k == 0)
-                        return 0;
-                log_debug_errno(k, "Failed to write '%s' to /sys/power/state: %m",
-                                *state);
-                if (r == 0)
-                        r = k;
-
-                fclose(*f);
-                *f = fopen("/sys/power/state", "we");
-                if (!*f)
-                        return log_error_errno(errno, "Failed to open /sys/power/state: %m");
-        }
-
-        return r;
-}
-
-int do_sleep(const char *arg_verb, char **modes, char **states) {
-
-        char *arguments[] = {
-                NULL,
-                (char*) "pre",
-                (char*) arg_verb,
-                NULL
-        };
-        static const char* const dirs[] = {SYSTEM_SLEEP_PATH, NULL};
-
-        int r;
-        _cleanup_fclose_ FILE *f = NULL;
-
-        /* This file is opened first, so that if we hit an error,
-         * we can abort before modifying any state. */
-        f = fopen("/sys/power/state", "we");
-        if (!f)
-                return log_error_errno(errno, "Failed to open /sys/power/state: %m");
-
-        /* Configure the hibernation mode */
-        r = write_mode(modes);
-        if (r < 0)
-                return r;
-
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, arguments);
-
-        log_struct(LOG_INFO,
-                   LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
-                   LOG_MESSAGE("Suspending system..."),
-                   "SLEEP=%s", arg_verb,
-                   NULL);
-
-        r = write_state(&f, states);
-        if (r < 0)
-                return r;
-
-        log_struct(LOG_INFO,
-                   LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_STOP),
-                   LOG_MESSAGE("System resumed."),
-                   "SLEEP=%s", arg_verb,
-                   NULL);
-
-        arguments[1] = (char*) "post";
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, arguments);
-
-        return r;
-}
-
+#endif // 0

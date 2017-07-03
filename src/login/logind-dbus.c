@@ -41,14 +41,18 @@
 #include "path-util.h"
 #include "process-util.h"
 #include "selinux-util.h"
-//#include "sleep-config.h"
+#include "sleep-config.h"
 //#include "special.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "udev-util.h"
 #include "unit-name.h"
 #include "user-util.h"
-//#include "utmp-wtmp.h"
+#include "utmp-wtmp.h"
+
+/// Additional includes needed by elogind
+#include "elogind-dbus.h"
+//#include "update-utmp.h"
 
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
@@ -263,6 +267,42 @@ static int property_get_docked(
         assert(m);
 
         return sd_bus_message_append(reply, "b", manager_is_docked_or_external_displays(m));
+}
+
+static int property_get_current_sessions(
+                sd_bus *bus,
+                const char *path,
+                const char *interface,
+                const char *property,
+                sd_bus_message *reply,
+                void *userdata,
+                sd_bus_error *error) {
+
+        Manager *m = userdata;
+
+        assert(bus);
+        assert(reply);
+        assert(m);
+
+        return sd_bus_message_append(reply, "t", (uint64_t) hashmap_size(m->sessions));
+}
+
+static int property_get_current_inhibitors(
+                sd_bus *bus,
+                const char *path,
+                const char *interface,
+                const char *property,
+                sd_bus_message *reply,
+                void *userdata,
+                sd_bus_error *error) {
+
+        Manager *m = userdata;
+
+        assert(bus);
+        assert(reply);
+        assert(m);
+
+        return sd_bus_message_append(reply, "t", (uint64_t) hashmap_size(m->inhibitors));
 }
 
 static int method_get_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
@@ -725,6 +765,9 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
             m->seat0->positions[vtnr]->class != SESSION_GREETER)
                 return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY, "Already occupied by a session");
 
+        if (hashmap_size(m->sessions) >= m->sessions_max)
+                return sd_bus_error_setf(error, SD_BUS_ERROR_LIMITS_EXCEEDED, "Maximum number of sessions (%" PRIu64 ") reached, refusing further sessions.", m->sessions_max);
+
         audit_session_from_pid(leader, &audit_id);
         if (audit_id > 0) {
                 /* Keep our session IDs and the audit session IDs in sync */
@@ -831,13 +874,17 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
 
         session->create_message = sd_bus_message_ref(message);
 
-        /* Here upstream systemd starts cgroups and the user systemd,
-           and arranges to reply asynchronously.  We reply
-           directly.  */
+#if 0 /// UNNEEDED by elogind
+        /* Now, let's wait until the slice unit and stuff got
+         * created. We send the reply back from
+         * session_send_create_reply(). */
+#else
+        /* We reply directly. */
 
         r = session_send_create_reply(session, NULL);
         if (r < 0)
                 goto fail;
+#endif // 0
 
         return 1;
 
@@ -872,8 +919,9 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
         if (r < 0)
                 return r;
 
+#if 1 /// elogind must queue this session
         session_add_to_gc_queue(session);
-
+#endif // 1
         return sd_bus_reply_method_return(message, NULL);
 }
 
@@ -1083,11 +1131,11 @@ static int method_terminate_seat(sd_bus_message *message, void *userdata, sd_bus
 static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *cc = NULL;
         Manager *m = userdata;
-        int b, r;
+        int r, b, interactive;
         struct passwd *pw;
         const char *path;
         uint32_t uid;
-        int interactive;
+        bool self = false;
 
         assert(message);
         assert(m);
@@ -1108,6 +1156,8 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
                 if (r < 0)
                         return r;
 
+                self = true;
+
         } else if (!uid_is_valid(uid))
                 return -EINVAL;
 
@@ -1119,7 +1169,7 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
         r = bus_verify_polkit_async(
                         message,
                         CAP_SYS_ADMIN,
-                        "org.freedesktop.login1.set-user-linger",
+                        self ? "org.freedesktop.login1.set-self-linger" : "org.freedesktop.login1.set-user-linger",
                         NULL,
                         interactive,
                         UID_INVALID,
@@ -1341,6 +1391,7 @@ static int method_flush_devices(sd_bus_message *message, void *userdata, sd_bus_
         return sd_bus_reply_method_return(message, NULL);
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int have_multiple_sessions(
                 Manager *m,
                 uid_t uid) {
@@ -1363,7 +1414,6 @@ static int have_multiple_sessions(
 static int bus_manager_log_shutdown(
                 Manager *m,
                 InhibitWhat w,
-#if 0 /// elogind does not support systemd units
                 const char *unit_name) {
 
         const char *p, *q;
@@ -1390,38 +1440,7 @@ static int bus_manager_log_shutdown(
                 p = "MESSAGE=System is shutting down";
                 q = NULL;
         }
-#else
-                 HandleAction action) {
 
-         const char *p, *q;
-
-         assert(m);
-
-         if (w != INHIBIT_SHUTDOWN)
-                 return 0;
-
-         switch (action) {
-         case HANDLE_POWEROFF:
-                 p = "MESSAGE=System is powering down.";
-                 q = "SHUTDOWN=power-off";
-                 break;
-         case HANDLE_HALT:
-                 p = "MESSAGE=System is halting.";
-                 q = "SHUTDOWN=halt";
-                 break;
-         case HANDLE_REBOOT:
-                 p = "MESSAGE=System is rebooting.";
-                 q = "SHUTDOWN=reboot";
-                 break;
-         case HANDLE_KEXEC:
-                 p = "MESSAGE=System is rebooting with kexec.";
-                 q = "SHUTDOWN=kexec";
-                 break;
-         default:
-                 p = "MESSAGE=System is shutting down.";
-                 q = NULL;
-         }
-#endif // 0
         if (isempty(m->wall_message))
                 p = strjoina(p, ".");
         else
@@ -1433,6 +1452,7 @@ static int bus_manager_log_shutdown(
                           q,
                           NULL);
 }
+#endif // 0
 
 static int lid_switch_ignore_handler(sd_event_source *e, uint64_t usec, void *userdata) {
         Manager *m = userdata;
@@ -1493,64 +1513,54 @@ static void reset_scheduled_shutdown(Manager *m) {
         }
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int execute_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
-                HandleAction action,
+                const char *unit_name,
                 sd_bus_error *error) {
 
-#if 0 /// elogind does not need these, we do it ourselves
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         char *c = NULL;
         const char *p;
-#endif // 0
         int r;
 
         assert(m);
         assert(w >= 0);
         assert(w < _INHIBIT_WHAT_MAX);
+        assert(unit_name);
 
-        bus_manager_log_shutdown(m, w, action);
+        bus_manager_log_shutdown(m, w, unit_name);
 
-#if 0 /// elogind does it directly without depending on systemd running the system
         if (m->shutdown_dry_run) {
                 log_info("Running in dry run, suppressing action.");
                 reset_scheduled_shutdown(m);
         } else {
-        r = sd_bus_call_method(
-                        m->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "StartUnit",
-                        error,
-                        &reply,
-                        "ss", unit_name, "replace-irreversibly");
-#else
-        r = shutdown_or_sleep(m, action);
+                r = sd_bus_call_method(
+                                m->bus,
+                                "org.freedesktop.systemd1",
+                                "/org/freedesktop/systemd1",
+                                "org.freedesktop.systemd1.Manager",
+                                "StartUnit",
+                                error,
+                                &reply,
+                                "ss", unit_name, "replace-irreversibly");
+                if (r < 0)
+                        return r;
 
-        /* no more pending actions, whether this failed or not */
-        m->pending_action = HANDLE_IGNORE;
-        m->action_what    = 0;
-#endif // 0
-        if (r < 0)
-                return r;
+                r = sd_bus_message_read(reply, "o", &p);
+                if (r < 0)
+                        return r;
 
-#if 0 /// elogind neither needs a dbus reply, nor supports systemd action jobs
-        r = sd_bus_message_read(reply, "o", &p);
-        if (r < 0)
-                return r;
-
-        c = strdup(p);
-        if (!c)
-                return -ENOMEM;
+                c = strdup(p);
+                if (!c)
+                        return -ENOMEM;
         }
 
         m->action_unit = unit_name;
         free(m->action_job);
         m->action_job = c;
         m->action_what = w;
-#endif // 0
 
         /* Make sure the lid switch is ignored for a while */
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
@@ -1566,7 +1576,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
         assert(manager);
 
-        if ( (0 == manager->action_what) || (HANDLE_IGNORE == manager->pending_action) )
+        if (manager->action_what == 0 || manager->action_job)
                 return 0;
 
         if (manager_is_inhibited(manager, manager->action_what, INHIBIT_DELAY, NULL, false, false, 0, &offending)) {
@@ -1584,12 +1594,12 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
         }
 
         /* Actually do the operation */
-        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->pending_action, &error);
+        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->action_unit, &error);
         if (r < 0) {
                 log_warning("Failed to send delayed message: %s", bus_error_message(&error, r));
 
-                manager->pending_action = HANDLE_IGNORE;
-                manager->action_what    = 0;
+                manager->action_unit = NULL;
+                manager->action_what = 0;
                 return r;
         }
 
@@ -1614,7 +1624,7 @@ static int manager_inhibit_timeout_handler(
 static int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
-                HandleAction action) {
+                const char *unit_name) {
 
         int r;
         usec_t timeout_val;
@@ -1622,6 +1632,7 @@ static int delay_shutdown_or_sleep(
         assert(m);
         assert(w >= 0);
         assert(w < _INHIBIT_WHAT_MAX);
+        assert(unit_name);
 
         timeout_val = now(CLOCK_MONOTONIC) + m->inhibit_delay_max;
 
@@ -1640,7 +1651,7 @@ static int delay_shutdown_or_sleep(
                         return r;
         }
 
-        m->pending_action = action;
+        m->action_unit = unit_name;
         m->action_what = w;
 
         return 0;
@@ -1670,7 +1681,7 @@ static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 
 int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
-                HandleAction action,
+                const char *unit_name,
                 InhibitWhat w,
                 sd_bus_error *error) {
 
@@ -1678,8 +1689,10 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         int r;
 
         assert(m);
+        assert(unit_name);
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
+        assert(!m->action_job);
 
         /* Tell everybody to prepare for shutdown/sleep */
         send_prepare_for(m, w, true);
@@ -1688,14 +1701,17 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 m->inhibit_delay_max > 0 &&
                 manager_is_inhibited(m, w, INHIBIT_DELAY, NULL, false, false, 0, NULL);
 
+        log_debug_elogind("%s called for %s (%sdelayed)", __FUNCTION__,
+                          handle_action_to_string(action),
+                          delayed ? "" : "NOT ");
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
-                r = delay_shutdown_or_sleep(m, w, action);
+                r = delay_shutdown_or_sleep(m, w, unit_name);
         else
                 /* Shutdown is not delayed, execute it
                  * immediately */
-                r = execute_shutdown_or_sleep(m, w, action, error);
+                r = execute_shutdown_or_sleep(m, w, unit_name, error);
 
         return r;
 }
@@ -1765,7 +1781,7 @@ static int verify_shutdown_creds(
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
-                HandleAction sleep_action,
+                const char *unit_name,
                 InhibitWhat w,
                 const char *action,
                 const char *action_multiple_sessions,
@@ -1777,6 +1793,7 @@ static int method_do_shutdown_or_sleep(
 
         assert(m);
         assert(message);
+        assert(unit_name);
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
 
@@ -1784,12 +1801,15 @@ static int method_do_shutdown_or_sleep(
         if (r < 0)
                 return r;
 
+        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
+                          __FUNCTION__, action, sleep_verb,
+                          interactive ? "" : "NOT ");
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
 
         if (sleep_verb) {
-                r = can_sleep(m, sleep_verb);
+                r = can_sleep(sleep_verb);
                 if (r < 0)
                         return r;
 
@@ -1799,10 +1819,11 @@ static int method_do_shutdown_or_sleep(
 
         r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
                                   action_ignore_inhibit, error);
+        log_debug_elogind("verify_shutdown_creds() returned %d", r);
         if (r != 0)
                 return r;
 
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, sleep_action, w, error);
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
         if (r < 0)
                 return r;
 
@@ -1812,9 +1833,10 @@ static int method_do_shutdown_or_sleep(
 static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_POWEROFF,
+                        SPECIAL_POWEROFF_TARGET,
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.power-off",
                         "org.freedesktop.login1.power-off-multiple-sessions",
@@ -1826,9 +1848,10 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
 static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_REBOOT,
+                        SPECIAL_REBOOT_TARGET,
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.reboot",
                         "org.freedesktop.login1.reboot-multiple-sessions",
@@ -1840,9 +1863,10 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
 static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_SUSPEND,
+                        SPECIAL_SUSPEND_TARGET,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.suspend",
                         "org.freedesktop.login1.suspend-multiple-sessions",
@@ -1850,6 +1874,7 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
                         "suspend",
                         error);
 }
+#endif // 0
 
 static int nologin_timeout_handler(
                         sd_event_source *s,
@@ -1919,12 +1944,13 @@ static int update_schedule_file(Manager *m) {
         return 0;
 
 fail:
-                (void) unlink(temp_path);
-                (void) unlink("/run/systemd/shutdown/scheduled");
+        (void) unlink(temp_path);
+        (void) unlink("/run/systemd/shutdown/scheduled");
 
         return log_error_errno(r, "Failed to write information about scheduled shutdowns: %m");
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int manager_scheduled_shutdown_handler(
                         sd_event_source *s,
                         uint64_t usec,
@@ -1932,7 +1958,7 @@ static int manager_scheduled_shutdown_handler(
 
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         Manager *m = userdata;
-        HandleAction action;
+        const char *target;
         int r;
 
         assert(m);
@@ -1941,18 +1967,19 @@ static int manager_scheduled_shutdown_handler(
                 return 0;
 
         if (streq(m->scheduled_shutdown_type, "halt"))
-                action = HANDLE_HALT;
+                target = SPECIAL_HALT_TARGET;
         else if (streq(m->scheduled_shutdown_type, "poweroff"))
-                action = HANDLE_POWEROFF;
+                target = SPECIAL_POWEROFF_TARGET;
         else
-                action = HANDLE_REBOOT;
+                target = SPECIAL_REBOOT_TARGET;
 
-        r = execute_shutdown_or_sleep(m, 0, action, &error);
+        r = execute_shutdown_or_sleep(m, 0, target, &error);
         if (r < 0)
-                return log_error_errno(r, "Unable to execute transition to %s: %m", m->scheduled_shutdown_type);
+                return log_error_errno(r, "Unable to execute transition to %s: %m", target);
 
         return 0;
 }
+#endif // 0
 
 static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
@@ -1967,6 +1994,7 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
         assert(m);
         assert(message);
 
+        log_debug_elogind("%s called", __FUNCTION__);
         r = sd_bus_message_read(message, "st", &type, &elapse);
         if (r < 0)
                 return r;
@@ -2048,11 +2076,9 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
                 }
         }
 
-#if 0 /// elogind does not support utmp-wtmp
         r = manager_setup_wall_message_timer(m);
         if (r < 0)
                 return r;
-#endif // 0
 
         if (!isempty(type)) {
                 r = update_schedule_file(m);
@@ -2067,14 +2093,17 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
 static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
         bool cancelled;
+#if 1 /// elogind needs to construct the message to allow extra wall messages
+        _cleanup_free_ char *l = NULL;
+#endif // 1
 
         assert(m);
         assert(message);
 
+        log_debug_elogind("%s called", __FUNCTION__);
         cancelled = m->scheduled_shutdown_type != NULL;
         reset_scheduled_shutdown(m);
 
-#if 0 /// elogind does not support utmp-wtmp
         if (cancelled) {
                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
                 const char *tty = NULL;
@@ -2087,20 +2116,33 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                         (void) sd_bus_creds_get_tty(creds, &tty);
                 }
 
+#if 0 /// elogind wants to allow extra cancellation messages
                 utmp_wall("The system shutdown has been cancelled",
                           uid_to_name(uid), tty, logind_wall_tty_filter, m);
-        }
+#else
+                r = asprintf(&l, "%s%sThe system shutdown has been cancelled!",
+                             strempty(m->wall_message),
+                             isempty(m->wall_message) ? "" : "\n");
+                if (r < 0) {
+                        log_oom();
+                        return 0;
+                }
+
+                utmp_wall(l, uid_to_name(uid), tty, logind_wall_tty_filter, m);
 #endif // 0
+        }
 
         return sd_bus_reply_method_return(message, "b", cancelled);
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_HIBERNATE,
+                        SPECIAL_HIBERNATE_TARGET,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -2112,9 +2154,10 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
 static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-                        HANDLE_HYBRID_SLEEP,
+                        SPECIAL_HYBRID_SLEEP_TARGET,
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -2122,6 +2165,7 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
                         "hybrid-sleep",
                         error);
 }
+#endif // 0
 
 static int method_can_shutdown_or_sleep(
                 Manager *m,
@@ -2148,7 +2192,11 @@ static int method_can_shutdown_or_sleep(
         assert(action_ignore_inhibit);
 
         if (sleep_verb) {
+#if 0 /// elogind needs to have the manager being passed
+                r = can_sleep(sleep_verb);
+#else
                 r = can_sleep(m, sleep_verb);
+#endif // 0
                 if (r < 0)
                         return r;
                 if (r == 0)
@@ -2301,7 +2349,7 @@ static int property_get_reboot_to_firmware_setup(
 
         return sd_bus_message_append(reply, "b", r > 0);
 #else
-        return sd_bus_message_append(reply, "b", -EOPNOTSUPP);
+        return sd_bus_message_append(reply, "b", false);
 #endif // 0
 }
 
@@ -2381,7 +2429,7 @@ static int method_can_reboot_to_firmware_setup(
 
         return sd_bus_reply_method_return(message, "s", result);
 #else
-        return sd_bus_reply_method_return(message, "s", "na");
+        return sd_bus_reply_method_return(message, "s", "no");
 #endif // 0
 }
 
@@ -2402,6 +2450,7 @@ static int method_set_wall_message(
         if (r < 0)
                 return r;
 
+#if 0 /// elogind only calls this for shutdown/reboot, which already needs authorization.
         r = bus_verify_polkit_async(message,
                                     CAP_SYS_ADMIN,
                                     "org.freedesktop.login1.set-wall-message",
@@ -2414,6 +2463,7 @@ static int method_set_wall_message(
                 return r;
         if (r == 0)
                 return 1; /* Will call us back */
+#endif // 0
 
         if (isempty(wall_message))
                 m->wall_message = mfree(m->wall_message);
@@ -2499,6 +2549,9 @@ static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error 
         if (r < 0)
                 return r;
 
+        if (hashmap_size(m->inhibitors) >= m->inhibitors_max)
+                return sd_bus_error_setf(error, SD_BUS_ERROR_LIMITS_EXCEEDED, "Maximum number of inhibitors (%" PRIu64 ") reached, refusing further inhibitors.", m->inhibitors_max);
+
         do {
                 id = mfree(id);
 
@@ -2546,7 +2599,9 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_WRITABLE_PROPERTY("EnableWallMessages", "b", NULL, NULL, offsetof(Manager, enable_wall_messages), 0),
         SD_BUS_WRITABLE_PROPERTY("WallMessage", "s", NULL, NULL, offsetof(Manager, wall_message), 0),
 
-//        SD_BUS_PROPERTY("NAutoVTs", "u", NULL, offsetof(Manager, n_autovts), SD_BUS_VTABLE_PROPERTY_CONST),
+#if 0 /// UNNEEDED by elogind
+        SD_BUS_PROPERTY("NAutoVTs", "u", NULL, offsetof(Manager, n_autovts), SD_BUS_VTABLE_PROPERTY_CONST),
+#endif // 0
         SD_BUS_PROPERTY("KillOnlyUsers", "as", NULL, offsetof(Manager, kill_only_users), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("KillExcludeUsers", "as", NULL, offsetof(Manager, kill_exclude_users), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("KillUserProcesses", "b", NULL, offsetof(Manager, kill_user_processes), SD_BUS_VTABLE_PROPERTY_CONST),
@@ -2569,6 +2624,13 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_PROPERTY("PreparingForSleep", "b", property_get_preparing, 0, 0),
         SD_BUS_PROPERTY("ScheduledShutdown", "(st)", property_get_scheduled_shutdown, 0, 0),
         SD_BUS_PROPERTY("Docked", "b", property_get_docked, 0, 0),
+        SD_BUS_PROPERTY("RemoveIPC", "b", bus_property_get_bool, offsetof(Manager, remove_ipc), SD_BUS_VTABLE_PROPERTY_CONST),
+        SD_BUS_PROPERTY("RuntimeDirectorySize", "t", bus_property_get_size, offsetof(Manager, runtime_dir_size), SD_BUS_VTABLE_PROPERTY_CONST),
+        SD_BUS_PROPERTY("InhibitorsMax", "t", NULL, offsetof(Manager, inhibitors_max), SD_BUS_VTABLE_PROPERTY_CONST),
+        SD_BUS_PROPERTY("NCurrentInhibitors", "t", property_get_current_inhibitors, 0, 0),
+        SD_BUS_PROPERTY("SessionsMax", "t", NULL, offsetof(Manager, sessions_max), SD_BUS_VTABLE_PROPERTY_CONST),
+        SD_BUS_PROPERTY("NCurrentSessions", "t", property_get_current_sessions, 0, 0),
+        SD_BUS_PROPERTY("UserTasksMax", "t", NULL, offsetof(Manager, user_tasks_max), SD_BUS_VTABLE_PROPERTY_CONST),
 
         SD_BUS_METHOD("GetSession", "s", "o", method_get_session, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("GetSessionByPID", "u", "o", method_get_session_by_pid, SD_BUS_VTABLE_UNPRIVILEGED),
@@ -2842,6 +2904,7 @@ int manager_start_slice(
 
         assert(manager);
         assert(slice);
+        assert(job);
 
         r = sd_bus_message_new_method_call(
                         manager->bus,
@@ -2895,9 +2958,7 @@ int manager_start_slice(
         if (r < 0)
                 return r;
 
-        if (job)
-                return strdup_job(reply, job);
-        return 1;
+        return strdup_job(reply, job);
 }
 
 int manager_start_scope(
@@ -2918,6 +2979,7 @@ int manager_start_scope(
         assert(manager);
         assert(scope);
         assert(pid > 1);
+        assert(job);
 
         r = sd_bus_message_new_method_call(
                         manager->bus,
@@ -2992,9 +3054,7 @@ int manager_start_scope(
         if (r < 0)
                 return r;
 
-        if (job)
-                return strdup_job(reply, job);
-        return 1;
+        return strdup_job(reply, job);
 }
 
 int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job) {
@@ -3003,6 +3063,7 @@ int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, 
 
         assert(manager);
         assert(unit);
+        assert(job);
 
         r = sd_bus_call_method(
                         manager->bus,
@@ -3016,9 +3077,7 @@ int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, 
         if (r < 0)
                 return r;
 
-        if (job)
-                return strdup_job(reply, job);
-        return 1;
+        return strdup_job(reply, job);
 }
 
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job) {
@@ -3027,6 +3086,7 @@ int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, c
 
         assert(manager);
         assert(unit);
+        assert(job);
 
         r = sd_bus_call_method(
                         manager->bus,
@@ -3041,9 +3101,7 @@ int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, c
                 if (sd_bus_error_has_name(error, BUS_ERROR_NO_SUCH_UNIT) ||
                     sd_bus_error_has_name(error, BUS_ERROR_LOAD_FAILED)) {
 
-                        if (job)
-                                *job = NULL;
-
+                        *job = NULL;
                         sd_bus_error_free(error);
                         return 0;
                 }
@@ -3051,9 +3109,7 @@ int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, c
                 return r;
         }
 
-        if (job)
-                return strdup_job(reply, job);
-        return 1;
+        return strdup_job(reply, job);
 }
 
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error) {

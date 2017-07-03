@@ -65,6 +65,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(DIR*, closedir);
 
 int fd_nonblock(int fd, bool nonblock);
 int fd_cloexec(int fd, bool cloexec);
+void stdio_unset_cloexec(void);
 
 int close_all_fds(const int except[], unsigned n_except);
 
@@ -74,6 +75,8 @@ int same_fd(int a, int b);
 void cmsg_close_all(struct msghdr *mh);
 
 bool fdname_is_valid(const char *s);
+
+int fd_get_path(int fd, char **ret);
 #endif // 0
 
 /* Hint: ENETUNREACH happens if we try to connect to "non-existing" special IP addresses, such as ::5 */

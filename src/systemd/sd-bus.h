@@ -89,13 +89,13 @@ enum {
         SD_BUS_CREDS_WELL_KNOWN_NAMES   = 1ULL << 32,
         SD_BUS_CREDS_DESCRIPTION        = 1ULL << 33,
         SD_BUS_CREDS_AUGMENT            = 1ULL << 63, /* special flag, if on sd-bus will augment creds struct, in a potentially race-full way. */
-        _SD_BUS_CREDS_ALL               = (1ULL << 34) -1,
+        _SD_BUS_CREDS_ALL               = (1ULL << 34) -1
 };
 
 enum {
         SD_BUS_NAME_REPLACE_EXISTING  = 1ULL << 0,
         SD_BUS_NAME_ALLOW_REPLACEMENT = 1ULL << 1,
-        SD_BUS_NAME_QUEUE             = 1ULL << 2,
+        SD_BUS_NAME_QUEUE             = 1ULL << 2
 };
 
 /* Callbacks */
@@ -258,7 +258,6 @@ int sd_bus_message_get_priority(sd_bus_message *m, int64_t *priority);
 int sd_bus_message_get_expect_reply(sd_bus_message *m);
 int sd_bus_message_get_auto_start(sd_bus_message *m);
 #endif // 0
-
 int sd_bus_message_get_allow_interactive_authorization(sd_bus_message *m);
 
 const char *sd_bus_message_get_signature(sd_bus_message *m, int complete);
@@ -338,6 +337,7 @@ int sd_bus_get_name_creds(sd_bus *bus, const char *name, uint64_t mask, sd_bus_c
 #if 0 /// UNNEEDED by elogind
 int sd_bus_get_name_machine_id(sd_bus *bus, const char *name, sd_id128_t *machine);
 #endif // 0
+
 /* Convenience calls */
 
 int sd_bus_call_method(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, sd_bus_message **reply, const char *types, ...);
@@ -345,9 +345,7 @@ int sd_bus_call_method(sd_bus *bus, const char *destination, const char *path, c
 int sd_bus_call_method_async(sd_bus *bus, sd_bus_slot **slot, const char *destination, const char *path, const char *interface, const char *member, sd_bus_message_handler_t callback, void *userdata, const char *types, ...);
 #endif // 0
 int sd_bus_get_property(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, sd_bus_message **reply, const char *type);
-#if 0 /// UNNEEDED by elogind
 int sd_bus_get_property_trivial(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, char type, void *ret_ptr);
-#endif // 0
 int sd_bus_get_property_string(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, char **ret); /* free the result! */
 #if 0 /// UNNEEDED by elogind
 int sd_bus_get_property_strv(sd_bus *bus, const char *destination, const char *path, const char *interface, const char *member, sd_bus_error *ret_error, char ***ret); /* free the result! */

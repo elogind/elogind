@@ -34,6 +34,7 @@
 typedef enum CGroupController {
         CGROUP_CONTROLLER_CPU,
         CGROUP_CONTROLLER_CPUACCT,
+        CGROUP_CONTROLLER_IO,
         CGROUP_CONTROLLER_BLKIO,
         CGROUP_CONTROLLER_MEMORY,
         CGROUP_CONTROLLER_DEVICES,
@@ -48,6 +49,7 @@ typedef enum CGroupController {
 typedef enum CGroupMask {
         CGROUP_MASK_CPU = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_CPU),
         CGROUP_MASK_CPUACCT = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_CPUACCT),
+        CGROUP_MASK_IO = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_IO),
         CGROUP_MASK_BLKIO = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_BLKIO),
         CGROUP_MASK_MEMORY = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_MEMORY),
         CGROUP_MASK_DEVICES = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_DEVICES),
@@ -56,6 +58,37 @@ typedef enum CGroupMask {
 } CGroupMask;
 
 #if 0 /// UNNEEDED by elogind
+/* Special values for all weight knobs on unified hierarchy */
+#define CGROUP_WEIGHT_INVALID ((uint64_t) -1)
+#define CGROUP_WEIGHT_MIN UINT64_C(1)
+#define CGROUP_WEIGHT_MAX UINT64_C(10000)
+#define CGROUP_WEIGHT_DEFAULT UINT64_C(100)
+
+#define CGROUP_LIMIT_MIN UINT64_C(0)
+#define CGROUP_LIMIT_MAX ((uint64_t) -1)
+
+static inline bool CGROUP_WEIGHT_IS_OK(uint64_t x) {
+        return
+            x == CGROUP_WEIGHT_INVALID ||
+            (x >= CGROUP_WEIGHT_MIN && x <= CGROUP_WEIGHT_MAX);
+}
+
+/* IO limits on unified hierarchy */
+typedef enum CGroupIOLimitType {
+        CGROUP_IO_RBPS_MAX,
+        CGROUP_IO_WBPS_MAX,
+        CGROUP_IO_RIOPS_MAX,
+        CGROUP_IO_WIOPS_MAX,
+
+        _CGROUP_IO_LIMIT_TYPE_MAX,
+        _CGROUP_IO_LIMIT_TYPE_INVALID = -1
+} CGroupIOLimitType;
+
+extern const uint64_t cgroup_io_limit_defaults[_CGROUP_IO_LIMIT_TYPE_MAX];
+
+const char* cgroup_io_limit_type_to_string(CGroupIOLimitType t) _const_;
+CGroupIOLimitType cgroup_io_limit_type_from_string(const char *s) _pure_;
+
 /* Special values for the cpu.shares attribute */
 #define CGROUP_CPU_SHARES_INVALID ((uint64_t) -1)
 #define CGROUP_CPU_SHARES_MIN UINT64_C(2)
@@ -98,16 +131,26 @@ static inline bool CGROUP_BLKIO_WEIGHT_IS_OK(uint64_t x) {
 
 int cg_enumerate_processes(const char *controller, const char *path, FILE **_f);
 int cg_read_pid(FILE *f, pid_t *_pid);
+int cg_read_event(const char *controller, const char *path, const char *event,
+                  char **val);
 
 int cg_enumerate_subgroups(const char *controller, const char *path, DIR **_d);
 int cg_read_subgroup(DIR *d, char **fn);
 
-int cg_kill(const char *controller, const char *path, int sig, bool sigcont, bool ignore_self, Set *s);
-int cg_kill_recursive(const char *controller, const char *path, int sig, bool sigcont, bool ignore_self, bool remove, Set *s);
+typedef enum CGroupFlags {
+        CGROUP_SIGCONT     = 1,
+        CGROUP_IGNORE_SELF = 2,
+        CGROUP_REMOVE      = 4,
+} CGroupFlags;
 
-int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char *pto, bool ignore_self);
-int cg_migrate_recursive(const char *cfrom, const char *pfrom, const char *cto, const char *pto, bool ignore_self, bool remove);
-int cg_migrate_recursive_fallback(const char *cfrom, const char *pfrom, const char *cto, const char *pto, bool ignore_self, bool rem);
+typedef void (*cg_kill_log_func_t)(pid_t pid, int sig, void *userdata);
+
+int cg_kill(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
+int cg_kill_recursive(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
+
+int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
+int cg_migrate_recursive(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
+int cg_migrate_recursive_fallback(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
 
 int cg_split_spec(const char *spec, char **controller, char **path);
 int cg_mangle_path(const char *path, char **result);
@@ -127,12 +170,13 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid);
 int cg_create_and_attach(const char *controller, const char *path, pid_t pid);
 
 int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value);
-#if 0 /// UNNEEDED by elogind
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret);
 
+#if 0 /// UNNEEDED by elogind
 int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 #endif // 0
+
 int cg_install_release_agent(const char *controller, const char *agent);
 int cg_uninstall_release_agent(const char *controller);
 
@@ -150,6 +194,7 @@ int cg_path_get_machine_name(const char *path, char **machine);
 int cg_path_get_slice(const char *path, char **slice);
 int cg_path_get_user_slice(const char *path, char **slice);
 #endif // 0
+
 int cg_shift_path(const char *cgroup, const char *cached_root, const char **shifted);
 int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
@@ -164,10 +209,12 @@ int cg_pid_get_user_slice(pid_t pid, char **slice);
 
 int cg_path_decode_unit(const char *cgroup, char **unit);
 #endif // 0
+
 char *cg_escape(const char *p);
 char *cg_unescape(const char *p) _pure_;
 
 bool cg_controller_is_valid(const char *p);
+
 #if 0 /// UNNEEDED by elogind
 int cg_slice_to_path(const char *unit, char **ret);
 
@@ -180,10 +227,13 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
 int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
 int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p);
 #endif // 0
+
 int cg_mask_supported(CGroupMask *ret);
+
 #if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set *controllers);
 #endif // 0
+
 int cg_unified(void);
 #if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void);
@@ -194,7 +244,9 @@ bool cg_is_legacy_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
+
 #if 0 /// UNNEEDED by elogind
+int cg_weight_parse(const char *s, uint64_t *ret);
 int cg_cpu_shares_parse(const char *s, uint64_t *ret);
 int cg_blkio_weight_parse(const char *s, uint64_t *ret);
 #endif // 0

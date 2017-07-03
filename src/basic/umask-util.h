@@ -31,7 +31,6 @@ static inline void umaskp(mode_t *u) {
 
 #define _cleanup_umask_ _cleanup_(umaskp)
 
-#if 0 /// UNNEEDED by elogind
 struct _umask_struct_ {
         mode_t mask;
         bool quit;
@@ -45,4 +44,3 @@ static inline void _reset_umask_(struct _umask_struct_ *s) {
         for (_cleanup_(_reset_umask_) struct _umask_struct_ _saved_umask_ = { umask(mask), false }; \
              !_saved_umask_.quit ;                                      \
              _saved_umask_.quit = true)
-#endif // 0

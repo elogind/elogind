@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [229.1],
+        [231.3],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -111,20 +111,52 @@ fi
 
 
 # ------------------------------------------------------------------------------
-# Find running cgroup controller
+# Let users set the cgroup controller to use, in case the target controller
+# isn't currently running the show.
+# Example: Gentoo Linux, user wants to switch from systemd to openrc+elogind,
+#          and emerges elogind before having booted the machine with openrc.
+#          See: https://github.com/elogind/elogind/issues/18
 with_cgroupctrl=
-AS_IF(  [test -f /proc/self/cgroup], [
-        # If the init system is a cgroup controler, it will be position 1.
-        # Secondary controllers, like cgmanager, do not work.
-        with_cgroupctrl=`grep "^1:name=" /proc/self/cgroup | cut -d ':' -f 2`
-        AS_IF(  [test -z "$with_cgroupctrl"], [
-                # Try to be our own cgroup controller
-                with_cgroupctrl="name=elogind"
+AC_ARG_WITH([cgroup-controller],
+            AS_HELP_STRING([--with-cgroup-controller=name],
+            [Set the name of the cgroup controller to use.
+             Use this when the autodetection fails, or you plan to use your system with a different controller than the one in place now.
+             The value 'auto' (default) detects the running controller.
+             The values 'none' and 'elogind' will cause elogind to be its own (very limited) controller.
+             When elogind shall be its own controller, there *MUST NOT* be any other controller running!
+             Another popular controller would be 'openrc'.]),
+            [with_cgroupctrl=$withval],
+            [with_cgroupctrl=auto])
+
+# ------------------------------------------------------------------------------
+# Find running cgroup controller, if none was set
+AS_IF(  [test "x$with_cgroupctrl" = "xauto"], [
+        AS_IF([test -f /proc/self/cgroup], [
+                # If the init system is a cgroup controler, it will be position 1.
+                # Secondary controllers, like cgmanager, do not work.
+                with_cgroupctrl=`grep "^1:name=" /proc/self/cgroup | \
+                        sed -n 's/.*=//p' | sed -e 's/:.*$//'`
+                AS_IF(  [test -z "$with_cgroupctrl"], [
+                        # Try to be our own cgroup controller
+                        with_cgroupctrl="elogind"
+                        ])
+        ], [
+                # 'auto' but no cgroup fs is a problem.
+                with_cgroupctrl=""
         ])
 ])
-AS_IF(  [test -z "$with_cgroupctrl"],
-        AC_MSG_ERROR([No running cgroup controller found]))
 
+# If the user specified 'none', switch to 'elogind'.
+# 'none' is allowed, as this means "there is no controller now"
+AS_IF(  [test "x$with_cgroupctrl" = "xnone"], [with_cgroupctrl=elogind])
+
+# If this was not possible, /proc/self/cgroup not mounted yet, and 'auto'
+# chosen, error out.
+AS_IF(  [test -z "$with_cgroupctrl"],
+        AC_MSG_ERROR([No running cgroup controller found]), [
+        # Otherwise add the 'name=' prefix
+        with_cgroupctrl="name=$with_cgroupctrl"
+])
 
 # ------------------------------------------------------------------------------
 address_sanitizer_cflags=
@@ -267,6 +299,7 @@ AC_CHECK_SIZEOF(uid_t)
 AC_CHECK_SIZEOF(gid_t)
 AC_CHECK_SIZEOF(time_t)
 AC_CHECK_SIZEOF(dev_t)
+AC_CHECK_SIZEOF(ino_t)
 AC_CHECK_SIZEOF(rlim_t,,[
        #include <sys/time.h>
        #include <sys/resource.h>
@@ -343,11 +376,20 @@ AC_SEARCH_LIBS([cap_init], [cap], [], [AC_MSG_ERROR([*** POSIX caps library not 
 CAP_LIBS="$LIBS"
 AC_SUBST(CAP_LIBS)
 
-AC_CHECK_FUNCS([memfd_create])
 AC_CHECK_FUNCS([__secure_getenv secure_getenv])
-AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renameat2,
-                char16_t, char32_t, LO_FLAGS_PARTSCAN],
-               [], [], [[
+AC_CHECK_DECLS([
+        memfd_create,
+        gettid,
+        pivot_root,
+        name_to_handle_at,
+        setns,
+        getrandom,
+        renameat2,
+        kcmp,
+        keyctl,
+        LO_FLAGS_PARTSCAN,
+        copy_file_range],
+                [], [], [[
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/mount.h>
@@ -357,7 +399,14 @@ AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, getrandom, renamea
 #include <linux/random.h>
 ]])
 
+AC_CHECK_TYPES([char16_t, char32_t, key_serial_t],
+               [], [], [[
+#include <uchar.h>
+]])
+
 AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
+                IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
+                IFLA_VRF_TABLE,
                 IFLA_MACVLAN_FLAGS,
                 IFLA_IPVLAN_MODE,
                 IFLA_VTI_REMOTE,
@@ -368,8 +417,9 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
                 IFLA_IPTUN_ENCAP_DPORT,
                 IFLA_GRE_ENCAP_DPORT,
                 IFLA_BRIDGE_VLAN_INFO,
+                IFLA_BRPORT_PROXYARP,
                 IFLA_BRPORT_LEARNING_SYNC,
-                IFLA_BR_PRIORITY,
+                IFLA_BR_VLAN_DEFAULT_PVID,
                 NDA_IFINDEX,
                 IFA_FLAGS],
 [], [], [[
@@ -404,6 +454,16 @@ AC_ARG_WITH([udevbindir],
             [],
             [with_udevbindir=$($PKG_CONFIG --variable=udevdir udev)])
 AC_SUBST([udevbindir], [$with_udevbindir])
+
+# ------------------------------------------------------------------------------
+have_utmp=yes
+AC_ARG_ENABLE([utmp], AS_HELP_STRING([--disable-utmp], [disable utmp/wtmp log handling]),
+        AS_CASE("x${enableval}",
+                [xyes], [have_utmp=yes],
+                [xno],  [have_utmp=no],
+                AC_MSG_ERROR(bad value ${enableval} for --enable-utmp)))
+AS_IF([test "x$have_utmp" = "xyes"], [AC_DEFINE(HAVE_UTMP, 1, [Define if utmp/wtmp support is enabled])])
+AM_CONDITIONAL([HAVE_UTMP], [test "x$have_utmp" = "xyes"])
 
 # ------------------------------------------------------------------------------
 have_coverage=no
@@ -442,6 +502,17 @@ if test "x$enable_selinux" != "xno"; then
         fi
 fi
 AM_CONDITIONAL(HAVE_SELINUX, [test "$have_selinux" = "yes"])
+
+# ------------------------------------------------------------------------------
+AC_ARG_WITH([kill-user-processes],
+        [AS_HELP_STRING([--without-kill-user-processes], [Set elogind's KillUserProcesses=no by default])])
+AS_IF([test "$with_kill_user_processes" != "no"],
+       [kill_user_processes=true
+        KILL_USER_PROCESSES=yes],
+       [kill_user_processes=false
+        KILL_USER_PROCESSES=no])
+AC_DEFINE_UNQUOTED(KILL_USER_PROCESSES, [$kill_user_processes], [Default KillUserProcesses setting])
+AC_SUBST(KILL_USER_PROCESSES)
 
 # ------------------------------------------------------------------------------
 AC_ARG_ENABLE([pam],
@@ -583,16 +654,6 @@ if test "x$enable_polkit" != "xno"; then
         have_polkit=yes
 fi
 AM_CONDITIONAL(ENABLE_POLKIT, [test "x$have_polkit" = "xyes"])
-
-# ------------------------------------------------------------------------------
-have_kdbus=no
-AC_ARG_ENABLE(kdbus, AS_HELP_STRING([--disable-kdbus], [do not connect to kdbus by default]))
-if test "x$enable_kdbus" != "xno"; then
-        AC_DEFINE(ENABLE_KDBUS, 1, [Define if kdbus is to be connected to by default])
-        have_kdbus=yes
-        M4_DEFINES="$M4_DEFINES -DENABLE_KDBUS"
-fi
-AM_CONDITIONAL(ENABLE_KDBUS, [test "$have_kdbus" = "yes"])
 
 # ------------------------------------------------------------------------------
 AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
@@ -750,12 +811,13 @@ AC_MSG_RESULT([
         SELinux:                 ${have_selinux}
         SMACK:                   ${have_smack}
         ACL:                     ${have_acl}
+        KillUserProcesses default: ${KILL_USER_PROCESSES}
         polkit:                  ${have_polkit}
-        kdbus:                   ${have_kdbus}
         Python:                  ${have_python}
         man pages:               ${have_manpages}
         test coverage:           ${have_coverage}
         Split /usr:              ${enable_split_usr}
+        utmp/wtmp support:       ${have_utmp}
         Link time optimization:  ${have_lto}
         extra debugging:         ${enable_debug}
         cgroup controller:       ${with_cgroupctrl}

@@ -21,14 +21,16 @@
 
 #include <stdbool.h>
 
+#if 0 /// elogind needs the systems udev header
 #include "libudev.h"
+#else
+#include <libudev.h>
+#endif // 0
 #include "sd-bus.h"
 #include "sd-event.h"
 
-#include "cgroup-util.h"
 #include "hashmap.h"
 #include "list.h"
-#include "path-lookup.h"
 #include "set.h"
 
 typedef struct Manager Manager;
@@ -37,7 +39,14 @@ typedef struct Manager Manager;
 #include "logind-button.h"
 #include "logind-device.h"
 #include "logind-inhibit.h"
-#include "logind-sleep.h"
+
+/// Additional includes needed by elogind
+#include "cgroup-util.h"
+
+#if 1 /// elogind has to ident itself
+#define MANAGER_IS_SYSTEM(m) ((m)->is_system)
+#define MANAGER_IS_USER(m) (!((m)->is_system))
+#endif // 1
 
 struct Manager {
         sd_event *event;
@@ -63,25 +72,31 @@ struct Manager {
         sd_event_source *udev_vcsa_event_source;
         sd_event_source *udev_button_event_source;
 
+#if 0 /// elogind does not support autospawning of vts
+        int console_active_fd;
+
+        unsigned n_autovts;
+
+        unsigned reserve_vt;
+        int reserve_vt_fd;
+#else
         /* Make sure the user cannot accidentally unmount our cgroup
          * file system */
         int pin_cgroupfs_fd;
 
+        /* fd for handling cgroup socket if elogind is its own cgroups manager */
+        int cgroups_agent_fd;
+        sd_event_source *cgroups_agent_event_source;
+
         /* Flags */
-        ManagerRunningAs running_as;
         bool test_run:1;
+        bool is_system:1; /* true if elogind is its own cgroups manager */
 
         /* Data specific to the cgroup subsystem */
         CGroupMask cgroup_supported;
         char *cgroup_root;
 
         int console_active_fd;
-
-#if 0 /// elogind does not support autospawning of vts
-        unsigned n_autovts;
-
-        unsigned reserve_vt;
-        int reserve_vt_fd;
 #endif // 0
 
         Seat *seat0;
@@ -115,8 +130,12 @@ struct Manager {
            contains the action we are supposed to perform after the
            delay is over */
         HandleAction pending_action;
-#endif // 0
 
+        char **suspend_state,      **suspend_mode;
+        char **hibernate_state,    **hibernate_mode;
+        char **hybrid_sleep_state, **hybrid_sleep_mode;
+
+#endif // 0
         sd_event_source *inhibit_timeout_source;
 
         char *scheduled_shutdown_type;
@@ -151,10 +170,6 @@ struct Manager {
 
         bool remove_ipc;
 
-        char **suspend_state,      **suspend_mode;
-        char **hibernate_state,    **hibernate_mode;
-        char **hybrid_sleep_state, **hybrid_sleep_mode;
-
         Hashmap *polkit_registry;
 
         usec_t holdoff_timeout_usec;
@@ -162,6 +177,8 @@ struct Manager {
 
         size_t runtime_dir_size;
         uint64_t user_tasks_max;
+        uint64_t sessions_max;
+        uint64_t inhibitors_max;
 };
 
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_device);
@@ -208,7 +225,7 @@ int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_
 
 #if 0 /// UNNEEDED by elogind
 int manager_start_slice(Manager *manager, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);
-int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_error *error, char **job);
+int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, uint64_t tasks_max, sd_bus_error *error, char **job);
 int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
@@ -223,14 +240,13 @@ const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE
 int manager_set_lid_switch_ignore(Manager *m, usec_t until);
 
 int config_parse_tmpfs_size(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+int config_parse_user_tasks_max(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
 
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret);
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);
 
-#if 0 /// UNNEEDED by elogind
 int manager_setup_wall_message_timer(Manager *m);
 bool logind_wall_tty_filter(const char *tty, void *userdata);
-#endif // 0
 
 int manager_dispatch_delayed(Manager *manager, bool timeout);

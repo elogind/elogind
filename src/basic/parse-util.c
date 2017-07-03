@@ -23,13 +23,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <xlocale.h>
+#if defined(__GLIBC__)
+#  include <xlocale.h>
+#endif // defined(__GLIBC__)
 
 #include "alloc-util.h"
 //#include "extract-word.h"
 #include "macro.h"
 #include "parse-util.h"
 #include "string-util.h"
+
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 int parse_boolean(const char *v) {
         assert(v);
@@ -507,7 +512,7 @@ int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
         s = *p;
 
         /* accept any number of digits, strtoull is limted to 19 */
-        for(i=0; i < digits; i++,s++) {
+        for (i=0; i < digits; i++,s++) {
                 if (*s < '0' || *s > '9') {
                         if (i == 0)
                                 return -EINVAL;
@@ -533,4 +538,23 @@ int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
         *res = val;
 
         return 0;
+}
+
+int parse_percent(const char *p) {
+        const char *pc, *n;
+        unsigned v;
+        int r;
+
+        pc = endswith(p, "%");
+        if (!pc)
+                return -EINVAL;
+
+        n = strndupa(p, pc - p);
+        r = safe_atou(n, &v);
+        if (r < 0)
+                return r;
+        if (v > 100)
+                return -ERANGE;
+
+        return (int) v;
 }

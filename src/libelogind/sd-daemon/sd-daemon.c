@@ -103,7 +103,7 @@ _public_ int sd_listen_fds(int unset_environment) {
 finish:
         unsetenv_all(unset_environment);
         return r;
-        }
+}
 
 _public_ int sd_listen_fds_with_names(int unset_environment, char ***names) {
         _cleanup_strv_free_ char **l = NULL;
@@ -137,8 +137,8 @@ _public_ int sd_listen_fds_with_names(int unset_environment, char ***names) {
         } else {
                 r = strv_extend_n(&l, "unknown", n_fds);
                 if (r < 0)
-        return r;
-}
+                        return r;
+        }
 
         *names = l;
         l = NULL;
@@ -313,12 +313,12 @@ _public_ int sd_is_socket_inet(int fd, int family, int type, int listening, uint
                         if (l < sizeof(struct sockaddr_in))
                                 return -EINVAL;
 
-                        return htons(port) == sockaddr.in.sin_port;
+                        return htobe16(port) == sockaddr.in.sin_port;
                 } else {
                         if (l < sizeof(struct sockaddr_in6))
                                 return -EINVAL;
 
-                        return htons(port) == sockaddr.in6.sin6_port;
+                        return htobe16(port) == sockaddr.in6.sin6_port;
                 }
         }
 
@@ -462,14 +462,12 @@ _public_ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char
         if (sockaddr.un.sun_path[0] == '@')
                 sockaddr.un.sun_path[0] = 0;
 
-        msghdr.msg_namelen = offsetof(struct sockaddr_un, sun_path) + strlen(e);
-        if (msghdr.msg_namelen > sizeof(struct sockaddr_un))
-                msghdr.msg_namelen = sizeof(struct sockaddr_un);
+        msghdr.msg_namelen = SOCKADDR_UN_LEN(sockaddr.un);
 
         have_pid = pid != 0 && pid != getpid();
 
         if (n_fds > 0 || have_pid) {
-                /* CMSG_SPACE(0) may return value different then zero, which results in miscalculated controllen. */
+                /* CMSG_SPACE(0) may return value different than zero, which results in miscalculated controllen. */
                 msghdr.msg_controllen =
                         (n_fds > 0 ? CMSG_SPACE(sizeof(int) * n_fds) : 0) +
                         (have_pid ? CMSG_SPACE(sizeof(struct ucred)) : 0);

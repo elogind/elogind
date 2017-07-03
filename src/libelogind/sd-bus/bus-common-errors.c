@@ -25,6 +25,7 @@
 #include "bus-error.h"
 
 BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
+#if 0 /// UNNEEDED by elogind
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_UNIT,                 ENOENT),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_UNIT_FOR_PID,              ESRCH),
         SD_BUS_ERROR_MAP(BUS_ERROR_UNIT_EXISTS,                  EEXIST),
@@ -38,6 +39,8 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
         SD_BUS_ERROR_MAP(BUS_ERROR_TRANSACTION_ORDER_IS_CYCLIC,  EDEADLK),
         SD_BUS_ERROR_MAP(BUS_ERROR_TRANSACTION_IS_DESTRUCTIVE,   EDEADLK),
         SD_BUS_ERROR_MAP(BUS_ERROR_UNIT_MASKED,                  ESHUTDOWN),
+        SD_BUS_ERROR_MAP(BUS_ERROR_UNIT_GENERATED,               EADDRNOTAVAIL),
+        SD_BUS_ERROR_MAP(BUS_ERROR_UNIT_LINKED,                  ELOOP),
         SD_BUS_ERROR_MAP(BUS_ERROR_JOB_TYPE_NOT_APPLICABLE,      EBADR),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_ISOLATION,                 EPERM),
         SD_BUS_ERROR_MAP(BUS_ERROR_SHUTTING_DOWN,                ECANCELED),
@@ -48,6 +51,7 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_MACHINE_FOR_PID,           ENXIO),
         SD_BUS_ERROR_MAP(BUS_ERROR_MACHINE_EXISTS,               EEXIST),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_PRIVATE_NETWORKING,        ENOSYS),
+#endif // 0
 
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_SESSION,              ENXIO),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SESSION_FOR_PID,           ENXIO),
@@ -61,6 +65,7 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
         SD_BUS_ERROR_MAP(BUS_ERROR_OPERATION_IN_PROGRESS,        EINPROGRESS),
         SD_BUS_ERROR_MAP(BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,     EOPNOTSUPP),
 
+#if 0 /// UNNEEDED by elogind
         SD_BUS_ERROR_MAP(BUS_ERROR_AUTOMATIC_TIME_SYNC_ENABLED,  EALREADY),
 
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_PROCESS,              ESRCH),
@@ -68,10 +73,8 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_NAME_SERVERS,              ESRCH),
         SD_BUS_ERROR_MAP(BUS_ERROR_INVALID_REPLY,                EINVAL),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_RR,                   ENOENT),
-        SD_BUS_ERROR_MAP(BUS_ERROR_NO_RESOURCES,                 ENOMEM),
         SD_BUS_ERROR_MAP(BUS_ERROR_CNAME_LOOP,                   EDEADLK),
         SD_BUS_ERROR_MAP(BUS_ERROR_ABORTED,                      ECANCELED),
-        SD_BUS_ERROR_MAP(BUS_ERROR_CONNECTION_FAILURE,           ECONNREFUSED),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_SERVICE,              EUNATCH),
         SD_BUS_ERROR_MAP(BUS_ERROR_DNSSEC_FAILED,                EHOSTUNREACH),
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_TRUST_ANCHOR,              EHOSTUNREACH),
@@ -82,6 +85,7 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
 
         SD_BUS_ERROR_MAP(BUS_ERROR_NO_SUCH_TRANSFER,             ENXIO),
         SD_BUS_ERROR_MAP(BUS_ERROR_TRANSFER_IN_PROGRESS,         EBUSY),
+#endif // 0
 
         SD_BUS_ERROR_MAP_END
 };

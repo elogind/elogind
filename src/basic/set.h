@@ -125,10 +125,14 @@ int set_consume(Set *s, void *value);
 int set_put_strdup(Set *s, const char *p);
 #if 0 /// UNNEEDED by elogind
 int set_put_strdupv(Set *s, char **l);
+int set_put_strsplit(Set *s, const char *v, const char *separators, ExtractFlags flags);
 #endif // 0
 
 #define SET_FOREACH(e, s, i) \
         for ((i) = ITERATOR_FIRST; set_iterate((s), &(i), (void**)&(e)); )
+
+#define SET_FOREACH_MOVE(e, d, s)                                       \
+        for (; ({ e = set_first(s); assert_se(!e || set_move_one(d, s, e) >= 0); e; }); )
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(Set*, set_free);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Set*, set_free_free);

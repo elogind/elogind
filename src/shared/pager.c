@@ -52,16 +52,19 @@ noreturn static void pager_fallback(void) {
         _exit(EXIT_SUCCESS);
 }
 
-int pager_open(bool jump_to_end) {
+int pager_open(bool no_pager, bool jump_to_end) {
         _cleanup_close_pair_ int fd[2] = { -1, -1 };
         const char *pager;
         pid_t parent_pid;
 
+        if (no_pager)
+                return 0;
+
         if (pager_pid > 0)
                 return 1;
 
-        if (!on_tty())
-                        return 0;
+        if (terminal_is_dumb())
+                return 0;
 
         pager = getenv("SYSTEMD_PAGER");
         if (!pager)
@@ -155,13 +158,13 @@ void pager_close(void) {
                 return;
 
         /* Inform pager that we are done */
-#if defined(__GLIBC__)
+#ifdef __GLIBC__
         stdout = safe_fclose(stdout);
         stderr = safe_fclose(stderr);
 #else
-        (void) safe_fclose(stdout);
-        (void) safe_fclose(stderr);
-#endif // in musl-libc these are const
+        safe_fclose(stdout);
+        safe_fclose(stderr);
+#endif // __GLIBC__
 
         (void) kill(pager_pid, SIGCONT);
         (void) wait_for_terminate(pager_pid, NULL);

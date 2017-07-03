@@ -17,9 +17,6 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#if defined(__GLIBC__)
-# include <bits/local_lim.h>
-#endif // defined(__GLIBC__)
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
@@ -48,9 +45,14 @@ bool hostname_is_set(void) {
 
         return true;
 }
+#endif // 0
 
 char* gethostname_malloc(void) {
         struct utsname u;
+
+        /* This call tries to return something useful, either the actual hostname
+         * or it makes something up. The only reason it might fail is OOM.
+         * It might even return "localhost" if that's set. */
 
         assert_se(uname(&u) >= 0);
 
@@ -58,6 +60,32 @@ char* gethostname_malloc(void) {
                 return strdup(u.sysname);
 
         return strdup(u.nodename);
+}
+
+#if 0 /// UNNEEDED by elogind
+int gethostname_strict(char **ret) {
+        struct utsname u;
+        char *k;
+
+        /* This call will rather fail than make up a name. It will not return "localhost" either. */
+
+        assert_se(uname(&u) >= 0);
+
+        if (isempty(u.nodename))
+                return -ENXIO;
+
+        if (streq(u.nodename, "(none)"))
+                return -ENXIO;
+
+        if (is_localhost(u.nodename))
+                return -ENXIO;
+
+        k = strdup(u.nodename);
+        if (!k)
+                return -ENOMEM;
+
+        *ret = k;
+        return 0;
 }
 #endif // 0
 
@@ -100,7 +128,7 @@ bool hostname_is_valid(const char *s, bool allow_trailing_dot) {
                                 return false;
 
                         dot = true;
-                        n_dots ++;
+                        n_dots++;
                 } else {
                         if (!hostname_valid_char(*p))
                                 return false;
@@ -127,6 +155,8 @@ char* hostname_cleanup(char *s) {
 
         assert(s);
 
+        strshorten(s, HOST_NAME_MAX);
+
         for (p = s, d = s, dot = true; *p; p++) {
                 if (*p == '.') {
                         if (dot)
@@ -146,8 +176,6 @@ char* hostname_cleanup(char *s) {
         else
                 *d = 0;
 
-        strshorten(s, HOST_NAME_MAX);
-
         return s;
 }
 #endif // 0
@@ -156,16 +184,16 @@ bool is_localhost(const char *hostname) {
         assert(hostname);
 
         /* This tries to identify local host and domain names
-         * described in RFC6761 plus the redhatism of .localdomain */
+         * described in RFC6761 plus the redhatism of localdomain */
 
         return strcaseeq(hostname, "localhost") ||
                strcaseeq(hostname, "localhost.") ||
-               strcaseeq(hostname, "localdomain.") ||
-               strcaseeq(hostname, "localdomain") ||
+               strcaseeq(hostname, "localhost.localdomain") ||
+               strcaseeq(hostname, "localhost.localdomain.") ||
                endswith_no_case(hostname, ".localhost") ||
                endswith_no_case(hostname, ".localhost.") ||
-               endswith_no_case(hostname, ".localdomain") ||
-               endswith_no_case(hostname, ".localdomain.");
+               endswith_no_case(hostname, ".localhost.localdomain") ||
+               endswith_no_case(hostname, ".localhost.localdomain.");
 }
 
 #if 0 /// UNNEEDED by elogind

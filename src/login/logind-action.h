@@ -36,14 +36,15 @@ typedef enum HandleAction {
 #include "logind-inhibit.h"
 #include "logind.h"
 
+/// Additional includes needed by elogind
+#include "elogind-action.h"
+
 int manager_handle_action(
                 Manager *m,
                 InhibitWhat inhibit_key,
                 HandleAction handle,
                 bool ignore_inhibited,
                 bool is_edge);
-
-int shutdown_or_sleep(Manager *m, HandleAction action);
 
 const char* handle_action_to_string(HandleAction h) _const_;
 HandleAction handle_action_from_string(const char *s) _pure_;

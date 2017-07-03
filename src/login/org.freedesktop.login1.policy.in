@@ -3,9 +3,9 @@
         "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 
 <!--
-  This file is part of systemd.
+  This file is part of elogind.
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
@@ -13,8 +13,8 @@
 
 <policyconfig>
 
-        <vendor>The systemd Project</vendor>
-        <vendor_url>http://www.freedesktop.org/wiki/Software/systemd</vendor_url>
+        <vendor>The elogind Project</vendor>
+        <vendor_url>https://github.com/elogind/elogind</vendor_url>
 
         <action id="org.freedesktop.login1.inhibit-block-shutdown">
                 <_description>Allow applications to inhibit system shutdown</_description>
@@ -106,6 +106,16 @@
                 <_message>Authentication is required for an application to inhibit system handling of the lid switch.</_message>
                 <defaults>
                         <allow_any>no</allow_any>
+                        <allow_inactive>yes</allow_inactive>
+                        <allow_active>yes</allow_active>
+                </defaults>
+        </action>
+
+        <action id="org.freedesktop.login1.set-self-linger">
+                <_description>Allow non-logged-in user to run programs</_description>
+                <_message>Explicit request is required to run programs as a non-logged-in user.</_message>
+                <defaults>
+                        <allow_any>yes</allow_any>
                         <allow_inactive>yes</allow_inactive>
                         <allow_active>yes</allow_active>
                 </defaults>

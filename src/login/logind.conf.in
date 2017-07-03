@@ -12,7 +12,7 @@
 # See logind.conf(5) for details.
 
 [Login]
-#KillUserProcesses=no
+#KillUserProcesses=@KILL_USER_PROCESSES@
 #KillOnlyUsers=
 #KillExcludeUsers=root
 #InhibitDelayMaxSec=5
@@ -30,6 +30,9 @@
 #IdleActionSec=30min
 #RuntimeDirectorySize=10%
 #RemoveIPC=yes
+#InhibitorsMax=8192
+#SessionsMax=8192
+#UserTasksMax=33%
 
 [Sleep]
 #SuspendState=mem standby freeze

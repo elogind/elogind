@@ -49,6 +49,10 @@
 #include "user-util.h"
 #include "util.h"
 
+#if 1 /// elogind uses a static value here
+#  define SPECIAL_USER_SLICE "user.slice"
+#endif // 1
+
 int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
@@ -77,7 +81,7 @@ int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         if (asprintf(&u->runtime_path, "/run/user/"UID_FMT, uid) < 0)
                 return -ENOMEM;
 
-        r = slice_build_subslice("user.slice", lu, &u->slice);
+        r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &u->slice);
         if (r < 0)
                 return r;
 
@@ -124,6 +128,7 @@ User *user_free(User *u) {
         u->slice_job = mfree(u->slice_job);
         u->service_job = mfree(u->service_job);
 #endif // 0
+
         u->service = mfree(u->service);
         u->slice = mfree(u->slice);
         u->runtime_path = mfree(u->runtime_path);
@@ -316,8 +321,7 @@ int user_load(User *u) {
                 if (r == -ENOENT)
                         return 0;
 
-                log_error_errno(r, "Failed to read %s: %m", u->state_file);
-                return r;
+                return log_error_errno(r, "Failed to read %s: %m", u->state_file);
         }
 
         if (display)
@@ -326,17 +330,10 @@ int user_load(User *u) {
         if (s && s->display && display_is_local(s->display))
                 u->display = s;
 
-        if (realtime) {
-                unsigned long long l;
-                if (sscanf(realtime, "%llu", &l) > 0)
-                        u->timestamp.realtime = l;
-        }
-
-        if (monotonic) {
-                unsigned long long l;
-                if (sscanf(monotonic, "%llu", &l) > 0)
-                        u->timestamp.monotonic = l;
-        }
+        if (realtime)
+                timestamp_deserialize(realtime, &u->timestamp.realtime);
+        if (monotonic)
+                timestamp_deserialize(monotonic, &u->timestamp.monotonic);
 
         return r;
 }
@@ -390,7 +387,7 @@ static int user_mkdir_runtime_path(User *u) {
         return 0;
 
 fail:
-                /* Try to clean up, but ignore errors */
+        /* Try to clean up, but ignore errors */
         (void) rmdir(u->runtime_path);
         return r;
 }
@@ -446,11 +443,11 @@ static int user_start_service(User *u) {
                         u->service,
                         &error,
                         &job);
-                if (r < 0) {
+        if (r < 0) {
                 /* we don't fail due to this, let's try to continue */
                 log_error_errno(r, "Failed to start user service, ignoring: %s", bus_error_message(&error, r));
-                } else {
-                        u->service_job = job;
+        } else {
+                u->service_job = job;
         }
 #else
         assert(u);
@@ -892,7 +889,6 @@ int config_parse_tmpfs_size(
                 void *userdata) {
 
         size_t *sz = data;
-        const char *e;
         int r;
 
         assert(filename);
@@ -900,29 +896,17 @@ int config_parse_tmpfs_size(
         assert(rvalue);
         assert(data);
 
-        e = endswith(rvalue, "%");
-        if (e) {
-                unsigned long ul;
-                char *f;
-
-                errno = 0;
-                ul = strtoul(rvalue, &f, 10);
-                if (errno > 0 || f != e) {
-                        log_syntax(unit, LOG_ERR, filename, line, errno, "Failed to parse percentage value, ignoring: %s", rvalue);
-                        return 0;
-                }
-
-                if (ul <= 0 || ul >= 100) {
-                        log_syntax(unit, LOG_ERR, filename, line, 0, "Percentage value out of range, ignoring: %s", rvalue);
-                        return 0;
-                }
-
-                *sz = PAGE_ALIGN((size_t) ((physical_memory() * (uint64_t) ul) / (uint64_t) 100));
-        } else {
+        /* First, try to parse as percentage */
+        r = parse_percent(rvalue);
+        if (r > 0 && r < 100)
+                *sz = physical_memory_scale(r, 100U);
+        else {
                 uint64_t k;
 
+                /* If the passed argument was not a percentage, or out of range, parse as byte size */
+
                 r = parse_size(rvalue, 1024, &k);
-                if (r < 0 || (uint64_t) (size_t) k != k) {
+                if (r < 0 || k <= 0 || (uint64_t) (size_t) k != k) {
                         log_syntax(unit, LOG_ERR, filename, line, r, "Failed to parse size value, ignoring: %s", rvalue);
                         return 0;
                 }
@@ -930,5 +914,50 @@ int config_parse_tmpfs_size(
                 *sz = PAGE_ALIGN((size_t) k);
         }
 
+        return 0;
+}
+
+int config_parse_user_tasks_max(
+                const char* unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
+
+        uint64_t *m = data;
+        uint64_t k;
+        int r;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+        assert(data);
+
+        /* First, try to parse as percentage */
+        r = parse_percent(rvalue);
+        if (r >= 0)
+                k = system_tasks_max_scale(r, 100U);
+        else {
+
+                /* If the passed argument was not a percentage, or out of range, parse as byte size */
+
+                r = safe_atou64(rvalue, &k);
+                if (r < 0) {
+                        log_syntax(unit, LOG_ERR, filename, line, r, "Failed to parse tasks maximum, ignoring: %s", rvalue);
+                        return 0;
+                }
+        }
+
+        if (k <= 0 || k >= UINT64_MAX) {
+                log_syntax(unit, LOG_ERR, filename, line, 0, "Tasks maximum out of range, ignoring: %s", rvalue);
+                return 0;
+        }
+
+        *m = k;
         return 0;
 }

@@ -36,6 +36,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/statfs.h>
+#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
@@ -91,6 +92,7 @@ int prot_from_flags(int flags) _const_;
 int fork_agent(pid_t *pid, const int except[], unsigned n_except, const char *path, ...);
 
 bool in_initrd(void);
+void in_initrd_force(bool value);
 
 #if 0 /// UNNEEDED by elogind
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
@@ -108,6 +110,16 @@ static inline void qsort_safe(void *base, size_t nmemb, size_t size, comparison_
 
         assert(base);
         qsort(base, nmemb, size, compar);
+}
+
+/**
+ * Normal memcpy requires src to be nonnull. We do nothing if n is 0.
+ */
+static inline void memcpy_safe(void *dst, const void *src, size_t n) {
+        if (n == 0)
+                return;
+        assert(src);
+        memcpy(dst, src, n);
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -128,7 +140,6 @@ static inline void _reset_errno_(int *saved_errno) {
 
 #define PROTECT_ERRNO _cleanup_(_reset_errno_) __attribute__((unused)) int _saved_errno_ = errno
 
-#if 0 /// UNNEEDED by elogind
 static inline int negative_errno(void) {
         /* This helper should be used to shut up gcc if you know 'errno' is
          * negative. Instead of "return -errno;", use "return negative_errno();"
@@ -137,7 +148,6 @@ static inline int negative_errno(void) {
         assert_return(errno > 0, -EINVAL);
         return -errno;
 }
-#endif // 0
 
 static inline unsigned u64log2(uint64_t n) {
 #if __SIZEOF_LONG_LONG__ == 8
@@ -177,18 +187,20 @@ static inline unsigned log2u_round_up(unsigned x) {
 }
 
 #if 0 /// UNNEEDED by elogind
-bool id128_is_valid(const char *s) _pure_;
 #endif // 0
-
 int container_get_leader(const char *machine, pid_t *pid);
 
 int namespace_open(pid_t pid, int *pidns_fd, int *mntns_fd, int *netns_fd, int *userns_fd, int *root_fd);
 int namespace_enter(int pidns_fd, int mntns_fd, int netns_fd, int userns_fd, int root_fd);
 
 uint64_t physical_memory(void);
+uint64_t physical_memory_scale(uint64_t v, uint64_t max);
+
+uint64_t system_tasks_max(void);
+uint64_t system_tasks_max_scale(uint64_t v, uint64_t max);
 
 #if 0 /// UNNEEDED by elogind
-int update_reboot_param_file(const char *param);
 #endif // 0
+int update_reboot_parameter_and_warn(const char *param);
 
 int version(void);

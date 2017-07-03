@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "missing.h"
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "formats-util.h"
@@ -75,7 +76,6 @@ int parse_uid(const char *s, uid_t *ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 char* getlogname_malloc(void) {
         uid_t uid;
         struct stat st;
@@ -88,6 +88,7 @@ char* getlogname_malloc(void) {
         return uid_to_name(uid);
 }
 
+#if 0 /// UNNEEDED by elogind
 char *getusername_malloc(void) {
         const char *e;
 
@@ -462,7 +463,7 @@ int take_etc_passwd_lock(const char *root) {
          *
          * Note that shadow-utils also takes per-database locks in
          * addition to lckpwdf(). However, we don't given that they
-         * are redundant as they they invoke lckpwdf() first and keep
+         * are redundant as they invoke lckpwdf() first and keep
          * it during everything they do. The per-database locks are
          * awfully racy, and thus we just won't do them. */
 

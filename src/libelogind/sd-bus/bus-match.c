@@ -429,6 +429,9 @@ int bus_match_run(
                         r = bus_match_run(bus, c, m);
                         if (r != 0)
                                 return r;
+
+                        if (bus && bus->match_callbacks_modified)
+                                return 0;
                 }
         }
 
@@ -940,7 +943,7 @@ char *bus_match_to_string(struct bus_match_component *components, unsigned n_com
         char *buffer = NULL;
         size_t size = 0;
         unsigned i;
-		int r;
+        int r;
 
         if (n_components <= 0)
                 return strdup("");

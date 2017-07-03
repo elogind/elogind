@@ -46,14 +46,35 @@
 //#include "umask-util.h"
 //#include "xattr-util.h"
 
-#define COPY_BUFFER_SIZE (16*1024)
+#define COPY_BUFFER_SIZE (16*1024u)
+
+static ssize_t try_copy_file_range(int fd_in, loff_t *off_in,
+                                   int fd_out, loff_t *off_out,
+                                   size_t len,
+                                   unsigned int flags) {
+        static int have = -1;
+        ssize_t r;
+
+        if (have == false)
+                return -ENOSYS;
+
+        r = copy_file_range(fd_in, off_in, fd_out, off_out, len, flags);
+        if (_unlikely_(have < 0))
+                have = r >= 0 || errno != ENOSYS;
+        if (r >= 0)
+                return r;
+        else
+                return -errno;
+}
 
 int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
-        bool try_sendfile = true, try_splice = true;
+        bool try_cfr = true, try_sendfile = true, try_splice = true;
         int r;
+        size_t m = SSIZE_MAX; /* that is the maximum that sendfile and c_f_r accept */
 
         assert(fdf >= 0);
         assert(fdt >= 0);
+
 #if 0 /// UNNEEDED by elogind
         /* Try btrfs reflinks first. */
         if (try_reflink &&
@@ -66,57 +87,71 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
                         return 0; /* we copied the whole thing, hence hit EOF, return 0 */
         }
 #endif // 0
+
         for (;;) {
-                size_t m = COPY_BUFFER_SIZE;
                 ssize_t n;
 
                 if (max_bytes != (uint64_t) -1) {
-
                         if (max_bytes <= 0)
                                 return 1; /* return > 0 if we hit the max_bytes limit */
 
-                        if ((uint64_t) m > max_bytes)
-                                m = (size_t) max_bytes;
+                        if (m > max_bytes)
+                                m = max_bytes;
+                }
+
+                /* First try copy_file_range(), unless we already tried */
+                if (try_cfr) {
+                        n = try_copy_file_range(fdf, NULL, fdt, NULL, m, 0u);
+                        if (n < 0) {
+                                if (!IN_SET(n, -EINVAL, -ENOSYS, -EXDEV, -EBADF))
+                                        return n;
+
+                                try_cfr = false;
+                                /* use fallback below */
+                        } else if (n == 0) /* EOF */
+                                break;
+                        else
+                                /* Success! */
+                                goto next;
                 }
 
                 /* First try sendfile(), unless we already tried */
                 if (try_sendfile) {
-
                         n = sendfile(fdt, fdf, NULL, m);
                         if (n < 0) {
-                                if (errno != EINVAL && errno != ENOSYS)
+                                if (!IN_SET(errno, EINVAL, ENOSYS))
                                         return -errno;
 
                                 try_sendfile = false;
                                 /* use fallback below */
                         } else if (n == 0) /* EOF */
                                 break;
-                        else if (n > 0)
+                        else
                                 /* Success! */
                                 goto next;
                 }
 
-                /* The try splice, unless we already tried */
+                /* Then try splice, unless we already tried */
                 if (try_splice) {
-                        n  = splice(fdf, NULL, fdt, NULL, m, 0);
+                        n = splice(fdf, NULL, fdt, NULL, m, 0);
                         if (n < 0) {
-                                if (errno != EINVAL && errno != ENOSYS)
+                                if (!IN_SET(errno, EINVAL, ENOSYS))
                                         return -errno;
 
                                 try_splice = false;
                                 /* use fallback below */
                         } else if (n == 0) /* EOF */
                                 break;
-                        else if (n > 0)
+                        else
                                 /* Success! */
                                 goto next;
                 }
 
                 /* As a fallback just copy bits by hand */
                 {
-                        uint8_t buf[m];
+                        uint8_t buf[MIN(m, COPY_BUFFER_SIZE)];
 
-                        n = read(fdf, buf, m);
+                        n = read(fdf, buf, sizeof buf);
                         if (n < 0)
                                 return -errno;
                         if (n == 0) /* EOF */
@@ -132,6 +167,11 @@ int copy_bytes(int fdf, int fdt, uint64_t max_bytes, bool try_reflink) {
                         assert(max_bytes >= (uint64_t) n);
                         max_bytes -= n;
                 }
+                /* sendfile accepts at most SSIZE_MAX-offset bytes to copy,
+                 * so reduce our maximum by the amount we already copied,
+                 * but don't go below our copy buffer size, unless we are
+                 * close the limit of bytes we are allowed to copy. */
+                m = MAX(MIN(COPY_BUFFER_SIZE, max_bytes), m - n);
         }
 
         return 0; /* return 0 if we hit EOF earlier than the size limit */
@@ -267,6 +307,8 @@ static int fd_copy_directory(
                 fdf = openat(df, from, O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW);
         else
                 fdf = fcntl(df, F_DUPFD_CLOEXEC, 3);
+        if (fdf < 0)
+                return -errno;
 
         d = fdopendir(fdf);
         if (!d)
@@ -286,22 +328,6 @@ static int fd_copy_directory(
                 return -errno;
 
         r = 0;
-
-        if (created) {
-                struct timespec ut[2] = {
-                        st->st_atim,
-                        st->st_mtim
-                };
-
-                if (fchown(fdt, st->st_uid, st->st_gid) < 0)
-                        r = -errno;
-
-                if (fchmod(fdt, st->st_mode & 07777) < 0)
-                        r = -errno;
-
-                (void) futimens(fdt, ut);
-                (void) copy_xattr(dirfd(d), fdt);
-        }
 
         FOREACH_DIRENT_ALL(de, d, return -errno) {
                 struct stat buf;
@@ -326,7 +352,7 @@ static int fd_copy_directory(
                         q = fd_copy_symlink(dirfd(d), de->d_name, &buf, fdt, de->d_name);
                 else if (S_ISFIFO(buf.st_mode))
                         q = fd_copy_fifo(dirfd(d), de->d_name, &buf, fdt, de->d_name);
-                else if (S_ISBLK(buf.st_mode) || S_ISCHR(buf.st_mode))
+                else if (S_ISBLK(buf.st_mode) || S_ISCHR(buf.st_mode) || S_ISSOCK(buf.st_mode))
                         q = fd_copy_node(dirfd(d), de->d_name, &buf, fdt, de->d_name);
                 else
                         q = -EOPNOTSUPP;
@@ -336,6 +362,22 @@ static int fd_copy_directory(
 
                 if (q < 0)
                         r = q;
+        }
+
+        if (created) {
+                struct timespec ut[2] = {
+                        st->st_atim,
+                        st->st_mtim
+                };
+
+                if (fchown(fdt, st->st_uid, st->st_gid) < 0)
+                        r = -errno;
+
+                if (fchmod(fdt, st->st_mode & 07777) < 0)
+                        r = -errno;
+
+                (void) copy_xattr(dirfd(d), fdt);
+                (void) futimens(fdt, ut);
         }
 
         return r;
@@ -358,7 +400,7 @@ int copy_tree_at(int fdf, const char *from, int fdt, const char *to, bool merge)
                 return fd_copy_symlink(fdf, from, &st, fdt, to);
         else if (S_ISFIFO(st.st_mode))
                 return fd_copy_fifo(fdf, from, &st, fdt, to);
-        else if (S_ISBLK(st.st_mode) || S_ISCHR(st.st_mode))
+        else if (S_ISBLK(st.st_mode) || S_ISCHR(st.st_mode) || S_ISSOCK(st.st_mode))
                 return fd_copy_node(fdf, from, &st, fdt, to);
         else
                 return -EOPNOTSUPP;
@@ -369,7 +411,6 @@ int copy_tree(const char *from, const char *to, bool merge) {
 }
 
 int copy_directory_fd(int dirfd, const char *to, bool merge) {
-
         struct stat st;
 
         assert(dirfd >= 0);
@@ -382,6 +423,21 @@ int copy_directory_fd(int dirfd, const char *to, bool merge) {
                 return -ENOTDIR;
 
         return fd_copy_directory(dirfd, NULL, &st, AT_FDCWD, to, st.st_dev, merge);
+}
+
+int copy_directory(const char *from, const char *to, bool merge) {
+        struct stat st;
+
+        assert(from);
+        assert(to);
+
+        if (lstat(from, &st) < 0)
+                return -errno;
+
+        if (!S_ISDIR(st.st_mode))
+                return -ENOTDIR;
+
+        return fd_copy_directory(AT_FDCWD, from, &st, AT_FDCWD, to, st.st_dev, merge);
 }
 
 int copy_file_fd(const char *from, int fdt, bool try_reflink) {

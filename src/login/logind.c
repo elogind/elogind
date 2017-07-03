@@ -22,7 +22,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#if 0 /// elogind needs the systems udev header
 #include "libudev.h"
+#else
+#include <libudev.h>
+#endif // 0
 #include "sd-daemon.h"
 
 #include "alloc-util.h"
@@ -39,33 +43,16 @@
 #include "strv.h"
 #include "udev-util.h"
 
-/// additional includes elogind needs
+/// Additional includes needed by elogind
 #include "cgroup.h"       // From src/core/
+#include "elogind.h"
 #include "label.h"
-#include "mount-setup.h"  // From src/core
 #include "musl_missing.h"
 
 static void manager_free(Manager *m);
-static int  manager_parse_config_file(Manager *m);
 
-static Manager *manager_new(void) {
-#ifdef ENABLE_DEBUG_ELOGIND
-        int dbg_cnt;
-#endif // ENABLE_DEBUG_ELOGIND
-        Manager *m;
-        int r;
-
-        m = new0(Manager, 1);
-        if (!m)
-                return NULL;
-
-        m->pin_cgroupfs_fd = -1;
-
-        m->console_active_fd = -1;
-
+static void manager_reset_config(Manager *m) {
 #if 0 /// elogind does not support autospawning of vts
-        m->reserve_vt_fd = -1;
-
         m->n_autovts = 6;
         m->reserve_vt = 6;
 #endif // 0
@@ -76,15 +63,44 @@ static Manager *manager_new(void) {
         m->handle_hibernate_key = HANDLE_HIBERNATE;
         m->handle_lid_switch = HANDLE_SUSPEND;
         m->handle_lid_switch_docked = HANDLE_IGNORE;
+        m->power_key_ignore_inhibited = false;
+        m->suspend_key_ignore_inhibited = false;
+        m->hibernate_key_ignore_inhibited = false;
         m->lid_switch_ignore_inhibited = true;
+
         m->holdoff_timeout_usec = 30 * USEC_PER_SEC;
 
         m->idle_action_usec = 30 * USEC_PER_MINUTE;
         m->idle_action = HANDLE_IGNORE;
-        m->idle_action_not_before_usec = now(CLOCK_MONOTONIC);
 
-        m->runtime_dir_size = PAGE_ALIGN((size_t) (physical_memory() / 10)); /* 10% */
-        m->user_tasks_max = UINT64_C(12288);
+        m->runtime_dir_size = physical_memory_scale(10U, 100U); /* 10% */
+        m->user_tasks_max = system_tasks_max_scale(33U, 100U); /* 33% */
+        m->sessions_max = 8192;
+        m->inhibitors_max = 8192;
+
+        m->kill_user_processes = KILL_USER_PROCESSES;
+
+        m->kill_only_users = strv_free(m->kill_only_users);
+        m->kill_exclude_users = strv_free(m->kill_exclude_users);
+#if 1 /// elogind needs an Add-On for sleep configuration
+        elogind_manager_reset_config(m);
+#endif // 1
+}
+
+static Manager *manager_new(void) {
+        Manager *m;
+        int r;
+
+        m = new0(Manager, 1);
+        if (!m)
+                return NULL;
+
+        m->console_active_fd = -1;
+#if 0 /// UNNEEDED by elogind
+        m->reserve_vt_fd = -1;
+#endif // 0
+
+        m->idle_action_not_before_usec = now(CLOCK_MONOTONIC);
 
         m->devices = hashmap_new(&string_hash_ops);
         m->seats = hashmap_new(&string_hash_ops);
@@ -96,91 +112,14 @@ static Manager *manager_new(void) {
         m->user_units = hashmap_new(&string_hash_ops);
         m->session_units = hashmap_new(&string_hash_ops);
 
-        m->running_as = MANAGER_SYSTEM;
-        m->test_run   = false;
-
         if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
                 goto fail;
 
-        m->kill_exclude_users = strv_new("root", NULL);
-        if (!m->kill_exclude_users)
-                goto fail;
-
-        /* If elogind should be its own controller, mount its cgroup */
-        if (streq(SYSTEMD_CGROUP_CONTROLLER, "name=elogind")) {
-                r = mount_setup(true);
-                if (r < 0)
-                        goto fail;
-        }
-
-        /* Make cgroups */
-        r = manager_setup_cgroup(m);
+#if 1 /// elogind needs some more data
+        r = elogind_manager_new(m);
         if (r < 0)
                 goto fail;
-
-        m->suspend_mode       = NULL;
-        m->suspend_state      = NULL;
-        m->hibernate_mode     = NULL;
-        m->hibernate_state    = NULL;
-        m->hybrid_sleep_mode  = NULL;
-        m->hybrid_sleep_state = NULL;
-
-        manager_parse_config_file(m);
-
-        /* Set default Sleep config if not already set by logind.conf */
-        if (!m->suspend_state) {
-                m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
-                if (!m->suspend_state)
-                        goto fail;
-        }
-        if (!m->hibernate_mode) {
-                m->hibernate_mode = strv_new("platform", "shutdown", NULL);
-                if (!m->hibernate_mode)
-                        goto fail;
-        }
-        if (!m->hibernate_state) {
-                m->hibernate_state = strv_new("disk", NULL);
-                if (!m->hibernate_state)
-                        goto fail;
-        }
-        if (!m->hybrid_sleep_mode) {
-                m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
-                if (!m->hybrid_sleep_mode)
-                        goto fail;
-        }
-        if (!m->hybrid_sleep_state) {
-                m->hybrid_sleep_state = strv_new("disk", NULL);
-                if (!m->hybrid_sleep_state)
-                        goto fail;
-        }
-
-#ifdef ENABLE_DEBUG_ELOGIND
-        dbg_cnt = -1;
-        while (m->suspend_mode && m->suspend_mode[++dbg_cnt])
-                log_debug_elogind("suspend_mode[%d] = %s",
-                                  dbg_cnt, m->suspend_mode[dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->suspend_state[++dbg_cnt])
-                log_debug_elogind("suspend_state[%d] = %s",
-                                  dbg_cnt, m->suspend_state[dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->hibernate_mode[++dbg_cnt])
-                log_debug_elogind("hibernate_mode[%d] = %s",
-                                  dbg_cnt, m->hibernate_mode[dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->hibernate_state[++dbg_cnt])
-                log_debug_elogind("hibernate_state[%d] = %s",
-                                  dbg_cnt, m->hibernate_state[dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->hybrid_sleep_mode[++dbg_cnt])
-                log_debug_elogind("hybrid_sleep_mode[%d] = %s",
-                                  dbg_cnt, m->hybrid_sleep_mode[dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->hybrid_sleep_state[++dbg_cnt])
-                log_debug_elogind("hybrid_sleep_state[%d] = %s",
-                                  dbg_cnt, m->hybrid_sleep_state[dbg_cnt]);
-#endif // ENABLE_DEBUG_ELOGIND
-
+#endif // 1
         m->udev = udev_new();
         if (!m->udev)
                 goto fail;
@@ -190,6 +129,8 @@ static Manager *manager_new(void) {
                 goto fail;
 
         sd_event_set_watchdog(m->event, true);
+
+        manager_reset_config(m);
 
         return m;
 
@@ -206,7 +147,8 @@ static void manager_free(Manager *m) {
         Inhibitor *i;
         Button *b;
 
-        assert(m);
+        if (!m)
+                return;
 
         while ((session = hashmap_first(m->sessions)))
                 session_free(session);
@@ -251,12 +193,12 @@ static void manager_free(Manager *m) {
 
         safe_close(m->console_active_fd);
 
-                udev_monitor_unref(m->udev_seat_monitor);
-                udev_monitor_unref(m->udev_device_monitor);
-                udev_monitor_unref(m->udev_vcsa_monitor);
-                udev_monitor_unref(m->udev_button_monitor);
+        udev_monitor_unref(m->udev_seat_monitor);
+        udev_monitor_unref(m->udev_device_monitor);
+        udev_monitor_unref(m->udev_vcsa_monitor);
+        udev_monitor_unref(m->udev_button_monitor);
 
-                udev_unref(m->udev);
+        udev_unref(m->udev);
 
         if (m->unlink_nologin)
                 (void) unlink("/run/nologin");
@@ -269,8 +211,9 @@ static void manager_free(Manager *m) {
 #if 0 /// elogind does not support autospawning of vts
         safe_close(m->reserve_vt_fd);
 #endif // 0
-
-        manager_shutdown_cgroup(m, true);
+#if 1 /// elogind has to free its own data
+        elogind_manager_free(m);
+#endif // 1
 
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);
@@ -278,14 +221,9 @@ static void manager_free(Manager *m) {
         free(m->scheduled_shutdown_type);
         free(m->scheduled_shutdown_tty);
         free(m->wall_message);
-
-        strv_free(m->suspend_mode);
-        strv_free(m->suspend_state);
-        strv_free(m->hibernate_mode);
-        strv_free(m->hibernate_state);
-        strv_free(m->hybrid_sleep_mode);
-        strv_free(m->hybrid_sleep_state);
-
+#if 0 /// UNNEEDED by elogind
+        free(m->action_job);
+#endif // 0
         free(m);
 }
 
@@ -685,34 +623,6 @@ static int manager_reserve_vt(Manager *m) {
 }
 #endif // 0
 
-static int signal_agent_released(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
-        Session *s;
-        const char *cgroup;
-        int r;
-
-        assert(message);
-        assert(m);
-
-        r = sd_bus_message_read(message, "s", &cgroup);
-        if (r < 0) {
-                bus_log_parse_error(r);
-                return 0;
-        }
-
-        s = hashmap_get(m->sessions, cgroup);
-
-        if (!s) {
-                log_warning("Session not found: %s", cgroup);
-                return 0;
-        }
-
-        session_finalize(s);
-        session_free(s);
-
-        return 0;
-}
-
 static int manager_connect_bus(Manager *m) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
@@ -727,14 +637,6 @@ static int manager_connect_bus(Manager *m) {
         r = sd_bus_add_object_vtable(m->bus, NULL, "/org/freedesktop/login1", "org.freedesktop.login1.Manager", manager_vtable, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to add manager object vtable: %m");
-
-        /* elogind relies on signals from its release agent */
-        r = sd_bus_add_match(m->bus, NULL,
-                             "type='signal',"
-                             "interface='org.freedesktop.elogind.Agent',"
-                             "member='Released',"
-                             "path='/org/freedesktop/elogind/agent'",
-                             signal_agent_released, m);
 
         r = sd_bus_add_fallback_vtable(m->bus, NULL, "/org/freedesktop/login1/seat", "org.freedesktop.login1.Seat", seat_vtable, seat_object_find, m);
         if (r < 0)
@@ -822,11 +724,18 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to register name: %m");
 
-        r = sd_bus_attach_event(m->bus, m->event, 0);
+        r = sd_bus_attach_event(m->bus, m->event, SD_EVENT_PRIORITY_NORMAL);
         if (r < 0)
                 return log_error_errno(r, "Failed to attach bus to event loop: %m");
 
+#if 0 /// elogind has to setup its release agent
         return 0;
+#else
+        elogind_bus_setup_system(m);
+        r = elogind_setup_cgroups_agent(m);
+
+        return r;
+#endif // 0
 }
 
 static int manager_vt_switch(sd_event_source *src, const struct signalfd_siginfo *si, void *data) {
@@ -1134,6 +1043,43 @@ static int manager_dispatch_idle_action(sd_event_source *s, uint64_t t, void *us
         return 0;
 }
 
+static int manager_parse_config_file(Manager *m) {
+#if 0 /// elogind parses its own config file
+        assert(m);
+
+        return config_parse_many(PKGSYSCONFDIR "/logind.conf",
+                                 CONF_PATHS_NULSTR("systemd/logind.conf.d"),
+                                 "Login\0",
+                                 config_item_perf_lookup, logind_gperf_lookup,
+                                 false, m);
+#else
+         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
+
+         assert(m);
+
+         if (!logind_conf)
+                 logind_conf = PKGSYSCONFDIR "/logind.conf";
+
+         return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
+                             config_item_perf_lookup, logind_gperf_lookup,
+                             false, false, true, m);
+#endif // 0
+}
+
+static int manager_dispatch_reload_signal(sd_event_source *s, const struct signalfd_siginfo *si, void *userdata) {
+        Manager *m = userdata;
+        int r;
+
+        manager_reset_config(m);
+        r = manager_parse_config_file(m);
+        if (r < 0)
+                log_warning_errno(r, "Failed to parse config file, using defaults: %m");
+        else
+                log_info("Config file reloaded.");
+
+        return 0;
+}
+
 static int manager_startup(Manager *m) {
         int r;
         Seat *seat;
@@ -1144,6 +1090,12 @@ static int manager_startup(Manager *m) {
         Iterator i;
 
         assert(m);
+
+        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGHUP, -1) >= 0);
+
+        r = sd_event_add_signal(m->event, NULL, SIGHUP, manager_dispatch_reload_signal, m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register SIGHUP handler: %m");
 
         /* Connect to console */
         r = manager_connect_console(m);
@@ -1249,30 +1201,6 @@ static int manager_run(Manager *m) {
         }
 }
 
-static int manager_parse_config_file(Manager *m) {
-#if 0 /// elogind parses its own config file
-
-        assert(m);
-
-        return config_parse_many(PKGSYSCONFDIR "/logind.conf",
-                                 CONF_PATHS_NULSTR("systemd/logind.conf.d"),
-                                 "Login\0",
-                                 config_item_perf_lookup, logind_gperf_lookup,
-                                 false, m);
-#else
-        const char* logind_conf = getenv("ELOGIND_CONF_FILE");
-
-        assert(m);
-
-        if (!logind_conf)
-                logind_conf = PKGSYSCONFDIR "/logind.conf";
-
-        return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
-                            config_item_perf_lookup, logind_gperf_lookup,
-                            false, false, true, m);
-#endif // 0
-}
-
 int main(int argc, char *argv[]) {
         Manager *m = NULL;
         int r;
@@ -1281,11 +1209,14 @@ int main(int argc, char *argv[]) {
         log_set_target(LOG_TARGET_AUTO);
         log_set_facility(LOG_AUTH);
         log_parse_environment();
-        log_open();
 
 #ifdef ENABLE_DEBUG_ELOGIND
         log_set_max_level(LOG_DEBUG);
+        log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
+
+        log_open();
+
 
         umask(0022);
 
@@ -1295,7 +1226,7 @@ int main(int argc, char *argv[]) {
                 goto finish;
         }
 
-        r = mac_selinux_init("/run");
+        r = mac_selinux_init();
         if (r < 0) {
                 log_error_errno(r, "Could not initialize labelling: %m");
                 goto finish;
@@ -1334,6 +1265,8 @@ int main(int argc, char *argv[]) {
                 goto finish;
         }
 
+        manager_parse_config_file(m);
+
         r = manager_startup(m);
         if (r < 0) {
                 log_error_errno(r, "Failed to fully start up daemon: %m");
@@ -1355,7 +1288,7 @@ finish:
                   "STOPPING=1\n"
                   "STATUS=Shutting down...");
 
-                manager_free(m);
+        manager_free(m);
 
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

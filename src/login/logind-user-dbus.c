@@ -25,6 +25,7 @@
 #include "formats-util.h"
 #include "logind-user.h"
 #include "logind.h"
+#include "signal-util.h"
 #include "strv.h"
 #include "user-util.h"
 
@@ -222,7 +223,7 @@ int bus_user_method_kill(sd_bus_message *message, void *userdata, sd_bus_error *
         if (r < 0)
                 return r;
 
-        if (signo <= 0 || signo >= _NSIG)
+        if (!SIGNAL_VALID(signo))
                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid signal %i", signo);
 
         r = user_kill(u, signo);
@@ -244,7 +245,7 @@ const sd_bus_vtable user_vtable[] = {
         SD_BUS_PROPERTY("Slice", "s", NULL, offsetof(User, slice), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("Display", "(so)", property_get_display, 0, SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
         SD_BUS_PROPERTY("State", "s", property_get_state, 0, 0),
-        SD_BUS_PROPERTY("Sessions", "a(so)", property_get_sessions, 0, SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
+        SD_BUS_PROPERTY("Sessions", "a(so)", property_get_sessions, 0, 0),
         SD_BUS_PROPERTY("IdleHint", "b", property_get_idle_hint, 0, SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
         SD_BUS_PROPERTY("IdleSinceHint", "t", property_get_idle_since_hint, 0, SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),
         SD_BUS_PROPERTY("IdleSinceHintMonotonic", "t", property_get_idle_since_hint, 0, SD_BUS_VTABLE_PROPERTY_EMITS_CHANGE),

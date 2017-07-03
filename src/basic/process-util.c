@@ -38,6 +38,7 @@
 #endif
 
 #include "alloc-util.h"
+//#include "architecture.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -100,12 +101,22 @@ int get_process_comm(pid_t pid, char **name) {
 
 int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char **line) {
         _cleanup_fclose_ FILE *f = NULL;
+        bool space = false;
         char *r = NULL, *k;
         const char *p;
         int c;
 
         assert(line);
         assert(pid >= 0);
+
+        /* Retrieves a process' command line. Replaces unprintable characters while doing so by whitespace (coalescing
+         * multiple sequential ones into one). If max_length is != 0 will return a string of the specified size at most
+         * (the trailing NUL byte does count towards the length here!), abbreviated with a "..." ellipsis. If
+         * comm_fallback is true and the process has no command line set (the case for kernel threads), or has a
+         * command line that resolves to the empty string will return the "comm" name of the process instead.
+         *
+         * Returns -ESRCH if the process doesn't exist, and -ENOENT if the process has no command line (and
+         * comm_fallback is false). */
 
         p = procfs_file_alloca(pid, "cmdline");
 
@@ -116,24 +127,44 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
                 return -errno;
         }
 
-        if (max_length == 0) {
+        if (max_length == 1) {
+
+                /* If there's only room for one byte, return the empty string */
+                r = new0(char, 1);
+                if (!r)
+                        return -ENOMEM;
+
+                *line = r;
+                return 0;
+
+        } else if (max_length == 0) {
                 size_t len = 0, allocated = 0;
 
                 while ((c = getc(f)) != EOF) {
 
-                        if (!GREEDY_REALLOC(r, allocated, len+2)) {
+                        if (!GREEDY_REALLOC(r, allocated, len+3)) {
                                 free(r);
                                 return -ENOMEM;
                         }
 
-                        r[len++] = isprint(c) ? c : ' ';
-                }
+                        if (isprint(c)) {
+                                if (space) {
+                                        r[len++] = ' ';
+                                        space = false;
+                                }
+
+                                r[len++] = c;
+                        } else if (len > 0)
+                                space = true;
+               }
 
                 if (len > 0)
-                        r[len-1] = 0;
+                        r[len] = 0;
+                else
+                        r = mfree(r);
 
         } else {
-                bool space = false;
+                bool dotdotdot = false;
                 size_t left;
 
                 r = new(char, max_length);
@@ -145,28 +176,46 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
                 while ((c = getc(f)) != EOF) {
 
                         if (isprint(c)) {
+
                                 if (space) {
-                                        if (left <= 4)
+                                        if (left <= 2) {
+                                                dotdotdot = true;
                                                 break;
+                                        }
 
                                         *(k++) = ' ';
                                         left--;
                                         space = false;
                                 }
 
-                                if (left <= 4)
+                                if (left <= 1) {
+                                        dotdotdot = true;
                                         break;
+                                }
 
                                 *(k++) = (char) c;
                                 left--;
-                        }  else
+                        } else if (k > r)
                                 space = true;
                 }
 
-                if (left <= 4) {
-                        size_t n = MIN(left-1, 3U);
-                        memcpy(k, "...", n);
-                        k[n] = 0;
+                if (dotdotdot) {
+                        if (max_length <= 4) {
+                                k = r;
+                                left = max_length;
+                        } else {
+                                k = r + max_length - 4;
+                                left = 4;
+
+                                /* Eat up final spaces */
+                                while (k > r && isspace(k[-1])) {
+                                        k--;
+                                        left++;
+                                }
+                        }
+
+                        strncpy(k, "...", left-1);
+                        k[left-1] = 0;
                 } else
                         *k = 0;
         }
@@ -185,7 +234,37 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
                 if (h < 0)
                         return h;
 
-                r = strjoin("[", t, "]", NULL);
+                if (max_length == 0)
+                        r = strjoin("[", t, "]", NULL);
+                else {
+                        size_t l;
+
+                        l = strlen(t);
+
+                        if (l + 3 <= max_length)
+                                r = strjoin("[", t, "]", NULL);
+                        else if (max_length <= 6) {
+
+                                r = new(char, max_length);
+                                if (!r)
+                                        return -ENOMEM;
+
+                                memcpy(r, "[...]", max_length-1);
+                                r[max_length-1] = 0;
+                        } else {
+                                char *e;
+
+                                t[max_length - 6] = 0;
+
+                                /* Chop off final spaces */
+                                e = strchr(t, 0);
+                                while (e > t && isspace(e[-1]))
+                                        e--;
+                                *e = 0;
+
+                                r = strjoin("[", t, "...]", NULL);
+                        }
+                }
                 if (!r)
                         return -ENOMEM;
         }
@@ -206,7 +285,7 @@ void rename_process(const char name[8]) {
          * "systemd"). If you pass a longer string it will be
          * truncated */
 
-        prctl(PR_SET_NAME, name);
+        (void) prctl(PR_SET_NAME, name);
 
         if (program_invocation_name)
                 strncpy(program_invocation_name, name, strlen(program_invocation_name));
@@ -320,9 +399,6 @@ static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
         assert(field);
         assert(uid);
 
-        if (pid == 0)
-                return getuid();
-
         p = procfs_file_alloca(pid, "status");
         f = fopen(p, "re");
         if (!f) {
@@ -412,7 +488,7 @@ int get_process_environ(pid_t pid, char **env) {
                 if (!outcome)
                         return -ENOMEM;
         } else
-        outcome[sz] = '\0';
+                outcome[sz] = '\0';
 
         *env = outcome;
         outcome = NULL;
@@ -482,7 +558,7 @@ int wait_for_terminate(pid_t pid, siginfo_t *status) {
                         if (errno == EINTR)
                                 continue;
 
-                        return -errno;
+                        return negative_errno();
                 }
 
                 return 0;
@@ -533,24 +609,32 @@ int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_cod
         return -EPROTO;
 }
 
-void sigkill_wait(pid_t *pid) {
+#if 0 /// UNNEEDED by elogind
+void sigkill_wait(pid_t pid) {
+        assert(pid > 1);
+
+        if (kill(pid, SIGKILL) > 0)
+                (void) wait_for_terminate(pid, NULL);
+}
+
+void sigkill_waitp(pid_t *pid) {
         if (!pid)
                 return;
         if (*pid <= 1)
                 return;
 
-        if (kill(*pid, SIGKILL) > 0)
-                (void) wait_for_terminate(*pid, NULL);
+        sigkill_wait(*pid);
 }
 
-#if 0 /// UNNEEDED by elogind
 int kill_and_sigcont(pid_t pid, int sig) {
         int r;
 
         r = kill(pid, sig) < 0 ? -errno : 0;
 
-        if (r >= 0)
-                kill(pid, SIGCONT);
+        /* If this worked, also send SIGCONT, unless we already just sent a SIGCONT, or SIGKILL was sent which isn't
+         * affected by a process being suspended anyway. */
+        if (r >= 0 && !IN_SET(SIGCONT, SIGKILL))
+                (void) kill(pid, SIGCONT);
 
         return r;
 }
@@ -671,6 +755,8 @@ bool is_main_thread(void) {
 #if 0 /// UNNEEDED by elogind
 noreturn void freeze(void) {
 
+        log_close();
+
         /* Make sure nobody waits for us on a socket anymore */
         close_all_fds(NULL, 0);
 
@@ -685,82 +771,50 @@ bool oom_score_adjust_is_valid(int oa) {
 }
 
 unsigned long personality_from_string(const char *p) {
+        int architecture;
 
-        /* Parse a personality specifier. We introduce our own
-         * identifiers that indicate specific ABIs, rather than just
-         * hints regarding the register size, since we want to keep
-         * things open for multiple locally supported ABIs for the
-         * same register size. We try to reuse the ABI identifiers
-         * used by libseccomp. */
+        if (!p)
+                return PERSONALITY_INVALID;
 
-#if defined(__x86_64__)
+        /* Parse a personality specifier. We use our own identifiers that indicate specific ABIs, rather than just
+         * hints regarding the register size, since we want to keep things open for multiple locally supported ABIs for
+         * the same register size. */
 
-        if (streq(p, "x86"))
+        architecture = architecture_from_string(p);
+        if (architecture < 0)
+                return PERSONALITY_INVALID;
+
+        if (architecture == native_architecture())
+                return PER_LINUX;
+#ifdef SECONDARY_ARCHITECTURE
+        if (architecture == SECONDARY_ARCHITECTURE)
                 return PER_LINUX32;
-
-        if (streq(p, "x86-64"))
-                return PER_LINUX;
-
-#elif defined(__i386__)
-
-        if (streq(p, "x86"))
-                return PER_LINUX;
-
-#elif defined(__s390x__)
-
-        if (streq(p, "s390"))
-                return PER_LINUX32;
-
-        if (streq(p, "s390x"))
-                return PER_LINUX;
-
-#elif defined(__s390__)
-
-        if (streq(p, "s390"))
-                return PER_LINUX;
 #endif
 
         return PERSONALITY_INVALID;
 }
 
 const char* personality_to_string(unsigned long p) {
-
-#if defined(__x86_64__)
-
-        if (p == PER_LINUX32)
-                return "x86";
+        int architecture = _ARCHITECTURE_INVALID;
 
         if (p == PER_LINUX)
-                return "x86-64";
-
-#elif defined(__i386__)
-
-        if (p == PER_LINUX)
-                return "x86";
-
-#elif defined(__s390x__)
-
-        if (p == PER_LINUX)
-                return "s390x";
-
-        if (p == PER_LINUX32)
-                return "s390";
-
-#elif defined(__s390__)
-
-        if (p == PER_LINUX)
-                return "s390";
-
+                architecture = native_architecture();
+#ifdef SECONDARY_ARCHITECTURE
+        else if (p == PER_LINUX32)
+                architecture = SECONDARY_ARCHITECTURE;
 #endif
 
-        return NULL;
+        if (architecture < 0)
+                return NULL;
+
+        return architecture_to_string(architecture);
 }
 
 void valgrind_summary_hack(void) {
 #ifdef HAVE_VALGRIND_VALGRIND_H
         if (getpid() == 1 && RUNNING_ON_VALGRIND) {
                 pid_t pid;
-                pid = raw_clone(SIGCHLD, NULL);
+                pid = raw_clone(SIGCHLD);
                 if (pid < 0)
                         log_emergency_errno(errno, "Failed to fork off valgrind helper: %m");
                 else if (pid == 0)
@@ -771,6 +825,18 @@ void valgrind_summary_hack(void) {
                 }
         }
 #endif
+}
+
+int pid_compare_func(const void *a, const void *b) {
+        const pid_t *p = a, *q = b;
+
+        /* Suitable for usage in qsort() */
+
+        if (*p < *q)
+                return -1;
+        if (*p > *q)
+                return 1;
+        return 0;
 }
 
 static const char *const ioprio_class_table[] = {

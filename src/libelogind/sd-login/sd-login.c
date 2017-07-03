@@ -148,7 +148,7 @@ _public_ int sd_pid_get_cgroup(pid_t pid, char **cgroup) {
 
         /* The internal APIs return the empty string for the root
          * cgroup, let's return the "/" in the public APIs instead, as
-         * that's easier and less ambigious for people to grok. */
+         * that's easier and less ambiguous for people to grok. */
         if (isempty(c)) {
                 free(c);
                 c = strdup("/");
@@ -378,7 +378,7 @@ static int file_of_seat(const char *seat, char **_p) {
                 if (!filename_is_valid(seat))
                         return -EINVAL;
 
-        p = strappend("/run/systemd/seats/", seat);
+                p = strappend("/run/systemd/seats/", seat);
         } else {
                 _cleanup_free_ char *buf = NULL;
 
@@ -442,10 +442,10 @@ static int uid_get_array(uid_t uid, const char *variable, char ***array) {
 
         r = parse_env_file(p, NEWLINE, variable, &s, NULL);
         if (r == -ENOENT || (r >= 0 && isempty(s))) {
-                        if (array)
-                                *array = NULL;
-                        return 0;
-                }
+                if (array)
+                        *array = NULL;
+                return 0;
+        }
         if (r < 0)
                 return r;
 

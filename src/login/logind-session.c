@@ -46,7 +46,7 @@
 #include "user-util.h"
 #include "util.h"
 
-// #define RELEASE_USEC (20*USEC_PER_SEC)
+#define RELEASE_USEC (20*USEC_PER_SEC)
 
 static void session_remove_fifo(Session *s);
 
@@ -452,17 +452,10 @@ int session_load(Session *s) {
                 safe_close(fd);
         }
 
-        if (realtime) {
-                unsigned long long l;
-                if (sscanf(realtime, "%llu", &l) > 0)
-                        s->timestamp.realtime = l;
-        }
-
-        if (monotonic) {
-                unsigned long long l;
-                if (sscanf(monotonic, "%llu", &l) > 0)
-                        s->timestamp.monotonic = l;
-        }
+        if (realtime)
+                timestamp_deserialize(realtime, &s->timestamp.realtime);
+        if (monotonic)
+                timestamp_deserialize(monotonic, &s->timestamp.monotonic);
 
         if (controller) {
                 if (bus_name_has_owner(s->manager->bus, controller, NULL) > 0)
@@ -527,7 +520,7 @@ static int session_start_scope(Session *s) {
                 if (!scope)
                         return log_oom();
 
-                description = strjoina("Session ", s->id, " of user ", s->user->name, NULL);
+                description = strjoina("Session ", s->id, " of user ", s->user->name);
 
                 r = manager_start_scope(
                                 s->manager,
@@ -557,8 +550,7 @@ static int session_start_scope(Session *s) {
 
         return 0;
 }
-#endif // 0
-
+#else
 static int session_start_cgroup(Session *s) {
         int r;
 
@@ -577,7 +569,7 @@ static int session_start_cgroup(Session *s) {
 
         return 0;
 }
-
+#endif // 0
 
 int session_start(Session *s) {
         int r;
@@ -595,9 +587,7 @@ int session_start(Session *s) {
                 return r;
 
         /* Create cgroup */
-/// elogind does its own session management without systemd units,
-/// slices and scopes
-#if 0
+#if 0 /// elogind does its own session management
         r = session_start_scope(s);
 #else
         r = session_start_cgroup(s);
@@ -645,7 +635,6 @@ int session_start(Session *s) {
 #if 0 /// UNNEEDED by elogind
 static int session_stop_scope(Session *s, bool force) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        char *job = NULL;
         int r;
 
         assert(s);
@@ -653,27 +642,29 @@ static int session_stop_scope(Session *s, bool force) {
         if (!s->scope)
                 return 0;
 
+        /* Let's always abandon the scope first. This tells systemd that we are not interested anymore, and everything
+         * that is left in in the scope is "left-over". Informing systemd about this has the benefit that it will log
+         * when killing any processes left after this point. */
+        r = manager_abandon_scope(s->manager, s->scope, &error);
+        if (r < 0)
+                log_warning_errno(r, "Failed to abandon session scope, ignoring: %s", bus_error_message(&error, r));
+
+        /* Optionally, let's kill everything that's left now. */
         if (force || manager_shall_kill(s->manager, s->user->name)) {
+                char *job = NULL;
+
                 r = manager_stop_unit(s->manager, s->scope, &error, &job);
-                if (r < 0) {
-                        log_error("Failed to stop session scope: %s", bus_error_message(&error, r));
-                        return r;
-                }
+                if (r < 0)
+                        return log_error_errno(r, "Failed to stop session scope: %s", bus_error_message(&error, r));
 
                 free(s->scope_job);
                 s->scope_job = job;
-        } else {
-                r = manager_abandon_scope(s->manager, s->scope, &error);
-                if (r < 0) {
-                        log_error("Failed to abandon session scope: %s", bus_error_message(&error, r));
-                        return r;
-                }
-        }
+        } else
+                s->scope_job = mfree(s->scope_job);
 
         return 0;
 }
-#endif // 0
-
+#else
 static int session_stop_cgroup(Session *s, bool force) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
@@ -688,6 +679,7 @@ static int session_stop_cgroup(Session *s, bool force) {
 
         return 0;
 }
+#endif // 0
 
 int session_stop(Session *s, bool force) {
         int r;
@@ -792,17 +784,16 @@ int session_release(Session *s) {
         if (s->timer_event_source)
                 return 0;
 
-        /* In systemd, session release is triggered by user jobs
-           dying.  In elogind we don't have that so go ahead and stop
-           now.  */
-#if 0
+#if 0 /// UNNEEDED by elogind
         return sd_event_add_time(s->manager->event,
                                  &s->timer_event_source,
                                  CLOCK_MONOTONIC,
                                  now(CLOCK_MONOTONIC) + RELEASE_USEC, 0,
                                  release_timeout_callback, s);
-
 #else
+        /* In systemd, session release is triggered by user jobs
+           dying.  In elogind we don't have that so go ahead and stop
+           now.  */
         return session_stop(s, false);
 #endif // 0
 }
@@ -869,7 +860,7 @@ int session_get_idle_hint(Session *s, dual_timestamp *t) {
 
         /* Graphical sessions should really implement a real
          * idle hint logic */
-        if (s->display)
+        if (SESSION_TYPE_IS_GRAPHICAL(s->type))
                 goto dont_know;
 
         /* For sessions with an explicitly configured tty, let's check
@@ -924,6 +915,23 @@ void session_set_idle_hint(Session *s, bool b) {
         manager_send_changed(s->manager, "IdleHint", "IdleSinceHint", "IdleSinceHintMonotonic", NULL);
 }
 
+int session_get_locked_hint(Session *s) {
+        assert(s);
+
+        return s->locked_hint;
+}
+
+void session_set_locked_hint(Session *s, bool b) {
+        assert(s);
+
+        if (s->locked_hint == b)
+                return;
+
+        s->locked_hint = b;
+
+        session_send_changed(s, "LockedHint", NULL);
+}
+
 static int session_dispatch_fifo(sd_event_source *es, int fd, uint32_t revents, void *userdata) {
         Session *s = userdata;
 
@@ -969,7 +977,9 @@ int session_create_fifo(Session *s) {
                 if (r < 0)
                         return r;
 
-                r = sd_event_source_set_priority(s->fifo_event_source, SD_EVENT_PRIORITY_IDLE);
+                /* Let's make sure we noticed dead sessions before we process new bus requests (which might create new
+                 * sessions). */
+                r = sd_event_source_set_priority(s->fifo_event_source, SD_EVENT_PRIORITY_NORMAL-10);
                 if (r < 0)
                         return r;
         }
@@ -1015,10 +1025,6 @@ bool session_check_gc(Session *s, bool drop_not_started) {
         if (s->scope && manager_unit_is_active(s->manager, s->scope))
                 return true;
 #endif // 0
-
-        if ( s->user->manager
-          && (cg_is_empty_recursive (SYSTEMD_CGROUP_CONTROLLER, s->user->manager->cgroup_root) > 0) )
-                return true;
 
         return false;
 }
@@ -1072,13 +1078,10 @@ int session_kill(Session *s, KillWho who, int signo) {
                         return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader, s->id);
                 }
                 return 0;
-        } else {
-                bool sigcont = false;
-                bool ignore_self = true;
-                bool rem = true;
+        } else
                 return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
-                                          sigcont, ignore_self, rem, NULL);
-        }
+                                          CGROUP_IGNORE_SELF | CGROUP_REMOVE,
+                                          NULL, NULL, NULL);
 #endif // 0
 }
 

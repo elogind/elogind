@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #ifdef HAVE_LINUX_MEMFD_H
-#  include <linux/memfd.h>
+#include <linux/memfd.h>
 #endif
 #include <stdio.h>
 #include <sys/mman.h>

@@ -21,7 +21,8 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="loginctl" xmlns:xi="http://www.w3.org/2001/XInclude">
+<refentry id="loginctl"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <refentryinfo>
     <title>loginctl</title>
@@ -89,6 +90,16 @@
         <literal>Sessions</literal>. If specified more than once, all
         properties with the specified names are
         shown.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--value</option></term>
+
+        <listitem>
+          <para>When printing properties with <command>show</command>,
+          only print the value, and skip the property name and
+          <literal>=</literal>.</para>
+        </listitem>
       </varlistentry>
 
       <varlistentry>
@@ -186,9 +197,9 @@
         <term><command>activate</command> <optional><replaceable>ID</replaceable></optional></term>
 
         <listitem><para>Activate a session. This brings a session into
-        the foreground, if another session is currently in the
+        the foreground if another session is currently in the
         foreground on the respective seat. Takes a session identifier
-        as argument. If no argument is specified the session of the
+        as argument. If no argument is specified, the session of the
         caller is put into foreground.</para></listitem>
       </varlistentry>
 
@@ -199,7 +210,7 @@
         <listitem><para>Activates/deactivates the screen lock on one
         or more sessions, if the session supports it. Takes one or
         more session identifiers as arguments. If no argument is
-        specified the session of the caller is locked/unlocked.
+        specified, the session of the caller is locked/unlocked.
         </para></listitem>
       </varlistentry>
 
@@ -274,8 +285,11 @@
         spawned for the user at boot and kept around after logouts.
         This allows users who are not logged in to run long-running
         services. Takes one or more user names or numeric UIDs as
-        argument. If no argument is specified enables/disables
-        lingering for the user of the session of the caller.
+        argument. If no argument is specified, enables/disables
+        lingering for the user of the session of the caller.</para>
+
+        <para>See also <varname>KillUserProcesses=</varname> setting in
+        <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
         </para></listitem>
       </varlistentry>
 
@@ -338,7 +352,7 @@
         seat. The devices should be specified via device paths in the
         <filename>/sys</filename> file system. To create a new seat,
         attach at least one graphics card to a previously unused seat
-        name. Seat names may consist only of a-z, A-Z, 0-9,
+        name. Seat names may consist only of a–z, A–Z, 0–9,
         <literal>-</literal> and <literal>_</literal> and must be
         prefixed with <literal>seat</literal>. To drop assignment of a
         device to a specific seat, just reassign it to a different
@@ -424,6 +438,37 @@
 
     <para>On success, 0 is returned, a non-zero failure code
     otherwise.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Examples</title>
+
+    <example>
+      <title>Querying user status</title>
+
+      <programlisting>$ loginctl user-status
+fatima (1005)
+           Since: Sat 2016-04-09 14:23:31 EDT; 54min ago
+           State: active
+        Sessions: 5 *3
+            Unit: user-1005.slice
+                  ├─user@1005.service
+                    ...
+                  ├─session-3.scope
+                    ...
+                  └─session-5.scope
+                    ├─3473 login -- fatima
+                    └─3515 -zsh
+
+Apr 09 14:40:30 laptop login[2325]: pam_unix(login:session):
+                       session opened for user fatima by LOGIN(uid=0)
+Apr 09 14:40:30 laptop login[2325]: LOGIN ON tty3 BY fatima
+</programlisting>
+
+      <para>There are two sessions, 3 and 5. Session 3 is a graphical session,
+      marked with a star. The tree of processing including the two corresponding
+      scope units and the user manager unit are shown.</para>
+    </example>
   </refsect1>
 
   <xi:include href="less-variables.xml" />

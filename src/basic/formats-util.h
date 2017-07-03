@@ -49,7 +49,7 @@
 #if SIZEOF_TIME_T == 8
 #  define PRI_TIME PRIi64
 #elif SIZEOF_TIME_T == 4
-#  define PRI_TIME PRIu32
+#  define PRI_TIME "li"
 #else
 #  error Unknown time_t size
 #endif
@@ -60,4 +60,20 @@
 #  define RLIM_FMT "%" PRIu32
 #else
 #  error Unknown rlim_t size
+#endif
+
+#if SIZEOF_DEV_T == 8
+#  define DEV_FMT "%" PRIu64
+#elif SIZEOF_DEV_T == 4
+#  define DEV_FMT "%" PRIu32
+#else
+#  error Unknown dev_t size
+#endif
+
+#if SIZEOF_INO_T == 8
+#  define INO_FMT "%" PRIu64
+#elif SIZEOF_INO_T == 4
+#  define INO_FMT "%" PRIu32
+#else
+#  error Unknown ino_t size
 #endif

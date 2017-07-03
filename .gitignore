@@ -6,7 +6,6 @@
 *.log
 *.o
 *.plist
-*.pyc
 *.stamp
 *.swp
 *.trs
@@ -40,7 +39,6 @@
 /hostnamectl
 /install-tree
 /journalctl
-/libsystemd-*.c
 /libtool
 /linuxx64.efi.stub
 /localectl
@@ -49,18 +47,14 @@
 /mtd_probe
 /networkctl
 /scsi_id
-/systemadm
 /systemctl
 /systemd
 /systemd-ac-power
-/systemd-activate
 /systemd-analyze
 /systemd-ask-password
 /systemd-backlight
 /systemd-binfmt
-/systemd-bootchart
 /systemd-bootx64.efi
-/systemd-bus-proxyd
 /systemd-cat
 /systemd-cgls
 /systemd-cgroups-agent
@@ -78,7 +72,6 @@
 /systemd-fsck
 /systemd-fstab-generator
 /systemd-getty-generator
-/systemd-gnome-ask-password-agent
 /systemd-gpt-auto-generator
 /systemd-hibernate-resume
 /systemd-hibernate-resume-generator
@@ -92,7 +85,6 @@
 /systemd-journal-remote
 /systemd-journal-upload
 /systemd-journald
-/systemd-kmsg-syslogd
 /systemd-localed
 /systemd-logind
 /systemd-machine-id-setup
@@ -107,7 +99,6 @@
 /systemd-quotacheck
 /systemd-random-seed
 /systemd-rc-local-generator
-/systemd-remount-api-vfs
 /systemd-remount-fs
 /systemd-reply-password
 /systemd-resolve-host
@@ -116,6 +107,7 @@
 /systemd-run
 /systemd-shutdown
 /systemd-sleep
+/systemd-socket-activate
 /systemd-socket-proxyd
 /systemd-stdio-bridge
 /systemd-sysctl
@@ -126,7 +118,6 @@
 /systemd-timesyncd
 /systemd-tmpfiles
 /systemd-tty-ask-password-agent
-/systemd-uaccess
 /systemd-udevd
 /systemd-update-done
 /systemd-update-utmp
@@ -135,13 +126,14 @@
 /tags
 /test-acd
 /test-af-list
+/test-alloc-util
 /test-architecture
 /test-arphrd-list
 /test-async
 /test-audit-type
 /test-barrier
 /test-bitmap
-/test-boot-timestamp
+/test-boot-timestamps
 /test-btrfs
 /test-bus-benchmark
 /test-bus-chat
@@ -156,7 +148,6 @@
 /test-bus-match
 /test-bus-objects
 /test-bus-policy
-/test-bus-proxy
 /test-bus-server
 /test-bus-signature
 /test-bus-zero-copy
@@ -167,6 +158,7 @@
 /test-cgroup
 /test-cgroup-mask
 /test-cgroup-util
+/test-clock
 /test-compress
 /test-compress-benchmark
 /test-condition
@@ -174,6 +166,7 @@
 /test-conf-parser
 /test-copy
 /test-coredump-vacuum
+/test-cpu-set-util
 /test-daemon
 /test-date
 /test-device-nodes
@@ -214,7 +207,7 @@
 /test-journal-stream
 /test-journal-syslog
 /test-journal-verify
-/test-json
+/test-keymap-util
 /test-libsystemd-sym*
 /test-libudev
 /test-libudev-sym*
@@ -274,6 +267,8 @@
 /test-util
 /test-verbs
 /test-watchdog
+/test-web-util
+/test-xattr-util
 /test-xml
 /timedatectl
 /udevadm
@@ -281,6 +276,7 @@
 /v4l_id
 Makefile.in
 __pycache__/
+*.py[co]
 aclocal.m4
 config.h
 config.h.in
@@ -295,7 +291,6 @@ stamp-*
 /elogind-inhibit
 /test-libelogind*
 
-
 # Local Helper Scripts and Tools - Not for distribution
 patches/
 /check_*.*
@@ -309,3 +304,18 @@ patches/
 *.remote
 *.bak
 *.layout
+
+# directories not needed by elogind
+/sysusers.d
+/hwdb
+/catalog
+/xorg
+/network
+/system-preset
+/tmpfiles.d
+/units
+/rules
+/test
+/.github
+/sysctl.d
+/coccinelle

@@ -101,6 +101,39 @@ int cg_read_pid(FILE *f, pid_t *_pid) {
         return 1;
 }
 
+int cg_read_event(const char *controller, const char *path, const char *event,
+                  char **val)
+{
+        _cleanup_free_ char *events = NULL, *content = NULL;
+        char *p, *line;
+        int r;
+
+        r = cg_get_path(controller, path, "cgroup.events", &events);
+        if (r < 0)
+                return r;
+
+        r = read_full_file(events, &content, NULL);
+        if (r < 0)
+                return r;
+
+        p = content;
+        while ((line = strsep(&p, "\n"))) {
+                char *key;
+
+                key = strsep(&line, " ");
+                if (!key || !line)
+                        return -EINVAL;
+
+                if (strcmp(key, event))
+                        continue;
+
+                *val = strdup(line);
+                return 0;
+        }
+
+        return -ENOENT;
+}
+
 int cg_enumerate_subgroups(const char *controller, const char *path, DIR **_d) {
         _cleanup_free_ char *fs = NULL;
         int r;
@@ -164,13 +197,26 @@ int cg_rmdir(const char *controller, const char *path) {
         return 0;
 }
 
-int cg_kill(const char *controller, const char *path, int sig, bool sigcont, bool ignore_self, Set *s) {
+int cg_kill(
+                const char *controller,
+                const char *path,
+                int sig,
+                CGroupFlags flags,
+                Set *s,
+                cg_kill_log_func_t log_kill,
+                void *userdata) {
+
         _cleanup_set_free_ Set *allocated_set = NULL;
         bool done = false;
         int r, ret = 0;
         pid_t my_pid;
 
         assert(sig >= 0);
+
+         /* Don't send SIGCONT twice. Also, SIGKILL always works even when process is suspended, hence don't send
+          * SIGCONT on SIGKILL. */
+        if (IN_SET(sig, SIGCONT, SIGKILL))
+                flags &= ~CGROUP_SIGCONT;
 
         /* This goes through the tasks list and kills them all. This
          * is repeated until no further processes are added to the
@@ -199,11 +245,14 @@ int cg_kill(const char *controller, const char *path, int sig, bool sigcont, boo
 
                 while ((r = cg_read_pid(f, &pid)) > 0) {
 
-                        if (ignore_self && pid == my_pid)
+                        if ((flags & CGROUP_IGNORE_SELF) && pid == my_pid)
                                 continue;
 
                         if (set_get(s, PID_TO_PTR(pid)) == PID_TO_PTR(pid))
                                 continue;
+
+                        if (log_kill)
+                                log_kill(pid, sig, userdata);
 
                         /* If we haven't killed this process yet, kill
                          * it */
@@ -211,7 +260,7 @@ int cg_kill(const char *controller, const char *path, int sig, bool sigcont, boo
                                 if (ret >= 0 && errno != ESRCH)
                                         ret = -errno;
                         } else {
-                                if (sigcont && sig != SIGKILL)
+                                if (flags & CGROUP_SIGCONT)
                                         (void) kill(pid, SIGCONT);
 
                                 if (ret == 0)
@@ -245,7 +294,15 @@ int cg_kill(const char *controller, const char *path, int sig, bool sigcont, boo
         return ret;
 }
 
-int cg_kill_recursive(const char *controller, const char *path, int sig, bool sigcont, bool ignore_self, bool rem, Set *s) {
+int cg_kill_recursive(
+                const char *controller,
+                const char *path,
+                int sig,
+                CGroupFlags flags,
+                Set *s,
+                cg_kill_log_func_t log_kill,
+                void *userdata) {
+
         _cleanup_set_free_ Set *allocated_set = NULL;
         _cleanup_closedir_ DIR *d = NULL;
         int r, ret;
@@ -260,7 +317,7 @@ int cg_kill_recursive(const char *controller, const char *path, int sig, bool si
                         return -ENOMEM;
         }
 
-        ret = cg_kill(controller, path, sig, sigcont, ignore_self, s);
+        ret = cg_kill(controller, path, sig, flags, s, log_kill, userdata);
 
         r = cg_enumerate_subgroups(controller, path, &d);
         if (r < 0) {
@@ -278,15 +335,14 @@ int cg_kill_recursive(const char *controller, const char *path, int sig, bool si
                 if (!p)
                         return -ENOMEM;
 
-                r = cg_kill_recursive(controller, p, sig, sigcont, ignore_self, rem, s);
+                r = cg_kill_recursive(controller, p, sig, flags, s, log_kill, userdata);
                 if (r != 0 && ret >= 0)
                         ret = r;
         }
-
         if (ret >= 0 && r < 0)
                 ret = r;
 
-        if (rem) {
+        if (flags & CGROUP_REMOVE) {
                 r = cg_rmdir(controller, path);
                 if (r < 0 && ret >= 0 && r != -ENOENT && r != -EBUSY)
                         return r;
@@ -295,7 +351,13 @@ int cg_kill_recursive(const char *controller, const char *path, int sig, bool si
         return ret;
 }
 
-int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char *pto, bool ignore_self) {
+int cg_migrate(
+                const char *cfrom,
+                const char *pfrom,
+                const char *cto,
+                const char *pto,
+                CGroupFlags flags) {
+
         bool done = false;
         _cleanup_set_free_ Set *s = NULL;
         int r, ret = 0;
@@ -314,8 +376,8 @@ int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char
 
         log_debug_elogind("Migrating \"%s\"/\"%s\" to \"%s\"/\"%s\" (%s)",
                           cfrom, pfrom, cto, pto,
-                          ignore_self ? "ignoring self" : "watching self");
-
+                          (flags & CGROUP_IGNORE_SELF)
+                          ? "ignoring self" : "watching self");
         do {
                 _cleanup_fclose_ FILE *f = NULL;
                 pid_t pid = 0;
@@ -334,7 +396,7 @@ int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char
                         /* This might do weird stuff if we aren't a
                          * single-threaded program. However, we
                          * luckily know we are not */
-                        if (ignore_self && pid == my_pid)
+                        if ((flags & CGROUP_IGNORE_SELF) && pid == my_pid)
                                 continue;
 
                         if (set_get(s, PID_TO_PTR(pid)) == PID_TO_PTR(pid))
@@ -382,8 +444,7 @@ int cg_migrate_recursive(
                 const char *pfrom,
                 const char *cto,
                 const char *pto,
-                bool ignore_self,
-                bool rem) {
+                CGroupFlags flags) {
 
         _cleanup_closedir_ DIR *d = NULL;
         int r, ret = 0;
@@ -394,7 +455,7 @@ int cg_migrate_recursive(
         assert(cto);
         assert(pto);
 
-        ret = cg_migrate(cfrom, pfrom, cto, pto, ignore_self);
+        ret = cg_migrate(cfrom, pfrom, cto, pto, flags);
 
         r = cg_enumerate_subgroups(cfrom, pfrom, &d);
         if (r < 0) {
@@ -410,9 +471,9 @@ int cg_migrate_recursive(
                 p = strjoin(pfrom, "/", fn, NULL);
                 free(fn);
                 if (!p)
-                                return -ENOMEM;
+                        return -ENOMEM;
 
-                r = cg_migrate_recursive(cfrom, p, cto, pto, ignore_self, rem);
+                r = cg_migrate_recursive(cfrom, p, cto, pto, flags);
                 if (r != 0 && ret >= 0)
                         ret = r;
         }
@@ -420,7 +481,7 @@ int cg_migrate_recursive(
         if (r < 0 && ret >= 0)
                 ret = r;
 
-        if (rem) {
+        if (flags & CGROUP_REMOVE) {
                 r = cg_rmdir(cfrom, pfrom);
                 if (r < 0 && ret >= 0 && r != -ENOENT && r != -EBUSY)
                         return r;
@@ -434,8 +495,7 @@ int cg_migrate_recursive_fallback(
                 const char *pfrom,
                 const char *cto,
                 const char *pto,
-                bool ignore_self,
-                bool rem) {
+                CGroupFlags flags) {
 
         int r;
 
@@ -444,7 +504,7 @@ int cg_migrate_recursive_fallback(
         assert(cto);
         assert(pto);
 
-        r = cg_migrate_recursive(cfrom, pfrom, cto, pto, ignore_self, rem);
+        r = cg_migrate_recursive(cfrom, pfrom, cto, pto, flags);
         if (r < 0) {
                 char prefix[strlen(pto) + 1];
 
@@ -453,7 +513,7 @@ int cg_migrate_recursive_fallback(
                 PATH_FOREACH_PREFIX(prefix, pto) {
                         int q;
 
-                        q = cg_migrate_recursive(cfrom, pfrom, cto, prefix, ignore_self, rem);
+                        q = cg_migrate_recursive(cfrom, pfrom, cto, prefix, flags);
                         if (q >= 0)
                                 return q;
                 }
@@ -494,14 +554,14 @@ static int join_path_legacy(const char *controller, const char *path, const char
                 t = strjoin("/sys/fs/cgroup/", dn, "/", suffix, NULL);
         else if (isempty(suffix))
                 t = strjoin("/sys/fs/cgroup/", dn, "/", path, NULL);
-                else
+        else
                 t = strjoin("/sys/fs/cgroup/", dn, "/", path, "/", suffix, NULL);
         if (!t)
                 return -ENOMEM;
 
         *fs = t;
         return 0;
-        }
+}
 
 static int join_path_unified(const char *path, const char *suffix, char **fs) {
         char *t;
@@ -1016,18 +1076,12 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
                 return unified;
 
         if (unified > 0) {
-                _cleanup_free_ char *populated = NULL, *t = NULL;
+                _cleanup_free_ char *t = NULL;
 
                 /* On the unified hierarchy we can check empty state
-                 * via the "cgroup.populated" attribute. */
+                 * via the "populated" attribute of "cgroup.events". */
 
-                r = cg_get_path(controller, path, "cgroup.populated", &populated);
-                if (r < 0)
-                        return r;
-
-                r = read_one_line_file(populated, &t);
-                if (r == -ENOENT)
-                        return 1;
+                r = cg_read_event(controller, path, "populated", &t);
                 if (r < 0)
                         return r;
 
@@ -1041,8 +1095,8 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
                         return r;
 
                 r = cg_enumerate_subgroups(controller, path, &d);
-                        if (r == -ENOENT)
-                                return 1;
+                if (r == -ENOENT)
+                        return 1;
                 if (r < 0)
                         return r;
 
@@ -1267,7 +1321,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int cg_path_decode_unit(const char *cgroup, char **unit){
+int cg_path_decode_unit(const char *cgroup, char **unit) {
         char *c, *s;
         size_t n;
 
@@ -1518,9 +1572,7 @@ int cg_pid_get_machine_name(pid_t pid, char **machine) {
 #endif // 0
 
 int cg_path_get_session(const char *path, char **session) {
-        /* Elogind uses a flat hierarchy, just "/SESSION".  The only
-           wrinkle is that SESSION might be escaped.  */
-#if 0
+#if 0 /// UNNEEDED by elogind
         _cleanup_free_ char *unit = NULL;
         char *start, *end;
         int r;
@@ -1542,6 +1594,8 @@ int cg_path_get_session(const char *path, char **session) {
         if (!session_id_valid(start))
                 return -ENXIO;
 #else
+        /* Elogind uses a flat hierarchy, just "/SESSION".  The only
+           wrinkle is that SESSION might be escaped.  */
         const char *e, *n, *start;
 
         assert(path);
@@ -1872,7 +1926,6 @@ int cg_set_attribute(const char *controller, const char *path, const char *attri
         return write_string_file(p, value, 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -1884,6 +1937,7 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
         return read_one_line_file(p, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path) {
         CGroupController c;
         int r, unified;
@@ -1936,16 +1990,16 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
 
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
-                        const char *p = NULL;
+                const char *p = NULL;
 
                 if (!(supported & bit))
                         continue;
 
-                        if (path_callback)
-                                p = path_callback(bit, userdata);
+                if (path_callback)
+                        p = path_callback(bit, userdata);
 
-                        if (!p)
-                                p = path;
+                if (!p)
+                        p = path;
 
                 (void) cg_attach_fallback(cgroup_controller_to_string(c), p, pid);
         }
@@ -1975,7 +2029,7 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
         int r = 0, unified;
 
         if (!path_equal(from, to))  {
-                r = cg_migrate_recursive(SYSTEMD_CGROUP_CONTROLLER, from, SYSTEMD_CGROUP_CONTROLLER, to, false, true);
+                r = cg_migrate_recursive(SYSTEMD_CGROUP_CONTROLLER, from, SYSTEMD_CGROUP_CONTROLLER, to, CGROUP_REMOVE);
                 if (r < 0)
                         return r;
         }
@@ -1988,18 +2042,18 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
 
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
-                        const char *p = NULL;
+                const char *p = NULL;
 
                 if (!(supported & bit))
                         continue;
 
-                        if (to_callback)
-                                p = to_callback(bit, userdata);
+                if (to_callback)
+                        p = to_callback(bit, userdata);
 
-                        if (!p)
-                                p = to;
+                if (!p)
+                        p = to;
 
-                (void) cg_migrate_recursive_fallback(SYSTEMD_CGROUP_CONTROLLER, to, cgroup_controller_to_string(c), p, false, false);
+                (void) cg_migrate_recursive_fallback(SYSTEMD_CGROUP_CONTROLLER, to, cgroup_controller_to_string(c), p, 0);
         }
 
         return 0;
@@ -2079,12 +2133,12 @@ int cg_mask_supported(CGroupMask *ret) {
                                 continue;
 
                         mask |= CGROUP_CONTROLLER_TO_MASK(v);
-        }
+                }
 
-                /* Currently, we only support the memory and pids
+                /* Currently, we only support the memory, io and pids
                  * controller in the unified hierarchy, mask
                  * everything else off. */
-                mask &= CGROUP_MASK_MEMORY | CGROUP_MASK_PIDS;
+                mask &= CGROUP_MASK_MEMORY | CGROUP_MASK_IO | CGROUP_MASK_PIDS;
 
         } else {
                 CGroupController c;
@@ -2179,21 +2233,21 @@ int cg_unified(void) {
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
                 return -errno;
 
-/// elogind can not support the unified hierarchy as a controller,
-/// so always assume a classical hierarchy.
-/// If, ond only *if*, someone really wants to substitute systemd-login
-/// in an environment managed by systemd with elogin, we might have to
-/// add such a support.
-#if 0
-        if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC))
+#if 0 /// UNNEEDED by elogind
+        if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC))
                 unified_cache = true;
         else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
 #else
+        /* elogind can not support the unified hierarchy as a controller,
+         * so always assume a classical hierarchy.
+         * If, and only *if*, someone really wants to substitute systemd-login
+         * in an environment managed by systemd with elogind, we might have to
+         * add such a support. */
         if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
 #endif // 0
                 unified_cache = false;
         else
-                return -ENOEXEC;
+                return -ENOMEDIUM;
 
         return unified_cache;
 }
@@ -2288,6 +2342,42 @@ bool cg_is_legacy_wanted(void) {
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
+int cg_weight_parse(const char *s, uint64_t *ret) {
+        uint64_t u;
+        int r;
+
+        if (isempty(s)) {
+                *ret = CGROUP_WEIGHT_INVALID;
+                return 0;
+        }
+
+        r = safe_atou64(s, &u);
+        if (r < 0)
+                return r;
+
+        if (u < CGROUP_WEIGHT_MIN || u > CGROUP_WEIGHT_MAX)
+                return -ERANGE;
+
+        *ret = u;
+        return 0;
+}
+
+const uint64_t cgroup_io_limit_defaults[_CGROUP_IO_LIMIT_TYPE_MAX] = {
+        [CGROUP_IO_RBPS_MAX]    = CGROUP_LIMIT_MAX,
+        [CGROUP_IO_WBPS_MAX]    = CGROUP_LIMIT_MAX,
+        [CGROUP_IO_RIOPS_MAX]   = CGROUP_LIMIT_MAX,
+        [CGROUP_IO_WIOPS_MAX]   = CGROUP_LIMIT_MAX,
+};
+
+static const char* const cgroup_io_limit_type_table[_CGROUP_IO_LIMIT_TYPE_MAX] = {
+        [CGROUP_IO_RBPS_MAX]    = "IOReadBandwidthMax",
+        [CGROUP_IO_WBPS_MAX]    = "IOWriteBandwidthMax",
+        [CGROUP_IO_RIOPS_MAX]   = "IOReadIOPSMax",
+        [CGROUP_IO_WIOPS_MAX]   = "IOWriteIOPSMax",
+};
+
+DEFINE_STRING_TABLE_LOOKUP(cgroup_io_limit_type, CGroupIOLimitType);
+
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;
@@ -2332,6 +2422,7 @@ int cg_blkio_weight_parse(const char *s, uint64_t *ret) {
 static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_CPU] = "cpu",
         [CGROUP_CONTROLLER_CPUACCT] = "cpuacct",
+        [CGROUP_CONTROLLER_IO] = "io",
         [CGROUP_CONTROLLER_BLKIO] = "blkio",
         [CGROUP_CONTROLLER_MEMORY] = "memory",
         [CGROUP_CONTROLLER_DEVICES] = "devices",

@@ -21,6 +21,7 @@
 
 #include <stdbool.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 bool uid_is_valid(uid_t uid);
 
@@ -34,8 +35,8 @@ static inline int parse_gid(const char *s, gid_t *ret_gid) {
         return parse_uid(s, (uid_t*) ret_gid);
 }
 
-#if 0 /// UNNEEDED by elogind
 char* getlogname_malloc(void);
+#if 0 /// UNNEEDED by elogind
 char* getusername_malloc(void);
 #endif // 0
 
@@ -69,3 +70,7 @@ int take_etc_passwd_lock(const char *root);
 
 #define PTR_TO_GID(p) ((gid_t) (((uintptr_t) (p))-1))
 #define GID_TO_PTR(u) ((void*) (((uintptr_t) (u))+1))
+
+static inline bool userns_supported(void) {
+        return access("/proc/self/uid_map", F_OK) >= 0;
+}

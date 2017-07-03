@@ -19,7 +19,13 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "logind.h"
+#if 0 /// UNNEEDED by elogind
+int parse_sleep_config(const char *verb, char ***modes, char ***states);
 
-int can_sleep(Manager *m, const char *verb);
-int do_sleep(const char *arg_verb, char **modes, char **states);
+int can_sleep(const char *verb);
+int can_sleep_disk(char **types);
+int can_sleep_state(char **types);
+#else
+#include <logind.h>
+int can_sleep(Manager* m, const char *verb);
+#endif // 0

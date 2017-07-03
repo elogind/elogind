@@ -25,10 +25,12 @@
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "formats-util.h"
-#include "musl_missing.h"
 #include "string-util.h"
 #include "strv.h"
 #include "util.h"
+
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 static void test_login(void) {
         _cleanup_close_pair_ int pair[2] = { -1, -1 };

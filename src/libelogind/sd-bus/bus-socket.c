@@ -60,7 +60,7 @@ static void iovec_advance(struct iovec iov[], unsigned *idx, size_t size) {
                 i->iov_base = NULL;
                 i->iov_len = 0;
 
-                (*idx) ++;
+                (*idx)++;
         }
 }
 
@@ -221,7 +221,7 @@ static int bus_socket_auth_verify_client(sd_bus *b) {
                 peer.bytes[i/2] = ((uint8_t) x << 4 | (uint8_t) y);
         }
 
-        if (!sd_id128_equal(b->server_id, SD_ID128_NULL) &&
+        if (!sd_id128_is_null(b->server_id) &&
             !sd_id128_equal(b->server_id, peer))
                 return -EPERM;
 
@@ -350,7 +350,7 @@ static int bus_socket_auth_write(sd_bus *b, const char *t) {
         if (!p)
                 return -ENOMEM;
 
-        memcpy(p, b->auth_iovec[0].iov_base, b->auth_iovec[0].iov_len);
+        memcpy_safe(p, b->auth_iovec[0].iov_base, b->auth_iovec[0].iov_len);
         memcpy(p + b->auth_iovec[0].iov_len, t, l);
 
         b->auth_iovec[0].iov_base = p;
@@ -787,7 +787,7 @@ int bus_socket_write_message(sd_bus *bus, sd_bus_message *m, size_t *idx) {
 
         n = m->n_iovec * sizeof(struct iovec);
         iov = alloca(n);
-        memcpy(iov, m->iovec, n);
+        memcpy_safe(iov, m->iovec, n);
 
         j = 0;
         iovec_advance(iov, &j, *idx);
@@ -998,7 +998,7 @@ int bus_socket_read_message(sd_bus *bus) {
                                         return -ENOMEM;
                                 }
 
-                                memcpy(f + bus->n_fds, CMSG_DATA(cmsg), n * sizeof(int));
+                                memcpy_safe(f + bus->n_fds, CMSG_DATA(cmsg), n * sizeof(int));
                                 bus->fds = f;
                                 bus->n_fds += n;
                         } else

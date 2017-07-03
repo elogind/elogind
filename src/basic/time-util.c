@@ -44,10 +44,30 @@
 static nsec_t timespec_load_nsec(const struct timespec *ts);
 #endif // 0
 
+static clockid_t map_clock_id(clockid_t c) {
+
+        /* Some more exotic archs (s390, ppc, …) lack the "ALARM" flavour of the clocks. Thus, clock_gettime() will
+         * fail for them. Since they are essentially the same as their non-ALARM pendants (their only difference is
+         * when timers are set on them), let's just map them accordingly. This way, we can get the correct time even on
+         * those archs. */
+
+        switch (c) {
+
+        case CLOCK_BOOTTIME_ALARM:
+                return CLOCK_BOOTTIME;
+
+        case CLOCK_REALTIME_ALARM:
+                return CLOCK_REALTIME;
+
+        default:
+                return c;
+        }
+}
+
 usec_t now(clockid_t clock_id) {
         struct timespec ts;
 
-        assert_se(clock_gettime(clock_id, &ts) == 0);
+        assert_se(clock_gettime(map_clock_id(clock_id), &ts) == 0);
 
         return timespec_load(&ts);
 }
@@ -56,7 +76,7 @@ usec_t now(clockid_t clock_id) {
 nsec_t now_nsec(clockid_t clock_id) {
         struct timespec ts;
 
-        assert_se(clock_gettime(clock_id, &ts) == 0);
+        assert_se(clock_gettime(map_clock_id(clock_id), &ts) == 0);
 
         return timespec_load_nsec(&ts);
 }
@@ -67,6 +87,16 @@ dual_timestamp* dual_timestamp_get(dual_timestamp *ts) {
 
         ts->realtime = now(CLOCK_REALTIME);
         ts->monotonic = now(CLOCK_MONOTONIC);
+
+        return ts;
+}
+
+triple_timestamp* triple_timestamp_get(triple_timestamp *ts) {
+        assert(ts);
+
+        ts->realtime = now(CLOCK_REALTIME);
+        ts->monotonic = now(CLOCK_MONOTONIC);
+        ts->boottime = clock_boottime_supported() ? now(CLOCK_BOOTTIME) : USEC_INFINITY;
 
         return ts;
 }
@@ -89,6 +119,24 @@ dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u) {
 }
 
 #if 0 /// UNNEEDED by elogind
+triple_timestamp* triple_timestamp_from_realtime(triple_timestamp *ts, usec_t u) {
+        int64_t delta;
+
+        assert(ts);
+
+        if (u == USEC_INFINITY || u <= 0) {
+                ts->realtime = ts->monotonic = ts->boottime = u;
+                return ts;
+        }
+
+        ts->realtime = u;
+        delta = (int64_t) now(CLOCK_REALTIME) - (int64_t) u;
+        ts->monotonic = usec_sub(now(CLOCK_MONOTONIC), delta);
+        ts->boottime = clock_boottime_supported() ? usec_sub(now(CLOCK_BOOTTIME), delta) : USEC_INFINITY;
+
+        return ts;
+}
+
 dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u) {
         int64_t delta;
         assert(ts);
@@ -122,11 +170,30 @@ dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, us
 }
 #endif // 0
 
+usec_t triple_timestamp_by_clock(triple_timestamp *ts, clockid_t clock) {
+
+        switch (clock) {
+
+        case CLOCK_REALTIME:
+        case CLOCK_REALTIME_ALARM:
+                return ts->realtime;
+
+        case CLOCK_MONOTONIC:
+                return ts->monotonic;
+
+        case CLOCK_BOOTTIME:
+        case CLOCK_BOOTTIME_ALARM:
+                return ts->boottime;
+
+        default:
+                return USEC_INFINITY;
+        }
+}
+
 usec_t timespec_load(const struct timespec *ts) {
         assert(ts);
 
-        if (ts->tv_sec == (time_t) -1 &&
-            ts->tv_nsec == (long) -1)
+        if (ts->tv_sec == (time_t) -1 && ts->tv_nsec == (long) -1)
                 return USEC_INFINITY;
 
         if ((usec_t) ts->tv_sec > (UINT64_MAX - (ts->tv_nsec / NSEC_PER_USEC)) / USEC_PER_SEC)
@@ -141,13 +208,13 @@ usec_t timespec_load(const struct timespec *ts) {
 static nsec_t timespec_load_nsec(const struct timespec *ts) {
         assert(ts);
 
-        if (ts->tv_sec == (time_t) -1 &&
-            ts->tv_nsec == (long) -1)
+        if (ts->tv_sec == (time_t) -1 && ts->tv_nsec == (long) -1)
                 return NSEC_INFINITY;
 
-        return
-                (nsec_t) ts->tv_sec * NSEC_PER_SEC +
-                (nsec_t) ts->tv_nsec;
+        if ((nsec_t) ts->tv_sec >= (UINT64_MAX - ts->tv_nsec) / NSEC_PER_SEC)
+                return NSEC_INFINITY;
+
+        return (nsec_t) ts->tv_sec * NSEC_PER_SEC + (nsec_t) ts->tv_nsec;
 }
 #endif // 0
 
@@ -314,15 +381,15 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
                 const char *suffix;
                 usec_t usec;
         } table[] = {
-                { "y", USEC_PER_YEAR },
-                { "month", USEC_PER_MONTH },
-                { "w", USEC_PER_WEEK },
-                { "d", USEC_PER_DAY },
-                { "h", USEC_PER_HOUR },
-                { "min", USEC_PER_MINUTE },
-                { "s", USEC_PER_SEC },
-                { "ms", USEC_PER_MSEC },
-                { "us", 1 },
+                { "y",     USEC_PER_YEAR   },
+                { "month", USEC_PER_MONTH  },
+                { "w",     USEC_PER_WEEK   },
+                { "d",     USEC_PER_DAY    },
+                { "h",     USEC_PER_HOUR   },
+                { "min",   USEC_PER_MINUTE },
+                { "s",     USEC_PER_SEC    },
+                { "ms",    USEC_PER_MSEC   },
+                { "us",    1               },
         };
 
         unsigned i;
@@ -442,7 +509,7 @@ int dual_timestamp_deserialize(const char *value, dual_timestamp *t) {
         assert(t);
 
         if (sscanf(value, "%llu %llu", &a, &b) != 2) {
-                log_debug("Failed to parse finish timestamp value %s.", value);
+                log_debug("Failed to parse dual timestamp value \"%s\": %m", value);
                 return -EINVAL;
         }
 
@@ -452,6 +519,20 @@ int dual_timestamp_deserialize(const char *value, dual_timestamp *t) {
         return 0;
 }
 
+#endif // 0
+int timestamp_deserialize(const char *value, usec_t *timestamp) {
+        int r;
+
+        assert(value);
+
+        r = safe_atou64(value, timestamp);
+        if (r < 0)
+                return log_debug_errno(r, "Failed to parse timestamp value \"%s\": %m", value);
+
+        return r;
+}
+
+#if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec) {
         static const struct {
                 const char *name;
@@ -558,12 +639,12 @@ int parse_timestamp(const char *t, usec_t *usec) {
                 goto from_tm;
 
         } else if (streq(t, "yesterday")) {
-                tm.tm_mday --;
+                tm.tm_mday--;
                 tm.tm_sec = tm.tm_min = tm.tm_hour = 0;
                 goto from_tm;
 
         } else if (streq(t, "tomorrow")) {
-                tm.tm_mday ++;
+                tm.tm_mday++;
                 tm.tm_sec = tm.tm_min = tm.tm_hour = 0;
                 goto from_tm;
         }
@@ -687,42 +768,56 @@ finish:
 }
 #endif // 0
 
-int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
-
+static char* extract_multiplier(char *p, usec_t *multiplier) {
         static const struct {
                 const char *suffix;
                 usec_t usec;
         } table[] = {
-                { "seconds", USEC_PER_SEC },
-                { "second", USEC_PER_SEC },
-                { "sec", USEC_PER_SEC },
-                { "s", USEC_PER_SEC },
+                { "seconds", USEC_PER_SEC    },
+                { "second",  USEC_PER_SEC    },
+                { "sec",     USEC_PER_SEC    },
+                { "s",       USEC_PER_SEC    },
                 { "minutes", USEC_PER_MINUTE },
-                { "minute", USEC_PER_MINUTE },
-                { "min", USEC_PER_MINUTE },
-                { "months", USEC_PER_MONTH },
-                { "month", USEC_PER_MONTH },
+                { "minute",  USEC_PER_MINUTE },
+                { "min",     USEC_PER_MINUTE },
+                { "months",  USEC_PER_MONTH  },
+                { "month",   USEC_PER_MONTH  },
                 { "M",       USEC_PER_MONTH  },
-                { "msec", USEC_PER_MSEC },
-                { "ms", USEC_PER_MSEC },
-                { "m", USEC_PER_MINUTE },
-                { "hours", USEC_PER_HOUR },
-                { "hour", USEC_PER_HOUR },
-                { "hr", USEC_PER_HOUR },
-                { "h", USEC_PER_HOUR },
-                { "days", USEC_PER_DAY },
-                { "day", USEC_PER_DAY },
-                { "d", USEC_PER_DAY },
-                { "weeks", USEC_PER_WEEK },
-                { "week", USEC_PER_WEEK },
-                { "w", USEC_PER_WEEK },
-                { "years", USEC_PER_YEAR },
-                { "year", USEC_PER_YEAR },
-                { "y", USEC_PER_YEAR },
-                { "usec", 1ULL },
-                { "us", 1ULL },
+                { "msec",    USEC_PER_MSEC   },
+                { "ms",      USEC_PER_MSEC   },
+                { "m",       USEC_PER_MINUTE },
+                { "hours",   USEC_PER_HOUR   },
+                { "hour",    USEC_PER_HOUR   },
+                { "hr",      USEC_PER_HOUR   },
+                { "h",       USEC_PER_HOUR   },
+                { "days",    USEC_PER_DAY    },
+                { "day",     USEC_PER_DAY    },
+                { "d",       USEC_PER_DAY    },
+                { "weeks",   USEC_PER_WEEK   },
+                { "week",    USEC_PER_WEEK   },
+                { "w",       USEC_PER_WEEK   },
+                { "years",   USEC_PER_YEAR   },
+                { "year",    USEC_PER_YEAR   },
+                { "y",       USEC_PER_YEAR   },
+                { "usec",    1ULL            },
+                { "us",      1ULL            },
         };
+        unsigned i;
 
+        for (i = 0; i < ELEMENTSOF(table); i++) {
+                char *e;
+
+                e = startswith(p, table[i].suffix);
+                if (e) {
+                        *multiplier = table[i].usec;
+                        return e;
+                }
+        }
+
+        return p;
+}
+
+int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
         const char *p, *s;
         usec_t r = 0;
         bool something = false;
@@ -747,8 +842,8 @@ int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
         for (;;) {
                 long long l, z = 0;
                 char *e;
-                unsigned i, n = 0;
-                usec_t multiplier, k;
+                unsigned n = 0;
+                usec_t multiplier = default_unit, k;
 
                 p += strspn(p, WHITESPACE);
 
@@ -761,10 +856,8 @@ int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
 
                 errno = 0;
                 l = strtoll(p, &e, 10);
-
                 if (errno > 0)
                         return -errno;
-
                 if (l < 0)
                         return -ERANGE;
 
@@ -788,18 +881,7 @@ int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
                         return -EINVAL;
 
                 e += strspn(e, WHITESPACE);
-
-                for (i = 0; i < ELEMENTSOF(table); i++)
-                        if (startswith(e, table[i].suffix)) {
-                                multiplier = table[i].usec;
-                                p = e + strlen(table[i].suffix);
-                                break;
-                        }
-
-                if (i >= ELEMENTSOF(table)) {
-                        multiplier = default_unit;
-                        p = e;
-                }
+                p = extract_multiplier(e, &multiplier);
 
                 something = true;
 
@@ -1063,24 +1145,61 @@ bool timezone_is_valid(const char *name) {
         return true;
 }
 
-clockid_t clock_boottime_or_monotonic(void) {
-        static clockid_t clock = -1;
-        int fd;
+#endif // 0
+bool clock_boottime_supported(void) {
+        static int supported = -1;
 
-        if (clock != -1)
-                return clock;
+        /* Note that this checks whether CLOCK_BOOTTIME is available in general as well as available for timerfds()! */
 
-        fd = timerfd_create(CLOCK_BOOTTIME, TFD_NONBLOCK|TFD_CLOEXEC);
-        if (fd < 0)
-                clock = CLOCK_MONOTONIC;
-        else {
-                safe_close(fd);
-                clock = CLOCK_BOOTTIME;
+        if (supported < 0) {
+                int fd;
+
+                fd = timerfd_create(CLOCK_BOOTTIME, TFD_NONBLOCK|TFD_CLOEXEC);
+                if (fd < 0)
+                        supported = false;
+                else {
+                        safe_close(fd);
+                        supported = true;
+                }
         }
 
-        return clock;
+        return supported;
 }
 
+#if 0 /// UNNEEDED by elogind
+clockid_t clock_boottime_or_monotonic(void) {
+        if (clock_boottime_supported())
+                return CLOCK_BOOTTIME;
+        else
+                return CLOCK_MONOTONIC;
+}
+#endif // 0
+
+bool clock_supported(clockid_t clock) {
+        struct timespec ts;
+
+        switch (clock) {
+
+        case CLOCK_MONOTONIC:
+        case CLOCK_REALTIME:
+                return true;
+
+        case CLOCK_BOOTTIME:
+                return clock_boottime_supported();
+
+        case CLOCK_BOOTTIME_ALARM:
+                if (!clock_boottime_supported())
+                        return false;
+
+                /* fall through, after checking the cached value for CLOCK_BOOTTIME. */
+
+        default:
+                /* For everything else, check properly */
+                return clock_gettime(clock, &ts) >= 0;
+        }
+}
+
+#if 0 /// UNNEEDED by elogind
 int get_timezone(char **tz) {
         _cleanup_free_ char *t = NULL;
         const char *e;

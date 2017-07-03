@@ -54,6 +54,7 @@ int strv_extend(char ***l, const char *value);
 #if 0 /// UNNEEDED by elogind
 int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
 #endif // 0
+int strv_extend_front(char ***l, const char *value);
 int strv_push(char ***l, char *value);
 int strv_push_pair(char ***l, char *a, char *b);
 int strv_push_prepend(char ***l, char *value);
@@ -76,8 +77,10 @@ bool strv_equal(char **a, char **b);
 char **strv_new(const char *x, ...) _sentinel_;
 char **strv_new_ap(const char *x, va_list ap);
 
+#define STRV_IGNORE ((const char *) -1)
+
 static inline const char* STRV_IFNOTNULL(const char *x) {
-        return x ? x : (const char *) -1;
+        return x ? x : STRV_IGNORE;
 }
 
 static inline bool strv_isempty(char * const *l) {
@@ -90,6 +93,7 @@ char **strv_split_newlines(const char *s);
 
 int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
 #endif // 0
+
 char *strv_join(char **l, const char *separator);
 #if 0 /// UNNEEDED by elogind
 char *strv_join_quoted(char **l);
@@ -102,6 +106,7 @@ int strv_make_nulstr(char **l, char **p, size_t *n);
 
 bool strv_overlap(char **a, char **b) _pure_;
 #endif // 0
+
 #define STRV_FOREACH(s, l)                      \
         for ((s) = (l); (s) && *(s); (s)++)
 

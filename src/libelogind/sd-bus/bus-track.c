@@ -24,7 +24,6 @@
 #include "bus-track.h"
 #include "bus-util.h"
 
-
 struct sd_bus_track {
         unsigned n_ref;
         sd_bus *bus;
@@ -130,7 +129,7 @@ _public_ sd_bus_track* sd_bus_track_unref(sd_bus_track *track) {
         assert(track->n_ref > 0);
 
         if (track->n_ref > 1) {
-                track->n_ref --;
+                track->n_ref--;
                 return NULL;
         }
 

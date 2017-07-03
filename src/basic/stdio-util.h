@@ -19,11 +19,11 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#if defined(__GLIBC__) && defined(HAVE_PRINTF_H)
+#if 0 /// elogind is musl-libc compatible and does not directly include printf.h
 #include <printf.h>
 #else
 #include "parse-printf-format.h"
-#endif
+#endif // 0
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -77,4 +77,4 @@ do {                                                                    \
                         assert_not_reached("Unknown format string argument."); \
                 }                                                       \
         }                                                               \
-} while(false)
+} while (false)

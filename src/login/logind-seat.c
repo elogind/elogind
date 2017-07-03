@@ -368,7 +368,6 @@ int seat_active_vt_changed(Seat *s, unsigned int vtnr) {
         }
 
         r = seat_set_active(s, new_active);
-
 #if 0 /// elogind does not spawn autovt
         manager_spawn_autovt(s->manager, vtnr);
 #endif // 0

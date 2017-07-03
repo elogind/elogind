@@ -294,7 +294,7 @@ int config_parse(const char *unit,
         _cleanup_free_ char *section = NULL, *continuation = NULL;
         _cleanup_fclose_ FILE *ours = NULL;
         unsigned line = 0, section_line = 0;
-        bool section_ignored = false;
+        bool section_ignored = false, allow_bom = true;
         int r;
 
         assert(filename);
@@ -314,17 +314,21 @@ int config_parse(const char *unit,
 
         fd_warn_permissions(filename, fileno(f));
 
-        while (!feof(f)) {
-                char l[LINE_MAX], *p, *c = NULL, *e;
+        for (;;) {
+                char buf[LINE_MAX], *l, *p, *c = NULL, *e;
                 bool escaped = false;
 
-                if (!fgets(l, sizeof(l), f)) {
+                if (!fgets(buf, sizeof buf, f)) {
                         if (feof(f))
                                 break;
 
-                        log_error_errno(errno, "Failed to read configuration file '%s': %m", filename);
-                        return -errno;
+                        return log_error_errno(errno, "Failed to read configuration file '%s': %m", filename);
                 }
+
+                l = buf;
+                if (allow_bom && startswith(l, UTF8_BYTE_ORDER_MARK))
+                        l += strlen(UTF8_BYTE_ORDER_MARK);
+                allow_bom = false;
 
                 truncate_nl(l);
 
@@ -425,15 +429,15 @@ int config_parse_many(const char *conf_file,
 #define DEFINE_PARSER(type, vartype, conv_func)                         \
         int config_parse_##type(                                        \
                         const char *unit,                               \
-                                const char *filename,                   \
-                                unsigned line,                          \
-                                const char *section,                    \
-                                unsigned section_line,                  \
-                                const char *lvalue,                     \
-                                int ltype,                              \
-                                const char *rvalue,                     \
-                                void *data,                             \
-                                void *userdata) {                       \
+                        const char *filename,                           \
+                        unsigned line,                                  \
+                        const char *section,                            \
+                        unsigned section_line,                          \
+                        const char *lvalue,                             \
+                        int ltype,                                      \
+                        const char *rvalue,                             \
+                        void *data,                                     \
+                        void *userdata) {                               \
                                                                         \
                 vartype *i = data;                                      \
                 int r;                                                  \
@@ -708,6 +712,7 @@ int config_parse_strv(const char *unit,
                       void *userdata) {
 
         char ***sv = data;
+        int r;
 
         assert(filename);
         assert(lvalue);
@@ -721,19 +726,20 @@ int config_parse_strv(const char *unit,
                  * we actually fill in a real empty array here rather
                  * than NULL, since some code wants to know if
                  * something was set at all... */
-                empty = strv_new(NULL, NULL);
+                empty = new0(char*, 1);
                 if (!empty)
                         return log_oom();
 
                 strv_free(*sv);
                 *sv = empty;
+
                 return 0;
         }
 
         for (;;) {
                 char *word = NULL;
-                int r;
-                r = extract_first_word(&rvalue, &word, WHITESPACE, EXTRACT_QUOTES);
+
+                r = extract_first_word(&rvalue, &word, WHITESPACE, EXTRACT_QUOTES|EXTRACT_RETAIN_ESCAPE);
                 if (r == 0)
                         break;
                 if (r == -ENOMEM)
@@ -875,6 +881,43 @@ int config_parse_personality(
         }
 
         *personality = p;
+        return 0;
+}
+
+int config_parse_ifname(
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
+
+        char **s = data;
+        int r;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+        assert(data);
+
+        if (isempty(rvalue)) {
+                *s = mfree(*s);
+                return 0;
+        }
+
+        if (!ifname_valid(rvalue)) {
+                log_syntax(unit, LOG_ERR, filename, line, 0, "Interface name is not valid or too long, ignoring assignment: %s", rvalue);
+                return 0;
+        }
+
+        r = free_and_strdup(s, rvalue);
+        if (r < 0)
+                return log_oom();
+
         return 0;
 }
 #endif // 0

@@ -31,12 +31,14 @@
 #include <linux/neighbour.h>
 #include <linux/oom.h>
 #include <linux/rtnetlink.h>
+#include <net/ethernet.h>
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/syscall.h>
 #include <uchar.h>
 #include <unistd.h>
 
+/// Additional includes needed by elogind
 #include "musl_missing.h"
 
 #ifdef HAVE_AUDIT
@@ -134,84 +136,6 @@
 
 #ifndef SOL_SCTP
 #define SOL_SCTP 132
-#endif
-
-#if !HAVE_DECL_PIVOT_ROOT
-static inline int pivot_root(const char *new_root, const char *put_old) {
-        return syscall(SYS_pivot_root, new_root, put_old);
-}
-#endif
-
-#ifndef __NR_memfd_create
-#  if defined __x86_64__
-#    define __NR_memfd_create 319
-#  elif defined __arm__
-#    define __NR_memfd_create 385
-#  elif defined __aarch64__
-#    define __NR_memfd_create 279
-#  elif defined __s390__
-#    define __NR_memfd_create 350
-#  elif defined _MIPS_SIM
-#    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define __NR_memfd_create 4354
-#    endif
-#    if _MIPS_SIM == _MIPS_SIM_NABI32
-#      define __NR_memfd_create 6318
-#    endif
-#    if _MIPS_SIM == _MIPS_SIM_ABI64
-#      define __NR_memfd_create 5314
-#    endif
-#  elif defined __i386__
-#    define __NR_memfd_create 356
-#  else
-#    warning "__NR_memfd_create unknown for your architecture"
-#    define __NR_memfd_create 0xffffffff
-#  endif
-#endif
-
-#ifndef HAVE_MEMFD_CREATE
-static inline int memfd_create(const char *name, unsigned int flags) {
-        return syscall(__NR_memfd_create, name, flags);
-}
-#endif
-
-#ifndef __NR_getrandom
-#  if defined __x86_64__
-#    define __NR_getrandom 318
-#  elif defined(__i386__)
-#    define __NR_getrandom 355
-#  elif defined(__arm__)
-#    define __NR_getrandom 384
-# elif defined(__aarch64__)
-#    define __NR_getrandom 278
-#  elif defined(__ia64__)
-#    define __NR_getrandom 1339
-#  elif defined(__m68k__)
-#    define __NR_getrandom 352
-#  elif defined(__s390x__)
-#    define __NR_getrandom 349
-#  elif defined(__powerpc__)
-#    define __NR_getrandom 359
-#  elif defined _MIPS_SIM
-#    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define __NR_getrandom 4353
-#    endif
-#    if _MIPS_SIM == _MIPS_SIM_NABI32
-#      define __NR_getrandom 6317
-#    endif
-#    if _MIPS_SIM == _MIPS_SIM_ABI64
-#      define __NR_getrandom 5313
-#    endif
-#  else
-#    warning "__NR_getrandom unknown for your architecture"
-#    define __NR_getrandom 0xffffffff
-#  endif
-#endif
-
-#if !HAVE_DECL_GETRANDOM
-static inline int getrandom(void *buffer, size_t count, unsigned flags) {
-        return syscall(__NR_getrandom, buffer, count, flags);
-}
 #endif
 
 #ifndef GRND_NONBLOCK
@@ -469,6 +393,10 @@ struct btrfs_ioctl_quota_ctl_args {
                                struct btrfs_ioctl_qgroup_limit_args)
 #endif
 
+#ifndef BTRFS_IOC_QUOTA_RESCAN_WAIT
+#define BTRFS_IOC_QUOTA_RESCAN_WAIT _IO(BTRFS_IOCTL_MAGIC, 46)
+#endif
+
 #ifndef BTRFS_FIRST_FREE_OBJECTID
 #define BTRFS_FIRST_FREE_OBJECTID 256
 #endif
@@ -514,13 +442,32 @@ struct btrfs_ioctl_quota_ctl_args {
 #endif
 
 #endif // 0
-
 #ifndef CGROUP_SUPER_MAGIC
 #define CGROUP_SUPER_MAGIC 0x27e0eb
 #endif
 
+#ifndef CGROUP2_SUPER_MAGIC
+#define CGROUP2_SUPER_MAGIC 0x63677270
+#endif
+
 #ifndef TMPFS_MAGIC
 #define TMPFS_MAGIC 0x01021994
+#endif
+
+#ifndef MQUEUE_MAGIC
+#define MQUEUE_MAGIC 0x19800202
+#endif
+
+#ifndef SECURITYFS_MAGIC
+#define SECURITYFS_MAGIC 0x73636673
+#endif
+
+#ifndef TRACEFS_MAGIC
+#define TRACEFS_MAGIC 0x74726163
+#endif
+
+#ifndef BPF_FS_MAGIC
+#define BPF_FS_MAGIC 0xcafe4a11
 #endif
 
 #ifndef MS_MOVE
@@ -529,12 +476,6 @@ struct btrfs_ioctl_quota_ctl_args {
 
 #ifndef MS_PRIVATE
 #define MS_PRIVATE  (1 << 18)
-#endif
-
-#if !HAVE_DECL_GETTID
-static inline pid_t gettid(void) {
-        return (pid_t) syscall(SYS_gettid);
-}
 #endif
 
 #ifndef SCM_SECURITY
@@ -563,32 +504,6 @@ static inline pid_t gettid(void) {
 
 #ifndef MAX_HANDLE_SZ
 #define MAX_HANDLE_SZ 128
-#endif
-
-#ifndef __NR_name_to_handle_at
-#  if defined(__x86_64__)
-#    define __NR_name_to_handle_at 303
-#  elif defined(__i386__)
-#    define __NR_name_to_handle_at 341
-#  elif defined(__arm__)
-#    define __NR_name_to_handle_at 370
-#  elif defined(__powerpc__)
-#    define __NR_name_to_handle_at 345
-#  else
-#    error "__NR_name_to_handle_at is not defined"
-#  endif
-#endif
-
-#if !HAVE_DECL_NAME_TO_HANDLE_AT
-struct file_handle {
-        unsigned int handle_bytes;
-        int handle_type;
-        unsigned char f_handle[0];
-};
-
-static inline int name_to_handle_at(int fd, const char *name, struct file_handle *handle, int *mnt_id, int flags) {
-        return syscall(__NR_name_to_handle_at, fd, name, handle, mnt_id, flags);
-}
 #endif
 
 #ifndef HAVE_SECURE_GETENV
@@ -639,22 +554,6 @@ static inline int name_to_handle_at(int fd, const char *name, struct file_handle
 
 #endif
 
-#ifndef __NR_setns
-#  if defined(__x86_64__)
-#    define __NR_setns 308
-#  elif defined(__i386__)
-#    define __NR_setns 346
-#  else
-#    error "__NR_setns is not defined"
-#  endif
-#endif
-
-#if !HAVE_DECL_SETNS
-static inline int setns(int fd, int nstype) {
-        return syscall(__NR_setns, fd, nstype);
-}
-#endif
-
 #if !HAVE_DECL_LO_FLAGS_PARTSCAN
 #define LO_FLAGS_PARTSCAN 8
 #endif
@@ -679,10 +578,14 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_INET6_ADDR_GEN_MODE 8
 #define __IFLA_INET6_MAX 9
 
-#define IFLA_INET6_MAX	(__IFLA_INET6_MAX - 1)
+#define IFLA_INET6_MAX (__IFLA_INET6_MAX - 1)
 
 #define IN6_ADDR_GEN_MODE_EUI64 0
 #define IN6_ADDR_GEN_MODE_NONE 1
+#endif
+
+#if !HAVE_DECL_IN6_ADDR_GEN_MODE_STABLE_PRIVACY
+#define IN6_ADDR_GEN_MODE_STABLE_PRIVACY 2
 #endif
 
 #if !HAVE_DECL_IFLA_MACVLAN_FLAGS
@@ -719,6 +622,7 @@ static inline int setns(int fd, int nstype) {
 #endif
 
 #if !HAVE_DECL_IFLA_PHYS_PORT_ID
+#define IFLA_EXT_MASK 29
 #undef IFLA_PROMISCUITY
 #define IFLA_PROMISCUITY 30
 #define IFLA_NUM_TX_QUEUES 31
@@ -863,7 +767,15 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
 #endif
 
-#if !HAVE_DECL_IFLA_BR_PRIORITY
+#ifndef BRIDGE_VLAN_INFO_RANGE_BEGIN
+#define BRIDGE_VLAN_INFO_RANGE_BEGIN (1<<3) /* VLAN is start of vlan range */
+#endif
+
+#ifndef BRIDGE_VLAN_INFO_RANGE_END
+#define BRIDGE_VLAN_INFO_RANGE_END (1<<4) /* VLAN is end of vlan range */
+#endif
+
+#if !HAVE_DECL_IFLA_BR_VLAN_DEFAULT_PVID
 #define IFLA_BR_UNSPEC 0
 #define IFLA_BR_FORWARD_DELAY 1
 #define IFLA_BR_HELLO_TIME 2
@@ -871,7 +783,40 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_BR_AGEING_TIME 4
 #define IFLA_BR_STP_STATE 5
 #define IFLA_BR_PRIORITY 6
-#define __IFLA_BR_MAX 7
+#define IFLA_BR_VLAN_FILTERING 7
+#define IFLA_BR_VLAN_PROTOCOL 8
+#define IFLA_BR_GROUP_FWD_MASK 9
+#define IFLA_BR_ROOT_ID 10
+#define IFLA_BR_BRIDGE_ID 11
+#define IFLA_BR_ROOT_PORT 12
+#define IFLA_BR_ROOT_PATH_COST 13
+#define IFLA_BR_TOPOLOGY_CHANGE 14
+#define IFLA_BR_TOPOLOGY_CHANGE_DETECTED 15
+#define IFLA_BR_HELLO_TIMER 16
+#define IFLA_BR_TCN_TIMER 17
+#define IFLA_BR_TOPOLOGY_CHANGE_TIMER 18
+#define IFLA_BR_GC_TIMER 19
+#define IFLA_BR_GROUP_ADDR 20
+#define IFLA_BR_FDB_FLUSH 21
+#define IFLA_BR_MCAST_ROUTER 22
+#define IFLA_BR_MCAST_SNOOPING 23
+#define IFLA_BR_MCAST_QUERY_USE_IFADDR 24
+#define IFLA_BR_MCAST_QUERIER 25
+#define IFLA_BR_MCAST_HASH_ELASTICITY 26
+#define IFLA_BR_MCAST_HASH_MAX 27
+#define IFLA_BR_MCAST_LAST_MEMBER_CNT 28
+#define IFLA_BR_MCAST_STARTUP_QUERY_CNT 29
+#define IFLA_BR_MCAST_LAST_MEMBER_INTVL 30
+#define IFLA_BR_MCAST_MEMBERSHIP_INTVL 31
+#define IFLA_BR_MCAST_QUERIER_INTVL 32
+#define IFLA_BR_MCAST_QUERY_INTVL 33
+#define IFLA_BR_MCAST_QUERY_RESPONSE_INTVL 34
+#define IFLA_BR_MCAST_STARTUP_QUERY_INTVL 35
+#define IFLA_BR_NF_CALL_IPTABLES 36
+#define IFLA_BR_NF_CALL_IP6TABLES 37
+#define IFLA_BR_NF_CALL_ARPTABLES 38
+#define IFLA_BR_VLAN_DEFAULT_PVID 39
+#define __IFLA_BR_MAX 40
 
 #define IFLA_BR_MAX (__IFLA_BR_MAX - 1)
 #endif
@@ -887,11 +832,18 @@ static inline int setns(int fd, int nstype) {
 #define IFLA_BRPORT_FAST_LEAVE 7
 #define IFLA_BRPORT_LEARNING 8
 #define IFLA_BRPORT_UNICAST_FLOOD 9
-#define IFLA_BRPORT_PROXYARP 10
 #define IFLA_BRPORT_LEARNING_SYNC 11
 #define __IFLA_BRPORT_MAX 12
 
 #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+#endif
+
+#if !HAVE_DECL_IFLA_BRPORT_PROXYARP
+#define IFLA_BRPORT_PROXYARP 10
+#endif
+
+#if !HAVE_DECL_IFLA_VRF_TABLE
+#define IFLA_VRF_TABLE 1
 #endif
 
 #if !HAVE_DECL_NDA_IFINDEX
@@ -915,6 +867,10 @@ static inline int setns(int fd, int nstype) {
 
 #ifndef IPV6_UNICAST_IF
 #define IPV6_UNICAST_IF 76
+#endif
+
+#ifndef IPV6_MIN_MTU
+#define IPV6_MIN_MTU 1280
 #endif
 
 #ifndef IFF_MULTI_QUEUE
@@ -1018,70 +974,9 @@ static inline int setns(int fd, int nstype) {
 #define CAP_AUDIT_READ 37
 #endif
 
-static inline int raw_clone(unsigned long flags, void *child_stack) {
-#if defined(__s390__) || defined(__CRIS__)
-        /* On s390 and cris the order of the first and second arguments
-         * of the raw clone() system call is reversed. */
-        return (int) syscall(__NR_clone, child_stack, flags);
-#else
-        return (int) syscall(__NR_clone, flags, child_stack);
-#endif
-}
-
-static inline pid_t raw_getpid(void) {
-#if defined(__alpha__)
-        return (pid_t) syscall(__NR_getxpid);
-#else
-        return (pid_t) syscall(__NR_getpid);
-#endif
-}
-
 #if 0 /// UNNEEDED by elogind
-
-#if !HAVE_DECL_RENAMEAT2
-
-
-#ifndef __NR_renameat2
-#  if defined __x86_64__
-#    define __NR_renameat2 316
-#  elif defined __arm__
-#    define __NR_renameat2 382
-#  elif defined _MIPS_SIM
-#    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define __NR_renameat2 4351
-#    endif
-#    if _MIPS_SIM == _MIPS_SIM_NABI32
-#      define __NR_renameat2 6315
-#    endif
-#    if _MIPS_SIM == _MIPS_SIM_ABI64
-#      define __NR_renameat2 5311
-#    endif
-#  elif defined __i386__
-#    define __NR_renameat2 353
-#  else
-#    warning "__NR_renameat2 unknown for your architecture"
-#    define __NR_renameat2 0xffffffff
-#  endif
-#endif
-
-static inline int renameat2(int oldfd, const char *oldname, int newfd, const char *newname, unsigned flags) {
-        return syscall(__NR_renameat2, oldfd, oldname, newfd, newname, flags);
-}
-#endif
-
 #ifndef RENAME_NOREPLACE
 #define RENAME_NOREPLACE (1 << 0)
-#endif
-
-#if !HAVE_DECL_KCMP
-static inline int kcmp(pid_t pid1, pid_t pid2, int type, unsigned long idx1, unsigned long idx2) {
-#if defined(__NR_kcmp)
-        return syscall(__NR_kcmp, pid1, pid2, type, idx1, idx2);
-#else
-        errno = ENOSYS;
-        return -1;
-#endif
-}
 #endif
 
 #ifndef KCMP_FILE
@@ -1095,40 +990,13 @@ static inline int kcmp(pid_t pid1, pid_t pid2, int type, unsigned long idx1, uns
 #ifndef INPUT_PROP_ACCELEROMETER
 #define INPUT_PROP_ACCELEROMETER  0x06
 #endif
+#endif // 0
 
-#if !HAVE_DECL_KEY_SERIAL_T
+#ifndef HAVE_KEY_SERIAL_T
 typedef int32_t key_serial_t;
 #endif
 
-#if !HAVE_DECL_KEYCTL
-static inline long keyctl(int cmd, unsigned long arg2, unsigned long arg3, unsigned long arg4,unsigned long arg5) {
-#if defined(__NR_keyctl)
-        return syscall(__NR_keyctl, cmd, arg2, arg3, arg4, arg5);
-#else
-        errno = ENOSYS;
-        return -1;
-#endif
-}
-
-static inline key_serial_t add_key(const char *type, const char *description, const void *payload, size_t plen, key_serial_t ringid) {
-#if defined (__NR_add_key)
-        return syscall(__NR_add_key, type, description, payload, plen, ringid);
-#else
-        errno = ENOSYS;
-        return -1;
-#endif
-}
-
-static inline key_serial_t request_key(const char *type, const char *description, const char * callout_info, key_serial_t destringid) {
-#if defined (__NR_request_key)
-        return syscall(__NR_request_key, type, description, callout_info, destringid);
-#else
-        errno = ENOSYS;
-        return -1;
-#endif
-}
-#endif
-
+#if 0 /// UNNEEDED by elogind
 #ifndef KEYCTL_READ
 #define KEYCTL_READ 11
 #endif
@@ -1168,12 +1036,18 @@ static inline key_serial_t request_key(const char *type, const char *description
 #ifndef IF_OPER_UP
 #define IF_OPER_UP 6
 
-#ifndef HAVE_DECL_CHAR32_T
+#ifndef HAVE_CHAR32_T
 #define char32_t uint32_t
 #endif
 
-#ifndef HAVE_DECL_CHAR16_T
+#ifndef HAVE_CHAR16_T
 #define char16_t uint16_t
 #endif
 
+#ifndef ETHERTYPE_LLDP
+#define ETHERTYPE_LLDP 0x88cc
 #endif
+
+#endif
+
+#include "missing_syscall.h"
