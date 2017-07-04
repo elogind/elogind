@@ -7,7 +7,7 @@
   (at your option) any later version.
 ***/
 
-LIBSYSTEMD_209 {
+LIBELOGIND_209 {
 global:
         /* sd-journal */
         /* sd_journal_print; */
@@ -126,7 +126,7 @@ local:
        *;
 };
 
-LIBSYSTEMD_211 {
+LIBELOGIND_211 {
 global:
         sd_machine_get_class;
         sd_peer_get_session;
@@ -135,44 +135,44 @@ global:
         sd_peer_get_user_unit;
         sd_peer_get_machine_name;
         sd_peer_get_slice;
-} LIBSYSTEMD_209;
+} LIBELOGIND_209;
 
-LIBSYSTEMD_213 {
+LIBELOGIND_213 {
 global:
         sd_uid_get_display;
-} LIBSYSTEMD_211;
+} LIBELOGIND_211;
 
 /*
  * These methods are not needed by elogind.
- * LIBSYSTEMD_214 {
+ * LIBELOGIND_214 {
  * global:
  *         sd_pid_notify;
  *         sd_pid_notifyf;
- * } LIBSYSTEMD_213;
+ * } LIBELOGIND_213;
  */
 
-LIBSYSTEMD_216 {
+LIBELOGIND_216 {
 global:
         sd_machine_get_ifindices;
-} LIBSYSTEMD_213;
+} LIBELOGIND_213;
 
-LIBSYSTEMD_217 {
+LIBELOGIND_217 {
 global:
         sd_session_get_desktop;
-} LIBSYSTEMD_216;
+} LIBELOGIND_216;
 
-LIBSYSTEMD_219 {
+LIBELOGIND_219 {
 global:
         sd_pid_notify_with_fds;
-} LIBSYSTEMD_217;
+} LIBELOGIND_217;
 
-LIBSYSTEMD_220 {
+LIBELOGIND_220 {
 global:
         sd_pid_get_user_slice;
         sd_peer_get_user_slice;
-} LIBSYSTEMD_219;
+} LIBELOGIND_219;
 
-LIBSYSTEMD_221 {
+LIBELOGIND_221 {
 global:
         /* sd-bus */
         sd_bus_default;
@@ -461,54 +461,65 @@ global:
         /* sd_event_source_get_time_clock; */
         /* sd_event_source_get_signal; */
         /* sd_event_source_get_child_pid; */
-} LIBSYSTEMD_220;
+} LIBELOGIND_220;
 
-LIBSYSTEMD_222 {
+LIBELOGIND_222 {
 global:
         /* sd-bus */
         sd_bus_emit_object_added;
         /* sd_bus_emit_object_removed; */
         sd_bus_flush_close_unref;
-} LIBSYSTEMD_221;
+} LIBELOGIND_221;
 
-LIBSYSTEMD_226 {
+LIBELOGIND_226 {
 global:
         sd_pid_get_cgroup;
         sd_peer_get_cgroup;
-} LIBSYSTEMD_222;
+} LIBELOGIND_222;
 
 /*
  * These methods are not needed by elogind.
- * LIBSYSTEMD_227 {
+ * LIBELOGIND_227 {
  * global:
  *         sd_bus_default_flush_close;
  *         sd_bus_path_decode_many;
  *         sd_bus_path_encode_many;
  *         sd_listen_fds_with_names;
- * } LIBSYSTEMD_226;
+ * } LIBELOGIND_226;
 */
 
 /*
  * These methods are not needed by elogind.
- * LIBSYSTEMD_229 {
+ * LIBELOGIND_229 {
  * global:
  *         sd_journal_has_runtime_files;
  *         sd_journal_has_persistent_files;
  *         sd_journal_enumerate_fields;
  *         sd_journal_restart_fields;
- * } LIBSYSTEMD_227;
+ * } LIBELOGIND_227;
 */
 
 /*
  * These methods are not needed by elogind.
- * LIBSYSTEMD_230 {
+ * LIBELOGIND_230 {
  * global:
  *         sd_journal_open_directory_fd;
  *         sd_journal_open_files_fd;
- * } LIBSYSTEMD_229;
+ * } LIBELOGIND_229;
 */
 
-LIBSYSTEMD_231 {
+LIBELOGIND_231 {
 global:
         sd_event_get_iteration;
-} LIBSYSTEMD_226;
+} LIBELOGIND_226;
+
+LIBELOGIND_232 {
+global:
+        /* sd_bus_track_set_recursive; */
+        /* sd_bus_track_get_recursive; */
+        /* sd_bus_track_count_name; */
+        /* sd_bus_track_count_sender; */
+        sd_bus_set_exit_on_disconnect;
+        /* sd_bus_get_exit_on_disconnect; */
+        /* sd_id128_get_invocation; */
+} LIBELOGIND_231;

@@ -46,7 +46,9 @@ int sd_id128_randomize(sd_id128_t *ret);
 
 int sd_id128_get_machine(sd_id128_t *ret);
 int sd_id128_get_boot(sd_id128_t *ret);
+#if 0 /// UNNEEDED by elogind
 int sd_id128_get_invocation(sd_id128_t *ret);
+#endif // 0
 
 #define SD_ID128_MAKE(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15) \
         ((const sd_id128_t) { .bytes = { 0x##v0, 0x##v1, 0x##v2, 0x##v3, 0x##v4, 0x##v5, 0x##v6, 0x##v7, \
