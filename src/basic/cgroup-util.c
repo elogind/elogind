@@ -2454,9 +2454,6 @@ bool cg_is_unified_wanted(void) {
 bool cg_is_legacy_wanted(void) {
         return !cg_is_unified_wanted();
 }
-#else
-bool cg_is_legacy_wanted(void) {
-        return true;
 
 bool cg_is_unified_systemd_controller_wanted(void) {
         static thread_local int wanted = -1;
@@ -2502,6 +2499,10 @@ bool cg_is_unified_systemd_controller_wanted(void) {
 
 bool cg_is_legacy_systemd_controller_wanted(void) {
         return cg_is_legacy_wanted() && !cg_is_unified_systemd_controller_wanted();
+}
+#else
+bool cg_is_legacy_wanted(void) {
+        return true;
 }
 #endif // 0
 

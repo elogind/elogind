@@ -1219,6 +1219,7 @@ bool colors_enabled(void) {
         static int enabled = -1;
 
         if (_unlikely_(enabled < 0)) {
+#if 0 /// elogind does not allow such forcing, and we are never init!
                 int val;
 
                 val = getenv_bool("SYSTEMD_COLORS");
@@ -1228,6 +1229,7 @@ bool colors_enabled(void) {
                         /* PID1 outputs to the console without holding it open all the time */
                         enabled = !getenv_terminal_is_dumb();
                 else
+#endif // 0
                         enabled = !terminal_is_dumb();
         }
 

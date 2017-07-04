@@ -561,8 +561,10 @@ int running_in_userns(void) {
 int running_in_chroot(void) {
         int ret;
 
+#if 0 /// elogind does not allow to ignore chroots, we are never init!
         if (getenv_bool("SYSTEMD_IGNORE_CHROOT") > 0)
                 return 0;
+#endif // 0
 
         ret = files_same("/proc/1/root", "/");
         if (ret < 0)
