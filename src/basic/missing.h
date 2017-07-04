@@ -1080,6 +1080,15 @@ struct input_mask {
 #ifndef INPUT_PROP_ACCELEROMETER
 #define INPUT_PROP_ACCELEROMETER  0x06
 #endif
+
+#ifndef BTN_DPAD_UP
+#define BTN_DPAD_UP 0x220
+#define BTN_DPAD_RIGHT 0x223
+#endif
+
+#ifndef KEY_ALS_TOGGLE
+#define KEY_ALS_TOGGLE 0x230
+#endif
 #endif // 0
 
 #ifndef HAVE_KEY_SERIAL_T
