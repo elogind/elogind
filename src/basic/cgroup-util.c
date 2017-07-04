@@ -889,7 +889,6 @@ int cg_set_task_access(
 
         return 0;
 }
-#endif // 0
 
 int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags) {
         _cleanup_free_ char *fs = NULL;
@@ -927,6 +926,7 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 
         return (int) n;
 }
+#endif // 0
 
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;

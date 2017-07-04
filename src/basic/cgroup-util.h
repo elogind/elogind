@@ -189,10 +189,10 @@ int cg_get_keyed_attribute(const char *controller, const char *path, const char 
 #if 0 /// UNNEEDED by elogind
 int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
-#endif // 0
 
 int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags);
 int cg_get_xattr(const char *controller, const char *path, const char *name, void *value, size_t size);
+#endif // 0
 
 int cg_install_release_agent(const char *controller, const char *agent);
 int cg_uninstall_release_agent(const char *controller);
@@ -253,9 +253,9 @@ int cg_kernel_controllers(Set *controllers);
 bool cg_ns_supported(void);
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int cg_all_unified(void);
 int cg_unified(const char *controller);
+#if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void);
 
 bool cg_is_unified_wanted(void);

@@ -1334,6 +1334,7 @@ int bus_property_get_bool(
         return sd_bus_message_append_basic(reply, 'b', &b);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_property_get_id128(
                 sd_bus *bus,
                 const char *path,
@@ -1350,6 +1351,7 @@ int bus_property_get_id128(
         else
                 return sd_bus_message_append_array(reply, 'y', id->bytes, 16);
 }
+#endif // 0
 
 #if __SIZEOF_SIZE_T__ != 8
 int bus_property_get_size(

@@ -567,6 +567,7 @@ int parse_percent(const char *p) {
         return v;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_nice(const char *p, int *ret) {
         int n, r;
 
@@ -580,3 +581,4 @@ int parse_nice(const char *p, int *ret) {
         *ret = n;
         return 0;
 }
+#endif // 0

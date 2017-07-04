@@ -114,6 +114,8 @@ void valgrind_summary_hack(void);
 
 int pid_compare_func(const void *a, const void *b);
 
+#if 0 /// UNNEEDED by elogind
 static inline bool nice_is_valid(int n) {
         return n >= PRIO_MIN && n < PRIO_MAX;
 }
+#endif // 0

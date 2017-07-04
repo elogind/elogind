@@ -34,7 +34,6 @@
 #include "alloc-util.h"
 #include "extract-word.h"
 #include "fs-util.h"
-#include "glob-util.h"
 #include "log.h"
 #include "macro.h"
 #include "missing.h"
@@ -835,7 +834,6 @@ bool is_deviceallow_pattern(const char *path) {
                startswith(path, "block-") ||
                startswith(path, "char-");
 }
-#endif // 0
 
 int systemd_installation_has_version(const char *root, unsigned minimal_version) {
         const char *pattern;
@@ -902,3 +900,4 @@ int systemd_installation_has_version(const char *root, unsigned minimal_version)
 
         return false;
 }
+#endif // 0

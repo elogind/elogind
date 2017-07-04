@@ -443,6 +443,7 @@ int config_parse_many_nulstr(
                                        sections, lookup, table, relaxed, userdata);
 }
 
+#if 0 /// UNNEEDED by elogind
 /* Parse each config file in the directories specified as strv. */
 int config_parse_many(
                 const char *conf_file,
@@ -471,6 +472,7 @@ int config_parse_many(
         return config_parse_many_files(conf_file, files,
                                        sections, lookup, table, relaxed, userdata);
 }
+#endif // 0
 
 #define DEFINE_PARSER(type, vartype, conv_func)                         \
         int config_parse_##type(                                        \

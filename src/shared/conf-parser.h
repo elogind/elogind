@@ -105,6 +105,7 @@ int config_parse_many_nulstr(
                 bool relaxed,
                 void *userdata);
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_many(
                 const char *conf_file,      /* possibly NULL */
                 const char* const* conf_file_dirs,
@@ -114,6 +115,7 @@ int config_parse_many(
                 const void *table,
                 bool relaxed,
                 void *userdata);
+#endif // 0
 
 /* Generic parsers */
 int config_parse_int(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);

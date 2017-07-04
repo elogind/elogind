@@ -91,7 +91,9 @@ int bus_print_property(const char *name, sd_bus_message *property, bool value, b
 int bus_print_all_properties(sd_bus *bus, const char *dest, const char *path, char **filter, bool value, bool all);
 
 int bus_property_get_bool(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
+#if 0 /// UNNEEDED by elogind
 int bus_property_get_id128(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
+#endif // 0
 
 #define bus_property_get_usec ((sd_bus_property_get_t) NULL)
 #define bus_property_set_usec ((sd_bus_property_set_t) NULL)
