@@ -2331,6 +2331,8 @@ static int cg_update_unified(void) {
 
 #if 0 /// UNNEEDED by elogind
         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC))
+                unified_cache = CGROUP_UNIFIED_ALL;
+        else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #else
         /* elogind can not support the unified hierarchy as a controller,
          * so always assume a classical hierarchy.
@@ -2339,8 +2341,6 @@ static int cg_update_unified(void) {
          * add such a support. */
         if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #endif // 0
-                unified_cache = CGROUP_UNIFIED_ALL;
-        else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
                 if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
                         return -errno;
 

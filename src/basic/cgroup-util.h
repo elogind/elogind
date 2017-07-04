@@ -63,10 +63,12 @@ typedef enum CGroupMask {
 #define CGROUP_WEIGHT_MIN UINT64_C(1)
 #define CGROUP_WEIGHT_MAX UINT64_C(10000)
 #define CGROUP_WEIGHT_DEFAULT UINT64_C(100)
+#endif // 0
 
 #define CGROUP_LIMIT_MIN UINT64_C(0)
 #define CGROUP_LIMIT_MAX ((uint64_t) -1)
 
+#if 0 /// UNNEEDED by elogind
 static inline bool CGROUP_WEIGHT_IS_OK(uint64_t x) {
         return
             x == CGROUP_WEIGHT_INVALID ||
