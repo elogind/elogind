@@ -129,7 +129,6 @@ _public_ int sd_id128_get_boot(sd_id128_t *ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_id128_get_invocation(sd_id128_t *ret) {
         static thread_local sd_id128_t saved_invocation_id = {};
         int r;
@@ -151,7 +150,6 @@ _public_ int sd_id128_get_invocation(sd_id128_t *ret) {
         *ret = saved_invocation_id;
         return 0;
 }
-#endif // 0
 
 static sd_id128_t make_v4_uuid(sd_id128_t id) {
         /* Stolen from generate_random_uuid() of drivers/char/random.c
