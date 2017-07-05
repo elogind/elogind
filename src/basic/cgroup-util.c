@@ -2333,14 +2333,6 @@ static int cg_update_unified(void) {
         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC))
                 unified_cache = CGROUP_UNIFIED_ALL;
         else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
-#else
-        /* elogind can not support the unified hierarchy as a controller,
-         * so always assume a classical hierarchy.
-         * If, and only *if*, someone really wants to substitute systemd-login
-         * in an environment managed by systemd with elogind, we might have to
-         * add such a support. */
-        if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
-#endif // 0
                 if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
                         return -errno;
 
@@ -2348,6 +2340,14 @@ static int cg_update_unified(void) {
                         CGROUP_UNIFIED_SYSTEMD : CGROUP_UNIFIED_NONE;
         } else
                 return -ENOMEDIUM;
+#else
+        /* elogind can not support the unified hierarchy as a controller,
+         * so always assume a classical hierarchy.
+         * If, and only *if*, someone really wants to substitute systemd-login
+         * in an environment managed by systemd with elogind, we might have to
+         * add such a support. */
+        unified_cache = CGROUP_UNIFIED_NONE;
+#endif // 0
 
         return 0;
 }
