@@ -1329,7 +1329,11 @@ int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {
         }
 
         p = path_startswith(cgroup, root);
+#if 0 /// With other controllers, elogind might end up in /elogind, and *p is 0
         if (p && p > cgroup)
+#else
+        if (p && p[0] && (p > cgroup))
+#endif // 0
                 *shifted = p - 1;
         else
                 *shifted = cgroup;
