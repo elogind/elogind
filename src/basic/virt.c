@@ -486,7 +486,6 @@ int detect_virtualization(void) {
 
         return r;
 }
-#endif // 0
 
 static int userns_has_mapping(const char *name) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -557,6 +556,7 @@ int running_in_userns(void) {
         log_debug("/proc/self/setgroups contains \"%s\", %s user namespace", line, r ? "in" : "not in");
         return r;
 }
+#endif // 0
 
 int running_in_chroot(void) {
         int ret;

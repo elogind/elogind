@@ -42,8 +42,10 @@ char* getusername_malloc(void);
 #endif // 0
 
 int get_user_creds(const char **username, uid_t *uid, gid_t *gid, const char **home, const char **shell);
+#if 0 /// UNNEEDED by elogind
 int get_user_creds_clean(const char **username, uid_t *uid, gid_t *gid, const char **home, const char **shell);
 int get_group_creds(const char **groupname, gid_t *gid);
+#endif // 0
 
 char* uid_to_name(uid_t uid);
 char* gid_to_name(gid_t gid);

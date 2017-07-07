@@ -1067,6 +1067,7 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 int socket_ioctl_fd(void) {
         int fd;
 
@@ -1083,3 +1084,4 @@ int socket_ioctl_fd(void) {
 
         return fd;
 }
+#endif // 0

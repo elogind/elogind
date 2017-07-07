@@ -115,7 +115,9 @@ static inline bool triple_timestamp_is_set(triple_timestamp *ts) {
 usec_t triple_timestamp_by_clock(triple_timestamp *ts, clockid_t clock);
 
 usec_t timespec_load(const struct timespec *ts) _pure_;
+#if 0 /// UNNEEDED by elogind
 nsec_t timespec_load_nsec(const struct timespec *ts) _pure_;
+#endif // 0
 struct timespec *timespec_store(struct timespec *ts, usec_t u);
 
 usec_t timeval_load(const struct timeval *tv) _pure_;

@@ -163,4 +163,6 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
                          strnlen(_sa->sun_path, sizeof(_sa->sun_path))); \
         })
 
+#if 0 /// UNNEEDED by elogind
 int socket_ioctl_fd(void);
+#endif // 0

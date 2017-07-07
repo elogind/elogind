@@ -179,6 +179,7 @@ int get_user_creds(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int get_user_creds_clean(
                 const char **username,
                 uid_t *uid, gid_t *gid,
@@ -249,6 +250,7 @@ int get_group_creds(const char **groupname, gid_t *gid) {
 
         return 0;
 }
+#endif // 0
 
 char* uid_to_name(uid_t uid) {
         char *ret;

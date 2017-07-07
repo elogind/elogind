@@ -388,6 +388,8 @@ int clean_ipc_by_uid(uid_t uid) {
         return clean_ipc(uid, GID_INVALID);
 }
 
+#if 0 /// UNNEEDED by elogind
 int clean_ipc_by_gid(gid_t gid) {
         return clean_ipc(UID_INVALID, gid);
 }
+#endif // 0

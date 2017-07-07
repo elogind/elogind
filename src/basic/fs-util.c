@@ -602,7 +602,6 @@ int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
 
         return r;
 }
-#endif // 0
 
 int chase_symlinks(const char *path, const char *_root, char **ret) {
         _cleanup_free_ char *buffer = NULL, *done = NULL, *root = NULL;
@@ -786,3 +785,4 @@ int chase_symlinks(const char *path, const char *_root, char **ret) {
 
         return 0;
 }
+#endif // 0

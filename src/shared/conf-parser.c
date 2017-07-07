@@ -507,8 +507,10 @@ int config_parse_many(
 
 DEFINE_PARSER(int, int, safe_atoi);
 DEFINE_PARSER(long, long, safe_atoli);
+#if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(uint16, uint16_t, safe_atou16);
 DEFINE_PARSER(uint32, uint32_t, safe_atou32);
+#endif // 0
 DEFINE_PARSER(uint64, uint64_t, safe_atou64);
 DEFINE_PARSER(unsigned, unsigned, safe_atou);
 DEFINE_PARSER(double, double, safe_atod);

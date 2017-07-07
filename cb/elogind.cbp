@@ -374,6 +374,10 @@
 		<Unit filename="../src/libelogind/sd-event/sd-event.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-id128/id128-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-id128/id128-util.h" />
 		<Unit filename="../src/libelogind/sd-id128/sd-id128.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -57,6 +57,7 @@ const char* mode_to_inaccessible_node(mode_t mode);
 
 #define FILE_HANDLE_INIT { .handle.handle_bytes = MAX_HANDLE_SZ }
 
+#if 0 /// UNNEEDED by elogind
 int mount_verbose(
                 int error_log_level,
                 const char *what,
@@ -65,3 +66,4 @@ int mount_verbose(
                 unsigned long flags,
                 const char *options);
 int umount_verbose(const char *where);
+#endif // 0

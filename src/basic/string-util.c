@@ -292,6 +292,7 @@ char *strstrip(char *s) {
         return s;
 }
 
+#if 0 /// UNNEEDED by elogind
 char *delete_chars(char *s, const char *bad) {
         char *f, *t;
 
@@ -308,6 +309,7 @@ char *delete_chars(char *s, const char *bad) {
 
         return s;
 }
+#endif // 0
 
 char *truncate_nl(char *s) {
         assert(s);
@@ -316,6 +318,7 @@ char *truncate_nl(char *s) {
         return s;
 }
 
+#if 0 /// UNNEEDED by elogind
 char ascii_tolower(char x) {
 
         if (x >= 'A' && x <= 'Z')
@@ -406,6 +409,7 @@ bool chars_intersect(const char *a, const char *b) {
 
         return false;
 }
+#endif // 0
 
 bool string_has_cc(const char *p, const char *ok) {
         const char *t;

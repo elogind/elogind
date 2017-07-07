@@ -584,6 +584,7 @@ const char* mode_to_inaccessible_node(mode_t mode) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 #define FLAG(name) (flags & name ? STRINGIFY(name) "|" : "")
 static char* mount_flags_to_string(long unsigned flags) {
         char *x;
@@ -688,3 +689,4 @@ int umount_verbose(const char *what) {
                 return log_error_errno(errno, "Failed to unmount %s: %m", what);
         return 0;
 }
+#endif // 0
