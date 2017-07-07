@@ -347,12 +347,7 @@ int open_terminal(const char *name, int mode) {
         }
 
         r = isatty(fd);
-        if (r < 0) {
-                safe_close(fd);
-                return -errno;
-        }
-
-        if (!r) {
+        if (r == 0) {
                 safe_close(fd);
                 return -ENOTTY;
         }
@@ -792,7 +787,7 @@ bool tty_is_vc_resolve(const char *tty) {
 }
 
 const char *default_term_for_tty(const char *tty) {
-        return tty && tty_is_vc_resolve(tty) ? "TERM=linux" : "TERM=vt220";
+        return tty && tty_is_vc_resolve(tty) ? "linux" : "vt220";
 }
 #endif // 0
 
@@ -1224,15 +1219,17 @@ bool colors_enabled(void) {
         static int enabled = -1;
 
         if (_unlikely_(enabled < 0)) {
-                const char *colors;
+#if 0 /// elogind does not allow such forcing, and we are never init!
+                int val;
 
-                colors = getenv("SYSTEMD_COLORS");
-                if (colors)
-                        enabled = parse_boolean(colors) != 0;
+                val = getenv_bool("SYSTEMD_COLORS");
+                if (val >= 0)
+                        enabled = val;
                 else if (getpid() == 1)
                         /* PID1 outputs to the console without holding it open all the time */
                         enabled = !getenv_terminal_is_dumb();
                 else
+#endif // 0
                         enabled = !terminal_is_dumb();
         }
 

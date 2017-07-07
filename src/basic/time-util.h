@@ -68,7 +68,9 @@ typedef struct triple_timestamp {
 #define USEC_PER_YEAR ((usec_t) (31557600ULL*USEC_PER_SEC))
 #define NSEC_PER_YEAR ((nsec_t) (31557600ULL*NSEC_PER_SEC))
 
-#define FORMAT_TIMESTAMP_MAX ((4*4+1)+11+9+4+1) /* weekdays can be unicode */
+/* We assume a maximum timezone length of 6. TZNAME_MAX is not defined on Linux, but glibc internally initializes this
+ * to 6. Let's rely on that. */
+#define FORMAT_TIMESTAMP_MAX (3+1+10+1+8+1+6+1+6+1)
 #define FORMAT_TIMESTAMP_WIDTH 28 /* when outputting, assume this width */
 #define FORMAT_TIMESTAMP_RELATIVE_MAX 256
 #define FORMAT_TIMESPAN_MAX 64
@@ -113,6 +115,9 @@ static inline bool triple_timestamp_is_set(triple_timestamp *ts) {
 usec_t triple_timestamp_by_clock(triple_timestamp *ts, clockid_t clock);
 
 usec_t timespec_load(const struct timespec *ts) _pure_;
+#if 0 /// UNNEEDED by elogind
+nsec_t timespec_load_nsec(const struct timespec *ts) _pure_;
+#endif // 0
 struct timespec *timespec_store(struct timespec *ts, usec_t u);
 
 usec_t timeval_load(const struct timeval *tv) _pure_;

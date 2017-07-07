@@ -62,16 +62,13 @@ Session* session_new(Manager *m, const char *id) {
                 return NULL;
 
         s->state_file = strappend("/run/systemd/sessions/", id);
-        if (!s->state_file) {
-                free(s);
-                return NULL;
-        }
+        if (!s->state_file)
+                return mfree(s);
 
         s->devices = hashmap_new(&devt_hash_ops);
         if (!s->devices) {
                 free(s->state_file);
-                free(s);
-                return NULL;
+                return mfree(s);
         }
 
         s->id = basename(s->state_file);
@@ -79,8 +76,7 @@ Session* session_new(Manager *m, const char *id) {
         if (hashmap_put(m->sessions, s->id, s) < 0) {
                 hashmap_free(s->devices);
                 free(s->state_file);
-                free(s);
-                return NULL;
+                return mfree(s);
         }
 
         s->manager = m;
@@ -643,7 +639,7 @@ static int session_stop_scope(Session *s, bool force) {
                 return 0;
 
         /* Let's always abandon the scope first. This tells systemd that we are not interested anymore, and everything
-         * that is left in in the scope is "left-over". Informing systemd about this has the benefit that it will log
+         * that is left in the scope is "left-over". Informing systemd about this has the benefit that it will log
          * when killing any processes left after this point. */
         r = manager_abandon_scope(s->manager, s->scope, &error);
         if (r < 0)

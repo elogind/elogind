@@ -1020,19 +1020,19 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
                 return r;
 
         switch (type) {
+
         case SD_BUS_TYPE_STRING: {
-                const char *s;
                 char **p = userdata;
+                const char *s;
 
                 r = sd_bus_message_read_basic(m, type, &s);
                 if (r < 0)
-                        break;
+                        return r;
 
                 if (isempty(s))
-                        break;
+                        s = NULL;
 
-                r = free_and_strdup(p, s);
-                break;
+                return free_and_strdup(p, s);
         }
 
         case SD_BUS_TYPE_ARRAY: {
@@ -1041,13 +1041,12 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
 
                 r = bus_message_read_strv_extend(m, &l);
                 if (r < 0)
-                        break;
+                        return r;
 
                 strv_free(*p);
                 *p = l;
                 l = NULL;
-
-                break;
+                return 0;
         }
 
         case SD_BUS_TYPE_BOOLEAN: {
@@ -1056,57 +1055,48 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
 
                 r = sd_bus_message_read_basic(m, type, &b);
                 if (r < 0)
-                        break;
+                        return r;
 
                 *p = b;
-
-                break;
+                return 0;
         }
 
+        case SD_BUS_TYPE_INT32:
         case SD_BUS_TYPE_UINT32: {
-                uint32_t u;
-                uint32_t *p = userdata;
+                uint32_t u, *p = userdata;
 
                 r = sd_bus_message_read_basic(m, type, &u);
                 if (r < 0)
-                        break;
+                        return r;
 
                 *p = u;
-
-                break;
+                return 0;
         }
 
+        case SD_BUS_TYPE_INT64:
         case SD_BUS_TYPE_UINT64: {
-                uint64_t t;
-                uint64_t *p = userdata;
+                uint64_t t, *p = userdata;
 
                 r = sd_bus_message_read_basic(m, type, &t);
                 if (r < 0)
-                        break;
+                        return r;
 
                 *p = t;
-
-                break;
+                return 0;
         }
 
         case SD_BUS_TYPE_DOUBLE: {
-                double d;
-                double *p = userdata;
+                double d, *p = userdata;
 
                 r = sd_bus_message_read_basic(m, type, &d);
                 if (r < 0)
-                        break;
+                        return r;
 
                 *p = d;
+                return 0;
+        }}
 
-                break;
-        }
-
-        default:
-                break;
-        }
-
-        return r;
+        return -EOPNOTSUPP;
 }
 
 int bus_message_map_all_properties(
@@ -1246,12 +1236,13 @@ int bus_map_all_properties(
         return bus_message_map_all_properties(m, map, userdata);
 }
 
-int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **bus) {
+int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **ret) {
+        _cleanup_(sd_bus_unrefp) sd_bus *bus = NULL;
         int r;
 
         assert(transport >= 0);
         assert(transport < _BUS_TRANSPORT_MAX);
-        assert(bus);
+        assert(ret);
 
         assert_return((transport == BUS_TRANSPORT_LOCAL) == !host, -EINVAL);
         assert_return(transport == BUS_TRANSPORT_LOCAL || !user, -EOPNOTSUPP);
@@ -1261,26 +1252,35 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         case BUS_TRANSPORT_LOCAL:
 #if 0 /// elogind does not support a user bus
                 if (user)
-                        r = sd_bus_default_user(bus);
+                        r = sd_bus_default_user(&bus);
                 else
 #endif // 0
-                        r = sd_bus_default_system(bus);
+                        r = sd_bus_default_system(&bus);
 
                 break;
 
         case BUS_TRANSPORT_REMOTE:
-                r = sd_bus_open_system_remote(bus, host);
+                r = sd_bus_open_system_remote(&bus, host);
                 break;
 
         case BUS_TRANSPORT_MACHINE:
-                r = sd_bus_open_system_machine(bus, host);
+                r = sd_bus_open_system_machine(&bus, host);
                 break;
 
         default:
                 assert_not_reached("Hmm, unknown transport type.");
         }
+        if (r < 0)
+                return r;
 
-        return r;
+        r = sd_bus_set_exit_on_disconnect(bus, true);
+        if (r < 0)
+                return r;
+
+        *ret = bus;
+        bus = NULL;
+
+        return 0;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -1333,6 +1333,25 @@ int bus_property_get_bool(
 
         return sd_bus_message_append_basic(reply, 'b', &b);
 }
+
+#if 0 /// UNNEEDED by elogind
+int bus_property_get_id128(
+                sd_bus *bus,
+                const char *path,
+                const char *interface,
+                const char *property,
+                sd_bus_message *reply,
+                void *userdata,
+                sd_bus_error *error) {
+
+        sd_id128_t *id = userdata;
+
+        if (sd_id128_is_null(*id)) /* Add an empty array if the ID is zero */
+                return sd_bus_message_append(reply, "ay", 0);
+        else
+                return sd_bus_message_append_array(reply, 'y', id->bytes, 16);
+}
+#endif // 0
 
 #if __SIZEOF_SIZE_T__ != 8
 int bus_property_get_size(

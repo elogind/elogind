@@ -450,6 +450,10 @@ struct btrfs_ioctl_quota_ctl_args {
 #define CGROUP2_SUPER_MAGIC 0x63677270
 #endif
 
+#ifndef CLONE_NEWCGROUP
+#define CLONE_NEWCGROUP 0x02000000
+#endif
+
 #ifndef TMPFS_MAGIC
 #define TMPFS_MAGIC 0x01021994
 #endif
@@ -474,24 +478,44 @@ struct btrfs_ioctl_quota_ctl_args {
 #define MS_MOVE 8192
 #endif
 
-#ifndef MS_PRIVATE
-#define MS_PRIVATE  (1 << 18)
-#endif
-
-#ifndef SCM_SECURITY
-#define SCM_SECURITY 0x03
-#endif
-
-#ifndef MS_STRICTATIME
-#define MS_STRICTATIME (1<<24)
-#endif
-
 #ifndef MS_REC
 #define MS_REC 16384
 #endif
 
+#ifndef MS_PRIVATE
+#define MS_PRIVATE      (1<<18)
+#endif
+
+#ifndef MS_REC
+#define MS_REC          (1<<19)
+#endif
+
 #ifndef MS_SHARED
-#define MS_SHARED (1<<20)
+#define MS_SHARED       (1<<20)
+#endif
+
+#ifndef MS_RELATIME
+#define MS_RELATIME     (1<<21)
+#endif
+
+#ifndef MS_KERNMOUNT
+#define MS_KERNMOUNT    (1<<22)
+#endif
+
+#ifndef MS_I_VERSION
+#define MS_I_VERSION    (1<<23)
+#endif
+
+#ifndef MS_STRICTATIME
+#define MS_STRICTATIME  (1<<24)
+#endif
+
+#ifndef MS_LAZYTIME
+#define MS_LAZYTIME     (1<<25)
+#endif
+
+#ifndef SCM_SECURITY
+#define SCM_SECURITY 0x03
 #endif
 
 #ifndef PR_SET_NO_NEW_PRIVS
@@ -538,12 +562,21 @@ struct btrfs_ioctl_quota_ctl_args {
 #  define DRM_IOCTL_DROP_MASTER _IO('d', 0x1f)
 #endif
 
-#if defined(__i386__) || defined(__x86_64__)
-
-/* The precise definition of __O_TMPFILE is arch specific, so let's
- * just define this on x86 where we know the value. */
+/* The precise definition of __O_TMPFILE is arch specific; use the
+ * values defined by the kernel (note: some are hexa, some are octal,
+ * duplicated as-is from the kernel definitions):
+ * - alpha, parisc, sparc: each has a specific value;
+ * - others: they use the "generic" value.
+ */
 
 #ifndef __O_TMPFILE
+#if defined(__alpha__)
+#define __O_TMPFILE     0100000000
+#elif defined(__parisc__) || defined(__hppa__)
+#define __O_TMPFILE     0400000000
+#elif defined(__sparc__) || defined(__sparc64__)
+#define __O_TMPFILE     0x2000000
+#else
 #define __O_TMPFILE     020000000
 #endif
 
@@ -1046,6 +1079,10 @@ typedef int32_t key_serial_t;
 
 #ifndef ETHERTYPE_LLDP
 #define ETHERTYPE_LLDP 0x88cc
+#endif
+
+#ifndef IFA_F_MCAUTOJOIN
+#define IFA_F_MCAUTOJOIN 0x400
 #endif
 
 #endif

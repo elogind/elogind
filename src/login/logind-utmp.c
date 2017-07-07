@@ -74,7 +74,7 @@ bool logind_wall_tty_filter(const char *tty, void *userdata) {
 static int warn_wall(Manager *m, usec_t n) {
         char date[FORMAT_TIMESTAMP_MAX] = {};
         _cleanup_free_ char *l = NULL;
-        bool left;
+        usec_t left;
         int r;
 
         assert(m);
@@ -148,7 +148,6 @@ int manager_setup_wall_message_timer(Manager *m) {
         if (!m->enable_wall_messages)
                 return 0;
 #endif // 1
-
         n = now(CLOCK_REALTIME);
         elapse = m->scheduled_shutdown_timeout;
 

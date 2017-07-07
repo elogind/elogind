@@ -23,53 +23,95 @@ External:
 
 Janitorial Clean-ups:
 
-* code cleanup: retire FOREACH_WORD_QUOTED, port to extract_first_word() loops instead
+* code cleanup: retire FOREACH_WORD_QUOTED, port to extract_first_word() loops instead.
+  For example, most conf parsing callbacks should use it.
 
 * replace manual readdir() loops with FOREACH_DIRENT or FOREACH_DIRENT_ALL
-
-* Get rid of the last strerror() invocations in favour of %m and strerror_r()
 
 * Rearrange tests so that the various test-xyz.c match a specific src/basic/xyz.c again
 
 Features:
 
+* drop nss-myhostname in favour of nss-resolve?
+
+* drop internal dlopen() based nss-dns fallback in nss-resolve, and rely on the
+  external nsswitch.conf based one
+
+* add a percentage syntax for TimeoutStopSec=, e.g. TimeoutStopSec=150%, and
+  then use that for the setting used in user@.service. It should be understood
+  relative to the configured default value.
+
+* on cgroupsv2 add DelegateControllers=, to pick the precise cgroup controllers to delegate
+
+* in networkd, when matching device types, fix up DEVTYPE rubbish the kernel passes to us
+
+* enable LockMLOCK to take a percentage value relative to physical memory
+
+* switch to ProtectSystem=strict for all our long-running services where that's possible
+
+* If RootDirectory= is used, mount /proc, /sys, /dev into it, if not mounted yet
+
+* Permit masking specific netlink APIs with RestrictAddressFamily=
+
+* nspawn: start UID allocation loop from hash of container name
+
+* nspawn: support that /proc, /sys/, /dev are pre-mounted
+
+* define gpt header bits to select volatility mode
+
+* nspawn: mount loopback filesystems with "discard"
+
 * ProtectKernelLogs= (drops CAP_SYSLOG, add seccomp for syslog() syscall, and DeviceAllow to /dev/kmsg) in service files
 
 * ProtectClock= (drops CAP_SYS_TIMES, adds seecomp filters for settimeofday, adjtimex), sets DeviceAllow o /dev/rtc
 
-* ProtectMount= (drop mount/umount/pivot_root from seccomp, disallow fuse via DeviceAllow, imply Mountflags=slave)
+* ProtectKernelModules= (drops CAP_SYS_MODULE and filters the kmod syscalls)
 
-* ProtectDevices= should also take iopl/ioperm/pciaccess away
+* ProtectTracing= (drops CAP_SYS_PTRACE, blocks ptrace syscall, makes /sys/kernel/tracing go away)
+
+* ProtectMount= (drop mount/umount/pivot_root from seccomp, disallow fuse via DeviceAllow, imply Mountflags=slave)
 
 * ProtectKeyRing= to take keyring calls away
 
-* PrivateUsers= which maps the all user ids except root and the one specified
-  in User= to nobody
+* RemoveKeyRing= to remove all keyring entries of the specified user
 
-* Add AllocateUser= for allowing dynamic user ids per-service
+* ProtectReboot= that masks reboot() and kexec_load() syscalls, prohibits kill
+  on PID 1 with the relevant signals, and makes relevant files in /sys and
+  /proc (such as the sysrq stuff) unavailable
+
+* DeviceAllow= should also generate seccomp filters for mknod()
 
 * Add DataDirectory=, CacheDirectory= and LogDirectory= to match
   RuntimeDirectory=, and create it as necessary when starting a service, owned by the right user.
 
 * Add BindDirectory= for allowing arbitrary, private bind mounts for services
 
-* Beef up RootDirectory= to use namespacing/bind mounts as soon as fs
-  namespaces are enabled by the service
-
 * Add RootImage= for mounting a disk image or file as root directory
 
 * RestrictNamespaces= or so in services (taking away the ability to create namespaces, with setns, unshare, clone)
-
-* nspawn: make /proc/sys/net writable?
 
 * make sure the ratelimit object can deal with USEC_INFINITY as way to turn off things
 
 * journalctl: make sure -f ends when the container indicated by -M terminates
 
+* mount: automatically search for "main" partition of an image has multiple
+  partitions
+
 * expose the "privileged" flag of ExecCommand on the bus, and open it up to
   transient units
 
+* in nss-systemd, if we run inside of RootDirectory= with PrivateUsers= set,
+  find a way to map the User=/Group= of the service to the right name. This way
+  a user/group for a service only has to exist on the host for the right
+  mapping to work.
+
 * allow attaching additional journald log fields to cgroups
+
+* add bus API for creating unit files in /etc, reusing the code for transient units
+
+* add bus API to remove unit files from /etc
+
+* add bus API to retrieve current unit file contents (i.e. implement "systemctl cat" on the bus only)
 
 * rework fopen_temporary() to make use of open_tmpfile_linkable() (problem: the
   kernel doesn't support linkat() that replaces existing files, currently)
@@ -81,8 +123,6 @@ Features:
 
 * journald: sigbus API via a signal-handler safe function that people may call
   from the SIGBUS handler
-
-* when using UTF8, ellipsize with "…" rather than "...", so that we can show more contents before truncating
 
 * move specifier expansion from service_spawn() into load-fragment.c
 
@@ -96,8 +136,6 @@ Features:
 * cache sd_event_now() result from before the first iteration...
 
 * add systemctl stop --job-mode=triggering that follows TRIGGERED_BY deps and adds them to the same transaction
-
-* Maybe add a way how users can "pin" units into memory, so that they are not subject to automatic GC?
 
 * PID1: find a way how we can reload unit file configuration for
   specific units only, without reloading the whole of systemd
@@ -113,8 +151,6 @@ Features:
 * push CPUAffinity= also into the "cpuset" cgroup controller (only after the cpuset controller got ported to the unified hierarchy)
 
 * PID 1 should send out sd_notify("WATCHDOG=1") messages (for usage in the --user mode, and when run via nspawn)
-
-* consider throwing a warning if a service declares it wants to be "Before=" a .device unit.
 
 * there's probably something wrong with having user mounts below /sys,
   as we have for debugfs. for exmaple, src/core/mount.c handles mounts
@@ -153,7 +189,7 @@ Features:
 * implement a per-service firewall based on net_cls
 
 * Port various tools to make use of verbs.[ch], where applicable: busctl,
-  bootctl, coredumpctl, hostnamectl, localectl, systemd-analyze, timedatectl
+  coredumpctl, hostnamectl, localectl, systemd-analyze, timedatectl
 
 * hostnamectl: show root image uuid
 
@@ -170,7 +206,7 @@ Features:
 * synchronize console access with BSD locks:
   http://lists.freedesktop.org/archives/systemd-devel/2014-October/024582.html
 
-* as soon as we have kdbus, and sender timestamps, revisit coalescing multiple parallel daemon reloads:
+* as soon as we have sender timestamps, revisit coalescing multiple parallel daemon reloads:
   http://lists.freedesktop.org/archives/systemd-devel/2014-December/025862.html
 
 * in systemctl list-unit-files: show the install value the presets would suggest for a service in a third column
@@ -209,10 +245,6 @@ Features:
 * exponential backoff in timesyncd when we cannot reach a server
 
 * timesyncd: add ugly bus calls to set NTP servers per-interface, for usage by NM
-
-* extract_many_words() should probably be used by a lot of code that
-  currently uses FOREACH_WORD and friends. For example, most conf
-  parsing callbacks should use it.
 
 * merge ~/.local/share and ~/.local/lib into one similar /usr/lib and /usr/share....
 
@@ -270,9 +302,6 @@ Features:
 
 * MessageQueueMessageSize= (and suchlike) should use parse_iec_size().
 
-* "busctl status" works only as root on dbus1, since we cannot read
-  /proc/$PID/exe
-
 * implement Distribute= in socket units to allow running multiple
   service instances processing the listening socket, and open this up
   for ReusePort=
@@ -282,8 +311,6 @@ Features:
   a tiny process that joins the namespace and creates/binds the socket
   and passes this back to PID1 via SCM_RIGHTS. This also could be used
   to allow Chown/chgrp on sockets without requiring NSS in PID 1.
-
-* New service property: maximum CPU runtime for a service
 
 * introduce bus call FreezeUnit(s, b), as well as "systemctl freeze
   $UNIT" and "systemctl thaw $UNIT" as wrappers around this. The calls
@@ -321,11 +348,9 @@ Features:
   error. Currently, we just ignore it and read the unit from the search
   path anyway.
 
-* refuse boot if /etc/os-release is missing or /etc/machine-id cannot be set up
+* refuse boot if /usr/lib/os-release is missing or /etc/machine-id cannot be set up
 
 * btrfs raid assembly: some .device jobs stay stuck in the queue
-
-* make sure gdm does not use multi-user-x but the new default X configuration file, and then remove multi-user-x from systemd
 
 * man: the documentation of Restart= currently is very misleading and suggests the tools from ExecStartPre= might get restarted.
 
@@ -474,7 +499,6 @@ Features:
     message that works, but alraedy after a short tiemout
   - check if we can make journalctl by default use --follow mode inside of less if called without args?
   - maybe add API to send pairs of iovecs via sd_journal_send
-  - journal: when writing journal auto-rotate if time jumps backwards
   - journal: add a setgid "systemd-journal" utility to invoke from libsystemd-journal, which passes fds via STDOUT and does PK access
   - journactl: support negative filtering, i.e. FOOBAR!="waldo",
     and !FOOBAR for events without FOOBAR.
@@ -583,9 +607,6 @@ Features:
 * currently x-systemd.timeout is lost in the initrd, since crypttab is copied into dracut, but fstab is not
 
 * nspawn:
-  - to allow "linking" of nspawn containers, extend --network-bridge= so
-    that it can dynamically create bridge interfaces that are refcounted
-    by the containers on them. For each group of containers to link together
   - nspawn -x should support ephemeral instances of gpt images
   - emulate /dev/kmsg using CUSE and turn off the syslog syscall
     with seccomp. That should provide us with a useful log buffer that
@@ -594,8 +615,6 @@ Features:
   - as soon as networkd has a bus interface, hook up --network-interface=,
     --network-bridge= with networkd, to trigger netdev creation should an
     interface be missing
-  - don't copy /etc/resolv.conf from host into container unless we are in
-    shared-network mode
   - a nice way to boot up without machine id set, so that it is set at boot
     automatically for supporting --ephemeral. Maybe hash the host machine id
     together with the machine name to generate the machine id for the container
@@ -612,8 +631,6 @@ Features:
     is used
 
 * machined:
-  - "machinectl list" should probably show columns for OS version and IP
-    addresses
   - add an API so that libvirt-lxc can inform us about network interfaces being
     removed or added to an existing machine
   - "machinectl migrate" or similar to copy a container from or to a
@@ -663,7 +680,7 @@ Features:
 
 * coredump:
   - save coredump in Windows/Mozilla minidump format
-  - move PID 1 segfaults to /var/lib/systemd/coredump?
+  - when truncating coredumps, also log the full size that the process had, and make a metadata field so we can report truncated coredumps
 
 * support crash reporting operation modes (https://live.gnome.org/GnomeOS/Design/Whiteboards/ProblemReporting)
 
@@ -730,7 +747,6 @@ Features:
   - GC unreferenced jobs (such as .device jobs)
   - move PAM code into its own binary
   - when we automatically restart a service, ensure we restart its rdeps, too.
-  - for services: do not set $HOME in services unless requested
   - hide PAM options in fragment parser when compile time disabled
   - Support --test based on current system state
   - If we show an error about a unit (such as not showing up) and it has no Description string, then show a description string generated form the reverse of unit_name_mangle().
@@ -780,7 +796,6 @@ Features:
    - add reduced [Link] support to .network files
    - add Scope= parsing option for [Network]
    - properly handle routerless dhcp leases
-   - add more attribute support for SIT tunnel
    - work with non-Ethernet devices
    - add support for more bond options
    - dhcp: do we allow configuring dhcp routes on interfaces that are not the one we got the dhcp info from?
@@ -797,7 +812,6 @@ Features:
      support Name=foo*|bar*|baz ?
    - duplicate address check for static IPs (like ARPCHECK in network-scripts)
    - allow DUID/IAID to be customized, see issue #394.
-   - support configuration option for TSO (tcp segmentation offload)
    - whenever uplink info changes, make DHCP server send out FORCERENEW
 
 * networkd-wait-online:
@@ -819,6 +833,7 @@ Features:
      or interface down
    - some servers don't do rapid commit without a filled in IA_NA, verify
      this behavior
+   - RouteTable= ?
 
 External:
 

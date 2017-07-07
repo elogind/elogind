@@ -90,6 +90,10 @@ struct CGroupContext {
         bool tasks_accounting;
 
         /* For unified hierarchy */
+        uint64_t cpu_weight;
+        uint64_t startup_cpu_weight;
+        usec_t cpu_quota_per_sec_usec;
+
         uint64_t io_weight;
         uint64_t startup_io_weight;
         LIST_HEAD(CGroupIODeviceWeight, io_device_weights);
@@ -98,11 +102,11 @@ struct CGroupContext {
         uint64_t memory_low;
         uint64_t memory_high;
         uint64_t memory_max;
+        uint64_t memory_swap_max;
 
         /* For legacy hierarchies */
         uint64_t cpu_shares;
         uint64_t startup_cpu_shares;
-        usec_t cpu_quota_per_sec_usec;
 
         uint64_t blockio_weight;
         uint64_t startup_blockio_weight;

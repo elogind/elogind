@@ -775,7 +775,6 @@ int session_send_create_reply(Session *s, sd_bus_error *error) {
 #if 1 /// Additionally elogind saves the user state file
         user_save(s->user);
 #endif // 1
-
         p = session_bus_path(s);
         if (!p)
                 return -ENOMEM;

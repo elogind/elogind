@@ -395,21 +395,17 @@ int config_parse(const char *unit,
         return 0;
 }
 
-/* Parse each config file in the specified directories. */
-int config_parse_many(const char *conf_file,
-                      const char *conf_file_dirs,
-                      const char *sections,
-                      ConfigItemLookup lookup,
-                      const void *table,
-                      bool relaxed,
-                      void *userdata) {
-        _cleanup_strv_free_ char **files = NULL;
+static int config_parse_many_files(
+                const char *conf_file,
+                char **files,
+                const char *sections,
+                ConfigItemLookup lookup,
+                const void *table,
+                bool relaxed,
+                void *userdata) {
+
         char **fn;
         int r;
-
-        r = conf_files_list_nulstr(&files, ".conf", NULL, conf_file_dirs);
-        if (r < 0)
-                return r;
 
         if (conf_file) {
                 r = config_parse(NULL, conf_file, NULL, sections, lookup, table, relaxed, false, true, userdata);
@@ -425,6 +421,58 @@ int config_parse_many(const char *conf_file,
 
         return 0;
 }
+
+/* Parse each config file in the directories specified as nulstr. */
+int config_parse_many_nulstr(
+                const char *conf_file,
+                const char *conf_file_dirs,
+                const char *sections,
+                ConfigItemLookup lookup,
+                const void *table,
+                bool relaxed,
+                void *userdata) {
+
+        _cleanup_strv_free_ char **files = NULL;
+        int r;
+
+        r = conf_files_list_nulstr(&files, ".conf", NULL, conf_file_dirs);
+        if (r < 0)
+                return r;
+
+        return config_parse_many_files(conf_file, files,
+                                       sections, lookup, table, relaxed, userdata);
+}
+
+#if 0 /// UNNEEDED by elogind
+/* Parse each config file in the directories specified as strv. */
+int config_parse_many(
+                const char *conf_file,
+                const char* const* conf_file_dirs,
+                const char *dropin_dirname,
+                const char *sections,
+                ConfigItemLookup lookup,
+                const void *table,
+                bool relaxed,
+                void *userdata) {
+
+        _cleanup_strv_free_ char **dropin_dirs = NULL;
+        _cleanup_strv_free_ char **files = NULL;
+        const char *suffix;
+        int r;
+
+        suffix = strjoina("/", dropin_dirname);
+        r = strv_extend_strv_concat(&dropin_dirs, (char**) conf_file_dirs, suffix);
+        if (r < 0)
+                return r;
+
+        r = conf_files_list_strv(&files, ".conf", NULL, (const char* const*) dropin_dirs);
+        if (r < 0)
+                return r;
+
+        return config_parse_many_files(conf_file, files,
+                                       sections, lookup, table, relaxed, userdata);
+}
+#endif // 0
 
 #define DEFINE_PARSER(type, vartype, conv_func)                         \
         int config_parse_##type(                                        \
@@ -459,7 +507,10 @@ int config_parse_many(const char *conf_file,
 
 DEFINE_PARSER(int, int, safe_atoi);
 DEFINE_PARSER(long, long, safe_atoli);
+#if 0 /// UNNEEDED by elogind
+DEFINE_PARSER(uint16, uint16_t, safe_atou16);
 DEFINE_PARSER(uint32, uint32_t, safe_atou32);
+#endif // 0
 DEFINE_PARSER(uint64, uint64_t, safe_atou64);
 DEFINE_PARSER(unsigned, unsigned, safe_atou);
 DEFINE_PARSER(double, double, safe_atod);

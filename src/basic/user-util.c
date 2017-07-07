@@ -29,16 +29,20 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <utmp.h>
 
-#include "missing.h"
 #include "alloc-util.h"
 #include "fd-util.h"
+#include "fileio.h"
 #include "formats-util.h"
 #include "macro.h"
+#include "missing.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "string-util.h"
+#include "strv.h"
 #include "user-util.h"
+#include "utf8.h"
 
 bool uid_is_valid(uid_t uid) {
 
@@ -175,6 +179,36 @@ int get_user_creds(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
+int get_user_creds_clean(
+                const char **username,
+                uid_t *uid, gid_t *gid,
+                const char **home,
+                const char **shell) {
+
+        int r;
+
+        /* Like get_user_creds(), but resets home/shell to NULL if they don't contain anything relevant. */
+
+        r = get_user_creds(username, uid, gid, home, shell);
+        if (r < 0)
+                return r;
+
+        if (shell &&
+            (isempty(*shell) || PATH_IN_SET(*shell,
+                                            "/bin/nologin",
+                                            "/sbin/nologin",
+                                            "/usr/bin/nologin",
+                                            "/usr/sbin/nologin")))
+                *shell = NULL;
+
+        if (home &&
+            (isempty(*home) || path_equal(*home, "/")))
+                *home = NULL;
+
+        return 0;
+}
+
 int get_group_creds(const char **groupname, gid_t *gid) {
         struct group *g;
         gid_t id;
@@ -216,6 +250,7 @@ int get_group_creds(const char **groupname, gid_t *gid) {
 
         return 0;
 }
+#endif // 0
 
 char* uid_to_name(uid_t uid) {
         char *ret;
@@ -431,9 +466,11 @@ int get_shell(char **_s) {
 #endif // 0
 
 int reset_uid_gid(void) {
+        int r;
 
-        if (setgroups(0, NULL) < 0)
-                return -errno;
+        r = maybe_setgroups(0, NULL);
+        if (r < 0)
+                return r;
 
         if (setresgid(0, 0, 0) < 0)
                 return -errno;
@@ -485,3 +522,123 @@ int take_etc_passwd_lock(const char *root) {
         return fd;
 }
 #endif // 0
+
+bool valid_user_group_name(const char *u) {
+        const char *i;
+        long sz;
+
+        /* Checks if the specified name is a valid user/group name. */
+
+        if (isempty(u))
+                return false;
+
+        if (!(u[0] >= 'a' && u[0] <= 'z') &&
+            !(u[0] >= 'A' && u[0] <= 'Z') &&
+            u[0] != '_')
+                return false;
+
+        for (i = u+1; *i; i++) {
+                if (!(*i >= 'a' && *i <= 'z') &&
+                    !(*i >= 'A' && *i <= 'Z') &&
+                    !(*i >= '0' && *i <= '9') &&
+                    *i != '_' &&
+                    *i != '-')
+                        return false;
+        }
+
+        sz = sysconf(_SC_LOGIN_NAME_MAX);
+        assert_se(sz > 0);
+
+        if ((size_t) (i-u) > (size_t) sz)
+                return false;
+
+        if ((size_t) (i-u) > UT_NAMESIZE - 1)
+                return false;
+
+        return true;
+}
+
+bool valid_user_group_name_or_id(const char *u) {
+
+        /* Similar as above, but is also fine with numeric UID/GID specifications, as long as they are in the right
+         * range, and not the invalid user ids. */
+
+        if (isempty(u))
+                return false;
+
+        if (valid_user_group_name(u))
+                return true;
+
+        return parse_uid(u, NULL) >= 0;
+}
+
+bool valid_gecos(const char *d) {
+
+        if (!d)
+                return false;
+
+        if (!utf8_is_valid(d))
+                return false;
+
+        if (string_has_cc(d, NULL))
+                return false;
+
+        /* Colons are used as field separators, and hence not OK */
+        if (strchr(d, ':'))
+                return false;
+
+        return true;
+}
+
+bool valid_home(const char *p) {
+
+        if (isempty(p))
+                return false;
+
+        if (!utf8_is_valid(p))
+                return false;
+
+        if (string_has_cc(p, NULL))
+                return false;
+
+        if (!path_is_absolute(p))
+                return false;
+
+        if (!path_is_safe(p))
+                return false;
+
+        /* Colons are used as field separators, and hence not OK */
+        if (strchr(p, ':'))
+                return false;
+
+        return true;
+}
+
+int maybe_setgroups(size_t size, const gid_t *list) {
+        int r;
+
+        /* Check if setgroups is allowed before we try to drop all the auxiliary groups */
+        if (size == 0) { /* Dropping all aux groups? */
+                _cleanup_free_ char *setgroups_content = NULL;
+                bool can_setgroups;
+
+                r = read_one_line_file("/proc/self/setgroups", &setgroups_content);
+                if (r == -ENOENT)
+                        /* Old kernels don't have /proc/self/setgroups, so assume we can use setgroups */
+                        can_setgroups = true;
+                else if (r < 0)
+                        return r;
+                else
+                        can_setgroups = streq(setgroups_content, "allow");
+
+                if (!can_setgroups) {
+                        log_debug("Skipping setgroups(), /proc/self/setgroups is set to 'deny'");
+                        return 0;
+                }
+        }
+
+        if (setgroups(size, list) < 0)
+                return -errno;
+
+        return 0;
+}

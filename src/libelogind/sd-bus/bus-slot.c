@@ -212,9 +212,7 @@ _public_ sd_bus_slot* sd_bus_slot_unref(sd_bus_slot *slot) {
 
         bus_slot_disconnect(slot);
         free(slot->description);
-        free(slot);
-
-        return NULL;
+        return mfree(slot);
 }
 
 #if 0 /// UNNEEDED by elogind

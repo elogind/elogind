@@ -37,6 +37,7 @@ enum {
         VIRTUALIZATION_MICROSOFT,
         VIRTUALIZATION_ZVM,
         VIRTUALIZATION_PARALLELS,
+        VIRTUALIZATION_BHYVE,
         VIRTUALIZATION_VM_OTHER,
         VIRTUALIZATION_VM_LAST = VIRTUALIZATION_VM_OTHER,
 
@@ -68,8 +69,9 @@ int detect_vm(void);
 int detect_container(void);
 #if 0 /// UNNEEDED by elogind
 int detect_virtualization(void);
-#endif // 0
 
+int running_in_userns(void);
+#endif // 0
 int running_in_chroot(void);
 
 const char *virtualization_to_string(int v) _const_;

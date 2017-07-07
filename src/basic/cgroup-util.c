@@ -134,6 +134,22 @@ int cg_read_event(const char *controller, const char *path, const char *event,
         return -ENOENT;
 }
 
+#if 0 /// UNNEEDED by elogind
+bool cg_ns_supported(void) {
+        static thread_local int enabled = -1;
+
+        if (enabled >= 0)
+                return enabled;
+
+        if (access("/proc/self/ns/cgroup", F_OK) == 0)
+                enabled = 1;
+        else
+                enabled = 0;
+
+        return enabled;
+}
+#endif //0
+
 int cg_enumerate_subgroups(const char *controller, const char *path, DIR **_d) {
         _cleanup_free_ char *fs = NULL;
         int r;
@@ -613,7 +629,7 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
         if (!cg_controller_is_valid(controller))
                 return -EINVAL;
 
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
 
@@ -641,7 +657,7 @@ static int controller_is_accessible(const char *controller) {
         if (!cg_controller_is_valid(controller))
                 return -EINVAL;
 
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
         if (unified > 0) {
@@ -860,7 +876,7 @@ int cg_set_task_access(
         if (r < 0)
                 return r;
 
-        unified = cg_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
         if (unified)
@@ -872,6 +888,43 @@ int cg_set_task_access(
                 (void) chmod_and_chown(procs, mode, uid, gid);
 
         return 0;
+}
+
+int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags) {
+        _cleanup_free_ char *fs = NULL;
+        int r;
+
+        assert(path);
+        assert(name);
+        assert(value || size <= 0);
+
+        r = cg_get_path(controller, path, NULL, &fs);
+        if (r < 0)
+                return r;
+
+        if (setxattr(fs, name, value, size, flags) < 0)
+                return -errno;
+
+        return 0;
+}
+
+int cg_get_xattr(const char *controller, const char *path, const char *name, void *value, size_t size) {
+        _cleanup_free_ char *fs = NULL;
+        ssize_t n;
+        int r;
+
+        assert(path);
+        assert(name);
+
+        r = cg_get_path(controller, path, NULL, &fs);
+        if (r < 0)
+                return r;
+
+        n = getxattr(fs, name, value, size);
+        if (n < 0)
+                return -errno;
+
+        return (int) n;
 }
 #endif // 0
 
@@ -885,18 +938,17 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         assert(path);
         assert(pid >= 0);
 
-        unified = cg_unified();
+        if (controller) {
+                if (!cg_controller_is_valid(controller))
+                        return -EINVAL;
+        } else
+                controller = SYSTEMD_CGROUP_CONTROLLER;
+
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
-        if (unified == 0) {
-                if (controller) {
-                        if (!cg_controller_is_valid(controller))
-                                return -EINVAL;
-                } else
-                        controller = SYSTEMD_CGROUP_CONTROLLER;
-
+        if (unified == 0)
                 cs = strlen(controller);
-        }
 
         fs = procfs_file_alloca(pid, "cgroup");
         log_debug_elogind("Searching for PID %u in \"%s\" (controller \"%s\")",
@@ -964,7 +1016,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
 
         assert(agent);
 
-        unified = cg_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
         if (unified) /* doesn't apply to unified hierarchy */
@@ -1015,7 +1067,7 @@ int cg_uninstall_release_agent(const char *controller) {
         _cleanup_free_ char *fs = NULL;
         int r, unified;
 
-        unified = cg_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
         if (unified) /* Doesn't apply to unified hierarchy */
@@ -1071,7 +1123,7 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
         if (controller && (isempty(path) || path_equal(path, "/")))
                 return false;
 
-        unified = cg_unified();
+        unified = cg_unified(controller);
         if (unified < 0)
                 return unified;
 
@@ -1277,7 +1329,11 @@ int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {
         }
 
         p = path_startswith(cgroup, root);
+#if 0 /// With other controllers, elogind might end up in /elogind, and *p is 0
+        if (p && p > cgroup)
+#else
         if (p && p[0] && (p > cgroup))
+#endif // 0
                 *shifted = p - 1;
         else
                 *shifted = cgroup;
@@ -1696,7 +1752,7 @@ int cg_path_get_slice(const char *p, char **slice) {
                         if (!e) {
                                 char *s;
 
-                                s = strdup("-.slice");
+                                s = strdup(SPECIAL_ROOT_SLICE);
                                 if (!s)
                                         return -ENOMEM;
 
@@ -1853,7 +1909,7 @@ int cg_slice_to_path(const char *unit, char **ret) {
         assert(unit);
         assert(ret);
 
-        if (streq(unit, "-.slice")) {
+        if (streq(unit, SPECIAL_ROOT_SLICE)) {
                 char *x;
 
                 x = strdup("");
@@ -1938,6 +1994,49 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 }
 
 #if 0 /// UNNEEDED by elogind
+int cg_get_keyed_attribute(const char *controller, const char *path, const char *attribute, const char **keys, char **values) {
+        _cleanup_free_ char *filename = NULL, *content = NULL;
+        char *line, *p;
+        int i, r;
+
+        for (i = 0; keys[i]; i++)
+                values[i] = NULL;
+
+        r = cg_get_path(controller, path, attribute, &filename);
+        if (r < 0)
+                return r;
+
+        r = read_full_file(filename, &content, NULL);
+        if (r < 0)
+                return r;
+
+        p = content;
+        while ((line = strsep(&p, "\n"))) {
+                char *key;
+
+                key = strsep(&line, " ");
+
+                for (i = 0; keys[i]; i++) {
+                        if (streq(key, keys[i])) {
+                                values[i] = strdup(line);
+                                break;
+                        }
+                }
+        }
+
+        for (i = 0; keys[i]; i++) {
+                if (!values[i]) {
+                        for (i = 0; keys[i]; i++) {
+                                free(values[i]);
+                                values[i] = NULL;
+                        }
+                        return -ENOENT;
+                }
+        }
+
+        return 0;
+}
+
 int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path) {
         CGroupController c;
         int r, unified;
@@ -1952,7 +2051,7 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
                 return r;
 
         /* If we are in the unified hierarchy, we are done now */
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
         if (unified > 0)
@@ -1982,7 +2081,7 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
         if (r < 0)
                 return r;
 
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
         if (unified > 0)
@@ -2034,7 +2133,7 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
                         return r;
         }
 
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
         if (unified > 0)
@@ -2067,7 +2166,7 @@ int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root)
         if (r < 0)
                 return r;
 
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
         if (unified > 0)
@@ -2094,7 +2193,7 @@ int cg_mask_supported(CGroupMask *ret) {
          * includes controllers we can make sense of and that are
          * actually accessible. */
 
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
         if (unified > 0) {
@@ -2135,10 +2234,10 @@ int cg_mask_supported(CGroupMask *ret) {
                         mask |= CGROUP_CONTROLLER_TO_MASK(v);
                 }
 
-                /* Currently, we only support the memory, io and pids
+                /* Currently, we support the cpu, memory, io and pids
                  * controller in the unified hierarchy, mask
                  * everything else off. */
-                mask &= CGROUP_MASK_MEMORY | CGROUP_MASK_IO | CGROUP_MASK_PIDS;
+                mask &= CGROUP_MASK_CPU | CGROUP_MASK_MEMORY | CGROUP_MASK_IO | CGROUP_MASK_PIDS;
 
         } else {
                 CGroupController c;
@@ -2217,9 +2316,10 @@ int cg_kernel_controllers(Set *controllers) {
 }
 #endif // 0
 
-static thread_local int unified_cache = -1;
+static thread_local CGroupUnified unified_cache = CGROUP_UNIFIED_UNKNOWN;
 
-int cg_unified(void) {
+static int cg_update_unified(void) {
+
         struct statfs fs;
 
         /* Checks if we support the unified hierarchy. Returns an
@@ -2227,34 +2327,57 @@ int cg_unified(void) {
          * have any other trouble determining if the unified hierarchy
          * is supported. */
 
-        if (unified_cache >= 0)
-                return unified_cache;
+        if (unified_cache >= CGROUP_UNIFIED_NONE)
+                return 0;
 
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
                 return -errno;
 
 #if 0 /// UNNEEDED by elogind
         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC))
-                unified_cache = true;
-        else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
+                unified_cache = CGROUP_UNIFIED_ALL;
+        else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
+                if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
+                        return -errno;
+
+                unified_cache = F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC) ?
+                        CGROUP_UNIFIED_SYSTEMD : CGROUP_UNIFIED_NONE;
+        } else
+                return -ENOMEDIUM;
 #else
         /* elogind can not support the unified hierarchy as a controller,
          * so always assume a classical hierarchy.
          * If, and only *if*, someone really wants to substitute systemd-login
          * in an environment managed by systemd with elogind, we might have to
          * add such a support. */
-        if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
+        unified_cache = CGROUP_UNIFIED_NONE;
 #endif // 0
-                unified_cache = false;
-        else
-                return -ENOMEDIUM;
 
-        return unified_cache;
+        return 0;
+}
+
+int cg_unified(const char *controller) {
+
+        int r;
+
+        r = cg_update_unified();
+        if (r < 0)
+                return r;
+
+        if (streq_ptr(controller, SYSTEMD_CGROUP_CONTROLLER))
+                return unified_cache >= CGROUP_UNIFIED_SYSTEMD;
+        else
+                return unified_cache >= CGROUP_UNIFIED_ALL;
+}
+
+int cg_all_unified(void) {
+
+        return cg_unified(NULL);
 }
 
 #if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void) {
-        unified_cache = -1;
+        unified_cache = CGROUP_UNIFIED_UNKNOWN;
 }
 
 int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
@@ -2267,7 +2390,7 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
         if (supported == 0)
                 return 0;
 
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified < 0)
                 return unified;
         if (!unified) /* on the legacy hiearchy there's no joining of controllers defined */
@@ -2306,7 +2429,7 @@ bool cg_is_unified_wanted(void) {
 
         /* If the hierarchy is already mounted, then follow whatever
          * was chosen for it. */
-        unified = cg_unified();
+        unified = cg_all_unified();
         if (unified >= 0)
                 return unified;
 
@@ -2334,6 +2457,52 @@ bool cg_is_unified_wanted(void) {
 
 bool cg_is_legacy_wanted(void) {
         return !cg_is_unified_wanted();
+}
+
+bool cg_is_unified_systemd_controller_wanted(void) {
+        static thread_local int wanted = -1;
+        int r, unified;
+
+        /* If the unified hierarchy is requested in full, no need to
+         * bother with this. */
+        if (cg_is_unified_wanted())
+                return 0;
+
+        /* If the hierarchy is already mounted, then follow whatever
+         * was chosen for it. */
+        unified = cg_unified(SYSTEMD_CGROUP_CONTROLLER);
+        if (unified >= 0)
+                return unified;
+
+        /* Otherwise, let's see what the kernel command line has to
+         * say. Since checking that is expensive, let's cache the
+         * result. */
+        if (wanted >= 0)
+                return wanted;
+
+        r = get_proc_cmdline_key("systemd.legacy_systemd_cgroup_controller", NULL);
+        if (r > 0) {
+        if (r > 0)
+                wanted = false;
+        } else {
+        else {
+                _cleanup_free_ char *value = NULL;
+
+                r = get_proc_cmdline_key("systemd.legacy_systemd_cgroup_controller=", &value);
+                if (r < 0)
+                        return true;
+
+                if (r == 0)
+                        wanted = true;
+                else
+                        wanted = parse_boolean(value) <= 0;
+        }
+
+        return wanted;
+}
+
+bool cg_is_legacy_systemd_controller_wanted(void) {
+        return cg_is_legacy_wanted() && !cg_is_unified_systemd_controller_wanted();
 }
 #else
 bool cg_is_legacy_wanted(void) {
@@ -2418,6 +2587,20 @@ int cg_blkio_weight_parse(const char *s, uint64_t *ret) {
         return 0;
 }
 #endif // 0
+
+bool is_cgroup_fs(const struct statfs *s) {
+        return is_fs_type(s, CGROUP_SUPER_MAGIC) ||
+               is_fs_type(s, CGROUP2_SUPER_MAGIC);
+}
+
+bool fd_is_cgroup_fs(int fd) {
+        struct statfs s;
+
+        if (fstatfs(fd, &s) < 0)
+                return -errno;
+
+        return is_cgroup_fs(&s);
+}
 
 static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_CPU] = "cpu",

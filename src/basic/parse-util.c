@@ -540,7 +540,7 @@ int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
         return 0;
 }
 
-int parse_percent(const char *p) {
+int parse_percent_unbounded(const char *p) {
         const char *pc, *n;
         unsigned v;
         int r;
@@ -553,8 +553,32 @@ int parse_percent(const char *p) {
         r = safe_atou(n, &v);
         if (r < 0)
                 return r;
-        if (v > 100)
-                return -ERANGE;
 
         return (int) v;
 }
+
+int parse_percent(const char *p) {
+        int v;
+
+        v = parse_percent_unbounded(p);
+        if (v > 100)
+                return -ERANGE;
+
+        return v;
+}
+
+#if 0 /// UNNEEDED by elogind
+int parse_nice(const char *p, int *ret) {
+        int n, r;
+
+        r = safe_atoi(p, &n);
+        if (r < 0)
+                return r;
+
+        if (!nice_is_valid(n))
+                return -ERANGE;
+
+        *ret = n;
+        return 0;
+}
+#endif // 0

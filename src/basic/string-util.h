@@ -66,9 +66,15 @@ static inline bool isempty(const char *p) {
         return !p || !p[0];
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline const char *empty_to_null(const char *p) {
         return isempty(p) ? NULL : p;
 }
+
+static inline const char *strdash_if_empty(const char *str) {
+        return isempty(str) ? "-" : str;
+}
+#endif // 0
 
 static inline char *startswith(const char *s, const char *prefix) {
         size_t l;
@@ -80,6 +86,7 @@ static inline char *startswith(const char *s, const char *prefix) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline char *startswith_no_case(const char *s, const char *prefix) {
         size_t l;
 
@@ -89,6 +96,7 @@ static inline char *startswith_no_case(const char *s, const char *prefix) {
 
         return NULL;
 }
+#endif // 0
 
 char *endswith(const char *s, const char *postfix) _pure_;
 char *endswith_no_case(const char *s, const char *postfix) _pure_;
@@ -130,17 +138,24 @@ char *strjoin(const char *x, ...) _sentinel_;
         })
 
 char *strstrip(char *s);
+#if 0 /// UNNEEDED by elogind
 char *delete_chars(char *s, const char *bad);
+#endif // 0
 char *truncate_nl(char *s);
 
+#if 0 /// UNNEEDED by elogind
 char ascii_tolower(char x);
 char *ascii_strlower(char *s);
 char *ascii_strlower_n(char *s, size_t n);
+
+char ascii_toupper(char x);
+char *ascii_strupper(char *s);
 
 int ascii_strcasecmp_n(const char *a, const char *b, size_t n);
 int ascii_strcasecmp_nn(const char *a, size_t n, const char *b, size_t m);
 
 bool chars_intersect(const char *a, const char *b) _pure_;
+#endif // 0
 
 static inline bool _pure_ in_charset(const char *s, const char* charset) {
         assert(s);

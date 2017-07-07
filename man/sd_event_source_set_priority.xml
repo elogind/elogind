@@ -57,9 +57,9 @@
       <funcsynopsisinfo>#include &lt;elogind/sd-event.h&gt;</funcsynopsisinfo>
 
       <funcsynopsisinfo><token>enum</token> {
-        <constant>SD_EVENT_SOURCE_IMPORTANT</constant> = -100,
-        <constant>SD_EVENT_SOURCE_NORMAL</constant> = 0,
-        <constant>SD_EVENT_SOURCE_IDLE</constant> = 100,
+        <constant>SD_EVENT_PRIORITY_IMPORTANT</constant> = -100,
+        <constant>SD_EVENT_PRIORITY_NORMAL</constant> = 0,
+        <constant>SD_EVENT_PRIORITY_IDLE</constant> = 100,
 };</funcsynopsisinfo>
 
       <funcprototype>
@@ -115,7 +115,7 @@
     reliable. However, it is guaranteed that if events are seen on
     multiple same-priority event sources at the same time, each one is
     not dispatched again until all others have been dispatched
-    once. This behaviour guarantees that within each priority
+    once. This behavior guarantees that within each priority
     particular event sources do not starve or dominate the event
     loop.</para>
 

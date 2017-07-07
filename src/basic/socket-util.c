@@ -441,7 +441,7 @@ const char* socket_address_get_path(const SocketAddress *a) {
 #endif // 0
 
 bool socket_ipv6_is_supported(void) {
-        if (access("/proc/net/sockstat6", F_OK) != 0)
+        if (access("/proc/net/if_inet6", F_OK) != 0)
                 return false;
 
         return true;
@@ -1050,5 +1050,38 @@ int flush_accept(int fd) {
 
                 close(cfd);
         }
+}
+#endif // 0
+
+struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length) {
+        struct cmsghdr *cmsg;
+
+        assert(mh);
+
+        CMSG_FOREACH(cmsg, mh)
+                if (cmsg->cmsg_level == level &&
+                    cmsg->cmsg_type == type &&
+                    (length == (socklen_t) -1 || length == cmsg->cmsg_len))
+                        return cmsg;
+
+        return NULL;
+}
+
+#if 0 /// UNNEEDED by elogind
+int socket_ioctl_fd(void) {
+        int fd;
+
+        /* Create a socket to invoke the various network interface ioctl()s on. Traditionally only AF_INET was good for
+         * that. Since kernel 4.6 AF_NETLINK works for this too. We first try to use AF_INET hence, but if that's not
+         * available (for example, because it is made unavailable via SECCOMP or such), we'll fall back to the more
+         * generic AF_NETLINK. */
+
+        fd = socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC, 0);
+        if (fd < 0)
+                fd = socket(AF_NETLINK, SOCK_RAW|SOCK_CLOEXEC, NETLINK_GENERIC);
+        if (fd < 0)
+                return -errno;
+
+        return fd;
 }
 #endif // 0

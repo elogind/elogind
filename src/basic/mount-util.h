@@ -36,7 +36,7 @@ int path_is_mount_point(const char *path, int flags);
 int repeat_unmount(const char *path, int flags);
 
 int umount_recursive(const char *target, int flags);
-int bind_remount_recursive(const char *prefix, bool ro);
+int bind_remount_recursive(const char *prefix, bool ro, char **blacklist);
 
 int mount_move_root(const char *path);
 #endif // 0
@@ -56,3 +56,14 @@ union file_handle_union {
 const char* mode_to_inaccessible_node(mode_t mode);
 
 #define FILE_HANDLE_INIT { .handle.handle_bytes = MAX_HANDLE_SZ }
+
+#if 0 /// UNNEEDED by elogind
+int mount_verbose(
+                int error_log_level,
+                const char *what,
+                const char *where,
+                const char *type,
+                unsigned long flags,
+                const char *options);
+int umount_verbose(const char *where);
+#endif // 0

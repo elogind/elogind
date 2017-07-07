@@ -140,4 +140,7 @@ bool hidden_or_backup_file(const char *filename) _pure_;
 
 #if 0 /// UNNEEDED by elogind
 bool is_device_path(const char *path);
+bool is_deviceallow_pattern(const char *path);
+
+int systemd_installation_has_version(const char *root, unsigned minimal_version);
 #endif // 0
