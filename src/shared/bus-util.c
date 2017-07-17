@@ -43,6 +43,7 @@
 #include "escape.h"
 #include "fd-util.h"
 #include "missing.h"
+#include "nsflags.h"
 #include "parse-util.h"
 #include "proc-cmdline.h"
 //#include "rlimit-util.h"
