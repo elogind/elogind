@@ -189,6 +189,7 @@ static inline pid_t raw_getpid(void) {
 #endif
 }
 #endif // 0
+
 /* ======================================================================= */
 
 #if !HAVE_DECL_RENAMEAT2

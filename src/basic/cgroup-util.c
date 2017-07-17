@@ -2483,7 +2483,6 @@ int cg_all_unified(void) {
         return unified_cache >= CGROUP_UNIFIED_ALL;
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_hybrid_unified(void) {
         int r;
 
@@ -2500,6 +2499,7 @@ int cg_unified_flush(void) {
         return cg_unified_update();
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
         _cleanup_free_ char *fs = NULL;
         CGroupController c;
@@ -2605,18 +2605,13 @@ bool cg_is_hybrid_wanted(void) {
          * Since checking is expensive, cache a non-error result. */
         r = proc_cmdline_get_bool("systemd.legacy_systemd_cgroup_controller", &b);
 
+        /* The meaning of the kernel option is reversed wrt. to the return value
+         * of this function, hence the negation. */
+        return (wanted = r > 0 ? !b : is_default);
+}
 #else
 bool cg_is_legacy_wanted(void) {
         return true;
-        /* The meaning of the kernel option is reversed wrt. to the return value
-         * of this function, hence the negation. */
-        return (wanted = r > 0 ? !b : false);
-        return (wanted = r > 0 ? b : false);
-}
-
-bool cg_is_legacy_systemd_controller_wanted(void) {
-        return cg_is_legacy_wanted() && !cg_is_unified_systemd_controller_wanted();
-        return (wanted = r > 0 ? !b : is_default);
 }
 #endif // 0
 
