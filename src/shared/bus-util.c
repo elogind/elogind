@@ -1601,7 +1601,6 @@ int bus_property_get_rlimit(
 
         return sd_bus_message_append(reply, "t", u);
 }
-#endif // 0
 
 int bus_track_add_name_many(sd_bus_track *t, char **l) {
         int r = 0;
@@ -1621,3 +1620,4 @@ int bus_track_add_name_many(sd_bus_track *t, char **l) {
 
         return r;
 }
+#endif // 0

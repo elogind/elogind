@@ -38,7 +38,9 @@
 
 const char* namespace_flag_to_string(unsigned long flag);
 unsigned long namespace_flag_from_string(const char *name);
+#if 0 /// UNNEEDED by elogind
 int namespace_flag_from_string_many(const char *name, unsigned long *ret);
+#endif // 0
 int namespace_flag_to_string_many(unsigned long flags, char **ret);
 
 struct namespace_flag_map {

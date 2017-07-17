@@ -62,6 +62,7 @@ unsigned long namespace_flag_from_string(const char *name) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int namespace_flag_from_string_many(const char *name, unsigned long *ret) {
         unsigned long flags = 0;
         int r;
@@ -88,6 +89,7 @@ int namespace_flag_from_string_many(const char *name, unsigned long *ret) {
         *ret = flags;
         return 0;
 }
+#endif // 0
 
 int namespace_flag_to_string_many(unsigned long flags, char **ret) {
         _cleanup_free_ char *s = NULL;
