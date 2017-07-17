@@ -1446,7 +1446,7 @@ static int bus_manager_log_shutdown(
                 p = strjoina(p, " (", m->wall_message, ").");
 
         return log_struct(LOG_NOTICE,
-                          LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                          "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
                           p,
                           q,
                           NULL);

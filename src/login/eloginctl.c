@@ -209,49 +209,49 @@ static void elogind_log_special(enum elogind_action a) {
         case ACTION_HALT:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Halt action called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
                            NULL);
                 break;
         case ACTION_POWEROFF:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Poweroff action called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
                            NULL);
                 break;
         case ACTION_REBOOT:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Reboot action called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
                            NULL);
                 break;
         case ACTION_KEXEC:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("KExec action called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
                            NULL);
                 break;
         case ACTION_SUSPEND:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Suspend action called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
+                           "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                            NULL);
                 break;
         case ACTION_HIBERNATE:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Hibernate action called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
+                           "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                            NULL);
                 break;
         case ACTION_HYBRID_SLEEP:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Hybrid-Sleep action called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SLEEP_START),
+                           "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                            NULL);
                 break;
         case ACTION_CANCEL_SHUTDOWN:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Cancel Shutdown called."),
-                           LOG_MESSAGE_ID(SD_MESSAGE_SHUTDOWN),
+                           "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
                            NULL);
                 break;
         default:
