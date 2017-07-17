@@ -27,6 +27,7 @@
 
 //#include "btrfs-util.h"
 #include "cgroup-util.h"
+#include "dirent-util.h"
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"

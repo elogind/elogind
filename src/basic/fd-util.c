@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "dirent-util.h"
 #include "fd-util.h"
 #include "macro.h"
 #include "missing.h"

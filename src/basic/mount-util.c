@@ -29,6 +29,7 @@
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
+#include "fs-util.h"
 #include "hashmap.h"
 #include "mount-util.h"
 #include "parse-util.h"
