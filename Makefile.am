@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=17
-LIBELOGIND_REVISION=2
-LIBELOGIND_AGE=17
+LIBELOGIND_CURRENT=18
+LIBELOGIND_REVISION=0
+LIBELOGIND_AGE=18
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -50,6 +50,8 @@ pamconfdir=@pamconfdir@
 pkgconfigdatadir=$(datadir)/pkgconfig
 pkgconfiglibdir=$(libdir)/pkgconfig
 polkitpolicydir=$(datadir)/polkit-1/actions
+polkitrulesdir=$(datadir)/polkit-1/rules.d
+polkitpkladir=$(localstatedir)/lib/polkit-1/localauthority/10-vendor.d
 bashcompletiondir=@bashcompletiondir@
 zshcompletiondir=@zshcompletiondir@
 
@@ -85,6 +87,8 @@ noinst_DATA =
 pkgconfiglib_DATA =
 polkitpolicy_in_files =
 polkitpolicy_files =
+polkitrules_files =
+polkitpkla_files =
 dist_udevrules_DATA =
 nodist_udevrules_DATA =
 dist_pkgsysconf_DATA =
@@ -140,7 +144,6 @@ AM_CPPFLAGS = \
 	-DLIBDIR=\"$(libdir)\" \
 	-DROOTLIBDIR=\"$(rootlibdir)\" \
 	-DROOTLIBEXECDIR=\"$(rootlibexecdir)\" \
-	-DTEST_DIR=\"$(abs_top_srcdir)/test\" \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src/basic \
 	-I $(top_srcdir)/src/basic \
@@ -155,6 +158,8 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/libelogind/sd-id128 \
 	-I $(top_srcdir)/src/update-utmp \
 	-I $(top_srcdir)/src/sleep \
+	-DABS_SRC_DIR=\"$(abs_top_srcdir)\" \
+	-DABS_BUILD_DIR=\"$(abs_top_builddir)\" \
 	$(OUR_CPPFLAGS)
 
 AM_CFLAGS = $(OUR_CFLAGS)
@@ -849,6 +854,7 @@ EXTRA_DIST += \
 
 # ------------------------------------------------------------------------------
 substitutions = \
+       '|rootlibdir=$(rootlibdir)|' \
        '|rootlibexecdir=$(rootlibexecdir)|' \
        '|rootbindir=$(rootbindir)|' \
        '|bindir=$(bindir)|' \
@@ -875,7 +881,8 @@ substitutions = \
 SED_PROCESS = \
 	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && \
 	$(SED) $(subst '|,-e 's|@,$(subst =,\@|,$(subst |',|g',$(substitutions)))) \
-		< $< > $@
+                -e '/^\#\# /d' \
+                < $< > $@
 
 man/%: man/%.in
 	$(SED_PROCESS)
@@ -927,6 +934,8 @@ units/user/%: units/user/%.m4
 if ENABLE_POLKIT
 nodist_polkitpolicy_DATA = \
 	$(polkitpolicy_files)
+polkitrules_DATA = $(polkitrules_files)
+polkitpkla_DATA = $(polkitpkla_files)
 endif
 
 EXTRA_DIST += \
@@ -1087,7 +1096,7 @@ valgrind-tests: $(TESTS)
 		if $(LIBTOOL) --mode=execute file $$f | grep -q shell; then \
 		echo -e "$${x}Skipping non-binary $$f"; else \
 		echo -e "$${x}Running $$f"; \
-		libtool --mode=execute valgrind -q --leak-check=full --max-stackframe=5242880 --error-exitcode=55 $(builddir)/$$f ; fi; \
+		$(AM_TESTS_ENVIRONMENT) $(LIBTOOL) --mode=execute valgrind -q --leak-check=full --max-stackframe=5242880 --error-exitcode=55 $(builddir)/$$f ; fi; \
 		x="\n\n"; \
 	done
 

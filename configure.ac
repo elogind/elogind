@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [232.2],
+        [233],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -191,7 +191,6 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
         -Wall \
         -Wextra \
         -Wundef \
-        "-Wformat=2 -Wformat-security -Wformat-nonliteral" \
         -Wlogical-op \
         -Wmissing-include-dirs \
         -Wold-style-definition \
@@ -204,6 +203,8 @@ CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
         -Werror=implicit-function-declaration \
         -Werror=missing-declarations \
         -Werror=return-type \
+        -Werror=incompatible-pointer-types \
+        -Werror=format=2 \
         -Wstrict-prototypes \
         -Wredundant-decls \
         -Wmissing-noreturn \
@@ -245,6 +246,7 @@ AS_CASE([$CC], [*clang*],
                -Wno-gnu-variable-sized-type-not-at-end \
         ])])
 
+# ------------------------------------------------------------------------------
 AC_ARG_ENABLE([lto], [AS_HELP_STRING([--disable-lto], [disable -flto])],
                      [], [enable_lto=yes])
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
@@ -252,27 +254,26 @@ AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
                [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [-flto])],
                [AC_MSG_RESULT([disabling -flto as requested])])],
         [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
-AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
 # ------------------------------------------------------------------------------
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
         [CC_CHECK_FLAGS_APPEND([with_cppflags], [CPPFLAGS], [\
                -Wp,-D_FORTIFY_SOURCE=2])],
         [AC_MSG_RESULT([skipping -D_FORTIFY_SOURCE, optimization not enabled])])
-AC_SUBST([OUR_CPPFLAGS], "$with_cppflags $sanitizer_cppflags")
 
+# ------------------------------------------------------------------------------
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
         [CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
                -Wl,--gc-sections])],
         [AC_MSG_RESULT([skipping --gc-sections, optimization not enabled])])
-AC_SUBST([OUR_CFLAGS], "$with_ldflags $sanitizer_cflags")
 
+# ------------------------------------------------------------------------------
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
         [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [\
                -ffunction-sections -fdata-sections])],
         [AC_MSG_RESULT([skipping -ffunction/data-section, optimization not enabled])])
-AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
+# ------------------------------------------------------------------------------
 CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
         -Wl,--as-needed \
         -Wl,--no-undefined \
@@ -280,8 +281,13 @@ CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
         -Wl,-z,now \
         -pie \
         -Wl,-fuse-ld=gold])
+
+# ------------------------------------------------------------------------------
+AC_SUBST([OUR_CPPFLAGS], "$with_cppflags $sanitizer_cppflags")
+AC_SUBST([OUR_CFLAGS], "-D__SANE_USERSPACE_TYPES__ $with_cflags $sanitizer_cflags")
 AC_SUBST([OUR_LDFLAGS], "$with_ldflags $sanitizer_ldflags")
 
+# ------------------------------------------------------------------------------
 AC_CHECK_SIZEOF(pid_t)
 AC_CHECK_SIZEOF(uid_t)
 AC_CHECK_SIZEOF(gid_t)
@@ -321,11 +327,11 @@ AC_DEFINE_UNQUOTED([GPERF_LEN_TYPE], [$GPERF_LEN_TYPE], [gperf len type])
 # we use python to build the man page index
 have_python=no
 AC_ARG_WITH([python],
-        [AS_HELP_STRING([--without-python], [Disable building the man page index and systemd-python (default: test)])])
+        [AS_HELP_STRING([--without-python], [disable building the man page index and systemd-python (default: test)])])
 
 have_lxml=no
 AS_IF([test "x$with_python" != "xno"], [
-        AM_PATH_PYTHON(,, [:])
+        AM_PATH_PYTHON([3],, [:])
         AS_IF([test "x$PYTHON" != "x:"], [
                 AC_MSG_CHECKING([for python lxml module])
                 AS_IF(["$PYTHON" -c 'import lxml' 2>/dev/null], [have_lxml=yes])
@@ -346,6 +352,7 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "x$have_python" = "xyes"])
 
 AC_CHECK_HEADERS([sys/capability.h], [], [AC_MSG_ERROR([*** POSIX caps headers not found])])
 AC_CHECK_HEADERS([linux/memfd.h], [], [])
+AC_CHECK_HEADERS([linux/vm_sockets.h], [], [], [#include <sys/socket.h>])
 
 AC_CHECK_HEADERS([printf.h], [have_printf_h=yes], [have_printf_h=no])
 AS_IF([test x$have_printf_h = xyes], [
@@ -376,20 +383,23 @@ AC_CHECK_DECLS([
         kcmp,
         keyctl,
         LO_FLAGS_PARTSCAN,
-        copy_file_range],
+        copy_file_range,
+        explicit_bzero],
                 [], [], [[
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/mount.h>
 #include <fcntl.h>
 #include <sched.h>
+#include <string.h>
 #include <linux/loop.h>
 #include <linux/random.h>
 ]])
 
-AC_CHECK_TYPES([char16_t, char32_t, key_serial_t],
+AC_CHECK_TYPES([char16_t, char32_t, key_serial_t, struct ethtool_link_settings],
                [], [], [[
 #include <uchar.h>
+#include <linux/ethtool.h>
 ]])
 
 AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
@@ -478,7 +488,7 @@ AM_CONDITIONAL(ENABLE_COVERAGE, [test "$have_coverage" = "yes"])
 
 # ------------------------------------------------------------------------------
 have_selinux=no
-AC_ARG_ENABLE(selinux, AS_HELP_STRING([--disable-selinux], [Disable optional SELINUX support]))
+AC_ARG_ENABLE(selinux, AS_HELP_STRING([--disable-selinux], [disable optional SELINUX support]))
 if test "x$enable_selinux" != "xno"; then
         PKG_CHECK_MODULES([SELINUX], [libselinux >= 2.1.9],
                 [AC_DEFINE(HAVE_SELINUX, 1, [Define if SELinux is available])
@@ -503,8 +513,27 @@ AC_DEFINE_UNQUOTED(KILL_USER_PROCESSES, [$kill_user_processes], [Default KillUse
 AC_SUBST(KILL_USER_PROCESSES)
 
 # ------------------------------------------------------------------------------
+# We do not really support systemd hybrid or unified mode, but set the default
+# to 'legacy' here. That is currently the only cgroup mode supported by elogind.
+#AC_ARG_WITH(default-hierarchy,
+#        AS_HELP_STRING([--with-default-hierarchy=MODE],
+#                [default cgroup hierarchy, defaults to "hybrid"]),
+#        [DEFAULT_HIERARCHY="$withval"],
+#        [DEFAULT_HIERARCHY="hybrid"])
+DEFAULT_HIERARCHY=legacy
+
+AS_CASE("$DEFAULT_HIERARCHY",
+        [legacy], [mode=CGROUP_UNIFIED_NONE],
+        [hybrid], [mode=CGROUP_UNIFIED_SYSTEMD],
+        [unified], [mode=CGROUP_UNIFIED_ALL],
+        AC_MSG_ERROR(Bad default hierarchy mode ${DEFAULT_HIERARCHY}))
+AC_DEFINE_UNQUOTED(DEFAULT_HIERARCHY, [$mode], [Default cgroup hierarchy])
+AC_DEFINE_UNQUOTED(DEFAULT_HIERARCHY_NAME, ["$DEFAULT_HIERARCHY"],
+                                           [Default cgroup hierarchy as string])
+
+# ------------------------------------------------------------------------------
 AC_ARG_ENABLE([pam],
-        AS_HELP_STRING([--disable-pam],[Disable optional PAM support]),
+        AS_HELP_STRING([--disable-pam],[disable optional PAM support]),
                 [case "${enableval}" in
                         yes) have_pam=yes ;;
                         no) have_pam=no ;;
@@ -543,7 +572,7 @@ AM_CONDITIONAL([HAVE_PAM], [test "x$have_pam" != xno])
 
 # ------------------------------------------------------------------------------
 AC_ARG_ENABLE([acl],
-        AS_HELP_STRING([--disable-acl],[Disable optional ACL support]),
+        AS_HELP_STRING([--disable-acl],[disable optional ACL support]),
                 [case "${enableval}" in
                         yes) have_acl=yes ;;
                         no) have_acl=no ;;
@@ -581,7 +610,7 @@ AC_SUBST(ACL_LIBS)
 AM_CONDITIONAL([HAVE_ACL], [test "x$have_acl" != xno])
 
 # ------------------------------------------------------------------------------
-AC_ARG_ENABLE([smack], AS_HELP_STRING([--disable-smack],[Disable optional SMACK support]),
+AC_ARG_ENABLE([smack], AS_HELP_STRING([--disable-smack],[disable optional SMACK support]),
                 [case "${enableval}" in
                         yes) have_smack=yes ;;
                         no) have_smack=no ;;
@@ -659,7 +688,7 @@ AC_SUBST(M4_DEFINES)
 AC_ARG_WITH([dbuspolicydir],
         AS_HELP_STRING([--with-dbuspolicydir=DIR], [D-Bus policy directory]),
         [],
-        [with_dbuspolicydir=${sysconfdir}/dbus-1/system.d])
+        [with_dbuspolicydir=${datadir}/dbus-1/system.d])
 AX_NORMALIZE_PATH([with_dbuspolicydir])
 
 AC_ARG_WITH([dbussystemservicedir],
@@ -669,7 +698,7 @@ AC_ARG_WITH([dbussystemservicedir],
 AX_NORMALIZE_PATH([with_dbussystemservicedir])
 
 AC_ARG_WITH([bashcompletiondir],
-        AS_HELP_STRING([--with-bashcompletiondir=DIR], [Bash completions directory]),
+        AS_HELP_STRING([--with-bashcompletiondir=DIR], [bash completions directory]),
         [],
         [AS_IF([$($PKG_CONFIG --exists bash-completion)], [
                 with_bashcompletiondir=$($PKG_CONFIG --variable=completionsdir bash-completion)
@@ -680,7 +709,7 @@ AM_CONDITIONAL(ENABLE_BASH_COMPLETION, [test "$with_bashcompletiondir" != "no"])
 AX_NORMALIZE_PATH([with_bashcompletiondir])
 
 AC_ARG_WITH([zshcompletiondir],
-        AS_HELP_STRING([--with-zshcompletiondir=DIR], [Zsh completions directory]),
+        AS_HELP_STRING([--with-zshcompletiondir=DIR], [zsh completions directory]),
         [], [with_zshcompletiondir=${datadir}/zsh/site-functions])
 AM_CONDITIONAL(ENABLE_ZSH_COMPLETION, [test "$with_zshcompletiondir" != "no"])
 AX_NORMALIZE_PATH([with_zshcompletiondir])
@@ -698,26 +727,26 @@ fi
 AX_NORMALIZE_PATH([with_rootprefix])
 
 AC_ARG_WITH([rootlibdir],
-        AS_HELP_STRING([--with-rootlibdir=DIR], [Root directory for libraries necessary for boot]),
+        AS_HELP_STRING([--with-rootlibdir=DIR], [root directory for libraries necessary for boot]),
         [],
         [with_rootlibdir=${libdir}])
 AX_NORMALIZE_PATH([with_rootlibdir])
 
 AC_ARG_WITH([pamlibdir],
-        AS_HELP_STRING([--with-pamlibdir=DIR], [Directory for PAM modules]),
+        AS_HELP_STRING([--with-pamlibdir=DIR], [directory for PAM modules]),
         [],
         [with_pamlibdir=${with_rootlibdir}/security])
 AX_NORMALIZE_PATH([with_pamlibdir])
 
 AC_ARG_WITH([pamconfdir],
-        AS_HELP_STRING([--with-pamconfdir=DIR], [Directory for PAM configuration (pass no to disable installing)]),
+        AS_HELP_STRING([--with-pamconfdir=DIR], [directory for PAM configuration (pass no to disable installing)]),
         [],
         [with_pamconfdir=${sysconfdir}/pam.d])
 AM_CONDITIONAL(ENABLE_PAM_CONFIG, [test "$with_pamconfdir" != "no"])
 AX_NORMALIZE_PATH([with_pamconfdir])
 
 AC_ARG_ENABLE([split-usr],
-        AS_HELP_STRING([--enable-split-usr], [Assume that /bin, /sbin aren\'t symlinks into /usr]),
+        AS_HELP_STRING([--enable-split-usr], [assume that /bin, /sbin aren\'t symlinks into /usr]),
         [],
         [AS_IF([test "x${ac_default_prefix}" != "x${with_rootprefix}"], [
                 enable_split_usr=yes
@@ -736,7 +765,7 @@ AS_IF([test "x$0" != "x./configure"], [
 ])
 
 AC_ARG_ENABLE(tests,
-        [AC_HELP_STRING([--disable-tests], [disable tests])],
+        [AS_HELP_STRING([--disable-tests], [disable tests, or enable extra tests with =unsafe])],
         enable_tests=$enableval, enable_tests=yes)
 AM_CONDITIONAL(ENABLE_TESTS, [test x$enable_tests = xyes])
 
@@ -796,37 +825,38 @@ AC_OUTPUT
 AC_MSG_RESULT([
         $PACKAGE_NAME $VERSION
 
-        PAM:                     ${have_pam}
-        SELinux:                 ${have_selinux}
-        SMACK:                   ${have_smack}
-        ACL:                     ${have_acl}
-        KillUserProcesses default: ${KILL_USER_PROCESSES}
-        polkit:                  ${have_polkit}
-        Python:                  ${have_python}
-        man pages:               ${have_manpages}
-        test coverage:           ${have_coverage}
-        Split /usr:              ${enable_split_usr}
-        utmp/wtmp support:       ${have_utmp}
-        extra debugging:         ${enable_debug}
-        cgroup controller:       ${with_cgroupctrl}
+        PAM: . . . . . . . . . . . . . . . ${have_pam}
+        SELinux: . . . . . . . . . . . . . ${have_selinux}
+        SMACK: . . . . . . . . . . . . . . ${have_smack}
+        ACL: . . . . . . . . . . . . . . . ${have_acl}
+        default cgroup hierarchy: . . . .  ${DEFAULT_HIERARCHY}
+        default KillUserProcesses setting: ${KILL_USER_PROCESSES}
+        polkit: . . . . . . . . . . . . .  ${have_polkit}
+        Python: . . . . . . . . . . . . .  ${have_python}
+        man pages: . . . . . . . . . . . . ${have_manpages}
+        test coverage: . . . . . . . . . . ${have_coverage}
+        Split /usr: . . . . . . . . . . .  ${enable_split_usr}
+        utmp/wtmp support: . . . . . . . . ${have_utmp}
+        extra debugging: . . . . . . . . . ${enable_debug}
+        cgroup controller: . . . . . . . . ${with_cgroupctrl}
 
-        prefix:                  ${prefix}
-        rootprefix:              ${with_rootprefix}
-        sysconf dir:             ${sysconfdir}
-        datarootdir:             ${datarootdir}
-        includedir:              ${includedir}
-        lib dir:                 ${libdir}
-        rootlib dir:             ${with_rootlibdir}
-        PAM modules dir:         ${with_pamlibdir}
-        PAM configuration dir:   ${with_pamconfdir}
-        D-Bus policy dir:        ${with_dbuspolicydir}
-        D-Bus system dir:        ${with_dbussystemservicedir}
-        Bash completions dir:    ${with_bashcompletiondir}
-        Zsh completions dir:     ${with_zshcompletiondir}
-        Maximum System UID:      ${SYSTEM_UID_MAX}
-        Maximum System GID:      ${SYSTEM_GID_MAX}
+        prefix: . . . . . . . . . . . . .  ${prefix}
+        rootprefix: . . . . . . . . . . .  ${with_rootprefix}
+        sysconf dir: . . . . . . . . . . . ${sysconfdir}
+        datarootdir: . . . . . . . . . . . ${datarootdir}
+        includedir: . . . . . . . . . . .  ${includedir}
+        lib dir: . . . . . . . . . . . . . ${libdir}
+        rootlib dir: . . . . . . . . . . . ${with_rootlibdir}
+        PAM modules dir: . . . . . . . . . ${with_pamlibdir}
+        PAM configuration dir: . . . . . . ${with_pamconfdir}
+        D-Bus policy dir: . . . . . . . .  ${with_dbuspolicydir}
+        D-Bus system dir: . . . . . . . .  ${with_dbussystemservicedir}
+        bash completions dir: . . . . . .  ${with_bashcompletiondir}
+        zsh completions dir: . . . . . . . ${with_zshcompletiondir}
+        maximum system UID: . . . . . . .  ${SYSTEM_UID_MAX}
+        maximum system GID: . . . . . . .  ${SYSTEM_GID_MAX}
 
-        CFLAGS:                  ${OUR_CFLAGS} ${CFLAGS}
-        CPPFLAGS:                ${OUR_CPPFLAGS} ${CPPFLAGS}
-        LDFLAGS:                 ${OUR_LDFLAGS} ${LDFLAGS}
+        CFLAGS: . . . . . . . . . . . . .  ${OUR_CFLAGS} ${CFLAGS}
+        CPPFLAGS: . . . . . . . . . . . .  ${OUR_CPPFLAGS} ${CPPFLAGS}
+        LDFLAGS: . . . . . . . . . . . . . ${OUR_LDFLAGS} ${LDFLAGS}
 ])

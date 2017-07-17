@@ -19,6 +19,7 @@
 /*.tar.bz2
 /*.tar.gz
 /*.tar.xz
+/30-systemd-environment-d-generator
 /GPATH
 /GRTAGS
 /GSYMS
@@ -67,6 +68,7 @@
 /systemd-debug-generator
 /systemd-delta
 /systemd-detect-virt
+/systemd-dissect
 /systemd-escape
 /systemd-export
 /systemd-firstboot
@@ -125,6 +127,9 @@
 /systemd-update-utmp
 /systemd-user-sessions
 /systemd-vconsole-setup
+/systemd-veritysetup
+/systemd-veritysetup-generator
+/systemd-volatile-root
 /tags
 /test-acd
 /test-acl-util
@@ -180,6 +185,7 @@
 /test-dhcp-option
 /test-dhcp-server
 /test-dhcp6-client
+/test-dissect-image
 /test-dns-domain
 /test-dns-packet
 /test-dnssec
@@ -189,6 +195,7 @@
 /test-env-util
 /test-escape
 /test-event
+/test-exec-util
 /test-execute
 /test-extract-word
 /test-fd-util
@@ -198,6 +205,7 @@
 /test-fs-util
 /test-fstab-util
 /test-glob-util
+/test-hash
 /test-hashmap
 /test-hexdecoct
 /test-hostname
@@ -214,6 +222,7 @@
 /test-journal
 /test-journal-enum
 /test-journal-flush
+/test-journal-importer
 /test-journal-init
 /test-journal-interleaving
 /test-journal-match
@@ -236,6 +245,7 @@
 /test-loopback
 /test-machine-tables
 /test-mmap-cache
+/test-mount-util
 /test-namespace
 /test-ndisc-rs
 /test-netlink

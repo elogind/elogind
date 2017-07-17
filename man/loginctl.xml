@@ -62,8 +62,8 @@
 
     <para><command>loginctl</command> may be used to introspect and
     control the state of the
-    <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry>
-    login manager
+    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    login manager</para>
   </refsect1>
 
   <refsect1>
