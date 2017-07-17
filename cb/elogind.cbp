@@ -70,6 +70,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/dirent-util.h" />
+		<Unit filename="../src/basic/env-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/env-util.h" />
 		<Unit filename="../src/basic/errno-list.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -78,6 +82,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/escape.h" />
+		<Unit filename="../src/basic/exec-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/exec-util.h" />
 		<Unit filename="../src/basic/extract-word.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -94,7 +102,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/fileio.h" />
-		<Unit filename="../src/basic/formats-util.h" />
+		<Unit filename="../src/basic/format-util.h" />
 		<Unit filename="../src/basic/fs-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -123,6 +131,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/io-util.h" />
+		<Unit filename="../src/basic/khash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/khash.h" />
 		<Unit filename="../src/basic/label.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -508,6 +520,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/musl_missing.h" />
+		<Unit filename="../src/shared/nsflags.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/nsflags.h" />
 		<Unit filename="../src/shared/pager.c">
 			<Option compilerVar="CC" />
 		</Unit>

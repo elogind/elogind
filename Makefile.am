@@ -133,6 +133,7 @@ AM_CPPFLAGS = \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
 	-DSYSTEMD_CGROUP_CONTROLLER=\"_$(CGROUP_CONTROLLER)\" \
 	-DSYSTEMD_CGROUP_CONTROLLER_LEGACY=\"name=$(CGROUP_CONTROLLER)\" \
+	-DSYSTEMD_CGROUP_CONTROLLER_HYBRID=\"name=$(CGROUP_CONTROLLER)\" \
 	-DSYSTEMD_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
@@ -363,10 +364,14 @@ libbasic_la_SOURCES = \
 	src/basic/prioq.h \
 	src/basic/strv.c \
 	src/basic/strv.h \
+	src/basic/env-util.c \
+	src/basic/env-util.h \
 	src/basic/log.c \
 	src/basic/log.h \
 	src/basic/bus-label.c \
 	src/basic/bus-label.h \
+	src/basic/exec-util.c \
+	src/basic/exec-util.h \
 	src/basic/virt.c \
 	src/basic/virt.h \
 	src/basic/smack-util.c \
@@ -411,7 +416,10 @@ libbasic_la_SOURCES = \
 	src/basic/copy.c \
 	src/basic/copy.h \
 	src/basic/alloc-util.h \
-	src/basic/alloc-util.c
+	src/basic/alloc-util.c \
+	src/basic/format-util.h \
+	src/basic/khash.h \
+	src/basic/khash.c
 
 nodist_libbasic_la_SOURCES = \
 	src/basic/errno-from-name.h \
@@ -450,7 +458,9 @@ libshared_la_SOURCES = \
 	src/shared/sleep-config.c \
 	src/shared/sleep-config.h \
 	src/shared/spawn-polkit-agent.c \
-	src/shared/spawn-polkit-agent.h
+	src/shared/spawn-polkit-agent.h \
+	src/shared/nsflags.h \
+	src/shared/nsflags.c
 
 if HAVE_ACL
 libshared_la_SOURCES += \
