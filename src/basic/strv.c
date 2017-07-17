@@ -322,6 +322,7 @@ char **strv_split_newlines(const char *s) {
 
         return l;
 }
+#endif // 0
 
 int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags) {
         _cleanup_strv_free_ char **l = NULL;
@@ -360,7 +361,6 @@ int strv_split_extract(char ***t, const char *s, const char *separators, Extract
 
         return (int) n;
 }
-#endif // 0
 
 char *strv_join(char **l, const char *separator) {
         char *r, *e;

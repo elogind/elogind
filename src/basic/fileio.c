@@ -713,6 +713,7 @@ int load_env_file(FILE *f, const char *fname, const char *newline, char ***rl) {
         *rl = m;
         return 0;
 }
+#endif // 0
 
 static int load_env_file_push_pairs(
                 const char *filename, unsigned line,
@@ -762,6 +763,7 @@ int load_env_file_pairs(FILE *f, const char *fname, const char *newline, char **
         *rl = m;
         return 0;
 }
+#if 0 /// UNNEEDED by elogind
 
 static int merge_env_file_push(
                 const char *filename, unsigned line,
@@ -1312,6 +1314,7 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 
         return fputs(s, f);
 }
+#endif // 0
 
 int open_tmpfile_unlinkable(const char *directory, int flags) {
         char *p;
@@ -1342,6 +1345,7 @@ int open_tmpfile_unlinkable(const char *directory, int flags) {
         return fd;
 }
 
+#if 0 /// UNNEEDED by elogind
 int open_tmpfile_linkable(const char *target, int flags, char **ret_path) {
         _cleanup_free_ char *tmp = NULL;
         int r, fd;
@@ -1385,6 +1389,7 @@ int open_tmpfile_linkable(const char *target, int flags, char **ret_path) {
 
         return fd;
 }
+#endif // 0
 
 int open_serialization_fd(const char *ident) {
         int fd = -1;
@@ -1405,6 +1410,7 @@ int open_serialization_fd(const char *ident) {
         return fd;
 }
 
+#if 0 /// UNNEEDED by elogind
 int link_tmpfile(int fd, const char *path, const char *target) {
 
         assert(fd >= 0);

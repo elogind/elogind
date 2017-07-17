@@ -47,8 +47,10 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl);
 int parse_env_file(const char *fname, const char *separator, ...) _sentinel_;
 #if 0 /// UNNEEDED by elogind
 int load_env_file(FILE *f, const char *fname, const char *separator, char ***l);
+#endif // 0
 int load_env_file_pairs(FILE *f, const char *fname, const char *separator, char ***l);
 
+#if 0 /// UNNEEDED by elogind
 int write_env_file(const char *fname, char **l);
 
 int executable_is_script(const char *path, char **interpreter);
@@ -86,11 +88,15 @@ int write_timestamp_file_atomic(const char *fn, usec_t n);
 int read_timestamp_file(const char *fn, usec_t *ret);
 
 int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space);
+#endif // 0
 
 int open_tmpfile_unlinkable(const char *directory, int flags);
+#if 0 /// UNNEEDED by elogind
 int open_tmpfile_linkable(const char *target, int flags, char **ret_path);
+#endif // 0
 int open_serialization_fd(const char *ident);
 
+#if 0 /// UNNEEDED by elogind
 int link_tmpfile(int fd, const char *path, const char *target);
 #endif // 0
 

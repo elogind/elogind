@@ -37,6 +37,7 @@
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
+#include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
 //#include "time-util.h"
@@ -491,7 +492,6 @@ int get_files_in_directory(const char *path, char ***list) {
         return n;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int getenv_tmp_dir(const char **ret_path) {
         const char *n;
         int r, ret = 0;
@@ -562,6 +562,7 @@ static int tmp_dir_internal(const char *def, const char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int var_tmp_dir(const char **ret) {
 
         /* Returns the location for "larger" temporary files, that is backed by physical storage if available, and thus
@@ -571,6 +572,7 @@ int var_tmp_dir(const char **ret) {
 
         return tmp_dir_internal("/var/tmp", ret);
 }
+#endif // 0
 
 int tmp_dir(const char **ret) {
 
@@ -580,6 +582,7 @@ int tmp_dir(const char **ret) {
         return tmp_dir_internal("/tmp", ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
         char path[strlen("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
         int r;
@@ -593,6 +596,7 @@ int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
 
         return r;
 }
+#endif // 0
 
 int chase_symlinks(const char *path, const char *original_root, unsigned flags, char **ret) {
         _cleanup_free_ char *buffer = NULL, *done = NULL, *root = NULL;
@@ -806,4 +810,3 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
 
         return exists;
 }
-#endif // 0

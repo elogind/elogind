@@ -188,7 +188,7 @@ static inline pid_t raw_getpid(void) {
         return (pid_t) syscall(__NR_getpid);
 #endif
 }
-
+#endif // 0
 /* ======================================================================= */
 
 #if !HAVE_DECL_RENAMEAT2
@@ -269,7 +269,6 @@ static inline key_serial_t request_key(const char *type, const char *description
 #  endif
 }
 #endif
-#endif // 0
 
 /* ======================================================================= */
 

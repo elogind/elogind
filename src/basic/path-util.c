@@ -608,6 +608,7 @@ int mkfs_exists(const char *fstype) {
         mkfs = strjoina("mkfs.", fstype);
         return binary_is_good(mkfs);
 }
+#endif // 0
 
 char *prefix_root(const char *root, const char *path) {
         char *n, *p;
@@ -643,6 +644,7 @@ char *prefix_root(const char *root, const char *path) {
         return n;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg) {
         char *p;
         int r;

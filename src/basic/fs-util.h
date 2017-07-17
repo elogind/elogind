@@ -72,8 +72,8 @@ int mkfifo_atomic(const char *path, mode_t mode);
 
 int get_files_in_directory(const char *path, char ***list);
 
-#if 0 /// UNNEEDED by elogind
 int tmp_dir(const char **ret);
+#if 0 /// UNNEEDED by elogind
 int var_tmp_dir(const char **ret);
 
 #define INOTIFY_EVENT_MAX (sizeof(struct inotify_event) + NAME_MAX + 1)

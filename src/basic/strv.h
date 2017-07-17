@@ -90,9 +90,9 @@ static inline bool strv_isempty(char * const *l) {
 char **strv_split(const char *s, const char *separator);
 #if 0 /// UNNEEDED by elogind
 char **strv_split_newlines(const char *s);
+#endif // 0
 
 int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
-#endif // 0
 
 char *strv_join(char **l, const char *separator);
 #if 0 /// UNNEEDED by elogind

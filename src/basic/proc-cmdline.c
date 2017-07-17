@@ -110,6 +110,7 @@ static bool relaxed_equal_char(char a, char b) {
                 (a == '-' && b == '_');
 }
 
+#if 0 /// UNNEEDED by elogind
 char *proc_cmdline_key_startswith(const char *s, const char *prefix) {
 
         assert(s);
@@ -123,6 +124,7 @@ char *proc_cmdline_key_startswith(const char *s, const char *prefix) {
 
         return (char*) s;
 }
+#endif // 0
 
 bool proc_cmdline_key_streq(const char *x, const char *y) {
         assert(x);
@@ -137,6 +139,7 @@ bool proc_cmdline_key_streq(const char *x, const char *y) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 int proc_cmdline_get_key(const char *key, unsigned flags, char **value) {
         _cleanup_free_ char *line = NULL, *ret = NULL;
         bool found = false;
@@ -236,7 +239,6 @@ int proc_cmdline_get_bool(const char *key, bool *ret) {
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 int shall_restore_state(void) {
         bool ret;
         int r;

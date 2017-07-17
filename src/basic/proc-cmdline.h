@@ -32,15 +32,17 @@ typedef int (*proc_cmdline_parse_t)(const char *key, const char *value, void *da
 
 int proc_cmdline(char **ret);
 
-#if 0 /// UNNEEDED by elogind
 int proc_cmdline_parse(const proc_cmdline_parse_t parse, void *userdata, unsigned flags);
 
+#if 0 /// UNNEEDED by elogind
 int proc_cmdline_get_key(const char *parameter, unsigned flags, char **value);
 int proc_cmdline_get_bool(const char *key, bool *ret);
 
 char *proc_cmdline_key_startswith(const char *s, const char *prefix);
+#endif // 0
 bool proc_cmdline_key_streq(const char *x, const char *y);
 
+#if 0 /// UNNEEDED by elogind
 int shall_restore_state(void);
 const char* runlevel_to_target(const char *rl);
 #endif // 0

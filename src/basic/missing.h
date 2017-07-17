@@ -1051,7 +1051,6 @@ struct btrfs_ioctl_quota_ctl_args {
 typedef int32_t key_serial_t;
 #endif
 
-#if 0 /// UNNEEDED by elogind
 #ifndef KEYCTL_JOIN_SESSION_KEYRING
 #define KEYCTL_JOIN_SESSION_KEYRING 1
 #endif
@@ -1109,7 +1108,6 @@ typedef int32_t key_serial_t;
 #ifndef KEY_SPEC_USER_KEYRING
 #define KEY_SPEC_USER_KEYRING -4
 #endif
-#endif // 0
 
 #ifndef KEY_SPEC_SESSION_KEYRING
 #define KEY_SPEC_SESSION_KEYRING -3

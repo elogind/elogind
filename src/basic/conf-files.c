@@ -120,7 +120,6 @@ static int conf_files_list_strv_internal(char ***strv, const char *suffix, const
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int conf_files_list_strv(char ***strv, const char *suffix, const char *root, const char* const* dirs) {
         _cleanup_strv_free_ char **copy = NULL;
 
@@ -133,6 +132,7 @@ int conf_files_list_strv(char ***strv, const char *suffix, const char *root, con
         return conf_files_list_strv_internal(strv, suffix, root, copy);
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_list(char ***strv, const char *suffix, const char *root, const char *dir, ...) {
         _cleanup_strv_free_ char **dirs = NULL;
         va_list ap;

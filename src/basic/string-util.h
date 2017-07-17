@@ -66,11 +66,11 @@ static inline bool isempty(const char *p) {
         return !p || !p[0];
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline const char *empty_to_null(const char *p) {
         return isempty(p) ? NULL : p;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline const char *strdash_if_empty(const char *str) {
         return isempty(str) ? "-" : str;
 }
