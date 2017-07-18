@@ -252,6 +252,7 @@ int execute_directories(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int gather_environment_generate(int fd, void *arg) {
         char ***env = arg, **x, **y;
         _cleanup_fclose_ FILE *f = NULL;
@@ -358,3 +359,4 @@ const gather_stdout_callback_t gather_environment[] = {
         gather_environment_collect,
         gather_environment_consume,
 };
+#endif // 0

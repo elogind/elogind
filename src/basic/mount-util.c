@@ -695,7 +695,6 @@ int umount_verbose(const char *what) {
                 return log_error_errno(errno, "Failed to unmount %s: %m", what);
         return 0;
 }
-#endif // 0
 
 const char *mount_propagation_flags_to_string(unsigned long flags) {
 
@@ -728,3 +727,4 @@ int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
                 return -EINVAL;
         return 0;
 }
+#endif // 0

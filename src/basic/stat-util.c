@@ -225,6 +225,7 @@ bool is_temporary_fs(const struct statfs *s) {
            is_fs_type(s, RAMFS_MAGIC);
 }
 
+#if 0 /// UNNEEDED by elogind
 int fd_is_temporary_fs(int fd) {
         struct statfs s;
 
@@ -243,3 +244,4 @@ int path_is_temporary_fs(const char *path) {
 
         return fd_is_temporary_fs(fd);
 }
+#endif // 0

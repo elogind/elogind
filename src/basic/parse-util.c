@@ -581,7 +581,6 @@ int parse_nice(const char *p, int *ret) {
         *ret = n;
         return 0;
 }
-#endif // 0
 
 int parse_ip_port(const char *s, uint16_t *ret) {
         uint16_t l;
@@ -598,3 +597,4 @@ int parse_ip_port(const char *s, uint16_t *ret) {
 
         return 0;
 }
+#endif // 0

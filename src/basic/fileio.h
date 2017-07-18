@@ -100,8 +100,8 @@ int open_serialization_fd(const char *ident);
 
 #if 0 /// UNNEEDED by elogind
 int link_tmpfile(int fd, const char *path, const char *target);
-#endif // 0
 
 int read_nul_string(FILE *f, char **ret);
 
 int mkdtemp_malloc(const char *template, char **ret);
+#endif // 0

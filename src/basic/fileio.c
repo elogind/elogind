@@ -1439,7 +1439,6 @@ int link_tmpfile(int fd, const char *path, const char *target) {
 
         return 0;
 }
-#endif // 0
 
 int read_nul_string(FILE *f, char **ret) {
         _cleanup_free_ char *x = NULL;
@@ -1500,3 +1499,4 @@ int mkdtemp_malloc(const char *template, char **ret) {
         *ret = p;
         return 0;
 }
+#endif // 0

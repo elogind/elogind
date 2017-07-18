@@ -1195,6 +1195,8 @@ int log_syntax_internal(
                         NULL);
 }
 
+#if 0 /// UNNEEDED by elogind
 void log_set_always_reopen_console(bool b) {
         always_reopen_console = b;
 }
+#endif // 0

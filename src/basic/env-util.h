@@ -35,13 +35,16 @@ enum {
         REPLACE_ENV_ALLOW_EXTENDED  = 4u,
 };
 
+#if 0 /// UNNEEDED by elogind
 char *replace_env_n(const char *format, size_t n, char **env, unsigned flags);
 char **replace_env_argv(char **argv, char **env);
 
 static inline char *replace_env(const char *format, char **env, unsigned flags) {
         return replace_env_n(format, strlen(format), env, flags);
 }
+#endif // 0
 
+#if 0 /// UNNEEDED by elogind
 bool strv_env_is_valid(char **e);
 #define strv_env_clean(l) strv_env_clean_with_callback(l, NULL, NULL)
 char **strv_env_clean_with_callback(char **l, void (*invalid_callback)(const char *p, void *userdata), void *userdata);
@@ -64,3 +67,4 @@ int getenv_bool(const char *p);
 
 int serialize_environment(FILE *f, char **environment);
 int deserialize_environment(char ***environment, const char *line);
+#endif // 0

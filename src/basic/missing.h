@@ -54,6 +54,7 @@
 #include <linux/btrfs.h>
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #ifdef HAVE_LINUX_VM_SOCKETS_H
 #include <linux/vm_sockets.h>
 #else
@@ -70,6 +71,7 @@ struct sockaddr_vm {
                                sizeof(unsigned int)];
 };
 #endif /* !HAVE_LINUX_VM_SOCKETS_H */
+#endif // 0
 
 #include "macro.h"
 
@@ -1155,6 +1157,7 @@ typedef int32_t key_serial_t;
 #define IFA_F_MCAUTOJOIN 0x400
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #ifndef HAVE_STRUCT_ETHTOOL_LINK_SETTINGS
 
 #define ETHTOOL_GLINKSETTINGS   0x0000004c /* Get ethtool_link_settings */
@@ -1181,6 +1184,7 @@ struct ethtool_link_settings {
 };
 
 #endif
+#endif // 0
 
 #endif
 

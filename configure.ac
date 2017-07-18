@@ -396,10 +396,9 @@ AC_CHECK_DECLS([
 #include <linux/random.h>
 ]])
 
-AC_CHECK_TYPES([char16_t, char32_t, key_serial_t, struct ethtool_link_settings],
+AC_CHECK_TYPES([char16_t, char32_t, key_serial_t],
                [], [], [[
 #include <uchar.h>
-#include <linux/ethtool.h>
 ]])
 
 AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,

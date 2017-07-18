@@ -122,6 +122,7 @@ bool env_assignment_is_valid(const char *e) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool strv_env_is_valid(char **e) {
         char **p, **q;
 
@@ -247,7 +248,7 @@ fail:
 
         return NULL;
 }
-
+S
 static bool env_match(const char *t, const char *pattern) {
         assert(t);
         assert(pattern);
@@ -804,3 +805,4 @@ int deserialize_environment(char ***environment, const char *line) {
 
         return strv_env_replace(environment, uce);
 }
+#endif // 0

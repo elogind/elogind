@@ -34,13 +34,17 @@
 
 union sockaddr_union {
         struct sockaddr sa;
+#if 0 /// UNNEEDED by elogind, only 'sa' and 'un' are used in all of elogind.
         struct sockaddr_in in;
         struct sockaddr_in6 in6;
+#endif // 0
         struct sockaddr_un un;
+#if 0 /// UNNEEDED by elogind, only 'sa' and 'un' are used in all of elogind.
         struct sockaddr_nl nl;
         struct sockaddr_storage storage;
         struct sockaddr_ll ll;
         struct sockaddr_vm vm;
+#endif // 0
 };
 
 #if 0 /// UNNEEDED by elogind
@@ -99,11 +103,9 @@ bool socket_address_matches_fd(const SocketAddress *a, int fd);
 bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) _pure_;
 
 const char* socket_address_get_path(const SocketAddress *a);
-#endif // 0
 
 bool socket_ipv6_is_supported(void);
 
-#if 0 /// UNNEEDED by elogind
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
 
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
@@ -128,10 +130,10 @@ int fd_inc_rcvbuf(int fd, size_t n);
 
 int ip_tos_to_string_alloc(int i, char **s);
 int ip_tos_from_string(const char *s);
-#endif // 0
 
 bool ifname_valid(const char *p);
 bool address_label_valid(const char *p);
+#endif // 0
 
 int getpeercred(int fd, struct ucred *ucred);
 int getpeersec(int fd, char **ret);
@@ -152,7 +154,9 @@ int flush_accept(int fd);
 #define CMSG_FOREACH(cmsg, mh)                                          \
         for ((cmsg) = CMSG_FIRSTHDR(mh); (cmsg); (cmsg) = CMSG_NXTHDR((mh), (cmsg)))
 
+#if 0 /// UNNEEDED by elogind
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length);
+#endif // 0
 
 /* Covers only file system and abstract AF_UNIX socket addresses, but not unnamed socket addresses. */
 #define SOCKADDR_UN_LEN(sa)                                             \

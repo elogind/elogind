@@ -480,7 +480,6 @@ const char* socket_address_get_path(const SocketAddress *a) {
 
         return a->sockaddr.un.sun_path;
 }
-#endif // 0
 
 bool socket_ipv6_is_supported(void) {
         if (access("/proc/net/if_inet6", F_OK) != 0)
@@ -489,7 +488,6 @@ bool socket_ipv6_is_supported(void) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool socket_address_matches_fd(const SocketAddress *a, int fd) {
         SocketAddress b;
         socklen_t solen;
@@ -866,7 +864,6 @@ static const char* const ip_tos_table[] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ip_tos, int, 0xff);
-#endif // 0
 
 bool ifname_valid(const char *p) {
         bool numeric = true;
@@ -923,6 +920,7 @@ bool address_label_valid(const char *p) {
 
         return true;
 }
+#endif // 0
 
 int getpeercred(int fd, struct ucred *ucred) {
         socklen_t n = sizeof(struct ucred);
@@ -1140,7 +1138,6 @@ int flush_accept(int fd) {
                 close(cfd);
         }
 }
-#endif // 0
 
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length) {
         struct cmsghdr *cmsg;
@@ -1156,7 +1153,6 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
         return NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 int socket_ioctl_fd(void) {
         int fd;
 
