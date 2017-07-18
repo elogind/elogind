@@ -36,6 +36,7 @@
 		<Unit filename="../Makefile.am" />
 		<Unit filename="../config.h.in" />
 		<Unit filename="../configure.ac" />
+		<Unit filename="../po/Makefile.in.in" />
 		<Unit filename="../src/basic/alloc-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
