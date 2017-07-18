@@ -258,13 +258,9 @@ int cg_hybrid_unified(void);
 int cg_unified_controller(const char *controller);
 int cg_unified_flush(void);
 
-#if 0 /// UNNEEDED by elogind
 bool cg_is_unified_wanted(void);
-#endif // 0
 bool cg_is_legacy_wanted(void);
-#if 0 /// UNNEEDED by elogind
 bool cg_is_hybrid_wanted(void);
-#endif // 0
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;

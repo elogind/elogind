@@ -1082,7 +1082,6 @@ _public_ sd_bus_creds *sd_bus_message_get_creds(sd_bus_message *m) {
         return &m->creds;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_is_signal(
                 sd_bus_message *m,
                 const char *interface,
@@ -1101,7 +1100,6 @@ _public_ int sd_bus_message_is_signal(
 
         return 1;
 }
-#endif // 0
 
 _public_ int sd_bus_message_is_method_call(
                 sd_bus_message *m,
@@ -2573,7 +2571,6 @@ _public_ int sd_bus_message_append(sd_bus_message *m, const char *types, ...) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_append_array_space(
                 sd_bus_message *m,
                 char type,
@@ -2617,6 +2614,7 @@ _public_ int sd_bus_message_append_array_space(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_append_array(
                 sd_bus_message *m,
                 char type,

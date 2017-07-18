@@ -1583,7 +1583,6 @@ uint64_t attach_flags_to_kdbus(uint64_t mask) {
         return m;
 }
 
-#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_bus(const char *name, bool world, char **s) {
         struct kdbus_cmd *make;
         struct kdbus_item *n;
@@ -1659,7 +1658,6 @@ int bus_kernel_create_bus(const char *name, bool world, char **s) {
 
         return fd;
 }
-#endif // 0
 
 int bus_kernel_open_bus_fd(const char *bus, char **path) {
         char *p;

@@ -74,13 +74,11 @@ bool mac_selinux_use(void) {
         return getuid() == 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 void mac_selinux_retest(void) {
 #ifdef HAVE_SELINUX
         cached_use = -1;
 #endif
 }
-#endif // 0
 
 int mac_selinux_init(void) {
         int r = 0;
@@ -120,7 +118,6 @@ int mac_selinux_init(void) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 void mac_selinux_finish(void) {
 
 #ifdef HAVE_SELINUX
@@ -131,7 +128,6 @@ void mac_selinux_finish(void) {
         label_hnd = NULL;
 #endif
 }
-#endif // 0
 
 int mac_selinux_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
 

@@ -2610,8 +2610,14 @@ bool cg_is_hybrid_wanted(void) {
         return (wanted = r > 0 ? !b : is_default);
 }
 #else
+bool cg_is_unified_wanted(void) {
+        return false;
+}
 bool cg_is_legacy_wanted(void) {
         return true;
+}
+bool cg_is_hybrid_wanted(void) {
+        return false;
 }
 #endif // 0
 

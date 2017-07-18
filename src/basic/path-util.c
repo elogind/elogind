@@ -448,7 +448,6 @@ bool path_equal_or_files_same(const char *a, const char *b) {
         return path_equal(a, b) || files_same(a, b) > 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 char* path_join(const char *root, const char *path, const char *rest) {
         assert(path);
 
@@ -525,6 +524,7 @@ int find_binary(const char *name, char **ret) {
         return last_error;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool paths_check_timestamp(const char* const* paths, usec_t *timestamp, bool update) {
         bool changed = false;
         const char* const* i;

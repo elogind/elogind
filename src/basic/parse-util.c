@@ -273,6 +273,7 @@ int parse_range(const char *t, unsigned *lower, unsigned *upper) {
         *upper = u;
         return 0;
 }
+#endif // 0
 
 char *format_bytes(char *buf, size_t l, uint64_t t) {
         unsigned i;
@@ -314,7 +315,6 @@ finish:
         return buf;
 
 }
-#endif // 0
 
 int safe_atou(const char *s, unsigned *ret_u) {
         char *x = NULL;

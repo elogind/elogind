@@ -35,7 +35,7 @@
 
 #include "alloc-util.h"
 #include "fd-util.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "socket-util.h"
@@ -631,6 +631,7 @@ _public_ int sd_notifyf(int unset_environment, const char *format, ...) {
 
         return sd_pid_notify(0, unset_environment, p);
 }
+#endif // 0
 
 _public_ int sd_booted(void) {
         /* We test whether the runtime unit file directory has been
@@ -639,7 +640,6 @@ _public_ int sd_booted(void) {
 
         return laccess("/run/systemd/system/", F_OK) >= 0;
 }
-#endif // 0
 
 _public_ int sd_watchdog_enabled(int unset_environment, uint64_t *usec) {
         const char *s, *p = ""; /* p is set to dummy value to do unsetting */

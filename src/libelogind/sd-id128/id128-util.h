@@ -43,8 +43,8 @@ typedef enum Id128Format {
 int id128_read_fd(int fd, Id128Format f, sd_id128_t *ret);
 int id128_read(const char *p, Id128Format f, sd_id128_t *ret);
 
-#if 0 /// UNNEEDED by elogind
 int id128_write_fd(int fd, Id128Format f, sd_id128_t id, bool do_sync);
+#if 0 /// UNNEEDED by elogind
 int id128_write(const char *p, Id128Format f, sd_id128_t id, bool do_sync);
 
 void id128_hash_func(const void *p, struct siphash *state);

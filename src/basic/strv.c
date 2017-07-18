@@ -790,7 +790,6 @@ char **strv_sort(char **l) {
         return l;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool strv_equal(char **a, char **b) {
 
         if (strv_isempty(a))
@@ -813,6 +812,7 @@ void strv_print(char **l) {
                 puts(*s);
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_extendf(char ***l, const char *format, ...) {
         va_list ap;
         char *x;

@@ -1745,7 +1745,6 @@ char **internal_hashmap_get_strv(HashmapBase *h) {
         return sv;
 }
 
-#if 0 /// UNNEEDED by elogind
 void *ordered_hashmap_next(OrderedHashmap *h, const void *key) {
         struct ordered_hashmap_entry *e;
         unsigned hash, idx;
@@ -1763,7 +1762,6 @@ void *ordered_hashmap_next(OrderedHashmap *h, const void *key) {
                 return NULL;
         return ordered_bucket_at(h, e->iterate_next)->p.value;
 }
-#endif // 0
 
 int set_consume(Set *s, void *value) {
         int r;

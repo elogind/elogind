@@ -129,11 +129,17 @@ int sd_bus_set_fd(sd_bus *bus, int input_fd, int output_fd);
 #if 0 /// UNNEEDED by elogind
 int sd_bus_set_exec(sd_bus *bus, const char *path, char *const argv[]);
 int sd_bus_get_address(sd_bus *bus, const char **address);
+#endif // 0
 int sd_bus_set_bus_client(sd_bus *bus, int b);
+#if 0 /// UNNEEDED by elogind
 int sd_bus_is_bus_client(sd_bus *bus);
+#endif // 0
 int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t bus_id);
+#if 0 /// UNNEEDED by elogind
 int sd_bus_is_server(sd_bus *bus);
+#endif // 0
 int sd_bus_set_anonymous(sd_bus *bus, int b);
+#if 0 /// UNNEEDED by elogind
 int sd_bus_is_anonymous(sd_bus *bus);
 int sd_bus_set_trusted(sd_bus *bus, int b);
 int sd_bus_is_trusted(sd_bus *bus);
@@ -143,8 +149,8 @@ int sd_bus_set_description(sd_bus *bus, const char *description);
 int sd_bus_get_description(sd_bus *bus, const char **description);
 int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t creds_mask);
 int sd_bus_negotiate_timestamp(sd_bus *bus, int b);
-int sd_bus_negotiate_fds(sd_bus *bus, int b);
 #endif // 0
+int sd_bus_negotiate_fds(sd_bus *bus, int b);
 int sd_bus_can_send(sd_bus *bus, char type);
 #if 0 /// UNNEEDED by elogind
 int sd_bus_get_creds_mask(sd_bus *bus, uint64_t *creds_mask);
@@ -282,9 +288,7 @@ int sd_bus_message_get_seqnum(sd_bus_message *m, uint64_t* seqnum);
 sd_bus* sd_bus_message_get_bus(sd_bus_message *m);
 sd_bus_creds *sd_bus_message_get_creds(sd_bus_message *m); /* do not unref the result */
 
-#if 0 /// UNNEEDED by elogind
 int sd_bus_message_is_signal(sd_bus_message *m, const char *interface, const char *member);
-#endif // 0
 int sd_bus_message_is_method_call(sd_bus_message *m, const char *interface, const char *member);
 int sd_bus_message_is_method_error(sd_bus_message *m, const char *name);
 #if 0 /// UNNEEDED by elogind
@@ -305,7 +309,9 @@ int sd_bus_message_append(sd_bus_message *m, const char *types, ...);
 int sd_bus_message_append_basic(sd_bus_message *m, char type, const void *p);
 #if 0 /// UNNEEDED by elogind
 int sd_bus_message_append_array(sd_bus_message *m, char type, const void *ptr, size_t size);
+#endif // 0
 int sd_bus_message_append_array_space(sd_bus_message *m, char type, size_t size, void **ptr);
+#if 0 /// UNNEEDED by elogind
 int sd_bus_message_append_array_iovec(sd_bus_message *m, char type, const struct iovec *iov, unsigned n);
 int sd_bus_message_append_array_memfd(sd_bus_message *m, char type, int memfd, uint64_t offset, uint64_t size);
 int sd_bus_message_append_string_space(sd_bus_message *m, size_t size, char **s);

@@ -53,13 +53,11 @@ char* path_startswith(const char *path, const char *prefix) _pure_;
 int path_compare(const char *a, const char *b) _pure_;
 bool path_equal(const char *a, const char *b) _pure_;
 bool path_equal_or_files_same(const char *a, const char *b);
-#if 0 /// UNNEEDED by elogind
 char* path_join(const char *root, const char *path, const char *rest);
 
 static inline bool path_equal_ptr(const char *a, const char *b) {
         return !!a == !!b && (!a || path_equal(a, b));
 }
-#endif // 0
 
 /* Note: the search terminates on the first NULL item. */
 #define PATH_IN_SET(p, ...)                                     \
@@ -92,9 +90,9 @@ int path_strv_make_absolute_cwd(char **l);
 char** path_strv_resolve(char **l, const char *root);
 char** path_strv_resolve_uniq(char **l, const char *root);
 
-#if 0 /// UNNEEDED by elogind
 int find_binary(const char *name, char **filename);
 
+#if 0 /// UNNEEDED by elogind
 bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
 int fsck_exists(const char *fstype);

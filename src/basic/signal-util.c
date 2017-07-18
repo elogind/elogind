@@ -120,7 +120,6 @@ int ignore_signals(int sig, ...) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int default_signals(int sig, ...) {
 
         static const struct sigaction sa = {
@@ -137,7 +136,6 @@ int default_signals(int sig, ...) {
 
         return r;
 }
-#endif // 0
 
 static int sigset_add_many_ap(sigset_t *ss, va_list ap) {
         int sig, r = 0;

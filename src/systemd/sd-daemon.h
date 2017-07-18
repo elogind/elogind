@@ -278,7 +278,6 @@ int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) _s
 */
 int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, const int *fds, unsigned n_fds);
 
-#if 0 /// UNNEEDED by elogind
 /*
   Returns > 0 if the system was booted with systemd. Returns < 0 on
   error. Returns 0 if the system was not booted with systemd. Note
@@ -291,7 +290,6 @@ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, 
   See sd_booted(3) for more information.
 */
 int sd_booted(void);
-#endif // 0
 
 /*
   Returns > 0 if the service manager expects watchdog keep-alive

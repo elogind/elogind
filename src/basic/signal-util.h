@@ -27,8 +27,8 @@ int reset_all_signal_handlers(void);
 int reset_signal_mask(void);
 
 int ignore_signals(int sig, ...);
-#if 0 /// UNNEEDED by elogind
 int default_signals(int sig, ...);
+#if 0 /// UNNEEDED by elogind
 int sigaction_many(const struct sigaction *sa, ...);
 #endif // 0
 

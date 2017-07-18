@@ -153,7 +153,6 @@ int id128_read(const char *p, Id128Format f, sd_id128_t *ret) {
         return id128_read_fd(fd, f, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 int id128_write_fd(int fd, Id128Format f, sd_id128_t id, bool do_sync) {
         char buffer[36 + 2];
         size_t sz;
@@ -184,6 +183,7 @@ int id128_write_fd(int fd, Id128Format f, sd_id128_t id, bool do_sync) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int id128_write(const char *p, Id128Format f, sd_id128_t id, bool do_sync) {
         _cleanup_close_ int fd = -1;
 

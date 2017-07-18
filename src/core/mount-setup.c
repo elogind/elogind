@@ -422,7 +422,9 @@ int mount_setup(bool loaded_policy) {
          * this mkdir really needs to stay for good, otherwise software that copied sd-daemon.c into their sources will
          * misdetect systemd. */
         (void) mkdir_label("/run/systemd", 0755);
+#if 0 /// Yeah, but elogind is not used with systemd, so this directory would be toxic.
         (void) mkdir_label("/run/systemd/system", 0755);
+#endif // 0
 
         /* Set up inaccessible items */
         (void) mkdir_label("/run/systemd/inaccessible", 0000);

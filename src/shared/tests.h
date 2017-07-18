@@ -3,8 +3,7 @@
 /***
   This file is part of systemd.
 
-  Copyright 2010-2012 Lennart Poettering
-  Copyright 2010-2012 Kay Sievers
+  Copyright 2016 Lennart Poettering
 
   systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
@@ -20,6 +19,5 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-int conf_files_list(char ***ret, const char *suffix, const char *root, const char *dir, ...);
-int conf_files_list_strv(char ***ret, const char *suffix, const char *root, const char* const* dirs);
-int conf_files_list_nulstr(char ***ret, const char *suffix, const char *root, const char *dirs);
+char* setup_fake_runtime_dir(void);
+const char* get_testdata_dir(const char *suffix);

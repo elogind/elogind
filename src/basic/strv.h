@@ -68,9 +68,9 @@ char **strv_remove(char **l, const char *s);
 char **strv_uniq(char **l);
 #if 0 /// UNNEEDED by elogind
 bool strv_is_uniq(char **l);
+#endif // 0
 
 bool strv_equal(char **a, char **b);
-#endif // 0
 
 #define strv_contains(l, s) (!!strv_find((l), (s)))
 
@@ -122,9 +122,7 @@ bool strv_overlap(char **a, char **b) _pure_;
         for ((x) = (l), (y) = (x+1); (x) && *(x) && *(y); (x) += 2, (y) = (x + 1))
 
 char **strv_sort(char **l);
-#if 0 /// UNNEEDED by elogind
 void strv_print(char **l);
-#endif // 0
 
 #define STRV_MAKE(...) ((char**) ((const char*[]) { __VA_ARGS__, NULL }))
 

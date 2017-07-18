@@ -69,8 +69,8 @@ int bus_kernel_read_message(sd_bus *bus, bool hint_priority, int64_t priority);
 
 int bus_kernel_open_bus_fd(const char *bus, char **path);
 
-#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_bus(const char *name, bool world, char **s);
+#if 0 /// UNNEEDED by elogind
 int bus_kernel_create_endpoint(const char *bus_name, const char *ep_name, char **path);
 #endif // 0
 
