@@ -138,7 +138,7 @@
     <para>The <function>sd_id128_get_machine()</function>, <function>sd_id128_get_machine_app_specific()</function>
     <function>sd_id128_get_boot()</function> and <function>sd_id128_get_invocation()</function> interfaces are
     available as a shared library, which can be compiled and linked to with the
-    <literal>libsystemd</literal> <citerefentry
+    <literal>libelogind</literal> <citerefentry
     project='die-net'><refentrytitle>pkg-config</refentrytitle><manvolnum>1</manvolnum></citerefentry> file.</para>
   </refsect1>
 

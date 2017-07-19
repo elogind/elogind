@@ -3,29 +3,29 @@
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <!--
-  This file is part of elogind.
+  This file is part of systemd.
 
   Copyright 2015 Lennart Poettering
 
-  elogind is free software; you can redistribute it and/or modify it
+  systemd is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
 
-  elogind is distributed in the hope that it will be useful, but
+  systemd is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with elogind; If not, see <http://www.gnu.org/licenses/>.
+  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <refentry id="sd_event_source_unref" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <refentryinfo>
     <title>sd_event_source_unref</title>
-    <productname>elogind</productname>
+    <productname>systemd</productname>
 
     <authorgroup>
       <author>
@@ -52,7 +52,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;elogind/sd-event.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;systemd/sd-event.h&gt;</funcsynopsisinfo>
 
       <funcprototype>
         <funcdef>sd_event_source* <function>sd_event_source_unref</function></funcdef>

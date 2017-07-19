@@ -1519,7 +1519,7 @@ valgrind-tests: $(TESTS)
 exported-%: %
 	$(AM_V_GEN)$(NM) -g --defined-only $(builddir)/.libs/$(<:.la=.so) 2>&1 /dev/null | grep " T " | cut -d" " -f3 > $@
 
-exported: $(addprefix exported-, $(lib_LTLIBRARIES))
+exported: $(addprefix exported-, $(rootlib_LTLIBRARIES))
 	$(AM_V_GEN)cat $^ > $@
 
 .PHONY: check-api-docs
