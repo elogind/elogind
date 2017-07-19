@@ -4,3 +4,6 @@ Makefile.in.in
 Makefile
 systemd.pot
 /*.gmo
+
+# elogind specific ignores
+elogind.pot

@@ -12,6 +12,7 @@ MANPAGES += \
 	man/loginctl.1 \
 	man/logind.conf.5 \
 	man/sd-event.3 \
+	man/sd_booted.3 \
 	man/sd_event_add_io.3 \
 	man/sd_event_exit.3 \
 	man/sd_event_now.3 \
@@ -311,6 +312,7 @@ EXTRA_DIST += \
 	man/logind.conf.xml \
 	man/pam_elogind.xml \
 	man/sd-event.xml \
+	man/sd_booted.xml \
 	man/sd_event_add_io.xml \
 	man/sd_event_exit.xml \
 	man/sd_event_now.xml \

@@ -764,9 +764,10 @@ AS_IF([test "x$0" != "x./configure"], [
 ])
 
 AC_ARG_ENABLE(tests,
-        [AS_HELP_STRING([--disable-tests], [disable tests, or enable extra tests with =unsafe])],
+        [AC_HELP_STRING([--disable-tests], [disable tests, or enable extra tests with =unsafe])],
         enable_tests=$enableval, enable_tests=yes)
-AM_CONDITIONAL(ENABLE_TESTS, [test x$enable_tests = xyes])
+AM_CONDITIONAL(ENABLE_TESTS, [test x$enable_tests = xyes -o x$enable_tests = xunsafe])
+AM_CONDITIONAL(ENABLE_UNSAFE_TESTS, [test x$enable_tests = xunsafe])
 
 AC_ARG_ENABLE(debug,
         [AC_HELP_STRING([--enable-debug@<:@=LIST@:>@], [enable extra debugging (elogind,hashmap,mmap-cache)])],

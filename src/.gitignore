@@ -30,7 +30,6 @@ org.freedesktop.systemd1.policy
 /gpt-auto-generator
 /journal
 /socket-proxy
-/test
 /cgtop
 /locale
 /cryptsetup

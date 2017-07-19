@@ -381,10 +381,28 @@
 		<Unit filename="../src/libelogind/sd-bus/sd-bus.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-error.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-introspect.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-match.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-server.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-signature.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/libelogind/sd-daemon/sd-daemon.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-event/sd-event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-event/test-event.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-id128/id128-util.c">
@@ -538,6 +556,10 @@
 		</Unit>
 		<Unit filename="../src/shared/spawn-polkit-agent.h" />
 		<Unit filename="../src/shared/test-tables.h" />
+		<Unit filename="../src/shared/tests.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/tests.h" />
 		<Unit filename="../src/shared/udev-util.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
@@ -556,6 +578,127 @@
 		<Unit filename="../src/systemd/sd-id128.h" />
 		<Unit filename="../src/systemd/sd-login.h" />
 		<Unit filename="../src/systemd/sd-messages.h" />
+		<Unit filename="../src/test/test-alloc-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-cgroup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-conf-files.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-conf-parser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-copy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-ellipsize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-escape.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-exec-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-extract-word.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-fd-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-fs-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-hash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-hashmap-ordered.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-hashmap-plain.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-hashmap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-helper.h" />
+		<Unit filename="../src/test/test-hexdecoct.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-id128.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-io-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-ipcrm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-locale-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-log.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-parse-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-path-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-prioq.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-proc-cmdline.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-process-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-selinux.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-set.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-signal-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-siphash24.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-sizeof.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-stat-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-string-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-strip-tab-ansi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-unaligned.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-user-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-utf8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-verbs.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/update-utmp/update-utmp.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -101,9 +101,14 @@ dist_rootlibexec_DATA =
 rootlib_LTLIBRARIES =
 tests=
 manual_tests =
+TEST_DATA_FILES =
 if ENABLE_TESTS
-noinst_PROGRAMS = $(manual_tests) $(tests)
+noinst_PROGRAMS = $(manual_tests) $(tests) $(unsafe_tests)
 TESTS = $(tests)
+if ENABLE_UNSAFE_TESTS
+TESTS += \
+	$(unsafe_tests)
+endif
 else
 noinst_PROGRAMS =
 TESTS =
@@ -135,6 +140,7 @@ AM_CPPFLAGS = \
 	-DSYSTEMD_CGROUP_CONTROLLER_LEGACY=\"name=$(CGROUP_CONTROLLER)\" \
 	-DSYSTEMD_CGROUP_CONTROLLER_HYBRID=\"name=$(CGROUP_CONTROLLER)\" \
 	-DSYSTEMD_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
+	-DSYSTEMD_BINARY_PATH=\"$(rootlibexecdir)/elogind\" \
 	-DUDEVLIBEXECDIR=\"$(udevlibexecdir)\" \
 	-DPOLKIT_AGENT_BINARY_PATH=\"$(PKTTYAGENT)\" \
 	-DSYSTEM_SLEEP_PATH=\"$(systemsleepdir)\" \
@@ -145,6 +151,7 @@ AM_CPPFLAGS = \
 	-DLIBDIR=\"$(libdir)\" \
 	-DROOTLIBDIR=\"$(rootlibdir)\" \
 	-DROOTLIBEXECDIR=\"$(rootlibexecdir)\" \
+	-DTEST_DIR=\"$(abs_top_srcdir)/test\" \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src/basic \
 	-I $(top_srcdir)/src/basic \
@@ -197,6 +204,10 @@ AM_V_RM_0 = @echo "  RM      " $@;
 
 # ------------------------------------------------------------------------------
 rootbin_PROGRAMS =
+rootlibexec_PROGRAMS = \
+	elogind \
+	elogind-cgroups-agent
+
 pkglibexec_PROGRAMS =
 
 dist_doc_DATA = \
@@ -459,6 +470,8 @@ libshared_la_SOURCES = \
 	src/shared/sleep-config.h \
 	src/shared/spawn-polkit-agent.c \
 	src/shared/spawn-polkit-agent.h \
+	src/shared/tests.h \
+	src/shared/tests.c \
 	src/shared/nsflags.h \
 	src/shared/nsflags.c
 
@@ -549,6 +562,334 @@ src/basic/errno-to-name.h: src/basic/errno-list.txt
 	$(AM_V_at)$(MKDIR_P) $(dir $@)
 	$(AM_V_GEN)$(AWK) 'BEGIN{ print "static const char* const errno_names[] = { "} !/EDEADLOCK/ && !/EWOULDBLOCK/ && !/ENOTSUP/ { printf "[%s] = \"%s\",\n", $$1, $$1 } END{print "};"}' <$< >$@
 
+# ------------------------------------------------------------------------------
+
+manual_tests += \
+	test-cgroup
+
+unsafe_tests = \
+	test-ipcrm
+
+tests += \
+	test-log \
+	test-path-util \
+	test-siphash24 \
+	test-utf8 \
+	test-ellipsize \
+	test-util \
+	test-exec-util \
+	test-hexdecoct \
+	test-escape \
+	test-alloc-util \
+	test-proc-cmdline \
+	test-io-util \
+	test-fs-util \
+	test-stat-util \
+	test-fd-util \
+	test-string-util \
+	test-extract-word \
+	test-parse-util \
+	test-user-util \
+	test-process-util \
+	test-strip-tab-ansi \
+	test-prioq \
+	test-hashmap \
+	test-set \
+	test-list \
+	test-unaligned \
+	test-conf-files \
+	test-conf-parser \
+	test-locale-util \
+	test-copy \
+	test-verbs \
+	test-signal-util \
+	test-selinux \
+	test-sizeof
+
+TEST_DATA_FILES += \
+	test/bus-policy/hello.conf \
+	test/bus-policy/methods.conf \
+	test/bus-policy/ownerships.conf \
+	test/bus-policy/signals.conf \
+	test/bus-policy/check-own-rules.conf \
+	test/bus-policy/many-rules.conf \
+	test/bus-policy/test.conf
+
+
+EXTRA_DIST += \
+	src/test/test-helper.h
+
+test_utf8_SOURCES = \
+	src/test/test-utf8.c
+
+test_utf8_LDADD = \
+	libelogind-shared.la
+
+test_locale_util_SOURCES = \
+	src/test/test-locale-util.c
+
+test_locale_util_LDADD = \
+	libelogind-shared.la
+
+test_copy_SOURCES = \
+	src/test/test-copy.c
+
+# Link statically to ensure file is large
+test_copy_LDADD = \
+	libshared.la
+
+test_util_SOURCES = \
+	src/test/test-util.c
+
+test_util_LDADD = \
+	libelogind-shared.la
+
+test_exec_util_SOURCES = \
+	src/test/test-exec-util.c
+
+test_exec_util_LDADD = \
+	libelogind-shared.la
+
+test_hexdecoct_SOURCES = \
+	src/test/test-hexdecoct.c
+
+test_hexdecoct_LDADD = \
+	libelogind-shared.la
+
+test_alloc_util_SOURCES = \
+	src/test/test-alloc-util.c
+
+test_alloc_util_LDADD = \
+	libelogind-shared.la
+
+test_io_util_SOURCES = \
+	src/test/test-io-util.c
+
+test_io_util_LDADD = \
+	libelogind-shared.la
+
+test_fs_util_SOURCES = \
+	src/test/test-fs-util.c
+
+test_fs_util_LDADD = \
+	libelogind-shared.la
+
+test_proc_cmdline_SOURCES = \
+	src/test/test-proc-cmdline.c
+
+test_proc_cmdline_LDADD = \
+	libelogind-shared.la
+
+test_fd_util_SOURCES = \
+	src/test/test-fd-util.c
+
+test_fd_util_LDADD = \
+	libelogind-shared.la
+
+test_stat_util_SOURCES = \
+	src/test/test-stat-util.c
+
+test_stat_util_LDADD = \
+	libelogind-shared.la
+
+test_escape_SOURCES = \
+	src/test/test-escape.c
+
+test_escape_LDADD = \
+	libelogind-shared.la
+
+test_string_util_SOURCES = \
+	src/test/test-string-util.c
+
+test_string_util_LDADD = \
+	libelogind-shared.la
+
+test_extract_word_SOURCES = \
+	src/test/test-extract-word.c
+
+test_extract_word_LDADD = \
+	libelogind-shared.la
+
+test_parse_util_SOURCES = \
+	src/test/test-parse-util.c
+
+test_parse_util_LDADD = \
+	libelogind-shared.la
+
+test_user_util_SOURCES = \
+	src/test/test-user-util.c
+
+test_user_util_LDADD = \
+	libelogind-shared.la
+
+test_process_util_SOURCES = \
+	src/test/test-process-util.c
+
+test_process_util_LDADD = \
+	libelogind-shared.la
+
+test_verbs_SOURCES = \
+	src/test/test-verbs.c
+
+test_verbs_LDADD = \
+	libelogind-shared.la
+
+test_signal_util_SOURCES = \
+	src/test/test-signal-util.c
+
+test_signal_util_LDADD = \
+	libelogind-shared.la
+
+test_selinux_SOURCES = \
+	src/test/test-selinux.c
+
+test_selinux_LDADD = \
+	libelogind-shared.la
+
+test_sizeof_SOURCES = \
+	src/test/test-sizeof.c
+
+test_sizeof_LDADD = \
+	libelogind-shared.la
+
+BUILT_SOURCES += \
+	src/test/test-hashmap-ordered.c
+
+src/test/test-hashmap-ordered.c: src/test/test-hashmap-plain.c
+	$(AM_V_at)$(MKDIR_P) $(dir $@)
+	$(AM_V_GEN)$(AWK) 'BEGIN { print "/* GENERATED FILE */\n#define ORDERED" } \
+	                   { if (!match($$0, "^#include"))          \
+	                         gsub(/hashmap/, "ordered_hashmap"); \
+	                     gsub(/HASHMAP/, "ORDERED_HASHMAP");     \
+	                     gsub(/Hashmap/, "OrderedHashmap");      \
+	                     print }' <$< >$@
+
+nodist_test_hashmap_SOURCES = \
+	src/test/test-hashmap-ordered.c
+
+test_hashmap_SOURCES = \
+	src/test/test-hashmap.c \
+	src/test/test-hashmap-plain.c
+
+test_hashmap_LDADD = \
+	libelogind-shared.la
+
+test_set_SOURCES = \
+	src/test/test-set.c
+
+test_set_LDADD = \
+	libelogind-shared.la
+
+test_list_SOURCES = \
+	src/test/test-list.c
+
+test_list_LDADD = \
+	libelogind-shared.la
+
+test_unaligned_LDADD = \
+	libelogind-shared.la
+
+test_unaligned_SOURCES = \
+	src/test/test-unaligned.c
+
+test_prioq_SOURCES = \
+	src/test/test-prioq.c
+
+test_prioq_LDADD = \
+	libelogind-shared.la
+
+test_log_SOURCES = \
+	src/test/test-log.c
+
+test_log_LDADD = \
+	libelogind-shared.la
+
+test_ipcrm_SOURCES = \
+	src/test/test-ipcrm.c
+
+test_ipcrm_LDADD = \
+	libelogind-shared.la
+
+test_ellipsize_SOURCES = \
+	src/test/test-ellipsize.c
+
+test_ellipsize_LDADD = \
+	libelogind-shared.la
+
+test_strip_tab_ansi_SOURCES = \
+	src/test/test-strip-tab-ansi.c
+
+test_strip_tab_ansi_LDADD = \
+	libelogind-shared.la
+
+test_cgroup_SOURCES = \
+	src/test/test-cgroup.c
+
+test_cgroup_LDADD = \
+	libelogind-shared.la
+
+test_path_util_SOURCES = \
+	src/test/test-path-util.c
+
+test_path_util_LDADD = \
+	libelogind-shared.la
+
+test_siphash24_SOURCES = \
+	src/test/test-siphash24.c
+
+test_siphash24_LDADD = \
+	libelogind-shared.la
+
+test_conf_files_SOURCES = \
+	src/test/test-conf-files.c
+
+test_conf_files_LDADD = \
+	libelogind-shared.la
+
+test_conf_parser_SOURCES = \
+	src/test/test-conf-parser.c
+
+test_conf_parser_LDADD = \
+	libelogind-shared.la
+
+# ------------------------------------------------------------------------------
+## .PHONY so it always rebuilds it
+.PHONY: coverage lcov-run lcov-report coverage-sync
+
+# run lcov from scratch, always
+coverage: all
+	$(MAKE) lcov-run
+	$(MAKE) lcov-report
+
+coverage_dir = coverage
+coverage_opts = --base-directory $(srcdir) --directory $(builddir) --rc 'geninfo_adjust_src_path=$(abspath $(srcdir))=>$(abspath $(builddir))'
+
+if ENABLE_COVERAGE
+# reset run coverage tests
+lcov-run:
+	@rm -rf $(coverage_dir)
+	lcov $(coverage_opts) --zerocounters
+	-$(MAKE) check
+
+# generate report based on current coverage data
+lcov-report:
+	$(MKDIR_P) $(coverage_dir)
+	lcov $(coverage_opts) --compat-libtool --capture --no-external \
+		| sed 's|$(abspath $(builddir))|$(abspath $(srcdir))|' > $(coverage_dir)/.lcov.info
+	lcov --remove $(coverage_dir)/.lcov.info --output-file $(coverage_dir)/.lcov-clean.info 'test-*'
+	genhtml -t "systemd test coverage" -o $(coverage_dir) $(coverage_dir)/.lcov-clean.info
+	@echo "Coverage report generated in $(abs_builddir)/$(coverage_dir)/index.html"
+
+# lcov doesn't work properly with vpath builds, make sure that bad
+# output is not uploaded by mistake.
+coverage-sync: coverage
+	test "$(builddir)" = "$(srcdir)"
+	rsync -rlv --delete --omit-dir-times coverage/ $(www_target)/coverage
+
+else
+lcov-run lcov-report:
+	echo "Need to reconfigure with --enable-coverage"
+endif
 
 # ------------------------------------------------------------------------------
 
@@ -668,6 +1009,71 @@ UNINSTALL_EXEC_HOOKS += header-uninstall-hook
 
 rootlib_LTLIBRARIES += \
 	libelogind.la
+
+tests += \
+	test-bus-signature \
+	test-bus-server \
+	test-bus-match \
+	test-bus-introspect \
+	test-bus-error \
+	test-event
+
+test_bus_signature_SOURCES = \
+	src/libelogind/sd-bus/test-bus-signature.c
+
+test_bus_signature_LDADD = \
+	libelogind-shared.la
+
+test_bus_server_SOURCES = \
+	src/libelogind/sd-bus/test-bus-server.c
+
+test_bus_server_LDADD = \
+	libelogind-shared.la
+
+test_bus_error_SOURCES = \
+	src/libelogind/sd-bus/test-bus-error.c
+
+# Link statically because this test uses BUS_ERROR_MAP_ELF_REGISTER
+test_bus_error_LDADD = \
+	libshared.la
+
+test_bus_match_SOURCES = \
+	src/libelogind/sd-bus/test-bus-match.c
+
+test_bus_match_LDADD = \
+	libelogind-shared.la
+
+test_bus_introspect_SOURCES = \
+	src/libelogind/sd-bus/test-bus-introspect.c
+
+test_bus_introspect_LDADD = \
+	libelogind-shared.la
+
+test_event_SOURCES = \
+	src/libelogind/sd-event/test-event.c
+
+test_event_LDADD = \
+	libelogind-shared.la
+
+# ------------------------------------------------------------------------------
+test_id128_SOURCES = \
+	src/test/test-id128.c
+
+test_id128_LDADD = \
+	libelogind-shared.la
+
+tests += \
+	test-id128
+
+# ------------------------------------------------------------------------------
+test_hash_SOURCES = \
+	src/test/test-hash.c
+
+test_hash_LDADD = \
+	libelogind-shared.la
+
+tests += \
+	test-hash
 
 # ------------------------------------------------------------------------------
 elogind_SOURCES = \
@@ -1099,10 +1505,10 @@ install-tree: all
 	tree $(abs_srcdir)/install-tree
 
 # Let's run all tests of the test suite, but under valgrind. Let's
-# exclude the one perl script we have in there
+# exclude perl/python/shell scripts we have in there
 .PHONY: valgrind-tests
 valgrind-tests: $(TESTS)
-	$(AM_V_GEN)for f in $(filter-out %.pl, $^); do \
+	$(AM_V_GEN)for f in $(filter-out %.pl %.py, $^); do \
 		if $(LIBTOOL) --mode=execute file $$f | grep -q shell; then \
 		echo -e "$${x}Skipping non-binary $$f"; else \
 		echo -e "$${x}Running $$f"; \
@@ -1181,9 +1587,38 @@ BUILT_SOURCES += \
 tests += \
 	test-libelogind-sym
 
+.PHONY: install-tests
+install-tests: $(tests) $(TEST_DATA_FILES)
+	for f in $(tests); do \
+	    if [ -x $(top_builddir)/.libs/$$f ]; then \
+		install -D -m 755 $(top_builddir)/.libs/$$f $(DESTDIR)/$(testsdir)/$$f; \
+	    else \
+		install -D -m 755 $(top_builddir)/$$f $(DESTDIR)/$(testsdir)/$$f; \
+	    fi; \
+	done
+	for f in $(TEST_DATA_FILES); do \
+	    install -D -m 644 $(top_srcdir)/$$f $(DESTDIR)/$(testsdir)/testdata/$${f#test/}; \
+	done
+
 .PHONY: cppcheck
 cppcheck:
-	cppcheck --enable=all -q $(top_srcdir)
+	cppcheck --enable=all -q \
+	-I $(top_srcdir)/src \
+	-I $(top_builddir)/src/basic \
+	-I $(top_srcdir)/src/basic \
+	-I $(top_srcdir)/src/core \
+	-I $(top_srcdir)/src/shared \
+	-I $(top_builddir)/src/shared \
+	-I $(top_srcdir)/src/login \
+	-I $(top_srcdir)/src/systemd \
+	-I $(top_srcdir)/src/libelogind/sd-bus \
+	-I $(top_srcdir)/src/libelogind/sd-event \
+	-I $(top_srcdir)/src/libelogind/sd-login \
+	-I $(top_srcdir)/src/libelogind/sd-id128 \
+	-I $(top_srcdir)/src/update-utmp \
+	-I $(top_srcdir)/src/sleep \
+	--force \
+	$(top_srcdir)
 
 # Used to extract compile flags for YCM.
 print-%:
