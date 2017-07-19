@@ -46,6 +46,7 @@ static int detect_vm_cpuid(void) {
         } cpuid_vendor_table[] = {
                 { "XenVMMXenVMM", VIRTUALIZATION_XEN       },
                 { "KVMKVMKVM",    VIRTUALIZATION_KVM       },
+                { "TCGTCGTCGTCG", VIRTUALIZATION_QEMU      },
                 /* http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1009458 */
                 { "VMwareVMware", VIRTUALIZATION_VMWARE    },
                 /* http://msdn.microsoft.com/en-us/library/ff542428.aspx */
