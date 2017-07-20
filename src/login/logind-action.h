@@ -36,9 +36,6 @@ typedef enum HandleAction {
 #include "logind-inhibit.h"
 #include "logind.h"
 
-/// Additional includes needed by elogind
-#include "elogind-action.h"
-
 int manager_handle_action(
                 Manager *m,
                 InhibitWhat inhibit_key,

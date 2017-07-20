@@ -22,8 +22,10 @@
 #include "bus-error.h"
 #include "bus-util.h"
 #include "elogind-dbus.h"
+#include "fd-util.h"
 #include "process-util.h"
 #include "sd-messages.h"
+#include "sleep.h"
 #include "sleep-config.h"
 #include "string-util.h"
 #include "strv.h"
@@ -116,6 +118,51 @@ static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
                                   signal_name[w],
                                   "b",
                                   active);
+}
+
+/* elogind specific helper to make HALT and REBOOT possible. */
+static int run_helper(const char *helper) {
+        int pid = fork();
+        if (pid < 0) {
+                return log_error_errno(errno, "Failed to fork: %m");
+        }
+
+        if (pid == 0) {
+                /* Child */
+
+                close_all_fds(NULL, 0);
+
+                execlp(helper, helper, NULL);
+                log_error_errno(errno, "Failed to execute %s: %m", helper);
+                _exit(EXIT_FAILURE);
+        }
+
+        return wait_for_terminate_and_warn(helper, pid, true);
+}
+
+/* elogind specific executor */
+static int shutdown_or_sleep(Manager *m, HandleAction action) {
+
+        assert(m);
+
+        switch (action) {
+        case HANDLE_POWEROFF:
+                return run_helper(HALT);
+        case HANDLE_REBOOT:
+                return run_helper(REBOOT);
+        case HANDLE_HALT:
+                return run_helper(HALT);
+        case HANDLE_KEXEC:
+                return run_helper(KEXEC);
+        case HANDLE_SUSPEND:
+                return do_sleep("suspend", m->suspend_mode, m->suspend_state);
+        case HANDLE_HIBERNATE:
+                return do_sleep("hibernate", m->hibernate_mode, m->hibernate_state);
+        case HANDLE_HYBRID_SLEEP:
+                return do_sleep("hybrid-sleep", m->hybrid_sleep_mode, m->hybrid_sleep_state);
+        default:
+                return -EINVAL;
+        }
 }
 
 static int execute_shutdown_or_sleep(

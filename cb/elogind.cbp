@@ -422,10 +422,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/eloginctl.h" />
-		<Unit filename="../src/login/elogind-action.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/login/elogind-action.h" />
 		<Unit filename="../src/login/elogind-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
