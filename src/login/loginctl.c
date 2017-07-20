@@ -1419,7 +1419,9 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
 #endif // 0
                "Session Commands:\n"
-               "  list-sessions            List sessions\n"
+#if 1 /// elogind has "list" as a shorthand for "list-sessions"
+               "  list[-sessions]          List sessions (default command)\n"
+#endif // 1
                "  session-status [ID...]   Show session status\n"
                "  show-session [ID...]     Show properties of sessions or the manager\n"
                "  activate [ID]            Activate a session\n"
@@ -1620,7 +1622,12 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
 
         static const Verb verbs[] = {
                 { "help",              VERB_ANY, VERB_ANY, 0,            help              },
+#if 0 /// elogind has "list" as a shorthand for "list-sessions"
                 { "list-sessions",     VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
+#else
+                { "list",              VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
+                { "list-sessions",     VERB_ANY, 1,        0,            list_sessions     },
+#endif // 0
                 { "session-status",    VERB_ANY, VERB_ANY, 0,            show_session      },
                 { "show-session",      VERB_ANY, VERB_ANY, 0,            show_session      },
                 { "activate",          VERB_ANY, 2,        0,            activate          },
