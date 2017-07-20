@@ -1600,7 +1600,11 @@ install-tests: $(tests) $(TEST_DATA_FILES)
 	    install -D -m 644 $(top_srcdir)/$$f $(DESTDIR)/$(testsdir)/testdata/$${f#test/}; \
 	done
 
-.PHONY: cppcheck
+.PHONY: cccc cppcheck
+cccc: all
+	cccc --outdir=$(top_builddir)/cccc \
+	`find $(top_srcdir)/src/ -name '*.h' -or -name '*.c'`
+
 cppcheck:
 	cppcheck --enable=all -q \
 	-I $(top_srcdir)/src \
