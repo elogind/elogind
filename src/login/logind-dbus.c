@@ -1390,7 +1390,6 @@ static int method_flush_devices(sd_bus_message *message, void *userdata, sd_bus_
         return sd_bus_reply_method_return(message, NULL);
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
 static int have_multiple_sessions(
                 Manager *m,
                 uid_t uid) {
@@ -1410,6 +1409,7 @@ static int have_multiple_sessions(
         return false;
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int bus_manager_log_shutdown(
                 Manager *m,
                 InhibitWhat w,
@@ -1604,8 +1604,13 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
         return 1;
 }
+#endif // 0
 
+#if 0 /// elogind-dbus.c needs to access this
 static int manager_inhibit_timeout_handler(
+#else
+int manager_inhibit_timeout_handler(
+#endif // 0
                         sd_event_source *s,
                         uint64_t usec,
                         void *userdata) {
@@ -1620,6 +1625,7 @@ static int manager_inhibit_timeout_handler(
         return (r < 0) ? r : 0;
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
@@ -1655,8 +1661,13 @@ static int delay_shutdown_or_sleep(
 
         return 0;
 }
+#endif // 0
 
+#if 0 /// elogind-dbus.c needs to access this
 static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+#else
+int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+#endif // 0
 
         static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
                 [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
@@ -1678,6 +1689,7 @@ static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
                                   active);
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
                 const char *unit_name,
@@ -1714,8 +1726,13 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 
         return r;
 }
+#endif // 0
 
+#if 0 /// elogind-dbus.c needs to access this
 static int verify_shutdown_creds(
+#else
+int verify_shutdown_creds(
+#endif // 0
                 Manager *m,
                 sd_bus_message *message,
                 InhibitWhat w,
@@ -1777,6 +1794,7 @@ static int verify_shutdown_creds(
         return 0;
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,

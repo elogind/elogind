@@ -33,25 +33,6 @@
 #include "user-util.h"
 
 
-int have_multiple_sessions(
-                Manager *m,
-                uid_t uid) {
-
-        Session *session;
-        Iterator i;
-
-        assert(m);
-
-        /* Check for other users' sessions. Greeter sessions do not
-         * count, and non-login sessions do not count either. */
-        HASHMAP_FOREACH(session, m->sessions, i)
-                if (session->class == SESSION_USER &&
-                    session->user->uid != uid)
-                        return true;
-
-        return false;
-}
-
 static int bus_manager_log_shutdown(
                 Manager *m,
                 InhibitWhat w,
@@ -96,28 +77,6 @@ static int bus_manager_log_shutdown(
                           p,
                           q,
                           NULL);
-}
-
-static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
-
-        static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
-                [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
-                [INHIBIT_SLEEP] = "PrepareForSleep"
-        };
-
-        int active = _active;
-
-        assert(m);
-        assert(w >= 0);
-        assert(w < _INHIBIT_WHAT_MAX);
-        assert(signal_name[w]);
-
-        return sd_bus_emit_signal(m->bus,
-                                  "/org/freedesktop/login1",
-                                  "org.freedesktop.login1.Manager",
-                                  signal_name[w],
-                                  "b",
-                                  active);
 }
 
 /* elogind specific helper to make HALT and REBOOT possible. */
@@ -264,21 +223,6 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
         return 1;
 }
 
-static int manager_inhibit_timeout_handler(
-                        sd_event_source *s,
-                        uint64_t usec,
-                        void *userdata) {
-
-        Manager *manager = userdata;
-        int r;
-
-        assert(manager);
-        assert(manager->inhibit_timeout_source == s);
-
-        r = manager_dispatch_delayed(manager, true);
-        return (r < 0) ? r : 0;
-}
-
 static int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
@@ -348,68 +292,6 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 r = execute_shutdown_or_sleep(m, w, action, error);
 
         return r;
-}
-
-int verify_shutdown_creds(
-                Manager *m,
-                sd_bus_message *message,
-                InhibitWhat w,
-                bool interactive,
-                const char *action,
-                const char *action_multiple_sessions,
-                const char *action_ignore_inhibit,
-                sd_bus_error *error) {
-
-        _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
-        bool multiple_sessions, blocked;
-        uid_t uid;
-        int r;
-
-        assert(m);
-        assert(message);
-        assert(w >= 0);
-        assert(w <= _INHIBIT_WHAT_MAX);
-
-        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
-        if (r < 0)
-                return r;
-
-        r = sd_bus_creds_get_euid(creds, &uid);
-        if (r < 0)
-                return r;
-
-        r = have_multiple_sessions(m, uid);
-        if (r < 0)
-                return r;
-
-        multiple_sessions = r > 0;
-        blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
-
-        if (multiple_sessions && action_multiple_sessions) {
-                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action_multiple_sessions, NULL, interactive, UID_INVALID, &m->polkit_registry, error);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
-        }
-
-        if (blocked && action_ignore_inhibit) {
-                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action_ignore_inhibit, NULL, interactive, UID_INVALID, &m->polkit_registry, error);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
-        }
-
-        if (!multiple_sessions && !blocked && action) {
-                r = bus_verify_polkit_async(message, CAP_SYS_BOOT, action, NULL, interactive, UID_INVALID, &m->polkit_registry, error);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
-        }
-
-        return 0;
 }
 
 static int method_do_shutdown_or_sleep(
