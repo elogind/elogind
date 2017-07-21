@@ -195,7 +195,7 @@
           <term><varname>HibernateKeyIgnoreInhibited=</varname></term>
           <term><varname>LidSwitchIgnoreInhibited=</varname></term>
 
-        <listitem><para>Controls whether actions that <command>systemd-logind</command>
+        <listitem><para>Controls whether actions that <command>elogind</command>
         takes when the power and sleep keys and the lid switch are triggered are subject
         to high-level inhibitor locks ("shutdown", "sleep", "idle"). Low level inhibitor
         locks ("handle-*-key"), are always honoured, irrespective of this setting.</para>
@@ -207,7 +207,7 @@
         <varname>SuspendKeyIgnoreInhibited=</varname>, and
         <varname>HibernateKeyIgnoreInhibited=</varname> default to <literal>no</literal>.
         <varname>LidSwitchIgnoreInhibited=</varname> defaults to <literal>yes</literal>.
-        This means that when <command>systemd-logind</command> is handling events by
+        This means that when <command>elogind</command> is handling events by
         itself (no low level inhibitor locks are taken by another application), the lid
         switch does not respect suspend blockers by default, but the power and sleep keys
         do.</para></listitem>
