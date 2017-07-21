@@ -247,13 +247,19 @@ AS_CASE([$CC], [*clang*],
         ])])
 
 # ------------------------------------------------------------------------------
+have_lto=no
 AC_ARG_ENABLE([lto], [AS_HELP_STRING([--disable-lto], [disable -flto])],
                      [], [enable_lto=yes])
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
-        [AS_IF([test "x$enable_lto" = "xyes"],
-               [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [-flto])],
+        [AS_IF([test "x$enable_lto" = "xyes"], [have_lto=yes],
                [AC_MSG_RESULT([disabling -flto as requested])])],
         [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
+
+AS_IF([test "x$have_lto" = "xyes"],
+        [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS],
+        [-flto -fuse-linker-plugin])])
+
+AS_CASE([$with_cflags], [*-flto*], [], [have_lto=no])
 
 # ------------------------------------------------------------------------------
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
@@ -279,8 +285,9 @@ CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
         -Wl,--no-undefined \
         -Wl,-z,relro \
         -Wl,-z,now \
-        -pie \
-        -Wl,-fuse-ld=gold])
+        -pie])
+AS_IF([test "x$have_lto" = "xyes"],
+        [CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [-Wl,-fuse-ld=gold])])
 
 # ------------------------------------------------------------------------------
 AC_SUBST([OUR_CPPFLAGS], "$with_cppflags $sanitizer_cppflags")
@@ -837,6 +844,7 @@ AC_MSG_RESULT([
         test coverage: . . . . . . . . . . ${have_coverage}
         Split /usr: . . . . . . . . . . .  ${enable_split_usr}
         utmp/wtmp support: . . . . . . . . ${have_utmp}
+        Link time optimization: . . . . .  ${have_lto}
         extra debugging: . . . . . . . . . ${enable_debug}
         cgroup controller: . . . . . . . . ${with_cgroupctrl}
 
