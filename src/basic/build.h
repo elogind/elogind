@@ -37,6 +37,12 @@
 #define _SMACK_FEATURE_ "-SMACK"
 #endif
 
+#ifdef HAVE_UTMP
+#define _UTMP_FEATURE_ "+UTMP"
+#else
+#define _UTMP_FEATURE_ "-UTMP"
+#endif
+
 #ifdef HAVE_ACL
 #define _ACL_FEATURE_ "+ACL"
 #else
@@ -49,5 +55,6 @@
         _PAM_FEATURE_ " "                                               \
         _SELINUX_FEATURE_ " "                                           \
         _SMACK_FEATURE_ " "                                             \
+        _UTMP_FEATURE_ " "                                              \
         _ACL_FEATURE_ " "                                               \
         _CGROUP_HIEARCHY_
