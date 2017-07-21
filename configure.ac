@@ -248,13 +248,20 @@ AS_CASE([$CC], [*clang*],
                -Wno-gnu-variable-sized-type-not-at-end \
         ])])
 
+# ------------------------------------------------------------------------------
+have_lto=no
 AC_ARG_ENABLE([lto], [AS_HELP_STRING([--disable-lto], [disable -flto])],
                      [], [enable_lto=yes])
 AS_CASE([$CFLAGS], [*-O[[12345sz\ ]]*],
-        [AS_IF([test "x$enable_lto" = "xyes"],
-               [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS], [-flto])],
+        [AS_IF([test "x$enable_lto" = "xyes"], [have_lto=yes],
                [AC_MSG_RESULT([disabling -flto as requested])])],
         [AC_MSG_RESULT([skipping -flto, optimization not enabled])])
+
+AS_IF([test "x$have_lto" = "xyes"],
+        [CC_CHECK_FLAGS_APPEND([with_cflags], [CFLAGS],
+        [-flto -fuse-linker-plugin])])
+
+AS_CASE([$with_cflags], [*-flto*], [], [have_lto=no])
 AC_SUBST([OUR_CFLAGS], "$with_cflags $sanitizer_cflags")
 
 # ------------------------------------------------------------------------------
@@ -281,8 +288,13 @@ CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
         -Wl,--no-undefined \
         -Wl,-z,relro \
         -Wl,-z,now \
-        -pie \
-        -Wl,-fuse-ld=gold])
+        -pie])
+AS_IF([test "x$have_lto" = "xyes"],
+        [CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [-Wl,-fuse-ld=gold])])
+
+# ------------------------------------------------------------------------------
+AC_SUBST([OUR_CPPFLAGS], "$with_cppflags $sanitizer_cppflags")
+AC_SUBST([OUR_CFLAGS], "-D__SANE_USERSPACE_TYPES__ $with_cflags $sanitizer_cflags")
 AC_SUBST([OUR_LDFLAGS], "$with_ldflags $sanitizer_ldflags")
 
 AC_CHECK_SIZEOF(pid_t)
@@ -797,39 +809,42 @@ AC_CONFIG_FILES([
 
 AC_OUTPUT
 AC_MSG_RESULT([
-        $PACKAGE_NAME $VERSION
+        $PACKAGE_NAME $PACKAGE_VERSION
 
-        PAM:                     ${have_pam}
-        SELinux:                 ${have_selinux}
-        SMACK:                   ${have_smack}
-        ACL:                     ${have_acl}
-        KillUserProcesses default: ${KILL_USER_PROCESSES}
-        polkit:                  ${have_polkit}
-        Python:                  ${have_python}
-        man pages:               ${have_manpages}
-        test coverage:           ${have_coverage}
-        Split /usr:              ${enable_split_usr}
-        utmp/wtmp support:       ${have_utmp}
-        extra debugging:         ${enable_debug}
-        cgroup controller:       ${with_cgroupctrl}
+        PAM: . . . . . . . . . . . . . . . ${have_pam}
+        SELinux: . . . . . . . . . . . . . ${have_selinux}
+        SMACK: . . . . . . . . . . . . . . ${have_smack}
+        ACL: . . . . . . . . . . . . . . . ${have_acl}
+        default cgroup hierarchy: . . . .  ${DEFAULT_HIERARCHY}
+        default KillUserProcesses setting: ${KILL_USER_PROCESSES}
+        polkit: . . . . . . . . . . . . .  ${have_polkit} (legacy pkla support: ${polkit_pkla})
+        glib: . . . . . . . . . . . . . .  ${have_glib}
+        Python: . . . . . . . . . . . . .  ${have_python}
+        man pages: . . . . . . . . . . . . ${have_manpages}
+        test coverage: . . . . . . . . . . ${have_coverage}
+        Split /usr: . . . . . . . . . . .  ${enable_split_usr}
+        utmp/wtmp support: . . . . . . . . ${have_utmp}
+        Link time optimization: . . . . .  ${have_lto}
+        extra debugging: . . . . . . . . . ${enable_debug}
+        cgroup controller: . . . . . . . . ${with_cgroupctrl}
 
-        prefix:                  ${prefix}
-        rootprefix:              ${with_rootprefix}
-        sysconf dir:             ${sysconfdir}
-        datarootdir:             ${datarootdir}
-        includedir:              ${includedir}
-        lib dir:                 ${libdir}
-        rootlib dir:             ${with_rootlibdir}
-        PAM modules dir:         ${with_pamlibdir}
-        PAM configuration dir:   ${with_pamconfdir}
-        D-Bus policy dir:        ${with_dbuspolicydir}
-        D-Bus system dir:        ${with_dbussystemservicedir}
-        Bash completions dir:    ${with_bashcompletiondir}
-        Zsh completions dir:     ${with_zshcompletiondir}
-        Maximum System UID:      ${SYSTEM_UID_MAX}
-        Maximum System GID:      ${SYSTEM_GID_MAX}
+        prefix: . . . . . . . . . . . . .  ${prefix}
+        rootprefix: . . . . . . . . . . .  ${with_rootprefix}
+        sysconf dir: . . . . . . . . . . . ${sysconfdir}
+        datarootdir: . . . . . . . . . . . ${datarootdir}
+        includedir: . . . . . . . . . . .  ${includedir}
+        lib dir: . . . . . . . . . . . . . ${libdir}
+        rootlib dir: . . . . . . . . . . . ${with_rootlibdir}
+        PAM modules dir: . . . . . . . . . ${with_pamlibdir}
+        PAM configuration dir: . . . . . . ${with_pamconfdir}
+        D-Bus policy dir: . . . . . . . .  ${with_dbuspolicydir}
+        D-Bus system dir: . . . . . . . .  ${with_dbussystemservicedir}
+        bash completions dir: . . . . . .  ${with_bashcompletiondir}
+        zsh completions dir: . . . . . . . ${with_zshcompletiondir}
+        maximum system UID: . . . . . . .  ${SYSTEM_UID_MAX}
+        maximum system GID: . . . . . . .  ${SYSTEM_GID_MAX}
 
-        CFLAGS:                  ${OUR_CFLAGS} ${CFLAGS}
-        CPPFLAGS:                ${OUR_CPPFLAGS} ${CPPFLAGS}
-        LDFLAGS:                 ${OUR_LDFLAGS} ${LDFLAGS}
+        CFLAGS: . . . . . . . . . . . . .  ${OUR_CFLAGS} ${CFLAGS}
+        CPPFLAGS: . . . . . . . . . . . .  ${OUR_CPPFLAGS} ${CPPFLAGS}
+        LDFLAGS: . . . . . . . . . . . . . ${OUR_LDFLAGS} ${LDFLAGS}
 ])
