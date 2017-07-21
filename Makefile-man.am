@@ -66,17 +66,9 @@ MANPAGES_ALIAS += \
 	man/sd_peer_get_machine_name.3 \
 	man/sd_peer_get_owner_uid.3 \
 	man/sd_peer_get_session.3 \
-	man/sd_peer_get_slice.3 \
-	man/sd_peer_get_unit.3 \
-	man/sd_peer_get_user_slice.3 \
-	man/sd_peer_get_user_unit.3 \
 	man/sd_pid_get_cgroup.3 \
 	man/sd_pid_get_machine_name.3 \
 	man/sd_pid_get_owner_uid.3 \
-	man/sd_pid_get_slice.3 \
-	man/sd_pid_get_unit.3 \
-	man/sd_pid_get_user_slice.3 \
-	man/sd_pid_get_user_unit.3 \
 	man/sd_seat_can_graphical.3 \
 	man/sd_seat_can_multi_session.3 \
 	man/sd_seat_can_tty.3 \
@@ -112,17 +104,9 @@ man/sd_peer_get_cgroup.3: man/sd_pid_get_session.3
 man/sd_peer_get_machine_name.3: man/sd_pid_get_session.3
 man/sd_peer_get_owner_uid.3: man/sd_pid_get_session.3
 man/sd_peer_get_session.3: man/sd_pid_get_session.3
-man/sd_peer_get_slice.3: man/sd_pid_get_session.3
-man/sd_peer_get_unit.3: man/sd_pid_get_session.3
-man/sd_peer_get_user_slice.3: man/sd_pid_get_session.3
-man/sd_peer_get_user_unit.3: man/sd_pid_get_session.3
 man/sd_pid_get_cgroup.3: man/sd_pid_get_session.3
 man/sd_pid_get_machine_name.3: man/sd_pid_get_session.3
 man/sd_pid_get_owner_uid.3: man/sd_pid_get_session.3
-man/sd_pid_get_slice.3: man/sd_pid_get_session.3
-man/sd_pid_get_unit.3: man/sd_pid_get_session.3
-man/sd_pid_get_user_slice.3: man/sd_pid_get_session.3
-man/sd_pid_get_user_unit.3: man/sd_pid_get_session.3
 man/sd_seat_can_graphical.3: man/sd_seat_get_active.3
 man/sd_seat_can_multi_session.3: man/sd_seat_get_active.3
 man/sd_seat_can_tty.3: man/sd_seat_get_active.3
@@ -186,18 +170,6 @@ man/sd_peer_get_owner_uid.html: man/sd_pid_get_session.html
 man/sd_peer_get_session.html: man/sd_pid_get_session.html
 	$(html-alias)
 
-man/sd_peer_get_slice.html: man/sd_pid_get_session.html
-	$(html-alias)
-
-man/sd_peer_get_unit.html: man/sd_pid_get_session.html
-	$(html-alias)
-
-man/sd_peer_get_user_slice.html: man/sd_pid_get_session.html
-	$(html-alias)
-
-man/sd_peer_get_user_unit.html: man/sd_pid_get_session.html
-	$(html-alias)
-
 man/sd_pid_get_cgroup.html: man/sd_pid_get_session.html
 	$(html-alias)
 
@@ -205,18 +177,6 @@ man/sd_pid_get_machine_name.html: man/sd_pid_get_session.html
 	$(html-alias)
 
 man/sd_pid_get_owner_uid.html: man/sd_pid_get_session.html
-	$(html-alias)
-
-man/sd_pid_get_slice.html: man/sd_pid_get_session.html
-	$(html-alias)
-
-man/sd_pid_get_unit.html: man/sd_pid_get_session.html
-	$(html-alias)
-
-man/sd_pid_get_user_slice.html: man/sd_pid_get_session.html
-	$(html-alias)
-
-man/sd_pid_get_user_unit.html: man/sd_pid_get_session.html
 	$(html-alias)
 
 man/sd_seat_can_graphical.html: man/sd_seat_get_active.html
