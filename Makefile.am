@@ -448,8 +448,7 @@ libbasic_la_LDFLAGS = \
 libbasic_la_LIBADD = \
 	$(SELINUX_LIBS) \
 	$(CAP_LIBS) \
-	-ldl \
-	-lm
+	-ldl
 
 # -----------------------------------------------------------------------------
 noinst_LTLIBRARIES += \
