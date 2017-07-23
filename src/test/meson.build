@@ -855,6 +855,7 @@ tests += [
 #          [],
 #          [threads]],
 #endif // 0
+
         [['src/libelogind/sd-login/test-login.c'],
          [],
          []],
