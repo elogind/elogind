@@ -16,8 +16,6 @@
 #         service.h
 #         socket.c
 #         socket.h
-#         busname.c
-#         busname.h
 #         bus-policy.c
 #         bus-policy.h
 #         target.c
@@ -58,8 +56,6 @@
 #         dbus-service.h
 #         dbus-socket.c
 #         dbus-socket.h
-#         dbus-busname.c
-#         dbus-busname.h
 #         dbus-target.c
 #         dbus-target.h
 #         dbus-device.c
