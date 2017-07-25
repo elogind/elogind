@@ -38,9 +38,9 @@ SUBDIRS = . po
 # Keep the test-suite.log
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-LIBELOGIND_CURRENT=18
-LIBELOGIND_REVISION=3
-LIBELOGIND_AGE=18
+LIBELOGIND_CURRENT=19
+LIBELOGIND_REVISION=0
+LIBELOGIND_AGE=19
 
 # Dirs of external packages
 dbuspolicydir=@dbuspolicydir@
@@ -260,8 +260,10 @@ man/index.html: man/elogind.index.html
 	$(AM_V_LN)$(LN_S) -f elogind.index.html $@
 
 if HAVE_PYTHON
+if ENABLE_MANPAGES
 noinst_DATA += \
        man/index.html
+endif
 endif
 
 CLEANFILES += \
@@ -509,7 +511,6 @@ libelogind_shared_la_CFLAGS = \
 	$(libelogind_journal_internal_la_CFLAGS) \
 	$(libudev_internal_la_CFLAGS) \
 	$(ACL_CFLAGS) \
-	$(LIBIDN_CFLAGS) \
 	$(SECCOMP_CFLAGS) \
 	-fvisibility=default
 
@@ -520,7 +521,6 @@ libelogind_shared_la_LIBADD = \
 	$(libelogind_internal_la_LIBADD) \
 	$(UDEV_LIBS) \
 	$(ACL_LIBS) \
-	$(LIBIDN_LIBS) \
 	$(SECCOMP_LIBS)
 
 libelogind_shared_la_LDFLAGS = \
@@ -600,6 +600,7 @@ tests += \
 	test-list \
 	test-unaligned \
 	test-conf-files \
+	test-random-util \
 	test-conf-parser \
 	test-locale-util \
 	test-copy \
@@ -639,6 +640,12 @@ test_copy_SOURCES = \
 # Link statically to ensure file is large
 test_copy_LDADD = \
 	libshared.la
+
+test_random_util_SOURCES = \
+	src/test/test-random-util.c
+
+test_random_util_LDADD = \
+	libelogind-shared.la
 
 test_util_SOURCES = \
 	src/test/test-util.c
@@ -750,9 +757,6 @@ test_selinux_LDADD = \
 
 test_sizeof_SOURCES = \
 	src/test/test-sizeof.c
-
-test_sizeof_LDADD = \
-	libelogind-shared.la
 
 BUILT_SOURCES += \
 	src/test/test-hashmap-ordered.c
@@ -972,7 +976,6 @@ noinst_LTLIBRARIES += \
 
 EXTRA_DIST += \
 	src/libelogind/libelogind.pc.in \
-	src/libelogind/sd-bus/DIFFERENCES \
 	src/libelogind/sd-bus/GVARIANT-SERIALIZATION
 
 libelogind_la_SOURCES =
@@ -1017,6 +1020,7 @@ tests += \
 	test-bus-server \
 	test-bus-match \
 	test-bus-introspect \
+	test-bus-vtable \
 	test-bus-error \
 	test-event
 
@@ -1030,6 +1034,12 @@ test_bus_server_SOURCES = \
 	src/libelogind/sd-bus/test-bus-server.c
 
 test_bus_server_LDADD = \
+	libelogind-shared.la
+
+test_bus_vtable_SOURCES = \
+	src/libelogind/sd-bus/test-bus-vtable.c
+
+test_bus_vtable_LDADD = \
 	libelogind-shared.la
 
 test_bus_error_SOURCES = \
@@ -1197,10 +1207,10 @@ test_login_tables_LDADD = \
 	libelogind-core.la
 
 manual_tests += \
-	test-login \
 	test-inhibit
 
 tests += \
+	test-login \
 	test-login-tables \
 	test-login-shared
 
@@ -1284,15 +1294,13 @@ substitutions = \
        '|exec_prefix=$(exec_prefix)|' \
        '|libdir=$(libdir)|' \
        '|includedir=$(includedir)|' \
-       '|VERSION=$(VERSION)|' \
        '|rootprefix=$(rootprefix)|' \
        '|udevlibexecdir=$(udevlibexecdir)|' \
        '|KILL=$(KILL)|' \
        '|MKDIR_P=$(MKDIR_P)|' \
        '|KILL_USER_PROCESSES=$(KILL_USER_PROCESSES)|' \
        '|systemuidmax=$(SYSTEM_UID_MAX)|' \
-       '|systemgidmax=$(SYSTEM_GID_MAX)|' \
-       '|TTY_GID=$(TTY_GID)|'
+       '|systemgidmax=$(SYSTEM_GID_MAX)|'
 
 SED_PROCESS = \
 	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && \
@@ -1351,7 +1359,9 @@ if ENABLE_POLKIT
 nodist_polkitpolicy_DATA = \
 	$(polkitpolicy_files)
 polkitrules_DATA = $(polkitrules_files)
+if ENABLE_POLKIT_PKLA
 polkitpkla_DATA = $(polkitpkla_files)
+endif
 endif
 
 EXTRA_DIST += \
@@ -1375,7 +1385,7 @@ XSLTPROC_FLAGS = \
 	--stringparam funcsynopsis.style ansi \
 	--stringparam man.authors.section.enabled 0 \
 	--stringparam man.copyright.section.enabled 0 \
-	--stringparam elogind.version $(VERSION) \
+	--stringparam elogind.version $(PACKAGE_VERSION) \
 	--path '$(builddir)/man:$(srcdir)/man'
 
 XSLTPROC_PROCESS_MAN = \
@@ -1465,38 +1475,43 @@ dist:
 
 .PHONY: git-tag
 git-tag:
-	git tag -s "v$(VERSION)" -m "elogind $(VERSION)"
+	git tag -s "v$(PACKAGE_VERSION)" -m "elogind $(PACKAGE_VERSION)"
 
 .PHONY: git-tar
 git-tar:
-	$(AM_V_at)git archive --format=tar --prefix=elogind-$(VERSION)-raw/ HEAD | \
+	$(AM_V_at)git archive --format=tar --prefix=elogind-$(PACKAGE_VERSION)-raw/ HEAD | \
 		(cd /var/tmp/ && tar xf -)
-	$(AM_V_GEN)(cd /var/tmp && rm -rf elogind-$(VERSION) && $(MKDIR_P) elogind-$(VERSION) && \
-	 for f in `find elogind-$(VERSION)-raw/ -type f | cut -d '/' -f 2-` ; do \
-		$(MKDIR_P) elogind-$(VERSION)/`dirname $$f` ;            \
-		$(AWK) 'BEGIN                    { i=0;e=0      }        \
-		        /^#if\s+0.*elogind.*$$/  { i=1;next     }        \
-		        /^#else\s*$$/            {                       \
-		            { if ( i==1 ) e=1; else print }{next}        \
-			}                                                \
-		        /^#endif\s*\/\/\s*0\s*$$/ {                      \
-		            { if ( i==1 ) { i=0;e=0 } else print }{next} \
-			}                                                \
-		        /^\s*\/\/\/.*elogind.*$$/{ next         }        \
-		        /^\s*\/\/\s*#include.+$$/{ next         }        \
-		        { if ( (i==0) || (e==1) ) print         }'       \
-		          elogind-$(VERSION)-raw/$$f                     \
-		        > elogind-$(VERSION)/$$f ;                       \
-		        chmod `stat -c '%a' elogind-$(VERSION)-raw/$$f`  \
-		                            elogind-$(VERSION)/$$f ;     \
-	 done ; \
-	 for l in `find elogind-$(VERSION)-raw/ -type l | cut -d '/' -f 2-` ; do \
-		$(MKDIR_P) elogind-$(VERSION)/`dirname $$l` ; \
-		cp -P elogind-$(VERSION)-raw/$$l elogind-$(VERSION)/$$l ; \
-	 done ; \
-	 tar czf elogind-$(VERSION).tar.gz elogind-$(VERSION) ; \
-	 rm -rf elogind-$(VERSION) elogind-$(VERSION)-raw) ; \
-	$(AM_V_at)mv /var/tmp/elogind-$(VERSION).tar.gz ./
+	$(AM_V_GEN)(cd /var/tmp &&                                              \
+		rm -rf elogind-$(PACKAGE_VERSION) &&                            \
+		$(MKDIR_P) elogind-$(PACKAGE_VERSION) &&                        \
+	 for f in `find elogind-$(PACKAGE_VERSION)-raw/ -type f |               \
+			cut -d '/' -f 2-` ; do                                  \
+		$(MKDIR_P) elogind-$(PACKAGE_VERSION)/`dirname $$f` ;           \
+		$(AWK) 'BEGIN                    { i=0;e=0      }               \
+		        /^#if\s+0.*elogind.*$$/  { i=1;next     }               \
+		        /^#else\s*$$/            {                              \
+		            { if ( i==1 ) e=1; else print }{next}               \
+			}                                                       \
+		        /^#endif\s*\/\/\s*0\s*$$/ {                             \
+		            { if ( i==1 ) { i=0;e=0 } else print }{next}        \
+			}                                                       \
+		        /^\s*\/\/\/.*elogind.*$$/{ next         }               \
+		        /^\s*\/\/\s*#include.+$$/{ next         }               \
+		        { if ( (i==0) || (e==1) ) print         }'              \
+		          elogind-$(PACKAGE_VERSION)-raw/$$f                    \
+		        > elogind-$(PACKAGE_VERSION)/$$f ;                      \
+		        chmod `stat -c '%a' elogind-$(PACKAGE_VERSION)-raw/$$f` \
+		                            elogind-$(PACKAGE_VERSION)/$$f ;    \
+	 done ;                                                                 \
+	 for l in `find elogind-$(PACKAGE_VERSION)-raw/ -type l |               \
+			cut -d '/' -f 2-` ; do                                  \
+		$(MKDIR_P) elogind-$(PACKAGE_VERSION)/`dirname $$l` ;           \
+		cp -P elogind-$(PACKAGE_VERSION)-raw/$$l                        \
+			elogind-$(PACKAGE_VERSION)/$$l ;                        \
+	 done ;                                                                 \
+	 tar czf elogind-$(PACKAGE_VERSION).tar.gz elogind-$(PACKAGE_VERSION) ; \
+	 rm -rf elogind-$(PACKAGE_VERSION) elogind-$(PACKAGE_VERSION)-raw) ;    \
+	$(AM_V_at)mv /var/tmp/elogind-$(PACKAGE_VERSION).tar.gz ./
 
 .PHONY: install-tree
 install-tree: all

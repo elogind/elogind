@@ -396,6 +396,9 @@
 		<Unit filename="../src/libelogind/sd-bus/test-bus-signature.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-vtable.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/libelogind/sd-daemon/sd-daemon.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -556,6 +559,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/tests.h" />
+		<Unit filename="../src/shared/udev-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/shared/udev-util.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
@@ -654,6 +660,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-process-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-random-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-selinux.c">

@@ -20,7 +20,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([elogind],
-        [233.3],
+        [234],
         [https://github.com/elogind/elogind/issues],
         [elogind],
         [https://github.com/elogind/elogind])
@@ -378,7 +378,6 @@ AC_CHECK_DECLS([
         pivot_root,
         name_to_handle_at,
         setns,
-        getrandom,
         renameat2,
         kcmp,
         keyctl,
@@ -393,6 +392,13 @@ AC_CHECK_DECLS([
 #include <sched.h>
 #include <string.h>
 #include <linux/loop.h>
+]])
+
+AC_CHECK_DECLS([getrandom],
+               [AC_DEFINE([USE_SYS_RANDOM_H], [], [sys/random.h is usable])],
+               [AC_CHECK_DECLS([getrandom], [], [], [[
+#include <sys/random.h>
+]])], [[
 #include <linux/random.h>
 ]])
 
@@ -410,7 +416,8 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
                 IFLA_PHYS_PORT_ID,
                 IFLA_BOND_AD_INFO,
                 IFLA_VLAN_PROTOCOL,
-                IFLA_VXLAN_REMCSUM_NOPARTIAL,
+                IFLA_VXLAN_GPE,
+                IFLA_GENEVE_LABEL,
                 IFLA_IPTUN_ENCAP_DPORT,
                 IFLA_GRE_ENCAP_DPORT,
                 IFLA_BRIDGE_VLAN_INFO,
@@ -453,13 +460,27 @@ AC_ARG_WITH([udevbindir],
 AC_SUBST([udevbindir], [$with_udevbindir])
 
 # ------------------------------------------------------------------------------
+have_glib=no
+AC_ARG_ENABLE(glib, AS_HELP_STRING([--disable-glib], [disable usage of glib,gobject,gio in tests]))
+AS_IF([test "x$enable_glib" != "xno"], [
+        PKG_CHECK_MODULES(GLIB, [glib-2.0 >= 2.22.0 gobject-2.0 >= 2.22.0 gio-2.0],
+                [AC_DEFINE(HAVE_GLIB, 1, [Define if glib,gobject,gio are available]) have_glib=yes],
+                [have_glib=no])
+        AS_IF([test "x$have_glib" = "xno" -a "x$enable_glib" = "xyes"],
+                [AC_MSG_ERROR([*** glib support requested but libraries not found])])])
+
+# ------------------------------------------------------------------------------
 have_utmp=yes
 AC_ARG_ENABLE([utmp], AS_HELP_STRING([--disable-utmp], [disable utmp/wtmp log handling]),
         AS_CASE("x${enableval}",
                 [xyes], [have_utmp=yes],
                 [xno],  [have_utmp=no],
                 AC_MSG_ERROR(bad value ${enableval} for --enable-utmp)))
-AS_IF([test "x$have_utmp" = "xyes"], [AC_DEFINE(HAVE_UTMP, 1, [Define if utmp/wtmp support is enabled])])
+AS_IF([test "x$have_utmp" = "xyes"], [
+        AC_DEFINE(HAVE_UTMP, 1, [Define if utmp/wtmp support is enabled])
+        have_utmp=yes
+        M4_DEFINES="$M4_DEFINES -DHAVE_UTMP"],
+        [have_utmp=no])
 AM_CONDITIONAL([HAVE_UTMP], [test "x$have_utmp" = "xyes"])
 
 # ------------------------------------------------------------------------------
@@ -668,8 +689,14 @@ AC_ARG_ENABLE(polkit, AS_HELP_STRING([--disable-polkit], [disable PolicyKit supp
 if test "x$enable_polkit" != "xno"; then
         AC_DEFINE(ENABLE_POLKIT, 1, [Define if PolicyKit support is to be enabled])
         have_polkit=yes
+
+        # also enable support for *.pkla files on old polkit
+        PKG_CHECK_MODULES(POLKIT, [ polkit-gobject-1 < 0.106 ],
+                           [polkit_pkla=yes],
+                           [polkit_pkla=no])
 fi
 AM_CONDITIONAL(ENABLE_POLKIT, [test "x$have_polkit" = "xyes"])
+AM_CONDITIONAL(ENABLE_POLKIT_PKLA, [test "x$polkit_pkla" = "xyes"])
 
 # ------------------------------------------------------------------------------
 AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h valgrind/valgrind.h])
@@ -823,7 +850,7 @@ AC_CONFIG_FILES([
 
 AC_OUTPUT
 AC_MSG_RESULT([
-        $PACKAGE_NAME $VERSION
+        $PACKAGE_NAME $PACKAGE_VERSION
 
         PAM: . . . . . . . . . . . . . . . ${have_pam}
         SELinux: . . . . . . . . . . . . . ${have_selinux}
@@ -831,7 +858,8 @@ AC_MSG_RESULT([
         ACL: . . . . . . . . . . . . . . . ${have_acl}
         default cgroup hierarchy: . . . .  ${DEFAULT_HIERARCHY}
         default KillUserProcesses setting: ${KILL_USER_PROCESSES}
-        polkit: . . . . . . . . . . . . .  ${have_polkit}
+        polkit: . . . . . . . . . . . . .  ${have_polkit} (legacy pkla support: ${polkit_pkla})
+        glib: . . . . . . . . . . . . . .  ${have_glib}
         Python: . . . . . . . . . . . . .  ${have_python}
         man pages: . . . . . . . . . . . . ${have_manpages}
         test coverage: . . . . . . . . . . ${have_coverage}

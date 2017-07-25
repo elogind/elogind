@@ -28,7 +28,7 @@
 /TAGS
 /ata_id
 /bootctl
-/build-aux
+/build*
 /busctl
 /cdrom_id
 /collect
@@ -160,6 +160,8 @@
 /test-bus-server
 /test-bus-signature
 /test-bus-track
+/test-bus-vtable
+/test-bus-vtable-cc
 /test-bus-zero-copy
 /test-calendarspec
 /test-cap-list
@@ -265,13 +267,16 @@
 /test-process-util
 /test-pty
 /test-qcow2
+/test-random-util
 /test-ratelimit
 /test-replace-var
 /test-resolve
 /test-resolve-tables
+/test-resolved-packet
 /test-ring
 /test-rlimit-util
 /test-sched-prio
+/test-sd-dhcp-lease
 /test-seccomp
 /test-selinux
 /test-set
@@ -290,6 +295,7 @@
 /test-tables
 /test-terminal-util
 /test-time
+/test-timesync
 /test-tmpfiles
 /test-udev
 /test-uid-range
@@ -355,3 +361,5 @@ patches/
 /coccinelle
 mask_po_files.sh
 cccc
+*.v234
+*.v234.diff
