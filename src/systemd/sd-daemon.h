@@ -57,7 +57,6 @@ _SD_BEGIN_DECLARATIONS;
 /* The first passed file descriptor is fd 3 */
 #define SD_LISTEN_FDS_START 3
 
-#if 0 /// UNNEEDED by elogind
 /*
   Returns how many file descriptors have been passed, or a negative
   errno code on failure. Optionally, removes the $LISTEN_FDS and
@@ -77,6 +76,7 @@ int sd_listen_fds(int unset_environment);
 
 int sd_listen_fds_with_names(int unset_environment, char ***names);
 
+#if 0 /// UNNEEDED by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is a FIFO in the file system stored under the

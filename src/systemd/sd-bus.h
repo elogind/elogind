@@ -306,6 +306,7 @@ int sd_bus_message_set_priority(sd_bus_message *m, int64_t priority);
 #endif // 0
 
 int sd_bus_message_append(sd_bus_message *m, const char *types, ...);
+int sd_bus_message_appendv(sd_bus_message *m, const char *types, va_list ap);
 int sd_bus_message_append_basic(sd_bus_message *m, char type, const void *p);
 #if 0 /// UNNEEDED by elogind
 int sd_bus_message_append_array(sd_bus_message *m, char type, const void *ptr, size_t size);
