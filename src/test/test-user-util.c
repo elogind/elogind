@@ -18,7 +18,6 @@
 ***/
 
 #include "alloc-util.h"
-#include "def.h"
 #include "macro.h"
 #include "string-util.h"
 #include "user-util.h"
@@ -151,7 +150,9 @@ int main(int argc, char*argv[]) {
         test_uid_to_name_one(0xFFFFFFFF, "4294967295");
 
         test_gid_to_name_one(0, "root");
+#if 0 /// UNNEEDED by elogind
         test_gid_to_name_one(TTY_GID, "tty");
+#endif // 0
         test_gid_to_name_one(0xFFFF, "65535");
         test_gid_to_name_one(0xFFFFFFFF, "4294967295");
 
