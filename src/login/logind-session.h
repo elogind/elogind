@@ -113,6 +113,8 @@ struct Session {
         bool started:1;
         bool stopping:1;
 
+        bool was_active:1;
+
         sd_bus_message *create_message;
 
         sd_event_source *timer_event_source;
