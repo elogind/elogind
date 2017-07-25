@@ -477,16 +477,13 @@ global:
         sd_peer_get_cgroup;
 } LIBSYSTEMD_222;
 
-/*
- * These methods are not needed by elogind.
- * LIBSYSTEMD_227 {
- * global:
- *         sd_bus_default_flush_close;
- *         sd_bus_path_decode_many;
- *         sd_bus_path_encode_many;
- *         sd_listen_fds_with_names;
- * } LIBSYSTEMD_226;
-*/
+LIBSYSTEMD_227 {
+global:
+        /* sd_bus_default_flush_close; */
+        /* sd_bus_path_decode_many; */
+        /* sd_bus_path_encode_many; */
+        sd_listen_fds_with_names;
+} LIBSYSTEMD_226;
 
 /*
  * These methods are not needed by elogind.
@@ -511,7 +508,7 @@ global:
 LIBSYSTEMD_231 {
 global:
         sd_event_get_iteration;
-} LIBSYSTEMD_226;
+} LIBSYSTEMD_227;
 
 LIBSYSTEMD_232 {
 global:
