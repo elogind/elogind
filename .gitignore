@@ -316,3 +316,4 @@ patches/
 *.remote
 *.bak
 *.layout
+mask_po_files.sh
