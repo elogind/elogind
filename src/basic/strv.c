@@ -890,6 +890,7 @@ char **strv_skip(char **l, size_t n) {
 
         return l;
 }
+#endif // 0
 
 int strv_extend_n(char ***l, const char *value, size_t n) {
         size_t i, j, k;
@@ -929,6 +930,7 @@ rollback:
         return -ENOMEM;
 }
 
+#if 0 /// UNNEEDED by elogind
 int fputstrv(FILE *f, char **l, const char *separator, bool *space) {
         bool b = false;
         char **s;

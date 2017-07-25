@@ -55,6 +55,7 @@
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
+#include "strv.h"
 #include "unit-name.h"
 #include "user-util.h"
 
@@ -1003,7 +1004,7 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
         char line[LINE_MAX];
-        const char *fs, *controller_str;
+        const char *fs, *controller_str = NULL;
         size_t cs = 0;
         int unified;
 

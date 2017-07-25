@@ -191,8 +191,10 @@ static inline bool strv_fnmatch_or_empty(char* const* patterns, const char *s, i
 char ***strv_free_free(char ***l);
 
 char **strv_skip(char **l, size_t n);
+#endif // 0
 
 int strv_extend_n(char ***l, const char *value, size_t n);
 
+#if 0 /// UNNEEDED by elogind
 int fputstrv(FILE *f, char **l, const char *separator, bool *space);
 #endif // 0

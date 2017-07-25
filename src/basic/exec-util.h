@@ -40,4 +40,3 @@ int execute_directories(
 #if 0 /// UNNEEDED by elogind
 extern const gather_stdout_callback_t gather_environment[_STDOUT_CONSUME_MAX];
 #endif // 0
-
