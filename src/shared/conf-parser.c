@@ -978,7 +978,6 @@ int config_parse_ifname(
 
         return 0;
 }
-#endif // 0
 
 int config_parse_ip_port(
                 const char *unit,
@@ -1016,3 +1015,4 @@ int config_parse_ip_port(
 
         return 0;
 }
+#endif // 0
