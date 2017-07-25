@@ -18,127 +18,127 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
-msgid "Send passphrase back to system"
-msgstr "Jelmondat visszaküldése a rendszernek"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
+# msgid "Send passphrase back to system"
+# msgstr "Jelmondat visszaküldése a rendszernek"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
-msgid ""
-"Authentication is required to send the entered passphrase back to the system."
-msgstr ""
-"Hitelesítés szükséges a bevitt jelmondat visszaküldéséhez a rendszernek."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
+# msgid ""
+# "Authentication is required to send the entered passphrase back to the system."
+# msgstr ""
+# "Hitelesítés szükséges a bevitt jelmondat visszaküldéséhez a rendszernek."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
-#, fuzzy
-msgid "Manage system services or other units"
-msgstr "Rendszerszolgáltatások vagy -egységek kezelése"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
+# #, fuzzy
+# msgid "Manage system services or other units"
+# msgstr "Rendszerszolgáltatások vagy -egységek kezelése"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
-#, fuzzy
-msgid "Authentication is required to manage system services or other units."
-msgstr ""
-"Hitelesítés szükséges a rendszerszolgáltatások vagy -egységek kezeléséhez."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
+# #, fuzzy
+# msgid "Authentication is required to manage system services or other units."
+# msgstr ""
+# "Hitelesítés szükséges a rendszerszolgáltatások vagy -egységek kezeléséhez."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
-msgid "Manage system service or unit files"
-msgstr "Rendszerszolgáltatás- vagy egységfájlok kezelése"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
+# msgid "Manage system service or unit files"
+# msgstr "Rendszerszolgáltatás- vagy egységfájlok kezelése"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
-msgid "Authentication is required to manage system service or unit files."
-msgstr ""
-"Hitelesítés szükséges a rendszerszolgáltatás- vagy egységfájlok kezeléséhez."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
+# msgid "Authentication is required to manage system service or unit files."
+# msgstr ""
+# "Hitelesítés szükséges a rendszerszolgáltatás- vagy egységfájlok kezeléséhez."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
-msgid "Set or unset system and service manager environment variables"
-msgstr ""
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
+# msgid "Set or unset system and service manager environment variables"
+# msgstr ""
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
-#, fuzzy
-msgid ""
-"Authentication is required to set or unset system and service manager "
-"environment variables."
-msgstr ""
-"Hitelesítés szükséges a rendszerszolgáltatás- vagy egységfájlok kezeléséhez."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
+# #, fuzzy
+# msgid ""
+# "Authentication is required to set or unset system and service manager "
+# "environment variables."
+# msgstr ""
+# "Hitelesítés szükséges a rendszerszolgáltatás- vagy egységfájlok kezeléséhez."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-msgid "Reload the systemd state"
-msgstr "A systemd állapotának újratöltése"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
+# msgid "Reload the systemd state"
+# msgstr "A systemd állapotának újratöltése"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-msgid "Authentication is required to reload the systemd state."
-msgstr "Hitelesítés szükséges a systemd állapotának újratöltéséhez."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "Hitelesítés szükséges a systemd állapotának újratöltéséhez."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
-msgid "Set host name"
-msgstr "Gépnév beállítása"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
+# msgid "Set host name"
+# msgstr "Gépnév beállítása"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
-msgid "Authentication is required to set the local host name."
-msgstr "Hitelesítés szükséges a helyi gépnév beállításához."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
+# msgid "Authentication is required to set the local host name."
+# msgstr "Hitelesítés szükséges a helyi gépnév beállításához."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
-msgid "Set static host name"
-msgstr "Statikus gépnév beállítása"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
+# msgid "Set static host name"
+# msgstr "Statikus gépnév beállítása"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
-msgid ""
-"Authentication is required to set the statically configured local host name, "
-"as well as the pretty host name."
-msgstr ""
-"Hitelesítés szükséges a statikusan megadott helyi gépnév, valamint a szép "
-"gépnév beállításához."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
+# msgid ""
+# "Authentication is required to set the statically configured local host name, "
+# "as well as the pretty host name."
+# msgstr ""
+# "Hitelesítés szükséges a statikusan megadott helyi gépnév, valamint a szép "
+# "gépnév beállításához."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
-msgid "Set machine information"
-msgstr "Gépinformációk beállítása"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
+# msgid "Set machine information"
+# msgstr "Gépinformációk beállítása"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
-msgid "Authentication is required to set local machine information."
-msgstr "Hitelesítés szükséges a helyi gép információinak beállításához."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
+# msgid "Authentication is required to set local machine information."
+# msgstr "Hitelesítés szükséges a helyi gép információinak beállításához."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:1
-msgid "Import a VM or container image"
-msgstr ""
+# #: ../src/import/org.freedesktop.import1.policy.in.h:1
+# msgid "Import a VM or container image"
+# msgstr ""
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:2
-#, fuzzy
-msgid "Authentication is required to import a VM or container image"
-msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
+# #: ../src/import/org.freedesktop.import1.policy.in.h:2
+# #, fuzzy
+# msgid "Authentication is required to import a VM or container image"
+# msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:3
-msgid "Export a VM or container image"
-msgstr ""
+# #: ../src/import/org.freedesktop.import1.policy.in.h:3
+# msgid "Export a VM or container image"
+# msgstr ""
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:4
-#, fuzzy
-msgid "Authentication is required to export a VM or container image"
-msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
+# #: ../src/import/org.freedesktop.import1.policy.in.h:4
+# #, fuzzy
+# msgid "Authentication is required to export a VM or container image"
+# msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:5
-msgid "Download a VM or container image"
-msgstr ""
+# #: ../src/import/org.freedesktop.import1.policy.in.h:5
+# msgid "Download a VM or container image"
+# msgstr ""
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:6
-#, fuzzy
-msgid "Authentication is required to download a VM or container image"
-msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
+# #: ../src/import/org.freedesktop.import1.policy.in.h:6
+# #, fuzzy
+# msgid "Authentication is required to download a VM or container image"
+# msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:1
-msgid "Set system locale"
-msgstr "Területi beállítás megadása"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
+# msgid "Set system locale"
+# msgstr "Területi beállítás megadása"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:2
-msgid "Authentication is required to set the system locale."
-msgstr "Hitelesítés szükséges a rendszer területi beállításainak megadásához."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
+# msgid "Authentication is required to set the system locale."
+# msgstr "Hitelesítés szükséges a rendszer területi beállításainak megadásához."
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:3
-msgid "Set system keyboard settings"
-msgstr "Rendszer billentyűzetbeállítások megadása"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
+# msgid "Set system keyboard settings"
+# msgstr "Rendszer billentyűzetbeállítások megadása"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:4
-msgid "Authentication is required to set the system keyboard settings."
-msgstr ""
-"Hitelesítés szükséges a rendszer billentyűzetbeállításainak megadásához."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
+# msgid "Authentication is required to set the system keyboard settings."
+# msgstr ""
+# "Hitelesítés szükséges a rendszer billentyűzetbeállításainak megadásához."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -439,70 +439,70 @@ msgid ""
 "interface."
 msgstr "Hitelesítés szükséges a helyi gépnév beállításához."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:1
-msgid "Log into a local container"
-msgstr "Bejelentkezés helyi konténerbe"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
+# msgid "Log into a local container"
+# msgstr "Bejelentkezés helyi konténerbe"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:2
-#, fuzzy
-msgid "Authentication is required to log into a local container."
-msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
+# #, fuzzy
+# msgid "Authentication is required to log into a local container."
+# msgstr "Hitelesítés szükséges a bejelentkezéshez egy helyi konténerbe."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:3
-msgid "Manage local virtual machines and containers"
-msgstr ""
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
+# msgid "Manage local virtual machines and containers"
+# msgstr ""
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:4
-#, fuzzy
-msgid ""
-"Authentication is required to manage local virtual machines and containers."
-msgstr "Hitelesítés szükséges a helyi gép információinak beállításához."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
+# #, fuzzy
+# msgid ""
+# "Authentication is required to manage local virtual machines and containers."
+# msgstr "Hitelesítés szükséges a helyi gép információinak beállításához."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:5
-msgid "Manage local virtual machine and container images"
-msgstr ""
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
+# msgid "Manage local virtual machine and container images"
+# msgstr ""
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:6
-#, fuzzy
-msgid ""
-"Authentication is required to manage local virtual machine and container "
-"images."
-msgstr "Hitelesítés szükséges a helyi gép információinak beállításához."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
+# #, fuzzy
+# msgid ""
+# "Authentication is required to manage local virtual machine and container "
+# "images."
+# msgstr "Hitelesítés szükséges a helyi gép információinak beállításához."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
-msgid "Set system time"
-msgstr "Rendszeridő beállítása"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
+# msgid "Set system time"
+# msgstr "Rendszeridő beállítása"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
-msgid "Authentication is required to set the system time."
-msgstr "Hitelesítés szükséges a rendszeridő beállításához."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
+# msgid "Authentication is required to set the system time."
+# msgstr "Hitelesítés szükséges a rendszeridő beállításához."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
-msgid "Set system timezone"
-msgstr "Rendszer időzónájának beállítása"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
+# msgid "Set system timezone"
+# msgstr "Rendszer időzónájának beállítása"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
-msgid "Authentication is required to set the system timezone."
-msgstr "Hitelesítés szükséges a rendszer időzónájának beállításához."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
+# msgid "Authentication is required to set the system timezone."
+# msgstr "Hitelesítés szükséges a rendszer időzónájának beállításához."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
-msgid "Set RTC to local timezone or UTC"
-msgstr "Az RTC beállítása helyi időzónára vagy UTC-re"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
+# msgid "Set RTC to local timezone or UTC"
+# msgstr "Az RTC beállítása helyi időzónára vagy UTC-re"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
-msgid ""
-"Authentication is required to control whether the RTC stores the local or "
-"UTC time."
-msgstr ""
-"Hitelesítés szükséges az RTC beállításához a helyi időzóna vagy UTC "
-"tárolására."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
+# msgid ""
+# "Authentication is required to control whether the RTC stores the local or "
+# "UTC time."
+# msgstr ""
+# "Hitelesítés szükséges az RTC beállításához a helyi időzóna vagy UTC "
+# "tárolására."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
-msgid "Turn network time synchronization on or off"
-msgstr "Hálózati időszinkronizáció be- vagy kikapcsolása"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
+# msgid "Turn network time synchronization on or off"
+# msgstr "Hálózati időszinkronizáció be- vagy kikapcsolása"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
-msgid ""
-"Authentication is required to control whether network time synchronization "
-"shall be enabled."
-msgstr "Hitelesítés szükséges a hálózati időszinkronizáció engedélyezéséhez."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
+# msgid ""
+# "Authentication is required to control whether network time synchronization "
+# "shall be enabled."
+# msgstr "Hitelesítés szükséges a hálózati időszinkronizáció engedélyezéséhez."

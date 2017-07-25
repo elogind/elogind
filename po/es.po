@@ -20,130 +20,130 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
-msgid "Send passphrase back to system"
-msgstr "Devolver contraseña al sistema"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
+# msgid "Send passphrase back to system"
+# msgstr "Devolver contraseña al sistema"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
-msgid ""
-"Authentication is required to send the entered passphrase back to the system."
-msgstr ""
-"Se requiere autenticación para devolver la contraseña introducida al sistema."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
+# msgid ""
+# "Authentication is required to send the entered passphrase back to the system."
+# msgstr ""
+# "Se requiere autenticación para devolver la contraseña introducida al sistema."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
-msgid "Manage system services or other units"
-msgstr "Administrar servicios del sistema u otras unidades"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
+# msgid "Manage system services or other units"
+# msgstr "Administrar servicios del sistema u otras unidades"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
-msgid "Authentication is required to manage system services or other units."
-msgstr ""
-"Se requiere autenticación para administrar los servicios de sistema u otras "
-"unidades."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
+# msgid "Authentication is required to manage system services or other units."
+# msgstr ""
+# "Se requiere autenticación para administrar los servicios de sistema u otras "
+# "unidades."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
-msgid "Manage system service or unit files"
-msgstr "Administrar servicio del sistema o archivos de unidad"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
+# msgid "Manage system service or unit files"
+# msgstr "Administrar servicio del sistema o archivos de unidad"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
-msgid "Authentication is required to manage system service or unit files."
-msgstr ""
-"Se requiere autenticación para administrar el servicio de sistema o los "
-"archivos de unidad."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
+# msgid "Authentication is required to manage system service or unit files."
+# msgstr ""
+# "Se requiere autenticación para administrar el servicio de sistema o los "
+# "archivos de unidad."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
-msgid "Set or unset system and service manager environment variables"
-msgstr "Administrar variables de entorno del sistema y del gestor de servicios"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
+# msgid "Set or unset system and service manager environment variables"
+# msgstr "Administrar variables de entorno del sistema y del gestor de servicios"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
-msgid ""
-"Authentication is required to set or unset system and service manager "
-"environment variables."
-msgstr ""
-"Se requiere autenticación para administrar las variables de entorno del "
-"sistema y del gestor de servicios."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
+# msgid ""
+# "Authentication is required to set or unset system and service manager "
+# "environment variables."
+# msgstr ""
+# "Se requiere autenticación para administrar las variables de entorno del "
+# "sistema y del gestor de servicios."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-msgid "Reload the systemd state"
-msgstr "Recargar el estado de systemd"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
+# msgid "Reload the systemd state"
+# msgstr "Recargar el estado de systemd"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-msgid "Authentication is required to reload the systemd state."
-msgstr "Se requiere autenticación para recargar el estado de systemd."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "Se requiere autenticación para recargar el estado de systemd."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
-msgid "Set host name"
-msgstr "Establecer nombre del equipo"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
+# msgid "Set host name"
+# msgstr "Establecer nombre del equipo"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
-msgid "Authentication is required to set the local host name."
-msgstr "Se requiere autenticación para establecer el nombre de equipo local."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
+# msgid "Authentication is required to set the local host name."
+# msgstr "Se requiere autenticación para establecer el nombre de equipo local."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
-msgid "Set static host name"
-msgstr "Establecer nombre estático del equipo"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
+# msgid "Set static host name"
+# msgstr "Establecer nombre estático del equipo"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
-msgid ""
-"Authentication is required to set the statically configured local host name, "
-"as well as the pretty host name."
-msgstr ""
-"Se requiere autenticación para establecer el nombre estático de equipo "
-"local, así como el nombre visible del equipo."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
+# msgid ""
+# "Authentication is required to set the statically configured local host name, "
+# "as well as the pretty host name."
+# msgstr ""
+# "Se requiere autenticación para establecer el nombre estático de equipo "
+# "local, así como el nombre visible del equipo."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
-msgid "Set machine information"
-msgstr "Establecer información del sistema"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
+# msgid "Set machine information"
+# msgstr "Establecer información del sistema"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
-msgid "Authentication is required to set local machine information."
-msgstr ""
-"Se requiere autenticación para establecer la información de sistema local."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
+# msgid "Authentication is required to set local machine information."
+# msgstr ""
+# "Se requiere autenticación para establecer la información de sistema local."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:1
-msgid "Import a VM or container image"
-msgstr "Importar una imagen de máquina virtual o de contenedor"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:1
+# msgid "Import a VM or container image"
+# msgstr "Importar una imagen de máquina virtual o de contenedor"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:2
-msgid "Authentication is required to import a VM or container image"
-msgstr ""
-"Se requiere autenticación para importar una imagen de máquina virtual o de "
-"contenedor"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:2
+# msgid "Authentication is required to import a VM or container image"
+# msgstr ""
+# "Se requiere autenticación para importar una imagen de máquina virtual o de "
+# "contenedor"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:3
-msgid "Export a VM or container image"
-msgstr "Exportar imagen de máquina virtual o de contenedor"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:3
+# msgid "Export a VM or container image"
+# msgstr "Exportar imagen de máquina virtual o de contenedor"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:4
-msgid "Authentication is required to export a VM or container image"
-msgstr ""
-"Se requiere autenticación para exportar una imagen de máquina virtual o de "
-"contenedor"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:4
+# msgid "Authentication is required to export a VM or container image"
+# msgstr ""
+# "Se requiere autenticación para exportar una imagen de máquina virtual o de "
+# "contenedor"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:5
-msgid "Download a VM or container image"
-msgstr "Descargar una imagen de máquina virtual o de contenedor"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:5
+# msgid "Download a VM or container image"
+# msgstr "Descargar una imagen de máquina virtual o de contenedor"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:6
-msgid "Authentication is required to download a VM or container image"
-msgstr ""
-"Se requiere autenticación para descargar una imagen de máquina virtual o de "
-"contenedor"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:6
+# msgid "Authentication is required to download a VM or container image"
+# msgstr ""
+# "Se requiere autenticación para descargar una imagen de máquina virtual o de "
+# "contenedor"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:1
-msgid "Set system locale"
-msgstr "Establecer región del sistema"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
+# msgid "Set system locale"
+# msgstr "Establecer región del sistema"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:2
-msgid "Authentication is required to set the system locale."
-msgstr "Se requiere autenticación para establecer la región del sistema"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
+# msgid "Authentication is required to set the system locale."
+# msgstr "Se requiere autenticación para establecer la región del sistema"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:3
-msgid "Set system keyboard settings"
-msgstr "Configurar teclado"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
+# msgid "Set system keyboard settings"
+# msgstr "Configurar teclado"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:4
-msgid "Authentication is required to set the system keyboard settings."
-msgstr "Se requiere autenticación para configurar el teclado del sistema."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
+# msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Se requiere autenticación para configurar el teclado del sistema."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -446,76 +446,76 @@ msgstr ""
 "Se requiere autenticación para indicar al firmware que arranque la interfaz "
 "de configuración."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:1
-msgid "Log into a local container"
-msgstr "Conectarse a un contenedor local"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
+# msgid "Log into a local container"
+# msgstr "Conectarse a un contenedor local"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:2
-msgid "Authentication is required to log into a local container."
-msgstr "Se requiere autenticación para conectarse a un contenedor local."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
+# msgid "Authentication is required to log into a local container."
+# msgstr "Se requiere autenticación para conectarse a un contenedor local."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:3
-msgid "Manage local virtual machines and containers"
-msgstr "Administrar máquinas virtuales y contenedores locales"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
+# msgid "Manage local virtual machines and containers"
+# msgstr "Administrar máquinas virtuales y contenedores locales"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:4
-msgid ""
-"Authentication is required to manage local virtual machines and containers."
-msgstr ""
-"Se requiere autenticación para administrar las máquinas virtuales y los "
-"contenedores locales."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
+# msgid ""
+# "Authentication is required to manage local virtual machines and containers."
+# msgstr ""
+# "Se requiere autenticación para administrar las máquinas virtuales y los "
+# "contenedores locales."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:5
-msgid "Manage local virtual machine and container images"
-msgstr "Administrar imágenes de máquina virtual y de contenedor locales"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
+# msgid "Manage local virtual machine and container images"
+# msgstr "Administrar imágenes de máquina virtual y de contenedor locales"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:6
-msgid ""
-"Authentication is required to manage local virtual machine and container "
-"images."
-msgstr ""
-"Se requiere autenticación para administrar las imágenes de máquina virtual y "
-"de contenedor locales."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
+# msgid ""
+# "Authentication is required to manage local virtual machine and container "
+# "images."
+# msgstr ""
+# "Se requiere autenticación para administrar las imágenes de máquina virtual y "
+# "de contenedor locales."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
-msgid "Set system time"
-msgstr "Establecer fecha y hora del sistema"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
+# msgid "Set system time"
+# msgstr "Establecer fecha y hora del sistema"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
-msgid "Authentication is required to set the system time."
-msgstr "Se requiere autenticación para establecer la fecha y hora del sistema."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
+# msgid "Authentication is required to set the system time."
+# msgstr "Se requiere autenticación para establecer la fecha y hora del sistema."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
-msgid "Set system timezone"
-msgstr "Establecer la zona horaria del sistema"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
+# msgid "Set system timezone"
+# msgstr "Establecer la zona horaria del sistema"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
-msgid "Authentication is required to set the system timezone."
-msgstr "Se requiere autenticación para establecer la zona horaria del sistema."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
+# msgid "Authentication is required to set the system timezone."
+# msgstr "Se requiere autenticación para establecer la zona horaria del sistema."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
-msgid "Set RTC to local timezone or UTC"
-msgstr "Establecer reloj del sistema en formato de hora local/tiempo UTC"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
+# msgid "Set RTC to local timezone or UTC"
+# msgstr "Establecer reloj del sistema en formato de hora local/tiempo UTC"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
-msgid ""
-"Authentication is required to control whether the RTC stores the local or "
-"UTC time."
-msgstr ""
-"Se requiere autenticación para establecer el reloj del sistema en formato de "
-"hora local / tiempo UTC."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
+# msgid ""
+# "Authentication is required to control whether the RTC stores the local or "
+# "UTC time."
+# msgstr ""
+# "Se requiere autenticación para establecer el reloj del sistema en formato de "
+# "hora local / tiempo UTC."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
-msgid "Turn network time synchronization on or off"
-msgstr "Activar/desactivar la sincronización de hora por red"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
+# msgid "Turn network time synchronization on or off"
+# msgstr "Activar/desactivar la sincronización de hora por red"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
-msgid ""
-"Authentication is required to control whether network time synchronization "
-"shall be enabled."
-msgstr ""
-"Se requiere autenticación para activar/desactivar la sincronización de hora "
-"por red."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
+# msgid ""
+# "Authentication is required to control whether network time synchronization "
+# "shall be enabled."
+# msgstr ""
+# "Se requiere autenticación para activar/desactivar la sincronización de hora "
+# "por red."
 
 #~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
 #~ msgstr ""

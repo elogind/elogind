@@ -16,134 +16,134 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
-msgid "Send passphrase back to system"
-msgstr "Отправить пароль системе"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
+# msgid "Send passphrase back to system"
+# msgstr "Отправить пароль системе"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
-msgid ""
-"Authentication is required to send the entered passphrase back to the system."
-msgstr "Чтобы отправить пароль системе, необходимо пройти аутентификацию."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
+# msgid ""
+# "Authentication is required to send the entered passphrase back to the system."
+# msgstr "Чтобы отправить пароль системе, необходимо пройти аутентификацию."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
-#, fuzzy
-msgid "Manage system services or other units"
-msgstr "Управление системными службами и юнитами"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
+# #, fuzzy
+# msgid "Manage system services or other units"
+# msgstr "Управление системными службами и юнитами"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
-#, fuzzy
-msgid "Authentication is required to manage system services or other units."
-msgstr ""
-"Для управления системными службами и юнитами, необходимо пройти "
-"аутентификацию."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
+# #, fuzzy
+# msgid "Authentication is required to manage system services or other units."
+# msgstr ""
+# "Для управления системными службами и юнитами, необходимо пройти "
+# "аутентификацию."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
-msgid "Manage system service or unit files"
-msgstr "Управление файлами конфигурации системных служб и юнитов"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
+# msgid "Manage system service or unit files"
+# msgstr "Управление файлами конфигурации системных служб и юнитов"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
-msgid "Authentication is required to manage system service or unit files."
-msgstr ""
-"Для управления файлами конфигурации системных служб и юнитов, необходимо "
-"пройти аутентификацию."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
+# msgid "Authentication is required to manage system service or unit files."
+# msgstr ""
+# "Для управления файлами конфигурации системных служб и юнитов, необходимо "
+# "пройти аутентификацию."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
-msgid "Set or unset system and service manager environment variables"
-msgstr "Настроить переменные окружения для системного менеджера"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
+# msgid "Set or unset system and service manager environment variables"
+# msgstr "Настроить переменные окружения для системного менеджера"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
-msgid ""
-"Authentication is required to set or unset system and service manager "
-"environment variables."
-msgstr ""
-"Чтобы настроить переменные окружения для системного менеджера, необходимо "
-"пройти аутентификацию."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
+# msgid ""
+# "Authentication is required to set or unset system and service manager "
+# "environment variables."
+# msgstr ""
+# "Чтобы настроить переменные окружения для системного менеджера, необходимо "
+# "пройти аутентификацию."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-msgid "Reload the systemd state"
-msgstr "Перечитать конфигурацию systemd"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
+# msgid "Reload the systemd state"
+# msgstr "Перечитать конфигурацию systemd"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-msgid "Authentication is required to reload the systemd state."
-msgstr ""
-"Чтобы заставить systemd перечитать конфигурацию, необходимо пройти "
-"аутентификацию."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
+# msgid "Authentication is required to reload the systemd state."
+# msgstr ""
+# "Чтобы заставить systemd перечитать конфигурацию, необходимо пройти "
+# "аутентификацию."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
-msgid "Set host name"
-msgstr "Настроить имя компьютера"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
+# msgid "Set host name"
+# msgstr "Настроить имя компьютера"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
-msgid "Authentication is required to set the local host name."
-msgstr "Чтобы настроить имя компьютера, необходимо пройти аутентификацию."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
+# msgid "Authentication is required to set the local host name."
+# msgstr "Чтобы настроить имя компьютера, необходимо пройти аутентификацию."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
-msgid "Set static host name"
-msgstr "Настроить статическое имя компьютера"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
+# msgid "Set static host name"
+# msgstr "Настроить статическое имя компьютера"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
-msgid ""
-"Authentication is required to set the statically configured local host name, "
-"as well as the pretty host name."
-msgstr ""
-"Чтобы настроить статическое имя компьютера, а также его «красивое» имя, "
-"необходимо пройти аутентификацию."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
+# msgid ""
+# "Authentication is required to set the statically configured local host name, "
+# "as well as the pretty host name."
+# msgstr ""
+# "Чтобы настроить статическое имя компьютера, а также его «красивое» имя, "
+# "необходимо пройти аутентификацию."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
-msgid "Set machine information"
-msgstr "Настроить информацию о компьютере"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
+# msgid "Set machine information"
+# msgstr "Настроить информацию о компьютере"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
-msgid "Authentication is required to set local machine information."
-msgstr ""
-"Чтобы настроить информацию о компьютере, необходимо пройти аутентификацию."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
+# msgid "Authentication is required to set local machine information."
+# msgstr ""
+# "Чтобы настроить информацию о компьютере, необходимо пройти аутентификацию."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:1
-msgid "Import a VM or container image"
-msgstr "Импортировать образ виртуальной машины или контейнера"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:1
+# msgid "Import a VM or container image"
+# msgstr "Импортировать образ виртуальной машины или контейнера"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:2
-msgid "Authentication is required to import a VM or container image"
-msgstr ""
-"Чтобы импортировать образ виртуальной машины или контейнера, необходимо "
-"пройти аутентификацию."
+# #: ../src/import/org.freedesktop.import1.policy.in.h:2
+# msgid "Authentication is required to import a VM or container image"
+# msgstr ""
+# "Чтобы импортировать образ виртуальной машины или контейнера, необходимо "
+# "пройти аутентификацию."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:3
-msgid "Export a VM or container image"
-msgstr "Экспортировать образ виртуальной машины или контейнера"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:3
+# msgid "Export a VM or container image"
+# msgstr "Экспортировать образ виртуальной машины или контейнера"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:4
-msgid "Authentication is required to export a VM or container image"
-msgstr ""
-"Чтобы экспортировать образ виртуальной машины или контейнера, необходимо "
-"пройти аутентификацию."
+# #: ../src/import/org.freedesktop.import1.policy.in.h:4
+# msgid "Authentication is required to export a VM or container image"
+# msgstr ""
+# "Чтобы экспортировать образ виртуальной машины или контейнера, необходимо "
+# "пройти аутентификацию."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:5
-msgid "Download a VM or container image"
-msgstr "Загрузить образ виртуальной машины или контейнера"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:5
+# msgid "Download a VM or container image"
+# msgstr "Загрузить образ виртуальной машины или контейнера"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:6
-msgid "Authentication is required to download a VM or container image"
-msgstr ""
-"Чтобы загрузить образ виртуальной машины или контейнера, необходимо пройти "
-"аутентификацию."
+# #: ../src/import/org.freedesktop.import1.policy.in.h:6
+# msgid "Authentication is required to download a VM or container image"
+# msgstr ""
+# "Чтобы загрузить образ виртуальной машины или контейнера, необходимо пройти "
+# "аутентификацию."
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:1
-msgid "Set system locale"
-msgstr "Настроить системную локаль"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
+# msgid "Set system locale"
+# msgstr "Настроить системную локаль"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:2
-msgid "Authentication is required to set the system locale."
-msgstr "Чтобы настроить системную локаль, необходимо пройти аутентификацию."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
+# msgid "Authentication is required to set the system locale."
+# msgstr "Чтобы настроить системную локаль, необходимо пройти аутентификацию."
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:3
-msgid "Set system keyboard settings"
-msgstr "Настроить параметры клавиатуры"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
+# msgid "Set system keyboard settings"
+# msgstr "Настроить параметры клавиатуры"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:4
-msgid "Authentication is required to set the system keyboard settings."
-msgstr ""
-"Чтобы настроить параметры клавиатуры, необходимо пройти аутентификацию."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
+# msgid "Authentication is required to set the system keyboard settings."
+# msgstr ""
+# "Чтобы настроить параметры клавиатуры, необходимо пройти аутентификацию."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -465,76 +465,76 @@ msgid ""
 "interface."
 msgstr "Чтобы настроить имя компьютера, необходимо пройти аутентификацию."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:1
-msgid "Log into a local container"
-msgstr "Зайти в локальный контейнер"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
+# msgid "Log into a local container"
+# msgstr "Зайти в локальный контейнер"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:2
-msgid "Authentication is required to log into a local container."
-msgstr "Чтобы зайти в локальный контейнер, необходимо пройти аутентификацию."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
+# msgid "Authentication is required to log into a local container."
+# msgstr "Чтобы зайти в локальный контейнер, необходимо пройти аутентификацию."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:3
-msgid "Manage local virtual machines and containers"
-msgstr "Управление виртуальными машинами и контейнерами"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
+# msgid "Manage local virtual machines and containers"
+# msgstr "Управление виртуальными машинами и контейнерами"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:4
-msgid ""
-"Authentication is required to manage local virtual machines and containers."
-msgstr ""
-"Для управления виртуальными машинами и контейнерами, необходимо пройти "
-"аутентификацию."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
+# msgid ""
+# "Authentication is required to manage local virtual machines and containers."
+# msgstr ""
+# "Для управления виртуальными машинами и контейнерами, необходимо пройти "
+# "аутентификацию."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:5
-msgid "Manage local virtual machine and container images"
-msgstr "Управление образами виртуальных машин и контейнеров"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
+# msgid "Manage local virtual machine and container images"
+# msgstr "Управление образами виртуальных машин и контейнеров"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:6
-msgid ""
-"Authentication is required to manage local virtual machine and container "
-"images."
-msgstr ""
-"Для управления образами виртуальных машин и контейнеров, необходимо пройти "
-"аутентификацию."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
+# msgid ""
+# "Authentication is required to manage local virtual machine and container "
+# "images."
+# msgstr ""
+# "Для управления образами виртуальных машин и контейнеров, необходимо пройти "
+# "аутентификацию."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
-msgid "Set system time"
-msgstr "Настроить системное время"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
+# msgid "Set system time"
+# msgstr "Настроить системное время"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
-msgid "Authentication is required to set the system time."
-msgstr "Чтобы настроить системное время, необходимо пройти аутентификацию."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
+# msgid "Authentication is required to set the system time."
+# msgstr "Чтобы настроить системное время, необходимо пройти аутентификацию."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
-msgid "Set system timezone"
-msgstr "Настроить часовой пояс"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
+# msgid "Set system timezone"
+# msgstr "Настроить часовой пояс"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
-msgid "Authentication is required to set the system timezone."
-msgstr "Чтобы настроить часовой пояс, необходимо пройти аутентификацию."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
+# msgid "Authentication is required to set the system timezone."
+# msgstr "Чтобы настроить часовой пояс, необходимо пройти аутентификацию."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
-msgid "Set RTC to local timezone or UTC"
-msgstr "Установить аппаратные часы по местному времени или по Гринвичу"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
+# msgid "Set RTC to local timezone or UTC"
+# msgstr "Установить аппаратные часы по местному времени или по Гринвичу"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
-msgid ""
-"Authentication is required to control whether the RTC stores the local or "
-"UTC time."
-msgstr ""
-"Чтобы контролировать, установлены аппаратные часы по местному времени или по "
-"Гринвичу, необходимо пройти аутентификацию."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
+# msgid ""
+# "Authentication is required to control whether the RTC stores the local or "
+# "UTC time."
+# msgstr ""
+# "Чтобы контролировать, установлены аппаратные часы по местному времени или по "
+# "Гринвичу, необходимо пройти аутентификацию."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
-msgid "Turn network time synchronization on or off"
-msgstr "Включить или выключить синхронизацию времени по сети"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
+# msgid "Turn network time synchronization on or off"
+# msgstr "Включить или выключить синхронизацию времени по сети"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
-msgid ""
-"Authentication is required to control whether network time synchronization "
-"shall be enabled."
-msgstr ""
-"Чтобы включить или выключить синхронизацию времени по сети, необходимо "
-"пройти аутентификацию."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
+# msgid ""
+# "Authentication is required to control whether network time synchronization "
+# "shall be enabled."
+# msgstr ""
+# "Чтобы включить или выключить синхронизацию времени по сети, необходимо "
+# "пройти аутентификацию."
 
 #~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
 #~ msgstr ""
