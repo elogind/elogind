@@ -343,3 +343,4 @@ patches/
 /.github
 /sysctl.d
 /coccinelle
+mask_po_files.sh
