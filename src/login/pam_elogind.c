@@ -244,7 +244,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 return PAM_SESSION_ERR;
 
         if (debug)
+#if 0 /// This is pam-elogind, not pam-systemd
                 pam_syslog(handle, LOG_DEBUG, "pam-systemd initializing");
+#else
+                pam_syslog(handle, LOG_DEBUG, "pam-systemd initializing");
+#endif // 0
 
         r = get_user_data(handle, &username, &pw);
         if (r != PAM_SUCCESS) {
