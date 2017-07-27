@@ -198,7 +198,7 @@ AM_V_RM_0 = @echo "  RM      " $@;
 
 # ------------------------------------------------------------------------------
 rootbin_PROGRAMS =
-pkglibexec_PROGRAMS =
+rootlibexec_PROGRAMS =
 
 dist_doc_DATA = \
 	README \
@@ -521,7 +521,7 @@ dist_factory_pam_DATA = \
 endif
 
 # ------------------------------------------------------------------------------
-pkglibexec_PROGRAMS += \
+rootlibexec_PROGRAMS += \
        elogind-cgroups-agent
 
 elogind_cgroups_agent_SOURCES = \
@@ -701,7 +701,7 @@ endif
 noinst_LTLIBRARIES += \
 	libelogind-core.la
 
-pkglibexec_PROGRAMS += \
+rootlibexec_PROGRAMS += \
 	elogind
 
 loginctl_SOURCES = \
