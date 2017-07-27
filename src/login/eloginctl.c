@@ -89,6 +89,9 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
         if (!on_tty())
                 return 0;
 
+        if (arg_transport != BUS_TRANSPORT_LOCAL)
+                return 0;
+
         r = sd_bus_call_method(
                         bus,
                         "org.freedesktop.login1",
