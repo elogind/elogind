@@ -65,14 +65,16 @@ udevrulesdir=@udevrulesdir@
 udevbindir=@udevbindir@
 udevlibexecdir=$(udevbindir)
 udevhomedir=$(udevlibexecdir)
-systemshutdowndir=$(rootlibexecdir)/system-shutdown
-systemsleepdir=$(rootlibexecdir)/system-sleep
 factory_pamdir = $(datadir)/factory/etc/pam.d
 
 # And these are the special ones for /
+
 rootprefix=@rootprefix@
 rootbindir=$(rootprefix)/bin
-rootlibexecdir=$(rootprefix)/lib/elogind
+rootlibdir=@rootlibdir@
+rootlibexecdir=@rootlibexecdir@
+systemshutdowndir=$(rootlibexecdir)/system-shutdown
+systemsleepdir=$(rootlibexecdir)/system-sleep
 
 EXTRA_DIST =
 BUILT_SOURCES =
