@@ -771,7 +771,7 @@ int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
                 long long l, z = 0;
                 char *e;
                 unsigned i, n = 0;
-                usec_t multiplier, k;
+                usec_t multiplier = 1, k;
 
                 p += strspn(p, WHITESPACE);
 

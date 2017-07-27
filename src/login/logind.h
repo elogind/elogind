@@ -41,6 +41,11 @@ typedef struct Manager Manager;
 #include "logind-sleep.h"
 #include "path-lookup.h"
 
+#if 1 /// elogind has to ident itself
+#define MANAGER_IS_SYSTEM(m) ((m)->is_system)
+#define MANAGER_IS_USER(m) (!((m)->is_system))
+#endif // 1
+
 struct Manager {
         sd_event *event;
         sd_bus *bus;
@@ -73,6 +78,7 @@ struct Manager {
         /* Flags */
         ManagerRunningAs running_as;
         bool test_run:1;
+        bool is_system:1; /* true if elogind is its own cgroups manager */
 
         /* Data specific to the cgroup subsystem */
         CGroupMask cgroup_supported;

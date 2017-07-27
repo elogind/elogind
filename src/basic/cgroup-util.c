@@ -896,6 +896,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         return -ENODATA;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_install_release_agent(const char *controller, const char *agent) {
         _cleanup_free_ char *fs = NULL, *contents = NULL;
         const char *sc;
@@ -918,6 +919,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
                 return r;
 
         sc = strstrip(contents);
+
         if (isempty(sc)) {
                 r = write_string_file(fs, agent, 0);
                 if (r < 0)
@@ -980,6 +982,7 @@ int cg_uninstall_release_agent(const char *controller) {
 
         return 0;
 }
+#endif // 0
 
 int cg_is_empty(const char *controller, const char *path) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -1175,7 +1178,6 @@ int cg_mangle_path(const char *path, char **result) {
 }
 
 int cg_get_root_path(char **path) {
-#if 0 /// elogind does not support systemd scopes and slices
         char *p, *e;
         int r;
 
@@ -1185,20 +1187,20 @@ int cg_get_root_path(char **path) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not support systemd scopes and slices
         e = endswith(p, "/" SPECIAL_INIT_SCOPE);
         if (!e)
                 e = endswith(p, "/" SPECIAL_SYSTEM_SLICE); /* legacy */
         if (!e)
                 e = endswith(p, "/system"); /* even more legacy */
+#else
+        e = endswith(p, "/elogind");
+#endif // 0
         if (e)
                 *e = 0;
 
         *path = p;
         return 0;
-#else
-        assert(path);
-        return cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, path);
-#endif // 0
 }
 
 int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {

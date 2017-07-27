@@ -264,7 +264,7 @@ int do_sleep(const char *arg_verb, char **modes, char **states) {
         char *arguments[] = {
                 NULL,
                 (char*) "pre",
-                arg_verb,
+                (char*)arg_verb,
                 NULL
         };
         static const char* const dirs[] = {SYSTEM_SLEEP_PATH, NULL};

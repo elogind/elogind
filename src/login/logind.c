@@ -99,6 +99,15 @@ static Manager *manager_new(void) {
         m->running_as = MANAGER_SYSTEM;
         m->test_run   = false;
 
+#if 1
+        /* If elogind should be its own controller, mount its cgroup */
+        if (streq(SYSTEMD_CGROUP_CONTROLLER, "name=elogind")) {
+                m->is_system = true;
+                r = mount_setup(true);
+        } else
+                m->is_system = false;
+#endif // 1
+
         if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
                 goto fail;
 
