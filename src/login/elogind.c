@@ -32,62 +32,6 @@
 #define CGROUPS_AGENT_RCVBUF_SIZE (8*1024*1024)
 
 
-static int signal_agent_released(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
-        Manager *m = userdata;
-        const char *cgroup;
-        uid_t sender_uid;
-        int r;
-
-        assert(message);
-        assert(m);
-
-        /* only accept org.freedesktop.login1.Agent from UID=0 */
-        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
-        if (r < 0)
-                return r;
-
-        r = sd_bus_creds_get_euid(creds, &sender_uid);
-        if (r < 0 || sender_uid != 0)
-                return 0;
-
-        /* parse 'cgroup-empty' notification */
-        r = sd_bus_message_read(message, "s", &cgroup);
-        if (r < 0) {
-                bus_log_parse_error(r);
-                return 0;
-        }
-
-        manager_notify_cgroup_empty(m, cgroup);
-
-        return 0;
-}
-
-/// Add-On for manager_connect_bus()
-/// Original: src/core/dbus.c:bus_setup_system()
-void elogind_bus_setup_system(Manager* m) {
-        int r;
-
-        assert(m);
-        assert(m->bus);
-
-        /* if we are a user instance we get the Released message via the system bus */
-        if (MANAGER_IS_USER(m)) {
-                r = sd_bus_add_match(
-                                m->bus,
-                                NULL,
-                                "type='signal',"
-                                "interface='org.freedesktop.login1.Agent',"
-                                "member='Released',"
-                                "path='/org/freedesktop.login1/agent'",
-                                signal_agent_released, m);
-                if (r < 0)
-                        log_warning_errno(r, "Failed to register Released match on system bus: %m");
-        }
-
-        log_debug("Successfully connected to system bus.");
-}
-
 static int manager_dispatch_cgroups_agent_fd(sd_event_source *source, int fd, uint32_t revents, void *userdata) {
         Manager *m = userdata;
         char buf[PATH_MAX+1];
@@ -228,7 +172,7 @@ int elogind_manager_new(Manager* m) {
         m->hybrid_sleep_state = NULL;
 
         /* If elogind should be its own controller, mount its cgroup */
-        if (streq(SYSTEMD_CGROUP_CONTROLLER, "name=elogind")) {
+        if (streq(SYSTEMD_CGROUP_CONTROLLER, "_elogind")) {
                 m->is_system = true;
                 r = mount_setup(true);
         } else

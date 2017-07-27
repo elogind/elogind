@@ -192,10 +192,10 @@ int cg_set_task_access(const char *controller, const char *path, mode_t mode, ui
 
 int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags);
 int cg_get_xattr(const char *controller, const char *path, const char *name, void *value, size_t size);
-#endif // 0
 
 int cg_install_release_agent(const char *controller, const char *agent);
 int cg_uninstall_release_agent(const char *controller);
+#endif // 0
 
 int cg_is_empty(const char *controller, const char *path);
 int cg_is_empty_recursive(const char *controller, const char *path);

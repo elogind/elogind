@@ -795,7 +795,6 @@ static int manager_connect_bus(Manager *m) {
 #if 0 /// elogind has to setup its release agent
         return 0;
 #else
-        elogind_bus_setup_system(m);
         r = elogind_setup_cgroups_agent(m);
 
         return r;
