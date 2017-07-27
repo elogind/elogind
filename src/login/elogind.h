@@ -27,7 +27,6 @@
 
 
 /// Add-Ons for manager_connect_bus()
-void elogind_bus_setup_system(Manager* m);
 int  elogind_setup_cgroups_agent(Manager *m);
 
 /// Add-On for manager_free()
