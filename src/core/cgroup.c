@@ -1770,7 +1770,11 @@ int manager_setup_cgroup(Manager *m) {
 
         /* 1. Determine hierarchy */
         m->cgroup_root = mfree(m->cgroup_root);
+#if 0 /// elogind is not init and must therefore search for PID 1 instead of self.
         r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 0, &m->cgroup_root);
+#else
+        r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, &m->cgroup_root);
+#endif // 0
         if (r < 0)
                 return log_error_errno(r, "Cannot determine cgroup we are running in: %m");
 
@@ -1826,13 +1830,13 @@ int manager_setup_cgroup(Manager *m) {
         if (!m->test_run) {
                 const char *scope_path;
 
+#if 0 /// elogind is not init, and does not install the agent here.
                 /* 3. Install agent */
                 if (cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER) > 0) {
 
                         /* In the unified hierarchy we can get
                          * cgroup empty notifications via inotify. */
 
-#if 0 /// elogind does not support the unified hierarchy, yet.
                         m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
                         safe_close(m->cgroup_inotify_fd);
 
@@ -1852,11 +1856,7 @@ int manager_setup_cgroup(Manager *m) {
 
                         (void) sd_event_source_set_description(m->cgroup_inotify_event_source, "cgroup-inotify");
 
-#else
-                        return log_error_errno(EOPNOTSUPP, "Unified cgroup hierarchy not supported: %m");
-#endif // 0
                 } else if (MANAGER_IS_SYSTEM(m)) {
-
                         /* On the legacy hierarchy we only get
                          * notifications via cgroup agents. (Which
                          * isn't really reliable, since it does not
@@ -1872,12 +1872,17 @@ int manager_setup_cgroup(Manager *m) {
                                 log_debug("Release agent already installed.");
                 }
 
-#if 0 /// elogind is not meant to run in systemd init scope
                 /* 4. Make sure we are in the special "init.scope" unit in the root slice. */
                 scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
                 r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
 #else
-                if (streq(SYSTEMD_CGROUP_CONTROLLER, "name=elogind"))
+                /* Note:
+                 * This method is in core, and normally called by systemd
+                 * being init. As elogind is never init, we can not install
+                 * our agent here. We do so when mounting our cgroup file
+                 * system, so only if elogind is its own tiny controller.
+                 * Further, elogind is not meant to run in systemd init scope. */
+                if (MANAGER_IS_SYSTEM(m))
                         // we are our own cgroup controller
                         scope_path = strjoina("");
                 else if (streq(m->cgroup_root, "/elogind"))
@@ -1892,11 +1897,13 @@ int manager_setup_cgroup(Manager *m) {
                         return log_error_errno(r, "Failed to create %s control group: %m", scope_path);
                 log_debug_elogind("Created control group \"%s\"", scope_path);
 
+#if 0 /// elogind is not a "sub-controller" like systemd, so migration is not needed.
                 /* also, move all other userspace processes remaining
                  * in the root cgroup into that scope. */
                 r = cg_migrate(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
                 if (r < 0)
                         log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
+#endif // 0
 
                 /* 5. And pin it, so that it cannot be unmounted */
                 safe_close(m->pin_cgroupfs_fd);

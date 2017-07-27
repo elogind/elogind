@@ -118,9 +118,9 @@ static const MountPoint mount_table[] = {
           is_efi_boot,   MNT_NONE                   },
 #endif
 #else
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH",xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER  },
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH,       MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
 };
