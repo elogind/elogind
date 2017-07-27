@@ -667,6 +667,12 @@ AC_ARG_WITH([rootlibdir],
         [with_rootlibdir=${libdir}])
 AX_NORMALIZE_PATH([with_rootlibdir])
 
+AC_ARG_WITH([rootlibexecdir],
+        AS_HELP_STRING([--with-rootlibexecdir=DIR], [Root directory for executables necessary for boot]),
+        [],
+        [with_rootlibexecdir=${libdir}/libexec])
+AX_NORMALIZE_PATH([with_rootlibexecdir])
+
 AC_ARG_WITH([pamlibdir],
         AS_HELP_STRING([--with-pamlibdir=DIR], [Directory for PAM modules]),
         [],
@@ -748,6 +754,7 @@ AC_SUBST([pamlibdir], [$with_pamlibdir])
 AC_SUBST([pamconfdir], [$with_pamconfdir])
 AC_SUBST([rootprefix], [$with_rootprefix])
 AC_SUBST([rootlibdir], [$with_rootlibdir])
+AC_SUBST([rootlibexecdir], [$with_rootlibexecdir])
 AC_SUBST([cgroup_controller], [$with_cgroupctrl])
 
 AC_CONFIG_FILES([
@@ -763,10 +770,7 @@ AC_MSG_RESULT([
         SELinux: . . . . . . . . . . . . . ${have_selinux}
         SMACK: . . . . . . . . . . . . . . ${have_smack}
         ACL: . . . . . . . . . . . . . . . ${have_acl}
-        default cgroup hierarchy: . . . .  ${DEFAULT_HIERARCHY}
-        default KillUserProcesses setting: ${KILL_USER_PROCESSES}
-        polkit: . . . . . . . . . . . . .  ${have_polkit} (legacy pkla support: ${polkit_pkla})
-        glib: . . . . . . . . . . . . . .  ${have_glib}
+        polkit: . . . . . . . . . . . . .  ${have_polkit}
         Python: . . . . . . . . . . . . .  ${have_python}
         man pages: . . . . . . . . . . . . ${have_manpages}
         test coverage: . . . . . . . . . . ${have_coverage}
@@ -783,6 +787,7 @@ AC_MSG_RESULT([
         includedir: . . . . . . . . . . .  ${includedir}
         lib dir: . . . . . . . . . . . . . ${libdir}
         rootlib dir: . . . . . . . . . . . ${with_rootlibdir}
+        rootlibexec dir: . . . . . . . . . ${with_rootlibexecdir}
         PAM modules dir: . . . . . . . . . ${with_pamlibdir}
         PAM configuration dir: . . . . . . ${with_pamconfdir}
         D-Bus policy dir: . . . . . . . .  ${with_dbuspolicydir}
