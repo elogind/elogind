@@ -175,10 +175,10 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 #if 0 /// UNNEEDED by elogind
 int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
 int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
-#endif // 0
 
 int cg_install_release_agent(const char *controller, const char *agent);
 int cg_uninstall_release_agent(const char *controller);
+#endif // 0
 
 int cg_is_empty(const char *controller, const char *path);
 int cg_is_empty_recursive(const char *controller, const char *path);

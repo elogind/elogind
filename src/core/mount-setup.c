@@ -109,19 +109,17 @@ static const MountPoint mount_table[] = {
           cg_is_legacy_wanted, MNT_IN_CONTAINER           },
         { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
-#else
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          cg_is_legacy_wanted, MNT_IN_CONTAINER           },
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind",       MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
-#endif // 0
-#if 0 /// UNNEEDED by elogind
         { "pstore",      "/sys/fs/pstore",            "pstore",     NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE                   },
 #ifdef ENABLE_EFI
         { "efivarfs",    "/sys/firmware/efi/efivars", "efivarfs",   NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           is_efi_boot,   MNT_NONE                   },
 #endif
+#else
+        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH",xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
+          cg_is_legacy_wanted, MNT_IN_CONTAINER  },
+        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH,       MS_NOSUID|MS_NOEXEC|MS_NODEV,
+          cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
 };
 
