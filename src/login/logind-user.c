@@ -616,7 +616,6 @@ int user_stop(User *u, bool force) {
 #if 1 /// elogind must queue this user again
         user_add_to_gc_queue(u);
 #endif // 1
-
         return r;
 }
 

@@ -1433,9 +1433,11 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
 #endif // 0
                "Session Commands:\n"
-#if 1 /// elogind has "list" as a shorthand for "list-sessions"
+#if 0 /// elogind has "list" as a shorthand for "list-sessions"
+               "  list-sessions            List sessions\n"
+#else
                "  list[-sessions]          List sessions (default command)\n"
-#endif // 1
+#endif // 0
                "  session-status [ID...]   Show session status\n"
                "  show-session [ID...]     Show properties of sessions or the manager\n"
                "  activate [ID]            Activate a session\n"

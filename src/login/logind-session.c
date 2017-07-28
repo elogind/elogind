@@ -771,7 +771,6 @@ int session_stop(Session *s, bool force) {
 #if 1 /// elogind must queue this session again
         session_add_to_gc_queue(s);
 #endif // 1
-
         return r;
 }
 
