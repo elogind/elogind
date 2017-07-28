@@ -1111,7 +1111,6 @@ int cg_install_release_agent(const char *controller, const char *agent) {
                 return r;
 
         sc = strstrip(contents);
-
         if (isempty(sc)) {
                 r = write_string_file(fs, agent, 0);
                 if (r < 0)
