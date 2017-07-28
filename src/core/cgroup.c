@@ -1856,6 +1856,7 @@ int manager_setup_cgroup(Manager *m) {
                         (void) sd_event_source_set_description(m->cgroup_inotify_event_source, "cgroup-inotify");
 
                 } else if (MANAGER_IS_SYSTEM(m)) {
+
                         /* On the legacy hierarchy we only get
                          * notifications via cgroup agents. (Which
                          * isn't really reliable, since it does not
