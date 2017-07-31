@@ -1,595 +1,546 @@
-# Swedish translation for systemd.
-# Copyright © 2015 systemd's COPYRIGHT HOLDER
+# Czech translation for systemd.
+# Copyright (C) 2016-2017 systemd's author and translators.
 # This file is distributed under the same license as the systemd package.
-# Sebastian Rasmussen <sebras@gmail.com>, 2015.
-# Andreas Henriksson <andreas@fatal.se>, 2016.
-# Josef Andersson <l10nl18nsweja@gmail.com>, 2015, 2017.
+# Daniel Maixner <xskipy@gmail.com>, 2016.
+# Daniel Rusek <mail@asciiwolf.com>, 2016, 2017.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: systemd master\n"
 "Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
-"POT-Creation-Date: 2017-03-01 15:50+0000\n"
-"PO-Revision-Date: 2017-03-19 21:18+0100\n"
-"Last-Translator: Josef Andersson <l10nl18nsweja@gmail.com>\n"
-"Language-Team: Swedish\n"
-"Language: sv\n"
+"POT-Creation-Date: 2016-04-23 14:24+0200\n"
+"PO-Revision-Date: 2017-04-20 23:00+0200\n"
+"Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.9\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n"
+"%100>=20) ? 1 : 2);\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.7.1\n"
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 # msgid "Send passphrase back to system"
-# msgstr "Skicka tillbaka lösenfras till system"
+# msgstr "Odeslat heslo zpět do systému"
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
-# msgid ""
-# "Authentication is required to send the entered passphrase back to the system."
-# msgstr ""
-# "Autentisering krävs för att skicka tillbaka den angivna lösenfrasen till "
-# "systemet."
+# msgid "Authentication is required to send the entered passphrase back to the system."
+# msgstr "Pro odeslání zadaného hesla do systému je vyžadováno ověření."
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 # msgid "Manage system services or other units"
-# msgstr "Hantera systemtjänster eller andra enheter"
+# msgstr "Spravovat systémové služby nebo další jednotky"
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 # msgid "Authentication is required to manage system services or other units."
-# msgstr ""
-# "Autentisering krävs för att hantera systemtjänster eller andra enheter."
+# msgstr "Pro správu systémových služeb nebo dalších jednotek je vyžadováno ověření."
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 # msgid "Manage system service or unit files"
-# msgstr "Hantera systemtjänster eller enhetsfiler"
+# msgstr "Spravovat systémové služby nebo soubory jednotek"
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 # msgid "Authentication is required to manage system service or unit files."
-# msgstr "Autentisering krävs för att hantera systemtjänster eller enhetsfiler."
+# msgstr "Pro správu systémových služeb nebo souborů jednotek je vyžadováno ověření."
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 # msgid "Set or unset system and service manager environment variables"
-# msgstr "Ställ in eller ta bort miljövariabler för system- och servicehanterare"
+# msgstr "Nastavit nebo rušit proměnné správce systému a služeb"
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 # msgid ""
-# "Authentication is required to set or unset system and service manager "
-# "environment variables."
+# "Authentication is required to set or unset system and service manager environment "
+# "variables."
 # msgstr ""
-# "Autentisering krävs för att ställa in eller ta bort miljövariabler för "
-# "system- och servicehanterare."
+# "Pro nastavení nebo rušení proměnných správce systému a služeb je vyžadováno "
+# "ověření."
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 # msgid "Reload the systemd state"
-# msgstr "Läs om tillståndet för systemd"
+# msgstr "Znovu načíst stav systemd"
 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 # msgid "Authentication is required to reload the systemd state."
-# msgstr "Autentisering krävs för att läsa om tillståndet för systemd."
+# msgstr "Pro znovu načtení stavu systemd je vyžadováno ověření."
 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"
-# msgstr "Ange värdnamn"
+# msgstr "Nastavit název stroje"
 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
 # msgid "Authentication is required to set the local host name."
-# msgstr "Autentisering krävs för att ställa in lokalt värdnamn."
+# msgstr "Pro nastavení lokálního názvu stroje je vyžadováno ověření."
 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 # msgid "Set static host name"
-# msgstr "Ange statiskt värdnamn"
+# msgstr "Nastavit statický název stoje"
 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 # msgid ""
-# "Authentication is required to set the statically configured local host name, "
-# "as well as the pretty host name."
+# "Authentication is required to set the statically configured local host name, as "
+# "well as the pretty host name."
 # msgstr ""
-# "Autentisering krävs för att ställa in det statiskt konfigurerade lokala "
-# "värdnamnet såväl som det stiliga värdnamnet."
+# "Pro nastavení staticky konfigurovaného názvu lokálního stroje, stejně tak pro "
+# "změnu uživatelsky přívětivého jména je vyžadováno ověření."
 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
 # msgid "Set machine information"
-# msgstr "Ställa in datorinformation"
+# msgstr "Nastavit informace o stroji"
 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
 # msgid "Authentication is required to set local machine information."
-# msgstr "Autentisering krävs för att ställa in lokal datorinformation."
+# msgstr "Pro nastavení informací o stroji je vyžadováno ověření."
 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:1
 # msgid "Import a VM or container image"
-# msgstr "Importera en VM eller behållaravbildning"
+# msgstr "Importovat obraz virtuální stroje nebo kontejneru"
 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:2
 # msgid "Authentication is required to import a VM or container image"
-# msgstr "Autentisering krävs för att importera en VM eller behållaravbildning"
+# msgstr "Pro import obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:3
 # msgid "Export a VM or container image"
-# msgstr "Exportera en VM eller behållaravbildning"
+# msgstr "Exportovat obraz virtuálního stroje nebo kontejneru"
 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:4
 # msgid "Authentication is required to export a VM or container image"
-# msgstr "Autentisering krävs för att exportera en VM eller behållaravbildning"
+# msgstr "Pro export obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:5
 # msgid "Download a VM or container image"
-# msgstr "Hämta ner en VM eller behållaravbildning"
+# msgstr "Stáhnout obraz virtuálního stroje nebo kontejneru"
 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:6
 # msgid "Authentication is required to download a VM or container image"
-# msgstr "Autentisering krävs för att hämta ner en VM eller behållaravbildning"
+# msgstr "Pro stažení obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
 # msgid "Set system locale"
-# msgstr "Ange systemlokal"
+# msgstr "Nastavit lokalizaci systému"
 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
 # msgid "Authentication is required to set the system locale."
-# msgstr "Autentisering krävs för att ställa in systemlokal."
+# msgstr "Pro nastavení lokalizace systému je vyžadováno ověření."
 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
 # msgid "Set system keyboard settings"
-# msgstr "Ange systeminställningar för tangentbord"
+# msgstr "Nastavit systémovou konfiguraci klávesnice"
 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
-# msgstr ""
-# "Autentisering krävs för att ställa in systeminställningar för tangentbord."
+# msgstr "Pro nastavení systémové konfigurace klávesnice je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
-msgstr "Tillåt program att hindra systemavstängning"
+msgstr "Povolit aplikacím zakázat vypnutí systému"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:2
-msgid ""
-"Authentication is required for an application to inhibit system shutdown."
-msgstr ""
-"Autentisering krävs för att tillåta ett program att hindra systemavstängning."
+msgid "Authentication is required for an application to inhibit system shutdown."
+msgstr "Pro povolení aplikacím zakázat vypnutí systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:3
 msgid "Allow applications to delay system shutdown"
-msgstr "Tillåt program att fördröja systemavstängning"
+msgstr "Povolit aplikacím odložit vypnutí systému"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:4
 msgid "Authentication is required for an application to delay system shutdown."
-msgstr ""
-"Autentisering krävs för att tillåta ett program att fördröja "
-"systemavstängning."
+msgstr "Pro povolení aplikacím odložit vypnutí systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:5
 msgid "Allow applications to inhibit system sleep"
-msgstr "Tillåt program att hindra system att försättas i viloläge"
+msgstr "Povolit aplikacím zakázat uspání systému"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:6
 msgid "Authentication is required for an application to inhibit system sleep."
-msgstr ""
-"Autentisering krävs för att tillåta ett program att hindra ett system att "
-"försättas i viloläge."
+msgstr "Pro povolení aplikacím zakázat uspání systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:7
 msgid "Allow applications to delay system sleep"
-msgstr "Tillåt program att fördröja att system försätts i viloläge"
+msgstr "Povolit aplikacím odložit uspání systému"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:8
 msgid "Authentication is required for an application to delay system sleep."
-msgstr ""
-"Autentisering krävs för att tillåta ett program att fördröja ett system att "
-"försättas i viloläge."
+msgstr "Pro povolení aplikacím odložit uspání systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:9
 msgid "Allow applications to inhibit automatic system suspend"
-msgstr "Tillåt program att hindra automatiskt systemvänteläge"
+msgstr "Povolit aplikacím zakázat automatické vypnutí systému"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:10
 msgid ""
-"Authentication is required for an application to inhibit automatic system "
-"suspend."
+"Authentication is required for an application to inhibit automatic system suspend."
 msgstr ""
-"Autentisering krävs för att tillåta ett program att hindra automatiskt "
-"systemvänteläge."
+"Pro povolení aplikacím zakázat automatické vypnutí systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:11
 msgid "Allow applications to inhibit system handling of the power key"
-msgstr "Tillåt program att hindra systemhantering av strömknappen"
+msgstr "Povolit aplikacím zakázat chovaní systému na stisknutí vypínacího tlačítka"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:12
 msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the power key."
+"Authentication is required for an application to inhibit system handling of the "
+"power key."
 msgstr ""
-"Autentisering krävs för att tillåta ett program att hindra systemhantering "
-"av strömknappen."
+"Pro povolení aplikacím zakázat chovaní systému na stisknutí vypínacího tlačítka je "
+"vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:13
 msgid "Allow applications to inhibit system handling of the suspend key"
-msgstr "Tillåt program att hindra systemhantering av väntelägesknappen"
+msgstr "Povolit aplikacím zakázat chovaní systému na stisknutí uspávacího tlačítka"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:14
 msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the suspend key."
+"Authentication is required for an application to inhibit system handling of the "
+"suspend key."
 msgstr ""
-"Autentisering krävs för att tillåta ett program att hindra systemhantering "
-"av väntelägesknappen."
+"Pro povolení aplikacím zakázat chovaní systému na stisknutí uspávacího tlačítka je "
+"vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:15
 msgid "Allow applications to inhibit system handling of the hibernate key"
-msgstr "Tillåt program att hindra systemhantering av vilolägesknappen"
+msgstr "Povolit aplikacím zakázat chovaní systému na stisknutí tlačítka hibernace"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:16
 msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the hibernate key."
+"Authentication is required for an application to inhibit system handling of the "
+"hibernate key."
 msgstr ""
-"Autentisering krävs för att tillåta ett program att hindra systemhantering "
-"av vilolägesknappen."
+"Pro povolení aplikacím zakázat chovaní systému na stisknutí tlačítka hibernace je "
+"vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:17
 msgid "Allow applications to inhibit system handling of the lid switch"
-msgstr "Tillåt program att hindra systemhantering av växel för datorhölje"
+msgstr "Povolit aplikacím zakázat chovaní systému na zavření víka"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:18
 msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the lid switch."
+"Authentication is required for an application to inhibit system handling of the "
+"lid switch."
 msgstr ""
-"Autentisering krävs för att tillåta ett program att hindra systemhantering "
-"av brytaren för datorhöljet."
+"Pro povolení aplikacím zakázat chovaní systému na zavření víka je vyžadováno "
+"ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:19
 msgid "Allow non-logged-in user to run programs"
-msgstr "Tillåt ej inloggad användare att köra program"
+msgstr "Povolit nepřihlášenému uživateli spouštět programy"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:20
 msgid "Explicit request is required to run programs as a non-logged-in user."
 msgstr ""
-"Uttrycklig begäran krävs för att köra program som en icke inloggad användare."
+"Ke spuštění programů jako nepřihlášený uživatel je třeba speciální požadavek."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:21
 msgid "Allow non-logged-in users to run programs"
-msgstr "Tillåt ej inloggade användare att köra program"
+msgstr "Povolit nepřihlášeným uživatelům spouštět programy"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:22
 msgid "Authentication is required to run programs as a non-logged-in user."
-msgstr ""
-"Autentisering krävs för att köra program som en icke inloggad användare."
+msgstr "Ke spuštění programů jako nepřihlášený uživatel je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:23
 msgid "Allow attaching devices to seats"
-msgstr "Tillåt att binda enheter till platser"
+msgstr "Povolit připojování zařízení ke stanovištím"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:24
 msgid "Authentication is required for attaching a device to a seat."
-msgstr "Autentisering krävs för att binda en enhet till en plats."
+msgstr "Pro připojování zařízení ke stanovišti je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:25
 msgid "Flush device to seat attachments"
-msgstr "Töm bindningar för enhet-till-plats"
+msgstr "Odstranit přiřazení zařízení ke stanovištím"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:26
-msgid ""
-"Authentication is required for resetting how devices are attached to seats."
+msgid "Authentication is required for resetting how devices are attached to seats."
 msgstr ""
-"Autentisering krävs för att återställa hur enheter är bundna till platser."
+"Pro reset způsobu jak jsou zařízení přiřazována ke stanovištím je vyžadováno "
+"ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:27
 msgid "Power off the system"
-msgstr "Stäng av systemet"
+msgstr "Vypnout systém"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:28
 msgid "Authentication is required for powering off the system."
-msgstr "Autentisering krävs för att stänga av systemet."
+msgstr "Pro vypnutí systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:29
 msgid "Power off the system while other users are logged in"
-msgstr "Stäng av systemet medan andra användare är inloggade"
+msgstr "Vypnout systém, i když jsou přihlášeni další uživatelé"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:30
 msgid ""
 "Authentication is required for powering off the system while other users are "
 "logged in."
 msgstr ""
-"Autentisering krävs för att stänga av systemet medan andra användare är "
-"inloggade."
+"Pro vypnutí systému, když jsou přihlášeni další uživatelé je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:31
 msgid "Power off the system while an application asked to inhibit it"
-msgstr "Stäng av systemet även då ett program hindrar det"
+msgstr "Vypnout systém, i když aplikace požádala o zákaz vypnutí"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:32
 msgid ""
-"Authentication is required for powering off the system while an application "
-"asked to inhibit it."
+"Authentication is required for powering off the system while an application asked "
+"to inhibit it."
 msgstr ""
-"Autentisering krävs för att stänga av systemet även då ett program hindrar "
-"det."
+"Pro vypnutí systému, když aplikace požádala o zákaz vypnutí je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:33
 msgid "Reboot the system"
-msgstr "Starta om systemet"
+msgstr "Restartovat systém"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:34
 msgid "Authentication is required for rebooting the system."
-msgstr "Autentisering krävs för att starta om systemet."
+msgstr "Pro restartování systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:35
 msgid "Reboot the system while other users are logged in"
-msgstr "Starta om systemet medan andra användare är inloggade"
+msgstr "Restartovat systém, i když jsou přihlášeni další uživatelé"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:36
 msgid ""
-"Authentication is required for rebooting the system while other users are "
-"logged in."
+"Authentication is required for rebooting the system while other users are logged "
+"in."
 msgstr ""
-"Autentisering krävs för att starta om systemet medan andra användare är "
-"inloggade."
+"Pro restartování systému, když jsou přihlášeni další uživatelé je vyžadováno "
+"ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:37
 msgid "Reboot the system while an application asked to inhibit it"
-msgstr "Starta om systemet även då ett program hindrar det"
+msgstr "Restartovat systém, i když aplikace požádala o zákaz restartu"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:38
 msgid ""
-"Authentication is required for rebooting the system while an application "
-"asked to inhibit it."
+"Authentication is required for rebooting the system while an application asked to "
+"inhibit it."
 msgstr ""
-"Autentisering krävs för att starta om systemet även då ett program hindrar "
-"det."
+"Pro restartování systému, když aplikace požádala o zákaz restartu je vyžadováno "
+"ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:39
 msgid "Suspend the system"
-msgstr "Försätt system i vänteläge"
+msgstr "Uspat systém"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:40
 msgid "Authentication is required for suspending the system."
-msgstr "Autentisering krävs för att försätta system i vänteläge."
+msgstr "Pro uspání systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:41
 msgid "Suspend the system while other users are logged in"
-msgstr "Försätt systemet i vänteläge medan andra användare är inloggade"
+msgstr "Uspat systém, i když jsou přihlášeni další uživatelé"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:42
 msgid ""
-"Authentication is required for suspending the system while other users are "
-"logged in."
+"Authentication is required for suspending the system while other users are logged "
+"in."
 msgstr ""
-"Autentisering krävs för att försätta systemet i vänteläge medan andra "
-"användare är inloggade."
+"Pro uspání systému, když jsou přihlášeni další uživatelé je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:43
 msgid "Suspend the system while an application asked to inhibit it"
-msgstr "Försätt systemet i vänteläge även då ett program hindrar det"
+msgstr "Uspat systém, i když aplikace požádala o zákaz uspání"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:44
 msgid ""
-"Authentication is required for suspending the system while an application "
-"asked to inhibit it."
+"Authentication is required for suspending the system while an application asked to "
+"inhibit it."
 msgstr ""
-"Autentisering krävs för att försätta ett program i vänteläge även då ett "
-"program hindrar det."
+"Pro uspání systému, když aplikace požádala o zákaz uspání je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:45
 msgid "Hibernate the system"
-msgstr "Försätt systemet i viloläge"
+msgstr "Hibernovat systém"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:46
 msgid "Authentication is required for hibernating the system."
-msgstr "Autentisering krävs för att försätta systemet i viloläge."
+msgstr "Pro hibernaci systému je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:47
 msgid "Hibernate the system while other users are logged in"
-msgstr "Försätt systemet i viloläge medan andra användare är inloggade"
+msgstr "Hibernovat systém, i když jsou přihlášeni další uživatelé"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:48
 msgid ""
-"Authentication is required for hibernating the system while other users are "
-"logged in."
+"Authentication is required for hibernating the system while other users are logged "
+"in."
 msgstr ""
-"Autentisering krävs för att försätta systemet i viloläge medan andra "
-"användare är inloggade."
+"Pro hibernaci systému, když jsou přihlášeni další uživatelé je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:49
 msgid "Hibernate the system while an application asked to inhibit it"
-msgstr "Försätt systemet i viloläge även då ett program hindrar det"
+msgstr "Hibernovat systém, i když aplikace požádala o zákaz hibernace"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:50
 msgid ""
-"Authentication is required for hibernating the system while an application "
-"asked to inhibit it."
+"Authentication is required for hibernating the system while an application asked "
+"to inhibit it."
 msgstr ""
-"Autentisering krävs för att försätta ett program i viloläge även då ett "
-"program hindrar det."
+"Pro hibernaci systému, když aplikace požádala o zákaz hibernace je vyžadováno "
+"ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:51
 msgid "Manage active sessions, users and seats"
-msgstr "Hantera aktiva sessioner, användare och platser"
+msgstr "Spravovat aktivní sezení, uživatele a stanoviště"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:52
-msgid ""
-"Authentication is required for managing active sessions, users and seats."
-msgstr ""
-"Autentisering krävs för att hantera aktiva sessioner, användare och platser."
+msgid "Authentication is required for managing active sessions, users and seats."
+msgstr "Pro správu aktivních sezení, uživatelů a stanovišť je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:53
 msgid "Lock or unlock active sessions"
-msgstr "Lås eller lås upp aktiva sessioner"
+msgstr "Zamknout nebo odemknout aktivní sezení"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:54
 msgid "Authentication is required to lock or unlock active sessions."
-msgstr "Autentisering krävs för att låsa eller låsa upp aktiva sessioner."
+msgstr "Pro zamčení nebo odemčení aktivních sezení je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:55
 msgid "Allow indication to the firmware to boot to setup interface"
-msgstr ""
-"Tillåt indikering till firmware att starta upp i inställningsgränssnitt"
+msgstr "Povolit indikaci firmwaru bootovat instalační prostředí"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:56
 msgid ""
-"Authentication is required to indicate to the firmware to boot to setup "
-"interface."
+"Authentication is required to indicate to the firmware to boot to setup interface."
 msgstr ""
-"Autentisering krävs för att indikera till firmware att starta upp till "
-"inställningsgränssnitt."
+"K povolení indikace firmwaru bootovat instalační prostředí je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:57
 msgid "Set a wall message"
-msgstr "Ange ett väggmeddelande"
+msgstr "Nastavit zprávu všem uživatelům"
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:58
 msgid "Authentication is required to set a wall message"
-msgstr "Autentisering krävs för att ställa in ett väggmeddelande"
+msgstr "K nastavení zprávy všem uživatelům je vyžadováno ověření"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 # msgid "Log into a local container"
-# msgstr "Logga in i en lokal behållare"
+# msgstr "Přihlásit se do lokálního kontejneru"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
 # msgid "Authentication is required to log into a local container."
-# msgstr "Autentisering krävs för att logga in i en lokal behållare"
+# msgstr "Pro přihlášení do lokálního kontejneru je vyžadováno ověření."
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
 # msgid "Log into the local host"
-# msgstr "Logga in på en lokal värd"
+# msgstr "Přihlásit se na lokální stroj"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
 # msgid "Authentication is required to log into the local host."
-# msgstr "Autentisering krävs för att logga in på den lokala värden"
+# msgstr "Pro přihlášení k lokálnímu stroji je vyžadováno ověření."
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
 # msgid "Acquire a shell in a local container"
-# msgstr "Förvärva en kommandotolk i en lokal behållare"
+# msgstr "Získat shell v lokálním kontejneru"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
 # msgid "Authentication is required to acquire a shell in a local container."
-# msgstr ""
-# "Autentisering krävs för att förvärva en kommandotolk i en lokal behållare."
+# msgstr "Pro získání shellu v lokálním kontejneru je vyžadováno ověření."
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
 # msgid "Acquire a shell on the local host"
-# msgstr "Förvärva en kommandotolk på den lokala värden"
+# msgstr "Získat shell na lokálním stroji"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
 # msgid "Authentication is required to acquire a shell on the local host."
-# msgstr ""
-# "Autentisering krävs för att förvärva en kommandotolk på den lokala värden."
+# msgstr "Pro získání shellu na lokálním stroji je vyžadováno ověření."
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
 # msgid "Acquire a pseudo TTY in a local container"
-# msgstr "Förvärva en pseudo TTY i en lokal behållare"
+# msgstr "Získat pseudo TTY v lokálním kontejneru"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
-# msgid ""
-# "Authentication is required to acquire a pseudo TTY in a local container."
-# msgstr ""
-# "Autentisering krävs för att förvärva en pseudo TTY i en lokal behållare"
+# msgid "Authentication is required to acquire a pseudo TTY in a local container."
+# msgstr "Pro získání pseudo TTY v lokálním kontejneru je vyžadováno ověření."
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
 # msgid "Acquire a pseudo TTY on the local host"
-# msgstr "Förvärva en pseudo TTY på den lokala värden"
+# msgstr "Získat pseudo TTY na lokálním stroji"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
 # msgid "Authentication is required to acquire a pseudo TTY on the local host."
-# msgstr ""
-# "Autentisering krävs för att förvärva en pseudo TTY på den lokala värden."
+# msgstr "Pro získání pseudo TTY na lokálním stroji je vyžadováno ověření."
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 # msgid "Manage local virtual machines and containers"
-# msgstr "Hantera lokala virtuella maskiner och behållare"
+# msgstr "Spravovat lokální virtuální stroje a kontejnery"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
-# msgid ""
-# "Authentication is required to manage local virtual machines and containers."
-# msgstr ""
-# "Autentisering krävs för att hantera lokala virtuella maskiner och behållare."
+# msgid "Authentication is required to manage local virtual machines and containers."
+# msgstr "Pro správu lokálních virtuálních strojů a kontejnerů je vyžadováno ověření."
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 # msgid "Manage local virtual machine and container images"
-# msgstr "Hantera lokala virtuella maskin- och behållaravbildningar"
+# msgstr "Spravovat lokální obrazy virtuálních strojů a kontejnerů"
 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 # msgid ""
-# "Authentication is required to manage local virtual machine and container "
-# "images."
+# "Authentication is required to manage local virtual machine and container images."
 # msgstr ""
-# "Autentisering krävs för att hantera lokala virtuella maskin- och "
-# "behållaravbildningar."
+# "Pro správu obrazů lokálních virtuálních strojů a kontejnerů je vyžadováno ověření."
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
 # msgid "Set system time"
-# msgstr "Ange systemtid"
+# msgstr "Nastavit systémový čas"
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
 # msgid "Authentication is required to set the system time."
-# msgstr "Autentisering krävs för ställa in systemtiden."
+# msgstr "Pro nastavení systémového času je vyžadováno ověření."
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
 # msgid "Set system timezone"
-# msgstr "Ange systemets tidszon"
+# msgstr "Nastavit systémovou časovou zónu"
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
 # msgid "Authentication is required to set the system timezone."
-# msgstr "Autentisering krävs för att ställa in systemets tidszon."
+# msgstr "Pro nastavení systémové časové zóny je vyžadováno ověření."
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
 # msgid "Set RTC to local timezone or UTC"
-# msgstr ""
-# "Sätt realtidsklocka (RTC) till lokal tidszon eller koordinerad universell "
-# "tid (UTC)"
+# msgstr "Nastavit RTC na lokální časovou zónu nebo UTC"
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
 # msgid ""
-# "Authentication is required to control whether the RTC stores the local or "
-# "UTC time."
+# "Authentication is required to control whether the RTC stores the local or UTC time."
 # msgstr ""
-# "Autentisering krävs för att kunna kontrollera huruvida realtidsklockan (RTC) "
-# "lagrar den lokala eller koordinerade universella tiden (UTC)."
+# "Pro kontrolu jestli RTC ukládá lokální časovou zónu nebo UTC čas je vyžadováno "
+# "ověření."
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
 # msgid "Turn network time synchronization on or off"
-# msgstr "Växla synkronisering av nätverkstid på och av"
+# msgstr "Zapnout nebo vypnout synchronizaci s časem ze sítě"
 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
 # msgid ""
-# "Authentication is required to control whether network time synchronization "
-# "shall be enabled."
-# msgstr ""
-# "Autentisering krävs för att kontrollera huruvida synkronisering av "
-# "nätverkstid ska vara aktiverat."
-
-# #: ../src/core/dbus-unit.c:457
-# msgid "Authentication is required to start '$(unit)'."
-# msgstr "Autentisering krävs för att starta \"$(unit)"."
-
-# #: ../src/core/dbus-unit.c:458
-# msgid "Authentication is required to stop '$(unit)'."
-# msgstr "Autentisering krävs för att stoppa \"$(unit)"."
+# "Authentication is required to control whether network time synchronization shall "
+# "be enabled."
+# msgstr "Pro kontrolu synchronizace času ze sítě je vyžadováno ověření."
 
 # #: ../src/core/dbus-unit.c:459
+# msgid "Authentication is required to start '$(unit)'."
+# msgstr "Pro spuštění „$(unit)” je vyžadováno ověření."
+
+# #: ../src/core/dbus-unit.c:460
+# msgid "Authentication is required to stop '$(unit)'."
+# msgstr "Pro vypnutí „$(unit)” je vyžadováno ověření."
+
+# #: ../src/core/dbus-unit.c:461
 # msgid "Authentication is required to reload '$(unit)'."
-# msgstr "Autentisering krävs för att läsa om tillståndet för \"$(unit)"."
+# msgstr "Pro znovu načtení „$(unit)” je vyžadováno ověření."
 
-# #: ../src/core/dbus-unit.c:460 ../src/core/dbus-unit.c:461
+# #: ../src/core/dbus-unit.c:462 ../src/core/dbus-unit.c:463
 # msgid "Authentication is required to restart '$(unit)'."
-# msgstr "Autentisering krävs för att starta om \"$(unit)"."
+# msgstr "Pro restart „$(unit)” je vyžadováno ověření."
 
-# #: ../src/core/dbus-unit.c:568
+# #: ../src/core/dbus-unit.c:570
 # msgid "Authentication is required to kill '$(unit)'."
-# msgstr "Autentisering krävs för att döda \"$(unit)"."
+# msgstr "Pro ukončení „$(unit)” je vyžadováno ověření."
 
-# #: ../src/core/dbus-unit.c:599
+# #: ../src/core/dbus-unit.c:601
 # msgid "Authentication is required to reset the \"failed" state of '$(unit)'."
-# msgstr ""
-# "Autentisering krävs för att återställa det \"fallerade" tillståndet för "
-# "\"$(unit)"."
+# msgstr "Pro resetování chybného stavu „$(unit)” je vyžadováno ověření."
 
-# #: ../src/core/dbus-unit.c:632
+# #: ../src/core/dbus-unit.c:634
 # msgid "Authentication is required to set properties on '$(unit)'."
-# msgstr "Autentisering krävs för att ställa in egenskaper på \"$(unit)"."
-
-#~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
-#~ msgstr "Tryck Ctrl+C för att avbryta alla pågående filsystemskontroller."
-
-#~ msgid "Checking in progress on %d disk (%3.1f%% complete)"
-#~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
-#~ msgstr[0] "Kontroll pågår på %d disk (%3.1f%% klart)"
-#~ msgstr[1] "Kontroll pågår på %d diskar (%3.1f%% klart)"
+# msgstr "Pro nastavení vlastností na „$(unit)” je vyžadováno ověření."
