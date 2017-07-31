@@ -152,30 +152,48 @@ LGPLv2.1+ for all code
 Dependencies
 ------------
 
-  glibc >= 2.14
+  glibc >= 2.16
   libcap
-  libmount >= 2.20 (from util-linux)
-  libseccomp >= 1.0.0 (optional)
+  libmount >= 2.27.1 (from util-linux)
+          (util-linux < 2.29 *must* be built with --enable-libmount-force-mountinfo,
+          and later versions without --enable-libmount-support-mtab.)
+  libseccomp >= 2.3.1 (optional)
   libblkid >= 2.24 (from util-linux) (optional)
   PAM >= 1.1.2 (optional)
   libacl (optional)
   libselinux (optional)
-  make, gcc, and similar tools
+  libpython (optional)
+  pkg-config
+  gperf >= 3.1
+  docbook-xsl (optional, required for documentation)
+  xsltproc    (optional, required for documentation)
+  python-lxml (optional, required to build the indices)
+  python, meson, ninja
+  gcc, awk, sed, grep, m4, and similar tools
 
 During runtime, you need the following additional dependencies:
 
+  util-linux >= v2.27.1 required
   dbus >= 1.4.0 (strictly speaking optional, but recommended)
+          NOTE: If using dbus < 1.9.18, you should override the default
+          policy directory (--with-dbuspolicydir=/etc/dbus-1/system.d).
   PolicyKit (optional)
 
-When building from git, you need the following additional
-dependencies:
+  To build in directory build/:
+    meson build/ && ninja -C build
 
-  pkg-config
-  docbook-xsl
-  xsltproc
-  automake
-  autoconf
-  libtool
-  intltool
-  gperf
-  gtkdocize (optional)
+  Any configuration options can be specfied as -Darg=value... arguments
+  to meson. After the build directory is initially configured, meson will
+  refuse to run again, and options must be changed with:
+    mesonconf -Darg=value...
+  mesonconf without any arguments will print out available options and
+  their current values.
+
+  Useful commands:
+    ninja -v some/target
+    ninja test
+    sudo ninja install
+    DESTDIR=... ninja install
+
+  A tarball can be created with:
+    git archive --format=tar --prefix=elogind-234/ v234 | xz > elogind-234.tar.xz
