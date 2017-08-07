@@ -140,6 +140,8 @@
 #         rm-rf.c
 #         rm-rf.h
 #         securebits.h
+#         securebits-util.c
+#         securebits-util.h
 #         selinux-util.c
 #         selinux-util.h
 #         set.h
@@ -358,6 +360,7 @@ generate_gperfs = find_program('generate-gperfs.py')
 #         command : [generate_cap_list, cpp, config_h, missing_h],
 #         capture : true)
 #endif // 0
+
 generate_errno_list = find_program('generate-errno-list.sh')
 errno_list_txt = custom_target(
         'errno-list.txt',
