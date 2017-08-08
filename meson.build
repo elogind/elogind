@@ -26,16 +26,17 @@ m4_defines = []
 
 #####################################################################
 #if 0 /// elogind does not need this
-# elogind Note: We use precompiler masks for two reasons:
-#               1) The masking is consistent with the sources
-#               2) The git patch creator we use for preparing upstream patches
-#                  manipulates commits to not take those masks out. Therefore
-#                  it can be used to add commits updating the meson files, too.
 # # Try to install the git pre-commit hook
 # git_hook = run_command(join_paths(meson.source_root(), 'tools/add-git-hook.sh'))
 # if git_hook.returncode() == 0
 #         message(git_hook.stdout().strip())
 # endif
+#else
+# elogind Note: We use precompiler masks for two reasons:
+#               1) The masking is consistent with the sources
+#               2) The git patch creator we use for preparing upstream patches
+#                  manipulates commits to not take those masks out. Therefore
+#                  it can be used to add commits updating the meson files, too.
 #endif // 0
 #####################################################################
 
@@ -189,7 +190,6 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 # conf.set_quoted('USER_DATA_UNIT_PATH',                        userunitdir)
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 # conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
-#endif // 0
 # conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'systemd'))
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          join_paths(rootlibexecdir, 'systemd-fsck'))
