@@ -495,7 +495,8 @@ tests += [
 
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-cgroup-mask.c'],
+#         [['src/test/test-cgroup-mask.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -527,7 +528,8 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-path.c'],
+#         [['src/test/test-path.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
