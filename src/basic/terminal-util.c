@@ -39,13 +39,13 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
+#include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
 #include "io-util.h"
 #include "log.h"
 #include "macro.h"
-#include "path-util.h"
 #include "parse-util.h"
 #include "process-util.h"
 #include "socket-util.h"
@@ -561,7 +561,6 @@ int terminal_vhangup(const char *name) {
 
 int vt_disallocate(const char *name) {
         _cleanup_close_ int fd = -1;
-        const char *e, *n;
         unsigned u;
         int r;
 
@@ -569,8 +568,7 @@ int vt_disallocate(const char *name) {
          * (i.e. because it is the active one), at least clear it
          * entirely (including the scrollback buffer) */
 
-        e = path_startswith(name, "/dev/");
-        if (!e)
+        if (!startswith(name, "/dev/"))
                 return -EINVAL;
 
         if (!tty_is_vc(name)) {
@@ -589,11 +587,10 @@ int vt_disallocate(const char *name) {
                 return 0;
         }
 
-        n = startswith(e, "tty");
-        if (!n)
+        if (!startswith(name, "/dev/tty"))
                 return -EINVAL;
 
-        r = safe_atou(n, &u);
+        r = safe_atou(name+8, &u);
         if (r < 0)
                 return r;
 
