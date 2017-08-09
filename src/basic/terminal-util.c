@@ -561,6 +561,7 @@ int terminal_vhangup(const char *name) {
 
 int vt_disallocate(const char *name) {
         _cleanup_close_ int fd = -1;
+        const char *e, *n;
         unsigned u;
         int r;
 
@@ -568,7 +569,8 @@ int vt_disallocate(const char *name) {
          * (i.e. because it is the active one), at least clear it
          * entirely (including the scrollback buffer) */
 
-        if (!startswith(name, "/dev/"))
+        e = path_startswith(name, "/dev/");
+        if (!e)
                 return -EINVAL;
 
         if (!tty_is_vc(name)) {
@@ -587,10 +589,11 @@ int vt_disallocate(const char *name) {
                 return 0;
         }
 
-        if (!startswith(name, "/dev/tty"))
+        n = startswith(e, "tty");
+        if (!n)
                 return -EINVAL;
 
-        r = safe_atou(name+8, &u);
+        r = safe_atou(n, &u);
         if (r < 0)
                 return r;
 
