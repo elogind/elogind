@@ -377,7 +377,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/bus-type.h" />
-		<Unit filename="../src/libelogind/sd-bus/kdbus.h" />
 		<Unit filename="../src/libelogind/sd-bus/sd-bus.c">
 			<Option compilerVar="CC" />
 		</Unit>

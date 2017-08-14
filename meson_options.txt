@@ -150,10 +150,13 @@ option('pamconfdir', type : 'string',
 
 option('fallback-hostname', type : 'string', value : 'localhost',
        description : 'the hostname used if none configured')
+#if 0 /// UNNEEDED by elogind
+# option('compat-gateway-hostname', type : 'boolean', value : 'false',
+#        description : 'allow "gateway" as the symbolic name for default gateway')
+#endif // 0
 option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
        description : 'default cgroup hierarchy')
-
 #if 0 /// UNNEEDED by elogind
 # option('time-epoch', type : 'string',
 #        description : 'time epoch for time clients')

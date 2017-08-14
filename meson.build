@@ -38,6 +38,7 @@ m4_defines = []
 #                  manipulates commits to not take those masks out. Therefore
 #                  it can be used to add commits updating the meson files, too.
 #endif // 0
+
 #####################################################################
 
 rootprefixdir = get_option('rootprefix')
@@ -95,6 +96,7 @@ varlogdir = join_paths(localstatedir, 'log')
 #if 0 /// UNNEEDED by elogind
 # xinitrcdir = join_paths(sysconfdir, 'X11/xinit/xinitrc.d')
 # rpmmacrosdir = get_option('rpmmacrosdir')
+# modprobedir = join_paths(prefixdir, 'lib/modprobe.d')
 #endif // 0
 
 # Our own paths
@@ -607,6 +609,10 @@ endforeach
 ############################################################
 
 conf.set_quoted('FALLBACK_HOSTNAME', get_option('fallback-hostname'))
+#if 0 /// UNNEEDED by elogind
+# conf.set10('ENABLE_COMPAT_GATEWAY_HOSTNAME', get_option('compat-gateway-hostname'))
+# gateway_hostnames = ['_gateway'] + (conf.get('ENABLE_COMPAT_GATEWAY_HOSTNAME') == 1 ? ['gateway'] : [])
+#endif // 0
 
 default_hierarchy = get_option('default-hierarchy')
 conf.set_quoted('DEFAULT_HIERARCHY_NAME', default_hierarchy,
@@ -1686,9 +1692,7 @@ if conf.get('HAVE_PAM', false)
                 install_dir : pamlibdir)
 endif
 #endif // 0
-
 #if 0 /// UNNEEDED by elogind
-# if conf.get('HAVE_PAM', false)
 #         executable('systemd-user-sessions',
 #                    'src/user-sessions/user-sessions.c',
 #                    include_directories : includes,
@@ -2571,11 +2575,14 @@ subdir('shell-completion/zsh')
 install_subdir('factory/etc',
                install_dir : factorydir)
 
+
 #if 0 /// UNNEEDED by elogind
 # install_data('xorg/50-systemd-user.sh',
 #              install_dir : xinitrcdir)
 # install_data('system-preset/90-systemd.preset',
 #              install_dir : systempresetdir)
+# install_data('modprobe.d/systemd.conf',
+#              install_dir : modprobedir)
 #endif // 0
 install_data('README',
              'NEWS',
@@ -2613,13 +2620,13 @@ if git.found()
                  ':/*.[ch]'])
         all_files = files(all_files.stdout().split())
 
-        run_target(
+        custom_target(
                 'tags',
-                input : all_files,
+                output : 'tags',
                 command : ['env', 'etags', '-o', '@0@/TAGS'.format(meson.source_root())] + all_files)
-        run_target(
+        custom_target(
                 'ctags',
-                input : all_files,
+                output : 'ctags',
                 command : ['env', 'ctags', '-o', '@0@/tags'.format(meson.source_root())] + all_files)
 endif
 
@@ -2668,6 +2675,7 @@ status = [
         'PAM configuration dir:             @0@'.format(pamconfdir),
 #if 0 /// UNSUPPORTED by elogind
 #         'RPM macros dir:                    @0@'.format(rpmmacrosdir),
+#         'modprobe.d dir:                    @0@'.format(modprobedir),
 #endif // 0
         'D-Bus policy dir:                  @0@'.format(dbuspolicydir),
         'D-Bus session dir:                 @0@'.format(dbussessionservicedir),
@@ -2690,6 +2698,7 @@ status = [
 #         'nobody user name:                  @0@'.format(get_option('nobody-user')),
 #         'nobody group name:                 @0@'.format(get_option('nobody-group')),
 #         'fallback hostname:                 @0@'.format(get_option('fallback-hostname')),
+#         'symbolic gateway hostnames:        @0@'.format(', '.join(gateway_hostnames)),
 #
 #         'default DNSSEC mode:               @0@'.format(default_dnssec),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
