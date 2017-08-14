@@ -933,8 +933,6 @@ static void cgroup_context_apply(Unit *u, CGroupMask mask, ManagerState state) {
                                 whitelist_device(path, x, y);
 
                         whitelist_major(path, "pts", 'c', "rw");
-                        whitelist_major(path, "kdbus", 'c', "rw");
-                        whitelist_major(path, "kdbus/*", 'c', "rw");
                 }
 
                 LIST_FOREACH(device_allow, a, c->device_allow) {
@@ -1595,7 +1593,7 @@ int unit_search_main_pid(Unit *u, pid_t *ret) {
         if (r < 0)
                 return r;
 
-        mypid = getpid();
+        mypid = getpid_cached();
         while (cg_read_pid(f, &npid) > 0)  {
                 pid_t ppid;
 
@@ -1856,6 +1854,7 @@ int manager_setup_cgroup(Manager *m) {
                         (void) sd_event_source_set_description(m->cgroup_inotify_event_source, "cgroup-inotify");
 
                 } else if (MANAGER_IS_SYSTEM(m)) {
+
                         /* On the legacy hierarchy we only get
                          * notifications via cgroup agents. (Which
                          * isn't really reliable, since it does not
