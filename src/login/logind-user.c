@@ -189,18 +189,18 @@ static int user_save_internal(User *u) {
                 Session *i;
                 bool first;
 
-                fputs("SESSIONS=", f);
+                fputs_unlocked("SESSIONS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (first)
                                 first = false;
                         else
-                                fputc(' ', f);
+                                fputc_unlocked(' ', f);
 
-                        fputs(i->id, f);
+                        fputs_unlocked(i->id, f);
                 }
 
-                fputs("\nSEATS=", f);
+                fputs_unlocked("\nSEATS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (!i->seat)
@@ -209,12 +209,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc(' ', f);
+                                fputc_unlocked(' ', f);
 
-                        fputs(i->seat->id, f);
+                        fputs_unlocked(i->seat->id, f);
                 }
 
-                fputs("\nACTIVE_SESSIONS=", f);
+                fputs_unlocked("\nACTIVE_SESSIONS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (!session_is_active(i))
@@ -223,12 +223,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc(' ', f);
+                                fputc_unlocked(' ', f);
 
-                        fputs(i->id, f);
+                        fputs_unlocked(i->id, f);
                 }
 
-                fputs("\nONLINE_SESSIONS=", f);
+                fputs_unlocked("\nONLINE_SESSIONS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (session_get_state(i) == SESSION_CLOSING)
@@ -237,12 +237,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc(' ', f);
+                                fputc_unlocked(' ', f);
 
-                        fputs(i->id, f);
+                        fputs_unlocked(i->id, f);
                 }
 
-                fputs("\nACTIVE_SEATS=", f);
+                fputs_unlocked("\nACTIVE_SEATS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (!session_is_active(i) || !i->seat)
@@ -251,12 +251,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc(' ', f);
+                                fputc_unlocked(' ', f);
 
-                        fputs(i->seat->id, f);
+                        fputs_unlocked(i->seat->id, f);
                 }
 
-                fputs("\nONLINE_SEATS=", f);
+                fputs_unlocked("\nONLINE_SEATS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (session_get_state(i) == SESSION_CLOSING || !i->seat)
@@ -265,11 +265,11 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc(' ', f);
+                                fputc_unlocked(' ', f);
 
-                        fputs(i->seat->id, f);
+                        fputs_unlocked(i->seat->id, f);
                 }
-                fputc('\n', f);
+                fputc_unlocked('\n', f);
         }
 
         r = fflush_and_check(f);
@@ -616,7 +616,6 @@ int user_stop(User *u, bool force) {
 #if 1 /// elogind must queue this user again
         user_add_to_gc_queue(u);
 #endif // 1
-
         return r;
 }
 

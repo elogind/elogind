@@ -33,7 +33,6 @@
 #include "bus-error.h"
 #include "bus-util.h"
 #include "escape.h"
-#include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
@@ -83,6 +82,7 @@ Session* session_new(Manager *m, const char *id) {
         s->manager = m;
         s->fifo_fd = -1;
         s->vtfd = -1;
+        s->audit_id = AUDIT_SESSION_INVALID;
 
         return s;
 }
@@ -285,10 +285,10 @@ int session_save(Session *s) {
         if (!s->vtnr)
                 fprintf(f, "POSITION=%u\n", s->position);
 
-        if (s->leader > 0)
+        if (pid_is_valid(s->leader))
                 fprintf(f, "LEADER="PID_FMT"\n", s->leader);
 
-        if (s->audit_id > 0)
+        if (audit_session_is_valid(s->audit_id))
                 fprintf(f, "AUDIT=%"PRIu32"\n", s->audit_id);
 
         if (dual_timestamp_is_set(&s->timestamp))
@@ -466,9 +466,8 @@ int session_load(Session *s) {
         }
 
         if (leader) {
-                k = parse_pid(leader, &s->leader);
-                if (k >= 0)
-                        audit_session_from_pid(s->leader, &s->audit_id);
+                if (parse_pid(leader, &s->leader) >= 0)
+                        (void) audit_session_from_pid(s->leader, &s->audit_id);
         }
 
         if (type) {
@@ -771,7 +770,6 @@ int session_stop(Session *s, bool force) {
 #if 1 /// elogind must queue this session again
         session_add_to_gc_queue(s);
 #endif // 1
-
         return r;
 }
 
