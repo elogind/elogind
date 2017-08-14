@@ -168,7 +168,7 @@ _public_ int sd_bus_creds_new_from_pid(sd_bus_creds **ret, pid_t pid, uint64_t m
         assert_return(ret, -EINVAL);
 
         if (pid == 0)
-                pid = getpid();
+                pid = getpid_cached();
 
         c = bus_creds_new();
         if (!c)
@@ -590,7 +590,7 @@ _public_ int sd_bus_creds_get_audit_session_id(sd_bus_creds *c, uint32_t *sessio
         if (!(c->mask & SD_BUS_CREDS_AUDIT_SESSION_ID))
                 return -ENODATA;
 
-        if (c->audit_session_id == AUDIT_SESSION_INVALID)
+        if (!audit_session_is_valid(c->audit_session_id))
                 return -ENXIO;
 
         *sessionid = c->audit_session_id;

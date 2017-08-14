@@ -11,7 +11,7 @@ libdir=@rootlibdir@/elogind
 includedir=@includedir@
 
 Name: elogind
-Description: elogind Library
+Name: elogind
 URL: @PACKAGE_URL@
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lelogind
