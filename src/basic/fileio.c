@@ -40,6 +40,7 @@
 #include "missing.h"
 #include "parse-util.h"
 #include "path-util.h"
+#include "process-util.h"
 #include "random-util.h"
 #include "stdio-util.h"
 #include "string-util.h"

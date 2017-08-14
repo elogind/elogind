@@ -137,11 +137,13 @@ static inline bool ioprio_class_is_valid(int i) {
 static inline bool ioprio_priority_is_valid(int i) {
         return i >= 0 && i < IOPRIO_BE_NR;
 }
+#endif // 0
 
 static inline bool pid_is_valid(pid_t p) {
         return p > 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int ioprio_parse_priority(const char *s, int *ret);
 #endif // 0
 

@@ -41,6 +41,7 @@
 #include "login-util.h"
 #include "macro.h"
 #include "parse-util.h"
+#include "process-util.h"
 #include "socket-util.h"
 #include "strv.h"
 #include "terminal-util.h"

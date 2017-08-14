@@ -131,8 +131,12 @@ libelogind_internal = static_library(
         install : false,
         include_directories : includes,
         link_with : libbasic,
-        dependencies : [threads,
-                        librt])
+#if 0 /// elogind does not need librt
+#         dependencies : [threads,
+#                         librt])
+#else
+        dependencies : [threads])
+#endif // 0
 
 libelogind_sym = 'src/libelogind/libelogind.sym'
 

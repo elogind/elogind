@@ -33,10 +33,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../Makefile.am" />
-		<Unit filename="../config.h.in" />
-		<Unit filename="../configure.ac" />
-		<Unit filename="../po/Makefile.in.in" />
+		<Unit filename="../man/meson.build" />
+		<Unit filename="../meson.build" />
+		<Unit filename="../meson_options.txt" />
 		<Unit filename="../src/basic/alloc-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -162,6 +161,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mempool.h" />
+		<Unit filename="../src/basic/meson.build" />
 		<Unit filename="../src/basic/missing.h" />
 		<Unit filename="../src/basic/missing_syscall.h" />
 		<Unit filename="../src/basic/mkdir-label.c">
@@ -301,6 +301,7 @@
 		</Unit>
 		<Unit filename="../src/core/mount-setup.h" />
 		<Unit filename="../src/libelogind/libelogind.sym" />
+		<Unit filename="../src/libelogind/meson.build" />
 		<Unit filename="../src/libelogind/sd-bus/bus-bloom.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -501,6 +502,7 @@
 		</Unit>
 		<Unit filename="../src/login/logind.conf.in" />
 		<Unit filename="../src/login/logind.h" />
+		<Unit filename="../src/login/meson.build" />
 		<Unit filename="../src/login/pam_elogind.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -533,6 +535,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
+		<Unit filename="../src/shared/meson.build" />
 		<Unit filename="../src/shared/musl_missing.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -579,6 +582,7 @@
 		<Unit filename="../src/systemd/sd-id128.h" />
 		<Unit filename="../src/systemd/sd-login.h" />
 		<Unit filename="../src/systemd/sd-messages.h" />
+		<Unit filename="../src/test/meson.build" />
 		<Unit filename="../src/test/test-alloc-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -703,6 +707,7 @@
 		<Unit filename="../src/test/test-verbs.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/update-utmp/meson.build" />
 		<Unit filename="../src/update-utmp/update-utmp.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -903,13 +903,17 @@ static void test_hashmap_reserve(void) {
 }
 
 void test_hashmap_funcs(void) {
+#if 0 /// UNNEEDED by elogind
         int r;
+#endif // 0
 
         log_parse_environment();
         log_open();
 
+#if 0 /// UNNEEDED by elogind
         r = getenv_bool("SYSTEMD_SLOW_TESTS");
         arg_slow = r >= 0 ? r : SYSTEMD_SLOW_TESTS_DEFAULT;
+#endif // 0
 
         test_hashmap_copy();
         test_hashmap_get_strv();

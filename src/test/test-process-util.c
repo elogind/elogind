@@ -449,6 +449,7 @@ static void test_rename_process(void) {
         test_rename_process_one("1234567", 1); /* should always fit */
         test_rename_process_multi(); /* multiple invocations and dropped privileges */
 }
+#endif // 0
 
 static void test_getpid_cached(void) {
         siginfo_t si;
@@ -504,7 +505,6 @@ static void test_getpid_measure(void) {
 
         log_info("getpid_cached(): %llu/s\n", (unsigned long long) (MEASURE_ITERATIONS*USEC_PER_SEC/q));
 }
-#endif // 0
 
 int main(int argc, char *argv[]) {
 

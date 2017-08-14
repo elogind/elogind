@@ -37,6 +37,7 @@
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
+#include "process-util.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"

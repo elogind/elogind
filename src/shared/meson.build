@@ -173,7 +173,7 @@ libshared = shared_library(
         libshared_name,
         shared_sources,
         basic_sources,
-#if 0 /// "Slightly" different in elogind
+#if 0 /// UNNEEDED by elogind
 #         journal_internal_sources,
 #         libsystemd_internal_sources,
 #         libudev_sources,
@@ -184,8 +184,12 @@ libshared = shared_library(
         link_args : ['-shared'],
         c_args : ['-fvisibility=default'],
         dependencies : libshared_deps,
-        install : true,
-        install_dir : rootlibexecdir)
+#if 0 /// UNNEEDED by elogind
+#         install : true,
+#         install_dir : rootlibexecdir)
+#else
+        install : false)
+#endif // 0
 
 libshared_static = static_library(
         libshared_name,

@@ -57,13 +57,11 @@ typedef enum CGroupMask {
         _CGROUP_MASK_ALL = CGROUP_CONTROLLER_TO_MASK(_CGROUP_CONTROLLER_MAX) - 1
 } CGroupMask;
 
-#if 0 /// UNNEEDED by elogind
 /* Special values for all weight knobs on unified hierarchy */
 #define CGROUP_WEIGHT_INVALID ((uint64_t) -1)
 #define CGROUP_WEIGHT_MIN UINT64_C(1)
 #define CGROUP_WEIGHT_MAX UINT64_C(10000)
 #define CGROUP_WEIGHT_DEFAULT UINT64_C(100)
-#endif // 0
 
 #define CGROUP_LIMIT_MIN UINT64_C(0)
 #define CGROUP_LIMIT_MAX ((uint64_t) -1)
@@ -90,6 +88,7 @@ extern const uint64_t cgroup_io_limit_defaults[_CGROUP_IO_LIMIT_TYPE_MAX];
 
 const char* cgroup_io_limit_type_to_string(CGroupIOLimitType t) _const_;
 CGroupIOLimitType cgroup_io_limit_type_from_string(const char *s) _pure_;
+#endif // 0
 
 /* Special values for the cpu.shares attribute */
 #define CGROUP_CPU_SHARES_INVALID ((uint64_t) -1)
@@ -97,11 +96,13 @@ CGroupIOLimitType cgroup_io_limit_type_from_string(const char *s) _pure_;
 #define CGROUP_CPU_SHARES_MAX UINT64_C(262144)
 #define CGROUP_CPU_SHARES_DEFAULT UINT64_C(1024)
 
+#if 0 /// UNNEEDED by elogind
 static inline bool CGROUP_CPU_SHARES_IS_OK(uint64_t x) {
         return
             x == CGROUP_CPU_SHARES_INVALID ||
             (x >= CGROUP_CPU_SHARES_MIN && x <= CGROUP_CPU_SHARES_MAX);
 }
+#endif // 0
 
 /* Special values for the blkio.weight attribute */
 #define CGROUP_BLKIO_WEIGHT_INVALID ((uint64_t) -1)
@@ -109,6 +110,7 @@ static inline bool CGROUP_CPU_SHARES_IS_OK(uint64_t x) {
 #define CGROUP_BLKIO_WEIGHT_MAX UINT64_C(1000)
 #define CGROUP_BLKIO_WEIGHT_DEFAULT UINT64_C(500)
 
+#if 0 /// UNNEEDED by elogind
 static inline bool CGROUP_BLKIO_WEIGHT_IS_OK(uint64_t x) {
         return
             x == CGROUP_BLKIO_WEIGHT_INVALID ||

@@ -188,7 +188,6 @@ static inline int setns(int fd, int nstype) {
 
 /* ======================================================================= */
 
-#if 0 /// UNNEEDED by elogind
 static inline pid_t raw_getpid(void) {
 #if defined(__alpha__)
         return (pid_t) syscall(__NR_getxpid);
@@ -196,7 +195,6 @@ static inline pid_t raw_getpid(void) {
         return (pid_t) syscall(__NR_getpid);
 #endif
 }
-#endif // 0
 
 /* ======================================================================= */
 

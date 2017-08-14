@@ -958,6 +958,7 @@ int ioprio_parse_priority(const char *s, int *ret) {
         *ret = i;
         return 0;
 }
+#endif // 0
 
 /* The cached PID, possible values:
  *
@@ -1021,6 +1022,7 @@ pid_t getpid_cached(void) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static const char *const ioprio_class_table[] = {
         [IOPRIO_CLASS_NONE] = "none",
         [IOPRIO_CLASS_RT] = "realtime",
