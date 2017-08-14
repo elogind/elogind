@@ -249,7 +249,7 @@ void log_assert_failed_return_realm(
 #define log_notice(...)    log_full(LOG_NOTICE,  __VA_ARGS__)
 #define log_warning(...)   log_full(LOG_WARNING, __VA_ARGS__)
 #define log_error(...)     log_full(LOG_ERR,     __VA_ARGS__)
-#define log_emergency(...) log_full(getpid() == 1 ? LOG_EMERG : LOG_ERR, __VA_ARGS__)
+#define log_emergency(...) log_full(getpid_cached() == 1 ? LOG_EMERG : LOG_ERR, __VA_ARGS__)
 
 /* Logging triggered by an errno-like error */
 #define log_debug_errno(error, ...)     log_full_errno(LOG_DEBUG,   error, __VA_ARGS__)
@@ -257,7 +257,7 @@ void log_assert_failed_return_realm(
 #define log_notice_errno(error, ...)    log_full_errno(LOG_NOTICE,  error, __VA_ARGS__)
 #define log_warning_errno(error, ...)   log_full_errno(LOG_WARNING, error, __VA_ARGS__)
 #define log_error_errno(error, ...)     log_full_errno(LOG_ERR,     error, __VA_ARGS__)
-#define log_emergency_errno(error, ...) log_full_errno(getpid() == 1 ? LOG_EMERG : LOG_ERR, error, __VA_ARGS__)
+#define log_emergency_errno(error, ...) log_full_errno(getpid_cached() == 1 ? LOG_EMERG : LOG_ERR, error, __VA_ARGS__)
 
 #ifdef LOG_TRACE
 #  define log_trace(...) log_debug(__VA_ARGS__)

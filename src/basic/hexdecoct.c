@@ -569,7 +569,7 @@ static int base64_append_width(char **prefix, int plen,
 
         lines = (len + width - 1) / width;
 
-        slen = sep ? strlen(sep) : 0;
+        slen = strlen_ptr(sep);
         t = realloc(*prefix, plen + 1 + slen + (indent + width + 1) * lines);
         if (!t)
                 return -ENOMEM;

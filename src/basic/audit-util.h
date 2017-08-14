@@ -31,3 +31,7 @@ int audit_loginuid_from_pid(pid_t pid, uid_t *uid);
 #if 0 /// UNNEEDED by elogind
 bool use_audit(void);
 #endif // 0
+
+static inline bool audit_session_is_valid(uint32_t id) {
+        return id > 0 && id != AUDIT_SESSION_INVALID;
+}

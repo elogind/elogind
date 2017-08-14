@@ -257,7 +257,7 @@ int cg_kill(
                         return -ENOMEM;
         }
 
-        my_pid = getpid();
+        my_pid = getpid_cached();
 
         do {
                 _cleanup_fclose_ FILE *f = NULL;
@@ -401,7 +401,7 @@ int cg_migrate(
         if (!s)
                 return -ENOMEM;
 
-        my_pid = getpid();
+        my_pid = getpid_cached();
 
         log_debug_elogind("Migrating \"%s\"/\"%s\" to \"%s\"/\"%s\" (%s)",
                           cfrom, pfrom, cto, pto,
@@ -831,7 +831,7 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
                 return r;
 
         if (pid == 0)
-                pid = getpid();
+                pid = getpid_cached();
 
         xsprintf(c, PID_FMT "\n", pid);
 
@@ -1004,7 +1004,7 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
         char line[LINE_MAX];
-        const char *fs, *controller_str = NULL;
+        const char *fs, *controller_str;
         size_t cs = 0;
         int unified;
 
@@ -1111,7 +1111,6 @@ int cg_install_release_agent(const char *controller, const char *agent) {
                 return r;
 
         sc = strstrip(contents);
-
         if (isempty(sc)) {
                 r = write_string_file(fs, agent, 0);
                 if (r < 0)

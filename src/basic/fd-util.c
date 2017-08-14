@@ -283,7 +283,7 @@ int same_fd(int a, int b) {
                 return true;
 
         /* Try to use kcmp() if we have it. */
-        pid = getpid();
+        pid = getpid_cached();
         r = kcmp(pid, pid, KCMP_FILE, a, b);
         if (r == 0)
                 return true;

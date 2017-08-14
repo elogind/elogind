@@ -138,5 +138,11 @@ static inline bool ioprio_priority_is_valid(int i) {
         return i >= 0 && i < IOPRIO_BE_NR;
 }
 
+static inline bool pid_is_valid(pid_t p) {
+        return p > 0;
+}
+
 int ioprio_parse_priority(const char *s, int *ret);
 #endif // 0
+
+pid_t getpid_cached(void);
