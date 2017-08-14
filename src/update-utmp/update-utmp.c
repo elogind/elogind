@@ -280,7 +280,7 @@ void update_utmp(int argc, char* argv[], sd_bus *bus) {
                 goto finish;
         }
 
-        log_debug("systemd-update-utmp running as pid "PID_FMT, getpid());
+        log_debug("systemd-update-utmp running as pid "PID_FMT, getpid_cached());
 
         if (streq(argv[1], "reboot"))
                 r = on_reboot(&c);
@@ -293,7 +293,7 @@ void update_utmp(int argc, char* argv[], sd_bus *bus) {
                 r = -EINVAL;
         }
 
-        log_debug("systemd-update-utmp stopped as pid "PID_FMT, getpid());
+        log_debug("systemd-update-utmp stopped as pid "PID_FMT, getpid_cached());
 
 finish:
 #else
