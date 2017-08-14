@@ -21,6 +21,7 @@ _systemd_headers = '''
         sd-login.h
         sd-messages.h
 '''.split()
+#endif // 0
 
 # https://github.com/mesonbuild/meson/issues/1633
 systemd_headers = files(_systemd_headers)
