@@ -163,10 +163,9 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libblkid]
 # #else
 libshared_deps = [threads,
-                  libcap,
                   libacl,
-                  libselinux,
-                  libudev]
+                  libcap,
+                  libselinux]
 #endif // 0
 
 libshared = shared_library(
@@ -184,12 +183,8 @@ libshared = shared_library(
         link_args : ['-shared'],
         c_args : ['-fvisibility=default'],
         dependencies : libshared_deps,
-#if 0 /// UNNEEDED by elogind
-#         install : true,
-#         install_dir : rootlibexecdir)
-#else
-        install : false)
-#endif // 0
+        install : true,
+        install_dir : rootlibexecdir)
 
 libshared_static = static_library(
         libshared_name,

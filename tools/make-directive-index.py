@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 #  -*- Mode: python; coding: utf-8; indent-tabs-mode: nil -*- */
 #
-#  This file is part of systemd.
+#  This file is part of elogind.
 #
 #  Copyright 2012-2013 Zbigniew Jędrzejewski-Szmek
+#  Copyright 2017      Sven Eden
 #
-#  systemd is free software; you can redistribute it and/or modify it
+#  elogind is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 2.1 of the License, or
 #  (at your option) any later version.
 #
-#  systemd is distributed in the hope that it will be useful, but
+#  elogind is distributed in the hope that it will be useful, but
 #  WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  Lesser General Public License for more details.
 #
 #  You should have received a copy of the GNU Lesser General Public License
-#  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+#  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 import collections
@@ -28,8 +29,8 @@ TEMPLATE = '''\
 <refentry id="elogind.directives" conditional="HAVE_PYTHON">
 
         <refentryinfo>
-                <title>systemd.directives</title>
-                <productname>systemd</productname>
+                <title>elogind.directives</title>
+                <productname>elogind</productname>
 
                 <authorgroup>
                         <author>
@@ -38,71 +39,32 @@ TEMPLATE = '''\
                                 <surname>Jędrzejewski-Szmek</surname>
                                 <email>zbyszek@in.waw.pl</email>
                         </author>
+                        <author>
+                                <contrib>Developer</contrib>
+                                <firstname>Sven</firstname>
+                                <surname>Eden</surname>
+                                <email>sven.eden@gmx.de</email>
+                        </author>
                 </authorgroup>
         </refentryinfo>
 
         <refmeta>
-                <refentrytitle>systemd.directives</refentrytitle>
+                <refentrytitle>elogind.directives</refentrytitle>
                 <manvolnum>7</manvolnum>
         </refmeta>
 
         <refnamediv>
-                <refname>systemd.directives</refname>
+                <refname>elogind.directives</refname>
                 <refpurpose>Index of configuration directives</refpurpose>
         </refnamediv>
 
         <refsect1>
-                <title>Unit directives</title>
-
-                <para>Directives for configuring units, used in unit
-                files.</para>
-
-                <variablelist id='unit-directives' />
-        </refsect1>
-
-        <refsect1>
-                <title>Options on the kernel command line</title>
-
-                <para>Kernel boot options for configuring the behaviour of the
-                systemd process.</para>
-
-                <variablelist id='kernel-commandline-options' />
-        </refsect1>
-
-        <refsect1>
                 <title>Environment variables</title>
 
-                <para>Environment variables understood by the systemd
+                <para>Environment variables understood by the elogind
                 manager and other programs.</para>
 
                 <variablelist id='environment-variables' />
-        </refsect1>
-
-        <refsect1>
-                <title>UDEV directives</title>
-
-                <para>Directives for configuring systemd units through the
-                udev database.</para>
-
-                <variablelist id='udev-directives' />
-        </refsect1>
-
-        <refsect1>
-                <title>Network directives</title>
-
-                <para>Directives for configuring network links through the
-                net-setup-link udev builtin and networks through
-                systemd-networkd.</para>
-
-                <variablelist id='network-directives' />
-        </refsect1>
-
-        <refsect1>
-                <title>Journal fields</title>
-
-                <para>Fields in the journal events with a well known meaning.</para>
-
-                <variablelist id='journal-directives' />
         </refsect1>
 
         <refsect1>
@@ -114,29 +76,10 @@ TEMPLATE = '''\
         </refsect1>
 
         <refsect1>
-                <title><filename>/etc/crypttab</filename> and
-                <filename>/etc/fstab</filename> options</title>
-
-                <para>Options which influence mounted filesystems and
-                encrypted volumes.</para>
-
-                <variablelist id='fstab-options' />
-        </refsect1>
-
-        <refsect1>
-                <title>System manager directives</title>
-
-                <para>Directives for configuring the behaviour of the
-                systemd process.</para>
-
-                <variablelist id='systemd-directives' />
-        </refsect1>
-
-        <refsect1>
                 <title>command line options</title>
 
                 <para>Command-line options accepted by programs in the
-                systemd suite.</para>
+                elogind suite.</para>
 
                 <variablelist id='options' />
         </refsect1>
@@ -144,7 +87,7 @@ TEMPLATE = '''\
         <refsect1>
                 <title>Constants</title>
 
-                <para>Various constant used and/or defined by systemd.</para>
+                <para>Various constant used and/or defined by elogind.</para>
 
                 <variablelist id='constants' />
         </refsect1>
