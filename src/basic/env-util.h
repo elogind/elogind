@@ -42,9 +42,7 @@ char **replace_env_argv(char **argv, char **env);
 static inline char *replace_env(const char *format, char **env, unsigned flags) {
         return replace_env_n(format, strlen(format), env, flags);
 }
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 bool strv_env_is_valid(char **e);
 #define strv_env_clean(l) strv_env_clean_with_callback(l, NULL, NULL)
 char **strv_env_clean_with_callback(char **l, void (*invalid_callback)(const char *p, void *userdata), void *userdata);
