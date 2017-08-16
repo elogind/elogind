@@ -22,14 +22,90 @@
 #include "cgroup.h"
 #include "elogind.h"
 #include "fd-util.h"
+#include "fileio.h"
+#include "fs-util.h"
 #include "mount-setup.h"
+#include "process-util.h"
 #include "socket-util.h"
+#include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "umask-util.h"
 
 
 #define CGROUPS_AGENT_RCVBUF_SIZE (8*1024*1024)
+#define ELOGIND_PID_FILE "/run/elogind.pid"
+
+
+static void remove_pid_file(void) {
+        if (access(ELOGIND_PID_FILE, F_OK) == 0)
+                unlink_noerrno(ELOGIND_PID_FILE);
+}
+
+
+/* daemonize elogind by double forking.
+   The grand child returns 0.
+   The parent and child return their forks PID.
+   On error, a value < 0 is returned.
+*/
+int elogind_daemonize(void) {
+        char c[DECIMAL_STR_MAX(pid_t) + 2];
+        pid_t child;
+        pid_t grandchild;
+        pid_t SID;
+        int r;
+
+        child = fork();
+
+        if (child < 0)
+                return log_error_errno(errno, "Failed to fork: %m");
+
+        if (child) {
+                /* Wait for the child to terminate, so the decoupling
+                 * is guaranteed to succeed.
+                 */
+                r = wait_for_terminate_and_warn("elogind control child", child, true);
+                if (r < 0)
+                        return r;
+                return child;
+        }
+
+        /* The first child has to become a new session leader. */
+        close_all_fds(NULL, 0);
+        SID = setsid();
+        if ((pid_t)-1 == SID)
+                return log_error_errno(errno, "Failed to create new SID: %m");
+        umask(0022);
+
+        /* Now the grandchild, the true daemon, can be created. */
+        grandchild = fork();
+
+        if (grandchild < 0)
+                return log_error_errno(errno, "Failed to double fork: %m");
+
+        if (grandchild)
+                /* Exit immediately! */
+                return grandchild;
+
+        close_all_fds(NULL, 0);
+        umask(0022);
+
+        /* Take care of our PID-file now */
+        grandchild = getpid_cached();
+
+        xsprintf(c, PID_FMT "\n", grandchild);
+
+        r = write_string_file(ELOGIND_PID_FILE, c,
+                              WRITE_STRING_FILE_CREATE |
+                              WRITE_STRING_FILE_VERIFY_ON_FAILURE);
+        if (r < 0)
+                log_error_errno(-r, "Failed to write PID file /run/elogind.pid: %m");
+
+        /* Make sure the PID file gets cleaned up on exit! */
+        atexit(remove_pid_file);
+
+        return 0;
+}
 
 
 static int manager_dispatch_cgroups_agent_fd(sd_event_source *source, int fd, uint32_t revents, void *userdata) {

@@ -26,8 +26,11 @@
 #include "sd-bus.h"
 
 
-/// Add-Ons for manager_connect_bus()
-int  elogind_setup_cgroups_agent(Manager *m);
+/// Add-On for main() to daemonize elogind upon request with a double fork
+int elogind_daemonize(void);
+
+/// Add-On for manager_connect_bus()
+int elogind_setup_cgroups_agent(Manager *m);
 
 /// Add-On for manager_free()
 void elogind_manager_free(Manager* m);

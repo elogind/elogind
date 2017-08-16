@@ -1280,6 +1280,25 @@ int main(int argc, char *argv[]) {
 
         umask(0022);
 
+#if 1 /// elogind allows to be daemonized using one argument "-D" / "--daemon"
+        if (argc == 2) {
+
+                if (!argv[1] || (0 == strlen(argv[1]))
+                  || ( !streq(argv[1], "-D")
+                    && !streq(argv[1], "--daemon") ) ) {
+                        fprintf(stderr, "%s [-D|--daemon]\n", argv[0]);
+                        r = -EINVAL;
+                        goto finish;
+                }
+
+                r = elogind_daemonize();
+                if (r)
+                        return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;;
+
+                argc = 1; /* Use the rest of main() as usual */
+        }
+#endif // 1
+
         if (argc != 1) {
                 log_error("This program takes no arguments.");
                 r = -EINVAL;
