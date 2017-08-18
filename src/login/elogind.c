@@ -34,8 +34,9 @@
 
 
 #define CGROUPS_AGENT_RCVBUF_SIZE (8*1024*1024)
-#define ELOGIND_PID_FILE "/run/elogind.pid"
-
+#ifndef ELOGIND_PID_FILE
+#  define ELOGIND_PID_FILE "/run/elogind.pid"
+#endif // ELOGIND_PID_FILE
 
 static void remove_pid_file(void) {
         if (access(ELOGIND_PID_FILE, F_OK) == 0)
@@ -99,7 +100,8 @@ int elogind_daemonize(void) {
                               WRITE_STRING_FILE_CREATE |
                               WRITE_STRING_FILE_VERIFY_ON_FAILURE);
         if (r < 0)
-                log_error_errno(-r, "Failed to write PID file /run/elogind.pid: %m");
+                log_error_errno(-r, "Failed to write PID file %s: %m",
+                                ELOGIND_PID_FILE);
 
         /* Make sure the PID file gets cleaned up on exit! */
         atexit(remove_pid_file);
