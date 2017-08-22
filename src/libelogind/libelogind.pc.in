@@ -7,11 +7,11 @@
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-libdir=@rootlibdir@/elogind
-includedir=@includedir@
+libdir=@rootlibdir@
+includedir=@includedir@/elogind
 
 Name: elogind
-Name: elogind
+Description: elogind Library
 URL: @PACKAGE_URL@
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lelogind
