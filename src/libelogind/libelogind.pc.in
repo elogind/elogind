@@ -7,8 +7,8 @@
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-libdir=@rootlibdir@/elogind
-includedir=@includedir@
+libdir=@rootlibdir@
+includedir=@includedir@/elogind
 
 Name: elogind
 Description: elogind Library
