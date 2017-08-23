@@ -1513,6 +1513,7 @@ static void reset_scheduled_shutdown(Manager *m) {
                 (void) unlink("/run/nologin");
                 m->unlink_nologin = false;
         }
+        (void) unlink("/run/systemd/shutdown/scheduled");
 }
 
 #if 0 /// elogind has its own variant in elogind-dbus.c
