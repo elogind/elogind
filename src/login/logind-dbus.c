@@ -1498,6 +1498,28 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
 }
 
 #if 0 /// elogind has its own variant in elogind-dbus.c
+static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+
+        static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
+                [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
+                [INHIBIT_SLEEP] = "PrepareForSleep"
+        };
+
+        int active = _active;
+
+        assert(m);
+        assert(w >= 0);
+        assert(w < _INHIBIT_WHAT_MAX);
+        assert(signal_name[w]);
+
+        return sd_bus_emit_signal(m->bus,
+                                  "/org/freedesktop/login1",
+                                  "org.freedesktop.login1.Manager",
+                                  signal_name[w],
+                                  "b",
+                                  active);
+}
+
 static int execute_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
@@ -1527,15 +1549,17 @@ static int execute_shutdown_or_sleep(
                         &reply,
                         "ss", unit_name, "replace-irreversibly");
         if (r < 0)
-                return r;
+                goto error;
 
         r = sd_bus_message_read(reply, "o", &p);
         if (r < 0)
-                return r;
+                goto error;
 
         c = strdup(p);
-        if (!c)
-                return -ENOMEM;
+        if (!c) {
+                r = -ENOMEM;
+                goto error;
+        }
 
         m->action_unit = unit_name;
         free(m->action_job);
@@ -1546,6 +1570,12 @@ static int execute_shutdown_or_sleep(
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
 
         return 0;
+
+error:
+        /* Tell people that they now may take a lock again */
+        send_prepare_for(m, m->action_what, false);
+
+        return r;
 }
 
 int manager_dispatch_delayed(Manager *manager, bool timeout) {
@@ -1576,7 +1606,8 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
         /* Actually do the operation */
         r = execute_shutdown_or_sleep(manager, manager->action_what, manager->action_unit, &error);
         if (r < 0) {
-                log_warning("Failed to send delayed message: %s", bus_error_message(&error, r));
+                log_warning("Error during inhibitor-delayed operation (already returned success to client): %s",
+                            bus_error_message(&error, r));
 
                 manager->action_unit = NULL;
                 manager->action_what = 0;
@@ -1643,32 +1674,10 @@ static int delay_shutdown_or_sleep(
         return 0;
 }
 #endif // 0
-
 #if 0 /// elogind-dbus.c needs to access this
-static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 #else
 int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 #endif // 0
-
-        static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
-                [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
-                [INHIBIT_SLEEP] = "PrepareForSleep"
-        };
-
-        int active = _active;
-
-        assert(m);
-        assert(w >= 0);
-        assert(w < _INHIBIT_WHAT_MAX);
-        assert(signal_name[w]);
-
-        return sd_bus_emit_signal(m->bus,
-                                  "/org/freedesktop/login1",
-                                  "org.freedesktop.login1.Manager",
-                                  signal_name[w],
-                                  "b",
-                                  active);
-}
 
 #if 0 /// elogind has its own variant in elogind-dbus.c
 int bus_manager_shutdown_or_sleep_now_or_later(
@@ -1988,8 +1997,9 @@ static int manager_scheduled_shutdown_handler(
 
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what) {
+                r = -EALREADY;
                 log_error("Scheduled shutdown to %s failed: shutdown or sleep operation already in progress", target);
-                return -EALREADY;
+                goto error;
         }
 
         if (m->shutdown_dry_run) {
@@ -2006,10 +2016,16 @@ static int manager_scheduled_shutdown_handler(
         }
 
         r = bus_manager_shutdown_or_sleep_now_or_later(m, target, INHIBIT_SHUTDOWN, &error);
-        if (r < 0)
-                return log_error_errno(r, "Scheduled shutdown to %s failed: %m", target);
+        if (r < 0) {
+                log_error_errno(r, "Scheduled shutdown to %s failed: %m", target);
+                goto error;
+        }
 
         return 0;
+
+error:
+        reset_scheduled_shutdown(m);
+        return r;
 }
 #endif // 0
 
