@@ -1532,7 +1532,7 @@ static int execute_shutdown_or_sleep(
         int r;
 
         assert(m);
-        assert(w >= 0);
+        assert(w > 0);
         assert(w < _INHIBIT_WHAT_MAX);
         assert(unit_name);
 
@@ -1691,7 +1691,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 
         assert(m);
         assert(unit_name);
-        assert(w >= 0);
+        assert(w > 0);
         assert(w <= _INHIBIT_WHAT_MAX);
         assert(!m->action_job);
 
