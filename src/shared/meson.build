@@ -168,6 +168,8 @@ libshared_deps = [threads,
                   libselinux]
 #endif // 0
 
+libshared_sym_path = '@0@/libshared.sym'.format(meson.current_source_dir())
+
 libshared = shared_library(
         libshared_name,
         shared_sources,
@@ -180,7 +182,8 @@ libshared = shared_library(
         libelogind_internal_sources,
 #endif // 0
         include_directories : includes,
-        link_args : ['-shared'],
+        link_args : ['-shared',
+                    '-Wl,--version-script=' + libshared_sym_path],
         c_args : ['-fvisibility=default'],
         dependencies : libshared_deps,
         install : true,
