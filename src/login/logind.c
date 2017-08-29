@@ -82,9 +82,6 @@ static void manager_reset_config(Manager *m) {
 
         m->kill_only_users = strv_free(m->kill_only_users);
         m->kill_exclude_users = strv_free(m->kill_exclude_users);
-#if 1 /// elogind needs an Add-On for sleep configuration
-        elogind_manager_reset_config(m);
-#endif // 1
 }
 
 static Manager *manager_new(void) {
@@ -1076,6 +1073,10 @@ static int manager_dispatch_reload_signal(sd_event_source *s, const struct signa
         else
                 log_info("Config file reloaded.");
 
+#if 1 /// elogind needs an Add-On for sleep configuration
+        elogind_manager_reset_config(m);
+#endif // 1
+
         return 0;
 }
 
@@ -1265,6 +1266,10 @@ int main(int argc, char *argv[]) {
         }
 
         manager_parse_config_file(m);
+
+#if 1 /// elogind needs an Add-On for sleep configuration
+        elogind_manager_reset_config(m);
+#endif // 1
 
         r = manager_startup(m);
         if (r < 0) {
