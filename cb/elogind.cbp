@@ -535,6 +535,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
+		<Unit filename="../src/shared/libshared.sym" />
 		<Unit filename="../src/shared/meson.build" />
 		<Unit filename="../src/shared/musl_missing.c">
 			<Option compilerVar="CC" />
