@@ -120,7 +120,7 @@ static int elogind_daemonize(void) {
 
 
 /// Simple tool to see, if elogind is already running
-static pid_t elogind_is_already_running(void) {
+static pid_t elogind_is_already_running(bool need_pid_file) {
         _cleanup_free_ char *s = NULL;
         pid_t pid;
         int r;
@@ -143,7 +143,8 @@ we_are_alone:
         /* Take care of our PID-file now.
            If the user is going to fork elogind, the PID file
            will be overwritten. */
-        write_pid_file();
+        if (need_pid_file)
+                write_pid_file();
 
         return 0;
 }
@@ -293,9 +294,9 @@ int elogind_startup(int argc, char *argv[]) {
         }
 
         /* Do not continue if elogind is already running */
-        pid = elogind_is_already_running();
+        pid = elogind_is_already_running(!daemonize);
         if (pid) {
-                fprintf(stderr, "elogind is already running:" PID_FMT "\n", pid);
+                fprintf(stderr, "elogind is already running as PID " PID_FMT "\n", pid);
                 return pid;
         }
 
