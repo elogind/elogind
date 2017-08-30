@@ -76,7 +76,6 @@ liblogind_core = static_library(
                         libaudit])
 #endif // 0
 
-
 loginctl_sources = files('''
         loginctl.c
         sysfs-show.h
