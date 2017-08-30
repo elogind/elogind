@@ -57,3 +57,7 @@ static inline bool cap_test_all(uint64_t caps) {
         m = (UINT64_C(1) << (cap_last_cap() + 1)) - 1;
         return (caps & m) == m;
 }
+
+#if 0 /// UNNEEDED by elogind
+bool ambient_capabilities_supported(void);
+#endif // 0

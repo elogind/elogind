@@ -45,6 +45,7 @@
 #include "io-util.h"
 #include "log.h"
 #include "macro.h"
+#include "path-util.h"
 #include "parse-util.h"
 #include "process-util.h"
 #include "socket-util.h"
@@ -560,6 +561,7 @@ int terminal_vhangup(const char *name) {
 
 int vt_disallocate(const char *name) {
         _cleanup_close_ int fd = -1;
+        const char *e, *n;
         unsigned u;
         int r;
 
@@ -567,7 +569,8 @@ int vt_disallocate(const char *name) {
          * (i.e. because it is the active one), at least clear it
          * entirely (including the scrollback buffer) */
 
-        if (!startswith(name, "/dev/"))
+        e = path_startswith(name, "/dev/");
+        if (!e)
                 return -EINVAL;
 
         if (!tty_is_vc(name)) {
@@ -586,10 +589,11 @@ int vt_disallocate(const char *name) {
                 return 0;
         }
 
-        if (!startswith(name, "/dev/tty"))
+        n = startswith(e, "tty");
+        if (!n)
                 return -EINVAL;
 
-        r = safe_atou(name+8, &u);
+        r = safe_atou(n, &u);
         if (r < 0)
                 return r;
 
@@ -654,10 +658,7 @@ bool tty_is_vc(const char *tty) {
 bool tty_is_console(const char *tty) {
         assert(tty);
 
-        if (startswith(tty, "/dev/"))
-                tty += 5;
-
-        return streq(tty, "console");
+        return streq(skip_dev_prefix(tty), "console");
 }
 
 int vtnr_from_tty(const char *tty) {
@@ -665,8 +666,7 @@ int vtnr_from_tty(const char *tty) {
 
         assert(tty);
 
-        if (startswith(tty, "/dev/"))
-                tty += 5;
+        tty = skip_dev_prefix(tty);
 
         if (!startswith(tty, "tty") )
                 return -EINVAL;
@@ -781,8 +781,7 @@ bool tty_is_vc_resolve(const char *tty) {
 
         assert(tty);
 
-        if (startswith(tty, "/dev/"))
-                tty += 5;
+        tty = skip_dev_prefix(tty);
 
         if (streq(tty, "console")) {
                 tty = resolve_dev_console(&active);
@@ -927,11 +926,9 @@ int getttyname_malloc(int fd, char **ret) {
 
                 r = ttyname_r(fd, path, sizeof(path));
                 if (r == 0) {
-                        const char *p;
                         char *c;
 
-                        p = startswith(path, "/dev/");
-                        c = strdup(p ?: path);
+                        c = strdup(skip_dev_prefix(path));
                         if (!c)
                                 return -ENOMEM;
 
