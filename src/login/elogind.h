@@ -26,11 +26,11 @@
 #include "sd-bus.h"
 
 
-/// Add-On for main() to daemonize elogind upon request with a double fork
-int elogind_daemonize(void);
-
 /// Add-On for manager_connect_bus()
 int elogind_setup_cgroups_agent(Manager *m);
+
+/// elogind has some extra functionality at startup, as it is not hooked into systemd.
+int elogind_startup(int argc, char *argv[]);
 
 /// Add-On for manager_free()
 void elogind_manager_free(Manager* m);

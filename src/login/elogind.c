@@ -25,6 +25,7 @@
 #include "fileio.h"
 #include "fs-util.h"
 #include "mount-setup.h"
+#include "parse-util.h"
 #include "process-util.h"
 #include "socket-util.h"
 #include "stdio-util.h"
@@ -44,13 +45,33 @@ static void remove_pid_file(void) {
 }
 
 
-/* daemonize elogind by double forking.
-   The grand child returns 0.
-   The parent and child return their forks PID.
-   On error, a value < 0 is returned.
-*/
-int elogind_daemonize(void) {
+static void write_pid_file(void) {
         char c[DECIMAL_STR_MAX(pid_t) + 2];
+        pid_t pid;
+        int   r;
+
+        pid = getpid_cached();
+
+        xsprintf(c, PID_FMT "\n", pid);
+
+        r = write_string_file(ELOGIND_PID_FILE, c,
+                              WRITE_STRING_FILE_CREATE |
+                              WRITE_STRING_FILE_VERIFY_ON_FAILURE);
+        if (r < 0)
+                log_error_errno(-r, "Failed to write PID file %s: %m",
+                                ELOGIND_PID_FILE);
+
+        /* Make sure the PID file gets cleaned up on exit! */
+        atexit(remove_pid_file);
+}
+
+
+/** daemonize elogind by double forking.
+  * The grand child returns 0.
+  * The parent and child return their forks PID.
+  * On error, a value < 0 is returned.
+**/
+static int elogind_daemonize(void) {
         pid_t child;
         pid_t grandchild;
         pid_t SID;
@@ -92,19 +113,37 @@ int elogind_daemonize(void) {
         umask(0022);
 
         /* Take care of our PID-file now */
-        grandchild = getpid_cached();
+        write_pid_file();
 
-        xsprintf(c, PID_FMT "\n", grandchild);
+        return 0;
+}
 
-        r = write_string_file(ELOGIND_PID_FILE, c,
-                              WRITE_STRING_FILE_CREATE |
-                              WRITE_STRING_FILE_VERIFY_ON_FAILURE);
+
+/// Simple tool to see, if elogind is already running
+static pid_t elogind_is_already_running(void) {
+        _cleanup_free_ char *s = NULL;
+        pid_t pid;
+        int r;
+
+        r = read_one_line_file(ELOGIND_PID_FILE, &s);
+
         if (r < 0)
-                log_error_errno(-r, "Failed to write PID file %s: %m",
-                                ELOGIND_PID_FILE);
+                goto we_are_alone;
 
-        /* Make sure the PID file gets cleaned up on exit! */
-        atexit(remove_pid_file);
+        r = safe_atoi32(s, &pid);
+
+        if (r < 0)
+                goto we_are_alone;
+
+        if ( (pid != getpid_cached()) && pid_is_alive(pid))
+                return pid;
+
+we_are_alone:
+
+        /* Take care of our PID-file now.
+           If the user is going to fork elogind, the PID file
+           will be overwritten. */
+        write_pid_file();
 
         return 0;
 }
@@ -137,6 +176,7 @@ static int manager_dispatch_cgroups_agent_fd(sd_event_source *source, int fd, ui
 
         return 0;
 }
+
 
 /// Add-On for manager_connect_bus()
 /// Original: src/core/manager.c:manager_setup_cgroups_agent()
@@ -216,6 +256,57 @@ int elogind_setup_cgroups_agent(Manager *m) {
         return 0;
 }
 
+
+/** Extra functionality at startup, exclusive to elogind
+  * return < 0 on error, exit with failure.
+  * return = 0 on success, continue normal operation.
+  * return > 0 if elogind is already running or forked, exit with success.
+**/
+int elogind_startup(int argc, char *argv[]) {
+        bool  daemonize = false;
+        pid_t pid;
+        int   r         = 0;
+        bool  show_help = false;
+        bool  wrong_arg = false;
+
+        /* add a -h/--help and a -d/--daemon argument. */
+        if ( (argc == 2) && argv[1] && strlen(argv[1]) ) {
+                if ( streq(argv[1], "-D") || streq(argv[1], "--daemon") )
+                        daemonize = true;
+                else if ( streq(argv[1], "-h") || streq(argv[1], "--help") ) {
+                        show_help = true;
+                        r = 1;
+                } else
+                        wrong_arg = true;
+        } else if (argc > 2)
+                wrong_arg = true;
+
+        /* try to get some meaningful output in case of an error */
+        if (wrong_arg) {
+                fprintf(stderr, "ERROR: Unknown arguments\n");
+                show_help = true;
+                r = -EINVAL;
+        }
+        if (show_help) {
+                fprintf(stderr, "%s [<-D|--daemon>|<-h|--help>]\n", argv[0]);
+                return r;
+        }
+
+        /* Do not continue if elogind is already running */
+        pid = elogind_is_already_running();
+        if (pid) {
+                fprintf(stderr, "elogind is already running:" PID_FMT "\n", pid);
+                return pid;
+        }
+
+        /* elogind allows to be daemonized using one argument "-D" / "--daemon" */
+        if (daemonize)
+                r = elogind_daemonize();
+
+        return r;
+}
+
+
 /// Add-On for manager_free()
 void elogind_manager_free(Manager* m) {
 
@@ -232,6 +323,7 @@ void elogind_manager_free(Manager* m) {
         strv_free(m->hybrid_sleep_mode);
         strv_free(m->hybrid_sleep_state);
 }
+
 
 /// Add-On for manager_new()
 int elogind_manager_new(Manager* m) {
@@ -262,6 +354,7 @@ int elogind_manager_new(Manager* m) {
 
         return r;
 }
+
 
 /// Add-On for manager_reset_config()
 void elogind_manager_reset_config(Manager* m) {
