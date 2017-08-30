@@ -121,8 +121,6 @@ static const MountPoint mount_table[] = {
         { "efivarfs",    "/sys/firmware/efi/efivars", "efivarfs",   NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           is_efi_boot,   MNT_NONE                   },
 #endif
-        { "xenfs",      "/proc/xen",                  "xenfs",     NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          NULL,          MNT_NONE                   },
 #else
         { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH",xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER  },
