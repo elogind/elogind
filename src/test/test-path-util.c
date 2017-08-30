@@ -592,6 +592,21 @@ static void test_systemd_installation_has_version(const char *path) {
 }
 #endif // 0
 
+static void test_skip_dev_prefix(void) {
+
+        assert_se(streq(skip_dev_prefix("/"), "/"));
+        assert_se(streq(skip_dev_prefix("/dev"), ""));
+        assert_se(streq(skip_dev_prefix("/dev/"), ""));
+        assert_se(streq(skip_dev_prefix("/dev/foo"), "foo"));
+        assert_se(streq(skip_dev_prefix("/dev/foo/bar"), "foo/bar"));
+        assert_se(streq(skip_dev_prefix("//dev"), ""));
+        assert_se(streq(skip_dev_prefix("//dev//"), ""));
+        assert_se(streq(skip_dev_prefix("/dev///foo"), "foo"));
+        assert_se(streq(skip_dev_prefix("///dev///foo///bar"), "foo///bar"));
+        assert_se(streq(skip_dev_prefix("//foo"), "//foo"));
+        assert_se(streq(skip_dev_prefix("foo"), "foo"));
+}
+
 int main(int argc, char **argv) {
         log_set_max_level(LOG_DEBUG);
         log_parse_environment();
@@ -613,6 +628,7 @@ int main(int argc, char **argv) {
         test_file_in_same_dir();
         test_filename_is_valid();
         test_hidden_or_backup_file();
+        test_skip_dev_prefix();
 
 #if 0 /// UNNEEDED by elogind
         test_systemd_installation_has_version(argv[1]); /* NULL is OK */
