@@ -27,6 +27,7 @@
 #include "mount-setup.h"
 #include "parse-util.h"
 #include "process-util.h"
+#include "signal-util.h"
 #include "socket-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
@@ -38,6 +39,25 @@
 #ifndef ELOGIND_PID_FILE
 #  define ELOGIND_PID_FILE "/run/elogind.pid"
 #endif // ELOGIND_PID_FILE
+
+
+static int elogind_signal_handler(sd_event_source *s,
+                                   const struct signalfd_siginfo *si,
+                                   void *userdata) {
+        Manager *m = userdata;
+        int r;
+
+        log_warning("Received signal %u [%s]", si->ssi_signo,
+                    signal_to_string(si->ssi_signo));
+
+        r = sd_event_get_state(m->event);
+
+        if (r != SD_EVENT_FINISHED)
+                sd_event_exit(m->event, si->ssi_signo);
+
+        return 0;
+}
+
 
 static void remove_pid_file(void) {
         if (access(ELOGIND_PID_FILE, F_OK) == 0)
@@ -432,4 +452,29 @@ void elogind_manager_reset_config(Manager* m) {
                 log_debug_elogind("hybrid_sleep_state[%d] = %s",
                                   dbg_cnt, m->hybrid_sleep_state[dbg_cnt]);
 #endif // ENABLE_DEBUG_ELOGIND
+}
+
+
+/// Add-On for manager_startup()
+int elogind_manager_startup(Manager *m) {
+        int r;
+
+        assert(m);
+
+        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGINT, -1) >= 0);
+        r = sd_event_add_signal(m->event, NULL, SIGINT, elogind_signal_handler, m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register SIGINT handler: %m");
+
+        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGQUIT, -1) >= 0);
+        r = sd_event_add_signal(m->event, NULL, SIGQUIT, elogind_signal_handler, m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register SIGQUIT handler: %m");
+
+        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGTERM, -1) >= 0);
+        r = sd_event_add_signal(m->event, NULL, SIGTERM, elogind_signal_handler, m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register SIGTERM handler: %m");
+
+        return 0;
 }

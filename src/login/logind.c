@@ -1161,6 +1161,10 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to register SIGHUP handler: %m");
 
+#if 1 /// elogind needs some extra preparations before connecting...
+        elogind_manager_startup(m);
+#endif // 1
+
         /* Connect to console */
         r = manager_connect_console(m);
         if (r < 0)
