@@ -1356,7 +1356,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
                         if (!e)
                                 return -ENOMEM;
 
-                        c = strjoina(",argv4=--machine=", m);
+                        c = strjoina(",argv5=--machine=", m);
                 }
         }
 
@@ -1366,7 +1366,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
                         return -ENOMEM;
         }
 
-        b->address = strjoin("unixexec:path=ssh,argv1=-xT,argv2=", e, ",argv3=systemd-stdio-bridge", c);
+        b->address = strjoin("unixexec:path=ssh,argv1=-xT,argv2=--,argv3=", e, ",argv4=elogind-stdio-bridge", c);
         if (!b->address)
                 return -ENOMEM;
 
