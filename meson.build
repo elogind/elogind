@@ -78,7 +78,7 @@ rootbindir = join_paths(rootprefixdir, 'bin')
 # rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
 #else
 rootlibexecdir = get_option('rootlibexecdir')
-rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : join_paths(rootprefixdir, 'lib/libexec')
+rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : join_paths(rootprefixdir, 'lib/elogind')
 #endif // 0
 
 rootlibdir = get_option('rootlibdir')
