@@ -820,6 +820,7 @@ noreturn void log_assert_failed_realm(
                 const char *file,
                 int line,
                 const char *func) {
+        log_open();
         log_assert(LOG_REALM_PLUS_LEVEL(realm, LOG_CRIT), text, file, line, func,
                    "Assertion '%s' failed at %s:%u, function %s(). Aborting.");
         abort();
@@ -831,6 +832,7 @@ noreturn void log_assert_failed_unreachable_realm(
                 const char *file,
                 int line,
                 const char *func) {
+        log_open();
         log_assert(LOG_REALM_PLUS_LEVEL(realm, LOG_CRIT), text, file, line, func,
                    "Code should not be reached '%s' at %s:%u, function %s(). Aborting.");
         abort();
