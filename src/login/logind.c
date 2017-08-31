@@ -1269,6 +1269,12 @@ int main(int argc, char *argv[]) {
         Manager *m = NULL;
         int r;
 
+#if 1 /// perform extra checks for elogind startup
+        r = elogind_startup(argc, argv);
+        if (r)
+                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+#endif // 0
+
         elogind_set_program_name(argv[0]);
         log_set_target(LOG_TARGET_AUTO);
         log_set_facility(LOG_AUTH);
@@ -1281,17 +1287,13 @@ int main(int argc, char *argv[]) {
 
         umask(0022);
 
-#if 1 /// elogind has some extra functionality at startup.
-        r = elogind_startup(argc, argv);
-        if (r)
-                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
-#endif // 1
-
+#if 0 /// elogind has some extra functionality at startup, argc can be != 1
         if (argc != 1) {
                 log_error("This program takes no arguments.");
                 r = -EINVAL;
                 goto finish;
         }
+#endif // 0
 
         r = mac_selinux_init();
         if (r < 0) {

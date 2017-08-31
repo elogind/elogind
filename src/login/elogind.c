@@ -77,6 +77,12 @@ static int elogind_daemonize(void) {
         pid_t SID;
         int r;
 
+#ifdef ENABLE_DEBUG_ELOGIND
+        log_notice("Double forking elogind");
+        log_notice("Parent PID     : %5d", getpid_cached());
+        log_notice("Parent SID     : %5d", getsid(getpid_cached()));
+#endif // ENABLE_DEBUG_ELOGIND
+
         child = fork();
 
         if (child < 0)
@@ -92,11 +98,21 @@ static int elogind_daemonize(void) {
                 return child;
         }
 
+#ifdef ENABLE_DEBUG_ELOGIND
+        log_notice("Child PID      : %5d", getpid_cached());
+        log_notice("Child SID      : %5d", getsid(getpid_cached()));
+#endif // ENABLE_DEBUG_ELOGIND
+
         /* The first child has to become a new session leader. */
         close_all_fds(NULL, 0);
         SID = setsid();
         if ((pid_t)-1 == SID)
                 return log_error_errno(errno, "Failed to create new SID: %m");
+
+#ifdef ENABLE_DEBUG_ELOGIND
+        log_notice("Child new SID  : %5d", getsid(getpid_cached()));
+#endif // ENABLE_DEBUG_ELOGIND
+
         umask(0022);
 
         /* Now the grandchild, the true daemon, can be created. */
@@ -111,6 +127,11 @@ static int elogind_daemonize(void) {
 
         close_all_fds(NULL, 0);
         umask(0022);
+
+#ifdef ENABLE_DEBUG_ELOGIND
+        log_notice("Grand child PID: %5d", getpid_cached());
+        log_notice("Grand child SID: %5d", getsid(getpid_cached()));
+#endif // ENABLE_DEBUG_ELOGIND
 
         /* Take care of our PID-file now */
         write_pid_file();
@@ -282,21 +303,30 @@ int elogind_startup(int argc, char *argv[]) {
         } else if (argc > 2)
                 wrong_arg = true;
 
+        /* Note: At this point, the logging is not initialized, so we can not
+                 use log_debug_elogind(). */
+#ifdef ENABLE_DEBUG_ELOGIND
+        log_notice("elogind startup: Daemonize: %s, Show Help: %s, Wrong arg: %s",
+                daemonize ? "True" : "False",
+                show_help ? "True" : "False",
+                wrong_arg ? "True" : "False");
+#endif // ENABLE_DEBUG_ELOGIND
+
         /* try to get some meaningful output in case of an error */
         if (wrong_arg) {
-                fprintf(stderr, "ERROR: Unknown arguments\n");
+                log_error("Unknown arguments");
                 show_help = true;
                 r = -EINVAL;
         }
         if (show_help) {
-                fprintf(stderr, "%s [<-D|--daemon>|<-h|--help>]\n", argv[0]);
+                log_info("%s [<-D|--daemon>|<-h|--help>]", basename(argv[0]));
                 return r;
         }
 
         /* Do not continue if elogind is already running */
         pid = elogind_is_already_running(!daemonize);
         if (pid) {
-                fprintf(stderr, "elogind is already running as PID " PID_FMT "\n", pid);
+                log_error("elogind is already running as PID " PID_FMT, pid);
                 return pid;
         }
 
