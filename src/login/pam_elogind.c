@@ -234,9 +234,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         assert(handle);
 
+#if 0 /// with elogind, it is always a "logind system".
         /* Make this a NOP on non-logind systems */
         if (!logind_running())
                 return PAM_SUCCESS;
+#endif // 0
 
         if (parse_argv(handle,
                        argc, argv,
@@ -249,7 +251,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 #if 0 /// This is pam-elogind, not pam-systemd
                 pam_syslog(handle, LOG_DEBUG, "pam-systemd initializing");
 #else
-                pam_syslog(handle, LOG_DEBUG, "pam-systemd initializing");
+                pam_syslog(handle, LOG_DEBUG, "pam-elogind initializing");
 #endif // 0
 
         r = get_user_data(handle, &username, &pw);
@@ -265,7 +267,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
          * leave. */
 
         pam_get_item(handle, PAM_SERVICE, (const void**) &service);
+#if 0 /// Actually it is elogind-user with elogind.
         if (streq_ptr(service, "systemd-user")) {
+#else
+        if (streq_ptr(service, "elogind-user")) {
+#endif // 0
                 _cleanup_free_ char *rt = NULL;
 
                 if (asprintf(&rt, "/run/user/"UID_FMT, pw->pw_uid) < 0)
