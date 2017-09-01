@@ -88,7 +88,7 @@ loginctl_sources += files('''
         eloginctl.h
 '''.split())
 #endif // 1
-#if 0 /// elogind builds itself unconditionally and with some adaptatins
+#if 0 /// elogind builds itself unconditionally and with some adaptations
 # if conf.get('ENABLE_LOGIND', false)
 #         logind_conf = configure_file(
 #                 input : 'logind.conf.in',
@@ -149,7 +149,11 @@ pam_elogind_c = files('pam_elogind.c')
 
 install_data('org.freedesktop.login1.conf',
                 install_dir : dbuspolicydir)
-install_data('org.freedesktop.login1.service',
+logind_service = configure_file(
+        input : 'org.freedesktop.login1.service.in',
+        output : 'org.freedesktop.login1.service',
+        configuration : substs)
+install_data(logind_service,
                 install_dir : dbussystemservicedir)
 
 custom_target(
