@@ -33,7 +33,6 @@
 #include "bus-error.h"
 #include "bus-util.h"
 #include "escape.h"
-#include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
@@ -42,11 +41,11 @@
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
-#include "process-util.h"
 #include "string-table.h"
 #include "terminal-util.h"
 #include "user-util.h"
 #include "util.h"
+#include "process-util.h"
 
 #define RELEASE_USEC (20*USEC_PER_SEC)
 
@@ -1216,7 +1215,7 @@ void session_restore_vt(Session *s) {
         };
 
         _cleanup_free_ char *utf8 = NULL;
-        int vt, kb, old_fd;
+        int vt, old_fd;
 
         /* We need to get a fresh handle to the virtual terminal,
          * since the old file-descriptor is potentially in a hung-up
@@ -1235,12 +1234,7 @@ void session_restore_vt(Session *s) {
 
         (void) ioctl(vt, KDSETMODE, KD_TEXT);
 
-        if (read_one_line_file("/sys/module/vt/parameters/default_utf8", &utf8) >= 0 && parse_boolean(utf8) == 0)
-                kb = K_XLATE;
-        else
-                kb = K_UNICODE;
-
-        (void) ioctl(vt, KDSKBMODE, kb);
+        (void) vt_reset_keyboard(vt);
 
         (void) ioctl(vt, VT_SETMODE, &mode);
         (void) fchown(vt, 0, (gid_t) -1);
