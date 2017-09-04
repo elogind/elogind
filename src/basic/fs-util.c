@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+//#include <linux/magic.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -38,6 +39,7 @@
 #include "parse-util.h"
 #include "path-util.h"
 #include "stat-util.h"
+//#include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
 //#include "time-util.h"
@@ -732,6 +734,9 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
 
                 if (fstat(child, &st) < 0)
                         return -errno;
+                if ((flags & CHASE_NO_AUTOFS) &&
+                    fd_check_fstype(child, AUTOFS_SUPER_MAGIC) > 0)
+                        return -EREMOTE;
 
                 if (S_ISLNK(st.st_mode)) {
                         char *joined;
