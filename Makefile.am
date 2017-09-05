@@ -188,8 +188,6 @@ CLEANFILES = $(BUILT_SOURCES) \
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DPKGSYSCONFDIR=\"$(pkgsysconfdir)\" \
-	-DSYSTEMD_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
-	-DSYSTEMD_BINARY_PATH=\"$(rootlibexecdir)/elogind\" \
 	-DSYSTEM_CONFIG_UNIT_PATH=\"$(pkgsysconfdir)/system\" \
 	-DSYSTEM_DATA_UNIT_PATH=\"$(systemunitdir)\" \
 	-DSYSTEM_SYSVINIT_PATH=\"$(SYSTEM_SYSVINIT_PATH)\" \
@@ -201,6 +199,8 @@ AM_CPPFLAGS = \
 	-DSYSTEMD_FSCK_PATH=\"$(rootlibexecdir)/elogind-fsck\" \
 	-DSYSTEMD_SHUTDOWN_BINARY_PATH=\"$(rootlibexecdir)/elogind-shutdown\" \
 	-DSYSTEMD_SLEEP_BINARY_PATH=\"$(rootlibexecdir)/elogind-sleep\" \
+	-DSYSTEMD_CGROUP_AGENT_PATH=\"$(rootlibexecdir)/elogind-cgroups-agent\" \
+	-DSYSTEMD_BINARY_PATH=\"$(rootlibexecdir)/elogind\" \
 	-DSYSTEMCTL_BINARY_PATH=\"$(rootbindir)/systemctl\" \
 	-DSYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH=\"$(rootbindir)/elogind-tty-ask-password-agent\" \
 	-DSYSTEMD_STDIO_BRIDGE_BINARY_PATH=\"$(bindir)/elogind-stdio-bridge\" \
@@ -1870,7 +1870,6 @@ test_utf8_SOURCES = \
 	src/test/test-utf8.c
 
 test_utf8_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_capability_SOURCES = \
@@ -1908,36 +1907,40 @@ test_sigbus_SOURCES = \
 
 test_sigbus_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 test_condition_SOURCES = \
 	src/test/test-condition.c
 
 test_condition_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 test_fdset_SOURCES = \
 	src/test/test-fdset.c
 
 test_fdset_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 test_fstab_util_SOURCES = \
 	src/test/test-fstab-util.c
 
 test_fstab_util_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 test_ratelimit_SOURCES = \
 	src/test/test-ratelimit.c
 
 test_ratelimit_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 test_util_SOURCES = \
 	src/test/test-util.c
 
 test_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_mount_util_SOURCES = \
@@ -1950,21 +1953,18 @@ test_exec_util_SOURCES = \
 	src/test/test-exec-util.c
 
 test_exec_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_hexdecoct_SOURCES = \
 	src/test/test-hexdecoct.c
 
 test_hexdecoct_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_alloc_util_SOURCES = \
 	src/test/test-alloc-util.c
 
 test_alloc_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_xattr_util_SOURCES = \
@@ -1977,7 +1977,6 @@ test_io_util_SOURCES = \
 	src/test/test-io-util.c
 
 test_io_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_glob_util_SOURCES = \
@@ -1990,21 +1989,18 @@ test_fs_util_SOURCES = \
 	src/test/test-fs-util.c
 
 test_fs_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_proc_cmdline_SOURCES = \
 	src/test/test-proc-cmdline.c
 
 test_proc_cmdline_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_fd_util_SOURCES = \
 	src/test/test-fd-util.c
 
 test_fd_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_web_util_SOURCES = \
@@ -2023,42 +2019,36 @@ test_stat_util_SOURCES = \
 	src/test/test-stat-util.c
 
 test_stat_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_escape_SOURCES = \
 	src/test/test-escape.c
 
 test_escape_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_string_util_SOURCES = \
 	src/test/test-string-util.c
 
 test_string_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_extract_word_SOURCES = \
 	src/test/test-extract-word.c
 
 test_extract_word_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_parse_util_SOURCES = \
 	src/test/test-parse-util.c
 
 test_parse_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_user_util_SOURCES = \
 	src/test/test-user-util.c
 
 test_user_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_hostname_util_SOURCES = \
@@ -2071,7 +2061,6 @@ test_process_util_SOURCES = \
 	src/test/test-process-util.c
 
 test_process_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_terminal_util_SOURCES = \
@@ -2128,7 +2117,6 @@ test_verbs_SOURCES = \
 	src/test/test-verbs.c
 
 test_verbs_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_install_root_SOURCES = \
@@ -2180,14 +2168,12 @@ test_signal_util_SOURCES = \
 	src/test/test-signal-util.c
 
 test_signal_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_selinux_SOURCES = \
 	src/test/test-selinux.c
 
 test_selinux_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_sizeof_SOURCES = \
@@ -2216,14 +2202,12 @@ test_hashmap_SOURCES = \
 	src/test/test-hashmap-plain.c
 
 test_hashmap_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_set_SOURCES = \
 	src/test/test-set.c
 
 test_set_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_bitmap_SOURCES = \
@@ -2242,11 +2226,9 @@ test_list_SOURCES = \
 	src/test/test-list.c
 
 test_list_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_unaligned_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_unaligned_SOURCES = \
@@ -2275,7 +2257,6 @@ test_prioq_SOURCES = \
 	src/test/test-prioq.c
 
 test_prioq_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_fileio_SOURCES = \
@@ -2306,14 +2287,12 @@ test_log_SOURCES = \
 	src/test/test-log.c
 
 test_log_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_ipcrm_SOURCES = \
 	src/test/test-ipcrm.c
 
 test_ipcrm_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_btrfs_SOURCES = \
@@ -2351,7 +2330,6 @@ test_ellipsize_SOURCES = \
 	src/test/test-ellipsize.c
 
 test_ellipsize_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_date_SOURCES = \
@@ -2382,7 +2360,6 @@ test_strip_tab_ansi_SOURCES = \
 	src/test/test-strip-tab-ansi.c
 
 test_strip_tab_ansi_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_daemon_SOURCES = \
@@ -2395,7 +2372,6 @@ test_cgroup_SOURCES = \
 	src/test/test-cgroup.c
 
 test_cgroup_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_cgroup_mask_SOURCES = \
@@ -2440,7 +2416,6 @@ test_path_util_SOURCES = \
 	src/test/test-path-util.c
 
 test_path_util_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_path_SOURCES = \
@@ -2467,7 +2442,6 @@ test_siphash24_SOURCES = \
 	src/test/test-siphash24.c
 
 test_siphash24_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_strxcpyx_SOURCES = \
@@ -2506,14 +2480,12 @@ test_conf_files_SOURCES = \
 	src/test/test-conf-files.c
 
 test_conf_files_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_conf_parser_SOURCES = \
 	src/test/test-conf-parser.c
 
 test_conf_parser_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_af_list_SOURCES = \
@@ -2532,6 +2504,7 @@ test_journal_importer_SOURCES = \
 	src/test/test-journal-importer.c
 
 test_journal_importer_LDADD = \
+	libelogind-shared.la
 
 TEST_DATA_FILES += \
 	test/journal-data/journal-1.txt \
@@ -2596,6 +2569,7 @@ elogind_initctl_SOURCES = \
 
 elogind_initctl_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_update_utmp_SOURCES = \
@@ -2804,6 +2778,7 @@ elogind_machine_id_setup_SOURCES = \
 
 elogind_machine_id_setup_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 SYSINIT_TARGET_WANTS += \
 	elogind-machine-id-commit.service
@@ -2814,6 +2789,7 @@ elogind_sysctl_SOURCES = \
 
 elogind_sysctl_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_sleep_SOURCES = \
@@ -2821,6 +2797,7 @@ elogind_sleep_SOURCES = \
 
 elogind_sleep_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_fsck_SOURCES = \
@@ -2828,6 +2805,7 @@ elogind_fsck_SOURCES = \
 
 elogind_fsck_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_ac_power_SOURCES = \
@@ -2835,6 +2813,7 @@ elogind_ac_power_SOURCES = \
 
 elogind_ac_power_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_detect_virt_SOURCES = \
@@ -2842,6 +2821,7 @@ elogind_detect_virt_SOURCES = \
 
 elogind_detect_virt_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 INSTALL_EXEC_HOOKS += \
 	elogind-detect-virt-install-hook
@@ -2852,6 +2832,7 @@ elogind_delta_SOURCES = \
 
 elogind_delta_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_getty_generator_SOURCES = \
@@ -2859,6 +2840,7 @@ elogind_getty_generator_SOURCES = \
 
 elogind_getty_generator_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_debug_generator_SOURCES = \
@@ -2866,6 +2848,7 @@ elogind_debug_generator_SOURCES = \
 
 elogind_debug_generator_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_fstab_generator_SOURCES = \
@@ -2874,6 +2857,7 @@ elogind_fstab_generator_SOURCES = \
 
 elogind_fstab_generator_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_system_update_generator_SOURCES = \
@@ -2881,6 +2865,7 @@ elogind_system_update_generator_SOURCES = \
 
 elogind_system_update_generator_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 30_elogind_environment_d_generator_SOURCES = \
@@ -2888,6 +2873,7 @@ elogind_system_update_generator_LDADD = \
 
 30_elogind_environment_d_generator_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 if ENABLE_HIBERNATE
@@ -2902,6 +2888,7 @@ elogind_hibernate_resume_SOURCES = \
 
 elogind_hibernate_resume_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 elogind_hibernate_resume_generator_SOURCES = \
 	src/hibernate-resume/hibernate-resume-generator.c
@@ -3156,6 +3143,7 @@ elogind_rc_local_generator_SOURCES = \
 
 elogind_rc_local_generator_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_remount_fs_SOURCES = \
@@ -3165,6 +3153,7 @@ elogind_remount_fs_SOURCES = \
 
 elogind_remount_fs_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_volatile_root_SOURCES = \
@@ -3172,6 +3161,7 @@ elogind_volatile_root_SOURCES = \
 
 elogind_volatile_root_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_cgroups_agent_SOURCES = \
@@ -3179,6 +3169,7 @@ elogind_cgroups_agent_SOURCES = \
 
 elogind_cgroups_agent_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_escape_SOURCES = \
@@ -3186,6 +3177,7 @@ elogind_escape_SOURCES = \
 
 elogind_escape_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # -----------------------------------------------------------------------------
 systemctl_SOURCES = \
@@ -3193,6 +3185,7 @@ systemctl_SOURCES = \
 
 systemctl_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_notify_SOURCES = \
@@ -3200,6 +3193,7 @@ elogind_notify_SOURCES = \
 
 elogind_notify_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_dissect_SOURCES = \
@@ -3207,6 +3201,7 @@ elogind_dissect_SOURCES = \
 
 elogind_dissect_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_path_SOURCES = \
@@ -3214,6 +3209,7 @@ elogind_path_SOURCES = \
 
 elogind_path_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_ask_password_SOURCES = \
@@ -3221,6 +3217,7 @@ elogind_ask_password_SOURCES = \
 
 elogind_ask_password_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_reply_password_SOURCES = \
@@ -3228,6 +3225,7 @@ elogind_reply_password_SOURCES = \
 
 elogind_reply_password_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_cgls_SOURCES = \
@@ -3235,17 +3233,16 @@ elogind_cgls_SOURCES = \
 
 elogind_cgls_LDADD = \
 	libelogind-shared.la
+	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
 elogind_cgtop_SOURCES = \
 	src/cgtop/cgtop.c
 
-       libelogind-shared.la
 elogind_cgtop_LDADD = \
 	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
-libelogind_internal_la_SOURCES = \
 elogind_nspawn_SOURCES = \
 	src/nspawn/nspawn.c \
 	src/nspawn/nspawn-settings.c \
@@ -3343,6 +3340,7 @@ elogind_tty_ask_password_agent_LDADD = \
 	libsystemd-shared.la
 
 # ------------------------------------------------------------------------------
+libelogind_internal_la_SOURCES = \
 	src/systemd/sd-bus.h \
 	src/systemd/sd-bus-protocol.h \
 	src/systemd/sd-bus-vtable.h \
@@ -3453,7 +3451,6 @@ libelogind_la_LDFLAGS = \
 	-version-info $(LIBSYSTEMD_CURRENT):$(LIBSYSTEMD_REVISION):$(LIBSYSTEMD_AGE) \
 
 libelogind_la_LIBADD = \
-	libelogind-internal.la \
 	libsystemd-internal.la \
 	libbasic.la \
 	libelogind-journal-internal.la
@@ -3515,7 +3512,6 @@ test_bus_signature_SOURCES = \
 	src/libelogind/sd-bus/test-bus-signature.c
 
 test_bus_signature_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_bus_chat_SOURCES = \
@@ -3548,7 +3544,6 @@ test_bus_server_SOURCES = \
 	src/libelogind/sd-bus/test-bus-server.c
 
 test_bus_server_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_bus_objects_SOURCES = \
@@ -3585,7 +3580,6 @@ test_bus_match_SOURCES = \
 	src/libelogind/sd-bus/test-bus-match.c
 
 test_bus_match_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_bus_kernel_SOURCES = \
@@ -3616,14 +3610,12 @@ test_bus_introspect_SOURCES = \
 	src/libelogind/sd-bus/test-bus-introspect.c
 
 test_bus_introspect_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_event_SOURCES = \
 	src/libelogind/sd-event/test-event.c
 
 test_event_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_netlink_SOURCES = \
@@ -3707,6 +3699,17 @@ libelogind_network_la_SOURCES = \
 	src/libelogind-network/lldp-neighbor.h \
 	src/libelogind-network/lldp-neighbor.c \
 	src/libelogind-network/sd-lldp.c
+	src/systemd/sd-dhcp-client.h \
+	src/systemd/sd-ipv4ll.h \
+	src/systemd/sd-ipv4acd.h \
+	src/systemd/sd-ndisc.h \
+	src/systemd/sd-dhcp6-client.h \
+	src/libsystemd-network/dhcp-internal.h \
+	src/libsystemd-network/dhcp-protocol.h \
+	src/libsystemd-network/arp-util.h \
+	src/libsystemd-network/icmp6-util.h \
+	src/libsystemd-network/dhcp6-internal.h \
+	src/libsystemd-network/dhcp-identifier.h \
 
 libelogind_network_la_LIBADD = \
 	$(KMOD_LIBS)
@@ -3715,9 +3718,12 @@ test_dhcp_option_SOURCES = \
 	src/libelogind-network/dhcp-protocol.h \
 	src/libelogind-network/dhcp-internal.h \
 	src/libelogind-network/test-dhcp-option.c
+	src/libsystemd-network/dhcp-protocol.h \
+	src/libsystemd-network/dhcp-internal.h \
 
 test_dhcp_option_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libsystemd-shared.la
 
 test_dhcp_client_SOURCES = \
@@ -3728,6 +3734,7 @@ test_dhcp_client_SOURCES = \
 
 test_dhcp_client_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libsystemd-shared.la
 
 test_dhcp_server_SOURCES = \
@@ -3735,15 +3742,18 @@ test_dhcp_server_SOURCES = \
 
 test_dhcp_server_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libsystemd-shared.la
 
 test_ipv4ll_SOURCES = \
 	src/elogind/sd-ipv4ll.h \
 	src/libelogind-network/arp-util.h \
 	src/libelogind-network/test-ipv4ll.c
+	src/systemd/sd-ipv4ll.h \
 
 test_ipv4ll_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libsystemd-shared.la
 
 test_ipv4ll_manual_SOURCES = \
@@ -3752,6 +3762,7 @@ test_ipv4ll_manual_SOURCES = \
 
 test_ipv4ll_manual_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libsystemd-shared.la
 
 test_acd_SOURCES = \
@@ -3760,6 +3771,7 @@ test_acd_SOURCES = \
 
 test_acd_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libsystemd-shared.la
 
 test_ndisc_rs_SOURCES = \
@@ -3769,9 +3781,13 @@ test_ndisc_rs_SOURCES = \
 	src/libelogind-network/test-ndisc-rs.c \
 	src/libelogind-network/dhcp-identifier.h \
 	src/libelogind-network/dhcp-identifier.c
+	src/systemd/sd-dhcp6-client.h \
+	src/libsystemd-network/dhcp-identifier.h \
+	src/libsystemd-network/dhcp-identifier.c
 
 test_ndisc_rs_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libudev.la \
 	libsystemd-shared.la
 
@@ -3784,6 +3800,7 @@ test_dhcp6_client_SOURCES = \
 
 test_dhcp6_client_LDADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libudev.la \
 	libsystemd-shared.la
 
@@ -3830,6 +3847,7 @@ libudev_la_LDFLAGS = \
 	-Wl,--version-script=$(top_srcdir)/src/libudev/libudev.sym
 
 libudev_la_LIBADD = \
+	libelogind-internal.la \
 	libbasic.la
 
 pkgconfiglib_DATA += \
@@ -4213,7 +4231,6 @@ test_hash_SOURCES = \
 	src/test/test-hash.c
 
 test_hash_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 tests += \
@@ -4297,6 +4314,7 @@ elogind_journal_remote_CFLAGS = \
 	$(MICROHTTPD_CFLAGS)
 
 elogind_journal_remote_LDADD += \
+systemd_journal_remote_LDADD += \
 	$(MICROHTTPD_LIBS)
 
 if ENABLE_TMPFILES
@@ -4538,6 +4556,7 @@ pkginclude_HEADERS += \
 	src/elogind/sd-journal.h \
 	src/elogind/sd-messages.h \
 	src/elogind/_sd-common.h
+	src/systemd/sd-journal.h \
 
 libelogind_journal_internal_la_SOURCES = \
 	src/journal/sd-journal.c \
@@ -4578,14 +4597,17 @@ libelogind_journal_internal_la_LIBADD =
 
 if HAVE_XZ
 libelogind_journal_internal_la_CFLAGS += \
+libsystemd_journal_internal_la_CFLAGS += \
 	$(XZ_CFLAGS)
 
 libelogind_journal_internal_la_LIBADD += \
+libsystemd_journal_internal_la_LIBADD += \
 	$(XZ_LIBS)
 endif
 
 if HAVE_LZ4
 libelogind_journal_internal_la_LIBADD += \
+libsystemd_journal_internal_la_LIBADD += \
 	-llz4
 endif
 
@@ -4945,7 +4967,8 @@ systemgenerator_PROGRAMS += \
 
 dist_systemunit_DATA += \
 	units/cryptsetup.target \
-	units/cryptsetup-pre.target
+	units/cryptsetup-pre.target \
+	units/remote-cryptsetup.target
 
 elogind_cryptsetup_SOURCES = \
 	src/cryptsetup/cryptsetup.c
@@ -4956,6 +4979,7 @@ elogind_cryptsetup_CFLAGS = \
 
 elogind_cryptsetup_LDADD = \
 	libelogind-shared.la \
+	libsystemd-shared.la \
 	$(LIBCRYPTSETUP_LIBS)
 
 elogind_cryptsetup_generator_SOURCES = \
@@ -5895,6 +5919,7 @@ nodist_libnetworkd_core_la_SOURCES = \
 
 libnetworkd_core_la_LIBADD = \
 	libelogind-network.la \
+	libsystemd-network.la \
 	libsystemd-shared.la
 
 rootlibexec_PROGRAMS += \
@@ -5913,6 +5938,7 @@ elogind_networkd_wait_online_SOURCES = \
 
 elogind_networkd_wait_online_LDADD = \
 	libelogind-network.la \
+	libelogind-shared.la
 
 rootbin_PROGRAMS += \
 	networkctl
@@ -6049,7 +6075,6 @@ liblogind_core_la_SOURCES = \
 	src/login/logind-utmp.c \
 	src/login/logind-acl.h
 
-	libelogind-shared.la
 liblogind_core_la_LIBADD = \
 	libsystemd-shared.la
 
@@ -6070,7 +6095,6 @@ loginctl_SOURCES = \
 	src/login/sysfs-show.c
 
 loginctl_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 rootbin_PROGRAMS += \
@@ -6087,7 +6111,6 @@ elogind_inhibit_SOURCES = \
 	src/login/inhibit.c
 
 elogind_inhibit_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 rootbin_PROGRAMS += \
@@ -6097,14 +6120,12 @@ test_login_SOURCES = \
 	src/libelogind/sd-login/test-login.c
 
 test_login_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_login_shared_SOURCES = \
 	src/login/test-login-shared.c
 
 test_login_shared_LDADD = \
-	libelogind-shared.la
 	libsystemd-shared.la
 
 test_inhibit_SOURCES = \
@@ -6517,8 +6538,10 @@ if HAVE_UTMP
 if HAVE_SYSV_COMPAT
 MULTI_USER_TARGET_WANTS += \
 	elogind-update-utmp-runlevel.service
+	systemd-update-utmp-runlevel.service
 GRAPHICAL_TARGET_WANTS += \
 	elogind-update-utmp-runlevel.service
+	systemd-update-utmp-runlevel.service
 RESCUE_TARGET_WANTS += \
 	elogind-update-utmp-runlevel.service
 endif
@@ -6798,6 +6821,7 @@ test_libudev_sym_LDADD = \
 
 BUILT_SOURCES += \
 	test-libelogind-sym.c \
+	test-libsystemd-sym.c \
 	test-libudev-sym.c
 
 CLEANFILES += \
