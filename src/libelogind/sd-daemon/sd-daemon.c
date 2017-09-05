@@ -38,6 +38,7 @@
 #include "fs-util.h"
 #include "parse-util.h"
 #include "path-util.h"
+#include "process-util.h"
 #include "socket-util.h"
 #include "strv.h"
 #include "util.h"

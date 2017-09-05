@@ -47,6 +47,7 @@
 #include "elogind.h"
 #include "label.h"
 #include "musl_missing.h"
+#include "process-util.h"
 
 static void manager_free(Manager *m);
 
