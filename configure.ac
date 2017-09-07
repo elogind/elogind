@@ -722,7 +722,7 @@ AX_NORMALIZE_PATH([with_rootlibdir])
 AC_ARG_WITH([rootlibexecdir],
         AS_HELP_STRING([--with-rootlibexecdir=DIR], [Root directory for executables necessary for boot]),
         [],
-        [with_rootlibexecdir=${libdir}/libexec])
+        [with_rootlibexecdir=${with_rootprefix}/lib/elogind])
 AX_NORMALIZE_PATH([with_rootlibexecdir])
 
 AC_ARG_WITH([pamlibdir],
