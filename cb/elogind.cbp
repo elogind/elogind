@@ -382,6 +382,10 @@
 		<Unit filename="../src/libelogind/sd-login/test-login.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/elogind.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/elogind.h" />
 		<Unit filename="../src/login/inhibit.c">
 			<Option compilerVar="CC" />
 		</Unit>
