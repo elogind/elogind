@@ -24,6 +24,8 @@
 
 bool session_id_valid(const char *id);
 
+#if 0 /// UNNEEDED by elogind
 static inline bool logind_running(void) {
         return access("/run/systemd/seats/", F_OK) >= 0;
 }
+#endif // 0
