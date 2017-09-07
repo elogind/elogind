@@ -846,7 +846,8 @@ gperf_gperf_sources = \
 EXTRA_DIST += \
 	src/login/71-seat.rules.in \
 	src/login/73-seat-late.rules.in \
-	src/login/logind.conf.in
+	src/login/logind.conf.in \
+	src/login/org.freedesktop.login1.service.in
 
 # ------------------------------------------------------------------------------
 substitutions = \
@@ -894,6 +895,9 @@ shell-completion/%: shell-completion/%.in
 	$(SED_PROCESS)
 
 %.conf: %.conf.in
+	$(SED_PROCESS)
+
+%.login1.service: %.login1.service.in
 	$(SED_PROCESS)
 
 %.sh: %.sh.in

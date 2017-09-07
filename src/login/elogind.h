@@ -26,8 +26,11 @@
 #include "sd-bus.h"
 
 
-/// Add-Ons for manager_connect_bus()
-int  elogind_setup_cgroups_agent(Manager *m);
+/// Add-On for manager_connect_bus()
+int elogind_setup_cgroups_agent(Manager *m);
+
+/// elogind has some extra functionality at startup, as it is not hooked into systemd.
+int elogind_startup(int argc, char *argv[]);
 
 /// Add-On for manager_free()
 void elogind_manager_free(Manager* m);
@@ -37,6 +40,9 @@ int elogind_manager_new(Manager* m);
 
 /// Add-On for manager_reset_config()
 void elogind_manager_reset_config(Manager* m);
+
+/// Add-On for manager_startup()
+int elogind_manager_startup(Manager *m);
 
 
 #endif // ELOGIND_SRC_LOGIN_ELOGIN_H_INCLUDED
