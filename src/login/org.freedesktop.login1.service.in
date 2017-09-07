@@ -7,6 +7,5 @@
 
 [D-BUS Service]
 Name=org.freedesktop.login1
-Exec=/bin/false
+Exec=@rootlibexecdir@/elogind --daemon
 User=root
-SystemdService=dbus-org.freedesktop.login1.service
