@@ -1097,6 +1097,10 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to register SIGHUP handler: %m");
 
+#if 1 /// elogind needs some extra preparations before connecting...
+        elogind_manager_startup(m);
+#endif // 1
+
         /* Connect to console */
         r = manager_connect_console(m);
         if (r < 0)
@@ -1205,6 +1209,12 @@ int main(int argc, char *argv[]) {
         Manager *m = NULL;
         int r;
 
+#if 1 /// perform extra checks for elogind startup
+        r = elogind_startup(argc, argv);
+        if (r)
+                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+#endif // 0
+
         elogind_set_program_name(argv[0]);
         log_set_target(LOG_TARGET_AUTO);
         log_set_facility(LOG_AUTH);
@@ -1220,11 +1230,13 @@ int main(int argc, char *argv[]) {
 
         umask(0022);
 
+#if 0 /// elogind has some extra functionality at startup, argc can be != 1
         if (argc != 1) {
                 log_error("This program takes no arguments.");
                 r = -EINVAL;
                 goto finish;
         }
+#endif // 0
 
         r = mac_selinux_init();
         if (r < 0) {
