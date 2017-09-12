@@ -94,7 +94,10 @@ static int execute(char **modes, char **states) {
                 arg_verb,
                 NULL
         };
-        static const char* const dirs[] = {SYSTEM_SLEEP_PATH, NULL};
+        static const char* const dirs[] = {
+                SYSTEM_SLEEP_PATH,
+                NULL
+        };
 
         int r;
         _cleanup_fclose_ FILE *f = NULL;

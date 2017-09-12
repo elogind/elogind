@@ -435,7 +435,7 @@ int config_parse_many_nulstr(
         _cleanup_strv_free_ char **files = NULL;
         int r;
 
-        r = conf_files_list_nulstr(&files, ".conf", NULL, conf_file_dirs);
+        r = conf_files_list_nulstr(&files, ".conf", NULL, 0, conf_file_dirs);
         if (r < 0)
                 return r;
 
@@ -465,7 +465,7 @@ int config_parse_many(
         if (r < 0)
                 return r;
 
-        r = conf_files_list_strv(&files, ".conf", NULL, (const char* const*) dropin_dirs);
+        r = conf_files_list_strv(&files, ".conf", NULL, 0, (const char* const*) dropin_dirs);
         if (r < 0)
                 return r;
 
@@ -734,11 +734,6 @@ int config_parse_path(
         assert(rvalue);
         assert(data);
 
-        if (isempty(rvalue)) {
-                n = NULL;
-                goto finalize;
-        }
-
         if (!utf8_is_valid(rvalue)) {
                 log_syntax_invalid_utf8(unit, LOG_ERR, filename, line, rvalue);
                 return fatal ? -ENOEXEC : 0;
@@ -757,7 +752,6 @@ int config_parse_path(
 
         path_kill_slashes(n);
 
-finalize:
         free(*s);
         *s = n;
 
