@@ -758,16 +758,17 @@ int config_parse_path(
         return 0;
 }
 
-int config_parse_strv(const char *unit,
-                      const char *filename,
-                      unsigned line,
-                      const char *section,
-                      unsigned section_line,
-                      const char *lvalue,
-                      int ltype,
-                      const char *rvalue,
-                      void *data,
-                      void *userdata) {
+int config_parse_strv(
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
 
         char ***sv = data;
         int r;
@@ -778,19 +779,7 @@ int config_parse_strv(const char *unit,
         assert(data);
 
         if (isempty(rvalue)) {
-                char **empty;
-
-                /* Empty assignment resets the list. As a special rule
-                 * we actually fill in a real empty array here rather
-                 * than NULL, since some code wants to know if
-                 * something was set at all... */
-                empty = new0(char*, 1);
-                if (!empty)
-                        return log_oom();
-
-                strv_free(*sv);
-                *sv = empty;
-
+                *sv = strv_free(*sv);
                 return 0;
         }
 
@@ -812,6 +801,7 @@ int config_parse_strv(const char *unit,
                         free(word);
                         continue;
                 }
+
                 r = strv_consume(sv, word);
                 if (r < 0)
                         return log_oom();
