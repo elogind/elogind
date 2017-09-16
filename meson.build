@@ -339,7 +339,9 @@ endforeach
 foreach arg : ['unused-parameter',
                'missing-field-initializers',
                'unused-result',
-               'format-signedness']
+               'format-signedness',
+               'error=nonnull', # work-around for gcc 7.1 turning this on on its own
+              ]
         if cc.has_argument('-W' + arg)
                 add_project_arguments('-Wno-' + arg, language : 'c')
         endif
@@ -433,6 +435,7 @@ foreach decl : ['char16_t',
                 'char32_t',
                 'key_serial_t',
                 'struct ethtool_link_settings',
+                'struct fib_rule_uid_range',
                ]
 
         # We get -1 if the size cannot be determined
@@ -461,6 +464,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IFLA_BR_VLAN_DEFAULT_PVID',        'linux/if_link.h'],
                 ['NDA_IFINDEX',                      'linux/neighbour.h'],
                 ['IFA_FLAGS',                        'linux/if_addr.h'],
+                ['FRA_UID_RANGE',                    'linux/fib_rules.h'],
                 ['LO_FLAGS_PARTSCAN',                'linux/loop.h'],
                ]
         prefix = decl.length() > 2 ? decl[2] : ''
@@ -1242,6 +1246,7 @@ includes = include_directories('src/basic',
                                'src/sleep',
                                'src/update-utmp',
 #endif // 0
+                               '.',
                               )
 
 add_project_arguments('-include', 'config.h', language : 'c')
@@ -2614,7 +2619,7 @@ endforeach
 if git.found()
         all_files = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.source_root()),
+                ['--git-dir=@0@/.git'.format(meson.current_source_dir()),
                  'ls-files',
                  ':/*.[ch]'])
         all_files = files(all_files.stdout().split())
@@ -2622,11 +2627,11 @@ if git.found()
         custom_target(
                 'tags',
                 output : 'tags',
-                command : ['env', 'etags', '-o', '@0@/TAGS'.format(meson.source_root())] + all_files)
+                command : ['env', 'etags', '-o', '@0@/TAGS'.format(meson.current_source_dir())] + all_files)
         custom_target(
                 'ctags',
                 output : 'ctags',
-                command : ['env', 'ctags', '-o', '@0@/tags'.format(meson.source_root())] + all_files)
+                command : ['env', 'ctags', '-o', '@0@/tags'.format(meson.current_source_dir())] + all_files)
 endif
 
 if git.found()
@@ -2639,17 +2644,17 @@ endif
 if git.found()
         git_head = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.source_root()),
+                ['--git-dir=@0@/.git'.format(meson.current_source_dir()),
                  'rev-parse', 'HEAD']).stdout().strip()
         git_head_short = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.source_root()),
+                ['--git-dir=@0@/.git'.format(meson.current_source_dir()),
                  'rev-parse', '--short=7', 'HEAD']).stdout().strip()
 
         run_target(
                 'git-snapshot',
                 command : ['git', 'archive',
-                           '-o', '@0@/systemd-@1@.tar.gz'.format(meson.source_root(),
+                           '-o', '@0@/systemd-@1@.tar.gz'.format(meson.current_source_dir(),
                                                                  git_head_short),
                            '--prefix', 'systemd-@0@/'.format(git_head),
                            'HEAD'])
