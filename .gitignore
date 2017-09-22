@@ -327,6 +327,7 @@ stamp-*
 
 # Local Helper Scripts and Tools - Not for distribution
 patches/
+patches_port/
 /check_*.*
 /cleanup*.sh
 /elogind.*
