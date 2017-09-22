@@ -111,3 +111,5 @@ int read_nul_string(FILE *f, char **ret);
 
 int mkdtemp_malloc(const char *template, char **ret);
 #endif // 0
+
+int read_line(FILE *f, size_t limit, char **ret);
