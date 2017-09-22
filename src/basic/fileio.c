@@ -70,7 +70,7 @@ int write_string_stream_ts(FILE *f, const char *line, bool enforce_newline, stru
         return fflush_and_check(f);
 }
 
-static int write_string_file_atomic(const char *fn, const char *line, bool enforce_newline) {
+static int write_string_file_atomic(const char *fn, const char *line, bool enforce_newline, bool do_fsync) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *p = NULL;
         int r;
@@ -85,6 +85,9 @@ static int write_string_file_atomic(const char *fn, const char *line, bool enfor
         (void) fchmod_umask(fileno(f), 0644);
 
         r = write_string_stream(f, line, enforce_newline);
+        if (r >= 0 && do_fsync)
+                r = fflush_sync_and_check(f);
+
         if (r >= 0) {
                 if (rename(p, fn) < 0)
                         r = -errno;
@@ -103,10 +106,14 @@ int write_string_file_ts(const char *fn, const char *line, WriteStringFileFlags 
         assert(fn);
         assert(line);
 
+        /* We don't know how to verify whether the file contents was already on-disk. */
+        assert(!((flags & WRITE_STRING_FILE_VERIFY_ON_FAILURE) && (flags & WRITE_STRING_FILE_SYNC)));
+
         if (flags & WRITE_STRING_FILE_ATOMIC) {
                 assert(flags & WRITE_STRING_FILE_CREATE);
 
-                r = write_string_file_atomic(fn, line, !(flags & WRITE_STRING_FILE_AVOID_NEWLINE));
+                r = write_string_file_atomic(fn, line, !(flags & WRITE_STRING_FILE_AVOID_NEWLINE),
+                                                       flags & WRITE_STRING_FILE_SYNC);
                 if (r < 0)
                         goto fail;
 
@@ -142,6 +149,12 @@ int write_string_file_ts(const char *fn, const char *line, WriteStringFileFlags 
         r = write_string_stream_ts(f, line, !(flags & WRITE_STRING_FILE_AVOID_NEWLINE), ts);
         if (r < 0)
                 goto fail;
+
+        if (flags & WRITE_STRING_FILE_SYNC) {
+                r = fflush_sync_and_check(f);
+                if (r < 0)
+                        return r;
+        }
 
         return 0;
 
@@ -1131,6 +1144,21 @@ int fflush_and_check(FILE *f) {
         return 0;
 }
 
+int fflush_sync_and_check(FILE *f) {
+        int r;
+
+        assert(f);
+
+        r = fflush_and_check(f);
+        if (r < 0)
+                return r;
+
+        if (fsync(fileno(f)) < 0)
+                return -errno;
+
+        return 0;
+}
+
 /* This is much like mkostemp() but is subject to umask(). */
 int mkostemp_safe(char *pattern) {
         _cleanup_umask_ mode_t u = 0;
@@ -1509,3 +1537,80 @@ int mkdtemp_malloc(const char *template, char **ret) {
         return 0;
 }
 #endif // 0
+
+int read_line(FILE *f, size_t limit, char **ret) {
+        _cleanup_free_ char *buffer = NULL;
+        size_t n = 0, allocated = 0, count = 0;
+        int r;
+
+        assert(f);
+
+        /* Something like a bounded version of getline().
+         *
+         * Considers EOF, \n and \0 end of line delimiters, and does not include these delimiters in the string
+         * returned.
+         *
+         * Returns the number of bytes read from the files (i.e. including delimiters — this hence usually differs from
+         * the number of characters in the returned string). When EOF is hit, 0 is returned.
+         *
+         * The input parameter limit is the maximum numbers of characters in the returned string, i.e. excluding
+         * delimiters. If the limit is hit we fail and return -ENOBUFS.
+         *
+         * If a line shall be skipped ret may be initialized as NULL. */
+
+        if (ret) {
+                if (!GREEDY_REALLOC(buffer, allocated, 1))
+                        return -ENOMEM;
+        }
+
+        flockfile(f);
+
+        for (;;) {
+                int c;
+
+                if (n >= limit) {
+                        funlockfile(f);
+                        return -ENOBUFS;
+                }
+
+                errno = 0;
+                c = fgetc_unlocked(f);
+                if (c == EOF) {
+                        /* if we read an error, and have no data to return, then propagate the error */
+                        if (ferror_unlocked(f) && n == 0) {
+                                r = errno > 0 ? -errno : -EIO;
+                                funlockfile(f);
+                                return r;
+                        }
+
+                        break;
+                }
+
+                count++;
+
+                if (IN_SET(c, '\n', 0)) /* Reached a delimiter */
+                        break;
+
+                if (ret) {
+                        if (!GREEDY_REALLOC(buffer, allocated, n + 2)) {
+                                funlockfile(f);
+                                return -ENOMEM;
+                        }
+
+                        buffer[n] = (char) c;
+                }
+
+                n++;
+        }
+
+        funlockfile(f);
+
+        if (ret) {
+                buffer[n] = 0;
+
+                *ret = buffer;
+                buffer = NULL;
+        }
+
+        return (int) count;
+}
