@@ -145,6 +145,7 @@ _public_ int sd_listen_fds_with_names(int unset_environment, char ***names) {
 
         return n_fds;
 }
+#endif // 0
 
 _public_ int sd_is_fifo(int fd, const char *path) {
         struct stat st_fd;
@@ -210,7 +211,6 @@ _public_ int sd_is_special(int fd, const char *path) {
 
         return 1;
 }
-#endif // 0
 
 static int sd_is_socket_internal(int fd, int type, int listening) {
         struct stat st_fd;
@@ -281,7 +281,6 @@ _public_ int sd_is_socket(int fd, int family, int type, int listening) {
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port) {
         union sockaddr_union sockaddr = {};
         socklen_t l = sizeof(sockaddr);
@@ -368,6 +367,7 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 _public_ int sd_is_mq(int fd, const char *path) {
         struct mq_attr attr;
 
@@ -527,17 +527,14 @@ finish:
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_pid_notify(pid_t pid, int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(pid, unset_environment, state, NULL, 0);
 }
-#endif // 0
 
 _public_ int sd_notify(int unset_environment, const char *state) {
         return sd_pid_notify_with_fds(0, unset_environment, state, NULL, 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) {
         _cleanup_free_ char *p = NULL;
         int r;
@@ -575,13 +572,16 @@ _public_ int sd_notifyf(int unset_environment, const char *format, ...) {
 }
 
 _public_ int sd_booted(void) {
+#if 0 /// With elogind, the system is (should never be) booted by systemd
         /* We test whether the runtime unit file directory has been
          * created. This takes place in mount-setup.c, so is
          * guaranteed to happen very early during boot. */
 
         return laccess("/run/systemd/system/", F_OK) >= 0;
-}
+#else
+        return 0;
 #endif // 0
+}
 
 _public_ int sd_watchdog_enabled(int unset_environment, uint64_t *usec) {
         const char *s, *p = ""; /* p is set to dummy value to do unsetting */

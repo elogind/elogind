@@ -4,3 +4,4 @@
 /71-seat.rules
 /73-seat-late.rules
 /elogind-user
+/org.freedesktop.login1.service
