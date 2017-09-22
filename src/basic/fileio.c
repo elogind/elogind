@@ -176,7 +176,6 @@ fail:
 
 int read_one_line_file(const char *fn, char **line) {
         _cleanup_fclose_ FILE *f = NULL;
-        char t[LINE_MAX], *c;
 
         assert(fn);
         assert(line);
@@ -185,21 +184,7 @@ int read_one_line_file(const char *fn, char **line) {
         if (!f)
                 return -errno;
 
-        if (!fgets(t, sizeof(t), f)) {
-
-                if (ferror(f))
-                        return errno > 0 ? -errno : -EIO;
-
-                t[0] = 0;
-        }
-
-        c = strdup(t);
-        if (!c)
-                return -ENOMEM;
-        truncate_nl(c);
-
-        *line = c;
-        return 0;
+        return read_line(f, LONG_LINE_MAX, line);
 }
 
 int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
