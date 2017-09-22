@@ -123,6 +123,7 @@ int memfd_get_sealed(int fd) {
 
         return r == (F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE | F_SEAL_SEAL);
 }
+#endif // 0
 
 int memfd_get_size(int fd, uint64_t *sz) {
         struct stat stat;
@@ -138,7 +139,6 @@ int memfd_get_size(int fd, uint64_t *sz) {
         *sz = stat.st_size;
         return 0;
 }
-#endif // 0
 
 int memfd_set_size(int fd, uint64_t sz) {
         int r;
