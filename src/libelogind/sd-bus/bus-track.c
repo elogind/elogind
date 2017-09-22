@@ -319,7 +319,6 @@ void bus_track_dispatch(sd_bus_track *track) {
         sd_bus_track_unref(track);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ void *sd_bus_track_get_userdata(sd_bus_track *track) {
         assert_return(track, NULL);
 
@@ -336,4 +335,3 @@ _public_ void *sd_bus_track_set_userdata(sd_bus_track *track, void *userdata) {
 
         return ret;
 }
-#endif // 0

@@ -57,7 +57,7 @@ _SD_BEGIN_DECLARATIONS;
 /* The first passed file descriptor is fd 3 */
 #define SD_LISTEN_FDS_START 3
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /// unsupported by elogind
 /*
   Returns how many file descriptors have been passed, or a negative
   errno code on failure. Optionally, removes the $LISTEN_FDS and
@@ -76,6 +76,7 @@ _SD_BEGIN_DECLARATIONS;
 int sd_listen_fds(int unset_environment);
 
 int sd_listen_fds_with_names(int unset_environment, char ***names);
+#endif // 0
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
@@ -100,7 +101,6 @@ int sd_is_fifo(int fd, const char *path);
   See sd_is_special(3) for more information.
 */
 int sd_is_special(int fd, const char *path);
-#endif // 0
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
@@ -118,7 +118,6 @@ int sd_is_special(int fd, const char *path);
 */
 int sd_is_socket(int fd, int family, int type, int listening);
 
-#if 0 /// UNNEEDED by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is an Internet socket, of the specified family
@@ -149,6 +148,7 @@ int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port
 */
 int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t length);
 
+#if 0 /// UNNEEDED by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is a POSIX Message Queue of the specified name,
@@ -218,7 +218,6 @@ int sd_is_mq(int fd, const char *path);
 */
 int sd_notify(int unset_environment, const char *state);
 
-#if 0 /// UNNEEDED by elogind
 /*
   Similar to sd_notify() but takes a format string.
 
@@ -252,7 +251,6 @@ int sd_pid_notify(pid_t pid, int unset_environment, const char *state);
   process, if the appropriate permissions are available.
 */
 int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) _sd_printf_(3,4);
-#endif // 0
 
 /*
   Similar to sd_pid_notify(), but also passes the specified fd array
@@ -261,7 +259,6 @@ int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) _s
 */
 int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, const int *fds, unsigned n_fds);
 
-#if 0 /// UNNEEDED by elogind
 /*
   Returns > 0 if the system was booted with systemd. Returns < 0 on
   error. Returns 0 if the system was not booted with systemd. Note
@@ -274,7 +271,6 @@ int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state, 
   See sd_booted(3) for more information.
 */
 int sd_booted(void);
-#endif // 0
 
 /*
   Returns > 0 if the service manager expects watchdog keep-alive
