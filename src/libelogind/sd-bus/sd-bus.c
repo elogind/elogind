@@ -3857,7 +3857,6 @@ _public_ void sd_bus_default_flush_close(void) {
 #endif // 0
         flush_close(default_system_bus);
 }
-#endif // 0
 
 _public_ int sd_bus_set_exit_on_disconnect(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
@@ -3871,7 +3870,6 @@ _public_ int sd_bus_set_exit_on_disconnect(sd_bus *bus, int b) {
         return bus_exit_now(bus);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_get_exit_on_disconnect(sd_bus *bus) {
         assert_return(bus, -EINVAL);
 
