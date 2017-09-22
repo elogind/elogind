@@ -3,29 +3,29 @@
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <!--
-  This file is part of systemd.
+  This file is part of elogind.
 
   Copyright 2010 Lennart Poettering
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
 
-  systemd is distributed in the hope that it will be useful, but
+  elogind is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <refentry id="sd_login_monitor_new" conditional='HAVE_PAM'>
 
   <refentryinfo>
     <title>sd_login_monitor_new</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
 
     <authorgroup>
       <author>
@@ -56,7 +56,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;systemd/sd-login.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;elogind/sd-login.h&gt;</funcsynopsisinfo>
 
       <funcprototype>
         <funcdef>int <function>sd_login_monitor_new</function></funcdef>
@@ -203,7 +203,7 @@ if (t == (uint64_t) -1)
 else {
          struct timespec ts;
          uint64_t n;
-         clock_gettime(CLOCK_MONOTONIC, &amp;ts);
+         clock_getttime(CLOCK_MONOTONIC, &amp;ts);
          n = (uint64_t) ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
          msec = t > n ? (int) ((t - n + 999) / 1000) : 0;
 }</programlisting>
@@ -276,7 +276,7 @@ else {
     <title>See Also</title>
 
     <para>
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_get_seats</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>poll</refentrytitle><manvolnum>2</manvolnum></citerefentry>,

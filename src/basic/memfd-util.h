@@ -34,7 +34,7 @@ int memfd_map(int fd, uint64_t offset, size_t size, void **p);
 int memfd_set_sealed(int fd);
 #if 0 /// UNNEEDED by elogind
 int memfd_get_sealed(int fd);
+#endif // 0
 
 int memfd_get_size(int fd, uint64_t *sz);
-#endif // 0
 int memfd_set_size(int fd, uint64_t sz);

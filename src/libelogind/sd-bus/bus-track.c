@@ -455,7 +455,6 @@ void bus_track_close(sd_bus_track *track) {
                 bus_track_dispatch(track);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ void *sd_bus_track_get_userdata(sd_bus_track *track) {
         assert_return(track, NULL);
 
@@ -524,4 +523,3 @@ _public_ int sd_bus_track_count_name(sd_bus_track *track, const char *name) {
 
         return i->n_ref;
 }
-#endif // 0

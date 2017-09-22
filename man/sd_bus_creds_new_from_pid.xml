@@ -3,29 +3,29 @@
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <!--
-  This file is part of systemd.
+  This file is part of elogind.
 
   Copyright 2014 Zbigniew Jędrzejewski-Szmek
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
 
-  systemd is distributed in the hope that it will be useful, but
+  elogind is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <refentry id="sd_bus_creds_new_from_pid">
 
   <refentryinfo>
     <title>sd_bus_creds_new_from_pid</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
 
     <authorgroup>
       <author>
@@ -55,7 +55,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;systemd/sd-bus.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;elogind/sd-bus.h&gt;</funcsynopsisinfo>
 
       <funcprototype>
         <funcdef>int <function>sd_bus_creds_new_from_pid</function></funcdef>
@@ -66,12 +66,12 @@
 
       <funcprototype>
         <funcdef>uint64_t <function>sd_bus_creds_get_mask</function></funcdef>
-        <paramdef>sd_bus_creds *<parameter>c</parameter></paramdef>
+        <paramdef>const sd_bus_creds *<parameter>c</parameter></paramdef>
       </funcprototype>
 
       <funcprototype>
         <funcdef>uint64_t <function>sd_bus_creds_get_augmented_mask</function></funcdef>
-        <paramdef>sd_bus_creds *<parameter>c</parameter></paramdef>
+        <paramdef>const sd_bus_creds *<parameter>c</parameter></paramdef>
       </funcprototype>
 
       <funcprototype>
@@ -108,10 +108,6 @@
       <constant>SD_BUS_CREDS_EXE</constant>,
       <constant>SD_BUS_CREDS_CMDLINE</constant>,
       <constant>SD_BUS_CREDS_CGROUP</constant>,
-      <constant>SD_BUS_CREDS_UNIT</constant>,
-      <constant>SD_BUS_CREDS_SLICE</constant>,
-      <constant>SD_BUS_CREDS_USER_UNIT</constant>,
-      <constant>SD_BUS_CREDS_USER_SLICE</constant>,
       <constant>SD_BUS_CREDS_SESSION</constant>,
       <constant>SD_BUS_CREDS_OWNER_UID</constant>,
       <constant>SD_BUS_CREDS_EFFECTIVE_CAPS</constant>,
@@ -162,10 +158,6 @@
     <constant>SD_BUS_CREDS_EXE</constant>,
     <constant>SD_BUS_CREDS_CMDLINE</constant>,
     <constant>SD_BUS_CREDS_CGROUP</constant>,
-    <constant>SD_BUS_CREDS_UNIT</constant>,
-    <constant>SD_BUS_CREDS_SLICE</constant>,
-    <constant>SD_BUS_CREDS_USER_UNIT</constant>,
-    <constant>SD_BUS_CREDS_USER_SLICE</constant>,
     <constant>SD_BUS_CREDS_SESSION</constant>,
     <constant>SD_BUS_CREDS_OWNER_UID</constant>,
     <constant>SD_BUS_CREDS_EFFECTIVE_CAPS</constant>,
@@ -341,7 +333,7 @@
     <title>See Also</title>
 
     <para>
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-bus</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_bus_creds_get_pid</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_bus_get_name_creds</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

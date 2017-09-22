@@ -3,29 +3,29 @@
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <!--
-  This file is part of systemd.
+  This file is part of elogind.
 
   Copyright 2014 Lennart Poettering
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
 
-  systemd is distributed in the hope that it will be useful, but
+  elogind is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <refentry id="sd_event_new" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <refentryinfo>
     <title>sd_event_new</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
 
     <authorgroup>
       <author>
@@ -56,7 +56,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;systemd/sd-event.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;elogind/sd-event.h&gt;</funcsynopsisinfo>
 
       <funcsynopsisinfo><token>typedef</token> struct sd_event sd_event;</funcsynopsisinfo>
 
@@ -183,9 +183,8 @@
   <refsect1>
     <title>Return Value</title>
 
-    <para>On success, <function>sd_event_new()</function>,
-    <function>sd_event_default()</function> and
-    <function>sd_event_get_tid()</function> return 0 or a positive
+    <para>On success, <function>sd_event_new()</function> and
+    <function>sd_event_default()</function> return 0 or a positive
     integer. On failure, they return a negative errno-style error
     code. <function>sd_event_ref()</function> always returns a pointer
     to the event loop object passed
@@ -229,7 +228,7 @@
     <title>See Also</title>
 
     <para>
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-event</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_event_add_io</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_event_add_time</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
