@@ -829,7 +829,6 @@ _public_ int sd_bus_message_new_method_errno(
         return sd_bus_message_new_method_error(call, m, &berror);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_new_method_errnof(
                 sd_bus_message *call,
                 sd_bus_message **m,
@@ -846,7 +845,6 @@ _public_ int sd_bus_message_new_method_errnof(
 
         return sd_bus_message_new_method_error(call, m, &berror);
 }
-#endif // 0
 
 void bus_message_set_sender_local(sd_bus *bus, sd_bus_message *m) {
         assert(bus);
@@ -944,7 +942,6 @@ _public_ sd_bus_message* sd_bus_message_unref(sd_bus_message *m) {
         return NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_get_type(sd_bus_message *m, uint8_t *type) {
         assert_return(m, -EINVAL);
         assert_return(type, -EINVAL);
@@ -990,7 +987,6 @@ _public_ int sd_bus_message_get_auto_start(sd_bus_message *m) {
 
         return !(m->header->flags & BUS_MESSAGE_NO_AUTO_START);
 }
-#endif // 0
 
 _public_ int sd_bus_message_get_allow_interactive_authorization(sd_bus_message *m) {
         assert_return(m, -EINVAL);
@@ -1038,7 +1034,6 @@ _public_ const sd_bus_error *sd_bus_message_get_error(sd_bus_message *m) {
         return &m->error;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_get_monotonic_usec(sd_bus_message *m, uint64_t *usec) {
         assert_return(m, -EINVAL);
         assert_return(usec, -EINVAL);
@@ -1071,7 +1066,6 @@ _public_ int sd_bus_message_get_seqnum(sd_bus_message *m, uint64_t *seqnum) {
         *seqnum = m->seqnum;
         return 0;
 }
-#endif // 0
 
 _public_ sd_bus_creds *sd_bus_message_get_creds(sd_bus_message *m) {
         assert_return(m, NULL);
@@ -1132,7 +1126,6 @@ _public_ int sd_bus_message_is_method_error(sd_bus_message *m, const char *name)
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_set_expect_reply(sd_bus_message *m, int b) {
         assert_return(m, -EINVAL);
         assert_return(!m->sealed, -EPERM);
@@ -1160,7 +1153,6 @@ _public_ int sd_bus_message_set_allow_interactive_authorization(sd_bus_message *
 
         return 0;
 }
-#endif // 0
 
 static struct bus_container *message_get_container(sd_bus_message *m) {
         assert(m);
@@ -1655,7 +1647,6 @@ _public_ int sd_bus_message_append_basic(sd_bus_message *m, char type, const voi
         return message_append_basic(m, type, p, NULL);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_append_string_space(
                 sd_bus_message *m,
                 size_t size,
@@ -1746,7 +1737,6 @@ _public_ int sd_bus_message_append_string_iovec(
 
         return 0;
 }
-#endif // 0
 
 static int bus_message_open_array(
                 sd_bus_message *m,
@@ -2848,7 +2838,6 @@ _public_ int sd_bus_message_append_string_memfd(
 
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_message_append_strv(sd_bus_message *m, char **l) {
         char **i;
@@ -3149,7 +3138,6 @@ static bool message_end_of_array(sd_bus_message *m, size_t index) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_at_end(sd_bus_message *m, int complete) {
         assert_return(m, -EINVAL);
         assert_return(m->sealed, -EPERM);
@@ -3165,7 +3153,6 @@ _public_ int sd_bus_message_at_end(sd_bus_message *m, int complete) {
 
         return false;
 }
-#endif // 0
 
 static struct bus_body_part* find_part(sd_bus_message *m, size_t index, size_t sz, void **p) {
         struct bus_body_part *part;
@@ -5721,7 +5708,6 @@ _public_ const char* sd_bus_message_get_signature(sd_bus_message *m, int complet
         return strempty(c->signature);
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_is_empty(sd_bus_message *m) {
         assert_return(m, -EINVAL);
 
@@ -5733,7 +5719,6 @@ _public_ int sd_bus_message_has_signature(sd_bus_message *m, const char *signatu
 
         return streq(strempty(m->root_container.signature), strempty(signature));
 }
-#endif // 0
 
 _public_ int sd_bus_message_copy(sd_bus_message *m, sd_bus_message *source, int all) {
         bool done_something = false;
@@ -5814,7 +5799,6 @@ _public_ int sd_bus_message_copy(sd_bus_message *m, sd_bus_message *source, int 
         return done_something;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_verify_type(sd_bus_message *m, char type, const char *contents) {
         const char *c;
         char t;
@@ -5839,7 +5823,6 @@ _public_ int sd_bus_message_verify_type(sd_bus_message *m, char type, const char
 
         return 1;
 }
-#endif // 0
 
 _public_ sd_bus *sd_bus_message_get_bus(sd_bus_message *m) {
         assert_return(m, NULL);
@@ -5942,6 +5925,7 @@ int bus_message_append_sender(sd_bus_message *m, const char *sender) {
 
         return message_append_field_string(m, BUS_MESSAGE_HEADER_SENDER, SD_BUS_TYPE_STRING, sender, &m->sender);
 }
+#endif // 0
 
 _public_ int sd_bus_message_get_priority(sd_bus_message *m, int64_t *priority) {
         assert_return(m, -EINVAL);
@@ -5958,4 +5942,3 @@ _public_ int sd_bus_message_set_priority(sd_bus_message *m, int64_t priority) {
         m->priority = priority;
         return 0;
 }
-#endif // 0

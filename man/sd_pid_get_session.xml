@@ -161,7 +161,7 @@
 
     <para>The <function>sd_peer_get_session()</function>,
     <function>sd_peer_get_owner_uid()</function>,
-    <function>sd_peer_get_machine_name()</function>,
+    <function>sd_peer_get_machine_name()</function> and
     <function>sd_peer_get_cgroup()</function> calls operate similar to
     their PID counterparts, but operate on a connected AF_UNIX socket
     and retrieve information about the connected peer process. Note
@@ -248,7 +248,7 @@
     <title>See Also</title>
 
     <para>
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_session_is_active</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>getsid</refentrytitle><manvolnum>2</manvolnum></citerefentry>,

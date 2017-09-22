@@ -107,63 +107,42 @@ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec);
 
 #if 0 /// UNNEEDED by elogind
 int sd_event_get_fd(sd_event *e);
-#endif // 0
 int sd_event_get_state(sd_event *e);
-#if 0 /// UNNEEDED by elogind
 int sd_event_get_tid(sd_event *e, pid_t *tid);
 int sd_event_get_exit_code(sd_event *e, int *code);
-#endif // 0
 int sd_event_set_watchdog(sd_event *e, int b);
-#if 0 /// UNNEEDED by elogind
 int sd_event_get_watchdog(sd_event *e);
 #endif // 0
 int sd_event_get_iteration(sd_event *e, uint64_t *ret);
 
 #if 0 /// UNNEEDED by elogind
 sd_event_source* sd_event_source_ref(sd_event_source *s);
-#endif // 0
 sd_event_source* sd_event_source_unref(sd_event_source *s);
 
 sd_event *sd_event_source_get_event(sd_event_source *s);
-#if 0 /// UNNEEDED by elogind
 void* sd_event_source_get_userdata(sd_event_source *s);
 void* sd_event_source_set_userdata(sd_event_source *s, void *userdata);
-#endif // 0
 
 int sd_event_source_set_description(sd_event_source *s, const char *description);
-#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_description(sd_event_source *s, const char **description);
-#endif // 0
 int sd_event_source_set_prepare(sd_event_source *s, sd_event_handler_t callback);
-#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_pending(sd_event_source *s);
-#endif // 0
 int sd_event_source_get_priority(sd_event_source *s, int64_t *priority);
 int sd_event_source_set_priority(sd_event_source *s, int64_t priority);
-#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_enabled(sd_event_source *s, int *enabled);
-#endif // 0
 int sd_event_source_set_enabled(sd_event_source *s, int enabled);
-#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_io_fd(sd_event_source *s);
-#endif // 0
 int sd_event_source_set_io_fd(sd_event_source *s, int fd);
-#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_io_events(sd_event_source *s, uint32_t* events);
-#endif // 0
 int sd_event_source_set_io_events(sd_event_source *s, uint32_t events);
-#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_io_revents(sd_event_source *s, uint32_t* revents);
-#endif // 0
 int sd_event_source_get_time(sd_event_source *s, uint64_t *usec);
 int sd_event_source_set_time(sd_event_source *s, uint64_t usec);
-#if 0 /// UNNEEDED by elogind
 int sd_event_source_get_time_accuracy(sd_event_source *s, uint64_t *usec);
 int sd_event_source_set_time_accuracy(sd_event_source *s, uint64_t usec);
 int sd_event_source_get_time_clock(sd_event_source *s, clockid_t *clock);
 int sd_event_source_get_signal(sd_event_source *s);
 int sd_event_source_get_child_pid(sd_event_source *s, pid_t *pid);
-#endif // 0
 
 /* Define helpers so that __attribute__((cleanup(sd_event_unrefp))) and similar may be used. */
 _SD_DEFINE_POINTER_CLEANUP_FUNC(sd_event, sd_event_unref);
