@@ -1004,7 +1004,7 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
         char line[LINE_MAX];
-        const char *fs, *controller_str = NULL;
+        const char *fs, *controller_str;
         size_t cs = 0;
         int unified;
 
@@ -2382,7 +2382,6 @@ int cg_mask_supported(CGroupMask *ret) {
 #if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set *controllers) {
         _cleanup_fclose_ FILE *f = NULL;
-        char buf[LINE_MAX];
         int r;
 
         assert(controllers);
@@ -2400,7 +2399,7 @@ int cg_kernel_controllers(Set *controllers) {
         }
 
         /* Ignore the header line */
-        (void) fgets(buf, sizeof(buf), f);
+        (void) read_line(f, (size_t) -1, NULL);
 
         for (;;) {
                 char *controller;
