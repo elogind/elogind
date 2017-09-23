@@ -51,17 +51,13 @@
 
 #define READ_FULL_BYTES_MAX (4U*1024U*1024U)
 
-int write_string_stream_ts(
-                FILE *f,
-                const char *line,
-                WriteStringFileFlags flags,
-                struct timespec *ts) {
+int write_string_stream_ts(FILE *f, const char *line, bool enforce_newline, struct timespec *ts) {
 
         assert(f);
         assert(line);
 
         fputs(line, f);
-        if (!(flags & WRITE_STRING_FILE_AVOID_NEWLINE) && !endswith(line, "\n"))
+        if (enforce_newline && !endswith(line, "\n"))
                 fputc('\n', f);
 
         if (ts) {
@@ -71,18 +67,10 @@ int write_string_stream_ts(
                         return -errno;
         }
 
-        if (flags & WRITE_STRING_FILE_SYNC)
-                return fflush_sync_and_check(f);
-        else
-                return fflush_and_check(f);
+        return fflush_and_check(f);
 }
 
-static int write_string_file_atomic(
-                const char *fn,
-                const char *line,
-                WriteStringFileFlags flags,
-                struct timespec *ts) {
-
+static int write_string_file_atomic(const char *fn, const char *line, bool enforce_newline, bool do_fsync) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *p = NULL;
         int r;
@@ -96,28 +84,22 @@ static int write_string_file_atomic(
 
         (void) fchmod_umask(fileno(f), 0644);
 
-        r = write_string_stream_ts(f, line, flags, ts);
-        if (r < 0)
-                goto fail;
+        r = write_string_stream(f, line, enforce_newline);
+        if (r >= 0 && do_fsync)
+                r = fflush_sync_and_check(f);
 
-        if (rename(p, fn) < 0) {
-                r = -errno;
-                goto fail;
+        if (r >= 0) {
+                if (rename(p, fn) < 0)
+                        r = -errno;
         }
 
-        return 0;
+        if (r < 0)
+                (void) unlink(p);
 
-fail:
-        (void) unlink(p);
         return r;
 }
 
-int write_string_file_ts(
-                const char *fn,
-                const char *line,
-                WriteStringFileFlags flags,
-                struct timespec *ts) {
-
+int write_string_file_ts(const char *fn, const char *line, WriteStringFileFlags flags, struct timespec *ts) {
         _cleanup_fclose_ FILE *f = NULL;
         int q, r;
 
@@ -130,7 +112,8 @@ int write_string_file_ts(
         if (flags & WRITE_STRING_FILE_ATOMIC) {
                 assert(flags & WRITE_STRING_FILE_CREATE);
 
-                r = write_string_file_atomic(fn, line, flags, ts);
+                r = write_string_file_atomic(fn, line, !(flags & WRITE_STRING_FILE_AVOID_NEWLINE),
+                                                       flags & WRITE_STRING_FILE_SYNC);
                 if (r < 0)
                         goto fail;
 
@@ -163,9 +146,15 @@ int write_string_file_ts(
                 }
         }
 
-        r = write_string_stream_ts(f, line, flags, ts);
+        r = write_string_stream_ts(f, line, !(flags & WRITE_STRING_FILE_AVOID_NEWLINE), ts);
         if (r < 0)
                 goto fail;
+
+        if (flags & WRITE_STRING_FILE_SYNC) {
+                r = fflush_sync_and_check(f);
+                if (r < 0)
+                        return r;
+        }
 
         return 0;
 
@@ -254,11 +243,11 @@ int read_full_stream(FILE *f, char **contents, size_t *size) {
                 if (st.st_size > READ_FULL_BYTES_MAX)
                         return -E2BIG;
 
-                /* Start with the right file size, but be prepared for files from /proc which generally report a file
-                 * size of 0. Note that we increase the size to read here by one, so that the first read attempt
-                 * already makes us notice the EOF. */
+                /* Start with the right file size, but be prepared for
+                 * files from /proc which generally report a file size
+                 * of 0 */
                 if (st.st_size > 0)
-                        n = st.st_size + 1;
+                        n = st.st_size;
         }
 
         l = 0;
@@ -271,13 +260,12 @@ int read_full_stream(FILE *f, char **contents, size_t *size) {
                         return -ENOMEM;
 
                 buf = t;
-                errno = 0;
                 k = fread(buf + l, 1, n - l, f);
                 if (k > 0)
                         l += k;
 
                 if (ferror(f))
-                        return errno > 0 ? -errno : -EIO;
+                        return -errno;
 
                 if (feof(f))
                         break;
@@ -1535,10 +1523,13 @@ int mkdtemp_malloc(const char *template, char **ret) {
 }
 #endif // 0
 
+static inline void funlockfilep(FILE **f) {
+        funlockfile(*f);
+}
+
 int read_line(FILE *f, size_t limit, char **ret) {
         _cleanup_free_ char *buffer = NULL;
         size_t n = 0, allocated = 0, count = 0;
-        int r;
 
         assert(f);
 
@@ -1560,47 +1551,41 @@ int read_line(FILE *f, size_t limit, char **ret) {
                         return -ENOMEM;
         }
 
-        flockfile(f);
+        {
+                _cleanup_(funlockfilep) FILE *flocked = f;
+                flockfile(f);
 
-        for (;;) {
-                int c;
+                for (;;) {
+                        int c;
 
-                if (n >= limit) {
-                        funlockfile(f);
-                        return -ENOBUFS;
-                }
+                        if (n >= limit)
+                                return -ENOBUFS;
 
-                errno = 0;
-                c = fgetc_unlocked(f);
-                if (c == EOF) {
-                        /* if we read an error, and have no data to return, then propagate the error */
-                        if (ferror_unlocked(f) && n == 0) {
-                                r = errno > 0 ? -errno : -EIO;
-                                funlockfile(f);
-                                return r;
+                        errno = 0;
+                        c = fgetc_unlocked(f);
+                        if (c == EOF) {
+                                /* if we read an error, and have no data to return, then propagate the error */
+                                if (ferror_unlocked(f) && n == 0)
+                                        return errno > 0 ? -errno : -EIO;
+
+                                break;
                         }
 
-                        break;
-                }
+                        count++;
 
-                count++;
+                        if (IN_SET(c, '\n', 0)) /* Reached a delimiter */
+                                break;
 
-                if (IN_SET(c, '\n', 0)) /* Reached a delimiter */
-                        break;
+                        if (ret) {
+                                if (!GREEDY_REALLOC(buffer, allocated, n + 2))
+                                        return -ENOMEM;
 
-                if (ret) {
-                        if (!GREEDY_REALLOC(buffer, allocated, n + 2)) {
-                                funlockfile(f);
-                                return -ENOMEM;
+                                buffer[n] = (char) c;
                         }
 
-                        buffer[n] = (char) c;
+                        n++;
                 }
-
-                n++;
         }
-
-        funlockfile(f);
 
         if (ret) {
                 buffer[n] = 0;
