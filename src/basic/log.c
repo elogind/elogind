@@ -494,7 +494,6 @@ static int write_to_kmsg(
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int log_do_header(
                 char *header,
                 size_t size,
@@ -539,6 +538,7 @@ static int log_do_header(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int write_to_journal(
                 int level,
                 int error,

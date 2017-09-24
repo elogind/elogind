@@ -24,9 +24,10 @@
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"
-#include "process-util.h"
 #include "signal-util.h"
 #include "util.h"
+/// Additional includes needed by elogind
+#include "process-util.h"
 
 static int prepare_handler(sd_event_source *s, void *userdata) {
         log_info("preparing %c", PTR_TO_INT(userdata));

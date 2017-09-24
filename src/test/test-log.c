@@ -22,8 +22,9 @@
 
 #include "format-util.h"
 #include "log.h"
-#include "process-util.h"
 #include "util.h"
+/// Additional includes needed by elogind
+#include "process-util.h"
 
 assert_cc(LOG_REALM_REMOVE_LEVEL(LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, LOG_FTP | LOG_DEBUG))
           == LOG_REALM_SYSTEMD);

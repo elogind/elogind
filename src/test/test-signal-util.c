@@ -21,8 +21,9 @@
 #include <unistd.h>
 
 #include "macro.h"
-#include "process-util.h"
 #include "signal-util.h"
+/// Additional includes needed by elogind
+#include "process-util.h"
 
 static void test_block_signals(void) {
         sigset_t ss;
