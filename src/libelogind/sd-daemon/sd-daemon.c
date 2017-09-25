@@ -44,7 +44,6 @@
 
 #define SNDBUF_SIZE (8*1024*1024)
 
-#if 0 /// UNNEEDED by elogind
 static void unsetenv_all(bool unset_environment) {
 
         if (!unset_environment)
@@ -145,7 +144,6 @@ _public_ int sd_listen_fds_with_names(int unset_environment, char ***names) {
 
         return n_fds;
 }
-#endif // 0
 
 _public_ int sd_is_fifo(int fd, const char *path) {
         struct stat st_fd;
