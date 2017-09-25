@@ -261,7 +261,6 @@ _public_ int sd_bus_set_exec(sd_bus *bus, const char *path, char *const argv[]) 
 
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_set_bus_client(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
@@ -272,7 +271,6 @@ _public_ int sd_bus_set_bus_client(sd_bus *bus, int b) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_set_monitor(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
         assert_return(bus->state == BUS_UNSET, -EPERM);
@@ -281,7 +279,6 @@ _public_ int sd_bus_set_monitor(sd_bus *bus, int b) {
         SET_FLAG(bus->hello_flags, KDBUS_HELLO_MONITOR, b);
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_negotiate_fds(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
@@ -292,7 +289,6 @@ _public_ int sd_bus_negotiate_fds(sd_bus *bus, int b) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_negotiate_timestamp(sd_bus *bus, int b) {
         uint64_t new_flags;
         assert_return(bus, -EINVAL);
@@ -336,7 +332,6 @@ _public_ int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t mask) {
 
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t server_id) {
         assert_return(bus, -EINVAL);
@@ -358,7 +353,6 @@ _public_ int sd_bus_set_anonymous(sd_bus *bus, int b) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_set_trusted(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
         assert_return(bus->state == BUS_UNSET, -EPERM);

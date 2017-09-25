@@ -54,7 +54,6 @@
 #include <linux/btrfs.h>
 #endif
 
-#if 0 /// UNNEEDED by elogind
 #ifdef HAVE_LINUX_VM_SOCKETS_H
 #include <linux/vm_sockets.h>
 #else
@@ -71,7 +70,6 @@ struct sockaddr_vm {
                                sizeof(unsigned int)];
 };
 #endif /* !HAVE_LINUX_VM_SOCKETS_H */
-#endif // 0
 
 #include "macro.h"
 

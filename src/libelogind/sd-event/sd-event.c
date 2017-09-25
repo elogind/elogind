@@ -1533,7 +1533,6 @@ _public_ int sd_event_source_get_signal(sd_event_source *s) {
 
         return s->signal.sig;
 }
-#endif // 0
 
 _public_ int sd_event_source_get_priority(sd_event_source *s, int64_t *priority) {
         assert_return(s, -EINVAL);
@@ -2720,7 +2719,6 @@ finish:
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_event_get_fd(sd_event *e) {
 
         assert_return(e, -EINVAL);

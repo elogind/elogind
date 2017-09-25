@@ -324,6 +324,7 @@ _public_ int sd_is_socket_inet(int fd, int family, int type, int listening, uint
         return 1;
 }
 
+#if 0 /// unsupported by elogind
 _public_ int sd_is_socket_sockaddr(int fd, int type, const struct sockaddr* addr, unsigned addr_len, int listening) {
         union sockaddr_union sockaddr = {};
         socklen_t l = sizeof(sockaddr);
@@ -381,6 +382,7 @@ _public_ int sd_is_socket_sockaddr(int fd, int type, const struct sockaddr* addr
                               sizeof(in->sin6_addr.s6_addr)) == 0;
         }
 }
+#endif // 0
 
 _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t length) {
         union sockaddr_union sockaddr = {};
@@ -628,7 +630,6 @@ _public_ int sd_notifyf(int unset_environment, const char *format, ...) {
 
         return sd_pid_notify(0, unset_environment, p);
 }
-#endif // 0
 
 _public_ int sd_booted(void) {
 #if 0 /// With elogind, the system is (should never be) booted by systemd
@@ -639,6 +640,7 @@ _public_ int sd_booted(void) {
         return laccess("/run/systemd/system/", F_OK) >= 0;
 #else
         return 0;
+#endif // 0
 }
 
 _public_ int sd_watchdog_enabled(int unset_environment, uint64_t *usec) {

@@ -193,6 +193,8 @@ MANPAGES_ALIAS += \
 	man/sd_event_unrefp.3 \
 	man/sd_id128_from_string.3 \
 	man/sd_id128_get_boot.3 \
+	man/sd_id128_get_invocation.3 \
+	man/sd_id128_get_machine_app_specific.3 \
 	man/sd_is_socket.3 \
 	man/sd_is_socket_inet.3 \
 	man/sd_is_socket_unix.3 \
@@ -333,6 +335,8 @@ man/sd_event_unref.3: man/sd_event_new.3
 man/sd_event_unrefp.3: man/sd_event_new.3
 man/sd_id128_from_string.3: man/sd_id128_to_string.3
 man/sd_id128_get_boot.3: man/sd_id128_get_machine.3
+man/sd_id128_get_invocation.3: man/sd_id128_get_machine.3
+man/sd_id128_get_machine_app_specific.3: man/sd_id128_get_machine.3
 man/sd_is_socket.3: man/sd_is_fifo.3
 man/sd_is_socket_inet.3: man/sd_is_fifo.3
 man/sd_is_socket_unix.3: man/sd_is_fifo.3
@@ -733,6 +737,12 @@ man/sd_id128_from_string.html: man/sd_id128_to_string.html
 	$(html-alias)
 
 man/sd_id128_get_boot.html: man/sd_id128_get_machine.html
+	$(html-alias)
+
+man/sd_id128_get_invocation.html: man/sd_id128_get_machine.html
+	$(html-alias)
+
+man/sd_id128_get_machine_app_specific.html: man/sd_id128_get_machine.html
 	$(html-alias)
 
 man/sd_is_socket.html: man/sd_is_fifo.html

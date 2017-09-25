@@ -105,7 +105,6 @@ int sd_event_exit(sd_event *e, int code);
 
 int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec);
 
-#if 0 /// UNNEEDED by elogind
 int sd_event_get_fd(sd_event *e);
 int sd_event_get_state(sd_event *e);
 int sd_event_get_tid(sd_event *e, pid_t *tid);

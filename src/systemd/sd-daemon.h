@@ -132,6 +132,7 @@ int sd_is_socket(int fd, int family, int type, int listening);
 */
 int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port);
 
+#if 0 /// unsupported by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if the
   file descriptor is an Internet socket of the specified type
@@ -143,6 +144,7 @@ int sd_is_socket_inet(int fd, int family, int type, int listening, uint16_t port
   See sd_is_socket_sockaddr(3) for more information.
 */
 int sd_is_socket_sockaddr(int fd, int type, const struct sockaddr* addr, unsigned addr_len, int listening);
+#endif // 0
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if

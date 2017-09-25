@@ -2604,7 +2604,6 @@ _public_ int sd_bus_message_append_array_space(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_message_append_array(
                 sd_bus_message *m,
                 char type,
