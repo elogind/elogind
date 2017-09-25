@@ -146,6 +146,7 @@
 #         securebits.h
 #         selinux-util.c
 #         selinux-util.h
+#         set.c
 #         set.h
 #         sigbus.c
 #         sigbus.h
