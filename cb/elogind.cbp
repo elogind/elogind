@@ -49,6 +49,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/bus-label.h" />
+		<Unit filename="../src/basic/cap-list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/cap-list.h" />
 		<Unit filename="../src/basic/capability-util.c">
 			<Option compilerVar="CC" />
 		</Unit>

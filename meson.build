@@ -2462,7 +2462,7 @@ executable('elogind-cgroups-agent',
 #                    install_dir : rootlibexecdir)
 # endif
 #
-# exe = executable('networkctl',
+#         exe = executable('networkctl',
 #                  networkctl_sources,
 #                  include_directories : includes,
 #                  link_with : [libsystemd_network,
