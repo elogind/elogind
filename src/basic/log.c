@@ -76,6 +76,7 @@ static bool show_location = false;
 static bool upgrade_syslog_to_journal = false;
 #endif // 0
 static bool always_reopen_console = false;
+static bool open_when_needed = false;
 
 /* Akin to glibc's __abort_msg; which is private and we hence cannot
  * use here. */
@@ -599,6 +600,9 @@ int log_dispatch_internal(
         if ((level & LOG_FACMASK) == 0)
                 level = log_facility | LOG_PRI(level);
 
+        if (open_when_needed)
+                log_open();
+
         do {
                 char *e;
                 int k = 0;
@@ -655,6 +659,9 @@ int log_dispatch_internal(
 
                 buffer = e;
         } while (buffer);
+
+        if (open_when_needed)
+                log_close();
 
         return -error;
 }
@@ -927,38 +934,48 @@ int log_struct_internal(
                 level = log_facility | LOG_PRI(level);
 
 #if 0 /// elogind does not support logging to systemd-journald
-        if (IN_SET(log_target, LOG_TARGET_AUTO,
-                               LOG_TARGET_JOURNAL_OR_KMSG,
-                               LOG_TARGET_JOURNAL) &&
-            journal_fd >= 0) {
-                char header[LINE_MAX];
-                struct iovec iovec[17] = {};
-                unsigned n = 0, i;
-                int r;
-                struct msghdr mh = {
-                        .msg_iov = iovec,
-                };
-                bool fallback = false;
+        if (IN_SET(log_target,
+                   LOG_TARGET_AUTO,
+                   LOG_TARGET_JOURNAL_OR_KMSG,
+                   LOG_TARGET_JOURNAL)) {
 
-                /* If the journal is available do structured logging */
-                log_do_header(header, sizeof(header), level, error, file, line, func, NULL, NULL, NULL, NULL);
-                iovec[n++] = IOVEC_MAKE_STRING(header);
+                if (open_when_needed)
+                        log_open_journal();
 
-                va_start(ap, format);
-                r = log_format_iovec(iovec, ELEMENTSOF(iovec), &n, true, error, format, ap);
-                if (r < 0)
-                        fallback = true;
-                else {
-                        mh.msg_iovlen = n;
-                        (void) sendmsg(journal_fd, &mh, MSG_NOSIGNAL);
+                if (journal_fd >= 0) {
+                        char header[LINE_MAX];
+                        struct iovec iovec[17] = {};
+                        unsigned n = 0, i;
+                        int r;
+                        struct msghdr mh = {
+                                .msg_iov = iovec,
+                        };
+                        bool fallback = false;
+
+                        /* If the journal is available do structured logging */
+                        log_do_header(header, sizeof(header), level, error, file, line, func, NULL, NULL, NULL, NULL);
+                        iovec[n++] = IOVEC_MAKE_STRING(header);
+
+                        va_start(ap, format);
+                        r = log_format_iovec(iovec, ELEMENTSOF(iovec), &n, true, error, format, ap);
+                        if (r < 0)
+                                fallback = true;
+                        else {
+                                mh.msg_iovlen = n;
+                                (void) sendmsg(journal_fd, &mh, MSG_NOSIGNAL);
+                        }
+
+                        va_end(ap);
+                        for (i = 1; i < n; i += 2)
+                                free(iovec[i].iov_base);
+
+                        if (!fallback) {
+                                if (open_when_needed)
+                                        log_close();
+
+                                return -error;
+                        }
                 }
-
-                va_end(ap);
-                for (i = 1; i < n; i += 2)
-                        free(iovec[i].iov_base);
-
-                if (!fallback)
-                        return -error;
         }
 #endif // 0
 
@@ -986,8 +1003,12 @@ int log_struct_internal(
         }
         va_end(ap);
 
-        if (!found)
+        if (!found) {
+                if (open_when_needed)
+                        log_close();
+
                 return -error;
+        }
 
         return log_dispatch_internal(level, error, file, line, func, NULL, NULL, NULL, NULL, buf + 8);
 }
@@ -1241,11 +1262,7 @@ void log_received_signal(int level, const struct signalfd_siginfo *si) {
 
 }
 
-void log_set_upgrade_syslog_to_journal(bool b) {
-        upgrade_syslog_to_journal = b;
-}
 #endif // 0
-
 int log_syntax_internal(
                 const char *unit,
                 int level,
@@ -1294,7 +1311,15 @@ int log_syntax_internal(
 }
 
 #if 0 /// UNNEEDED by elogind
+void log_set_upgrade_syslog_to_journal(bool b) {
+        upgrade_syslog_to_journal = b;
+}
+
 void log_set_always_reopen_console(bool b) {
         always_reopen_console = b;
 }
 #endif // 0
+
+void log_set_open_when_needed(bool b) {
+        open_when_needed = b;
+}
