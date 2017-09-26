@@ -172,6 +172,8 @@ void unit_release_cgroup(Unit *u);
 void unit_prune_cgroup(Unit *u);
 int unit_watch_cgroup(Unit *u);
 
+void unit_add_to_cgroup_empty_queue(Unit *u);
+
 int unit_attach_pids_to_cgroup(Unit *u);
 #else
 # include "logind.h"
@@ -204,7 +206,6 @@ int unit_reset_ip_accounting(Unit *u);
         cc ? cc->name : false;                          \
         })
 
-int unit_notify_cgroup_empty(Unit *u);
 #endif // 0
 int manager_notify_cgroup_empty(Manager *m, const char *group);
 
