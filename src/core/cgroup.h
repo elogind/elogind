@@ -181,7 +181,7 @@ int manager_setup_cgroup(Manager *m);
 void manager_shutdown_cgroup(Manager *m, bool delete);
 
 #if 0 /// UNNEEDED by elogind
-unsigned manager_dispatch_cgroup_queue(Manager *m);
+unsigned manager_dispatch_cgroup_realize_queue(Manager *m);
 
 Unit *manager_get_unit_by_cgroup(Manager *m, const char *cgroup);
 Unit *manager_get_unit_by_pid_cgroup(Manager *m, pid_t pid);

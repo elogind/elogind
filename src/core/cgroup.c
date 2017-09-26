@@ -1497,9 +1497,9 @@ static int unit_realize_cgroup_now(Unit *u, ManagerState state) {
 
         assert(u);
 
-        if (u->in_cgroup_queue) {
-                LIST_REMOVE(cgroup_queue, u->manager->cgroup_queue, u);
-                u->in_cgroup_queue = false;
+        if (u->in_cgroup_realize_queue) {
+                LIST_REMOVE(cgroup_realize_queue, u->manager->cgroup_realize_queue, u);
+                u->in_cgroup_realize_queue = false;
         }
 
         target_mask = unit_get_target_mask(u);
@@ -1533,26 +1533,28 @@ static int unit_realize_cgroup_now(Unit *u, ManagerState state) {
         return 0;
 }
 
-static void unit_add_to_cgroup_queue(Unit *u) {
+static void unit_add_to_cgroup_realize_queue(Unit *u) {
         assert(u);
 
-        if (u->in_cgroup_queue)
+        if (u->in_cgroup_realize_queue)
                 return;
 
-        LIST_PREPEND(cgroup_queue, u->manager->cgroup_queue, u);
-        u->in_cgroup_queue = true;
+        LIST_PREPEND(cgroup_realize_queue, u->manager->cgroup_realize_queue, u);
+        u->in_cgroup_realize_queue = true;
 }
 
-unsigned manager_dispatch_cgroup_queue(Manager *m) {
+unsigned manager_dispatch_cgroup_realize_queue(Manager *m) {
         ManagerState state;
         unsigned n = 0;
         Unit *i;
         int r;
 
+        assert(m);
+
         state = manager_state(m);
 
-        while ((i = m->cgroup_queue)) {
-                assert(i->in_cgroup_queue);
+        while ((i = m->cgroup_realize_queue)) {
+                assert(i->in_cgroup_realize_queue);
 
                 r = unit_realize_cgroup_now(i, state);
                 if (r < 0)
@@ -1564,7 +1566,7 @@ unsigned manager_dispatch_cgroup_queue(Manager *m) {
         return n;
 }
 
-static void unit_queue_siblings(Unit *u) {
+static void unit_add_siblings_to_cgroup_realize_queue(Unit *u) {
         Unit *slice;
 
         /* This adds the siblings of the specified unit and the
@@ -1598,7 +1600,7 @@ static void unit_queue_siblings(Unit *u) {
                                                    unit_get_needs_bpf(m)))
                                 continue;
 
-                        unit_add_to_cgroup_queue(m);
+                        unit_add_to_cgroup_realize_queue(m);
                 }
 
                 u = slice;
@@ -1623,7 +1625,7 @@ int unit_realize_cgroup(Unit *u) {
          * iteration. */
 
         /* Add all sibling slices to the cgroup queue. */
-        unit_queue_siblings(u);
+        unit_add_siblings_to_cgroup_realize_queue(u);
 
         /* And realize this one now (and apply the values) */
         return unit_realize_cgroup_now(u, manager_state(u->manager));
@@ -2386,7 +2388,7 @@ void unit_invalidate_cgroup(Unit *u, CGroupMask m) {
                 return;
 
         u->cgroup_realized_mask &= ~m;
-        unit_add_to_cgroup_queue(u);
+        unit_add_to_cgroup_realize_queue(u);
 }
 
 void unit_invalidate_cgroup_bpf(Unit *u) {
@@ -2399,7 +2401,7 @@ void unit_invalidate_cgroup_bpf(Unit *u) {
                 return;
 
         u->cgroup_bpf_state = UNIT_CGROUP_BPF_INVALIDATED;
-        unit_add_to_cgroup_queue(u);
+        unit_add_to_cgroup_realize_queue(u);
 
         /* If we are a slice unit, we also need to put compile a new BPF program for all our children, as the IP access
          * list of our children includes our own. */
