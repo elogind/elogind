@@ -2892,7 +2892,6 @@ _public_ int sd_bus_add_match(
         }
 
         s->match_callback.callback = callback;
-        s->match_callback.cookie = ++bus->match_cookie;
 
         if (bus->bus_client) {
                 enum bus_match_scope scope;
@@ -2912,7 +2911,7 @@ _public_ int sd_bus_add_match(
                                 goto finish;
                         }
 
-                        r = bus_add_match_internal(bus, s->match_callback.match_string, components, n_components, s->match_callback.cookie);
+                        r = bus_add_match_internal(bus, s->match_callback.match_string, components, n_components);
                         if (r < 0)
                                 goto finish;
 
