@@ -1807,9 +1807,6 @@ static int method_do_shutdown_or_sleep(
         if (r < 0)
                 return r;
 
-        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
-                          __FUNCTION__, action, sleep_verb,
-                          interactive ? "" : "NOT ");
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
@@ -1839,7 +1836,6 @@ static int method_do_shutdown_or_sleep(
 static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
                         SPECIAL_POWEROFF_TARGET,
@@ -1854,7 +1850,6 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
 static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
                         SPECIAL_REBOOT_TARGET,
@@ -1883,7 +1878,6 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
 static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
                         SPECIAL_SUSPEND_TARGET,
@@ -1892,6 +1886,34 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
                         "org.freedesktop.login1.suspend-multiple-sessions",
                         "org.freedesktop.login1.suspend-ignore-inhibit",
                         "suspend",
+                        error);
+}
+
+static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+
+        return method_do_shutdown_or_sleep(
+                        m, message,
+                        SPECIAL_HIBERNATE_TARGET,
+                        INHIBIT_SLEEP,
+                        "org.freedesktop.login1.hibernate",
+                        "org.freedesktop.login1.hibernate-multiple-sessions",
+                        "org.freedesktop.login1.hibernate-ignore-inhibit",
+                        "hibernate",
+                        error);
+}
+
+static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+
+        return method_do_shutdown_or_sleep(
+                        m, message,
+                        SPECIAL_HYBRID_SLEEP_TARGET,
+                        INHIBIT_SLEEP,
+                        "org.freedesktop.login1.hibernate",
+                        "org.freedesktop.login1.hibernate-multiple-sessions",
+                        "org.freedesktop.login1.hibernate-ignore-inhibit",
+                        "hybrid-sleep",
                         error);
 }
 #endif // 0
@@ -2198,38 +2220,6 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
 
         return sd_bus_reply_method_return(message, "b", cancelled);
 }
-
-#if 0 /// elogind has its own variant in elogind-dbus.c
-static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
-
-        log_debug_elogind("%s called", __FUNCTION__);
-        return method_do_shutdown_or_sleep(
-                        m, message,
-                        SPECIAL_HIBERNATE_TARGET,
-                        INHIBIT_SLEEP,
-                        "org.freedesktop.login1.hibernate",
-                        "org.freedesktop.login1.hibernate-multiple-sessions",
-                        "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "hibernate",
-                        error);
-}
-
-static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
-
-        log_debug_elogind("%s called", __FUNCTION__);
-        return method_do_shutdown_or_sleep(
-                        m, message,
-                        SPECIAL_HYBRID_SLEEP_TARGET,
-                        INHIBIT_SLEEP,
-                        "org.freedesktop.login1.hibernate",
-                        "org.freedesktop.login1.hibernate-multiple-sessions",
-                        "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "hybrid-sleep",
-                        error);
-}
-#endif // 0
 
 static int method_can_shutdown_or_sleep(
                 Manager *m,
