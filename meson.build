@@ -1,5 +1,5 @@
 project('elogind', 'c',
-        version : '234',
+        version : '235',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -9,6 +9,9 @@ project('elogind', 'c',
         ],
         meson_version : '>= 0.40',
        )
+
+libsystemd_version = '0.19.0'
+libudev_version = '1.6.6'
 
 # We need the same data in three different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -469,7 +472,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                ]
         prefix = decl.length() > 2 ? decl[2] : ''
         have = cc.has_header_symbol(decl[1], decl[0], prefix : prefix)
-        conf.set10('HAVE_DECL_' + decl[0], have)
+        conf.set10('HAVE_' + decl[0], have)
 endforeach
 
 skip = false
@@ -502,15 +505,15 @@ foreach ident : [
 ]
 
         have = cc.has_function(ident[0], prefix : ident[1])
-        conf.set10('HAVE_DECL_' + ident[0].to_upper(), have)
+        conf.set10('HAVE_' + ident[0].to_upper(), have)
 endforeach
 
 if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''')
         conf.set('USE_SYS_RANDOM_H', true)
-        conf.set10('HAVE_DECL_GETRANDOM', true)
+        conf.set10('HAVE_GETRANDOM', true)
 else
         have = cc.has_function('getrandom', prefix : '''#include <linux/random.h>''')
-        conf.set10('HAVE_DECL_GETRANDOM', have)
+        conf.set10('HAVE_GETRANDOM', have)
 endif
 
 #####################################################################
@@ -1289,7 +1292,7 @@ subdir('src/login')
 #         'systemd',
 #         libsystemd_internal_sources,
 #         journal_internal_sources,
-#         version : '0.19.0',
+#         version : libsystemd_version,
 #         include_directories : includes,
 #         link_args : ['-shared',
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
