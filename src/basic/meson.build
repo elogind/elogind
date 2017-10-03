@@ -295,6 +295,7 @@ basic_sources_plain = files('''
         rm-rf.h
         selinux-util.c
         selinux-util.h
+        set.c
         set.h
         signal-util.c
         signal-util.h
@@ -350,7 +351,7 @@ generate_gperfs = find_program('generate-gperfs.py')
 #         output : 'af-list.txt',
 #         command : [generate_af_list, cpp],
 #         capture : true)
-# 
+#
 # generate_arphrd_list = find_program('generate-arphrd-list.sh')
 # arphrd_list_txt = custom_target(
 #         'arphrd-list.txt',

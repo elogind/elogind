@@ -21,7 +21,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
 #include <libaudit.h>
 #endif
 
@@ -30,10 +30,12 @@
 //#include "alloc-util.h"
 #include "bus-error.h"
 //#include "bus-util.h"
-//#include "formats-util.h"
+//#include "format-util.h"
 //#include "log.h"
 //#include "macro.h"
+#include "process-util.h"
 //#include "special.h"
+#include "strv.h"
 //#include "unit-name.h"
 //#include "util.h"
 #include "utmp-wtmp.h"
@@ -44,7 +46,7 @@
 #include "update-utmp.h"
 typedef struct Context {
         sd_bus *bus;
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
         int audit_fd;
 #endif
 } Context;
@@ -129,7 +131,7 @@ static int on_reboot(Context *c) {
         /* We finished start-up, so let's write the utmp
          * record and send the audit msg */
 
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
         if (c->audit_fd >= 0)
                 if (audit_log_user_comm_message(c->audit_fd, AUDIT_SYSTEM_BOOT, "", "systemd-update-utmp", NULL, NULL, NULL, 1) < 0 &&
                     errno != EPERM) {
@@ -162,7 +164,7 @@ static int on_shutdown(Context *c) {
         /* We started shut-down, so let's write the utmp
          * record and send the audit msg */
 
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
         if (c->audit_fd >= 0)
                 if (audit_log_user_comm_message(c->audit_fd, AUDIT_SYSTEM_SHUTDOWN, "", "systemd-update-utmp", NULL, NULL, NULL, 1) < 0 &&
                     errno != EPERM) {
@@ -207,7 +209,7 @@ static int on_runlevel(Context *c) {
         if (previous == runlevel)
                 return 0;
 
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
         if (c->audit_fd >= 0) {
                 _cleanup_free_ char *s = NULL;
 
@@ -237,7 +239,7 @@ int main(int argc, char *argv[]) {
 void update_utmp(int argc, char* argv[], sd_bus *bus) {
 #endif // 0
         Context c = {
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
                 .audit_fd = -1
 #endif
         };
@@ -265,7 +267,7 @@ void update_utmp(int argc, char* argv[], sd_bus *bus) {
         assert(bus);
 #endif // 0
 
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
         /* If the kernel lacks netlink or audit support,
          * don't worry about it. */
         c.audit_fd = audit_open();
@@ -303,7 +305,7 @@ finish:
         else if (streq(argv[1], "shutdown"))
                 (void)on_shutdown(&c);
 #endif // 0
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
         if (c.audit_fd >= 0)
                 audit_close(c.audit_fd);
 #endif

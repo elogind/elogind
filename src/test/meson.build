@@ -35,9 +35,9 @@ test_libelogind_sym_c = custom_target(
 #         output : 'test-libudev-sym.c',
 #         command : [generate_sym_test_py, '@INPUT0@', '@INPUT1@'],
 #         capture : true)
-#
-# test_dlopen_c = files('test-dlopen.c')
 #endif // 0
+
+test_dlopen_c = files('test-dlopen.c')
 
 ############################################################
 
@@ -365,6 +365,7 @@ tests += [
          [libbasic],
          []],
 
+#if 0 /// UNNEEDED in elogind
 #         [['src/test/test-bpf.c',
 #           'src/test/test-helper.c'],
 #          [libcore,
@@ -375,6 +376,7 @@ tests += [
 #           libseccomp,
 #           libselinux,
 #           libblkid]],
+#endif // 0
 
         [['src/test/test-hashmap.c',
           'src/test/test-hashmap-plain.c',

@@ -19,11 +19,13 @@
 
 #include <string.h>
 
-#include "alloc-util.h"
 #include "fileio.h"
 #include "log.h"
 #include "string-util.h"
 #include "udev-util.h"
+
+/// Additional includes needed by elogind
+#include "alloc-util.h"
 
 int udev_parse_config(void) {
         _cleanup_free_ char *val = NULL;

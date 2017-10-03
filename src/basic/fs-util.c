@@ -46,6 +46,9 @@
 #include "user-util.h"
 #include "util.h"
 
+/// Additional includes needed by elogind
+#include "process-util.h"
+
 int unlink_noerrno(const char *path) {
         PROTECT_ERRNO;
         int r;

@@ -53,6 +53,9 @@
 #include "strv.h"
 #include "util.h"
 
+/// Additional includes needed by elogind
+#include "process-util.h"
+
 #define log_debug_bus_message(m)                                         \
         do {                                                             \
                 sd_bus_message *_mm = (m);                               \

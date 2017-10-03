@@ -61,7 +61,7 @@ liblogind_core_sources += [files('''
         update_utmp_files]
 #endif // 1
 logind_acl_c = files('logind-acl.c')
-if conf.get('HAVE_ACL', false)
+if conf.get('HAVE_ACL') == 1
         liblogind_core_sources += logind_acl_c
 endif
 
@@ -89,7 +89,7 @@ loginctl_sources += files('''
 '''.split())
 #endif // 1
 #if 0 /// elogind builds itself unconditionally and with some adaptations
-# if conf.get('ENABLE_LOGIND', false)
+# if conf.get('ENABLE_LOGIND') == 1
 #         logind_conf = configure_file(
 #                 input : 'logind.conf.in',
 #                 output : 'logind.conf',

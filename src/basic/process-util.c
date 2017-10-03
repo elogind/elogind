@@ -27,13 +27,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/personality.h>
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <syslog.h>
 #include <unistd.h>
-#ifdef HAVE_VALGRIND_VALGRIND_H
+#if HAVE_VALGRIND_VALGRIND_H
 #include <valgrind/valgrind.h>
 #endif
 
@@ -48,6 +49,7 @@
 #include "macro.h"
 #include "missing.h"
 #include "process-util.h"
+//#include "raw-clone.h"
 #include "signal-util.h"
 //#include "stat-util.h"
 #include "string-table.h"
@@ -478,7 +480,7 @@ static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
         assert(field);
         assert(uid);
 
-        if (pid < 0)
+        if (!pid_is_valid(pid))
                 return -EINVAL;
 
         p = procfs_file_alloca(pid, "status");
@@ -793,7 +795,7 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value) {
 bool pid_is_unwaited(pid_t pid) {
         /* Checks whether a PID is still valid at all, including a zombie */
 
-        if (pid < 0)
+        if (!pid_is_valid(pid))
                 return false;
 
         if (pid <= 1) /* If we or PID 1 would be dead and have been waited for, this code would not be running */
@@ -813,7 +815,7 @@ bool pid_is_alive(pid_t pid) {
 
         /* Checks whether a PID is still valid and not a zombie */
 
-        if (pid < 0)
+        if (!pid_is_valid(pid))
                 return false;
 
         if (pid <= 1) /* If we or PID 1 would be a zombie, this code would not be running */
@@ -833,7 +835,7 @@ bool pid_is_alive(pid_t pid) {
 int pid_from_same_root_fs(pid_t pid) {
         const char *root;
 
-        if (pid < 0)
+        if (!pid_is_valid(pid))
                 return false;
 
         if (pid == 0 || pid == getpid_cached())
@@ -954,7 +956,7 @@ int opinionated_personality(unsigned long *ret) {
 }
 
 void valgrind_summary_hack(void) {
-#ifdef HAVE_VALGRIND_VALGRIND_H
+#if HAVE_VALGRIND_VALGRIND_H
         if (getpid_cached() == 1 && RUNNING_ON_VALGRIND) {
                 pid_t pid;
                 pid = raw_clone(SIGCHLD);

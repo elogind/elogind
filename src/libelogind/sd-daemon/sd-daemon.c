@@ -42,6 +42,9 @@
 #include "strv.h"
 #include "util.h"
 
+/// Additional includes needed by elogind
+#include "process-util.h"
+
 #define SNDBUF_SIZE (8*1024*1024)
 
 static void unsetenv_all(bool unset_environment) {
