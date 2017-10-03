@@ -291,7 +291,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session) {
 
         assert(m);
 
-        if (pid < 1)
+        if (!pid_is_valid(pid))
                 return -EINVAL;
 
 #if 0 /// elogind does not support systemd units, but its own session system
@@ -330,7 +330,7 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **user) {
         assert(m);
         assert(user);
 
-        if (pid < 1)
+        if (!pid_is_valid(pid))
                 return -EINVAL;
 
 #if 0 /// elogind does not support systemd units, but its own session system
