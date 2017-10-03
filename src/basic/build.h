@@ -51,7 +51,7 @@
 #endif
 #endif // 0
 
-#if HAVE_SMACK
+#if ENABLE_SMACK
 #define _SMACK_FEATURE_ "+SMACK"
 #else
 #define _SMACK_FEATURE_ "-SMACK"
