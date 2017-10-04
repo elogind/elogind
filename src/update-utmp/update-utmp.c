@@ -21,7 +21,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
 #include <libaudit.h>
 #endif
 
@@ -46,7 +46,7 @@
 #include "update-utmp.h"
 typedef struct Context {
         sd_bus *bus;
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
         int audit_fd;
 #endif
 } Context;
@@ -131,7 +131,7 @@ static int on_reboot(Context *c) {
         /* We finished start-up, so let's write the utmp
          * record and send the audit msg */
 
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
         if (c->audit_fd >= 0)
                 if (audit_log_user_comm_message(c->audit_fd, AUDIT_SYSTEM_BOOT, "", "systemd-update-utmp", NULL, NULL, NULL, 1) < 0 &&
                     errno != EPERM) {
@@ -164,7 +164,7 @@ static int on_shutdown(Context *c) {
         /* We started shut-down, so let's write the utmp
          * record and send the audit msg */
 
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
         if (c->audit_fd >= 0)
                 if (audit_log_user_comm_message(c->audit_fd, AUDIT_SYSTEM_SHUTDOWN, "", "systemd-update-utmp", NULL, NULL, NULL, 1) < 0 &&
                     errno != EPERM) {
@@ -194,7 +194,7 @@ static int on_runlevel(Context *c) {
         q = utmp_get_runlevel(&previous, NULL);
 
         if (q < 0) {
-                if (q != -ESRCH && q != -ENOENT)
+                if (!IN_SET(q, -ESRCH, -ENOENT))
                         return log_error_errno(q, "Failed to get current runlevel: %m");
 
                 previous = 0;
@@ -209,7 +209,7 @@ static int on_runlevel(Context *c) {
         if (previous == runlevel)
                 return 0;
 
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
         if (c->audit_fd >= 0) {
                 _cleanup_free_ char *s = NULL;
 
@@ -224,7 +224,7 @@ static int on_runlevel(Context *c) {
 #endif
 
         q = utmp_put_runlevel(runlevel, previous);
-        if (q < 0 && q != -ESRCH && q != -ENOENT) {
+        if (q < 0 && !IN_SET(q, -ESRCH, -ENOENT)) {
                 log_error_errno(q, "Failed to write utmp record: %m");
                 r = q;
         }
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
 void update_utmp(int argc, char* argv[], sd_bus *bus) {
 #endif // 0
         Context c = {
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
                 .audit_fd = -1
 #endif
         };
@@ -267,11 +267,11 @@ void update_utmp(int argc, char* argv[], sd_bus *bus) {
         assert(bus);
 #endif // 0
 
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
         /* If the kernel lacks netlink or audit support,
          * don't worry about it. */
         c.audit_fd = audit_open();
-        if (c.audit_fd < 0 && errno != EAFNOSUPPORT && errno != EPROTONOSUPPORT)
+        if (c.audit_fd < 0 && !IN_SET(errno, EAFNOSUPPORT, EPROTONOSUPPORT))
                 log_error_errno(errno, "Failed to connect to audit log: %m");
 #endif
 #if 0 /// UNNEEDED by elogind
@@ -305,7 +305,7 @@ finish:
         else if (streq(argv[1], "shutdown"))
                 (void)on_shutdown(&c);
 #endif // 0
-#if HAVE_AUDIT
+#ifdef HAVE_AUDIT
         if (c.audit_fd >= 0)
                 audit_close(c.audit_fd);
 #endif

@@ -1323,7 +1323,7 @@ bool timezone_is_valid(const char *name) {
                 if (!(*p >= '0' && *p <= '9') &&
                     !(*p >= 'a' && *p <= 'z') &&
                     !(*p >= 'A' && *p <= 'Z') &&
-                    !(*p == '-' || *p == '_' || *p == '+' || *p == '/'))
+                    !IN_SET(*p, '-', '_', '+', '/'))
                         return false;
 
                 if (*p == '/') {

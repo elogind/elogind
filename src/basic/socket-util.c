@@ -49,7 +49,7 @@
 #include "util.h"
 
 #if 0 /// UNNEEDED by elogind
-#if ENABLE_IDN
+#ifdef ENABLE_IDN
 #  define IDN_FLAGS (NI_IDN|NI_IDN_USE_STD3_ASCII_RULES)
 #else
 #  define IDN_FLAGS 0
@@ -895,7 +895,7 @@ bool ifname_valid(const char *p) {
                 if ((unsigned char) *p <= 32U)
                         return false;
 
-                if (*p == ':' || *p == '/')
+                if (IN_SET(*p, ':', '/'))
                         return false;
 
                 numeric = numeric && (*p >= '0' && *p <= '9');

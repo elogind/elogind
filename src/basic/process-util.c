@@ -34,7 +34,7 @@
 #include <sys/wait.h>
 #include <syslog.h>
 #include <unistd.h>
-#if HAVE_VALGRIND_VALGRIND_H
+#ifdef HAVE_VALGRIND_VALGRIND_H
 #include <valgrind/valgrind.h>
 #endif
 
@@ -394,7 +394,7 @@ int is_kernel_thread(pid_t pid) {
         bool eof;
         FILE *f;
 
-        if (pid == 0 || pid == 1 || pid == getpid_cached()) /* pid 1, and we ourselves certainly aren't a kernel thread */
+        if (IN_SET(pid, 0, 1) || pid == getpid_cached()) /* pid 1, and we ourselves certainly aren't a kernel thread */
                 return 0;
 
         assert(pid > 1);
@@ -825,7 +825,7 @@ bool pid_is_alive(pid_t pid) {
                 return true;
 
         r = get_process_state(pid);
-        if (r == -ESRCH || r == 'Z')
+        if (IN_SET(r, -ESRCH, 'Z'))
                 return false;
 
         return true;
@@ -956,7 +956,7 @@ int opinionated_personality(unsigned long *ret) {
 }
 
 void valgrind_summary_hack(void) {
-#if HAVE_VALGRIND_VALGRIND_H
+#ifdef HAVE_VALGRIND_VALGRIND_H
         if (getpid_cached() == 1 && RUNNING_ON_VALGRIND) {
                 pid_t pid;
                 pid = raw_clone(SIGCHLD);
