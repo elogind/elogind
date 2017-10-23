@@ -1279,4 +1279,8 @@ struct fib_rule_uid_range {
 #define AF_VSOCK 40
 #endif
 
+#ifndef EXT4_IOC_RESIZE_FS
+#  define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
+#endif
+
 #include "missing_syscall.h"
