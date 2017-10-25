@@ -1097,10 +1097,11 @@ CGroupMask unit_get_members_mask(Unit *u) {
         u->cgroup_members_mask = 0;
 
         if (u->type == UNIT_SLICE) {
+                void *v;
                 Unit *member;
                 Iterator i;
 
-                SET_FOREACH(member, u->dependencies[UNIT_BEFORE], i) {
+                HASHMAP_FOREACH_KEY(v, member, u->dependencies[UNIT_BEFORE], i) {
 
                         if (member == u)
                                 continue;
@@ -1577,8 +1578,9 @@ static void unit_add_siblings_to_cgroup_realize_queue(Unit *u) {
         while ((slice = UNIT_DEREF(u->slice))) {
                 Iterator i;
                 Unit *m;
+                void *v;
 
-                SET_FOREACH(m, slice->dependencies[UNIT_BEFORE], i) {
+                HASHMAP_FOREACH_KEY(v, m, u->dependencies[UNIT_BEFORE], i) {
                         if (m == u)
                                 continue;
 
@@ -2484,8 +2486,9 @@ void unit_invalidate_cgroup_bpf(Unit *u) {
         if (u->type == UNIT_SLICE) {
                 Unit *member;
                 Iterator i;
+                void *v;
 
-                SET_FOREACH(member, u->dependencies[UNIT_BEFORE], i) {
+                HASHMAP_FOREACH_KEY(v, member, u->dependencies[UNIT_BEFORE], i) {
                         if (member == u)
                                 continue;
 
