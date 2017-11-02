@@ -851,7 +851,6 @@ int config_parse_log_facility(
                 void *data,
                 void *userdata) {
 
-
         int *o = data, x;
 
         assert(filename);
@@ -883,7 +882,6 @@ int config_parse_log_level(
                 void *data,
                 void *userdata) {
 
-
         int *o = data, x;
 
         assert(filename);
@@ -897,7 +895,11 @@ int config_parse_log_level(
                 return 0;
         }
 
-        *o = (*o & LOG_FACMASK) | x;
+        if (*o < 0) /* if it wasn't initialized so far, assume zero facility */
+                *o = x;
+        else
+                *o = (*o & LOG_FACMASK) | x;
+
         return 0;
 }
 
