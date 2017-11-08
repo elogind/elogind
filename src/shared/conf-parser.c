@@ -190,7 +190,6 @@ static int parse_line(const char* unit,
         assert(l);
 
         l = strstrip(l);
-
         if (!*l)
                 return 0;
 
@@ -323,8 +322,8 @@ int config_parse(const char *unit,
 
         for (;;) {
                 _cleanup_free_ char *buf = NULL;
-                char *l, *p, *c = NULL, *e;
                 bool escaped = false;
+                char *l, *p, *e;
 
                 r = read_line(f, LONG_LINE_MAX, &buf);
                 if (r == 0)
@@ -360,15 +359,13 @@ int config_parse(const char *unit,
                                 return -ENOBUFS;
                         }
 
-                        c = strappend(continuation, l);
-                        if (!c) {
+                        if (!strextend(&continuation, l, NULL)) {
                                 if (warn)
                                         log_oom();
                                 return -ENOMEM;
                         }
 
-                        continuation = mfree(continuation);
-                        p = c;
+                        p = continuation;
                 } else
                         p = l;
 
@@ -382,9 +379,7 @@ int config_parse(const char *unit,
                 if (escaped) {
                         *(e-1) = ' ';
 
-                        if (c)
-                                continuation = c;
-                        else {
+                        if (!continuation) {
                                 continuation = strdup(l);
                                 if (!continuation) {
                                         if (warn)
@@ -409,13 +404,14 @@ int config_parse(const char *unit,
                                &section_ignored,
                                p,
                                userdata);
-                free(c);
-
                 if (r < 0) {
                         if (warn)
                                 log_warning_errno(r, "%s:%u: Failed to parse file: %m", filename, line);
                         return r;
+
                 }
+
+                continuation = mfree(continuation);
         }
 
         return 0;
