@@ -127,6 +127,7 @@ struct CGroupContext {
         uint64_t tasks_max;
 
         bool delegate;
+        CGroupMask delegate_controllers;
 };
 
 /* Used when querying IP accounting data */
@@ -154,8 +155,9 @@ void cgroup_context_free_blockio_device_weight(CGroupContext *c, CGroupBlockIODe
 void cgroup_context_free_blockio_device_bandwidth(CGroupContext *c, CGroupBlockIODeviceBandwidth *b);
 
 CGroupMask unit_get_own_mask(Unit *u);
-CGroupMask unit_get_siblings_mask(Unit *u);
+CGroupMask unit_get_delegate_mask(Unit *u);
 CGroupMask unit_get_members_mask(Unit *u);
+CGroupMask unit_get_siblings_mask(Unit *u);
 CGroupMask unit_get_subtree_mask(Unit *u);
 
 CGroupMask unit_get_target_mask(Unit *u);
