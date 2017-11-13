@@ -40,6 +40,7 @@ struct SessionDevice {
         int fd;
         bool active;
         DeviceType type;
+        bool pushed_fd;
 
         LIST_FIELDS(struct SessionDevice, sd_by_device);
 };
