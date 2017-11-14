@@ -215,7 +215,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
 
                 (void) cg_mask_to_string(c->delegate_controllers, &t);
 
-                fprintf(f, "%sDelegateController=%s\n",
+                fprintf(f, "%sDelegateControllers=%s\n",
                         prefix,
                         strempty(t));
         }
