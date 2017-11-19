@@ -210,6 +210,8 @@ basic_sources_plain = files('''
         capability-util.c
         capability-util.h
         cgroup-util.c
+        cap-list.c
+        cap-list.h
         cgroup-util.h
         conf-files.c
         conf-files.h
@@ -338,7 +340,7 @@ missing_h = files('missing.h')
 
 generate_gperfs = find_program('generate-gperfs.py')
 
-#if 0 /// elogind has only the errno list.
+#if 0 /// elogind has only the cap and errno list.
 # generate_af_list = find_program('generate-af-list.sh')
 # af_list_txt = custom_target(
 #         'af-list.txt',
@@ -352,14 +354,14 @@ generate_gperfs = find_program('generate-gperfs.py')
 #         output : 'arphrd-list.txt',
 #         command : [generate_arphrd_list, cpp],
 #         capture : true)
-# 
-# generate_cap_list = find_program('generate-cap-list.sh')
-# cap_list_txt = custom_target(
-#         'cap-list.txt',
-#         output : 'cap-list.txt',
-#         command : [generate_cap_list, cpp, config_h, missing_h],
-#         capture : true)
 #endif // 0
+
+generate_cap_list = find_program('generate-cap-list.sh')
+cap_list_txt = custom_target(
+        'cap-list.txt',
+        output : 'cap-list.txt',
+        command : [generate_cap_list, cpp, config_h, missing_h],
+        capture : true)
 
 generate_errno_list = find_program('generate-errno-list.sh')
 errno_list_txt = custom_target(
@@ -369,13 +371,14 @@ errno_list_txt = custom_target(
         capture : true)
 
 generated_gperf_headers = []
-#if 0 /// elogind has only the errno list.
+#if 0 /// elogind has only the cap and errno list.
 # foreach item : [['af',     af_list_txt,     'af',         ''],
 #                 ['arphrd', arphrd_list_txt, 'arphrd',     'ARPHRD_'],
 #                 ['cap',    cap_list_txt,    'capability', ''],
 #                 ['errno',  errno_list_txt,  'errno',      '']]
 #else
-foreach item : [['errno',  errno_list_txt,  'errno',      '']]
+foreach item : [['cap',    cap_list_txt,    'capability', ''],
+                ['errno',  errno_list_txt,  'errno',      '']]
 #endif // 0
 
         fname = '@0@-from-name.gperf'.format(item[0])
