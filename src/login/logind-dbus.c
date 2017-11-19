@@ -1497,8 +1497,11 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
         return r;
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
+#if 0 /// elogind-dbus.c needs to access this
 static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+#else
+int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+#endif // 0
 
         static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
                 [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
@@ -1520,6 +1523,7 @@ static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
                                   active);
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int execute_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
@@ -1673,10 +1677,6 @@ static int delay_shutdown_or_sleep(
 
         return 0;
 }
-#endif // 0
-#if 0 /// elogind-dbus.c needs to access this
-#else
-int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 #endif // 0
 
 #if 0 /// elogind has its own variant in elogind-dbus.c
@@ -1957,7 +1957,6 @@ fail:
         return log_error_errno(r, "Failed to write information about scheduled shutdowns: %m");
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
 static void reset_scheduled_shutdown(Manager *m) {
         m->scheduled_shutdown_timeout_source = sd_event_source_unref(m->scheduled_shutdown_timeout_source);
         m->wall_message_timeout_source = sd_event_source_unref(m->wall_message_timeout_source);
@@ -1973,6 +1972,7 @@ static void reset_scheduled_shutdown(Manager *m) {
         (void) unlink("/run/systemd/shutdown/scheduled");
 }
 
+#if 0 /// elogind has its own variant in elogind-dbus.c
 static int manager_scheduled_shutdown_handler(
                         sd_event_source *s,
                         uint64_t usec,

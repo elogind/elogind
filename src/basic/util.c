@@ -729,6 +729,7 @@ int version(void) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int get_block_device(const char *path, dev_t *dev) {
         struct stat st;
         struct statfs sfs;
@@ -858,3 +859,4 @@ fallback:
         *dev = dt;
         return 1;
 }
+#endif // 0

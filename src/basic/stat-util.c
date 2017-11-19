@@ -199,7 +199,6 @@ bool is_fs_type(const struct statfs *s, statfs_f_type_t magic_value) {
         return F_TYPE_EQUAL(s->f_type, magic_value);
 }
 
-#if 0 /// UNNEEDED by elogind
 int fd_check_fstype(int fd, statfs_f_type_t magic_value) {
         struct statfs s;
 
@@ -209,6 +208,7 @@ int fd_check_fstype(int fd, statfs_f_type_t magic_value) {
         return is_fs_type(&s, magic_value);
 }
 
+#if 0 /// UNNEEDED by elogind
 int path_check_fstype(const char *path, statfs_f_type_t magic_value) {
         _cleanup_close_ int fd = -1;
 

@@ -188,8 +188,6 @@ static inline unsigned log2u_round_up(unsigned x) {
         return log2u(x - 1) + 1;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int container_get_leader(const char *machine, pid_t *pid);
 
 int namespace_open(pid_t pid, int *pidns_fd, int *mntns_fd, int *netns_fd, int *userns_fd, int *root_fd);
@@ -202,10 +200,12 @@ uint64_t system_tasks_max(void);
 uint64_t system_tasks_max_scale(uint64_t v, uint64_t max);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int update_reboot_parameter_and_warn(const char *param);
+#endif // 0
 
 int version(void);
 
+#if 0 /// UNNEEDED by elogind
 int get_block_device(const char *path, dev_t *dev);
 int get_block_device_harder(const char *path, dev_t *dev);
+#endif // 0

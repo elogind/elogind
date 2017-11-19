@@ -243,7 +243,7 @@ int elogind_setup_cgroups_agent(Manager *m) {
          * to it. The system instance hence listens on this special socket, but the user instances listen on the system
          * bus for these messages. */
 
-        if (m->test_run)
+        if (m->test_run_flags)
                 return 0;
 
         if (!MANAGER_IS_SYSTEM(m))
@@ -382,7 +382,7 @@ int elogind_manager_new(Manager* m) {
 
         m->cgroups_agent_fd = -1;
         m->pin_cgroupfs_fd  = -1;
-        m->test_run         = false;
+        m->test_run_flags   = 0;
 
         /* Init sleep modes and states */
         m->suspend_mode       = NULL;

@@ -88,7 +88,7 @@ struct Manager {
         sd_event_source *cgroups_agent_event_source;
 
         /* Flags */
-        bool test_run:1;
+        unsigned test_run_flags;
         bool is_system:1; /* true if elogind is its own cgroups manager */
 
         /* Data specific to the cgroup subsystem */

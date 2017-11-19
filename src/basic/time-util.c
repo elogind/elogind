@@ -888,7 +888,6 @@ finish:
 
         return 0;
 }
-#endif // 0
 
 typedef struct ParseTimestampResult {
         usec_t usec;
@@ -958,6 +957,7 @@ int parse_timestamp(const char *t, usec_t *usec) {
 
         return tmp.return_value;
 }
+#endif // 0
 
 static char* extract_multiplier(char *p, usec_t *multiplier) {
         static const struct {

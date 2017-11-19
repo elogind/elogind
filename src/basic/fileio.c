@@ -30,6 +30,7 @@
 
 #include "alloc-util.h"
 #include "ctype.h"
+#include "def.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"

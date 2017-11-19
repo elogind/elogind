@@ -372,7 +372,6 @@ int drop_capability(cap_value_t cv) {
 
         return 0;
 }
-#endif // 0
 
 bool ambient_capabilities_supported(void) {
         static int cache = -1;
@@ -388,3 +387,4 @@ bool ambient_capabilities_supported(void) {
 
         return cache;
 }
+#endif // 0
