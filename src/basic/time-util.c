@@ -1405,8 +1405,7 @@ bool clock_supported(clockid_t clock) {
                 if (!clock_boottime_supported())
                         return false;
 
-                /* fall through */
-
+                _fallthrough_;
         default:
                 /* For everything else, check properly */
                 return clock_gettime(clock, &ts) >= 0;

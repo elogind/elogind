@@ -1436,7 +1436,7 @@ int message_append_basic(sd_bus_message *m, char type, const void *p, const void
                 case SD_BUS_TYPE_STRING:
                         p = strempty(p);
 
-                        /* Fall through... */
+                        _fallthrough_;
                 case SD_BUS_TYPE_OBJECT_PATH:
                         if (!p)
                                 return -EINVAL;
@@ -1496,7 +1496,7 @@ int message_append_basic(sd_bus_message *m, char type, const void *p, const void
                          * into the empty string */
                         p = strempty(p);
 
-                        /* Fall through... */
+                        _fallthrough_;
                 case SD_BUS_TYPE_OBJECT_PATH:
 
                         if (!p)
