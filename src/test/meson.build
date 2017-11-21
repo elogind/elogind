@@ -252,6 +252,10 @@ tests += [
          [],
          []],
 
+        [['src/test/test-specifier.c'],
+         [],
+         []],
+
         [['src/test/test-string-util.c'],
          [],
          []],
