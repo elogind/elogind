@@ -1475,8 +1475,7 @@ static struct node *bus_node_allocate(sd_bus *bus, const char *path) {
         r = hashmap_put(bus->nodes, n->path, n);
         if (r < 0) {
                 free(n->path);
-                free(n);
-                return NULL;
+                return mfree(n);
         }
 
         if (parent)
