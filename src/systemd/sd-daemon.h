@@ -22,6 +22,7 @@
 
 #include <inttypes.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 
 #include "_sd-common.h"
 

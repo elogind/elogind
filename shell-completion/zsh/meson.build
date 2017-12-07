@@ -11,7 +11,7 @@ if zshcompletiondir != 'no'
 #                 input : '_systemctl.in',
 #                 output : '_systemctl',
 #                 configuration : substs)
-#
+
 #         items = [['_busctl',                   ''],
 #                  ['_journalctl',               ''],
 #                  ['_systemd-analyze',          ''],

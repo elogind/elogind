@@ -19,6 +19,7 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include "extract-word.h"
 #include "hashmap.h"
 #include "macro.h"
 

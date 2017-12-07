@@ -29,6 +29,7 @@
 #include "cgroup-util.h"
 #include "fd-util.h"
 #include "logind.h"
+#include "parse-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "udev-util.h"

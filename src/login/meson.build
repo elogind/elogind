@@ -96,15 +96,15 @@ loginctl_sources += files('''
 #                 configuration : substs)
 #         install_data(logind_conf,
 #                      install_dir : pkgsysconfdir)
-#
+
 #         pam_systemd_sym = 'src/login/pam_systemd.sym'
 #         pam_systemd_c = files('pam_systemd.c')
-#
+
 #         install_data('org.freedesktop.login1.conf',
 #                      install_dir : dbuspolicydir)
 #         install_data('org.freedesktop.login1.service',
 #                      install_dir : dbussystemservicedir)
-#
+
 #         custom_target(
 #                 'org.freedesktop.login1.policy',
 #                 input : 'org.freedesktop.login1.policy.in',
@@ -112,11 +112,11 @@ loginctl_sources += files('''
 #                 command : intltool_command,
 #                 install : install_polkit,
 #                 install_dir : polkitpolicydir)
-#
+
 #         install_data('70-power-switch.rules',
 #                      '70-uaccess.rules',
 #                      install_dir : udevrulesdir)
-#
+
 #         foreach file : ['71-seat.rules',
 #                         '73-seat-late.rules']
 #                 gen = configure_file(
@@ -126,7 +126,7 @@ loginctl_sources += files('''
 #                 install_data(gen,
 #                              install_dir : udevrulesdir)
 #         endforeach
-#
+
 #         custom_target(
 #                 'systemd-user',
 #                 input : 'systemd-user.m4',

@@ -21,6 +21,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/timerfd.h>

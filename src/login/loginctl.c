@@ -27,6 +27,7 @@
 
 #include "alloc-util.h"
 #include "bus-error.h"
+#include "bus-unit-util.h"
 #include "bus-util.h"
 //#include "cgroup-show.h"
 #include "cgroup-util.h"
@@ -1433,9 +1434,11 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
 #endif // 0
                "Session Commands:\n"
-#if 1 /// elogind has "list" as a shorthand for "list-sessions"
+#if 0 /// elogind has "list" as a shorthand for "list-sessions"
+               "  list-sessions            List sessions\n"
+#else
                "  list[-sessions]          List sessions (default command)\n"
-#endif // 1
+#endif // 0
                "  session-status [ID...]   Show session status\n"
                "  show-session [ID...]     Show properties of sessions or the manager\n"
                "  activate [ID]            Activate a session\n"
@@ -1459,15 +1462,17 @@ static int help(int argc, char *argv[], void *userdata) {
                "  show-seat [NAME...]      Show properties of seats or the manager\n"
                "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
                "  flush-devices            Flush all device associations\n"
+#if 0 /// elogind adds some system commands to loginctl
+               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+#else
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
-#if 1 /// elogind adds some system commands to loginctl
                "System Commands:\n"
                "  poweroff [TIME] [WALL...] Turn off the machine\n"
                "  reboot   [TIME] [WALL...] Reboot the machine\n"
                "  suspend                   Suspend the machine to memory\n"
                "  hibernate                 Suspend the machine to disk\n"
                "  hybrid-sleep              Suspend the machine to memory and disk\n"
-#endif // 1
+#endif // 0
                , program_invocation_short_name);
 
         return 0;

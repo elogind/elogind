@@ -19,37 +19,37 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#ifdef HAVE_PAM
+#if HAVE_PAM
 #define _PAM_FEATURE_ "+PAM"
 #else
 #define _PAM_FEATURE_ "-PAM"
 #endif
 
-#ifdef HAVE_AUDIT
+#if HAVE_AUDIT
 #define _AUDIT_FEATURE_ "+AUDIT"
 #else
 #define _AUDIT_FEATURE_ "-AUDIT"
 #endif
 
-#ifdef HAVE_SELINUX
+#if HAVE_SELINUX
 #define _SELINUX_FEATURE_ "+SELINUX"
 #else
 #define _SELINUX_FEATURE_ "-SELINUX"
 #endif
 
-#ifdef HAVE_SMACK
+#if HAVE_SMACK
 #define _SMACK_FEATURE_ "+SMACK"
 #else
 #define _SMACK_FEATURE_ "-SMACK"
 #endif
 
-#ifdef HAVE_UTMP
+#if HAVE_UTMP
 #define _UTMP_FEATURE_ "+UTMP"
 #else
 #define _UTMP_FEATURE_ "-UTMP"
 #endif
 
-#ifdef HAVE_ACL
+#if HAVE_ACL
 #define _ACL_FEATURE_ "+ACL"
 #else
 #define _ACL_FEATURE_ "-ACL"

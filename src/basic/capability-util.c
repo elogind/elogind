@@ -31,6 +31,7 @@
 #include "log.h"
 #include "macro.h"
 #include "parse-util.h"
+#include "user-util.h"
 #include "util.h"
 
 #if 0 /// UNNEEDED by elogind

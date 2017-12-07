@@ -48,6 +48,7 @@
 #include "label.h"
 #include "musl_missing.h"
 #include "process-util.h"
+#include "cgroup-util.h"
 
 static void manager_free(Manager *m);
 
@@ -1276,7 +1277,7 @@ int main(int argc, char *argv[]) {
         r = elogind_startup(argc, argv);
         if (r)
                 return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
-#endif // 0
+#endif // 1
 
         elogind_set_program_name(argv[0]);
         log_set_target(LOG_TARGET_AUTO);
@@ -1356,7 +1357,7 @@ int main(int argc, char *argv[]) {
 
         r = manager_run(m);
 
-        log_debug("elogind stopped as pid "PID_FMT, getpid());
+        log_debug("elogind stopped as pid "PID_FMT, getpid_cached());
 
 finish:
         sd_notify(false,

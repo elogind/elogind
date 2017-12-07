@@ -40,10 +40,12 @@
 //#include "fs-util.h"
 #include "io-util.h"
 //#include "macro.h"
+#include "missing.h"
 //#include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
 //#include "umask-util.h"
+#include "user-util.h"
 //#include "xattr-util.h"
 
 #define COPY_BUFFER_SIZE (16*1024u)

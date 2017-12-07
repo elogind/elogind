@@ -23,6 +23,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/statfs.h>
 #include <sys/types.h>
 
 #include "def.h"

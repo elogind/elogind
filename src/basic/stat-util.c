@@ -28,6 +28,7 @@
 
 #include "dirent-util.h"
 #include "fd-util.h"
+#include "fs-util.h"
 #include "macro.h"
 #include "missing.h"
 #include "stat-util.h"

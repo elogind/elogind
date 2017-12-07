@@ -112,7 +112,7 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states) {
 
 #if 1 /// Only available in this file for elogind
 static
-#endif // 0
+#endif // 1
 int can_sleep_state(char **types) {
         char **type;
         int r;
@@ -144,7 +144,7 @@ int can_sleep_state(char **types) {
 
 #if 1 /// Only available in this file for elogind
 static
-#endif // 0
+#endif // 1
 int can_sleep_disk(char **types) {
         char **type;
         int r;

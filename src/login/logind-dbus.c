@@ -52,7 +52,6 @@
 
 /// Additional includes needed by elogind
 #include "elogind-dbus.h"
-//#include "update-utmp.h"
 
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;

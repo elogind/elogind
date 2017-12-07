@@ -24,6 +24,7 @@
 #if 0 /// only system command elogind knows are needed
 #define BUS_ERROR_NO_SUCH_UNIT "org.freedesktop.systemd1.NoSuchUnit"
 #define BUS_ERROR_NO_UNIT_FOR_PID "org.freedesktop.systemd1.NoUnitForPID"
+#define BUS_ERROR_NO_UNIT_FOR_INVOCATION_ID "org.freedesktop.elogind1.NoUnitForInvocationID"
 #define BUS_ERROR_UNIT_EXISTS "org.freedesktop.systemd1.UnitExists"
 #define BUS_ERROR_LOAD_FAILED "org.freedesktop.systemd1.LoadFailed"
 #define BUS_ERROR_JOB_FAILED "org.freedesktop.systemd1.JobFailed"
@@ -42,6 +43,9 @@
 #define BUS_ERROR_SHUTTING_DOWN "org.freedesktop.systemd1.ShuttingDown"
 #define BUS_ERROR_SCOPE_NOT_RUNNING "org.freedesktop.systemd1.ScopeNotRunning"
 #endif // 0
+#define BUS_ERROR_NO_SUCH_DYNAMIC_USER "org.freedesktop.elogind1.NoSuchDynamicUser"
+#define BUS_ERROR_NOT_REFERENCED "org.freedesktop.elogind1.NotReferenced"
+#define BUS_ERROR_DISK_FULL "org.freedesktop.elogind1.DiskFull"
 
 #if 0 /// no machined in elogind
 #define BUS_ERROR_NO_SUCH_MACHINE "org.freedesktop.machine1.NoSuchMachine"

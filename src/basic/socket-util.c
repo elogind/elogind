@@ -23,6 +23,7 @@
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/ip.h>
+#include <poll.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>

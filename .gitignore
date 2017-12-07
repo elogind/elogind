@@ -69,3 +69,5 @@ mask_po_files.sh
 cccc
 *.v234
 *.v234.diff
+.project
+patches_port/

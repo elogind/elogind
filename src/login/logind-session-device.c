@@ -34,6 +34,7 @@
 #include "fd-util.h"
 #include "logind-session-device.h"
 #include "missing.h"
+#include "parse-util.h"
 #include "sd-daemon.h"
 #include "util.h"
 

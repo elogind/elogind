@@ -37,6 +37,7 @@
 #include "set.h"
 #include "stdio-util.h"
 #include "string-util.h"
+#include "strv.h"
 
 static int fd_fdinfo_mnt_id(int fd, const char *filename, int flags, int *mnt_id) {
         char path[strlen("/proc/self/fdinfo/") + DECIMAL_STR_MAX(int)];

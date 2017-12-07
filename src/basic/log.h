@@ -30,6 +30,7 @@
 #include "sd-id128.h"
 
 #include "macro.h"
+#include "process-util.h"
 
 typedef enum LogRealm {
         LOG_REALM_SYSTEMD,

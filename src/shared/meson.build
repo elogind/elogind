@@ -139,7 +139,7 @@ endif
 # if conf.get('HAVE_SECCOMP') == 1
 #         shared_sources += ['seccomp-util.c']
 # endif
-#
+
 # if conf.get('HAVE_LIBIPTC') == 1
 #         shared_sources += ['firewall-util.c']
 # endif
@@ -161,7 +161,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libxz,
 #                   liblz4,
 #                   libblkid]
-# #else
+#else
 libshared_deps = [threads,
                   libacl,
                   libcap,

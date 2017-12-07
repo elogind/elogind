@@ -216,6 +216,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/selinux-util.h" />
+		<Unit filename="../src/basic/set.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/basic/set.h" />
 		<Unit filename="../src/basic/signal-util.c">
 			<Option compilerVar="CC" />
@@ -601,6 +604,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-copy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-dlopen.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-ellipsize.c">
