@@ -335,6 +335,20 @@ static int property_get_current_inhibitors(
         return sd_bus_message_append(reply, "t", (uint64_t) hashmap_size(m->inhibitors));
 }
 
+static int property_get_compat_user_tasks_max(
+                sd_bus *bus,
+                const char *path,
+                const char *interface,
+                const char *property,
+                sd_bus_message *reply,
+                void *userdata,
+                sd_bus_error *error) {
+
+        assert(reply);
+
+        return sd_bus_message_append(reply, "t", CGROUP_LIMIT_MAX);
+}
+
 static int method_get_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *p = NULL;
         Manager *m = userdata;
@@ -1260,7 +1274,7 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
 }
 
 static int trigger_device(Manager *m, struct udev_device *d) {
-        _cleanup_(udev_enumerate_unrefp) struct udev_enumerate *e = NULL;
+        _cleanup_udev_enumerate_unref_ struct udev_enumerate *e = NULL;
         struct udev_list_entry *first, *item;
         int r;
 
@@ -1298,7 +1312,7 @@ static int trigger_device(Manager *m, struct udev_device *d) {
 }
 
 static int attach_device(Manager *m, const char *seat, const char *sysfs) {
-        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
+        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         _cleanup_free_ char *rule = NULL, *file = NULL;
         const char *id_for_seat;
         int r;
@@ -2876,7 +2890,7 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_PROPERTY("NCurrentInhibitors", "t", property_get_current_inhibitors, 0, 0),
         SD_BUS_PROPERTY("SessionsMax", "t", NULL, offsetof(Manager, sessions_max), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("NCurrentSessions", "t", property_get_current_sessions, 0, 0),
-        SD_BUS_PROPERTY("UserTasksMax", "t", NULL, offsetof(Manager, user_tasks_max), SD_BUS_VTABLE_PROPERTY_CONST),
+        SD_BUS_PROPERTY("UserTasksMax", "t", property_get_compat_user_tasks_max, 0, SD_BUS_VTABLE_PROPERTY_CONST|SD_BUS_VTABLE_HIDDEN),
 
         SD_BUS_METHOD("GetSession", "s", "o", method_get_session, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("GetSessionByPID", "u", "o", method_get_session_by_pid, SD_BUS_VTABLE_UNPRIVILEGED),
