@@ -131,7 +131,7 @@ if conf.get('HAVE_ACL') == 1
         shared_sources += ['acl-util.c']
 endif
 
-if conf.get('HAVE_UTMP') == 1
+if conf.get('ENABLE_UTMP') == 1
         shared_sources += ['utmp-wtmp.c']
 endif
 
