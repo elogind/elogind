@@ -21,7 +21,7 @@
 #include <fnmatch.h>
 
 #include "alloc-util.h"
-#include "bpf-firewall.h"
+//#include "bpf-firewall.h"
 #include "cgroup-util.h"
 #include "cgroup.h"
 #include "fd-util.h"

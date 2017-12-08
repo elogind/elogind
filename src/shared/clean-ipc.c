@@ -451,6 +451,7 @@ int clean_ipc_internal(uid_t uid, gid_t gid, bool rm) {
                         ret = r;
         }
 
+#if 0 /// Nothing in elogind uses mqueues
         r = clean_posix_mq(uid, gid, rm);
         if (r != 0) {
                 if (!rm)
@@ -458,6 +459,7 @@ int clean_ipc_internal(uid_t uid, gid_t gid, bool rm) {
                 if (ret == 0)
                         ret = r;
         }
+#endif // 0
 
         return ret;
 }

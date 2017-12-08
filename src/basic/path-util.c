@@ -34,7 +34,7 @@
 #include "alloc-util.h"
 #include "extract-word.h"
 #include "fs-util.h"
-#include "glob-util.h"
+//#include "glob-util.h"
 #include "log.h"
 #include "macro.h"
 #include "missing.h"

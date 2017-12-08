@@ -25,6 +25,7 @@
 
 int manager_scheduled_shutdown_handler(sd_event_source *s, uint64_t usec,
                                        void *userdata);
+int method_halt        (sd_bus_message *message, void *userdata, sd_bus_error *error);
 int method_hibernate   (sd_bus_message *message, void *userdata, sd_bus_error *error);
 int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error);
 int method_poweroff    (sd_bus_message *message, void *userdata, sd_bus_error *error);

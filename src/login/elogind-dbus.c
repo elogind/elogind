@@ -380,6 +380,22 @@ int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *error) 
                         error);
 }
 
+int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+
+        log_debug_elogind("%s called", __FUNCTION__);
+
+        return method_do_shutdown_or_sleep(
+                        m, message,
+                        HANDLE_HALT,
+                        INHIBIT_SHUTDOWN,
+                        "org.freedesktop.login1.halt",
+                        "org.freedesktop.login1.halt-multiple-sessions",
+                        "org.freedesktop.login1.halt-ignore-inhibit",
+                        NULL,
+                        error);
+}
+
 int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
