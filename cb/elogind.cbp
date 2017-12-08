@@ -582,6 +582,7 @@
 		</Unit>
 		<Unit filename="../src/sleep/sleep.h" />
 		<Unit filename="../src/systemd/_sd-common.h" />
+		<Unit filename="../src/systemd/meson.build" />
 		<Unit filename="../src/systemd/sd-bus-protocol.h" />
 		<Unit filename="../src/systemd/sd-bus-vtable.h" />
 		<Unit filename="../src/systemd/sd-bus.h" />
