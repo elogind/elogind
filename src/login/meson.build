@@ -89,8 +89,12 @@ loginctl_sources = files('''
 loginctl_sources += files('''
         eloginctl.c
         eloginctl.h
+user_runtime_dir_sources = files('''
+        user-runtime-dir.c
+        logind.h
 '''.split())
 #endif // 1
+
 #if 0 /// elogind builds itself unconditionally and with some adaptations
 # if conf.get('ENABLE_LOGIND') == 1
 #         logind_conf = configure_file(

@@ -444,7 +444,8 @@ if cc.get_id() == 'clang'
         foreach arg : ['-Wno-typedef-redefinition',
                        '-Wno-gnu-variable-sized-type-not-at-end',
                       ]
-                if cc.has_argument(arg)
+                if cc.has_argument(arg,
+                                   name : '@0@ is supported'.format(arg))
                         add_project_arguments(arg, language : 'c')
                 endif
         endforeach
@@ -1916,6 +1917,13 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
+           user_runtime_dir_sources,
+           include_directories : includes,
+           link_with : [libshared, liblogind_core],
+           install_rpath : rootlibexecdir,
+           install : true,
+           install_dir : rootlibexecdir)
 
 if conf.get('HAVE_PAM') == 1
         version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)
