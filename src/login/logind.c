@@ -44,40 +44,8 @@
 
 static void manager_free(Manager *m);
 
-static void manager_reset_config(Manager *m) {
 #if 0 /// elogind does not support autospawning of vts
-        m->n_autovts = 6;
-        m->reserve_vt = 6;
 #endif // 0
-        m->remove_ipc = true;
-        m->inhibit_delay_max = 5 * USEC_PER_SEC;
-        m->handle_power_key = HANDLE_POWEROFF;
-        m->handle_suspend_key = HANDLE_SUSPEND;
-        m->handle_hibernate_key = HANDLE_HIBERNATE;
-        m->handle_lid_switch = HANDLE_SUSPEND;
-        m->handle_lid_switch_ep = _HANDLE_ACTION_INVALID;
-        m->handle_lid_switch_docked = HANDLE_IGNORE;
-        m->power_key_ignore_inhibited = false;
-        m->suspend_key_ignore_inhibited = false;
-        m->hibernate_key_ignore_inhibited = false;
-        m->lid_switch_ignore_inhibited = true;
-
-        m->holdoff_timeout_usec = 30 * USEC_PER_SEC;
-
-        m->idle_action_usec = 30 * USEC_PER_MINUTE;
-        m->idle_action = HANDLE_IGNORE;
-
-        m->runtime_dir_size = physical_memory_scale(10U, 100U); /* 10% */
-        m->user_tasks_max = system_tasks_max_scale(DEFAULT_USER_TASKS_MAX_PERCENTAGE, 100U); /* 33% */
-        m->sessions_max = 8192;
-        m->inhibitors_max = 8192;
-
-        m->kill_user_processes = KILL_USER_PROCESSES;
-
-        m->kill_only_users = strv_free(m->kill_only_users);
-        m->kill_exclude_users = strv_free(m->kill_exclude_users);
-}
-
 static Manager *manager_new(void) {
         Manager *m;
         int r;
@@ -220,7 +188,7 @@ static void manager_free(Manager *m) {
 
 static int manager_enumerate_devices(Manager *m) {
         struct udev_list_entry *item = NULL, *first = NULL;
-        _cleanup_(udev_enumerate_unrefp) struct udev_enumerate *e = NULL;
+        _cleanup_udev_enumerate_unref_ struct udev_enumerate *e = NULL;
         int r;
 
         assert(m);
@@ -246,7 +214,7 @@ static int manager_enumerate_devices(Manager *m) {
 
         first = udev_enumerate_get_list_entry(e);
         udev_list_entry_foreach(item, first) {
-                _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
+                _cleanup_udev_device_unref_ struct udev_device *d = NULL;
                 int k;
 
                 d = udev_device_new_from_syspath(m->udev, udev_list_entry_get_name(item));
@@ -262,7 +230,7 @@ static int manager_enumerate_devices(Manager *m) {
 }
 
 static int manager_enumerate_buttons(Manager *m) {
-        _cleanup_(udev_enumerate_unrefp) struct udev_enumerate *e = NULL;
+        _cleanup_udev_enumerate_unref_ struct udev_enumerate *e = NULL;
         struct udev_list_entry *item = NULL, *first = NULL;
         int r;
 
@@ -295,7 +263,7 @@ static int manager_enumerate_buttons(Manager *m) {
 
         first = udev_enumerate_get_list_entry(e);
         udev_list_entry_foreach(item, first) {
-                _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
+                _cleanup_udev_device_unref_ struct udev_device *d = NULL;
                 int k;
 
                 d = udev_device_new_from_syspath(m->udev, udev_list_entry_get_name(item));
@@ -618,7 +586,7 @@ static int manager_enumerate_inhibitors(Manager *m) {
 }
 
 static int manager_dispatch_seat_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
+        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         Manager *m = userdata;
 
         assert(m);
@@ -632,7 +600,7 @@ static int manager_dispatch_seat_udev(sd_event_source *s, int fd, uint32_t reven
 }
 
 static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
+        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         Manager *m = userdata;
 
         assert(m);
@@ -647,7 +615,7 @@ static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t rev
 
 #if 0 /// UNNEEDED by elogind
 static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
+        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         Manager *m = userdata;
         const char *name;
 
@@ -670,7 +638,7 @@ static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t reven
 #endif // 0
 
 static int manager_dispatch_button_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
+        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
         Manager *m = userdata;
 
         assert(m);
@@ -1132,14 +1100,7 @@ static int manager_dispatch_idle_action(sd_event_source *s, uint64_t t, void *us
         return 0;
 }
 
-static int manager_parse_config_file(Manager *m) {
 #if 0 /// elogind parses its own config file
-        assert(m);
-
-        return config_parse_many_nulstr(PKGSYSCONFDIR "/logind.conf",
-                                        CONF_PATHS_NULSTR("systemd/logind.conf.d"),
-                                        "Login\0",
-                                        config_item_perf_lookup, logind_gperf_lookup,
 #else
          const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
@@ -1151,9 +1112,6 @@ static int manager_parse_config_file(Manager *m) {
          return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
                              config_item_perf_lookup, logind_gperf_lookup,
 #endif // 0
-                                        CONFIG_PARSE_WARN, m);
-}
-
 static int manager_dispatch_reload_signal(sd_event_source *s, const struct signalfd_siginfo *si, void *userdata) {
         Manager *m = userdata;
         int r;
