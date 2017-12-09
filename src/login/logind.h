@@ -169,6 +169,9 @@ struct Manager {
         uint64_t inhibitors_max;
 };
 
+void manager_reset_config(Manager *m);
+int manager_parse_config_file(Manager *m);
+
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_device);
 int manager_add_button(Manager *m, const char *name, Button **_button);
 int manager_add_seat(Manager *m, const char *id, Seat **_seat);

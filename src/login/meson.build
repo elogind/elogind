@@ -23,12 +23,9 @@ logind_gperf_c = custom_target(
         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
 
 #if 0 /// rename to elogind
-# systemd_logind_sources += [logind_gperf_c]
 #else
 elogind_sources += [logind_gperf_c]
 #endif // 0
-
-
 liblogind_core_sources = files('''
         logind-core.c
         logind-device.c
@@ -64,6 +61,8 @@ liblogind_core_sources += [files('''
         sleep_files,
         update_utmp_files]
 #endif // 1
+liblogind_core_sources += [logind_gperf_c]
+
 logind_acl_c = files('logind-acl.c')
 if conf.get('HAVE_ACL') == 1
         liblogind_core_sources += logind_acl_c
