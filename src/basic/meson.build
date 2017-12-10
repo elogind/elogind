@@ -364,7 +364,7 @@ generate_cap_list = find_program('generate-cap-list.sh')
 cap_list_txt = custom_target(
         'cap-list.txt',
         output : 'cap-list.txt',
-        command : [generate_cap_list, cpp, config_h, missing_h],
+        command : [generate_cap_list, cpp, meson.source_root(), config_h, missing_h],
         capture : true)
 
 generate_errno_list = find_program('generate-errno-list.sh')

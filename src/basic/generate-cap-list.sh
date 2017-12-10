@@ -5,7 +5,7 @@
 #         awk '/^#define[ \t]+CAP_[A-Z_]+[ \t]+/ { print $2; }' | \
 #         grep -v CAP_LAST_CAP
 #else
-$1 -dM -include linux/capability.h -I../src/shared -include "$2" -include "$3" - </dev/null | \
+$1 -dM -include linux/capability.h -I"$2"/src/shared -include "$3" -include "$4" - </dev/null | \
         awk '/^#define[ \t]+CAP_[A-Z_]+[ \t]+/ { print $2; }' | \
         grep -v CAP_LAST_CAP
 #endif // 0
