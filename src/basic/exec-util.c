@@ -130,7 +130,11 @@ static int do_execute(
         STRV_FOREACH(path, paths) {
                 _cleanup_free_ char *t = NULL;
                 _cleanup_close_ int fd = -1;
+#if 0 /// No "maybe uninitialized" warning in elogind
                 pid_t pid;
+#else
+                pid_t pid = 0;
+#endif // 0
 
                 t = strdup(*path);
                 if (!t)
