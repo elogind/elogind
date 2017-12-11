@@ -20,127 +20,127 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
-msgid "Send passphrase back to system"
-msgstr "Sisteme parolayı geri gönder"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
+# msgid "Send passphrase back to system"
+# msgstr "Sisteme parolayı geri gönder"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
-msgid ""
-"Authentication is required to send the entered passphrase back to the system."
-msgstr "Sisteme parolayı geri göndermek kimlik doğrulaması gerektiriyor."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
+# msgid ""
+# "Authentication is required to send the entered passphrase back to the system."
+# msgstr "Sisteme parolayı geri göndermek kimlik doğrulaması gerektiriyor."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
-msgid "Manage system services or other units"
-msgstr "Sistem servislerini veya diğer birimlerini yönet"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
+# msgid "Manage system services or other units"
+# msgstr "Sistem servislerini veya diğer birimlerini yönet"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
-msgid "Authentication is required to manage system services or other units."
-msgstr ""
-"Sistem servislerini veya diğer birimlerini yönetmek kimlik doğrulaması "
-"gerektiriyor."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
+# msgid "Authentication is required to manage system services or other units."
+# msgstr ""
+# "Sistem servislerini veya diğer birimlerini yönetmek kimlik doğrulaması "
+# "gerektiriyor."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
-msgid "Manage system service or unit files"
-msgstr "Sistem servislerini veya birim dosyalarını yönet"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
+# msgid "Manage system service or unit files"
+# msgstr "Sistem servislerini veya birim dosyalarını yönet"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
-msgid "Authentication is required to manage system service or unit files."
-msgstr ""
-"Sistem servislerini veya birim dosyalarını yönetmek kimlik doğrulaması "
-"gerektiriyor."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
+# msgid "Authentication is required to manage system service or unit files."
+# msgstr ""
+# "Sistem servislerini veya birim dosyalarını yönetmek kimlik doğrulaması "
+# "gerektiriyor."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
-msgid "Set or unset system and service manager environment variables"
-msgstr "Sistem ve servis yöneticisi ortam değişkenlerini ayarla ya da kaldır"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
+# msgid "Set or unset system and service manager environment variables"
+# msgstr "Sistem ve servis yöneticisi ortam değişkenlerini ayarla ya da kaldır"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
-msgid ""
-"Authentication is required to set or unset system and service manager "
-"environment variables."
-msgstr ""
-"Sistem ve servis yöneticisi ortam değişkenlerini ayarlamak ya da kaldırmak "
-"kimlik doğrulaması gerektiriyor."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
+# msgid ""
+# "Authentication is required to set or unset system and service manager "
+# "environment variables."
+# msgstr ""
+# "Sistem ve servis yöneticisi ortam değişkenlerini ayarlamak ya da kaldırmak "
+# "kimlik doğrulaması gerektiriyor."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-msgid "Reload the systemd state"
-msgstr "systemd durumunu yeniden yükle"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
+# msgid "Reload the systemd state"
+# msgstr "systemd durumunu yeniden yükle"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-msgid "Authentication is required to reload the systemd state."
-msgstr "systemd durumunu yeniden yüklemek kimlik doğrulaması gerektiriyor."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "systemd durumunu yeniden yüklemek kimlik doğrulaması gerektiriyor."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
-msgid "Set host name"
-msgstr "Makine adını ayarla"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
+# msgid "Set host name"
+# msgstr "Makine adını ayarla"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
-msgid "Authentication is required to set the local host name."
-msgstr "Yerel makine adını ayarlamak kimlik doğrulaması gerektiriyor."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
+# msgid "Authentication is required to set the local host name."
+# msgstr "Yerel makine adını ayarlamak kimlik doğrulaması gerektiriyor."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
-msgid "Set static host name"
-msgstr "Statik makine adı ayarla"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
+# msgid "Set static host name"
+# msgstr "Statik makine adı ayarla"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
-msgid ""
-"Authentication is required to set the statically configured local host name, "
-"as well as the pretty host name."
-msgstr ""
-"Statik olarak yapılandırılmış konak makine adını ve yerel makine adını "
-"ayarlamak kimlik doğrulaması gerektiriyor."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
+# msgid ""
+# "Authentication is required to set the statically configured local host name, "
+# "as well as the pretty host name."
+# msgstr ""
+# "Statik olarak yapılandırılmış konak makine adını ve yerel makine adını "
+# "ayarlamak kimlik doğrulaması gerektiriyor."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
-msgid "Set machine information"
-msgstr "Makine bilgisini ayarla"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
+# msgid "Set machine information"
+# msgstr "Makine bilgisini ayarla"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
-msgid "Authentication is required to set local machine information."
-msgstr "Yerel makine bilgisini ayarlamak kimlik doğrulaması gerektiriyor."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
+# msgid "Authentication is required to set local machine information."
+# msgstr "Yerel makine bilgisini ayarlamak kimlik doğrulaması gerektiriyor."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:1
-msgid "Import a VM or container image"
-msgstr "Bir SM ya da kapsayıcı kalıbını içe aktar"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:1
+# msgid "Import a VM or container image"
+# msgstr "Bir SM ya da kapsayıcı kalıbını içe aktar"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:2
-msgid "Authentication is required to import a VM or container image"
-msgstr ""
-"Bir SM ya da kapsayıcı kalıbını içe aktarmak için kimlik doğrulaması "
-"gereklidir"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:2
+# msgid "Authentication is required to import a VM or container image"
+# msgstr ""
+# "Bir SM ya da kapsayıcı kalıbını içe aktarmak için kimlik doğrulaması "
+# "gereklidir"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:3
-msgid "Export a VM or container image"
-msgstr "Bir SM ya da kapsayıcı kalıbını dışa aktar"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:3
+# msgid "Export a VM or container image"
+# msgstr "Bir SM ya da kapsayıcı kalıbını dışa aktar"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:4
-msgid "Authentication is required to export a VM or container image"
-msgstr ""
-"Bir SM ya da kapsayıcı kalıbını dışa aktarmak için kimlik doğrulaması "
-"gereklidir"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:4
+# msgid "Authentication is required to export a VM or container image"
+# msgstr ""
+# "Bir SM ya da kapsayıcı kalıbını dışa aktarmak için kimlik doğrulaması "
+# "gereklidir"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:5
-msgid "Download a VM or container image"
-msgstr "Bir SM ya da kapsayıcı kalıbını indir"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:5
+# msgid "Download a VM or container image"
+# msgstr "Bir SM ya da kapsayıcı kalıbını indir"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:6
-msgid "Authentication is required to download a VM or container image"
-msgstr ""
-"Bir SM ya da kapsayıcı kalıbını indirmek için kimlik doğrulaması gereklidir"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:6
+# msgid "Authentication is required to download a VM or container image"
+# msgstr ""
+# "Bir SM ya da kapsayıcı kalıbını indirmek için kimlik doğrulaması gereklidir"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:1
-msgid "Set system locale"
-msgstr "Sistem yerelini ayarla"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
+# msgid "Set system locale"
+# msgstr "Sistem yerelini ayarla"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:2
-msgid "Authentication is required to set the system locale."
-msgstr "Sistem yerelini ayarlamak kimlik doğrulaması gerektiriyor."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
+# msgid "Authentication is required to set the system locale."
+# msgstr "Sistem yerelini ayarlamak kimlik doğrulaması gerektiriyor."
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:3
-msgid "Set system keyboard settings"
-msgstr "Sistem klavye ayarlarını ayarla"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
+# msgid "Set system keyboard settings"
+# msgstr "Sistem klavye ayarlarını ayarla"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:4
-msgid "Authentication is required to set the system keyboard settings."
-msgstr "Sistem klavye ayarlarını ayarlamak kimlik doğrulaması gerektiriyor."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
+# msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Sistem klavye ayarlarını ayarlamak kimlik doğrulaması gerektiriyor."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -460,151 +460,151 @@ msgstr "Bir duvar mesajı ayarla"
 msgid "Authentication is required to set a wall message"
 msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:1
-msgid "Log into a local container"
-msgstr "Yerel kapsayıcıya giriş yap"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
+# msgid "Log into a local container"
+# msgstr "Yerel kapsayıcıya giriş yap"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:2
-msgid "Authentication is required to log into a local container."
-msgstr "Yerel kapsayıcıda oturum açmak için kimlik doğrulaması gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
+# msgid "Authentication is required to log into a local container."
+# msgstr "Yerel kapsayıcıda oturum açmak için kimlik doğrulaması gereklidir."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:3
-msgid "Log into the local host"
-msgstr "Yerel (ana) makineye giriş yap"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
+# msgid "Log into the local host"
+# msgstr "Yerel (ana) makineye giriş yap"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:4
-msgid "Authentication is required to log into the local host."
-msgstr "Yerel (ana) makinede oturum açmak için kimlik doğrulaması gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
+# msgid "Authentication is required to log into the local host."
+# msgstr "Yerel (ana) makinede oturum açmak için kimlik doğrulaması gereklidir."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:5
-msgid "Acquire a shell in a local container"
-msgstr "Yerel kapsayıcıda kabuk (shell) aç"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
+# msgid "Acquire a shell in a local container"
+# msgstr "Yerel kapsayıcıda kabuk (shell) aç"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:6
-msgid "Authentication is required to acquire a shell in a local container."
-msgstr ""
-"Yerel kapsayıcıda kabuk (shell) açmak için kimlik doğrulaması gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
+# msgid "Authentication is required to acquire a shell in a local container."
+# msgstr ""
+# "Yerel kapsayıcıda kabuk (shell) açmak için kimlik doğrulaması gereklidir."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:7
-msgid "Acquire a shell on the local host"
-msgstr "Yerel (ana) makinede kabuk (shell) aç"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
+# msgid "Acquire a shell on the local host"
+# msgstr "Yerel (ana) makinede kabuk (shell) aç"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:8
-msgid "Authentication is required to acquire a shell on the local host."
-msgstr ""
-"Yerel (ana) makinede kabuk (shell) açmak için kimlik doğrulaması gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
+# msgid "Authentication is required to acquire a shell on the local host."
+# msgstr ""
+# "Yerel (ana) makinede kabuk (shell) açmak için kimlik doğrulaması gereklidir."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:9
-msgid "Acquire a pseudo TTY in a local container"
-msgstr "Yerel kapsayıcıda sözde (pseudo) TTY al"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
+# msgid "Acquire a pseudo TTY in a local container"
+# msgstr "Yerel kapsayıcıda sözde (pseudo) TTY al"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:10
-msgid ""
-"Authentication is required to acquire a pseudo TTY in a local container."
-msgstr ""
-"Yerel kapsayıcıda sözde (pseudo) TTY almak için kimlik doğrulaması "
-"gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
+# msgid ""
+# "Authentication is required to acquire a pseudo TTY in a local container."
+# msgstr ""
+# "Yerel kapsayıcıda sözde (pseudo) TTY almak için kimlik doğrulaması "
+# "gereklidir."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:11
-msgid "Acquire a pseudo TTY on the local host"
-msgstr "Yerel (ana) makinede sözde (pseudo) TTY al"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
+# msgid "Acquire a pseudo TTY on the local host"
+# msgstr "Yerel (ana) makinede sözde (pseudo) TTY al"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:12
-msgid "Authentication is required to acquire a pseudo TTY on the local host."
-msgstr ""
-"Yerel (ana) makinede sözde (pseudo) TTY almak için kimlik doğrulaması "
-"gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
+# msgid "Authentication is required to acquire a pseudo TTY on the local host."
+# msgstr ""
+# "Yerel (ana) makinede sözde (pseudo) TTY almak için kimlik doğrulaması "
+# "gereklidir."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:13
-msgid "Manage local virtual machines and containers"
-msgstr "Yerel sanal makineleri ve kapsayıcıları yönet"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
+# msgid "Manage local virtual machines and containers"
+# msgstr "Yerel sanal makineleri ve kapsayıcıları yönet"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:14
-msgid ""
-"Authentication is required to manage local virtual machines and containers."
-msgstr ""
-"Yerel sanal makineleri ve kapsayıcıları yönetmek için kimlik doğrulaması "
-"gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
+# msgid ""
+# "Authentication is required to manage local virtual machines and containers."
+# msgstr ""
+# "Yerel sanal makineleri ve kapsayıcıları yönetmek için kimlik doğrulaması "
+# "gereklidir."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:15
-msgid "Manage local virtual machine and container images"
-msgstr "Yerel sanal makine ve kapsayıcı kalıplarını yönet"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
+# msgid "Manage local virtual machine and container images"
+# msgstr "Yerel sanal makine ve kapsayıcı kalıplarını yönet"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:16
-msgid ""
-"Authentication is required to manage local virtual machine and container "
-"images."
-msgstr ""
-"Yerel sanal makineler ve kapsayıcı kalıplarını yönetmek için kimlik "
-"doğrulaması gereklidir."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
+# msgid ""
+# "Authentication is required to manage local virtual machine and container "
+# "images."
+# msgstr ""
+# "Yerel sanal makineler ve kapsayıcı kalıplarını yönetmek için kimlik "
+# "doğrulaması gereklidir."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
-msgid "Set system time"
-msgstr "Sistem zamanını ayarla"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
+# msgid "Set system time"
+# msgstr "Sistem zamanını ayarla"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
-msgid "Authentication is required to set the system time."
-msgstr "Sistem zamanını ayarlamak kimlik doğrulaması gerektiriyor."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
+# msgid "Authentication is required to set the system time."
+# msgstr "Sistem zamanını ayarlamak kimlik doğrulaması gerektiriyor."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
-msgid "Set system timezone"
-msgstr "Sistem zaman dilimini ayarla"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
+# msgid "Set system timezone"
+# msgstr "Sistem zaman dilimini ayarla"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
-msgid "Authentication is required to set the system timezone."
-msgstr "Sistem zaman dilimini ayarlamak kimlik doğrulaması gerektiriyor."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
+# msgid "Authentication is required to set the system timezone."
+# msgstr "Sistem zaman dilimini ayarlamak kimlik doğrulaması gerektiriyor."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
-msgid "Set RTC to local timezone or UTC"
-msgstr "Gerçek zamanlı saat olarak yerel zaman dilimini veya UTC'yi ayarla"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
+# msgid "Set RTC to local timezone or UTC"
+# msgstr "Gerçek zamanlı saat olarak yerel zaman dilimini veya UTC'yi ayarla"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
-msgid ""
-"Authentication is required to control whether the RTC stores the local or "
-"UTC time."
-msgstr ""
-"Gerçek zamanlı saat olarak yerel zaman dilimini veya UTC'yi ayarlamak kimlik "
-"doğrulaması gerektiriyor."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
+# msgid ""
+# "Authentication is required to control whether the RTC stores the local or "
+# "UTC time."
+# msgstr ""
+# "Gerçek zamanlı saat olarak yerel zaman dilimini veya UTC'yi ayarlamak kimlik "
+# "doğrulaması gerektiriyor."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
-msgid "Turn network time synchronization on or off"
-msgstr "Ağ zaman eş zamanlamasını aç veya kapat"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
+# msgid "Turn network time synchronization on or off"
+# msgstr "Ağ zaman eş zamanlamasını aç veya kapat"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
-msgid ""
-"Authentication is required to control whether network time synchronization "
-"shall be enabled."
-msgstr ""
-"Ağ zaman eş zamanlamasını kontrol etmek kimlik doğrulaması gerektiriyor."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
+# msgid ""
+# "Authentication is required to control whether network time synchronization "
+# "shall be enabled."
+# msgstr ""
+# "Ağ zaman eş zamanlamasını kontrol etmek kimlik doğrulaması gerektiriyor."
 
-#: ../src/core/dbus-unit.c:450
-msgid "Authentication is required to start '$(unit)'."
-msgstr "'$(unit)' başlatmak için kimlik doğrulaması gereklidir."
+# #: ../src/core/dbus-unit.c:450
+# msgid "Authentication is required to start '$(unit)'."
+# msgstr "'$(unit)' başlatmak için kimlik doğrulaması gereklidir."
 
-#: ../src/core/dbus-unit.c:451
-msgid "Authentication is required to stop '$(unit)'."
-msgstr "'$(unit)' durdurmak için kimlik doğrulaması gereklidir."
+# #: ../src/core/dbus-unit.c:451
+# msgid "Authentication is required to stop '$(unit)'."
+# msgstr "'$(unit)' durdurmak için kimlik doğrulaması gereklidir."
 
-#: ../src/core/dbus-unit.c:452
-msgid "Authentication is required to reload '$(unit)'."
-msgstr "'$(unit)' yeniden yüklemek için kimlik doğrulaması gereklidir."
+# #: ../src/core/dbus-unit.c:452
+# msgid "Authentication is required to reload '$(unit)'."
+# msgstr "'$(unit)' yeniden yüklemek için kimlik doğrulaması gereklidir."
 
-#: ../src/core/dbus-unit.c:453 ../src/core/dbus-unit.c:454
-msgid "Authentication is required to restart '$(unit)'."
-msgstr "'$(unit)' yeniden başlatmak için kimlik doğrulaması gereklidir."
+# #: ../src/core/dbus-unit.c:453 ../src/core/dbus-unit.c:454
+# msgid "Authentication is required to restart '$(unit)'."
+# msgstr "'$(unit)' yeniden başlatmak için kimlik doğrulaması gereklidir."
 
-#: ../src/core/dbus-unit.c:560
-msgid "Authentication is required to kill '$(unit)'."
-msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."
+# #: ../src/core/dbus-unit.c:560
+# msgid "Authentication is required to kill '$(unit)'."
+# msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."
 
-#: ../src/core/dbus-unit.c:590
-msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgstr ""
-"'$(unit)'in \"failed\" (başarısız) durumunu sıfırlamak için kimlik "
-"doğrulaması gereklidir."
+# #: ../src/core/dbus-unit.c:590
+# msgid "Authentication is required to reset the \"failed" state of '$(unit)'."
+# msgstr ""
+# "'$(unit)'in \"failed" (başarısız) durumunu sıfırlamak için kimlik "
+# "doğrulaması gereklidir."
 
-#: ../src/core/dbus-unit.c:622
-msgid "Authentication is required to set properties on '$(unit)'."
-msgstr ""
-"'$(unit)' üzerindeki özellikleri ayarlamak için kimlik doğrulaması "
-"gereklidir."
+# #: ../src/core/dbus-unit.c:622
+# msgid "Authentication is required to set properties on '$(unit)'."
+# msgstr ""
+# "'$(unit)' üzerindeki özellikleri ayarlamak için kimlik doğrulaması "
+# "gereklidir."

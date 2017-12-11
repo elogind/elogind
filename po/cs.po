@@ -20,117 +20,117 @@ msgstr ""
 "Language-Team: \n"
 "X-Generator: Poedit 1.8.7.1\n"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
-msgid "Send passphrase back to system"
-msgstr "Odeslat heslo zpět do systému"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
+# msgid "Send passphrase back to system"
+# msgstr "Odeslat heslo zpět do systému"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
-msgid "Authentication is required to send the entered passphrase back to the system."
-msgstr "Pro odeslání zadaného hesla do systému je vyžadováno ověření."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
+# msgid "Authentication is required to send the entered passphrase back to the system."
+# msgstr "Pro odeslání zadaného hesla do systému je vyžadováno ověření."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
-msgid "Manage system services or other units"
-msgstr "Spravovat systémové služby nebo další jednotky"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
+# msgid "Manage system services or other units"
+# msgstr "Spravovat systémové služby nebo další jednotky"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
-msgid "Authentication is required to manage system services or other units."
-msgstr "Pro správu systémových služeb nebo dalších jednotek je vyžadováno ověření."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
+# msgid "Authentication is required to manage system services or other units."
+# msgstr "Pro správu systémových služeb nebo dalších jednotek je vyžadováno ověření."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
-msgid "Manage system service or unit files"
-msgstr "Spravovat systémové služby nebo soubory jednotek"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
+# msgid "Manage system service or unit files"
+# msgstr "Spravovat systémové služby nebo soubory jednotek"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
-msgid "Authentication is required to manage system service or unit files."
-msgstr "Pro správu systémových služeb nebo souborů jednotek je vyžadováno ověření."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
+# msgid "Authentication is required to manage system service or unit files."
+# msgstr "Pro správu systémových služeb nebo souborů jednotek je vyžadováno ověření."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
-msgid "Set or unset system and service manager environment variables"
-msgstr "Nastavit nebo rušit proměnné správce systému a služeb"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
+# msgid "Set or unset system and service manager environment variables"
+# msgstr "Nastavit nebo rušit proměnné správce systému a služeb"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
-msgid ""
-"Authentication is required to set or unset system and service manager environment "
-"variables."
-msgstr ""
-"Pro nastavení nebo rušení proměnných správce systému a služeb je vyžadováno "
-"ověření."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
+# msgid ""
+# "Authentication is required to set or unset system and service manager environment "
+# "variables."
+# msgstr ""
+# "Pro nastavení nebo rušení proměnných správce systému a služeb je vyžadováno "
+# "ověření."
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-msgid "Reload the systemd state"
-msgstr "Znovu načíst stav systemd"
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
+# msgid "Reload the systemd state"
+# msgstr "Znovu načíst stav systemd"
 
-#: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-msgid "Authentication is required to reload the systemd state."
-msgstr "Pro znovu načtení stavu systemd je vyžadováno ověření."
+# #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "Pro znovu načtení stavu systemd je vyžadováno ověření."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
-msgid "Set host name"
-msgstr "Nastavit název stroje"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
+# msgid "Set host name"
+# msgstr "Nastavit název stroje"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
-msgid "Authentication is required to set the local host name."
-msgstr "Pro nastavení lokálního názvu stroje je vyžadováno ověření."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
+# msgid "Authentication is required to set the local host name."
+# msgstr "Pro nastavení lokálního názvu stroje je vyžadováno ověření."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
-msgid "Set static host name"
-msgstr "Nastavit statický název stoje"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
+# msgid "Set static host name"
+# msgstr "Nastavit statický název stoje"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
-msgid ""
-"Authentication is required to set the statically configured local host name, as "
-"well as the pretty host name."
-msgstr ""
-"Pro nastavení staticky konfigurovaného názvu lokálního stroje, stejně tak pro "
-"změnu uživatelsky přívětivého jména je vyžadováno ověření."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
+# msgid ""
+# "Authentication is required to set the statically configured local host name, as "
+# "well as the pretty host name."
+# msgstr ""
+# "Pro nastavení staticky konfigurovaného názvu lokálního stroje, stejně tak pro "
+# "změnu uživatelsky přívětivého jména je vyžadováno ověření."
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
-msgid "Set machine information"
-msgstr "Nastavit informace o stroji"
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
+# msgid "Set machine information"
+# msgstr "Nastavit informace o stroji"
 
-#: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
-msgid "Authentication is required to set local machine information."
-msgstr "Pro nastavení informací o stroji je vyžadováno ověření."
+# #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
+# msgid "Authentication is required to set local machine information."
+# msgstr "Pro nastavení informací o stroji je vyžadováno ověření."
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:1
-msgid "Import a VM or container image"
-msgstr "Importovat obraz virtuální stroje nebo kontejneru"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:1
+# msgid "Import a VM or container image"
+# msgstr "Importovat obraz virtuální stroje nebo kontejneru"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:2
-msgid "Authentication is required to import a VM or container image"
-msgstr "Pro import obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:2
+# msgid "Authentication is required to import a VM or container image"
+# msgstr "Pro import obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:3
-msgid "Export a VM or container image"
-msgstr "Exportovat obraz virtuálního stroje nebo kontejneru"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:3
+# msgid "Export a VM or container image"
+# msgstr "Exportovat obraz virtuálního stroje nebo kontejneru"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:4
-msgid "Authentication is required to export a VM or container image"
-msgstr "Pro export obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:4
+# msgid "Authentication is required to export a VM or container image"
+# msgstr "Pro export obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:5
-msgid "Download a VM or container image"
-msgstr "Stáhnout obraz virtuálního stroje nebo kontejneru"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:5
+# msgid "Download a VM or container image"
+# msgstr "Stáhnout obraz virtuálního stroje nebo kontejneru"
 
-#: ../src/import/org.freedesktop.import1.policy.in.h:6
-msgid "Authentication is required to download a VM or container image"
-msgstr "Pro stažení obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
+# #: ../src/import/org.freedesktop.import1.policy.in.h:6
+# msgid "Authentication is required to download a VM or container image"
+# msgstr "Pro stažení obrazu virtuálního stroje nebo kontejneru je vyžadováno ověření"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:1
-msgid "Set system locale"
-msgstr "Nastavit lokalizaci systému"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
+# msgid "Set system locale"
+# msgstr "Nastavit lokalizaci systému"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:2
-msgid "Authentication is required to set the system locale."
-msgstr "Pro nastavení lokalizace systému je vyžadováno ověření."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
+# msgid "Authentication is required to set the system locale."
+# msgstr "Pro nastavení lokalizace systému je vyžadováno ověření."
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:3
-msgid "Set system keyboard settings"
-msgstr "Nastavit systémovou konfiguraci klávesnice"
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
+# msgid "Set system keyboard settings"
+# msgstr "Nastavit systémovou konfiguraci klávesnice"
 
-#: ../src/locale/org.freedesktop.locale1.policy.in.h:4
-msgid "Authentication is required to set the system keyboard settings."
-msgstr "Pro nastavení systémové konfigurace klávesnice je vyžadováno ověření."
+# #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
+# msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Pro nastavení systémové konfigurace klávesnice je vyžadováno ověření."
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -414,133 +414,133 @@ msgstr "Nastavit zprávu všem uživatelům"
 msgid "Authentication is required to set a wall message"
 msgstr "K nastavení zprávy všem uživatelům je vyžadováno ověření"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:1
-msgid "Log into a local container"
-msgstr "Přihlásit se do lokálního kontejneru"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
+# msgid "Log into a local container"
+# msgstr "Přihlásit se do lokálního kontejneru"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:2
-msgid "Authentication is required to log into a local container."
-msgstr "Pro přihlášení do lokálního kontejneru je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
+# msgid "Authentication is required to log into a local container."
+# msgstr "Pro přihlášení do lokálního kontejneru je vyžadováno ověření."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:3
-msgid "Log into the local host"
-msgstr "Přihlásit se na lokální stroj"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
+# msgid "Log into the local host"
+# msgstr "Přihlásit se na lokální stroj"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:4
-msgid "Authentication is required to log into the local host."
-msgstr "Pro přihlášení k lokálnímu stroji je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
+# msgid "Authentication is required to log into the local host."
+# msgstr "Pro přihlášení k lokálnímu stroji je vyžadováno ověření."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:5
-msgid "Acquire a shell in a local container"
-msgstr "Získat shell v lokálním kontejneru"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
+# msgid "Acquire a shell in a local container"
+# msgstr "Získat shell v lokálním kontejneru"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:6
-msgid "Authentication is required to acquire a shell in a local container."
-msgstr "Pro získání shellu v lokálním kontejneru je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
+# msgid "Authentication is required to acquire a shell in a local container."
+# msgstr "Pro získání shellu v lokálním kontejneru je vyžadováno ověření."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:7
-msgid "Acquire a shell on the local host"
-msgstr "Získat shell na lokálním stroji"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
+# msgid "Acquire a shell on the local host"
+# msgstr "Získat shell na lokálním stroji"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:8
-msgid "Authentication is required to acquire a shell on the local host."
-msgstr "Pro získání shellu na lokálním stroji je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
+# msgid "Authentication is required to acquire a shell on the local host."
+# msgstr "Pro získání shellu na lokálním stroji je vyžadováno ověření."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:9
-msgid "Acquire a pseudo TTY in a local container"
-msgstr "Získat pseudo TTY v lokálním kontejneru"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
+# msgid "Acquire a pseudo TTY in a local container"
+# msgstr "Získat pseudo TTY v lokálním kontejneru"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:10
-msgid "Authentication is required to acquire a pseudo TTY in a local container."
-msgstr "Pro získání pseudo TTY v lokálním kontejneru je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
+# msgid "Authentication is required to acquire a pseudo TTY in a local container."
+# msgstr "Pro získání pseudo TTY v lokálním kontejneru je vyžadováno ověření."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:11
-msgid "Acquire a pseudo TTY on the local host"
-msgstr "Získat pseudo TTY na lokálním stroji"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
+# msgid "Acquire a pseudo TTY on the local host"
+# msgstr "Získat pseudo TTY na lokálním stroji"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:12
-msgid "Authentication is required to acquire a pseudo TTY on the local host."
-msgstr "Pro získání pseudo TTY na lokálním stroji je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
+# msgid "Authentication is required to acquire a pseudo TTY on the local host."
+# msgstr "Pro získání pseudo TTY na lokálním stroji je vyžadováno ověření."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:13
-msgid "Manage local virtual machines and containers"
-msgstr "Spravovat lokální virtuální stroje a kontejnery"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
+# msgid "Manage local virtual machines and containers"
+# msgstr "Spravovat lokální virtuální stroje a kontejnery"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:14
-msgid "Authentication is required to manage local virtual machines and containers."
-msgstr "Pro správu lokálních virtuálních strojů a kontejnerů je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
+# msgid "Authentication is required to manage local virtual machines and containers."
+# msgstr "Pro správu lokálních virtuálních strojů a kontejnerů je vyžadováno ověření."
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:15
-msgid "Manage local virtual machine and container images"
-msgstr "Spravovat lokální obrazy virtuálních strojů a kontejnerů"
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
+# msgid "Manage local virtual machine and container images"
+# msgstr "Spravovat lokální obrazy virtuálních strojů a kontejnerů"
 
-#: ../src/machine/org.freedesktop.machine1.policy.in.h:16
-msgid ""
-"Authentication is required to manage local virtual machine and container images."
-msgstr ""
-"Pro správu obrazů lokálních virtuálních strojů a kontejnerů je vyžadováno ověření."
+# #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
+# msgid ""
+# "Authentication is required to manage local virtual machine and container images."
+# msgstr ""
+# "Pro správu obrazů lokálních virtuálních strojů a kontejnerů je vyžadováno ověření."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
-msgid "Set system time"
-msgstr "Nastavit systémový čas"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
+# msgid "Set system time"
+# msgstr "Nastavit systémový čas"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
-msgid "Authentication is required to set the system time."
-msgstr "Pro nastavení systémového času je vyžadováno ověření."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
+# msgid "Authentication is required to set the system time."
+# msgstr "Pro nastavení systémového času je vyžadováno ověření."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
-msgid "Set system timezone"
-msgstr "Nastavit systémovou časovou zónu"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
+# msgid "Set system timezone"
+# msgstr "Nastavit systémovou časovou zónu"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
-msgid "Authentication is required to set the system timezone."
-msgstr "Pro nastavení systémové časové zóny je vyžadováno ověření."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
+# msgid "Authentication is required to set the system timezone."
+# msgstr "Pro nastavení systémové časové zóny je vyžadováno ověření."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
-msgid "Set RTC to local timezone or UTC"
-msgstr "Nastavit RTC na lokální časovou zónu nebo UTC"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
+# msgid "Set RTC to local timezone or UTC"
+# msgstr "Nastavit RTC na lokální časovou zónu nebo UTC"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
-msgid ""
-"Authentication is required to control whether the RTC stores the local or UTC time."
-msgstr ""
-"Pro kontrolu jestli RTC ukládá lokální časovou zónu nebo UTC čas je vyžadováno "
-"ověření."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
+# msgid ""
+# "Authentication is required to control whether the RTC stores the local or UTC time."
+# msgstr ""
+# "Pro kontrolu jestli RTC ukládá lokální časovou zónu nebo UTC čas je vyžadováno "
+# "ověření."
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
-msgid "Turn network time synchronization on or off"
-msgstr "Zapnout nebo vypnout synchronizaci s časem ze sítě"
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
+# msgid "Turn network time synchronization on or off"
+# msgstr "Zapnout nebo vypnout synchronizaci s časem ze sítě"
 
-#: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
-msgid ""
-"Authentication is required to control whether network time synchronization shall "
-"be enabled."
-msgstr "Pro kontrolu synchronizace času ze sítě je vyžadováno ověření."
+# #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
+# msgid ""
+# "Authentication is required to control whether network time synchronization shall "
+# "be enabled."
+# msgstr "Pro kontrolu synchronizace času ze sítě je vyžadováno ověření."
 
-#: ../src/core/dbus-unit.c:459
-msgid "Authentication is required to start '$(unit)'."
-msgstr "Pro spuštění „$(unit)” je vyžadováno ověření."
+# #: ../src/core/dbus-unit.c:459
+# msgid "Authentication is required to start '$(unit)'."
+# msgstr "Pro spuštění „$(unit)” je vyžadováno ověření."
 
-#: ../src/core/dbus-unit.c:460
-msgid "Authentication is required to stop '$(unit)'."
-msgstr "Pro vypnutí „$(unit)” je vyžadováno ověření."
+# #: ../src/core/dbus-unit.c:460
+# msgid "Authentication is required to stop '$(unit)'."
+# msgstr "Pro vypnutí „$(unit)” je vyžadováno ověření."
 
-#: ../src/core/dbus-unit.c:461
-msgid "Authentication is required to reload '$(unit)'."
-msgstr "Pro znovu načtení „$(unit)” je vyžadováno ověření."
+# #: ../src/core/dbus-unit.c:461
+# msgid "Authentication is required to reload '$(unit)'."
+# msgstr "Pro znovu načtení „$(unit)” je vyžadováno ověření."
 
-#: ../src/core/dbus-unit.c:462 ../src/core/dbus-unit.c:463
-msgid "Authentication is required to restart '$(unit)'."
-msgstr "Pro restart „$(unit)” je vyžadováno ověření."
+# #: ../src/core/dbus-unit.c:462 ../src/core/dbus-unit.c:463
+# msgid "Authentication is required to restart '$(unit)'."
+# msgstr "Pro restart „$(unit)” je vyžadováno ověření."
 
-#: ../src/core/dbus-unit.c:570
-msgid "Authentication is required to kill '$(unit)'."
-msgstr "Pro ukončení „$(unit)” je vyžadováno ověření."
+# #: ../src/core/dbus-unit.c:570
+# msgid "Authentication is required to kill '$(unit)'."
+# msgstr "Pro ukončení „$(unit)” je vyžadováno ověření."
 
-#: ../src/core/dbus-unit.c:601
-msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgstr "Pro resetování chybného stavu „$(unit)” je vyžadováno ověření."
+# #: ../src/core/dbus-unit.c:601
+# msgid "Authentication is required to reset the \"failed" state of '$(unit)'."
+# msgstr "Pro resetování chybného stavu „$(unit)” je vyžadováno ověření."
 
-#: ../src/core/dbus-unit.c:634
-msgid "Authentication is required to set properties on '$(unit)'."
-msgstr "Pro nastavení vlastností na „$(unit)” je vyžadováno ověření."
+# #: ../src/core/dbus-unit.c:634
+# msgid "Authentication is required to set properties on '$(unit)'."
+# msgstr "Pro nastavení vlastností na „$(unit)” je vyžadováno ověření."
