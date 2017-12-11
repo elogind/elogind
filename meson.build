@@ -1,4 +1,3 @@
-project('elogind', 'c',
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Copyright 2017 Zbigniew Jędrzejewski-Szmek
@@ -16,6 +15,7 @@ project('elogind', 'c',
 # You should have received a copy of the GNU Lesser General Public License
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
+project('elogind', 'c',
         version : '236',
         license : 'LGPLv2+',
         default_options: [
@@ -229,8 +229,8 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 # conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'systemd'))
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          join_paths(rootlibexecdir, 'systemd-fsck'))
-# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'elogind-makefs'))
-# conf.set_quoted('SYSTEMD_GROWFS_PATH',                        join_paths(rootlibexecdir, 'elogind-growfs'))
+# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'systemd-makefs'))
+# conf.set_quoted('SYSTEMD_GROWFS_PATH',                        join_paths(rootlibexecdir, 'systemd-growfs'))
 # conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               join_paths(rootlibexecdir, 'systemd-shutdown'))
 # conf.set_quoted('SYSTEMD_SLEEP_BINARY_PATH',                  join_paths(rootlibexecdir, 'systemd-sleep'))
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      join_paths(rootbindir, 'systemctl'))
@@ -2495,8 +2495,8 @@ executable('elogind-cgroups-agent',
 #                          install_dir : rootbindir)
 #         public_programs += [exe]
 # 
-#         test('test-elogind-tmpfiles',
-#              test_elogind_tmpfiles_py,
+#         test('test-systemd-tmpfiles',
+#              test_systemd_tmpfiles_py,
 #              args : exe.full_path())
 #         # https://github.com/mesonbuild/meson/issues/2681
 # endif
