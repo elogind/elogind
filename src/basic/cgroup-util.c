@@ -1504,7 +1504,7 @@ static bool valid_slice_name(const char *p, size_t n) {
         if (!p)
                 return false;
 
-        if (n < STRLEN("x.slice"))
+        if (n < strlen("x.slice"))
                 return false;
 
         if (memcmp(p + n - 6, ".slice", 6) == 0) {
@@ -1588,7 +1588,7 @@ static const char *skip_session(const char *p) {
         p += strspn(p, "/");
 
         n = strcspn(p, "/");
-        if (n < STRLEN("session-x.scope"))
+        if (n < strlen("session-x.scope"))
                 return NULL;
 
         if (memcmp(p, "session-", 8) == 0 && memcmp(p + n - 6, ".scope", 6) == 0) {
@@ -1625,7 +1625,7 @@ static const char *skip_user_manager(const char *p) {
         p += strspn(p, "/");
 
         n = strcspn(p, "/");
-        if (n < STRLEN("user@x.service"))
+        if (n < strlen("user@x.service"))
                 return NULL;
 
         if (memcmp(p, "user@", 5) == 0 && memcmp(p + n - 8, ".service", 8) == 0) {
@@ -2558,13 +2558,13 @@ static int cg_unified_update(void) {
                 unified_cache = CGROUP_UNIFIED_ALL;
 #if 0 /// The handling of cgroups is a bit different with elogind
         } else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
+                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for systemd controller");
 #else
         } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)
               || F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #endif // 0
                 if (statfs("/sys/fs/cgroup/unified/", &fs) == 0 &&
                     F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
-                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for elogind controller");
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = false;
                 } else {
