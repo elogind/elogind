@@ -39,7 +39,7 @@ union sockaddr_union {
         struct sockaddr_in in;
         struct sockaddr_in6 in6;
         struct sockaddr_un un;
-#if 0 /// UNNEEDED by elogind.
+#if 0 /// UNNEEDED by elogind, only 'sa', 'in', 'in6' and 'un' are used in all of elogind.
         struct sockaddr_nl nl;
         struct sockaddr_storage storage;
         struct sockaddr_ll ll;

@@ -55,7 +55,6 @@
 #include <linux/btrfs.h>
 #endif
 
-#if 0 /// UNNEEDED by elogind
 #if HAVE_LINUX_VM_SOCKETS_H
 #include <linux/vm_sockets.h>
 #else
@@ -72,7 +71,6 @@ struct sockaddr_vm {
                                sizeof(unsigned int)];
 };
 #endif /* !HAVE_LINUX_VM_SOCKETS_H */
-#endif // 0
 
 #ifndef RLIMIT_RTTIME
 #define RLIMIT_RTTIME 15
