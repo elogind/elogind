@@ -54,16 +54,11 @@ interface, which is currently only provided by systemd.  That is the
 origin of this project: to take the excellent logind functionality
 from systemd and provide it as a standalone package.
 
-We like systemd.  We realize that there are people out there that hate
-it.  You're welcome to use elogind for whatever purpose you like --
+You're welcome to use elogind for whatever purpose you like --
 as-is, or as a jumping-off point for other things -- but please don't
-use it as part of some anti-systemd vendetta.  Systemd hackers are
-smart folks that are trying to solve interesting problems on the free
-desktop, and their large adoption is largely because they solve
-problems that users and developers of user-focused applications care
-about.  We are appreciative of their logind effort and think that
-everyone deserves to run it if they like, even if they use a different
-PID 1.
+use it as part of some anti-systemd vendetta. We are appreciative of
+the systemd developers logind effort and think that everyone deserves
+to run it if they like. Not matter what kind of PID1 they use.
 
 Differences relative to systemd
 -------------------------------
