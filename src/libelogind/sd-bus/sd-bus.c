@@ -2074,6 +2074,7 @@ static int process_timeout(sd_bus *bus) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message* m = NULL;
         struct reply_callback *c;
         sd_bus_slot *slot;
+        bool is_hello;
         usec_t n;
         int r;
 
@@ -2109,6 +2110,8 @@ static int process_timeout(sd_bus *bus) {
 
         bus->iteration_counter++;
 
+        is_hello = bus->state == BUS_HELLO && c->callback == hello_callback;
+
         bus->current_message = m;
         bus->current_slot = sd_bus_slot_ref(slot);
         bus->current_handler = c->callback;
@@ -2125,6 +2128,11 @@ static int process_timeout(sd_bus *bus) {
         }
 
         sd_bus_slot_unref(slot);
+
+        /* When this is the hello message and it failed, then make sure to propagate the error up, don't just log and
+         * ignore the callback handler's return value. */
+        if (is_hello)
+                return r;
 
         return bus_maybe_reply_error(m, r, &error_buffer);
 }
@@ -2155,6 +2163,7 @@ static int process_reply(sd_bus *bus, sd_bus_message *m) {
         _cleanup_(sd_bus_error_free) sd_bus_error error_buffer = SD_BUS_ERROR_NULL;
         struct reply_callback *c;
         sd_bus_slot *slot;
+        bool is_hello;
         int r;
 
         assert(bus);
@@ -2208,6 +2217,8 @@ static int process_reply(sd_bus *bus, sd_bus_message *m) {
                 c->timeout = 0;
         }
 
+        is_hello = bus->state == BUS_HELLO && c->callback == hello_callback;
+
         bus->current_slot = sd_bus_slot_ref(slot);
         bus->current_handler = c->callback;
         bus->current_userdata = slot->userdata;
@@ -2222,6 +2233,11 @@ static int process_reply(sd_bus *bus, sd_bus_message *m) {
         }
 
         sd_bus_slot_unref(slot);
+
+        /* When this is the hello message and it timed out, then make sure to propagate the error up, don't just log
+         * and ignore the callback handler's return value. */
+        if (is_hello)
+                return r;
 
         return bus_maybe_reply_error(m, r, &error_buffer);
 }
