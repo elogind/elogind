@@ -77,7 +77,6 @@ int sd_listen_fds(int unset_environment);
 
 int sd_listen_fds_with_names(int unset_environment, char ***names);
 
-#if 0 /// UNNEEDED by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is a FIFO in the file system stored under the
@@ -101,7 +100,6 @@ int sd_is_fifo(int fd, const char *path);
   See sd_is_special(3) for more information.
 */
 int sd_is_special(int fd, const char *path);
-#endif // 0
 
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
@@ -119,7 +117,6 @@ int sd_is_special(int fd, const char *path);
 */
 int sd_is_socket(int fd, int family, int type, int listening);
 
-#if 0 /// UNNEEDED by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is an Internet socket, of the specified family
@@ -162,6 +159,7 @@ int sd_is_socket_sockaddr(int fd, int type, const struct sockaddr* addr, unsigne
 */
 int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t length);
 
+#if 0 /// UNNEEDED by elogind
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is a POSIX Message Queue of the specified name,
@@ -236,7 +234,6 @@ int sd_is_mq(int fd, const char *path);
 */
 int sd_notify(int unset_environment, const char *state);
 
-#if 0 /// UNNEEDED by elogind
 /*
   Similar to sd_notify() but takes a format string.
 
@@ -270,7 +267,6 @@ int sd_pid_notify(pid_t pid, int unset_environment, const char *state);
   process, if the appropriate permissions are available.
 */
 int sd_pid_notifyf(pid_t pid, int unset_environment, const char *format, ...) _sd_printf_(3,4);
-#endif // 0
 
 /*
   Similar to sd_pid_notify(), but also passes the specified fd array

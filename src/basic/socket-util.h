@@ -36,12 +36,10 @@
 
 union sockaddr_union {
         struct sockaddr sa;
-#if 0 /// UNNEEDED by elogind, only 'sa' and 'un' are used in all of elogind.
         struct sockaddr_in in;
         struct sockaddr_in6 in6;
-#endif // 0
         struct sockaddr_un un;
-#if 0 /// UNNEEDED by elogind, only 'sa' and 'un' are used in all of elogind.
+#if 0 /// UNNEEDED by elogind.
         struct sockaddr_nl nl;
         struct sockaddr_storage storage;
         struct sockaddr_ll ll;
