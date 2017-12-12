@@ -472,7 +472,6 @@ _public_ void *sd_bus_track_set_userdata(sd_bus_track *track, void *userdata) {
         return ret;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_track_set_recursive(sd_bus_track *track, int b) {
         assert_return(track, -EINVAL);
 
@@ -524,4 +523,3 @@ _public_ int sd_bus_track_count_name(sd_bus_track *track, const char *name) {
 
         return i->n_ref;
 }
-#endif // 0
