@@ -71,7 +71,7 @@ global:
         sd_is_socket_inet;
         sd_is_socket_unix;
         sd_is_special;
-        /* sd_listen_fds; */
+        sd_listen_fds;
         sd_notify;
         sd_notifyf;
         sd_watchdog_enabled;
@@ -479,7 +479,7 @@ global:
         sd_bus_default_flush_close;
         sd_bus_path_decode_many;
         sd_bus_path_encode_many;
-        /* sd_listen_fds_with_names; */
+        sd_listen_fds_with_names;
 } LIBSYSTEMD_226;
 
 /*
