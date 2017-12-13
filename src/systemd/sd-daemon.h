@@ -159,7 +159,7 @@ int sd_is_socket_sockaddr(int fd, int type, const struct sockaddr* addr, unsigne
 */
 int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t length);
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind **/
 /*
   Helper call for identifying a passed file descriptor. Returns 1 if
   the file descriptor is a POSIX Message Queue of the specified name,
@@ -169,7 +169,7 @@ int sd_is_socket_unix(int fd, int type, int listening, const char *path, size_t 
   See sd_is_mq(3) for more information.
 */
 int sd_is_mq(int fd, const char *path);
-#endif // 0
+#endif /** 0 **/
 
 /*
   Informs systemd about changed daemon state. This takes a number of

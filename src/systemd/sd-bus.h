@@ -358,12 +358,12 @@ int sd_bus_creds_get_tid_comm(sd_bus_creds *c, const char **comm);
 int sd_bus_creds_get_exe(sd_bus_creds *c, const char **exe);
 int sd_bus_creds_get_cmdline(sd_bus_creds *c, char ***cmdline);
 int sd_bus_creds_get_cgroup(sd_bus_creds *c, const char **cgroup);
-#if 0 /// unsupported by elogind
+#if 0 /** unsupported by elogind **/
 int sd_bus_creds_get_unit(sd_bus_creds *c, const char **unit);
 int sd_bus_creds_get_slice(sd_bus_creds *c, const char **slice);
 int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **unit);
 int sd_bus_creds_get_user_slice(sd_bus_creds *c, const char **slice);
-#endif // 0
+#endif /** 0 **/
 int sd_bus_creds_get_session(sd_bus_creds *c, const char **session);
 int sd_bus_creds_get_owner_uid(sd_bus_creds *c, uid_t *uid);
 int sd_bus_creds_has_effective_cap(sd_bus_creds *c, int capability);
