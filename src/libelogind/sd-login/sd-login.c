@@ -146,19 +146,13 @@ _public_ int sd_pid_get_user_slice(pid_t pid, char **slice) {
 }
 
 _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
-#if 0 /// UNNEEDED by elogind
         int r;
-#endif // 0
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(uid, -EINVAL);
 
-#if 0 /// elogind does not support systemd slices
         r = cg_pid_get_owner_uid(pid, uid);
         return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
-#else
-        return -ESRCH;
-#endif // 0
 }
 
 _public_ int sd_pid_get_cgroup(pid_t pid, char **cgroup) {
