@@ -33,7 +33,6 @@
 #include "format-util.h"
 //#include "ioprio.h"
 #include "macro.h"
-//#include "time-util.h"
 
 #define procfs_file_alloca(pid, field)                                  \
         ({                                                              \
@@ -65,7 +64,6 @@ int get_process_ppid(pid_t pid, pid_t *ppid);
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_code);
 #if 0 /// UNNEEDED by elogind
-int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout);
 
 void sigkill_wait(pid_t pid);
 void sigkill_waitp(pid_t *pid);
