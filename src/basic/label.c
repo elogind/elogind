@@ -24,6 +24,7 @@
 
 #include "label.h"
 #include "macro.h"
+#include "mkdir.h"
 #include "selinux-util.h"
 #include "smack-util.h"
 
@@ -50,11 +51,8 @@ int mkdir_label(const char *path, mode_t mode) {
         if (r < 0)
                 return r;
 
-        if (mkdir(path, mode) < 0)
-                r = -errno;
-
+        r = mkdir_errno_wrapper(path, mode);
         mac_selinux_create_file_clear();
-
         if (r < 0)
                 return r;
 
