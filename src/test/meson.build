@@ -821,7 +821,11 @@ tests += [
          [threads]],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libelogind/sd-bus/test-bus-chat.c'],
+#         [['src/libsystemd/sd-bus/test-bus-watch-bind.c'],
+#          [],
+#          [threads], '', 'timeout=120'],
+# 
+#         [['src/libsystemd/sd-bus/test-bus-chat.c'],
 #          [],
 #          [threads]],
 # 
