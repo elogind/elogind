@@ -2552,6 +2552,7 @@ executable('elogind-cgroups-agent',
 # 
 # exe = executable('udevadm',
 #                  udevadm_sources,
+#                  c_args : ['-DLOG_REALM=LOG_REALM_UDEV'],
 #                  include_directories : includes,
 #                  link_with : [libudev_core,
 #                               libsystemd_network,
