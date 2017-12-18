@@ -205,6 +205,10 @@ libshared = shared_library(
 #         include_directories : includes,
 #         link_args : ['-shared',
 #                     '-Wl,--version-script=' + libshared_sym_path],
+#         c_args : ['-fvisibility=default'],
+#         dependencies : libshared_deps,
+#         install : true,
+#         install_dir : rootlibexecdir)
 # 
 # libshared_static = static_library(
 #         libshared_name,
@@ -215,10 +219,6 @@ libshared = shared_library(
 #else
         libelogind_internal_sources,
 #endif // 0
-        c_args : ['-fvisibility=default'],
-        dependencies : libshared_deps,
-        install : true,
-        install_dir : rootlibexecdir)
 #if 1 /// need elogind internal library sources
         libelogind_internal_sources,
 #endif // 1
