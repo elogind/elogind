@@ -43,7 +43,5 @@ struct memfd_cache {
 #endif // 0
 void close_and_munmap(int fd, void *address, size_t size);
 void bus_flush_memfd(sd_bus *bus);
-
-uint64_t attach_flags_to_kdbus(uint64_t sd_bus_flags);
 #if 0 /// UNNEEDED by elogind
 #endif // 0

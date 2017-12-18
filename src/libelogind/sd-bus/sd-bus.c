@@ -201,8 +201,7 @@ _public_ int sd_bus_new(sd_bus **ret) {
         r->inotify_fd = -1;
         r->message_version = 1;
         r->creds_mask |= SD_BUS_CREDS_WELL_KNOWN_NAMES|SD_BUS_CREDS_UNIQUE_NAME;
-        r->hello_flags |= KDBUS_HELLO_ACCEPT_FD;
-        r->attach_flags |= KDBUS_ATTACH_NAMES;
+        r->accept_fd = true;
         r->original_pid = getpid_cached();
         r->n_groups = (size_t) -1;
 
@@ -291,7 +290,7 @@ _public_ int sd_bus_set_monitor(sd_bus *bus, int b) {
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        SET_FLAG(bus->hello_flags, KDBUS_HELLO_MONITOR, b);
+        bus->is_monitor = b;
         return 0;
 }
 
@@ -300,30 +299,23 @@ _public_ int sd_bus_negotiate_fds(sd_bus *bus, int b) {
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        SET_FLAG(bus->hello_flags, KDBUS_HELLO_ACCEPT_FD, b);
+        bus->accept_fd = b;
         return 0;
 }
 
 _public_ int sd_bus_negotiate_timestamp(sd_bus *bus, int b) {
-        uint64_t new_flags;
         assert_return(bus, -EINVAL);
         assert_return(!IN_SET(bus->state, BUS_CLOSING, BUS_CLOSED), -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        new_flags = bus->attach_flags;
-        SET_FLAG(new_flags, KDBUS_ATTACH_TIMESTAMP, b);
-
-        if (bus->attach_flags == new_flags)
-                return 0;
-
-        bus->attach_flags = new_flags;
+        /* This is not actually supported by any of our transports these days, but we do honour it for synthetic
+         * replies, and maybe one day classic D-Bus learns this too */
+        bus->attach_timestamp = b;
 
         return 0;
 }
 
 _public_ int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t mask) {
-        uint64_t new_flags;
-
         assert_return(bus, -EINVAL);
         assert_return(mask <= _SD_BUS_CREDS_ALL, -EINVAL);
         assert_return(!IN_SET(bus->state, BUS_CLOSING, BUS_CLOSED), -EPERM);
@@ -333,13 +325,6 @@ _public_ int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t mask) {
 
         /* The well knowns we need unconditionally, so that matches can work */
         bus->creds_mask |= SD_BUS_CREDS_WELL_KNOWN_NAMES|SD_BUS_CREDS_UNIQUE_NAME;
-
-        /* Make sure we don't lose the timestamp flag */
-        new_flags = (bus->attach_flags & KDBUS_ATTACH_TIMESTAMP) | attach_flags_to_kdbus(bus->creds_mask);
-        if (bus->attach_flags == new_flags)
-                return 0;
-
-        bus->attach_flags = new_flags;
 
         return 0;
 }
@@ -1103,7 +1088,6 @@ _public_ int sd_bus_open(sd_bus **ret) {
          * be safe, and authenticate everything */
         b->trusted = false;
         b->is_local = false;
-        b->attach_flags |= KDBUS_ATTACH_CAPS | KDBUS_ATTACH_CREDS;
         b->creds_mask |= SD_BUS_CREDS_UID | SD_BUS_CREDS_EUID | SD_BUS_CREDS_EFFECTIVE_CAPS;
 
         r = sd_bus_start(b);
@@ -1149,7 +1133,6 @@ _public_ int sd_bus_open_system(sd_bus **ret) {
         /* Let's do per-method access control on the system bus. We
          * need the caller's UID and capability set for that. */
         b->trusted = false;
-        b->attach_flags |= KDBUS_ATTACH_CAPS | KDBUS_ATTACH_CREDS;
         b->creds_mask |= SD_BUS_CREDS_UID | SD_BUS_CREDS_EUID | SD_BUS_CREDS_EFFECTIVE_CAPS;
         b->is_local = true;
 
@@ -1434,11 +1417,11 @@ _public_ int sd_bus_can_send(sd_bus *bus, char type) {
         assert_return(bus->state != BUS_UNSET, -ENOTCONN);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        if (bus->hello_flags & KDBUS_HELLO_MONITOR)
+        if (bus->is_monitor)
                 return 0;
 
         if (type == SD_BUS_TYPE_UNIX_FD) {
-                if (!(bus->hello_flags & KDBUS_HELLO_ACCEPT_FD))
+                if (!bus->accept_fd)
                         return 0;
 
                 r = bus_ensure_running(bus);
@@ -1506,7 +1489,7 @@ int bus_seal_synthetic_message(sd_bus *b, sd_bus_message *m) {
 
         /* Fake some timestamps, if they were requested, and not
          * already initialized */
-        if (b->attach_flags & KDBUS_ATTACH_TIMESTAMP) {
+        if (b->attach_timestamp) {
                 if (m->realtime <= 0)
                         m->realtime = now(CLOCK_REALTIME);
 
@@ -1951,7 +1934,7 @@ _public_ int sd_bus_call(
 
                                 if (incoming->header->type == SD_BUS_MESSAGE_METHOD_RETURN) {
 
-                                        if (incoming->n_fds <= 0 || (bus->hello_flags & KDBUS_HELLO_ACCEPT_FD)) {
+                                        if (incoming->n_fds <= 0 || bus->accept_fd) {
                                                 if (reply)
                                                         *reply = incoming;
                                                 else
@@ -2277,7 +2260,7 @@ static int process_reply(sd_bus *bus, sd_bus_message *m) {
 
         slot = container_of(c, sd_bus_slot, reply_callback);
 
-        if (m->n_fds > 0 && !(bus->hello_flags & KDBUS_HELLO_ACCEPT_FD)) {
+        if (m->n_fds > 0 && !bus->accept_fd) {
 
                 /* If the reply contained a file descriptor which we
                  * didn't want we pass an error instead. */
@@ -2409,7 +2392,7 @@ static int process_builtin(sd_bus *bus, sd_bus_message *m) {
         assert(bus);
         assert(m);
 
-        if (bus->hello_flags & KDBUS_HELLO_MONITOR)
+        if (bus->is_monitor)
                 return 0;
 
         if (bus->manual_peer_interface)
@@ -2467,13 +2450,13 @@ static int process_fd_check(sd_bus *bus, sd_bus_message *m) {
          * delivered to us later even though we ourselves did not
          * negotiate it. */
 
-        if (bus->hello_flags & KDBUS_HELLO_MONITOR)
+        if (bus->is_monitor)
                 return 0;
 
         if (m->n_fds <= 0)
                 return 0;
 
-        if (bus->hello_flags & KDBUS_HELLO_ACCEPT_FD)
+        if (bus->accept_fd)
                 return 0;
 
         if (m->header->type != SD_BUS_MESSAGE_METHOD_CALL)
@@ -3794,7 +3777,7 @@ _public_ int sd_bus_is_monitor(sd_bus *bus) {
         assert_return(bus, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        return !!(bus->hello_flags & KDBUS_HELLO_MONITOR);
+        return bus->is_monitor;
 }
 
 static void flush_close(sd_bus *bus) {
