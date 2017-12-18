@@ -2799,6 +2799,8 @@ install_data('README',
 #endif // 0
              'LICENSE.GPL2',
              'LICENSE.LGPL2.1',
+             'TRANSIENT-SETTINGS.md',
+             'UIDS-GIDS.md',
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              install_dir : docdir)
 
