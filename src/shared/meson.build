@@ -201,7 +201,6 @@ libshared_static = static_library(
 libshared = shared_library(
         libshared_name,
 #if 0 /// UNNEEDED by elogind
-#         journal_internal_sources,
 #         libudev_sources,
 #         include_directories : includes,
 #         link_args : ['-shared',
@@ -209,7 +208,8 @@ libshared = shared_library(
 #         link_whole : [libshared_static,
 #                       libbasic,
 #                       libbasic_gcrypt,
-#                       libsystemd_static],
+#                       libsystemd_static,
+#                       libjournal_client],
 #else
         libelogind_internal_sources,
 #endif // 0
