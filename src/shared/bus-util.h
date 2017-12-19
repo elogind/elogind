@@ -182,3 +182,5 @@ int bus_property_get_rlimit(sd_bus *bus, const char *path, const char *interface
 
 int bus_track_add_name_many(sd_bus_track *t, char **l);
 #endif // 0
+
+int bus_open_system_watch_bind(sd_bus **ret);
