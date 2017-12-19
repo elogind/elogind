@@ -126,7 +126,8 @@ tests += [
 # 
 #         [['src/test/test-dns-domain.c'],
 #          [libcore,
-#           libelogind_network],
+#           libshared,
+#           libsystemd_network],
 #          []],
 # 
 #         [['src/test/test-boot-timestamps.c'],
@@ -177,7 +178,7 @@ tests += [
          []],
 
         [['src/test/test-copy.c'],
-         [libshared_static],
+         [],
          []],
 
 #if 0 /// UNNEEDED in elogind

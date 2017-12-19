@@ -193,31 +193,31 @@ libshared_deps = [threads,
 
 libshared_sym_path = '@0@/libshared.sym'.format(meson.current_source_dir())
 
-libshared = shared_library(
+libshared_static = static_library(
         libshared_name,
         shared_sources,
-        basic_sources,
+        include_directories : includes,
+        dependencies : libshared_deps,
+        c_args : ['-fvisibility=default'])
+
+libshared = shared_library(
+        libshared_name,
 #if 0 /// UNNEEDED by elogind
 #         journal_internal_sources,
 #         libsystemd_sources,
 #         libudev_sources,
+#                      '-Wl,--version-script=' + libshared_sym_path],
+#         link_whole : [libshared_static,
+#                       libbasic],
 #else
         libelogind_internal_sources,
 #endif // 0
         include_directories : includes,
         link_args : ['-shared',
-                    '-Wl,--version-script=' + libshared_sym_path],
         c_args : ['-fvisibility=default'],
         dependencies : libshared_deps,
         install : true,
         install_dir : rootlibexecdir)
-
-libshared_static = static_library(
-        libshared_name,
-        shared_sources,
-        basic_sources,
 #if 1 /// need elogind internal library sources
         libelogind_internal_sources,
 #endif // 1
-        include_directories : includes,
-        dependencies : libshared_deps)

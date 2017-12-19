@@ -1396,14 +1396,13 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-netlink',
 #                                'src/libsystemd/sd-network',
 #                                'src/libsystemd-network',
+#                                '.')
 #else
                                'src/libelogind/sd-bus',
                                'src/libelogind/sd-id128',
                                'src/sleep',
                                'src/update-utmp',
 #endif // 0
-                               '.',
-                              )
 
 add_project_arguments('-include', 'config.h', language : 'c')
 
@@ -1442,6 +1441,7 @@ subdir('src/login')
 # libsystemd = shared_library(
 #         'systemd',
 #         journal_internal_sources,
+#         gcrypt_util_sources,
 #         version : libsystemd_version,
 #         include_directories : includes,
 #         link_args : ['-shared',
