@@ -1407,10 +1407,7 @@ includes = include_directories('src/basic',
 add_project_arguments('-include', 'config.h', language : 'c')
 
 #if 0 /// UNNEEDED by elogind
-# gcrypt_util_sources = files('src/shared/gcrypt-util.h',
-#                             'src/shared/gcrypt-util.c')
 #endif // 0
-
 subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
@@ -1441,15 +1438,14 @@ subdir('src/login')
 # libsystemd = shared_library(
 #         'systemd',
 #         journal_internal_sources,
-#         gcrypt_util_sources,
 #         version : libsystemd_version,
 #         include_directories : includes,
 #         link_args : ['-shared',
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
-#         link_with : libbasic,
+#         link_with : [libbasic,
+#                      libbasic_gcrypt],
 #         link_whole : libsystemd_static,
 #         dependencies : [threads,
-#                         libgcrypt,
 #                         librt,
 #                         libxz,
 #                         liblz4],
@@ -1717,11 +1713,10 @@ test_dlopen = executable(
 # if conf.get('ENABLE_RESOLVE') == 1
 #         executable('systemd-resolved',
 #                    systemd_resolved_sources,
-#                    gcrypt_util_sources,
 #                    include_directories : includes,
-#                    link_with : [libshared],
+#                    link_with : [libshared,
+#                                 libbasic_gcrypt],
 #                    dependencies : [threads,
-#                                    libgcrypt,
 #                                    libgpg_error,
 #                                    libm,
 #                                    libidn],
@@ -1731,11 +1726,10 @@ test_dlopen = executable(
 # 
 #         exe = executable('systemd-resolve',
 #                          systemd_resolve_sources,
-#                          gcrypt_util_sources,
 #                          include_directories : includes,
-#                          link_with : [libshared],
+#                          link_with : [libshared,
+#                                       libbasic_gcrypt],
 #                          dependencies : [threads,
-#                                          libgcrypt,
 #                                          libgpg_error,
 #                                          libm,
 #                                          libidn],

@@ -57,8 +57,6 @@
 #         firewall-util.h
 #         fstab-util.c
 #         fstab-util.h
-#         gcrypt-util.c
-#         gcrypt-util.h
 #         generator.c
 #         generator.h
 #         gpt.h
@@ -208,7 +206,8 @@ libshared = shared_library(
 #         libudev_sources,
 #                      '-Wl,--version-script=' + libshared_sym_path],
 #         link_whole : [libshared_static,
-#                       libbasic],
+#                       libbasic,
+#                       libbasic_gcrypt],
 #else
         libelogind_internal_sources,
 #endif // 0
