@@ -486,7 +486,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
                 ['IFLA_VRF_TABLE',                   'linux/if_link.h'],
                 ['IFLA_MACVLAN_FLAGS',               'linux/if_link.h'],
-                ['IFLA_IPVLAN_FLAGS',                'linux/if_link.h'],
+                ['IFLA_IPVLAN_MODE',                 'linux/if_link.h'],
                 ['IFLA_PHYS_PORT_ID',                'linux/if_link.h'],
                 ['IFLA_BOND_AD_INFO',                'linux/if_link.h'],
                 ['IFLA_VLAN_PROTOCOL',               'linux/if_link.h'],
@@ -501,7 +501,6 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IFLA_BRPORT_PROXYARP',             'linux/if_link.h'],
                 ['IFLA_BRPORT_LEARNING_SYNC',        'linux/if_link.h'],
                 ['IFLA_BR_VLAN_DEFAULT_PVID',        'linux/if_link.h'],
-                ['IPVLAN_F_PRIVATE',                 'linux/if_link.h'],
                 ['NDA_IFINDEX',                      'linux/neighbour.h'],
                 ['IFA_FLAGS',                        'linux/if_addr.h'],
                 ['FRA_UID_RANGE',                    'linux/fib_rules.h'],
@@ -518,17 +517,17 @@ foreach ident : ['secure_getenv', '__secure_getenv']
 endforeach
 
 foreach ident : [
-        ['memfd_create',      '''#include <sys/mman.h>'''],
-        ['gettid',            '''#include <sys/types.h>
-//                                 #include <unistd.h>'''],
-        ['pivot_root',        '''#include <stdlib.h>
-                                 #include <unistd.h>'''],     # no known header declares pivot_root
-        ['name_to_handle_at', '''#include <sys/types.h>
+        ['memfd_create',      '''#define _GNU_SOURCE
+//                                 #include <sys/mman.h>'''],
+        ['gettid',            '''#include <sys/types.h>'''],
+        ['pivot_root',        '''#include <stdlib.h>'''],     # no known header declares pivot_root
+        ['name_to_handle_at', '''#define _GNU_SOURCE
+//                                 #include <sys/types.h>
                                  #include <sys/stat.h>
                                  #include <fcntl.h>'''],
-        ['setns',             '''#include <sched.h>'''],
-        ['renameat2',         '''#include <stdio.h>
-//                                 #include <fcntl.h>'''],
+        ['setns',             '''#define _GNU_SOURCE
+//                                 #include <sched.h>'''],
+        ['renameat2',         '''#include <stdio.h>'''],
         ['kcmp',              '''#include <linux/kcmp.h>'''],
         ['keyctl',            '''#include <sys/types.h>
                                  #include <keyutils.h>'''],
@@ -539,11 +538,11 @@ foreach ident : [
         ['explicit_bzero' ,   '''#include <string.h>'''],
 ]
 
-        have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE')
+        have = cc.has_function(ident[0], prefix : ident[1])
         conf.set10('HAVE_' + ident[0].to_upper(), have)
 endforeach
 
-if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''', args : '-D_GNU_SOURCE')
+if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''')
         conf.set10('USE_SYS_RANDOM_H', true)
         conf.set10('HAVE_GETRANDOM', true)
 else
@@ -1442,7 +1441,7 @@ subdir('src/login')
 # libsystemd_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libsystemd_sym)
 # libsystemd = shared_library(
 #         'systemd',
-#         libsystemd_internal_sources,
+#         libsystemd_sources,
 #         journal_internal_sources,
 #         version : libsystemd_version,
 #         include_directories : includes,
@@ -1547,7 +1546,7 @@ test_dlopen = executable(
 #                                      '-shared',
 #                                      '-Wl,--version-script=' + version_script_arg,
 #                                      '-Wl,--undefined'],
-#                         link_with : [libsystemd_internal,
+#                         link_with : [libsystemd_static,
 #                                      libbasic],
 #                         dependencies : [threads,
 #                                         librt],
@@ -1787,7 +1786,7 @@ test_dlopen = executable(
 #                         include_directories : includes,
 #                         link_args : ['-shared',
 #                                      '-Wl,--version-script=' + version_script_arg],
-#                         link_with : [libsystemd_internal,
+#                         link_with : [libsystemd_static,
 #                                      libshared_static],
 #                         dependencies : [threads,
 #                                         libpam,
@@ -2800,8 +2799,6 @@ install_data('README',
 #endif // 0
              'LICENSE.GPL2',
              'LICENSE.LGPL2.1',
-             'TRANSIENT-SETTINGS.md',
-             'UIDS-GIDS.md',
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              install_dir : docdir)
 

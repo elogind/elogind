@@ -199,7 +199,7 @@ libshared = shared_library(
         basic_sources,
 #if 0 /// UNNEEDED by elogind
 #         journal_internal_sources,
-#         libsystemd_internal_sources,
+#         libsystemd_sources,
 #         libudev_sources,
 #else
         libelogind_internal_sources,
