@@ -202,17 +202,17 @@ libshared = shared_library(
         libshared_name,
 #if 0 /// UNNEEDED by elogind
 #         journal_internal_sources,
-#         libsystemd_sources,
 #         libudev_sources,
+#         include_directories : includes,
+#         link_args : ['-shared',
 #                      '-Wl,--version-script=' + libshared_sym_path],
 #         link_whole : [libshared_static,
 #                       libbasic,
-#                       libbasic_gcrypt],
+#                       libbasic_gcrypt,
+#                       libsystemd_static],
 #else
         libelogind_internal_sources,
 #endif // 0
-        include_directories : includes,
-        link_args : ['-shared',
         c_args : ['-fvisibility=default'],
         dependencies : libshared_deps,
         install : true,

@@ -150,7 +150,8 @@ libelogind_static = static_library(
         link_with : libbasic,
 #if 0 /// elogind does not need librt
 #         dependencies : [threads,
-#                         librt])
+#                         librt],
+#         c_args : ['-fvisibility=default'])
 #else
         dependencies : [threads])
 #endif // 0
