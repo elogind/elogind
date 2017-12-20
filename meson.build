@@ -2869,6 +2869,14 @@ endif
 
 ############################################################
 
+meson_check_api_docs_sh = find_program('tools/meson-check-api-docs.sh')
+run_target(
+        'check-api-docs',
+        depends : [man, libelogind, libudev],
+        command : [meson_check_api_docs_sh, libelogind.full_path(), libudev.full_path()])
+
+############################################################
+
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
