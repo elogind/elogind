@@ -688,7 +688,6 @@ static int manager_reserve_vt(Manager *m) {
 #endif // 0
 
 static int manager_connect_bus(Manager *m) {
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(m);
@@ -771,19 +770,18 @@ static int manager_connect_bus(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to request match for Reloading: %m");
 
-        r = sd_bus_call_method(
+        r = sd_bus_call_method_async(
                         m->bus,
+                        NULL,
                         "org.freedesktop.systemd1",
                         "/org/freedesktop/systemd1",
                         "org.freedesktop.systemd1.Manager",
                         "Subscribe",
-                        &error,
-                        NULL, NULL);
-        if (r < 0) {
-                log_error("Failed to enable subscription: %s", bus_error_message(&error, r));
-                return r;
-        }
 #endif // 0
+                        NULL, NULL,
+                        NULL);
+        if (r < 0)
+                return log_error_errno(r, "Failed to enable subscription: %m");
 
         r = sd_bus_request_name_async(m->bus, NULL, "org.freedesktop.login1", 0, NULL, NULL);
         if (r < 0)
