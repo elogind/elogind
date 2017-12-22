@@ -26,6 +26,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
+//#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -55,6 +56,7 @@
 //#include "stat-util.h"
 #include "string-table.h"
 #include "string-util.h"
+//#include "terminal-util.h"
 #include "user-util.h"
 #include "util.h"
 
@@ -129,6 +131,8 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
                         return -ESRCH;
                 return -errno;
         }
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         if (max_length == 1) {
 
@@ -408,6 +412,8 @@ int is_kernel_thread(pid_t pid) {
                 return -errno;
         }
 
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+
         count = fread(&c, 1, 1, f);
         eof = feof(f);
         fclose(f);
@@ -492,6 +498,8 @@ static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
                 return -errno;
         }
 
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+
         FOREACH_LINE(line, f, return -errno) {
                 char *l;
 
@@ -569,6 +577,8 @@ int get_process_environ(pid_t pid, char **env) {
                         return -ESRCH;
                 return -errno;
         }
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         while ((c = fgetc(f)) != EOF) {
                 if (!GREEDY_REALLOC(outcome, allocated, sz + 5))
@@ -817,6 +827,8 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value) {
                         return -ESRCH;
                 return -errno;
         }
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         l = strlen(field);
         r = 0;
@@ -1135,6 +1147,142 @@ int must_be_root(void) {
 
         log_error("Need to be root.");
         return -EPERM;
+}
+
+int safe_fork_full(
+                const char *name,
+                const int except_fds[],
+                size_t n_except_fds,
+                ForkFlags flags,
+                pid_t *ret_pid) {
+
+        pid_t original_pid, pid;
+        sigset_t saved_ss;
+        bool block_signals;
+        int r;
+
+        /* A wrapper around fork(), that does a couple of important initializations in addition to mere forking. Always
+         * returns the child's PID in *ret_pid. Returns == 0 in the child, and > 0 in the parent. */
+
+        original_pid = getpid_cached();
+
+        block_signals = flags & (FORK_RESET_SIGNALS|FORK_DEATHSIG);
+
+        if (block_signals) {
+                sigset_t ss;
+
+                /* We temporarily block all signals, so that the new child has them blocked initially. This way, we can be sure
+                 * that SIGTERMs are not lost we might send to the child. */
+                if (sigfillset(&ss) < 0)
+                        return log_debug_errno(errno, "Failed to reset signal set: %m");
+
+                if (sigprocmask(SIG_SETMASK, &ss, &saved_ss) < 0)
+                        return log_debug_errno(errno, "Failed to reset signal mask: %m");
+        }
+
+        pid = fork();
+        if (pid < 0) {
+                r = -errno;
+
+                if (block_signals) /* undo what we did above */
+                        (void) sigprocmask(SIG_SETMASK, &saved_ss, NULL);
+
+                return log_debug_errno(r, "Failed to fork: %m");
+        }
+        if (pid > 0) {
+                /* We are in the parent process */
+
+                if (block_signals) /* undo what we did above */
+                        (void) sigprocmask(SIG_SETMASK, &saved_ss, NULL);
+
+                log_debug("Sucessfully forked off '%s' as PID " PID_FMT ".", strna(name), pid);
+
+                if (ret_pid)
+                        *ret_pid = pid;
+
+                return 1;
+        }
+
+        /* We are in the child process */
+
+        if (flags & FORK_REOPEN_LOG) {
+                /* Close the logs if requested, before we log anything. And make sure we reopen it if needed. */
+                log_close();
+                log_set_open_when_needed(true);
+        }
+
+        if (name) {
+                r = rename_process(name);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to rename process, ignoring: %m");
+        }
+
+        if (flags & FORK_DEATHSIG)
+                if (prctl(PR_SET_PDEATHSIG, SIGTERM) < 0) {
+                        log_debug_errno(errno, "Failed to set death signal: %m");
+                        _exit(EXIT_FAILURE);
+                }
+
+        if (flags & FORK_RESET_SIGNALS) {
+                r = reset_all_signal_handlers();
+                if (r < 0) {
+                        log_debug_errno(r, "Failed to reset signal handlers: %m");
+                        _exit(EXIT_FAILURE);
+                }
+
+                /* This implicitly undoes the signal mask stuff we did before the fork()ing above */
+                r = reset_signal_mask();
+                if (r < 0) {
+                        log_debug_errno(r, "Failed to reset signal mask: %m");
+                        _exit(EXIT_FAILURE);
+                }
+        } else if (block_signals) { /* undo what we did above */
+                if (sigprocmask(SIG_SETMASK, &saved_ss, NULL) < 0) {
+                        log_debug_errno(errno, "Failed to restore signal mask: %m");
+                        _exit(EXIT_FAILURE);
+                }
+        }
+
+        if (flags & FORK_DEATHSIG) {
+                /* Let's see if the parent PID is still the one we started from? If not, then the parent
+                 * already died by the time we set PR_SET_PDEATHSIG, hence let's emulate the effect */
+
+                if (getppid() != original_pid) {
+                        log_debug("Parent died early, raising SIGTERM.");
+                        (void) raise(SIGTERM);
+                        _exit(EXIT_FAILURE);
+                }
+        }
+
+        if (flags & FORK_CLOSE_ALL_FDS) {
+                /* Close the logs here in case it got reopened above, as close_all_fds() would close them for us */
+                log_close();
+
+                r = close_all_fds(except_fds, n_except_fds);
+                if (r < 0) {
+                        log_debug_errno(r, "Failed to close all file descriptors: %m");
+                        _exit(EXIT_FAILURE);
+                }
+        }
+
+        /* When we were asked to reopen the logs, do so again now */
+        if (flags & FORK_REOPEN_LOG) {
+                log_open();
+                log_set_open_when_needed(false);
+        }
+
+        if (flags & FORK_NULL_STDIO) {
+                r = make_null_stdio();
+                if (r < 0) {
+                        log_debug_errno(r, "Failed to connect stdin/stdout to /dev/null: %m");
+                        _exit(EXIT_FAILURE);
+                }
+        }
+
+        if (ret_pid)
+                *ret_pid = getpid_cached();
+
+        return 0;
 }
 
 #if 0 /// UNNEEDED by elogind
