@@ -36,6 +36,8 @@
 #         bitmap.c
 #         bitmap.h
 #         blkid-util.h
+#         blockdev-util.c
+#         blockdev-util.h
 #         bpf-program.c
 #         bpf-program.h
 #         btrfs-ctree.h
@@ -204,10 +206,10 @@
 #         time-util.h
 #         umask-util.h
 #         unaligned.h
-#         unit-name.c
-#         unit-name.h
 #         unit-def.c
 #         unit-def.h
+#         unit-name.c
+#         unit-name.h
 #         user-util.c
 #         user-util.h
 #         utf8.c

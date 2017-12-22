@@ -74,9 +74,7 @@ bool display_is_local(const char *display) _pure_;
 int socket_from_display(const char *display, char **path);
 
 #if 0 /// UNNEEDED by elogind
-int block_get_whole_disk(dev_t d, dev_t *ret);
 #endif // 0
-
 #define NULSTR_FOREACH(i, l)                                    \
         for ((i) = (l); (i) && *(i); (i) = strchr((i), 0)+1)
 
@@ -205,6 +203,4 @@ int update_reboot_parameter_and_warn(const char *param);
 int version(void);
 
 #if 0 /// UNNEEDED by elogind
-int get_block_device(const char *path, dev_t *dev);
-int get_block_device_harder(const char *path, dev_t *dev);
 #endif // 0
