@@ -204,3 +204,4 @@ int version(void);
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
+int str_verscmp(const char *s1, const char *s2);
