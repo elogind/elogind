@@ -1,4 +1,5 @@
-#!/bin/sh -eu
+#!/bin/sh
+set -eu
 
 #if 0 /// elogind needs musl_missing.sh, which is in shared.
 # $1 -dM -include linux/capability.h -include "$2" -include "$3" - </dev/null | \
