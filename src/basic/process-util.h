@@ -161,6 +161,7 @@ int ioprio_parse_priority(const char *s, int *ret);
 #endif // 0
 
 pid_t getpid_cached(void);
+void reset_cached_pid(void);
 
 int must_be_root(void);
 
