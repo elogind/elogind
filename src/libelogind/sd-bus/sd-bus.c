@@ -3510,8 +3510,7 @@ _public_ int sd_bus_path_decode_many(const char *path, const char *path_template
         }
         va_end(list);
 
-        free(labels);
-        labels = NULL;
+        labels = mfree(labels);
         return 1;
 }
 
