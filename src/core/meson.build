@@ -61,6 +61,8 @@
 #         dbus-timer.h
 #         dbus-unit.c
 #         dbus-unit.h
+#         dbus-util.c
+#         dbus-util.h
 #         dbus.c
 #         dbus.h
 #         device.c
