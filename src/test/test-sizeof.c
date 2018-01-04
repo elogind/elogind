@@ -66,6 +66,7 @@ int main(void) {
         info(__time_t);
 #endif // ifdef __GLIBC__
         info(pid_t);
+        info(uid_t);
         info(gid_t);
 
         info(enum Enum);
