@@ -34,7 +34,6 @@
 				<Option working_dir="../../elogind" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
 				<Option parameters="-m" />
 			</Target>
 			<Target title="test-login">
@@ -42,8 +41,14 @@
 				<Option working_dir="../../elogind" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
 				<Option parameters="-m" />
+			</Target>
+			<Target title="loginctl">
+				<Option output="../build/loginctl" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../elogind" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="enable-linger sed" />
 			</Target>
 		</Build>
 		<Compiler>
