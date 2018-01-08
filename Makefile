@@ -1,10 +1,13 @@
-.PHONY: all install test test-login
+.PHONY: all install loginctl test test-login
 
 all:
 	ninja -C build
 
 install:
 	DESTDIR=$(DESTDIR) ninja -C build install
+
+loginctl:
+	ninja -C build loginctl
 
 test:
 	ninja -C build test
