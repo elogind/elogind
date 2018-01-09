@@ -211,7 +211,9 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid);
 int cg_path_get_unit(const char *path, char **unit);
 int cg_path_get_user_unit(const char *path, char **unit);
 int cg_path_get_machine_name(const char *path, char **machine);
+#endif // 0
 int cg_path_get_slice(const char *path, char **slice);
+#if 0 /// UNNEEDED by elogind
 int cg_path_get_user_slice(const char *path, char **slice);
 #endif // 0
 

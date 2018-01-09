@@ -543,15 +543,12 @@ _public_ int sd_bus_creds_get_owner_uid(sd_bus_creds *c, uid_t *uid) {
         assert(c->cgroup);
 
         r = cg_shift_path(c->cgroup, c->cgroup_root, &shifted);
+        log_debug_elogind("Shifted to %s from %s/%s for c->uid %u (result %d)",
+                          shifted, c->cgroup_root, c->cgroup, c->uid, r);
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd slices
         return cg_path_get_owner_uid(shifted, uid);
-#else
-        *uid = c->uid;
-        return 0;
-#endif // 0
 }
 
 _public_ int sd_bus_creds_get_cmdline(sd_bus_creds *c, char ***cmdline) {

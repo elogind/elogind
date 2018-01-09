@@ -1812,9 +1812,12 @@ int cg_pid_get_session(pid_t pid, char **session) {
 }
 
 int cg_path_get_owner_uid(const char *path, uid_t *uid) {
-#if 0 /// elogind does not support systemd slices
+#if 0 /// elogind needs one more value
         _cleanup_free_ char *slice = NULL;
         char *start, *end;
+#else
+        _cleanup_free_ char *slice = NULL, *p = NULL, *s = NULL;
+#endif // 0
         int r;
 
         assert(path);
@@ -1823,6 +1826,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not support systemd slices
         start = startswith(slice, "user-");
         if (!start)
                 return -ENXIO;
@@ -1831,27 +1835,11 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
                 return -ENXIO;
 
         *end = 0;
+
         if (parse_uid(start, uid) < 0)
                 return -ENXIO;
-
-        return 0;
 #else
-        _cleanup_free_ char *p = NULL, *s = NULL;
-        char *start;
-        int r;
-
-        assert(path);
-
-        /* Basically this is a simple session->uid mapping here.
-           The path argument will be something like "/<session id>"
-           and that is something we can map.
-        */
-
-        start = startswith(path, "/");
-        if (start)
-                p = strappend("/run/systemd/sessions/", start);
-        else
-                p = strappend("/run/systemd/sessions/", path);
+        p = strappend("/run/systemd/sessions/", slice);
 
         r = parse_env_file(p, NEWLINE, "UID", &s, NULL);
         if (r == -ENOENT)
@@ -1861,8 +1849,11 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         if (isempty(s))
                 return -EIO;
 
-        return parse_uid(s, uid);
+        if (parse_uid(s, uid) < 0)
+                return -ENXIO;
 #endif // 0
+
+        return 0;
 }
 
 int cg_pid_get_owner_uid(pid_t pid, uid_t *uid) {
@@ -1876,13 +1867,13 @@ int cg_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         return cg_path_get_owner_uid(cgroup, uid);
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_path_get_slice(const char *p, char **slice) {
         const char *e = NULL;
 
         assert(p);
         assert(slice);
 
+#if 0 /// elogind does not support systemd slices
         /* Finds the right-most slice unit from the beginning, but
          * stops before we come to the first non-slice unit. */
 
@@ -1911,8 +1902,26 @@ int cg_path_get_slice(const char *p, char **slice) {
                 e = p;
                 p += n;
         }
+#else
+        /* In elogind, what is reported here, is the location of
+         * the session. This is derived from /proc/<self|PID>/cgroup.
+         * In there we look at the controller, which will look something
+         * like "1:name=openrc:/3".
+         * The last part gets extracted (and is now p), which is "/3" in
+         * this case. The three is the session id, and that can be mapped.
+         */
+        e = startswith(p, "/");
+
+        if (e)
+                *slice = strdup(e);
+        else
+                *slice = strdup(p);
+
+        return 0;
+#endif // 0
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_pid_get_slice(pid_t pid, char **slice) {
         _cleanup_free_ char *cgroup = NULL;
         int r;
