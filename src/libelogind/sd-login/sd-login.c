@@ -114,19 +114,13 @@ _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
 }
 
 _public_ int sd_pid_get_slice(pid_t pid, char **slice) {
-#if 0 /// UNNEEDED by elogind
         int r;
-#endif // 0
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(slice, -EINVAL);
 
-#if 0 /// elogind does not support systemd slices
         r = cg_pid_get_slice(pid, slice);
         return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
-#else
-        return -ESRCH;
-#endif // 0
 }
 
 _public_ int sd_pid_get_user_slice(pid_t pid, char **slice) {
@@ -282,11 +276,7 @@ _public_ int sd_peer_get_slice(int fd, char **slice) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd slices
         return cg_pid_get_slice(ucred.pid, slice);
-#else
-        return -ESRCH;
-#endif // 0
 }
 
 _public_ int sd_peer_get_user_slice(int fd, char **slice) {

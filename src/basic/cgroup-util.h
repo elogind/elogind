@@ -226,7 +226,9 @@ int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
 int cg_pid_get_unit(pid_t pid, char **unit);
 int cg_pid_get_user_unit(pid_t pid, char **unit);
 int cg_pid_get_machine_name(pid_t pid, char **machine);
+#endif // 0
 int cg_pid_get_slice(pid_t pid, char **slice);
+#if 0 /// UNNEEDED by elogind
 int cg_pid_get_user_slice(pid_t pid, char **slice);
 
 int cg_path_decode_unit(const char *cgroup, char **unit);

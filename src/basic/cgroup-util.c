@@ -1921,7 +1921,6 @@ int cg_path_get_slice(const char *p, char **slice) {
 #endif // 0
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_pid_get_slice(pid_t pid, char **slice) {
         _cleanup_free_ char *cgroup = NULL;
         int r;
@@ -1929,12 +1928,15 @@ int cg_pid_get_slice(pid_t pid, char **slice) {
         assert(slice);
 
         r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        log_debug_elogind("Found cgroup %s for pid %u (result %d)",
+                          cgroup, pid, r);
         if (r < 0)
                 return r;
 
         return cg_path_get_slice(cgroup, slice);
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_path_get_user_slice(const char *p, char **slice) {
         const char *t;
         assert(p);
