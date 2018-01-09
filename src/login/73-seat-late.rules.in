@@ -12,6 +12,9 @@ ENV{ID_SEAT}=="", IMPORT{parent}="ID_SEAT"
 
 ENV{ID_SEAT}!="", TAG+="$env{ID_SEAT}"
 
-TAG=="uaccess", ENV{MAJOR}!="", RUN{builtin}+="uaccess"
+# "uaccess" builtin is not supported by eudev because "uaccess" uses
+# logind to get currently logged in user. (thus systemd-udev depends on
+# systemd-logind)
+#TAG=="uaccess", ENV{MAJOR}!="", RUN{builtin}+="uaccess"
 
 LABEL="seat_late_end"
