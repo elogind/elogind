@@ -55,7 +55,7 @@ install_headers(
 meson.add_install_script(meson_symlink_headers,
                          includedir,
                          _systemd_headers,
-                         _sd-common.h)
+                         '_sd-common.h')
 
 
 ############################################################
