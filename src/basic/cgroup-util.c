@@ -1936,19 +1936,29 @@ int cg_pid_get_slice(pid_t pid, char **slice) {
         return cg_path_get_slice(cgroup, slice);
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_path_get_user_slice(const char *p, char **slice) {
+#if 0 /// UNNEEDED by elogind
         const char *t;
+#endif // 0
         assert(p);
         assert(slice);
 
+#if 0 // nothing to skip in elogind
         t = skip_user_prefix(p);
         if (!t)
                 return -ENXIO;
+#endif // 0
 
+#if 0 /// UNNEEDED by elogind
         /* And now it looks pretty much the same as for a system
          * slice, so let's just use the same parser from here on. */
         return cg_path_get_slice(t, slice);
+#else
+        /* In elogind there is nothing to skip, we can use the path
+         * directly. Generally speaking this is always a session id
+         * to user mapping. */
+        return cg_path_get_slice(p, slice);
+#endif // 0
 }
 
 int cg_pid_get_user_slice(pid_t pid, char **slice) {
@@ -1963,7 +1973,6 @@ int cg_pid_get_user_slice(pid_t pid, char **slice) {
 
         return cg_path_get_user_slice(cgroup, slice);
 }
-#endif // 0
 
 char *cg_escape(const char *p) {
         bool need_prefix = false;

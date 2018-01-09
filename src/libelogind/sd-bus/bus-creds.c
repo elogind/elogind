@@ -444,6 +444,7 @@ _public_ int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **ret) {
         *ret = c->user_unit;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_bus_creds_get_slice(sd_bus_creds *c, const char **ret) {
         int r;
@@ -498,7 +499,6 @@ _public_ int sd_bus_creds_get_user_slice(sd_bus_creds *c, const char **ret) {
         *ret = c->user_slice;
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_creds_get_session(sd_bus_creds *c, const char **ret) {
         int r;

@@ -213,9 +213,7 @@ int cg_path_get_user_unit(const char *path, char **unit);
 int cg_path_get_machine_name(const char *path, char **machine);
 #endif // 0
 int cg_path_get_slice(const char *path, char **slice);
-#if 0 /// UNNEEDED by elogind
 int cg_path_get_user_slice(const char *path, char **slice);
-#endif // 0
 
 int cg_shift_path(const char *cgroup, const char *cached_root, const char **shifted);
 int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
@@ -228,9 +226,9 @@ int cg_pid_get_user_unit(pid_t pid, char **unit);
 int cg_pid_get_machine_name(pid_t pid, char **machine);
 #endif // 0
 int cg_pid_get_slice(pid_t pid, char **slice);
-#if 0 /// UNNEEDED by elogind
 int cg_pid_get_user_slice(pid_t pid, char **slice);
 
+#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit);
 #endif // 0
 
