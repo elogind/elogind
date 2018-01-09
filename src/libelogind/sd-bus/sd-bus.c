@@ -1020,7 +1020,7 @@ _public_ int sd_bus_open(sd_bus **ret) {
         if (e) {
                 if (streq(e, "system"))
                         return sd_bus_open_system(ret);
-#if 0 /// elogind does not support systemd units
+#if 0 /// elogind does not support systemd user instances
                 else if (STR_IN_SET(e, "session", "user"))
                         return sd_bus_open_user(ret);
 #endif // 0
@@ -1028,7 +1028,7 @@ _public_ int sd_bus_open(sd_bus **ret) {
 
         e = secure_getenv("DBUS_STARTER_ADDRESS");
         if (!e) {
-#if 0 /// elogind does not support systemd units
+#if 0 /// elogind does not support systemd user instances
                 if (cg_pid_get_owner_uid(0, NULL) >= 0)
                         return sd_bus_open_user(ret);
                 else
@@ -3283,7 +3283,7 @@ _public_ int sd_bus_default(sd_bus **ret) {
         /* Finally, if nothing is set use the cached connection for
          * the right scope */
 
-#if 0 /// elogind does not support systemd units
+#if 0 /// elogind does not support systemd user instances
         if (cg_pid_get_owner_uid(0, NULL) >= 0)
                 return sd_bus_default_user(ret);
         else

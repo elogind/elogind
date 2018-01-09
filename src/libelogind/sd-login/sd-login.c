@@ -180,11 +180,7 @@ _public_ int sd_peer_get_session(int fd, char **session) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd scopes
         return cg_pid_get_session(ucred.pid, session);
-#else
-        return -ESRCH;
-#endif // 0
 }
 
 _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
@@ -198,11 +194,7 @@ _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd units
         return cg_pid_get_owner_uid(ucred.pid, uid);
-#else
-        return -ESRCH;
-#endif // 0
 }
 
 _public_ int sd_peer_get_unit(int fd, char **unit) {
