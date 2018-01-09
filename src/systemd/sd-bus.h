@@ -360,9 +360,9 @@ int sd_bus_creds_get_cmdline(sd_bus_creds *c, char ***cmdline);
 int sd_bus_creds_get_cgroup(sd_bus_creds *c, const char **cgroup);
 #if 0 /** unsupported by elogind **/
 int sd_bus_creds_get_unit(sd_bus_creds *c, const char **unit);
-#endif // 0
+#endif /** 0 **/
 int sd_bus_creds_get_slice(sd_bus_creds *c, const char **slice);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind **/
 int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **unit);
 #endif /** 0 **/
 int sd_bus_creds_get_user_slice(sd_bus_creds *c, const char **slice);
