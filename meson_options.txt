@@ -155,7 +155,11 @@ option('fallback-hostname', type : 'string', value : 'localhost',
 #endif // 0
 option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
-       description : 'default cgroup hierarchy')
+       description : 'default cgroup hierarchy
+                "legacy"  assumes cgroups version 1 mounted on /sys/fs/cgroup
+                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified and
+                                  cgroups version 1 mounted on /sys/fs/cgroup.
+                "unified" assumes cgroups version 2 on /sys/fs/cgroup')
 #if 0 /// UNNEEDED by elogind
 # option('time-epoch', type : 'string',
 #        description : 'time epoch for time clients')

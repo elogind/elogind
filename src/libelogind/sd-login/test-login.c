@@ -61,7 +61,7 @@ static void test_login(void) {
         uid_t u, u2;
         char *t, **seats, **sessions;
 
-#if 0 /// elogind does not support systemd slices
+#if 0 /// elogind does not support systemd units
         r = sd_pid_get_unit(0, &unit);
         assert_se(r >= 0 || r == -ENODATA);
         log_info("sd_pid_get_unit(0, …) → \"%s\"", strna(unit));
@@ -69,11 +69,11 @@ static void test_login(void) {
         r = sd_pid_get_user_unit(0, &user_unit);
         assert_se(r >= 0 || r == -ENODATA);
         log_info("sd_pid_get_user_unit(0, …) → \"%s\"", strna(user_unit));
+#endif // 0
 
         r = sd_pid_get_slice(0, &slice);
         assert_se(r >= 0 || r == -ENODATA);
         log_info("sd_pid_get_slice(0, …) → \"%s\"", strna(slice));
-#endif // 0
 
         r = sd_pid_get_session(0, &session);
         if (r < 0) {

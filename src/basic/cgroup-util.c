@@ -1037,7 +1037,7 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
         char line[LINE_MAX];
-#if 0 // At elogind we do not want that (false alarm) "maybe uninitialized" warning
+#if 0 /// At elogind we do not want that (false alarm) "maybe uninitialized" warning
         const char *fs, *controller_str;
 #else
         const char *fs, *controller_str = NULL;
@@ -1943,7 +1943,7 @@ int cg_path_get_user_slice(const char *p, char **slice) {
         assert(p);
         assert(slice);
 
-#if 0 // nothing to skip in elogind
+#if 0 /// nothing to skip in elogind
         t = skip_user_prefix(p);
         if (!t)
                 return -ENXIO;
@@ -2548,7 +2548,6 @@ static int cg_unified_update(void) {
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
                 return -errno;
 
-#if 0 /// UNNEEDED by elogind
         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC))
                 unified_cache = CGROUP_UNIFIED_ALL;
         else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
@@ -2556,6 +2555,7 @@ static int cg_unified_update(void) {
                     F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = false;
+#if 0 /// elogind uses its own name
                 } else if (statfs("/sys/fs/cgroup/systemd/", &fs) == 0 &&
                            F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
@@ -2563,20 +2563,21 @@ static int cg_unified_update(void) {
                 } else {
                         if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
                                 return -errno;
+#else
+                } else if (statfs("/sys/fs/cgroup/elogind/", &fs) == 0 &&
+                           F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
+                        unified_cache = CGROUP_UNIFIED_SYSTEMD;
+                        unified_systemd_v232 = true;
+                } else {
+                        if (statfs("/sys/fs/cgroup/elogind/", &fs) < 0)
+                                return -errno;
+#endif // 0
                         if (!F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC))
                                 return -ENOMEDIUM;
                         unified_cache = CGROUP_UNIFIED_NONE;
                 }
         } else
                 return -ENOMEDIUM;
-#else
-        /* elogind can not support the unified hierarchy as a controller,
-         * so always assume a classical hierarchy.
-         * If, and only *if*, someone really wants to substitute systemd-login
-         * in an environment managed by systemd with elogind, we might have to
-         * add such a support. */
-        unified_cache = CGROUP_UNIFIED_NONE;
-#endif // 0
 
         return 0;
 }
@@ -2594,7 +2595,11 @@ int cg_unified_controller(const char *controller) {
         if (unified_cache >= CGROUP_UNIFIED_ALL)
                 return true;
 
+#if 0 /// only if elogind is the controller we can use cgroups2 in hybrid mode
         return streq_ptr(controller, SYSTEMD_CGROUP_CONTROLLER);
+#else
+        return streq_ptr(controller, SYSTEMD_CGROUP_CONTROLLER_HYBRID);
+#endif // 0
 }
 
 int cg_all_unified(void) {
@@ -2666,6 +2671,7 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
 
         return 0;
 }
+#endif // 0
 
 bool cg_is_unified_wanted(void) {
         static thread_local int wanted = -1;
@@ -2682,9 +2688,11 @@ bool cg_is_unified_wanted(void) {
         if (cg_unified_flush() >= 0)
                 return (wanted = unified_cache >= CGROUP_UNIFIED_ALL);
 
+#if 0 /// elogind is not init and has no business with kernel command line
         /* Otherwise, let's see what the kernel command line has to say.
          * Since checking is expensive, cache a non-error result. */
         r = proc_cmdline_get_bool("systemd.unified_cgroup_hierarchy", &b);
+#endif // 0
 
         return (wanted = r > 0 ? b : is_default);
 }
@@ -2725,25 +2733,16 @@ bool cg_is_hybrid_wanted(void) {
             unified_cache == CGROUP_UNIFIED_ALL)
                 return (wanted = false);
 
+#if 0 /// elogind is not init and has no business with kernel command line
         /* Otherwise, let's see what the kernel command line has to say.
          * Since checking is expensive, cache a non-error result. */
         r = proc_cmdline_get_bool("systemd.legacy_systemd_cgroup_controller", &b);
+#endif // 0
 
         /* The meaning of the kernel option is reversed wrt. to the return value
          * of this function, hence the negation. */
         return (wanted = r > 0 ? !b : is_default);
 }
-#else
-bool cg_is_unified_wanted(void) {
-        return false;
-}
-bool cg_is_legacy_wanted(void) {
-        return true;
-}
-bool cg_is_hybrid_wanted(void) {
-        return false;
-}
-#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int cg_weight_parse(const char *s, uint64_t *ret) {
