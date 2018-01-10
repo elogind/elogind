@@ -18,9 +18,7 @@
 sd_login_c = files('sd-login/sd-login.c')
 
 #if 0 /// elogind has a shorter list, of course...
-# libsystemd_internal_sources = files('''
-#         sd-bus/bus-bloom.c
-#         sd-bus/bus-bloom.h
+# libsystemd_sources = files('''
 #         sd-bus/bus-common-errors.c
 #         sd-bus/bus-common-errors.h
 #         sd-bus/bus-container.c
@@ -143,15 +141,16 @@ libelogind_internal_sources = files('''
 '''.split()) + sd_login_c
 #endif // 0
 
-libelogind_internal = static_library(
+libelogind_static = static_library(
         'elogind',
-        libelogind_internal_sources,
+        libelogind_sources,
         install : false,
         include_directories : includes,
         link_with : libbasic,
 #if 0 /// elogind does not need librt
 #         dependencies : [threads,
-#                         librt])
+#                         librt],
+#         c_args : ['-fvisibility=default'])
 #else
         dependencies : [threads])
 #endif // 0
