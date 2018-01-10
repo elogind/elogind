@@ -206,4 +206,4 @@ int version(void);
 #endif // 0
 int str_verscmp(const char *s1, const char *s2);
 
-void disable_core_dumps(void);
+void disable_coredumps(void);
