@@ -126,8 +126,13 @@ int sched_policy_to_string_alloc(int i, char **s);
 int sched_policy_from_string(const char *s);
 #endif // 0
 
-#define PTR_TO_PID(p) ((pid_t) ((uintptr_t) p))
-#define PID_TO_PTR(p) ((void*) ((uintptr_t) p))
+static inline pid_t PTR_TO_PID(const void *p) {
+        return (pid_t) ((uintptr_t) p);
+}
+
+static inline void* PID_TO_PTR(pid_t pid) {
+        return (void*) ((uintptr_t) pid);
+}
 
 void valgrind_summary_hack(void);
 
