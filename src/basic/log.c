@@ -1247,10 +1247,12 @@ DEFINE_STRING_TABLE_LOOKUP(log_target, LogTarget);
 
 #if 0 /// UNNEEDED by elogind
 void log_received_signal(int level, const struct signalfd_siginfo *si) {
-        if (si->ssi_pid > 0) {
+        assert(si);
+
+        if (pid_is_valid(si->ssi_pid)) {
                 _cleanup_free_ char *p = NULL;
 
-                get_process_comm(si->ssi_pid, &p);
+                (void) get_process_comm(si->ssi_pid, &p);
 
                 log_full(level,
                          "Received SIG%s from PID %"PRIu32" (%s).",
