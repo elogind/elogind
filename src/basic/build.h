@@ -143,6 +143,12 @@
 
 #if HAVE_LIBIDN
 #define _IDN_FEATURE_ "+IDN"
+
+#if HAVE_PCRE2
+#define _PCRE2_FEATURE_ "+PCRE2"
+#else
+#define _PCRE2_FEATURE_ "-PCRE2"
+#endif
 #else
 #define _IDN_FEATURE_ "-IDN"
 #endif
@@ -172,6 +178,7 @@
         _KMOD_FEATURE_ " "                                              \
         _IDN2_FEATURE_ " "                                              \
         _IDN_FEATURE_ " "                                               \
+        _PCRE2_FEATURE_ " "                                             \
         _CGROUP_HIEARCHY_
 #else
 #define SYSTEMD_FEATURES                                                \

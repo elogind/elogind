@@ -319,6 +319,8 @@ option('pam', type : 'combo', choices : ['auto', 'true', 'false'],
 # option('xkbcommon', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'xkbcommon keymap support')
 #endif // 0
+option('pcre2', type : 'combo', choices : ['auto', 'true', 'false'],
+       description : 'regexp matching support using pcre2')
 option('glib', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'libglib support (for tests only)')
 option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
@@ -346,14 +348,9 @@ option('bashcompletiondir', type : 'string',
 option('zshcompletiondir', type : 'string',
        description : 'directory for zsh completion scripts ["no" disables]')
 
-option('tests', type : 'combo', choices : ['true', 'unsafe', 'false'],
+option('tests', type : 'combo', choices : ['true', 'unsafe'],
        description : 'enable extra tests with =unsafe')
 option('slow-tests', type : 'boolean', value : 'false',
        description : 'run the slow tests by default')
 option('install-tests', type : 'boolean', value : 'false',
        description : 'install test executables')
-
-option('oss-fuzz', type : 'boolean', value : 'false',
-       description : 'build against oss-fuzz')
-option('llvm-fuzz', type : 'boolean', value : 'false',
-       description : 'build against LLVM libFuzzer')
