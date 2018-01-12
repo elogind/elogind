@@ -1640,7 +1640,8 @@ test_dlopen = executable(
 #                  dependencies : [threads,
 #                                  libqrencode,
 #                                  libxz,
-#                                  liblz4],
+#                                  liblz4,
+#                                  libpcre2],
 #                  install_rpath : rootlibexecdir,
 #                  install : true,
 #                  install_dir : rootbindir)
