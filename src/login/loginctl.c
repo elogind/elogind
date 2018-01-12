@@ -1674,7 +1674,7 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
 }
 
 int main(int argc, char *argv[]) {
-        _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+        sd_bus *bus = NULL;
         int r;
 
         setlocale(LC_ALL, "");
@@ -1698,6 +1698,8 @@ int main(int argc, char *argv[]) {
         r = loginctl_main(argc, argv, bus);
 
 finish:
+        sd_bus_flush_close_unref(bus);
+
         pager_close();
 #if 0 /// elogind does that in elogind_cleanup()
         polkit_agent_close();
