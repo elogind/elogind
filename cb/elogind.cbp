@@ -29,6 +29,16 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="test-login">
+				<Option output="../test-login" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../elogind" />
+				<Option object_output="./" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />

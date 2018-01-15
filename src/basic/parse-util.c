@@ -23,9 +23,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if 0 /// Not used in elogind - was removed in glibc-2.26 anyway
 #ifdef __GLIBC__
 #include <xlocale.h>
 #endif // __GLIBC__
+#endif // 0
 
 #include "alloc-util.h"
 //#include "extract-word.h"

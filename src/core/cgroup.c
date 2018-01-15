@@ -1408,7 +1408,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         if (delete && m->cgroup_root)
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
-#if 0 /// elogind does not support the unified hierarchy, yet.
+#if 0 /// elogind is not init
         m->cgroup_inotify_wd_unit = hashmap_free(m->cgroup_inotify_wd_unit);
 
         m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);

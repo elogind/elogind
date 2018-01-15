@@ -192,11 +192,9 @@ int cg_kernel_controllers(Set *controllers);
 #endif // 0
 
 int cg_unified(void);
-#if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void);
 
 bool cg_is_unified_wanted(void);
-#endif // 0
 bool cg_is_legacy_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;

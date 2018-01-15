@@ -2180,18 +2180,9 @@ int cg_unified(void) {
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
                 return -errno;
 
-#if 0 /// elogind can not support the unified hierarchy
         if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC))
                 unified_cache = true;
         else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
-#else
-        /* elogind can not support the unified hierarchy as a controller,
-         * so always assume a classical hierarchy.
-         * If, ond only *if*, someone really wants to substitute systemd-login
-         * in an environment managed by systemd with elogin, we might have to
-         * add such a support. */
-        if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC))
-#endif // 0
                 unified_cache = false;
         else
                 return -ENOMEDIUM;
@@ -2199,11 +2190,11 @@ int cg_unified(void) {
         return unified_cache;
 }
 
-#if 0 /// UNNEEDED by elogind
 void cg_unified_flush(void) {
         unified_cache = -1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
         _cleanup_free_ char *fs = NULL;
         CGroupController c;
@@ -2246,6 +2237,7 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
 
         return 0;
 }
+#endif // 0
 
 bool cg_is_unified_wanted(void) {
         static thread_local int wanted = -1;
@@ -2282,11 +2274,6 @@ bool cg_is_unified_wanted(void) {
 bool cg_is_legacy_wanted(void) {
         return !cg_is_unified_wanted();
 }
-#else
-bool cg_is_legacy_wanted(void) {
-        return true;
-}
-#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
