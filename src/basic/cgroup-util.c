@@ -2569,8 +2569,6 @@ static int cg_unified_update(void) {
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = true;
                 } else {
-                        if (statfs("/sys/fs/cgroup/elogind/", &fs) < 0)
-                                return -errno;
 #endif // 0
                         if (!F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC))
                                 return -ENOMEDIUM;
