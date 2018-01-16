@@ -24,6 +24,7 @@ void elogind_set_program_name(const char* pcall);
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h> /* for pthread_atfork */
 
 #define strerror_r(e, m, k) (strerror_r(e, m, k) < 0 ? strdup("strerror_r() failed") : m);
 
@@ -98,6 +99,13 @@ typedef __compar_fn_t comparison_fn_t;
 #   define _PATH_WTMPX _PATH_WTMP
 # endif
 #endif // ENABLE_UTMP
+
+/*
+ * Systemd makes use of undeclared glibc-specific __register_atfork to avoid
+ * a depednency on libpthread, __register_atfork is roughly equivalent to
+ * pthread_atfork so define __register_atfork to pthread_atfork.
+ */
+#define __register_atfork(prepare,parent,child,dso) pthread_atfork(prepare,parent,child)
 
 #endif // !defined(__GLIBC__)
 
