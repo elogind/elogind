@@ -332,8 +332,16 @@ if get_option('tests') != 'false'
         endif
 endif
 
-ossfuzz = get_option('oss-fuzz')
-if ossfuzz
+want_ossfuzz = get_option('oss-fuzz')
+want_libfuzzer = get_option('llvm-fuzz')
+fuzzer_build = want_ossfuzz or want_libfuzzer
+if want_ossfuzz and want_libfuzzer
+        error('only one of oss-fuzz and llvm-fuzz can be specified')
+endif
+if want_libfuzzer
+        fuzzing_engine = meson.get_compiler('cpp').find_library('Fuzzer')
+endif
+if want_ossfuzz
         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
 endif
 
@@ -380,7 +388,7 @@ endforeach
 
 # the oss-fuzz fuzzers are not built with -fPIE, so don't
 # enable it when we are linking against them
-if not ossfuzz
+if not fuzzer_build
         if cc.has_argument('-fPIE')
               add_project_arguments('-fPIE', language : 'c')
         endif
@@ -436,7 +444,7 @@ foreach arg : ['-Wl,-z,relro',
                            cc.cmd_array(), '-x', 'c', arg,
                            '-include', link_test_c).returncode() == 0
         message('Linking with @0@ supported: @1@'.format(arg, have ? 'yes' : 'no'))
-        if have and (arg != '-pie' or not ossfuzz)
+        if have and (arg != '-pie' or not fuzzer_build)
                 add_project_link_arguments(arg, language : 'c')
         endif
 endforeach
@@ -902,10 +910,10 @@ endif
 #if 0 /// UNNEEDED by elogind
 # libmount = dependency('mount',
 #                       version : '>= 2.30',
-#                       required : not ossfuzz)
+#                       required : not fuzzer_build)
 # 
 # want_seccomp = get_option('seccomp')
-# if want_seccomp != 'false' and not ossfuzz
+# if want_seccomp != 'false' and not fuzzer_build
 #         libseccomp = dependency('libseccomp',
 #                                 version : '>= 2.3.1',
 #                                 required : want_seccomp == 'true')
@@ -921,7 +929,7 @@ conf.set10('HAVE_SECCOMP', have)
 m4_defines += have ? ['-DHAVE_SECCOMP'] : []
 
 want_selinux = get_option('selinux')
-if want_selinux != 'false' and not ossfuzz
+if want_selinux != 'false' and not fuzzer_build
         libselinux = dependency('libselinux',
                                 version : '>= 2.1.9',
                                 required : want_selinux == 'true')
@@ -935,7 +943,7 @@ m4_defines += have ? ['-DHAVE_SELINUX'] : []
 
 #if 0 /// UNNEEDED by elogind
 # want_apparmor = get_option('apparmor')
-# if want_apparmor != 'false' and not ossfuzz
+# if want_apparmor != 'false' and not fuzzer_build
 #         libapparmor = dependency('libapparmor',
 #                                  required : want_apparmor == 'true')
 #         have = libapparmor.found()
@@ -958,7 +966,7 @@ endif
 want_polkit = get_option('polkit')
 install_polkit = false
 install_polkit_pkla = false
-if want_polkit != 'false' and not ossfuzz
+if want_polkit != 'false' and not fuzzer_build
         install_polkit = true
 
         libpolkit = dependency('polkit-gobject-1',
@@ -971,7 +979,7 @@ endif
 conf.set10('ENABLE_POLKIT', install_polkit)
 
 want_acl = get_option('acl')
-if want_acl != 'false' and not ossfuzz
+if want_acl != 'false' and not fuzzer_build
         libacl = cc.find_library('acl', required : want_acl == 'true')
         have = libacl.found()
 else
@@ -982,7 +990,7 @@ conf.set10('HAVE_ACL', have)
 m4_defines += have ? ['-DHAVE_ACL'] : []
 
 want_audit = get_option('audit')
-if want_audit != 'false' and not ossfuzz
+if want_audit != 'false' and not fuzzer_build
         libaudit = dependency('audit', required : want_audit == 'true')
         have = libaudit.found()
 else
@@ -993,7 +1001,7 @@ conf.set10('HAVE_AUDIT', have)
 
 #if 0 /// UNNEEDED by elogind
 # want_blkid = get_option('blkid')
-# if want_blkid != 'false' and not ossfuzz
+# if want_blkid != 'false' and not fuzzer_build
 #         libblkid = dependency('blkid', required : want_blkid == 'true')
 #         have = libblkid.found()
 # else
@@ -1003,7 +1011,7 @@ conf.set10('HAVE_AUDIT', have)
 # conf.set10('HAVE_BLKID', have)
 # 
 # want_kmod = get_option('kmod')
-# if want_kmod != 'false' and not ossfuzz
+# if want_kmod != 'false' and not fuzzer_build
 #         libkmod = dependency('libkmod',
 #                              version : '>= 15',
 #                              required : want_kmod == 'true')
@@ -1019,7 +1027,7 @@ libkmod = []
 #endif // 0
 
 want_pam = get_option('pam')
-if want_pam != 'false' and not ossfuzz
+if want_pam != 'false' and not fuzzer_build
         libpam = cc.find_library('pam', required : want_pam == 'true')
         libpam_misc = cc.find_library('pam_misc', required : want_pam == 'true')
         have = libpam.found() and libpam_misc.found()
@@ -1033,7 +1041,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 
 #if 0 /// UNNEEDED by elogind
 # want_microhttpd = get_option('microhttpd')
-# if want_microhttpd != 'false' and not ossfuzz
+# if want_microhttpd != 'false' and not fuzzer_build
 #         libmicrohttpd = dependency('libmicrohttpd',
 #                                    version : '>= 0.9.33',
 #                                    required : want_microhttpd == 'true')
@@ -1046,7 +1054,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # m4_defines += have ? ['-DHAVE_MICROHTTPD'] : []
 # 
 # want_libcryptsetup = get_option('libcryptsetup')
-# if want_libcryptsetup != 'false' and not ossfuzz
+# if want_libcryptsetup != 'false' and not fuzzer_build
 #         libcryptsetup = dependency('libcryptsetup',
 #                                    version : '>= 1.6.0',
 #                                    required : want_libcryptsetup == 'true')
@@ -1058,7 +1066,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_LIBCRYPTSETUP', have)
 # 
 # want_libcurl = get_option('libcurl')
-# if want_libcurl != 'false' and not ossfuzz
+# if want_libcurl != 'false' and not fuzzer_build
 #         libcurl = dependency('libcurl',
 #                              version : '>= 7.32.0',
 #                              required : want_libcurl == 'true')
@@ -1076,7 +1084,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         error('libidn and libidn2 cannot be requested simultaneously')
 # endif
 # 
-# if want_libidn != 'false' and want_libidn2 != 'true' and not ossfuzz
+# if want_libidn != 'false' and want_libidn2 != 'true' and not fuzzer_build
 #         libidn = dependency('libidn',
 #                             required : want_libidn == 'true')
 #         have = libidn.found()
@@ -1086,7 +1094,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBIDN', have)
 # m4_defines += have ? ['-DHAVE_LIBIDN'] : []
-# if not have and want_libidn2 != 'false' and not ossfuzz
+# if not have and want_libidn2 != 'false' and not fuzzer_build
 #         # libidn is used for both libidn and libidn2 objects
 #         libidn = dependency('libidn2',
 #                             required : want_libidn2 == 'true')
@@ -1098,7 +1106,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # m4_defines += have ? ['-DHAVE_LIBIDN2'] : []
 # 
 # want_libiptc = get_option('libiptc')
-# if want_libiptc != 'false' and not ossfuzz
+# if want_libiptc != 'false' and not fuzzer_build
 #         libiptc = dependency('libiptc',
 #                              required : want_libiptc == 'true')
 #         have = libiptc.found()
@@ -1110,7 +1118,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # m4_defines += have ? ['-DHAVE_LIBIPTC'] : []
 # 
 # want_qrencode = get_option('qrencode')
-# if want_qrencode != 'false' and not ossfuzz
+# if want_qrencode != 'false' and not fuzzer_build
 #         libqrencode = dependency('libqrencode',
 #                                  required : want_qrencode == 'true')
 #         have = libqrencode.found()
@@ -1121,7 +1129,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_QRENCODE', have)
 # 
 # want_gcrypt = get_option('gcrypt')
-# if want_gcrypt != 'false' and not ossfuzz
+# if want_gcrypt != 'false' and not fuzzer_build
 #         libgcrypt = cc.find_library('gcrypt', required : want_gcrypt == 'true')
 #         libgpg_error = cc.find_library('gpg-error', required : want_gcrypt == 'true')
 #         have = libgcrypt.found() and libgpg_error.found()
@@ -1136,7 +1144,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_GCRYPT', have)
 # 
 # want_gnutls = get_option('gnutls')
-# if want_gnutls != 'false' and not ossfuzz
+# if want_gnutls != 'false' and not fuzzer_build
 #         libgnutls = dependency('gnutls',
 #                                version : '>= 3.1.4',
 #                                required : want_gnutls == 'true')
@@ -1148,7 +1156,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_GNUTLS', have)
 # 
 # want_elfutils = get_option('elfutils')
-# if want_elfutils != 'false' and not ossfuzz
+# if want_elfutils != 'false' and not fuzzer_build
 #         libdw = dependency('libdw',
 #                            required : want_elfutils == 'true')
 #         have = libdw.found()
@@ -1159,7 +1167,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_ELFUTILS', have)
 # 
 # want_zlib = get_option('zlib')
-# if want_zlib != 'false' and not ossfuzz
+# if want_zlib != 'false' and not fuzzer_build
 #         libz = dependency('zlib',
 #                           required : want_zlib == 'true')
 #         have = libz.found()
@@ -1170,7 +1178,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_ZLIB', have)
 # 
 # want_bzip2 = get_option('bzip2')
-# if want_bzip2 != 'false' and not ossfuzz
+# if want_bzip2 != 'false' and not fuzzer_build
 #         libbzip2 = cc.find_library('bz2',
 #                                    required : want_bzip2 == 'true')
 #         have = libbzip2.found()
@@ -1181,7 +1189,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_BZIP2', have)
 # 
 # want_xz = get_option('xz')
-# if want_xz != 'false' and not ossfuzz
+# if want_xz != 'false' and not fuzzer_build
 #         libxz = dependency('liblzma',
 #                            required : want_xz == 'true')
 #         have = libxz.found()
@@ -1192,7 +1200,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_XZ', have)
 # 
 # want_lz4 = get_option('lz4')
-# if want_lz4 != 'false' and not ossfuzz
+# if want_lz4 != 'false' and not fuzzer_build
 #         liblz4 = dependency('liblz4',
 #                             required : want_lz4 == 'true')
 #         have = liblz4.found()
@@ -1203,7 +1211,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_LZ4', have)
 # 
 # want_xkbcommon = get_option('xkbcommon')
-# if want_xkbcommon != 'false' and not ossfuzz
+# if want_xkbcommon != 'false' and not fuzzer_build
 #         libxkbcommon = dependency('xkbcommon',
 #                                   version : '>= 0.3.0',
 #                                   required : want_xkbcommon == 'true')
@@ -1232,7 +1240,7 @@ libxkbcommon = []
 conf.set10('HAVE_XKBCOMMON', have)
 
 want_glib = get_option('glib')
-if want_glib != 'false' and not ossfuzz
+if want_glib != 'false' and not fuzzer_build
         libglib =    dependency('glib-2.0',
                                 version : '>= 2.22.0',
                                 required : want_glib == 'true')
@@ -1251,7 +1259,7 @@ endif
 conf.set10('HAVE_GLIB', have)
 
 want_dbus = get_option('dbus')
-if want_dbus != 'false' and not ossfuzz
+if want_dbus != 'false' and not fuzzer_build
         libdbus = dependency('dbus-1',
                              version : '>= 1.3.2',
                              required : want_dbus == 'true')
@@ -1264,7 +1272,7 @@ conf.set10('HAVE_DBUS', have)
 
 #if 0 /// UNNEEDED by elogind
 # default_dnssec = get_option('default-dnssec')
-# if ossfuzz
+# if fuzzer_build
 #         default_dnssec = 'no'
 # endif
 # if default_dnssec != 'no' and conf.get('HAVE_GCRYPT') == 0
@@ -2774,7 +2782,7 @@ endforeach
 #         defs = tuple.length() >= 4 ? tuple[3] : []
 #         incs = tuple.length() >= 5 ? tuple[4] : includes
 # 
-#         if ossfuzz
+#         if fuzzer_build
 #                 dependencies += fuzzing_engine
 #         else
 #                 sources += 'src/fuzz/fuzz-main.c'
