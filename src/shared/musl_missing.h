@@ -86,7 +86,7 @@ typedef __compar_fn_t comparison_fn_t;
 #endif
 
 /* Make musl utmp/wtmp stubs visible if needed. */
-#ifdef HAVE_UTMP
+#if ENABLE_UTMP
 # include <paths.h>
 # include <utmp.h>
 # include <utmpx.h>
@@ -96,7 +96,7 @@ typedef __compar_fn_t comparison_fn_t;
 # if defined(_PATH_WTMP) && !defined(_PATH_WTMPX)
 #   define _PATH_WTMPX _PATH_WTMP
 # endif
-#endif // HAVE_UTMP
+#endif // ENABLE_UTMP
 
 #endif // !defined(__GLIBC__)
 
