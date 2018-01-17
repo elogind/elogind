@@ -39,6 +39,7 @@
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
+//#include "process-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
@@ -670,6 +671,14 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
          * as-is: fully qualified and relative to your host's root. Optionally, specify the root parameter to tell this
          * function what to do when encountering a symlink with an absolute path as directory: prefix it by the
          * specified path. */
+
+        if (original_root) {
+                if (isempty(original_root)) /* What's this even supposed to mean? */
+                        return -EINVAL;
+
+                if (path_equal(original_root, "/")) /* A root directory of "/" is identical to none */
+                        original_root = NULL;
+        }
 
         if (original_root) {
                 r = path_make_absolute_cwd(original_root, &root);
