@@ -45,6 +45,7 @@ bool path_is_absolute(const char *p) _pure_;
 #if 0 /// UNNEEDED by elogind
 char* path_make_absolute(const char *p, const char *prefix);
 #endif // 0
+int safe_getcwd(char **ret);
 int path_make_absolute_cwd(const char *p, char **ret);
 #if 0 /// UNNEEDED by elogind
 int path_make_relative(const char *from_dir, const char *to_path, char **_r);
