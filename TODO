@@ -24,8 +24,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* there should be path_hash_ops and we should use it in tmpfiles' hashmap object to deal with identical but differently spelt paths
-
 * rework pid watching logic, allow any number of units watch the same pid
 
 * be stricter with fds we receive for the fdstore: close them asynchronously
@@ -39,9 +37,14 @@ Features:
 
 * add bpf-based implementation of devices cgroup controller logic for compat with cgroupsv2 as supported by newest kernel
 
-* introduce sd_id128_get_boot_app_specific() which is like
-  sd_id128_get_machine_app_specific(). After all on long-running systems both
-  IDs have similar properties.
+* emulate properties of the root cgroup on controllers that don't support such
+  properties natively on cpu/io/memory, the way we already do it for
+  "pids". Also, add the same logic to cgtop.
+
+* set TasksAccounting=1 on the root slice if we are running on the root cgroup,
+  and similar for the others, as soon as we emulate them properly. After all,
+  Linux keeps these system-wide stats anyway, and it costs nothing to expose
+  them.
 
 * sd-bus: add vtable flag, that may be used to request client creds implicitly
   and asynchronously before dispatching the operation
