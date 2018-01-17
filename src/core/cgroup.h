@@ -197,8 +197,6 @@ Unit* manager_get_unit_by_pid(Manager *m, pid_t pid);
 int unit_search_main_pid(Unit *u, pid_t *ret);
 int unit_watch_all_pids(Unit *u);
 
-int unit_synthesize_cgroup_empty_event(Unit *u);
-
 int unit_get_memory_current(Unit *u, uint64_t *ret);
 int unit_get_tasks_current(Unit *u, uint64_t *ret);
 int unit_get_cpu_usage(Unit *u, nsec_t *ret);
@@ -214,6 +212,8 @@ int unit_reset_ip_accounting(Unit *u);
         })
 
 #endif // 0
+bool unit_has_root_cgroup(Unit *u);
+
 int manager_notify_cgroup_empty(Manager *m, const char *group);
 
 #if 0 /// UNNEEDED by elogind
