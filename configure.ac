@@ -784,7 +784,7 @@ AC_SUBST([pamconfdir], [$with_pamconfdir])
 AC_SUBST([rootprefix], [$with_rootprefix])
 AC_SUBST([rootlibdir], [$with_rootlibdir])
 AC_SUBST([rootlibexecdir], [$with_rootlibexecdir])
-AC_SUBST([cgroup_controller], [$with_cgroupctrl])
+AC_SUBST([cgroup_controller], [name=$with_cgroupctrl])
 
 AC_CONFIG_FILES([
         Makefile
