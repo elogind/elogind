@@ -24,6 +24,8 @@ Janitorial Clean-ups:
 
 Features:
 
+* there should be path_hash_ops and we should use it in tmpfiles' hashmap object to deal with identical but differently spelt paths
+
 * rework pid watching logic, allow any number of units watch the same pid
 
 * be stricter with fds we receive for the fdstore: close them asynchronously
@@ -180,6 +182,9 @@ Features:
   execve() and turn off watchdog support. Then, use that to implement
   "systemd-gdb" for attaching to the start-up of any system service in its
   natural habitat.
+
+* replace all canonicalize_file_name() invocations by chase_symlinks(), in
+  particulr those where a rootdir is relevant.
 
 * maybe introduce gpt auto discovery for /var/tmp?
 
