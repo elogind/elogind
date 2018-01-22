@@ -85,6 +85,64 @@ static thread_local sd_bus *default_user_bus = NULL;
 #endif // 0
 static thread_local sd_bus *default_starter_bus = NULL;
 
+static sd_bus **bus_choose_default(int (**bus_open)(sd_bus **)) {
+        const char *e;
+
+        /* Let's try our best to reuse another cached connection. If
+         * the starter bus type is set, connect via our normal
+         * connection logic, ignoring $DBUS_STARTER_ADDRESS, so that
+         * we can share the connection with the user/system default
+         * bus. */
+
+        e = secure_getenv("DBUS_STARTER_BUS_TYPE");
+        if (e) {
+                if (streq(e, "system")) {
+                        if (bus_open)
+                                *bus_open = sd_bus_open_system;
+                        return &default_system_bus;
+                } else if (STR_IN_SET(e, "user", "session")) {
+                        if (bus_open)
+                                *bus_open = sd_bus_open_user;
+                        return &default_user_bus;
+                }
+        }
+
+        /* No type is specified, so we have not other option than to
+         * use the starter address if it is set. */
+        e = secure_getenv("DBUS_STARTER_ADDRESS");
+        if (e) {
+                if (bus_open)
+                        *bus_open = sd_bus_open;
+                return &default_starter_bus;
+        }
+
+        /* Finally, if nothing is set use the cached connection for
+         * the right scope */
+
+        if (cg_pid_get_owner_uid(0, NULL) >= 0) {
+                if (bus_open)
+                        *bus_open = sd_bus_open_user;
+                return &default_user_bus;
+        } else {
+                if (bus_open)
+                        *bus_open = sd_bus_open_system;
+                return &default_system_bus;
+        }
+}
+
+sd_bus *bus_resolve(sd_bus *bus) {
+        switch ((uintptr_t) bus) {
+        case (uintptr_t) SD_BUS_DEFAULT:
+                return *(bus_choose_default(NULL));
+        case (uintptr_t) SD_BUS_DEFAULT_USER:
+                return default_user_bus;
+        case (uintptr_t) SD_BUS_DEFAULT_SYSTEM:
+                return default_system_bus;
+        default:
+                return bus;
+        }
+}
+
 void bus_close_io_fds(sd_bus *b) {
         assert(b);
 
@@ -224,6 +282,7 @@ _public_ int sd_bus_set_address(sd_bus *bus, const char *address) {
         char *a;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(address, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
@@ -240,6 +299,7 @@ _public_ int sd_bus_set_address(sd_bus *bus, const char *address) {
 
 _public_ int sd_bus_set_fd(sd_bus *bus, int input_fd, int output_fd) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(input_fd >= 0, -EBADF);
         assert_return(output_fd >= 0, -EBADF);
@@ -254,6 +314,7 @@ _public_ int sd_bus_set_exec(sd_bus *bus, const char *path, char *const argv[]) 
         char *p, **a;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(path, -EINVAL);
         assert_return(!strv_isempty(argv), -EINVAL);
@@ -280,6 +341,7 @@ _public_ int sd_bus_set_exec(sd_bus *bus, const char *path, char *const argv[]) 
 
 _public_ int sd_bus_set_bus_client(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus->patch_sender, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
@@ -290,6 +352,7 @@ _public_ int sd_bus_set_bus_client(sd_bus *bus, int b) {
 
 _public_ int sd_bus_set_monitor(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -299,6 +362,7 @@ _public_ int sd_bus_set_monitor(sd_bus *bus, int b) {
 
 _public_ int sd_bus_negotiate_fds(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -308,6 +372,7 @@ _public_ int sd_bus_negotiate_fds(sd_bus *bus, int b) {
 
 _public_ int sd_bus_negotiate_timestamp(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!IN_SET(bus->state, BUS_CLOSING, BUS_CLOSED), -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -320,6 +385,7 @@ _public_ int sd_bus_negotiate_timestamp(sd_bus *bus, int b) {
 
 _public_ int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t mask) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(mask <= _SD_BUS_CREDS_ALL, -EINVAL);
         assert_return(!IN_SET(bus->state, BUS_CLOSING, BUS_CLOSED), -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
@@ -334,6 +400,7 @@ _public_ int sd_bus_negotiate_creds(sd_bus *bus, int b, uint64_t mask) {
 
 _public_ int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t server_id) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(b || sd_id128_equal(server_id, SD_ID128_NULL), -EINVAL);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
@@ -345,6 +412,7 @@ _public_ int sd_bus_set_server(sd_bus *bus, int b, sd_id128_t server_id) {
 
 _public_ int sd_bus_set_anonymous(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -354,6 +422,7 @@ _public_ int sd_bus_set_anonymous(sd_bus *bus, int b) {
 
 _public_ int sd_bus_set_trusted(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -363,6 +432,7 @@ _public_ int sd_bus_set_trusted(sd_bus *bus, int b) {
 
 _public_ int sd_bus_set_description(sd_bus *bus, const char *description) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -371,6 +441,7 @@ _public_ int sd_bus_set_description(sd_bus *bus, const char *description) {
 
 _public_ int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         bus->allow_interactive_authorization = !!b;
@@ -379,6 +450,7 @@ _public_ int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b) {
 
 _public_ int sd_bus_get_allow_interactive_authorization(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->allow_interactive_authorization;
@@ -386,6 +458,7 @@ _public_ int sd_bus_get_allow_interactive_authorization(sd_bus *bus) {
 
 _public_ int sd_bus_set_watch_bind(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -395,6 +468,7 @@ _public_ int sd_bus_set_watch_bind(sd_bus *bus, int b) {
 
 _public_ int sd_bus_get_watch_bind(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->watch_bind;
@@ -402,6 +476,7 @@ _public_ int sd_bus_get_watch_bind(sd_bus *bus) {
 
 _public_ int sd_bus_set_connected_signal(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -411,6 +486,7 @@ _public_ int sd_bus_set_connected_signal(sd_bus *bus, int b) {
 
 _public_ int sd_bus_get_connected_signal(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->connected_signal;
@@ -1118,6 +1194,7 @@ _public_ int sd_bus_start(sd_bus *bus) {
         int r;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -1503,6 +1580,7 @@ _public_ sd_bus *sd_bus_unref(sd_bus *bus) {
 _public_ int sd_bus_is_open(sd_bus *bus) {
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return BUS_IS_OPEN(bus->state);
@@ -1510,6 +1588,7 @@ _public_ int sd_bus_is_open(sd_bus *bus) {
 
 _public_ int sd_bus_is_ready(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->state == BUS_RUNNING;
@@ -1519,6 +1598,7 @@ _public_ int sd_bus_can_send(sd_bus *bus, char type) {
         int r;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state != BUS_UNSET, -ENOTCONN);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -1543,6 +1623,7 @@ _public_ int sd_bus_get_bus_id(sd_bus *bus, sd_id128_t *id) {
         int r;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(id, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -2143,6 +2224,7 @@ fail:
 _public_ int sd_bus_get_fd(sd_bus *bus) {
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->input_fd == bus->output_fd, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -2162,6 +2244,7 @@ _public_ int sd_bus_get_events(sd_bus *bus) {
         int flags = 0;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         switch (bus->state) {
@@ -2207,6 +2290,7 @@ _public_ int sd_bus_get_timeout(sd_bus *bus, uint64_t *timeout_usec) {
         struct reply_callback *c;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(timeout_usec, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -2848,6 +2932,7 @@ static int bus_process_internal(sd_bus *bus, bool hint_priority, int64_t priorit
          * means *ret is filled in with an unprocessed message. */
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         /* We don't allow recursively invoking sd_bus_process(). */
@@ -2979,6 +3064,7 @@ static int bus_poll(sd_bus *bus, bool need_more, uint64_t timeout_usec) {
 _public_ int sd_bus_wait(sd_bus *bus, uint64_t timeout_usec) {
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         if (bus->state == BUS_CLOSING)
@@ -2997,6 +3083,7 @@ _public_ int sd_bus_flush(sd_bus *bus) {
         int r;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         if (bus->state == BUS_CLOSING)
@@ -3045,6 +3132,7 @@ _public_ int sd_bus_add_filter(
         sd_bus_slot *s;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(callback, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -3143,6 +3231,7 @@ static int bus_add_match_full(
         int r = 0;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(match, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -3443,6 +3532,7 @@ _public_ int sd_bus_attach_event(sd_bus *bus, sd_event *event, int priority) {
         int r;
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus->event, -EBUSY);
 
         assert(!bus->input_io_event_source);
@@ -3496,6 +3586,7 @@ fail:
 
 _public_ int sd_bus_detach_event(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
 
         if (!bus->event)
                 return 0;
@@ -3588,40 +3679,16 @@ _public_ int sd_bus_default_user(sd_bus **ret) {
 }
 
 _public_ int sd_bus_default(sd_bus **ret) {
+        int (*bus_open)(sd_bus **) = NULL;
+        sd_bus **busp;
 
-        const char *e;
-
-        /* Let's try our best to reuse another cached connection. If
-         * the starter bus type is set, connect via our normal
-         * connection logic, ignoring $DBUS_STARTER_ADDRESS, so that
-         * we can share the connection with the user/system default
-         * bus. */
-
-        e = secure_getenv("DBUS_STARTER_BUS_TYPE");
-        if (e) {
-                if (streq(e, "system"))
-                        return sd_bus_default_system(ret);
 #if 0 /// elogind does not support systemd units
-                else if (STR_IN_SET(e, "user", "session"))
-                        return sd_bus_default_user(ret);
 #endif // 0
-        }
-
-        /* No type is specified, so we have not other option than to
-         * use the starter address if it is set. */
-        e = secure_getenv("DBUS_STARTER_ADDRESS");
-        if (e)
-                return bus_default(sd_bus_open, &default_starter_bus, ret);
-
-        /* Finally, if nothing is set use the cached connection for
-         * the right scope */
 
 #if 0 /// elogind does not support systemd user instances
-        if (cg_pid_get_owner_uid(0, NULL) >= 0)
-                return sd_bus_default_user(ret);
-        else
 #endif // 0
-                return sd_bus_default_system(ret);
+        busp = bus_choose_default(&bus_open);
+        return bus_default(bus_open, busp, ret);
 }
 
 _public_ int sd_bus_get_tid(sd_bus *b, pid_t *tid) {
@@ -3848,6 +3915,7 @@ _public_ int sd_bus_path_decode_many(const char *path, const char *path_template
 
 _public_ int sd_bus_try_close(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return -EOPNOTSUPP;
@@ -3855,6 +3923,7 @@ _public_ int sd_bus_try_close(sd_bus *bus) {
 
 _public_ int sd_bus_get_description(sd_bus *bus, const char **description) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(description, -EINVAL);
         assert_return(bus->description, -ENXIO);
         assert_return(!bus_pid_changed(bus), -ECHILD);
@@ -3883,6 +3952,7 @@ int bus_get_root_path(sd_bus *bus) {
 
 _public_ int sd_bus_get_scope(sd_bus *bus, const char **scope) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(scope, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -3902,6 +3972,7 @@ _public_ int sd_bus_get_scope(sd_bus *bus, const char **scope) {
 _public_ int sd_bus_get_address(sd_bus *bus, const char **address) {
 
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(address, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -3915,6 +3986,7 @@ _public_ int sd_bus_get_address(sd_bus *bus, const char **address) {
 
 _public_ int sd_bus_get_creds_mask(sd_bus *bus, uint64_t *mask) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(mask, -EINVAL);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
@@ -3924,6 +3996,7 @@ _public_ int sd_bus_get_creds_mask(sd_bus *bus, uint64_t *mask) {
 
 _public_ int sd_bus_is_bus_client(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->bus_client;
@@ -3931,6 +4004,7 @@ _public_ int sd_bus_is_bus_client(sd_bus *bus) {
 
 _public_ int sd_bus_is_server(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->is_server;
@@ -3938,6 +4012,7 @@ _public_ int sd_bus_is_server(sd_bus *bus) {
 
 _public_ int sd_bus_is_anonymous(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->anonymous_auth;
@@ -3945,6 +4020,7 @@ _public_ int sd_bus_is_anonymous(sd_bus *bus) {
 
 _public_ int sd_bus_is_trusted(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->trusted;
@@ -3952,6 +4028,7 @@ _public_ int sd_bus_is_trusted(sd_bus *bus) {
 
 _public_ int sd_bus_is_monitor(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         return bus->is_monitor;
@@ -3978,6 +4055,7 @@ _public_ void sd_bus_default_flush_close(void) {
 
 _public_ int sd_bus_set_exit_on_disconnect(sd_bus *bus, int b) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
 
         /* Turns on exit-on-disconnect, and triggers it immediately if the bus connection was already
          * disconnected. Note that this is triggered exclusively on disconnections triggered by the server side, never
@@ -3990,12 +4068,14 @@ _public_ int sd_bus_set_exit_on_disconnect(sd_bus *bus, int b) {
 
 _public_ int sd_bus_get_exit_on_disconnect(sd_bus *bus) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
 
         return bus->exit_on_disconnect;
 }
 
 _public_ int sd_bus_set_sender(sd_bus *bus, const char *sender) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(!bus->bus_client, -EPERM);
         assert_return(!sender || service_name_is_valid(sender), -EINVAL);
 
@@ -4004,6 +4084,7 @@ _public_ int sd_bus_set_sender(sd_bus *bus, const char *sender) {
 
 _public_ int sd_bus_get_sender(sd_bus *bus, const char **ret) {
         assert_return(bus, -EINVAL);
+        assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(ret, -EINVAL);
 
         if (!bus->patch_sender)
