@@ -316,6 +316,10 @@ void log_set_always_reopen_console(bool b);
 #endif // 0
 void log_set_open_when_needed(bool b);
 
+/* If turned on, then we'll never use IPC-based logging, i.e. never log to syslog or the journal. We'll only log to
+ * stderr, the console or kmsg */
+void log_set_prohibit_ipc(bool b);
+
 int log_syntax_internal(
                 const char *unit,
                 int level,
