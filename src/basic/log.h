@@ -310,6 +310,7 @@ LogTarget log_target_from_string(const char *s) _pure_;
 #if 0 /// UNNEEDED by elogind
 void log_received_signal(int level, const struct signalfd_siginfo *si);
 
+/* If turned on, any requests for a log target involving "syslog" will be implicitly upgraded to the equivalent journal target */
 void log_set_upgrade_syslog_to_journal(bool b);
 void log_set_always_reopen_console(bool b);
 #endif // 0
