@@ -22,6 +22,9 @@
 #include "macro.h"
 #include "string-util.h"
 
+/// Additional includes needed by elogind
+#include "musl_missing.h"
+
 static void test_hexchar(void) {
         assert_se(hexchar(0xa) == 'a');
         assert_se(hexchar(0x0) == '0');

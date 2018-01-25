@@ -55,13 +55,14 @@ extern char *program_invocation_short_name;
 
 /* strndupa may already be defined in another compatibility header */
 #if !defined(strndupa)
-#define strndupa(src, n) \
-        (__extension__ ({const char *in = (src);   \
-                size_t len = strnlen(in, (n)) + 1; \
-                char *out = (char *) alloca(len);  \
-                out[len-1] = '\0';                 \
-                (char *) memcpy(out, in, len-1);}) \
-        )
+#define strndupa(x_src, x_n) \
+        (__extension__ ( {   \
+                const char* x_in  = (x_src);                  \
+                size_t      x_len = strnlen(x_in, (x_n)) + 1; \
+                char*       x_out = (char *) alloca(x_len);   \
+                x_out[x_len-1] = '\0';                        \
+                (char *) memcpy(x_out, x_in, x_len-1);        \
+        } ) )
 #endif
 
 /* See http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html */
