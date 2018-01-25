@@ -16,7 +16,7 @@
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 project('elogind', 'c',
-        version : '237',
+        version : '236',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -28,8 +28,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.21.0'
-# libudev_version = '1.6.9'
+# libsystemd_version = '0.20.0'
+# libudev_version = '1.6.8'
 #else
 libelogind_version = '0.20.0'
 #endif // 0
@@ -665,7 +665,8 @@ conf.set('GPERF_LEN_TYPE', gperf_len_type,
 if not cc.has_header('sys/capability.h')
         error('POSIX caps headers not found')
 endif
-foreach header : ['linux/btrfs.h',
+foreach header : ['crypt.h',
+                  'linux/btrfs.h',
                   'linux/memfd.h',
                   'linux/vm_sockets.h',
                   'sys/auxv.h',
