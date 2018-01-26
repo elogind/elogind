@@ -96,11 +96,6 @@ void log_close(void);
 void log_forget_fds(void);
 #endif // 0
 
-void log_close_syslog(void);
-void log_close_journal(void);
-void log_close_kmsg(void);
-void log_close_console(void);
-
 void log_parse_environment_realm(LogRealm realm);
 #define log_parse_environment() \
         log_parse_environment_realm(LOG_REALM)
