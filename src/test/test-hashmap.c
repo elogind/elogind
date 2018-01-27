@@ -80,32 +80,61 @@ static void test_string_compare_func(void) {
         assert_se(string_compare_func("fred", "fred") == 0);
 }
 
-static void test_path_hashmap(void) {
-        _cleanup_(hashmap_freep) Hashmap *h = NULL;
+static void compare_cache(Hashmap *map, IteratedCache *cache) {
+        const void **keys = NULL, **values = NULL;
+        unsigned num, idx;
+        Iterator iter;
+        void *k, *v;
 
-        assert_se(h = hashmap_new(&path_hash_ops));
+        assert_se(iterated_cache_get(cache, &keys, &values, &num) == 0);
+        assert_se(num == 0 || keys);
+        assert_se(num == 0 || values);
 
-        assert_se(hashmap_put(h, "foo", INT_TO_PTR(1)) >= 0);
-        assert_se(hashmap_put(h, "/foo", INT_TO_PTR(2)) >= 0);
-        assert_se(hashmap_put(h, "//foo", INT_TO_PTR(3)) == -EEXIST);
-        assert_se(hashmap_put(h, "//foox/", INT_TO_PTR(4)) >= 0);
-        assert_se(hashmap_put(h, "/foox////", INT_TO_PTR(5)) == -EEXIST);
-        assert_se(hashmap_put(h, "foo//////bar/quux//", INT_TO_PTR(6)) >= 0);
-        assert_se(hashmap_put(h, "foo/bar//quux/", INT_TO_PTR(8)) == -EEXIST);
+        idx = 0;
+        HASHMAP_FOREACH_KEY(v, k, map, iter) {
+                assert_se(v == values[idx]);
+                assert_se(k == keys[idx]);
 
-        assert_se(hashmap_get(h, "foo") == INT_TO_PTR(1));
-        assert_se(hashmap_get(h, "foo/") == INT_TO_PTR(1));
-        assert_se(hashmap_get(h, "foo////") == INT_TO_PTR(1));
-        assert_se(hashmap_get(h, "/foo") == INT_TO_PTR(2));
-        assert_se(hashmap_get(h, "//foo") == INT_TO_PTR(2));
-        assert_se(hashmap_get(h, "/////foo////") == INT_TO_PTR(2));
-        assert_se(hashmap_get(h, "/////foox////") == INT_TO_PTR(4));
-        assert_se(hashmap_get(h, "/foox/") == INT_TO_PTR(4));
-        assert_se(hashmap_get(h, "/foox") == INT_TO_PTR(4));
-        assert_se(!hashmap_get(h, "foox"));
-        assert_se(hashmap_get(h, "foo/bar/quux") == INT_TO_PTR(6));
-        assert_se(hashmap_get(h, "foo////bar////quux/////") == INT_TO_PTR(6));
-        assert_se(!hashmap_get(h, "/foo////bar////quux/////"));
+                idx++;
+        }
+
+        assert_se(idx == num);
+}
+
+static void test_iterated_cache(void) {
+        Hashmap *m;
+        IteratedCache *c;
+
+        assert_se(m = hashmap_new(NULL));
+        assert_se(c = hashmap_iterated_cache_new(m));
+        compare_cache(m, c);
+
+        for (int stage = 0; stage < 100; stage++) {
+
+                for (int i = 0; i < 100; i++) {
+                        int foo = stage * 1000 + i;
+
+                        assert_se(hashmap_put(m, INT_TO_PTR(foo), INT_TO_PTR(foo + 777)) == 1);
+                }
+
+                compare_cache(m, c);
+
+                if (!(stage % 10)) {
+                        for (int i = 0; i < 100; i++) {
+                                int foo = stage * 1000 + i;
+
+                                assert_se(hashmap_remove(m, INT_TO_PTR(foo)) == INT_TO_PTR(foo + 777));
+                        }
+
+                        compare_cache(m, c);
+                }
+        }
+
+        hashmap_clear(m);
+        compare_cache(m, c);
+
+        assert_se(hashmap_free(m) == NULL);
+        assert_se(iterated_cache_free(c) == NULL);
 }
 
 int main(int argc, const char *argv[]) {
@@ -117,7 +146,5 @@ int main(int argc, const char *argv[]) {
         test_uint64_compare_func();
         test_trivial_compare_func();
         test_string_compare_func();
-        test_path_hashmap();
-
-        return 0;
+        test_iterated_cache();
 }
