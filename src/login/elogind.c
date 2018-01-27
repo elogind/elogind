@@ -125,6 +125,12 @@ static int elogind_daemonize(void) {
 
         /* The first child has to become a new session leader. */
         close_all_fds(NULL, 0);
+
+        /* close_all_fds() does not close 0,1,2 */
+        close(0);
+        close(1);
+        close(2);
+
         SID = setsid();
         if ((pid_t)-1 == SID)
                 return log_error_errno(errno, "Failed to create new SID: %m");
