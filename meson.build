@@ -16,7 +16,7 @@
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 project('elogind', 'c',
-        version : '236',
+        version : '237',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -28,8 +28,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.20.0'
-# libudev_version = '1.6.8'
+# libsystemd_version = '0.21.0'
+# libudev_version = '1.6.9'
 #else
 libelogind_version = '0.20.0'
 #endif // 0
@@ -162,12 +162,14 @@ modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 # catalogdir = join_paths(prefixdir, 'lib/systemd/catalog')
 # kernelinstalldir = join_paths(prefixdir, 'lib/kernel/install.d')
 # factorydir = join_paths(datadir, 'factory')
-# docdir = join_paths(datadir, 'doc/systemd')
 # bootlibdir = join_paths(prefixdir, 'lib/systemd/boot/efi')
 # testsdir = join_paths(prefixdir, 'lib/systemd/tests')
 # systemdstatedir = join_paths(localstatedir, 'lib/systemd')
 # catalogstatedir = join_paths(systemdstatedir, 'catalog')
 # randomseeddir = join_paths(localstatedir, 'lib/systemd')
+# if docdir == ''
+#         docdir = join_paths(datadir, 'doc/systemd')
+# endif
 #else
 pkgdatadir = join_paths(datadir, 'elogind')
 pkgsysconfdir = join_paths(sysconfdir, 'elogind')
@@ -323,11 +325,27 @@ substs.set('VARLOGDIR',                                       varlogdir)
 cc = meson.get_compiler('c')
 pkgconfig = import('pkgconfig')
 check_compilation_sh = find_program('tools/meson-check-compilation.sh')
+meson_build_sh = find_program('tools/meson-build.sh')
 
-cxx = find_program('c++', required : false)
-if cxx.found()
-        #  Used only for tests
-        add_languages('cpp')
+if get_option('tests') != 'false'
+        cxx = find_program('c++', required : false)
+        if cxx.found()
+                #  Used only for tests
+                add_languages('cpp')
+        endif
+endif
+
+want_ossfuzz = get_option('oss-fuzz')
+want_libfuzzer = get_option('llvm-fuzz')
+fuzzer_build = want_ossfuzz or want_libfuzzer
+if want_ossfuzz and want_libfuzzer
+        error('only one of oss-fuzz and llvm-fuzz can be specified')
+endif
+if want_libfuzzer
+        fuzzing_engine = meson.get_compiler('cpp').find_library('Fuzzer')
+endif
+if want_ossfuzz
+        fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
 endif
 
 foreach arg : ['-Wextra',
@@ -364,13 +382,20 @@ foreach arg : ['-Wextra',
                '-fvisibility=hidden',
                '-fstack-protector',
                '-fstack-protector-strong',
-               '-fPIE',
                '--param=ssp-buffer-size=4',
               ]
         if cc.has_argument(arg)
                 add_project_arguments(arg, language : 'c')
         endif
 endforeach
+
+# the oss-fuzz fuzzers are not built with -fPIE, so don't
+# enable it when we are linking against them
+if not fuzzer_build
+        if cc.has_argument('-fPIE')
+              add_project_arguments('-fPIE', language : 'c')
+        endif
+endif
 
 # "negative" arguments: gcc on purpose does not return an error for "-Wno-"
 # arguments, just emits a warnings. So test for the "positive" version instead.
@@ -422,8 +447,22 @@ foreach arg : ['-Wl,-z,relro',
                            cc.cmd_array(), '-x', 'c', arg,
                            '-include', link_test_c).returncode() == 0
         message('Linking with @0@ supported: @1@'.format(arg, have ? 'yes' : 'no'))
-        if have
+        if have and (arg != '-pie' or not fuzzer_build)
                 add_project_link_arguments(arg, language : 'c')
+        endif
+endforeach
+
+# Check if various sanitizers are supported
+sanitizers = []
+foreach arg : ['address']
+
+        have = run_command(check_compilation_sh,
+                           cc.cmd_array(), '-x', 'c',
+                           '-fsanitize=@0@'.format(arg),
+                           '-include', link_test_c).returncode() == 0
+        message('@0@ sanitizer supported: @1@'.format(arg, have ? 'yes' : 'no'))
+        if have
+                sanitizers += arg
         endif
 endforeach
 
@@ -559,6 +598,7 @@ awk = find_program('awk')
 m4 = find_program('m4')
 stat = find_program('stat')
 git = find_program('git', required : false)
+env = find_program('env')
 
 meson_make_symlink = meson.source_root() + '/tools/meson-make-symlink.sh'
 #if 1 /// Needed by elogind
@@ -643,7 +683,8 @@ conf.set('GPERF_LEN_TYPE', gperf_len_type,
 if not cc.has_header('sys/capability.h')
         error('POSIX caps headers not found')
 endif
-foreach header : ['linux/btrfs.h',
+foreach header : ['crypt.h',
+                  'linux/btrfs.h',
                   'linux/memfd.h',
                   'linux/vm_sockets.h',
                   'sys/auxv.h',
@@ -887,10 +928,11 @@ endif
 
 #if 0 /// UNNEEDED by elogind
 # libmount = dependency('mount',
-#                       version : '>= 2.30')
+#                       version : '>= 2.30',
+#                       required : not fuzzer_build)
 # 
 # want_seccomp = get_option('seccomp')
-# if want_seccomp != 'false'
+# if want_seccomp != 'false' and not fuzzer_build
 #         libseccomp = dependency('libseccomp',
 #                                 version : '>= 2.3.1',
 #                                 required : want_seccomp == 'true')
@@ -906,7 +948,7 @@ conf.set10('HAVE_SECCOMP', have)
 m4_defines += have ? ['-DHAVE_SECCOMP'] : []
 
 want_selinux = get_option('selinux')
-if want_selinux != 'false'
+if want_selinux != 'false' and not fuzzer_build
         libselinux = dependency('libselinux',
                                 version : '>= 2.1.9',
                                 required : want_selinux == 'true')
@@ -920,7 +962,7 @@ m4_defines += have ? ['-DHAVE_SELINUX'] : []
 
 #if 0 /// UNNEEDED by elogind
 # want_apparmor = get_option('apparmor')
-# if want_apparmor != 'false'
+# if want_apparmor != 'false' and not fuzzer_build
 #         libapparmor = dependency('libapparmor',
 #                                  required : want_apparmor == 'true')
 #         have = libapparmor.found()
@@ -943,7 +985,7 @@ endif
 want_polkit = get_option('polkit')
 install_polkit = false
 install_polkit_pkla = false
-if want_polkit != 'false'
+if want_polkit != 'false' and not fuzzer_build
         install_polkit = true
 
         libpolkit = dependency('polkit-gobject-1',
@@ -956,7 +998,7 @@ endif
 conf.set10('ENABLE_POLKIT', install_polkit)
 
 want_acl = get_option('acl')
-if want_acl != 'false'
+if want_acl != 'false' and not fuzzer_build
         libacl = cc.find_library('acl', required : want_acl == 'true')
         have = libacl.found()
 else
@@ -967,7 +1009,7 @@ conf.set10('HAVE_ACL', have)
 m4_defines += have ? ['-DHAVE_ACL'] : []
 
 want_audit = get_option('audit')
-if want_audit != 'false'
+if want_audit != 'false' and not fuzzer_build
         libaudit = dependency('audit', required : want_audit == 'true')
         have = libaudit.found()
 else
@@ -978,7 +1020,7 @@ conf.set10('HAVE_AUDIT', have)
 
 #if 0 /// UNNEEDED by elogind
 # want_blkid = get_option('blkid')
-# if want_blkid != 'false'
+# if want_blkid != 'false' and not fuzzer_build
 #         libblkid = dependency('blkid', required : want_blkid == 'true')
 #         have = libblkid.found()
 # else
@@ -988,7 +1030,7 @@ conf.set10('HAVE_AUDIT', have)
 # conf.set10('HAVE_BLKID', have)
 # 
 # want_kmod = get_option('kmod')
-# if want_kmod != 'false'
+# if want_kmod != 'false' and not fuzzer_build
 #         libkmod = dependency('libkmod',
 #                              version : '>= 15',
 #                              required : want_kmod == 'true')
@@ -1004,7 +1046,7 @@ libkmod = []
 #endif // 0
 
 want_pam = get_option('pam')
-if want_pam != 'false'
+if want_pam != 'false' and not fuzzer_build
         libpam = cc.find_library('pam', required : want_pam == 'true')
         libpam_misc = cc.find_library('pam_misc', required : want_pam == 'true')
         have = libpam.found() and libpam_misc.found()
@@ -1018,7 +1060,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 
 #if 0 /// UNNEEDED by elogind
 # want_microhttpd = get_option('microhttpd')
-# if want_microhttpd != 'false'
+# if want_microhttpd != 'false' and not fuzzer_build
 #         libmicrohttpd = dependency('libmicrohttpd',
 #                                    version : '>= 0.9.33',
 #                                    required : want_microhttpd == 'true')
@@ -1031,7 +1073,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # m4_defines += have ? ['-DHAVE_MICROHTTPD'] : []
 # 
 # want_libcryptsetup = get_option('libcryptsetup')
-# if want_libcryptsetup != 'false'
+# if want_libcryptsetup != 'false' and not fuzzer_build
 #         libcryptsetup = dependency('libcryptsetup',
 #                                    version : '>= 1.6.0',
 #                                    required : want_libcryptsetup == 'true')
@@ -1043,7 +1085,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_LIBCRYPTSETUP', have)
 # 
 # want_libcurl = get_option('libcurl')
-# if want_libcurl != 'false'
+# if want_libcurl != 'false' and not fuzzer_build
 #         libcurl = dependency('libcurl',
 #                              version : '>= 7.32.0',
 #                              required : want_libcurl == 'true')
@@ -1061,7 +1103,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         error('libidn and libidn2 cannot be requested simultaneously')
 # endif
 # 
-# if want_libidn != 'false' and want_libidn2 != 'true'
+# if want_libidn != 'false' and want_libidn2 != 'true' and not fuzzer_build
 #         libidn = dependency('libidn',
 #                             required : want_libidn == 'true')
 #         have = libidn.found()
@@ -1071,7 +1113,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBIDN', have)
 # m4_defines += have ? ['-DHAVE_LIBIDN'] : []
-# if not have and want_libidn2 != 'false'
+# if not have and want_libidn2 != 'false' and not fuzzer_build
 #         # libidn is used for both libidn and libidn2 objects
 #         libidn = dependency('libidn2',
 #                             required : want_libidn2 == 'true')
@@ -1083,7 +1125,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # m4_defines += have ? ['-DHAVE_LIBIDN2'] : []
 # 
 # want_libiptc = get_option('libiptc')
-# if want_libiptc != 'false'
+# if want_libiptc != 'false' and not fuzzer_build
 #         libiptc = dependency('libiptc',
 #                              required : want_libiptc == 'true')
 #         have = libiptc.found()
@@ -1095,7 +1137,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # m4_defines += have ? ['-DHAVE_LIBIPTC'] : []
 # 
 # want_qrencode = get_option('qrencode')
-# if want_qrencode != 'false'
+# if want_qrencode != 'false' and not fuzzer_build
 #         libqrencode = dependency('libqrencode',
 #                                  required : want_qrencode == 'true')
 #         have = libqrencode.found()
@@ -1106,7 +1148,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_QRENCODE', have)
 # 
 # want_gcrypt = get_option('gcrypt')
-# if want_gcrypt != 'false'
+# if want_gcrypt != 'false' and not fuzzer_build
 #         libgcrypt = cc.find_library('gcrypt', required : want_gcrypt == 'true')
 #         libgpg_error = cc.find_library('gpg-error', required : want_gcrypt == 'true')
 #         have = libgcrypt.found() and libgpg_error.found()
@@ -1121,7 +1163,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_GCRYPT', have)
 # 
 # want_gnutls = get_option('gnutls')
-# if want_gnutls != 'false'
+# if want_gnutls != 'false' and not fuzzer_build
 #         libgnutls = dependency('gnutls',
 #                                version : '>= 3.1.4',
 #                                required : want_gnutls == 'true')
@@ -1133,7 +1175,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_GNUTLS', have)
 # 
 # want_elfutils = get_option('elfutils')
-# if want_elfutils != 'false'
+# if want_elfutils != 'false' and not fuzzer_build
 #         libdw = dependency('libdw',
 #                            required : want_elfutils == 'true')
 #         have = libdw.found()
@@ -1144,7 +1186,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_ELFUTILS', have)
 # 
 # want_zlib = get_option('zlib')
-# if want_zlib != 'false'
+# if want_zlib != 'false' and not fuzzer_build
 #         libz = dependency('zlib',
 #                           required : want_zlib == 'true')
 #         have = libz.found()
@@ -1155,7 +1197,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_ZLIB', have)
 # 
 # want_bzip2 = get_option('bzip2')
-# if want_bzip2 != 'false'
+# if want_bzip2 != 'false' and not fuzzer_build
 #         libbzip2 = cc.find_library('bz2',
 #                                    required : want_bzip2 == 'true')
 #         have = libbzip2.found()
@@ -1166,7 +1208,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_BZIP2', have)
 # 
 # want_xz = get_option('xz')
-# if want_xz != 'false'
+# if want_xz != 'false' and not fuzzer_build
 #         libxz = dependency('liblzma',
 #                            required : want_xz == 'true')
 #         have = libxz.found()
@@ -1177,7 +1219,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_XZ', have)
 # 
 # want_lz4 = get_option('lz4')
-# if want_lz4 != 'false'
+# if want_lz4 != 'false' and not fuzzer_build
 #         liblz4 = dependency('liblz4',
 #                             required : want_lz4 == 'true')
 #         have = liblz4.found()
@@ -1188,7 +1230,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # conf.set10('HAVE_LZ4', have)
 # 
 # want_xkbcommon = get_option('xkbcommon')
-# if want_xkbcommon != 'false'
+# if want_xkbcommon != 'false' and not fuzzer_build
 #         libxkbcommon = dependency('xkbcommon',
 #                                   version : '>= 0.3.0',
 #                                   required : want_xkbcommon == 'true')
@@ -1228,7 +1270,7 @@ endif
 conf.set10('HAVE_PCRE2', have)
 
 want_glib = get_option('glib')
-if want_glib != 'false'
+if want_glib != 'false' and not fuzzer_build
         libglib =    dependency('glib-2.0',
                                 version : '>= 2.22.0',
                                 required : want_glib == 'true')
@@ -1247,7 +1289,7 @@ endif
 conf.set10('HAVE_GLIB', have)
 
 want_dbus = get_option('dbus')
-if want_dbus != 'false'
+if want_dbus != 'false' and not fuzzer_build
         libdbus = dependency('dbus-1',
                              version : '>= 1.3.2',
                              required : want_dbus == 'true')
@@ -1260,6 +1302,9 @@ conf.set10('HAVE_DBUS', have)
 
 #if 0 /// UNNEEDED by elogind
 # default_dnssec = get_option('default-dnssec')
+# if fuzzer_build
+#         default_dnssec = 'no'
+# endif
 # if default_dnssec != 'no' and conf.get('HAVE_GCRYPT') == 0
 #         message('default-dnssec cannot be set to yes or allow-downgrade when gcrypt is disabled. Setting default-dnssec to no.')
 #         default_dnssec = 'no'
@@ -1344,9 +1389,11 @@ endforeach
 
 want_tests = get_option('tests')
 install_tests = get_option('install-tests')
+slow_tests = get_option('slow-tests')
 tests = []
+fuzzers = []
 
-conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', get_option('slow-tests'))
+conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 #####################################################################
 
@@ -1517,6 +1564,7 @@ subdir('src/shared')
 #endif // 0
 
 subdir('src/test')
+subdir('src/fuzz')
 #if 0 /// UNNEEDED in elogind
 # subdir('rules')
 # subdir('test')
@@ -2705,8 +2753,9 @@ foreach tuple : tests
                 timeout = type.split('=')[1].to_int()
                 type = ''
         endif
-
-        if condition == '' or conf.get(condition) == 1
+        if want_tests == 'false'
+                message('Not compiling @0@ because tests is set to false'.format(name))
+        elif condition == '' or conf.get(condition) == 1
                 exe = executable(
                         name,
                         sources,
@@ -2753,6 +2802,39 @@ endforeach
 #         install_dir : testsdir)
 # test('test-libudev-sym',
 #      test_libudev_sym)
+# 
+# ############################################################
+# 
+# fuzzer_exes = []
+# 
+# foreach tuple : fuzzers
+#         sources = tuple[0]
+#         link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
+#         dependencies = tuple[2]
+#         defs = tuple.length() >= 4 ? tuple[3] : []
+#         incs = tuple.length() >= 5 ? tuple[4] : includes
+# 
+#         if fuzzer_build
+#                 dependencies += fuzzing_engine
+#         else
+#                 sources += 'src/fuzz/fuzz-main.c'
+#         endif
+# 
+#         name = sources[0].split('/')[-1].split('.')[0]
+# 
+#         fuzzer_exes += executable(
+#                 name,
+#                 sources,
+#                 include_directories : [incs, include_directories('src/fuzz')],
+#                 link_with : link_with,
+#                 dependencies : dependencies,
+#                 c_args : defs,
+#                 install : false)
+# endforeach
+# 
+# run_target('fuzzers',
+#         depends : fuzzer_exes,
+#         command : ['true'])
 # 
 # ############################################################
 # 
@@ -2833,6 +2915,50 @@ endforeach
 
 ############################################################
 
+prev = ''
+foreach p : fuzz_regression_tests
+        a = p.split('/')[-3]
+        b = p.split('/')[-2]
+        c = p.split('/')[-1]
+
+        if a == 'address'
+                build = sanitize_address
+        else
+                error('unknown sanitizer @0@'.format(a))
+        endif
+
+        name = '@1@:@0@'.format(a, b)
+
+        if name != prev
+                if want_tests == 'false'
+                        message('Not compiling @0@ because tests is set to false'.format(name))
+                elif not sanitizers.contains(a)
+                        message('Not compiling @0@ because @1@ sanitizer is not available'.format(name, a))
+                elif slow_tests
+                        exe = custom_target(
+                                name,
+                                output : name,
+                                depends : build,
+                                command : [env, 'ln', '-fs',
+                                           join_paths(build.full_path(), b),
+                                           '@OUTPUT@'],
+                                build_by_default : true)
+                else
+                        message('Not compiling @0@ because slow-tests is set to false'.format(name))
+                endif
+        endif
+        prev = name
+
+        if want_tests != 'false' and slow_tests
+                test(c, env, args : [exe.full_path(),
+                                     join_paths(meson.source_root(),
+                                                'test/fuzz-regressions',
+                                                p)])
+        endif
+endforeach
+
+############################################################
+
 if git.found()
         all_files = run_command(
                 git,
@@ -2844,11 +2970,11 @@ if git.found()
         custom_target(
                 'tags',
                 output : 'tags',
-                command : ['env', 'etags', '-o', '@0@/TAGS'.format(meson.current_source_dir())] + all_files)
+                command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.current_source_dir())] + all_files)
         custom_target(
                 'ctags',
                 output : 'ctags',
-                command : ['env', 'ctags', '-o', '@0@/tags'.format(meson.current_source_dir())] + all_files)
+                command : [env, 'ctags', '-o', '@0@/tags'.format(meson.current_source_dir())] + all_files)
 endif
 
 #if 0 /// UNNEEDED by elogind
