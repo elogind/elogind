@@ -412,7 +412,7 @@ foreach arg : ['unused-parameter',
         endif
 endforeach
 
-if cc.compiles('''
+if cc.compiles('
    #include <time.h>
    #include <inttypes.h>
    typedef uint64_t usec_t;
@@ -421,7 +421,7 @@ if cc.compiles('''
            struct timespec now;
            return 0;
    }
-''', name : '-Werror=shadow with local shadowing')
+', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -754,11 +754,8 @@ system_uid_max = get_option('system-uid-max')
 if system_uid_max == ''
         system_uid_max = run_command(
                 awk,
-                '/^\s*SYS_UID_MAX\s+/ { uid=$2 } END { print uid }',
-                '/etc/login.defs').stdout().strip()
-        if system_uid_max == ''
-                system_uid_max = '999'
-        endif
+                'BEGIN { uid=999 } /^\s*SYS_UID_MAX\s+/ { uid=$2 } END { print uid }',
+                '/etc/login.defs').stdout()
 endif
 system_uid_max = system_uid_max.to_int()
 conf.set('SYSTEM_UID_MAX', system_uid_max)
@@ -769,11 +766,8 @@ system_gid_max = get_option('system-gid-max')
 if system_gid_max == ''
         system_gid_max = run_command(
                 awk,
-                '/^\s*SYS_GID_MAX\s+/ { gid=$2 } END { print gid }',
-                '/etc/login.defs').stdout().strip()
-        if system_gid_max == ''
-                system_gid_max = '999'
-        endif
+                'BEGIN { gid=999 } /^\s*SYS_GID_MAX\s+/ { gid=$2 } END { print gid }',
+                '/etc/login.defs').stdout()
 endif
 system_gid_max = system_gid_max.to_int()
 conf.set('SYSTEM_GID_MAX', system_gid_max)
