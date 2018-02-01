@@ -97,7 +97,6 @@ int strv_split_extract(char ***t, const char *s, const char *separators, Extract
 
 char *strv_join(char **l, const char *separator);
 #if 0 /// UNNEEDED by elogind
-char *strv_join_quoted(char **l);
 #endif // 0
 
 char **strv_parse_nulstr(const char *s, size_t l);
