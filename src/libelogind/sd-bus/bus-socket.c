@@ -621,13 +621,10 @@ static void bus_get_peercred(sd_bus *b) {
 
         /* Get the list of auxiliary groups of the peer */
         r = getpeergroups(b->input_fd, &b->groups);
-        if (r < 0) {
-                if (!IN_SET(r, -EOPNOTSUPP, -ENOPROTOOPT))
-                        log_debug_errno(r, "Failed to determine peer groups list: %m");
-
-                b->n_groups = (size_t) -1;
-        } else
+        if (r >= 0)
                 b->n_groups = (size_t) r;
+        else if (!IN_SET(r, -EOPNOTSUPP, -ENOPROTOOPT))
+                log_debug_errno(r, "Failed to determine peer's group list: %m");
 }
 
 static int bus_socket_start_auth_client(sd_bus *b) {
@@ -940,18 +937,18 @@ int bus_socket_connect(sd_bus *b) {
 
 int bus_socket_exec(sd_bus *b) {
         int s[2], r;
-        pid_t pid;
 
         assert(b);
         assert(b->input_fd < 0);
         assert(b->output_fd < 0);
         assert(b->exec_path);
+        assert(b->busexec_pid == 0);
 
         r = socketpair(AF_UNIX, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0, s);
         if (r < 0)
                 return -errno;
 
-        r = safe_fork_full("(sd-busexec)", s+1, 1, FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS, &pid);
+        r = safe_fork_full("(sd-busexec)", s+1, 1, FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS, &b->busexec_pid);
         if (r < 0) {
                 safe_close_pair(s);
                 return r;
