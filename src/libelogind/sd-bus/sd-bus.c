@@ -22,8 +22,10 @@
 #include <netdb.h>
 #include <poll.h>
 #include <pthread.h>
+//#include <signal.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+//#include <sys/wait.h>
 #include <unistd.h>
 
 #include "sd-bus.h"
@@ -291,7 +293,8 @@ _public_ int sd_bus_set_address(sd_bus *bus, const char *address) {
         if (!a)
                 return -ENOMEM;
 
-        free_and_replace(bus->address, a);
+        free(bus->address);
+        bus->address = a;
 
         return 0;
 }
@@ -329,9 +332,10 @@ _public_ int sd_bus_set_exec(sd_bus *bus, const char *path, char *const argv[]) 
                 return -ENOMEM;
         }
 
-        free_and_replace(bus->exec_path, p);
-
+        free(bus->exec_path);
         strv_free(bus->exec_argv);
+
+        bus->exec_path = p;
         bus->exec_argv = a;
 
         return 0;
@@ -354,7 +358,7 @@ _public_ int sd_bus_set_monitor(sd_bus *bus, int b) {
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        bus->is_monitor = !!b;
+        bus->is_monitor = b;
         return 0;
 }
 
@@ -364,7 +368,7 @@ _public_ int sd_bus_negotiate_fds(sd_bus *bus, int b) {
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        bus->accept_fd = !!b;
+        bus->accept_fd = b;
         return 0;
 }
 
@@ -376,7 +380,7 @@ _public_ int sd_bus_negotiate_timestamp(sd_bus *bus, int b) {
 
         /* This is not actually supported by any of our transports these days, but we do honour it for synthetic
          * replies, and maybe one day classic D-Bus learns this too */
-        bus->attach_timestamp = !!b;
+        bus->attach_timestamp = b;
 
         return 0;
 }
@@ -460,7 +464,7 @@ _public_ int sd_bus_set_watch_bind(sd_bus *bus, int b) {
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        bus->watch_bind = !!b;
+        bus->watch_bind = b;
         return 0;
 }
 
@@ -478,7 +482,7 @@ _public_ int sd_bus_set_connected_signal(sd_bus *bus, int b) {
         assert_return(bus->state == BUS_UNSET, -EPERM);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
-        bus->connected_signal = !!b;
+        bus->connected_signal = b;
         return 0;
 }
 
@@ -559,7 +563,6 @@ void bus_set_state(sd_bus *bus, enum bus_state state) {
 
 static int hello_callback(sd_bus_message *reply, void *userdata, sd_bus_error *error) {
         const char *s;
-        char *t;
         sd_bus *bus;
         int r;
 
@@ -579,11 +582,9 @@ static int hello_callback(sd_bus_message *reply, void *userdata, sd_bus_error *e
         if (!service_name_is_valid(s) || s[0] != ':')
                 return -EBADMSG;
 
-        t = strdup(s);
-        if (!t)
+        bus->unique_name = strdup(s);
+        if (!bus->unique_name)
                 return -ENOMEM;
-
-        free_and_replace(bus->unique_name, t);
 
         if (bus->state == BUS_HELLO) {
                 bus_set_state(bus, BUS_RUNNING);
@@ -655,8 +656,8 @@ int bus_start_running(sd_bus *bus) {
 
 static int parse_address_key(const char **p, const char *key, char **value) {
         size_t l, n = 0, allocated = 0;
-        _cleanup_free_ char *r = NULL;
         const char *a;
+        char *r = NULL;
 
         assert(p);
         assert(*p);
@@ -684,12 +685,16 @@ static int parse_address_key(const char **p, const char *key, char **value) {
                         int x, y;
 
                         x = unhexchar(a[1]);
-                        if (x < 0)
+                        if (x < 0) {
+                                free(r);
                                 return x;
+                        }
 
                         y = unhexchar(a[2]);
-                        if (y < 0)
+                        if (y < 0) {
+                                free(r);
                                 return y;
+                        }
 
                         c = (char) ((x << 4) | y);
                         a += 3;
@@ -716,7 +721,8 @@ static int parse_address_key(const char **p, const char *key, char **value) {
 
         *p = a;
 
-        free_and_replace(*value, r);
+        free(*value);
+        *value = r;
 
         return 1;
 }
@@ -1100,6 +1106,13 @@ static int bus_parse_next_address(sd_bus *b) {
         return 1;
 }
 
+static void bus_kill_exec(sd_bus *bus) {
+        if (pid_is_valid(bus->busexec_pid) > 0) {
+                sigterm_wait(bus->busexec_pid);
+                bus->busexec_pid = 0;
+        }
+}
+
 static int bus_start_address(sd_bus *b) {
         int r;
 
@@ -1108,6 +1121,8 @@ static int bus_start_address(sd_bus *b) {
         for (;;) {
                 bus_close_io_fds(b);
                 bus_close_inotify_fd(b);
+
+                bus_kill_exec(b);
 
                 /* If you provide multiple different bus-addresses, we
                  * try all of them in order and use the first one that
@@ -1388,7 +1403,7 @@ fail:
 
 int bus_set_address_system_remote(sd_bus *b, const char *host) {
         _cleanup_free_ char *e = NULL;
-        char *m = NULL, *c = NULL, *a;
+        char *m = NULL, *c = NULL;
 
         assert(b);
         assert(host);
@@ -1419,11 +1434,9 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
                         return -ENOMEM;
         }
 
-        a = strjoin("unixexec:path=ssh,argv1=-xT,argv2=--,argv3=", e, ",argv4=elogind-stdio-bridge", c);
-        if (!a)
+        b->address = strjoin("unixexec:path=ssh,argv1=-xT,argv2=--,argv3=", e, ",argv4=elogind-stdio-bridge", c);
+        if (!b->address)
                 return -ENOMEM;
-
-        free_and_replace(b->address, a);
 
         return 0;
  }
@@ -1462,7 +1475,6 @@ fail:
 
 int bus_set_address_system_machine(sd_bus *b, const char *machine) {
         _cleanup_free_ char *e = NULL;
-        char *a;
 
         assert(b);
         assert(machine);
@@ -1471,11 +1483,9 @@ int bus_set_address_system_machine(sd_bus *b, const char *machine) {
         if (!e)
                 return -ENOMEM;
 
-        a = strjoin("x-machine-unix:machine=", e);
-        if (!a)
+        b->address = strjoin("x-machine-unix:machine=", e);
+        if (!b->address)
                 return -ENOMEM;
-
-        free_and_replace(b->address, a);
 
         return 0;
 }
@@ -1522,6 +1532,9 @@ _public_ void sd_bus_close(sd_bus *bus) {
         if (bus_pid_changed(bus))
                 return;
 
+        /* Don't leave ssh hanging around */
+        bus_kill_exec(bus);
+
         bus_set_state(bus, BUS_CLOSED);
 
         sd_bus_detach_event(bus);
@@ -1538,6 +1551,9 @@ _public_ sd_bus* sd_bus_flush_close_unref(sd_bus *bus) {
 
         if (!bus)
                 return NULL;
+
+        /* Have to do this before flush() to prevent hang */
+        bus_kill_exec(bus);
 
         sd_bus_flush(bus);
         sd_bus_close(bus);
