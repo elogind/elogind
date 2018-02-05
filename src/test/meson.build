@@ -409,6 +409,17 @@ tests += [
 #           libblkid]],
 #endif // 0
 
+        [['src/test/test-watch-pid.c',
+          'src/test/test-helper.c'],
+         [libcore,
+          libshared],
+         [libmount,
+          threads,
+          librt,
+          libseccomp,
+          libselinux,
+          libblkid]],
+
         [['src/test/test-hashmap.c',
           'src/test/test-hashmap-plain.c',
           test_hashmap_ordered_c],
@@ -431,6 +442,10 @@ tests += [
 #endif // 0
 
         [['src/test/test-list.c'],
+         [],
+         []],
+
+        [['src/test/test-procfs-util.c'],
          [],
          []],
 
@@ -680,6 +695,11 @@ tests += [
         [['src/test/test-hash.c'],
          [],
          []],
+
+        [['src/test/test-gcrypt-util.c'],
+         [],
+         [],
+         'HAVE_GCRYPT'],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-nss.c'],
