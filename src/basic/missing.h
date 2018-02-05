@@ -1052,6 +1052,10 @@ struct input_mask {
 #define RTA_PREF 20
 #endif
 
+#ifndef RTAX_QUICKACK
+#define RTAX_QUICKACK 15
+#endif
+
 #ifndef IPV6_UNICAST_IF
 #define IPV6_UNICAST_IF 76
 #endif
