@@ -168,6 +168,7 @@ bool unit_get_needs_bpf(Unit *u);
 
 void unit_update_cgroup_members_masks(Unit *u);
 
+const char *unit_get_realized_cgroup_path(Unit *u, CGroupMask mask);
 char *unit_default_cgroup_path(Unit *u);
 int unit_set_cgroup_path(Unit *u, const char *path);
 int unit_pick_cgroup_path(Unit *u);
@@ -179,7 +180,7 @@ int unit_watch_cgroup(Unit *u);
 
 void unit_add_to_cgroup_empty_queue(Unit *u);
 
-int unit_attach_pids_to_cgroup(Unit *u);
+int unit_attach_pids_to_cgroup(Unit *u, Set *pids, const char *suffix_path);
 #else
 # include "logind.h"
 #endif // 0
