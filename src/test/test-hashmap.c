@@ -80,6 +80,34 @@ static void test_string_compare_func(void) {
         assert_se(string_compare_func("fred", "fred") == 0);
 }
 
+static void test_path_hashmap(void) {
+        _cleanup_(hashmap_freep) Hashmap *h = NULL;
+
+        assert_se(h = hashmap_new(&path_hash_ops));
+
+        assert_se(hashmap_put(h, "foo", INT_TO_PTR(1)) >= 0);
+        assert_se(hashmap_put(h, "/foo", INT_TO_PTR(2)) >= 0);
+        assert_se(hashmap_put(h, "//foo", INT_TO_PTR(3)) == -EEXIST);
+        assert_se(hashmap_put(h, "//foox/", INT_TO_PTR(4)) >= 0);
+        assert_se(hashmap_put(h, "/foox////", INT_TO_PTR(5)) == -EEXIST);
+        assert_se(hashmap_put(h, "foo//////bar/quux//", INT_TO_PTR(6)) >= 0);
+        assert_se(hashmap_put(h, "foo/bar//quux/", INT_TO_PTR(8)) == -EEXIST);
+
+        assert_se(hashmap_get(h, "foo") == INT_TO_PTR(1));
+        assert_se(hashmap_get(h, "foo/") == INT_TO_PTR(1));
+        assert_se(hashmap_get(h, "foo////") == INT_TO_PTR(1));
+        assert_se(hashmap_get(h, "/foo") == INT_TO_PTR(2));
+        assert_se(hashmap_get(h, "//foo") == INT_TO_PTR(2));
+        assert_se(hashmap_get(h, "/////foo////") == INT_TO_PTR(2));
+        assert_se(hashmap_get(h, "/////foox////") == INT_TO_PTR(4));
+        assert_se(hashmap_get(h, "/foox/") == INT_TO_PTR(4));
+        assert_se(hashmap_get(h, "/foox") == INT_TO_PTR(4));
+        assert_se(!hashmap_get(h, "foox"));
+        assert_se(hashmap_get(h, "foo/bar/quux") == INT_TO_PTR(6));
+        assert_se(hashmap_get(h, "foo////bar////quux/////") == INT_TO_PTR(6));
+        assert_se(!hashmap_get(h, "/foo////bar////quux/////"));
+}
+
 int main(int argc, const char *argv[]) {
         test_hashmap_funcs();
         test_ordered_hashmap_funcs();
@@ -89,4 +117,7 @@ int main(int argc, const char *argv[]) {
         test_uint64_compare_func();
         test_trivial_compare_func();
         test_string_compare_func();
+        test_path_hashmap();
+
+        return 0;
 }
