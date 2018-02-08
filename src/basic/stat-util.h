@@ -71,9 +71,14 @@ int fd_is_fs_type(int fd, statfs_f_type_t magic_value);
 int path_is_fs_type(const char *path, statfs_f_type_t magic_value);
 
 bool is_temporary_fs(const struct statfs *s) _pure_;
+bool is_network_fs(const struct statfs *s) _pure_;
+
 #if 0 /// UNNEEDED by elogind
 int fd_is_temporary_fs(int fd);
+int fd_is_network_fs(int fd);
+
 int fd_is_network_ns(int fd);
+
 int path_is_temporary_fs(const char *path);
 #endif // 0
 
