@@ -12,6 +12,6 @@ ENV{ID_SEAT}=="", IMPORT{parent}="ID_SEAT"
 
 ENV{ID_SEAT}!="", TAG+="$env{ID_SEAT}"
 
-TAG=="uaccess", ENV{MAJOR}!="", RUN{builtin}+="uaccess"
+TAG=="uaccess", ENV{MAJOR}!="", RUN{program}+="@rootlibexecdir@/elogind-uaccess-command %N $env{ID_SEAT}"
 
 LABEL="seat_late_end"
