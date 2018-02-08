@@ -205,6 +205,7 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 # conf.set_quoted('SYSTEMD_STDIO_BRIDGE_BINARY_PATH',           join_paths(bindir, 'systemd-stdio-bridge'))
 #else
 conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'elogind-cgroups-agent'))
+conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               join_paths(rootlibexecdir, 'elogind-uaccess-command'))
 conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'elogind'))
 #endif // 0
 conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
@@ -2519,6 +2520,18 @@ executable('elogind-cgroups-agent',
 #         public_programs += [exe]
 # endif
 #endif // 0
+
+executable('elogind-uaccess-command',
+           'src/uaccess-command/uaccess-command.c',
+           include_directories : includes,
+           link_with : [liblogind_core,
+                        libshared_static],
+           dependencies: [libacl,
+                          libudev],
+           install_rpath : rootlibexecdir,
+           install : true,
+           install_dir : rootlibexecdir)
+
 ############################################################
 
 foreach tuple : tests
