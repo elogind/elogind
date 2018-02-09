@@ -3,9 +3,9 @@
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <!--
-  This file is part of elogind.
   SPDX-License-Identifier: LGPL-2.1+
 
+  This file is part of elogind.
 
   Copyright 2010 Lennart Poettering
 
@@ -26,12 +26,12 @@
 <!-- 0 /// elogind does not have to enable itself in configure
 <refentry id="logind.conf" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
+    <productname>systemd</productname>
 --><!-- else -->
 <refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
 <!-- // 0 -->
   <refentryinfo>
     <title>logind.conf</title>
-    <productname>elogind</productname>
 
     <authorgroup>
       <author>
@@ -170,6 +170,7 @@
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
         </para>
         // 0 -->
+
         <para>Note that setting <varname>KillUserProcesses=yes</varname>
         will break tools like
         <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>
@@ -248,6 +249,7 @@
         <term><varname>HandleSuspendKey=</varname></term>
         <term><varname>HandleHibernateKey=</varname></term>
         <term><varname>HandleLidSwitch=</varname></term>
+        <term><varname>HandleLidSwitchExternalPower=</varname></term>
         <term><varname>HandleLidSwitchDocked=</varname></term>
 
         <listitem><para>Controls how logind shall handle the
@@ -272,12 +274,17 @@
         <varname>HandleSuspendKey=</varname> and
         <varname>HandleLidSwitch=</varname> default to
         <literal>suspend</literal>.
-        <varname>HandleLidSwitchDocked=</varname> defaults to
-        <literal>ignore</literal>.
+        <varname>HandleLidSwitchExternalPower=</varname> is completely
+        ignored by default (for backwards compatibility) &#x2014; an explicit
+        value must be set before it will be used to determine
+        behaviour.  <varname>HandleLidSwitchDocked=</varname> defaults
+        to <literal>ignore</literal>.
         <varname>HandleHibernateKey=</varname> defaults to
         <literal>hibernate</literal>. If the system is inserted in a
         docking station, or if more than one display is connected, the
         action specified by <varname>HandleLidSwitchDocked=</varname>
+        occurs; if the system is on external power the action (if any)
+        specified by <varname>HandleLidSwitchExternalPower=</varname>
         occurs; otherwise the <varname>HandleLidSwitch=</varname>
         action occurs.</para>
 
