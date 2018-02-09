@@ -115,3 +115,5 @@ static inline void unlink_and_free(char *p) {
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
 #endif // 0
+
+int unlinkat_deallocate(int fd, const char *name, int flags);
