@@ -46,7 +46,6 @@ int readlink_value(const char *p, char **ret);
 #endif // 0
 int readlink_and_make_absolute(const char *p, char **r);
 #if 0 /// UNNEEDED by elogind
-int readlink_and_canonicalize(const char *p, const char *root, char **r);
 int readlink_and_make_absolute_root(const char *root, const char *path, char **ret);
 #endif // 0
 
@@ -121,5 +120,3 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
 #endif // 0
 
 int access_fd(int fd, int mode);
-
-int unlinkat_deallocate(int fd, const char *name, int flags);
