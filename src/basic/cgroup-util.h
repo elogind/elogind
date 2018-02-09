@@ -35,8 +35,8 @@
 #if 0 /// elogind has them set through config.h
 #define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=elogind"
 #define SYSTEMD_CGROUP_CONTROLLER_HYBRID "name=unified"
-#define SYSTEMD_CGROUP_CONTROLLER "_elogind"
 #endif // 0
+#define SYSTEMD_CGROUP_CONTROLLER "_elogind"
 
 /* An enum of well known cgroup controllers */
 typedef enum CGroupController {
@@ -195,7 +195,7 @@ int cg_create_and_attach(const char *controller, const char *path, pid_t pid);
 int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value);
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret);
 #if 0 /// UNNEEDED by elogind
-int cg_get_keyed_attribute(const char *controller, const char *path, const char *attribute, const char **keys, char **values);
+int cg_get_keyed_attribute(const char *controller, const char *path, const char *attribute, char **keys, char **values);
 
 int cg_set_access(const char *controller, const char *path, uid_t uid, gid_t gid);
 
