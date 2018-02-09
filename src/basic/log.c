@@ -107,6 +107,8 @@ static int log_open_console(void) {
                 console_fd = open_terminal("/dev/console", O_WRONLY|O_NOCTTY|O_CLOEXEC);
                 if (console_fd < 0)
                         return console_fd;
+
+                console_fd = fd_move_above_stdio(console_fd);
         }
 
         return 0;
@@ -125,6 +127,7 @@ static int log_open_kmsg(void) {
         if (kmsg_fd < 0)
                 return -errno;
 
+        kmsg_fd = fd_move_above_stdio(kmsg_fd);
         return 0;
 }
 
@@ -140,11 +143,11 @@ static int create_log_socket(int type) {
         if (fd < 0)
                 return -errno;
 
+        fd = fd_move_above_stdio(fd);
         (void) fd_inc_sndbuf(fd, SNDBUF_SIZE);
 
-        /* We need a blocking fd here since we'd otherwise lose
-        messages way too early. However, let's not hang forever in the
-        unlikely case of a deadlock. */
+        /* We need a blocking fd here since we'd otherwise lose messages way too early. However, let's not hang forever
+         * in the unlikely case of a deadlock. */
         if (getpid_cached() == 1)
                 timeval_store(&tv, 10 * USEC_PER_MSEC);
         else
