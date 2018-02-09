@@ -46,7 +46,6 @@ int readlink_value(const char *p, char **ret);
 #endif // 0
 int readlink_and_make_absolute(const char *p, char **r);
 #if 0 /// UNNEEDED by elogind
-int readlink_and_make_absolute_root(const char *root, const char *path, char **ret);
 #endif // 0
 
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid);
