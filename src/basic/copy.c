@@ -242,7 +242,7 @@ static int fd_copy_regular(
 
         r = copy_bytes(fdf, fdt, (uint64_t) -1, copy_flags);
         if (r < 0) {
-                unlinkat(dt, to, 0);
+                (void) unlinkat(dt, to, 0);
                 return r;
         }
 
@@ -264,7 +264,7 @@ static int fd_copy_regular(
 
         if (q < 0) {
                 r = -errno;
-                unlinkat(dt, to, 0);
+                (void) unlinkat(dt, to, 0);
         }
 
         return r;
@@ -528,7 +528,7 @@ int copy_file(const char *from, const char *to, int flags, mode_t mode, unsigned
         r = copy_file_fd(from, fdt, copy_flags);
         if (r < 0) {
                 close(fdt);
-                unlink(to);
+                (void) unlink(to);
                 return r;
         }
 
