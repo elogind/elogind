@@ -52,7 +52,7 @@
 
 #if 0 /// UNNEEDED by elogind
 #if ENABLE_IDN
-#  define IDN_FLAGS NI_IDN
+#  define IDN_FLAGS (NI_IDN|NI_IDN_USE_STD3_ASCII_RULES)
 #else
 #  define IDN_FLAGS 0
 #endif
