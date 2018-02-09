@@ -119,3 +119,5 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
 #endif // 0
 
 int access_fd(int fd, int mode);
+
+int unlinkat_deallocate(int fd, const char *name, int flags);
