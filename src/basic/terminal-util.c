@@ -63,6 +63,10 @@
 static volatile unsigned cached_columns = 0;
 static volatile unsigned cached_lines = 0;
 
+static volatile int cached_on_tty = -1;
+static volatile int cached_colors_enabled = -1;
+static volatile int cached_underline_enabled = -1;
+
 int chvt(int vt) {
         _cleanup_close_ int fd;
 
@@ -633,6 +637,8 @@ int make_console_stdio(void) {
         if (r < 0)
                 return log_error_errno(r, "Failed to duplicate terminal fd: %m");
 
+        reset_terminal_feature_caches();
+
         return 0;
 }
 #endif // 0
@@ -801,7 +807,7 @@ unsigned columns(void) {
         const char *e;
         int c;
 
-        if (_likely_(cached_columns > 0))
+        if (cached_columns > 0)
                 return cached_columns;
 
         c = 0;
@@ -835,7 +841,7 @@ unsigned lines(void) {
         const char *e;
         int l;
 
-        if (_likely_(cached_lines > 0))
+        if (cached_lines > 0)
                 return cached_lines;
 
         l = 0;
@@ -861,10 +867,17 @@ void columns_lines_cache_reset(int signum) {
 }
 #endif // 0
 
-bool on_tty(void) {
-        static int cached_on_tty = -1;
+void reset_terminal_feature_caches(void) {
+        cached_columns = 0;
+        cached_lines = 0;
 
-        if (_unlikely_(cached_on_tty < 0))
+        cached_colors_enabled = -1;
+        cached_underline_enabled = -1;
+        cached_on_tty = -1;
+}
+
+bool on_tty(void) {
+        if (cached_on_tty < 0)
                 cached_on_tty = isatty(STDOUT_FILENO) > 0;
 
         return cached_on_tty;
@@ -875,7 +888,7 @@ int make_stdio(int fd) {
 
         assert(fd >= 0);
 
-        if (dup2(fd, STDIN_FILENO) < 0 && r >= 0)
+        if (dup2(fd, STDIN_FILENO) < 0)
                 r = -errno;
         if (dup2(fd, STDOUT_FILENO) < 0 && r >= 0)
                 r = -errno;
@@ -892,13 +905,17 @@ int make_stdio(int fd) {
 }
 
 int make_null_stdio(void) {
-        int null_fd;
+        int null_fd, r;
 
         null_fd = open("/dev/null", O_RDWR|O_NOCTTY|O_CLOEXEC);
         if (null_fd < 0)
                 return -errno;
 
-        return make_stdio(null_fd);
+        r = make_stdio(null_fd);
+
+        reset_terminal_feature_caches();
+
+        return r;
 }
 
 int getttyname_malloc(int fd, char **ret) {
@@ -1203,40 +1220,38 @@ bool terminal_is_dumb(void) {
 }
 
 bool colors_enabled(void) {
-        static int enabled = -1;
 
-        if (_unlikely_(enabled < 0)) {
+        if (cached_colors_enabled < 0) {
 #if 0 /// elogind does not allow such forcing, and we are never init!
                 int val;
 
                 val = getenv_bool("SYSTEMD_COLORS");
                 if (val >= 0)
-                        enabled = val;
+                        cached_colors_enabled = val;
                 else if (getpid_cached() == 1)
                         /* PID1 outputs to the console without holding it open all the time */
-                        enabled = !getenv_terminal_is_dumb();
+                        cached_colors_enabled = !getenv_terminal_is_dumb();
                 else
 #endif // 0
-                        enabled = !terminal_is_dumb();
+                        cached_colors_enabled = !terminal_is_dumb();
         }
 
-        return enabled;
+        return cached_colors_enabled;
 }
 
 bool underline_enabled(void) {
-        static int enabled = -1;
 
-        if (enabled < 0) {
+        if (cached_underline_enabled < 0) {
 
                 /* The Linux console doesn't support underlining, turn it off, but only there. */
 
-                if (!colors_enabled())
-                        enabled = false;
+                if (colors_enabled())
+                        cached_underline_enabled = !streq_ptr(getenv("TERM"), "linux");
                 else
-                        enabled = !streq_ptr(getenv("TERM"), "linux");
+                        cached_underline_enabled = false;
         }
 
-        return enabled;
+        return cached_underline_enabled;
 }
 
 int vt_default_utf8(void) {
