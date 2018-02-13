@@ -40,7 +40,7 @@ static int dev_uaccess(const char *path, const char *seat) {
 
         umask(0022);
 
-        /* don't muck around with ACLs when the system is not running systemd */
+        /* don't muck around with ACLs when the system is not running logind */
         if (!logind_running())
                 return 0;
 
@@ -73,7 +73,7 @@ finish:
                 /* Better be safe than sorry and reset ACL */
                 k = devnode_acl(path, true, false, 0, false, 0);
                 if (k < 0) {
-                        log_full_errno(errno == ENOENT ? LOG_DEBUG : LOG_ERR, k, "Failed to apply ACL on %s: %m", path);
+                        log_full_errno(errno == ENOENT ? LOG_DEBUG : LOG_ERR, k, "Failed to reset ACL on %s: %m", path);
                         if (r >= 0)
                                 r = k;
                 }
