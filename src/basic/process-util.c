@@ -400,61 +400,37 @@ use_saved_argv:
 #endif // 0
 
 int is_kernel_thread(pid_t pid) {
-        _cleanup_free_ char *line = NULL;
-        unsigned long long flags;
-        size_t l, i;
         const char *p;
-        char *q;
-        int r;
+        size_t count;
+        char c;
+        bool eof;
+        FILE *f;
 
         if (IN_SET(pid, 0, 1) || pid == getpid_cached()) /* pid 1, and we ourselves certainly aren't a kernel thread */
                 return 0;
-        if (!pid_is_valid(pid))
-                return -EINVAL;
 
-        p = procfs_file_alloca(pid, "stat");
-        r = read_one_line_file(p, &line);
-        if (r == -ENOENT)
-                return -ESRCH;
-        if (r < 0)
-                return r;
+        assert(pid > 1);
 
-        /* Skip past the comm field */
-        q = strrchr(line, ')');
-        if (!q)
-                return -EINVAL;
-        q++;
-
-        /* Skip 6 fields to reach the flags field */
-        for (i = 0; i < 6; i++) {
-                l = strspn(q, WHITESPACE);
-                if (l < 1)
-                        return -EINVAL;
-                q += l;
-
-                l = strcspn(q, WHITESPACE);
-                if (l < 1)
-                        return -EINVAL;
-                q += l;
+        p = procfs_file_alloca(pid, "cmdline");
+        f = fopen(p, "re");
+        if (!f) {
+                if (errno == ENOENT)
+                        return -ESRCH;
+                return -errno;
         }
 
-        /* Skip preceeding whitespace */
-        l = strspn(q, WHITESPACE);
-        if (l < 1)
-                return -EINVAL;
-        q += l;
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
-        /* Truncate the rest */
-        l = strcspn(q, WHITESPACE);
-        if (l < 1)
-                return -EINVAL;
-        q[l] = 0;
+        count = fread(&c, 1, 1, f);
+        eof = feof(f);
+        fclose(f);
 
-        r = safe_atollu(q, &flags);
-        if (r < 0)
-                return r;
+        /* Kernel threads have an empty cmdline */
 
-        return !!(flags & PF_KTHREAD);
+        if (count <= 0)
+                return eof ? 1 : -errno;
+
+        return 0;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -858,17 +834,33 @@ int kill_and_sigcont(pid_t pid, int sig) {
 }
 #endif // 0
 
-int getenv_for_pid(pid_t pid, const char *field, char **_value) {
+int getenv_for_pid(pid_t pid, const char *field, char **ret) {
         _cleanup_fclose_ FILE *f = NULL;
         char *value = NULL;
-        int r;
         bool done = false;
-        size_t l;
         const char *path;
+        size_t l;
 
         assert(pid >= 0);
         assert(field);
-        assert(_value);
+        assert(ret);
+
+        if (pid == 0 || pid == getpid_cached()) {
+                const char *e;
+
+                e = getenv(field);
+                if (!e) {
+                        *ret = NULL;
+                        return 0;
+                }
+
+                value = strdup(e);
+                if (!value)
+                        return -ENOMEM;
+
+                *ret = value;
+                return 1;
+        }
 
         path = procfs_file_alloca(pid, "environ");
 
@@ -876,13 +868,13 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value) {
         if (!f) {
                 if (errno == ENOENT)
                         return -ESRCH;
+
                 return -errno;
         }
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         l = strlen(field);
-        r = 0;
 
         do {
                 char line[LINE_MAX];
@@ -907,14 +899,14 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value) {
                         if (!value)
                                 return -ENOMEM;
 
-                        r = 1;
-                        break;
+                        *ret = value;
+                        return 1;
                 }
 
         } while (!done);
 
-        *_value = value;
-        return r;
+        *ret = NULL;
+        return 0;
 }
 
 bool pid_is_unwaited(pid_t pid) {
