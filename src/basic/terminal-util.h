@@ -89,7 +89,7 @@ int vt_disallocate(const char *name);
 
 char *resolve_dev_console(char **active);
 #endif // 0
-int get_kernel_consoles(char ***consoles);
+int get_kernel_consoles(char ***ret);
 bool tty_is_vc(const char *tty);
 #if 0 /// UNNEEDED by elogind
 bool tty_is_vc_resolve(const char *tty);
