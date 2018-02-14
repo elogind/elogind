@@ -87,8 +87,8 @@ int ask_string(char **ret, const char *text, ...) _printf_(2, 3);
 
 int vt_disallocate(const char *name);
 
-char *resolve_dev_console(char **active);
 #endif // 0
+int resolve_dev_console(char **ret);
 int get_kernel_consoles(char ***ret);
 bool tty_is_vc(const char *tty);
 #if 0 /// UNNEEDED by elogind
