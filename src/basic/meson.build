@@ -473,6 +473,7 @@ libbasic = static_library(
 #if 0 /// no blkid in elogind
 #                         libblkid,
 #endif // 0
+                        libmount,
                         libselinux],
         c_args : ['-fvisibility=default'],
         install : false)
