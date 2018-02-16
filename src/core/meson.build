@@ -222,7 +222,7 @@ libcore_la_sources = files('''
 #              install_dir : dbussystemservicedir)
 # 
 # policy = configure_file(
-#         input : 'org.freedesktop.systemd1.policy.in.in',
+#         input : 'org.freedesktop.systemd1.policy.in',
 #         output : 'org.freedesktop.systemd1.policy',
 #endif // 0
         configuration : substs)
