@@ -39,6 +39,7 @@
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "format-util.h"
+//#include "fs-util.h"
 #include "logind.h"
 //#include "process-util.h"
 #include "selinux-util.h"
@@ -203,7 +204,7 @@ static void manager_free(Manager *m) {
         udev_unref(m->udev);
 
         if (m->unlink_nologin)
-                (void) unlink("/run/nologin");
+                (void) unlink_or_warn("/run/nologin");
 
         bus_verify_polkit_async_registry_free(m->polkit_registry);
 
@@ -999,7 +1000,7 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 LIST_REMOVE(gc_queue, m->seat_gc_queue, seat);
                 seat->in_gc_queue = false;
 
-                if (seat_may_gc(seat, drop_not_started)) {
+                if (!seat_check_gc(seat, drop_not_started)) {
                         seat_stop(seat, false);
                         seat_free(seat);
                 }
@@ -1010,14 +1011,14 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 session->in_gc_queue = false;
 
                 /* First, if we are not closing yet, initiate stopping */
-                if (session_may_gc(session, drop_not_started) &&
+                if (!session_check_gc(session, drop_not_started) &&
                     session_get_state(session) != SESSION_CLOSING)
                         session_stop(session, false);
 
                 /* Normally, this should make the session referenced
                  * again, if it doesn't then let's get rid of it
                  * immediately */
-                if (session_may_gc(session, drop_not_started)) {
+                if (!session_check_gc(session, drop_not_started)) {
                         session_finalize(session);
                         session_free(session);
                 }
@@ -1028,11 +1029,11 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 user->in_gc_queue = false;
 
                 /* First step: queue stop jobs */
-                if (user_may_gc(user, drop_not_started))
+                if (!user_check_gc(user, drop_not_started))
                         user_stop(user, false);
 
                 /* Second step: finalize user */
-                if (user_may_gc(user, drop_not_started)) {
+                if (!user_check_gc(user, drop_not_started)) {
                         user_finalize(user);
                         user_free(user);
                 }

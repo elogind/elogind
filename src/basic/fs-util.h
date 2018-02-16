@@ -77,6 +77,8 @@ int tmp_dir(const char **ret);
 #if 0 /// UNNEEDED by elogind
 int var_tmp_dir(const char **ret);
 
+int unlink_or_warn(const char *filename);
+
 #define INOTIFY_EVENT_MAX (sizeof(struct inotify_event) + NAME_MAX + 1)
 
 #define FOREACH_INOTIFY_EVENT(e, buffer, sz) \
