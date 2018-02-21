@@ -159,6 +159,8 @@
 #         ratelimit.h
 #         raw-clone.h
 #         raw-reboot.h
+#         reboot-util.c
+#         reboot-util.h
 #         refcnt.h
 #         replace-var.c
 #         replace-var.h

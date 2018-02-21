@@ -197,9 +197,7 @@ uint64_t system_tasks_max(void);
 uint64_t system_tasks_max_scale(uint64_t v, uint64_t max);
 
 #if 0 /// UNNEEDED by elogind
-int update_reboot_parameter_and_warn(const char *param);
 #endif // 0
-
 int version(void);
 
 #if 0 /// UNNEEDED by elogind
