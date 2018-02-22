@@ -28,6 +28,7 @@
 //#include "extract-word.h"
 #include "macro.h"
 #include "parse-util.h"
+//#include "process-util.h"
 #include "string-util.h"
 
 /// Additional includes needed by elogind
@@ -470,6 +471,30 @@ int safe_atoi16(const char *s, int16_t *ret) {
                 return -ERANGE;
 
         *ret = (int16_t) l;
+        return 0;
+}
+
+int safe_atoux16(const char *s, uint16_t *ret) {
+        char *x = NULL;
+        unsigned long l;
+
+        assert(s);
+        assert(ret);
+
+        s += strspn(s, WHITESPACE);
+
+        errno = 0;
+        l = strtoul(s, &x, 16);
+        if (errno > 0)
+                return -errno;
+        if (!x || x == s || *x != 0)
+                return -EINVAL;
+        if (s[0] == '-')
+                return -ERANGE;
+        if ((unsigned long) (uint16_t) l != l)
+                return -ERANGE;
+
+        *ret = (uint16_t) l;
         return 0;
 }
 
