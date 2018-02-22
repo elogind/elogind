@@ -35,6 +35,7 @@ static inline int write_string_file_atomic_label(const char *fn, const char *lin
 }
 #if 0 /// UNNEEDED by elogind
 int write_env_file_label(const char *fname, char **l);
-int fopen_temporary_label(const char *target,
-                          const char *path, FILE **f, char **temp_path);
 #endif // 0
+int fopen_temporary_label(const char *target, const char *path, FILE **f, char **temp_path);
+
+int create_shutdown_run_nologin_or_warn(void);
