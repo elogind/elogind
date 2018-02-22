@@ -377,7 +377,7 @@ static int write_to_console(
         highlight = LOG_PRI(level) <= LOG_ERR && show_color;
 
         if (show_location) {
-                snprintf(location, sizeof(location), "(%s:%i) ", file, line);
+                (void) snprintf(location, sizeof location, "(%s:%i) ", file, line);
                 iovec[n++] = IOVEC_MAKE_STRING(location);
         }
 
@@ -714,7 +714,7 @@ int log_internalv_realm(
         if (error != 0)
                 errno = error;
 
-        vsnprintf(buffer, sizeof(buffer), format, ap);
+        (void) vsnprintf(buffer, sizeof buffer, format, ap);
 
         return log_dispatch_internal(level, error, file, line, func, NULL, NULL, NULL, NULL, buffer);
 }
@@ -773,7 +773,7 @@ int log_object_internalv(
         } else
                 b = buffer = newa(char, LINE_MAX);
 
-        vsnprintf(b, LINE_MAX, format, ap);
+        (void) vsnprintf(b, LINE_MAX, format, ap);
 
         return log_dispatch_internal(level, error, file, line, func,
                                      object_field, object, extra_field, extra, buffer);
@@ -816,7 +816,7 @@ static void log_assert(
                 return;
 
         DISABLE_WARNING_FORMAT_NONLITERAL;
-        snprintf(buffer, sizeof buffer, format, text, file, line, func);
+        (void) snprintf(buffer, sizeof buffer, format, text, file, line, func);
         REENABLE_WARNING;
 
         log_abort_msg = buffer;
@@ -992,7 +992,7 @@ int log_struct_internal(
                         errno = error;
 
                 va_copy(aq, ap);
-                vsnprintf(buf, sizeof(buf), format, aq);
+                (void) vsnprintf(buf, sizeof buf, format, aq);
                 va_end(aq);
 
                 if (startswith(buf, "MESSAGE=")) {
@@ -1295,7 +1295,7 @@ int log_syntax_internal(
                 errno = error;
 
         va_start(ap, format);
-        vsnprintf(buffer, sizeof(buffer), format, ap);
+        (void) vsnprintf(buffer, sizeof buffer, format, ap);
         va_end(ap);
 
         if (unit)
