@@ -20,7 +20,6 @@
 void elogind_set_program_name(const char* pcall);
 
 #if !defined(__GLIBC__)
-#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
