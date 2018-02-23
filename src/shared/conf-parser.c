@@ -184,7 +184,7 @@ static int parse_line(
                 char *l,
                 void *userdata) {
 
-        char *e;
+        char *e, *include;
 
         assert(filename);
         assert(line > 0);
@@ -198,7 +198,8 @@ static int parse_line(
         if (strchr(COMMENTS "\n", *l))
                 return 0;
 
-        if (startswith(l, ".include ")) {
+        include = first_word(l, ".include");
+        if (include) {
                 _cleanup_free_ char *fn = NULL;
 
                 /* .includes are a bad idea, we only support them here
@@ -219,7 +220,7 @@ static int parse_line(
                            ".include directives are deprecated, and support for them will be removed in a future version of elogind. "
                            "Please use drop-in files instead.");
 
-                fn = file_in_same_dir(filename, strstrip(l+9));
+                fn = file_in_same_dir(filename, strstrip(include));
                 if (!fn)
                         return -ENOMEM;
 
