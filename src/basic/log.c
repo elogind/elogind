@@ -85,6 +85,16 @@ static bool prohibit_ipc = false;
  * use here. */
 static char *log_abort_msg = NULL;
 
+/* An assert to use in logging functions that does not call recursively
+ * into our logging functions (since that might lead to a loop). */
+#define assert_raw(expr)                                                \
+        do {                                                            \
+                if (_unlikely_(!(expr))) {                              \
+                        fputs(#expr "\n", stderr);                      \
+                        abort();                                        \
+                }                                                       \
+        } while (false)
+
 static void log_close_console(void) {
 
         if (console_fd < 0)
@@ -543,7 +553,7 @@ static int log_do_header(
                      isempty(extra) ? "" : extra,
                      isempty(extra) ? "" : "\n",
                      program_invocation_short_name);
-        assert((size_t) r < size);
+        assert_raw((size_t) r < size);
 
         return 0;
 }
@@ -597,7 +607,7 @@ int log_dispatch_internal(
                 const char *extra,
                 char *buffer) {
 
-        assert(buffer);
+        assert_raw(buffer);
 
         if (error < 0)
                 error = -error;
