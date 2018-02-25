@@ -540,8 +540,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
 
         assert(format);
 
-        for (e = format, i = 0; *e && i < n; e ++, i ++) {
-
+        for (e = format, i = 0; *e && i < n; e ++, i ++)
                 switch (state) {
 
                 case WORD:
@@ -555,8 +554,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                                 if (!k)
                                         return NULL;
 
-                                free(r);
-                                r = k;
+                                free_and_replace(r, k);
 
                                 word = e-1;
                                 state = VARIABLE;
@@ -566,8 +564,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                                 if (!k)
                                         return NULL;
 
-                                free(r);
-                                r = k;
+                                free_and_replace(r, k);
 
                                 word = e+1;
                                 state = WORD;
@@ -577,8 +574,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                                 if (!k)
                                         return NULL;
 
-                                free(r);
-                                r = k;
+                                free_and_replace(r, k);
 
                                 word = e-1;
                                 state = VARIABLE_RAW;
@@ -597,8 +593,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                                 if (!k)
                                         return NULL;
 
-                                free(r);
-                                r = k;
+                                free_and_replace(r, k);
 
                                 word = e+1;
                                 state = WORD;
@@ -654,8 +649,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                                 if (!k)
                                         return NULL;
 
-                                free(r);
-                                r = k;
+                                free_and_replace(r, k);
 
                                 word = e+1;
                                 state = WORD;
@@ -674,8 +668,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                                 if (!k)
                                         return NULL;
 
-                                free(r);
-                                r = k;
+                                free_and_replace(r, k);
 
                                 word = e--;
                                 i--;
@@ -683,7 +676,6 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                         }
                         break;
                 }
-        }
 
         if (state == VARIABLE_RAW) {
                 const char *t;
