@@ -2903,17 +2903,19 @@ install_subdir('factory/etc',
 # install_data('modprobe.d/systemd.conf',
 #              install_dir : modprobedir)
 #endif // 0
-install_data('README',
-             'NEWS',
-             'CODING_STYLE',
 #if 0 /// UNNEEDED by elogind
-#              'DISTRO_PORTING',
-#              'ENVIRONMENT.md',
 #endif // 0
-             'LICENSE.GPL2',
+install_data('LICENSE.GPL2',
              'LICENSE.LGPL2.1',
-             'TRANSIENT-SETTINGS.md',
-             'UIDS-GIDS.md',
+             'NEWS',
+             'README',
+             'doc/CODING_STYLE',
+             'doc/DISTRO_PORTING',
+             'doc/ENVIRONMENT.md',
+             'doc/HACKING',
+             'doc/TRANSIENT-SETTINGS.md',
+             'doc/TRANSLATORS',
+             'doc/UIDS-GIDS.md',
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              install_dir : docdir)
 
