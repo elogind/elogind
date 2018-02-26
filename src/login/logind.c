@@ -482,7 +482,7 @@ static int manager_attach_fds(Manager *m) {
 
                 sd = hashmap_get(s->devices, &st.st_rdev);
                 if (!sd) {
-                        /* Weird we got an fd for a session device which wasn't
+                        /* Weird, we got an fd for a session device which wasn't
                         * recorded in the session state file... */
                         log_warning("Got fd for missing session device [%u:%u] in session %s",
                                     major(st.st_rdev), minor(st.st_rdev), s->id);
@@ -1002,7 +1002,7 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 LIST_REMOVE(gc_queue, m->seat_gc_queue, seat);
                 seat->in_gc_queue = false;
 
-                if (!seat_check_gc(seat, drop_not_started)) {
+                if (seat_may_gc(seat, drop_not_started)) {
                         seat_stop(seat, false);
                         seat_free(seat);
                 }
@@ -1013,14 +1013,14 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 session->in_gc_queue = false;
 
                 /* First, if we are not closing yet, initiate stopping */
-                if (!session_check_gc(session, drop_not_started) &&
+                if (session_may_gc(session, drop_not_started) &&
                     session_get_state(session) != SESSION_CLOSING)
                         session_stop(session, false);
 
                 /* Normally, this should make the session referenced
                  * again, if it doesn't then let's get rid of it
                  * immediately */
-                if (!session_check_gc(session, drop_not_started)) {
+                if (session_may_gc(session, drop_not_started)) {
                         session_finalize(session);
                         session_free(session);
                 }
@@ -1031,11 +1031,11 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 user->in_gc_queue = false;
 
                 /* First step: queue stop jobs */
-                if (!user_check_gc(user, drop_not_started))
+                if (user_may_gc(user, drop_not_started))
                         user_stop(user, false);
 
                 /* Second step: finalize user */
-                if (!user_check_gc(user, drop_not_started)) {
+                if (user_may_gc(user, drop_not_started)) {
                         user_finalize(user);
                         user_free(user);
                 }
