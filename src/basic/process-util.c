@@ -1180,6 +1180,7 @@ extern void* __dso_handle __attribute__ ((__weak__));
 #endif // ifdef __GLIBC__
 
 pid_t getpid_cached(void) {
+        static bool installed = false;
         pid_t current_value;
 
         /* getpid_cached() is much like getpid(), but caches the value in local memory, to avoid having to invoke a
@@ -1200,10 +1201,18 @@ pid_t getpid_cached(void) {
 
                 new_pid = raw_getpid();
 
-                if (__register_atfork(NULL, NULL, reset_cached_pid, __dso_handle) != 0) {
-                        /* OOM? Let's try again later */
-                        cached_pid = CACHED_PID_UNSET;
-                        return new_pid;
+                if (!installed) {
+                        /* __register_atfork() either returns 0 or -ENOMEM, in its glibc implementation. Since it's
+                         * only half-documented (glibc doesn't document it but LSB does — though only superficially)
+                         * we'll check for errors only in the most generic fashion possible. */
+
+                        if (__register_atfork(NULL, NULL, reset_cached_pid, __dso_handle) != 0) {
+                                /* OOM? Let's try again later */
+                                cached_pid = CACHED_PID_UNSET;
+                                return new_pid;
+                        }
+
+                        installed = true;
                 }
 
                 cached_pid = new_pid;
