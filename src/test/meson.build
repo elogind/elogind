@@ -707,6 +707,14 @@ tests += [
 #          [libdl],
 #          '', 'manual'],
 #endif // 0
+
+        [['src/test/test-umount.c',
+          'src/core/mount-setup.c',
+          'src/core/mount-setup.h',
+          'src/core/umount.c',
+          'src/core/umount.h'],
+         [],
+         [libmount]],
 ]
 
 ############################################################
@@ -772,6 +780,13 @@ tests += [
 #          [threads,
 #           libxz,
 #           liblz4]],
+# 
+#         [['src/journal/test-journal-config.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libxz,
+#           liblz4,
+#           libselinux]],
 # 
 #         [['src/journal/test-journal-verify.c'],
 #          [libjournal_core,
