@@ -960,14 +960,11 @@ int bus_socket_exec(sd_bus *b) {
         if (r == 0) {
                 /* Child */
 
-                assert_se(dup3(s[1], STDIN_FILENO, 0) == STDIN_FILENO);
-                assert_se(dup3(s[1], STDOUT_FILENO, 0) == STDOUT_FILENO);
+                safe_close(s[0]);
 
-                if (!IN_SET(s[1], STDIN_FILENO, STDOUT_FILENO))
-                        safe_close(s[1]);
+                if (rearrange_stdio(s[1], s[1], STDERR_FILENO) < 0)
+                        _exit(EXIT_FAILURE);
 
-                (void) fd_cloexec(STDIN_FILENO, false);
-                (void) fd_cloexec(STDOUT_FILENO, false);
                 (void) fd_nonblock(STDIN_FILENO, false);
                 (void) fd_nonblock(STDOUT_FILENO, false);
 
@@ -1223,7 +1220,7 @@ int bus_socket_read_message(sd_bus *bus) {
                                         return -EIO;
                                 }
 
-                                f = reallocarray(bus->fds, bus->n_fds + n, sizeof(int));
+                                f = realloc(bus->fds, sizeof(int) * (bus->n_fds + n));
                                 if (!f) {
                                         close_many((int*) CMSG_DATA(cmsg), n);
                                         return -ENOMEM;
