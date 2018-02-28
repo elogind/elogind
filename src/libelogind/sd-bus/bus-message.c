@@ -1400,7 +1400,7 @@ static int message_push_fd(sd_bus_message *m, int fd) {
         if (copy < 0)
                 return -errno;
 
-        f = reallocarray(m->fds, sizeof(int), m->n_fds + 1);
+        f = realloc(m->fds, sizeof(int) * (m->n_fds + 1));
         if (!f) {
                 m->poisoned = true;
                 safe_close(copy);
@@ -2646,7 +2646,7 @@ _public_ int sd_bus_message_append_array_memfd(
         if (r < 0)
                 return r;
 
-        copy_fd = dup(memfd);
+        copy_fd = fcntl(memfd, F_DUPFD_CLOEXEC, 3);
         if (copy_fd < 0)
                 return copy_fd;
 
@@ -2721,7 +2721,7 @@ _public_ int sd_bus_message_append_string_memfd(
         if (r < 0)
                 return r;
 
-        copy_fd = dup(memfd);
+        copy_fd = fcntl(memfd, FD_CLOEXEC, 3);
         if (copy_fd < 0)
                 return copy_fd;
 
