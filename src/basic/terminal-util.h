@@ -28,45 +28,21 @@
 #include "macro.h"
 #include "time-util.h"
 
-/* Regular colors */
-#define ANSI_BLACK   "\x1B[0;30m"
-#define ANSI_RED     "\x1B[0;31m"
-#define ANSI_GREEN   "\x1B[0;32m"
-#define ANSI_YELLOW  "\x1B[0;33m"
-#define ANSI_BLUE    "\x1B[0;34m"
-#define ANSI_MAGENTA "\x1B[0;35m"
-#define ANSI_CYAN    "\x1B[0;36m"
-#define ANSI_WHITE   "\x1B[0;37m"
-
-/* Bold/highlighted */
-#define ANSI_HIGHLIGHT_BLACK   "\x1B[0;1;30m"
-#define ANSI_HIGHLIGHT_RED     "\x1B[0;1;31m"
-#define ANSI_HIGHLIGHT_GREEN   "\x1B[0;1;32m"
-#define ANSI_HIGHLIGHT_YELLOW  "\x1B[0;1;33m"
-#define ANSI_HIGHLIGHT_BLUE    "\x1B[0;1;34m"
-#define ANSI_HIGHLIGHT_MAGENTA "\x1B[0;1;35m"
-#define ANSI_HIGHLIGHT_CYAN    "\x1B[0;1;36m"
-#define ANSI_HIGHLIGHT_WHITE   "\x1B[0;1;37m"
-
-/* Underlined */
-#define ANSI_HIGHLIGHT_BLACK_UNDERLINE   "\x1B[0;1;4;30m"
-#define ANSI_HIGHLIGHT_RED_UNDERLINE     "\x1B[0;1;4;31m"
-#define ANSI_HIGHLIGHT_GREEN_UNDERLINE   "\x1B[0;1;4;32m"
-#define ANSI_HIGHLIGHT_YELLOW_UNDERLINE  "\x1B[0;1;4;33m"
-#define ANSI_HIGHLIGHT_BLUE_UNDERLINE    "\x1B[0;1;4;34m"
-#define ANSI_HIGHLIGHT_MAGENTA_UNDERLINE "\x1B[0;1;4;35m"
-#define ANSI_HIGHLIGHT_CYAN_UNDERLINE    "\x1B[0;1;4;36m"
-#define ANSI_HIGHLIGHT_WHITE_UNDERLINE   "\x1B[0;1;4;37m"
-
-/* Other ANSI codes */
+#define ANSI_RED "\x1B[0;31m"
+#define ANSI_GREEN "\x1B[0;32m"
 #define ANSI_UNDERLINE "\x1B[0;4m"
 #define ANSI_HIGHLIGHT "\x1B[0;1;39m"
+#define ANSI_HIGHLIGHT_RED "\x1B[0;1;31m"
+#define ANSI_HIGHLIGHT_GREEN "\x1B[0;1;32m"
+#define ANSI_HIGHLIGHT_YELLOW "\x1B[0;1;33m"
+#define ANSI_HIGHLIGHT_BLUE "\x1B[0;1;34m"
 #define ANSI_HIGHLIGHT_UNDERLINE "\x1B[0;1;4m"
-
-/* Reset/clear ANSI styles */
+#define ANSI_HIGHLIGHT_RED_UNDERLINE "\x1B[0;1;4;31m"
+#define ANSI_HIGHLIGHT_GREEN_UNDERLINE "\x1B[0;1;4;32m"
+#define ANSI_HIGHLIGHT_YELLOW_UNDERLINE "\x1B[0;1;4;33m"
+#define ANSI_HIGHLIGHT_BLUE_UNDERLINE "\x1B[0;1;4;34m"
 #define ANSI_NORMAL "\x1B[0m"
 
-/* Erase characters until the end of the line */
 #define ANSI_ERASE_TO_END_OF_LINE "\x1B[K"
 
 /* Set cursor to top left corner and clear screen */
@@ -124,8 +100,6 @@ int vtnr_from_tty(const char *tty);
 const char *default_term_for_tty(const char *tty);
 #endif // 0
 
-int make_stdio(int fd);
-int make_null_stdio(void);
 #if 0 /// UNNEEDED by elogind
 int make_console_stdio(void);
 #endif // 0
