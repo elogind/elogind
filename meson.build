@@ -76,7 +76,7 @@ conf.set10('HAVE_SPLIT_USR', split_usr)
 rootprefixdir = get_option('rootprefix')
 # Unusual rootprefixdir values are used by some distros
 # (see https://github.com/systemd/systemd/pull/7461).
-rootprefix_default = get_option('split-usr') ? '/' : '/usr'
+rootprefix_default = split_usr ? '/' : '/usr'
 if rootprefixdir == ''
         rootprefixdir = rootprefix_default
 endif
@@ -105,6 +105,7 @@ datadir = join_paths(prefixdir, get_option('datadir'))
 localstatedir = join_paths('/', get_option('localstatedir'))
 
 rootbindir = join_paths(rootprefixdir, 'bin')
+rootsbindir = join_paths(rootprefixdir, 'sbin')
 #if 0 /// elogind has a different default
 # rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
 #else
@@ -1663,6 +1664,10 @@ test_dlopen = executable(
 #            install : true,
 #            install_dir : rootlibexecdir)
 # 
+# meson.add_install_script(meson_make_symlink,
+#                          join_paths(rootlibexecdir, 'systemd'),
+#                          join_paths(rootsbindir, 'init'))
+# 
 # exe = executable('systemd-analyze',
 #                  systemd_analyze_sources,
 #                  include_directories : includes,
@@ -1978,6 +1983,12 @@ endif
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
+# 
+# foreach alias : ['halt', 'poweroff', 'reboot', 'runlevel', 'shutdown', 'telinit']
+#         meson.add_install_script(meson_make_symlink,
+#                                  join_paths(rootbindir, 'systemctl'),
+#                                  join_paths(rootsbindir, alias))
+# endforeach
 # 
 # if conf.get('ENABLE_BACKLIGHT') == 1
 #         executable('systemd-backlight',
