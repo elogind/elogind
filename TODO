@@ -24,8 +24,25 @@ Janitorial Clean-ups:
 
 Features:
 
-* check what setting the login shell to /bin/false vs. /sbin/nologin means and
-  do the right thing in get_user_creds_clean() with it.
+* add proper dbus APIs for the various sd_notify() commands, such as MAINPID=1
+  and so on, which would mean we could report errors and such.
+
+* block setrlimit(RLIMIT_NOPROC) (and other per-user limits) in nspawn when userns is not on
+
+* nss-elogind: implement enumeration, that shows all dynamic users plus the
+  synthesized ones if necessary, so that "getent passwd" shows useful data.
+
+* teach tmpfiles.d q/Q logic something sensible in the context of XFS/ext4
+  project quota
+
+* introduce DefaultSlice= or so in system.conf that allows changing where we
+  place our units by default, i.e. change system.slice to something
+  else. Similar, ManagerSlice= should exist so that PID1's own scope unit could
+  be moved somewhere else too. Finally machined and logind should get similar
+  options so that it is possible to move user session scopes and machines to a
+  different slice too by default. Usecase: people who want to put resources on
+  the entire system, with the exception of one specific service. See:
+  https://lists.freedesktop.org/archives/elogind-devel/2018-February/040369.html
 
 * maybe rework get_user_creds() to query the user database if $SHELL is used
   for root, but only then.
@@ -368,8 +385,6 @@ Features:
   can be used for resuming the system but nothing else.
 
 * what to do about udev db binary stability for apps? (raw access is not an option)
-
-* maybe provide an API to allow migration of foreign PIDs into existing scopes.
 
 * man: maybe use the word "inspect" rather than "introspect"?
 
