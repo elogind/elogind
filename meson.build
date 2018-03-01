@@ -77,6 +77,12 @@ else
 endif
 conf.set10('HAVE_SPLIT_USR', split_usr)
 
+if get_option('split-bin') == 'auto'
+        split_bin = run_command('test', '-L', '/usr/sbin').returncode() != 0
+else
+        split_bin = get_option('split-bin') == 'true'
+endif
+
 rootprefixdir = get_option('rootprefix')
 # Unusual rootprefixdir values are used by some distros
 # (see https://github.com/systemd/systemd/pull/7461).
@@ -109,7 +115,7 @@ datadir = join_paths(prefixdir, get_option('datadir'))
 localstatedir = join_paths('/', get_option('localstatedir'))
 
 rootbindir = join_paths(rootprefixdir, 'bin')
-rootsbindir = join_paths(rootprefixdir, 'sbin')
+rootsbindir = join_paths(rootprefixdir, split_bin ? 'sbin' : 'bin')
 #if 0 /// elogind has a different default
 # rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
 #else
@@ -3056,6 +3062,7 @@ status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
         'split /usr:                        @0@'.format(split_usr),
+        'split bin-sbin:                    @0@'.format(split_bin),
 #if 0 /// UNSUPPORTED by elogind
 #         'prefix directory:                  @0@'.format(prefixdir),
 #         'rootprefix directory:              @0@'.format(rootprefixdir),
