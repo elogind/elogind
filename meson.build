@@ -70,7 +70,11 @@ m4_defines = []
 
 #####################################################################
 
-split_usr = get_option('split-usr')
+if get_option('split-usr') == 'auto'
+        split_usr = run_command('test', '-L', '/bin').returncode() != 0
+else
+        split_usr = get_option('split-usr') == 'true'
+endif
 conf.set10('HAVE_SPLIT_USR', split_usr)
 
 rootprefixdir = get_option('rootprefix')
@@ -3051,6 +3055,7 @@ run_target(
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
+        'split /usr:                        @0@'.format(split_usr),
 #if 0 /// UNSUPPORTED by elogind
 #         'prefix directory:                  @0@'.format(prefixdir),
 #         'rootprefix directory:              @0@'.format(rootprefixdir),
@@ -3216,7 +3221,6 @@ foreach tuple : [
         ['html pages',       want_html],
         ['man page indices', want_man and have_lxml],
 #if 0 /// UNNEEDED by elogind
-#         ['split /usr',       conf.get('HAVE_SPLIT_USR') == 1],
 #         ['SysV compat'],
 #endif // 0
         ['utmp'],
