@@ -70,21 +70,8 @@ m4_defines = []
 
 #####################################################################
 
-if get_option('split-usr') == 'auto'
-        split_usr = run_command('test', '-L', '/bin').returncode() != 0
-else
-        split_usr = get_option('split-usr') == 'true'
-endif
-conf.set10('HAVE_SPLIT_USR', split_usr,
-           description : '/usr/bin and /bin directories are separate')
-
-if get_option('split-bin') == 'auto'
-        split_bin = run_command('test', '-L', '/usr/sbin').returncode() != 0
-else
-        split_bin = get_option('split-bin') == 'true'
-endif
-conf.set10('HAVE_SPLIT_BIN', split_bin,
-           description : 'bin and sbin directories are separate')
+split_usr = get_option('split-usr')
+conf.set10('HAVE_SPLIT_USR', split_usr)
 
 rootprefixdir = get_option('rootprefix')
 # Unusual rootprefixdir values are used by some distros
@@ -118,7 +105,7 @@ datadir = join_paths(prefixdir, get_option('datadir'))
 localstatedir = join_paths('/', get_option('localstatedir'))
 
 rootbindir = join_paths(rootprefixdir, 'bin')
-rootsbindir = join_paths(rootprefixdir, split_bin ? 'sbin' : 'bin')
+rootsbindir = join_paths(rootprefixdir, 'sbin')
 #if 0 /// elogind has a different default
 # rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
 #else
@@ -242,6 +229,9 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 # conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
 # conf.set_quoted('RC_LOCAL_SCRIPT_PATH_START',                 get_option('rc-local'))
 # conf.set_quoted('RC_LOCAL_SCRIPT_PATH_STOP',                  get_option('halt-local'))
+# 
+# conf.set('ANSI_OK_COLOR', 'ANSI_' + get_option('ok-color').to_upper())
+# 
 # conf.set_quoted('USER_CONFIG_UNIT_PATH',                      join_paths(pkgsysconfdir, 'user'))
 # conf.set_quoted('USER_DATA_UNIT_PATH',                        userunitdir)
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
@@ -3064,8 +3054,6 @@ run_target(
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
-        'split /usr:                        @0@'.format(split_usr),
-        'split bin-sbin:                    @0@'.format(split_bin),
 #if 0 /// UNSUPPORTED by elogind
 #         'prefix directory:                  @0@'.format(prefixdir),
 #         'rootprefix directory:              @0@'.format(rootprefixdir),
@@ -3230,6 +3218,7 @@ foreach tuple : [
         ['man pages',        want_man],
         ['html pages',       want_html],
         ['man page indices', want_man and have_lxml],
+        ['split /usr',       conf.get('HAVE_SPLIT_USR') == 1],
 #if 0 /// UNNEEDED by elogind
 #         ['SysV compat'],
 #endif // 0
