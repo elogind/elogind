@@ -110,7 +110,7 @@ static int session_device_notify(SessionDevice *sd, enum SessionDeviceNotificati
         return sd_bus_send(sd->session->manager->bus, m, NULL);
 }
 
-static int sd_eviocrevoke(int fd) {
+static void sd_eviocrevoke(int fd) {
         static bool warned = false;
 
         assert(fd >= 0);
@@ -122,8 +122,6 @@ static int sd_eviocrevoke(int fd) {
                         warned = true;
                 }
         }
-
-        return 0;
 }
 
 static int sd_drmsetmaster(int fd) {
