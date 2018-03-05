@@ -16,7 +16,7 @@
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 project('elogind', 'c',
-        version : '237',
+        version : '238',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -28,8 +28,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.21.0'
-# libudev_version = '1.6.9'
+# libsystemd_version = '0.22.0'
+# libudev_version = '1.6.10'
 #else
 libelogind_version = '0.20.0'
 #endif // 0
@@ -70,8 +70,21 @@ m4_defines = []
 
 #####################################################################
 
-split_usr = get_option('split-usr')
-conf.set10('HAVE_SPLIT_USR', split_usr)
+if get_option('split-usr') == 'auto'
+        split_usr = run_command('test', '-L', '/bin').returncode() != 0
+else
+        split_usr = get_option('split-usr') == 'true'
+endif
+conf.set10('HAVE_SPLIT_USR', split_usr,
+           description : '/usr/bin and /bin directories are separate')
+
+if get_option('split-bin') == 'auto'
+        split_bin = run_command('test', '-L', '/usr/sbin').returncode() != 0
+else
+        split_bin = get_option('split-bin') == 'true'
+endif
+conf.set10('HAVE_SPLIT_BIN', split_bin,
+           description : 'bin and sbin directories are separate')
 
 rootprefixdir = get_option('rootprefix')
 # Unusual rootprefixdir values are used by some distros
@@ -105,7 +118,7 @@ datadir = join_paths(prefixdir, get_option('datadir'))
 localstatedir = join_paths('/', get_option('localstatedir'))
 
 rootbindir = join_paths(rootprefixdir, 'bin')
-rootsbindir = join_paths(rootprefixdir, 'sbin')
+rootsbindir = join_paths(rootprefixdir, split_bin ? 'sbin' : 'bin')
 #if 0 /// elogind has a different default
 # rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
 #else
@@ -3054,6 +3067,8 @@ run_target(
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
+        'split /usr:                        @0@'.format(split_usr),
+        'split bin-sbin:                    @0@'.format(split_bin),
 #if 0 /// UNSUPPORTED by elogind
 #         'prefix directory:                  @0@'.format(prefixdir),
 #         'rootprefix directory:              @0@'.format(rootprefixdir),
@@ -3218,7 +3233,6 @@ foreach tuple : [
         ['man pages',        want_man],
         ['html pages',       want_html],
         ['man page indices', want_man and have_lxml],
-        ['split /usr',       conf.get('HAVE_SPLIT_USR') == 1],
 #if 0 /// UNNEEDED by elogind
 #         ['SysV compat'],
 #endif // 0
