@@ -50,12 +50,12 @@ install_headers(
 #         subdir : 'systemd')
 #else
         subdir : 'elogind/systemd')
-#endif // 0
 
 meson.add_install_script(meson_symlink_headers,
                          includedir,
                          _systemd_headers,
                          '_sd-common.h')
+#endif // 0
 
 
 ############################################################

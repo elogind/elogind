@@ -133,13 +133,13 @@ libcore_la_sources = files('''
 #         output: 'load-fragment-gperf.gperf',
 #         command : [m4, '-P'] + m4_defines + ['@INPUT@'],
 #         capture : true)
-
+# 
 # load_fragment_gperf_c = custom_target(
 #         'load-fragment-gperf.c',
 #         input : load_fragment_gperf_gperf,
 #         output : 'load-fragment-gperf.c',
 #         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
-
+# 
 # awkscript = 'load-fragment-gperf-nulstr.awk'
 # load_fragment_gperf_nulstr_c = custom_target(
 #         'load-fragment-gperf-nulstr.c',
@@ -147,7 +147,7 @@ libcore_la_sources = files('''
 #         output : 'load-fragment-gperf-nulstr.c',
 #         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
 #         capture : true)
-
+# 
 # libcore = static_library(
 #         'core',
 #         libcore_la_sources,
@@ -162,9 +162,9 @@ libcore_la_sources = files('''
 #                         libkmod,
 #                         libapparmor,
 #                         libmount])
-
+# 
 # systemd_sources = files('main.c')
-
+# 
 # systemd_shutdown_sources = files('''
 #         shutdown.c
 #         umount.c
@@ -174,15 +174,15 @@ libcore_la_sources = files('''
 #         killall.c
 #         killall.h
 # '''.split())
-
+# 
 # in_files = [['macros.systemd',   rpmmacrosdir],
 #             ['triggers.systemd', ''],
 #             ['systemd.pc',       pkgconfigdatadir]]
-
+# 
 # foreach item : in_files
 #         file = item[0]
 #         dir = item[1]
-
+# 
 #         # If 'no', disable generation completely.
 #         # If '', generate, but do not install.
 #         if dir != 'no'
@@ -196,17 +196,17 @@ libcore_la_sources = files('''
 #                 endif
 #         endif
 # endforeach
-
+# 
 # install_data('org.freedesktop.systemd1.conf',
 #              install_dir : dbuspolicydir)
 # install_data('org.freedesktop.systemd1.service',
 #              install_dir : dbussystemservicedir)
-
+# 
 # policy_in = configure_file(
 #         input : 'org.freedesktop.systemd1.policy.in.in',
 #         output : 'org.freedesktop.systemd1.policy.in',
 #         configuration : substs)
-
+# 
 # custom_target(
 #         'org.freedesktop.systemd1.policy',
 #         input : policy_in,
@@ -231,12 +231,12 @@ libcore_la_sources = files('''
 # install_data('system.conf',
 #              'user.conf',
 #              install_dir : pkgsysconfdir)
-
+# 
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemshutdowndir))
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemsleepdir))
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemgeneratordir))
 # meson.add_install_script('sh', '-c', mkdir_p.format(usergeneratordir))
-
+# 
 # meson.add_install_script('sh', '-c',
 #                          mkdir_p.format(join_paths(pkgsysconfdir, 'system/multi-user.target.wants')))
 # meson.add_install_script('sh', '-c',
