@@ -34,6 +34,7 @@ use Readonly;
 # ================================================================
 Readonly my $VERSION     => "0.8.1"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
+Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
 Readonly my $WORKDIR     => getcwd();
 Readonly my $USAGE_SHORT => "$PROGNAME <--help|[OPTIONS] <path to upstream tree>>";
@@ -92,7 +93,7 @@ my %hFile = (); ## Main data structure to manage a complete compare of two files
                 ##   hunks  : Arrayref with the Hunks, stored in %hHunk instances
                 ##   output : Arrayref with the lines of the final patch
                 ##   part   : local relative file path
-                ##   patch  : WORKDIR/patches/<part>.patch (With / replaced by _ in <part>)
+                ##   patch  : PROGDIR/patches/<part>.patch (With / replaced by _ in <part>)
                 ##   source : WORKDIR/<part>
                 ##   target : UPSTREAM/<part>
                 ## )
@@ -215,7 +216,7 @@ for my $file_part (@source_files) {
 
 		# === 5) Check for useful blank line additions ====================
 		check_blanks and hunk_is_useful and prune_hunk or next;
-		
+
 		# === 6) Check for 'elogind' => 'systemd' reverts =================
 		check_name_reverts and hunk_is_useful and prune_hunk or next;
 
@@ -257,7 +258,7 @@ for my $file_part (@source_files) {
 	# --- Splice all include insertions that are marked for splicing    ---
 	# ---------------------------------------------------------------------
 	splice_includes;
-	
+
 	# ---------------------------------------------------------------------
 	# --- Go through all hunks for a last prune and check               ---
 	# ---------------------------------------------------------------------
@@ -270,13 +271,13 @@ for my $file_part (@source_files) {
 
 		prune_hunk and ++$have_hunk;
 	}
-	
+
 	# If we have at least 1 useful hunk, create the output and tell the user what we've got.
 	$have_hunk
 		and build_output # (Always returns 1)
 		and printf("%d Hunk%s\n", $have_hunk, $have_hunk > 1 ? "s" : "")
 		 or print("clean\n");
-	
+
 	# Shell and meson files must be unprepared. See unprepare_shell()
 	$hFile{source} =~ m/\.pwx$/ and unprepare_shell;
 
@@ -375,7 +376,7 @@ sub build_hFile {
 		hunks  => [ ],
 		output => [ ],
 		part   => "$part",
-		patch  => "patches/${patch}.patch",
+		patch  => "$PROGDIR/patches/${patch}.patch",
 		source => "$WORKDIR/$part",
 		target => "$tgt"
 	);
@@ -418,7 +419,6 @@ sub build_hHunk {
 	return 0;
 }
 
-
 # -----------------------------------------------------------------------
 # --- Writes $hFile{output} from all useful $hFile{hunks}.            ---
 # --- Important: No more checks, just do it!                          ---
@@ -430,21 +430,20 @@ sub build_output {
 	for (my $pos = 0; $pos < $hFile{count}; ++$pos) {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
 		$hHunk->{useful} or next;     ## And the skip of the useless.
-		
+
 		# --- Add the header line -----------------
 		# -----------------------------------------
 		push(@{$hFile{output}}, get_hunk_head(\$offset));
-		
+
 		# --- Add the hunk lines ------------------
 		# -----------------------------------------
 		for my $line (@{$hHunk->{lines}}) {
 			push(@{$hFile{output}}, $line);
 		}
 	} ## End of walking the hunks
-	
+
 	return 1;
 }
-
 
 # -----------------------------------------------------------------------
 # --- Check that useful blank line additions aren't misplaced.        ---
@@ -461,7 +460,7 @@ sub check_blanks {
 
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
-	
+
 		if ( ($$line =~ m/^\+\s*$/)
 		  && ($i > 0)
 		  && ($hHunk->{lines}[$i-1] =~ m/^[ -+]#if\s+[01].*elogind/) ) {
@@ -472,10 +471,9 @@ sub check_blanks {
 			next;
 		}
 	}
-	
+
 	return 1;
 }
-
 
 # -----------------------------------------------------------------------
 # --- Check comments we added for elogind specific information.       ---
@@ -612,7 +610,6 @@ sub check_debug {
 	return 1;
 }
 
-
 # -----------------------------------------------------------------------
 # --- Check for attempts to remove elogind_*() special function calls. --
 # --- We have som special functions, needed oly by elogind.           ---
@@ -654,7 +651,6 @@ sub check_func_removes  {
 	return 1;
 }
 
-
 # -----------------------------------------------------------------------
 # --- Check hunk for include manipulations we must step in            ---
 # --- This is basically read_include(), but this time we actually act ---
@@ -689,7 +685,7 @@ sub check_includes {
 
 	# We must know when "needed by elogind blocks" start
 	my $in_elogind_block = 0;
-	
+
 	# The simple undo check will fail, if we do at least one at once.
 	# Delay the undoing of the removals until after the hunk was checked.
 	my %undos = ();
@@ -1011,7 +1007,6 @@ sub check_musl {
 	return 1;
 }
 
-
 # -----------------------------------------------------------------------
 # --- Check for attempts to revert 'elogind' to 'systemd'             ---
 # --- Note: We only check for single line reverts like:               ---
@@ -1029,7 +1024,7 @@ sub check_name_reverts {
 
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
-		
+
 		defined($$line) or return hunk_failed("check_name_reverts: Line " . ($i + 1) . "/$hHunk->{count} is undef?\n");
 
 		# Note down removals
@@ -1038,29 +1033,42 @@ sub check_name_reverts {
 			$hRemovals{$1}{line} = $i;
 			next;
 		}
-		
+
 		# Check Additions
 		# ---------------------------------
 		if ($$line =~ m/^\+\s*(.*systemd.*)\s*$/) {
-			my $our_text = $1;
-			$our_text =~ s/systemd/elogind/g;
-			
+			my $replace_text   = $1;
+			my $our_text_long  = $replace_text;
+			my $our_text_short = $our_text_long;
+			$our_text_long  =~ s/systemd-logind/elogind/g;
+			$our_text_short =~ s/systemd/elogind/g;
+
+			# There is one speciality:
+			# In some meson files, we need the variable "systemd_headers".
+			# This refers to the systemd API headers that get installed,
+			# and must therefore not be renamed to elogind_headers.
+			$our_text_short =~ s/elogind_headers/systemd_headers/g;
+
 			# If this is a simple switch, undo it:
-			if (defined($hRemovals{$our_text})) {
-				substr($hHunk->{lines}[$hRemovals{$our_text}{line}], 0, 1) = " ";
+			if ( defined($hRemovals{$our_text_short})
+			  || defined($hRemovals{$our_text_long }) ) {
+				defined($hRemovals{$our_text_short} )
+					and substr($hHunk->{lines}[$hRemovals{$our_text_short}{line}], 0, 1) = " "
+					 or substr($hHunk->{lines}[$hRemovals{$our_text_long }{line}], 0, 1) = " ";
 				splice(@{$hHunk->{lines}}, $i--, 1);
 				$hHunk->{count}--;
 				next;
 			}
-			
+
 			# Otherwise replace the addition with our text. ;-)
-			$$line =~ s/^\+(\s*).*systemd.*(\s*)$/+${1}${our_text}${2}/;
+			$our_text_long eq $replace_text
+				and $$line =~ s/^\+(\s*).*systemd.*(\s*)$/+${1}${our_text_short}${2}/
+				 or $$line =~ s/^\+(\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
 		}
 	}
-	
+
 	return 1;
 }
-
 
 # -----------------------------------------------------------------------
 # --- Checkout the given refid on $upstream_path                      ---
@@ -1073,7 +1081,7 @@ sub checkout_upstream {
 
 	# It is completely in order to not wanting to checkout a specific commit.
 	defined($commit) and length($commit) or return 1;
-	
+
 	# Save the previous commit
 	$previous_commit = qx(cd $upstream_path ; git rev-parse --short HEAD 2>&1);
 	if ($?) {
@@ -1234,7 +1242,7 @@ sub get_hunk_head {
 			$tgt_len++;
 		}
 	}
-	
+
 	# If an offset reference was given, add back the size diff
 	defined($offset)
 		and $$offset += $tgt_len - $src_len;
@@ -1443,7 +1451,7 @@ sub prepare_shell {
 	} else {
 		die("$out can not be opened for writing! [$!]");
 	}
-	
+
 	# The temporary file is our new source
 	$hFile{source} = $out;
 
@@ -1489,7 +1497,6 @@ sub prune_hunk {
 
 	return 1;
 }
-
 
 # -----------------------------------------------------------------------
 # --- Unprepare shell (and meson) files after our processing          ---
@@ -1586,7 +1593,6 @@ sub unprepare_shell {
 	return 1;
 }
 
-
 # -----------------------------------------------------------------------
 # --- Analyze the hunk and map all include changes                    ---
 # --- The gathered knowledge is used in check_includes(), see there   ---
@@ -1636,7 +1642,6 @@ sub read_includes {
 	return 1;
 }
 
-
 # -----------------------------------------------------------------------
 # --- Splice all includes that were marked for splicing.              ---
 # --- This is not as easy as it seems. It can be, that if we just go  ---
@@ -1645,14 +1650,14 @@ sub read_includes {
 # --- worse, the splicing being attempted out of bounds.              ---
 # -----------------------------------------------------------------------
 sub splice_includes {
-	
+
 	# First build a tree of the includes to splice:
 	my %incMap = ();
 	for my $inc (keys %hIncs) {
 		if ($hIncs{$inc}{insert}{spliceme}) {
 			my $hId = $hIncs{$inc}{insert}{hunkid};
 			my $lId = $hIncs{$inc}{insert}{lineid};
-			
+
 			# Sanity checks:
 			$hId > -1 or print "splice_includes : Inc $inc has Hunk Id -1!\n" and next;
 			if ( -1 == $lId ) {
@@ -1665,7 +1670,7 @@ sub splice_includes {
 				hunk_failed("splice_includes: $inc line id $lId/$hFile{hunks}[$hId]{count}!");
 				next;
 			}
-			
+
 			# Record the include line
 			$incMap{$hId}{$lId} = 1;
 		}
@@ -1683,7 +1688,6 @@ sub splice_includes {
 	return 1;
 }
 
-
 # Callback function for File::Find
 sub wanted {
 	-f $_ and ( (0 == $have_wanted)
@@ -1693,4 +1697,3 @@ sub wanted {
 	      and push @source_files, $File::Find::name;
 	return 1;
 }
-
