@@ -154,7 +154,6 @@ factorydir = join_paths(datadir, 'factory')
 docdir = '-'.join([join_paths(datadir, 'doc/elogind'),
                              meson.project_version()])
 testsdir = join_paths(prefixdir, 'lib/elogind/tests')
-systemdstatedir = join_paths(localstatedir, 'lib/elogind')
 randomseeddir = join_paths(localstatedir, 'lib/elogind')
 #endif // 0
 
@@ -2659,7 +2658,9 @@ install_data('README',
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              install_dir : docdir)
 
-meson.add_install_script('sh', '-c', mkdir_p.format(systemdstatedir))
+#if 0 /// UNNEEDED by elogind
+# meson.add_install_script('sh', '-c', mkdir_p.format(systemdstatedir))
+#endif // 0
 meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
 
 ############################################################
