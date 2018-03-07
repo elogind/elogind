@@ -38,13 +38,10 @@ __pycache__/
 /test-libelogind*
 
 # Local Helper Scripts and Tools - Not for distribution
-patches/
-/check_*.*
-/cleanup*.sh
-/elogind.*
-/get_build_file_diff.sh
-/pwx_*.*
-/rebuild_all.sh
+pwx/patches/*
+!pwx/patches/.keep_dir
+pwx/patches_port/*
+!pwx/patches_port/.keep_dir
 *.orig
 *.rej
 *.remote
