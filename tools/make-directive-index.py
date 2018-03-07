@@ -4,7 +4,6 @@
 #  This file is part of elogind.
 #
 #  Copyright 2012-2013 Zbigniew Jędrzejewski-Szmek
-#  Copyright 2017      Sven Eden
 #
 #  elogind is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU Lesser General Public License as published by
@@ -39,12 +38,6 @@ TEMPLATE = '''\
                                 <surname>Jędrzejewski-Szmek</surname>
                                 <email>zbyszek@in.waw.pl</email>
                         </author>
-                        <author>
-                                <contrib>Developer</contrib>
-                                <firstname>Sven</firstname>
-                                <surname>Eden</surname>
-                                <email>sven.eden@gmx.de</email>
-                        </author>
                 </authorgroup>
         </refentryinfo>
 
@@ -59,6 +52,24 @@ TEMPLATE = '''\
         </refnamediv>
 
         <refsect1>
+                <title>Unit directives</title>
+
+                <para>Directives for configuring units, used in unit
+                files.</para>
+
+                <variablelist id='unit-directives' />
+        </refsect1>
+
+        <refsect1>
+                <title>Options on the kernel command line</title>
+
+                <para>Kernel boot options for configuring the behaviour of the
+                elogind process.</para>
+
+                <variablelist id='kernel-commandline-options' />
+        </refsect1>
+
+        <refsect1>
                 <title>Environment variables</title>
 
                 <para>Environment variables understood by the elogind
@@ -68,11 +79,57 @@ TEMPLATE = '''\
         </refsect1>
 
         <refsect1>
+                <title>UDEV directives</title>
+
+                <para>Directives for configuring elogind units through the
+                udev database.</para>
+
+                <variablelist id='udev-directives' />
+        </refsect1>
+
+        <refsect1>
+                <title>Network directives</title>
+
+                <para>Directives for configuring network links through the
+                net-setup-link udev builtin and networks through
+                elogind-networkd.</para>
+
+                <variablelist id='network-directives' />
+        </refsect1>
+
+        <refsect1>
+                <title>Journal fields</title>
+
+                <para>Fields in the journal events with a well known meaning.</para>
+
+                <variablelist id='journal-directives' />
+        </refsect1>
+
+        <refsect1>
                 <title>PAM configuration directives</title>
 
                 <para>Directives for configuring PAM behaviour.</para>
 
                 <variablelist id='pam-directives' />
+        </refsect1>
+
+        <refsect1>
+                <title><filename>/etc/crypttab</filename> and
+                <filename>/etc/fstab</filename> options</title>
+
+                <para>Options which influence mounted filesystems and
+                encrypted volumes.</para>
+
+                <variablelist id='fstab-options' />
+        </refsect1>
+
+        <refsect1>
+                <title>System manager directives</title>
+
+                <para>Directives for configuring the behaviour of the
+                elogind process.</para>
+
+                <variablelist id='elogind-directives' />
         </refsect1>
 
         <refsect1>

@@ -1835,7 +1835,6 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
                 return -ENXIO;
 
         *end = 0;
-
         if (parse_uid(start, uid) < 0)
                 return -ENXIO;
 #else

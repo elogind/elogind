@@ -633,6 +633,7 @@ _public_ int sd_booted(void) {
         /* We test whether the runtime unit file directory has been
          * created. This takes place in mount-setup.c, so is
          * guaranteed to happen very early during boot. */
+
 #if 0 /// elogind is always used without systemd running the show. (Well, it should...)
         return laccess("/run/systemd/system/", F_OK) >= 0;
 #else
