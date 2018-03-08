@@ -1278,7 +1278,6 @@ int main(int argc, char *argv[]) {
         if (r)
                 return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 #endif // 1
-
         elogind_set_program_name(argv[0]);
         log_set_target(LOG_TARGET_AUTO);
         log_set_facility(LOG_AUTH);

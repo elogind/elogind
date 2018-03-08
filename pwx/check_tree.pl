@@ -10,6 +10,8 @@
 # 0.8.0    2018-02-23  sed, PrydeWorX  2nd gen rewritten due to loss of the original thanks to stupidity.
 # 0.8.1    2018-03-05  sed, PrydeWorX  Fixed all outstanding issues and optimized rewriting of shell files.
 # 0.8.2    2018-03-06  sed, PrydeWorX  Added checks for elogind_*() function call removals.
+# 0.8.3    2018-03-08  sed, PrydeWorX  Handle systemd-logind <=> elogind renames. Do not allow moving of
+#                                        commented out includes under out elogind block.
 #
 # ========================
 # === Little TODO list ===
@@ -18,8 +20,6 @@
 #   python tools and man sources always generate useless patches. Real patches
 #   are in danger of getting overlooked.
 # - Add handling of the *.sym files.
-# - Detect when "mask includes undos" are moved into the elogind block by diff.
-# - Renames must also include "elogind <=> systemd-login"
 # - Find a masking solution for login/logind-gperf.gperf
 #
 use strict;
@@ -32,7 +32,7 @@ use Readonly;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.8.1"; ## Please keep this current!
+Readonly my $VERSION     => "0.8.3"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -116,8 +116,9 @@ my %hIncs  = ();## Hash for remembered includes over different hunks.
                 ##     elogind = { hunkid : Hunk id ; Position where a "needed by elogin" include is
                 ##                 lineid : Line id ; wanted to be removed by the patch.
                 ##     }
-                ##     insert  = { hunkid  :  Hunk id ; Position where a commented out include is
-                ##                 lineid  :  Line id ; wanted to be removed by the patch.
+                ##     insert  = { elogind : Set to 1 if the insert was found under elogind special includes.
+                ##                 hunkid  : Hunk id ; Position where a commented out include is
+                ##                 lineid  : Line id ; wanted to be removed by the patch.
                 ##                 spliceme: Set to 1 if this insert is later to be spliced.
                 ##                 sysinc  : Set to 1 if it is <include>, 0 otherwise.
                 ##     }
@@ -235,9 +236,12 @@ for my $file_part (@source_files) {
 	# ---------------------------------------------------------------------
 	for my $inc (keys %hIncs) {
 		$hIncs{$inc}{applied} = 0;
-		defined ($hIncs{$inc}{elogind}) or $hIncs{$inc}{elogind} = { hunkid => -1, lineid => -1 };
-		defined ($hIncs{$inc}{insert})  or $hIncs{$inc}{insert}  = { hunkid => -1, lineid => -1, spliceme => 0, sysinc => 0 };
-		defined ($hIncs{$inc}{remove})  or $hIncs{$inc}{remove}  = { hunkid => -1, lineid => -1, sysinc => 0 };
+		defined ($hIncs{$inc}{elogind})
+			or $hIncs{$inc}{elogind} = {               hunkid => -1, lineid => -1 };
+		defined ($hIncs{$inc}{insert})
+			or $hIncs{$inc}{insert}  = { elogind => 0, hunkid => -1, lineid => -1, spliceme => 0, sysinc => 0 };
+		defined ($hIncs{$inc}{remove})
+			or $hIncs{$inc}{remove}  = {               hunkid => -1, lineid => -1,                sysinc => 0 };
 	}
 
 	# ---------------------------------------------------------------------
@@ -249,7 +253,7 @@ for my $file_part (@source_files) {
 		# (pre -> early out)
 		hunk_is_useful or next;
 
-		# === 1) Apply what we learned to changed includes ================
+		# === 1) Apply what we learned about changed includes =============
 		check_includes and hunk_is_useful or next;
 
 	} ## End of second hunk loop
@@ -312,7 +316,7 @@ if (scalar @only_here) {
 }
 
 # -------------------------------------------------------------------------
-# --- Print out the list of files that only exist here and not upstream ---
+# --- Print out the list of failed hunks -> bug in hunk or program?     ---
 # -------------------------------------------------------------------------
 if (scalar @lFails) {
 	my $count = scalar @lFails;
@@ -747,6 +751,11 @@ sub check_includes {
 				my $lId = $hIncs{$inc}{elogind}{lineid};
 				substr($hFile{hunks}[$hId]{lines}[$lId], 0, 1) = " ";
 				$hIncs{$inc}{applied}  = 1;
+			} elsif ( $hIncs{$inc}{insert}{elogind} ) {
+				# Do not move masked includes under our block.
+				$undos{$i} = 1;
+				$hIncs{$inc}{applied}  = 1;
+				$hIncs{$inc}{insert}{spliceme} = 1;
 			} else {
 				# Just comment out the insert.
 				my $hId = $hIncs{$inc}{insert}{hunkid};
@@ -812,9 +821,9 @@ sub check_includes {
 		}
 
 		# === Other 2 : elogind include blocks end, when the first not      ===
-		# ===           removed line is found                               ===
+		# ===           removed EMPTY line is found                         ===
 		# =====================================================================
-		$in_elogind_block and ($$line =~ m,^[ +]$,) and $in_elogind_block = 0;
+		$in_elogind_block and ($$line =~ m,^[ +]\s*$,) and $in_elogind_block = 0;
 
 		# === Other 3 : Undo all other removals in elogind include blocks   ===
 		# =====================================================================
@@ -1358,7 +1367,7 @@ sub parse_args {
 		else {
 			# But only if it is not set, yet:
 			if (length($upstream_path)) {
-				print "ERROR: Superfluous upstream path \"$args[$1]\" found!\n\nUsage: $USAGE_SHORT\n";
+				print "ERROR: Superfluous upstream path \"$args[$i]\" found!\n\nUsage: $USAGE_SHORT\n";
 				$result = 0;
 				next;
 			}
@@ -1606,10 +1615,8 @@ sub read_includes {
 
 	# We must know when "needed by elogind blocks" start
 	my $in_elogind_block = 0;
-
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
-
 		# Note down removes of includes we commented out
 		if ( $$line =~ m,^-\s*//+\s*#include\s+([<"'])([^>"']+)[>"'], ) {
 			$hIncs{$2}{remove} = { hunkid => $hHunk->{idx}, lineid => $i, sysinc => $1 eq "<" };
@@ -1618,7 +1625,13 @@ sub read_includes {
 
 		# Note down inserts of possibly new includes we might want commented out
 		if ( $$line =~ m,^\+\s*#include\s+([<"'])([^>"']+)[>"'], ) {
-			$hIncs{$2}{insert} = { hunkid => $hHunk->{idx}, lineid => $i, spliceme => 0, sysinc => $1 eq "<" };
+			$hIncs{$2}{insert} = {
+				elogind  => $in_elogind_block,
+				hunkid   => $hHunk->{idx},
+				lineid   => $i,
+				spliceme => 0,
+				sysinc   => $1 eq "<"
+			};
 			next;
 		}
 
@@ -1630,13 +1643,13 @@ sub read_includes {
 		}
 
 		# elogind include blocks are started by a comment featuring "needed by elogind"
-		if ($$line =~ m,^-\s*//+.*needed by elogind.*,i) {
+		if ($$line =~ m,^[ -]\s*/+.*needed by elogind.*,i) {
 			$in_elogind_block = 1;
 			next;
 		}
 
-		# elogind include blocks end, when the first not removed line is found
-		$in_elogind_block and ($$line =~ m,^[ +]$,) and $in_elogind_block = 0;
+		# elogind include blocks end, when the first not removed *EMPTY* line is found
+		$in_elogind_block and ($$line =~ m,^[ ]\s*$,) and $in_elogind_block = 0;
 	}
 
 	return 1;
