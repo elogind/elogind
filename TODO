@@ -27,9 +27,6 @@ Features:
 * add proper dbus APIs for the various sd_notify() commands, such as MAINPID=1
   and so on, which would mean we could report errors and such.
 
-* nss-elogind: implement enumeration, that shows all dynamic users plus the
-  synthesized ones if necessary, so that "getent passwd" shows useful data.
-
 * teach tmpfiles.d q/Q logic something sensible in the context of XFS/ext4
   project quota
 
@@ -125,6 +122,10 @@ Features:
 
 * In DynamicUser= mode: before selecting a UID, use disk quota APIs on relevant
   disks to see if the UID is already in use.
+
+* add dissect_image_warn() as a wrapper around dissect_image() that prints
+  friendly log messages for the returned errors, so that we don't have to
+  duplicate that in nspawn, elogind-dissect and PID 1.
 
 * add "systemctl wait" or so, which does what "systemd-run --wait" does, but
   for all units. It should be both a way to pin units into memory as well as a
