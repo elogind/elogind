@@ -46,7 +46,8 @@
 #                                         file list.
 
 # Common functions
-source pwx_git_funcs.sh
+PROGDIR="$(readlink -f $(dirname $0))"
+source ${PROGDIR}/pwx_git_funcs.sh
 
 # Version, please keep this current
 VERSION="0.4.0"
@@ -55,7 +56,7 @@ VERSION="0.4.0"
 SOURCE_TREE=""
 TAG_TO_USE=""
 LAST_MUTUAL_COMMIT=""
-OUTPUT="${HERE}/patches"
+OUTPUT="${PROGDIR}/patches"
 EXTRA_GIT_OPTS=""
 
 

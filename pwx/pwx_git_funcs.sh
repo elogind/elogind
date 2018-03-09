@@ -66,7 +66,7 @@ declare HERE="$(pwd -P)"
 # @VARIABLE: PWX_COMMIT_FILE
 # @DESCRIPTION
 # The name of the file that stores mutual commit information.
-declare PWX_COMMIT_FILE="pwx_last_mutual_commits.txt"
+declare PWX_COMMIT_FILE="${PROGDIR}/pwx_last_mutual_commits.txt"
 
 
 # @VARIABLE: PWX_IS_PUSHD
