@@ -1,5 +1,5 @@
 project('elogind', 'c',
-        version : '235.2',
+        version : '235.3',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -11,7 +11,6 @@ project('elogind', 'c',
        )
 
 libelogind_version = '0.19.1'
-libudev_version = '1.6.7'
 
 # We need the same data in three different formats, ugh!
 # Also, for hysterical reasons, we use different variable
