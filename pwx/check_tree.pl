@@ -12,6 +12,7 @@
 # 0.8.2    2018-03-06  sed, PrydeWorX  Added checks for elogind_*() function call removals.
 # 0.8.3    2018-03-08  sed, PrydeWorX  Handle systemd-logind <=> elogind renames. Do not allow moving of
 #                                        commented out includes under out elogind block.
+# 0.8.4    2018-03-09  sed, PrydeWorX  Added handling of .gperf files.
 #
 # ========================
 # === Little TODO list ===
@@ -20,7 +21,6 @@
 #   python tools and man sources always generate useless patches. Real patches
 #   are in danger of getting overlooked.
 # - Add handling of the *.sym files.
-# - Find a masking solution for login/logind-gperf.gperf
 #
 use strict;
 use warnings;
@@ -1153,6 +1153,7 @@ sub diff_hFile {
 
 	# Shell and meson files must be prepared. See prepare_meson()
 	( $hFile{source} =~ m/meson/ or
+	  $hFile{source} =~ m/\.gperf$/ or
 	  $hFile{source} =~ m/\.in$/ or
 	  $hFile{source} =~ m/\.pl$/ or
 	  $hFile{source} =~ m/\.sh$/ ) and prepare_shell;
