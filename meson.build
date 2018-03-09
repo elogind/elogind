@@ -688,7 +688,7 @@ endforeach
 #endif // 0
 
 if run_command('ln', '--relative', '--help').returncode() != 0
-        error('ln does not support --relative')
+        error('ln does not support --relative (added in coreutils 8.16)')
 endif
 
 ############################################################
