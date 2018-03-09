@@ -12,14 +12,11 @@
 # 0.8.2    2018-03-06  sed, PrydeWorX  Added checks for elogind_*() function call removals.
 # 0.8.3    2018-03-08  sed, PrydeWorX  Handle systemd-logind <=> elogind renames. Do not allow moving of
 #                                        commented out includes under out elogind block.
-# 0.8.4    2018-03-09  sed, PrydeWorX  Added handling of .gperf files.
+# 0.8.4    2018-03-09  sed, PrydeWorX  Added handling of .gperf and .xml files.
 #
 # ========================
 # === Little TODO list ===
 # ========================
-# - Add masking for XML code. It is a nuisance that the XML templates in the
-#   python tools and man sources always generate useless patches. Real patches
-#   are in danger of getting overlooked.
 # - Add handling of the *.sym files.
 #
 use strict;
@@ -32,7 +29,7 @@ use Readonly;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.8.3"; ## Please keep this current!
+Readonly my $VERSION     => "0.8.4"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -848,7 +845,7 @@ sub check_includes {
 # --- Check $hHunk for elogind preprocessor masks and additions       ---
 # --- Rules:                                                          ---
 # --- 1) If we need an alternative for an existing systemd code block,---
-# ---    we do it like this:                                          ---
+# ---    we do it like this: (*)                                      ---
 # ---      #if 0 /// <some comment with the word "elogind" in it>     ---
 # ---        (... systemd code block, unaltered ...)                  ---
 # ---        -> Any change in this block is okay.                     ---
@@ -856,11 +853,16 @@ sub check_includes {
 # ---        (... elogind alternative code ...)                       ---
 # ---        -> Any change in this block is *NOT* okay.               ---
 # ---      #endif // 0                                                ---
-# --- 2) If we need an addition for elogind, we do it like this:      ---
+# --- 2) If we need an addition for elogind, we do it like this: (*)  ---
 # ---      #if 1 /// <some comment with the word "elogind" in it>     ---
 # ---        (... elogind additional code ...)                        ---
 # ---        -> Any change in this block is *NOT* okay.               ---
 # ---      #endif // 1                                                ---
+# --- (*) : To be able to handle XML content, masking and unmasking   ---
+# ---       can also be done with :                                   ---
+# ---       Masking : "<!-- 0 /// <comment>" and "// 0 -->"           ---
+# ---       Adding  : "<!-- 1 /// <comment> --> and "<!-- // 1 -->"   ---
+# ---       Else    : "<!-- else -->"                                 ---
 # -----------------------------------------------------------------------
 sub check_masks {
 
@@ -877,7 +879,9 @@ sub check_masks {
 
 		# Entering an elogind mask
 		# ---------------------------------------
-		if ( $$line =~ m/^-#if\s+0.+elogind/ ) {
+		if ( ($$line =~ m/^-#if\s+0.+elogind/ ) 
+		  || (  ($$line =~ m/<!--\s+0.+elogind/  )
+		    && !($$line =~ m/-->\s*$/) ) ) {
 			$in_mask_block
 				and return hunk_failed("check_masks: Mask start found while being in a mask block!");
 			$in_insert_block
@@ -889,7 +893,8 @@ sub check_masks {
 
 		# Entering an elogind insert
 		# ---------------------------------------
-		if ( $$line =~ m/^-#if\s+1.+elogind/ ) {
+		if ( ( $$line =~ m/^-#if\s+1.+elogind/ )
+		  || ( $$line =~ m/<!--\s+1.+elogind.+ -->\s*$/  ) ) {
 			$in_mask_block
 				and return hunk_failed("check_masks: Insert start found while being in a mask block!");
 			$in_insert_block
@@ -905,7 +910,9 @@ sub check_masks {
 		# Switching from Mask to else.
 		# Note: Inserts have no #else, they make no sense.
 		# ---------------------------------------
-		if ( ($$line =~ m/^-#else/ ) && $in_mask_block && !$regular_ifs) {
+		if ( $in_mask_block && !$regular_ifs
+		  && ( ( $$line =~ m/^-#else/ )
+		    || ( $$line =~ m/<!--\s+else\s+-->\s*$/ ) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_else_block = 1;
 			next;
@@ -914,7 +921,8 @@ sub check_masks {
 		# Ending a Mask/Insert block
 		# ---------------------------------------
 		# Note: The regex supports "#endif /** 0 **/", too.
-		if ( $$line =~ m,^-#endif\s*/(?:[*/]+)\s*([01]), ) {
+		if ( ( $$line =~ m,^-#endif\s*/(?:[*/]+)\s*([01]), )
+		  || ( $$line =~ m,\s+//\s+([01])\s+-->\s*$, ) ) {
 			if (0 == $1) {
 				(!$in_mask_block)
 					and return hunk_failed("check_masks: #endif // 0 found outside any mask block");

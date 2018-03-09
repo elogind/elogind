@@ -14,7 +14,11 @@
 <policyconfig>
 
         <vendor>The elogind Project</vendor>
+        <!-- 0 /// Need to set this to the elogind project url
+        <vendor_url>http://www.freedesktop.org/wiki/Software/systemd</vendor_url>
+        --><!-- else -->
         <vendor_url>https://github.com/elogind/elogind</vendor_url>
+        <!-- // 0 -->
 
         <action id="org.freedesktop.login1.inhibit-block-shutdown">
                 <_description>Allow applications to inhibit system shutdown</_description>

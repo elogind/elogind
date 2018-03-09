@@ -40,12 +40,14 @@ TEMPLATE = '''\
         <surname>Poettering</surname>
         <email>lennart@poettering.net</email>
       </author>
+      <!-- 1 /// Must add elogind authors for the additions and changes -->
       <author>
         <contrib>Developer</contrib>
         <firstname>Sven</firstname>
         <surname>Eden</surname>
         <email>sven.eden@gmx.de</email>
       </author>
+      <!-- // 1 -->
     </authorgroup>
   </refentryinfo>
 
