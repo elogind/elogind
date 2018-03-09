@@ -40,14 +40,15 @@
 #                                        letting the user have a look.
 
 # Common functions
-source pwx_git_funcs.sh
+PROGDIR="$(readlink -f $(dirname $0))"
+source ${PROGDIR}/pwx_git_funcs.sh
 
 # Version, please keep this current
 VERSION="0.5.0"
 
 
 # Global values to be filled in:
-PATCH_DIR="${HERE}/patches"
+PATCH_DIR="${PROGDIR}/patches"
 TAG_TO_USE=""
 
 
