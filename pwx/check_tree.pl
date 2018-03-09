@@ -1206,7 +1206,7 @@ sub generate_file_list {
 	# in all legal directories this program allows. Checking against
 	# the built %hWanted ensures that a user provided list of files
 	# is heeded.
-	for my $xDir ("docs", "factory", "m4", "man", "po", "shell-completion", "src", "tools") {
+	for my $xDir ("docs", "factory", "m4", "man", "shell-completion", "src", "tools") {
 		if ( -d "$xDir" ) {
 			find(\&wanted, "$xDir");
 		}
