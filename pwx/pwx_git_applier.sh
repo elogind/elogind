@@ -315,13 +315,13 @@ for p in "${patch_files[@]}" ; do
 				while read a b ; do \
 					echo -e "$a\n$b" | cut -d '/' -f 2- ; \
 				done | sort -u) ; do
-			xFiles+="$pF "
-			xPatches+="patches/${pF//\//_}.patch "
+			xFiles+="-f $pF "
+			xPatches+="${PROGDIR}/patches/${pF//\//_}.patch "
 		done
 
 		# If we have our lists, do it:
 		if [[ "x" != "x$xFiles" ]] && [[ "x" != "x$xPatches" ]]; then
-			./check_tree.pl "$SOURCE_DIR" "$xCommit" $xFiles
+			$(PROGDIR)/check_tree.pl -c $xCommit $xFiles "$SOURCE_DIR"
 			
 			# Let's see which patches got built
 			xResult=""

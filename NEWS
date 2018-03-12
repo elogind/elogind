@@ -1,6 +1,258 @@
 systemd System and Service Manager
 
+CHANGES WITH 236:
+
+        * The modprobe.d/ drop-in for the bonding.ko kernel module introduced
+          in v235 has been extended to also set the dummy.ko module option
+          numdummies=0, preventing the kernel from automatically creating
+          dummy0. All dummy interfaces must now be explicitly created.
+
+        * Unknown '%' specifiers in configuration files are now rejected. This
+          applies to units and tmpfiles.d configuration. Any percent characters
+          that are followed by a letter or digit that are not supposed to be
+          interpreted as the beginning of a specifier should be escaped by
+          doubling ("%%").  (So "size=5%" is still accepted, as well as
+          "size=5%,foo=bar", but not "LABEL=x%y%z" since %y and %z are not
+          valid specifiers today.)
+
+        * systemd-resolved now maintains a new dynamic
+          /run/systemd/resolve/stub-resolv.conf compatibility file. It is
+          recommended to make /etc/resolv.conf a symlink to it. This file
+          points at the systemd-resolved stub DNS 127.0.0.53 resolver and
+          includes dynamically acquired search domains, achieving more correct
+          DNS resolution by software that bypasses local DNS APIs such as NSS.
+
+        * The "uaccess" udev tag has been dropped from /dev/kvm and
+          /dev/dri/renderD*.  These devices now have the 0666 permissions by
+          default (but this may be changed at build-time). /dev/dri/renderD*
+          will now be owned by the "render" group along with /dev/kfd.
+
+        * "DynamicUser=yes" has been enabled for systemd-timesyncd.service,
+          systemd-journal-gatewayd.service and
+          systemd-journal-upload.service. This means "nss-systemd" must be
+          enabled in /etc/nsswitch.conf to ensure the UIDs assigned to these
+          services are resolved properly.
+
+        * In /etc/fstab two new mount options are now understood:
+          x-systemd.makefs and x-systemd.growfs. The former has the effect that
+          the configured file system is formatted before it is mounted, the
+          latter that the file system is resized to the full block device size
+          after it is mounted (i.e. if the file system is smaller than the
+          partition it resides on, it's grown). This is similar to the fsck
+          logic in /etc/fstab, and pulls in systemd-makefs@.service and
+          systemd-growfs@.service as necessary, similar to
+          systemd-fsck@.service. Resizing is currently only supported on ext4
+          and btrfs.
+
+        * In systemd-networkd, the IPv6 RA logic now optionally may announce
+          DNS server and domain information.
+
+        * Support for the LUKS2 on-disk format for encrypted partitions has
+          been added. This requires libcryptsetup2 during compilation and
+          runtime.
+
+        * The systemd --user instance will now signal "readiness" when its
+          basic.target unit has been reached, instead of when the run queue ran
+          empty for the first time.
+
+        * Tmpfiles.d with user configuration are now also supported.
+          systemd-tmpfiles gained a new --user switch, and snippets placed in
+          ~/.config/user-tmpfiles.d/ and corresponding directories will be
+          executed by systemd-tmpfiles --user running in the new
+          systemd-tmpfiles-setup.service and systemd-tmpfiles-clean.service
+          running in the user session.
+
+        * Unit files and tmpfiles.d snippets learnt three new % specifiers:
+          %S resolves to the top-level state directory (/var/lib for the system
+          instance, $XDG_CONFIG_HOME for the user instance), %C resolves to the
+          top-level cache directory (/var/cache for the system instance,
+          $XDG_CACHE_HOME for the user instance), %L resolves to the top-level
+          logs directory (/var/log for the system instance,
+          $XDG_CONFIG_HOME/log/ for the user instance). This matches the
+          existing %t specifier, that resolves to the top-level runtime
+          directory (/run for the system instance, and $XDG_RUNTIME_DIR for the
+          user instance).
+
+        * journalctl learnt a new parameter --output-fields= for limiting the
+          set of journal fields to output in verbose and JSON output modes.
+
+        * systemd-timesyncd's configuration file gained a new option
+          RootDistanceMaxSec= for setting the maximum root distance of servers
+          it'll use, as well as the new options PollIntervalMinSec= and
+          PollIntervalMaxSec= to tweak the minimum and maximum poll interval.
+
+        * bootctl gained a new command "list" for listing all available boot
+          menu items on systems that follow the boot loader specification.
+
+        * systemctl gained a new --dry-run switch that shows what would be done
+          instead of doing it, and is currently supported by the shutdown and
+          sleep verbs.
+
+        * ConditionSecurity= can now detect the TOMOYO security module.
+
+        * Unit file [Install] sections are now also respected in unit drop-in
+          files. This is intended to be used by drop-ins under /usr/lib/.
+
+        * systemd-firstboot may now also set the initial keyboard mapping.
+
+        * Udev "changed" events for devices which are exposed as systemd
+          .device units are now propagated to units specified in
+          ReloadPropagatedFrom= as reload requests.
+
+        * If a udev device has a SYSTEMD_WANTS= property containing a systemd
+          unit template name (i.e. a name in the form of 'foobar@.service',
+          without the instance component between the '@' and - the '.'), then
+          the escaped sysfs path of the device is automatically used as the
+          instance.
+
+        * SystemCallFilter= in unit files has been extended so that an "errno"
+          can be specified individually for each system call. Example:
+          SystemCallFilter=~uname:EILSEQ.
+
+        * The cgroup delegation logic has been substantially updated. Delegate=
+          now optionally takes a list of controllers (instead of a boolean, as
+          before), which lists the controllers to delegate at least.
+
+        * The networkd DHCPv6 client now implements the FQDN option (RFC 4704).
+
+        * A new LogLevelMax= setting configures the maximum log level any
+          process of the service may log at (i.e. anything with a lesser
+          priority than what is specified is automatically dropped). A new
+          LogExtraFields= setting allows configuration of additional journal
+          fields to attach to all log records generated by any of the unit's
+          processes.
+
+        * New StandardInputData= and StandardInputText= settings along with the
+          new option StandardInput=data may be used to configure textual or
+          binary data that shall be passed to the executed service process via
+          standard input, encoded in-line in the unit file.
+
+        * StandardInput=, StandardOutput= and StandardError= may now be used to
+          connect stdin/stdout/stderr of executed processes directly with a
+          file or AF_UNIX socket in the file system, using the new "file:" option.
+
+        * A new unit file option CollectMode= has been added, that allows
+          tweaking the garbage collection logic for units. It may be used to
+          tell systemd to garbage collect units that have failed automatically
+          (normally it only GCs units that exited successfully). systemd-run
+          and systemd-mount expose this new functionality with a new -G option.
+
+        * "machinectl bind" may now be used to bind mount non-directories
+          (i.e. regularfiles, devices, fifos, sockets).
+
+        * systemd-analyze gained a new verb "calendar" for validating and
+          testing calendar time specifications to use for OnCalendar= in timer
+          units. Besides validating the expression it will calculate the next
+          time the specified expression would elapse.
+
+        * In addition to the pre-existing FailureAction= unit file setting
+          there's now SuccessAction=, for configuring a shutdown action to
+          execute when a unit completes successfully. This is useful in
+          particular inside containers that shall terminate after some workload
+          has been completed. Also, both options are now supported for all unit
+          types, not just services.
+
+        * networkds's IP rule support gained two new options
+          IncomingInterface= and OutgoingInterface= for configuring the incoming
+          and outgoing interfaces of configured rules. systemd-networkd also
+          gained support for "vxcan" network devices.
+
+        * networkd gained a new setting RequiredForOnline=, taking a
+          boolean. If set, systemd-wait-online will take it into consideration
+          when determining that the system is up, otherwise it will ignore the
+          interface for this purpose.
+
+        * The sd_notify() protocol gained support for a new operation: with
+          FDSTOREREMOVE=1 file descriptors may be removed from the per-service
+          store again, ahead of POLLHUP or POLLERR when they are removed
+          anyway.
+
+        * A new document UIDS-GIDS.md has been added to the source tree, that
+          documents the UID/GID range and assignment assumptions and
+          requirements of systemd.
+
+        * The watchdog device PID 1 will ping may now be configured through the
+          WatchdogDevice= configuration file setting, or by setting the
+          systemd.watchdog_service= kernel commandline option.
+
+        * systemd-resolved's gained support for registering DNS-SD services on
+          the local network using MulticastDNS. Services may either be
+          registered by dropping in a .dnssd file in /etc/systemd/dnssd/ (or
+          the same dir below /run, /usr/lib), or through its D-Bus API.
+
+        * The sd_notify() protocol can now with EXTEND_TIMEOUT_USEC=microsecond
+          extend the effective start, runtime, and stop time. The service must
+          continue to send EXTEND_TIMEOUT_USEC within the period specified to
+          prevent the service manager from making the service as timedout.
+
+        * systemd-resolved's DNSSEC support gained support for RFC 8080
+          (Ed25519 keys and signatures).
+
+        * The systemd-resolve command line tool gained a new set of options
+          --set-dns=, --set-domain=, --set-llmnr=, --set-mdns=, --set-dnssec=,
+          --set-nta= and --revert to configure per-interface DNS configuration
+          dynamically during runtime. It's useful for pushing DNS information
+          into systemd-resolved from DNS hook scripts that various interface
+          managing software supports (such as pppd).
+
+        * systemd-nspawn gained a new --network-namespace-path= command line
+          option, which may be used to make a container join an existing
+          network namespace, by specifying a path to a "netns" file.
+
+        Contributions from: Alan Jenkins, Alan Robertson, Alessandro Ghedini,
+        Andrew Jeddeloh, Antonio Rojas, Ari, asavah, bleep_blop, Carsten
+        Strotmann, Christian Brauner, Christian Hesse, Clinton Roy, Collin
+        Eggert, Cong Wang, Daniel Black, Daniel Lockyer, Daniel Rusek, Dimitri
+        John Ledkov, Dmitry Rozhkov, Dongsu Park, Edward A. James, Evgeny
+        Vereshchagin, Florian Klink, Franck Bui, Gwendal Grignou, Hans de
+        Goede, Harald Hoyer, Hristo Venev, Iago López Galeiras, Ikey Doherty,
+        Jakub Wilk, Jérémy Rosen, Jiahui Xie, John Lin, José Bollo, Josef
+        Andersson, juga0, Krzysztof Nowicki, Kyle Walker, Lars Karlitski, Lars
+        Kellogg-Stedman, Lauri Tirkkonen, Lennart Poettering, Lubomir Rintel,
+        Luca Bruno, Lucas Werkmeister, Lukáš Nykrýn, Lukáš Říha, Lukasz
+        Rubaszewski, Maciej S. Szmigiero, Mantas Mikulėnas, Marcus Folkesson,
+        Martin Steuer, Mathieu Trudel-Lapierre, Matija Skala,
+        Matthias-Christian Ott, Max Resch, Michael Biebl, Michael Vogt, Michal
+        Koutný, Michal Sekletar, Mike Gilbert, Muhammet Kara, Neil Brown, Olaf
+        Hering, Ondrej Kozina, Patrik Flykt, Patryk Kocielnik, Peter Hutterer,
+        Piotr Drąg, Razvan Cojocaru, Robin McCorkell, Roland Hieber, Saran
+        Tunyasuvunakool, Sergey Ptashnick, Shawn Landden, Shuang Liu, Simon
+        Arlott, Simon Peeters, Stanislav Angelovič, Stefan Agner, Susant
+        Sahani, Sylvain Plantefève, Thomas Blume, Thomas Haller, Tiago Salem
+        Herrmann, Tinu Weber, Tom Stellard, Topi Miettinen, Torsten Hilbrich,
+        Vito Caputo, Vladislav Vishnyakov, WaLyong Cho, Yu Watanabe, Zbigniew
+        Jędrzejewski-Szmek, Zeal Jagannatha
+
+        — Berlin, 2017-12-14
+
 CHANGES WITH 235:
+
+        * INCOMPATIBILITY: systemd-logind.service and other long-running
+          services now run inside an IPv4/IPv6 sandbox, prohibiting them any IP
+          communication with the outside. This generally improves security of
+          the system, and is in almost all cases a safe and good choice, as
+          these services do not and should not provide any network-facing
+          functionality. However, systemd-logind uses the glibc NSS API to
+          query the user database. This creates problems on systems where NSS
+          is set up to directly consult network services for user database
+          lookups. In particular, this creates incompatibilities with the
+          "nss-nis" module, which attempts to directly contact the NIS/YP
+          network servers it is configured for, and will now consistently
+          fail. In such cases, it is possible to turn off IP sandboxing for
+          systemd-logind.service (set IPAddressDeny= in its [Service] section
+          to the empty string, via a .d/ unit file drop-in). Downstream
+          distributions might want to update their nss-nis packaging to include
+          such a drop-in snippet, accordingly, to hide this incompatibility
+          from the user. Another option is to make use of glibc's nscd service
+          to proxy such network requests through a privilege-separated, minimal
+          local caching daemon, or to switch to more modern technologies such
+          sssd, whose NSS hook-ups generally do not involve direct network
+          access. In general, we think it's definitely time to question the
+          implementation choices of nss-nis, i.e. whether it's a good idea
+          today to embed a network-facing loadable module into all local
+          processes that need to query the user database, including the most
+          trivial and benign ones, such as "ls". For more details about
+          IPAddressDeny= see below.
 
         * A new modprobe.d drop-in is now shipped by default that sets the
           bonding module option max_bonds=0. This overrides the kernel default,
