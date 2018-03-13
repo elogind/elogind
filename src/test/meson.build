@@ -1,3 +1,20 @@
+# SPDX-License-Identifier: LGPL-2.1+
+#
+# Copyright 2017 Zbigniew Jędrzejewski-Szmek
+#
+# elogind is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# elogind is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with elogind; If not, see <http://www.gnu.org/licenses/>.
+
 awkscript = 'test-hashmap-ordered.awk'
 test_hashmap_ordered_c = custom_target(
         'test-hashmap-ordered.c',
@@ -38,6 +55,12 @@ test_libelogind_sym_c = custom_target(
 #endif // 0
 
 test_dlopen_c = files('test-dlopen.c')
+
+############################################################
+
+#if 0 /// UNNEEDED by elogind
+# test_elogind_tmpfiles_py = find_program('test-elogind-tmpfiles.py')
+#endif // 0
 
 ############################################################
 
@@ -145,7 +168,8 @@ tests += [
 # 
 #         [['src/test/test-async.c'],
 #          [],
-#          []],
+#          [],
+#          '', 'timeout=120'],
 #endif // 0
 
         [['src/test/test-locale-util.c'],
@@ -440,7 +464,7 @@ tests += [
 #          [],
 #          []],
 # 
-#         [['src/test/test-time.c'],
+#         [['src/test/test-time-util.c'],
 #          [],
 #          []],
 # 
@@ -702,7 +726,8 @@ tests += [
 #           libshared],
 #          [threads,
 #           libxz,
-#           liblz4]],
+#           liblz4],
+#          '', 'timeout=360'],
 # 
 #         [['src/journal/test-journal-stream.c'],
 #          [libjournal_core,

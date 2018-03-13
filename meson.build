@@ -1,5 +1,22 @@
 project('elogind', 'c',
-        version : '235.3',
+# SPDX-License-Identifier: LGPL-2.1+
+#
+# Copyright 2017 Zbigniew Jędrzejewski-Szmek
+#
+# elogind is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# elogind is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with elogind; If not, see <http://www.gnu.org/licenses/>.
+
+        version : '236',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -7,10 +24,15 @@ project('elogind', 'c',
                 'sysconfdir=/etc',
                 'localstatedir=/var',
         ],
-        meson_version : '>= 0.40',
+        meson_version : '>= 0.41',
        )
 
-libelogind_version = '0.19.1'
+#if 0 /// UNNEEDED by elogind - libudev is external
+# libsystemd_version = '0.20.0'
+# libudev_version = '1.6.8'
+#else
+libelogind_version = '0.20.0'
+#endif // 0
 
 # We need the same data in three different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -21,15 +43,19 @@ conf.set_quoted('PACKAGE_STRING',  meson.project_name() + ' ' + meson.project_ve
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 substs = configuration_data()
+#if 0 /// Set elogind Package PACKAGE_URL
+# substs.set('PACKAGE_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
+#else
 substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
+#endif // 0
 substs.set('PACKAGE_VERSION',      meson.project_version())
 
 m4_defines = []
 
 #####################################################################
 #if 0 /// elogind does not need this
-#
-# # Try to install the git pre-commit hook
+# 
+# Try to install the git pre-commit hook
 # git_hook = run_command(join_paths(meson.source_root(), 'tools/add-git-hook.sh'))
 # if git_hook.returncode() == 0
 #         message(git_hook.stdout().strip())
@@ -44,12 +70,15 @@ m4_defines = []
 
 #####################################################################
 
+split_usr = get_option('split-usr')
+conf.set10('HAVE_SPLIT_USR', split_usr)
+
 rootprefixdir = get_option('rootprefix')
-conf.set10('HAVE_SPLIT_USR', get_option('split-usr'))
-if get_option('split-usr')
-        rootprefixdir = rootprefixdir != '' ? rootprefixdir : '/'
-else
-        rootprefixdir = rootprefixdir != '' ? rootprefixdir : '/usr'
+# Unusual rootprefixdir values are used by some distros
+# (see https://github.com/systemd/systemd/pull/7461).
+rootprefix_default = get_option('split-usr') ? '/' : '/usr'
+if rootprefixdir == ''
+        rootprefixdir = rootprefix_default
 endif
 
 #if 0 /// UNNEEDED by elogind
@@ -98,8 +127,11 @@ varlogdir = join_paths(localstatedir, 'log')
 #if 0 /// UNNEEDED by elogind
 # xinitrcdir = join_paths(sysconfdir, 'X11/xinit/xinitrc.d')
 # rpmmacrosdir = get_option('rpmmacrosdir')
-# modprobedir = join_paths(prefixdir, 'lib/modprobe.d')
+# if rpmmacrosdir != 'no'
+#         rpmmacrosdir = join_paths(prefixdir, rpmmacrosdir)
+# endif
 #endif // 0
+modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 
 # Our own paths
 #if 0 /// elogind has a bit different layout and does not need all of theses
@@ -196,6 +228,8 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 # conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'systemd'))
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          join_paths(rootlibexecdir, 'systemd-fsck'))
+# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'elogind-makefs'))
+# conf.set_quoted('SYSTEMD_GROWFS_PATH',                        join_paths(rootlibexecdir, 'elogind-growfs'))
 # conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               join_paths(rootlibexecdir, 'systemd-shutdown'))
 # conf.set_quoted('SYSTEMD_SLEEP_BINARY_PATH',                  join_paths(rootlibexecdir, 'systemd-sleep'))
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      join_paths(rootbindir, 'systemctl'))
@@ -314,6 +348,7 @@ foreach arg : ['-Wextra',
                '-Wstrict-prototypes',
                '-Wredundant-decls',
                '-Wmissing-noreturn',
+               '-Wimplicit-fallthrough=5',
                '-Wshadow',
                '-Wendif-labels',
                '-Wstrict-aliasing=2',
@@ -469,6 +504,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IFA_FLAGS',                        'linux/if_addr.h'],
                 ['FRA_UID_RANGE',                    'linux/fib_rules.h'],
                 ['LO_FLAGS_PARTSCAN',                'linux/loop.h'],
+                ['VXCAN_INFO_PEER',                  'linux/can/vxcan.h'],
                ]
         prefix = decl.length() > 2 ? decl[2] : ''
         have = cc.has_header_symbol(decl[1], decl[0], prefix : prefix)
@@ -480,7 +516,8 @@ foreach ident : ['secure_getenv', '__secure_getenv']
 endforeach
 
 foreach ident : [
-        ['memfd_create',      '''#include <sys/memfd.h>'''],
+        ['memfd_create',      '''#define _GNU_SOURCE
+//                                 #include <sys/mman.h>'''],
         ['gettid',            '''#include <sys/types.h>'''],
         ['pivot_root',        '''#include <stdlib.h>'''],     # no known header declares pivot_root
         ['name_to_handle_at', '''#define _GNU_SOURCE
@@ -516,7 +553,6 @@ endif
 #####################################################################
 
 sed = find_program('sed')
-grep = find_program('grep')
 awk = find_program('awk')
 m4 = find_program('m4')
 stat = find_program('stat')
@@ -681,10 +717,7 @@ substs.set('systemuidmax', system_uid_max)
 message('maximum system UID is @0@'.format(system_uid_max))
 
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('NOBODY_USER_NAME', get_option('nobody-user'))
-# conf.set_quoted('NOBODY_GROUP_NAME', get_option('nobody-group'))
 #endif // 0
-
 system_gid_max = get_option('system-gid-max')
 if system_gid_max == ''
         system_gid_max = run_command(
@@ -697,21 +730,95 @@ conf.set('SYSTEM_GID_MAX', system_gid_max)
 substs.set('systemgidmax', system_gid_max)
 message('maximum system GID is @0@'.format(system_gid_max))
 
+dynamic_uid_min = get_option('dynamic-uid-min').to_int()
+dynamic_uid_max = get_option('dynamic-uid-max').to_int()
+conf.set('DYNAMIC_UID_MIN', dynamic_uid_min)
+conf.set('DYNAMIC_UID_MAX', dynamic_uid_max)
+substs.set('dynamicuidmin', dynamic_uid_min)
+substs.set('dynamicuidmax', dynamic_uid_max)
+
+container_uid_base_min = get_option('container-uid-base-min').to_int()
+container_uid_base_max = get_option('container-uid-base-max').to_int()
+conf.set('CONTAINER_UID_BASE_MIN', container_uid_base_min)
+conf.set('CONTAINER_UID_BASE_MAX', container_uid_base_max)
+substs.set('containeruidbasemin', container_uid_base_min)
+substs.set('containeruidbasemax', container_uid_base_max)
+
+nobody_user = get_option('nobody-user')
+nobody_group = get_option('nobody-group')
+
+getent_result = run_command('getent', 'passwd', '65534')
+if getent_result.returncode() == 0
+        name = getent_result.stdout().split(':')[0]
+        if name != nobody_user
+                message('WARNING:\n' +
+                        '        The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
+                        '        Your build will result in an user table setup that is incompatible with the local system.')
+        endif
+endif
+id_result = run_command('id', '-u', nobody_user)
+if id_result.returncode() == 0
+        id = id_result.stdout().to_int()
+        if id != 65534
+                message('WARNING:\n' +
+                        '        The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
+                        '        Your build will result in an user table setup that is incompatible with the local system.')
+        endif
+endif
+
+getent_result = run_command('getent', 'group', '65534')
+if getent_result.returncode() == 0
+        name = getent_result.stdout().split(':')[0]
+        if name != nobody_group
+                message('WARNING:\n' +
+                        '        The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
+                        '        Your build will result in an group table setup that is incompatible with the local system.')
+        endif
+endif
+id_result = run_command('id', '-g', nobody_group)
+if id_result.returncode() == 0
+        id = id_result.stdout().to_int()
+        if id != 65534
+                message('WARNING:\n' +
+                        '        The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
+                        '        Your build will result in an group table setup that is incompatible with the local system.')
+        endif
+endif
+if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
+        message('WARNING:\n' +
+                '        The configured user name "@0@" and group name "@0@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
+                '        Please re-check that both "nobody-user" and "nobody-group" options are correctly set.')
+endif
+
+conf.set_quoted('NOBODY_USER_NAME', nobody_user)
+conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
+substs.set('NOBODY_USER_NAME', nobody_user)
+substs.set('NOBODY_GROUP_NAME', nobody_group)
+
 tty_gid = get_option('tty-gid')
 conf.set('TTY_GID', tty_gid)
 substs.set('TTY_GID', tty_gid)
 
 #if 0 /// UNNEEDED by elogind
+# Ensure provided GID argument is numeric, otherwise fallback to default assignment
+# if get_option('users-gid') != ''
+#         users_gid = get_option('users-gid').to_int()
+# else
+#         users_gid = '-'
+# endif
+# substs.set('USERS_GID', users_gid)
+# 
 # if get_option('adm-group')
 #         m4_defines += ['-DENABLE_ADM_GROUP']
 # endif
-
+# 
 # if get_option('wheel-group')
 #         m4_defines += ['-DENABLE_WHEEL_GROUP']
 # endif
-
+# 
 # substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
 #endif // 0
+substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
 
 kill_user_processes = get_option('default-kill-user-processes')
 conf.set10('KILL_USER_PROCESSES', kill_user_processes)
@@ -721,7 +828,7 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 # dns_servers = get_option('dns-servers')
 # conf.set_quoted('DNS_SERVERS', dns_servers)
 # substs.set('DNS_SERVERS', dns_servers)
-
+# 
 # ntp_servers = get_option('ntp-servers')
 # conf.set_quoted('NTP_SERVERS', ntp_servers)
 # substs.set('NTP_SERVERS', ntp_servers)
@@ -772,7 +879,7 @@ endif
 #if 0 /// UNNEEDED by elogind
 # libmount = dependency('mount',
 #                       version : '>= 2.30')
-
+# 
 # want_seccomp = get_option('seccomp')
 # if want_seccomp != 'false'
 #         libseccomp = dependency('libseccomp',
@@ -870,7 +977,7 @@ conf.set10('HAVE_AUDIT', have)
 #         libblkid = []
 # endif
 # conf.set10('HAVE_BLKID', have)
-
+# 
 # want_kmod = get_option('kmod')
 # if want_kmod != 'false'
 #         libkmod = dependency('libkmod',
@@ -913,7 +1020,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_MICROHTTPD', have)
 # m4_defines += have ? ['-DHAVE_MICROHTTPD'] : []
-
+# 
 # want_libcryptsetup = get_option('libcryptsetup')
 # if want_libcryptsetup != 'false'
 #         libcryptsetup = dependency('libcryptsetup',
@@ -925,7 +1032,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libcryptsetup = []
 # endif
 # conf.set10('HAVE_LIBCRYPTSETUP', have)
-
+# 
 # want_libcurl = get_option('libcurl')
 # if want_libcurl != 'false'
 #         libcurl = dependency('libcurl',
@@ -938,13 +1045,13 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBCURL', have)
 # m4_defines += have ? ['-DHAVE_LIBCURL'] : []
-
+# 
 # want_libidn = get_option('libidn')
 # want_libidn2 = get_option('libidn2')
 # if want_libidn == 'true' and want_libidn2 == 'true'
 #         error('libidn and libidn2 cannot be requested simultaneously')
 # endif
-
+# 
 # if want_libidn != 'false' and want_libidn2 != 'true'
 #         libidn = dependency('libidn',
 #                             required : want_libidn == 'true')
@@ -965,7 +1072,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBIDN2', have)
 # m4_defines += have ? ['-DHAVE_LIBIDN2'] : []
-
+# 
 # want_libiptc = get_option('libiptc')
 # if want_libiptc != 'false'
 #         libiptc = dependency('libiptc',
@@ -977,7 +1084,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBIPTC', have)
 # m4_defines += have ? ['-DHAVE_LIBIPTC'] : []
-
+# 
 # want_qrencode = get_option('qrencode')
 # if want_qrencode != 'false'
 #         libqrencode = dependency('libqrencode',
@@ -988,7 +1095,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libqrencode = []
 # endif
 # conf.set10('HAVE_QRENCODE', have)
-
+# 
 # want_gcrypt = get_option('gcrypt')
 # if want_gcrypt != 'false'
 #         libgcrypt = cc.find_library('gcrypt', required : want_gcrypt == 'true')
@@ -1003,7 +1110,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libgpg_error = []
 # endif
 # conf.set10('HAVE_GCRYPT', have)
-
+# 
 # want_gnutls = get_option('gnutls')
 # if want_gnutls != 'false'
 #         libgnutls = dependency('gnutls',
@@ -1015,7 +1122,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libgnutls = []
 # endif
 # conf.set10('HAVE_GNUTLS', have)
-
+# 
 # want_elfutils = get_option('elfutils')
 # if want_elfutils != 'false'
 #         libdw = dependency('libdw',
@@ -1026,7 +1133,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libdw = []
 # endif
 # conf.set10('HAVE_ELFUTILS', have)
-
+# 
 # want_zlib = get_option('zlib')
 # if want_zlib != 'false'
 #         libz = dependency('zlib',
@@ -1037,7 +1144,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libz = []
 # endif
 # conf.set10('HAVE_ZLIB', have)
-
+# 
 # want_bzip2 = get_option('bzip2')
 # if want_bzip2 != 'false'
 #         libbzip2 = cc.find_library('bz2',
@@ -1048,7 +1155,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libbzip2 = []
 # endif
 # conf.set10('HAVE_BZIP2', have)
-
+# 
 # want_xz = get_option('xz')
 # if want_xz != 'false'
 #         libxz = dependency('liblzma',
@@ -1059,7 +1166,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libxz = []
 # endif
 # conf.set10('HAVE_XZ', have)
-
+# 
 # want_lz4 = get_option('lz4')
 # if want_lz4 != 'false'
 #         liblz4 = dependency('liblz4',
@@ -1070,7 +1177,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         liblz4 = []
 # endif
 # conf.set10('HAVE_LZ4', have)
-
+# 
 # want_xkbcommon = get_option('xkbcommon')
 # if want_xkbcommon != 'false'
 #         libxkbcommon = dependency('xkbcommon',
@@ -1140,7 +1247,7 @@ conf.set10('HAVE_DBUS', have)
 # conf.set('DEFAULT_DNSSEC_MODE',
 #          'DNSSEC_' + default_dnssec.underscorify().to_upper())
 # substs.set('DEFAULT_DNSSEC_MODE', default_dnssec)
-
+# 
 # want_importd = get_option('importd')
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
@@ -1155,7 +1262,7 @@ conf.set10('HAVE_DBUS', have)
 #         have = false
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
-
+# 
 # want_remote = get_option('remote')
 # if want_remote != 'false'
 #         have_deps = [conf.get('HAVE_MICROHTTPD') == 1,
@@ -1202,6 +1309,7 @@ foreach term : ['utmp',
 #                 'efi',
 #                 'tpm',
 #                 'ima',
+#                 'smack',
 #                 'gshadow',
 #                 'idn',
 #                 'nss-systemd']
@@ -1225,7 +1333,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', get_option('slow-tests'))
 #if 0 /// UNNEEDED by elogind
 # if get_option('efi')
 #         efi_arch = host_machine.cpu_family()
-
+# 
 #         if efi_arch == 'x86'
 #                 EFI_MACHINE_TYPE_NAME = 'ia32'
 #                 gnu_efi_arch = 'ia32'
@@ -1242,10 +1350,10 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', get_option('slow-tests'))
 #                 EFI_MACHINE_TYPE_NAME = ''
 #                 gnu_efi_arch = ''
 #         endif
-
+# 
 #         have = true
 #         conf.set_quoted('EFI_MACHINE_TYPE_NAME', EFI_MACHINE_TYPE_NAME)
-
+# 
 #         conf.set('SD_TPM_PCR', get_option('tpm-pcrindex').to_int())
 # else
 #         have = false
@@ -1322,7 +1430,7 @@ subdir('src/login')
 #         journald_gperf_c,
 #         include_directories : includes,
 #         install : false)
-
+# 
 # libsystemd_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libsystemd_sym)
 # libsystemd = shared_library(
 #         'systemd',
@@ -1374,7 +1482,7 @@ subdir('src/shared')
 # subdir('src/core')
 # subdir('src/udev')
 # subdir('src/network')
-
+# 
 # subdir('src/analyze')
 # subdir('src/journal-remote')
 # subdir('src/coredump')
@@ -1388,12 +1496,12 @@ subdir('src/shared')
 # subdir('src/timedate')
 # subdir('src/timesync')
 # subdir('src/vconsole')
-# subdir('src/sulogin-shell')
 # subdir('src/boot/efi')
 #endif // 0
 
 subdir('src/test')
 #if 0 /// UNNEEDED in elogind
+# subdir('rules')
 # subdir('test')
 #endif // 0
 
@@ -1413,20 +1521,22 @@ test_dlopen = executable(
 #                  ['systemd',    'ENABLE_NSS_SYSTEMD'],
 #                  ['mymachines', 'ENABLE_MACHINED'],
 #                  ['resolve',    'ENABLE_RESOLVE']]
-#
+# 
 #         condition = tuple[1] == '' or conf.get(tuple[1]) == 1
 #         if condition
 #                 module = tuple[0]
-#
+# 
 #                 sym = 'src/nss-@0@/nss-@0@.sym'.format(module)
 #                 version_script_arg = join_paths(meson.current_source_dir(), sym)
-#
+# 
 #                 nss = shared_library(
 #                         'nss_' + module,
 #                         'src/nss-@0@/nss-@0@.c'.format(module),
 #                         version : '2',
 #                         include_directories : includes,
-#                         link_args : ['-shared',
+#                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
+#                         link_args : ['-Wl,-z,nodelete',
+#                                      '-shared',
 #                                      '-Wl,--version-script=' + version_script_arg,
 #                                      '-Wl,--undefined'],
 #                         link_with : [libsystemd_internal,
@@ -1436,13 +1546,13 @@ test_dlopen = executable(
 #                         link_depends : sym,
 #                         install : true,
 #                         install_dir : rootlibdir)
-#
+# 
 #                 # We cannot use shared_module because it does not support version suffix.
 #                 # Unfortunately shared_library insists on creating the symlink…
 #                 meson.add_install_script('sh', '-c',
 #                                          'rm $DESTDIR@0@/libnss_@1@.so'
 #                                          .format(rootlibdir, module))
-#
+# 
 #                 test('dlopen-nss_' + module,
 #                      test_dlopen,
 #                      args : [nss.full_path()]) # path to dlopen must include a slash
@@ -1467,7 +1577,7 @@ test_dlopen = executable(
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # exe = executable('systemd-analyze',
 #                  systemd_analyze_sources,
 #                  include_directories : includes,
@@ -1482,7 +1592,7 @@ test_dlopen = executable(
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # executable('systemd-journald',
 #            systemd_journald_sources,
 #            include_directories : includes,
@@ -1495,7 +1605,7 @@ test_dlopen = executable(
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # exe = executable('systemd-cat',
 #                  systemd_cat_sources,
 #                  include_directories : includes,
@@ -1505,7 +1615,7 @@ test_dlopen = executable(
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('journalctl',
 #                  journalctl_sources,
 #                  include_directories : includes,
@@ -1518,7 +1628,7 @@ test_dlopen = executable(
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
-#
+# 
 # executable('systemd-getty-generator',
 #            'src/getty-generator/getty-generator.c',
 #            include_directories : includes,
@@ -1526,7 +1636,7 @@ test_dlopen = executable(
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : systemgeneratordir)
-#
+# 
 # executable('systemd-debug-generator',
 #            'src/debug-generator/debug-generator.c',
 #            include_directories : includes,
@@ -1534,7 +1644,7 @@ test_dlopen = executable(
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : systemgeneratordir)
-#
+# 
 # executable('systemd-fstab-generator',
 #            'src/fstab-generator/fstab-generator.c',
 #            'src/core/mount-setup.c',
@@ -1543,7 +1653,7 @@ test_dlopen = executable(
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : systemgeneratordir)
-#
+# 
 # if conf.get('ENABLE_ENVIRONMENT_D') == 1
 #         executable('30-systemd-environment-d-generator',
 #                    'src/environment-d-generator/environment-d-generator.c',
@@ -1552,12 +1662,12 @@ test_dlopen = executable(
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : userenvgeneratordir)
-#
+# 
 #         meson.add_install_script(meson_make_symlink,
 #                                  join_paths(sysconfdir, 'environment'),
 #                                  join_paths(environmentdir, '99-environment.conf'))
 # endif
-#
+# 
 # if conf.get('ENABLE_HIBERNATE') == 1
 #         executable('systemd-hibernate-resume-generator',
 #                    'src/hibernate-resume/hibernate-resume-generator.c',
@@ -1566,7 +1676,7 @@ test_dlopen = executable(
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : systemgeneratordir)
-#
+# 
 #         executable('systemd-hibernate-resume',
 #                    'src/hibernate-resume/hibernate-resume.c',
 #                    include_directories : includes,
@@ -1575,7 +1685,7 @@ test_dlopen = executable(
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # if conf.get('HAVE_BLKID') == 1
 #         executable('systemd-gpt-auto-generator',
 #                    'src/gpt-auto-generator/gpt-auto-generator.c',
@@ -1586,7 +1696,7 @@ test_dlopen = executable(
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : systemgeneratordir)
-#
+# 
 #         exe = executable('systemd-dissect',
 #                          'src/dissect/dissect.c',
 #                          include_directories : includes,
@@ -1596,7 +1706,7 @@ test_dlopen = executable(
 #                          install_dir : rootlibexecdir)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_RESOLVE') == 1
 #         executable('systemd-resolved',
 #                    systemd_resolved_sources,
@@ -1611,7 +1721,7 @@ test_dlopen = executable(
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('systemd-resolve',
 #                          systemd_resolve_sources,
 #                          gcrypt_util_sources,
@@ -1626,7 +1736,7 @@ test_dlopen = executable(
 #                          install : true)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_LOGIND') == 1
 #         executable('systemd-logind',
 #                    systemd_logind_sources,
@@ -1638,7 +1748,7 @@ test_dlopen = executable(
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('loginctl',
 #                          loginctl_sources,
 #                          include_directories : includes,
@@ -1650,7 +1760,7 @@ test_dlopen = executable(
 #                          install : true,
 #                          install_dir : rootbindir)
 #         public_programs += [exe]
-#
+# 
 #         exe = executable('systemd-inhibit',
 #                          'src/login/inhibit.c',
 #                          include_directories : includes,
@@ -1659,7 +1769,7 @@ test_dlopen = executable(
 #                          install : true,
 #                          install_dir : rootbindir)
 #         public_programs += [exe]
-#
+# 
 #         if conf.get('HAVE_PAM') == 1
 #                 version_script_arg = join_paths(meson.current_source_dir(), pam_systemd_sym)
 #                 pam_systemd = shared_library(
@@ -1677,7 +1787,7 @@ test_dlopen = executable(
 #                         link_depends : pam_systemd_sym,
 #                         install : true,
 #                         install_dir : pamlibdir)
-#
+# 
 #                 test('dlopen-pam_systemd',
 #                      test_dlopen,
 #                      args : [pam_systemd.full_path()]) # path to dlopen must include a slash
@@ -1741,7 +1851,6 @@ if conf.get('HAVE_PAM') == 1
              args : [pam_elogind.full_path()]) # path to dlopen must include a slash
 endif
 #endif // 0
-
 #if 0 /// UNNEEDED by elogind
 #         executable('systemd-user-sessions',
 #                    'src/user-sessions/user-sessions.c',
@@ -1751,7 +1860,7 @@ endif
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_BLKID') == 1
 #         exe = executable('bootctl',
 #                          'src/boot/bootctl.c',
@@ -1762,7 +1871,7 @@ endif
 #                          install : true)
 #         public_programs += [exe]
 # endif
-#
+# 
 # exe = executable('systemd-socket-activate', 'src/activate/activate.c',
 #                  include_directories : includes,
 #                  link_with : [libshared],
@@ -1770,7 +1879,7 @@ endif
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemctl', 'src/systemctl/systemctl.c',
 #                  include_directories : includes,
 #                  link_with : [libshared],
@@ -1783,7 +1892,7 @@ endif
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
-#
+# 
 # if conf.get('ENABLE_BACKLIGHT') == 1
 #         executable('systemd-backlight',
 #                    'src/backlight/backlight.c',
@@ -1793,7 +1902,7 @@ endif
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # if conf.get('ENABLE_RFKILL') == 1
 #         executable('systemd-rfkill',
 #                    'src/rfkill/rfkill.c',
@@ -1803,7 +1912,7 @@ endif
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # executable('systemd-system-update-generator',
 #            'src/system-update-generator/system-update-generator.c',
 #            include_directories : includes,
@@ -1811,7 +1920,7 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : systemgeneratordir)
-#
+# 
 # if conf.get('HAVE_LIBCRYPTSETUP') == 1
 #         executable('systemd-cryptsetup',
 #                    'src/cryptsetup/cryptsetup.c',
@@ -1821,7 +1930,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         executable('systemd-cryptsetup-generator',
 #                    'src/cryptsetup/cryptsetup-generator.c',
 #                    include_directories : includes,
@@ -1830,7 +1939,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : systemgeneratordir)
-#
+# 
 #         executable('systemd-veritysetup',
 #                    'src/veritysetup/veritysetup.c',
 #                    include_directories : includes,
@@ -1839,7 +1948,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         executable('systemd-veritysetup-generator',
 #                    'src/veritysetup/veritysetup-generator.c',
 #                    include_directories : includes,
@@ -1849,7 +1958,7 @@ endif
 #                    install : true,
 #                    install_dir : systemgeneratordir)
 # endif
-#
+# 
 # if conf.get('HAVE_SYSV_COMPAT') == 1
 #         executable('systemd-sysv-generator',
 #                    'src/sysv-generator/sysv-generator.c',
@@ -1858,7 +1967,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : systemgeneratordir)
-#
+# 
 #         executable('systemd-rc-local-generator',
 #                    'src/rc-local-generator/rc-local-generator.c',
 #                    include_directories : includes,
@@ -1867,7 +1976,7 @@ endif
 #                    install : true,
 #                    install_dir : systemgeneratordir)
 # endif
-#
+# 
 # if conf.get('ENABLE_HOSTNAMED') == 1
 #         executable('systemd-hostnamed',
 #                    'src/hostname/hostnamed.c',
@@ -1876,7 +1985,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('hostnamectl',
 #                          'src/hostname/hostnamectl.c',
 #                          include_directories : includes,
@@ -1885,7 +1994,7 @@ endif
 #                          install : true)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_LOCALED') == 1
 #         if conf.get('HAVE_XKBCOMMON') == 1
 #                 # logind will load libxkbcommon.so dynamically on its own
@@ -1893,7 +2002,7 @@ endif
 #         else
 #                 deps = []
 #         endif
-#
+# 
 #         executable('systemd-localed',
 #                    systemd_localed_sources,
 #                    include_directories : includes,
@@ -1902,7 +2011,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('localectl',
 #                          localectl_sources,
 #                          include_directories : includes,
@@ -1911,7 +2020,7 @@ endif
 #                          install : true)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_TIMEDATED') == 1
 #         executable('systemd-timedated',
 #                    'src/timedate/timedated.c',
@@ -1920,7 +2029,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('timedatectl',
 #                          'src/timedate/timedatectl.c',
 #                          include_directories : includes,
@@ -1929,7 +2038,7 @@ endif
 #                          install : true)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_TIMESYNCD') == 1
 #         executable('systemd-timesyncd',
 #                    systemd_timesyncd_sources,
@@ -1941,7 +2050,7 @@ endif
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # if conf.get('ENABLE_MACHINED') == 1
 #         executable('systemd-machined',
 #                    systemd_machined_sources,
@@ -1951,7 +2060,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('machinectl',
 #                          'src/machine/machinectl.c',
 #                          include_directories : includes,
@@ -1964,7 +2073,7 @@ endif
 #                          install_dir : rootbindir)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_IMPORTD') == 1
 #         executable('systemd-importd',
 #                    systemd_importd_sources,
@@ -1974,7 +2083,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         systemd_pull = executable('systemd-pull',
 #                                   systemd_pull_sources,
 #                                   include_directories : includes,
@@ -1987,7 +2096,7 @@ endif
 #                                   install_rpath : rootlibexecdir,
 #                                   install : true,
 #                                   install_dir : rootlibexecdir)
-#
+# 
 #         systemd_import = executable('systemd-import',
 #                                     systemd_import_sources,
 #                                     include_directories : includes,
@@ -1999,7 +2108,7 @@ endif
 #                                     install_rpath : rootlibexecdir,
 #                                     install : true,
 #                                     install_dir : rootlibexecdir)
-#
+# 
 #         systemd_export = executable('systemd-export',
 #                                     systemd_export_sources,
 #                                     include_directories : includes,
@@ -2013,7 +2122,7 @@ endif
 #                                     install_dir : rootlibexecdir)
 #         public_programs += [systemd_pull, systemd_import, systemd_export]
 # endif
-#
+# 
 # if conf.get('ENABLE_REMOTE') == 1 and conf.get('HAVE_LIBCURL') == 1
 #         exe = executable('systemd-journal-upload',
 #                          systemd_journal_upload_sources,
@@ -2029,7 +2138,7 @@ endif
 #                          install_dir : rootlibexecdir)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_REMOTE') == 1 and conf.get('HAVE_MICROHTTPD') == 1
 #         s_j_remote = executable('systemd-journal-remote',
 #                                 systemd_journal_remote_sources,
@@ -2043,7 +2152,7 @@ endif
 #                                 install_rpath : rootlibexecdir,
 #                                 install : true,
 #                                 install_dir : rootlibexecdir)
-#
+# 
 #         s_j_gatewayd = executable('systemd-journal-gatewayd',
 #                                   systemd_journal_gatewayd_sources,
 #                                   include_directories : includes,
@@ -2058,7 +2167,7 @@ endif
 #                                   install_dir : rootlibexecdir)
 #         public_programs += [s_j_remote, s_j_gatewayd]
 # endif
-#
+# 
 # if conf.get('ENABLE_COREDUMP') == 1
 #         executable('systemd-coredump',
 #                    systemd_coredump_sources,
@@ -2072,7 +2181,7 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('coredumpctl',
 #                          coredumpctl_sources,
 #                          include_directories : includes,
@@ -2084,7 +2193,7 @@ endif
 #                          install : true)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_BINFMT') == 1
 #         exe = executable('systemd-binfmt',
 #                          'src/binfmt/binfmt.c',
@@ -2094,13 +2203,13 @@ endif
 #                          install : true,
 #                          install_dir : rootlibexecdir)
 #         public_programs += [exe]
-#
+# 
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(binfmtdir))
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
 # endif
-#
+# 
 # if conf.get('ENABLE_VCONSOLE') == 1
 #         executable('systemd-vconsole-setup',
 #                    'src/vconsole/vconsole-setup.c',
@@ -2110,7 +2219,7 @@ endif
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # if conf.get('ENABLE_RANDOMSEED') == 1
 #         executable('systemd-random-seed',
 #                    'src/random-seed/random-seed.c',
@@ -2120,7 +2229,7 @@ endif
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # if conf.get('ENABLE_FIRSTBOOT') == 1
 #         executable('systemd-firstboot',
 #                    'src/firstboot/firstboot.c',
@@ -2131,7 +2240,7 @@ endif
 #                    install : true,
 #                    install_dir : rootbindir)
 # endif
-#
+# 
 # executable('systemd-remount-fs',
 #            'src/remount-fs/remount-fs.c',
 #            'src/core/mount-setup.c',
@@ -2141,7 +2250,7 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # executable('systemd-machine-id-setup',
 #            'src/machine-id-setup/machine-id-setup-main.c',
 #            'src/core/machine-id-setup.c',
@@ -2151,7 +2260,7 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootbindir)
-#
+# 
 # executable('systemd-fsck',
 #            'src/fsck/fsck.c',
 #            include_directories : includes,
@@ -2159,7 +2268,24 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
+# executable('elogind-growfs',
+#            'src/partition/growfs.c',
+#            include_directories : includes,
+#            link_with : [libshared],
+#            dependencies : [libcryptsetup],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : rootlibexecdir)
+# 
+# executable('elogind-makefs',
+#            'src/partition/makefs.c',
+#            include_directories : includes,
+#            link_with : [libshared],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : rootlibexecdir)
+# 
 # executable('systemd-sleep',
 #            'src/sleep/sleep.c',
 #            include_directories : includes,
@@ -2167,7 +2293,7 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # exe = executable('systemd-sysctl',
 #                  'src/sysctl/sysctl.c',
 #                  include_directories : includes,
@@ -2176,7 +2302,7 @@ endif
 #                  install : true,
 #                  install_dir : rootlibexecdir)
 # public_programs += [exe]
-#
+# 
 # executable('systemd-ac-power',
 #            'src/ac-power/ac-power.c',
 #            include_directories : includes,
@@ -2184,7 +2310,7 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # exe = executable('systemd-detect-virt',
 #                  'src/detect-virt/detect-virt.c',
 #                  include_directories : includes,
@@ -2192,7 +2318,7 @@ endif
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-delta',
 #                  'src/delta/delta.c',
 #                  include_directories : includes,
@@ -2200,7 +2326,7 @@ endif
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-escape',
 #                  'src/escape/escape.c',
 #                  include_directories : includes,
@@ -2209,7 +2335,7 @@ endif
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-notify',
 #                  'src/notify/notify.c',
 #                  include_directories : includes,
@@ -2218,7 +2344,7 @@ endif
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
-#
+# 
 # executable('systemd-volatile-root',
 #            'src/volatile-root/volatile-root.c',
 #            include_directories : includes,
@@ -2226,7 +2352,7 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # executable('systemd-cgroups-agent',
 #            'src/cgroups-agent/cgroups-agent.c',
 #            include_directories : includes,
@@ -2252,7 +2378,7 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-ask-password',
 #                  'src/ask-password/ask-password.c',
 #                  include_directories : includes,
@@ -2261,7 +2387,7 @@ executable('elogind-cgroups-agent',
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
-#
+# 
 # executable('systemd-reply-password',
 #            'src/reply-password/reply-password.c',
 #            include_directories : includes,
@@ -2269,7 +2395,7 @@ executable('elogind-cgroups-agent',
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # exe = executable('systemd-tty-ask-password-agent',
 #                  'src/tty-ask-password-agent/tty-ask-password-agent.c',
 #                  include_directories : includes,
@@ -2278,7 +2404,7 @@ executable('elogind-cgroups-agent',
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-cgls',
 #                  'src/cgls/cgls.c',
 #                  include_directories : includes,
@@ -2286,7 +2412,7 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-cgtop',
 #                  'src/cgtop/cgtop.c',
 #                  include_directories : includes,
@@ -2294,7 +2420,7 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # executable('systemd-initctl',
 #            'src/initctl/initctl.c',
 #            include_directories : includes,
@@ -2302,7 +2428,7 @@ executable('elogind-cgroups-agent',
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # exe = executable('systemd-mount',
 #                  'src/mount/mount-tool.c',
 #                  include_directories : includes,
@@ -2310,10 +2436,10 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # meson.add_install_script(meson_make_symlink,
 #                          'systemd-mount', join_paths(bindir, 'systemd-umount'))
-#
+# 
 # exe = executable('systemd-run',
 #                  'src/run/run.c',
 #                  include_directories : includes,
@@ -2321,7 +2447,7 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-stdio-bridge',
 #                  'src/stdio-bridge/stdio-bridge.c',
 #                  include_directories : includes,
@@ -2329,7 +2455,7 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # exe = executable('busctl',
 #                  'src/busctl/busctl.c',
 #                  'src/busctl/busctl-introspect.c',
@@ -2339,7 +2465,7 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # if conf.get('ENABLE_SYSUSERS') == 1
 #         exe = executable('systemd-sysusers',
 #                          'src/sysusers/sysusers.c',
@@ -2350,7 +2476,7 @@ executable('elogind-cgroups-agent',
 #                          install_dir : rootbindir)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_TMPFILES') == 1
 #         exe = executable('systemd-tmpfiles',
 #                          'src/tmpfiles/tmpfiles.c',
@@ -2361,8 +2487,13 @@ executable('elogind-cgroups-agent',
 #                          install : true,
 #                          install_dir : rootbindir)
 #         public_programs += [exe]
+# 
+#         test('test-elogind-tmpfiles',
+#              test_elogind_tmpfiles_py,
+#              args : exe.full_path())
+#         # https://github.com/mesonbuild/meson/issues/2681
 # endif
-#
+# 
 # if conf.get('ENABLE_HWDB') == 1
 #         exe = executable('systemd-hwdb',
 #                          'src/hwdb/hwdb.c',
@@ -2374,7 +2505,7 @@ executable('elogind-cgroups-agent',
 #                          install_dir : rootbindir)
 #         public_programs += [exe]
 # endif
-#
+# 
 # if conf.get('ENABLE_QUOTACHECK') == 1
 #         executable('systemd-quotacheck',
 #                    'src/quotacheck/quotacheck.c',
@@ -2384,7 +2515,7 @@ executable('elogind-cgroups-agent',
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#
+# 
 # exe = executable('systemd-socket-proxyd',
 #                  'src/socket-proxy/socket-proxyd.c',
 #                  include_directories : includes,
@@ -2394,7 +2525,7 @@ executable('elogind-cgroups-agent',
 #                  install : true,
 #                  install_dir : rootlibexecdir)
 # public_programs += [exe]
-#
+# 
 # exe = executable('systemd-udevd',
 #                  systemd_udevd_sources,
 #                  include_directories : includes,
@@ -2411,7 +2542,7 @@ executable('elogind-cgroups-agent',
 #                  install : true,
 #                  install_dir : rootlibexecdir)
 # public_programs += [exe]
-#
+# 
 # exe = executable('udevadm',
 #                  udevadm_sources,
 #                  include_directories : includes,
@@ -2427,7 +2558,7 @@ executable('elogind-cgroups-agent',
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
-#
+# 
 # executable('systemd-shutdown',
 #            systemd_shutdown_sources,
 #            include_directories : includes,
@@ -2435,7 +2566,7 @@ executable('elogind-cgroups-agent',
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # executable('systemd-update-done',
 #            'src/update-done/update-done.c',
 #            include_directories : includes,
@@ -2443,7 +2574,7 @@ executable('elogind-cgroups-agent',
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # executable('systemd-update-utmp',
 #            'src/update-utmp/update-utmp.c',
 #            include_directories : includes,
@@ -2452,7 +2583,7 @@ executable('elogind-cgroups-agent',
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#
+# 
 # if conf.get('HAVE_KMOD') == 1
 #         executable('systemd-modules-load',
 #                    'src/modules-load/modules-load.c',
@@ -2462,13 +2593,13 @@ executable('elogind-cgroups-agent',
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(modulesloaddir))
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
 # endif
-#
+# 
 # exe = executable('systemd-nspawn',
 #                  systemd_nspawn_sources,
 #                  'src/core/mount-setup.c', # FIXME: use a variable?
@@ -2484,7 +2615,7 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-#
+# 
 # if conf.get('ENABLE_NETWORKD') == 1
 #         executable('systemd-networkd',
 #                    systemd_networkd_sources,
@@ -2497,7 +2628,7 @@ executable('elogind-cgroups-agent',
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         executable('systemd-networkd-wait-online',
 #                    systemd_networkd_wait_online_sources,
 #                    include_directories : includes,
@@ -2506,7 +2637,7 @@ executable('elogind-cgroups-agent',
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
+# 
 #         exe = executable('networkctl',
 #                    networkctl_sources,
 #                    include_directories : includes,
@@ -2517,8 +2648,15 @@ executable('elogind-cgroups-agent',
 #                    install_dir : rootbindir)
 #         public_programs += [exe]
 # endif
-#endif // 0
-
+# 
+# executable('systemd-sulogin-shell',
+#            ['src/sulogin-shell/sulogin-shell.c'],
+#            include_directories : includes,
+#            link_with : [libshared],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : rootlibexecdir)
+#else
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
            include_directories : includes,
@@ -2526,9 +2664,7 @@ executable('elogind-uaccess-command',
                         libshared_static],
            dependencies: [libacl,
                           libudev],
-           install_rpath : rootlibexecdir,
-           install : true,
-           install_dir : rootlibexecdir)
+#endif // 0
 
 ############################################################
 
@@ -2584,7 +2720,7 @@ endforeach
 #         install_dir : testsdir)
 # test('test-libsystemd-sym',
 #      test_libsystemd_sym)
-#
+# 
 # test_libudev_sym = executable(
 #         'test-libudev-sym',
 #         test_libudev_sym_c,
@@ -2614,12 +2750,12 @@ make_man_index_py = find_program('tools/make-man-index.py')
 xml_helper_py = find_program('tools/xml_helper.py')
 #if 0 /// UNNEEDED by elogind
 # hwdb_update_sh = find_program('tools/meson-hwdb-update.sh')
-
+# 
 # subdir('units')
 # subdir('sysctl.d')
 # subdir('sysusers.d')
 # subdir('tmpfiles.d')
-# subdir('rules')
+# subdir('presets')
 # subdir('hwdb')
 # subdir('network')
 #endif // 0
@@ -2640,8 +2776,6 @@ install_subdir('factory/etc',
 #if 0 /// UNNEEDED by elogind
 # install_data('xorg/50-systemd-user.sh',
 #              install_dir : xinitrcdir)
-# install_data('system-preset/90-systemd.preset',
-#              install_dir : systempresetdir)
 # install_data('modprobe.d/systemd.conf',
 #              install_dir : modprobedir)
 #endif // 0
@@ -2724,47 +2858,53 @@ endif
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
-        'prefix:                            @0@'.format(prefixdir),
-        'rootprefix:                        @0@'.format(rootprefixdir),
-        'sysconf dir:                       @0@'.format(sysconfdir),
-        'includedir:                        @0@'.format(includedir),
-        'lib dir:                           @0@'.format(libdir),
-        'rootlib dir:                       @0@'.format(rootlibdir),
 #if 0 /// UNSUPPORTED by elogind
+#         'prefix directory:                  @0@'.format(prefixdir),
+#         'rootprefix directory:              @0@'.format(rootprefixdir),
+#         'sysconf directory:                 @0@'.format(sysconfdir),
+#         'include directory:                 @0@'.format(includedir),
+#         'lib directory:                     @0@'.format(libdir),
+#         'rootlib directory:                 @0@'.format(rootlibdir),
 #         'SysV init scripts:                 @0@'.format(sysvinit_path),
 #         'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
 #else
         'rootexeclib dir:                   @0@'.format(rootlibexecdir),
 #endif // 0
-        'PAM modules dir:                   @0@'.format(pamlibdir),
-        'PAM configuration dir:             @0@'.format(pamconfdir),
 #if 0 /// UNSUPPORTED by elogind
-#         'RPM macros dir:                    @0@'.format(rpmmacrosdir),
-#         'modprobe.d dir:                    @0@'.format(modprobedir),
 #endif // 0
-        'D-Bus policy dir:                  @0@'.format(dbuspolicydir),
-        'D-Bus session dir:                 @0@'.format(dbussessionservicedir),
-        'D-Bus system dir:                  @0@'.format(dbussystemservicedir),
-        'bash completions dir:              @0@'.format(bashcompletiondir),
-        'zsh completions dir:               @0@'.format(zshcompletiondir),
 #if 0 /// UNSUPPORTED by elogind
+#         'PAM modules directory:             @0@'.format(pamlibdir),
+#         'PAM configuration directory:       @0@'.format(pamconfdir),
+#         'RPM macros directory:              @0@'.format(rpmmacrosdir),
+#         'modprobe.d directory:              @0@'.format(modprobedir),
+#         'D-Bus policy directory:            @0@'.format(dbuspolicydir),
+#         'D-Bus session directory:           @0@'.format(dbussessionservicedir),
+#         'D-Bus system directory:            @0@'.format(dbussystemservicedir),
+#         'bash completions directory:        @0@'.format(bashcompletiondir),
+#         'zsh completions directory:         @0@'.format(zshcompletiondir),
 #         'extra start script:                @0@'.format(get_option('rc-local')),
 #         'extra stop script:                 @0@'.format(get_option('halt-local')),
 #         'debug shell:                       @0@ @ @1@'.format(get_option('debug-shell'),
 #                                                               get_option('debug-tty')),
 #endif // 0
         'TTY GID:                           @0@'.format(tty_gid),
+        'users GID:                         @0@'.format(users_gid),
         'maximum system UID:                @0@'.format(system_uid_max),
         'maximum system GID:                @0@'.format(system_gid_max),
 #if 0 /// UNSUPPORTED by elogind
+#         'minimum dynamic UID:               @0@'.format(dynamic_uid_min),
+#         'maximum dynamic UID:               @0@'.format(dynamic_uid_max),
+#         'minimum container UID base:        @0@'.format(container_uid_base_min),
+#         'maximum container UID base:        @0@'.format(container_uid_base_max),
 #         '/dev/kvm access mode:              @0@'.format(get_option('dev-kvm-mode')),
-#         'certificate root:                  @0@'.format(get_option('certificate-root')),
+#         'render group access mode:          @0@'.format(get_option('group-render-mode')),
+#         'certificate root directory:        @0@'.format(get_option('certificate-root')),
 #         'support URL:                       @0@'.format(support_url),
-#         'nobody user name:                  @0@'.format(get_option('nobody-user')),
-#         'nobody group name:                 @0@'.format(get_option('nobody-group')),
+#         'nobody user name:                  @0@'.format(nobody_user),
+#         'nobody group name:                 @0@'.format(nobody_group),
 #         'fallback hostname:                 @0@'.format(get_option('fallback-hostname')),
 #         'symbolic gateway hostnames:        @0@'.format(', '.join(gateway_hostnames)),
-
+# 
 #         'default DNSSEC mode:               @0@'.format(default_dnssec),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #endif // 0
@@ -2776,7 +2916,7 @@ status = [
 # status += [
 #         'default DNS servers:               @0@'.format(alt_dns_servers),
 #         'default NTP servers:               @0@'.format(alt_ntp_servers)]
-
+# 
 # alt_time_epoch = run_command('date', '-Is', '-u', '-d',
 #                              '@@0@'.format(time_epoch)).stdout().strip()
 # status += [
@@ -2792,14 +2932,14 @@ status = [
 # if conf.get('ENABLE_EFI') == 1
 #         status += [
 #                 'efi arch:                          @0@'.format(efi_arch)]
-
+# 
 #         if have_gnu_efi
 #                 status += [
 #                         'EFI machine type:                  @0@'.format(EFI_MACHINE_TYPE_NAME),
 #                         'EFI CC                             @0@'.format(efi_cc),
-#                         'EFI libdir:                        @0@'.format(efi_libdir),
-#                         'EFI ldsdir:                        @0@'.format(efi_ldsdir),
-#                         'EFI includedir:                    @0@'.format(efi_incdir)]
+#                         'EFI lib directory:                 @0@'.format(efi_libdir),
+#                         'EFI lds directory:                 @0@'.format(efi_ldsdir),
+#                         'EFI include directory:             @0@'.format(efi_incdir)]
 #         endif
 # endif
 #endif // 0
@@ -2919,3 +3059,10 @@ status += [
         'disabled features: @0@'.format(', '.join(missing)),
         '']
 message('\n         '.join(status))
+
+if rootprefixdir != rootprefix_default
+        message('WARNING:\n' +
+                '        Note that the installation prefix was changed to "@0@".\n'.format(rootprefixdir) +
+                '        elogind used fixed names for unit file directories and other paths, so anything\n' +
+                '        except the default ("@0@") is strongly discouraged.'.format(rootprefix_default))
+endif

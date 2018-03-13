@@ -1,3 +1,20 @@
+# SPDX-License-Identifier: LGPL-2.1+
+#
+# Copyright 2017 Zbigniew Jędrzejewski-Szmek
+#
+# elogind is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# elogind is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with elogind; If not, see <http://www.gnu.org/licenses/>.
+
 #if 0 /// elogind has only two of the parts here in it...
 # libcore_la_sources = '''
 #         audit-fd.c
@@ -207,25 +224,15 @@ libcore_la_sources = files('''
 #         output : 'org.freedesktop.systemd1.policy.in',
 #         configuration : substs)
 # 
-# custom_target(
+# i18n.merge_file(
 #         'org.freedesktop.systemd1.policy',
 #         input : policy_in,
 #         output : 'org.freedesktop.systemd1.policy',
-#         command : intltool_command,
+#         po_dir : po_dir,
+#         data_dirs : po_dir,
 #         install : install_polkit,
 #         install_dir : polkitpolicydir)
 #endif // 0
-
-# TODO: this might work with meson from git, see
-# https://github.com/mesonbuild/meson/issues/1441#issuecomment-283585493
-#
-# i18n.merge_file(
-#   'org.freedesktop.systemd1.policy',
-#   po_dir : po_dir,
-#   input : policy_in,
-#   output : 'org.freedesktop.systemd1.policy',
-#   install : install_polkit,
-#   install_dir : polkitpolicydir)
 
 #if 0 /// totally UNNEEDED in elogind
 # install_data('system.conf',

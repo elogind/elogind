@@ -1,4 +1,20 @@
 # -*- mode: meson -*-
+# SPDX-License-Identifier: LGPL-2.1+
+#
+# Copyright 2017 Zbigniew Jędrzejewski-Szmek
+#
+# elogind is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# elogind is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 option('split-usr', type : 'boolean', value : false,
        description : '''assume that /bin, /sbin aren't symlinks into /usr''')
@@ -9,7 +25,7 @@ option('rootprefix', type : 'string',
 #if 0 /// UNNEEDED by elogind
 # option('link-udev-shared', type : 'boolean',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
-
+# 
 # option('sysvinit-path', type : 'string', value : '/etc/init.d',
 #        description : 'the directory where the SysV init scripts are located')
 # option('sysvrcnd-path', type : 'string', value : '/etc/rc.d',
@@ -19,7 +35,7 @@ option('rootprefix', type : 'string',
 #        value : '/etc/rc.local')
 # option('halt-local', type : 'string',
 #        value : '/usr/sbin/halt.local')
-
+# 
 # option('quotaon-path', type : 'string', description : 'path to quotaon')
 # option('quotacheck-path', type : 'string', description : 'path to quotacheck')
 # option('kill-path', type : 'string', description : 'path to kill')
@@ -48,7 +64,7 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 # option('umount-path', type : 'string', description : 'path to umount')
 # option('loadkeys-path', type : 'string', description : 'path to loadkeys')
 # option('setfont-path', type : 'string', description : 'path to setfont')
-
+# 
 # option('debug-shell', type : 'string', value : '/bin/sh',
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
@@ -155,15 +171,16 @@ option('fallback-hostname', type : 'string', value : 'localhost',
 #endif // 0
 option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
-       description : 'default cgroup hierarchy
+#if 0 /// elogind interprets this a bit different
+#        description : 'default cgroup hierarchy')
+# option('time-epoch', type : 'string',
+#        description : 'time epoch for time clients')
+#else
+       description : 'Wanted cgroup hierarchy if elogind has to be a cgroup controller:
                 "legacy"  assumes cgroups version 1 mounted on /sys/fs/cgroup
                 "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified and
                                   cgroups version 1 mounted on /sys/fs/cgroup.
                 "unified" assumes cgroups version 2 on /sys/fs/cgroup')
-#if 0 /// UNNEEDED by elogind
-# option('time-epoch', type : 'string',
-#        description : 'time epoch for time clients')
-#else
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
 #endif // 0
@@ -171,10 +188,26 @@ option('system-uid-max', type : 'string',
        description : 'maximum system UID')
 option('system-gid-max', type : 'string',
        description : 'maximum system GID')
+#if 0 /// UNNEEDED by elogind
+# option('dynamic-uid-min', type : 'string',
+#        description : 'minimum dynamic UID',
+#        value : '61184') # That's → 0x0000EF00 in hex
+# option('dynamic-uid-max', type : 'string',
+#        description : 'maximum dynamic UID',
+#        value : '65519') # That's → 0x0000FFEF in hex
+# option('container-uid-base-min', type : 'string',
+#        description : 'minimum container UID base',
+#        value : '524288') # That's → 0x00080000 in hex
+# option('container-uid-base-max', type : 'string',
+#        description : 'maximum container UID base',
+#        value : '1878982656') # That's → 0x6FFF0000 in hex
+#endif // 0
 option('tty-gid', type : 'string',
        description : 'the numeric GID of the "tty" group',
        value : '5')
 #if 0 /// UNNEEDED by elogind
+# option('users-gid', type : 'string',
+#        description : 'the numeric GID of the "users" group')
 # option('adm-group', type : 'boolean',
 #        description : 'the ACL for adm group should be added')
 # option('wheel-group', type : 'boolean',
@@ -185,8 +218,10 @@ option('tty-gid', type : 'string',
 # option('nobody-group', type : 'string',
 #        description : 'The name of the nobody group (the one with GID 65534)',
 #        value : 'nobody')
-# option('dev-kvm-mode', type : 'string', value : '0660',
+# option('dev-kvm-mode', type : 'string', value : '0666',
 #        description : '/dev/kvm access mode')
+# option('group-render-mode', type : 'string', value : '0666',
+#        description : 'Access mode for devices owned by render group (e.g. /dev/dri/renderD*, /dev/kfd).')
 #endif // 0
 option('default-kill-user-processes', type : 'boolean',
        description : 'the default value for KillUserProcesses= setting')
@@ -210,7 +245,7 @@ option('gshadow', type : 'boolean',
 # option('www-target', type : 'string',
 #        description : 'the address and dir to upload docs too',
 #        value : 'www.freedesktop.org:/srv/www.freedesktop.org/www/software/systemd')
-
+# 
 # option('seccomp', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'SECCOMP support')
 #endif // 0
