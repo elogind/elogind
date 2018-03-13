@@ -1,4 +1,6 @@
 /***
+  SPDX-License-Identifier: LGPL-2.1+
+
   This file is part of systemd.
 
   systemd is free software; you can redistribute it and/or modify it
@@ -482,30 +484,30 @@ global:
         sd_listen_fds_with_names;
 } LIBSYSTEMD_226;
 
-/*
- * These methods are not needed by elogind.
- * LIBSYSTEMD_229 {
- * global:
- *         sd_journal_has_runtime_files;
- *         sd_journal_has_persistent_files;
- *         sd_journal_enumerate_fields;
- *         sd_journal_restart_fields;
- * } LIBSYSTEMD_227;
-*/
-/*
- * These methods are not needed by elogind.
- * LIBSYSTEMD_230 {
- * global:
- *         sd_journal_open_directory_fd;
- *         sd_journal_open_files_fd;
- * } LIBSYSTEMD_229;
-*/
-
+/** if 0 /// UNNEEDED by elogind
+  * LIBSYSTEMD_229 {
+  * global:
+  *         sd_journal_has_runtime_files;
+  *         sd_journal_has_persistent_files;
+  *         sd_journal_enumerate_fields;
+  *         sd_journal_restart_fields;
+  * } LIBSYSTEMD_227;
+  * 
+  * LIBSYSTEMD_230 {
+  * global:
+  *         sd_journal_open_directory_fd;
+  *         sd_journal_open_files_fd;
+  * } LIBSYSTEMD_229;
+ endif **/
 
 LIBSYSTEMD_231 {
 global:
         sd_event_get_iteration;
+/** if 0 /// Previous blocks unused by elogind
+  * } LIBSYSTEMD_230;
+  * else **/
 } LIBSYSTEMD_227;
+/** endif **/
 
 LIBSYSTEMD_232 {
 global:
@@ -528,3 +530,9 @@ LIBSYSTEMD_234 {
 global:
         sd_bus_message_appendv;
 } LIBSYSTEMD_233;
+
+LIBSYSTEMD_236 {
+global:
+        sd_bus_message_new;
+        sd_bus_message_seal;
+} LIBSYSTEMD_234;
