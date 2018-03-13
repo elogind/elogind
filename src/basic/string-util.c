@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -21,6 +22,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -278,6 +280,9 @@ char *strjoin_real(const char *x, ...) {
 char *strstrip(char *s) {
         char *e;
 
+        if (!s)
+                return NULL;
+
         /* Drops trailing whitespace. Modifies the string in
          * place. Returns pointer to first non-space character */
 
@@ -296,7 +301,13 @@ char *strstrip(char *s) {
 char *delete_chars(char *s, const char *bad) {
         char *f, *t;
 
-        /* Drops all whitespace, regardless where in the string */
+        /* Drops all specified bad characters, regardless where in the string */
+
+        if (!s)
+                return NULL;
+
+        if (!bad)
+                bad = WHITESPACE;
 
         for (f = s, t = s; *f; f++) {
                 if (strchr(bad, *f))
@@ -310,6 +321,26 @@ char *delete_chars(char *s, const char *bad) {
         return s;
 }
 #endif // 0
+
+char *delete_trailing_chars(char *s, const char *bad) {
+        char *p, *c = s;
+
+        /* Drops all specified bad characters, at the end of the string */
+
+        if (!s)
+                return NULL;
+
+        if (!bad)
+                bad = WHITESPACE;
+
+        for (p = s; *p; p++)
+                if (!strchr(bad, *p))
+                        c = p + 1;
+
+        *c = 0;
+
+        return s;
+}
 
 char *truncate_nl(char *s) {
         assert(s);
@@ -643,10 +674,10 @@ char *strip_tab_ansi(char **ibuf, size_t *_isz) {
         if (!f)
                 return NULL;
 
-        /* Note we use the _unlocked() stdio variants on f for performance
-         * reasons.  It's safe to do so since we created f here and it
-         * doesn't leave our scope.
-         */
+        /* Note we turn off internal locking on f for performance reasons.  It's safe to do so since we created f here
+         * and it doesn't leave our scope. */
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         for (i = *ibuf; i < *ibuf + isz + 1; i++) {
 
@@ -658,21 +689,21 @@ char *strip_tab_ansi(char **ibuf, size_t *_isz) {
                         else if (*i == '\x1B')
                                 state = STATE_ESCAPE;
                         else if (*i == '\t')
-                                fputs_unlocked("        ", f);
+                                fputs("        ", f);
                         else
-                                fputc_unlocked(*i, f);
+                                fputc(*i, f);
                         break;
 
                 case STATE_ESCAPE:
                         if (i >= *ibuf + isz) { /* EOT */
-                                fputc_unlocked('\x1B', f);
+                                fputc('\x1B', f);
                                 break;
                         } else if (*i == '[') {
                                 state = STATE_BRACKET;
                                 begin = i + 1;
                         } else {
-                                fputc_unlocked('\x1B', f);
-                                fputc_unlocked(*i, f);
+                                fputc('\x1B', f);
+                                fputc(*i, f);
                                 state = STATE_OTHER;
                         }
 
@@ -682,8 +713,8 @@ char *strip_tab_ansi(char **ibuf, size_t *_isz) {
 
                         if (i >= *ibuf + isz || /* EOT */
                             (!(*i >= '0' && *i <= '9') && !IN_SET(*i, ';', 'm'))) {
-                                fputc_unlocked('\x1B', f);
-                                fputc_unlocked('[', f);
+                                fputc('\x1B', f);
+                                fputc('[', f);
                                 state = STATE_OTHER;
                                 i = begin-1;
                         } else if (*i == 'm')

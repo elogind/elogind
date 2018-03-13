@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -710,6 +711,37 @@ char* dirname_malloc(const char *path) {
         return dir2;
 }
 
+const char *last_path_component(const char *path) {
+        /* Finds the last component of the path, preserving the
+         * optional trailing slash that signifies a directory.
+         *    a/b/c → c
+         *    a/b/c/ → c/
+         *    / → /
+         *    // → /
+         *    /foo/a → a
+         *    /foo/a/ → a/
+         * This is different than basename, which returns "" when
+         * a trailing slash is present.
+         */
+
+        unsigned l, k;
+
+        l = k = strlen(path);
+        if (l == 0) /* special case — an empty string */
+                return path;
+
+        while (k > 0 && path[k-1] == '/')
+                k--;
+
+        if (k == 0) /* the root directory */
+                return path + l - 1;
+
+        while (k > 0 && path[k-1] != '/')
+                k--;
+
+        return path + k;
+}
+
 bool filename_is_valid(const char *p) {
         const char *e;
 
@@ -729,7 +761,7 @@ bool filename_is_valid(const char *p) {
         return true;
 }
 
-bool path_is_safe(const char *p) {
+bool path_is_normalized(const char *p) {
 
         if (isempty(p))
                 return false;
@@ -743,7 +775,6 @@ bool path_is_safe(const char *p) {
         if (strlen(p)+1 > PATH_MAX)
                 return false;
 
-        /* The following two checks are not really dangerous, but hey, they still are confusing */
         if (startswith(p, "./") || endswith(p, "/.") || strstr(p, "/./"))
                 return false;
 
@@ -860,7 +891,9 @@ int systemd_installation_has_version(const char *root, unsigned minimal_version)
                         * for Gentoo which does a merge without making /lib a symlink.
                         */
                        "lib/systemd/libsystemd-shared-*.so\0"
-                       "usr/lib/systemd/libsystemd-shared-*.so\0") {
+                       "lib64/elogind/libelogind-shared-*.so\0"
+                       "usr/lib/elogind/libelogind-shared-*.so\0"
+                       "usr/lib64/elogind/libelogind-shared-*.so\0") {
 
                 _cleanup_strv_free_ char **names = NULL;
                 _cleanup_free_ char *path = NULL;

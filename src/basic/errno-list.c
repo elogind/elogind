@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -51,9 +52,5 @@ int errno_from_name(const char *name) {
         assert(sc->id > 0);
         return sc->id;
 }
-
 #if 0 /// UNNEEDED by elogind
-int errno_max(void) {
-        return ELEMENTSOF(errno_names);
-}
 #endif // 0

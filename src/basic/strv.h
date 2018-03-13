@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -198,3 +199,11 @@ int strv_extend_n(char ***l, const char *value, size_t n);
 #if 0 /// UNNEEDED by elogind
 int fputstrv(FILE *f, char **l, const char *separator, bool *space);
 #endif // 0
+
+#define strv_free_and_replace(a, b)             \
+        ({                                      \
+                strv_free(a);                   \
+                (a) = (b);                      \
+                (b) = NULL;                     \
+                0;                              \
+        })

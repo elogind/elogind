@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -45,5 +46,8 @@ bool is_gateway_hostname(const char *hostname);
 
 int sethostname_idempotent(const char *s);
 
-int read_hostname_config(const char *path, char **hostname);
 #endif // 0
+int shorten_overlong(const char *s, char **ret);
+
+int read_etc_hostname_stream(FILE *f, char **ret);
+int read_etc_hostname(const char *path, char **ret);

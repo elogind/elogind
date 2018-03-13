@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -141,9 +142,10 @@ int parse_path_argument_and_warn(const char *path, bool suppress_root, char **ar
 #endif // 0
 
 char* dirname_malloc(const char *path);
+const char *last_path_component(const char *path);
 
 bool filename_is_valid(const char *p) _pure_;
-bool path_is_safe(const char *p) _pure_;
+bool path_is_normalized(const char *p) _pure_;
 
 char *file_in_same_dir(const char *path, const char *filename);
 

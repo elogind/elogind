@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -19,9 +20,13 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+/*
+ * MAX_ERRNO is defined as 4095 in linux/err.h
+ * We use the same value here.
+ */
+#define ERRNO_MAX 4095
+
 const char *errno_to_name(int id);
 int errno_from_name(const char *name);
-
 #if 0 /// UNNEEDED by elogind
-int errno_max(void);
 #endif // 0

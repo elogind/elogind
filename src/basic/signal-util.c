@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -227,7 +228,7 @@ static const char *const __signal_table[] = {
 DEFINE_PRIVATE_STRING_TABLE_LOOKUP(__signal, int);
 
 const char *signal_to_string(int signo) {
-        static thread_local char buf[sizeof("RTMIN+")-1 + DECIMAL_STR_MAX(int) + 1];
+        static thread_local char buf[STRLEN("RTMIN+") + DECIMAL_STR_MAX(int) + 1];
         const char *name;
 
         name = __signal_to_string(signo);

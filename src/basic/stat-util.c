@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -200,7 +201,7 @@ bool is_fs_type(const struct statfs *s, statfs_f_type_t magic_value) {
         return F_TYPE_EQUAL(s->f_type, magic_value);
 }
 
-int fd_check_fstype(int fd, statfs_f_type_t magic_value) {
+int fd_is_fs_type(int fd, statfs_f_type_t magic_value) {
         struct statfs s;
 
         if (fstatfs(fd, &s) < 0)
@@ -210,14 +211,14 @@ int fd_check_fstype(int fd, statfs_f_type_t magic_value) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int path_check_fstype(const char *path, statfs_f_type_t magic_value) {
+int path_is_fs_type(const char *path, statfs_f_type_t magic_value) {
         _cleanup_close_ int fd = -1;
 
         fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_PATH);
         if (fd < 0)
                 return -errno;
 
-        return fd_check_fstype(fd, magic_value);
+        return fd_is_fs_type(fd, magic_value);
 }
 #endif // 0
 
@@ -234,6 +235,18 @@ int fd_is_temporary_fs(int fd) {
                 return -errno;
 
         return is_temporary_fs(&s);
+}
+
+int fd_is_network_ns(int fd) {
+        int r;
+
+        r = fd_is_fs_type(fd, NSFS_MAGIC);
+        if (r <= 0)
+                return r;
+        r = ioctl(fd, NS_GET_NSTYPE);
+        if (r < 0)
+                return -errno;
+        return r == CLONE_NEWNET;
 }
 
 int path_is_temporary_fs(const char *path) {

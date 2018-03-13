@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -23,6 +24,7 @@
 //#include <limits.h>
 #include <signal.h>
 //#include <stddef.h>
+#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -882,115 +884,87 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int cg_set_group_access(
+int cg_set_access(
                 const char *controller,
                 const char *path,
-                mode_t mode,
                 uid_t uid,
                 gid_t gid) {
 
-        _cleanup_free_ char *fs = NULL;
-        int r;
+        struct Attribute {
+                const char *name;
+                bool fatal;
+        };
 
-        if (mode == MODE_INVALID && uid == UID_INVALID && gid == GID_INVALID)
+        /* cgroupsv1, aka legacy/non-unified */
+        static const struct Attribute legacy_attributes[] = {
+                { "cgroup.procs",           true  },
+                { "tasks",                  false },
+                { "cgroup.clone_children",  false },
+                {},
+        };
+
+        /* cgroupsv2, aka unified */
+        static const struct Attribute unified_attributes[] = {
+                { "cgroup.procs",           true  },
+                { "cgroup.subtree_control", true  },
+                { "cgroup.threads",         false },
+                {},
+        };
+
+        static const struct Attribute* const attributes[] = {
+                [false] = legacy_attributes,
+                [true]  = unified_attributes,
+        };
+
+        _cleanup_free_ char *fs = NULL;
+        const struct Attribute *i;
+        int r, unified;
+
+        assert(path);
+
+        if (uid == UID_INVALID && gid == GID_INVALID)
                 return 0;
 
-        if (mode != MODE_INVALID)
-                mode &= 0777;
+        unified = cg_unified_controller(controller);
+        if (unified < 0)
+                return unified;
 
+        /* Configure access to the cgroup itself */
         r = cg_get_path(controller, path, NULL, &fs);
         if (r < 0)
                 return r;
 
-        r = chmod_and_chown(fs, mode, uid, gid);
+        r = chmod_and_chown(fs, 0755, uid, gid);
         if (r < 0)
                 return r;
 
-        r = cg_hybrid_unified();
-        if (r < 0)
-                return r;
-        if (r > 0 && streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
-                r = cg_set_group_access(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, mode, uid, gid);
-                if (r < 0)
-                        log_debug_errno(r, "Failed to set group access on compatibility systemd cgroup %s, ignoring: %m", path);
-        }
-
-        return 0;
-}
-
-int cg_set_task_access(
-                const char *controller,
-                const char *path,
-                mode_t mode,
-                uid_t uid,
-                gid_t gid) {
-
-        _cleanup_free_ char *fs = NULL;
-        int r;
-
-        assert(path);
-
-        if (mode == MODE_INVALID && uid == UID_INVALID && gid == GID_INVALID)
-                return 0;
-
-        if (mode != MODE_INVALID)
-                mode &= 0666;
-
-        /* For both the legacy and unified hierarchies, "cgroup.procs" is the main entry point for PIDs */
-        r = cg_get_path(controller, path, "cgroup.procs", &fs);
-        if (r < 0)
-                return r;
-
-        r = chmod_and_chown(fs, mode, uid, gid);
-        if (r < 0)
-                return r;
-
-        r = cg_unified_controller(controller);
-        if (r < 0)
-                return r;
-        if (r == 0) {
-                const char *fn;
-
-                /* Compatibility: on cgroupsv1 always keep values for the legacy files "tasks" and
-                 * "cgroup.clone_children" in sync with "cgroup.procs". Since this is legacy stuff, we don't care if
-                 * this fails. */
-
-                FOREACH_STRING(fn,
-                               "tasks",
-                               "cgroup.clone_children") {
-
-                        fs = mfree(fs);
-
-                        r = cg_get_path(controller, path, fn, &fs);
-                        if (r < 0)
-                                log_debug_errno(r, "Failed to get path for %s of %s, ignoring: %m", fn, path);
-
-                        r = chmod_and_chown(fs, mode, uid, gid);
-                        if (r < 0)
-                                log_debug_errno(r, "Failed to to change ownership/access mode for %s of %s, ignoring: %m", fn, path);
-                }
-        } else {
-                /* On the unified controller, we want to permit subtree controllers too. */
-
+        /* Configure access to the cgroup's attributes */
+        for (i = attributes[unified]; i->name; i++) {
                 fs = mfree(fs);
-                r = cg_get_path(controller, path, "cgroup.subtree_control", &fs);
+
+                r = cg_get_path(controller, path, i->name, &fs);
                 if (r < 0)
                         return r;
 
-                r = chmod_and_chown(fs, mode, uid, gid);
-                if (r < 0)
-                        return r;
+                r = chmod_and_chown(fs, 0644, uid, gid);
+                if (r < 0) {
+                        if (i->fatal)
+                                return r;
+
+                        log_debug_errno(r, "Failed to set access on cgroup %s, ignoring: %m", fs);
+                }
         }
 
-        r = cg_hybrid_unified();
-        if (r < 0)
-                return r;
-        if (r > 0 && streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
-                /* Always propagate access mode from unified to legacy controller */
-
-                r = cg_set_task_access(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, mode, uid, gid);
+        if (streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
+                r = cg_hybrid_unified();
                 if (r < 0)
-                        log_debug_errno(r, "Failed to set task access on compatibility systemd cgroup %s, ignoring: %m", path);
+                        return r;
+                if (r > 0) {
+                        /* Always propagate access mode from unified to legacy controller */
+                        r = cg_set_access(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, uid, gid);
+                        if (r < 0)
+                                log_debug_errno(r, "Failed to set access on compatibility elogind cgroup %s, ignoring: %m", path);
+                }
         }
 
         return 0;
@@ -1072,6 +1046,8 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         f = fopen(fs, "re");
         if (!f)
                 return errno == ENOENT ? -ESRCH : -errno;
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         FOREACH_LINE(line, f, return -errno) {
                 char *e, *p;
@@ -1300,7 +1276,7 @@ int cg_split_spec(const char *spec, char **controller, char **path) {
         assert(spec);
 
         if (*spec == '/') {
-                if (!path_is_safe(spec))
+                if (!path_is_normalized(spec))
                         return -EINVAL;
 
                 if (path) {
@@ -1353,7 +1329,7 @@ int cg_split_spec(const char *spec, char **controller, char **path) {
                         return -ENOMEM;
                 }
 
-                if (!path_is_safe(u) ||
+                if (!path_is_normalized(u) ||
                     !path_is_absolute(u)) {
                         free(t);
                         free(u);
@@ -1528,7 +1504,7 @@ static bool valid_slice_name(const char *p, size_t n) {
         if (!p)
                 return false;
 
-        if (n < strlen("x.slice"))
+        if (n < STRLEN("x.slice"))
                 return false;
 
         if (memcmp(p + n - 6, ".slice", 6) == 0) {
@@ -1612,7 +1588,7 @@ static const char *skip_session(const char *p) {
         p += strspn(p, "/");
 
         n = strcspn(p, "/");
-        if (n < strlen("session-x.scope"))
+        if (n < STRLEN("session-x.scope"))
                 return NULL;
 
         if (memcmp(p, "session-", 8) == 0 && memcmp(p + n - 6, ".scope", 6) == 0) {
@@ -1649,7 +1625,7 @@ static const char *skip_user_manager(const char *p) {
         p += strspn(p, "/");
 
         n = strcspn(p, "/");
-        if (n < strlen("user@x.service"))
+        if (n < STRLEN("user@x.service"))
                 return NULL;
 
         if (memcmp(p, "user@", 5) == 0 && memcmp(p + n - 8, ".service", 8) == 0) {
@@ -2355,10 +2331,10 @@ int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root)
 #endif // 0
 
 int cg_mask_to_string(CGroupMask mask, char **ret) {
-        const char *controllers[_CGROUP_CONTROLLER_MAX + 1];
+        _cleanup_free_ char *s = NULL;
+        size_t n = 0, allocated = 0;
+        bool space = false;
         CGroupController c;
-        int i = 0;
-        char *s;
 
         assert(ret);
 
@@ -2368,19 +2344,32 @@ int cg_mask_to_string(CGroupMask mask, char **ret) {
         }
 
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
+                const char *k;
+                size_t l;
 
                 if (!(mask & CGROUP_CONTROLLER_TO_MASK(c)))
                         continue;
 
-                controllers[i++] = cgroup_controller_to_string(c);
-                controllers[i] = NULL;
+                k = cgroup_controller_to_string(c);
+                l = strlen(k);
+
+                if (!GREEDY_REALLOC(s, allocated, n + space + l + 1))
+                        return -ENOMEM;
+
+                if (space)
+                        s[n] = ' ';
+                memcpy(s + n + space, k, l);
+                n += space + l;
+
+                space = true;
         }
 
-        s = strv_join((char **)controllers, NULL);
-        if (!s)
-                return -ENOMEM;
+        assert(s);
 
+        s[n] = 0;
         *ret = s;
+        s = NULL;
+
         return 0;
 }
 
@@ -2467,23 +2456,33 @@ int cg_mask_supported(CGroupMask *ret) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int cg_kernel_controllers(Set *controllers) {
+int cg_kernel_controllers(Set **ret) {
+        _cleanup_set_free_free_ Set *controllers = NULL;
         _cleanup_fclose_ FILE *f = NULL;
         int r;
 
-        assert(controllers);
+        assert(ret);
 
         /* Determines the full list of kernel-known controllers. Might
          * include controllers we don't actually support, arbitrary
          * named hierarchies and controllers that aren't currently
          * accessible (because not mounted). */
 
+        controllers = set_new(&string_hash_ops);
+        if (!controllers)
+                return -ENOMEM;
+
         f = fopen("/proc/cgroups", "re");
         if (!f) {
-                if (errno == ENOENT)
+                if (errno == ENOENT) {
+                        *ret = NULL;
                         return 0;
+                }
+
                 return -errno;
         }
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         /* Ignore the header line */
         (void) read_line(f, (size_t) -1, NULL);
@@ -2519,6 +2518,9 @@ int cg_kernel_controllers(Set *controllers) {
                         return r;
         }
 
+        *ret = controllers;
+        controllers = NULL;
+
         return 0;
 }
 #endif // 0
@@ -2549,39 +2551,48 @@ static int cg_unified_update(void) {
                 return 0;
 
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
-                return -errno;
+                return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/\" failed: %m");
 
-        if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC))
+        if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
+                log_debug("Found cgroup2 on /sys/fs/cgroup/, full unified hierarchy");
                 unified_cache = CGROUP_UNIFIED_ALL;
 #if 0 /// The handling of cgroups is a bit different with elogind
-        else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
+        } else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #else
-        else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)
+        } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)
               || F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #endif // 0
                 if (statfs("/sys/fs/cgroup/unified/", &fs) == 0 &&
                     F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
+                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for elogind controller");
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = false;
-#if 0 /// elogind uses its own name
-                } else if (statfs("/sys/fs/cgroup/systemd/", &fs) == 0 &&
-#else
-                } else if (statfs("/sys/fs/cgroup/elogind/", &fs) == 0 &&
-#endif // 0
-                           F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
-                        unified_cache = CGROUP_UNIFIED_SYSTEMD;
-                        unified_systemd_v232 = true;
                 } else {
 #if 0 /// There is no sub-grouping within elogind
                         if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
-                                return -errno;
-                        if (!F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC))
-                                return -ENOMEDIUM;
-#endif // 0
+                                return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/systemd\" failed: %m");
+
+                        if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
+                                log_debug("Found cgroup2 on /sys/fs/cgroup/systemd, unified hierarchy for systemd controller (v232 variant)");
+                                unified_cache = CGROUP_UNIFIED_SYSTEMD;
+                                unified_systemd_v232 = true;
+                        } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)) {
+                                log_debug("Found cgroup on /sys/fs/cgroup/systemd, legacy hierarchy");
+                                unified_cache = CGROUP_UNIFIED_NONE;
+                        } else {
+                                log_debug("Unexpected filesystem type %llx mounted on /sys/fs/cgroup/systemd, assuming legacy hierarchy",
+                                          (unsigned long long) fs.f_type);
+                                unified_cache = CGROUP_UNIFIED_NONE;
+                        }
+#else
                         unified_cache = CGROUP_UNIFIED_NONE;
+#endif // 0
                 }
-        } else
+        } else {
+                log_debug("Unknown filesystem type %llx mounted on /sys/fs/cgroup.",
+                          (unsigned long long) fs.f_type);
                 return -ENOMEDIUM;
+        }
 
         return 0;
 }
@@ -2634,6 +2645,7 @@ int cg_unified_flush(void) {
 
 #if 0 /// UNNEEDED by elogind
 int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
+        _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *fs = NULL;
         CGroupController c;
         int r;
@@ -2667,7 +2679,15 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
                         s[0] = mask & bit ? '+' : '-';
                         strcpy(s + 1, n);
 
-                        r = write_string_file(fs, s, 0);
+                        if (!f) {
+                                f = fopen(fs, "we");
+                                if (!f) {
+                                        log_debug_errno(errno, "Failed to open cgroup.subtree_control file of %s: %m", p);
+                                        break;
+                                }
+                        }
+
+                        r = write_string_stream(f, s, 0);
                         if (r < 0)
                                 log_debug_errno(r, "Failed to enable controller %s for %s (%s): %m", n, p, fs);
                 }

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -100,7 +101,6 @@ enum {
 
 int chase_symlinks(const char *path_with_prefix, const char *root, unsigned flags, char **ret);
 
-#if 0 /// UNNEEDED by elogind
 /* Useful for usage with _cleanup_(), removes a directory and frees the pointer */
 static inline void rmdir_and_free(char *p) {
         (void) rmdir(p);
@@ -108,9 +108,12 @@ static inline void rmdir_and_free(char *p) {
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, rmdir_and_free);
 
+#if 0 /// UNNEEDED by elogind
 static inline void unlink_and_free(char *p) {
         (void) unlink(p);
         free(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
 #endif // 0
+
+int access_fd(int fd, int mode);

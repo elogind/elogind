@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -25,8 +26,8 @@
 #include "label.h"
 #include "mkdir.h"
 
-int mkdir_safe_label(const char *path, mode_t mode, uid_t uid, gid_t gid) {
-        return mkdir_safe_internal(path, mode, uid, gid, mkdir_label);
+int mkdir_safe_label(const char *path, mode_t mode, uid_t uid, gid_t gid, bool follow_symlink) {
+        return mkdir_safe_internal(path, mode, uid, gid, follow_symlink, mkdir_label);
 }
 
 #if 0 /// UNNEEDED by elogind

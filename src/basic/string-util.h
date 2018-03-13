@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -139,9 +140,21 @@ char *strstrip(char *s);
 #if 0 /// UNNEEDED by elogind
 char *delete_chars(char *s, const char *bad);
 #endif // 0
+char *delete_trailing_chars(char *s, const char *bad);
 char *truncate_nl(char *s);
 
 #if 0 /// UNNEEDED by elogind
+static inline char *skip_leading_chars(const char *s, const char *bad) {
+
+        if (!s)
+                return NULL;
+
+        if (!bad)
+                bad = WHITESPACE;
+
+        return (char*) s + strspn(s, bad);
+}
+
 char ascii_tolower(char x);
 char *ascii_strlower(char *s);
 char *ascii_strlower_n(char *s, size_t n);

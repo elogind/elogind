@@ -319,6 +319,8 @@ basic_sources_plain = files('''
         selinux-util.h
         set.c
         set.h
+        sigbus.c
+        sigbus.h
         signal-util.c
         signal-util.h
         siphash24.c
@@ -345,6 +347,8 @@ basic_sources_plain = files('''
         time-util.h
         umask-util.h
         unaligned.h
+        unit-def.c
+        unit-def.h
         unit-name.c
         unit-name.h
         user-util.c

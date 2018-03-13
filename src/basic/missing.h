@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -545,10 +546,6 @@ struct btrfs_ioctl_quota_ctl_args {
 
 #ifndef PR_SET_CHILD_SUBREAPER
 #define PR_SET_CHILD_SUBREAPER 36
-#endif
-
-#ifndef MAX_HANDLE_SZ
-#define MAX_HANDLE_SZ 128
 #endif
 
 #if ! HAVE_SECURE_GETENV
@@ -1281,6 +1278,14 @@ struct fib_rule_uid_range {
 
 #ifndef EXT4_IOC_RESIZE_FS
 #  define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
+#endif
+
+#ifndef NSFS_MAGIC
+#define NSFS_MAGIC 0x6e736673
+#endif
+
+#ifndef NS_GET_NSTYPE
+#define NS_GET_NSTYPE _IO(0xb7, 0x3)
 #endif
 
 #include "missing_syscall.h"

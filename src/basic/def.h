@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -37,9 +38,6 @@
 #define DEFAULT_UNIX_MAX_DGRAM_QLEN 512UL
 
 #if 0 /// elogind allows foreign cgroup controllers. (Well, needs them, actually)
-#define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=systemd"
-#define SYSTEMD_CGROUP_CONTROLLER_HYBRID "name=unified"
-#define SYSTEMD_CGROUP_CONTROLLER "_systemd"
 #else
 #ifndef SYSTEMD_CGROUP_CONTROLLER_LEGACY
 #  define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=elogind"
@@ -51,7 +49,6 @@
 #  define SYSTEMD_CGROUP_CONTROLLER "_elogind"
 #endif // SYSTEMD_CGROUP_CONTROLLER
 #endif // 0
-
 #define SIGNALS_CRASH_HANDLER SIGSEGV,SIGILL,SIGFPE,SIGBUS,SIGQUIT,SIGABRT
 #define SIGNALS_IGNORE SIGPIPE
 

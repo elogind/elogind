@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -1488,3 +1489,9 @@ usec_t usec_shift_clock(usec_t x, clockid_t from, clockid_t to) {
                 return usec_sub_unsigned(b, usec_sub_unsigned(a, x));
 }
 #endif // 0
+
+bool in_utc_timezone(void) {
+        tzset();
+
+        return timezone == 0 && daylight == 0;
+}

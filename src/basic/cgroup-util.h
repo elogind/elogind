@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -30,6 +31,12 @@
 //#include "hashmap.h"
 //#include "macro.h"
 #include "set.h"
+
+#if 0 /// elogind has them set through config.h
+#define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=elogind"
+#define SYSTEMD_CGROUP_CONTROLLER_HYBRID "name=unified"
+#define SYSTEMD_CGROUP_CONTROLLER "_elogind"
+#endif // 0
 
 /* An enum of well known cgroup controllers */
 typedef enum CGroupController {
@@ -190,8 +197,7 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 #if 0 /// UNNEEDED by elogind
 int cg_get_keyed_attribute(const char *controller, const char *path, const char *attribute, const char **keys, char **values);
 
-int cg_set_group_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
-int cg_set_task_access(const char *controller, const char *path, mode_t mode, uid_t uid, gid_t gid);
+int cg_set_access(const char *controller, const char *path, uid_t uid, gid_t gid);
 
 int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags);
 int cg_get_xattr(const char *controller, const char *path, const char *name, void *value, size_t size);
@@ -255,7 +261,7 @@ int cg_mask_from_string(const char *s, CGroupMask *ret);
 int cg_mask_to_string(CGroupMask mask, char **ret);
 
 #if 0 /// UNNEEDED by elogind
-int cg_kernel_controllers(Set *controllers);
+int cg_kernel_controllers(Set **controllers);
 
 bool cg_ns_supported(void);
 #endif // 0

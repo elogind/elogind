@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -22,6 +23,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "alloc-util.h"
 #include "fs-util.h"
 #include "macro.h"
 #include "mkdir.h"
@@ -32,7 +34,7 @@
 /// Additional includes needed by elogind
 #include "missing.h"
 
-int mkdir_safe_internal(const char *path, mode_t mode, uid_t uid, gid_t gid, mkdir_func_t _mkdir) {
+int mkdir_safe_internal(const char *path, mode_t mode, uid_t uid, gid_t gid, bool follow_symlink, mkdir_func_t _mkdir) {
         struct stat st;
         int r;
 
@@ -45,6 +47,19 @@ int mkdir_safe_internal(const char *path, mode_t mode, uid_t uid, gid_t gid, mkd
         if (lstat(path, &st) < 0)
                 return -errno;
 
+        if (follow_symlink && S_ISLNK(st.st_mode)) {
+                _cleanup_free_ char *p = NULL;
+
+                r = chase_symlinks(path, NULL, CHASE_NONEXISTENT, &p);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        return mkdir_safe_internal(p, mode, uid, gid, false, _mkdir);
+
+                if (lstat(p, &st) < 0)
+                        return -errno;
+        }
+
         if ((st.st_mode & 0007) > (mode & 0007) ||
             (st.st_mode & 0070) > (mode & 0070) ||
             (st.st_mode & 0700) > (mode & 0700) ||
@@ -56,8 +71,8 @@ int mkdir_safe_internal(const char *path, mode_t mode, uid_t uid, gid_t gid, mkd
         return 0;
 }
 
-int mkdir_safe(const char *path, mode_t mode, uid_t uid, gid_t gid) {
-        return mkdir_safe_internal(path, mode, uid, gid, mkdir);
+int mkdir_safe(const char *path, mode_t mode, uid_t uid, gid_t gid, bool follow_symlink) {
+        return mkdir_safe_internal(path, mode, uid, gid, follow_symlink, mkdir);
 }
 
 int mkdir_parents_internal(const char *prefix, const char *path, mode_t mode, mkdir_func_t _mkdir) {
