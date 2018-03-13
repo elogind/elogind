@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -21,6 +22,7 @@
 #include <string.h>
 #include <sys/mount.h>
 #include <unistd.h>
+#include <stdio_ext.h>
 
 #include "alloc-util.h"
 #include "bus-common-errors.h"
@@ -146,7 +148,7 @@ static int user_save_internal(User *u) {
         assert(u);
         assert(u->state_file);
 
-        r = mkdir_safe_label("/run/systemd/users", 0755, 0, 0);
+        r = mkdir_safe_label("/run/elogind/users", 0755, 0, 0, false);
         if (r < 0)
                 goto fail;
 
@@ -154,7 +156,8 @@ static int user_save_internal(User *u) {
         if (r < 0)
                 goto fail;
 
-        fchmod(fileno(f), 0644);
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+        (void) fchmod(fileno(f), 0644);
 
         fprintf(f,
                 "# This is private data. Do not parse.\n"
@@ -189,18 +192,18 @@ static int user_save_internal(User *u) {
                 Session *i;
                 bool first;
 
-                fputs_unlocked("SESSIONS=", f);
+                fputs("SESSIONS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (first)
                                 first = false;
                         else
-                                fputc_unlocked(' ', f);
+                                fputc(' ', f);
 
-                        fputs_unlocked(i->id, f);
+                        fputs(i->id, f);
                 }
 
-                fputs_unlocked("\nSEATS=", f);
+                fputs("\nSEATS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (!i->seat)
@@ -209,12 +212,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc_unlocked(' ', f);
+                                fputc(' ', f);
 
-                        fputs_unlocked(i->seat->id, f);
+                        fputs(i->seat->id, f);
                 }
 
-                fputs_unlocked("\nACTIVE_SESSIONS=", f);
+                fputs("\nACTIVE_SESSIONS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (!session_is_active(i))
@@ -223,12 +226,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc_unlocked(' ', f);
+                                fputc(' ', f);
 
-                        fputs_unlocked(i->id, f);
+                        fputs(i->id, f);
                 }
 
-                fputs_unlocked("\nONLINE_SESSIONS=", f);
+                fputs("\nONLINE_SESSIONS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (session_get_state(i) == SESSION_CLOSING)
@@ -237,12 +240,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc_unlocked(' ', f);
+                                fputc(' ', f);
 
-                        fputs_unlocked(i->id, f);
+                        fputs(i->id, f);
                 }
 
-                fputs_unlocked("\nACTIVE_SEATS=", f);
+                fputs("\nACTIVE_SEATS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (!session_is_active(i) || !i->seat)
@@ -251,12 +254,12 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc_unlocked(' ', f);
+                                fputc(' ', f);
 
-                        fputs_unlocked(i->seat->id, f);
+                        fputs(i->seat->id, f);
                 }
 
-                fputs_unlocked("\nONLINE_SEATS=", f);
+                fputs("\nONLINE_SEATS=", f);
                 first = true;
                 LIST_FOREACH(sessions_by_user, i, u->sessions) {
                         if (session_get_state(i) == SESSION_CLOSING || !i->seat)
@@ -265,11 +268,11 @@ static int user_save_internal(User *u) {
                         if (first)
                                 first = false;
                         else
-                                fputc_unlocked(' ', f);
+                                fputc(' ', f);
 
-                        fputs_unlocked(i->seat->id, f);
+                        fputs(i->seat->id, f);
                 }
-                fputc_unlocked('\n', f);
+                fputc('\n', f);
         }
 
         r = fflush_and_check(f);
@@ -343,7 +346,7 @@ static int user_mkdir_runtime_path(User *u) {
 
         assert(u);
 
-        r = mkdir_safe_label("/run/user", 0755, 0, 0);
+        r = mkdir_safe_label("/run/user", 0755, 0, 0, false);
         if (r < 0)
                 return log_error_errno(r, "Failed to create /run/user: %m");
 
@@ -441,12 +444,11 @@ static int user_start_service(User *u) {
                         u->service,
                         &error,
                         &job);
-        if (r < 0) {
+        if (r < 0)
                 /* we don't fail due to this, let's try to continue */
                 log_error_errno(r, "Failed to start user service, ignoring: %s", bus_error_message(&error, r));
-        } else {
+        else
                 u->service_job = job;
-        }
 #else
         assert(u);
 

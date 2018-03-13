@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -1113,7 +1114,6 @@ static int manager_parse_config_file(Manager *m) {
                                         CONF_PATHS_NULSTR("systemd/logind.conf.d"),
                                         "Login\0",
                                         config_item_perf_lookup, logind_gperf_lookup,
-                                        false, m);
 #else
          const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
@@ -1124,8 +1124,8 @@ static int manager_parse_config_file(Manager *m) {
 
          return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
                              config_item_perf_lookup, logind_gperf_lookup,
-                             false, false, true, m);
 #endif // 0
+                                        CONFIG_PARSE_WARN, m);
 }
 
 static int manager_dispatch_reload_signal(sd_event_source *s, const struct signalfd_siginfo *si, void *userdata) {

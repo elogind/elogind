@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -184,7 +185,7 @@ int session_save(Session *s) {
         if (!s->started)
                 return 0;
 
-        r = mkdir_safe_label("/run/systemd/sessions", 0755, 0, 0);
+        r = mkdir_safe_label("/run/elogind/sessions", 0755, 0, 0, false);
         if (r < 0)
                 goto fail;
 
@@ -1006,7 +1007,7 @@ int session_create_fifo(Session *s) {
 
         /* Create FIFO */
         if (!s->fifo_path) {
-                r = mkdir_safe_label("/run/systemd/sessions", 0755, 0, 0);
+                r = mkdir_safe_label("/run/elogind/sessions", 0755, 0, 0, false);
                 if (r < 0)
                         return r;
 

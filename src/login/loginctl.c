@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -37,8 +38,9 @@
 #include "pager.h"
 #include "parse-util.h"
 #include "process-util.h"
+#include "sigbus.h"
 #include "signal-util.h"
-//#include "spawn-polkit-agent.h"
+#include "spawn-polkit-agent.h"
 #include "strv.h"
 #include "sysfs-show.h"
 #include "terminal-util.h"
@@ -75,29 +77,13 @@ extern bool arg_ignore_inhibitors;
 extern elogind_action arg_action;
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-static void polkit_agent_open_if_enabled(void) {
-
-        /* Open the polkit agent as a child process if necessary */
-
-        if (!arg_ask_password)
-                return;
-
-        if (arg_transport != BUS_TRANSPORT_LOCAL)
-                return;
-
-        polkit_agent_open();
-}
-
 static OutputFlags get_output_flags(void) {
 
         return
                 arg_all * OUTPUT_SHOW_ALL |
-                arg_full * OUTPUT_FULL_WIDTH |
-                (!on_tty() || pager_have()) * OUTPUT_FULL_WIDTH |
+                (arg_full || !on_tty() || pager_have()) * OUTPUT_FULL_WIDTH |
                 colors_enabled() * OUTPUT_COLOR;
 }
-#endif // 0
 
 static int get_session_path(sd_bus *bus, const char *session_id, sd_bus_error *error, char **path) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
@@ -749,7 +735,7 @@ static int print_seat_status_info(sd_bus *bus, const char *path, bool *new_line)
 
                 printf("\t Devices:\n");
 
-                show_sysfs(i.id, "\t\t  ", c);
+                show_sysfs(i.id, "\t\t  ", c, get_output_flags());
         }
 
         return 0;
@@ -1103,7 +1089,7 @@ static int activate(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         if (argc < 2) {
                 /* No argument? Let's either use $XDG_SESSION_ID (if specified), or an empty
@@ -1147,7 +1133,7 @@ static int kill_session(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         if (!arg_kill_who)
                 arg_kill_who = "all";
@@ -1181,7 +1167,7 @@ static int enable_linger(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         b = streq(argv[0], "enable-linger");
 
@@ -1232,7 +1218,7 @@ static int terminate_user(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         for (i = 1; i < argc; i++) {
                 uid_t uid;
@@ -1266,7 +1252,7 @@ static int kill_user(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         if (!arg_kill_who)
                 arg_kill_who = "all";
@@ -1303,7 +1289,7 @@ static int attach(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         for (i = 2; i < argc; i++) {
 
@@ -1333,7 +1319,7 @@ static int flush_devices(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         r = sd_bus_call_method(
                         bus,
@@ -1357,7 +1343,7 @@ static int lock_sessions(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         r = sd_bus_call_method(
                         bus,
@@ -1381,7 +1367,7 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         for (i = 1; i < argc; i++) {
 
@@ -1688,13 +1674,14 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
 }
 
 int main(int argc, char *argv[]) {
-        sd_bus *bus = NULL;
+        _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         int r;
 
         setlocale(LC_ALL, "");
         elogind_set_program_name(argv[0]);
         log_parse_environment();
         log_open();
+        sigbus_install();
 
         r = parse_argv(argc, argv);
         if (r <= 0)
@@ -1711,8 +1698,6 @@ int main(int argc, char *argv[]) {
         r = loginctl_main(argc, argv, bus);
 
 finish:
-        sd_bus_flush_close_unref(bus);
-
         pager_close();
 #if 0 /// elogind does that in elogind_cleanup()
         polkit_agent_close();

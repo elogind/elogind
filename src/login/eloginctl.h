@@ -41,7 +41,6 @@ typedef enum elogind_action {
 
 int  elogind_cancel_shutdown(sd_bus *bus);
 void elogind_cleanup(void);
-void polkit_agent_open_if_enabled(void);
 int  start_special(int argc, char *argv[], void *userdata);
 
 

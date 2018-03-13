@@ -313,7 +313,7 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
                 return -EINVAL;
         }
 
-        polkit_agent_open_if_enabled();
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
         if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT) )
                 (void) elogind_set_wall_message(bus, table[a]);
@@ -474,22 +474,6 @@ static int parse_shutdown_time_spec(const char *t, usec_t *_u) {
         }
 
         return 0;
-}
-
-/* Original:
- * systemctl/systemctl.c:270:polkit_agent_open_if_enabled()
- */
-void polkit_agent_open_if_enabled(void) {
-
-        /* Open the polkit agent as a child process if necessary */
-
-        if (!arg_ask_password)
-                return;
-
-        if (arg_transport != BUS_TRANSPORT_LOCAL)
-                return;
-
-        polkit_agent_open();
 }
 
 /* Original:

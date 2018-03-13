@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -19,6 +20,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio_ext.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -93,7 +95,7 @@ int seat_save(Seat *s) {
         if (!s->started)
                 return 0;
 
-        r = mkdir_safe_label("/run/systemd/seats", 0755, 0, 0);
+        r = mkdir_safe_label("/run/elogind/seats", 0755, 0, 0, false);
         if (r < 0)
                 goto fail;
 
@@ -101,7 +103,8 @@ int seat_save(Seat *s) {
         if (r < 0)
                 goto fail;
 
-        fchmod(fileno(f), 0644);
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+        (void) fchmod(fileno(f), 0644);
 
         fprintf(f,
                 "# This is private data. Do not parse.\n"
@@ -127,7 +130,7 @@ int seat_save(Seat *s) {
         if (s->sessions) {
                 Session *i;
 
-                fputs_unlocked("SESSIONS=", f);
+                fputs("SESSIONS=", f);
                 LIST_FOREACH(sessions_by_seat, i, s->sessions) {
                         fprintf(f,
                                 "%s%c",
@@ -135,7 +138,7 @@ int seat_save(Seat *s) {
                                 i->sessions_by_seat_next ? ' ' : '\n');
                 }
 
-                fputs_unlocked("UIDS=", f);
+                fputs("UIDS=", f);
                 LIST_FOREACH(sessions_by_seat, i, s->sessions)
                         fprintf(f,
                                 UID_FMT"%c",
