@@ -13,6 +13,8 @@
 # 0.8.3    2018-03-08  sed, PrydeWorX  Handle systemd-logind <=> elogind renames. Do not allow moving of
 #                                        commented out includes under out elogind block.
 # 0.8.4    2018-03-09  sed, PrydeWorX  Added handling of .gperf and .xml files.
+# 0.8.5    2018-03-13  sed, PrydeWorX  Added possibility to (manualy) check root files and enhanced the
+#                                        handling of shell masks and unmasks.
 #
 # ========================
 # === Little TODO list ===
@@ -29,7 +31,7 @@ use Readonly;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.8.4"; ## Please keep this current!
+Readonly my $VERSION     => "0.8.5"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -91,6 +93,7 @@ my %hFile = (); ## Main data structure to manage a complete compare of two files
                 ##   output : Arrayref with the lines of the final patch
                 ##   part   : local relative file path
                 ##   patch  : PROGDIR/patches/<part>.patch (With / replaced by _ in <part>)
+                ##   ispwx  : Set to 1 if it is a prepared shell file (See prepare_shell())
                 ##   source : WORKDIR/<part>
                 ##   target : UPSTREAM/<part>
                 ## )
@@ -280,7 +283,7 @@ for my $file_part (@source_files) {
 		 or print("clean\n");
 
 	# Shell and meson files must be unprepared. See unprepare_shell()
-	$hFile{source} =~ m/\.pwx$/ and unprepare_shell;
+	$hFile{pwxfile} and unprepare_shell;
 
 	# Now skip the writing if there are no hunks
 	$have_hunk or next;
@@ -378,6 +381,7 @@ sub build_hFile {
 		output => [ ],
 		part   => "$part",
 		patch  => "$PROGDIR/patches/${patch}.patch",
+		pwxfile=> 0,
 		source => "$WORKDIR/$part",
 		target => "$tgt"
 	);
@@ -950,6 +954,11 @@ sub check_masks {
 		  && ( $in_insert_block || ($in_mask_block && $in_else_block) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 		}
+
+		# If this is a .pwx file, prefix all lines in non-else mask blocks with '# '
+		# --------------------------------------------------------------------------
+		$hFile{pwxfile} and $in_mask_block and (!$in_else_block)
+			and substr($$line, 1, 0) = "# ";
 	} ## End of looping lines
 
 	return 1;
@@ -1046,25 +1055,29 @@ sub check_name_reverts {
 
 		# Note down removals
 		# ---------------------------------
-		if ($$line =~ m/^-\s*(.*elogind.*)\s*$/) {
+		if ($$line =~ m/^-[#]?\s*(.*elogind.*)\s*$/) {
 			$hRemovals{$1}{line} = $i;
 			next;
 		}
 
 		# Check Additions
 		# ---------------------------------
-		if ($$line =~ m/^\+\s*(.*systemd.*)\s*$/) {
+		if ($$line =~ m/^\+[#]?\s*(.*systemd.*)\s*$/) {
 			my $replace_text   = $1;
 			my $our_text_long  = $replace_text;
 			my $our_text_short = $our_text_long;
 			$our_text_long  =~ s/systemd-logind/elogind/g;
 			$our_text_short =~ s/systemd/elogind/g;
 
-			# There is one speciality:
-			# In some meson files, we need the variable "systemd_headers".
+			# There is some specialities:
+			# =============================================================
+			# 1) In some meson files, we need the variable "systemd_headers".
 			# This refers to the systemd API headers that get installed,
 			# and must therefore not be renamed to elogind_headers.
 			$our_text_short =~ s/elogind_headers/systemd_headers/g;
+
+			# 2) References to the systemd github site must not be changed
+			$replace_text =~ m,github\.com/systemd, and next;
 
 			# If this is a simple switch, undo it:
 			if ( defined($hRemovals{$our_text_short})
@@ -1079,8 +1092,8 @@ sub check_name_reverts {
 
 			# Otherwise replace the addition with our text. ;-)
 			$our_text_long eq $replace_text
-				and $$line =~ s/^\+(\s*).*systemd.*(\s*)$/+${1}${our_text_short}${2}/
-				 or $$line =~ s/^\+(\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
+				and $$line =~ s/^\+([#]?\s*).*systemd.*(\s*)$/+${1}${our_text_short}${2}/
+				 or $$line =~ s/^\+([#]?\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
 		}
 	}
 
@@ -1164,7 +1177,8 @@ sub diff_hFile {
 	  $hFile{source} =~ m/\.gperf$/ or
 	  $hFile{source} =~ m/\.in$/ or
 	  $hFile{source} =~ m/\.pl$/ or
-	  $hFile{source} =~ m/\.sh$/ ) and prepare_shell;
+	  $hFile{source} =~ m/\.po$/ or
+	  $hFile{source} =~ m/\.sh$/ ) and $hFile{pwxfile} = 1 and prepare_shell;
 
 	# Let's have two shortcuts:
 	my $src = $hFile{source};
@@ -1204,11 +1218,11 @@ sub generate_file_list {
 
 	# Build wanted files hash
 	while (my $want = shift @wanted_files) {
+		$have_wanted    = 1;
 		$want =~ m,^\./, or $want = "./$want"; 
 		$hWanted{$want} = 1;
 		$want           =~ s/elogind/systemd/g;
 		$hWanted{$want} = 1;
-		$have_wanted    = 1;
 	}
 
 	# The idea now is, that we use File::Find to search for files
@@ -1219,6 +1233,13 @@ sub generate_file_list {
 		if ( -d "$xDir" ) {
 			find(\&wanted, "$xDir");
 		}
+	}
+
+	# If the user wants to check files, that do not show up when
+	# searching our predefined set of directories, then let them.
+	for my $xFile (keys %hWanted) {
+		$hWanted{$xFile} == 2 and next; ## Already handled
+		find(\&wanted, "$xFile");
 	}
 
 	# Just to be sure...
@@ -1599,8 +1620,8 @@ sub unprepare_shell {
 		$is_block or $is_else = 0;
 		$line =~ m,^[ ]+#if 0 /* .*elogind.*, and $is_block = 1;
 		$is_block and $line =~ m,^[ ]?#else, and $is_else = 1;
-		$is_block and (!$is_else) and (" # " ne substr($line, 0, 2))
-			and $line = " #" . $line;
+		$is_block and (!$is_else) and ("#" ne substr($line, 1, 1))
+			and "@@" ne substr($line, 0, 2) and substr($line, 1, 0) = "# ";
 
 		push @{$hFile{output}}, $line;
 	}
@@ -1712,10 +1733,17 @@ sub splice_includes {
 
 # Callback function for File::Find
 sub wanted {
-	-f $_ and ( (0 == $have_wanted)
-	         or defined($hWanted{$File::Find::name})
-	         or defined($hWanted{"./$File::Find::name"}) )
-	      and (! ($_ =~ m/\.pwx$/ ))
-	      and push @source_files, $File::Find::name;
+	my $f = $File::Find::name;
+	my $is_wanted = 0;
+
+	$f =~ m,^\./, or $f = "./$f"; 
+
+	-f $_ and ( (0 == $have_wanted) or defined($hWanted{$f}) )
+	      and (! ($_ =~ m/\.pwx$/ ) )
+	      and push @source_files, $File::Find::name
+	      and $is_wanted = 1;
+
+	$is_wanted and $hWanted{$f} = 2;
+
 	return 1;
 }
