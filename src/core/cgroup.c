@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -1974,7 +1975,9 @@ int manager_setup_cgroup(Manager *m) {
         const char *scope_path;
         CGroupController c;
         int r, all_unified;
+#if 0 /// UNNEEDED by elogind
         char *e;
+#endif // 0
 
         assert(m);
 
@@ -2005,13 +2008,11 @@ int manager_setup_cgroup(Manager *m) {
                 *e = 0;
 #endif // 0
 
-        /* And make sure to store away the root value without trailing
-         * slash, even for the root dir, so that we can easily prepend
-         * it everywhere. */
-        while ((e = endswith(m->cgroup_root, "/")))
-                *e = 0;
         log_debug_elogind("Cgroup Controller \"%s\" -> root \"%s\"",
                           SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root);
+        /* And make sure to store away the root value without trailing slash, even for the root dir, so that we can
+         * easily prepend it everywhere. */
+        delete_trailing_chars(m->cgroup_root, "/");
 
         /* 2. Show data */
         r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, NULL, &path);
