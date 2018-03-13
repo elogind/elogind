@@ -730,70 +730,72 @@ conf.set('SYSTEM_GID_MAX', system_gid_max)
 substs.set('systemgidmax', system_gid_max)
 message('maximum system GID is @0@'.format(system_gid_max))
 
-dynamic_uid_min = get_option('dynamic-uid-min').to_int()
-dynamic_uid_max = get_option('dynamic-uid-max').to_int()
-conf.set('DYNAMIC_UID_MIN', dynamic_uid_min)
-conf.set('DYNAMIC_UID_MAX', dynamic_uid_max)
-substs.set('dynamicuidmin', dynamic_uid_min)
-substs.set('dynamicuidmax', dynamic_uid_max)
-
-container_uid_base_min = get_option('container-uid-base-min').to_int()
-container_uid_base_max = get_option('container-uid-base-max').to_int()
-conf.set('CONTAINER_UID_BASE_MIN', container_uid_base_min)
-conf.set('CONTAINER_UID_BASE_MAX', container_uid_base_max)
-substs.set('containeruidbasemin', container_uid_base_min)
-substs.set('containeruidbasemax', container_uid_base_max)
-
-nobody_user = get_option('nobody-user')
-nobody_group = get_option('nobody-group')
-
-getent_result = run_command('getent', 'passwd', '65534')
-if getent_result.returncode() == 0
-        name = getent_result.stdout().split(':')[0]
-        if name != nobody_user
-                message('WARNING:\n' +
-                        '        The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
-                        '        Your build will result in an user table setup that is incompatible with the local system.')
-        endif
-endif
-id_result = run_command('id', '-u', nobody_user)
-if id_result.returncode() == 0
-        id = id_result.stdout().to_int()
-        if id != 65534
-                message('WARNING:\n' +
-                        '        The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
-                        '        Your build will result in an user table setup that is incompatible with the local system.')
-        endif
-endif
-
-getent_result = run_command('getent', 'group', '65534')
-if getent_result.returncode() == 0
-        name = getent_result.stdout().split(':')[0]
-        if name != nobody_group
-                message('WARNING:\n' +
-                        '        The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
-                        '        Your build will result in an group table setup that is incompatible with the local system.')
-        endif
-endif
-id_result = run_command('id', '-g', nobody_group)
-if id_result.returncode() == 0
-        id = id_result.stdout().to_int()
-        if id != 65534
-                message('WARNING:\n' +
-                        '        The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
-                        '        Your build will result in an group table setup that is incompatible with the local system.')
-        endif
-endif
-if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
-        message('WARNING:\n' +
-                '        The configured user name "@0@" and group name "@0@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
-                '        Please re-check that both "nobody-user" and "nobody-group" options are correctly set.')
-endif
-
-conf.set_quoted('NOBODY_USER_NAME', nobody_user)
-conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
-substs.set('NOBODY_USER_NAME', nobody_user)
-substs.set('NOBODY_GROUP_NAME', nobody_group)
+#if 0 /// UNNEEDED by elogind
+# dynamic_uid_min = get_option('dynamic-uid-min').to_int()
+# dynamic_uid_max = get_option('dynamic-uid-max').to_int()
+# conf.set('DYNAMIC_UID_MIN', dynamic_uid_min)
+# conf.set('DYNAMIC_UID_MAX', dynamic_uid_max)
+# substs.set('dynamicuidmin', dynamic_uid_min)
+# substs.set('dynamicuidmax', dynamic_uid_max)
+# 
+# container_uid_base_min = get_option('container-uid-base-min').to_int()
+# container_uid_base_max = get_option('container-uid-base-max').to_int()
+# conf.set('CONTAINER_UID_BASE_MIN', container_uid_base_min)
+# conf.set('CONTAINER_UID_BASE_MAX', container_uid_base_max)
+# substs.set('containeruidbasemin', container_uid_base_min)
+# substs.set('containeruidbasemax', container_uid_base_max)
+# 
+# nobody_user = get_option('nobody-user')
+# nobody_group = get_option('nobody-group')
+# 
+# getent_result = run_command('getent', 'passwd', '65534')
+# if getent_result.returncode() == 0
+#         name = getent_result.stdout().split(':')[0]
+#         if name != nobody_user
+#                 message('WARNING:\n' +
+#                         '        The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
+#                         '        Your build will result in an user table setup that is incompatible with the local system.')
+#         endif
+# endif
+# id_result = run_command('id', '-u', nobody_user)
+# if id_result.returncode() == 0
+#         id = id_result.stdout().to_int()
+#         if id != 65534
+#                 message('WARNING:\n' +
+#                         '        The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
+#                         '        Your build will result in an user table setup that is incompatible with the local system.')
+#         endif
+# endif
+# 
+# getent_result = run_command('getent', 'group', '65534')
+# if getent_result.returncode() == 0
+#         name = getent_result.stdout().split(':')[0]
+#         if name != nobody_group
+#                 message('WARNING:\n' +
+#                         '        The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
+#                         '        Your build will result in an group table setup that is incompatible with the local system.')
+#         endif
+# endif
+# id_result = run_command('id', '-g', nobody_group)
+# if id_result.returncode() == 0
+#         id = id_result.stdout().to_int()
+#         if id != 65534
+#                 message('WARNING:\n' +
+#                         '        The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
+#                         '        Your build will result in an group table setup that is incompatible with the local system.')
+#         endif
+# endif
+# if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
+#         message('WARNING:\n' +
+#                 '        The configured user name "@0@" and group name "@0@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
+#                 '        Please re-check that both "nobody-user" and "nobody-group" options are correctly set.')
+# endif
+# 
+# conf.set_quoted('NOBODY_USER_NAME', nobody_user)
+# conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
+# substs.set('NOBODY_USER_NAME', nobody_user)
+# substs.set('NOBODY_GROUP_NAME', nobody_group)
+#endif // 0
 
 tty_gid = get_option('tty-gid')
 conf.set('TTY_GID', tty_gid)
@@ -817,8 +819,8 @@ substs.set('TTY_GID', tty_gid)
 # endif
 # 
 # substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
+# substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
 #endif // 0
-substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
 
 kill_user_processes = get_option('default-kill-user-processes')
 conf.set10('KILL_USER_PROCESSES', kill_user_processes)
@@ -2664,6 +2666,9 @@ executable('elogind-uaccess-command',
                         libshared_static],
            dependencies: [libacl,
                           libudev],
+           install_rpath : rootlibexecdir,
+           install : true,
+           install_dir : rootlibexecdir)
 #endif // 0
 
 ############################################################
@@ -2888,7 +2893,9 @@ status = [
 #                                                               get_option('debug-tty')),
 #endif // 0
         'TTY GID:                           @0@'.format(tty_gid),
-        'users GID:                         @0@'.format(users_gid),
+#if 0 /// UNSUPPORTED by elogind
+#         'users GID:                         @0@'.format(users_gid),
+#endif // 0
         'maximum system UID:                @0@'.format(system_uid_max),
         'maximum system GID:                @0@'.format(system_gid_max),
 #if 0 /// UNSUPPORTED by elogind

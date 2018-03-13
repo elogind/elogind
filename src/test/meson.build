@@ -276,9 +276,11 @@ tests += [
          [],
          []],
 
-        [['src/test/test-specifier.c'],
-         [],
-         []],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-specifier.c'],
+#          [],
+#          []],
+#endif // 0
 
         [['src/test/test-string-util.c'],
          [],

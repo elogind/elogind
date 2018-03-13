@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -25,6 +26,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -128,6 +130,8 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
                         return -ESRCH;
                 return -errno;
         }
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         if (max_length == 1) {
 
@@ -407,6 +411,8 @@ int is_kernel_thread(pid_t pid) {
                 return -errno;
         }
 
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+
         count = fread(&c, 1, 1, f);
         eof = feof(f);
         fclose(f);
@@ -491,6 +497,8 @@ static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
                 return -errno;
         }
 
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+
         FOREACH_LINE(line, f, return -errno) {
                 char *l;
 
@@ -568,6 +576,8 @@ int get_process_environ(pid_t pid, char **env) {
                         return -ESRCH;
                 return -errno;
         }
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         while ((c = fgetc(f)) != EOF) {
                 if (!GREEDY_REALLOC(outcome, allocated, sz + 5))
@@ -705,6 +715,67 @@ int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_cod
 }
 
 #if 0 /// UNNEEDED by elogind
+/*
+ * Return values:
+ * < 0 : wait_for_terminate_with_timeout() failed to get the state of the
+ *       process, the process timed out, the process was terminated by a
+ *       signal, or failed for an unknown reason.
+ * >=0 : The process terminated normally with no failures.
+ *
+ * Success is indicated by a return value of zero, a timeout is indicated
+ * by ETIMEDOUT, and all other child failure states are indicated by error
+ * is indicated by a non-zero value.
+ */
+int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout) {
+        sigset_t mask;
+        int r;
+        usec_t until;
+
+        assert_se(sigemptyset(&mask) == 0);
+        assert_se(sigaddset(&mask, SIGCHLD) == 0);
+
+        /* Drop into a sigtimewait-based timeout. Waiting for the
+         * pid to exit. */
+        until = now(CLOCK_MONOTONIC) + timeout;
+        for (;;) {
+                usec_t n;
+                siginfo_t status = {};
+                struct timespec ts;
+
+                n = now(CLOCK_MONOTONIC);
+                if (n >= until)
+                        break;
+
+                r = sigtimedwait(&mask, NULL, timespec_store(&ts, until - n)) < 0 ? -errno : 0;
+                /* Assuming we woke due to the child exiting. */
+                if (waitid(P_PID, pid, &status, WEXITED|WNOHANG) == 0) {
+                        if (status.si_pid == pid) {
+                                /* This is the correct child.*/
+                                if (status.si_code == CLD_EXITED)
+                                        return (status.si_status == 0) ? 0 : -EPROTO;
+                                else
+                                        return -EPROTO;
+                        }
+                }
+                /* Not the child, check for errors and proceed appropriately */
+                if (r < 0) {
+                        switch (r) {
+                        case -EAGAIN:
+                                /* Timed out, child is likely hung. */
+                                return -ETIMEDOUT;
+                        case -EINTR:
+                                /* Received a different signal and should retry */
+                                continue;
+                        default:
+                                /* Return any unexpected errors */
+                                return r;
+                        }
+                }
+        }
+
+        return -EPROTO;
+}
+
 void sigkill_wait(pid_t pid) {
         assert(pid > 1);
 
@@ -755,6 +826,8 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value) {
                         return -ESRCH;
                 return -errno;
         }
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         l = strlen(field);
         r = 0;
@@ -922,7 +995,7 @@ int safe_personality(unsigned long p) {
          * wrapper that uses errno if it is set, and uses the return value otherwise. And then it sets both errno and
          * the return value indicating the same issue, so that we are definitely on the safe side.
          *
-         * See https://github.com/elogind/elogind/issues/6737 */
+         * See https://github.com/systemd/systemd/issues/6737 */
 
         errno = 0;
         ret = personality(p);
@@ -1064,6 +1137,15 @@ pid_t getpid_cached(void) {
         default: /* Properly initialized */
                 return current_value;
         }
+}
+
+int must_be_root(void) {
+
+        if (geteuid() == 0)
+                return 0;
+
+        log_error("Need to be root.");
+        return -EPERM;
 }
 
 #if 0 /// UNNEEDED by elogind

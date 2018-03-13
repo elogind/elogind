@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 /***
@@ -32,6 +33,7 @@
 #include "format-util.h"
 //#include "ioprio.h"
 #include "macro.h"
+//#include "time-util.h"
 
 #define procfs_file_alloca(pid, field)                                  \
         ({                                                              \
@@ -40,7 +42,7 @@
                 if (_pid_ == 0) {                                       \
                         _r_ = ("/proc/self/" field);                    \
                 } else {                                                \
-                        _r_ = alloca(strlen("/proc/") + DECIMAL_STR_MAX(pid_t) + 1 + sizeof(field)); \
+                        _r_ = alloca(STRLEN("/proc/") + DECIMAL_STR_MAX(pid_t) + 1 + sizeof(field)); \
                         sprintf((char*) _r_, "/proc/"PID_FMT"/" field, _pid_);                       \
                 }                                                       \
                 _r_;                                                    \
@@ -62,8 +64,9 @@ int get_process_ppid(pid_t pid, pid_t *ppid);
 
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 int wait_for_terminate_and_warn(const char *name, pid_t pid, bool check_exit_code);
-
 #if 0 /// UNNEEDED by elogind
+int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout);
+
 void sigkill_wait(pid_t pid);
 void sigkill_waitp(pid_t *pid);
 
@@ -151,3 +154,5 @@ int ioprio_parse_priority(const char *s, int *ret);
 #endif // 0
 
 pid_t getpid_cached(void);
+
+int must_be_root(void);
