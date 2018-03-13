@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1+
+#
 # Belarusian translation for systemd.
 # Copyright (C) 2015 systemd's COPYRIGHT HOLDER
 # This file is distributed under the same license as the systemd package.
@@ -20,39 +22,40 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "X-Generator: Lokalize 2.0\n"
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 # msgid "Send passphrase back to system"
 # msgstr "Адправіць пароль назад сістэме"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
 # msgid ""
 # "Authentication is required to send the entered passphrase back to the system."
 # msgstr "Неабходна аўтэнтыфікацыя для адпраўкі пароля назад сістэме."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 # msgid "Manage system services or other units"
 # msgstr "Кіраваць сэрвісамі і іншымі сістэмнымі адзінкамі"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для кіравання сэрвісамі і іншымі сістэмнымі "
 # "адзінкамі."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 # msgid "Manage system service or unit files"
 # msgstr "Кіраваць файламі сэрвісаў і іншых сістэмных адзінак"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 # msgid "Authentication is required to manage system service or unit files."
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для кіравання файламі сэрвісаў і іншых сістэмных "
 # "адзінак."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 # msgid "Set or unset system and service manager environment variables"
 # msgstr "Усталяваць або скінуць зменныя асяроддзя сістэмнага мэнэджэра"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 # msgid ""
 # "Authentication is required to set or unset system and service manager "
@@ -60,27 +63,27 @@ msgstr ""
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для ўсталявання або скіду зменных асяроддзя "
 # "сістэмнага мэнэджэра."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 # msgid "Reload the systemd state"
 # msgstr "Перачытаць стан systemd"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 # msgid "Authentication is required to reload the systemd state."
 # msgstr "Неабходна аўтэнтыфікацыя для перачытання стану systemd."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"
 # msgstr "Усталяваць імя вузла"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
 # msgid "Authentication is required to set the local host name."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання імя вузла."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 # msgid "Set static host name"
 # msgstr "Усталяваць статычнае імя вузла"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 # msgid ""
 # "Authentication is required to set the statically configured local host name, "
@@ -88,55 +91,57 @@ msgstr ""
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для ўсталявання як статычнага так і прыгожага імя "
 # "вузла."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
 # msgid "Set machine information"
 # msgstr "Усталяваць інфармацыю аб машыне"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
 # msgid "Authentication is required to set local machine information."
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для ўсталявання інфармацыі аб лакальнай машыне."
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:1
 # msgid "Import a VM or container image"
 # msgstr "Імпартаваць вобраз ВМ або кантэйнера"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:2
 # msgid "Authentication is required to import a VM or container image"
 # msgstr "Неабходна аўтэнтыфікацыя для імпарту вобраза ВМ або кантэйнера"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:3
 # msgid "Export a VM or container image"
 # msgstr "Экспартаваць вобраз ВМ або кантэйнера"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:4
 # msgid "Authentication is required to export a VM or container image"
 # msgstr "Неабходна аўтэнтыфікацыя для экспарту вобраза ВМ або кантэйнера"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:5
 # msgid "Download a VM or container image"
 # msgstr "Спампаваць вобраз ВМ або кантэйнера"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:6
 # msgid "Authentication is required to download a VM or container image"
 # msgstr "Неабходна аўтэнтыфікацыя для спампоўкі вобраза ВМ або кантэйнера"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
 # msgid "Set system locale"
 # msgstr "Усталяваць сістэмную лакаль"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
 # msgid "Authentication is required to set the system locale."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання сістэмнай лакалі."
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
 # msgid "Set system keyboard settings"
 # msgstr "Усталяваць сістэмныя налады клавіятуры"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання сістэмных налад клавіятуры."
+# 
+#endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -449,72 +454,73 @@ msgstr "Усталяваць усеагульнае паведамленне"
 msgid "Authentication is required to set a wall message"
 msgstr "Неабходна аўтэнтыфікацыя для ўсталявання ўсеагульнага паведамлення"
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 # msgid "Log into a local container"
 # msgstr "Увайсці ў лакальны кантэйнер"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
 # msgid "Authentication is required to log into a local container."
 # msgstr "Неабходна аўтэнтыфікацыя для ўваходу ў лакальны кантэйнер."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
 # msgid "Log into the local host"
 # msgstr "Увайсці ў лакальны вузел"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
 # msgid "Authentication is required to log into the local host."
 # msgstr "Неабходна аўтэнтыфікацыя для ўваходу ў лакальны вузел."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
 # msgid "Acquire a shell in a local container"
 # msgstr "Атрымаць абалонку на лакальным кантэйнеры"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
 # msgid "Authentication is required to acquire a shell in a local container."
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для атрымання абалонкі на лакальным кантэйнеры."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
 # msgid "Acquire a shell on the local host"
 # msgstr "Атрымаць абалонку на лакальным вузле"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
 # msgid "Authentication is required to acquire a shell on the local host."
 # msgstr "Неабходна аўтэнтыфікацыя для атрымання абалонкі на лакальным вузле."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
 # msgid "Acquire a pseudo TTY in a local container"
 # msgstr "Атрымаць псеўда TTY на лакальным кантэйнеры"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
 # msgid ""
 # "Authentication is required to acquire a pseudo TTY in a local container."
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для атрымання псеўда TTY на лакальным кантэйнеры."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
 # msgid "Acquire a pseudo TTY on the local host"
 # msgstr "Атрымаць псеўда TTY на лакальным вузле"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
 # msgid "Authentication is required to acquire a pseudo TTY on the local host."
 # msgstr "Неабходна аўтэнтыфікацыя для атрымання псеўда TTY на лакальным вузле."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 # msgid "Manage local virtual machines and containers"
 # msgstr "Кіраваць лакальнымі віртуальнымі машынамі або кантэйнерамі"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
 # msgid ""
 # "Authentication is required to manage local virtual machines and containers."
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для кіравання лакальнымі віртуальнымі машынамі і "
 # "кантэйнерамі."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 # msgid "Manage local virtual machine and container images"
 # msgstr "Кіраваць вобразамі лакальных віртуальных машын і кантэйнераў"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 # msgid ""
 # "Authentication is required to manage local virtual machine and container "
@@ -522,27 +528,27 @@ msgstr "Неабходна аўтэнтыфікацыя для ўсталява�
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для кіравання вобразамі лакальных віртуальных машын "
 # "і кантэйнераў."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
 # msgid "Set system time"
 # msgstr "Усталяваць сістэмны час"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
 # msgid "Authentication is required to set the system time."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання сістэмнага часу."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
 # msgid "Set system timezone"
 # msgstr "Усталяваць сістэмны часавы пояс"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
 # msgid "Authentication is required to set the system timezone."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання сістэмнага часавога поясу."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
 # msgid "Set RTC to local timezone or UTC"
 # msgstr "Усталяваць часавы пояс (мясцовы або UTC), у якім RTC захоўвае час"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
 # msgid ""
 # "Authentication is required to control whether the RTC stores the local or "
@@ -550,11 +556,11 @@ msgstr "Неабходна аўтэнтыфікацыя для ўсталява�
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для ўсталявання часавога поясу (мясцовы або UTC), у "
 # "якім захоўваецца час у RTC."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
 # msgid "Turn network time synchronization on or off"
 # msgstr "Уключыць або выключыць сінхранізацыю часу па сетцы"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
 # msgid ""
 # "Authentication is required to control whether network time synchronization "
@@ -562,31 +568,33 @@ msgstr "Неабходна аўтэнтыфікацыя для ўсталява�
 # msgstr ""
 # "Неабходна аўтэнтыфікацыя для ўключэння або выключэння сінхранізацыі часу па "
 # "сетцы."
-
+# 
 # #: ../src/core/dbus-unit.c:450
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для запуску '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:451
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для спынення '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:452
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для перачытання стану '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:453 ../src/core/dbus-unit.c:454
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для перазапуску '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:560
 # msgid "Authentication is required to kill '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для забойства '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:590
-# msgid "Authentication is required to reset the \"failed" state of '$(unit)'."
+# msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для анулявання памылковага стану '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:622
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання ўласцівасцей '$(unit)'."
+#endif // 0
+

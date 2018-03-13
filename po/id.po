@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1+
+#
 # Indonesian translation for systemd.
 # Copyright (C) 2014 systemd's COPYRIGHT HOLDER
 # This file is distributed under the same license as the systemd package.
@@ -17,38 +19,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.8\n"
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 # msgid "Send passphrase back to system"
 # msgstr "Kirim frasa sandi kembali ke sistem"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
 # msgid ""
 # "Authentication is required to send the entered passphrase back to the system."
 # msgstr ""
 # "Otentikasi diperlukan untuk mengirim frasa sandi yang dimasukkan kembali ke "
 # "sistem."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 # msgid "Manage system services or other units"
 # msgstr "Kelola layanan sistem atau unit lainnya"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
 # "Otentikasi diperlukan untuk mengelola layanan sistem atau unit lainnya."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 # msgid "Manage system service or unit files"
 # msgstr "Kelola layanan sistem atau berkas unit"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 # msgid "Authentication is required to manage system service or unit files."
 # msgstr "Otentikasi diperlukan untuk mengelola layanan sistem atau berkas unit."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 # msgid "Set or unset system and service manager environment variables"
 # msgstr "Atur atau hapus variabel lingkungan manajer layanan dan sistem"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 # msgid ""
 # "Authentication is required to set or unset system and service manager "
@@ -56,27 +59,27 @@ msgstr ""
 # msgstr ""
 # "Otentikasi diperlukan untuk menata atau menghapus variabel lingkungan "
 # "manajer layanan dan sistem."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 # msgid "Reload the systemd state"
 # msgstr "Muat ulang keadaan systemd"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 # msgid "Authentication is required to reload the systemd state."
 # msgstr "Otentikasi diperlukan untuk memuat ulang keadaan systemd."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"
 # msgstr "Setel nama host"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
 # msgid "Authentication is required to set the local host name."
 # msgstr "Otentikasi diperlukan untuk menata nama host lokal."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 # msgid "Set static host name"
 # msgstr "Setel nama host statik"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 # msgid ""
 # "Authentication is required to set the statically configured local host name, "
@@ -84,54 +87,56 @@ msgstr ""
 # msgstr ""
 # "Otentikasi diperlukan untuk menata nama host lokal yang dikonfigurasi "
 # "statik, maupun nama host cantik."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
 # msgid "Set machine information"
 # msgstr "Setel informasi mesin"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
 # msgid "Authentication is required to set local machine information."
 # msgstr "Otentikasi diperlukan untuk menata informasi mesin lokal."
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:1
 # msgid "Import a VM or container image"
 # msgstr "Impor sebuah image kontainer atau VM"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:2
 # msgid "Authentication is required to import a VM or container image"
 # msgstr "Otentikasi diperlukan untuk mengimpor suatu image kontainer atau VM"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:3
 # msgid "Export a VM or container image"
 # msgstr "Ekspor sebuah image kontainer atau VM"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:4
 # msgid "Authentication is required to export a VM or container image"
 # msgstr "Otentikasi diperlukan untuk mengekspor suatu image kontainer atau VM"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:5
 # msgid "Download a VM or container image"
 # msgstr "Unduh sebuah image kontainer atau VM"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:6
 # msgid "Authentication is required to download a VM or container image"
 # msgstr "Otentikasi diperlukan untuk mengunduh suatu image kontainer atau VM"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
 # msgid "Set system locale"
 # msgstr "Setel locale sistem"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
 # msgid "Authentication is required to set the system locale."
 # msgstr "Otentikasi diperlukan untuk menyetel locale sistem."
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
 # msgid "Set system keyboard settings"
 # msgstr "Setel pengaturan papan tik sistem"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Otentikasi diperlukan untuk menyetel pengaturan papan tik sistem."
+# 
+#endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -430,74 +435,75 @@ msgstr "Setel suatu pesan wall"
 msgid "Authentication is required to set a wall message"
 msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 # msgid "Log into a local container"
 # msgstr "Log masuk ke dalam suatu kontainer lokal"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
 # msgid "Authentication is required to log into a local container."
 # msgstr "Otentikasi diperlukan untuk log masuk ke dalam suatu kontainer lokal."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
 # msgid "Log into the local host"
 # msgstr "Log masuk ke dalam host lokal"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
 # msgid "Authentication is required to log into the local host."
 # msgstr "Otentikasi diperlukan untuk log masuk ke dalam host lokal."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
 # msgid "Acquire a shell in a local container"
 # msgstr "Dapatkan sebuah shell dalam kontainer lokal"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
 # msgid "Authentication is required to acquire a shell in a local container."
 # msgstr ""
 # "Otentikasi diperlukan untuk mendapatkan suatu shell dalam sebuah kontainer "
 # "lokal."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
 # msgid "Acquire a shell on the local host"
 # msgstr "Dapatkan sebuah shell pada host lokal"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
 # msgid "Authentication is required to acquire a shell on the local host."
 # msgstr "Otentikasi diperlukan untuk mendapatkan suatu shell pada host lokal."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
 # msgid "Acquire a pseudo TTY in a local container"
 # msgstr "Dapatkan sebuah TTY semu dalam suatu kontainer lokal"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
 # msgid ""
 # "Authentication is required to acquire a pseudo TTY in a local container."
 # msgstr ""
 # "Otentikasi diperlukan untuk mendapatkan suatu TTY semu dalam sebuah "
 # "kontainer lokal."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
 # msgid "Acquire a pseudo TTY on the local host"
 # msgstr "Dapatkan sebuah TTY semu pada host lokal"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
 # msgid "Authentication is required to acquire a pseudo TTY on the local host."
 # msgstr ""
 # "Otentikasi diperlukan untuk mendapatkan suatu TTY semu pada host lokal."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 # msgid "Manage local virtual machines and containers"
 # msgstr "Kelola mesin virtual lokal dan kontainer"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
 # msgid ""
 # "Authentication is required to manage local virtual machines and containers."
 # msgstr ""
 # "Otentikasi diperlukan untuk mengelola mesin virtual lokal dan kontainer."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 # msgid "Manage local virtual machine and container images"
 # msgstr "Kelola mesin virtual lokal dan image kontainer"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 # msgid ""
 # "Authentication is required to manage local virtual machine and container "
@@ -505,27 +511,27 @@ msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
 # msgstr ""
 # "Otentikasi diperlukan untuk mengelola mesin virtual lokal dan image "
 # "kontainer."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
 # msgid "Set system time"
 # msgstr "Setel waktu sistem"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
 # msgid "Authentication is required to set the system time."
 # msgstr "Otentikasi diperlukan untuk menyetel waktu sistem."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
 # msgid "Set system timezone"
 # msgstr "Setel zona waktu sistem"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
 # msgid "Authentication is required to set the system timezone."
 # msgstr "Otentikasi diperlukan untuk menyetel zona waktu sistem."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
 # msgid "Set RTC to local timezone or UTC"
 # msgstr "Atur RTC ke zona waktu lokal atau UTC"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
 # msgid ""
 # "Authentication is required to control whether the RTC stores the local or "
@@ -533,11 +539,11 @@ msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
 # msgstr ""
 # "Otentikasi diperlukan untuk mengendalikan apakah RTC menyimpan waktu UTC "
 # "atau lokal."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
 # msgid "Turn network time synchronization on or off"
 # msgstr "Nyalakan atau matikan penyelarasan waktu jaringan"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
 # msgid ""
 # "Authentication is required to control whether network time synchronization "
@@ -545,32 +551,34 @@ msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
 # msgstr ""
 # "Otentikasi diperlukan untuk mengendalikan apakah sinkronisasi waktu jaringan "
 # "mesti difungsikan."
-
+# 
 # #: ../src/core/dbus-unit.c:450
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk memulai '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:451
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk menghentikan '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:452
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk memuat ulang '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:453 ../src/core/dbus-unit.c:454
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk memulai ulang '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:560
 # msgid "Authentication is required to kill '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk mematikan '$(unit)'."
-
+# 
 # #: ../src/core/dbus-unit.c:590
-# msgid "Authentication is required to reset the \"failed" state of '$(unit)'."
+# msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
-# "Otentikasi diperlukan untuk me-reset keadaan \"failed" dari '$(unit)'."
-
+# "Otentikasi diperlukan untuk me-reset keadaan \"failed\" dari '$(unit)'."
+# 
 # #: ../src/core/dbus-unit.c:622
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk menata properti pada '$(unit)'."
+#endif // 0
+

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1+
+#
 # Slovak translation for systemd.
 # Copyright (C) 2017 systemd's COPYRIGHT HOLDER
 # This file is distributed under the same license as the systemd package.
@@ -18,42 +20,43 @@ msgstr ""
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "X-Generator: Poedit 2.0.2\n"
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 # msgid "Send passphrase back to system"
 # msgstr "Odoslanie hesla späť do systému"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
 # msgid ""
 # "Authentication is required to send the entered passphrase back to the system."
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na odoslanie zadaného hesla späť do systému."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 # msgid "Manage system services or other units"
 # msgstr "Správa systémových služieb alebo iných jednotiek"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na správu systémových služieb alebo iných "
 # "jednotiek."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 # msgid "Manage system service or unit files"
 # msgstr "Správa systémovej služby alebo súborov jednotky"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 # msgid "Authentication is required to manage system service or unit files."
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na správu systémovej služby alebo súborov "
 # "jednotky."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 # msgid "Set or unset system and service manager environment variables"
 # msgstr ""
 # "Nastavenie alebo zrušenie nastavenia premenných prostredia systému a správcu "
 # "služieb"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 # msgid ""
 # "Authentication is required to set or unset system and service manager "
@@ -61,28 +64,28 @@ msgstr ""
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na nastavenie alebo zrušenie nastavenia "
 # "premenných prostredia systému a správcu služieb."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 # msgid "Reload the systemd state"
 # msgstr "Znovu načítanie stavu systému systemd"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 # msgid "Authentication is required to reload the systemd state."
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"
 # msgstr "Nastavenie názvu hostiteľa"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
 # msgid "Authentication is required to set the local host name."
 # msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 # msgid "Set static host name"
 # msgstr "Nastavenie nemenného názvu hostiteľa"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 # msgid ""
 # "Authentication is required to set the statically configured local host name, "
@@ -90,57 +93,59 @@ msgstr ""
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na nastavenie pevne určeného názvu miestneho "
 # "hostiteľa, známeho ako zrozumiteľný názov hostiteľa."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
 # msgid "Set machine information"
 # msgstr "Nastavenie informácií o počítači"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
 # msgid "Authentication is required to set local machine information."
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na nastavenie informácií o miestnom počítači."
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:1
 # msgid "Import a VM or container image"
 # msgstr ""
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:2
 # msgid "Authentication is required to import a VM or container image"
 # msgstr ""
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:3
 # msgid "Export a VM or container image"
 # msgstr ""
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:4
 # msgid "Authentication is required to export a VM or container image"
 # msgstr ""
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:5
 # msgid "Download a VM or container image"
 # msgstr ""
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:6
 # msgid "Authentication is required to download a VM or container image"
 # msgstr ""
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
 # msgid "Set system locale"
 # msgstr "Nastavenie miestnych nastavení"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
 # msgid "Authentication is required to set the system locale."
 # msgstr "Vyžaduje sa overenie totožnosti na nastavenie miestnych nastavení."
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
 # msgid "Set system keyboard settings"
 # msgstr "Nastavenie nastavení systémovej klávesnice"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej "
 # "klávesnice."
+# 
+#endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -420,105 +425,106 @@ msgstr ""
 msgid "Authentication is required to set a wall message"
 msgstr ""
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 # msgid "Log into a local container"
 # msgstr "Prihlásenie do miestneho kontajneru"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
 # msgid "Authentication is required to log into a local container."
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na prihlásenie do miestneho kontajneru."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
 # msgid "Log into the local host"
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
 # msgid "Authentication is required to log into the local host."
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
 # msgid "Acquire a shell in a local container"
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
 # msgid "Authentication is required to acquire a shell in a local container."
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
 # msgid "Acquire a shell on the local host"
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
 # msgid "Authentication is required to acquire a shell on the local host."
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
 # msgid "Acquire a pseudo TTY in a local container"
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
 # msgid ""
 # "Authentication is required to acquire a pseudo TTY in a local container."
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
 # msgid "Acquire a pseudo TTY on the local host"
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
 # msgid "Authentication is required to acquire a pseudo TTY on the local host."
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 # msgid "Manage local virtual machines and containers"
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
 # msgid ""
 # "Authentication is required to manage local virtual machines and containers."
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 # msgid "Manage local virtual machine and container images"
 # msgstr ""
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 # msgid ""
 # "Authentication is required to manage local virtual machine and container "
 # "images."
 # msgstr ""
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
 # msgid "Set system time"
 # msgstr ""
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
 # msgid "Authentication is required to set the system time."
 # msgstr ""
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
 # msgid "Set system timezone"
 # msgstr ""
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
 # msgid "Authentication is required to set the system timezone."
 # msgstr ""
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
 # msgid "Set RTC to local timezone or UTC"
 # msgstr ""
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
 # msgid ""
 # "Authentication is required to control whether the RTC stores the local or "
 # "UTC time."
 # msgstr ""
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
 # msgid "Turn network time synchronization on or off"
 # msgstr "Zapnutie alebo vypnutie sieťovej synchronizácie času"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
 # msgid ""
 # "Authentication is required to control whether network time synchronization "
@@ -526,31 +532,33 @@ msgstr ""
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na ovládanie, či má byť povolená "
 # "synchronizácia času cez sieť."
-
+# 
 # #: ../src/core/dbus-unit.c:457
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr ""
-
+# 
 # #: ../src/core/dbus-unit.c:458
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr ""
-
+# 
 # #: ../src/core/dbus-unit.c:459
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr ""
-
+# 
 # #: ../src/core/dbus-unit.c:460 ../src/core/dbus-unit.c:461
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr ""
-
+# 
 # #: ../src/core/dbus-unit.c:568
 # msgid "Authentication is required to kill '$(unit)'."
 # msgstr ""
-
+# 
 # #: ../src/core/dbus-unit.c:599
-# msgid "Authentication is required to reset the \"failed" state of '$(unit)'."
+# msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
-
+# 
 # #: ../src/core/dbus-unit.c:632
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
+#endif // 0
+

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1+
+#
 # Bulgarian translation of systemd po-file.
 # Copyright (C) 2016 Alexander Shopov <ash@kambanaria.org>
 # This file is distributed under the same license as the systemd package.
@@ -17,40 +19,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:1
 # msgid "Send passphrase back to system"
 # msgstr "Изпращане на паролата към системата"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:2
 # msgid ""
 # "Authentication is required to send the entered passphrase back to the system."
 # msgstr "За изпращане на паролата към системата е необходима идентификация."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:3
 # msgid "Manage system services or other units"
 # msgstr "Управление на услугите или другите модули"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:4
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
 # "За управление на услугите или другите модули е необходима идентификация."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:5
 # msgid "Manage system service or unit files"
 # msgstr "Управление на файловете за услугите или другите модули"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:6
 # msgid "Authentication is required to manage system service or unit files."
 # msgstr ""
 # "За управление на файловете за услугите или другите модули е необходима "
 # "идентификация."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:7
 # msgid "Set or unset system and service manager environment variables"
 # msgstr ""
 # "Задаване или изтриване на променливи на средата за системата и управлението "
 # "на услугите"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:8
 # msgid ""
 # "Authentication is required to set or unset system and service manager "
@@ -58,88 +61,90 @@ msgstr ""
 # msgstr ""
 # "За задаване или изтриване на променливи на средата за системата и "
 # "управлението на услугите е необходима идентификация."
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 # msgid "Reload the systemd state"
 # msgstr "Презареждане на състоянието на systemd"
-
+# 
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 # msgid "Authentication is required to reload the systemd state."
 # msgstr "За презареждане на състоянието на systemd е необходима идентификация."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"
 # msgstr "Задаване на име на машината"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:2
 # msgid "Authentication is required to set the local host name."
 # msgstr "За задаване на име на локалната машина е необходима идентификация."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 # msgid "Set static host name"
 # msgstr "Задаване на статично име на машината"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 # msgid ""
 # "Authentication is required to set the statically configured local host name, "
 # "as well as the pretty host name."
 # msgstr ""
 # "За задаване на статично име на локалната машина е необходима идентификация."
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:5
 # msgid "Set machine information"
 # msgstr "Задаване на информация за машината"
-
+# 
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:6
 # msgid "Authentication is required to set local machine information."
 # msgstr ""
 # "За задаване на информация за локалната машина е необходима идентификация."
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:1
 # msgid "Import a VM or container image"
 # msgstr "Внасяне на изображение на виртуална машина или контейнер"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:2
 # msgid "Authentication is required to import a VM or container image"
 # msgstr ""
 # "За внасяне на изображение на виртуална машина или контейнер е необходима "
 # "идентификация."
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:3
 # msgid "Export a VM or container image"
 # msgstr "Изнасяне на изображение на виртуална машина или контейнер"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:4
 # msgid "Authentication is required to export a VM or container image"
 # msgstr ""
 # "За изнасяне на изображение на виртуална машина или контейнер е необходима "
 # "идентификация."
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:5
 # msgid "Download a VM or container image"
 # msgstr "Изтегляне на изображение на виртуална машина или контейнер"
-
+# 
 # #: ../src/import/org.freedesktop.import1.policy.in.h:6
 # msgid "Authentication is required to download a VM or container image"
 # msgstr ""
 # "За изтегляне на изображение на виртуална машина или контейнер е необходима "
 # "идентификация."
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:1
 # msgid "Set system locale"
 # msgstr "Задаване на локала на системата"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:2
 # msgid "Authentication is required to set the system locale."
 # msgstr "За задаване на локала на системата е необходима идентификация."
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:3
 # msgid "Set system keyboard settings"
 # msgstr "Задаване на настройките на клавиатурата"
-
+# 
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "За задаване на настройките на клавиатурата е необходима идентификация."
+# 
+#endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
@@ -470,74 +475,75 @@ msgstr "Задаване на системно съобщение „wall“"
 msgid "Authentication is required to set a wall message"
 msgstr "За задаване на системно съобщение „wall“ е необходима идентификация."
 
+#if 0 /// UNNEEDED by elgoind
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:1
 # msgid "Log into a local container"
 # msgstr "Вписване в локален контейнер"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:2
 # msgid "Authentication is required to log into a local container."
 # msgstr "За вписване в локален контейнер е необходима идентификация."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:3
 # msgid "Log into the local host"
 # msgstr "Вписване в локалната машина"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:4
 # msgid "Authentication is required to log into the local host."
 # msgstr "За вписване в локалната машина е необходима идентификация."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:5
 # msgid "Acquire a shell in a local container"
 # msgstr "Достъп до обвивка в локален контейнер"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:6
 # msgid "Authentication is required to acquire a shell in a local container."
 # msgstr "За достъп до обвивка в локален контейнер е необходима идентификация."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:7
 # msgid "Acquire a shell on the local host"
 # msgstr "Достъп до обвивка на локалната машина"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:8
 # msgid "Authentication is required to acquire a shell on the local host."
 # msgstr "За достъп до обвивка на локалната машина е необходима идентификация."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:9
 # msgid "Acquire a pseudo TTY in a local container"
 # msgstr "Получаване на псевдо терминал в локален контейнер"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:10
 # msgid ""
 # "Authentication is required to acquire a pseudo TTY in a local container."
 # msgstr ""
 # "За получаване на псевдо терминал в локален контейнер е необходима "
 # "идентификация."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:11
 # msgid "Acquire a pseudo TTY on the local host"
 # msgstr "Получаване на псевдо терминал на локалната машина"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:12
 # msgid "Authentication is required to acquire a pseudo TTY on the local host."
 # msgstr ""
 # "За получаване на псевдо терминал на локалната машина е необходима "
 # "идентификация."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:13
 # msgid "Manage local virtual machines and containers"
 # msgstr "Управление на локалните виртуални машини и контейнери"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:14
 # msgid ""
 # "Authentication is required to manage local virtual machines and containers."
 # msgstr ""
 # "За управление на локалните виртуални машини и контейнери е необходима "
 # "идентификация."
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:15
 # msgid "Manage local virtual machine and container images"
 # msgstr "Управление на изображения на виртуални машини или контейнери"
-
+# 
 # #: ../src/machine/org.freedesktop.machine1.policy.in.h:16
 # msgid ""
 # "Authentication is required to manage local virtual machine and container "
@@ -545,27 +551,27 @@ msgstr "За задаване на системно съобщение „wall�
 # msgstr ""
 # "За управление на изображения на виртуални машини или е необходима "
 # "идентификация."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:1
 # msgid "Set system time"
 # msgstr "Задаване на времето на системата"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:2
 # msgid "Authentication is required to set the system time."
 # msgstr "За задаване на времето на системата е необходима идентификация."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:3
 # msgid "Set system timezone"
 # msgstr "Задаване на часовия пояс на системата"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:4
 # msgid "Authentication is required to set the system timezone."
 # msgstr "За задаване на часовия пояс на системата е необходима идентификация."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:5
 # msgid "Set RTC to local timezone or UTC"
 # msgstr "Превключване на системния часовник между местния часови пояс и UTC"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:6
 # msgid ""
 # "Authentication is required to control whether the RTC stores the local or "
@@ -573,11 +579,11 @@ msgstr "За задаване на системно съобщение „wall�
 # msgstr ""
 # "За превключване на системния часовник между местния часови пояс и UTC е "
 # "необходима идентификация."
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:7
 # msgid "Turn network time synchronization on or off"
 # msgstr "Превключване на синхронизацията на времето по мрежата"
-
+# 
 # #: ../src/timedate/org.freedesktop.timedate1.policy.in.h:8
 # msgid ""
 # "Authentication is required to control whether network time synchronization "
@@ -585,33 +591,35 @@ msgstr "За задаване на системно съобщение „wall�
 # msgstr ""
 # "За превключване на синхронизацията на времето по мрежата е необходима "
 # "идентификация."
-
+# 
 # #: ../src/core/dbus-unit.c:450
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "За стартиране на „$(unit)“ е необходима идентификация."
-
+# 
 # #: ../src/core/dbus-unit.c:451
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "За спиране на „$(unit)“ е необходима идентификация."
-
+# 
 # #: ../src/core/dbus-unit.c:452
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "За презареждане на „$(unit)“ е необходима идентификация."
-
+# 
 # #: ../src/core/dbus-unit.c:453 ../src/core/dbus-unit.c:454
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "За рестартиране на „$(unit)“ е необходима идентификация."
-
+# 
 # #: ../src/core/dbus-unit.c:560
 # msgid "Authentication is required to kill '$(unit)'."
 # msgstr "За убиване на „$(unit)“ е необходима идентификация."
-
+# 
 # #: ../src/core/dbus-unit.c:590
-# msgid "Authentication is required to reset the \"failed" state of '$(unit)'."
+# msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "За премахване на състоянието за неуспех на „$(unit)“ е необходима "
 # "идентификация."
-
+# 
 # #: ../src/core/dbus-unit.c:622
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "За задаване на свойствата на „$(unit)“ е необходима идентификация."
+#endif // 0
+
