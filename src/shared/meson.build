@@ -134,6 +134,8 @@ shared_sources = '''
         musl_missing.h
         nsflags.c
         nsflags.h
+        output-mode.c
+        output-mode.h
         pager.c
         pager.h
         sleep-config.c

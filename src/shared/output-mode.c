@@ -1,6 +1,4 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-#pragma once
-
 /***
   This file is part of systemd.
 
@@ -20,22 +18,23 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include "bus-util.h"
+#include "output-mode.h"
+#include "string-table.h"
 
-int polkit_agent_open(void);
-void polkit_agent_close(void);
+static const char *const output_mode_table[_OUTPUT_MODE_MAX] = {
+        [OUTPUT_SHORT] = "short",
+        [OUTPUT_SHORT_FULL] = "short-full",
+        [OUTPUT_SHORT_ISO] = "short-iso",
+        [OUTPUT_SHORT_ISO_PRECISE] = "short-iso-precise",
+        [OUTPUT_SHORT_PRECISE] = "short-precise",
+        [OUTPUT_SHORT_MONOTONIC] = "short-monotonic",
+        [OUTPUT_SHORT_UNIX] = "short-unix",
+        [OUTPUT_VERBOSE] = "verbose",
+        [OUTPUT_EXPORT] = "export",
+        [OUTPUT_JSON] = "json",
+        [OUTPUT_JSON_PRETTY] = "json-pretty",
+        [OUTPUT_JSON_SSE] = "json-sse",
+        [OUTPUT_CAT] = "cat"
+};
 
-static inline void polkit_agent_open_if_enabled(
-                BusTransport transport,
-                bool ask_password) {
-
-        /* Open the polkit agent as a child process if necessary */
-
-        if (transport != BUS_TRANSPORT_LOCAL)
-                return;
-
-        if (!ask_password)
-                return;
-
-        polkit_agent_open();
-}
+DEFINE_STRING_TABLE_LOOKUP(output_mode, OutputMode);
