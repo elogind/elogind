@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -400,6 +401,21 @@ static void test_file_in_same_dir(void) {
         free(t);
 }
 
+static void test_last_path_component(void) {
+        assert_se(streq(last_path_component("a/b/c"), "c"));
+        assert_se(streq(last_path_component("a/b/c/"), "c/"));
+        assert_se(streq(last_path_component("/"), "/"));
+        assert_se(streq(last_path_component("//"), "/"));
+        assert_se(streq(last_path_component("///"), "/"));
+        assert_se(streq(last_path_component("."), "."));
+        assert_se(streq(last_path_component("./."), "."));
+        assert_se(streq(last_path_component("././"), "./"));
+        assert_se(streq(last_path_component("././/"), ".//"));
+        assert_se(streq(last_path_component("/foo/a"), "a"));
+        assert_se(streq(last_path_component("/foo/a/"), "a/"));
+        assert_se(streq(last_path_component(""), ""));
+}
+
 static void test_filename_is_valid(void) {
         char foo[FILENAME_MAX+2];
         int i;
@@ -489,6 +505,7 @@ int main(int argc, char **argv) {
         test_path_startswith();
         test_prefix_root();
         test_file_in_same_dir();
+        test_last_path_component();
         test_filename_is_valid();
         test_hidden_or_backup_file();
         test_skip_dev_prefix();

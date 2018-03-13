@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: LGPL-2.1+ */
 /***
   This file is part of systemd.
 
@@ -72,16 +73,16 @@ static void test_path_is_os_tree(void) {
         assert_se(path_is_os_tree("/idontexist") == -ENOENT);
 }
 
-static void test_path_check_fstype(void) {
+static void test_path_is_fs_type(void) {
         /* run might not be a mount point in build chroots */
         if (path_is_mount_point("/run", NULL, AT_SYMLINK_FOLLOW) > 0) {
-                assert_se(path_check_fstype("/run", TMPFS_MAGIC) > 0);
-                assert_se(path_check_fstype("/run", BTRFS_SUPER_MAGIC) == 0);
+                assert_se(path_is_fs_type("/run", TMPFS_MAGIC) > 0);
+                assert_se(path_is_fs_type("/run", BTRFS_SUPER_MAGIC) == 0);
         }
-        assert_se(path_check_fstype("/proc", PROC_SUPER_MAGIC) > 0);
-        assert_se(path_check_fstype("/proc", BTRFS_SUPER_MAGIC) == 0);
-        assert_se(path_check_fstype("/proc", BTRFS_SUPER_MAGIC) == 0);
-        assert_se(path_check_fstype("/i-dont-exist", BTRFS_SUPER_MAGIC) == -ENOENT);
+        assert_se(path_is_fs_type("/proc", PROC_SUPER_MAGIC) > 0);
+        assert_se(path_is_fs_type("/proc", BTRFS_SUPER_MAGIC) == 0);
+        assert_se(path_is_fs_type("/proc", BTRFS_SUPER_MAGIC) == 0);
+        assert_se(path_is_fs_type("/i-dont-exist", BTRFS_SUPER_MAGIC) == -ENOENT);
 }
 
 static void test_path_is_temporary_fs(void) {
@@ -98,7 +99,7 @@ int main(int argc, char *argv[]) {
 #if 0 /// UNNEEDED by elogind
         test_is_symlink();
         test_path_is_os_tree();
-        test_path_check_fstype();
+        test_path_is_fs_type();
         test_path_is_temporary_fs();
 #endif // 0
 
