@@ -822,7 +822,7 @@ static void log_assert(
         log_dispatch_internal(level, 0, file, line, func, NULL, NULL, NULL, NULL, buffer);
 }
 
-noreturn void log_assert_failed_realm(
+_noreturn_ void log_assert_failed_realm(
                 LogRealm realm,
                 const char *text,
                 const char *file,
@@ -834,7 +834,7 @@ noreturn void log_assert_failed_realm(
         abort();
 }
 
-noreturn void log_assert_failed_unreachable_realm(
+_noreturn_ void log_assert_failed_unreachable_realm(
                 LogRealm realm,
                 const char *text,
                 const char *file,
