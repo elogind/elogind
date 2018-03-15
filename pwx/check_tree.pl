@@ -1120,6 +1120,7 @@ sub checkout_upstream {
 		print "$previous_commit\n";
 		return 0;
 	}
+	chomp $previous_commit;
 
 	# Get the shortened commit hash of $commit
 	$new_commit = qx(cd $upstream_path ; git rev-parse --short "$commit" 2>&1);
@@ -1129,6 +1130,7 @@ sub checkout_upstream {
 		print "$new_commit\n";
 		return 0;
 	}
+	chomp $new_commit;
 
 	# Now check it out, unless we are already there:
 	if ($previous_commit ne $new_commit) {
