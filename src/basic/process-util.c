@@ -48,6 +48,7 @@
 #include "macro.h"
 #include "missing.h"
 #include "process-util.h"
+//#include "raw-clone.h"
 #include "signal-util.h"
 //#include "stat-util.h"
 #include "string-table.h"
@@ -753,7 +754,7 @@ bool is_main_thread(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-noreturn void freeze(void) {
+_noreturn_ void freeze(void) {
 
         log_close();
 

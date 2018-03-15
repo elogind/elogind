@@ -40,7 +40,7 @@
 
 static pid_t pager_pid = 0;
 
-noreturn static void pager_fallback(void) {
+_noreturn_ static void pager_fallback(void) {
         int r;
 
         r = copy_bytes(STDIN_FILENO, STDOUT_FILENO, (uint64_t) -1, false);
