@@ -996,7 +996,7 @@ bool is_main_thread(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-noreturn void freeze(void) {
+_noreturn_ void freeze(void) {
 
         log_close();
 
