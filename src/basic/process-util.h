@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+//#include <sys/resource.h>
 
 #include "formats-util.h"
 #include "macro.h"
@@ -81,7 +82,7 @@ int pid_from_same_root_fs(pid_t pid);
 bool is_main_thread(void);
 
 #if 0 /// UNNEEDED by elogind
-noreturn void freeze(void);
+_noreturn_ void freeze(void);
 
 bool oom_score_adjust_is_valid(int oa);
 #endif // 0

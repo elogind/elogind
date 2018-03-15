@@ -806,12 +806,12 @@ static void log_assert(
         log_dispatch(level, 0, file, line, func, NULL, NULL, NULL, NULL, buffer);
 }
 
-noreturn void log_assert_failed(const char *text, const char *file, int line, const char *func) {
+_noreturn_ void log_assert_failed(const char *text, const char *file, int line, const char *func) {
         log_assert(LOG_CRIT, text, file, line, func, "Assertion '%s' failed at %s:%u, function %s(). Aborting.");
         abort();
 }
 
-noreturn void log_assert_failed_unreachable(const char *text, const char *file, int line, const char *func) {
+_noreturn_ void log_assert_failed_unreachable(const char *text, const char *file, int line, const char *func) {
         log_assert(LOG_CRIT, text, file, line, func, "Code should not be reached '%s' at %s:%u, function %s(). Aborting.");
         abort();
 }
