@@ -72,6 +72,7 @@ static bool show_color = false;
 static bool show_location = false;
 
 /// UNNEEDED by elogind  static bool upgrade_syslog_to_journal = false;
+static bool upgrade_syslog_to_journal = false;
 
 /* Akin to glibc's __abort_msg; which is private and we hence cannot
  * use here. */
@@ -240,6 +241,7 @@ int log_open(void) {
 
         if (log_target == LOG_TARGET_NULL) {
                 /// UNNEEDED by elogind log_close_journal();
+                log_close_journal();
                 log_close_syslog();
                 log_close_console();
                 return 0;
@@ -261,11 +263,13 @@ int log_open(void) {
                         }
                 }
 #endif // 0
+
                 if (log_target == LOG_TARGET_SYSLOG_OR_KMSG ||
                     log_target == LOG_TARGET_SYSLOG) {
                         r = log_open_syslog();
                         if (r >= 0) {
                                 /// UNNEEDED by elogind log_close_journal();
+                                log_close_journal();
                                 log_close_console();
                                 return r;
                         }
@@ -274,11 +278,13 @@ int log_open(void) {
                 if (log_target == LOG_TARGET_AUTO ||
                     log_target == LOG_TARGET_SAFE ||
                     /// UNNEEDED by elogind log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
+                    log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                     log_target == LOG_TARGET_SYSLOG_OR_KMSG ||
                     log_target == LOG_TARGET_KMSG) {
                         r = log_open_kmsg();
                         if (r >= 0) {
                                 /// UNNEEDED by elogind log_close_journal();
+                                log_close_journal();
                                 log_close_syslog();
                                 log_close_console();
                                 return r;
@@ -287,6 +293,7 @@ int log_open(void) {
         }
 
         /// UNNEEDED by elogind log_close_journal();
+        log_close_journal();
         log_close_syslog();
 
         return log_open_console();
@@ -310,6 +317,7 @@ void log_set_target(LogTarget target) {
 
 void log_close(void) {
         /// UNNEDED by elogind log_close_journal();
+        log_close_journal();
         log_close_syslog();
         log_close_kmsg();
         log_close_console();
@@ -624,6 +632,7 @@ static int log_dispatch(
                      log_target == LOG_TARGET_SAFE ||
                      log_target == LOG_TARGET_SYSLOG_OR_KMSG ||
                      /// UNNEEDED by elogind log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
+                     log_target == LOG_TARGET_JOURNAL_OR_KMSG ||
                      log_target == LOG_TARGET_KMSG)) {
 
                         k = write_to_kmsg(level, error, file, line, func, object_field, object, buffer);
@@ -794,12 +803,12 @@ static void log_assert(
         log_dispatch(level, 0, file, line, func, NULL, NULL, buffer);
 }
 
-noreturn void log_assert_failed(const char *text, const char *file, int line, const char *func) {
+_noreturn_ void log_assert_failed(const char *text, const char *file, int line, const char *func) {
         log_assert(LOG_CRIT, text, file, line, func, "Assertion '%s' failed at %s:%u, function %s(). Aborting.");
         abort();
 }
 
-noreturn void log_assert_failed_unreachable(const char *text, const char *file, int line, const char *func) {
+_noreturn_ void log_assert_failed_unreachable(const char *text, const char *file, int line, const char *func) {
         log_assert(LOG_CRIT, text, file, line, func, "Code should not be reached '%s' at %s:%u, function %s(). Aborting.");
         abort();
 }

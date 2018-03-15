@@ -71,6 +71,7 @@ void log_close(void);
 #if 0 /// UNNEEDED by elogind
 void log_forget_fds(void);
 #endif // 0
+
 void log_close_syslog(void);
 #if 0 /// UNNEEDED by elogind
 void log_close_journal(void);
@@ -150,13 +151,13 @@ int log_dump_internal(
                 char *buffer);
 
 /* Logging for various assertions */
-noreturn void log_assert_failed(
+_noreturn_ void log_assert_failed(
                 const char *text,
                 const char *file,
                 int line,
                 const char *func);
 
-noreturn void log_assert_failed_unreachable(
+_noreturn_ void log_assert_failed_unreachable(
                 const char *text,
                 const char *file,
                 int line,
