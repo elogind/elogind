@@ -744,58 +744,58 @@ message('maximum system GID is @0@'.format(system_gid_max))
 # conf.set('CONTAINER_UID_BASE_MAX', container_uid_base_max)
 # substs.set('containeruidbasemin', container_uid_base_min)
 # substs.set('containeruidbasemax', container_uid_base_max)
-# 
-# nobody_user = get_option('nobody-user')
-# nobody_group = get_option('nobody-group')
-# 
-# getent_result = run_command('getent', 'passwd', '65534')
-# if getent_result.returncode() == 0
-#         name = getent_result.stdout().split(':')[0]
-#         if name != nobody_user
-#                 message('WARNING:\n' +
-#                         '        The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
-#                         '        Your build will result in an user table setup that is incompatible with the local system.')
-#         endif
-# endif
-# id_result = run_command('id', '-u', nobody_user)
-# if id_result.returncode() == 0
-#         id = id_result.stdout().to_int()
-#         if id != 65534
-#                 message('WARNING:\n' +
-#                         '        The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
-#                         '        Your build will result in an user table setup that is incompatible with the local system.')
-#         endif
-# endif
-# 
-# getent_result = run_command('getent', 'group', '65534')
-# if getent_result.returncode() == 0
-#         name = getent_result.stdout().split(':')[0]
-#         if name != nobody_group
-#                 message('WARNING:\n' +
-#                         '        The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
-#                         '        Your build will result in an group table setup that is incompatible with the local system.')
-#         endif
-# endif
-# id_result = run_command('id', '-g', nobody_group)
-# if id_result.returncode() == 0
-#         id = id_result.stdout().to_int()
-#         if id != 65534
-#                 message('WARNING:\n' +
-#                         '        The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
-#                         '        Your build will result in an group table setup that is incompatible with the local system.')
-#         endif
-# endif
-# if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
-#         message('WARNING:\n' +
-#                 '        The configured user name "@0@" and group name "@0@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
-#                 '        Please re-check that both "nobody-user" and "nobody-group" options are correctly set.')
-# endif
-# 
-# conf.set_quoted('NOBODY_USER_NAME', nobody_user)
-# conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
-# substs.set('NOBODY_USER_NAME', nobody_user)
-# substs.set('NOBODY_GROUP_NAME', nobody_group)
 #endif // 0
+
+nobody_user = get_option('nobody-user')
+nobody_group = get_option('nobody-group')
+
+getent_result = run_command('getent', 'passwd', '65534')
+if getent_result.returncode() == 0
+        name = getent_result.stdout().split(':')[0]
+        if name != nobody_user
+                message('WARNING:\n' +
+                        '        The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
+                        '        Your build will result in an user table setup that is incompatible with the local system.')
+        endif
+endif
+id_result = run_command('id', '-u', nobody_user)
+if id_result.returncode() == 0
+        id = id_result.stdout().to_int()
+        if id != 65534
+                message('WARNING:\n' +
+                        '        The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
+                        '        Your build will result in an user table setup that is incompatible with the local system.')
+        endif
+endif
+
+getent_result = run_command('getent', 'group', '65534')
+if getent_result.returncode() == 0
+        name = getent_result.stdout().split(':')[0]
+        if name != nobody_group
+                message('WARNING:\n' +
+                        '        The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
+                        '        Your build will result in an group table setup that is incompatible with the local system.')
+        endif
+endif
+id_result = run_command('id', '-g', nobody_group)
+if id_result.returncode() == 0
+        id = id_result.stdout().to_int()
+        if id != 65534
+                message('WARNING:\n' +
+                        '        The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
+                        '        Your build will result in an group table setup that is incompatible with the local system.')
+        endif
+endif
+if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
+        message('WARNING:\n' +
+                '        The configured user name "@0@" and group name "@0@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
+                '        Please re-check that both "nobody-user" and "nobody-group" options are correctly set.')
+endif
+
+conf.set_quoted('NOBODY_USER_NAME', nobody_user)
+conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
+substs.set('NOBODY_USER_NAME', nobody_user)
+substs.set('NOBODY_GROUP_NAME', nobody_group)
 
 tty_gid = get_option('tty-gid')
 conf.set('TTY_GID', tty_gid)

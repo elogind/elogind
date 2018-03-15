@@ -212,12 +212,14 @@ option('tty-gid', type : 'string',
 #        description : 'the ACL for adm group should be added')
 # option('wheel-group', type : 'boolean',
 #        description : 'the ACL for wheel group should be added')
-# option('nobody-user', type : 'string',
-#        description : 'The name of the nobody user (the one with UID 65534)',
-#        value : 'nobody')
-# option('nobody-group', type : 'string',
-#        description : 'The name of the nobody group (the one with GID 65534)',
-#        value : 'nobody')
+#endif // 0
+option('nobody-user', type : 'string',
+       description : 'The name of the nobody user (the one with UID 65534)',
+       value : 'nobody')
+option('nobody-group', type : 'string',
+       description : 'The name of the nobody group (the one with GID 65534)',
+       value : 'nobody')
+#if 0 /// UNNEEDED by elogind
 # option('dev-kvm-mode', type : 'string', value : '0666',
 #        description : '/dev/kvm access mode')
 # option('group-render-mode', type : 'string', value : '0666',
