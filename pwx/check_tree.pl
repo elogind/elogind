@@ -892,6 +892,13 @@ sub check_masks {
 				and return hunk_failed("check_masks: Mask start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_mask_block = 1;
+
+			# While we are here we can check the previous line.
+			# All masks shall be preceded by an empty line to enhance readability.
+			# So any attempt to remove them must be stopped.
+			($i > 0) and ($hHunk->{lines}[$i-1] =~ m/^-\s*$/)
+				and substr($hHunk->{lines}[$i-1], 0, 1) = " ";
+
 			next;
 		}
 
@@ -905,6 +912,13 @@ sub check_masks {
 				and return hunk_failed("check_masks: Insert start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_insert_block = 1;
+
+			# While we are here we can check the previous line.
+			# All inserts shall be preceded by an empty line to enhance readability.
+			# So any attempt to remove them must be stopped.
+			($i > 0) and ($hHunk->{lines}[$i-1] =~ m/^-\s*$/)
+				and substr($hHunk->{lines}[$i-1], 0, 1) = " ";
+
 			next;
 		}
 
@@ -1055,14 +1069,14 @@ sub check_name_reverts {
 
 		# Note down removals
 		# ---------------------------------
-		if ($$line =~ m/^-[#]?\s*(.*elogind.*)\s*$/) {
-			$hRemovals{$1}{line} = $i;
+		if ($$line =~ m/^-[# ]*\s*(.*elogind.*)\s*$/) {
+			$hRemovals{$1}{line}      = $i;
 			next;
 		}
 
 		# Check Additions
 		# ---------------------------------
-		if ($$line =~ m/^\+[#]?\s*(.*systemd.*)\s*$/) {
+		if ($$line =~ m/^\+[# ]*\s*(.*systemd.*)\s*$/) {
 			my $replace_text   = $1;
 			my $our_text_long  = $replace_text;
 			my $our_text_short = $our_text_long;
@@ -1079,21 +1093,27 @@ sub check_name_reverts {
 			# 2) References to the systemd github site must not be changed
 			$replace_text =~ m,github\.com/systemd, and next;
 
-			# If this is a simple switch, undo it:
-			if ( defined($hRemovals{$our_text_short})
-			  || defined($hRemovals{$our_text_long }) ) {
-				defined($hRemovals{$our_text_short} )
-					and substr($hHunk->{lines}[$hRemovals{$our_text_short}{line}], 0, 1) = " "
-					 or substr($hHunk->{lines}[$hRemovals{$our_text_long }{line}], 0, 1) = " ";
+			# Make the following easier with a simple shortcut:
+			my $o_txt = defined($hRemovals{$our_text_long }) ? $our_text_long  :
+			            defined($hRemovals{$our_text_short}) ? $our_text_short :
+			            "";
+
+			# --- Case A) If this is a simple switch, undo it. ---
+			# ----------------------------------------------------
+			if ( length($o_txt) ) {
+				substr($hHunk->{lines}[$hRemovals{$o_txt}{line}], 0, 1) = " ";
 				splice(@{$hHunk->{lines}}, $i--, 1);
 				$hHunk->{count}--;
 				next;
 			}
 
-			# Otherwise replace the addition with our text. ;-)
+			# --- Case B) Otherwise replace the addition with our text. ---
+			# ---         Unless we are in a mask block.                ---
+			# -------------------------------------------------------------
+			$in_mask_block and next;
 			$our_text_long eq $replace_text
-				and $$line =~ s/^\+([#]?\s*).*systemd.*(\s*)$/+${1}${our_text_short}${2}/
-				 or $$line =~ s/^\+([#]?\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
+				and $$line =~ s/^\+([# ]*\s*).*systemd.*(\s*)$/+${1}${our_text_short}${2}/
+				 or $$line =~ s/^\+([# ]*\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
 		}
 	}
 
