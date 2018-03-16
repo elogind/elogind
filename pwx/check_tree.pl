@@ -15,6 +15,7 @@
 # 0.8.4    2018-03-09  sed, PrydeWorX  Added handling of .gperf and .xml files.
 # 0.8.5    2018-03-13  sed, PrydeWorX  Added possibility to (manualy) check root files and enhanced the
 #                                        handling of shell masks and unmasks.
+# 0.8.6    2018-03-16  sed, PrydeWorX  Enhanced mask block handling and added handling of .sym files.
 #
 # ========================
 # === Little TODO list ===
@@ -31,7 +32,7 @@ use Readonly;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.8.5"; ## Please keep this current!
+Readonly my $VERSION     => "0.8.6"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -151,6 +152,7 @@ sub check_includes;     ## performe necessary actions with the help of %hIncs (b
 sub check_masks;        ## Check for elogind preprocessor masks
 sub check_musl;         ## Check for musl_libc compatibility blocks
 sub check_name_reverts; ## Check for attempts to revert 'elogind' to 'systemd'
+sub check_sym_lines;    ## Check for attempts to uncomment unsupported API functions in .sym files.
 sub checkout_upstream;  ## Checkout the given refid on $upstream_path
 sub clean_hFile;        ## Completely clean up the current %hFile data structure.
 sub diff_hFile;         ## Generates the diff and builds $hFile{hunks} if needed.
@@ -203,30 +205,33 @@ for my $file_part (@source_files) {
 	for (my $pos = 0; $pos < $hFile{count}; ++$pos) {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
 
-		# === 1) Check for elogind masks ==================================
+		# === 1) Check for elogind masks 1 (normal source code) ===========
 		check_masks and hunk_is_useful and prune_hunk or next;
 
-		# === 2) Check for musl_libc compatibility blocks =================
+		# === 2) Check for elogind masks 2 (symbol files) =================
+		check_sym_lines and hunk_is_useful and prune_hunk or next;
+
+		# === 3) Check for musl_libc compatibility blocks =================
 		check_musl and hunk_is_useful and prune_hunk or next;
 
-		# === 3) Check for debug constructs ===============================
+		# === 4) Check for debug constructs ===============================
 		check_debug and hunk_is_useful and prune_hunk or next;
 
-		# === 4) Check for elogind extra comments and information =========
+		# === 5) Check for elogind extra comments and information =========
 		check_comments and hunk_is_useful and prune_hunk or next;
 
-		# === 5) Check for useful blank line additions ====================
+		# === 6) Check for useful blank line additions ====================
 		check_blanks and hunk_is_useful and prune_hunk or next;
 
-		# === 6) Check for 'elogind' => 'systemd' reverts =================
+		# === 7) Check for 'elogind' => 'systemd' reverts =================
 		check_name_reverts and hunk_is_useful and prune_hunk or next;
 
-		# === 7) Check for elogind_*() function removals ==================
+		# === 8) Check for elogind_*() function removals ==================
 		check_func_removes and hunk_is_useful and prune_hunk or next;
 
 		#  ===> IMPORTANT: From here on no more pruning, lines must *NOT* change any more! <===
 
-		# === 8) Analyze includes and note their appearance in $hIncs =====
+		# === 9) Analyze includes and note their appearance in $hIncs =====
 		read_includes; ## Never fails, doesn't change anything.
 
 	} ## End of first hunk loop
@@ -885,7 +890,9 @@ sub check_masks {
 		# ---------------------------------------
 		if ( ($$line =~ m/^-#if\s+0.+elogind/ ) 
 		  || (  ($$line =~ m/<!--\s+0.+elogind/  )
-		    && !($$line =~ m/-->\s*$/) ) ) {
+		    && !($$line =~ m/-->\s*$/) )
+		  || (  ($$line =~ m,/\*\*\s+0.+elogind,)
+		    && !($$line =~ m,\*\*/\s*$,) ) ) {
 			$in_mask_block
 				and return hunk_failed("check_masks: Mask start found while being in a mask block!");
 			$in_insert_block
@@ -930,7 +937,8 @@ sub check_masks {
 		# ---------------------------------------
 		if ( $in_mask_block && !$regular_ifs
 		  && ( ( $$line =~ m/^-#else/ )
-		    || ( $$line =~ m/<!--\s+else\s+-->\s*$/ ) ) ) {
+		    || ( $$line =~ m/<!--\s+else\s+-->\s*$/ ) 
+		    || ( $$line =~ m,\*\s+else\s+\*\*/\s*$, ) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_else_block = 1;
 			next;
@@ -940,7 +948,8 @@ sub check_masks {
 		# ---------------------------------------
 		# Note: The regex supports "#endif /** 0 **/", too.
 		if ( ( $$line =~ m,^-#endif\s*/(?:[*/]+)\s*([01]), )
-		  || ( $$line =~ m,\s+//\s+([01])\s+-->\s*$, ) ) {
+		  || ( $$line =~ m,\s+//\s+([01])\s+-->\s*$, )
+		  || ( $$line =~ m,\*\s+//\s+([01])\s+\*\*/\s*$, ) ) {
 			if (0 == $1) {
 				(!$in_mask_block)
 					and return hunk_failed("check_masks: #endif // 0 found outside any mask block");
@@ -1065,7 +1074,9 @@ sub check_name_reverts {
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
 
-		defined($$line) or return hunk_failed("check_name_reverts: Line " . ($i + 1) . "/$hHunk->{count} is undef?\n");
+		defined($$line)
+			or return hunk_failed("check_name_reverts: Line "
+				. ($i + 1) . "/$hHunk->{count} is undef?");
 
 		# Note down removals
 		# ---------------------------------
@@ -1119,6 +1130,77 @@ sub check_name_reverts {
 
 	return 1;
 }
+
+
+# -----------------------------------------------------------------------
+# --- Check for attempts to uncomment unsupported API functions       ---
+# --- in .sym files.                                                  ---
+# --- In here we change unsupported function calls from               ---
+# ---        sd_foo_func;                                             ---
+# --- to                                                              ---
+# ---        /* sd_foo_func; */                                       ---
+# -----------------------------------------------------------------------
+sub check_sym_lines {
+
+	# Early exits:
+	defined($hHunk) or return 0;
+	$hHunk->{useful} or return 0;
+
+	# Only .sym files are handled here
+	$hFile{source} =~ m/\.sym\.pwx$/ or return 1;
+
+	# Note down what is changed, so we can have inline updates
+	my %hAdditions = ();
+	my %hRemovals  = ();
+	
+	# We need a sortable line map for possible later splicing
+	my %hAddMap     = ();
+
+	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
+		my $line = \$hHunk->{lines}[$i]; ## Shortcut
+
+		defined($$line)
+			or return hunk_failed("check_sym_files: Line "
+				. ($i + 1) . "/$hHunk->{count} is undef?");
+
+		# Note down removals
+		# ---------------------------------
+		if ($$line =~ m,^-\s*/\*\s+(\S.+;)\s+\*/\s*$,) {
+			$hRemovals{$1}{line}    = $i;
+			next;
+		}
+
+		# Check Additions
+		# ---------------------------------
+		if ($$line =~ m,^\+\s*([^ /].+;)\s*$,) {
+			$hAdditions{$1}{line}    = $i;
+			$hAdditions{$1}{handled} = 0;
+			$hAddMap{$i} = $1;
+		}
+	}
+	
+	# Now we go backwards through the lines that got added and revert the reversals.
+	for my $i (sort { $b <=> $a } keys %hAddMap) {
+		my $item = $hAddMap{$i};
+		
+		# First a sanity check against double insertions.
+		$hAdditions{$item}{handled}
+			and return hunk_failed("check_sym_files: Line"
+				. ($i + 1) . ": Double addition of \"$item\" found!" );
+		
+		# New stuff is in order:
+		defined($hRemovals{$item}) or ++$hAdditions{$item}{handled} and next;
+		
+		# Here we simply undo the removal and splice the addition:
+		substr($hHunk->{lines}[$hRemovals{$item}{line}], 0, 1) = " ";
+		splice(@{$hHunk->{lines}}, $i, 1);
+		$hAdditions{$item}{handled} = 1;
+		--$hHunk->{count};
+	}
+
+	return 1;
+}
+
 
 # -----------------------------------------------------------------------
 # --- Checkout the given refid on $upstream_path                      ---
@@ -1200,7 +1282,8 @@ sub diff_hFile {
 	  $hFile{source} =~ m/\.in$/ or
 	  $hFile{source} =~ m/\.pl$/ or
 	  $hFile{source} =~ m/\.po$/ or
-	  $hFile{source} =~ m/\.sh$/ ) and $hFile{pwxfile} = 1 and prepare_shell;
+	  $hFile{source} =~ m/\.sh$/ or
+	  $hFile{source} =~ m/\.sym$/ ) and $hFile{pwxfile} = 1 and prepare_shell;
 
 	# Let's have two shortcuts:
 	my $src = $hFile{source};
@@ -1260,7 +1343,9 @@ sub generate_file_list {
 	# If the user wants to check files, that do not show up when
 	# searching our predefined set of directories, then let them.
 	for my $xFile (keys %hWanted) {
-		$hWanted{$xFile} == 2 and next; ## Already handled
+		# Files with systemd<->elogind alternatives might not be there
+		-f "$xFile" or $hWanted{$xFile} = 2;
+		$hWanted{$xFile} == 2 and next; ## Already handled or unavailable
 		find(\&wanted, "$xFile");
 	}
 
@@ -1481,15 +1566,20 @@ sub prepare_shell {
 		chomp $line;
 		++$line_no;
 
-		if ($line =~ m,^[ ]?#if 0 /* .*elogind.*,) {
+		if ( ($line =~ m,^[ ]?#if 0 /* .*elogind.*,)
+		  || (  ($line =~ m,^[ ]?/\*\* 0 .*elogind.*, )
+		    && !($line =~ m,\*\*/\s*$,) ) ) {
 			if ($is_block) {
 				print "ERROR: $in:$line_no : Mask start in mask!\n";
 				die("Illegal file");
 			}
 			$is_block = 1;
-		} elsif ($is_block && ($line =~ m,^[ ]?#else,) ) {
+		} elsif ($is_block
+		       && ( ($line =~ m,^[ ]?#else,)
+		         || ($line =~ m,\* else \*\*/\s*$,) ) ) {
 			$is_else = 1;
-		} elsif ($line =~ m,^[ ]?#endif /* 0,) {
+		} elsif ( ($line =~ m,^[ ]?#endif /* 0,)
+		       || ($line =~ m,\*\s+//\s+0\s+\*\*/\s*$,) ) {
 			if (!$is_block) {
 				print "ERROR: $in:$line_no : Mask end outside mask!\n";
 				die("Illegal file");
@@ -1498,6 +1588,7 @@ sub prepare_shell {
 			$is_else  = 0;
 		} elsif ($is_block && !$is_else) {
 			$line =~ s,^#\s?,,;
+			$line =~ s,^\s\s\*\s?,,;
 		}
 
 		push @lOut, $line;
@@ -1595,15 +1686,20 @@ sub unprepare_shell {
 		chomp $line;
 		++$line_no;
 
-		if ($line =~ m,^[ ]?#if 0 /* .*elogind.*,) {
+		if ( ($line =~ m,^[ ]?#if 0 /* .*elogind.*,)
+		  || (  ($line =~ m,^[ ]?/\*\* 0 .*elogind.*, )
+		    && !($line =~ m,\*\*/\s*$,) ) ) {
 			if ($is_block) {
 				print "ERROR: $in:$line_no : Mask start in mask!\n";
 				die("Illegal file");
 			}
 			$is_block = 1;
-		} elsif ($is_block && ($line =~ m,^[ ]?#else,) ) {
+		} elsif ($is_block
+		       && ( ($line =~ m,^[ ]?#else,)
+		         || ($line =~ m,\* else \*\*/\s*$,) ) ) {
 			$is_else = 1;
-		} elsif ($line =~ m,^[ ]?#endif /* 0,) {
+		} elsif ( ($line =~ m,^[ ]?#endif /* 0,)
+		       || ($line =~ m,\*\s+//\s+0\s+\*\*/\s*$,) ) {
 			if (!$is_block) {
 				print "ERROR: $in:$line_no : Mask end outside mask!\n";
 				die("Illegal file");
@@ -1611,8 +1707,11 @@ sub unprepare_shell {
 			$is_block = 0;
 			$is_else  = 0;
 		} elsif ($is_block && !$is_else
-		     && ("# " ne substr($line, 0, 2)) ) {
-			$line = "# " . $line;
+		     && ("# "   ne substr($line, 0, 2))
+		     && ("  * " ne substr($line, 0, 4)) ) {
+			$hFile{source} =~ m/\.sym\.pwx$/
+				and $line = "  * " . $line
+				 or $line = "# "   . $line;
 		}
 
 		push @lOut, $line;
