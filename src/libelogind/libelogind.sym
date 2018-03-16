@@ -482,30 +482,30 @@ global:
         sd_listen_fds_with_names;
 } LIBSYSTEMD_226;
 
-/*
- * These methods are not needed by elogind.
- * LIBSYSTEMD_229 {
- * global:
- *         sd_journal_has_runtime_files;
- *         sd_journal_has_persistent_files;
- *         sd_journal_enumerate_fields;
- *         sd_journal_restart_fields;
- * } LIBSYSTEMD_227;
-*/
-/*
- * These methods are not needed by elogind.
- * LIBSYSTEMD_230 {
- * global:
- *         sd_journal_open_directory_fd;
- *         sd_journal_open_files_fd;
- * } LIBSYSTEMD_229;
-*/
-
+/** 0 /// UNNEEDED by elogind
+  * LIBSYSTEMD_229 {
+  * global:
+  *         sd_journal_has_runtime_files;
+  *         sd_journal_has_persistent_files;
+  *         sd_journal_enumerate_fields;
+  *         sd_journal_restart_fields;
+  * } LIBSYSTEMD_227;
+  * 
+  * LIBSYSTEMD_230 {
+  * global:
+  *         sd_journal_open_directory_fd;
+  *         sd_journal_open_files_fd;
+  * } LIBSYSTEMD_229;
+  * // 0 **/
 
 LIBSYSTEMD_231 {
 global:
         sd_event_get_iteration;
+/** 0 /// Previous blocks unused by elogind
+  * } LIBSYSTEMD_230;
+  * else **/
 } LIBSYSTEMD_227;
+/** // 0 **/
 
 LIBSYSTEMD_232 {
 global:
@@ -528,3 +528,9 @@ LIBSYSTEMD_234 {
 global:
         sd_bus_message_appendv;
 } LIBSYSTEMD_233;
+
+LIBSYSTEMD_236 {
+global:
+        sd_bus_message_new;
+        sd_bus_message_seal;
+} LIBSYSTEMD_234;
