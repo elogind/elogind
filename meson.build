@@ -16,7 +16,7 @@
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 project('elogind', 'c',
-        version : '238.1',
+        version : '238',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -296,8 +296,8 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('USER_KEYRING_PATH',                          join_paths(pkgsysconfdir, 'import-pubring.gpg'))
 # conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
 # conf.set('MEMORY_ACCOUNTING_DEFAULT',                         memory_accounting_default ? 'true' : 'false')
-# conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_ON_OFF',           memory_accounting_default ? 'on' : 'off')
 #endif // 0
+conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
 
 conf.set_quoted('ABS_BUILD_DIR',                              meson.build_root())
 conf.set_quoted('ABS_SRC_DIR',                                meson.source_root())
@@ -457,7 +457,8 @@ if cc.get_id() == 'clang'
         foreach arg : ['-Wno-typedef-redefinition',
                        '-Wno-gnu-variable-sized-type-not-at-end',
                       ]
-                if cc.has_argument(arg)
+                if cc.has_argument(arg,
+                                   name : '@0@ is supported'.format(arg))
                         add_project_arguments(arg, language : 'c')
                 endif
         endforeach
@@ -481,24 +482,11 @@ foreach arg : ['-Wl,-z,relro',
         endif
 endforeach
 
-# Check if various sanitizers are supported
-sanitizers = []
-foreach arg : ['address']
-
-        have = run_command(check_compilation_sh,
-                           cc.cmd_array(), '-x', 'c',
-                           '-fsanitize=@0@'.format(arg),
-                           '-include', link_test_c).returncode() == 0
-        message('@0@ sanitizer supported: @1@'.format(arg, have ? 'yes' : 'no'))
-        if have
-                sanitizers += arg
-        endif
-endforeach
-
 if get_option('buildtype') != 'debug'
         foreach arg : ['-ffunction-sections',
                        '-fdata-sections']
-                if cc.has_argument(arg)
+                if cc.has_argument(arg,
+                                   name : '@0@ is supported'.format(arg))
                         add_project_arguments(arg, language : 'c')
                 endif
         endforeach
@@ -685,8 +673,9 @@ endforeach
 
 #if 0 /// unneeded by elogind
 # conf.set_quoted('TELINIT', get_option('telinit-path'))
+# 
 # if run_command('ln', '--relative', '--help').returncode() != 0
-#         error('ln does not support --relative')
+#         error('ln does not support --relative (added in coreutils 8.16)')
 # endif
 #endif // 0
 
@@ -910,6 +899,7 @@ substs.set('TTY_GID', tty_gid)
 
 kill_user_processes = get_option('default-kill-user-processes')
 conf.set10('KILL_USER_PROCESSES', kill_user_processes)
+conf.set_quoted('KILL_USER_PROCESSES_YES_NO', kill_user_processes ? 'yes' : 'no')
 substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 
 #if 0 /// UNNEEDED by elogind
@@ -972,8 +962,7 @@ endif
 
 #if 0 /// UNNEEDED by elogind
 # libmount = dependency('mount',
-#                       version : '>= 2.30',
-#                       required : not fuzzer_build)
+#                       version : fuzzer_build ? '>= 0' : '>= 2.30')
 # 
 # want_seccomp = get_option('seccomp')
 # if want_seccomp != 'false' and not fuzzer_build
@@ -1486,6 +1475,7 @@ includes = include_directories('src/basic',
 #                                'src/resolve',
 #                                'src/timesync',
 #endif // 0
+                               'src/time-wait-sync',
                                'src/login',
 #if 0 /// UNNEEDED by elogind
 #                                'src/udev',
@@ -1840,6 +1830,10 @@ test_dlopen = executable(
 #                          install_rpath : rootlibexecdir,
 #                          install : true)
 #         public_programs += [exe]
+# 
+#         meson.add_install_script(meson_make_symlink,
+#                          join_paths(bindir, 'systemd-resolve'),
+#                          join_paths(rootsbindir, 'resolvconf'))
 # endif
 # 
 # if conf.get('ENABLE_LOGIND') == 1
@@ -2157,6 +2151,14 @@ endif
 #                    link_with : [libshared],
 #                    dependencies : [threads,
 #                                    libm],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
+# 
+#         executable('systemd-time-wait-sync',
+#                    'src/time-wait-sync/time-wait-sync.c',
+#                    include_directories : includes,
+#                    link_with : [libshared],
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
@@ -2675,6 +2677,7 @@ executable('elogind-cgroups-agent',
 #            systemd_shutdown_sources,
 #            include_directories : includes,
 #            link_with : [libshared],
+#            dependencies : [libmount],
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
@@ -2963,48 +2966,56 @@ endforeach
 ############################################################
 
 #if 0 /// fuzz regression tests are not supported by elogind
-# prev = ''
-# foreach p : fuzz_regression_tests
-#         a = p.split('/')[-3]
-#         b = p.split('/')[-2]
-#         c = p.split('/')[-1]
+# # Enable tests for all supported sanitizers
+# foreach tuple : sanitizers
+#         sanitizer = tuple[0]
+#         build = tuple[1]
 # 
-#         if a == 'address'
-#                 build = sanitize_address
-#         else
-#                 error('unknown sanitizer @0@'.format(a))
-#         endif
+#         have = run_command(check_compilation_sh,
+#                            cc.cmd_array(), '-x', 'c',
+#                            '-fsanitize=@0@'.format(sanitizer),
+#                            '-include', link_test_c).returncode() == 0
+#         message('@0@ sanitizer supported: @1@'.format(sanitizer, have ? 'yes' : 'no'))
 # 
-#         name = '@1@:@0@'.format(a, b)
+#         if have
+#                 prev = ''
+#                 foreach p : fuzz_regression_tests
+#                         b = p.split('/')[-2]
+#                         c = p.split('/')[-1]
 # 
-#         if name != prev
-#                 if want_tests == 'false'
-#                         message('Not compiling @0@ because tests is set to false'.format(name))
-#                 elif not sanitizers.contains(a)
-#                         message('Not compiling @0@ because @1@ sanitizer is not available'.format(name, a))
-#                 elif slow_tests
-#                         exe = custom_target(
-#                                 name,
-#                                 output : name,
-#                                 depends : build,
-#                                 command : [env, 'ln', '-fs',
-#                                            join_paths(build.full_path(), b),
-#                                            '@OUTPUT@'],
-#                                 build_by_default : true)
-#                 else
-#                         message('Not compiling @0@ because slow-tests is set to false'.format(name))
-#                 endif
-#         endif
-#         prev = name
+#                         name = '@0@:@1@'.format(b, sanitizer)
 # 
-#         if want_tests != 'false' and slow_tests
-#                 test(c, env, args : [exe.full_path(),
-#                                      join_paths(meson.source_root(),
-#                                                 'test/fuzz-regressions',
-#                                                 p)])
+#                         if name != prev
+#                                 if want_tests == 'false'
+#                                         message('Not compiling @0@ because tests is set to false'.format(name))
+#                                 elif slow_tests
+#                                         exe = custom_target(
+#                                                 name,
+#                                                 output : name,
+#                                                 depends : build,
+#                                                 command : [env, 'ln', '-fs',
+#                                                            join_paths(build.full_path(), b),
+#                                                            '@OUTPUT@'],
+#                                                 build_by_default : true)
+#                                 else
+#                                         message('Not compiling @0@ because slow-tests is set to false'.format(name))
+#                                 endif
+#                         endif
+#                         prev = name
+# 
+#                         if want_tests != 'false' and slow_tests
+#                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
+#                                      env,
+#                                      args : [exe.full_path(),
+#                                              join_paths(meson.source_root(),
+#                                                         'test/fuzz-regressions',
+#                                                         p)])
+#                         endif
+#                 endforeach
 #         endif
 # endforeach
 #endif // 0
+
 
 ############################################################
 
