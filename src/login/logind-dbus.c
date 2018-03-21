@@ -661,10 +661,9 @@ static int method_list_inhibitors(sd_bus_message *message, void *userdata, sd_bu
 
 static int method_create_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         const char *service, *type, *class, *cseat, *tty, *display, *remote_user, *remote_host, *desktop;
-        uint32_t audit_id = 0;
-        _cleanup_free_ char *unit = NULL;
-        _cleanup_free_ char *id = NULL;
+        _cleanup_free_ char *unit = NULL, *id = NULL;
         Session *session = NULL;
+        uint32_t audit_id = 0;
         Manager *m = userdata;
         User *user = NULL;
         Seat *seat = NULL;
@@ -688,7 +687,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
 
         if (!uid_is_valid(uid))
                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid UID");
-        if (leader < 0 || leader == 1)
+        if (leader < 0 || leader == 1 || leader == getpid_cached())
                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid leader PID");
 
         if (isempty(type))
@@ -734,7 +733,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                 if (v <= 0)
                         return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Cannot determine VT number from virtual console TTY %s", tty);
 
-                if (!vtnr)
+                if (vtnr == 0)
                         vtnr = (uint32_t) v;
                 else if (vtnr != (uint32_t) v)
                         return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Specified TTY and VT number do not match");
@@ -752,7 +751,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
 
         if (seat) {
                 if (seat_has_vts(seat)) {
-                        if (!vtnr || vtnr > 63)
+                        if (vtnr <= 0 || vtnr > 63)
                                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "VT number out of range");
                 } else {
                         if (vtnr != 0)
@@ -792,16 +791,13 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                         return r;
         }
 
-        /*
-         * Check if we are already in a logind session.  Or if we are in user@.service
-         * which is a special PAM session that avoids creating a logind session.
-         */
-        r = cg_pid_get_unit(leader, &unit);
+        /* Check if we are already in a logind session. Or if we are in user@.service which is a special PAM session
+         * that avoids creating a logind session. */
+        r = manager_get_user_by_pid(m, leader, NULL);
         if (r < 0)
                 return r;
-        if (hashmap_get(m->session_units, unit) ||
-            hashmap_get(m->user_units, unit))
-                return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY, "Already running in a session");
+        if (r > 0)
+                return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY, "Already running in a session or user slice");
 
         /*
          * Old gdm and lightdm start the user-session on the same VT as
@@ -835,9 +831,8 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                  * the audit data and let's better register a new
                  * ID */
                 if (hashmap_get(m->sessions, id)) {
-                        log_warning("Existing logind session ID %s used by new audit session, ignoring", id);
+                        log_warning("Existing logind session ID %s used by new audit session, ignoring.", id);
                         audit_id = AUDIT_SESSION_INVALID;
-
                         id = mfree(id);
                 }
         }
@@ -930,8 +925,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         session->create_message = sd_bus_message_ref(message);
 
 #if 0 /// UNNEEDED by elogind
-        /* Now, let's wait until the slice unit and stuff got
-         * created. We send the reply back from
+        /* Now, let's wait until the slice unit and stuff got created. We send the reply back from
          * session_send_create_reply(). */
 #else
         /* We reply directly. */
@@ -1711,6 +1705,7 @@ static int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
                 const char *unit_name) {
+
 #else
 int delay_shutdown_or_sleep(
                 Manager *m,
@@ -1758,6 +1753,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
+
 #else
                 HandleAction unit_name,
 #endif // 0
@@ -1787,7 +1783,6 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         log_debug_elogind("%s called for %s (%sdelayed)", __FUNCTION__,
                           handle_action_to_string(unit_name),
                           delayed ? "" : "NOT ");
-
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
@@ -1894,7 +1889,6 @@ static int method_do_shutdown_or_sleep(
         log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
                           __FUNCTION__, action, sleep_verb,
                           interactive ? "" : "NOT ");
-
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
@@ -1938,7 +1932,6 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -1958,7 +1951,6 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -1978,7 +1970,6 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -1998,7 +1989,6 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -2018,7 +2008,6 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -2038,11 +2027,24 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_HYBRID_SLEEP_TARGET,
+                        INHIBIT_SLEEP,
+                        "org.freedesktop.login1.hibernate",
+                        "org.freedesktop.login1.hibernate-multiple-sessions",
+                        "org.freedesktop.login1.hibernate-ignore-inhibit",
+                        "hybrid-sleep",
+                        error);
+}
+
+static int method_suspend_to_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+
+        return method_do_shutdown_or_sleep(
+                        m, message,
+                        SPECIAL_SUSPEND_TO_HIBERNATE_TARGET,
 #else
                         HANDLE_HYBRID_SLEEP,
 #endif // 0
@@ -2329,7 +2331,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         cancelled = m->scheduled_shutdown_type != NULL;
         reset_scheduled_shutdown(m);
 
-        if (cancelled && m->enable_wall_messages) {
+        if (cancelled) {
                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
                 const char *tty = NULL;
                 uid_t uid = 0;
@@ -2531,6 +2533,19 @@ static int method_can_hybrid_sleep(sd_bus_message *message, void *userdata, sd_b
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
                         "hybrid-sleep",
+                        error);
+}
+
+static int method_can_suspend_to_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+
+        return method_can_shutdown_or_sleep(
+                        m, message,
+                        INHIBIT_SLEEP,
+                        "org.freedesktop.login1.hibernate",
+                        "org.freedesktop.login1.hibernate-multiple-sessions",
+                        "org.freedesktop.login1.hibernate-ignore-inhibit",
+                        "suspend-to-hibernate",
                         error);
 }
 
@@ -2868,12 +2883,14 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_METHOD("Suspend", "b", NULL, method_suspend, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Hibernate", "b", NULL, method_hibernate, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("HybridSleep", "b", NULL, method_hybrid_sleep, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("SuspendToHibernate", "b", NULL, method_suspend_to_hibernate, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanPowerOff", NULL, "s", method_can_poweroff, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanReboot", NULL, "s", method_can_reboot, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanHalt", NULL, "s", method_can_halt, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanSuspend", NULL, "s", method_can_suspend, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanHibernate", NULL, "s", method_can_hibernate, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CanHybridSleep", NULL, "s", method_can_hybrid_sleep, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("CanSuspendToHibernate", NULL, "s", method_can_suspend_to_hibernate, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("ScheduleShutdown", "st", NULL, method_schedule_shutdown, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("CancelScheduledShutdown", NULL, "b", method_cancel_scheduled_shutdown, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Inhibit", "ssss", "h", method_inhibit, SD_BUS_VTABLE_UNPRIVILEGED),
