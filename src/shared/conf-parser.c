@@ -169,7 +169,7 @@ static int next_assignment(
         return 0;
 }
 
-/* Parse a variable assignment line */
+/* Parse a single logical line */
 static int parse_line(
                 const char* unit,
                 const char *filename,
@@ -413,27 +413,6 @@ int config_parse(const char *unit,
                 continuation = mfree(continuation);
         }
 
-        if (continuation) {
-                r = parse_line(unit,
-                               filename,
-                               ++line,
-                               sections,
-                               lookup,
-                               table,
-                               flags,
-                               &section,
-                               &section_line,
-                               &section_ignored,
-                               continuation,
-                               userdata);
-                if (r < 0) {
-                        if (flags & CONFIG_PARSE_WARN)
-                                log_warning_errno(r, "%s:%u: Failed to parse file: %m", filename, line);
-                        return r;
-
-                }
-        }
-
         return 0;
 }
 
@@ -542,8 +521,7 @@ int config_parse_many(
                                    #type, rvalue);                      \
                                                                         \
                 return 0;                                               \
-        }                                                               \
-        struct __useless_struct_to_allow_trailing_semicolon__
+        }
 
 DEFINE_PARSER(int, int, safe_atoi);
 DEFINE_PARSER(long, long, safe_atoli);
@@ -854,6 +832,37 @@ int config_parse_strv(
                 if (r < 0)
                         return log_oom();
         }
+
+        return 0;
+}
+
+int config_parse_warn_compat(
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
+        Disabled reason = ltype;
+
+        switch(reason) {
+        case DISABLED_CONFIGURATION:
+                log_syntax(unit, LOG_DEBUG, filename, line, 0,
+                           "Support for option %s= has been disabled at compile time and it is ignored", lvalue);
+                break;
+        case DISABLED_LEGACY:
+                log_syntax(unit, LOG_INFO, filename, line, 0,
+                           "Support for option %s= has been removed and it is ignored", lvalue);
+                break;
+        case DISABLED_EXPERIMENTAL:
+                log_syntax(unit, LOG_INFO, filename, line, 0,
+                           "Support for option %s= has not yet been enabled and it is ignored", lvalue);
+                break;
+        };
 
         return 0;
 }
