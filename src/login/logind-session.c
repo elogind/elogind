@@ -732,21 +732,6 @@ static int session_stop_cgroup(Session *s, bool force) {
 
         assert(s);
 
-#if 0 /// elogind must not kill lingering user processes alive
-        if (force || manager_shall_kill(s->manager, s->user->name)) {
-#else
-        if ( (force || manager_shall_kill(s->manager, s->user->name) )
-            && (user_check_linger_file(s->user) < 1) ) {
-#endif // 1
-
-                r = session_kill(s, KILL_ALL, SIGTERM);
-                if (r < 0)
-                        return r;
-        }
-
-        return 0;
-}
-#endif // 0
 
 int session_stop(Session *s, bool force) {
         int r;
@@ -765,11 +750,7 @@ int session_stop(Session *s, bool force) {
         session_remove_fifo(s);
 
         /* Kill cgroup */
-#if 0 /// elogind does not start scopes, but sessions
         r = session_stop_scope(s, force);
-#else
-        r = session_stop_cgroup(s, force);
-#endif // 0
 
         s->stopping = true;
 
@@ -778,9 +759,6 @@ int session_stop(Session *s, bool force) {
         session_save(s);
         user_save(s->user);
 
-#if 1 /// elogind must queue this session again
-        session_add_to_gc_queue(s);
-#endif // 1
         return r;
 }
 
@@ -1078,12 +1056,10 @@ bool session_may_gc(Session *s, bool drop_not_started) {
                         return false;
         }
 
-#if 0 /// elogind supports neither scopes nor jobs
         if (s->scope_job && manager_job_is_active(s->manager, s->scope_job))
                 return false;
 
         if (s->scope && manager_unit_is_active(s->manager, s->scope))
-#endif // 0
                 return false;
 
         return true;
@@ -1106,11 +1082,7 @@ SessionState session_get_state(Session *s) {
         if (s->stopping || s->timer_event_source)
                 return SESSION_CLOSING;
 
-#if 0 /// elogind does not support systemd scope_jobs
         if (s->scope_job || s->fifo_fd < 0)
-#else
-        if (s->fifo_fd < 0)
-#endif // 0
                 return SESSION_OPENING;
 
         if (session_is_active(s))
@@ -1122,27 +1094,10 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
-#if 0 /// Without direct cgroup support, elogind can not kill sessions
         if (!s->scope)
                 return -ESRCH;
 
         return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
-#else
-        if (who == KILL_LEADER) {
-                if (s->leader <= 0)
-                        return -ESRCH;
-
-                /* FIXME: verify that leader is in cgroup?  */
-
-                if (kill(s->leader, signo) < 0) {
-                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader, s->id);
-                }
-                return 0;
-        } else
-                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
-                                          CGROUP_IGNORE_SELF | CGROUP_REMOVE,
-                                          NULL, NULL, NULL);
-#endif // 0
 }
 
 static int session_open_vt(Session *s) {
@@ -1360,6 +1315,7 @@ int session_set_controller(Session *s, const char *sender, bool force, bool prep
         session_release_controller(s, true);
         s->controller = name;
         name = NULL;
+        s->controller = TAKE_PTR(name);
         session_save(s);
 
         return 0;

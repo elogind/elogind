@@ -22,7 +22,6 @@
 #include <ftw.h>
 #include <stdlib.h>
 #include <sys/mount.h>
-//#include <sys/statvfs.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
@@ -331,10 +330,8 @@ int mount_cgroup_controllers(char ***join_controllers) {
                         options = strv_join(*k, ",");
                         if (!options)
                                 return log_oom();
-                } else {
-                        options = controller;
-                        controller = NULL;
-                }
+                } else
+                        options = TAKE_PTR(controller);
 
                 where = strappend("/sys/fs/cgroup/", options);
                 if (!where)
@@ -403,35 +400,6 @@ static int nftw_cb(
 
         return FTW_CONTINUE;
 };
-
-static int relabel_cgroup_filesystems(void) {
-        int r;
-        struct statfs st;
-
-        r = cg_all_unified();
-        if (r == 0) {
-                /* Temporarily remount the root cgroup filesystem to give it a proper label. Do this
-                   only when the filesystem has been already populated by a previous instance of systemd
-                   running from initrd. Otherwise don't remount anything and leave the filesystem read-write
-                   for the cgroup filesystems to be mounted inside. */
-                r = statfs("/sys/fs/cgroup", &st);
-                if (r < 0) {
-                        return log_error_errno(errno, "Failed to determine mount flags for /sys/fs/cgroup: %m");
-                }
-
-                if (st.f_flags & ST_RDONLY)
-                        (void) mount(NULL, "/sys/fs/cgroup", NULL, MS_REMOUNT, NULL);
-
-                label_fix("/sys/fs/cgroup", false, false);
-                nftw("/sys/fs/cgroup", nftw_cb, 64, FTW_MOUNT|FTW_PHYS|FTW_ACTIONRETVAL);
-
-                if (st.f_flags & ST_RDONLY)
-                        (void) mount(NULL, "/sys/fs/cgroup", NULL, MS_REMOUNT|MS_RDONLY, NULL);
-        } else if (r < 0)
-                return log_error_errno(r, "Failed to determine whether we are in all unified mode: %m");
-
-        return 0;
-}
 #endif
 #endif // 0
 
@@ -458,9 +426,15 @@ int mount_setup(bool loaded_policy) {
                 nftw("/dev/shm", nftw_cb, 64, FTW_MOUNT|FTW_PHYS|FTW_ACTIONRETVAL);
                 nftw("/run", nftw_cb, 64, FTW_MOUNT|FTW_PHYS|FTW_ACTIONRETVAL);
 
-                r = relabel_cgroup_filesystems();
-                if (r < 0)
-                        return r;
+                /* Temporarily remount the root cgroup filesystem to give it a proper label. */
+                r = cg_all_unified();
+                if (r == 0) {
+                        (void) mount(NULL, "/sys/fs/cgroup", NULL, MS_REMOUNT, NULL);
+                        label_fix("/sys/fs/cgroup", false, false);
+                        nftw("/sys/fs/cgroup", nftw_cb, 64, FTW_MOUNT|FTW_PHYS|FTW_ACTIONRETVAL);
+                        (void) mount(NULL, "/sys/fs/cgroup", NULL, MS_REMOUNT|MS_RDONLY, NULL);
+                } else if (r < 0)
+                        return log_error_errno(r, "Failed to determine whether we are in all unified mode: %m");
 
                 after_relabel = now(CLOCK_MONOTONIC);
 

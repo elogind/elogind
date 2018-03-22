@@ -626,8 +626,7 @@ int get_process_environ(pid_t pid, char **env) {
         } else
                 outcome[sz] = '\0';
 
-        *env = outcome;
-        outcome = NULL;
+        *env = TAKE_PTR(outcome);
 
         return 0;
 }
@@ -1479,7 +1478,7 @@ static const char *const ioprio_class_table[] = {
         [IOPRIO_CLASS_IDLE] = "idle"
 };
 
-DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ioprio_class, int, INT_MAX);
+DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ioprio_class, int, IOPRIO_N_CLASSES);
 
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
