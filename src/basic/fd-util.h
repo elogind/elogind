@@ -118,4 +118,12 @@ static inline int make_null_stdio(void) {
         return rearrange_stdio(-1, -1, -1);
 }
 
+/* Like TAKE_PTR() but for file descriptors, resetting them to -1 */
+#define TAKE_FD(fd)                             \
+        ({                                      \
+                int _fd_ = (fd);                \
+                (fd) = -1;                      \
+                _fd_;                           \
+        })
+
 int fd_reopen(int fd, int flags);
