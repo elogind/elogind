@@ -102,10 +102,6 @@ int acquire_data_fd(const void *data, size_t size, unsigned flags);
 #define ERRNO_IS_DISCONNECT(r) \
         IN_SET(r, ENOTCONN, ECONNRESET, ECONNREFUSED, ECONNABORTED, EPIPE, ENETUNREACH)
 
-/* Resource exhaustion, could be our fault or general system trouble */
-#define ERRNO_IS_RESOURCE(r) \
-        IN_SET(r, ENOMEM, EMFILE, ENFILE)
-
 int fd_move_above_stdio(int fd);
 
 int rearrange_stdio(int original_input_fd, int original_output_fd, int original_error_fd);
@@ -113,3 +109,11 @@ int rearrange_stdio(int original_input_fd, int original_output_fd, int original_
 static inline int make_null_stdio(void) {
         return rearrange_stdio(-1, -1, -1);
 }
+
+/* Like TAKE_PTR() but for file descriptors, resetting them to -1 */
+#define TAKE_FD(fd)                             \
+        ({                                      \
+                int _fd_ = (fd);                \
+                (fd) = -1;                      \
+                _fd_;                           \
+        })
