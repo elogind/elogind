@@ -1011,8 +1011,7 @@ int getpeersec(int fd, char **ret) {
         if (isempty(s))
                 return -EOPNOTSUPP;
 
-        *ret = s;
-        s = NULL;
+        *ret = TAKE_PTR(s);
 
         return 0;
 }

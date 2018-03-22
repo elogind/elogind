@@ -1452,10 +1452,9 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         if (r < 0)
                 return r;
 
-        if (c == raw) {
-                *cgroup = raw;
-                raw = NULL;
-        } else {
+        if (c == raw)
+                *cgroup = TAKE_PTR(raw);
+        else {
                 char *n;
 
                 n = strdup(c);
@@ -2087,6 +2086,14 @@ int cg_slice_to_path(const char *unit, char **ret) {
                 _cleanup_free_ char *escaped = NULL;
                 char n[dash - p + sizeof(".slice")];
 
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+                /* msan doesn't instrument stpncpy, so it thinks
+                 * n is later used unitialized:
+                 * https://github.com/google/sanitizers/issues/926
+                 */
+                zero(n);
+#endif
+
                 /* Don't allow trailing or double dashes */
                 if (IN_SET(dash[1], 0, '-'))
                         return -EINVAL;
@@ -2112,8 +2119,7 @@ int cg_slice_to_path(const char *unit, char **ret) {
         if (!strextend(&s, e, NULL))
                 return -ENOMEM;
 
-        *ret = s;
-        s = NULL;
+        *ret = TAKE_PTR(s);
 
         return 0;
 }
@@ -2406,8 +2412,7 @@ int cg_mask_to_string(CGroupMask mask, char **ret) {
         assert(s);
 
         s[n] = 0;
-        *ret = s;
-        s = NULL;
+        *ret = TAKE_PTR(s);
 
         return 0;
 }
@@ -2590,7 +2595,7 @@ static int cg_unified_update(void) {
                 return 0;
 
         if (statfs("/sys/fs/cgroup/", &fs) < 0)
-                return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/\" failed: %m");
+                return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/\") failed: %m");
 
         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
                 log_debug("Found cgroup2 on /sys/fs/cgroup/, full unified hierarchy");
@@ -2727,10 +2732,8 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
                         }
 
                         r = write_string_stream(f, s, 0);
-                        if (r < 0) {
+                        if (r < 0)
                                 log_debug_errno(r, "Failed to enable controller %s for %s (%s): %m", n, p, fs);
-                                clearerr(f);
-                        }
                 }
         }
 

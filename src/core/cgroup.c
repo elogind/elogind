@@ -1382,8 +1382,7 @@ int unit_set_cgroup_path(Unit *u, const char *path) {
 
         unit_release_cgroup(u);
 
-        u->cgroup_path = p;
-        p = NULL;
+        u->cgroup_path = TAKE_PTR(p);
 
         return 1;
 }
@@ -2341,7 +2340,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
 #if 0 /// elogind is not init
         /* We can't really delete the group, since we are in it. But
          * let's trim it. */
-        if (delete && m->cgroup_root && m->test_run_flags != MANAGER_TEST_RUN_MINIMAL)
+        if (delete && m->cgroup_root)
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
         m->cgroup_empty_event_source = sd_event_source_unref(m->cgroup_empty_event_source);
