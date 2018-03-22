@@ -1189,6 +1189,7 @@ void session_restore_vt(Session *s) {
          */
         old_fd = s->vtfd;
         s->vtfd = -1;
+        old_fd = TAKE_FD(s->vtfd);
 
         vt = session_open_vt(s);
         safe_close(old_fd);
