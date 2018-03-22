@@ -81,8 +81,10 @@ int name_to_handle_at_loop(
 
                 if (name_to_handle_at(fd, path, h, &mnt_id, flags) >= 0) {
 
-                        if (ret_handle)
-                                *ret_handle = TAKE_PTR(h);
+                        if (ret_handle) {
+                                *ret_handle = h;
+                                h = NULL;
+                        }
 
                         if (ret_mnt_id)
                                 *ret_mnt_id = mnt_id;
@@ -294,7 +296,7 @@ int path_is_mount_point(const char *t, const char *root, int flags) {
          * /bin -> /usr/bin/ and /usr is a mount point, then the parent that we
          * look at needs to be /usr, not /. */
         if (flags & AT_SYMLINK_FOLLOW) {
-                r = chase_symlinks(t, root, 0, &canonical);
+                r = chase_symlinks(t, root, CHASE_TRAIL_SLASH, &canonical);
                 if (r < 0)
                         return r;
 
@@ -954,7 +956,8 @@ int mount_option_mangle(
         }
 
         *ret_mount_flags = mount_flags;
-        *ret_remaining_options = TAKE_PTR(ret);
+        *ret_remaining_options = ret;
+        ret = NULL;
 
         return 0;
 }
