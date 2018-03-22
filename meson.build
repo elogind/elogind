@@ -622,6 +622,7 @@ m4 = find_program('m4')
 stat = find_program('stat')
 git = find_program('git', required : false)
 env = find_program('env')
+perl = find_program('perl', required : false)
 
 #if 0 /// elogind does not use this but needs a tool to symlink its installed headers.
 # meson_make_symlink = meson.source_root() + '/tools/meson-make-symlink.sh'
