@@ -333,16 +333,13 @@ int detect_vm(void) {
 
         /* We have to use the correct order here:
          *
-         * → First, try to detect Oracle Virtualbox, even if it uses KVM, as well as Xen even if it cloaks as Microsoft
-         *   Hyper-V.
-         *
-         * → Second, try to detect from CPUID, this will report KVM for whatever software is used even if info in DMI is
-         *   overwritten.
-         *
-         * → Third, try to detect from DMI. */
+         * -> First try to detect Oracle Virtualbox, even if it uses KVM.
+         * -> Second try to detect from cpuid, this will report KVM for
+         *    whatever software is used even if info in dmi is overwritten.
+         * -> Third try to detect from dmi. */
 
         dmi = detect_vm_dmi();
-        if (IN_SET(dmi, VIRTUALIZATION_ORACLE, VIRTUALIZATION_XEN)) {
+        if (dmi == VIRTUALIZATION_ORACLE) {
                 r = dmi;
                 goto finish;
         }
@@ -371,7 +368,7 @@ int detect_vm(void) {
          * because we're not an x86 guest), then we should try the /proc/xen
          * directory next. If that's not found, then we check for the high-level
          * hypervisor sysfs file.
-	 */
+         */
 
         r = detect_vm_xen();
         if (r < 0)
