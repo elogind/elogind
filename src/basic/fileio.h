@@ -45,7 +45,7 @@ int read_full_stream(FILE *f, char **contents, size_t *size);
 
 int verify_file(const char *fn, const char *blob, bool accept_extra_nl);
 
-int parse_env_file(const char *fname, const char *separator, ...) _sentinel_;
+int parse_env_file(FILE *f, const char *fname, const char *separator, ...) _sentinel_;
 #if 0 /// UNNEEDED by elogind
 int load_env_file(FILE *f, const char *fname, const char *separator, char ***l);
 #endif // 0
