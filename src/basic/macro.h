@@ -63,6 +63,17 @@
 #endif
 #endif
 
+#if !defined(HAS_FEATURE_MEMORY_SANITIZER)
+#  if defined(__has_feature)
+#    if __has_feature(memory_sanitizer)
+#      define HAS_FEATURE_MEMORY_SANITIZER 1
+#    endif
+#  endif
+#  if !defined(HAS_FEATURE_MEMORY_SANITIZER)
+#    define HAS_FEATURE_MEMORY_SANITIZER 0
+#  endif
+#endif
+
 /* Temporarily disable some warnings */
 #define DISABLE_WARNING_DECLARATION_AFTER_STATEMENT                     \
         _Pragma("GCC diagnostic push");                                 \
@@ -427,7 +438,6 @@ static inline unsigned long ALIGN_POWER2(unsigned long u) {
         static inline void func##p(type *p) {                   \
                 if (*p)                                         \
                         func(*p);                               \
-        }                                                       \
-        struct __useless_struct_to_allow_trailing_semicolon__
+        }
 
 #include "log.h"
