@@ -42,7 +42,6 @@ int null_or_empty_fd(int fd);
 
 int path_is_read_only_fs(const char *path);
 #if 0 /// UNNEEDED by elogind
-int path_is_os_tree(const char *path);
 #endif // 0
 
 int files_same(const char *filea, const char *fileb, int flags);
