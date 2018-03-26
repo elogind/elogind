@@ -40,7 +40,7 @@ if [[ $minVers -gt 234 ]]; then
 
 	debug_opt="-Ddebug=\"\" --buildtype release"
 	if [[ "x$xType" = "xdebug" ]]; then
-		debug_opt="-Ddebug=elogind -Dtest=unsafe --buildtype debug"
+		debug_opt="-Ddebug=elogind -Dtests=unsafe --buildtype debug"
 	fi
 
 	set -x
@@ -80,7 +80,7 @@ if [[ $minVers -gt 234 ]]; then
 			 -Dcgroup-controller=openrc -Ddefault-hierarchy=$cgdefault \
 			 -Dacl=true -Dpam=true -Dselinux=false \
 			 -Dbashcompletiondir=$PREFIX/usr/share/bash-completion/completions \
-			 -Dzsh-completion=$PREFIX/usr/share/zsh/site-functions \
+			 -Dzshcompletiondir=$PREFIX/usr/share/zsh/site-functions \
 			 $extra_opts $(pwd -P) $(pwd -P)/build
 
 	set +x

@@ -91,7 +91,12 @@ foreach tuple : xsltproc.found() ? manpages : []
                                 output : htmlalias,
                                 command : ['ln', '-fs', html, '@OUTPUT@'])
                         if want_html
-                                dst = join_paths(docdir, 'html', htmlalias)
+#if 0 /// This must be configurable in elogind
+#                                 dst = join_paths(docdir, 'html', htmlalias)
+#else
+                                  dst = get_option('htmldir')
+                                  dst = dst != '' ? dst: join_paths(docdir, 'html', htmlalias)
+#endif // 0
                                 cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
                                 meson.add_install_script('sh', '-c', cmd)
                                 p2 += [link]

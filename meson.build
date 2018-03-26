@@ -175,15 +175,16 @@ pkgincludedir = join_paths(includedir, 'elogind/systemd')
 systemshutdowndir = join_paths(rootlibexecdir, 'system-shutdown')
 systemsleepdir = join_paths(rootlibexecdir, 'system-sleep')
 
-# in elogind, udev is external and hus configurable
+# in elogind, udev is external and thus configurable
 udevlibexecdir = get_option('udevbindir')
 udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : join_paths(rootprefixdir, 'lib/udev')
 udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : join_paths(udevlibexecdir, 'rules.d')
 udevhomedir = udevlibexecdir
 factorydir = join_paths(datadir, 'factory')
-docdir = '-'.join([join_paths(datadir, 'doc/elogind'),
-                             meson.project_version()])
+docdir = get_option('docdir')
+docdir = docdir != '' ? docdir: '-'.join([join_paths(datadir, 'doc/elogind'),
+                                          meson.project_version()])
 testsdir = join_paths(prefixdir, 'lib/elogind/tests')
 randomseeddir = join_paths(localstatedir, 'lib/elogind')
 #endif // 0
@@ -384,7 +385,7 @@ foreach arg : ['unused-parameter',
         endif
 endforeach
 
-if cc.compiles('
+if cc.compiles('''
    #include <time.h>
    #include <inttypes.h>
    typedef uint64_t usec_t;
@@ -393,7 +394,7 @@ if cc.compiles('
            struct timespec now;
            return 0;
    }
-', name : '-Werror=shadow with local shadowing')
+''', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -846,16 +847,19 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 debug = get_option('debug')
 enable_debug_hashmap = false
 enable_debug_mmap_cache = false
+#if 1 /// additional elogind debug mode
+enable_debug_elogind = false
+#endif // 1
 if debug != ''
         foreach name : debug.split(',')
                 if name == 'hashmap'
                         enable_debug_hashmap = true
                 elif name == 'mmap-cache'
-#if 1 /// additional elogind debug mode
-                        elif name == 'elogind'
-                        conf.set('ENABLE_DEBUG_ELOGIND', true)
-#endif // 1
                         enable_debug_mmap_cache = true
+#if 1 /// additional elogind debug mode
+                elif name == 'elogind'
+                        enable_debug_elogind = true
+#endif // 1
                 else
                         message('unknown debug option "@0@", ignoring'.format(name))
                 endif
@@ -863,6 +867,9 @@ if debug != ''
 endif
 conf.set10('ENABLE_DEBUG_HASHMAP', enable_debug_hashmap)
 conf.set10('ENABLE_DEBUG_MMAP_CACHE', enable_debug_mmap_cache)
+#if 1 /// additional elogind debug mode
+conf.set10('ENABLE_DEBUG_ELOGIND', enable_debug_elogind)
+#endif // 1
 
 #####################################################################
 
@@ -946,7 +953,7 @@ if want_polkit != 'false'
                 install_polkit_pkla = true
         endif
 endif
-conf.set10('ENABLE_POLKIT', install_polkit)
+conf.set10('ENABLE_POLKIT', install_polkit ? '1' : '0')
 
 want_acl = get_option('acl')
 if want_acl != 'false'
@@ -2832,12 +2839,14 @@ if git.found()
                 command : ['env', 'ctags', '-o', '@0@/tags'.format(meson.current_source_dir())] + all_files)
 endif
 
-if git.found()
-        meson_git_contrib_sh = find_program('tools/meson-git-contrib.sh')
-        run_target(
-                'git-contrib',
-                command : [meson_git_contrib_sh])
-endif
+#if 0 /// UNNEEDED by elogind
+# if git.found()
+#         meson_git_contrib_sh = find_program('tools/meson-git-contrib.sh')
+#         run_target(
+#                 'git-contrib',
+#                 command : [meson_git_contrib_sh])
+# endif
+#endif // 0
 
 if git.found()
         git_head = run_command(
@@ -3046,12 +3055,13 @@ foreach tuple : [
         ['debug mmap cache'],
 ]
 
-        cond = tuple.get(1, '')
-        if cond == ''
+        cond = tuple.get(1, false)
+        if not cond
                 ident1 = 'HAVE_' + tuple[0].underscorify().to_upper()
                 ident2 = 'ENABLE_' + tuple[0].underscorify().to_upper()
                 cond = conf.get(ident1, 0) == 1 or conf.get(ident2, 0) == 1
         endif
+
         if cond
                 found += [tuple[0]]
         else

@@ -53,6 +53,10 @@ option('udevrulesdir', type : 'string',
 option('udevbindir', type : 'string',
        description : '''directory for udev binary files''')
 
+# We are nice and make the documentation paths configurable
+option('docdir', type : 'string', description : 'path where to install the documentation.')
+option('htmldir', type : 'string', description : 'path where to install the HTML documentation.')
+
 # We have no systemd-shutdown binary, so we need 'halt' and 'reboot'
 option('halt-path', type : 'string', description : 'path to halt')
 option('reboot-path', type : 'string', description : 'path to reboot')
@@ -176,11 +180,11 @@ option('default-hierarchy', type : 'combo',
 # option('time-epoch', type : 'string',
 #        description : 'time epoch for time clients')
 #else
-       description : 'Wanted cgroup hierarchy if elogind has to be a cgroup controller:
+       description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
                 "legacy"  assumes cgroups version 1 mounted on /sys/fs/cgroup
                 "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified and
                                   cgroups version 1 mounted on /sys/fs/cgroup.
-                "unified" assumes cgroups version 2 on /sys/fs/cgroup')
+                "unified" assumes cgroups version 2 on /sys/fs/cgroup''')
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
 #endif // 0
