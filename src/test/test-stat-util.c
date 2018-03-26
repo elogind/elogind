@@ -53,12 +53,6 @@ static void test_is_symlink(void) {
         unlink(name_link);
 }
 
-static void test_path_is_os_tree(void) {
-        assert_se(path_is_os_tree("/") > 0);
-        assert_se(path_is_os_tree("/etc") == 0);
-        assert_se(path_is_os_tree("/idontexist") == -ENOENT);
-}
-
 static void test_path_is_fs_type(void) {
         /* run might not be a mount point in build chroots */
         if (path_is_mount_point("/run", NULL, AT_SYMLINK_FOLLOW) > 0) {
@@ -84,7 +78,6 @@ int main(int argc, char *argv[]) {
         test_files_same();
 #if 0 /// UNNEEDED by elogind
         test_is_symlink();
-        test_path_is_os_tree();
         test_path_is_fs_type();
         test_path_is_temporary_fs();
 #endif // 0

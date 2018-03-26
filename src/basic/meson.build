@@ -132,6 +132,8 @@
 #         ordered-set.h
 #         pager.c
 #         pager.h
+#         os-util.c
+#         os-util.h
 #         parse-util.c
 #         parse-util.h
 #         path-util.c
@@ -164,7 +166,6 @@
 #         securebits.h
 #         selinux-util.c
 #         selinux-util.h
-#         set.c
 #         set.h
 #         sigbus.c
 #         sigbus.h
