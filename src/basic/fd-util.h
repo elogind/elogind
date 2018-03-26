@@ -117,3 +117,5 @@ int rearrange_stdio(int original_input_fd, int original_output_fd, int original_
 static inline int make_null_stdio(void) {
         return rearrange_stdio(-1, -1, -1);
 }
+
+int fd_reopen(int fd, int flags);
