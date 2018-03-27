@@ -25,6 +25,7 @@
 #include <sys/types.h>
 
 #include "macro.h"
+//#include "label.h"
 
 bool mac_selinux_use(void);
 void mac_selinux_retest(void);
@@ -32,7 +33,7 @@ void mac_selinux_retest(void);
 int mac_selinux_init(void);
 void mac_selinux_finish(void);
 
-int mac_selinux_fix(const char *path, bool ignore_enoent, bool ignore_erofs);
+int mac_selinux_fix(const char *path, LabelFixFlags flags);
 #if 0 /// UNNEEDED by elogind
 int mac_selinux_apply(const char *path, const char *label);
 
