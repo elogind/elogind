@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -51,6 +50,9 @@
 //#include "time-util.h"
 #include "umask-util.h"
 #include "utf8.h"
+
+/// Additional includes needed by elogind
+#include <sys/mman.h>
 
 #define READ_FULL_BYTES_MAX (4U*1024U*1024U)
 

@@ -922,7 +922,7 @@ int safe_personality(unsigned long p) {
          * wrapper that uses errno if it is set, and uses the return value otherwise. And then it sets both errno and
          * the return value indicating the same issue, so that we are definitely on the safe side.
          *
-         * See https://github.com/elogind/elogind/issues/6737 */
+         * See https://github.com/systemd/systemd/issues/6737 */
 
         errno = 0;
         ret = personality(p);

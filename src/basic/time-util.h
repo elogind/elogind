@@ -168,9 +168,6 @@ clockid_t clock_boottime_or_monotonic(void);
 usec_t usec_shift_clock(usec_t, clockid_t from, clockid_t to);
 #endif // 0
 
-#define xstrftime(buf, fmt, tm) \
-        assert_message_se(strftime(buf, ELEMENTSOF(buf), fmt, tm) > 0, \
-                          "xstrftime: " #buf "[] must be big enough")
 
 #if 0 /// UNNEEDED by elogind
 int get_timezone(char **timezone);
