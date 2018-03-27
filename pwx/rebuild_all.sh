@@ -70,8 +70,8 @@ if [[ $minVers -gt 234 ]]; then
 		meson $debug_opt --prefix $PREFIX/usr -Drootprefix=$PREFIX \
 			--wrap-mode nodownload --libdir lib64 \
 			--localstatedir $PREFIX/var/lib  --sysconfdir $PREFIX/etc \
-			 -Ddocdir=$PREFIX/usr/share/doc/elogind-9999 \
-			 -Dhtmldir=$PREFIX/usr/share/doc/elogind-9999/html \
+			 -Ddocdir=$PREFIX/usr/share/doc/elogind-${xVersion} \
+			 -Dhtmldir=$PREFIX/usr/share/doc/elogind-${xVersion}/html \
 			 -Dpamlibdir=$PREFIX/lib64/security \
 			 -Dudevrulesdir=$PREFIX/lib/udev/rules.d \
 			 --libdir=$PREFIX/usr/lib64 -Drootlibdir=$PREFIX/lib64 \
