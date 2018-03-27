@@ -9,7 +9,7 @@ option('rootprefix', type : 'string',
 #if 0 /// UNNEEDED by elogind
 # option('link-udev-shared', type : 'boolean',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
-
+# 
 # option('sysvinit-path', type : 'string', value : '/etc/init.d',
 #        description : 'the directory where the SysV init scripts are located')
 # option('sysvrcnd-path', type : 'string', value : '/etc/rc.d',
@@ -19,7 +19,7 @@ option('rootprefix', type : 'string',
 #        value : '/etc/rc.local')
 # option('halt-local', type : 'string',
 #        value : '/usr/sbin/halt.local')
-
+# 
 # option('quotaon-path', type : 'string', description : 'path to quotaon')
 # option('quotacheck-path', type : 'string', description : 'path to quotacheck')
 # option('kill-path', type : 'string', description : 'path to kill')
@@ -48,7 +48,7 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 # option('umount-path', type : 'string', description : 'path to umount')
 # option('loadkeys-path', type : 'string', description : 'path to loadkeys')
 # option('setfont-path', type : 'string', description : 'path to setfont')
-
+# 
 # option('debug-shell', type : 'string', value : '/bin/sh',
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
@@ -152,20 +152,26 @@ option('fallback-hostname', type : 'string', value : 'localhost',
 #if 0 /// UNNEEDED by elogind
 # option('compat-gateway-hostname', type : 'boolean', value : 'false',
 #        description : 'allow "gateway" as the symbolic name for default gateway')
-#endif // 0
-option('default-hierarchy', type : 'combo',
-       choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
-       description : 'default cgroup hierarchy
-                "legacy"  assumes cgroups version 1 mounted on /sys/fs/cgroup
-                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified and
-                                  cgroups version 1 mounted on /sys/fs/cgroup.
-                "unified" assumes cgroups version 2 on /sys/fs/cgroup')
-#if 0 /// UNNEEDED by elogind
+# option('default-hierarchy', type : 'combo',
+#        choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
+#        description : 'default cgroup hierarchy')
 # option('time-epoch', type : 'string',
 #        description : 'time epoch for time clients')
 #else
+option('default-hierarchy', type : 'combo',
+       choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
+       description : '''default cgroup hierarchy if elogind must be its own controller:
+                "legacy"  assumes cgroups version 1 mounted on /sys/fs/cgroup
+                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified and
+                                  cgroups version 1 mounted on /sys/fs/cgroup.
+                "unified" assumes cgroups version 2 on /sys/fs/cgroup''')
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
+# docdir and htmldir must be configurable
+option('docdir', type : 'string',
+       description : 'directory for the documentation')
+option('htmldir', type : 'string',
+       description : 'directory for the HTML documentation')
 #endif // 0
 option('system-uid-max', type : 'string',
        description : 'maximum system UID')
@@ -210,7 +216,7 @@ option('gshadow', type : 'boolean',
 # option('www-target', type : 'string',
 #        description : 'the address and dir to upload docs too',
 #        value : 'www.freedesktop.org:/srv/www.freedesktop.org/www/software/systemd')
-
+# 
 # option('seccomp', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'SECCOMP support')
 #endif // 0

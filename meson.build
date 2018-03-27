@@ -150,8 +150,9 @@ udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : join_paths(udevlibexecdir, 'rules.d')
 udevhomedir = udevlibexecdir
 factorydir = join_paths(datadir, 'factory')
-docdir = '-'.join([join_paths(datadir, 'doc/elogind'),
-                             meson.project_version()])
+docdir = get_option('docdir')
+docdir = docdir != '' ? docdir : '-'.join([join_paths(datadir, 'doc/elogind'),
+                                           meson.project_version()])
 testsdir = join_paths(prefixdir, 'lib/elogind/tests')
 randomseeddir = join_paths(localstatedir, 'lib/elogind')
 #endif // 0
@@ -349,7 +350,7 @@ foreach arg : ['unused-parameter',
         endif
 endforeach
 
-if cc.compiles('
+if cc.compiles('''
    #include <time.h>
    #include <inttypes.h>
    typedef uint64_t usec_t;
@@ -358,7 +359,7 @@ if cc.compiles('
            struct timespec now;
            return 0;
    }
-', name : '-Werror=shadow with local shadowing')
+''', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -2901,8 +2902,8 @@ foreach tuple : [
         ['debug mmap cache'],
 ]
 
-        cond = tuple.get(1, '')
-        if cond == ''
+        cond = tuple.get(1, false)
+        if not cond
                 ident1 = 'HAVE_' + tuple[0].underscorify().to_upper()
                 ident2 = 'ENABLE_' + tuple[0].underscorify().to_upper()
                 cond = conf.get(ident1, 0) == 1 or conf.get(ident2, 0) == 1
