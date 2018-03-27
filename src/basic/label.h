@@ -23,7 +23,12 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-int label_fix(const char *path, bool ignore_enoent, bool ignore_erofs);
+typedef enum LabelFixFlags {
+        LABEL_IGNORE_ENOENT = 1U << 0,
+        LABEL_IGNORE_EROFS  = 1U << 1,
+} LabelFixFlags;
+
+int label_fix(const char *path, LabelFixFlags flags);
 
 int mkdir_label(const char *path, mode_t mode);
 #if 0 /// UNNEEDED by elogind
