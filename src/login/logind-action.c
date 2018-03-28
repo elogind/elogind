@@ -53,7 +53,8 @@ int manager_handle_action(
                 [HANDLE_KEXEC] = "Rebooting via kexec...",
                 [HANDLE_SUSPEND] = "Suspending...",
                 [HANDLE_HIBERNATE] = "Hibernating...",
-                [HANDLE_HYBRID_SLEEP] = "Hibernating and suspending..."
+                [HANDLE_HYBRID_SLEEP] = "Hibernating and suspending...",
+                [HANDLE_SUSPEND_THEN_HIBERNATE] = "Suspending, then hibernating...",
         };
 
 #if 0 /// elogind does this itself. No target table required
@@ -64,7 +65,8 @@ int manager_handle_action(
                 [HANDLE_KEXEC] = SPECIAL_KEXEC_TARGET,
                 [HANDLE_SUSPEND] = SPECIAL_SUSPEND_TARGET,
                 [HANDLE_HIBERNATE] = SPECIAL_HIBERNATE_TARGET,
-                [HANDLE_HYBRID_SLEEP] = SPECIAL_HYBRID_SLEEP_TARGET
+                [HANDLE_HYBRID_SLEEP] = SPECIAL_HYBRID_SLEEP_TARGET,
+                [HANDLE_SUSPEND_THEN_HIBERNATE] = SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
         };
 #endif // 0
 
@@ -119,6 +121,8 @@ int manager_handle_action(
                 supported = can_sleep("hibernate") > 0;
         else if (handle == HANDLE_HYBRID_SLEEP)
                 supported = can_sleep("hybrid-sleep") > 0;
+        else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
+                supported = can_sleep("suspend-then-hibernate") > 0;
 #else
         if (handle == HANDLE_SUSPEND)
                 supported = can_sleep(m, "suspend") > 0;
@@ -142,7 +146,9 @@ int manager_handle_action(
                 return -EALREADY;
         }
 
-        inhibit_operation = IN_SET(handle, HANDLE_SUSPEND, HANDLE_HIBERNATE, HANDLE_HYBRID_SLEEP) ? INHIBIT_SLEEP : INHIBIT_SHUTDOWN;
+        inhibit_operation = IN_SET(handle, HANDLE_SUSPEND, HANDLE_HIBERNATE,
+                                           HANDLE_HYBRID_SLEEP,
+                                           HANDLE_SUSPEND_THEN_HIBERNATE) ? INHIBIT_SLEEP : INHIBIT_SHUTDOWN;
 
         /* If the actual operation is inhibited, warn and fail */
         if (!ignore_inhibited &&
@@ -193,6 +199,7 @@ static const char* const handle_action_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_SUSPEND] = "suspend",
         [HANDLE_HIBERNATE] = "hibernate",
         [HANDLE_HYBRID_SLEEP] = "hybrid-sleep",
+        [HANDLE_SUSPEND_THEN_HIBERNATE] = "suspend-then-hibernate",
         [HANDLE_LOCK] = "lock"
 };
 

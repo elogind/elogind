@@ -1,6 +1,9 @@
 <?xml version='1.0'?> <!--*- Mode: nxml; nxml-child-indent: 2; indent-tabs-mode: nil -*-->
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY % entities SYSTEM "custom-entities.ent" >
+%entities;
+]>
 
 <!--
   SPDX-License-Identifier: LGPL-2.1+
@@ -156,12 +159,12 @@
         corresponding to the session and all processes inside that scope will be
         terminated. If false, the scope is "abandoned", see
         <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+        and processes are not killed. Defaults to <literal>&KILL_USER_PROCESSES;</literal>,
         --><!-- else -->
         user should be killed when the user logs out. If true, the processes
         listed in their session cgroup will be terminated. If false, the session cgroup
         is ignored
         <!-- // 0 -->
-        and processes are not killed. Defaults to <literal>yes</literal>,
         but see the options <varname>KillOnlyUsers=</varname> and
         <varname>KillExcludeUsers=</varname> below.</para>
 
@@ -216,7 +219,8 @@
         <literal>kexec</literal>,
         <literal>suspend</literal>,
         <literal>hibernate</literal>,
-        <literal>hybrid-sleep</literal>, and
+        <literal>hybrid-sleep</literal>,
+        <literal>suspend-then-hibernate</literal>, and
         <literal>lock</literal>.
         Defaults to <literal>ignore</literal>.</para>
 
@@ -265,7 +269,8 @@
         <literal>kexec</literal>,
         <literal>suspend</literal>,
         <literal>hibernate</literal>,
-        <literal>hybrid-sleep</literal>, and
+        <literal>hybrid-sleep</literal>,
+        <literal>suspend-then-hibernate</literal>, and
         <literal>lock</literal>.
         If <literal>ignore</literal>, logind will never handle these
         keys. If <literal>lock</literal>, all running sessions will be
