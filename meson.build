@@ -2916,9 +2916,9 @@ subdir('man')
 subdir('shell-completion/bash')
 subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
-# subdir('docs/sysvinit')
-# subdir('docs/var-log')
 #endif // 0
+subdir('doc/sysvinit')
+subdir('doc/var-log')
 
 # FIXME: figure out if the warning is true:
 # https://github.com/mesonbuild/meson/wiki/Reference-manual#install_subdir
