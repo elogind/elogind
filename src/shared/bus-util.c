@@ -1061,7 +1061,7 @@ int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_err
         return 0;
 }
 
-static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata, bool copy_string) {
+static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, unsigned flags, sd_bus_error *error, void *userdata) {
         char type;
         int r;
 
@@ -1082,7 +1082,7 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
                 if (isempty(s))
                         s = NULL;
 
-                if (copy_string)
+                if (flags & BUS_MAP_STRDUP)
                         return free_and_strdup((char **) userdata, s);
 
                 *p = s;
@@ -1103,14 +1103,17 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
         }
 
         case SD_BUS_TYPE_BOOLEAN: {
-                unsigned b;
-                bool *p = userdata;
+                int b;
 
                 r = sd_bus_message_read_basic(m, type, &b);
                 if (r < 0)
                         return r;
 
-                *p = !!b;
+                if (flags & BUS_MAP_BOOLEAN_AS_BOOL)
+                        * (bool*) userdata = !!b;
+                else
+                        * (int*) userdata = b;
+
                 return 0;
         }
 
@@ -1155,7 +1158,7 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_
 int bus_message_map_all_properties(
                 sd_bus_message *m,
                 const struct bus_properties_map *map,
-                bool copy_string,
+                unsigned flags,
                 sd_bus_error *error,
                 void *userdata) {
 
@@ -1198,7 +1201,7 @@ int bus_message_map_all_properties(
                         if (map[i].set)
                                 r = prop->set(sd_bus_message_get_bus(m), member, m, error, v);
                         else
-                                r = map_basic(sd_bus_message_get_bus(m), member, m, error, v, copy_string);
+                                r = map_basic(sd_bus_message_get_bus(m), member, m, flags, error, v);
                         if (r < 0)
                                 return r;
 
@@ -1225,7 +1228,7 @@ int bus_message_map_all_properties(
 int bus_message_map_properties_changed(
                 sd_bus_message *m,
                 const struct bus_properties_map *map,
-                bool copy_string,
+                unsigned flags,
                 sd_bus_error *error,
                 void *userdata) {
 
@@ -1235,7 +1238,7 @@ int bus_message_map_properties_changed(
         assert(m);
         assert(map);
 
-        r = bus_message_map_all_properties(m, map, copy_string, error, userdata);
+        r = bus_message_map_all_properties(m, map, flags, error, userdata);
         if (r < 0)
                 return r;
 
@@ -1266,6 +1269,7 @@ int bus_map_all_properties(
                 const char *destination,
                 const char *path,
                 const struct bus_properties_map *map,
+                unsigned flags,
                 sd_bus_error *error,
                 sd_bus_message **reply,
                 void *userdata) {
@@ -1277,6 +1281,7 @@ int bus_map_all_properties(
         assert(destination);
         assert(path);
         assert(map);
+        assert(reply || (flags & BUS_MAP_STRDUP));
 
         r = sd_bus_call_method(
                         bus,
@@ -1290,7 +1295,7 @@ int bus_map_all_properties(
         if (r < 0)
                 return r;
 
-        r = bus_message_map_all_properties(m, map, !reply, error, userdata);
+        r = bus_message_map_all_properties(m, map, flags, error, userdata);
         if (r < 0)
                 return r;
 
