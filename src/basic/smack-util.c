@@ -253,7 +253,7 @@ int mac_smack_apply_pid(pid_t pid, const char *label) {
 }
 #endif // 0
 
-int mac_smack_fix(const char *path, bool ignore_enoent, bool ignore_erofs) {
+int mac_smack_fix(const char *path, LabelFixFlags flags) {
         return 0;
 }
 
