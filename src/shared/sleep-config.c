@@ -97,13 +97,13 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
                 else
                         states = strv_new("disk", NULL);
 
-        } else if (streq(verb, "suspend-to-hibernate"))
+        } else if (streq(verb, "suspend-then-hibernate"))
                 modes = states = NULL;
         else
                 assert_not_reached("what verb");
 
         if ((!modes && STR_IN_SET(verb, "hibernate", "hybrid-sleep")) ||
-            (!states && !streq(verb, "suspend-to-hibernate"))) {
+            (!states && !streq(verb, "suspend-then-hibernate"))) {
                 strv_free(modes);
                 strv_free(states);
                 return log_oom();
@@ -319,12 +319,14 @@ int can_sleep(const char *verb) {
             || !can_sleep_disk(m->suspend_mode) ) )
                 return false;
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-to-hibernate"));
+        assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 
         if ( streq(verb, "hibernate")
           && ( !can_sleep_state(m->hibernate_state)
             || !can_sleep_disk(m->hibernate_mode) ) )
                 return false;
         if (streq(verb, "suspend-to-hibernate"))
+        if (streq(verb, "suspend-then-hibernate"))
                 return can_s2h();
 
         if ( streq(verb, "hybrid-sleep")
