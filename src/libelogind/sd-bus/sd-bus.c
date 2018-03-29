@@ -1223,7 +1223,7 @@ _public_ int sd_bus_start(sd_bus *bus) {
         return bus_send_hello(bus);
 }
 
-_public_ int sd_bus_open(sd_bus **ret) {
+_public_ int sd_bus_open_with_description(sd_bus **ret, const char *description) {
         const char *e;
         sd_bus *b;
         int r;
@@ -1237,21 +1237,21 @@ _public_ int sd_bus_open(sd_bus **ret) {
         e = secure_getenv("DBUS_STARTER_BUS_TYPE");
         if (e) {
                 if (streq(e, "system"))
-                        return sd_bus_open_system(ret);
+                        return sd_bus_open_system_with_description(ret, description);
 #if 0 /// elogind does not support systemd user instances
                 else if (STR_IN_SET(e, "session", "user"))
-                        return sd_bus_open_user(ret);
 #endif // 0
+                        return sd_bus_open_user_with_description(ret, description);
         }
 
         e = secure_getenv("DBUS_STARTER_ADDRESS");
         if (!e) {
 #if 0 /// elogind does not support systemd user instances
                 if (cg_pid_get_owner_uid(0, NULL) >= 0)
-                        return sd_bus_open_user(ret);
+                        return sd_bus_open_user_with_description(ret, description);
                 else
 #endif // 0
-                        return sd_bus_open_system(ret);
+                        return sd_bus_open_system_with_description(ret, description);
         }
 
         r = sd_bus_new(&b);
@@ -1282,6 +1282,10 @@ fail:
         return r;
 }
 
+_public_ int sd_bus_open(sd_bus **ret) {
+        return sd_bus_open_with_description(ret, NULL);
+}
+
 int bus_set_address_system(sd_bus *b) {
         const char *e;
         assert(b);
@@ -1293,7 +1297,7 @@ int bus_set_address_system(sd_bus *b) {
         return sd_bus_set_address(b, DEFAULT_SYSTEM_BUS_ADDRESS);
 }
 
-_public_ int sd_bus_open_system(sd_bus **ret) {
+_public_ int sd_bus_open_system_with_description(sd_bus **ret, const char *description) {
         sd_bus *b;
         int r;
 
@@ -1302,6 +1306,12 @@ _public_ int sd_bus_open_system(sd_bus **ret) {
         r = sd_bus_new(&b);
         if (r < 0)
                 return r;
+
+        if (description) {
+                r = sd_bus_set_description(b, description);
+                if (r < 0)
+                        goto fail;
+        }
 
         r = bus_set_address_system(b);
         if (r < 0)
@@ -1326,6 +1336,10 @@ _public_ int sd_bus_open_system(sd_bus **ret) {
 fail:
         bus_free(b);
         return r;
+}
+
+_public_ int sd_bus_open_system(sd_bus **ret) {
+        return sd_bus_open_system_with_description(ret, NULL);
 }
 
 #if 0 /// elogind can not open/use a user bus
@@ -1356,7 +1370,7 @@ int bus_set_address_user(sd_bus *b) {
 }
 #endif // 0
 
-_public_ int sd_bus_open_user(sd_bus **ret) {
+_public_ int sd_bus_open_user_with_description(sd_bus **ret, const char *description) {
 #if 0 /// elogind does not support user buses
         sd_bus *b;
         int r;
@@ -1366,6 +1380,12 @@ _public_ int sd_bus_open_user(sd_bus **ret) {
         r = sd_bus_new(&b);
         if (r < 0)
                 return r;
+
+        if (description) {
+                r = sd_bus_set_description(b, description);
+                if (r < 0)
+                        goto fail;
+        }
 
         r = bus_set_address_user(b);
         if (r < 0)
@@ -1389,6 +1409,10 @@ _public_ int sd_bus_open_user(sd_bus **ret) {
 fail:
         bus_free(b);
         return r;
+}
+
+_public_ int sd_bus_open_user(sd_bus **ret) {
+        return sd_bus_open_user_with_description(ret, NULL);
 #else
         return sd_bus_open_system(ret);
 #endif // 0
