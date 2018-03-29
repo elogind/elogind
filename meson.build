@@ -518,7 +518,8 @@ endforeach
 
 foreach ident : [
         ['memfd_create',      '''#define _GNU_SOURCE
-//                                 #include <sys/mman.h>'''],
+                                 #include <sys/mman.h>
+                                 #include <sys/memfd.h>'''],
         ['gettid',            '''#include <sys/types.h>'''],
         ['pivot_root',        '''#include <stdlib.h>'''],     # no known header declares pivot_root
         ['name_to_handle_at', '''#define _GNU_SOURCE
@@ -531,7 +532,7 @@ foreach ident : [
         ['kcmp',              '''#include <linux/kcmp.h>'''],
         ['keyctl',            '''#include <sys/types.h>
                                  #include <keyutils.h>'''],
-        ['copy_file_range',   '''#include <sys/syscall.h>
+        ['copy_file_range',   '''#define _GNU_SOURCE
                                  #include <unistd.h>'''],
         ['bpf',               '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
