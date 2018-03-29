@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include "time-util.h"
+#include "util.h"
 
 int unlink_noerrno(const char *path);
 
@@ -103,6 +104,7 @@ int chase_symlinks(const char *path_with_prefix, const char *root, unsigned flag
 
 /* Useful for usage with _cleanup_(), removes a directory and frees the pointer */
 static inline void rmdir_and_free(char *p) {
+        PROTECT_ERRNO;
         (void) rmdir(p);
         free(p);
 }
@@ -110,7 +112,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(char*, rmdir_and_free);
 
 #if 0 /// UNNEEDED by elogind
 static inline void unlink_and_free(char *p) {
-        (void) unlink(p);
+        (void) unlink_noerrno(p);
         free(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
