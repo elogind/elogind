@@ -84,7 +84,7 @@ endif
 #if 0 /// UNNEEDED by elogind
 # sysvinit_path = get_option('sysvinit-path')
 # sysvrcnd_path = get_option('sysvrcnd-path')
-# have = sysvinit_path != '' or sysvrcnd_path != ''
+# have = sysvinit_path != '' and sysvrcnd_path != ''
 # conf.set10('HAVE_SYSV_COMPAT', have,
 #            description : 'SysV init scripts and rcN.d links are supported')
 # m4_defines += have ? ['-DHAVE_SYSV_COMPAT'] : []
@@ -517,33 +517,33 @@ foreach ident : ['secure_getenv', '__secure_getenv']
 endforeach
 
 foreach ident : [
-        ['memfd_create',      '''#define _GNU_SOURCE
-                                 #include <sys/mman.h>
+        ['memfd_create',      '''#include <sys/mman.h>
                                  #include <sys/memfd.h>'''],
-        ['gettid',            '''#include <sys/types.h>'''],
-        ['pivot_root',        '''#include <stdlib.h>'''],     # no known header declares pivot_root
-        ['name_to_handle_at', '''#define _GNU_SOURCE
-                                 #include <sys/types.h>
+        ['gettid',            '''#include <sys/types.h>
+                                 #include <unistd.h>'''],
+        ['pivot_root',        '''#include <stdlib.h>
+                                 #include <unistd.h>'''],     # no known header declares pivot_root
+        ['name_to_handle_at', '''#include <sys/types.h>
                                  #include <sys/stat.h>
                                  #include <fcntl.h>'''],
-        ['setns',             '''#define _GNU_SOURCE
-                                 #include <sched.h>'''],
-        ['renameat2',         '''#include <stdio.h>'''],
+        ['setns',             '''#include <sched.h>'''],
+        ['renameat2',         '''#include <stdio.h>
+                                 #include <fcntl.h>'''],
         ['kcmp',              '''#include <linux/kcmp.h>'''],
         ['keyctl',            '''#include <sys/types.h>
                                  #include <keyutils.h>'''],
-        ['copy_file_range',   '''#define _GNU_SOURCE
+        ['copy_file_range',   '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
         ['bpf',               '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
         ['explicit_bzero' ,   '''#include <string.h>'''],
 ]
 
-        have = cc.has_function(ident[0], prefix : ident[1])
+        have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE')
         conf.set10('HAVE_' + ident[0].to_upper(), have)
 endforeach
 
-if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''')
+if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''', args : '-D_GNU_SOURCE')
         conf.set10('USE_SYS_RANDOM_H', true)
         conf.set10('HAVE_GETRANDOM', true)
 else
@@ -573,8 +573,7 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 # if -Dxxx-path option is found, use that. Otherwise, check in $PATH,
 # /usr/sbin, /sbin, and fall back to the default from middle column.
 #if 0 /// elogind has a bit different list and some adaptions
-# progs = [['telinit',    '/lib/sysvinit/telinit'],
-#          ['quotaon',    '/usr/sbin/quotaon'    ],
+# progs = [['quotaon',    '/usr/sbin/quotaon'    ],
 #          ['quotacheck', '/usr/sbin/quotacheck' ],
 #          ['kill',       '/usr/bin/kill'        ],
 #          ['kmod',       '/usr/bin/kmod'        ],
@@ -606,6 +605,10 @@ foreach prog : progs
         conf.set_quoted(name, path)
         substs.set(name, path)
 endforeach
+
+#if 0 /// UNNEEDED by elogind
+# conf.set_quoted('TELINIT', get_option('telinit-path'))
+#endif // 0
 
 if run_command('ln', '--relative', '--help').returncode() != 0
         error('ln does not support --relative')
@@ -954,7 +957,11 @@ if want_polkit != 'false'
                 install_polkit_pkla = true
         endif
 endif
+#if 0 /// elogind has to be compatible with the latest meson
+# conf.set10('ENABLE_POLKIT', install_polkit)
+#else
 conf.set10('ENABLE_POLKIT', install_polkit ? '1' : '0')
+#endif // 0
 
 want_acl = get_option('acl')
 if want_acl != 'false'
@@ -2555,6 +2562,7 @@ executable('elogind-cgroups-agent',
 # 
 # exe = executable('udevadm',
 #                  udevadm_sources,
+#                  c_args : ['-DLOG_REALM=LOG_REALM_UDEV'],
 #                  include_directories : includes,
 #                  link_with : [libudev_core,
 #                               libsystemd_network,
@@ -2802,6 +2810,10 @@ install_data('README',
              'LICENSE.GPL2',
              'LICENSE.LGPL2.1',
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
+#if 0 /// UNNEEDED by elogind
+#              'TRANSIENT-SETTINGS.md',
+#              'UIDS-GIDS.md',
+#endif // 0
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind
@@ -3056,13 +3068,17 @@ foreach tuple : [
         ['debug mmap cache'],
 ]
 
+#if 0 /// elogind has to be compatible with the latest meson
+#         cond = tuple.get(1, '')
+#         if cond == ''
+#else
         cond = tuple.get(1, false)
         if not cond
+#endif // 0
                 ident1 = 'HAVE_' + tuple[0].underscorify().to_upper()
                 ident2 = 'ENABLE_' + tuple[0].underscorify().to_upper()
                 cond = conf.get(ident1, 0) == 1 or conf.get(ident2, 0) == 1
         endif
-
         if cond
                 found += [tuple[0]]
         else
