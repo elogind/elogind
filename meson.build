@@ -640,7 +640,6 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// elogind has a bit different list and some adaptions
 # progs = [['quotaon',    '/usr/sbin/quotaon'    ],
 #          ['quotacheck', '/usr/sbin/quotacheck' ],
-#          ['kill',       '/usr/bin/kill'        ],
 #          ['kmod',       '/usr/bin/kmod'        ],
 #          ['kexec',      '/usr/sbin/kexec'      ],
 #          ['sulogin',    '/usr/sbin/sulogin'    ],
