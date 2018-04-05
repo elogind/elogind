@@ -1298,8 +1298,7 @@ int get_timezones(char ***ret) {
         } else if (errno != ENOENT)
                 return -errno;
 
-        *ret = zones;
-        zones = NULL;
+        *ret = TAKE_PTR(zones);
 
         return 0;
 }

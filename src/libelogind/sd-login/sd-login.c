@@ -771,15 +771,11 @@ _public_ int sd_seat_get_sessions(const char *seat, char ***sessions, uid_t **ui
 
         r = strv_length(a);
 
-        if (sessions) {
-                *sessions = a;
-                a = NULL;
-        }
+        if (sessions)
+                *sessions = TAKE_PTR(a);
 
-        if (uids) {
-                *uids = b;
-                b = NULL;
-        }
+        if (uids)
+                *uids = TAKE_PTR(b);
 
         if (n_uids)
                 *n_uids = n;
@@ -894,10 +890,8 @@ _public_ int sd_get_uids(uid_t **users) {
                         r++;
         }
 
-        if (users) {
-                *users = l;
-                l = NULL;
-        }
+        if (users)
+                *users = TAKE_PTR(l);
 
         return r;
 }
