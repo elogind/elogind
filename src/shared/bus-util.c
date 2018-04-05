@@ -607,8 +607,7 @@ int bus_connect_system_systemd(sd_bus **_bus) {
         if (r < 0)
                 return r;
 
-        *_bus = bus;
-        bus = NULL;
+        *_bus = TAKE_PTR(bus);
 
         return 0;
 }
@@ -645,8 +644,7 @@ int bus_connect_user_systemd(sd_bus **_bus) {
         if (r < 0)
                 return r;
 
-        *_bus = bus;
-        bus = NULL;
+        *_bus = TAKE_PTR(bus);
 
         return 0;
 }
@@ -1346,8 +1344,7 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         if (r < 0)
                 return r;
 
-        *ret = bus;
-        bus = NULL;
+        *ret = TAKE_PTR(bus);
 
         return 0;
 }
@@ -1736,8 +1733,7 @@ int bus_open_system_watch_bind(sd_bus **ret) {
         if (r < 0)
                 return r;
 
-        *ret = bus;
-        bus = NULL;
+        *ret = TAKE_PTR(bus);
 
         return 0;
 }

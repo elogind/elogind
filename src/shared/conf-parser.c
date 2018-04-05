@@ -1184,8 +1184,7 @@ int config_parse_join_controllers(
         }
 
         strv_free_free(*ret);
-        *ret = controllers;
-        controllers = NULL;
+        *ret = TAKE_PTR(controllers);
 
         return 0;
 }

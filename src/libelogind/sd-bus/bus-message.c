@@ -513,8 +513,7 @@ int bus_message_from_header(
         }
 
         m->bus = sd_bus_ref(bus);
-        *ret = m;
-        m = NULL;
+        *ret = TAKE_PTR(m);
 
         return 0;
 }
@@ -5871,8 +5870,7 @@ int bus_message_remarshal(sd_bus *bus, sd_bus_message **m) {
                 return r;
 
         sd_bus_message_unref(*m);
-        *m = n;
-        n = NULL;
+        *m = TAKE_PTR(n);
 
         return 0;
 }
