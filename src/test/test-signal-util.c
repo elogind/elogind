@@ -3,28 +3,26 @@
   This file is part of systemd.
 
   Copyright 2016 Lennart Poettering
-
-  systemd is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  systemd is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <signal.h>
 #include <unistd.h>
 
+//#include "log.h"
 #include "macro.h"
 #include "signal-util.h"
 /// Additional includes needed by elogind
 #include "process-util.h"
+
+#define info(sig) log_info(#sig " = " STRINGIFY(sig) " = %d", sig)
+
+static void test_rt_signals(void) {
+        info(SIGRTMIN);
+        info(SIGRTMAX);
+
+        /* We use signals SIGRTMIN+0 to SIGRTMIN+24 unconditionally */
+        assert(SIGRTMAX - SIGRTMIN >= 24);
+}
 
 static void test_block_signals(void) {
         sigset_t ss;
@@ -63,6 +61,7 @@ static void test_ignore_signals(void) {
 }
 
 int main(int argc, char *argv[]) {
+        test_rt_signals();
         test_block_signals();
         test_ignore_signals();
 
