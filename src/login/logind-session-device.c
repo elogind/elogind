@@ -3,19 +3,6 @@
   This file is part of systemd.
 
   Copyright 2013 David Herrmann
-
-  systemd is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  systemd is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <fcntl.h>
@@ -197,19 +184,16 @@ static int session_device_start(SessionDevice *sd) {
         switch (sd->type) {
 
         case DEVICE_TYPE_DRM:
-
                 if (sd->fd < 0) {
-                        /* Open device if it isn't open yet */
-                        sd->fd = session_device_open(sd, true);
-                        if (sd->fd < 0)
-                                return sd->fd;
-                } else {
-                        /* Device is kept open. Simply call drmSetMaster() and hope there is no-one else. In case it fails, we
-                         * keep the device paused. Maybe at some point we have a drmStealMaster(). */
-                        r = sd_drmsetmaster(sd->fd);
-                        if (r < 0)
-                                return r;
+                        log_error("Failed to re-activate DRM fd, as the fd was lost (maybe logind restart went wrong?)");
+                        return -EBADF;
                 }
+
+                /* Device is kept open. Simply call drmSetMaster() and hope there is no-one else. In case it fails, we
+                 * keep the device paused. Maybe at some point we have a drmStealMaster(). */
+                r = sd_drmsetmaster(sd->fd);
+                if (r < 0)
+                        return r;
                 break;
 
         case DEVICE_TYPE_EVDEV:
@@ -243,6 +227,11 @@ static void session_device_stop(SessionDevice *sd) {
         switch (sd->type) {
 
         case DEVICE_TYPE_DRM:
+                if (sd->fd < 0) {
+                        log_error("Failed to de-activate DRM fd, as the fd was lost (maybe logind restart went wrong?)");
+                        return;
+                }
+
                 /* On DRM devices we simply drop DRM-Master but keep it open.
                  * This allows the user to keep resources allocated. The
                  * CAP_SYS_ADMIN restriction to DRM-Master prevents users from
@@ -420,15 +409,21 @@ error:
 void session_device_free(SessionDevice *sd) {
         assert(sd);
 
+        /* Make sure to remove the pushed fd. */
         if (sd->pushed_fd) {
-                const char *m;
+                _cleanup_free_ char *m = NULL;
+                const char *id;
+                int r;
 
-                /* Remove the pushed fd again, just in case. */
+                /* Session ID does not contain separators. */
+                id = sd->session->id;
+                assert(*(id + strcspn(id, "-\n")) == '\0');
 
-                m = strjoina("FDSTOREREMOVE=1\n"
-                             "FDNAME=session-", sd->session->id);
-
-                (void) sd_notify(false, m);
+                r = asprintf(&m, "FDSTOREREMOVE=1\n"
+                                 "FDNAME=session-%s-device-%u-%u\n",
+                                 id, major(sd->dev), minor(sd->dev));
+                if (r >= 0)
+                        (void) sd_notify(false, m);
         }
 
         session_device_stop(sd);
@@ -514,7 +509,8 @@ unsigned int session_device_try_pause_all(Session *s) {
 }
 
 int session_device_save(SessionDevice *sd) {
-        const char *m;
+        _cleanup_free_ char *m = NULL;
+        const char *id;
         int r;
 
         assert(sd);
@@ -528,9 +524,16 @@ int session_device_save(SessionDevice *sd) {
 
         if (sd->pushed_fd)
                 return 0;
+              
+        /* Session ID does not contain separators. */
+        id = sd->session->id;
+        assert(*(id + strcspn(id, "-\n")) == '\0');
 
-        m = strjoina("FDSTORE=1\n"
-                     "FDNAME=session-", sd->session->id);
+        r = asprintf(&m, "FDSTORE=1\n"
+                         "FDNAME=session-%s-device-%u-%u\n",
+                         id, major(sd->dev), minor(sd->dev));
+        if (r < 0)
+                return r;
 
         r = sd_pid_notify_with_fds(0, false, m, &sd->fd, 1);
         if (r < 0)

@@ -3,19 +3,6 @@
   This file is part of systemd.
 
   Copyright 2010 Lennart Poettering
-
-  systemd is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  systemd is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <errno.h>
@@ -715,8 +702,9 @@ int log_internalv_realm(
         if (_likely_(LOG_PRI(level) > log_max_level[realm]))
                 return -error;
 
-        /* Make sure that %m maps to the specified error (or "Success"). */
-        errno = error;
+        /* Make sure that %m maps to the specified error */
+        if (error != 0)
+                errno = error;
 
         (void) vsnprintf(buffer, sizeof buffer, format, ap);
 
@@ -764,8 +752,9 @@ static int log_object_internalv(
         if (_likely_(LOG_PRI(level) > log_max_level[LOG_REALM_SYSTEMD]))
                 return -error;
 
-        /* Make sure that %m maps to the specified error (or "Success"). */
-        errno = error;
+        /* Make sure that %m maps to the specified error */
+        if (error != 0)
+                errno = error;
 
         /* Prepend the object name before the message */
         if (object) {
@@ -888,7 +877,8 @@ int log_format_iovec(
                  * since vasprintf() leaves it afterwards at
                  * an undefined location */
 
-                errno = error;
+                if (error != 0)
+                        errno = error;
 
                 va_copy(aq, ap);
                 r = vasprintf(&m, format, aq);
@@ -991,7 +981,8 @@ int log_struct_internal(
         while (format) {
                 va_list aq;
 
-                errno = error;
+                if (error != 0)
+                        errno = error;
 
                 va_copy(aq, ap);
                 (void) vsnprintf(buf, sizeof buf, format, aq);
@@ -1293,7 +1284,8 @@ int log_syntax_internal(
         if (log_target == LOG_TARGET_NULL)
                 return -error;
 
-        errno = error;
+        if (error != 0)
+                errno = error;
 
         va_start(ap, format);
         (void) vsnprintf(buffer, sizeof buffer, format, ap);

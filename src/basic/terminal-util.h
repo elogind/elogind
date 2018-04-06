@@ -5,19 +5,6 @@
   This file is part of systemd.
 
   Copyright 2010 Lennart Poettering
-
-  systemd is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  systemd is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <stdarg.h>
@@ -149,16 +136,13 @@ bool dev_console_colors_enabled(void);
 #define DEFINE_ANSI_FUNC(name, NAME)                            \
         static inline const char *ansi_##name(void) {           \
                 return colors_enabled() ? ANSI_##NAME : "";     \
-        }                                                       \
-        struct __useless_struct_to_allow_trailing_semicolon__
+        }
 
 #define DEFINE_ANSI_FUNC_UNDERLINE(name, NAME, REPLACEMENT)             \
         static inline const char *ansi_##name(void) {                   \
                 return underline_enabled() ? ANSI_##NAME :              \
                         colors_enabled() ? ANSI_##REPLACEMENT : "";     \
-        }                                                               \
-        struct __useless_struct_to_allow_trailing_semicolon__
-
+        }
 
 DEFINE_ANSI_FUNC(highlight,                  HIGHLIGHT);
 DEFINE_ANSI_FUNC(highlight_red,              HIGHLIGHT_RED);

@@ -3,19 +3,6 @@
   This file is part of systemd.
 
   Copyright 2010 Lennart Poettering
-
-  systemd is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  systemd is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <errno.h>
@@ -81,10 +68,8 @@ int name_to_handle_at_loop(
 
                 if (name_to_handle_at(fd, path, h, &mnt_id, flags) >= 0) {
 
-                        if (ret_handle) {
-                                *ret_handle = h;
-                                h = NULL;
-                        }
+                        if (ret_handle)
+                                *ret_handle = TAKE_PTR(h);
 
                         if (ret_mnt_id)
                                 *ret_mnt_id = mnt_id;
@@ -956,8 +941,7 @@ int mount_option_mangle(
         }
 
         *ret_mount_flags = mount_flags;
-        *ret_remaining_options = ret;
-        ret = NULL;
+        *ret_remaining_options = TAKE_PTR(ret);
 
         return 0;
 }

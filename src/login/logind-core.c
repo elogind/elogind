@@ -3,19 +3,6 @@
   This file is part of systemd.
 
   Copyright 2011 Lennart Poettering
-
-  systemd is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  systemd is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <fcntl.h>
@@ -302,6 +289,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
                 goto not_found;
 
         s = hashmap_get(m->session_units, unit);
+        if (!s)
                 goto not_found;
 
         if (ret)
@@ -316,7 +304,6 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
         log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
                           session_name, s && s->id ? s->id : "NULL");
 #endif // 0
-        if (!s)
 
         return 1;
 
@@ -349,6 +336,10 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
         if (!u)
                 goto not_found;
 
+        if (ret)
+                *ret = u;
+
+        return 1;
 
 not_found:
         if (ret)
@@ -364,7 +355,6 @@ not_found:
 
         *user = s->user;
 #endif // 0
-        return 1;
 }
 
 int manager_get_idle_hint(Manager *m, dual_timestamp *t) {
