@@ -21,7 +21,7 @@ project('elogind', 'c',
 libelogind_version = '0.22.0'
 #endif // 0
 
-# We need the same data in two different formats, ugh!
+# We need the same data in three different formats, ugh!
 # Also, for hysterical reasons, we use different variable
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
@@ -36,6 +36,8 @@ substs = configuration_data()
 substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
 #endif // 0
 substs.set('PACKAGE_VERSION',      meson.project_version())
+
+m4_defines = []
 
 #####################################################################
 #if 0 /// elogind does not need this
@@ -82,9 +84,11 @@ endif
 #if 0 /// UNNEEDED by elogind
 # sysvinit_path = get_option('sysvinit-path')
 # sysvrcnd_path = get_option('sysvrcnd-path')
-# conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
+# have = sysvinit_path != '' and sysvrcnd_path != ''
+# conf.set10('HAVE_SYSV_COMPAT', have,
 #            description : 'SysV init scripts and rcN.d links are supported')
 #endif // 0
+m4_defines += have ? ['-DHAVE_SYSV_COMPAT'] : []
 
 # join_paths ignore the preceding arguments if an absolute component is
 # encountered, so this should canonicalize various paths when they are
@@ -440,7 +444,8 @@ if cc.get_id() == 'clang'
         foreach arg : ['-Wno-typedef-redefinition',
                        '-Wno-gnu-variable-sized-type-not-at-end',
                       ]
-                if cc.has_argument(arg)
+                if cc.has_argument(arg,
+                                   name : '@0@ is supported'.format(arg))
                         add_project_arguments(arg, language : 'c')
                 endif
         endforeach
@@ -467,7 +472,8 @@ endforeach
 if get_option('buildtype') != 'debug'
         foreach arg : ['-ffunction-sections',
                        '-fdata-sections']
-                if cc.has_argument(arg)
+                if cc.has_argument(arg,
+                                   name : '@0@ is supported'.format(arg))
                         add_project_arguments(arg, language : 'c')
                 endif
         endforeach
@@ -866,8 +872,13 @@ substs.set('TTY_GID', tty_gid)
 # endif
 # substs.set('USERS_GID', users_gid)
 # 
-# conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
-# conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
+# if get_option('adm-group')
+#         m4_defines += ['-DENABLE_ADM_GROUP']
+# endif
+# 
+# if get_option('wheel-group')
+#         m4_defines += ['-DENABLE_WHEEL_GROUP']
+# endif
 # 
 # substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
 # substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
@@ -950,6 +961,7 @@ endif
 #         have = false
 #         libseccomp = []
 # endif
+# m4_defines += have ? ['-DHAVE_SECCOMP'] : []
 #else
 libseccomp = []
 #endif // 0
@@ -966,6 +978,7 @@ else
         libselinux = []
 endif
 conf.set10('HAVE_SELINUX', have)
+m4_defines += have ? ['-DHAVE_SELINUX'] : []
 
 #if 0 /// UNNEEDED by elogind
 # want_apparmor = get_option('apparmor')
@@ -977,6 +990,7 @@ conf.set10('HAVE_SELINUX', have)
 #         have = false
 #         libapparmor = []
 # endif
+# m4_defines += have ? ['-DHAVE_APPARMOR'] : []
 #else
 libapparmor = []
 #endif // 0
@@ -985,6 +999,7 @@ conf.set10('HAVE_APPARMOR', have)
 smack_run_label = get_option('smack-run-label')
 if smack_run_label != ''
         conf.set_quoted('SMACK_RUN_LABEL', smack_run_label)
+        m4_defines += ['-DHAVE_SMACK_RUN_LABEL']
 endif
 
 want_polkit = get_option('polkit')
@@ -1011,6 +1026,7 @@ else
         libacl = []
 endif
 conf.set10('HAVE_ACL', have)
+m4_defines += have ? ['-DHAVE_ACL'] : []
 
 want_audit = get_option('audit')
 if want_audit != 'false' and not fuzzer_build
@@ -1060,6 +1076,7 @@ else
         libpam_misc = []
 endif
 conf.set10('HAVE_PAM', have)
+m4_defines += have ? ['-DHAVE_PAM'] : []
 
 #if 0 /// UNNEEDED by elogind
 # want_microhttpd = get_option('microhttpd')
@@ -1073,6 +1090,7 @@ conf.set10('HAVE_PAM', have)
 #         libmicrohttpd = []
 # endif
 # conf.set10('HAVE_MICROHTTPD', have)
+# m4_defines += have ? ['-DHAVE_MICROHTTPD'] : []
 # 
 # want_libcryptsetup = get_option('libcryptsetup')
 # if want_libcryptsetup != 'false' and not fuzzer_build
@@ -1097,6 +1115,7 @@ conf.set10('HAVE_PAM', have)
 #         libcurl = []
 # endif
 # conf.set10('HAVE_LIBCURL', have)
+# m4_defines += have ? ['-DHAVE_LIBCURL'] : []
 # 
 # want_libidn = get_option('libidn')
 # want_libidn2 = get_option('libidn2')
@@ -1113,6 +1132,7 @@ conf.set10('HAVE_PAM', have)
 #         libidn = []
 # endif
 # conf.set10('HAVE_LIBIDN', have)
+# m4_defines += have ? ['-DHAVE_LIBIDN'] : []
 # if not have and want_libidn2 != 'false' and not fuzzer_build
 #         # libidn is used for both libidn and libidn2 objects
 #         libidn = dependency('libidn2',
@@ -1122,6 +1142,7 @@ conf.set10('HAVE_PAM', have)
 #         have = false
 # endif
 # conf.set10('HAVE_LIBIDN2', have)
+# m4_defines += have ? ['-DHAVE_LIBIDN2'] : []
 # 
 # want_libiptc = get_option('libiptc')
 # if want_libiptc != 'false' and not fuzzer_build
@@ -1133,6 +1154,7 @@ conf.set10('HAVE_PAM', have)
 #         libiptc = []
 # endif
 # conf.set10('HAVE_LIBIPTC', have)
+# m4_defines += have ? ['-DHAVE_LIBIPTC'] : []
 # 
 # want_qrencode = get_option('qrencode')
 # if want_qrencode != 'false' and not fuzzer_build
@@ -1376,6 +1398,7 @@ foreach term : ['utmp',
 #                 'gshadow',
 #                 'idn',
 #                 'nss-systemd']
+#         m4_defines += have ? ['-D' + name] : []
 #else
                 'smack']
 #endif // 0
@@ -1383,8 +1406,6 @@ foreach term : ['utmp',
         name = 'ENABLE_' + term.underscorify().to_upper()
         conf.set10(name, have)
 endforeach
-
-conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
 
 want_tests = get_option('tests')
 install_tests = get_option('install-tests')
@@ -1432,8 +1453,6 @@ conf.set10('ENABLE_EFI', have)
 config_h = configure_file(
         output : 'config.h',
         configuration : conf)
-
-meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
                                'src/shared',
@@ -1521,6 +1540,27 @@ libelogind = shared_library(
 #endif // 0
         install : true,
         install_dir : rootlibdir)
+
+static_libelogind = get_option('static-libelogind')
+static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
+
+install_libelogind_static = static_library(
+        'elogind',
+        libelogind_sources,
+        journal_client_sources,
+        include_directories : includes,
+        link_with : [libbasic,
+                     libbasic_gcrypt],
+        build_by_default : static_libelogind != 'false',
+        install : static_libelogind != 'false',
+        install_dir : rootlibdir,
+        pic : static_libelogind == 'true' or static_libelogind == 'pic',
+        dependencies : [threads,
+                        librt,
+                        libxz,
+                        liblz4,
+                        libgcrypt],
+        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 
 ############################################################
 
@@ -1865,13 +1905,6 @@ test_dlopen = executable(
 #         endif
 # endif
 # 
-# executable('systemd-user-runtime-dir',
-#            user_runtime_dir_sources,
-#            include_directories : includes,
-#            link_with : [libshared, liblogind_core],
-#            install_rpath : rootlibexecdir,
-#            install : true,
-#            install_dir : rootlibexecdir)
 #else
 
 executable('elogind',
@@ -2114,15 +2147,12 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-# endif
 # 
-# if conf.get('ENABLE_TIMEDATECTL') == 1
 #         exe = executable('timedatectl',
 #                          'src/timedate/timedatectl.c',
 #                          include_directories : includes,
 #                          install_rpath : rootlibexecdir,
 #                          link_with : [libshared],
-#                          dependencies : [libm],
 #                          install : true)
 #         public_programs += [exe]
 # endif
