@@ -130,18 +130,20 @@ libelogind_sources = files('''
 #endif // 0
 
 libelogind_static = static_library(
-        'elogind',
         libelogind_sources,
+libelogind_c_args = ['-fvisibility=default']
+
+        'elogind_static',
         install : false,
         include_directories : includes,
         link_with : libbasic,
 #if 0 /// elogind does not need librt
 #         dependencies : [threads,
 #                         librt],
+#         c_args : libsystemd_c_args)
 #else
         dependencies : [threads],
 #endif // 0
-        c_args : ['-fvisibility=default'])
 
 libelogind_sym = 'src/libelogind/libelogind.sym'
 
