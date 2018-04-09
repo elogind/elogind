@@ -1082,9 +1082,7 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, unsigne
                 if (r < 0)
                         return r;
 
-                strv_free(*p);
-                *p = TAKE_PTR(l);
-                return 0;
+                return strv_free_and_replace(*p, l);
         }
 
         case SD_BUS_TYPE_BOOLEAN: {
@@ -1308,9 +1306,15 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
                 if (user)
                         r = sd_bus_default_user(&bus);
 #endif // 0
-                else
-                        r = sd_bus_default_system(&bus);
+                else {
+                        if (sd_booted() <= 0) {
+                                /* Print a friendly message when the local system is actually not running systemd as PID 1. */
+                                log_error("System has not been booted with elogind as init system (PID 1). Can't operate.");
 
+                                return -EHOSTDOWN;
+                        }
+                        r = sd_bus_default_system(&bus);
+                }
                 break;
 
         case BUS_TRANSPORT_REMOTE:
@@ -1352,9 +1356,15 @@ int bus_connect_transport_systemd(BusTransport transport, const char *host, bool
         case BUS_TRANSPORT_LOCAL:
                 if (user)
                         r = bus_connect_user_systemd(bus);
-                else
-                        r = bus_connect_system_systemd(bus);
+                else {
+                        if (sd_booted() <= 0) {
+                                /* Print a friendly message when the local system is actually not running systemd as PID 1. */
+                                log_error("System has not been booted with systemd as init system (PID 1). Can't operate.");
 
+                                return -EHOSTDOWN;
+                        }
+                        r = bus_connect_system_systemd(bus);
+                }
                 break;
 
         case BUS_TRANSPORT_REMOTE:
@@ -1620,36 +1630,40 @@ int bus_property_get_rlimit(
                 void *userdata,
                 sd_bus_error *error) {
 
+        const char *is_soft;
         struct rlimit *rl;
         uint64_t u;
         rlim_t x;
-        const char *is_soft;
 
         assert(bus);
         assert(reply);
         assert(userdata);
 
         is_soft = endswith(property, "Soft");
+
         rl = *(struct rlimit**) userdata;
         if (rl)
                 x = is_soft ? rl->rlim_cur : rl->rlim_max;
         else {
                 struct rlimit buf = {};
+                const char *s, *p;
                 int z;
-                const char *s;
 
+                /* Chop off "Soft" suffix */
                 s = is_soft ? strndupa(property, is_soft - property) : property;
 
-                z = rlimit_from_string(strstr(s, "Limit"));
+                /* Skip over any prefix, such as "Default" */
+                assert_se(p = strstr(s, "Limit"));
+
+                z = rlimit_from_string(p + 5);
                 assert(z >= 0);
 
-                getrlimit(z, &buf);
+                (void) getrlimit(z, &buf);
                 x = is_soft ? buf.rlim_cur : buf.rlim_max;
         }
 
-        /* rlim_t might have different sizes, let's map
-         * RLIMIT_INFINITY to (uint64_t) -1, so that it is the same on
-         * all archs */
+        /* rlim_t might have different sizes, let's map RLIMIT_INFINITY to (uint64_t) -1, so that it is the same on all
+         * archs */
         u = x == RLIM_INFINITY ? (uint64_t) -1 : (uint64_t) x;
 
         return sd_bus_message_append(reply, "t", u);
@@ -1729,4 +1743,156 @@ int bus_open_system_watch_bind_with_description(sd_bus **ret, const char *descri
         *ret = TAKE_PTR(bus);
 
         return 0;
+}
+
+struct request_name_data {
+        const char *name;
+        uint64_t flags;
+        void *userdata;
+};
+
+static int reload_dbus_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+        _cleanup_free_ struct request_name_data *data = userdata;
+        const sd_bus_error *e;
+        int r;
+
+        assert(m);
+        assert(data);
+        assert(data->name);
+
+        e = sd_bus_message_get_error(m);
+        if (e) {
+                log_error_errno(sd_bus_error_get_errno(e), "Failed to reload DBus configuration: %s", e->message);
+                return 1;
+        }
+
+        /* Here, use the default request name handler to avoid an infinite loop of reloading and requesting. */
+        r = sd_bus_request_name_async(sd_bus_message_get_bus(m), NULL, data->name, data->flags, NULL, data->userdata);
+        if (r < 0)
+                log_error_errno(r, "Failed to request name: %m");
+
+        return 1;
+}
+
+static int request_name_handler_may_reload_dbus(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+        _cleanup_free_ struct request_name_data *data = userdata;
+        uint32_t ret;
+        int r;
+
+        assert(m);
+        assert(userdata);
+
+        if (sd_bus_message_is_method_error(m, NULL)) {
+                const sd_bus_error *e = sd_bus_message_get_error(m);
+
+                if (!sd_bus_error_has_name(e, SD_BUS_ERROR_ACCESS_DENIED)) {
+                        log_debug_errno(sd_bus_error_get_errno(e),
+                                        "Unable to request name, failing connection: %s",
+                                        e->message);
+
+                        bus_enter_closing(sd_bus_message_get_bus(m));
+                        return 1;
+                }
+
+                log_debug_errno(sd_bus_error_get_errno(e),
+                                "Unable to request name, retry after reloading DBus configuration: %s",
+                                e->message);
+
+                /* If systemd-timesyncd.service enables DynamicUser= and dbus.service
+                 * started before the dynamic user is realized, then the DBus policy
+                 * about timesyncd has not been enabled yet. So, let's try to reload
+                 * DBus configuration, and after that request name again. Note that it
+                 * seems that no privileges are necessary to call the following method. */
+
+                r = sd_bus_call_method_async(
+                                sd_bus_message_get_bus(m),
+                                NULL,
+                                "org.freedesktop.DBus",
+                                "/org/freedesktop/DBus",
+                                "org.freedesktop.DBus",
+                                "ReloadConfig",
+                                reload_dbus_handler,
+                                userdata, NULL);
+                if (r < 0) {
+                        log_error_errno(r, "Failed to reload DBus configuration: %m");
+                        bus_enter_closing(sd_bus_message_get_bus(m));
+                        return 1;
+                }
+
+                data = NULL; /* Avoid free() */
+                return 1;
+        }
+
+        r = sd_bus_message_read(m, "u", &ret);
+        if (r < 0)
+                return r;
+
+        switch (ret) {
+
+        case BUS_NAME_ALREADY_OWNER:
+                log_debug("Already owner of requested service name, ignoring.");
+                return 1;
+
+        case BUS_NAME_IN_QUEUE:
+                log_debug("In queue for requested service name.");
+                return 1;
+
+        case BUS_NAME_PRIMARY_OWNER:
+                log_debug("Successfully acquired requested service name.");
+                return 1;
+
+        case BUS_NAME_EXISTS:
+                log_debug("Requested service name already owned, failing connection.");
+                bus_enter_closing(sd_bus_message_get_bus(m));
+                return 1;
+        }
+
+        log_debug("Unexpected response from RequestName(), failing connection.");
+        bus_enter_closing(sd_bus_message_get_bus(m));
+        return 1;
+}
+
+int bus_request_name_async_may_reload_dbus(sd_bus *bus, sd_bus_slot **ret_slot, const char *name, uint64_t flags, void *userdata) {
+        struct request_name_data *data;
+
+        data = new0(struct request_name_data, 1);
+        if (!data)
+                return -ENOMEM;
+
+        data->name = name;
+        data->flags = flags;
+        data->userdata = userdata;
+
+        return sd_bus_request_name_async(bus, ret_slot, name, flags, request_name_handler_may_reload_dbus, data);
+}
+
+int bus_reply_pair_array(sd_bus_message *m, char **l) {
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
+        char **k, **v;
+        int r;
+
+        assert(m);
+
+        /* Reply to the specified message with a message containing a dictionary put together from the specified
+         * strv */
+
+        r = sd_bus_message_new_method_return(m, &reply);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_message_open_container(reply, 'a', "{ss}");
+        if (r < 0)
+                return r;
+
+        STRV_FOREACH_PAIR(k, v, l) {
+                r = sd_bus_message_append(reply, "{ss}", *k, *v);
+                if (r < 0)
+                        return r;
+        }
+
+        r = sd_bus_message_close_container(reply);
+        if (r < 0)
+                return r;
+
+        return sd_bus_send(NULL, reply, NULL);
 }
