@@ -3,6 +3,19 @@
   This file is part of systemd.
 
   Copyright 2012 Lennart Poettering
+
+  elogind is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation; either version 2.1 of the License, or
+  (at your option) any later version.
+
+  elogind is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <unistd.h>
@@ -25,6 +38,23 @@
 #include "fileio.h"
 #include "sd-messages.h"
 #include "strv.h"
+const char* manager_target_for_action(HandleAction handle) {
+        static const char * const target_table[_HANDLE_ACTION_MAX] = {
+                [HANDLE_POWEROFF] = SPECIAL_POWEROFF_TARGET,
+                [HANDLE_REBOOT] = SPECIAL_REBOOT_TARGET,
+                [HANDLE_HALT] = SPECIAL_HALT_TARGET,
+                [HANDLE_KEXEC] = SPECIAL_KEXEC_TARGET,
+                [HANDLE_SUSPEND] = SPECIAL_SUSPEND_TARGET,
+                [HANDLE_HIBERNATE] = SPECIAL_HIBERNATE_TARGET,
+                [HANDLE_HYBRID_SLEEP] = SPECIAL_HYBRID_SLEEP_TARGET,
+                [HANDLE_SUSPEND_THEN_HIBERNATE] = SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
+        };
+
+        assert(handle >= 0);
+        if (handle < (ssize_t) ELEMENTSOF(target_table))
+                return target_table[handle];
+        return NULL;
+}
 
 int manager_handle_action(
                 Manager *m,
@@ -45,22 +75,12 @@ int manager_handle_action(
         };
 
 #if 0 /// elogind does this itself. No target table required
-        static const char * const target_table[_HANDLE_ACTION_MAX] = {
-                [HANDLE_POWEROFF] = SPECIAL_POWEROFF_TARGET,
-                [HANDLE_REBOOT] = SPECIAL_REBOOT_TARGET,
-                [HANDLE_HALT] = SPECIAL_HALT_TARGET,
-                [HANDLE_KEXEC] = SPECIAL_KEXEC_TARGET,
-                [HANDLE_SUSPEND] = SPECIAL_SUSPEND_TARGET,
-                [HANDLE_HIBERNATE] = SPECIAL_HIBERNATE_TARGET,
-                [HANDLE_HYBRID_SLEEP] = SPECIAL_HYBRID_SLEEP_TARGET,
-                [HANDLE_SUSPEND_THEN_HIBERNATE] = SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
-        };
 #endif // 0
-
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         InhibitWhat inhibit_operation;
         Inhibitor *offending = NULL;
         bool supported;
+        const char *target;
         int r;
 
         assert(m);
@@ -92,7 +112,6 @@ int manager_handle_action(
 
         /* Locking is handled differently from the rest. */
         if (handle == HANDLE_LOCK) {
-
                 if (!is_edge)
                         return 0;
 
@@ -133,6 +152,8 @@ int manager_handle_action(
                 return -EALREADY;
         }
 
+        assert_se(target = manager_target_for_action(handle));
+
         inhibit_operation = IN_SET(handle, HANDLE_SUSPEND, HANDLE_HIBERNATE,
                                            HANDLE_HYBRID_SLEEP,
                                            HANDLE_SUSPEND_THEN_HIBERNATE) ? INHIBIT_SLEEP : INHIBIT_SHUTDOWN;
@@ -165,7 +186,7 @@ int manager_handle_action(
         log_info("%s", message_table[handle]);
 
 #if 0 /// elogind uses its own variant, which can use the handle directly.
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, target_table[handle], inhibit_operation, &error);
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, target, inhibit_operation, &error);
 #else
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
 #endif // 0
@@ -187,7 +208,7 @@ static const char* const handle_action_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_HIBERNATE] = "hibernate",
         [HANDLE_HYBRID_SLEEP] = "hybrid-sleep",
         [HANDLE_SUSPEND_THEN_HIBERNATE] = "suspend-then-hibernate",
-        [HANDLE_LOCK] = "lock"
+        [HANDLE_LOCK] = "lock",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(handle_action, HandleAction);

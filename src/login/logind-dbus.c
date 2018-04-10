@@ -3,6 +3,19 @@
   This file is part of systemd.
 
   Copyright 2011 Lennart Poettering
+
+  elogind is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation; either version 2.1 of the License, or
+  (at your option) any later version.
+
+  elogind is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <errno.h>
@@ -16,6 +29,7 @@
 #include "audit-util.h"
 #include "bus-common-errors.h"
 #include "bus-error.h"
+//#include "bus-unit-util.h"
 #include "bus-util.h"
 #include "dirent-util.h"
 //#include "efivars.h"
@@ -1741,6 +1755,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
 
+        _cleanup_free_ char *load_state = NULL;
 #else
                 HandleAction unit_name,
 #endif // 0
@@ -1755,6 +1770,15 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         assert(w > 0);
         assert(w <= _INHIBIT_WHAT_MAX);
         assert(!m->action_job);
+
+        r = unit_load_state(m->bus, unit_name, &load_state);
+        if (r < 0)
+                return r;
+
+        if (!streq(load_state, "loaded")) {
+                log_notice("Unit %s is %s, refusing operation.", unit_name, load_state);
+                return -EACCES;
+        }
 #else
         assert(w > 0);
         assert(w <= _INHIBIT_WHAT_MAX);
@@ -2360,6 +2384,7 @@ static int method_can_shutdown_or_sleep(
                 sd_bus_error *error) {
 
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
+        HandleAction handle;
         bool multiple_sessions, challenge, blocked;
         const char *result = NULL;
         uid_t uid;
@@ -2399,6 +2424,25 @@ static int method_can_shutdown_or_sleep(
 
         multiple_sessions = r > 0;
         blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
+
+        handle = handle_action_from_string(sleep_verb);
+        if (handle >= 0) {
+                const char *target;
+
+                target = manager_target_for_action(handle);
+                if (target) {
+                        _cleanup_free_ char *load_state = NULL;
+
+                        r = unit_load_state(m->bus, target, &load_state);
+                        if (r < 0)
+                                return r;
+
+                        if (!streq(load_state, "loaded")) {
+                                result = "no";
+                                goto finish;
+                        }
+                }
+        }
 
         if (multiple_sessions) {
                 r = bus_test_polkit(message, CAP_SYS_BOOT, action_multiple_sessions, NULL, UID_INVALID, &challenge, error);
@@ -2442,6 +2486,7 @@ static int method_can_shutdown_or_sleep(
                         result = "no";
         }
 
+ finish:
         return sd_bus_reply_method_return(message, "s", result);
 }
 
