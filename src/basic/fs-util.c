@@ -250,6 +250,21 @@ int fchmod_umask(int fd, mode_t m) {
         return r;
 }
 
+int fchmod_opath(int fd, mode_t m) {
+        char procfs_path[strlen("/proc/self/fd/") + DECIMAL_STR_MAX(int)];
+
+        /* This function operates also on fd that might have been opened with
+         * O_PATH. Indeed fchmodat() doesn't have the AT_EMPTY_PATH flag like
+         * fchownat() does. */
+
+        xsprintf(procfs_path, "/proc/self/fd/%i", fd);
+
+        if (chmod(procfs_path, m) < 0)
+                return -errno;
+
+        return 0;
+}
+
 int fd_warn_permissions(const char *path, int fd) {
         struct stat st;
 
@@ -579,10 +594,6 @@ int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
 }
 #endif // 0
 
-static bool noop_root(const char *root) {
-        return isempty(root) || path_equal(root, "/");
-}
-
 static bool safe_transition(const struct stat *a, const struct stat *b) {
         /* Returns true if the transition from a to b is safe, i.e. that we never transition from unprivileged to
          * privileged files or directories. Why bother? So that unprivileged code can't symlink to privileged files
@@ -657,7 +668,7 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
          * */
 
         /* A root directory of "/" or "" is identical to none */
-        if (noop_root(original_root))
+        if (empty_or_root(original_root))
                 original_root = NULL;
 
         if (!original_root && !ret && (flags & (CHASE_NONEXISTENT|CHASE_NO_AUTOFS|CHASE_SAFE|CHASE_OPEN|CHASE_STEP)) == CHASE_OPEN) {
@@ -742,7 +753,7 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
 
                         /* If we already are at the top, then going up will not change anything. This is in-line with
                          * how the kernel handles this. */
-                        if (isempty(done) || path_equal(done, "/"))
+                        if (empty_or_root(done))
                                 continue;
 
                         parent = dirname_malloc(done);
@@ -963,7 +974,7 @@ int chase_symlinks_and_open(
         if (chase_flags & CHASE_NONEXISTENT)
                 return -EINVAL;
 
-        if (noop_root(root) && !ret_path && (chase_flags & (CHASE_NO_AUTOFS|CHASE_SAFE)) == 0) {
+        if (empty_or_root(root) && !ret_path && (chase_flags & (CHASE_NO_AUTOFS|CHASE_SAFE)) == 0) {
                 /* Shortcut this call if none of the special features of this call are requested */
                 r = open(path, open_flags);
                 if (r < 0)
@@ -1003,7 +1014,7 @@ int chase_symlinks_and_opendir(
         if (chase_flags & CHASE_NONEXISTENT)
                 return -EINVAL;
 
-        if (noop_root(root) && !ret_path && (chase_flags & (CHASE_NO_AUTOFS|CHASE_SAFE)) == 0) {
+        if (empty_or_root(root) && !ret_path && (chase_flags & (CHASE_NO_AUTOFS|CHASE_SAFE)) == 0) {
                 /* Shortcut this call if none of the special features of this call are requested */
                 d = opendir(path);
                 if (!d)
@@ -1027,6 +1038,46 @@ int chase_symlinks_and_opendir(
 
         *ret_dir = d;
         return 0;
+}
+
+int chase_symlinks_and_stat(
+                const char *path,
+                const char *root,
+                unsigned chase_flags,
+                char **ret_path,
+                struct stat *ret_stat) {
+
+        _cleanup_close_ int path_fd = -1;
+        _cleanup_free_ char *p = NULL;
+
+        assert(path);
+        assert(ret_stat);
+
+        if (chase_flags & CHASE_NONEXISTENT)
+                return -EINVAL;
+
+        if (empty_or_root(root) && !ret_path && (chase_flags & (CHASE_NO_AUTOFS|CHASE_SAFE)) == 0) {
+                /* Shortcut this call if none of the special features of this call are requested */
+                if (stat(path, ret_stat) < 0)
+                        return -errno;
+
+                return 1;
+        }
+
+        path_fd = chase_symlinks(path, root, chase_flags|CHASE_OPEN, ret_path ? &p : NULL);
+        if (path_fd < 0)
+                return path_fd;
+
+        if (fstat(path_fd, ret_stat) < 0)
+                return -errno;
+
+        if (ret_path)
+                *ret_path = TAKE_PTR(p);
+
+        if (chase_flags & CHASE_OPEN)
+                return TAKE_FD(path_fd);
+
+        return 1;
 }
 
 int access_fd(int fd, int mode) {
