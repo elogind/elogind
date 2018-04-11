@@ -70,8 +70,6 @@
 #         nsflags.h
 #         output-mode.c
 #         output-mode.h
-#         pager.c
-#         pager.h
 #         path-lookup.c
 #         path-lookup.h
 #         ptyfwd.c
