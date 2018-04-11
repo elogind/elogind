@@ -247,7 +247,7 @@ int find_hibernate_location(char **device, char **type, size_t *size, size_t *us
         return -ENOSYS;
 }
 
-static bool enough_memory_for_hibernation(void) {
+static bool enough_swap_for_hibernation(void) {
         _cleanup_free_ char *active = NULL;
         unsigned long long act = 0;
         size_t size = 0, used = 0;
@@ -430,6 +430,7 @@ int can_sleep(const char *verb) {
                 return true;
 
         if (!enough_memory_for_hibernation())
+        if (!enough_swap_for_hibernation())
                 return -ENOSPC;
 
         return true;
