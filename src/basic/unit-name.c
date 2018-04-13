@@ -251,8 +251,6 @@ int unit_name_build(const char *prefix, const char *instance, const char *suffix
         assert(suffix);
         assert(ret);
 
-        if (isempty(suffix))
-                return -EINVAL;
         if (suffix[0] != '.')
                 return -EINVAL;
 
