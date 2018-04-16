@@ -61,11 +61,11 @@
   <refsect1>
     <title>Description</title>
 
-    <para>These files configure various parameters of the elogind
     <!-- 0 /// elogind does not need a service file.
-    login manager,
-    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
-    </para>
+    <para>These files configure various parameters of the systemd login manager,
+    <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>. See
+    <citerefentry><refentrytitle>systemd.syntax</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+    for a general description of the syntax.</para>
     --><!-- else -->
     login manager.</para>
     <!-- // 0 -->
