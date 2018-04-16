@@ -164,6 +164,7 @@ modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 # systemdstatedir = join_paths(localstatedir, 'lib/systemd')
 # catalogstatedir = join_paths(systemdstatedir, 'catalog')
 # randomseeddir = join_paths(localstatedir, 'lib/systemd')
+# profiledir = join_paths(rootlibexecdir, 'portable', 'profile')
 # 
 # docdir = get_option('docdir')
 # if docdir == ''
@@ -1342,6 +1343,7 @@ foreach term : ['utmp',
 #                 'hostnamed',
 #                 'localed',
 #                 'machined',
+#                 'portabled',
 #                 'networkd',
 #                 'timedated',
 #                 'timesyncd',
@@ -1560,6 +1562,7 @@ subdir('src/shared')
 # subdir('src/kernel-install')
 # subdir('src/locale')
 # subdir('src/machine')
+# subdir('src/portable')
 # subdir('src/nspawn')
 # subdir('src/resolve')
 # subdir('src/timedate')
@@ -1918,6 +1921,7 @@ executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
+executable('elogind-user-runtime-dir',
            user_runtime_dir_sources,
            include_directories : includes,
            link_with : [libshared, liblogind_core],
@@ -1989,6 +1993,26 @@ endif
 #                  install : true,
 #                  install_dir : rootbindir)
 # public_programs += [exe]
+# 
+# if conf.get('ENABLE_PORTABLED') == 1
+#         executable('systemd-portabled',
+#                    systemd_portabled_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [threads],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
+# 
+#         exe = executable('portablectl', 'src/portable/portablectl.c',
+#                          include_directories : includes,
+#                          link_with : [libshared],
+#                          dependencies : [threads],
+#                          install_rpath : rootlibexecdir,
+#                          install : true,
+#                          install_dir : rootlibexecdir)
+#         public_programs += [exe]
+# endif
 # 
 # foreach alias : ['halt', 'poweroff', 'reboot', 'runlevel', 'shutdown', 'telinit']
 #         meson.add_install_script(meson_make_symlink,
@@ -3057,9 +3081,8 @@ if git.found()
                 'tags',
                 output : 'tags',
                 command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.current_source_dir())] + all_files)
-        custom_target(
+        run_target(
                 'ctags',
-                output : 'ctags',
                 command : [env, 'ctags', '-o', '@0@/tags'.format(meson.current_source_dir())] + all_files)
 endif
 
@@ -3246,6 +3269,7 @@ foreach tuple : [
 #         ['rfkill'],
 #         ['logind'],
 #         ['machined'],
+#         ['portabled'],
 #         ['importd'],
 #         ['hostnamed'],
 #         ['timedated'],
