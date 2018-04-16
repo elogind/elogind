@@ -1,0 +1,107 @@
+<?xml version='1.0'?> <!--*- Mode: nxml; nxml-child-indent: 2; indent-tabs-mode: nil -*-->
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY % entities SYSTEM "custom-entities.ent" >
+%entities;
+]>
+
+<!-- SPDX-License-Identifier: LGPL-2.1+ -->
+
+<refentry id="elogind.syntax">
+
+  <refentryinfo>
+    <title>elogind.syntax</title>
+    <productname>elogind</productname>
+
+    <authorgroup>
+      <author>
+        <contrib>A. U. Thor</contrib>
+        <firstname>Zbigniew</firstname>
+        <surname>Jędrzejewski-Szmek</surname>
+        <email>zbyszek@in.waw.pl</email>
+      </author>
+    </authorgroup>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>elogind.syntax</refentrytitle>
+    <manvolnum>7</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>elogind.syntax</refname>
+    <refpurpose>General syntax of elogind configuration files</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Introduction</title>
+
+    <para>This page describes the basic principles of configuration files used by
+    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+    and related programs for:
+    <itemizedlist>
+      <listitem><para>elogind unit files, see
+      <citerefentry><refentrytitle>elogind.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.device</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.automount</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.swap</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.target</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.path</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.timer</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry></para></listitem>
+
+      <listitem><para>daemon config files, see
+      <citerefentry><refentrytitle>elogind-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind-user.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>journald.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>journal-remote.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>journal-upload.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind-sleep.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>timesyncd.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      </para></listitem>
+    </itemizedlist>
+    </para>
+
+    <para>The syntax is inspired by
+    <ulink url="http://standards.freedesktop.org/desktop-entry-spec/latest/">XDG Desktop Entry Specification</ulink>
+    <filename>.desktop</filename> files, which are in turn inspired by Microsoft Windows
+    <filename>.ini</filename> files.
+    </para>
+
+    <para>Each file is a plain text file divided into sections, with configuration entries in the
+    style <replaceable>key</replaceable>=<replaceable>value</replaceable>.
+    Empty lines and lines starting with <literal>#</literal> or <literal>;</literal> are
+    ignored, which may be used for commenting.</para>
+
+    <para>Lines ending in a backslash are concatenated with the following line while reading and the
+    backslash is replaced by a space character. This may be used to wrap long lines. The limit on
+    line length is very large (currently 1 MB), but it is recommended to avoid such long lines and
+    use multiple directives, variable substitution, or other mechanism as appropriate for the given
+    file type.</para>
+
+    <example><programlisting>[Section A]
+KeyOne=value 1
+KeyTwo=value 2
+
+# a comment
+
+[Section B]
+Setting="something" "some thing" "…"
+KeyTwo=value 2 \
+       value 2 continued
+</programlisting></example>
+
+    <para>Various settings are allowed to be specified more than once, in which case the
+    interpretation depends on the setting. Often, multiple settings form a list, and setting to an
+    empty value "resets", which means that previous assignments are ignored. When this is allowed,
+    it is mentioned in the description of the setting. Note that using multiple assignments to the
+    same value makes the file incompatible with parsers for the XDG <filename>.desktop</filename>
+    file format.</para>
+  </refsect1>
+
+</refentry>
