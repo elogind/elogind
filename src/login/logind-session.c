@@ -555,7 +555,7 @@ int session_activate(Session *s) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static int session_start_scope(Session *s) {
+static int session_start_scope(Session *s, sd_bus_message *properties) {
         int r;
 
         assert(s);
@@ -580,7 +580,7 @@ static int session_start_scope(Session *s) {
                                 description,
                                 "systemd-logind.service",
                                 "systemd-user-sessions.service",
-                                (uint64_t) -1, /* disable TasksMax= for the scope, rely on the slice setting for it */
+                                properties,
                                 &error,
                                 &job);
                 if (r < 0) {
@@ -621,7 +621,7 @@ static int session_start_cgroup(Session *s) {
 }
 #endif // 0
 
-int session_start(Session *s) {
+int session_start(Session *s, sd_bus_message *properties) {
         int r;
 
         assert(s);
@@ -638,7 +638,7 @@ int session_start(Session *s) {
 
         /* Create cgroup */
 #if 0 /// elogind does its own session management
-        r = session_start_scope(s);
+        r = session_start_scope(s, properties);
 #else
         r = session_start_cgroup(s);
 #endif // 0
