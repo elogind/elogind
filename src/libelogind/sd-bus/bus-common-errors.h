@@ -60,6 +60,7 @@
 
 #if 0 /// more services unsupported by elogind
 #define BUS_ERROR_AUTOMATIC_TIME_SYNC_ENABLED "org.freedesktop.timedate1.AutomaticTimeSyncEnabled"
+#define BUS_ERROR_NO_NTP_SUPPORT "org.freedesktop.timedate1.NoNTPSupport"
 
 #define BUS_ERROR_NO_SUCH_PROCESS "org.freedesktop.systemd1.NoSuchProcess"
 
