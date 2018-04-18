@@ -5,19 +5,6 @@
   This file is part of systemd.
 
   Copyright 2010-2012 Lennart Poettering
-
-  elogind is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  elogind is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 #include <alloca.h>
@@ -30,23 +17,23 @@
 
 #if HAVE_SPLIT_BIN
 #  define PATH_SBIN_BIN(x) x "sbin:" x "bin"
-#  define PATH0_SBIN_BIN(x) x "sbin\0" x "bin"
+#  define PATH_SBIN_BIN_NULSTR(x) x "sbin\0" x "bin\0"
 #else
-#  define PATH0_SBIN_BIN(x) x "bin"
 #  define PATH_SBIN_BIN(x) x "bin"
+#  define PATH_SBIN_BIN_NULSTR(x) x "bin\0"
 #endif
 
 #define DEFAULT_PATH_NORMAL PATH_SBIN_BIN("/usr/local/") ":" PATH_SBIN_BIN("/usr/")
-#define DEFAULT_PATH0_NORMAL PATH0_SBIN_BIN("/usr/local/") "\0" PATH0_SBIN_BIN("/usr/")
+#define DEFAULT_PATH_NORMAL_NULSTR PATH_SBIN_BIN_NULSTR("/usr/local/") PATH_SBIN_BIN_NULSTR("/usr/")
 #define DEFAULT_PATH_SPLIT_USR DEFAULT_PATH_NORMAL ":" PATH_SBIN_BIN("/")
-#define DEFAULT_PATH0_SPLIT_USR DEFAULT_PATH0_NORMAL "\0" PATH0_SBIN_BIN("/")
+#define DEFAULT_PATH_SPLIT_USR_NULSTR DEFAULT_PATH_NORMAL_NULSTR PATH_SBIN_BIN_NULSTR("/")
 
 #if HAVE_SPLIT_USR
 #  define DEFAULT_PATH DEFAULT_PATH_SPLIT_USR
-#  define DEFAULT_PATH_NULSTR DEFAULT_PATH0_SPLIT_USR
+#  define DEFAULT_PATH_NULSTR DEFAULT_PATH_SPLIT_USR_NULSTR
 #else
 #  define DEFAULT_PATH DEFAULT_PATH_NORMAL
-#  define DEFAULT_PATH_NULSTR DEFAULT_PATH0_NORMAL
+#  define DEFAULT_PATH_NULSTR DEFAULT_PATH_NORMAL_NULSTR
 #endif
 
 bool is_path(const char *p) _pure_;
