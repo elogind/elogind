@@ -102,7 +102,11 @@
     <title>See Also</title>
 
     <para>
+      <!-- 0 /// elogind is in section 8
+      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <!-- // 0 -->
       <citerefentry><refentrytitle>sd-id128</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>machine-id</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>random</refentrytitle><manvolnum>4</manvolnum></citerefentry>,
