@@ -66,7 +66,7 @@
         <funcdef>int <function>sd_bus_path_encode_many</function></funcdef>
         <paramdef>char **<parameter>out</parameter></paramdef>
         <paramdef>const char *<parameter>path_template</parameter></paramdef>
-        <paramdef>...</paramdef>
+        <paramdef>…</paramdef>
       </funcprototype>
 
       <funcprototype>
@@ -80,7 +80,7 @@
         <funcdef>int <function>sd_bus_path_decode_many</function></funcdef>
         <paramdef>const char *<parameter>path</parameter></paramdef>
         <paramdef>const char *<parameter>path_template</parameter></paramdef>
-        <paramdef>...</paramdef>
+        <paramdef>…</paramdef>
       </funcprototype>
     </funcsynopsis>
   </refsynopsisdiv>
@@ -179,7 +179,11 @@
     <title>See Also</title>
 
     <para>
+      <!-- 0 /// elogind is in section 8
+      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <!-- // 0 -->
       <citerefentry><refentrytitle>sd-bus</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     </para>

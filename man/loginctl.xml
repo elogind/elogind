@@ -477,7 +477,11 @@ Apr 09 14:40:30 laptop login[2325]: LOGIN ON tty3 BY fatima
   <refsect1>
     <title>See Also</title>
     <para>
+      <!-- 0 /// elogind is in section 8
+      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <!-- // 0 -->
       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     </para>

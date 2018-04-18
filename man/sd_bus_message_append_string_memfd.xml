@@ -143,7 +143,11 @@
     <title>See Also</title>
 
     <para>
+      <!-- 0 /// elogind is in section 8
+      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <!-- // 0 -->
       <citerefentry><refentrytitle>sd-bus</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_bus_message_append_basic</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <ulink url="http://dbus.freedesktop.org/doc/dbus-specification.html">The D-Bus specification</ulink>
