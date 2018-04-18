@@ -10,7 +10,11 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@rootlibdir@
-includedir=@includedir@
+#if 0 /// To be able to act as a drop-in replacement, elogind has a systemd subdir
+# includedir=@includedir@
+#else
+includedir=@includedir@/elogind
+#endif // 0
 
 Name: elogind
 Description: elogind Library
