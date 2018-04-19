@@ -4,6 +4,8 @@
 
 <!--
   This file is part of elogind.
+  SPDX-License-Identifier: LGPL-2.1+
+
 
   Copyright 2010 Lennart Poettering
 
@@ -61,7 +63,7 @@
   <refsynopsisdiv>
     <!-- 0 /// elogind has a different synopsis of course...
     <cmdsynopsis>
-      <command>systemd</command>
+      <command>/usr/lib/systemd/systemd</command>
       <arg choice="opt" rep="repeat">OPTIONS</arg>
     </cmdsynopsis>
     <cmdsynopsis>
@@ -381,11 +383,12 @@
     states are called "activating", "deactivating"). A special
     "failed" state is available as well, which is very similar to
     "inactive" and is entered when the service failed in some way
-    (process returned error code on exit, or crashed, or an operation
-    timed out). If this state is entered, the cause will be logged,
-    for later reference. Note that the various unit types may have a
-    number of additional substates, which are mapped to the five
-    generalized unit states described here.</para>
+    (process returned error code on exit, or crashed, an operation
+    timed out, or after too many restarts). If this state is entered,
+    the cause will be logged, for later reference. Note that the
+    various unit types may have a number of additional substates,
+    which are mapped to the five generalized unit states described
+    here.</para>
 
     <para>The following unit types are available:</para>
 
@@ -527,7 +530,7 @@
     verify that it makes sense, fixing it if possible, and only
     failing if it really cannot work.</para>
 
-    <para>Systemd contains native implementations of various tasks
+    <para>systemd contains native implementations of various tasks
     that need to be executed as part of the boot process. For example,
     it sets the hostname or configures the loopback network device. It
     also sets up and mounts various API file systems, such as
@@ -661,7 +664,7 @@
         <listitem><para>Upon receiving this signal the systemd system
         manager will start the
         <filename>ctrl-alt-del.target</filename> unit. This is mostly
-        equivalent to <command>systemctl start ctl-alt-del.target
+        equivalent to <command>systemctl start ctrl-alt-del.target
         --job-mode=replace-irreversible</command>. If this signal is
         received more than 7 times per 2s, an immediate reboot is
         triggered.  Note that pressing Ctrl-Alt-Del on the console
