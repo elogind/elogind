@@ -21,8 +21,12 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<refentry id="loginctl"
+<!-- 0 /// elogind does not need to activate loginctl in configure
+<refentry id="loginctl" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
+else -->
+<refentry id="loginctl" xmlns:xi="http://www.w3.org/2001/XInclude">
+<!-- // 0 -->
 
   <refentryinfo>
     <title>loginctl</title>
@@ -62,8 +66,14 @@
 
     <para><command>loginctl</command> may be used to introspect and
     control the state of the
+    <!-- 0 /// elogind has no services and is in section 8
+    <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+    login manager
+    <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+    --><!-- else -->
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     login manager</para>
+    <!-- // 0 -->
   </refsect1>
 
   <refsect1>
@@ -142,6 +152,31 @@
         If omitted, defaults to
         <constant>SIGTERM</constant>.</para></listitem>
       </varlistentry>
+
+      <!-- 0 /// elogind does not support systemd-journal
+      <varlistentry>
+        <term><option>-n</option></term>
+        <term><option>--lines=</option></term>
+
+        <listitem><para>When used with <command>user-status</command>
+        and <command>session-status</command>, controls the number of
+        journal lines to show, counting from the most recent ones.
+        Takes a positive integer argument. Defaults to 10.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-o</option></term>
+        <term><option>--output=</option></term>
+
+        <listitem><para>When used with <command>user-status</command>
+        and <command>session-status</command>, controls the formatting
+        of the journal entries that are shown. For the available
+        choices, see
+        <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+        Defaults to <literal>short</literal>.</para></listitem>
+      </varlistentry>
+      // 0 -->
 
       <xi:include href="user-system-options.xml" xpointer="host" />
       <xi:include href="user-system-options.xml" xpointer="machine" />
@@ -379,61 +414,64 @@
       </varlistentry>
     </variablelist></refsect2>
 
+    <!-- 1 /// elogind additionally supports a few systemctl commands. -->
     <refsect2><title>System Commands</title><variablelist>
+      <varlistentry>
+        <term><command>poweroff</command></term>
+
+        <listitem>
+          <para>Print a wall message to all users, shut down and
+            power-off the system.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>reboot <optional><replaceable>arg</replaceable></optional></command></term>
+
+        <listitem>
+          <para>Print a wall message to all users, shut down and
+            reboot the system.</para>
+
+          <para>If the optional argument
+          <replaceable>arg</replaceable> is given, it will be passed
+          as the optional argument to the
+          <citerefentry><refentrytitle>reboot</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+          system call. The value is architecture and firmware
+          specific. As an example, <literal>recovery</literal> might
+          be used to trigger system recovery, and
+          <literal>fota</literal> might be used to trigger a
+          <quote>firmware over the air</quote> update.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><command>suspend</command></term>
+
+        <listitem>
+          <para>Suspend the system.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><command>hibernate</command></term>
+
+        <listitem>
+          <para>Hibernate the system.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><command>hybrid-sleep</command></term>
+
+        <listitem>
+          <para>Hibernate and suspend the system.</para>
+        </listitem>
+      </varlistentry>
     </variablelist></refsect2>
-    <varlistentry>
-      <term><command>poweroff</command></term>
-
-      <listitem>
-        <para>Print a wall message to all users, shut down and
-          power-off the system.</para>
-      </listitem>
-    </varlistentry>
-    <varlistentry>
-      <term><command>reboot <optional><replaceable>arg</replaceable></optional></command></term>
-
-      <listitem>
-        <para>Print a wall message to all users, shut down and
-          reboot the system.</para>
-
-        <para>If the optional argument
-        <replaceable>arg</replaceable> is given, it will be passed
-        as the optional argument to the
-        <citerefentry><refentrytitle>reboot</refentrytitle><manvolnum>2</manvolnum></citerefentry>
-        system call. The value is architecture and firmware
-        specific. As an example, <literal>recovery</literal> might
-        be used to trigger system recovery, and
-        <literal>fota</literal> might be used to trigger a
-        <quote>firmware over the air</quote> update.</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><command>suspend</command></term>
-
-      <listitem>
-        <para>Suspend the system.
-        </para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><command>hibernate</command></term>
-
-      <listitem>
-        <para>Hibernate the system.
-        </para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><command>hybrid-sleep</command></term>
-
-      <listitem>
-        <para>Hibernate and suspend the system.</para>
-      </listitem>
-    </varlistentry>
+    <!-- // 1 -->
   </refsect1>
+
   <refsect1>
     <title>Exit status</title>
 
@@ -479,10 +517,11 @@ Apr 09 14:40:30 laptop login[2325]: LOGIN ON tty3 BY fatima
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
-      <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     </para>
   </refsect1>
