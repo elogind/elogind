@@ -1693,7 +1693,6 @@ static void unit_remove_from_cgroup_realize_queue(Unit *u) {
         u->in_cgroup_realize_queue = false;
 }
 
-
 /* Check if necessary controllers and attributes for a unit are in place.
  *
  * If so, do nothing.
