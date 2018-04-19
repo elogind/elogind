@@ -1,4 +1,4 @@
-<?xml version='1.0'?> <!--*-nxml-*-->
+<?xml version='1.0'?> <!--*- Mode: nxml; nxml-child-indent: 2; indent-tabs-mode: nil -*-->
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
@@ -21,7 +21,12 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<!-- 0 /// elogind does not have to enable itself in configure
+<refentry id="logind.conf" conditional='ENABLE_LOGIND'
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+--><!-- else -->
 <refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
+<!-- // 0 -->
   <refentryinfo>
     <title>logind.conf</title>
     <productname>elogind</productname>
@@ -43,18 +48,32 @@
 
   <refnamediv>
     <refname>logind.conf</refname>
+    <!-- 0 /// not supported by elogind
+    <refname>logind.conf.d</refname>
+    // 0 -->
     <refpurpose>Login manager configuration files</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <para><filename>/etc/elogind/logind.conf</filename></para>
+    <!-- 0 /// not supported by elogind
+    <para><filename>/etc/systemd/logind.conf.d/*.conf</filename></para>
+    <para><filename>/run/systemd/logind.conf.d/*.conf</filename></para>
+    <para><filename>/usr/lib/systemd/logind.conf.d/*.conf</filename></para>
+    // 0 -->
   </refsynopsisdiv>
 
   <refsect1>
     <title>Description</title>
 
     <para>These files configure various parameters of the elogind
+    <!-- 0 /// elogind does not need a service file.
+    login manager,
+    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    </para>
+    --><!-- else -->
     login manager.</para>
+    <!-- // 0 -->
   </refsect1>
 
   <xi:include href="standard-conf.xml" xpointer="main-conf" />
@@ -62,148 +81,219 @@
   <refsect1>
     <title>Options</title>
 
+    <!-- 0 /// elogind also supports a few system commands
+    <para>All options are configured in the
+    <literal>[Login]</literal> section:</para>
+    --><!-- else -->
     <para>All login options are configured in the
     <literal>[Login]</literal> section, system sleep options are
     configured in the <literal>[Sleep]</literal> section.</para>
+    <!-- // 0 -->
 
+    <!-- 1 /// elogind needs a second level, as we use two sections. -->
     <refsect2><title>[Login] section:</title>
-      <variablelist>
+    <!-- // 1 -->
 
-        <varlistentry>
-          <term><varname>KillUserProcesses=</varname></term>
+    <variablelist>
+      <!-- 0 /// elogind has no support for AutoVT
 
-          <listitem><para>Takes a boolean argument. Configures whether
-          the processes of a user should be killed when the user
-          completely logs out (i.e. after the user's last session
-          ended). Defaults to <literal>no</literal>.</para>
+      <varlistentry>
+        <term><varname>NAutoVTs=</varname></term>
 
-          <para>Note that setting <varname>KillUserProcesses=1</varname>
-          will break tools like
-          <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
-        </varlistentry>
+        <listitem><para>Takes a positive integer. Configures how many
+        virtual terminals (VTs) to allocate by default that, when
+        switched to and are previously unused,
+        <literal>autovt</literal> services are automatically spawned
+        on. These services are instantiated from the template unit
+        <filename>autovt@.service</filename> for the respective VT TTY
+        name, for example, <filename>autovt@tty4.service</filename>.
+        By default, <filename>autovt@.service</filename> is linked to
+        <filename>getty@.service</filename>. In other words, login
+        prompts are started dynamically as the user switches to unused
+        virtual terminals. Hence, this parameter controls how many
+        login <literal>gettys</literal> are available on the VTs. If a
+        VT is already used by some other subsystem (for example, a
+        graphical login), this kind of activation will not be
+        attempted. Note that the VT configured in
+        <varname>ReserveVT=</varname> is always subject to this kind
+        of activation, even if it is not one of the VTs configured
+        with the <varname>NAutoVTs=</varname> directive. Defaults to
+        6. When set to 0, automatic spawning of
+        <literal>autovt</literal> services is
+        disabled.</para></listitem>
+      </varlistentry>
 
-        <varlistentry>
-          <term><varname>KillOnlyUsers=</varname></term>
-          <term><varname>KillExcludeUsers=</varname></term>
+      <varlistentry>
+        <term><varname>ReserveVT=</varname></term>
 
-          <listitem><para>These settings take space-separated lists of
-          usernames that influence the effect of
-          <varname>KillUserProcesses=</varname>. If not empty, only
-          processes of users listed in <varname>KillOnlyUsers=</varname>
-          will be killed when they log out entirely. Processes of users
-          listed in <varname>KillExcludeUsers=</varname> are excluded
-          from being killed. <varname>KillExcludeUsers=</varname>
-          defaults to <literal>root</literal> and takes precedence over
-          <varname>KillOnlyUsers=</varname>, which defaults to the empty
-          list.</para></listitem>
-        </varlistentry>
+        <listitem><para>Takes a positive integer. Identifies one
+        virtual terminal that shall unconditionally be reserved for
+        <filename>autovt@.service</filename> activation (see above).
+        The VT selected with this option will be marked busy
+        unconditionally, so that no other subsystem will allocate it.
+        This functionality is useful to ensure that, regardless of how
+        many VTs are allocated by other subsystems, one login
+        <literal>getty</literal> is always available. Defaults to 6
+        (in other words, there will always be a
+        <literal>getty</literal> available on Alt-F6.). When set to 0,
+        VT reservation is disabled.</para></listitem>
+      </varlistentry>
+      // 0 -->
 
-        <varlistentry>
-          <term><varname>IdleAction=</varname></term>
+      <varlistentry>
+        <term><varname>KillUserProcesses=</varname></term>
 
-          <listitem><para>Configures the action to take when the system
-          is idle. Takes one of
-          <literal>ignore</literal>,
-          <literal>poweroff</literal>,
-          <literal>reboot</literal>,
-          <literal>halt</literal>,
-          <literal>kexec</literal>,
-          <literal>suspend</literal>,
-          <literal>hibernate</literal>,
-          <literal>hybrid-sleep</literal>, and
-          <literal>lock</literal>.
-          Defaults to <literal>ignore</literal>.</para>
+        <listitem><para>Takes a boolean argument. Configures whether the processes of a
+        user should be killed when the user logs out. If true, the scope unit
+        corresponding to the session and all processes inside that scope will be
+        terminated. If false, the scope is "abandoned", see
+        <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+        and processes are not killed. Defaults to <literal>yes</literal>,
+        but see the options <varname>KillOnlyUsers=</varname> and
+        <varname>KillExcludeUsers=</varname> below.</para>
 
-          <para>Note that this requires that user sessions correctly
-          report the idle status to the system. The system will execute
-          the action after all sessions report that they are idle, no
-          idle inhibitor lock is active, and subsequently, the time
-          configured with <varname>IdleActionSec=</varname> (see below)
-          has expired.</para>
-          </listitem>
-        </varlistentry>
+        <para>In addition to session processes, user process may run under the user
+        manager unit <filename>user@.service</filename>. Depending on the linger
+        settings, this may allow users to run processes independent of their login
+        sessions. See the description of <command>enable-linger</command> in
+        <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+        </para>
 
-        <varlistentry>
-          <term><varname>IdleActionSec=</varname></term>
+        <para>Note that setting <varname>KillUserProcesses=yes</varname>
+        will break tools like
+        <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+        and
+        <citerefentry project='die-net'><refentrytitle>tmux</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+        unless they are moved out of the session scope. See example in
+        <citerefentry><refentrytitle>systemd-run</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+        </para></listitem>
+      </varlistentry>
 
-          <listitem><para>Configures the delay after which the action
-          configured in <varname>IdleAction=</varname> (see above) is
-          taken after the system is idle.</para></listitem>
-        </varlistentry>
+      <varlistentry>
+        <term><varname>KillOnlyUsers=</varname></term>
+        <term><varname>KillExcludeUsers=</varname></term>
 
-        <varlistentry>
-          <term><varname>InhibitDelayMaxSec=</varname></term>
+        <listitem><para>These settings take space-separated lists of usernames that override
+        the <varname>KillUserProcesses=</varname> setting. A user name may be added to
+        <varname>KillExcludeUsers=</varname> to exclude the processes in the session scopes of
+        that user from being killed even if <varname>KillUserProcesses=yes</varname> is set. If
+        <varname>KillExcludeUsers=</varname> is not set, the <literal>root</literal> user is
+        excluded by default. <varname>KillExcludeUsers=</varname> may be set to an empty value
+        to override this default. If a user is not excluded, <varname>KillOnlyUsers=</varname>
+        is checked next. If this setting is specified, only the session scopes of those users
+        will be killed. Otherwise, users are subject to the
+        <varname>KillUserProcesses=yes</varname> setting.</para></listitem>
+      </varlistentry>
 
-          <listitem><para>Specifies the maximum time a system shutdown
-          or sleep request is delayed due to an inhibitor lock of type
-          <literal>delay</literal> being active before the inhibitor is
-          ignored and the operation executes anyway. Defaults to
-          5.</para></listitem>
-        </varlistentry>
+      <varlistentry>
+        <term><varname>IdleAction=</varname></term>
 
-        <varlistentry>
-          <term><varname>HandlePowerKey=</varname></term>
-          <term><varname>HandleSuspendKey=</varname></term>
-          <term><varname>HandleHibernateKey=</varname></term>
-          <term><varname>HandleLidSwitch=</varname></term>
-          <term><varname>HandleLidSwitchDocked=</varname></term>
+        <listitem><para>Configures the action to take when the system
+        is idle. Takes one of
+        <literal>ignore</literal>,
+        <literal>poweroff</literal>,
+        <literal>reboot</literal>,
+        <literal>halt</literal>,
+        <literal>kexec</literal>,
+        <literal>suspend</literal>,
+        <literal>hibernate</literal>,
+        <literal>hybrid-sleep</literal>, and
+        <literal>lock</literal>.
+        Defaults to <literal>ignore</literal>.</para>
 
-          <listitem><para>Controls how logind shall handle the
-          system power and sleep keys and the lid switch to trigger
-          actions such as system power-off or suspend. Can be one of
-          <literal>ignore</literal>,
-          <literal>poweroff</literal>,
-          <literal>reboot</literal>,
-          <literal>halt</literal>,
-          <literal>kexec</literal>,
-          <literal>suspend</literal>,
-          <literal>hibernate</literal>,
-          <literal>hybrid-sleep</literal>, and
-          <literal>lock</literal>.
-          If <literal>ignore</literal>, logind will never handle these
-          keys. If <literal>lock</literal>, all running sessions will be
-          screen-locked; otherwise, the specified action will be taken
-          in the respective event. Only input devices with the
-          <literal>power-switch</literal> udev tag will be watched for
-          key/lid switch events. <varname>HandlePowerKey=</varname>
-          defaults to <literal>poweroff</literal>.
-          <varname>HandleSuspendKey=</varname> and
-          <varname>HandleLidSwitch=</varname> default to
-          <literal>suspend</literal>.
-          <varname>HandleLidSwitchDocked=</varname> defaults to
-          <literal>ignore</literal>.
-          <varname>HandleHibernateKey=</varname> defaults to
-          <literal>hibernate</literal>. If the system is inserted in a
-          docking station, or if more than one display is connected, the
-          action specified by <varname>HandleLidSwitchDocked=</varname>
-          occurs; otherwise the <varname>HandleLidSwitch=</varname>
+        <para>Note that this requires that user sessions correctly
+        report the idle status to the system. The system will execute
+        the action after all sessions report that they are idle, no
+        idle inhibitor lock is active, and subsequently, the time
+        configured with <varname>IdleActionSec=</varname> (see below)
+        has expired.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>IdleActionSec=</varname></term>
+
+        <listitem><para>Configures the delay after which the action
+        configured in <varname>IdleAction=</varname> (see above) is
+        taken after the system is idle.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>InhibitDelayMaxSec=</varname></term>
+
+        <listitem><para>Specifies the maximum time a system shutdown
+        or sleep request is delayed due to an inhibitor lock of type
+        <literal>delay</literal> being active before the inhibitor is
+        ignored and the operation executes anyway. Defaults to
+        5.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>HandlePowerKey=</varname></term>
+        <term><varname>HandleSuspendKey=</varname></term>
+        <term><varname>HandleHibernateKey=</varname></term>
+        <term><varname>HandleLidSwitch=</varname></term>
+        <term><varname>HandleLidSwitchDocked=</varname></term>
+
+        <listitem><para>Controls how logind shall handle the
+        system power and sleep keys and the lid switch to trigger
+        actions such as system power-off or suspend. Can be one of
+        <literal>ignore</literal>,
+        <literal>poweroff</literal>,
+        <literal>reboot</literal>,
+        <literal>halt</literal>,
+        <literal>kexec</literal>,
+        <literal>suspend</literal>,
+        <literal>hibernate</literal>,
+        <literal>hybrid-sleep</literal>, and
+        <literal>lock</literal>.
+        If <literal>ignore</literal>, logind will never handle these
+        keys. If <literal>lock</literal>, all running sessions will be
+        screen-locked; otherwise, the specified action will be taken
+        in the respective event. Only input devices with the
+        <literal>power-switch</literal> udev tag will be watched for
+        key/lid switch events. <varname>HandlePowerKey=</varname>
+        defaults to <literal>poweroff</literal>.
+        <varname>HandleSuspendKey=</varname> and
+        <varname>HandleLidSwitch=</varname> default to
+        <literal>suspend</literal>.
+        <varname>HandleLidSwitchDocked=</varname> defaults to
+        <literal>ignore</literal>.
+        <varname>HandleHibernateKey=</varname> defaults to
+        <literal>hibernate</literal>. If the system is inserted in a
+        docking station, or if more than one display is connected, the
+        action specified by <varname>HandleLidSwitchDocked=</varname>
+        occurs; otherwise the <varname>HandleLidSwitch=</varname>
         action occurs.</para>
 
         <para>A different application may disable logind's handling of system power and
         sleep keys and the lid switch by taking a low-level inhibitor lock
-        ("handle-power-key", "handle-suspend-key", "handle-hibernate-key",
-        "handle-lid-switch"). This is most commonly used by graphical desktop environments
+        (<literal>handle-power-key</literal>, <literal>handle-suspend-key</literal>,
+        <literal>handle-hibernate-key</literal>, <literal>handle-lid-switch</literal>).
+        This is most commonly used by graphical desktop environments
         to take over suspend and hibernation handling, and to use their own configuration
         mechanisms. If a low-level inhibitor lock is taken, logind will not take any
         action when that key or switch is triggered and the <varname>Handle*=</varname>
         settings are irrelevant.</para></listitem>
       </varlistentry>
 
-        <varlistentry>
-          <term><varname>PowerKeyIgnoreInhibited=</varname></term>
-          <term><varname>SuspendKeyIgnoreInhibited=</varname></term>
-          <term><varname>HibernateKeyIgnoreInhibited=</varname></term>
-          <term><varname>LidSwitchIgnoreInhibited=</varname></term>
+      <varlistentry>
+        <term><varname>PowerKeyIgnoreInhibited=</varname></term>
+        <term><varname>SuspendKeyIgnoreInhibited=</varname></term>
+        <term><varname>HibernateKeyIgnoreInhibited=</varname></term>
+        <term><varname>LidSwitchIgnoreInhibited=</varname></term>
 
         <listitem><para>Controls whether actions that <command>systemd-logind</command>
         takes when the power and sleep keys and the lid switch are triggered are subject
         to high-level inhibitor locks ("shutdown", "sleep", "idle"). Low level inhibitor
-        locks ("handle-*-key"), are always honoured, irrespective of this setting.</para>
+        locks (<literal>handle-power-key</literal>, <literal>handle-suspend-key</literal>,
+        <literal>handle-hibernate-key</literal>, <literal>handle-lid-switch</literal>),
+        are always honored, irrespective of this setting.</para>
 
         <para>These settings take boolean arguments. If <literal>no</literal>, the
         inhibitor locks taken by applications are respected. If <literal>yes</literal>,
         "shutdown", "sleep", and "idle" inhibitor locks are ignored.
-          <varname>PowerKeyIgnoreInhibited=</varname>,
+        <varname>PowerKeyIgnoreInhibited=</varname>,
         <varname>SuspendKeyIgnoreInhibited=</varname>, and
         <varname>HibernateKeyIgnoreInhibited=</varname> default to <literal>no</literal>.
         <varname>LidSwitchIgnoreInhibited=</varname> defaults to <literal>yes</literal>.
@@ -211,53 +301,80 @@
         itself (no low level inhibitor locks are taken by another application), the lid
         switch does not respect suspend blockers by default, but the power and sleep keys
         do.</para></listitem>
-        </varlistentry>
+      </varlistentry>
 
-        <varlistentry>
-          <term><varname>HoldoffTimeoutSec=</varname></term>
+      <varlistentry>
+        <term><varname>HoldoffTimeoutSec=</varname></term>
 
-          <listitem><para>Specifies the timeout after system startup or
-          system resume in which elogind will hold off on reacting to
-          LID events. This is required for the system to properly
-          detect any hotplugged devices so elogind can ignore LID events
-          if external monitors, or docks, are connected. If set to 0,
-          elogind will always react immediately, possibly before the
-          kernel fully probed all hotplugged devices. This is safe, as
-          long as you do not care for elogind to account for devices
-          that have been plugged or unplugged while the system was off.
-          Defaults to 30s.</para></listitem>
-        </varlistentry>
+        <listitem><para>Specifies the timeout after system startup or
+        system resume in which systemd will hold off on reacting to
+        lid events. This is required for the system to properly
+        detect any hotplugged devices so systemd can ignore lid events
+        if external monitors, or docks, are connected. If set to 0,
+        systemd will always react immediately, possibly before the
+        kernel fully probed all hotplugged devices. This is safe, as
+        long as you do not care for systemd to account for devices
+        that have been plugged or unplugged while the system was off.
+        Defaults to 30s.</para></listitem>
+      </varlistentry>
 
-        <varlistentry>
-          <term><varname>RuntimeDirectorySize=</varname></term>
+      <varlistentry>
+        <term><varname>RuntimeDirectorySize=</varname></term>
 
-          <listitem><para>Sets the size limit on the
-          <varname>$XDG_RUNTIME_DIR</varname> runtime directory for each
-          user who logs in. Takes a size in bytes, optionally suffixed
-          with the usual K, G, M, and T suffixes, to the base 1024
-          (IEC). Alternatively, a numerical percentage suffixed by
-          <literal>%</literal> may be specified, which sets the size
-          limit relative to the amount of physical RAM. Defaults to 10%.
-          Note that this size is a safety limit only. As each runtime
-          directory is a tmpfs file system, it will only consume as much
-          memory as is needed. </para></listitem>
-        </varlistentry>
+        <listitem><para>Sets the size limit on the
+        <varname>$XDG_RUNTIME_DIR</varname> runtime directory for each
+        user who logs in. Takes a size in bytes, optionally suffixed
+        with the usual K, G, M, and T suffixes, to the base 1024
+        (IEC). Alternatively, a numerical percentage suffixed by
+        <literal>%</literal> may be specified, which sets the size
+        limit relative to the amount of physical RAM. Defaults to 10%.
+        Note that this size is a safety limit only. As each runtime
+        directory is a tmpfs file system, it will only consume as much
+        memory as is needed.</para></listitem>
+      </varlistentry>
 
-        <varlistentry>
-          <term><varname>RemoveIPC=</varname></term>
+      <varlistentry>
+        <term><varname>InhibitorsMax=</varname></term>
 
-          <listitem><para>Controls whether System V and POSIX IPC objects belonging to the user shall be removed when the
-          user fully logs out. Takes a boolean argument. If enabled, the user may not consume IPC resources after the
-          last of the user's sessions terminated. This covers System V semaphores, shared memory and message queues, as
-          well as POSIX shared memory and message queues. Note that IPC objects of the root user and other system users
-          are excluded from the effect of this setting. Defaults to <literal>yes</literal>.</para></listitem>
-        </varlistentry>
+        <listitem><para>Controls the maximum number of concurrent inhibitors to permit. Defaults to 8192
+        (8K).</para></listitem>
+      </varlistentry>
 
-      </variablelist>
+      <varlistentry>
+        <term><varname>SessionsMax=</varname></term>
+
+        <listitem><para>Controls the maximum number of concurrent user sessions to manage. Defaults to 8192
+        (8K). Depending on how the <filename>pam_systemd.so</filename> module is included in the PAM stack
+        configuration, further login sessions will either be refused, or permitted but not tracked by
+        <filename>systemd-logind</filename>.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>UserTasksMax=</varname></term>
+
+        <listitem><para>Sets the maximum number of OS tasks each user may run concurrently. This controls the
+        <varname>TasksMax=</varname> setting of the per-user slice unit, see
+        <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        for details. If assigned the special value <literal>infinity</literal>, no tasks limit is applied.
+        Defaults to 33%, which equals 10813 with the kernel's defaults on the host, but might be smaller in
+        OS containers.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>RemoveIPC=</varname></term>
+
+        <listitem><para>Controls whether System V and POSIX IPC objects belonging to the user shall be removed when the
+        user fully logs out. Takes a boolean argument. If enabled, the user may not consume IPC resources after the
+        last of the user's sessions terminated. This covers System V semaphores, shared memory and message queues, as
+        well as POSIX shared memory and message queues. Note that IPC objects of the root user and other system users
+        are excluded from the effect of this setting. Defaults to <literal>yes</literal>.</para></listitem>
+      </varlistentry>
+
+    </variablelist>
+    <!-- 1 /// elogind has an additional section for system commands. -->
     </refsect2>
 
     <refsect2><title>[Sleep] section:</title>
-
       <para><command>elogind</command> supports three general
       power-saving modes:</para>
 
@@ -331,17 +448,22 @@
 
       </variablelist>
     </refsect2>
+    <!-- // 1 -->
   </refsect1>
 
   <refsect1>
       <title>See Also</title>
       <para>
-      <!-- 0 /// elogind is in section 8
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      --><!-- else -->
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <!-- // 0 -->
+        <!-- 0 /// elogind is in section 8
+        <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+        <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+        --><!-- else -->
+        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+        <!-- // 0 -->
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+        <!-- 0 /// UNNEEDED by elogind
+        <citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        // 0 -->
       </para>
   </refsect1>
 
