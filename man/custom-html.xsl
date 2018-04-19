@@ -2,6 +2,8 @@
 
 <!--
   This file is part of elogind.
+  SPDX-License-Identifier: LGPL-2.1+
+
 
   Copyright 2011 Lennart Poettering
 

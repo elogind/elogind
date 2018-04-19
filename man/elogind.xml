@@ -4,6 +4,8 @@
 
 <!--
   This file is part of elogind.
+  SPDX-License-Identifier: LGPL-2.1+
+
 
   Copyright 2010 Lennart Poettering
 
@@ -61,7 +63,7 @@
   <refsynopsisdiv>
     <!-- 0 /// elogind has a different synopsis of course...
     <cmdsynopsis>
-      <command>systemd</command>
+      <command>/usr/lib/systemd/systemd</command>
       <arg choice="opt" rep="repeat">OPTIONS</arg>
     </cmdsynopsis>
     <cmdsynopsis>
@@ -527,7 +529,7 @@
     verify that it makes sense, fixing it if possible, and only
     failing if it really cannot work.</para>
 
-    <para>Systemd contains native implementations of various tasks
+    <para>systemd contains native implementations of various tasks
     that need to be executed as part of the boot process. For example,
     it sets the hostname or configures the loopback network device. It
     also sets up and mounts various API file systems, such as
