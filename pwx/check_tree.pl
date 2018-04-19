@@ -912,7 +912,7 @@ sub check_masks {
 		# Entering an elogind insert
 		# ---------------------------------------
 		if ( ( $$line =~ m/^-#if\s+1.+elogind/ )
-		  || ( $$line =~ m/<!--\s+1.+elogind.+ -->\s*$/  ) ) {
+		  || ( $$line =~ m/<!--\s+1.+elogind.+-->\s*$/  ) ) {
 			$in_mask_block
 				and return hunk_failed("check_masks: Insert start found while being in a mask block!");
 			$in_insert_block
@@ -937,7 +937,7 @@ sub check_masks {
 		# ---------------------------------------
 		if ( $in_mask_block && !$regular_ifs
 		  && ( ( $$line =~ m/^-#else/ )
-		    || ( $$line =~ m/<!--\s+else\s+-->\s*$/ ) 
+		    || ( $$line =~ m/else\s+-->\s*$/ ) 
 		    || ( $$line =~ m,\*\s+else\s+\*\*/\s*$, ) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_else_block = 1;
@@ -948,7 +948,7 @@ sub check_masks {
 		# ---------------------------------------
 		# Note: The regex supports "#endif /** 0 **/", too.
 		if ( ( $$line =~ m,^-#endif\s*/(?:[*/]+)\s*([01]), )
-		  || ( $$line =~ m,\s+//\s+([01])\s+-->\s*$, )
+		  || ( $$line =~ m,//\s+([01])\s+-->\s*$, )
 		  || ( $$line =~ m,\*\s+//\s+([01])\s+\*\*/\s*$, ) ) {
 			if (0 == $1) {
 				(!$in_mask_block)
