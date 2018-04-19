@@ -3,24 +3,11 @@ systemd System and Service Manager
 CHANGES WITH 239 in spe:
 
         * NETWORK INTERFACE DEVICE NAMING CHANGES: elogind-udevd's "net_id"
-          builtin will name network interfaces differently than in previous
-          versions for virtual network interfaces created with SR-IOV and NPAR
-          and for devices where the PCI network controller device does not have
-          a slot number associated.
-
-          SR-IOV virtual devices are now named based on the name of the parent
-          interface, with a suffix of "v<N>", where <N> is the virtual device
-          number. Previously those virtual devices were named as if completely
-          independent.
-
-          The ninth and later NPAR virtual devices will be named following the
-          scheme used for the first eight NPAR partitions. Previously those
-          devices were not renamed and the kernel default (eth<n>) was used.
-
-          "net_id" will also generate names for PCI devices where the PCI
-          network controller device does not have an associated slot number
-          itself, but one of its parents does. Previously those devices were
-          not renamed and the kernel default (eth<n>) was used.
+          builtin may name network interfaces differently than in previous
+          versions. SR-IOV virtual functions and NPAR partitions with PCI
+          function numbers of 8 and above will be named more predictably, and
+          udev may generate names based on the PCI slot number in some cases
+          where it previously did not.
 
         * AF_INET and AF_INET6 are dropped from RestrictAddressFamilies= in
           elogind.service. Since v235, IPAddressDeny=any has been set to
@@ -58,6 +45,15 @@ CHANGES WITH 239 in spe:
           behaviour that wasn't useful. systemctl disable/unmask will now undo
           both runtime and persistent enablement/masking, i.e. it will remove
           any relevant symlinks both in /run and /etc.
+
+        * Note that all long-running system services shipped with elogind will
+          now default to a system call whitelist (rather than a blacklist, as
+          before). In particular, elogind-udevd will now enforce one too. For
+          most cases this should be safe, however downstream distributions
+          which disabled sandboxing of elogind-udevd (specifically the
+          MountFlags= setting), might want to disable this security feature
+          too, as the default whitelisting will prohibit all mount, swap,
+          reboot and clock changing operations from udev rules.
 
         * sd-boot acquired new loader configuration settings to optionally turn
           off Windows and MacOS boot partition discovery as well as
@@ -322,27 +318,27 @@ CHANGES WITH 239 in spe:
         J. Murrell, Bruno Vernay, Chris Lesiak, Christian Brauner, Christian
         Hesse, Daniel Dao, Daniel Lin, Danylo Korostil, Davide Cavalca, David
         Tardon, Dimitri John Ledkov, Dmitriy Geels, Douglas Christman, Elia
-        Geretto, emelenas, Emil Velikov, Evgeny Vereshchagin, Felipe Sateler,
-        Feng Sun, Filipe Brandenburger, Franck Bui, futpib, Giuseppe Scrivano,
-        Guillem Jover, guixxx, Hans de Goede, Henrique Dante de Almeida, Hiram
-        van Paassen, Ian Miell, Igor Gnatenko, Ivan Shapovalov, Iwan Timmer,
+        Geretto, emelenas, Evegeny Vereshchagin, Evgeny Vereshchagin, Felipe
+        Sateler, Feng Sun, Filipe Brandenburger, Franck Bui, futpib, Giuseppe
+        Scrivano, Guillem Jover, guixxx, Hans de Goede, Henrique Dante de
+        Almeida, Hiram van Paassen, Ian Miell, Igor Gnatenko, Ivan Shapovalov,
         James Cowgill, Jan Janssen, Jan Synacek, Jared Kazimir, João Paulo
         Rechi Vita, Joost Heitbrink, Jui-Chi Ricky Liang, Jürg Billeter,
         Kai-Heng Feng, Karol Augustin, Krzysztof Nowicki, Lauri Tirkkonen,
         Lennart Poettering, Leonard König, Long Li, Luca Boccassi, Lucas
         Werkmeister, Marcel Hoppe, Marc Kleine-Budde, Mario Limonciello, Martin
         Jansa, Martin Wilck, Mathieu Malaterre, Matteo F. Vescovi, Matthew
-        McGinn, Matthias-Christian Ott, Michael Biebl, Michael Olbrich, Michael
-        Prokop, Michal Koutný, Michal Sekletar, Mike Gilbert, Mikhail Kasimov,
-        Milan Broz, Milan Pässler, Muhammet Kara, Nicolas Boichat, Omer Katz,
-        Paride Legovini, Paul Menzel, Paul Milliken, Pavel Hrdina, Peter
-        A. Bigot, Peter Hutterer, Peter Jones, Philip Sequeira, Philip
-        Withnall, Piotr Drąg, Radostin Stoyanov, Ricardo Salveti de Araujo,
-        Rosen Penev, Rubén Suárez Alvarez, Ryan Gonzalez, Salvo Tomaselli,
-        Sebastian Reichel, Sergio Lindo Mansilla, Stefan Schweter, Stephen
-        Hemminger, Stuart Hayes, Susant Sahani, Sylvain Plantefève, Thomas
-        H. P. Andersen, Tobias Jungel, Tomasz Torcz, Vito Caputo, Will Dietz,
-        Will Thompson, Wim van Mourik, Yu Watanabe, Zbigniew Jędrzejewski-Szmek
+        McGinn, Michael Biebl, Michael Olbrich, Michael Prokop, Michal Koutný,
+        Michal Sekletar, Mike Gilbert, Mikhail Kasimov, Milan Broz, Milan
+        Pässler, Muhammet Kara, Nicolas Boichat, Omer Katz, Paride Legovini,
+        Paul Menzel, Paul Milliken, Pavel Hrdina, Peter A. Bigot, Peter
+        Hutterer, Peter Jones, Philip Sequeira, Philip Withnall, Piotr Drąg,
+        Radostin Stoyanov, Ricardo Salveti de Araujo, Rosen Penev, Rubén Suárez
+        Alvarez, Ryan Gonzalez, Salvo Tomaselli, Sebastian Reichel, Sergio
+        Lindo Mansilla, Stefan Schweter, Stephen Hemminger, Stuart Hayes,
+        Susant Sahani, Sylvain Plantefève, Thomas H. P. Andersen, Tobias
+        Jungel, Tomasz Torcz, Vito Caputo, Will Dietz, Will Thompson, Wim van
+        Mourik, Yu Watanabe, Zbigniew Jędrzejewski-Szmek
 
         — Berlin, 2018-06-XX
 
