@@ -16,6 +16,7 @@
 # 0.8.5    2018-03-13  sed, PrydeWorX  Added possibility to (manualy) check root files and enhanced the
 #                                        handling of shell masks and unmasks.
 # 0.8.6    2018-03-16  sed, PrydeWorX  Enhanced mask block handling and added handling of .sym files.
+# 0.8.7    2018-04-20  sed, PrydeWorX  Add [un]preparation for XML files.
 #
 # ========================
 # === Little TODO list ===
@@ -32,7 +33,7 @@ use Readonly;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.8.6"; ## Please keep this current!
+Readonly my $VERSION     => "0.8.7"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -162,10 +163,12 @@ sub hunk_failed;        ## Generates a new @lFails entry and terminates the prog
 sub hunk_is_useful;     ## Prunes the hunk and checks whether it stil does anything
 sub parse_args;         ## Parse ARGV for the options we support
 sub prepare_shell;      ## Prepare shell (and meson) files for our processing
+sub prepare_xml;        ## Prepare XML files for our processing (Unmask double dashes in comments)
 sub prune_hunk;         ## remove unneeded prefix and postfix lines.
 sub read_includes;      ## map include changes
 sub splice_includes;    ## Splice all includes that were marked for splicing
 sub unprepare_shell;    ## Unprepare shell (and meson) files after our processing
+sub unprepare_xml;      ## Unprepare XML files after our processing (Mask double dashes in comments)
 sub wanted;             ## Callback function for File::Find
 
 # ================================================================
@@ -288,7 +291,7 @@ for my $file_part (@source_files) {
 		 or print("clean\n");
 
 	# Shell and meson files must be unprepared. See unprepare_shell()
-	$hFile{pwxfile} and unprepare_shell;
+	$hFile{pwxfile} and ( unprepare_shell or unprepare_xml );
 
 	# Now skip the writing if there are no hunks
 	$have_hunk or next;
@@ -1284,6 +1287,10 @@ sub diff_hFile {
 	  $hFile{source} =~ m/\.po$/ or
 	  $hFile{source} =~ m/\.sh$/ or
 	  $hFile{source} =~ m/\.sym$/ ) and $hFile{pwxfile} = 1 and prepare_shell;
+	
+	# We mask double dashes in XML comments using XML hex entities. These
+	# must be unmasked for processing.
+	$hFile{source} =~ m/\.xml$/ and $hFile{pwxfile} = 1 and prepare_xml;
 
 	# Let's have two shortcuts:
 	my $src = $hFile{source};
@@ -1611,6 +1618,75 @@ sub prepare_shell {
 }
 
 # -----------------------------------------------------------------------
+# --- The masking of unneeded blocks in XML files is done using a     ---
+# --- comment scheme. Unfortunately the standard forbids double dashes---
+# --- in comments. To be able to process XML files nevertheless, they ---
+# --- are updated by unprepare_xml() so that all double dashes in     ---
+# --- comments are substituted by &#x2D;&#x2D;, which must be reversed---
+# --- here or the further processing would go nuts.                   ---
+# -----------------------------------------------------------------------
+sub prepare_xml {
+	my $in   = $hFile{source};
+	my $out  = $in . ".pwx";
+	my @lIn  = ();
+	my @lOut = ();
+
+	# Leech the source file
+	if (open(my $fIn, "<", $in)) {
+		@lIn = <$fIn>;
+		close($fIn);
+	} else {
+		die("$in can not be opened for reading! [$!]");
+	}
+
+	# Now prepare the output, line by line.
+	my $is_block = 0;
+	my $is_else  = 0;
+	my $line_no  = 0;
+	for my $line (@lIn) {
+
+		chomp $line;
+		++$line_no;
+
+		if ( ($line =~ m/<!--\s+0.+elogind/) && !($line =~ m/-->\s*$/) ) {
+			if ($is_block) {
+				print "ERROR: $in:$line_no : Mask start in mask!\n";
+				die("Illegal file");
+			}
+			$is_block = 1;
+		} elsif ($is_block && ( $line =~ m/else\s+-->\s*$/ ) ) {
+			$is_else = 1;
+		} elsif ( $line =~ m,//\s+0\s+-->\s*$, ) {
+			if (!$is_block) {
+				print "ERROR: $in:$line_no : Mask end outside mask!\n";
+				die("Illegal file");
+			}
+			$is_block = 0;
+			$is_else  = 0;
+		} elsif ($is_block && !$is_else) {
+			$line =~ s/&#x2D;/-/g;
+		}
+
+		push @lOut, $line;
+	}
+
+	# Now write the outfile:
+	if (open(my $fOut, ">", $out)) {
+		for my $line (@lOut) {
+			print $fOut "$line\n";
+		}
+		close($fOut);
+	} else {
+		die("$out can not be opened for writing! [$!]");
+	}
+
+	# The temporary file is our new source
+	$hFile{source} = $out;
+
+	return 1;
+}
+
+# -----------------------------------------------------------------------
 # --- Remove unused prefix and postfix lines. Recalculates offsets.   ---
 # -----------------------------------------------------------------------
 sub prune_hunk {
@@ -1668,6 +1744,9 @@ sub unprepare_shell {
 	my $out  = substr($in, 0, -4);
 	my @lIn  = ();
 	my @lOut = ();
+
+	# Do not handle XML files here
+	$out =~ m/\.xml$/ and return 0;
 
 	# Leech the temporary file
 	if (open(my $fIn, "<", $in)) {
@@ -1743,6 +1822,92 @@ sub unprepare_shell {
 		$is_block and $line =~ m,^[ ]?#else, and $is_else = 1;
 		$is_block and (!$is_else) and ("#" ne substr($line, 1, 1))
 			and "@@" ne substr($line, 0, 2) and substr($line, 1, 0) = "# ";
+
+		push @{$hFile{output}}, $line;
+	}
+
+	# Now source is the written back original:
+	$hFile{source} = $out;
+
+	return 1;
+}
+
+# -----------------------------------------------------------------------
+# --- Before we can allow an XML file to live, all double dashes that ---
+# --- happen to reside in one of our mask blocks must be masked.      ---
+# --- The standard forbids double dashes inside comments, so we solve ---
+# --- this by substituting '--' with '&#x2D;&#x2D;'.                  ---
+# -----------------------------------------------------------------------
+sub unprepare_xml {
+	my $in   = $hFile{source};
+	my $out  = substr($in, 0, -4);
+	my @lIn  = ();
+	my @lOut = ();
+
+	# Leech the temporary file
+	if (open(my $fIn, "<", $in)) {
+		@lIn = <$fIn>;
+		close($fIn);
+	} else {
+		die("$in can not be opened for reading! [$!]");
+	}
+
+	# Now prepare the output, line by line.
+	my $is_block = 0;
+	my $is_else  = 0;
+	my $line_no  = 0;
+	for my $line (@lIn) {
+
+		chomp $line;
+		++$line_no;
+
+		if ( ($line =~ m/<!--\s+0.+elogind/) && !($line =~ m/-->\s*$/) ) {
+			if ($is_block) {
+				print "ERROR: $in:$line_no : Mask start in mask!\n";
+				die("Illegal file");
+			}
+			$is_block = 1;
+		} elsif ($is_block && ( $line =~ m/else\s+-->\s*$/ ) ) {
+			$is_else = 1;
+		} elsif ( $line =~ m,//\s+0\s+-->\s*$, ) {
+			if (!$is_block) {
+				print "ERROR: $in:$line_no : Mask end outside mask!\n";
+				die("Illegal file");
+			}
+			$is_block = 0;
+			$is_else  = 0;
+		} elsif ($is_block && !$is_else) {
+			$line =~ s/--/&#x2D;&#x2D;/g;
+		}
+
+		push @lOut, $line;
+	}
+
+	# Now write the outfile:
+	if (open(my $fOut, ">", $out)) {
+		for my $line (@lOut) {
+			print $fOut "$line\n";
+		}
+		close($fOut);
+	} else {
+		die("$out can not be opened for writing! [$!]");
+	}
+
+	# Remove the temporary file
+	unlink($in);
+
+	# Now prepare the patch. It is like above, but with less checks.
+	# We have to move out the lines first, and then write them back.
+	@lIn = ();
+	$is_block = 0;
+	$is_else  = 0;
+	@lIn = splice(@{$hFile{output}});
+	for my $line (@lIn) {
+		$line =~ m,//\s+0\s+-->\s*$, and $is_block = 0;
+		$is_block or $is_else = 0;
+		$line =~ m/<!--\s+0.+elogind/ and (! $line =~ m/-->\s*$/) and $is_block = 1;
+		$is_block and $line =~ m/else\s+-->\s*$/ and $is_else = 1;
+		$is_block and (!$is_else) and $line =~ s/--/&#x2D;&#x2D;/g;
 
 		push @{$hFile{output}}, $line;
 	}
