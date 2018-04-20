@@ -162,44 +162,44 @@
     <variablelist>
     <!-- 0 /// This list is much shorter with elogind of course.
       <varlistentry>
-        <term><option>--test</option></term>
+        <term><option>&#x2D;&#x2D;test</option></term>
 
         <listitem><para>Determine startup sequence, dump it and exit.
         This is an option useful for debugging only.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--dump-configuration-items</option></term>
+        <term><option>&#x2D;&#x2D;dump-configuration-items</option></term>
 
         <listitem><para>Dump understood unit configuration items. This
         outputs a terse but complete list of configuration items
         understood in unit definition files.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--unit=</option></term>
+        <term><option>&#x2D;&#x2D;unit=</option></term>
 
         <listitem><para>Set default unit to activate on startup. If
         not specified, defaults to
         <filename>default.target</filename>.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--system</option></term>
-        <term><option>--user</option></term>
+        <term><option>&#x2D;&#x2D;system</option></term>
+        <term><option>&#x2D;&#x2D;user</option></term>
 
-        <listitem><para>For <option>--system</option>, tell systemd to
+        <listitem><para>For <option>&#x2D;&#x2D;system</option>, tell systemd to
         run a system instance, even if the process ID is not 1, i.e.
-        systemd is not run as init process. <option>--user</option>
+        systemd is not run as init process. <option>&#x2D;&#x2D;user</option>
         does the opposite, running a user instance even if the process
         ID is 1. Normally, it should not be necessary to pass these
         options, as systemd automatically detects the mode it is
         started in. These options are hence of little use except for
         debugging. Note that it is not supported booting and
         maintaining a full system with systemd running in
-        <option>--system</option> mode, but PID not 1. In practice,
-        passing <option>--system</option> explicitly is only useful in
-        conjunction with <option>--test</option>.</para></listitem>
+        <option>&#x2D;&#x2D;system</option> mode, but PID not 1. In practice,
+        passing <option>&#x2D;&#x2D;system</option> explicitly is only useful in
+        conjunction with <option>&#x2D;&#x2D;test</option>.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--dump-core</option></term>
+        <term><option>&#x2D;&#x2D;dump-core</option></term>
 
         <listitem><para>Enable core dumping on crash. This switch has
         no effect when running as user instance. This setting may also
@@ -209,7 +209,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term><option>--crash-vt=</option><replaceable>VT</replaceable></term>
+        <term><option>&#x2D;&#x2D;crash-vt=</option><replaceable>VT</replaceable></term>
 
         <listitem><para>Switch to a specific virtual console (VT) on
         crash. Takes a positive integer in the range 1–63, or a
@@ -227,7 +227,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term><option>--crash-shell</option></term>
+        <term><option>&#x2D;&#x2D;crash-shell</option></term>
 
         <listitem><para>Run a shell on crash. This switch has no
         effect when running as user instance. This setting may also be
@@ -237,7 +237,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term><option>--crash-reboot</option></term>
+        <term><option>&#x2D;&#x2D;crash-reboot</option></term>
 
         <listitem><para>Automatically reboot the system on crash. This
         switch has no effect when running as user instance. This
@@ -247,14 +247,14 @@
       </varlistentry>
 
       <varlistentry>
-        <term><option>--confirm-spawn</option></term>
+        <term><option>&#x2D;&#x2D;confirm-spawn</option></term>
 
         <listitem><para>Ask for confirmation when spawning processes.
         This switch has no effect when run as user
         instance.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--show-status=</option></term>
+        <term><option>&#x2D;&#x2D;show-status=</option></term>
 
         <listitem><para>Takes a boolean argument or the special value <constant>auto</constant>. If on, terse unit
         status information is shown on the console during boot-up and shutdown. If off, no such status information is
@@ -266,7 +266,7 @@
         <citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--log-target=</option></term>
+        <term><option>&#x2D;&#x2D;log-target=</option></term>
 
         <listitem><para>Set log target. Argument must be one of
         <option>console</option>,
@@ -276,7 +276,7 @@
         <option>null</option>.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--log-level=</option></term>
+        <term><option>&#x2D;&#x2D;log-level=</option></term>
 
         <listitem><para>Set log level. As
         argument this accepts a numerical log
@@ -292,14 +292,14 @@
         <option>debug</option>.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--log-color=</option></term>
+        <term><option>&#x2D;&#x2D;log-color=</option></term>
 
         <listitem><para>Highlight important log messages. Argument is
         a boolean value. If the argument is omitted, it defaults to
         <option>true</option>.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--log-location=</option></term>
+        <term><option>&#x2D;&#x2D;log-location=</option></term>
 
         <listitem><para>Include code location in log messages. This is
         mostly relevant for debugging purposes. Argument is a boolean
@@ -307,8 +307,8 @@
         <option>true</option>.</para></listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>--default-standard-output=</option></term>
-        <term><option>--default-standard-error=</option></term>
+        <term><option>&#x2D;&#x2D;default-standard-output=</option></term>
+        <term><option>&#x2D;&#x2D;default-standard-error=</option></term>
 
         <listitem><para>Sets the default output or error output for
         all services and sockets, respectively. That is, controls the
@@ -326,14 +326,14 @@
         <option>kmsg</option>,
         <option>kmsg+console</option>.  If the
         argument is omitted
-        <option>--default-standard-output=</option> defaults to
+        <option>&#x2D;&#x2D;default-standard-output=</option> defaults to
         <option>journal</option> and
-        <option>--default-standard-error=</option> to
+        <option>&#x2D;&#x2D;default-standard-error=</option> to
         <option>inherit</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term><option>--machine-id=</option></term>
+        <term><option>&#x2D;&#x2D;machine-id=</option></term>
 
         <listitem><para>Override the machine-id set on the hard drive,
         useful for network booting or for containers. May not be set
@@ -567,11 +567,11 @@
         configuration from various directories. Packages that want to
         install unit files shall place them in the directory returned
         by <command>pkg-config systemd
-        --variable=systemdsystemunitdir</command>. Other directories
+        &#x2D;&#x2D;variable=systemdsystemunitdir</command>. Other directories
         checked are <filename>/usr/local/lib/systemd/system</filename>
         and <filename>/usr/lib/systemd/system</filename>. User
         configuration always takes precedence. <command>pkg-config
-        systemd --variable=systemdsystemconfdir</command> returns the
+        systemd &#x2D;&#x2D;variable=systemdsystemconfdir</command> returns the
         path of the system configuration directory. Packages should
         alter the content of these directories only with the
         <command>enable</command> and <command>disable</command>
@@ -593,9 +593,9 @@
         Base Directory specification</ulink> is followed to find
         units. Applications should place their unit files in the
         directory returned by <command>pkg-config systemd
-        --variable=systemduserunitdir</command>. Global configuration
+        &#x2D;&#x2D;variable=systemduserunitdir</command>. Global configuration
         is done in the directory reported by <command>pkg-config
-        systemd --variable=systemduserconfdir</command>. The
+        systemd &#x2D;&#x2D;variable=systemduserconfdir</command>. The
         <command>enable</command> and <command>disable</command>
         commands of the
         <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
@@ -651,8 +651,8 @@
         <para>systemd user managers will start the
         <filename>exit.target</filename> unit when this signal is
         received. This is mostly equivalent to <command>systemctl
-        --user start exit.target
-        --job-mode=replace-irreversible</command>.</para></listitem>
+        &#x2D;&#x2D;user start exit.target
+        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -662,7 +662,7 @@
         manager will start the
         <filename>ctrl-alt-del.target</filename> unit. This is mostly
         equivalent to <command>systemctl start ctl-alt-del.target
-        --job-mode=replace-irreversible</command>. If this signal is
+        &#x2D;&#x2D;job-mode=replace-irreversible</command>. If this signal is
         received more than 7 times per 2s, an immediate reboot is
         triggered.  Note that pressing Ctrl-Alt-Del on the console
         will trigger this signal. Hence, if a reboot is hanging,
@@ -753,7 +753,7 @@
         <listitem><para>Halts the machine, starts the
         <filename>halt.target</filename> unit. This is mostly
         equivalent to <command>systemctl start halt.target
-        --job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
         </listitem>
       </varlistentry>
 
@@ -763,7 +763,7 @@
         <listitem><para>Powers off the machine, starts the
         <filename>poweroff.target</filename> unit. This is mostly
         equivalent to <command>systemctl start poweroff.target
-        --job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
         </listitem>
       </varlistentry>
 
@@ -773,7 +773,7 @@
         <listitem><para>Reboots the machine, starts the
         <filename>reboot.target</filename> unit. This is mostly
         equivalent to <command>systemctl start reboot.target
-        --job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
         </listitem>
       </varlistentry>
 
@@ -783,7 +783,7 @@
         <listitem><para>Reboots the machine via kexec, starts the
         <filename>kexec.target</filename> unit. This is mostly
         equivalent to <command>systemctl start kexec.target
-        --job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
         </listitem>
       </varlistentry>
 
@@ -848,7 +848,7 @@
         <term><constant>SIGRTMIN+24</constant></term>
 
         <listitem><para>Immediately exits the manager (only available
-        for --user instances).</para></listitem>
+        for &#x2D;&#x2D;user instances).</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -881,28 +881,28 @@
         <term><varname>$SYSTEMD_LOG_LEVEL</varname></term>
         <listitem><para>systemd reads the log level from this
         environment variable. This can be overridden with
-        <option>--log-level=</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-level=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_TARGET</varname></term>
         <listitem><para>systemd reads the log target from this
         environment variable. This can be overridden with
-        <option>--log-target=</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-target=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_COLOR</varname></term>
         <listitem><para>Controls whether systemd highlights important
         log messages. This can be overridden with
-        <option>--log-color=</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-color=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_LOCATION</varname></term>
         <listitem><para>Controls whether systemd prints the code
         location along with log messages. This can be overridden with
-        <option>--log-location=</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-location=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -1068,7 +1068,7 @@
         it defaults to <constant>auto</constant>. If specified overrides the system
         manager configuration file option <option>ShowStatus=</option>, see
         <citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
-        However, the process command line option <option>--show-status=</option>
+        However, the process command line option <option>&#x2D;&#x2D;show-status=</option>
         takes precedence over both this kernel command line option and the
         configuration file option.</para></listitem>
       </varlistentry>
@@ -1093,8 +1093,8 @@
         <term><varname>systemd.default_standard_error=</varname></term>
         <listitem><para>Controls default standard output and error
         output for services, with the same effect as the
-        <option>--default-standard-output=</option> and
-        <option>--default-standard-error=</option> command line
+        <option>&#x2D;&#x2D;default-standard-output=</option> and
+        <option>&#x2D;&#x2D;default-standard-error=</option> command line
         arguments described above, respectively.</para></listitem>
       </varlistentry>
 
@@ -1126,7 +1126,7 @@
         hybrid or full legacy cgroup hierarchy.</para>
 
         <para>If this option is not specified, the default behaviour is determined
-        during compilation (the <option>--with-default-hierarchy=</option>
+        during compilation (the <option>&#x2D;&#x2D;with-default-hierarchy=</option>
         option). If the kernel does not support unified cgroup hierarchy, the legacy
         hierarchy will be used even if this option is specified.</para>
         </listitem>
@@ -1145,7 +1145,7 @@
         the use of "hybrid" hierarchy.</para>
 
         <para>If this option is not specified, the default behaviour is determined
-        during compilation (the <option>--with-default-hierarchy=</option>
+        during compilation (the <option>&#x2D;&#x2D;with-default-hierarchy=</option>
         option). If the kernel does not support unified cgroup hierarchy, the legacy
         hierarchy will be used  even if this option is specified.</para>
         </listitem>
