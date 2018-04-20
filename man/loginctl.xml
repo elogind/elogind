@@ -158,7 +158,7 @@ else -->
       <!-- 0 /// elogind does not support systemd-journal
       <varlistentry>
         <term><option>-n</option></term>
-        <term><option>--lines=</option></term>
+        <term><option>&#x2D;&#x2D;lines=</option></term>
 
         <listitem><para>When used with <command>user-status</command>
         and <command>session-status</command>, controls the number of
@@ -169,7 +169,7 @@ else -->
 
       <varlistentry>
         <term><option>-o</option></term>
-        <term><option>--output=</option></term>
+        <term><option>&#x2D;&#x2D;output=</option></term>
 
         <listitem><para>When used with <command>user-status</command>
         and <command>session-status</command>, controls the formatting
