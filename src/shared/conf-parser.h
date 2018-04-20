@@ -162,6 +162,7 @@ int config_parse_ip_port(GENERIC_PARSER_ARGS);
 #if 0 /// UNNEEDED by elogind
 int config_parse_join_controllers(GENERIC_PARSER_ARGS);
 #endif // 0
+int config_parse_mtu(GENERIC_PARSER_ARGS);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
