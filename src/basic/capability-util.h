@@ -43,7 +43,7 @@ static inline void cap_free_charpp(char **p) {
 static inline bool cap_test_all(uint64_t caps) {
         uint64_t m;
         m = (UINT64_C(1) << (cap_last_cap() + 1)) - 1;
-        return (caps & m) == m;
+        return FLAGS_SET(caps, m);
 }
 
 #if 0 /// UNNEEDED by elogind
