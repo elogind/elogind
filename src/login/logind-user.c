@@ -148,7 +148,7 @@ static int user_save_internal(User *u) {
         assert(u);
         assert(u->state_file);
 
-        r = mkdir_safe_label("/run/elogind/users", 0755, 0, 0, false);
+        r = mkdir_safe_label("/run/systemd/users", 0755, 0, 0, false);
         if (r < 0)
                 goto fail;
 
