@@ -1227,7 +1227,7 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
         if (r == 0)
                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
 
-        mkdir_p_label("/var/lib/systemd", 0755);
+        mkdir_p_label("/var/lib/elogind", 0755);
 
         r = mkdir_safe_label("/var/lib/elogind/linger", 0755, 0, 0, false);
         if (r < 0)
@@ -1237,7 +1237,7 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
         if (!cc)
                 return -ENOMEM;
 
-        path = strjoina("/var/lib/systemd/linger/", cc);
+        path = strjoina("/var/lib/elogind/linger/", cc);
         if (b) {
                 User *u;
 
