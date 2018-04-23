@@ -1107,6 +1107,12 @@ sub check_name_reverts {
 			# 2) References to the systemd github site must not be changed
 			$replace_text =~ m,github\.com/systemd, and next;
 
+			# 3) /run/systemd/ must not be changed, as other applications
+			#    rely on that naming.
+			# Note: The /run/elogind.pid file is not touched by that, as
+			#       systemd does not have something like that.
+			$replace_text =~ m,/run/systemd, and next;
+
 			# Make the following easier with a simple shortcut:
 			my $o_txt = defined($hRemovals{$our_text_long }) ? $our_text_long  :
 			            defined($hRemovals{$our_text_short}) ? $our_text_short :
