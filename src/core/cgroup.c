@@ -966,7 +966,6 @@ static void cgroup_context_apply(
                                 "/dev/urandom\0" "rwm\0"
                                 "/dev/tty\0" "rwm\0"
                                 "/dev/pts/ptmx\0" "rw\0" /* /dev/pts/ptmx may not be duplicated, but accessed */
-                                /* Allow /run/elogind/inaccessible/{chr,blk} devices for mapping InaccessiblePaths */
                                 /* Allow /run/systemd/inaccessible/{chr,blk} devices for mapping InaccessiblePaths */
                                 "-/run/systemd/inaccessible/chr\0" "rwm\0"
                                 "-/run/systemd/inaccessible/blk\0" "rwm\0";
