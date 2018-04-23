@@ -1989,7 +1989,7 @@ static int update_schedule_file(Manager *m) {
 
         assert(m);
 
-        r = mkdir_safe_label("/run/elogind/shutdown", 0755, 0, 0, false);
+        r = mkdir_safe_label("/run/systemd/shutdown", 0755, 0, 0, false);
         if (r < 0)
                 return log_error_errno(r, "Failed to create shutdown subdirectory: %m");
 
