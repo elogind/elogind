@@ -369,12 +369,12 @@ static int manager_enumerate_linger_users(Manager *m) {
 
         assert(m);
 
-        d = opendir("/var/lib/systemd/linger");
+        d = opendir("/var/lib/elogind/linger");
         if (!d) {
                 if (errno == ENOENT)
                         return 0;
 
-                return log_error_errno(errno, "Failed to open /var/lib/systemd/linger/: %m");
+                return log_error_errno(errno, "Failed to open /var/lib/elogind/linger/: %m");
         }
 
         FOREACH_DIRENT(de, d, return -errno) {
