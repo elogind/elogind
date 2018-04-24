@@ -26,6 +26,8 @@
 #include "user-util.h"
 
 void manager_reset_config(Manager *m) {
+        assert(m);
+
         m->n_autovts = 6;
         m->reserve_vt = 6;
         m->remove_ipc = true;
@@ -573,7 +575,7 @@ static bool manager_is_docked(Manager *m) {
 }
 
 static int manager_count_external_displays(Manager *m) {
-        _cleanup_udev_enumerate_unref_ struct udev_enumerate *e = NULL;
+        _cleanup_(udev_enumerate_unrefp) struct udev_enumerate *e = NULL;
         struct udev_list_entry *item = NULL, *first = NULL;
         int r;
         int n = 0;
@@ -592,7 +594,7 @@ static int manager_count_external_displays(Manager *m) {
 
         first = udev_enumerate_get_list_entry(e);
         udev_list_entry_foreach(item, first) {
-                _cleanup_udev_device_unref_ struct udev_device *d = NULL;
+                _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
                 struct udev_device *p;
                 const char *status, *enabled, *dash, *nn, *i;
                 bool external = false;
