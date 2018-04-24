@@ -1294,15 +1294,16 @@ int main(int argc, char *argv[]) {
                 goto finish;
         }
 
-        /* Always create the directories people can create inotify
-         * watches in. Note that some applications might check for the
-         * existence of /run/systemd/seats/ to determine whether
-         * logind is available, so please always make sure this check
-         * stays in. */
 #if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         mkdir_label("/run/systemd/seats", 0755);
         mkdir_label("/run/systemd/users", 0755);
         mkdir_label("/run/systemd/sessions", 0755);
+        /* Always create the directories people can create inotify watches in. Note that some applications might check
+         * for the existence of /run/systemd/seats/ to determine whether logind is available, so please always make
+         * sure these directories are created early on and unconditionally. */
+        (void) mkdir_label("/run/systemd/seats", 0755);
+        (void) mkdir_label("/run/systemd/users", 0755);
+        (void) mkdir_label("/run/systemd/sessions", 0755);
 
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, -1) >= 0);
 
