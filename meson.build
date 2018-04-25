@@ -1548,9 +1548,9 @@ install_libelogind_static = static_library(
         'elogind',
         libelogind_sources,
         journal_client_sources,
+        basic_sources,
+        basic_gcrypt_sources,
         include_directories : includes,
-        link_with : [libbasic,
-                     libbasic_gcrypt],
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
         install_dir : rootlibdir,
@@ -1559,6 +1559,10 @@ install_libelogind_static = static_library(
                         librt,
                         libxz,
                         liblz4,
+                        libcap,
+                        libblkid,
+                        libmount,
+                        libselinux,
                         libgcrypt],
         c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 
