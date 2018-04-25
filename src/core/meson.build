@@ -160,13 +160,14 @@ libcore_la_sources = files('''
 #         load_fragment_gperf_c,
 #         load_fragment_gperf_nulstr_c,
 #         include_directories : includes,
-#         link_with : [libshared_static],
 #         dependencies : [threads,
+#                         librt,
 #                         libseccomp,
 #                         libpam,
 #                         libaudit,
 #                         libkmod,
 #                         libapparmor,
+#                         libselinux,
 #                         libmount])
 # 
 # systemd_sources = files('main.c')
