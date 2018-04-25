@@ -100,6 +100,9 @@
 #         ioprio.h
 #         journal-importer.c
 #         journal-importer.h
+#         json-internal.h
+#         json.c
+#         json.h
 #         khash.c
 #         khash.h
 #         label.c
@@ -481,7 +484,8 @@ libbasic = static_library(
 #                         libblkid,
 #                         libmount,
 #endif // 0
-                        libselinux],
+                        libselinux,
+                        libm],
         c_args : ['-fvisibility=default'],
         install : false)
 
