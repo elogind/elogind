@@ -164,6 +164,7 @@
 #         securebits.h
 #         selinux-util.c
 #         selinux-util.h
+#         set.c
 #         set.h
 #         sigbus.c
 #         sigbus.h
@@ -459,6 +460,9 @@ foreach item : [['cap',    cap_list_txt,    'capability', ''],
 endforeach
 
 basic_sources += [missing_h] + generated_gperf_headers
+basic_gcrypt_sources = files(
+        'gcrypt-util.c',
+        'gcrypt-util.h')
 
 libbasic = static_library(
         'basic',
@@ -479,8 +483,7 @@ libbasic = static_library(
 # # unnecessary linking to libgcrypt.
 # libbasic_gcrypt = static_library(
 #         'basic-gcrypt',
-#         'gcrypt-util.c',
-#         'gcrypt-util.h',
+#         basic_gcrypt_sources,
 #         include_directories : includes,
 #         dependencies : [libgcrypt],
 #         c_args : ['-fvisibility=default'])

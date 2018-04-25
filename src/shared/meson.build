@@ -3,7 +3,7 @@
 # Copyright 2017 Zbigniew Jędrzejewski-Szmek
 
 #if 0 /// elogind has a much shorter list
-# shared_sources = '''
+# shared_sources = files('''
 #         acl-util.h
 #         acpi-fpdt.c
 #         acpi-fpdt.h
@@ -105,7 +105,7 @@
 #         watchdog.c
 #         watchdog.h
 #         wireguard-netlink.h
-# '''.split()
+# '''.split())
 #else
 shared_sources = '''
         bus-util.c
@@ -135,20 +135,20 @@ test_tables_h = files('test-tables.h')
 shared_sources += [test_tables_h]
 
 if conf.get('HAVE_ACL') == 1
-        shared_sources += ['acl-util.c']
+        shared_sources += files('acl-util.c')
 endif
 
 if conf.get('ENABLE_UTMP') == 1
-        shared_sources += ['utmp-wtmp.c']
+        shared_sources += files('utmp-wtmp.c')
 endif
 
 #if 0 /// UNNEEDED by elogind
 # if conf.get('HAVE_SECCOMP') == 1
-#         shared_sources += ['seccomp-util.c']
+#         shared_sources += files('seccomp-util.c')
 # endif
 # 
 # if conf.get('HAVE_LIBIPTC') == 1
-#         shared_sources += ['firewall-util.c']
+#         shared_sources += files('firewall-util.c')
 # endif
 #endif // 0
 
