@@ -80,7 +80,7 @@
 
   <!-- 0 /// elogind has only this configuration
   <xi:include href="standard-conf.xml" xpointer="main-conf" />
-  <!-- // 0 -->
+  // 0 -->
 
   <refsect1>
     <title>Options</title>
