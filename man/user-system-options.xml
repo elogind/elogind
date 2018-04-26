@@ -21,7 +21,7 @@
       implied default.</para>
     </listitem>
   </varlistentry>
-  <!-- // 0 -->
+  // 0 -->
 
   <varlistentry id='host'>
     <term><option>-H</option></term>
