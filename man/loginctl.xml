@@ -314,6 +314,7 @@ else -->
         formatted human-readable output.</para></listitem>
       </varlistentry>
 
+      <!-- 0 /// elogind does not spawn a user manager. Mask until lingeringin elogind is clarified.
       <varlistentry>
         <term><command>enable-linger</command> <optional><replaceable>USER</replaceable>…</optional></term>
         <term><command>disable-linger</command> <optional><replaceable>USER</replaceable>…</optional></term>
@@ -330,6 +331,7 @@ else -->
         <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
         </para></listitem>
       </varlistentry>
+      // 0 -->
 
       <varlistentry>
         <term><command>terminate-user</command> <replaceable>USER</replaceable>…</term>
@@ -487,6 +489,7 @@ else -->
     <example>
       <title>Querying user status</title>
 
+      <!-- 0 /// With elogind no Unit and jurnald output is generated
       <programlisting>$ loginctl user-status
 fatima (1005)
            Since: Sat 2016-04-09 14:23:31 EDT; 54min ago
@@ -498,13 +501,22 @@ fatima (1005)
                   ├─session-3.scope
                     …
                   └─session-5.scope
-                    ├─3473 login -- fatima
+                    ├─3473 login &#x2D;&#x2D; fatima
                     └─3515 -zsh
 
 Apr 09 14:40:30 laptop login[2325]: pam_unix(login:session):
                        session opened for user fatima by LOGIN(uid=0)
 Apr 09 14:40:30 laptop login[2325]: LOGIN ON tty3 BY fatima
 </programlisting>
+      --><!-- else -->
+      <programlisting>$ loginctl user-status
+fatima (1005)
+           Since: Sat 2016-04-09 14:23:31 EDT; 54min ago
+           State: active
+        Sessions: 5 *3
+            Unit: user-1005.slice
+</programlisting>
+      <!-- // 0 -->
 
       <para>There are two sessions, 3 and 5. Session 3 is a graphical session,
       marked with a star. The tree of processing including the two corresponding

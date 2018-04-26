@@ -25,8 +25,9 @@
 -->
 
 <variablelist>
+  <!-- 0 /// With elogind there is no calling user systemd instance.
   <varlistentry id='user'>
-    <term><option>--user</option></term>
+    <term><option>&#x2D;&#x2D;user</option></term>
 
     <listitem id='user-text'>
       <para>Talk to the service manager of the calling user,
@@ -35,13 +36,14 @@
   </varlistentry>
 
   <varlistentry id='system'>
-    <term><option>--system</option></term>
+    <term><option>&#x2D;&#x2D;system</option></term>
 
     <listitem id='system-text'>
       <para>Talk to the service manager of the system. This is the
       implied default.</para>
     </listitem>
   </varlistentry>
+  <!-- // 0 -->
 
   <varlistentry id='host'>
     <term><option>-H</option></term>
