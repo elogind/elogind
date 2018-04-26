@@ -78,7 +78,9 @@
     <!-- // 0 -->
   </refsect1>
 
+  <!-- 0 /// elogind has only this configuration
   <xi:include href="standard-conf.xml" xpointer="main-conf" />
+  <!-- // 0 -->
 
   <refsect1>
     <title>Options</title>
@@ -146,28 +148,39 @@
         <term><varname>KillUserProcesses=</varname></term>
 
         <listitem><para>Takes a boolean argument. Configures whether the processes of a
+        <!-- 0 /// elogind has no scope unit, and goes for cgroups only
         user should be killed when the user logs out. If true, the scope unit
         corresponding to the session and all processes inside that scope will be
         terminated. If false, the scope is "abandoned", see
         <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+        --><!-- else -->
+        user should be killed when the user logs out. If true, the processes
+        listed in their session cgroup will be terminated. If false, the session cgroup
+        is ignored
+        <!-- // 0 -->
         and processes are not killed. Defaults to <literal>yes</literal>,
         but see the options <varname>KillOnlyUsers=</varname> and
         <varname>KillExcludeUsers=</varname> below.</para>
 
+        <!-- 0 /// elogind has no user manager unit, and lingering isn't clarified, yet.
         <para>In addition to session processes, user process may run under the user
         manager unit <filename>user@.service</filename>. Depending on the linger
         settings, this may allow users to run processes independent of their login
         sessions. See the description of <command>enable-linger</command> in
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
         </para>
-
+        // 0 -->
         <para>Note that setting <varname>KillUserProcesses=yes</varname>
         will break tools like
         <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>
         and
         <citerefentry project='die-net'><refentrytitle>tmux</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+        <!-- 0 /// elogind does not provide systemd-run or any equivalent, yet.
         unless they are moved out of the session scope. See example in
         <citerefentry><refentrytitle>systemd-run</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+        --><!-- else -->
+        unless they are moved out of the session scope.
+        <!-- // 0 -->
         </para></listitem>
       </varlistentry>
 
