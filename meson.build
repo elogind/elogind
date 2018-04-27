@@ -1300,6 +1300,18 @@ conf.set10('HAVE_DBUS', have)
 #          'DNSSEC_' + default_dnssec.underscorify().to_upper())
 # substs.set('DEFAULT_DNSSEC_MODE', default_dnssec)
 # 
+# default_private_dns = get_option('default-private-dns')
+# if fuzzer_build
+#         default_private_dns = 'no'
+# endif
+# if default_private_dns != 'no' and conf.get('HAVE_GNUTLS') == 0
+#         message('default-private-dns cannot be set to strict or opportunistic when gnutls is disabled. Setting default-private-dns to no.')
+#         default_private_dns = 'no'
+# endif
+# conf.set('DEFAULT_PRIVATE_DNS_MODE',
+#          'PRIVATE_DNS_' + default_private_dns.underscorify().to_upper())
+# substs.set('DEFAULT_PRIVATE_DNS_MODE', default_private_dns)
+# 
 # want_importd = get_option('importd')
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
@@ -1796,6 +1808,7 @@ test_dlopen = executable(
 #                                 libbasic_gcrypt,
 #                                 libsystemd_resolve_core],
 #                    dependencies : [threads,
+#                                    libgnutls,
 #                                    libgpg_error,
 #                                    libm,
 #                                    libidn],
@@ -1917,6 +1930,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
@@ -3201,6 +3215,7 @@ status = [
 #         'symbolic gateway hostnames:        @0@'.format(', '.join(gateway_hostnames)),
 # 
 #         'default DNSSEC mode:               @0@'.format(default_dnssec),
+#         'default private DNS mode:          @0@'.format(default_private_dns),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #endif // 0
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
