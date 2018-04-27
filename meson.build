@@ -1,5 +1,5 @@
 project('elogind', 'c',
-        version : '235.3',
+        version : '235.4',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
