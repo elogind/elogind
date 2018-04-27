@@ -21,7 +21,6 @@
 #include "bus-error.h"
 #include "bus-util.h"
 //#include "cgroup-util.h"
-#include "conf-parser.h"
 #include "def.h"
 #include "dirent-util.h"
 #include "fd-util.h"
@@ -188,7 +187,7 @@ static void manager_free(Manager *m) {
 
 static int manager_enumerate_devices(Manager *m) {
         struct udev_list_entry *item = NULL, *first = NULL;
-        _cleanup_udev_enumerate_unref_ struct udev_enumerate *e = NULL;
+        _cleanup_(udev_enumerate_unrefp) struct udev_enumerate *e = NULL;
         int r;
 
         assert(m);
@@ -214,7 +213,7 @@ static int manager_enumerate_devices(Manager *m) {
 
         first = udev_enumerate_get_list_entry(e);
         udev_list_entry_foreach(item, first) {
-                _cleanup_udev_device_unref_ struct udev_device *d = NULL;
+                _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
                 int k;
 
                 d = udev_device_new_from_syspath(m->udev, udev_list_entry_get_name(item));
@@ -230,7 +229,7 @@ static int manager_enumerate_devices(Manager *m) {
 }
 
 static int manager_enumerate_buttons(Manager *m) {
-        _cleanup_udev_enumerate_unref_ struct udev_enumerate *e = NULL;
+        _cleanup_(udev_enumerate_unrefp) struct udev_enumerate *e = NULL;
         struct udev_list_entry *item = NULL, *first = NULL;
         int r;
 
@@ -263,7 +262,7 @@ static int manager_enumerate_buttons(Manager *m) {
 
         first = udev_enumerate_get_list_entry(e);
         udev_list_entry_foreach(item, first) {
-                _cleanup_udev_device_unref_ struct udev_device *d = NULL;
+                _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
                 int k;
 
                 d = udev_device_new_from_syspath(m->udev, udev_list_entry_get_name(item));
@@ -586,7 +585,7 @@ static int manager_enumerate_inhibitors(Manager *m) {
 }
 
 static int manager_dispatch_seat_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
+        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
         Manager *m = userdata;
 
         assert(m);
@@ -600,7 +599,7 @@ static int manager_dispatch_seat_udev(sd_event_source *s, int fd, uint32_t reven
 }
 
 static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
+        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
         Manager *m = userdata;
 
         assert(m);
@@ -615,7 +614,7 @@ static int manager_dispatch_device_udev(sd_event_source *s, int fd, uint32_t rev
 
 #if 0 /// UNNEEDED by elogind
 static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
+        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
         Manager *m = userdata;
         const char *name;
 
@@ -638,7 +637,7 @@ static int manager_dispatch_vcsa_udev(sd_event_source *s, int fd, uint32_t reven
 #endif // 0
 
 static int manager_dispatch_button_udev(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
-        _cleanup_udev_device_unref_ struct udev_device *d = NULL;
+        _cleanup_(udev_device_unrefp) struct udev_device *d = NULL;
         Manager *m = userdata;
 
         assert(m);
