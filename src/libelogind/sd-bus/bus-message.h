@@ -184,7 +184,7 @@ int bus_message_from_header(
                 size_t footer_accessible,
                 size_t message_size,
                 int *fds,
-                unsigned n_fds,
+                size_t n_fds,
                 const char *label,
                 size_t extra,
                 sd_bus_message **ret);
@@ -194,7 +194,7 @@ int bus_message_from_malloc(
                 void *buffer,
                 size_t length,
                 int *fds,
-                unsigned n_fds,
+                size_t n_fds,
                 const char *label,
                 sd_bus_message **ret);
 

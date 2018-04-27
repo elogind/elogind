@@ -32,7 +32,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(char**, strv_free_erase);
 void strv_clear(char **l);
 
 char **strv_copy(char * const *l);
-unsigned strv_length(char * const *l) _pure_;
+size_t strv_length(char * const *l) _pure_;
 
 #if 0 /// UNNEEDED by elogind
 int strv_extend_strv(char ***a, char **b, bool filter_duplicates);
@@ -45,7 +45,7 @@ int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
 int strv_extend_front(char ***l, const char *value);
 int strv_push(char ***l, char *value);
 int strv_push_pair(char ***l, char *a, char *b);
-int strv_insert(char ***l, unsigned position, char *value);
+int strv_insert(char ***l, size_t position, char *value);
 
 static inline int strv_push_prepend(char ***l, char *value) {
         return strv_insert(l, 0, value);
@@ -127,7 +127,7 @@ void strv_print(char **l);
                 if (!first)                                     \
                         _l = (char**) &first;                   \
                 else {                                          \
-                        unsigned _n;                            \
+                        size_t _n;                              \
                         va_list _ap;                            \
                                                                 \
                         _n = 1;                                 \

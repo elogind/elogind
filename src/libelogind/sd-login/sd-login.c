@@ -432,7 +432,7 @@ static int uid_get_array(uid_t uid, const char *variable, char ***array) {
                 return -ENOMEM;
 
         strv_uniq(a);
-        r = strv_length(a);
+        r = (int) strv_length(a);
 
         if (array)
                 *array = a;
@@ -756,7 +756,7 @@ _public_ int sd_seat_get_sessions(const char *seat, char ***sessions, uid_t **ui
                 }
         }
 
-        r = strv_length(a);
+        r = (int) strv_length(a);
 
         if (sessions)
                 *sessions = TAKE_PTR(a);
