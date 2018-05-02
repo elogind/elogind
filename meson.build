@@ -444,8 +444,7 @@ if cc.get_id() == 'clang'
         foreach arg : ['-Wno-typedef-redefinition',
                        '-Wno-gnu-variable-sized-type-not-at-end',
                       ]
-                if cc.has_argument(arg,
-                                   name : '@0@ is supported'.format(arg))
+                if cc.has_argument(arg)
                         add_project_arguments(arg, language : 'c')
                 endif
         endforeach
@@ -472,8 +471,7 @@ endforeach
 if get_option('buildtype') != 'debug'
         foreach arg : ['-ffunction-sections',
                        '-fdata-sections']
-                if cc.has_argument(arg,
-                                   name : '@0@ is supported'.format(arg))
+                if cc.has_argument(arg)
                         add_project_arguments(arg, language : 'c')
                 endif
         endforeach
@@ -1917,6 +1915,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
            user_runtime_dir_sources,
            include_directories : includes,
