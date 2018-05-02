@@ -1916,6 +1916,7 @@ exe = executable('elogind-inhibit',
                         install_dir : rootbindir)
 public_programs += [exe]
 executable('elogind-user-runtime-dir',
+executable('elogind-user-runtime-dir',
            user_runtime_dir_sources,
            include_directories : includes,
            link_with : [libshared, liblogind_core],
