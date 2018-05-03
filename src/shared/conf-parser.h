@@ -163,6 +163,7 @@ int config_parse_ip_port(GENERIC_PARSER_ARGS);
 int config_parse_join_controllers(GENERIC_PARSER_ARGS);
 #endif // 0
 int config_parse_mtu(GENERIC_PARSER_ARGS);
+int config_parse_rlimit(GENERIC_PARSER_ARGS);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
