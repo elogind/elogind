@@ -1711,6 +1711,7 @@ static int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
                 const char *unit_name) {
+
 #else
 int delay_shutdown_or_sleep(
                 Manager *m,
@@ -1758,6 +1759,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
+
 #else
                 HandleAction unit_name,
 #endif // 0
@@ -1787,7 +1789,6 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         log_debug_elogind("%s called for %s (%sdelayed)", __FUNCTION__,
                           handle_action_to_string(unit_name),
                           delayed ? "" : "NOT ");
-
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
@@ -1894,7 +1895,6 @@ static int method_do_shutdown_or_sleep(
         log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
                           __FUNCTION__, action, sleep_verb,
                           interactive ? "" : "NOT ");
-
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
@@ -1938,7 +1938,6 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -1958,7 +1957,6 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -1978,7 +1976,6 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -1998,7 +1995,6 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -2018,7 +2014,6 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -2038,7 +2033,6 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
         Manager *m = userdata;
 
         log_debug_elogind("%s called", __FUNCTION__);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
@@ -2649,7 +2643,7 @@ static int method_set_wall_message(
         int r;
         Manager *m = userdata;
         char *wall_message;
-        int enable_wall_messages;
+        unsigned enable_wall_messages;
 
         assert(message);
         assert(m);
