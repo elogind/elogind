@@ -137,7 +137,7 @@ libcore_la_sources = files('''
 #         'load-fragment-gperf.gperf',
 #         input : 'load-fragment-gperf.gperf.m4',
 #         output: 'load-fragment-gperf.gperf',
-#         command : [m4, '-P'] + m4_defines + ['@INPUT@'],
+#         command : [meson_apply_m4, config_h, '@INPUT@'],
 #         capture : true)
 # 
 # load_fragment_gperf_c = custom_target(
