@@ -17,6 +17,7 @@
 #                                        handling of shell masks and unmasks.
 # 0.8.6    2018-03-16  sed, PrydeWorX  Enhanced mask block handling and added handling of .sym files.
 # 0.8.7    2018-04-20  sed, PrydeWorX  Add [un]preparation for XML files.
+# 0.8.8    2018-05-09  sed, PrydeWorX  Use Git::Wrapper to checkout the wanted commit in the upstream tree.
 #
 # ========================
 # === Little TODO list ===
@@ -28,12 +29,13 @@ use warnings;
 use Cwd qw(getcwd abs_path);
 use File::Basename;
 use File::Find;
+use Git::Wrapper;
 use Readonly;
 
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.8.7"; ## Please keep this current!
+Readonly my $VERSION     => "0.8.8"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -1217,45 +1219,53 @@ sub check_sym_lines {
 # -----------------------------------------------------------------------
 sub checkout_upstream {
 	my ($commit)   = @_;
-	my $errmsg     = "";
-	my $new_commit = "";
 
 	# It is completely in order to not wanting to checkout a specific commit.
 	defined($commit) and length($commit) or return 1;
 
+	my $new_commit = "";
+	my $git        = Git::Wrapper->new($upstream_path);
+	my @lOut       = ();
+
 	# Save the previous commit
-	$previous_commit = qx(cd $upstream_path ; git rev-parse --short HEAD 2>&1);
-	if ($?) {
+	try {
+		@lOut = $git->rev_parse({short => 1}, "HEAD");
+	} catch {
 		print "ERROR: Couldn't rev-parse $upstream_path HEAD\n";
-		print "Exit Code : " . ($? >> 8) . "\n";
-		print "$previous_commit\n";
+		print "Exit Code : " . $_->status . "\n";
+		print "Message   : " . $_->error  . "\n";
 		return 0;
-	}
-	chomp $previous_commit;
+	};
+	$previous_commit = $lOut[0];
 
 	# Get the shortened commit hash of $commit
-	$new_commit = qx(cd $upstream_path ; git rev-parse --short "$commit" 2>&1);
-	if ($?) {
+	try {
+		@lOut = $git->rev_parse({short => 1}, $commit);
+	} catch {
 		print "ERROR: Couldn't rev-parse $upstream_path \"$commit\"\n";
-		print "Exit Code : " . ($? >> 8) . "\n";
-		print "$new_commit\n";
+		print "Exit Code : " . $_->status . "\n";
+		print "Message   : " . $_->error  . "\n";
 		return 0;
-	}
-	chomp $new_commit;
+	};
+	$new_commit = $lOut[0];
 
 	# Now check it out, unless we are already there:
 	if ($previous_commit ne $new_commit) {
-		$errmsg = qx(cd $upstream_path ; git checkout "$new_commit" 2>&1);
-		if ($?) {
-			print "ERROR: Couldn't checkout \"new_commit\" in $upstream_path\n";
-			print "Exit Code : " . ($? >> 8) . "\n";
-			print "$errmsg\n";
+		print "Checking out $new_commit in upstream tree...";
+		try {
+			$git->checkout($new_commit);
+		} catch {
+			print "\nERROR: Couldn't checkout \"new_commit\" in $upstream_path\n";
+			print "Exit Code : " . $_->status . "\n";
+			print "Message   : " . $_->error  . "\n";
 			return 0;
-		}
+		};
+		print " done\n";
 	}
 
 	return 1;
 }
+
 
 # -----------------------------------------------------------------------
 # --- Completely clean up the current %hFile data structure.          ---
