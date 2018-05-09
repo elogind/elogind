@@ -4,19 +4,6 @@
 
   Copyright 2013 Zbigniew Jędrzejewski-Szmek
   Copyright 2018 Dell Inc.
-
-  elogind is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation; either version 2.1 of the License, or
-  (at your option) any later version.
-
-  elogind is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
 //#include <errno.h>
@@ -48,7 +35,7 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
                 **suspend_mode = NULL, **suspend_state = NULL,
                 **hibernate_mode = NULL, **hibernate_state = NULL,
                 **hybrid_mode = NULL, **hybrid_state = NULL;
-        char **modes, **states;
+        _cleanup_strv_free_ char **modes, **states; /* always initialized below */
         usec_t delay = 180 * USEC_PER_MINUTE;
 
         const ConfigTableItem items[] = {
@@ -104,16 +91,13 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
                 assert_not_reached("what verb");
 
         if ((!modes && STR_IN_SET(verb, "hibernate", "hybrid-sleep")) ||
-            (!states && !streq(verb, "suspend-then-hibernate"))) {
-                strv_free(modes);
-                strv_free(states);
+            (!states && !streq(verb, "suspend-then-hibernate")))
                 return log_oom();
-        }
 
         if (_modes)
-                *_modes = modes;
+                *_modes = TAKE_PTR(modes);
         if (_states)
-                *_states = states;
+                *_states = TAKE_PTR(states);
         if (_delay)
                 *_delay = delay;
 
