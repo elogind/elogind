@@ -190,8 +190,10 @@ option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
 #if 0 /// elogind interprets this a bit different
 #        description : 'default cgroup hierarchy')
-# option('time-epoch', type : 'string',
+# option('time-epoch', type : 'integer', value : '-1',
 #        description : 'time epoch for time clients')
+# option('system-uid-max', type : 'integer', value : '-1',
+# option('system-gid-max', type : 'integer', value : '-1',
 #else
        description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
                 "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its
@@ -202,29 +204,22 @@ option('default-hierarchy', type : 'combo',
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
 #endif // 0
-option('system-uid-max', type : 'string',
        description : 'maximum system UID')
-option('system-gid-max', type : 'string',
        description : 'maximum system GID')
 #if 0 /// UNNEEDED by elogind
-# option('dynamic-uid-min', type : 'string',
-#        description : 'minimum dynamic UID',
-#        value : '61184') # That's → 0x0000EF00 in hex
-# option('dynamic-uid-max', type : 'string',
-#        description : 'maximum dynamic UID',
-#        value : '65519') # That's → 0x0000FFEF in hex
-# option('container-uid-base-min', type : 'string',
-#        description : 'minimum container UID base',
-#        value : '524288') # That's → 0x00080000 in hex
-# option('container-uid-base-max', type : 'string',
-#        description : 'maximum container UID base',
-#        value : '1878982656') # That's → 0x6FFF0000 in hex
 #endif // 0
-option('tty-gid', type : 'string',
-       description : 'the numeric GID of the "tty" group',
-       value : '5')
 #if 0 /// UNNEEDED by elogind
-# option('users-gid', type : 'string',
+# option('dynamic-uid-min', type : 'integer', value : 0x0000EF00,
+#        description : 'minimum dynamic UID')
+# option('dynamic-uid-max', type : 'integer', value : 0x0000FFEF,
+#        description : 'maximum dynamic UID')
+# option('container-uid-base-min', type : 'integer', value : 0x00080000,
+#        description : 'minimum container UID base')
+# option('container-uid-base-max', type : 'integer', value : 0x6FFF0000,
+#        description : 'maximum container UID base')
+# option('tty-gid', type : 'integer', value : 5,
+#        description : 'the numeric GID of the "tty" group')
+# option('users-gid', type : 'integer', value : '-1',
 #        description : 'the numeric GID of the "users" group')
 # option('adm-group', type : 'boolean',
 #        description : 'the ACL for adm group should be added')
@@ -356,7 +351,7 @@ option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'path to the EFI lds directory')
 # option('efi-includedir', type : 'string', value : '/usr/include/efi',
 #        description : 'path to the EFI header directory')
-# option('tpm-pcrindex', type : 'string', value : '8',
+# option('tpm-pcrindex', type : 'integer', value : 8,
 #        description : 'TPM PCR register number to use')
 #endif // 0
 
