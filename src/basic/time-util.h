@@ -145,7 +145,7 @@ int parse_nsec(const char *t, nsec_t *nsec);
 bool ntp_synced(void);
 
 int get_timezones(char ***l);
-bool timezone_is_valid(const char *name);
+bool timezone_is_valid(const char *name, int log_level);
 
 #endif // 0
 bool clock_boottime_supported(void);
