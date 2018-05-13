@@ -74,6 +74,8 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 #        description : 'enable extra debugging')
 # option('memory-accounting-default', type : 'boolean',
 #        description : 'enable MemoryAccounting= by default')
+# option('valgrind', type : 'boolean', value : false,
+#        description : 'do extra operations to avoid valgrind warnings')
 #else
 option('debug', type : 'string',
        description : 'enable extra debugging (elogind,hashmap,mmap-cache)')
