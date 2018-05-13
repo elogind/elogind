@@ -905,6 +905,8 @@ conf.set10('ENABLE_DEBUG_MMAP_CACHE', enable_debug_mmap_cache)
 conf.set10('ENABLE_DEBUG_ELOGIND', enable_debug_elogind)
 #endif // 1
 
+conf.set10('VALGRIND', get_option('valgrind'))
+
 #####################################################################
 
 threads = dependency('threads')
@@ -1907,6 +1909,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
@@ -3277,6 +3280,7 @@ foreach tuple : [
 #         ['adm group',        get_option('adm-group')],
 #         ['wheel group',      get_option('wheel-group')],
 #         ['gshadow'],
+#         ['valgrind',         conf.get('VALGRIND') == 1],
 #else
         ['debug elogind'],
 #endif // 0
