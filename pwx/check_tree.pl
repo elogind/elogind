@@ -17,12 +17,12 @@
 #                                        handling of shell masks and unmasks.
 # 0.8.6    2018-03-16  sed, PrydeWorX  Enhanced mask block handling and added handling of .sym files.
 # 0.8.7    2018-04-20  sed, PrydeWorX  Add [un]preparation for XML files.
-# 0.8.8    2018-05-09  sed, PrydeWorX  Use Git::Wrapper to checkout the wanted commit in the upstream tree.
-#
+# 0.8.8    2018-05-08  sed, PrydeWorX  Use Git::Wrapper to checkout the wanted commit in the upstream tree.
+# 0.8.9    2018-05-09  sed, PrydeWorX  Add new option --create to create non-existing files. Needs --file.
+#                                      Add new option --stay to to not reset back from --commit.
 # ========================
 # === Little TODO list ===
 # ========================
-# - Add handling of the *.sym files.
 #
 use strict;
 use warnings;
@@ -31,6 +31,7 @@ use File::Basename;
 use File::Find;
 use Git::Wrapper;
 use Readonly;
+use Try::Tiny;
 
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
@@ -60,19 +61,24 @@ Usage :
 Options :
 ---------
     -c|--commit <refid> | Check out <refid> in the upstream tree.
+       --create         | Needs --file. If the file does not exist, create it.
     -f|--file   <path>  | Do not search recursively, check only <path>.
                         | For the check of multiple files, you can either
-                        | specify -f multiple times, or concatenate paths
-                        | with a comma, or mix both methods.
+                        | specify -f multiple times, or concatenate paths with
+                        | a comma, or mix both methods.
     -h|--help           | Print this help text and exit.
+       --stay           | Needs --commit. Do not reset to the current commit,
+                        | stay with the wanted commit.
 #;
 
 # ================================================================
 # ===        ==> -------- Global variables -------- <==        ===
 # ================================================================
-
+my $do_create       = 0;  ## If set to 1, a non-existing file is created.
+my $do_stay         = 0;  ## If set to 1, the previous commit isn't restored on exit.
 my $file_fmt        = ""; ## Format string built from the longest file name in generate_file_list().
 my $have_wanted     = 0;  ## Helper for finding relevant files (see wanted())
+my %hToCreate       = (); ## The keys are files that do not exist and shall be created.
 my %hWanted         = (); ## Helper hash for finding relevant files (see wanted())
 my $in_else_block   = 0;  ## Set to 1 if we switched from mask/unmask to 'else'.
 my $in_mask_block   = 0;  ## Set to 1 if we entered an elogind mask block
@@ -93,6 +99,7 @@ my %hFile = (); ## Main data structure to manage a complete compare of two files
                 ## Note: %hFile is used globaly for each file that is processed.
                 ## The structure is:
                 ## ( count  : Number of hunks stored
+                ##   create : Set to 1 if this is a new file to be created, 0 otherwise.
                 ##   hunks  : Arrayref with the Hunks, stored in %hHunk instances
                 ##   output : Arrayref with the lines of the final patch
                 ##   part   : local relative file path
@@ -350,7 +357,7 @@ if (scalar @lFails) {
 # ===        ==> --------     Cleanup      -------- <==        ===
 # ================================================================
 
-length($previous_commit) and checkout_upstream($previous_commit);
+$do_stay or length($previous_commit) and checkout_upstream($previous_commit);
 
 # ================================================================
 # ===        ==> ---- Function Implementations ---- <==        ===
@@ -365,6 +372,9 @@ sub build_hFile {
 	my ($part) = @_;
 
 	defined($part) and length($part) or print("ERROR\n") and die("build_hfile: part is empty ???");
+
+	# Is this a new file?
+	my $isNew = defined($hToCreate{$part}) ? 1 : 0;
 
 	# We only prefixed './' to unify things. Now it is no longer needed:
 	$part =~ s,^\./,,;
@@ -383,10 +393,11 @@ sub build_hFile {
 	# Build the patch name
 	my $patch = $part;
 	$patch =~ s/\//_/g;
-
+	
 	# Build the central data structure.
 	%hFile = (
 		count  => 0,
+		create => $isNew,
 		hunks  => [ ],
 		output => [ ],
 		part   => "$part",
@@ -1291,30 +1302,34 @@ sub clean_hFile {
 # -----------------------------------------------------------------------
 sub diff_hFile {
 
-	# Do they differ at all?
-	`diff -qu "$hFile{source}" "$hFile{target}" 1>/dev/null 2>&1`;
-	$? or print "same\n" and return 0;
+	# If this is not an attempt to create a new file, a few preparations
+	# and checks can be made beforehand. They make no sense on new files.
+	if (0 == $hFile{create}) {
+		# Do they differ at all?
+		`diff -qu "$hFile{source}" "$hFile{target}" 1>/dev/null 2>&1`;
+		$? or print "same\n" and return 0;
 
-	# Shell and meson files must be prepared. See prepare_meson()
-	( $hFile{source} =~ m/meson/ or
-	  $hFile{source} =~ m/\.gperf$/ or
-	  $hFile{source} =~ m/\.in$/ or
-	  $hFile{source} =~ m/\.pl$/ or
-	  $hFile{source} =~ m/\.po$/ or
-	  $hFile{source} =~ m/\.sh$/ or
-	  $hFile{source} =~ m/\.sym$/ ) and $hFile{pwxfile} = 1 and prepare_shell;
-	
-	# We mask double dashes in XML comments using XML hex entities. These
-	# must be unmasked for processing.
-	$hFile{source} =~ m/\.xml$/ and $hFile{pwxfile} = 1 and prepare_xml;
+		# Shell and meson files must be prepared. See prepare_meson()
+		( $hFile{source} =~ m/meson/ or
+		  $hFile{source} =~ m/\.gperf$/ or
+		  $hFile{source} =~ m/\.in$/ or
+		  $hFile{source} =~ m/\.pl$/ or
+		  $hFile{source} =~ m/\.po$/ or
+		  $hFile{source} =~ m/\.sh$/ or
+		  $hFile{source} =~ m/\.sym$/ ) and $hFile{pwxfile} = 1 and prepare_shell;
 
-	# Let's have two shortcuts:
+		# We mask double dashes in XML comments using XML hex entities. These
+		# must be unmasked for processing.
+		$hFile{source} =~ m/\.xml$/ and $hFile{pwxfile} = 1 and prepare_xml;
+	}
+
+	# Let's have three shortcuts:
 	my $src = $hFile{source};
 	my $tgt = $hFile{target};
 	my $prt = $hFile{part};
 
 	# Now the diff can be built ...
-	my @lDiff = `diff -u "$src" "$tgt"`;
+	my @lDiff = `diff -N -u "$src" "$tgt"`;
 
 	# ... the head of the output can be generated ...
 	@{$hFile{output}} = splice(@lDiff, 0, 2);
@@ -1371,6 +1386,9 @@ sub generate_file_list {
 		$hWanted{$xFile} == 2 and next; ## Already handled or unavailable
 		find(\&wanted, "$xFile");
 	}
+	
+	# All files that shall be created must be added manually now.
+	scalar keys %hToCreate and push @source_files, keys %hToCreate;
 
 	# Just to be sure...
 	scalar @source_files
@@ -1497,6 +1515,12 @@ sub parse_args {
 			$wanted_commit = $args[++$i];
 		}
 
+		# Check for --create option
+		# -------------------------------------------------------------------------------
+		elsif ($args[$i] =~ m/^--create$/) {
+			$do_create = 1;
+		}
+
 		# Check for -f|--file option
 		# -------------------------------------------------------------------------------
 		elsif ($args[$i] =~ m/^-(?:f|-file)$/) {
@@ -1513,6 +1537,12 @@ sub parse_args {
 		# -------------------------------------------------------------------------------
 		elsif ($args[$i] =~ m/^-(?:h|-help)$/) {
 			$show_help = 1;
+		}
+
+		# Check for --stay option
+		# -------------------------------------------------------------------------------
+		elsif ($args[$i] =~ m/^--stay$/) {
+			$do_stay = 1;
 		}
 
 		# Check for unknown options:
@@ -1545,11 +1575,26 @@ sub parse_args {
 		print "ERROR: Please provide a path to upstream!\n\nUsage: $USAGE_SHORT\n";
 		$result = 0;
 	}
+	
+	# If --create was given, @wanted_files must not be empty
+	if ($result && !$show_help && $do_create && (0 == scalar @wanted_files)) {
+		print "ERROR: --create must not be used on the full tree!\n";
+		print "       Add at least one file using the --file option.\n";
+		$result = 0;
+	}
 
-	# If any of the wanted files do not exist, error out.
+	# If --stay was given, $wanted_commit must not be empty
+	if ($result && !$show_help && $do_stay && (0 == length($wanted_commit))) {
+		print "ERROR: --stay makes only sense with the -c|--commit option!\n";
+		$result = 0;
+	}
+
+	# If any of the wanted files do not exist, error out unless --create was used.
 	if ($result && !$show_help && defined($wanted_files[0])) {
 		foreach my $f (@wanted_files) {
-			-f $f or print "ERROR: $f does not exist!\n" and $result = 0;
+			-f $f 
+				or $do_create and $hToCreate{$f} = 1
+				or print "ERROR: $f does not exist!\n" and $result = 0;
 		}
 	}
 
