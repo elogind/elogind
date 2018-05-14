@@ -8,6 +8,7 @@
 # 0.0.1    2018-05-02  sed, PrydeWorX  First basic design.
 # 0.0.2    2018-05-07  sed, PrydeWorX  Work flow integrated up to creating the formatted patches.
 # 0.0.3    2018-05-13  sed, PrydeWorX  Reworking of the formatted patches added.
+# 0.1.0    2018-05-14  sed, PrydeWorX  Application of the reworked patches added.
 #
 # ========================
 # === Little TODO list ===
@@ -25,7 +26,7 @@ use Try::Tiny;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.0.3";                                                # Please keep this current!
+Readonly my $VERSION     => "0.1.0";                                                # Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -145,11 +146,11 @@ sub wanted;              # Callback function for File::Find
 $output_path = abs_path("$PROGDIR/patches");
 $main_result = parse_args(@ARGV);
 (
-	( !$main_result )                        ## Note: Error or --help given, then exit.
+	( !$main_result )  ## Note: Error or --help given, then exit.
 	  or ( $show_help and print "$USAGE_LONG" ) ) and exit( !$main_result );
 get_last_mutual and generate_file_list
   or exit 1;
-checkout_upstream($wanted_refid)             ## Note: Does nothing if $wanted_refid is already checked out.
+checkout_upstream($wanted_refid)  ## Note: Does nothing if $wanted_refid is already checked out.
   or exit 1;
 
 # ================================================================
@@ -232,10 +233,56 @@ length($previous_refid) and checkout_upstream($previous_refid);
 # --- Apply a reworked patch                                 ---
 # --------------------------------------------------------------
 sub apply_patch {
-	my ($pFile) = @_;
+	my ($pFile)     = @_;
+	my $git         = Git::Wrapper->new($WORKDIR);
+	my @lGitRes     = ();
+	my $patch_lines = "";
+
+	# --- 1) Read the patch, we have to use it directly via STDIN ---
+	if ( open( my $fIn, "<", $pFile ) ) {
+		my @lLines = <$fIn>;
+		close($fIn);
+		chomp(@lLines);
+		$patch_lines = join( "\n", @lLines ) . "\n";
+	} else {
+		print "\nERROR: $pFile could not be opened for reading!\n$!\n";
+		return 0;
+	}
+
+	# --- 2) Try to apply the patch as is ---
+	try {
+		@lGitRes = $git->am(
+			{
+				"3"    => 1,
+				stdin  => 1,
+				-STDIN => $patch_lines
+			} );
+
+		# If we are here, everything is fine.
+		return 1;
+	} ## end try
+	catch {
+		# We try again without 3-way-merging
+		show_prg( sprintf("Applying  %s (2nd try)"), basename($pFile) );
+	};
+
+	# --- 3) Try to apply the patch without 3-way-merging ---
+	try {
+		@lGitRes = $git->am(
+			{
+				stdin  => 1,
+				-STDIN => $patch_lines
+			} );
+	} ## end try
+	catch {
+		print "\nERROR: Couldn't apply $pFile\n";
+		print "Exit Code : " . $_->status . "\n";
+		print "Message   : " . $_->error . "\n";
+		return 0;
+	} ## end catch
 
 	return 1;
-}
+} ## end sub apply_patch
 
 # ------------------------------------------------------
 # --- Build a hash of commits for the current hFile. ---
