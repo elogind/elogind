@@ -138,6 +138,7 @@ sub get_last_mutual;     # Find or read the last mutual refid between this and t
 sub parse_args;          # Parse ARGV for the options we support
 sub rework_patch;        # Use check_tree.pl to generate valid diffs on all valid files within the patch.
 sub set_last_mutual;     # Write back %hMutuals to $COMMIT_FILE
+sub shorten_refid;       # Take DIR and REFID and return the shortest possible REFID in DIR.
 sub show_prg;            # Helper to show a progress line that is not permanent.
 sub wanted;              # Callback function for File::Find
 
@@ -294,20 +295,11 @@ sub apply_patch {
 
 	# --- 4) Get the new commit id, so we can update %hMutuals ---
 	# ---------------------------------------------------------------
-	try {
-		@lGitRes = $git->rev_parse( { short => 1 }, "HEAD" );
-	} catch {
-		print "ERROR: Couldn't rev-parse $WORKDIR HEAD\n";
-		print "Exit Code : " . $_->status . "\n";
-		print "Message   : " . $_->error . "\n";
-		$result =  0;
-	};
-	$result or return $result; ## Give up and exit
-
-	$hMutuals{$wanted_refid}{tgt} = $lGitRes[0];
+	$hMutuals{$wanted_refid}{tgt} = shorten_refid($WORKDIR, "HEAD");
+	length($hMutuals{$wanted_refid}{tgt}) or return 0; # Give up and exit
 	
 	# The commit of the just applied patch file becomes the last mutual commit.
-	$hMutuals{$wanted_refid}{mutual} = $hSrcCommits{$pFile};
+	$hMutuals{$wanted_refid}{mutual} = shorten_refid($upstream_path, $hSrcCommits{$pFile});
 
 	return $result;
 } ## end sub apply_patch
@@ -510,35 +502,18 @@ sub checkout_upstream {
 
 	my $new_commit = "";
 	my $git        = Git::Wrapper->new($upstream_path);
-	my @lOut       = ();
-	my $result     = 1;
 
 	# Save the previous commit
-	try {
-		@lOut = $git->rev_parse( { short => 1 }, "HEAD" );
-	} catch {
-		print "ERROR: Couldn't rev-parse $upstream_path HEAD\n";
-		print "Exit Code : " . $_->status . "\n";
-		print "Message   : " . $_->error . "\n";
-		$result = 0;
-	};
-	$result or return $result;
-	$previous_refid = $lOut[0];
+	$previous_refid = shorten_refid($upstream_path, "HEAD");
+	length($previous_refid) or return 0;
 
 	# Get the shortened commit hash of $commit
-	try {
-		@lOut = $git->rev_parse( { short => 1 }, $commit );
-	} catch {
-		print "ERROR: Couldn't rev-parse $upstream_path \"$commit\"\n";
-		print "Exit Code : " . $_->status . "\n";
-		print "Message   : " . $_->error . "\n";
-		$result = 0;
-	};
-	$result or return $result;
-	$new_commit = $lOut[0];
+	$new_commit = shorten_refid($upstream_path, $commit);
+	length($new_commit) or return 0;
 
 	# Now check it out, unless we are already there:
 	if ( $previous_refid ne $new_commit ) {
+		my $result     = 1;
 		print "Checking out $new_commit in upstream tree...";
 		try {
 			$git->checkout($new_commit);
@@ -628,9 +603,13 @@ sub get_last_mutual {
 					my $ref = $1;
 					my $src = $3;
 					my $tgt = $4;
-					$hMutuals{$ref} = { mutual => $2, src => undef, tgt => undef };
-					$src =~ m/^src-(\S+)$/ and $hMutuals{$ref}{src} = $1;
-					$tgt =~ m/^tgt-(\S+)$/ and $hMutuals{$ref}{tgt} = $1;
+					$hMutuals{$ref} = {
+						mutual => shorten_refid($upstream_path, $2),
+						src    => undef,
+						tgt    => undef
+					};
+					$src =~ m/^src-(\S+)$/ and $hMutuals{$ref}{src} = shorten_refid($upstream_path, $1);
+					$tgt =~ m/^tgt-(\S+)$/ and $hMutuals{$ref}{tgt} = shorten_refid($WORKDIR, $1);
 				} ## end if ( $line =~ m/^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$/)
 			} ## end for my $line (@lLines)
 		} else {
@@ -641,8 +620,8 @@ sub get_last_mutual {
 
 	# If this is already set, we are fine.
 	if ( length($mutual_commit) ) {
-		$hMutuals{$wanted_refid}{mutual} = $mutual_commit;
-		return 1;
+		$hMutuals{$wanted_refid}{mutual} = shorten_refid($upstream_path, $mutual_commit);
+		length($hMutuals{$wanted_refid}{mutual}) and return 1 or return 0;
 	}
 
 	# Now check against --advance and then set $mutual_commit accordingly.
@@ -870,7 +849,7 @@ sub rework_patch {
 		push @lOut, $line;
 	}  ## End of scanning lines
 
-	scalar @lFixedPatches or next;
+	scalar @lFixedPatches or return 1;
 
 	# Load all generated patches and add them to lOut
 	# ----------------------------------------------------------
@@ -921,11 +900,11 @@ sub set_last_mutual {
 		push @lRefs, $refid;
 		length($refid)                    > $ref_len and $ref_len = length($refid);
 		length($hMutuals{$refid}{mutual}) > $ref_len and $ref_len = length($hMutuals{$refid}{mutual});
-		defined(length($hMutuals{$refid}{src}))
+		defined($hMutuals{$refid}{src}) and length($hMutuals{$refid}{src})
 			and $hMutuals{$refid}{src} = "src-" . $hMutuals{$refid}{src}
 			 or $hMutuals{$refid}{src} = "x";
-		length($hMutuals{$refid}{src})    > $ref_len and $ref_len = length($hMutuals{$refid}{src});
-		defined(length($hMutuals{$refid}{tgt}))
+		($hMutuals{$refid}{src})    > $ref_len and $ref_len = length($hMutuals{$refid}{src});
+		defined($hMutuals{$refid}{tgt}) and length($hMutuals{$refid}{tgt})
 			and $hMutuals{$refid}{tgt} = "tgt-" . $hMutuals{$refid}{tgt}
 			 or $hMutuals{$refid}{tgt} = "x";
 		length($hMutuals{$refid}{tgt})    > $ref_len and $ref_len = length($hMutuals{$refid}{tgt});
@@ -958,6 +937,29 @@ sub set_last_mutual {
 	return 1;
 }
 
+
+# -------------------------------------------------------------------------
+# --- Take DIR and REFID and return the shortest possible REFID in DIR. ---
+# -------------------------------------------------------------------------
+sub shorten_refid {
+	my ($p, $r) = @_;
+
+	my $git        = Git::Wrapper->new($p);
+	my @lOut       = ();
+	my $result     = 1;
+
+	# Get the shortest possible $r (REFID)
+	try {
+		@lOut = $git->rev_parse( { short => 1 }, "$r" );
+	} catch {
+		print "ERROR: Couldn't rev-parse $p::$r\n";
+		print "Exit Code : " . $_->status . "\n";
+		print "Message   : " . $_->error . "\n";
+		$result = 0;
+	};
+	$result and return $lOut[0];
+	return "";
+}
 
 # Helper to show the argument as a non permanent progress line.
 sub show_prg {
