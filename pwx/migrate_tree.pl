@@ -265,15 +265,14 @@ sub apply_patch {
 	# ---------------------------------------------------------------
 	my $result = 1;
 	try {
-		@lGitRes = $git->am(
-			{
+		@lGitRes = $git->am( {
 				"3"    => 1,
-				stdin  => 1,
 				-STDIN => $patch_lines
 			} );
 	} catch {
 		# We try again without 3-way-merging
-		show_prg( sprintf("Applying  %s (2nd try)"), basename($pFile) );
+		$git->am( { "abort" => 1 } );
+		show_prg( sprintf("Applying  %s (2nd try)", basename($pFile) ) );
 		$result = 0;
 	};
 	$result and return $result;
@@ -281,13 +280,12 @@ sub apply_patch {
 	# --- 3) Try to apply the patch without 3-way-merging         ---
 	# ---------------------------------------------------------------
 	try {
-		@lGitRes = $git->am(
-			{
-				stdin  => 1,
+		@lGitRes = $git->am( {
 				-STDIN => $patch_lines
 			} );
 		$result = 1;
 	} catch {
+		$git->am( { "abort" => 1 } );
 		print "\nERROR: Couldn't apply $pFile\n";
 		print "Exit Code : " . $_->status . "\n";
 		print "Message   : " . $_->error . "\n";
