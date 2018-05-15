@@ -10,6 +10,7 @@
 # 0.0.3    2018-05-13  sed, PrydeWorX  Reworking of the formatted patches added.
 # 0.1.0    2018-05-14  sed, PrydeWorX  Application of the reworked patches added.
 # 0.2.0    2018-05-15  sed, PrydeWorX  First working version.
+# 0.2.1                                Fixed usage of Try::Tiny.
 #
 # ========================
 # === Little TODO list ===
@@ -205,7 +206,7 @@ for ( my $i = 0 ; $i < $commit_count ; ++$i ) {
 		return 0;
 	}
 
-	show_prg( sprintf("Reworking %s"), basename( $lFiles[0] ) );
+	show_prg( sprintf("Reworking %s", basename( $lFiles[0] ) ) );
 	rework_patch( $lFiles[0] ) or exit 1;
 
 	# -------------------------------------------------------------
@@ -213,7 +214,7 @@ for ( my $i = 0 ; $i < $commit_count ; ++$i ) {
 	# ---    Otherwise we'll screw up if a newly created file   ---
 	# ---    gets patched later.                                ---
 	# -------------------------------------------------------------
-	show_prg( sprintf("Applying  %s"), basename( $lFiles[0] ) );
+	show_prg( sprintf("Applying  %s", basename( $lFiles[0] ) ) );
 	apply_patch( $lFiles[0] ) or exit 1;
 	
 	# The patch file is no longer needed. Keeping it would lead to confusion.
@@ -262,6 +263,7 @@ sub apply_patch {
 
 	# --- 2) Try to apply the patch as is                         ---
 	# ---------------------------------------------------------------
+	my $result = 1;
 	try {
 		@lGitRes = $git->am(
 			{
@@ -269,14 +271,12 @@ sub apply_patch {
 				stdin  => 1,
 				-STDIN => $patch_lines
 			} );
-
-		# If we are here, everything is fine.
-		return 1;
-	}
-	catch {
+	} catch {
 		# We try again without 3-way-merging
 		show_prg( sprintf("Applying  %s (2nd try)"), basename($pFile) );
+		$result = 0;
 	};
+	$result and return $result;
 
 	# --- 3) Try to apply the patch without 3-way-merging         ---
 	# ---------------------------------------------------------------
@@ -286,31 +286,32 @@ sub apply_patch {
 				stdin  => 1,
 				-STDIN => $patch_lines
 			} );
-	}
-	catch {
+		$result = 1;
+	} catch {
 		print "\nERROR: Couldn't apply $pFile\n";
 		print "Exit Code : " . $_->status . "\n";
 		print "Message   : " . $_->error . "\n";
-		return 0;
 	};
+	$result or return $result; ## Give up and exit
 
 	# --- 4) Get the new commit id, so we can update %hMutuals ---
 	# ---------------------------------------------------------------
 	try {
 		@lGitRes = $git->rev_parse( { short => 1 }, "HEAD" );
-	}
-	catch {
+	} catch {
 		print "ERROR: Couldn't rev-parse $WORKDIR HEAD\n";
 		print "Exit Code : " . $_->status . "\n";
 		print "Message   : " . $_->error . "\n";
-		return 0;
+		$result =  0;
 	};
+	$result or return $result; ## Give up and exit
+
 	$hMutuals{$wanted_refid}{tgt} = $lGitRes[0];
 	
 	# The commit of the just applied patch file becomes the last mutual commit.
 	$hMutuals{$wanted_refid}{mutual} = $hSrcCommits{$pFile};
 
-	return 1;
+	return $result;
 } ## end sub apply_patch
 
 # ------------------------------------------------------
@@ -397,10 +398,11 @@ sub build_hFile {
 # --- Fill $output_path with formatted patches from @lCommits. ---
 # ----------------------------------------------------------------
 sub build_lPatches {
-	my $git   = Git::Wrapper->new($upstream_path);
-	my $cnt   = 0;
-	my @lRev  = ();
-	my @lPath = ();
+	my $git    = Git::Wrapper->new($upstream_path);
+	my $cnt    = 0;
+	my @lRev   = ();
+	my @lPath  = ();
+	my $result = 1;
 
 	for my $refid (@lCommits) {
 		@lRev = $git->rev_list( { "1" => 1, oneline => 1 }, $refid );
@@ -419,13 +421,13 @@ sub build_lPatches {
 				"--start-number=$cnt",
 				$refid
 			);
-		} ## end try
-		catch {
+		} catch {
 			print "\nERROR: Couldn't format-patch $refid\n";
 			print "Exit Code : " . $_->status . "\n";
 			print "Message   : " . $_->error . "\n";
-			return 0;
+			$result = 0;
 		};
+		$result or return $result;
 	} ## end for my $refid (@lCommits)
 	$cnt and show_prg("") and print("$cnt patches built\n");
 
@@ -511,29 +513,30 @@ sub checkout_upstream {
 	my $new_commit = "";
 	my $git        = Git::Wrapper->new($upstream_path);
 	my @lOut       = ();
+	my $result     = 1;
 
 	# Save the previous commit
 	try {
 		@lOut = $git->rev_parse( { short => 1 }, "HEAD" );
-	}
-	catch {
+	} catch {
 		print "ERROR: Couldn't rev-parse $upstream_path HEAD\n";
 		print "Exit Code : " . $_->status . "\n";
 		print "Message   : " . $_->error . "\n";
-		return 0;
+		$result = 0;
 	};
+	$result or return $result;
 	$previous_refid = $lOut[0];
 
 	# Get the shortened commit hash of $commit
 	try {
 		@lOut = $git->rev_parse( { short => 1 }, $commit );
-	}
-	catch {
+	} catch {
 		print "ERROR: Couldn't rev-parse $upstream_path \"$commit\"\n";
 		print "Exit Code : " . $_->status . "\n";
 		print "Message   : " . $_->error . "\n";
-		return 0;
+		$result = 0;
 	};
+	$result or return $result;
 	$new_commit = $lOut[0];
 
 	# Now check it out, unless we are already there:
@@ -541,13 +544,13 @@ sub checkout_upstream {
 		print "Checking out $new_commit in upstream tree...";
 		try {
 			$git->checkout($new_commit);
-		}
-		catch {
+		} catch {
 			print "\nERROR: Couldn't checkout \"new_commit\" in $upstream_path\n";
 			print "Exit Code : " . $_->status . "\n";
 			print "Message   : " . $_->error . "\n";
-			return 0;
+			$result = 0;
 		};
+		$result or return $result;
 		print " done\n";
 	} ## end if ( $previous_refid ne...)
 	
@@ -897,6 +900,7 @@ sub rework_patch {
 		close($fOut);
 	} else {
 		print "\nERROR: Can not opne $pFile for writing!\n$!\n";
+		return 0;
 	}
 
 	return 1;
