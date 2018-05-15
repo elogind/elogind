@@ -55,7 +55,7 @@ m4_defines = []
 #####################################################################
 #if 0 /// elogind does not need this
 # 
-# Try to install the git pre-commit hook
+# # Try to install the git pre-commit hook
 # git_hook = run_command(join_paths(meson.source_root(), 'tools/add-git-hook.sh'))
 # if git_hook.returncode() == 0
 #         message(git_hook.stdout().strip())
@@ -385,7 +385,7 @@ foreach arg : ['unused-parameter',
         endif
 endforeach
 
-if cc.compiles('''
+if cc.compiles('
    #include <time.h>
    #include <inttypes.h>
    typedef uint64_t usec_t;
@@ -394,7 +394,7 @@ if cc.compiles('''
            struct timespec now;
            return 0;
    }
-''', name : '-Werror=shadow with local shadowing')
+', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -518,8 +518,7 @@ endforeach
 
 foreach ident : [
         ['memfd_create',      '''#define _GNU_SOURCE
-                                 #include <sys/mman.h>
-                                 #include <sys/memfd.h>'''],
+//                                 #include <sys/mman.h>'''],
         ['gettid',            '''#include <sys/types.h>'''],
         ['pivot_root',        '''#include <stdlib.h>'''],     # no known header declares pivot_root
         ['name_to_handle_at', '''#define _GNU_SOURCE
@@ -532,7 +531,7 @@ foreach ident : [
         ['kcmp',              '''#include <linux/kcmp.h>'''],
         ['keyctl',            '''#include <sys/types.h>
                                  #include <keyutils.h>'''],
-        ['copy_file_range',   '''#define _GNU_SOURCE
+        ['copy_file_range',   '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
         ['bpf',               '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
@@ -718,8 +717,6 @@ conf.set('SYSTEM_UID_MAX', system_uid_max)
 substs.set('systemuidmax', system_uid_max)
 message('maximum system UID is @0@'.format(system_uid_max))
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 system_gid_max = get_option('system-gid-max')
 if system_gid_max == ''
         system_gid_max = run_command(
@@ -804,7 +801,7 @@ conf.set('TTY_GID', tty_gid)
 substs.set('TTY_GID', tty_gid)
 
 #if 0 /// UNNEEDED by elogind
-# Ensure provided GID argument is numeric, otherwise fallback to default assignment
+# # Ensure provided GID argument is numeric, otherwise fallback to default assignment
 # if get_option('users-gid') != ''
 #         users_gid = get_option('users-gid').to_int()
 # else
@@ -954,7 +951,7 @@ if want_polkit != 'false'
                 install_polkit_pkla = true
         endif
 endif
-conf.set10('ENABLE_POLKIT', install_polkit ? '1' : '0')
+conf.set10('ENABLE_POLKIT', install_polkit)
 
 want_acl = get_option('acl')
 if want_acl != 'false'
@@ -2886,8 +2883,6 @@ status = [
         'rootexeclib dir:                   @0@'.format(rootlibexecdir),
 #endif // 0
 #if 0 /// UNSUPPORTED by elogind
-#endif // 0
-#if 0 /// UNSUPPORTED by elogind
 #         'PAM modules directory:             @0@'.format(pamlibdir),
 #         'PAM configuration directory:       @0@'.format(pamconfdir),
 #         'RPM macros directory:              @0@'.format(rpmmacrosdir),
@@ -3056,13 +3051,12 @@ foreach tuple : [
         ['debug mmap cache'],
 ]
 
-        cond = tuple.get(1, false)
-        if not cond
+        cond = tuple.get(1, '')
+        if cond == ''
                 ident1 = 'HAVE_' + tuple[0].underscorify().to_upper()
                 ident2 = 'ENABLE_' + tuple[0].underscorify().to_upper()
                 cond = conf.get(ident1, 0) == 1 or conf.get(ident2, 0) == 1
         endif
-
         if cond
                 found += [tuple[0]]
         else
