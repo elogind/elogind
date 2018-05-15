@@ -9,6 +9,7 @@
 # 0.0.2    2018-05-07  sed, PrydeWorX  Work flow integrated up to creating the formatted patches.
 # 0.0.3    2018-05-13  sed, PrydeWorX  Reworking of the formatted patches added.
 # 0.1.0    2018-05-14  sed, PrydeWorX  Application of the reworked patches added.
+# 0.2.0    2018-05-15  sed, PrydeWorX  First working version.
 #
 # ========================
 # === Little TODO list ===
@@ -26,7 +27,7 @@ use Try::Tiny;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.1.0";                                                # Please keep this current!
+Readonly my $VERSION     => "0.2.0"; # Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -77,6 +78,7 @@ Notes:
 
 my $commit_count   = 0;   # It is easiest to count the relevant commits globally.
 my $do_advance     = 0;   # If set by --advance, use src-<hash> as last commit.
+my %hSrcCommits    = ();  # Record here which patch file is which commit.
 my %hDirectories   = ();  # Filled when searching relevant files, used to validate new files.
 my @lCommits       = ();  # List of all relevant commits that have been found, in topological order.
 my @lCreated       = ();  # List of all files that were created using the migrated commits.
@@ -134,6 +136,7 @@ sub generate_file_list;  # Find all relevant files and store them in @wanted_fil
 sub get_last_mutual;     # Find or read the last mutual refid between this and the upstream tree.
 sub parse_args;          # Parse ARGV for the options we support
 sub rework_patch;        # Use check_tree.pl to generate valid diffs on all valid files within the patch.
+sub set_last_mutual;     # Write back %hMutuals to $COMMIT_FILE
 sub show_prg;            # Helper to show a progress line that is not permanent.
 sub wanted;              # Callback function for File::Find
 
@@ -212,8 +215,15 @@ for ( my $i = 0 ; $i < $commit_count ; ++$i ) {
 	# -------------------------------------------------------------
 	show_prg( sprintf("Applying  %s"), basename( $lFiles[0] ) );
 	apply_patch( $lFiles[0] ) or exit 1;
+	
+	# The patch file is no longer needed. Keeping it would lead to confusion.
+	unlink($lFiles[0]);
 } ## end for ( my $i = 0 ; $i < ...)
 show_prg("");
+
+# -----------------------------------------------------------------
+# --- 6) Write back the CSV file of mutual commits              ---
+set_last_mutual;
 
 # ===========================
 # === END OF MAIN PROGRAM ===
@@ -239,6 +249,7 @@ sub apply_patch {
 	my $patch_lines = "";
 
 	# --- 1) Read the patch, we have to use it directly via STDIN ---
+	# ---------------------------------------------------------------
 	if ( open( my $fIn, "<", $pFile ) ) {
 		my @lLines = <$fIn>;
 		close($fIn);
@@ -249,7 +260,8 @@ sub apply_patch {
 		return 0;
 	}
 
-	# --- 2) Try to apply the patch as is ---
+	# --- 2) Try to apply the patch as is                         ---
+	# ---------------------------------------------------------------
 	try {
 		@lGitRes = $git->am(
 			{
@@ -260,26 +272,43 @@ sub apply_patch {
 
 		# If we are here, everything is fine.
 		return 1;
-	} ## end try
+	}
 	catch {
 		# We try again without 3-way-merging
 		show_prg( sprintf("Applying  %s (2nd try)"), basename($pFile) );
 	};
 
-	# --- 3) Try to apply the patch without 3-way-merging ---
+	# --- 3) Try to apply the patch without 3-way-merging         ---
+	# ---------------------------------------------------------------
 	try {
 		@lGitRes = $git->am(
 			{
 				stdin  => 1,
 				-STDIN => $patch_lines
 			} );
-	} ## end try
+	}
 	catch {
 		print "\nERROR: Couldn't apply $pFile\n";
 		print "Exit Code : " . $_->status . "\n";
 		print "Message   : " . $_->error . "\n";
 		return 0;
-	} ## end catch
+	};
+
+	# --- 4) Get the new commit id, so we can update %hMutuals ---
+	# ---------------------------------------------------------------
+	try {
+		@lGitRes = $git->rev_parse( { short => 1 }, "HEAD" );
+	}
+	catch {
+		print "ERROR: Couldn't rev-parse $WORKDIR HEAD\n";
+		print "Exit Code : " . $_->status . "\n";
+		print "Message   : " . $_->error . "\n";
+		return 0;
+	};
+	$hMutuals{$wanted_refid}{tgt} = $lGitRes[0];
+	
+	# The commit of the just applied patch file becomes the last mutual commit.
+	$hMutuals{$wanted_refid}{mutual} = $hSrcCommits{$pFile};
 
 	return 1;
 } ## end sub apply_patch
@@ -289,7 +318,11 @@ sub apply_patch {
 # ------------------------------------------------------
 sub build_hCommits {
 	my $git = Git::Wrapper->new($upstream_path);
-	my @lRev = $git->rev_list( { topo_order => 1, "reverse" => 1, oneline => 1 }, "${mutual_commit}..${wanted_refid}", $hFile->{src} );
+	my @lRev = $git->rev_list( {
+		topo_order => 1,
+		"reverse" => 1,
+		oneline => 1
+	}, "${mutual_commit}..${wanted_refid}", $hFile->{src} );
 
 	for my $line (@lRev) {
 		if ( $line =~ m/^(\S+)\s+/ ) {
@@ -308,7 +341,11 @@ sub build_hCommits {
 sub build_lCommits {
 	my $git = Git::Wrapper->new($upstream_path);
 
-	my @lRev = $git->rev_list( { topo_order => 1, "reverse" => 1, oneline => 1 }, "${mutual_commit}..${wanted_refid}" );
+	my @lRev = $git->rev_list( {
+		topo_order => 1,
+		"reverse" => 1,
+		oneline => 1
+		 }, "${mutual_commit}..${wanted_refid}" );
 
 	for my $line (@lRev) {
 		if ( $line =~ m/^(\S+)\s+/ ) {
@@ -513,6 +550,9 @@ sub checkout_upstream {
 		};
 		print " done\n";
 	} ## end if ( $previous_refid ne...)
+	
+	# Save the commit hash of the wanted refid
+	$hMutuals{$wanted_refid}{src} = $new_commit;
 
 	return 1;
 } ## end sub checkout_upstream
@@ -574,9 +614,15 @@ sub get_last_mutual {
 		if ( open my $fIn, "<", $COMMIT_FILE ) {
 			my @lLines = <$fIn>;
 			close $fIn;
+			chomp(@lLines);
 
 			for my $line (@lLines) {
-				chomp $line;
+				# Skip comments
+				$line =~ m/^\s*#/ and next;
+
+				# Skip empty lines
+				$line =~ m/^\s*$/ and next;
+
 				if ( $line =~ m/^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$/ ) {
 					my $ref = $1;
 					my $src = $3;
@@ -840,6 +886,10 @@ sub rework_patch {
 		}
 	} ## end for my $pNew (@lFixedPatches)
 
+	# Store the patch commit for later reference
+	# ----------------------------------------------------------
+	$hSrcCommits{$pFile} = $commit;
+
 	# Eventually overwrite $pFile with @lOut
 	# ----------------------------------------------------------
 	if ( open( my $fOut, ">", $pFile ) ) {
@@ -851,6 +901,61 @@ sub rework_patch {
 
 	return 1;
 } ## end sub rework_patch
+
+
+# --------------------------------------------
+# --- Write back %hMutuals to $COMMIT_FILE ---
+# --------------------------------------------
+sub set_last_mutual {
+	my $out_text = "# Automatically generated commit information\n"
+	             . "# Only edit if you know what these do!\n\n";
+	my $ref_len  = 0;
+	
+	# First we need a length to set all fields to.
+	# ---------------------------------------------------------------
+	# (And build a shortcut while at it so we do ...
+	my @lRefs = (); # ... not need to sort keys twice)
+	for my $refid (sort keys %hMutuals) {
+		push @lRefs, $refid;
+		length($refid)                    > $ref_len and $ref_len = length($refid);
+		length($hMutuals{$refid}{mutual}) > $ref_len and $ref_len = length($hMutuals{$refid}{mutual});
+		defined(length($hMutuals{$refid}{src}))
+			and $hMutuals{$refid}{src} = "src-" . $hMutuals{$refid}{src}
+			 or $hMutuals{$refid}{src} = "x";
+		length($hMutuals{$refid}{src})    > $ref_len and $ref_len = length($hMutuals{$refid}{src});
+		defined(length($hMutuals{$refid}{tgt}))
+			and $hMutuals{$refid}{tgt} = "tgt-" . $hMutuals{$refid}{tgt}
+			 or $hMutuals{$refid}{tgt} = "x";
+		length($hMutuals{$refid}{tgt})    > $ref_len and $ref_len = length($hMutuals{$refid}{tgt});
+	}
+	
+	# Now we can build the fmt
+	my $out_fmt  = sprintf("%%-%ds\t%%-%ds\t%%-%ds\t%%-%ds\n", $ref_len, $ref_len, $ref_len, $ref_len);
+	
+	# Second we build the out text
+	# ---------------------------------------------------------------
+	for my $refid (@lRefs) {
+		$out_text .= sprintf($out_fmt, $refid,
+			$hMutuals{$refid}{mutual},
+			$hMutuals{$refid}{src},
+			$hMutuals{$refid}{tgt}
+		);
+	}
+	
+	# Third, write a new $COMMIT_FILE
+	# ---------------------------------------------------------------
+	if (open(my $fOut, ">", $COMMIT_FILE)) {
+		print $fOut $out_text;
+		close($fOut);
+	} else {
+		print "ERROR: Can not open $COMMIT_FILE for writing!\n$!\n";
+		print "The content would have been:\n" . ('-' x 24) . "\n$out_text" . ('-' x 24) . "\n";
+		exit 1;
+	}
+
+	return 1;
+}
+
 
 # Helper to show the argument as a non permanent progress line.
 sub show_prg {
