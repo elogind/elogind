@@ -20,6 +20,7 @@
 # 0.8.8    2018-05-08  sed, PrydeWorX  Use Git::Wrapper to checkout the wanted commit in the upstream tree.
 # 0.8.9    2018-05-09  sed, PrydeWorX  Add new option --create to create non-existing files. Needs --file.
 #                                      Add new option --stay to to not reset back from --commit.
+# 0.9.0    2018-05-15  sed, PrydeWorX  Do not prefix mask block content in XML file patch hunks with a '# '.
 # ========================
 # === Little TODO list ===
 # ========================
@@ -995,8 +996,10 @@ sub check_masks {
 		}
 
 		# If this is a .pwx file, prefix all lines in non-else mask blocks with '# '
+		# unless they are xml files.
 		# --------------------------------------------------------------------------
 		$hFile{pwxfile} and $in_mask_block and (!$in_else_block)
+			and ( !( $hFile{target} =~ m/\.xml$/ ) )
 			and substr($$line, 1, 0) = "# ";
 	} ## End of looping lines
 
@@ -1847,7 +1850,7 @@ sub unprepare_shell {
 			$is_block = 0;
 			$is_else  = 0;
 		} elsif ($is_block && !$is_else
-		     && ("# "   ne substr($line, 0, 2))
+		     && ("# #"   ne substr($line, 0, 3))
 		     && ("  * " ne substr($line, 0, 4)) ) {
 			$hFile{source} =~ m/\.sym\.pwx$/
 				and $line = "  * " . $line
