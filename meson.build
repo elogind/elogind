@@ -9,7 +9,7 @@ project('elogind', 'c',
                 'sysconfdir=/etc',
                 'localstatedir=/var',
         ],
-        meson_version : '>= 0.45',
+        meson_version : '>= 0.46',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
@@ -437,6 +437,7 @@ if get_option('buildtype') != 'debug'
 endif
 
 add_project_arguments(cc.get_supported_arguments(possible_cc_flags), language : 'c')
+add_project_link_arguments(cc.get_supported_link_arguments(possible_link_flags), language : 'c')
 
 # "negative" arguments: gcc on purpose does not return an error for "-Wno-"
 # arguments, just emits a warning. So test for the "positive" version instead.
@@ -463,18 +464,6 @@ if cc.compiles('''
 ''', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
-
-link_test_c = files('tools/meson-link-test.c')
-
-foreach arg : possible_link_flags
-        have = run_command(check_compilation_sh,
-                           cc.cmd_array(), '-x', 'c', arg,
-                           '-include', link_test_c).returncode() == 0
-        message('Linking with @0@ supported: @1@'.format(arg, have ? 'yes' : 'no'))
-        if have
-                add_project_link_arguments(arg, language : 'c')
-        endif
-endforeach
 
 cpp = ' '.join(cc.cmd_array()) + ' -E'
 
@@ -3117,13 +3106,7 @@ endforeach
 #         sanitizer = tuple[0]
 #         build = tuple[1]
 #
-#         have = run_command(check_compilation_sh,
-#                            cc.cmd_array(), '-x', 'c',
-#                            '-fsanitize=@0@'.format(sanitizer),
-#                            '-include', link_test_c).returncode() == 0
-#         message('@0@ sanitizer supported: @1@'.format(sanitizer, have ? 'yes' : 'no'))
-#
-#         if have
+#         if cc.has_link_argument('-fsanitize=@0@'.format(sanitizer))
 #                 prev = ''
 #                 foreach p : fuzz_regression_tests
 #                         b = p.split('/')[-2]
