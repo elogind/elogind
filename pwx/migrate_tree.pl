@@ -201,10 +201,10 @@ for ( my $i = 0 ; $i < $commit_count ; ++$i ) {
 	# ----------------------------------------------------------
 	if ( scalar @lFiles > 1 ) {
 		print "\nERROR: $fmt results in more than one patch!\n";
-		return 0;
+		exit 1;
 	} elsif ( 1 > scalar @lFiles ) {
 		print "\nERROR: No patches found for $fmt!";
-		return 0;
+		exit 1;
 	}
 
 	show_prg( sprintf("Reworking %s", basename( $lFiles[0] ) ) );
@@ -223,9 +223,6 @@ for ( my $i = 0 ; $i < $commit_count ; ++$i ) {
 } ## end for ( my $i = 0 ; $i < ...)
 show_prg("");
 
-# -----------------------------------------------------------------
-# --- 6) Write back the CSV file of mutual commits              ---
-set_last_mutual;
 
 # ===========================
 # === END OF MAIN PROGRAM ===
@@ -235,7 +232,11 @@ set_last_mutual;
 # ===        ==> --------     Cleanup      -------- <==        ===
 # ================================================================
 
-length($previous_refid) and checkout_upstream($previous_refid);
+END {
+	set_last_mutual;
+	length($previous_refid) and checkout_upstream($previous_refid);
+}
+
 
 # ================================================================
 # ===        ==> ---- Function Implementations ---- <==        ===
@@ -903,7 +904,7 @@ sub set_last_mutual {
 		defined($hMutuals{$refid}{src}) and length($hMutuals{$refid}{src})
 			and $hMutuals{$refid}{src} = "src-" . $hMutuals{$refid}{src}
 			 or $hMutuals{$refid}{src} = "x";
-		($hMutuals{$refid}{src})    > $ref_len and $ref_len = length($hMutuals{$refid}{src});
+		length($hMutuals{$refid}{src})    > $ref_len and $ref_len = length($hMutuals{$refid}{src});
 		defined($hMutuals{$refid}{tgt}) and length($hMutuals{$refid}{tgt})
 			and $hMutuals{$refid}{tgt} = "tgt-" . $hMutuals{$refid}{tgt}
 			 or $hMutuals{$refid}{tgt} = "x";

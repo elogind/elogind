@@ -319,37 +319,6 @@ for my $file_part (@source_files) {
 	}
 } ## End of main loop
 
-# -------------------------------------------------------------------------
-# --- Print out the list of files that only exist here and not upstream ---
-# -------------------------------------------------------------------------
-if (scalar @only_here) {
-	my $count = scalar @only_here;
-	my $fmt   = sprintf("%%d %d: %%s\n", length("$count"));
-
-	printf("\n%d file%s only found in $WORKDIR:\n", $count, $count > 1 ? "s": "");
-
-	for (my $i = 0; $i < $count; ++$i) {
-		printf($fmt, $i + 1, $only_here[$i]);
-	}
-}
-
-# -------------------------------------------------------------------------
-# --- Print out the list of failed hunks -> bug in hunk or program?     ---
-# -------------------------------------------------------------------------
-if (scalar @lFails) {
-	my $count = scalar @lFails;
-
-	printf("\n%d file%s %s have at least one fishy hunk:\n", $count,
-	       $count > 1 ? "s" : "", $count > 1 ? "have" : "has");
-
-	for (my $i = 0; $i < $count; ++$i) {
-		print "=== $lFails[$i]{part} ===\n";
-		print " => $lFails[$i]{msg} <=\n";
-		print "---------------------------\n";
-		print "$_\n" foreach(@{$lFails[$i]{hunk}});
-	}
-}
-
 # ===========================
 # === END OF MAIN PROGRAM ===
 # ===========================
@@ -358,7 +327,41 @@ if (scalar @lFails) {
 # ===        ==> --------     Cleanup      -------- <==        ===
 # ================================================================
 
-$do_stay or length($previous_commit) and checkout_upstream($previous_commit);
+END {
+	# -------------------------------------------------------------------------
+	# --- Print out the list of files that only exist here and not upstream ---
+	# -------------------------------------------------------------------------
+	if (scalar @only_here) {
+		my $count = scalar @only_here;
+		my $fmt   = sprintf("%%d %d: %%s\n", length("$count"));
+	
+		printf("\n%d file%s only found in $WORKDIR:\n", $count, $count > 1 ? "s": "");
+	
+		for (my $i = 0; $i < $count; ++$i) {
+			printf($fmt, $i + 1, $only_here[$i]);
+		}
+	}
+	
+	# -------------------------------------------------------------------------
+	# --- Print out the list of failed hunks -> bug in hunk or program?     ---
+	# -------------------------------------------------------------------------
+	if (scalar @lFails) {
+		my $count = scalar @lFails;
+	
+		printf("\n%d file%s %s have at least one fishy hunk:\n", $count,
+		       $count > 1 ? "s" : "", $count > 1 ? "have" : "has");
+	
+		for (my $i = 0; $i < $count; ++$i) {
+			print "=== $lFails[$i]{part} ===\n";
+			print " => $lFails[$i]{msg} <=\n";
+			print "---------------------------\n";
+			print "$_\n" foreach(@{$lFails[$i]{hunk}});
+		}
+	}
+
+	$do_stay or length($previous_commit) and checkout_upstream($previous_commit);
+}
+
 
 # ================================================================
 # ===        ==> ---- Function Implementations ---- <==        ===
