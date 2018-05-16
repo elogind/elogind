@@ -11,6 +11,7 @@
 # 0.1.0    2018-05-14  sed, PrydeWorX  Application of the reworked patches added.
 # 0.2.0    2018-05-15  sed, PrydeWorX  First working version.
 # 0.2.1                                Fixed usage of Try::Tiny.
+# 0.2.2    2018-05-16  sed, PrydeWorX  Made sure that the commit file is always written on exit.
 #
 # ========================
 # === Little TODO list ===
@@ -28,7 +29,7 @@ use Try::Tiny;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.2.0"; # Please keep this current!
+Readonly my $VERSION     => "0.2.2"; # Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -145,9 +146,9 @@ sub show_prg;            # Helper to show a progress line that is not permanent.
 sub wanted;              # Callback function for File::Find
 
 # set signal-handlers
-$SIG{'INT'}  = \&handle_sig;
-$SIG{'QUIT'} = \&handle_sig;
-$SIG{'TERM'} = \&handle_sig;
+local $SIG{'INT'}  = \&handle_sig;
+local $SIG{'QUIT'} = \&handle_sig;
+local $SIG{'TERM'} = \&handle_sig;
 
 # ================================================================
 # ===        ==> --------    Prechecks     -------- <==        ==
@@ -217,6 +218,9 @@ for ( my $i = 0 ; $i < $commit_count ; ++$i ) {
 	show_prg( sprintf("Reworking %s", basename( $lFiles[0] ) ) );
 	rework_patch( $lFiles[0] ) or exit 1;
 
+	# If the patch was eventually empty, rework_patch() has deleted it.
+	-f $lFiles[0] or next;
+
 	# -------------------------------------------------------------
 	# --- 5) Reworked patches must be applied directly.         ---
 	# ---    Otherwise we'll screw up if a newly created file   ---
@@ -284,22 +288,24 @@ sub apply_patch {
 		show_prg( sprintf("Applying  %s (2nd try)", basename($pFile) ) );
 		$result = 0;
 	};
-	$result and return $result;
 
-	# --- 3) Try to apply the patch without 3-way-merging         ---
-	# ---------------------------------------------------------------
-	try {
-		@lGitRes = $git->am( {
-				-STDIN => $patch_lines
-			} );
-		$result = 1;
-	} catch {
-		$git->am( { "abort" => 1 } );
-		print "\nERROR: Couldn't apply $pFile\n";
-		print "Exit Code : " . $_->status . "\n";
-		print "Message   : " . $_->error . "\n";
-	};
-	$result or return $result; ## Give up and exit
+	if (0 == $result) {
+		# --- 3) Try to apply the patch without 3-way-merging         ---
+		# ---------------------------------------------------------------
+	
+		try {
+			@lGitRes = $git->am( {
+					-STDIN => $patch_lines
+				} );
+			$result = 1;
+		} catch {
+			$git->am( { "abort" => 1 } );
+			print "\nERROR: Couldn't apply $pFile\n";
+			print "Exit Code : " . $_->status . "\n";
+			print "Message   : " . $_->error . "\n";
+		};
+		$result or return $result; ## Give up and exit
+	}
 
 	# --- 4) Get the new commit id, so we can update %hMutuals ---
 	# ---------------------------------------------------------------
@@ -309,6 +315,7 @@ sub apply_patch {
 	# The commit of the just applied patch file becomes the last mutual commit.
 	$hMutuals{$upstream_path}{$wanted_refid}{mutual}
 		= shorten_refid($upstream_path, $hSrcCommits{$pFile});
+	length($hMutuals{$upstream_path}{$wanted_refid}{mutual}) or return 0; # Give up and exit
 
 	return $result;
 } ## end sub apply_patch
@@ -673,7 +680,6 @@ sub get_last_mutual {
 sub handle_sig {
 	my($sig) = @_;
 	print "\nCaught SIG${sig}!\n";
-	set_last_mutual;
 	exit 1;
 }
 
@@ -862,7 +868,7 @@ sub rework_patch {
 		# The determination what is valid is different for whether this is
 		# the modification of an existing or the creation of a new file
 		if ($isNew) {
-			defined( $hDirectories{ dirname($src) } ) and $real = $src;
+			defined( $hDirectories{ dirname($src) } ) and $real = $src or
 			defined( $hDirectories{ dirname($tgt) } ) and $real = $tgt;
 		} else {
 
@@ -885,10 +891,14 @@ sub rework_patch {
 		length($pNew) and push @lFixedPatches, $pNew or return 0;
 
 		# If we are here, transfer the file line. It is useful.
+		$line =~ s/$src/$real/;
 		push @lOut, $line;
 	}  ## End of scanning lines
 
-	scalar @lFixedPatches or return 1;
+	if ( 0 == scalar @lFixedPatches) {
+		unlink $pFile; ## Empty patch...
+		return 1;
+	}
 
 	# Load all generated patches and add them to lOut
 	# ----------------------------------------------------------
@@ -929,30 +939,29 @@ sub rework_patch {
 sub set_last_mutual {
 	my $out_text = "# Automatically generated commit information\n"
 	             . "# Only edit if you know what these do!\n\n";
-	my $ref_len  = 0;
+	my ($pLen, $rLen, $mLen, $sLen) = (0, 0, 0, 0); # Length for the fmt
 	
 	# First we need a length to set all fields to.
 	# ---------------------------------------------------------------
 	# (And build a shortcut while at it so we do ...
 	for my $path (sort keys %hMutuals) {
-		length($path) > $ref_len and $ref_len = length($path);
+		length($path) > $pLen and $pLen = length($path);
 		for my $refid (sort keys %{$hMutuals{$path}}) {
 			my $hM = $hMutuals{$path}{$refid}; # Shortcut!
-			length($refid)        > $ref_len and $ref_len = length($refid);
-			length($hM->{mutual}) > $ref_len and $ref_len = length($hM->{mutual});
-			defined($hM->{src}) and length($hM->{src})
+			length($refid)        > $rLen and $rLen = length($refid);
+			length($hM->{mutual}) > $mLen and $mLen = length($hM->{mutual});
+			defined($hM->{src}) and (length($hM->{src}) > 4)
 				and $hM->{src} = "src-" . $hM->{src}
 				 or $hM->{src} = "x";
-			length($hM->{src})    > $ref_len and $ref_len = length($hM->{src});
-			defined($hM->{tgt}) and length($hM->{tgt})
+			length($hM->{src})    > $sLen and $sLen = length($hM->{src});
+			defined($hM->{tgt}) and (length($hM->{tgt}) > 4)
 				and $hM->{tgt} = "tgt-" . $hM->{tgt}
 				 or $hM->{tgt} = "x";
-			length($hM->{tgt})    > $ref_len and $ref_len = length($hM->{tgt});
 		}
 	}
 	
 	# Now we can build the fmt
-	my $out_fmt  = sprintf("%%-%ds %%-%ds %%-%ds %%-%ds %%s\n", $ref_len, $ref_len, $ref_len, $ref_len);
+	my $out_fmt  = sprintf("%%-%ds %%-%ds %%-%ds %%-%ds %%s\n", $pLen, $rLen, $mLen, $sLen);
 	
 	# Second we build the out text
 	# ---------------------------------------------------------------
