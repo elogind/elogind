@@ -136,12 +136,18 @@ sub check_tree;          # Use check_tree.pl on the given commit and file.
 sub checkout_tree;       # Checkout the given refid on the given path.
 sub generate_file_list;  # Find all relevant files and store them in @wanted_files
 sub get_last_mutual;     # Find or read the last mutual refid between this and the upstream tree.
+sub handle_sig;          # Signal handler so we don't break without writing a new commit file.
 sub parse_args;          # Parse ARGV for the options we support
 sub rework_patch;        # Use check_tree.pl to generate valid diffs on all valid files within the patch.
 sub set_last_mutual;     # Write back %hMutuals to $COMMIT_FILE
 sub shorten_refid;       # Take DIR and REFID and return the shortest possible REFID in DIR.
 sub show_prg;            # Helper to show a progress line that is not permanent.
 sub wanted;              # Callback function for File::Find
+
+# set signal-handlers
+$SIG{'INT'}  = \&handle_sig;
+$SIG{'QUIT'} = \&handle_sig;
+$SIG{'TERM'} = \&handle_sig;
 
 # ================================================================
 # ===        ==> --------    Prechecks     -------- <==        ==
@@ -660,6 +666,18 @@ sub get_last_mutual {
 	return 0;
 } ## end sub get_last_mutual
 
+
+# ---------------------------------------------------------------------------
+# --- Signal handler so we don't break without writing a new commit file. ---
+# ---------------------------------------------------------------------------
+sub handle_sig {
+	my($sig) = @_;
+	print "\nCaught SIG${sig}!\n";
+	set_last_mutual;
+	exit 1;
+}
+
+
 # -----------------------------------------------------------------------
 # --- parse the given list for arguments.                             ---
 # --- returns 1 on success, 0 otherwise.                              ---
@@ -732,7 +750,7 @@ sub parse_args {
 					$result = 0;
 					next;
 				}
-				$upstream_path = abs_path( $args[$i] );
+				$upstream_path = $args[$i];
 			} ## end else [ if ( length($upstream_path...))]
 		} ## end else [ if ( $args[$i] =~ m/^--advance$/)]
 	}  ## End looping arguments
@@ -934,7 +952,7 @@ sub set_last_mutual {
 	}
 	
 	# Now we can build the fmt
-	my $out_fmt  = sprintf("%%-%ds\t%%-%ds\t%%-%ds\t%%-%ds\t%%s\n", $ref_len, $ref_len, $ref_len, $ref_len);
+	my $out_fmt  = sprintf("%%-%ds %%-%ds %%-%ds %%-%ds %%s\n", $ref_len, $ref_len, $ref_len, $ref_len);
 	
 	# Second we build the out text
 	# ---------------------------------------------------------------
