@@ -113,11 +113,12 @@ my %hMutuals = ();  # Mapping of the $COMMIT_FILE, that works as follows:
                     # CSV lines are structured as:
                     # <refid> <hash> src-<hash> tgt-<hash>
                     # They map as follows:
-                    # ( <refid> : {
-                    #       mutual : <hash> | This is the last mutual commit
-                    #       src    : <hash> | This is the last individual commit in the upstream tree (*)
-                    #       tgt    : <hash> | This is the last individual commit in the local tree    (*)
-                    #       } )
+                    # ( <path to upstream tree> {
+                    #       <refid> : {
+                    #           mutual : <hash> | This is the last mutual commit
+                    #           src    : <hash> | This is the last individual commit in the upstream tree (*)
+                    #           tgt    : <hash> | This is the last individual commit in the local tree    (*)
+                    #       } } )
                     # (*) When this entry was written. This means that src-<hash> can be used as
                     #     the next last mutual commit, when this migration run is finished. To make
                     #     this automatic, the --advance option triggers exactly that.
@@ -132,7 +133,7 @@ sub build_hFile;         # Add an entry to hFiles for a specific target file.
 sub build_lCommits;      # Build the topological list of all relevant commits.
 sub build_lPatches;      # Fill $output_path with formatted patches from @lCommits.
 sub check_tree;          # Use check_tree.pl on the given commit and file.
-sub checkout_upstream;   # Checkout the given refid on $upstream_path.
+sub checkout_tree;       # Checkout the given refid on the given path.
 sub generate_file_list;  # Find all relevant files and store them in @wanted_files
 sub get_last_mutual;     # Find or read the last mutual refid between this and the upstream tree.
 sub parse_args;          # Parse ARGV for the options we support
@@ -155,7 +156,7 @@ $main_result = parse_args(@ARGV);
 	  or ( $show_help and print "$USAGE_LONG" ) ) and exit( !$main_result );
 get_last_mutual and generate_file_list
   or exit 1;
-checkout_upstream($wanted_refid)  ## Note: Does nothing if $wanted_refid is already checked out.
+checkout_tree($upstream_path, $wanted_refid, 1)
   or exit 1;
 
 # ================================================================
@@ -234,7 +235,7 @@ show_prg("");
 
 END {
 	set_last_mutual;
-	length($previous_refid) and checkout_upstream($previous_refid);
+	length($previous_refid) and checkout_tree($upstream_path, $previous_refid, 0);
 }
 
 
@@ -296,11 +297,12 @@ sub apply_patch {
 
 	# --- 4) Get the new commit id, so we can update %hMutuals ---
 	# ---------------------------------------------------------------
-	$hMutuals{$wanted_refid}{tgt} = shorten_refid($WORKDIR, "HEAD");
-	length($hMutuals{$wanted_refid}{tgt}) or return 0; # Give up and exit
+	$hMutuals{$upstream_path}{$wanted_refid}{tgt} = shorten_refid($WORKDIR, "HEAD");
+	length($hMutuals{$upstream_path}{$wanted_refid}{tgt}) or return 0; # Give up and exit
 	
 	# The commit of the just applied patch file becomes the last mutual commit.
-	$hMutuals{$wanted_refid}{mutual} = shorten_refid($upstream_path, $hSrcCommits{$pFile});
+	$hMutuals{$upstream_path}{$wanted_refid}{mutual}
+		= shorten_refid($upstream_path, $hSrcCommits{$pFile});
 
 	return $result;
 } ## end sub apply_patch
@@ -493,33 +495,37 @@ sub check_tree {
 
 # -----------------------------------------------------------------------
 # --- Checkout the given refid on $upstream_path                      ---
+# --- Param 1 is the path where to do the checkout
+# --- Param 2 is the refid to check out.                              ---
+# --- Param 3 can be set to 1, if mutuals{src} and previous_refid     ---
+# ---         shall be stored.                                        ---
 # --- Returns 1 on success, 0 otherwise.                              ---
 # -----------------------------------------------------------------------
-sub checkout_upstream {
-	my ($commit) = @_;
+sub checkout_tree {
+	my ($path, $commit, $do_store) = @_;
 
 	# It is completely in order to not wanting to checkout a specific commit.
 	defined($commit) and length($commit) or return 1;
 
+	my $git        = Git::Wrapper->new($path);
 	my $new_commit = "";
-	my $git        = Git::Wrapper->new($upstream_path);
+	my $old_commit = shorten_refid($path, "HEAD");;
 
-	# Save the previous commit
-	$previous_refid = shorten_refid($upstream_path, "HEAD");
-	length($previous_refid) or return 0;
+	# The current commit must be valid:
+	length($old_commit) or return 0;
 
 	# Get the shortened commit hash of $commit
-	$new_commit = shorten_refid($upstream_path, $commit);
+	$new_commit = shorten_refid($path, $commit);
 	length($new_commit) or return 0;
 
 	# Now check it out, unless we are already there:
-	if ( $previous_refid ne $new_commit ) {
+	if ( $old_commit ne $new_commit ) {
 		my $result     = 1;
-		print "Checking out $new_commit in upstream tree...";
+		print "Checking out $new_commit in ${path}...";
 		try {
 			$git->checkout($new_commit);
 		} catch {
-			print "\nERROR: Couldn't checkout \"new_commit\" in $upstream_path\n";
+			print "\nERROR: Couldn't checkout \"new_commit\" in $path\n";
 			print "Exit Code : " . $_->status . "\n";
 			print "Message   : " . $_->error . "\n";
 			$result = 0;
@@ -528,8 +534,11 @@ sub checkout_upstream {
 		print " done\n";
 	} ## end if ( $previous_refid ne...)
 	
-	# Save the commit hash of the wanted refid
-	$hMutuals{$wanted_refid}{src} = $new_commit;
+	# Save the commit hash of the wanted refid and the previous commit if wanted
+	if ($do_store) {
+		$hMutuals{$path}{$wanted_refid}{src} = $new_commit;
+		$previous_refid                      = $old_commit;
+	}
 
 	return 1;
 } ## end sub checkout_upstream
@@ -600,38 +609,49 @@ sub get_last_mutual {
 				# Skip empty lines
 				$line =~ m/^\s*$/ and next;
 
-				if ( $line =~ m/^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$/ ) {
-					my $ref = $1;
-					my $src = $3;
-					my $tgt = $4;
-					$hMutuals{$ref} = {
-						mutual => shorten_refid($upstream_path, $2),
+				if ( $line =~ m/^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$/ ) {
+					my $usp = $1;
+					my $ref = $2;
+					my $mut = $3;
+					my $src = $4;
+					my $tgt = $5;
+					
+					# We mast be in the right branch or right tag!
+					checkout_tree($usp, $ref, 0) or return 0;
+					
+					$hMutuals{$usp}{$ref} = {
+						mutual => shorten_refid($usp, $mut),
 						src    => undef,
 						tgt    => undef
 					};
-					$src =~ m/^src-(\S+)$/ and $hMutuals{$ref}{src} = shorten_refid($upstream_path, $1);
-					$tgt =~ m/^tgt-(\S+)$/ and $hMutuals{$ref}{tgt} = shorten_refid($WORKDIR, $1);
+					$src =~ m/^src-(\S+)$/ and $hMutuals{$usp}{$ref}{src} = shorten_refid($usp, $1);
+					$tgt =~ m/^tgt-(\S+)$/ and $hMutuals{$usp}{$ref}{tgt} = shorten_refid($WORKDIR, $1);
 				} ## end if ( $line =~ m/^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$/)
 			} ## end for my $line (@lLines)
 		} else {
 			print("ERROR: $COMMIT_FILE can not be read!\n$!\n");
 			return 0;
 		}
+		
+		# Make sure we are back at the wanted place in the upstream tree
+		checkout_tree($upstream_path, $wanted_refid, 0);
 	} ## end if ( -f $COMMIT_FILE )
 
 	# If this is already set, we are fine.
 	if ( length($mutual_commit) ) {
-		$hMutuals{$wanted_refid}{mutual} = shorten_refid($upstream_path, $mutual_commit);
-		length($hMutuals{$wanted_refid}{mutual}) and return 1 or return 0;
+		$hMutuals{$upstream_path}{$wanted_refid}{mutual} = shorten_refid($upstream_path, $mutual_commit);
+		length($hMutuals{$upstream_path}{$wanted_refid}{mutual}) or return 0;
 	}
 
 	# Now check against --advance and then set $mutual_commit accordingly.
-	if ( defined( $hMutuals{$wanted_refid} ) ) {
+	if ( defined( $hMutuals{$upstream_path}{$wanted_refid} ) ) {
 		if ($do_advance) {
-			defined( $hMutuals{$wanted_refid}{src} ) and $hMutuals{$wanted_refid}{mutual} = $hMutuals{$wanted_refid}{src}
-			  or print "ERROR: --advance set, but no source hash found!\n" and return 0;
+			defined( $hMutuals{$upstream_path}{$wanted_refid}{src} )
+				and $hMutuals{$upstream_path}{$wanted_refid}{mutual}
+					= $hMutuals{$upstream_path}{$wanted_refid}{src}
+				 or print "ERROR: --advance set, but no source hash found!\n" and return 0;
 		}
-		$mutual_commit = $hMutuals{$wanted_refid}{mutual};
+		$mutual_commit = $hMutuals{$upstream_path}{$wanted_refid}{mutual};
 		return 1;
 	} ## end if ( defined( $hMutuals...))
 
@@ -896,32 +916,39 @@ sub set_last_mutual {
 	# First we need a length to set all fields to.
 	# ---------------------------------------------------------------
 	# (And build a shortcut while at it so we do ...
-	my @lRefs = (); # ... not need to sort keys twice)
-	for my $refid (sort keys %hMutuals) {
-		push @lRefs, $refid;
-		length($refid)                    > $ref_len and $ref_len = length($refid);
-		length($hMutuals{$refid}{mutual}) > $ref_len and $ref_len = length($hMutuals{$refid}{mutual});
-		defined($hMutuals{$refid}{src}) and length($hMutuals{$refid}{src})
-			and $hMutuals{$refid}{src} = "src-" . $hMutuals{$refid}{src}
-			 or $hMutuals{$refid}{src} = "x";
-		length($hMutuals{$refid}{src})    > $ref_len and $ref_len = length($hMutuals{$refid}{src});
-		defined($hMutuals{$refid}{tgt}) and length($hMutuals{$refid}{tgt})
-			and $hMutuals{$refid}{tgt} = "tgt-" . $hMutuals{$refid}{tgt}
-			 or $hMutuals{$refid}{tgt} = "x";
-		length($hMutuals{$refid}{tgt})    > $ref_len and $ref_len = length($hMutuals{$refid}{tgt});
+	for my $path (sort keys %hMutuals) {
+		length($path) > $ref_len and $ref_len = length($path);
+		for my $refid (sort keys %{$hMutuals{$path}}) {
+			my $hM = $hMutuals{$path}{$refid}; # Shortcut!
+			length($refid)        > $ref_len and $ref_len = length($refid);
+			length($hM->{mutual}) > $ref_len and $ref_len = length($hM->{mutual});
+			defined($hM->{src}) and length($hM->{src})
+				and $hM->{src} = "src-" . $hM->{src}
+				 or $hM->{src} = "x";
+			length($hM->{src})    > $ref_len and $ref_len = length($hM->{src});
+			defined($hM->{tgt}) and length($hM->{tgt})
+				and $hM->{tgt} = "tgt-" . $hM->{tgt}
+				 or $hM->{tgt} = "x";
+			length($hM->{tgt})    > $ref_len and $ref_len = length($hM->{tgt});
+		}
 	}
 	
 	# Now we can build the fmt
-	my $out_fmt  = sprintf("%%-%ds\t%%-%ds\t%%-%ds\t%%-%ds\n", $ref_len, $ref_len, $ref_len, $ref_len);
+	my $out_fmt  = sprintf("%%-%ds\t%%-%ds\t%%-%ds\t%%-%ds\t%%s\n", $ref_len, $ref_len, $ref_len, $ref_len);
 	
 	# Second we build the out text
 	# ---------------------------------------------------------------
-	for my $refid (@lRefs) {
-		$out_text .= sprintf($out_fmt, $refid,
-			$hMutuals{$refid}{mutual},
-			$hMutuals{$refid}{src},
-			$hMutuals{$refid}{tgt}
-		);
+	for my $path (sort keys %hMutuals) {
+		for my $refid (sort keys %{$hMutuals{$path}}) {
+			my $hM = $hMutuals{$path}{$refid}; # Shortcut!
+			$out_text .= sprintf($out_fmt,
+				$path,
+				$refid,
+				$hM->{mutual},
+				$hM->{src},
+				$hM->{tgt}
+			);
+		}
 	}
 	
 	# Third, write a new $COMMIT_FILE
@@ -945,6 +972,9 @@ sub set_last_mutual {
 sub shorten_refid {
 	my ($p, $r) = @_;
 
+	defined($p) and length($p) or die("shorten_refid() called with undef path!");
+	defined($r) and length($r) or die("shorten_refid() called with undef refid!");
+
 	my $git        = Git::Wrapper->new($p);
 	my @lOut       = ();
 	my $result     = 1;
@@ -953,7 +983,7 @@ sub shorten_refid {
 	try {
 		@lOut = $git->rev_parse( { short => 1 }, "$r" );
 	} catch {
-		print "ERROR: Couldn't rev-parse $p::$r\n";
+		print "ERROR: Couldn't rev-parse ${p}::${r}\n";
 		print "Exit Code : " . $_->status . "\n";
 		print "Message   : " . $_->error . "\n";
 		$result = 0;
