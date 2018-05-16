@@ -1429,6 +1429,7 @@ includes = include_directories('src/basic',
                                'src/systemd',
 #if 0 /// UNNEEDED by elogind
 #                                'src/journal',
+#                                'src/journal-remote',
 #                                'src/nspawn',
 #                                'src/resolve',
 #                                'src/timesync',
@@ -1915,6 +1916,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
