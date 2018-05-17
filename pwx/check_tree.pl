@@ -943,7 +943,8 @@ sub check_masks {
 				and return hunk_failed("check_masks: Mask start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_mask_block = 1;
-			$hHunk->{is_mask} = 1;
+			$hHunk->{is_mask}  = 1;
+			$hHunk->{is_endif} = 0;
 
 			# While we are here we can check the previous line.
 			# All masks shall be preceded by an empty line to enhance readability.
@@ -963,7 +964,10 @@ sub check_masks {
 			$in_insert_block
 				and return hunk_failed("check_masks: Insert start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_insert_block = 1;
+			$in_insert_block   = 1;
+			$hHunk->{is_mask}  = 0;
+			$hHunk->{is_else}  = 0;
+			$hHunk->{is_endif} = 0;
 
 			# While we are here we can check the previous line.
 			# All inserts shall be preceded by an empty line to enhance readability.
@@ -985,8 +989,10 @@ sub check_masks {
 		    || ( $$line =~ m/else\s+-->\s*$/ ) 
 		    || ( $$line =~ m,\*\s+else\s+\*\*/\s*$, ) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_else_block    = 1;
-			$hHunk->{is_else} = 1;
+			$in_else_block     = 1;
+			$in_mask_block
+				and $hHunk->{is_else}  = 1;
+			$hHunk->{is_endif} = 0;
 			next;
 		}
 
@@ -1914,7 +1920,7 @@ sub unprepare_shell {
 	$is_else  = 0;
 	@lIn = splice(@{$hFile{output}});
 	for my $line (@lIn) {
-		if ( $line =~ /^# emi (\d) (\d)$/ ) {
+		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])$/ ) {
 			$is_block = $1;
 			$is_else  = $2;
 			# This does not need to be transported.
@@ -1924,8 +1930,9 @@ sub unprepare_shell {
 		$is_block or $is_else = 0;
 		$line =~ m,^[ ]+#if 0 /* .*elogind.*, and $is_block = 1;
 		$is_block and $line =~ m,^[ ]?#else, and $is_else = 1;
-		$is_block and (!$is_else) and ("#" ne substr($line, 1, 1))
-			and "@@" ne substr($line, 0, 2) and substr($line, 1, 0) = "# ";
+		$is_block and (!$is_else)
+			and "@@" ne substr($line, 0, 2)
+			and substr($line, 1, 0) = "# ";
 
 		push @{$hFile{output}}, $line;
 	}
@@ -2007,7 +2014,7 @@ sub unprepare_xml {
 	$is_else  = 0;
 	@lIn = splice(@{$hFile{output}});
 	for my $line (@lIn) {
-		if ( $line =~ /^# emi (\d) (\d)$/ ) {
+		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])$/ ) {
 			$is_block = $1;
 			$is_else  = $2;
 			# This does not need to be transported.
