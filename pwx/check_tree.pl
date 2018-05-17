@@ -478,21 +478,22 @@ sub build_output {
 		$in_mask_block = $hHunk->{is_mask} && (!$hHunk->{is_endif}) ? 1 : 0;
 		$in_else_block = $hHunk->{is_else} && (!$hHunk->{is_endif}) ? 1 : 0;
 
-		# The useless are to be skipped
-		$hHunk->{useful} or next;
+		# The useless are to be skipped, but we need the [e]logind[m]ask[i]nfo
+		if ($hHunk->{useful}) {
+
+			# --- Add the header line -----------------
+			# -----------------------------------------
+			push(@{$hFile{output}}, get_hunk_head(\$offset));
+
+			# --- Add the hunk lines ------------------
+			# -----------------------------------------
+			for my $line (@{$hHunk->{lines}}) {
+				push(@{$hFile{output}}, $line);
+			}
+		}
 
 		# --- Add a comment line for later processing of .pwx files
 		$hFile{pwxfile} and push(@{$hFile{output}}, "# emi ${in_mask_block} ${in_else_block}");
-
-		# --- Add the header line -----------------
-		# -----------------------------------------
-		push(@{$hFile{output}}, get_hunk_head(\$offset));
-
-		# --- Add the hunk lines ------------------
-		# -----------------------------------------
-		for my $line (@{$hHunk->{lines}}) {
-			push(@{$hFile{output}}, $line);
-		}
 	} ## End of walking the hunks
 
 	return 1;
