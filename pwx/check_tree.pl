@@ -21,6 +21,8 @@
 # 0.8.9    2018-05-09  sed, PrydeWorX  Add new option --create to create non-existing files. Needs --file.
 #                                      Add new option --stay to to not reset back from --commit.
 # 0.9.0    2018-05-15  sed, PrydeWorX  Do not prefix mask block content in XML file patch hunks with a '# '.
+# 0.9.1    2018-05-17  sed, PrydeWorX  Replace the source in creation patches with /dev/null.
+#
 # ========================
 # === Little TODO list ===
 # ========================
@@ -37,7 +39,7 @@ use Try::Tiny;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.8.8"; ## Please keep this current!
+Readonly my $VERSION     => "0.9.1"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -1341,8 +1343,10 @@ sub diff_hFile {
 	@{$hFile{output}} = splice(@lDiff, 0, 2);
 	chomp $hFile{output}[0]; # These now have absolute paths, and source meson files have a
 	chomp $hFile{output}[1]; # .pwx extensions. That is not what the result shall look like.
-	$hFile{output}[0] =~ s,$src,a/$prt,; # But we have $hFile{part}, which is already the
-	$hFile{output}[1] =~ s,$tgt,b/$prt,; # relative file name of the file we are processing.
+	$hFile{create}           # But we have $hFile{part}, which is already the
+		and $hFile{output}[0] =~ s,$src,/dev/null, # relative file name of the file we are 
+		 or $hFile{output}[0] =~ s,$src,a/$prt,;   # processing, and we know if a file is
+	$hFile{output}[1] =~ s,$tgt,b/$prt,;           # to be created.
 
 	# ... and the raw hunks can be stored.
 	for (my $line_no  = 1; $line_no < scalar @lDiff; ++$line_no) {
