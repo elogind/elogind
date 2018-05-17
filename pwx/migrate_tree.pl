@@ -11,7 +11,8 @@
 # 0.1.0    2018-05-14  sed, PrydeWorX  Application of the reworked patches added.
 # 0.2.0    2018-05-15  sed, PrydeWorX  First working version.
 # 0.2.1                                Fixed usage of Try::Tiny.
-# 0.2.2    2018-05-16  sed, PrydeWorX  Made sure that the commit file is always written on exit.
+# 0.2.2    2018-05-16  sed, PrydeWorX  Made sure that the commit file is always written on exit,
+#                                        but only if a potential commits file was finished reading.
 #
 # ========================
 # === Little TODO list ===
@@ -79,6 +80,7 @@ Notes:
 # ================================================================
 
 my $commit_count   = 0;   # It is easiest to count the relevant commits globally.
+my $commits_read   = 0;   # Set to one once the commit file is completely read.
 my $do_advance     = 0;   # If set by --advance, use src-<hash> as last commit.
 my %hSrcCommits    = ();  # Record here which patch file is which commit.
 my %hDirectories   = ();  # Filled when searching relevant files, used to validate new files.
@@ -650,6 +652,9 @@ sub get_last_mutual {
 		checkout_tree($upstream_path, $wanted_refid, 0);
 	} ## end if ( -f $COMMIT_FILE )
 
+	# Note down that reading of any file is done.
+	$commits_read = 1;
+
 	# If this is already set, we are fine.
 	if ( length($mutual_commit) ) {
 		$hMutuals{$upstream_path}{$wanted_refid}{mutual} = shorten_refid($upstream_path, $mutual_commit);
@@ -936,6 +941,10 @@ sub rework_patch {
 # --- Write back %hMutuals to $COMMIT_FILE ---
 # --------------------------------------------
 sub set_last_mutual {
+
+	# Don't do anything if we haven't finished reading the commit file:
+	$commits_read or return 1;
+
 	my $out_text = "# Automatically generated commit information\n"
 	             . "# Only edit if you know what these do!\n\n";
 	my ($pLen, $rLen, $mLen, $sLen) = (0, 0, 0, 0); # Length for the fmt
