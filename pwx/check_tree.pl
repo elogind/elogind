@@ -22,6 +22,8 @@
 #                                      Add new option --stay to to not reset back from --commit.
 # 0.9.0    2018-05-15  sed, PrydeWorX  Do not prefix mask block content in XML file patch hunks with a '# '.
 # 0.9.1    2018-05-17  sed, PrydeWorX  Replace the source in creation patches with /dev/null.
+#                                        Remember mask starts and elses in hunks, so the resulting patches
+#                                        can be reworked without ignoring changes in useless hunks.
 #
 # ========================
 # === Little TODO list ===
@@ -118,6 +120,9 @@ my $hHunk = {}; ## Secondary data structure to describe one diff hunk.          
                 ## { count      : Number of lines in {lines}
                 ##   lines      : list of the lines themselves,
                 ##   idx        : Index of this hunk in %hFile{hunks}
+                ##   is_else    : Set to 1 if the hunk exits in an else after a mask start
+                ##   is_endif   : Set to 1 if the hunk exists after ending a mask block
+                ##   is_mask    : Set to 1 if the hunk exists within an elogind mask block
                 ##   src_start  : line number this hunk starts in the source file.
                 ##   tgt_start  : line number this hunk becomes in the target file.
                 ##   useful     : 1 if the hunk is transported, 0 if it is to be omitted.
@@ -269,6 +274,10 @@ for my $file_part (@source_files) {
 	# ---------------------------------------------------------------------
 	for (my $pos = 0; $pos < $hFile{count}; ++$pos) {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
+
+		# The state of what the hunk did must be known:
+		$in_mask_block = $hHunk->{is_mask} && (!$hHunk->{is_endif}) ? 1 : 0;
+		$in_else_block = $hHunk->{is_else} && (!$hHunk->{is_endif}) ? 1 : 0;
 
 		# (pre -> early out)
 		hunk_is_useful or next;
@@ -430,6 +439,9 @@ sub build_hHunk {
 		%{$hFile{hunks}[$pos]} = (
 			count      => 0,
 			idx        => $pos,
+			is_else    => 0,
+			is_endif   => 0,
+			is_mask    => 0,
 			offset     => 0,
 			src_start  => $1,
 			tgt_start  => $2,
@@ -461,7 +473,16 @@ sub build_output {
 
 	for (my $pos = 0; $pos < $hFile{count}; ++$pos) {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
-		$hHunk->{useful} or next;     ## And the skip of the useless.
+
+		# The state of what the hunk did must be known:
+		$in_mask_block = $hHunk->{is_mask} && (!$hHunk->{is_endif}) ? 1 : 0;
+		$in_else_block = $hHunk->{is_else} && (!$hHunk->{is_endif}) ? 1 : 0;
+
+		# The useless are to be skipped
+		$hHunk->{useful} or next;
+
+		# --- Add a comment line for later processing of .pwx files
+		$hFile{pwxfile} and push(@{$hFile{output}}, "# emi ${in_mask_block} ${in_else_block}");
 
 		# --- Add the header line -----------------
 		# -----------------------------------------
@@ -921,6 +942,7 @@ sub check_masks {
 				and return hunk_failed("check_masks: Mask start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_mask_block = 1;
+			$hHunk->{is_mask} = 1;
 
 			# While we are here we can check the previous line.
 			# All masks shall be preceded by an empty line to enhance readability.
@@ -962,7 +984,8 @@ sub check_masks {
 		    || ( $$line =~ m/else\s+-->\s*$/ ) 
 		    || ( $$line =~ m,\*\s+else\s+\*\*/\s*$, ) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_else_block = 1;
+			$in_else_block    = 1;
+			$hHunk->{is_else} = 1;
 			next;
 		}
 
@@ -976,8 +999,11 @@ sub check_masks {
 				(!$in_mask_block)
 					and return hunk_failed("check_masks: #endif // 0 found outside any mask block");
 				substr($$line, 0, 1) = " "; ## Remove '-'
-				$in_mask_block = 0;
-				$in_else_block = 0;
+				$in_mask_block     = 0;
+				$in_else_block     = 0;
+				$hHunk->{is_else}  = 0;
+				$hHunk->{is_endif} = 1;
+				$hHunk->{is_mask}  = 0;
 				next;
 			}
 
@@ -1887,6 +1913,12 @@ sub unprepare_shell {
 	$is_else  = 0;
 	@lIn = splice(@{$hFile{output}});
 	for my $line (@lIn) {
+		if ( $line =~ /^# emi (\d) (\d)$/ ) {
+			$is_block = $1;
+			$is_else  = $2;
+			# This does not need to be transported.
+			next;
+		}
 		$line =~ m,^[ ]+#endif /* 0, and $is_block = 0;
 		$is_block or $is_else = 0;
 		$line =~ m,^[ ]+#if 0 /* .*elogind.*, and $is_block = 1;
@@ -1974,6 +2006,12 @@ sub unprepare_xml {
 	$is_else  = 0;
 	@lIn = splice(@{$hFile{output}});
 	for my $line (@lIn) {
+		if ( $line =~ /^# emi (\d) (\d)$/ ) {
+			$is_block = $1;
+			$is_else  = $2;
+			# This does not need to be transported.
+			next;
+		}
 		$line =~ m,//\s+0\s+-->\s*$, and $is_block = 0;
 		$is_block or $is_else = 0;
 		$line =~ m/<!--\s+0.+elogind/ and (! $line =~ m/-->\s*$/) and $is_block = 1;
