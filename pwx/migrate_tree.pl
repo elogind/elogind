@@ -868,10 +868,9 @@ sub rework_patch {
 		# The determination what is valid is different for whether this is
 		# the modification of an existing or the creation of a new file
 		if ($isNew) {
-			defined( $hDirectories{ dirname($src) } ) and $real = $src or
-			defined( $hDirectories{ dirname($tgt) } ) and $real = $tgt;
+			defined( $hDirectories{ dirname($tgt) } ) and $real = $tgt or
+			defined( $hDirectories{ dirname($src) } ) and $real = $src;
 		} else {
-
 			# Try the renamed first, then the non-renamed
 			defined( $hFiles{$tgt} ) and $real = $tgt
 			  or defined( $hFiles{$src} )
