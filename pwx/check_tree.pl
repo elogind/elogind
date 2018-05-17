@@ -275,10 +275,6 @@ for my $file_part (@source_files) {
 	for (my $pos = 0; $pos < $hFile{count}; ++$pos) {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
 
-		# The state of what the hunk did must be known:
-		$in_mask_block = $hHunk->{is_mask} && (!$hHunk->{is_endif}) ? 1 : 0;
-		$in_else_block = $hHunk->{is_else} && (!$hHunk->{is_endif}) ? 1 : 0;
-
 		# (pre -> early out)
 		hunk_is_useful or next;
 
@@ -475,8 +471,12 @@ sub build_output {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
 
 		# The state of what the hunk did must be known:
-		$in_mask_block = $hHunk->{is_mask} && (!$hHunk->{is_endif}) ? 1 : 0;
-		$in_else_block = $hHunk->{is_else} && (!$hHunk->{is_endif}) ? 1 : 0;
+		$hHunk->{is_mask} and $in_mask_block = 1;
+		$hHunk->{is_else} and $in_else_block = 1;
+		if ($hHunk->{is_endif}) {
+			$in_mask_block = 0;
+			$in_else_block = 0;
+		};
 
 		# The useless are to be skipped, but we need the [e]logind[m]ask[i]nfo
 		if ($hHunk->{useful}) {
