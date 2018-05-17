@@ -18,6 +18,7 @@
 #include "bus-util.h"
 #include "fd-util.h"
 #include "format-util.h"
+//#include "pager.h"
 #include "process-util.h"
 #include "signal-util.h"
 #include "strv.h"
@@ -31,6 +32,7 @@ static const char* arg_what = "idle:sleep:shutdown";
 static const char* arg_who = NULL;
 static const char* arg_why = "Unknown reason";
 static const char* arg_mode = NULL;
+static bool arg_no_pager = false;
 
 static enum {
         ACTION_INHIBIT,
@@ -71,6 +73,8 @@ static int print_inhibitors(sd_bus *bus, sd_bus_error *error) {
         unsigned int uid, pid;
         unsigned n = 0;
         int r;
+
+        (void) pager_open(arg_no_pager, false);
 
         r = sd_bus_call_method(
                         bus,
@@ -124,6 +128,7 @@ static void help(void) {
                "Execute a process while inhibiting shutdown/sleep/idle.\n\n"
                "  -h --help               Show this help\n"
                "     --version            Show package version\n"
+               "     --no-pager           Do not pipe output into a pager\n"
                "     --what=WHAT          Operations to inhibit, colon separated list of:\n"
                "                          shutdown, sleep, idle, handle-power-key,\n"
                "                          handle-suspend-key, handle-hibernate-key,\n"
@@ -144,6 +149,7 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_WHY,
                 ARG_MODE,
                 ARG_LIST,
+                ARG_NO_PAGER,
         };
 
         static const struct option options[] = {
@@ -154,6 +160,7 @@ static int parse_argv(int argc, char *argv[]) {
                 { "why",          required_argument, NULL, ARG_WHY          },
                 { "mode",         required_argument, NULL, ARG_MODE         },
                 { "list",         no_argument,       NULL, ARG_LIST         },
+                { "no-pager",     no_argument,       NULL, ARG_NO_PAGER     },
                 {}
         };
 
@@ -191,6 +198,10 @@ static int parse_argv(int argc, char *argv[]) {
 
                 case ARG_LIST:
                         arg_action = ACTION_LIST;
+                        break;
+
+                case ARG_NO_PAGER:
+                        arg_no_pager = true;
                         break;
 
                 case '?':
@@ -235,6 +246,7 @@ int main(int argc, char *argv[]) {
         if (arg_action == ACTION_LIST) {
 
                 r = print_inhibitors(bus, &error);
+                pager_close();
                 if (r < 0) {
                         log_error("Failed to list inhibitors: %s", bus_error_message(&error, -r));
                         return EXIT_FAILURE;
