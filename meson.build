@@ -303,6 +303,7 @@ substs.set('rootlibexecdir',                                  rootlibexecdir)
 #endif // 0
 substs.set('udevrulesdir',                                    udevrulesdir)
 substs.set('udevlibexecdir',                                  udevlibexecdir)
+substs.set('environmentdir',                                  environmentdir)
 #if 0 /// UNNEEDED by elogind
 # substs.set('catalogdir',                                      catalogdir)
 # substs.set('tmpfilesdir',                                     tmpfilesdir)
@@ -310,6 +311,7 @@ substs.set('udevlibexecdir',                                  udevlibexecdir)
 # substs.set('sysctldir',                                       sysctldir)
 # substs.set('binfmtdir',                                       binfmtdir)
 # substs.set('modulesloaddir',                                  modulesloaddir)
+# substs.set('modprobedir',                                     modprobedir)
 # substs.set('systemgeneratordir',                              systemgeneratordir)
 # substs.set('usergeneratordir',                                usergeneratordir)
 # substs.set('systemenvgeneratordir',                           systemenvgeneratordir)
@@ -1914,6 +1916,7 @@ executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
+executable('elogind-user-runtime-dir',
            user_runtime_dir_sources,
            include_directories : includes,
            link_with : [libshared, liblogind_core],
@@ -3053,8 +3056,9 @@ if git.found()
                 'tags',
                 output : 'tags',
                 command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.current_source_dir())] + all_files)
-        run_target(
+        custom_target(
                 'ctags',
+                output : 'ctags',
                 command : [env, 'ctags', '-o', '@0@/tags'.format(meson.current_source_dir())] + all_files)
 endif
 
