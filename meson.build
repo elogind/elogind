@@ -1927,6 +1927,7 @@ executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
+executable('elogind-user-runtime-dir',
            user_runtime_dir_sources,
            include_directories : includes,
            link_with : [libshared, liblogind_core],
@@ -1986,9 +1987,19 @@ endif
 #                  install : true)
 # public_programs += [exe]
 # 
+# 
+# if get_option('link-systemctl-shared')
+#         systemctl_link_with = [libshared]
+# else
+#         systemctl_link_with = [libsystemd_static,
+#                                libshared_static,
+#                                libjournal_client,
+#                                libbasic_gcrypt]
+# endif
+# 
 # exe = executable('systemctl', 'src/systemctl/systemctl.c',
 #                  include_directories : includes,
-#                  link_with : [libshared],
+#                  link_with : systemctl_link_with,
 #                  dependencies : [threads,
 #                                  libcap,
 #                                  libselinux,
