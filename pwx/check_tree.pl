@@ -118,12 +118,6 @@ my $hHunk = {}; ## Secondary data structure to describe one diff hunk.          
                 ##       current $hFile{hunks}[] instance.
                 ## The structure is:
                 ## { count      : Number of lines in {lines}
-                ##   emi_end    : [e]logind [m]ask [i]nfo [end] with the last thing the hunk did:
-                ##                <start mask> <else mask> <endif mask>
-                ##                inserts are ignored, as these have no elses.
-                ##   emi_start  : Same as emi_end, but the first thing the block does. This is needed
-                ##                so we do not lose the information that a mask in a previous block was
-                ##                ended, when the 'endif' gets pruned.
                 ##   lines      : list of the lines themselves,
                 ##   idx        : Index of this hunk in %hFile{hunks}
                 ##   src_start  : line number this hunk starts in the source file.
@@ -437,8 +431,6 @@ sub build_hHunk {
 	if ( $head =~ m/^@@ -(\d+),\d+ \+(\d+),\d+ @@/ ) {
 		%{$hFile{hunks}[$pos]} = (
 			count      => 0,
-			emi_end    => "0 0 0",
-			emi_start  => "0 0 0",
 			idx        => $pos,
 			offset     => 0,
 			src_start  => $1,
@@ -472,9 +464,6 @@ sub build_output {
 	for (my $pos = 0; $pos < $hFile{count}; ++$pos) {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
 
-		# The first action of the hunk must be known:
-		$hFile{pwxfile} and push(@{$hFile{output}}, "# emi " . $hHunk->{emi_start});
-
 		# The useless are to be skipped, but we need the [e]logind[m]ask[i]nfo
 		if ($hHunk->{useful}) {
 
@@ -488,9 +477,6 @@ sub build_output {
 				push(@{$hFile{output}}, $line);
 			}
 		}
-
-		# The state of what the hunk did must be known:
-		$hFile{pwxfile} and push(@{$hFile{output}}, "# emi " . $hHunk->{emi_end});
 	} ## End of walking the hunks
 
 	return 1;
@@ -939,7 +925,6 @@ sub check_masks {
 				and return hunk_failed("check_masks: Mask start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_mask_block    = 1;
-			$hHunk->{emi_end} = "1 0 0";
 
 			# While we are here we can check the previous line.
 			# All masks shall be preceded by an empty line to enhance readability.
@@ -960,7 +945,6 @@ sub check_masks {
 				and return hunk_failed("check_masks: Insert start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_insert_block  = 1;
-			$hHunk->{emi_end} = "0 0 0";
 
 			# While we are here we can check the previous line.
 			# All inserts shall be preceded by an empty line to enhance readability.
@@ -983,7 +967,6 @@ sub check_masks {
 		    || ( $$line =~ m,\*\s+else\s+\*\*/\s*$, ) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_else_block    = 1;
-			$hHunk->{emi_end} = "1 1 0";
 			next;
 		}
 
@@ -999,7 +982,6 @@ sub check_masks {
 				substr($$line, 0, 1) = " "; ## Remove '-'
 				$in_mask_block    = 0;
 				$in_else_block    = 0;
-				$hHunk->{emi_end} = "0 0 1";
 				next;
 			}
 
@@ -1009,7 +991,6 @@ sub check_masks {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_insert_block  = 0;
 			$in_else_block    = 0;
-			$hHunk->{emi_end} = "0 0 0";
 			next;
 		}
 
@@ -1796,16 +1777,6 @@ sub prune_hunk {
 			$changed or ++$prefix;
 			++$postfix;
 		}
-
-		# We have to note down the first mask change action, if it will be pruned:
-		if (0 == $changed) {
-			$hHunk->{lines}[$i] =~ m/^ #if\s+0.+elogind/
-				and $is_mask = 1 and $hHunk->{emi_start} = "1 0 0"; 
-			$hHunk->{lines}[$i] =~ m/^ #else/
-				and $is_mask     and $hHunk->{emi_start} = "1 1 0";
-			$hHunk->{lines}[$i] =~ m/^ #endif.+0/
-				and $is_mask     and $hHunk->{emi_start} = "0 0 0" and $is_mask = 0;
-		}
 	}
 
 	# Now let's prune it:
@@ -1914,17 +1885,6 @@ sub unprepare_shell {
 	@lIn = splice(@{$hFile{output}});
 
 	for my $line (@lIn) {
-		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])\s+([01])$/ ) {
-			if ($3) {
-				$is_block = 0;
-				$is_else  = 0;
-			} else {
-				$1 and $is_block = 1;
-				$2 and $is_else  = 1;
-			}
-			# This does not need to be transported.
-			next;
-		}
 		$line =~ m,^[ ]+#endif /* 0, and $is_block = 0;
 		$is_block or $is_else = 0;
 		$line =~ m,^[ ]+#if 0 /* .*elogind.*, and $is_block = 1;
@@ -2013,17 +1973,6 @@ sub unprepare_xml {
 	$is_else  = 0;
 	@lIn = splice(@{$hFile{output}});
 	for my $line (@lIn) {
-		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])\s+([01])$/ ) {
-			if ($3) {
-				$is_block = 0;
-				$is_else  = 0;
-			} else {
-				$1 and $is_block = 1;
-				$2 and $is_else  = 1;
-			}
-			# This does not need to be transported.
-			next;
-		}
 		$line =~ m,//\s+0\s+-->\s*$, and $is_block = 0;
 		$is_block or $is_else = 0;
 		$line =~ m/<!--\s+0.+elogind/ and (! $line =~ m/-->\s*$/) and $is_block = 1;
