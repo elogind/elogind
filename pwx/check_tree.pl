@@ -118,11 +118,14 @@ my $hHunk = {}; ## Secondary data structure to describe one diff hunk.          
                 ##       current $hFile{hunks}[] instance.
                 ## The structure is:
                 ## { count      : Number of lines in {lines}
+                ##   emi_end    : [e]logind [m]ask [i]nfo [end] with the last thing the hunk did:
+                ##                <start mask> <else mask> <endif mask>
+                ##                inserts are ignored, as these have no elses.
+                ##   emi_start  : Same as emi_end, but the first thing the block does. This is needed
+                ##                so we do not lose the information that a mask in a previous block was
+                ##                ended, when the 'endif' gets pruned.
                 ##   lines      : list of the lines themselves,
                 ##   idx        : Index of this hunk in %hFile{hunks}
-                ##   is_else    : Set to 1 if the hunk exits in an else after a mask start
-                ##   is_endif   : Set to 1 if the hunk exists after ending a mask block
-                ##   is_mask    : Set to 1 if the hunk exists within an elogind mask block
                 ##   src_start  : line number this hunk starts in the source file.
                 ##   tgt_start  : line number this hunk becomes in the target file.
                 ##   useful     : 1 if the hunk is transported, 0 if it is to be omitted.
@@ -434,10 +437,9 @@ sub build_hHunk {
 	if ( $head =~ m/^@@ -(\d+),\d+ \+(\d+),\d+ @@/ ) {
 		%{$hFile{hunks}[$pos]} = (
 			count      => 0,
+			emi_end    => "0 0 0",
+			emi_start  => "0 0 0",
 			idx        => $pos,
-			is_else    => 0,
-			is_endif   => 0,
-			is_mask    => 0,
 			offset     => 0,
 			src_start  => $1,
 			tgt_start  => $2,
@@ -470,13 +472,8 @@ sub build_output {
 	for (my $pos = 0; $pos < $hFile{count}; ++$pos) {
 		$hHunk = $hFile{hunks}[$pos]; ## Global shortcut
 
-		# The state of what the hunk did must be known:
-		$hHunk->{is_mask} and $in_mask_block = 1;
-		$hHunk->{is_else} and $in_else_block = 1;
-		if ($hHunk->{is_endif}) {
-			$in_mask_block = 0;
-			$in_else_block = 0;
-		};
+		# The first action of the hunk must be known:
+		$hFile{pwxfile} and push(@{$hFile{output}}, "# emi " . $hHunk->{emi_start});
 
 		# The useless are to be skipped, but we need the [e]logind[m]ask[i]nfo
 		if ($hHunk->{useful}) {
@@ -492,8 +489,8 @@ sub build_output {
 			}
 		}
 
-		# --- Add a comment line for later processing of .pwx files
-		$hFile{pwxfile} and push(@{$hFile{output}}, "# emi ${in_mask_block} ${in_else_block}");
+		# The state of what the hunk did must be known:
+		$hFile{pwxfile} and push(@{$hFile{output}}, "# emi " . $hHunk->{emi_end});
 	} ## End of walking the hunks
 
 	return 1;
@@ -920,8 +917,8 @@ sub check_includes {
 sub check_masks {
 
 	# Early exits:
-	defined($hHunk) or return 0;
-	$hHunk->{useful} or return 0;
+	defined($hHunk) or die("check_masks: hHunk is undef");
+	$hHunk->{useful} or die("chec_masks: Nothing done but hHunk is useless?");
 
 	# Count non-elogind block #ifs. This is needed, so normal
 	# #if/#else/#/endif constructs can be put inside elogind mask blocks.
@@ -929,7 +926,6 @@ sub check_masks {
 
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
-
 		# Entering an elogind mask
 		# ---------------------------------------
 		if ( ($$line =~ m/^-#if\s+0.+elogind/ ) 
@@ -942,9 +938,8 @@ sub check_masks {
 			$in_insert_block
 				and return hunk_failed("check_masks: Mask start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_mask_block = 1;
-			$hHunk->{is_mask}  = 1;
-			$hHunk->{is_endif} = 0;
+			$in_mask_block    = 1;
+			$hHunk->{emi_end} = "1 0 0";
 
 			# While we are here we can check the previous line.
 			# All masks shall be preceded by an empty line to enhance readability.
@@ -964,10 +959,8 @@ sub check_masks {
 			$in_insert_block
 				and return hunk_failed("check_masks: Insert start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_insert_block   = 1;
-			$hHunk->{is_mask}  = 0;
-			$hHunk->{is_else}  = 0;
-			$hHunk->{is_endif} = 0;
+			$in_insert_block  = 1;
+			$hHunk->{emi_end} = "0 0 0";
 
 			# While we are here we can check the previous line.
 			# All inserts shall be preceded by an empty line to enhance readability.
@@ -989,10 +982,8 @@ sub check_masks {
 		    || ( $$line =~ m/else\s+-->\s*$/ ) 
 		    || ( $$line =~ m,\*\s+else\s+\*\*/\s*$, ) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_else_block     = 1;
-			$in_mask_block
-				and $hHunk->{is_else}  = 1;
-			$hHunk->{is_endif} = 0;
+			$in_else_block    = 1;
+			$hHunk->{emi_end} = "1 1 0";
 			next;
 		}
 
@@ -1006,11 +997,9 @@ sub check_masks {
 				(!$in_mask_block)
 					and return hunk_failed("check_masks: #endif // 0 found outside any mask block");
 				substr($$line, 0, 1) = " "; ## Remove '-'
-				$in_mask_block     = 0;
-				$in_else_block     = 0;
-				$hHunk->{is_else}  = 0;
-				$hHunk->{is_endif} = 1;
-				$hHunk->{is_mask}  = 0;
+				$in_mask_block    = 0;
+				$in_else_block    = 0;
+				$hHunk->{emi_end} = "0 0 1";
 				next;
 			}
 
@@ -1018,8 +1007,9 @@ sub check_masks {
 			(!$in_insert_block)
 				and return hunk_failed("check_masks: #endif // 1 found outside any insert block");
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_insert_block = 0;
-			$in_else_block   = 0;
+			$in_insert_block  = 0;
+			$in_else_block    = 0;
+			$hHunk->{emi_end} = "0 0 0";
 			next;
 		}
 
@@ -1032,13 +1022,6 @@ sub check_masks {
 		  && ( $in_insert_block || ($in_mask_block && $in_else_block) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 		}
-
-		# If this is a .pwx file, prefix all lines in non-else mask blocks with '# '
-		# unless they are xml files.
-		# --------------------------------------------------------------------------
-		$hFile{pwxfile} and $in_mask_block and (!$in_else_block)
-			and ( !( $hFile{target} =~ m/\.xml$/ ) )
-			and substr($$line, 1, 0) = "# ";
 	} ## End of looping lines
 
 	return 1;
@@ -1800,6 +1783,7 @@ sub prune_hunk {
 	$hHunk->{useful} or return 0;
 
 	# Go through the lines and see what we've got.
+	my $is_mask = 0;
 	my $prefix  = 0;
 	my $postfix = 0;
 	my $changed = 0; ## Set to 1 once the first change was found.
@@ -1811,6 +1795,16 @@ sub prune_hunk {
 		} else {
 			$changed or ++$prefix;
 			++$postfix;
+		}
+
+		# We have to note down the first mask change action, if it will be pruned:
+		if (0 == $changed) {
+			$hHunk->{lines}[$i] =~ m/^ #if\s+0.+elogind/
+				and $is_mask = 1 and $hHunk->{emi_start} = "1 0 0"; 
+			$hHunk->{lines}[$i] =~ m/^ #else/
+				and $is_mask     and $hHunk->{emi_start} = "1 1 0";
+			$hHunk->{lines}[$i] =~ m/^ #endif.+0/
+				and $is_mask     and $hHunk->{emi_start} = "0 0 0" and $is_mask = 0;
 		}
 	}
 
@@ -1915,14 +1909,19 @@ sub unprepare_shell {
 
 	# Now prepare the patch. It is like above, but with less checks.
 	# We have to move out the lines first, and then write them back.
-	@lIn = ();
 	$is_block = 0;
 	$is_else  = 0;
 	@lIn = splice(@{$hFile{output}});
+
 	for my $line (@lIn) {
-		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])$/ ) {
-			$is_block = $1;
-			$is_else  = $2;
+		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])\s+([01])$/ ) {
+			if ($3) {
+				$is_block = 0;
+				$is_else  = 0;
+			} else {
+				$1 and $is_block = 1;
+				$2 and $is_else  = 1;
+			}
 			# This does not need to be transported.
 			next;
 		}
@@ -1932,8 +1931,8 @@ sub unprepare_shell {
 		$is_block and $line =~ m,^[ ]?#else, and $is_else = 1;
 		$is_block and (!$is_else)
 			and "@@" ne substr($line, 0, 2)
+			and (! ($line =~ m/^[ ]+#(?:if|else|endif)/) )
 			and substr($line, 1, 0) = "# ";
-
 		push @{$hFile{output}}, $line;
 	}
 
@@ -2014,9 +2013,14 @@ sub unprepare_xml {
 	$is_else  = 0;
 	@lIn = splice(@{$hFile{output}});
 	for my $line (@lIn) {
-		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])$/ ) {
-			$is_block = $1;
-			$is_else  = $2;
+		if ( $line =~ m/^\s*#\s+emi\s+([01])\s+([01])\s+([01])$/ ) {
+			if ($3) {
+				$is_block = 0;
+				$is_else  = 0;
+			} else {
+				$1 and $is_block = 1;
+				$2 and $is_else  = 1;
+			}
 			# This does not need to be transported.
 			next;
 		}
