@@ -790,8 +790,7 @@ sub check_includes {
 				}
 				if ($all_same) {
 					# The insertion is right before or after the removal. That's pointless.
-					$undos{$i} = 1;
-					$undos{$hIncs{$inc}{insert}{lineid}} = 1;
+					$undos{$hIncs{$inc}{remove}{lineid}} = 1;
 					$hIncs{$inc}{applied}  = 1;
 					$hIncs{$inc}{insert}{spliceme} = 1;
 					next;
@@ -807,7 +806,7 @@ sub check_includes {
 				$hIncs{$inc}{applied}  = 1;
 			} elsif ( $hIncs{$inc}{insert}{elogind} ) {
 				# Do not move masked includes under our block.
-				$undos{$i} = 1;
+				$undos{$hIncs{$inc}{remove}{lineid}} = 1;
 				$hIncs{$inc}{applied}  = 1;
 				$hIncs{$inc}{insert}{spliceme} = 1;
 			} else {
@@ -1046,8 +1045,25 @@ sub check_musl {
 	# and the alternative block.
 	my $regular_ifs = 0;
 
+	# Remember the final mask state for later reversal
+	# ------------------------------------------------
+	my $hunk_ends_in_mask = $in_mask_block;
+	my $hunk_ends_in_else = $in_else_block;
+	$in_else_block = 0;
+	$hHunk->{masked_start} and $in_mask_block = 1 or $in_mask_block = 0;
+
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
+
+		# Quick mask checks, we must have the intermediate states
+		# -------------------------------------------------------
+		is_mask_start($$line) and ++$in_mask_block and next;
+		is_mask_else($$line)  and ++$in_else_block and next;
+		if (is_mask_end($$line)) {
+			$in_mask_block--;
+			$in_else_block--;
+			next;
+		}
 
 		# Entering a __GLIBC__ block
 		# ---------------------------------------
@@ -1090,6 +1106,11 @@ sub check_musl {
 		}
 	} ## End of looping lines
 
+	# Revert the final mask state remembered above
+	# ------------------------------------------------
+	$in_mask_block = $hunk_ends_in_mask;
+	$in_else_block = $hunk_ends_in_else;
+
 	return 1;
 }
 
@@ -1108,12 +1129,29 @@ sub check_name_reverts {
 	# Note down what is changed, so we can have inline updates
 	my %hRemovals = ();
 
+	# Remember the final mask state for later reversal
+	# ------------------------------------------------
+	my $hunk_ends_in_mask = $in_mask_block;
+	my $hunk_ends_in_else = $in_else_block;
+	$in_else_block = 0;
+	$hHunk->{masked_start} and $in_mask_block = 1 or $in_mask_block = 0;
+
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
 
 		defined($$line)
 			or return hunk_failed("check_name_reverts: Line "
 				. ($i + 1) . "/$hHunk->{count} is undef?");
+
+		# Quick mask checks, we must have the intermediate states
+		# -------------------------------------------------------
+		is_mask_start($$line) and ++$in_mask_block and next;
+		is_mask_else($$line)  and ++$in_else_block and next;
+		if (is_mask_end($$line)) {
+			$in_mask_block = 0;
+			$in_else_block = 0;
+			next;
+		}
 
 		# Note down removals
 		# ---------------------------------
@@ -1170,6 +1208,11 @@ sub check_name_reverts {
 				 or $$line =~ s/^\+([# ]*\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
 		}
 	}
+
+	# Revert the final mask state remembered above
+	# ------------------------------------------------
+	$in_mask_block = $hunk_ends_in_mask;
+	$in_else_block = $hunk_ends_in_else;
 
 	return 1;
 }
@@ -2131,9 +2174,14 @@ sub read_includes {
 	my $in_elogind_block = 0;
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
-		# Note down removes of includes we commented out
+
+		# Note down removals of includes we commented out
 		if ( $$line =~ m,^-\s*//+\s*#include\s+([<"'])([^>"']+)[>"'], ) {
-			$hIncs{$2}{remove} = { hunkid => $hHunk->{idx}, lineid => $i, sysinc => $1 eq "<" };
+			$hIncs{$2}{remove} = {
+				hunkid => $hHunk->{idx},
+				lineid => $i,
+				sysinc => $1 eq "<"
+			};
 			next;
 		}
 
