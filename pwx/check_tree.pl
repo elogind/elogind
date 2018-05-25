@@ -26,6 +26,8 @@
 #                                        can be reworked without ignoring changes in useless hunks.
 # 0.9.2    2018-05-24  sed, PrydeWorX  Enhance the final processing of shell and xml files and their patches
 #                                        by remembering mask changes that get pruned from the hunks.
+# 0.9.3    2018-05-25  sed, PrydeWorX  Made check_musl() and check_name_reverts() safer. Further policy.in
+#                                        consist of XML code, and are now handled by (un)prepare_xml().
 #
 # ========================
 # === Little TODO list ===
@@ -43,7 +45,7 @@ use Try::Tiny;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.9.2"; ## Please keep this current!
+Readonly my $VERSION     => "0.9.3"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -1055,6 +1057,10 @@ sub check_musl {
 	for (my $i = 0; $i < $hHunk->{count}; ++$i) {
 		my $line = \$hHunk->{lines}[$i]; ## Shortcut
 
+		# The increment/decrement variant can cause negative values:
+		$in_mask_block < 0 and $in_mask_block = 0;
+		$in_else_block < 0 and $in_else_block = 0;
+
 		# Quick mask checks, we must have the intermediate states
 		# -------------------------------------------------------
 		is_mask_start($$line) and ++$in_mask_block and next;
@@ -1101,7 +1107,9 @@ sub check_musl {
 
 		# Remove '-' prefixes in all lines within the musl (#else) blocks
 		# -------------------------------------------------------------------
-		if ( ($$line =~ m,^-,) && $in_mask_block && $in_else_block ) {
+		if ( ($$line =~ m,^-,)
+		  && ($in_mask_block > 0)
+		  && ($in_else_block > 0 ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 		}
 	} ## End of looping lines
@@ -1143,6 +1151,10 @@ sub check_name_reverts {
 			or return hunk_failed("check_name_reverts: Line "
 				. ($i + 1) . "/$hHunk->{count} is undef?");
 
+		# The increment/decrement variant can cause negative values:
+		$in_mask_block < 0 and $in_mask_block = 0;
+		$in_else_block < 0 and $in_else_block = 0;
+
 		# Quick mask checks, we must have the intermediate states
 		# -------------------------------------------------------
 		is_mask_start($$line) and ++$in_mask_block and next;
@@ -1156,7 +1168,7 @@ sub check_name_reverts {
 		# Note down removals
 		# ---------------------------------
 		if ($$line =~ m/^-[# ]*\s*(.*elogind.*)\s*$/) {
-			$hRemovals{$1}{line}      = $i;
+			$hRemovals{$1}{line} = $i;
 			next;
 		}
 
@@ -1202,7 +1214,7 @@ sub check_name_reverts {
 			# --- Case B) Otherwise replace the addition with our text. ---
 			# ---         Unless we are in a mask block.                ---
 			# -------------------------------------------------------------
-			$in_mask_block and next;
+			$in_mask_block > 0 and (0 == $in_else_block) and next;
 			$our_text_long eq $replace_text
 				and $$line =~ s/^\+([# ]*\s*).*systemd.*(\s*)$/+${1}${our_text_short}${2}/
 				 or $$line =~ s/^\+([# ]*\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
@@ -1376,15 +1388,18 @@ sub diff_hFile {
 		# Shell and meson files must be prepared. See prepare_meson()
 		( $hFile{source} =~ m/meson/ or
 		  $hFile{source} =~ m/\.gperf$/ or
-		  $hFile{source} =~ m/\.in$/ or
+		 ($hFile{source} =~ m/\.in$/ and (!($hFile{source} =~ m/\.policy\.in$/)) ) or
 		  $hFile{source} =~ m/\.pl$/ or
 		  $hFile{source} =~ m/\.po$/ or
 		  $hFile{source} =~ m/\.sh$/ or
-		  $hFile{source} =~ m/\.sym$/ ) and $hFile{pwxfile} = 1 and prepare_shell;
+		  $hFile{source} =~ m/\.sym$/
+		) and $hFile{pwxfile} = 1 and prepare_shell;
 
 		# We mask double dashes in XML comments using XML hex entities. These
 		# must be unmasked for processing.
-		$hFile{source} =~ m/\.xml$/ and $hFile{pwxfile} = 1 and prepare_xml;
+		( $hFile{source} =~ m/\.xml$/ or
+		  $hFile{source} =~ m/\.policy\.in$/
+		) and $hFile{pwxfile} = 1 and prepare_xml;
 	}
 
 	# Let's have three shortcuts:
@@ -1982,6 +1997,9 @@ sub unprepare_shell {
 
 	# Do not handle XML files here
 	$out =~ m/\.xml$/ and return 0;
+
+	# policy files are xml, too
+	$out =~ m/\.policy\.in$/ and return 0;
 
 	# Leech the temporary file
 	if (open(my $fIn, "<", $in)) {
