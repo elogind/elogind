@@ -518,18 +518,17 @@ static int source_io_register(
                 int enabled,
                 uint32_t events) {
 
-        struct epoll_event ev = {};
+        struct epoll_event ev;
         int r;
 
         assert(s);
         assert(s->type == SOURCE_IO);
         assert(enabled != SD_EVENT_OFF);
 
-        ev.events = events;
-        ev.data.ptr = s;
-
-        if (enabled == SD_EVENT_ONESHOT)
-                ev.events |= EPOLLONESHOT;
+        ev = (struct epoll_event) {
+                .events = events | (enabled == SD_EVENT_ONESHOT ? EPOLLONESHOT : 0),
+                .data.ptr = s,
+        };
 
         if (s->io.registered)
                 r = epoll_ctl(s->event->epoll_fd, EPOLL_CTL_MOD, s->io.fd, &ev);
@@ -621,7 +620,7 @@ static int event_make_signal_data(
                 int sig,
                 struct signal_data **ret) {
 
-        struct epoll_event ev = {};
+        struct epoll_event ev;
         struct signal_data *d;
         bool added = false;
         sigset_t ss_copy;
@@ -686,8 +685,10 @@ static int event_make_signal_data(
 
         d->fd = fd_move_above_stdio(r);
 
-        ev.events = EPOLLIN;
-        ev.data.ptr = d;
+        ev = (struct epoll_event) {
+                .events = EPOLLIN,
+                .data.ptr = d,
+        };
 
         r = epoll_ctl(e->epoll_fd, EPOLL_CTL_ADD, d->fd, &ev);
         if (r < 0)  {
@@ -1021,7 +1022,7 @@ static int event_setup_timer_fd(
                 struct clock_data *d,
                 clockid_t clock) {
 
-        struct epoll_event ev = {};
+        struct epoll_event ev;
         int r, fd;
 
         assert(e);
@@ -1036,8 +1037,10 @@ static int event_setup_timer_fd(
 
         fd = fd_move_above_stdio(fd);
 
-        ev.events = EPOLLIN;
-        ev.data.ptr = d;
+        ev = (struct epoll_event) {
+                .events = EPOLLIN,
+                .data.ptr = d,
+        };
 
         r = epoll_ctl(e->epoll_fd, EPOLL_CTL_ADD, fd, &ev);
         if (r < 0) {
@@ -2390,6 +2393,7 @@ static int event_prepare(sd_event *e) {
 
 static int dispatch_exit(sd_event *e) {
         sd_event_source *p;
+        _cleanup_(sd_event_unrefp) sd_event *ref = NULL;
         int r;
 
         assert(e);
@@ -2400,15 +2404,11 @@ static int dispatch_exit(sd_event *e) {
                 return 0;
         }
 
-        sd_event_ref(e);
+        ref = sd_event_ref(e);
         e->iteration++;
         e->state = SD_EVENT_EXITING;
-
         r = source_dispatch(p);
-
         e->state = SD_EVENT_INITIAL;
-        sd_event_unref(e);
-
         return r;
 }
 
@@ -2648,14 +2648,12 @@ _public_ int sd_event_dispatch(sd_event *e) {
 
         p = event_next_pending(e);
         if (p) {
-                sd_event_ref(e);
+                _cleanup_(sd_event_unrefp) sd_event *ref = NULL;
 
+                ref = sd_event_ref(e);
                 e->state = SD_EVENT_RUNNING;
                 r = source_dispatch(p);
                 e->state = SD_EVENT_INITIAL;
-
-                sd_event_unref(e);
-
                 return r;
         }
 
@@ -2722,6 +2720,7 @@ _public_ int sd_event_run(sd_event *e, uint64_t timeout) {
 }
 
 _public_ int sd_event_loop(sd_event *e) {
+        _cleanup_(sd_event_unrefp) sd_event *ref = NULL;
         int r;
 
         assert_return(e, -EINVAL);
@@ -2729,19 +2728,15 @@ _public_ int sd_event_loop(sd_event *e) {
         assert_return(!event_pid_changed(e), -ECHILD);
         assert_return(e->state == SD_EVENT_INITIAL, -EBUSY);
 
-        sd_event_ref(e);
+        ref = sd_event_ref(e);
 
         while (e->state != SD_EVENT_FINISHED) {
                 r = sd_event_run(e, (uint64_t) -1);
                 if (r < 0)
-                        goto finish;
+                        return r;
         }
 
-        r = e->exit_code;
-
-finish:
-        sd_event_unref(e);
-        return r;
+        return e->exit_code;
 }
 
 _public_ int sd_event_get_fd(sd_event *e) {
@@ -2861,7 +2856,7 @@ _public_ int sd_event_set_watchdog(sd_event *e, int b) {
                 return e->watchdog;
 
         if (b) {
-                struct epoll_event ev = {};
+                struct epoll_event ev;
 
                 r = sd_watchdog_enabled(false, &e->watchdog_period);
                 if (r <= 0)
@@ -2879,8 +2874,10 @@ _public_ int sd_event_set_watchdog(sd_event *e, int b) {
                 if (r < 0)
                         goto fail;
 
-                ev.events = EPOLLIN;
-                ev.data.ptr = INT_TO_PTR(SOURCE_WATCHDOG);
+                ev = (struct epoll_event) {
+                        .events = EPOLLIN,
+                        .data.ptr = INT_TO_PTR(SOURCE_WATCHDOG),
+                };
 
                 r = epoll_ctl(e->epoll_fd, EPOLL_CTL_ADD, e->watchdog_fd, &ev);
                 if (r < 0) {
