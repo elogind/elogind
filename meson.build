@@ -1429,6 +1429,7 @@ includes = include_directories('src/basic',
                                'src/systemd',
 #if 0 /// UNNEEDED by elogind
 #                                'src/journal',
+#                                'src/nspawn',
 #                                'src/resolve',
 #                                'src/timesync',
 #endif // 0
@@ -1914,6 +1915,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
@@ -2746,12 +2748,10 @@ executable('elogind-cgroups-agent',
 #                  'src/core/mount-setup.h',
 #                  'src/core/loopback-setup.c',
 #                  'src/core/loopback-setup.h',
-#                  include_directories : [includes, include_directories('src/nspawn')],
-#                  link_with : [libshared],
-#                  dependencies : [libacl,
-#                                  libblkid,
-#                                  libseccomp,
-#                                  libselinux],
+#                  include_directories : includes,
+#                  link_with : [libnspawn_core,
+#                               libshared],
+#                  dependencies : [libblkid],
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
