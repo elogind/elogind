@@ -29,6 +29,8 @@
 # 0.9.3    2018-05-25  sed, PrydeWorX  Made check_musl() and check_name_reverts() safer. Further policy.in
 #                                        consist of XML code, and are now handled by (un)prepare_xml().
 # 0.9.4    2018-05-29  sed, PrydeWorX  Fixed a bug that caused #else to not be unremoved in __GLIBC__ blocks.
+#                                        The word "systemd" is no longer changed to "elogind", if it was
+#                                        found in a comment block that is added by the patch.
 #
 # ========================
 # === Little TODO list ===
@@ -1134,6 +1136,10 @@ sub check_name_reverts {
 	# Note down what is changed, so we can have inline updates
 	my %hRemovals = ();
 
+	# Remember enmtering and ending newly inserted comments.
+	# We do not rename in them.
+	my $is_in_comment = 0;
+
 	# Remember the final mask state for later reversal
 	# ------------------------------------------------
 	my $hunk_ends_in_mask = $in_mask_block;
@@ -1168,6 +1174,11 @@ sub check_name_reverts {
 			$hRemovals{$1}{line} = $i;
 			next;
 		}
+
+		# Check for comments that get added
+		# ---------------------------------
+		($$line =~ m,^\+\s*/[*]+,)    and $is_in_comment = 1;
+		($$line =~ m,^\+.*\*/[^/]*$,) and $is_in_comment = 0;
 
 		# Check Additions
 		# ---------------------------------
@@ -1212,6 +1223,7 @@ sub check_name_reverts {
 			# ---         Unless we are in a mask block.                ---
 			# -------------------------------------------------------------
 			$in_mask_block > 0 and (0 == $in_else_block) and next;
+			$is_in_comment and next;
 			$our_text_long eq $replace_text
 				and $$line =~ s/^\+([# ]*\s*).*systemd.*(\s*)$/+${1}${our_text_short}${2}/
 				 or $$line =~ s/^\+([# ]*\s*).*systemd.*(\s*)$/+${1}${our_text_long }${2}/;
