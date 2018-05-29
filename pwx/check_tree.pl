@@ -19,18 +19,19 @@
 # 0.8.7    2018-04-20  sed, PrydeWorX  Add [un]preparation for XML files.
 # 0.8.8    2018-05-08  sed, PrydeWorX  Use Git::Wrapper to checkout the wanted commit in the upstream tree.
 # 0.8.9    2018-05-09  sed, PrydeWorX  Add new option --create to create non-existing files. Needs --file.
-#                                      Add new option --stay to to not reset back from --commit.
+#                                      + Add new option --stay to to not reset back from --commit.
 # 0.9.0    2018-05-15  sed, PrydeWorX  Do not prefix mask block content in XML file patch hunks with a '# '.
 # 0.9.1    2018-05-17  sed, PrydeWorX  Replace the source in creation patches with /dev/null.
-#                                        Remember mask starts and elses in hunks, so the resulting patches
+#                                      + Remember mask starts and elses in hunks, so the resulting patches
 #                                        can be reworked without ignoring changes in useless hunks.
 # 0.9.2    2018-05-24  sed, PrydeWorX  Enhance the final processing of shell and xml files and their patches
 #                                        by remembering mask changes that get pruned from the hunks.
 # 0.9.3    2018-05-25  sed, PrydeWorX  Made check_musl() and check_name_reverts() safer. Further policy.in
 #                                        consist of XML code, and are now handled by (un)prepare_xml().
 # 0.9.4    2018-05-29  sed, PrydeWorX  Fixed a bug that caused #else to not be unremoved in __GLIBC__ blocks.
-#                                        The word "systemd" is no longer changed to "elogind", if it was
+#                                      + The word "systemd" is no longer changed to "elogind", if it was
 #                                        found in a comment block that is added by the patch.
+#                                      + Added missing detection of mask else switches in prune_hunk().
 #
 # ========================
 # === Little TODO list ===
@@ -1177,8 +1178,14 @@ sub check_name_reverts {
 
 		# Check for comments that get added
 		# ---------------------------------
-		($$line =~ m,^\+\s*/[*]+,)    and $is_in_comment = 1;
-		($$line =~ m,^\+.*\*/[^/]*$,) and $is_in_comment = 0;
+		if ($hFile{pwxfile}) {
+			$$line =~ m,^\+#\s+,
+				and $is_in_comment = 1
+				 or $is_in_comment = 0;
+		} else {
+			($$line =~ m,^\+\s*/[*]+,)    and $is_in_comment = 1;
+			($$line =~ m,^\+.*\*/[^/]*$,) and $is_in_comment = 0;
+		}
 
 		# Check Additions
 		# ---------------------------------
@@ -1211,8 +1218,9 @@ sub check_name_reverts {
 			            "";
 
 			# --- Case A) If this is a simple switch, undo it. ---
+			# --- Simple means, one line to another.           ---
 			# ----------------------------------------------------
-			if ( length($o_txt) ) {
+			if ( length($o_txt) && (1 == ($i - $hRemovals{$o_txt}{line})) ) {
 				substr($hHunk->{lines}[$hRemovals{$o_txt}{line}], 0, 1) = " ";
 				splice(@{$hHunk->{lines}}, $i--, 1);
 				$hHunk->{count}--;
@@ -1954,6 +1962,7 @@ sub prune_hunk {
 		# If any is found, the hunks masked_start must be set to it.
 		if ( 0 == $changed) {
 			$mask_info[$i+1] = is_mask_end($line)   ? -1
+			                 : is_mask_else($line)  ? -1
 			                 : is_mask_start($line) ?  1
 			                 : 0;
 		}
