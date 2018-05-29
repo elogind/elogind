@@ -32,6 +32,8 @@
 #                                      + The word "systemd" is no longer changed to "elogind", if it was
 #                                        found in a comment block that is added by the patch.
 #                                      + Added missing detection of mask else switches in prune_hunk().
+#                                      + Move move upstream appends from after our mask blocks up before
+#                                        found #else switches.
 #
 # ========================
 # === Little TODO list ===
@@ -367,7 +369,7 @@ END {
 	if (scalar @lFails) {
 		my $count = scalar @lFails;
 	
-		printf("\n%d file%s %s have at least one fishy hunk:\n", $count,
+		printf("\n%d file%s %s at least one fishy hunk:\n", $count,
 		       $count > 1 ? "s" : "", $count > 1 ? "have" : "has");
 	
 		for (my $i = 0; $i < $count; ++$i) {
@@ -936,6 +938,11 @@ sub check_masks {
 	# #if/#else/#/endif constructs can be put inside elogind mask blocks.
 	my $regular_ifs = 0;
 
+	# We have to know when an #else block ends. If upstream appends something
+	# to a block we commented out, diff adds it after the removal of our
+	# #else block. With this we can move the stuff up before the else.
+	my $else_block_start = -1;
+
 	# Note down how this hunk starts before first pruning
 	$hHunk->{masked_start} = $in_mask_block && !$in_else_block;
 
@@ -950,6 +957,7 @@ sub check_masks {
 				and return hunk_failed("check_masks: Mask start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_mask_block    = 1;
+			$else_block_start = -1;
 
 			# While we are here we can check the previous line.
 			# All masks shall be preceded by an empty line to enhance readability.
@@ -969,6 +977,7 @@ sub check_masks {
 				and return hunk_failed("check_masks: Insert start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_insert_block  = 1;
+			$else_block_start = -1;
 
 			# While we are here we can check the previous line.
 			# All inserts shall be preceded by an empty line to enhance readability.
@@ -989,6 +998,7 @@ sub check_masks {
 		  && is_mask_else($$line) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_else_block    = 1;
+			$else_block_start = $i; ## Here we might insert upstream additions
 			next;
 		}
 
@@ -997,8 +1007,8 @@ sub check_masks {
 		if (is_mask_end($$line)) {
 			$in_mask_block or return hunk_failed("check_masks: #endif // 0 found outside any mask block");
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_mask_block = 0;
-			$in_else_block = 0;
+			$in_mask_block  = 0;
+			$in_else_block  = 0;
 			next;
 		}
 
@@ -1020,6 +1030,17 @@ sub check_masks {
 		if ( ($$line =~ m,^-,)
 		  && ( $in_insert_block || ($in_mask_block && $in_else_block) ) ) {
 			substr($$line, 0, 1) = " "; ## Remove '-'
+		}
+
+		# End our else block awareness at the first empty line after a mask block.
+		# ------------------------------------------------------------------------
+		$$line =~ m,^\s+$, and ($else_block_start > -1) and (!$in_mask_block) and $else_block_start = -1;
+
+		# If upstream adds something after a mask #else block, we move it up before the #else.
+		if ( ($$line =~ m,^\+,) && ($else_block_start > -1) && !$in_mask_block) {
+			splice(@{$hHunk->{lines}}, $i, 1); ## Order matters here.
+			splice(@{$hHunk->{lines}}, $else_block_start++, 0, $$line);
+			next;
 		}
 	} ## End of looping lines
 
