@@ -28,6 +28,7 @@
 #                                        by remembering mask changes that get pruned from the hunks.
 # 0.9.3    2018-05-25  sed, PrydeWorX  Made check_musl() and check_name_reverts() safer. Further policy.in
 #                                        consist of XML code, and are now handled by (un)prepare_xml().
+# 0.9.4    2018-05-29  sed, PrydeWorX  Fixed a bug that caused #else to not be unremoved in __GLIBC__ blocks.
 #
 # ========================
 # === Little TODO list ===
@@ -45,7 +46,7 @@ use Try::Tiny;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.9.3"; ## Please keep this current!
+Readonly my $VERSION     => "0.9.4"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -1064,7 +1065,7 @@ sub check_musl {
 		# Quick mask checks, we must have the intermediate states
 		# -------------------------------------------------------
 		is_mask_start($$line) and ++$in_mask_block and next;
-		is_mask_else($$line)  and ++$in_else_block and next;
+		is_mask_else($$line)  and ++$in_else_block and substr($$line, 0, 1) = " " and next;
 		if (is_mask_end($$line)) {
 			$in_mask_block--;
 			$in_else_block--;
@@ -1083,13 +1084,9 @@ sub check_musl {
 		# Count regular #if
 		$$line =~ m/^-#if/ and $in_mask_block and ++$regular_ifs;
 
-		# Switching from __GLIBC__ to else - the alternative for musl_libc.
+		# Switching from __GLIBC__ to else - not needed.
+		# (done by is_else_block() above)
 		# ---------------------------------------
-		if ( ($$line =~ m/^-#else/ ) && $in_mask_block && !$regular_ifs) {
-			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_else_block++; ## Increase instead of setting this to 1.
-			next;
-		}
 
 		# Ending a __GLBC__ block
 		# ---------------------------------------
