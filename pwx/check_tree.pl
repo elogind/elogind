@@ -34,6 +34,9 @@
 #                                      + Added missing detection of mask else switches in prune_hunk().
 #                                      + Move move upstream appends from after our mask blocks up before
 #                                        found #else switches.
+# 0.9.5    2018-05-30  sed, PrydeWorX  Do not allow diff to move name reverts into a mask block.
+#                                      + Do not replace double dashes in XML comments, that are either the
+#                                        comment start or end.
 #
 # ========================
 # === Little TODO list ===
@@ -51,7 +54,7 @@ use Try::Tiny;
 # ================================================================
 # ===        ==> ------ Help Text and Version ----- <==        ===
 # ================================================================
-Readonly my $VERSION     => "0.9.4"; ## Please keep this current!
+Readonly my $VERSION     => "0.9.5"; ## Please keep this current!
 Readonly my $VERSMIN     => "-" x length($VERSION);
 Readonly my $PROGDIR     => dirname($0);
 Readonly my $PROGNAME    => basename($0);
@@ -938,10 +941,15 @@ sub check_masks {
 	# #if/#else/#/endif constructs can be put inside elogind mask blocks.
 	my $regular_ifs = 0;
 
-	# We have to know when an #else block ends. If upstream appends something
+	# We have to know where an #else block ends. If upstream appends something
 	# to a block we commented out, diff adds it after the removal of our
 	# #else block. With this we can move the stuff up before the else.
 	my $else_block_start = -1;
+
+	# We have to note down mask starts. If a name revert takes place right in
+	# front of a mask start, diff will put it under the mask start, which
+	# would place it at the wrong position.
+	my $mask_block_start = -1;
 
 	# Note down how this hunk starts before first pruning
 	$hHunk->{masked_start} = $in_mask_block && !$in_else_block;
@@ -958,6 +966,7 @@ sub check_masks {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_mask_block    = 1;
 			$else_block_start = -1;
+			$mask_block_start = $i;
 
 			# While we are here we can check the previous line.
 			# All masks shall be preceded by an empty line to enhance readability.
@@ -977,7 +986,6 @@ sub check_masks {
 				and return hunk_failed("check_masks: Insert start found while being in an insert block!");
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_insert_block  = 1;
-			$else_block_start = -1;
 
 			# While we are here we can check the previous line.
 			# All inserts shall be preceded by an empty line to enhance readability.
@@ -999,6 +1007,7 @@ sub check_masks {
 			substr($$line, 0, 1) = " "; ## Remove '-'
 			$in_else_block    = 1;
 			$else_block_start = $i; ## Here we might insert upstream additions
+			$mask_block_start = -1;
 			next;
 		}
 
@@ -1007,8 +1016,9 @@ sub check_masks {
 		if (is_mask_end($$line)) {
 			$in_mask_block or return hunk_failed("check_masks: #endif // 0 found outside any mask block");
 			substr($$line, 0, 1) = " "; ## Remove '-'
-			$in_mask_block  = 0;
-			$in_else_block  = 0;
+			$in_mask_block    = 0;
+			$in_else_block    = 0;
+			$mask_block_start = -1;
 			next;
 		}
 
@@ -1036,11 +1046,24 @@ sub check_masks {
 		# ------------------------------------------------------------------------
 		$$line =~ m,^\s+$, and ($else_block_start > -1) and (!$in_mask_block) and $else_block_start = -1;
 
-		# If upstream adds something after a mask #else block, we move it up before the #else.
-		if ( ($$line =~ m,^\+,) && ($else_block_start > -1) && !$in_mask_block) {
-			splice(@{$hHunk->{lines}}, $i, 1); ## Order matters here.
-			splice(@{$hHunk->{lines}}, $else_block_start++, 0, $$line);
-			next;
+		# Special check for additions that might wreak havoc:
+		# ---------------------------------------------------
+		if ( $$line =~ m,^\+, ) {
+
+			# If upstream adds something after a mask #else block, we move it up before the #else.
+			# ------------------------------------------------------------------------------------
+			if ( ($else_block_start > -1) && !$in_mask_block) {
+				splice(@{$hHunk->{lines}}, $i, 1); ## Order matters here.
+				splice(@{$hHunk->{lines}}, $else_block_start++, 0, $$line);
+				next;
+			}
+
+			# If a name reverts pulls a line under a mask start, push it back up.
+			# -------------------------------------------------------------------
+			if ( ($mask_block_start > -1) && $in_mask_block && (1 ==($i - $mask_block_start))) {
+				splice(@{$hHunk->{lines}}, $i, 1); ## Order matters here, too.
+				splice(@{$hHunk->{lines}}, $mask_block_start++, 0, $$line);
+			}
 		}
 	} ## End of looping lines
 
@@ -1158,7 +1181,7 @@ sub check_name_reverts {
 	# Note down what is changed, so we can have inline updates
 	my %hRemovals = ();
 
-	# Remember enmtering and ending newly inserted comments.
+	# Remember entering and ending newly inserted comments.
 	# We do not rename in them.
 	my $is_in_comment = 0;
 
@@ -2205,7 +2228,8 @@ sub unprepare_xml {
 		is_mask_start($line) and $is_block = 1;
 		$is_block  or $is_else = 0;
 		$is_block and is_mask_else($line) and $is_else = 1;
-		$is_block and (!$is_else) and $line =~ s/--/&#x2D;&#x2D;/g;
+		$is_block and (!$is_else)
+			and $line =~ s/([^<!]+)--([^>]+)/${1}&#x2D;&#x2D;${2}/g;
 
 		push @{$hFile{output}}, $line;
 	}
