@@ -414,6 +414,18 @@ static void test_strlen_ptr(void) {
         assert_se(strlen_ptr(NULL) == 0);
 }
 
+static void test_memory_startswith(void) {
+        assert_se(streq(memory_startswith("", 0, ""), ""));
+        assert_se(streq(memory_startswith("", 1, ""), ""));
+        assert_se(streq(memory_startswith("x", 2, ""), "x"));
+        assert_se(!memory_startswith("", 1, "x"));
+        assert_se(!memory_startswith("", 1, "xxxxxxxx"));
+        assert_se(streq(memory_startswith("xxx", 4, "x"), "xx"));
+        assert_se(streq(memory_startswith("xxx", 4, "xx"), "x"));
+        assert_se(streq(memory_startswith("xxx", 4, "xxx"), ""));
+        assert_se(!memory_startswith("xxx", 4, "xxxx"));
+}
+
 int main(int argc, char *argv[]) {
         test_string_erase();
 #if 0 /// UNNEEDED by elogind
@@ -449,6 +461,7 @@ int main(int argc, char *argv[]) {
         test_split_pair();
         test_first_word();
         test_strlen_ptr();
+        test_memory_startswith();
 
         return 0;
 }
