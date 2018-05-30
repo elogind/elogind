@@ -106,7 +106,7 @@ my @only_here       = (); ## List of files that do not exist in $upstream_path.
 my $previous_commit = ""; ## Store current upstream state, so we can revert afterwards.
 my $show_help       = 0;
 my @source_files    = (); ## Final file list to process, generated in in generate_file_list().
-my $upstream_path     = "";
+my $upstream_path   = "";
 my $wanted_commit   = "";
 my @wanted_files    = (); ## User given file list (if any) to limit generate_file_list()
 
@@ -681,7 +681,7 @@ sub check_debug {
 
 # -----------------------------------------------------------------------
 # --- Check for attempts to remove elogind_*() special function calls. --
-# --- We have som special functions, needed oly by elogind.           ---
+# --- We have some special functions, needed only by elogind.         ---
 # --- One of the most important ones is elogind_set_program_name(),   ---
 # --- which has an important role in musl_libc compatibility.         ---
 # --- These calls must not be removed of course.                      ---
@@ -1053,16 +1053,18 @@ sub check_masks {
 			# If upstream adds something after a mask #else block, we move it up before the #else.
 			# ------------------------------------------------------------------------------------
 			if ( ($else_block_start > -1) && !$in_mask_block) {
+				my $moved_line = $$line;
 				splice(@{$hHunk->{lines}}, $i, 1); ## Order matters here.
-				splice(@{$hHunk->{lines}}, $else_block_start++, 0, $$line);
+				splice(@{$hHunk->{lines}}, $else_block_start++, 0, $moved_line);
 				next;
 			}
 
 			# If a name reverts pulls a line under a mask start, push it back up.
 			# -------------------------------------------------------------------
 			if ( ($mask_block_start > -1) && $in_mask_block && (1 ==($i - $mask_block_start))) {
+				my $moved_line = $$line;
 				splice(@{$hHunk->{lines}}, $i, 1); ## Order matters here, too.
-				splice(@{$hHunk->{lines}}, $mask_block_start++, 0, $$line);
+				splice(@{$hHunk->{lines}}, $mask_block_start++, 0, $moved_line);
 			}
 		}
 	} ## End of looping lines
@@ -1072,6 +1074,7 @@ sub check_masks {
 
 	return 1;
 }
+
 
 # -----------------------------------------------------------------------
 # --- Check for musl_libc compatibility blocks                        ---
@@ -1262,9 +1265,8 @@ sub check_name_reverts {
 			            "";
 
 			# --- Case A) If this is a simple switch, undo it. ---
-			# --- Simple means, one line to another.           ---
 			# ----------------------------------------------------
-			if ( length($o_txt) && (1 == ($i - $hRemovals{$o_txt}{line})) ) {
+			if ( length($o_txt) ) {
 				substr($hHunk->{lines}[$hRemovals{$o_txt}{line}], 0, 1) = " ";
 				splice(@{$hHunk->{lines}}, $i--, 1);
 				$hHunk->{count}--;
@@ -1272,7 +1274,7 @@ sub check_name_reverts {
 			}
 
 			# --- Case B) Otherwise replace the addition with our text. ---
-			# ---         Unless we are in a mask block.                ---
+			# ---         Unless we are in a mask block or comment.     ---
 			# -------------------------------------------------------------
 			$in_mask_block > 0 and (0 == $in_else_block) and next;
 			$is_in_comment and next;
