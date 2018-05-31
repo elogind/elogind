@@ -41,6 +41,7 @@
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
+//#include "rlimit-util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -757,7 +758,7 @@ int config_parse_path(
         if (!n)
                 return log_oom();
 
-        path_kill_slashes(n);
+        path_simplify(n, false);
 
 finalize:
         free(*s);
