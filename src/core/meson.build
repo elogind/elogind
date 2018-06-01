@@ -196,7 +196,8 @@ libcore_la_sources = files('''
 # 
 # in_files = [['macros.systemd',   rpmmacrosdir],
 #             ['triggers.systemd', ''],
-#             ['systemd.pc',       pkgconfigdatadir]]
+#             ['systemd.pc',       pkgconfigdatadir],
+#             ['system.conf',      pkgsysconfdir]]
 # 
 # foreach item : in_files
 #         file = item[0]
@@ -224,14 +225,11 @@ libcore_la_sources = files('''
 # policy = configure_file(
 #         input : 'org.freedesktop.systemd1.policy.in',
 #         output : 'org.freedesktop.systemd1.policy',
-#endif // 0
-        configuration : substs)
-install_data(policy,
-             install_dir : polkitpolicydir)
-
-#if 0 /// totally UNNEEDED in elogind
-# install_data('system.conf',
-#              'user.conf',
+#         configuration : substs)
+# install_data(policy,
+#              install_dir : polkitpolicydir)
+# 
+# install_data('user.conf',
 #              install_dir : pkgsysconfdir)
 # 
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemshutdowndir))
