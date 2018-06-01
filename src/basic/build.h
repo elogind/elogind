@@ -143,6 +143,9 @@
 
 #if HAVE_LIBIDN
 #define _IDN_FEATURE_ "+IDN"
+#else
+#define _IDN_FEATURE_ "-IDN"
+#endif
 
 #if HAVE_PCRE2
 #define _PCRE2_FEATURE_ "+PCRE2"
