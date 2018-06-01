@@ -96,9 +96,7 @@ sd_login_c = files('sd-login/sd-login.c')
 #         sd-utf8/sd-utf8.c
 # '''.split()) + id128_sources + sd_daemon_c + sd_event_c + sd_login_c
 #else
-libelogind_internal_sources = files('''
-        sd-bus/bus-bloom.c
-        sd-bus/bus-bloom.h
+libelogind_sources = files('''
         sd-bus/bus-common-errors.c
         sd-bus/bus-common-errors.h
         sd-bus/bus-container.c
@@ -153,16 +151,16 @@ libelogind_static = static_library(
 #if 0 /// elogind does not need librt
 #         dependencies : [threads,
 #                         librt],
-#         c_args : ['-fvisibility=default'])
-# 
-# libsystemd_sym = 'src/libsystemd/libsystemd.sym'
-# 
-# libsystemd_pc = configure_file(
-#         input : 'libsystemd.pc.in',
-#         output : 'libsystemd.pc',
-# install_data(libsystemd_pc,
 #else
-        dependencies : [threads])
+        dependencies : [threads],
 #endif // 0
+        c_args : ['-fvisibility=default'])
+
+libelogind_sym = 'src/libelogind/libelogind.sym'
+
+libelogind_pc = configure_file(
+        input : 'libelogind.pc.in',
+        output : 'libelogind.pc',
         configuration : substs)
+install_data(libelogind_pc,
              install_dir : pkgconfiglibdir)
