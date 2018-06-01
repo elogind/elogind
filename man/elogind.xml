@@ -342,20 +342,24 @@
         to all zeros.</para></listitem>
       </varlistentry>
 
+      <varlistentry>
+        <term><option>&#x2D;&#x2D;service-watchdogs=</option></term>
+
+        <listitem><para>Globally enable/disable all service watchdog timeouts and emergency
+        actions. This setting may also be specified during boot, on the kernel
+        command line via the <varname>systemd.service_watchdogs=</varname>
+        option, see below. Defaults to enabled.</para></listitem>
+      </varlistentry>
+
       <xi:include href="standard-options.xml" xpointer="help" />
       <xi:include href="standard-options.xml" xpointer="version" />
       else -->
       <varlistentry>
         <term><option>-D</option></term>
         <term><option>--daemon</option></term>
-        <term><option>--service-watchdogs=</option></term>
 
         <listitem><para>Daemonize elogind by double-forking
         into background.</para></listitem>
-        <listitem><para>Globally enable/disable all service watchdog timeouts and emergency
-        actions. This setting may also be specified during boot, on the kernel
-        command line via the <varname>elogind.service_watchdogs=</varname>
-        option, see below. Defaults to enabled.</para></listitem>
       </varlistentry>
 
       <varlistentry>
