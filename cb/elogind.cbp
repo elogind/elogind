@@ -686,6 +686,7 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/core/meson.build" />
 		<Unit filename="../src/core/mount-setup.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
@@ -700,15 +701,6 @@
 			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-bloom.c">
-			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-bloom.h">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
