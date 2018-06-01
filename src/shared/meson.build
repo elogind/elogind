@@ -57,8 +57,6 @@
 #         firewall-util.h
 #         fstab-util.c
 #         fstab-util.h
-#         gcrypt-util.c
-#         gcrypt-util.h
 #         generator.c
 #         generator.h
 #         gpt.h
@@ -194,31 +192,31 @@ libshared_deps = [threads,
 
 libshared_sym_path = '@0@/libshared.sym'.format(meson.current_source_dir())
 
-libshared = shared_library(
+libshared_static = static_library(
         libshared_name,
         shared_sources,
-        basic_sources,
-        journal_internal_sources,
-        libelogind_internal_sources,
+        include_directories : includes,
+        dependencies : libshared_deps,
+        c_args : ['-fvisibility=default'])
+
+libshared = shared_library(
+        libshared_name,
 #if 0 /// UNNEEDED by elogind
 #         libudev_sources,
-#         include_directories : includes,
-#         link_args : ['-shared',
-#                     '-Wl,--version-script=' + libshared_sym_path],
-#         c_args : ['-fvisibility=default'],
-#         dependencies : libshared_deps,
-#         install : true,
-#         install_dir : rootlibexecdir)
-# 
-# libshared_static = static_library(
-#         libshared_name,
-#         shared_sources,
-#         basic_sources,
-#         include_directories : includes,
-#         dependencies : libshared_deps)
-#else
-        libelogind_internal_sources,
 #endif // 0
-#if 1 /// need elogind internal library sources
-        libelogind_internal_sources,
-#endif // 1
+        include_directories : includes,
+        link_args : ['-shared',
+                     '-Wl,--version-script=' + libshared_sym_path],
+        link_whole : [libshared_static,
+                      libbasic,
+#if 0 /// UNNEEDED by elogind
+#                       libbasic_gcrypt,
+#                       libsystemd_static,
+#                       libjournal_client],
+#else
+                      libelogind_static],
+#endif // 0
+        c_args : ['-fvisibility=default'],
+        dependencies : libshared_deps,
+        install : true,
+        install_dir : rootlibexecdir)

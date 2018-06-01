@@ -59,8 +59,8 @@ test_dlopen_c = files('test-dlopen.c')
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
+# test_systemd_tmpfiles_py = find_program('test-systemd-tmpfiles.py')
 #endif // 0
-test_elogind_tmpfiles_py = find_program('test-elogind-tmpfiles.py')
 
 ############################################################
 
@@ -407,18 +407,18 @@ tests += [
 #           libseccomp,
 #           libselinux,
 #           libblkid]],
+# 
+#         [['src/test/test-watch-pid.c',
+#           'src/test/test-helper.c'],
+#          [libcore,
+#           libshared],
+#          [libmount,
+#           threads,
+#           librt,
+#           libseccomp,
+#           libselinux,
+#           libblkid]],
 #endif // 0
-
-        [['src/test/test-watch-pid.c',
-          'src/test/test-helper.c'],
-         [libcore,
-          libshared],
-         [libmount,
-          threads,
-          librt,
-          libseccomp,
-          libselinux,
-          libblkid]],
 
         [['src/test/test-hashmap.c',
           'src/test/test-hashmap-plain.c',
@@ -696,12 +696,12 @@ tests += [
          [],
          []],
 
-        [['src/test/test-gcrypt-util.c'],
-         [],
-         [],
-         'HAVE_GCRYPT'],
-
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-gcrypt-util.c'],
+#          [],
+#          [],
+#          'HAVE_GCRYPT'],
+# 
 #         [['src/test/test-nss.c'],
 #          [],
 #          [libdl],
