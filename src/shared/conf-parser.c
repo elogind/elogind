@@ -44,6 +44,7 @@
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
+//#include "rlimit-util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -250,8 +251,7 @@ static int parse_line(
                         *section_line = 0;
                         *section_ignored = true;
                 } else {
-                        free(*section);
-                        *section = n;
+                        free_and_replace(*section, n);
                         *section_line = line;
                         *section_ignored = false;
                 }
@@ -409,7 +409,6 @@ int config_parse(const char *unit,
                         if (flags & CONFIG_PARSE_WARN)
                                 log_warning_errno(r, "%s:%u: Failed to parse file: %m", filename, line);
                         return r;
-
                 }
 
                 continuation = mfree(continuation);
@@ -432,7 +431,6 @@ int config_parse(const char *unit,
                         if (flags & CONFIG_PARSE_WARN)
                                 log_warning_errno(r, "%s:%u: Failed to parse file: %m", filename, line);
                         return r;
-
                 }
         }
 
