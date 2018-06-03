@@ -287,7 +287,7 @@ static void test_make_relative(void) {
         test("/some/path", "/", "../..");
         test("/some/path", "/some/other/path", "../other/path");
         test("/some/path/./dot", "/some/further/path", "../../further/path");
-        test("//extra/////slashes///won't////fool///anybody//", "////extra///slashes////are/just///fine///", "../../../are/just/fine");
+        test("//extra.//.//./.slashes//./won't////fo.ol///anybody//", "/././/extra././/.slashes////ar.e/.just/././.fine///", "../../../ar.e/.just/.fine");
 }
 #endif // 0
 
