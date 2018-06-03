@@ -43,6 +43,7 @@
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
+//#include "rlimit-util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -219,6 +220,9 @@ static int parse_line(
 
                 return config_parse(unit, fn, NULL, sections, lookup, table, flags, userdata);
         }
+
+        if (!utf8_is_valid(l))
+                return log_syntax_invalid_utf8(unit, LOG_WARNING, filename, line, l);
 
         if (*l == '[') {
                 size_t k;
