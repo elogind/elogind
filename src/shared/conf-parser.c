@@ -49,6 +49,7 @@
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
+//#include "rlimit-util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -741,10 +742,8 @@ int config_parse_path(
         assert(rvalue);
         assert(data);
 
-        if (isempty(rvalue)) {
-                n = NULL;
+        if (isempty(rvalue))
                 goto finalize;
-        }
 
         n = strdup(rvalue);
         if (!n)
@@ -755,9 +754,7 @@ int config_parse_path(
                 return fatal ? -ENOEXEC : 0;
 
 finalize:
-        free_and_replace(*s, n);
-
-        return 0;
+        return free_and_replace(*s, n);
 }
 
 int config_parse_strv(
