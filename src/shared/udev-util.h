@@ -29,3 +29,5 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(struct udev_monitor*, udev_monitor_unref);
 #if 0 /// UNNEEDED by elogind
 #endif // 0
 int udev_parse_config(void);
+
+int udev_device_new_from_stat_rdev(struct udev *udev, const struct stat *st, struct udev_device **ret);
