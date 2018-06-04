@@ -1436,8 +1436,7 @@ static int bus_manager_log_shutdown(
         return log_struct(LOG_NOTICE,
                           "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_STR,
                           p,
-                          q,
-                          NULL);
+                          q);
 }
 #endif // 0
 
