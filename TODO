@@ -24,6 +24,12 @@ Janitorial Clean-ups:
 
 Features:
 
+* rework mount.c and swap.c to follow proper state enumeration/deserialization
+  semantics, like we do for device.c now
+
+* When reloading configuration PID 1 should reset all its properties to the
+  original defaults before calling parse_config()
+
 * Add OnTimezoneChange= and OnTimeChange= stanzas to .timer units in order to
   schedule events based on time and timezone changes.
 
@@ -65,6 +71,12 @@ Features:
   numbers.
 
 * port systemctl, elogind-inhibit, busctl, … over to format-table.[ch]'s table formatters
+* Check that users of inotify's IN_DELETE_SELF flag are using it properly, as
+  usually IN_ATTRIB is the right way to watch deleted files, as the former only
+  fires when a file is actually removed from disk, i.e. the link count drops to
+  zero and is not open anymore, while the latter happens when a file is
+  unlinked from any dir.
+
 
 * pid1: lock image configured with RootDirectory=/RootImage= using the usual nspawn semantics while the unit is up
 
