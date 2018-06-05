@@ -82,9 +82,7 @@ static void bus_detach_io_events(sd_bus *b);
 static void bus_detach_inotify_event(sd_bus *b);
 
 static thread_local sd_bus *default_system_bus = NULL;
-#if 0 /// UNNEEDED by elogind
 static thread_local sd_bus *default_user_bus = NULL;
-#endif // 0
 static thread_local sd_bus *default_starter_bus = NULL;
 
 static sd_bus **bus_choose_default(int (**bus_open)(sd_bus **)) {
@@ -3700,11 +3698,6 @@ _public_ int sd_bus_default(sd_bus **ret) {
         int (*bus_open)(sd_bus **) = NULL;
         sd_bus **busp;
 
-#if 0 /// elogind does not support systemd units
-#endif // 0
-
-#if 0 /// elogind does not support systemd user instances
-#endif // 0
         busp = bus_choose_default(&bus_open);
         return bus_default(bus_open, busp, ret);
 }

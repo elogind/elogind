@@ -18,9 +18,9 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-//#include <errno.h>
+#include <errno.h>
 
-//#include "sd-bus.h"
+#include "sd-bus.h"
 
 #include "bus-type.h"
 
