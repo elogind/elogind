@@ -48,6 +48,7 @@
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
+//#include "rlimit-util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -1228,6 +1229,37 @@ int config_parse_rlimit(
                 if (!rl[ltype])
                         return log_oom();
         }
+
+        return 0;
+}
+
+int config_parse_permille(const char* unit,
+                          const char *filename,
+                          unsigned line,
+                          const char *section,
+                          unsigned section_line,
+                          const char *lvalue,
+                          int ltype,
+                          const char *rvalue,
+                          void *data,
+                          void *userdata) {
+
+        unsigned *permille = data;
+        int r;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+        assert(permille);
+
+        r = parse_permille(rvalue);
+        if (r < 0) {
+                log_syntax(unit, LOG_ERR, filename, line, r,
+                           "Failed to parse permille value, ignoring: %s", rvalue);
+                return 0;
+        }
+
+        *permille = (unsigned) r;
 
         return 0;
 }
