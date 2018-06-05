@@ -1943,7 +1943,7 @@ if conf.get('HAVE_PAM') == 1
                 include_directories : includes,
                 link_args : ['-shared',
                                 '-Wl,--version-script=' + version_script_arg],
-                link_with : [libelogind,
+                link_with : [libelogind_static,
                              libshared_static],
                 dependencies : [threads,
                                 libpam,
@@ -2476,7 +2476,7 @@ endif
 executable('elogind-cgroups-agent',
            'src/cgroups-agent/cgroups-agent.c',
            include_directories : includes,
-           link_with : [libshared_static],
+           link_with : [libshared],
            install_rpath : rootlibexecdir,
            install : true,
            install_dir : rootlibexecdir)
@@ -2774,7 +2774,7 @@ executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
            include_directories : includes,
            link_with : [liblogind_core,
-                        libshared_static],
+                        libshared],
            dependencies: [libacl,
                           libudev],
            install_rpath : rootlibexecdir,
@@ -2928,8 +2928,6 @@ install_subdir('factory/etc',
 #              install_dir : xinitrcdir)
 # install_data('modprobe.d/systemd.conf',
 #              install_dir : modprobedir)
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 #endif // 0
 install_data('LICENSE.GPL2',
              'LICENSE.LGPL2.1',
