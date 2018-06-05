@@ -1038,7 +1038,6 @@ int config_parse_ip_port(
 
         return 0;
 }
-#endif // 0
 
 int config_parse_join_controllers(
                 const char *unit,
@@ -1155,3 +1154,4 @@ int config_parse_join_controllers(
 
         return 0;
 }
+#endif // 0

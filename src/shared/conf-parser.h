@@ -171,7 +171,9 @@ int config_parse_signal(GENERIC_PARSER_ARGS);
 int config_parse_personality(GENERIC_PARSER_ARGS);
 int config_parse_ifname(GENERIC_PARSER_ARGS);
 int config_parse_ip_port(GENERIC_PARSER_ARGS);
+#if 0 /// UNNEEDED by elogind
 int config_parse_join_controllers(GENERIC_PARSER_ARGS);
+#endif // 0
 
 #define DEFINE_CONFIG_PARSE_ENUM(function,name,type,msg)                \
         int function(GENERIC_PARSER_ARGS) {                             \
