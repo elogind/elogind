@@ -38,7 +38,7 @@
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
-//#include "virt.h"
+#include "virt.h"
 
 #define CGROUP_CPU_QUOTA_PERIOD_USEC ((usec_t) 100 * USEC_PER_MSEC)
 
@@ -56,6 +56,7 @@ bool manager_owns_root_cgroup(Manager *m) {
         return isempty(m->cgroup_root) || path_equal(m->cgroup_root, "/");
 }
 
+#if 0 /// UNNEEDED by elogind
 bool unit_has_root_cgroup(Unit *u) {
         assert(u);
 
@@ -68,7 +69,6 @@ bool unit_has_root_cgroup(Unit *u) {
         return unit_has_name(u, SPECIAL_ROOT_SLICE);
 }
 
-#if 0 /// UNNEEDED by elogind
 static void cgroup_compat_warn(void) {
         static bool cgroup_compat_warned = false;
 

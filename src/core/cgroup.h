@@ -216,7 +216,10 @@ int unit_reset_ip_accounting(Unit *u);
 
 #endif // 0
 bool manager_owns_root_cgroup(Manager *m);
+
+#if 0 /// UNNEEDED by elogind
 bool unit_has_root_cgroup(Unit *u);
+#endif // 0
 
 int manager_notify_cgroup_empty(Manager *m, const char *group);
 
