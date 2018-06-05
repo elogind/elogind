@@ -19,10 +19,10 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-//#include <string.h>
+#include <string.h>
 
 #include "hash-funcs.h"
-//#include "path-util.h"
+#include "path-util.h"
 
 void string_hash_func(const void *p, struct siphash *state) {
         siphash24_compress(p, strlen(p) + 1, state);

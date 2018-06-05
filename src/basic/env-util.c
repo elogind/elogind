@@ -752,6 +752,7 @@ char **replace_env_argv(char **argv, char **env) {
         ret[k] = NULL;
         return ret;
 }
+#endif // 0
 
 int getenv_bool(const char *p) {
         const char *e;
@@ -763,6 +764,7 @@ int getenv_bool(const char *p) {
         return parse_boolean(e);
 }
 
+#if 0 /// UNNEEDED by elogind
 int getenv_bool_secure(const char *p) {
         const char *e;
 

@@ -26,7 +26,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
-//#include <stdio_ext.h>
+#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -51,7 +51,7 @@
 #include "macro.h"
 #include "missing.h"
 #include "process-util.h"
-//#include "raw-clone.h"
+#include "raw-clone.h"
 #include "signal-util.h"
 //#include "stat-util.h"
 #include "string-table.h"
@@ -280,7 +280,6 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int rename_process(const char name[]) {
         static size_t mm_size = 0;
         static char *mm = NULL;
@@ -397,7 +396,6 @@ use_saved_argv:
 
         return !truncated;
 }
-#endif // 0
 
 int is_kernel_thread(pid_t pid) {
         _cleanup_free_ char *line = NULL;
@@ -836,6 +834,7 @@ void sigkill_waitp(pid_t *pid) {
 
         sigkill_wait(*pid);
 }
+#endif // 0
 
 void sigterm_wait(pid_t pid) {
         assert(pid > 1);
@@ -856,7 +855,6 @@ int kill_and_sigcont(pid_t pid, int sig) {
 
         return r;
 }
-#endif // 0
 
 int getenv_for_pid(pid_t pid, const char *field, char **ret) {
         _cleanup_fclose_ FILE *f = NULL;

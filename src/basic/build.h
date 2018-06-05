@@ -152,9 +152,6 @@
 #else
 #define _PCRE2_FEATURE_ "-PCRE2"
 #endif
-#else
-#define _IDN_FEATURE_ "-IDN"
-#endif
 #endif // 0
 
 #define _CGROUP_HIEARCHY_ "default-hierarchy=" DEFAULT_HIERARCHY_NAME

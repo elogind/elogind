@@ -46,11 +46,11 @@ union sockaddr_union {
         struct sockaddr_in in;
         struct sockaddr_in6 in6;
         struct sockaddr_un un;
-#if 0 /// UNNEEDED by elogind, only 'sa', 'in', 'in6' and 'un' are used in all of elogind.
+#if 0 /// UNNEEDED by elogind.
         struct sockaddr_nl nl;
         struct sockaddr_ll ll;
-        struct sockaddr_vm vm;
 #endif // 0
+        struct sockaddr_vm vm;
 
         /* Ensure there is enough space to store Infiniband addresses */
         uint8_t ll_buffer[offsetof(struct sockaddr_ll, sll_addr) + CONST_MAX(ETH_ALEN, INFINIBAND_ALEN)];
@@ -121,9 +121,11 @@ bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) _pure_
 const char* socket_address_get_path(const SocketAddress *a);
 
 bool socket_ipv6_is_supported(void);
+#endif // 0
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
 
+#if 0 /// UNNEEDED by elogind
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
 int getpeername_pretty(int fd, bool include_port, char **ret);
 int getsockname_pretty(int fd, char **ret);

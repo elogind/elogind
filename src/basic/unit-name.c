@@ -28,7 +28,7 @@
 //#include "glob-util.h"
 #include "hexdecoct.h"
 #include "path-util.h"
-//#include "special.h"
+#include "special.h"
 #include "string-util.h"
 #include "strv.h"
 #include "unit-name.h"

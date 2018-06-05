@@ -142,7 +142,9 @@ bool on_tty(void);
 bool terminal_is_dumb(void);
 bool colors_enabled(void);
 bool underline_enabled(void);
+#if 0 /// UNNEEDED by elogind
 bool dev_console_colors_enabled(void);
+#endif // 0
 
 #define DEFINE_ANSI_FUNC(name, NAME)                            \
         static inline const char *ansi_##name(void) {           \

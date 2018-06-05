@@ -891,6 +891,7 @@ int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int mount_option_mangle(
                 const char *options,
                 unsigned long mount_flags,
@@ -960,3 +961,4 @@ int mount_option_mangle(
 
         return 0;
 }
+#endif // 0

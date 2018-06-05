@@ -54,7 +54,7 @@
 #include "syslog-util.h"
 #include "terminal-util.h"
 #include "time-util.h"
-//#include "utf8.h"
+#include "utf8.h"
 #include "util.h"
 
 #define SNDBUF_SIZE (8*1024*1024)

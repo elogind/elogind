@@ -22,7 +22,7 @@
 
 #include <sys/stat.h>
 
-//#include "util.h"
+#include "util.h"
 
 typedef enum RemoveFlags {
         REMOVE_ONLY_DIRECTORIES = 1 << 0,

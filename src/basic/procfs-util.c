@@ -1,16 +1,16 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <errno.h>
+#include <errno.h>
 
-//#include "alloc-util.h"
-//#include "def.h"
-//#include "fd-util.h"
-//#include "fileio.h"
-//#include "parse-util.h"
-//#include "process-util.h"
-//#include "procfs-util.h"
-//#include "stdio-util.h"
-//#include "string-util.h"
+#include "alloc-util.h"
+#include "def.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "parse-util.h"
+#include "process-util.h"
+#include "procfs-util.h"
+#include "stdio-util.h"
+#include "string-util.h"
 
 int procfs_tasks_get_limit(uint64_t *ret) {
         _cleanup_free_ char *value = NULL;
@@ -57,6 +57,7 @@ int procfs_tasks_get_limit(uint64_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int procfs_tasks_set_limit(uint64_t limit) {
         char buffer[DECIMAL_STR_MAX(uint64_t)+1];
         _cleanup_free_ char *value = NULL;
@@ -265,3 +266,4 @@ int procfs_memory_get_current(uint64_t *ret) {
         *ret = (mem_total - mem_free) * 1024U;
         return 0;
 }
+#endif // 0

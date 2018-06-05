@@ -52,7 +52,7 @@
 #include "parse-util.h"
 //#include "path-util.h"
 #include "process-util.h"
-//#include "procfs-util.h"
+#include "procfs-util.h"
 #include "set.h"
 #include "signal-util.h"
 #include "stat-util.h"
@@ -174,11 +174,11 @@ bool in_initrd(void) {
         return saved_in_initrd;
 }
 
+#if 0 /// UNNEEDED by elogind
 void in_initrd_force(bool value) {
         saved_in_initrd = value;
 }
 
-#if 0 /// UNNEEDED by elogind
 /* hey glibc, APIs with callbacks without a user pointer are so useless */
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
                  int (*compar) (const void *, const void *, void *), void *arg) {
@@ -201,6 +201,7 @@ void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
         }
         return NULL;
 }
+#endif // 0
 
 int on_ac_power(void) {
         bool found_offline = false, found_online = false;
@@ -267,7 +268,6 @@ int on_ac_power(void) {
         return found_online || !found_offline;
 }
 
-#endif // 0
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;
         const char *p;
@@ -480,7 +480,6 @@ uint64_t physical_memory_scale(uint64_t v, uint64_t max) {
 
 uint64_t system_tasks_max(void) {
 
-#else
         uint64_t a = TASKS_MAX, b = TASKS_MAX;
         _cleanup_free_ char *root = NULL;
 
@@ -525,8 +524,6 @@ uint64_t system_tasks_max_scale(uint64_t v, uint64_t max) {
         return m / max;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int version(void) {
         puts(PACKAGE_STRING "\n"
              SYSTEMD_FEATURES);
@@ -534,7 +531,6 @@ int version(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 /* This is a direct translation of str_verscmp from boot.c */
 static bool is_digit(int c) {
         return c >= '0' && c <= '9';
@@ -608,3 +604,4 @@ void disable_coredumps(void) {
         if (r < 0)
                 log_debug_errno(r, "Failed to turn off coredumps, ignoring: %m");
 }
+#endif // 0

@@ -33,10 +33,10 @@
 #include "set.h"
 
 #if 0 /// elogind has them set through config.h
-#define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=elogind"
+#define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=systemd"
 #define SYSTEMD_CGROUP_CONTROLLER_HYBRID "name=unified"
+#define SYSTEMD_CGROUP_CONTROLLER "_systemd"
 #endif // 0
-#define SYSTEMD_CGROUP_CONTROLLER "_elogind"
 
 /* An enum of well known cgroup controllers */
 typedef enum CGroupController {
@@ -213,8 +213,8 @@ int cg_get_root_path(char **path);
 
 int cg_path_get_session(const char *path, char **session);
 int cg_path_get_owner_uid(const char *path, uid_t *uid);
-#if 0 /// UNNEEDED by elogind
 int cg_path_get_unit(const char *path, char **unit);
+#if 0 /// UNNEEDED by elogind
 int cg_path_get_user_unit(const char *path, char **unit);
 int cg_path_get_machine_name(const char *path, char **machine);
 #endif // 0
@@ -226,17 +226,15 @@ int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
 int cg_pid_get_session(pid_t pid, char **session);
 int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
-#if 0 /// UNNEEDED by elogind
 int cg_pid_get_unit(pid_t pid, char **unit);
+#if 0 /// UNNEEDED by elogind
 int cg_pid_get_user_unit(pid_t pid, char **unit);
 int cg_pid_get_machine_name(pid_t pid, char **machine);
 #endif // 0
 int cg_pid_get_slice(pid_t pid, char **slice);
 int cg_pid_get_user_slice(pid_t pid, char **slice);
 
-#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit);
-#endif // 0
 
 char *cg_escape(const char *p);
 char *cg_unescape(const char *p) _pure_;

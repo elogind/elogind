@@ -21,7 +21,7 @@
 ***/
 
 #include <alloca.h>
-//#include <errno.h>
+#include <errno.h>
 #include <sched.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -34,7 +34,7 @@
 #include "format-util.h"
 //#include "ioprio.h"
 #include "macro.h"
-//#include "time-util.h"
+#include "time-util.h"
 
 #define procfs_file_alloca(pid, field)                                  \
         ({                                                              \
@@ -79,12 +79,12 @@ int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout);
 
 void sigkill_wait(pid_t pid);
 void sigkill_waitp(pid_t *pid);
+#endif // 0
 void sigterm_wait(pid_t pid);
 
 int kill_and_sigcont(pid_t pid, int sig);
 
 int rename_process(const char name[]);
-#endif // 0
 int is_kernel_thread(pid_t pid);
 
 int getenv_for_pid(pid_t pid, const char *field, char **_value);
@@ -122,8 +122,10 @@ int ioprio_class_from_string(const char *s);
 
 const char *sigchld_code_to_string(int i) _const_;
 int sigchld_code_from_string(const char *s) _pure_;
+#endif // 0
 
 int sched_policy_to_string_alloc(int i, char **s);
+#if 0 /// UNNEEDED by elogind
 int sched_policy_from_string(const char *s);
 #endif // 0
 
@@ -143,11 +145,13 @@ int pid_compare_func(const void *a, const void *b);
 static inline bool nice_is_valid(int n) {
         return n >= PRIO_MIN && n < PRIO_MAX;
 }
+#endif // 0
 
 static inline bool sched_policy_is_valid(int i) {
         return IN_SET(i, SCHED_OTHER, SCHED_BATCH, SCHED_IDLE, SCHED_FIFO, SCHED_RR);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline bool sched_priority_is_valid(int i) {
         return i >= 0 && i <= sched_get_priority_max(SCHED_RR);
 }

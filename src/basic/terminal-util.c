@@ -1245,6 +1245,7 @@ bool colors_enabled(void) {
         return cached_colors_enabled;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool dev_console_colors_enabled(void) {
         _cleanup_free_ char *s = NULL;
         int b;
@@ -1265,6 +1266,7 @@ bool dev_console_colors_enabled(void) {
 
         return !streq_ptr(s, "dumb");
 }
+#endif // 0
 
 bool underline_enabled(void) {
 

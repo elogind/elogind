@@ -29,7 +29,7 @@
 #include <unistd.h>
 
 #include "time-util.h"
-//#include "util.h"
+#include "util.h"
 
 int unlink_noerrno(const char *path);
 
@@ -76,9 +76,11 @@ int get_files_in_directory(const char *path, char ***list);
 int tmp_dir(const char **ret);
 #if 0 /// UNNEEDED by elogind
 int var_tmp_dir(const char **ret);
+#endif // 0
 
 int unlink_or_warn(const char *filename);
 
+#if 0 /// UNNEEDED by elogind
 #define INOTIFY_EVENT_MAX (sizeof(struct inotify_event) + NAME_MAX + 1)
 
 #define FOREACH_INOTIFY_EVENT(e, buffer, sz) \

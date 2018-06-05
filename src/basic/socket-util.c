@@ -41,7 +41,7 @@
 #include "missing.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "socket-util.h"
 #include "string-table.h"
 #include "string-util.h"
@@ -555,8 +555,8 @@ bool socket_address_matches_fd(const SocketAddress *a, int fd) {
 
         return socket_address_equal(a, &b);
 }
+#endif // 0
 
-int sockaddr_port(const struct sockaddr *_sa, unsigned *port) {
 int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
         union sockaddr_union *sa = (union sockaddr_union*) _sa;
 
@@ -567,17 +567,14 @@ int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
         switch (sa->sa.sa_family) {
 
         case AF_INET:
-                *port = be16toh(sa->in.sin_port);
                 *ret_port = be16toh(sa->in.sin_port);
                 return 0;
 
         case AF_INET6:
-                *port = be16toh(sa->in6.sin6_port);
                 *ret_port = be16toh(sa->in6.sin6_port);
                 return 0;
 
         case AF_VSOCK:
-                *port = sa->vm.svm_port;
                 *ret_port = sa->vm.svm_port;
                 return 0;
 
@@ -586,6 +583,7 @@ int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret) {
         union sockaddr_union *sa = (union sockaddr_union*) _sa;
         char *p;

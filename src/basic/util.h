@@ -91,9 +91,9 @@ int prot_from_flags(int flags) _const_;
 #endif // 0
 
 bool in_initrd(void);
+#if 0 /// UNNEEDED by elogind
 void in_initrd_force(bool value);
 
-#if 0 /// UNNEEDED by elogind
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
                  int (*compar) (const void *, const void *, void *),
                  void *arg);
@@ -121,9 +121,7 @@ static inline void memcpy_safe(void *dst, const void *src, size_t n) {
         memcpy(dst, src, n);
 }
 
-#if 0 /// UNNEEDED by elogind
 int on_ac_power(void);
-#endif // 0
 
 #define memzero(x,l) (memset((x), 0, (l)))
 #define zero(x) (memzero(&(x), sizeof(x)))
@@ -196,12 +194,10 @@ uint64_t physical_memory_scale(uint64_t v, uint64_t max);
 uint64_t system_tasks_max(void);
 uint64_t system_tasks_max_scale(uint64_t v, uint64_t max);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int version(void);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int str_verscmp(const char *s1, const char *s2);
 
 void disable_coredumps(void);
+#endif // 0

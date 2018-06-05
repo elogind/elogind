@@ -362,6 +362,7 @@ bool fdname_is_valid(const char *s) {
 
         return p - s < 256;
 }
+#endif // 0
 
 int fd_get_path(int fd, char **ret) {
         char procfs_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int)];
@@ -376,7 +377,6 @@ int fd_get_path(int fd, char **ret) {
 
         return r;
 }
-#endif // 0
 
 int move_fd(int from, int to, int cloexec) {
         int r;

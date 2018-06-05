@@ -1469,7 +1469,6 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit) {
         char *c, *s;
         size_t n;
@@ -1572,6 +1571,7 @@ int cg_pid_get_unit(pid_t pid, char **unit) {
         return cg_path_get_unit(cgroup, unit);
 }
 
+#if 0 /// UNNEEDED by elogind
 /**
  * Skip session-*.scope, but require it to be there.
  */

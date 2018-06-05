@@ -20,15 +20,15 @@
 ***/
 
 #include <stdio.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include "label.h"
-//#include "macro.h"
+#include "macro.h"
 #include "mkdir.h"
-//#include "selinux-util.h"
-//#include "smack-util.h"
+#include "selinux-util.h"
+#include "smack-util.h"
 
 int mkdir_label(const char *path, mode_t mode) {
         int r;
