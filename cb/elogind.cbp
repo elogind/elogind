@@ -454,6 +454,10 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/basic/procfs-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/procfs-util.h" />
 		<Unit filename="../src/basic/random-util.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
@@ -463,6 +467,7 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/basic/raw-clone.h" />
 		<Unit filename="../src/basic/refcnt.h">
 			<Option target="all" />
 			<Option target="clean" />
@@ -534,6 +539,7 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/basic/special.h" />
 		<Unit filename="../src/basic/stat-util.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
@@ -1459,6 +1465,9 @@
 			<Option compilerVar="CC" />
 			<Option target="all" />
 			<Option target="clean" />
+		</Unit>
+		<Unit filename="../src/test/test-procfs-util.c">
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-random-util.c">
 			<Option compilerVar="CC" />

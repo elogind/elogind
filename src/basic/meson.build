@@ -317,6 +317,8 @@ basic_sources = files('''
         prioq.h
         proc-cmdline.c
         proc-cmdline.h
+        procfs-util.c
+        procfs-util.h
         process-util.c
         process-util.h
         random-util.c
@@ -339,6 +341,7 @@ basic_sources = files('''
         socket-util.c
         socket-util.h
         sparse-endian.h
+        special.h
         stat-util.c
         stat-util.h
         stdio-util.h
@@ -386,7 +389,7 @@ generate_gperfs = find_program('generate-gperfs.py')
 #         output : 'af-list.txt',
 #         command : [generate_af_list, cpp],
 #         capture : true)
-# 
+#
 # generate_arphrd_list = find_program('generate-arphrd-list.sh')
 # arphrd_list_txt = custom_target(
 #         'arphrd-list.txt',
