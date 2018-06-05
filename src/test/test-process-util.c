@@ -38,7 +38,7 @@
 #include "macro.h"
 #include "parse-util.h"
 #include "process-util.h"
-//#include "signal-util.h"
+#include "signal-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "terminal-util.h"

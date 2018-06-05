@@ -240,7 +240,6 @@ static void test_config_parse_iec_uint64(void) {
 
         assert_se(config_parse_iec_uint64(NULL, "/this/file", 11, "Section", 22, "Size", 0, "4.5M", &offset, NULL) == 0);
 }
-#endif // 0
 
 static void test_config_parse_join_controllers(void) {
         int r;
@@ -280,6 +279,7 @@ static void test_config_parse_join_controllers(void) {
         assert_se(r < 0);
         assert_se(c == c2);
 }
+#endif // 0
 
 #define x10(x) x x x x x x x x x x
 #define x100(x) x10(x10(x))
@@ -425,8 +425,8 @@ int main(int argc, char **argv) {
 #if 0 /// UNNEEDED by elogind
         test_config_parse_nsec();
         test_config_parse_iec_uint64();
-#endif // 0
         test_config_parse_join_controllers();
+#endif // 0
 
         for (i = 0; i < ELEMENTSOF(config_file); i++)
                 test_config_parse(i, config_file[i]);

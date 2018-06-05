@@ -25,15 +25,15 @@
 //#include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
-//#include "id128-util.h"
+#include "id128-util.h"
 #include "macro.h"
 #include "mkdir.h"
 #include "path-util.h"
 #include "rm-rf.h"
-//#include "stdio-util.h"
+#include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "user-util.h"
+#include "user-util.h"
 #include "util.h"
 
 static void test_chase_symlinks(void) {
@@ -443,7 +443,6 @@ static void test_access_fd(void) {
                 assert_se(access_fd(fd, W_OK) == -EACCES);
         }
 }
-#endif // 0
 
 static void test_touch_file(void) {
         uid_t test_uid, test_gid;
@@ -555,6 +554,7 @@ static void test_unlinkat_deallocate(void) {
         assert_se(st.st_blocks == 0);
         assert_se(st.st_nlink == 0);
 }
+#endif // 0
 
 static void test_fsync_directory_of_file(void) {
         _cleanup_close_ int fd = -1;
@@ -576,9 +576,9 @@ int main(int argc, char *argv[]) {
         test_dot_or_dot_dot();
 #if 0 /// Uses functions that elogind does not need
         test_access_fd();
-#endif // 0
         test_touch_file();
         test_unlinkat_deallocate();
+#endif // 0
         test_fsync_directory_of_file();
 
         return 0;
