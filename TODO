@@ -14,6 +14,8 @@ Janitorial Clean-ups:
 
 * Rearrange tests so that the various test-xyz.c match a specific src/basic/xyz.c again
 
+* copy.c: set the right chattrs before copying files and others after
+
 * rework mount.c and swap.c to follow proper state enumeration/deserialization
   semantics, like we do for device.c now
 
@@ -25,8 +27,6 @@ Features:
 * Add OnTimezoneChange= and OnTimeChange= stanzas to .timer units in order to
   schedule events based on time and timezone changes.
 
-* add O_TMPFILE support to copy_file_atomic()
-
 * nspawn: greater control over selinux label?
 
 * cgroups: figure out if we can somehow communicate in a cleaner way whether a
@@ -35,9 +35,6 @@ Features:
   then might get EPERM due to permission porblems/userns, which is OK, but this
   should be revisited to make clearer and also work if the payload elogind runs
   with full privs and without userns.
-
-* portables: introduce a new unit file directory /etc/elogind/system.attached/
-  or so, where we attach portable services to
 
 * cgroups: use inotify to get notified when somebody else modifies cgroups
   owned by us, then log a friendly warning.
