@@ -39,7 +39,7 @@
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "format-util.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 #include "logind.h"
 //#include "process-util.h"
 #include "selinux-util.h"
@@ -785,9 +785,9 @@ static int manager_connect_bus(Manager *m) {
                         "/org/freedesktop/systemd1",
                         "org.freedesktop.systemd1.Manager",
                         "Subscribe",
-#endif // 0
                         NULL, NULL,
                         NULL);
+#endif // 0
         if (r < 0)
                 return log_error_errno(r, "Failed to enable subscription: %m");
 

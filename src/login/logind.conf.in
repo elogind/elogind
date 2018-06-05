@@ -12,8 +12,6 @@
 # See logind.conf(5) for details.
 
 [Login]
-#NAutoVTs=6
-#ReserveVT=6
 #KillUserProcesses=@KILL_USER_PROCESSES@
 #KillOnlyUsers=
 #KillExcludeUsers=root
@@ -36,3 +34,10 @@
 #InhibitorsMax=8192
 #SessionsMax=8192
 #UserTasksMax=33%
+
+[Sleep]
+#SuspendState=mem standby freeze
+#SuspendMode=
+#HibernateState=disk
+#HibernateMode=platform shutdown
+#HybridSleepState=disk

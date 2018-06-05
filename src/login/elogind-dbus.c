@@ -81,22 +81,23 @@ static int bus_manager_log_shutdown(
 
 /* elogind specific helper to make HALT and REBOOT possible. */
 static int run_helper(const char *helper) {
-        int pid = fork();
-        if (pid < 0) {
-                return log_error_errno(errno, "Failed to fork: %m");
-        }
+        pid_t pid = 0;
+        int   r   = 0;
+
+        r = safe_fork_full(helper, NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_WAIT, &pid);
+
+        if (r < 0)
+                return log_error_errno(errno, "Failed to fork run %s: %m", helper);
 
         if (pid == 0) {
                 /* Child */
-
-                close_all_fds(NULL, 0);
 
                 execlp(helper, helper, NULL);
                 log_error_errno(errno, "Failed to execute %s: %m", helper);
                 _exit(EXIT_FAILURE);
         }
 
-        return wait_for_terminate_and_warn(helper, pid, true);
+        return r;
 }
 
 /* elogind specific executor */

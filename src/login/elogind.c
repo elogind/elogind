@@ -103,30 +103,24 @@ static int elogind_daemonize(void) {
         log_notice("Parent SID     : %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
 
-        child = fork();
+        r = safe_fork_full("daemon leader", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_WAIT, &child);
 
-        if (child < 0)
-                return log_error_errno(errno, "Failed to fork: %m");
+        if (r < 0)
+                return log_error_errno(errno, "Failed to fork daemon leader: %m");
 
-        if (child) {
-                /* Wait for the child to terminate, so the decoupling
-                 * is guaranteed to succeed.
-                 */
-                r = wait_for_terminate_and_warn("elogind control child", child, true);
-                if (r < 0)
-                        return r;
+        /* safe_fork_full() Has waited for the child to terminate, so we
+         * are safe to return here. The child already has forked off the
+         * daemon itself.
+         */
+        if (child)
                 return child;
-        }
 
 #ifdef ENABLE_DEBUG_ELOGIND
         log_notice("Child PID      : %5d", getpid_cached());
         log_notice("Child SID      : %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
 
-        /* The first child has to become a new session leader. */
-        close_all_fds(NULL, 0);
-
-        /* close_all_fds() does not close 0,1,2 */
+        /* safe_fork_full() does not close stdin/stdout/stderr */
         close(0);
         close(1);
         close(2);
@@ -142,16 +136,20 @@ static int elogind_daemonize(void) {
         umask(0022);
 
         /* Now the grandchild, the true daemon, can be created. */
-        grandchild = fork();
+        r = safe_fork_full("daemon leader", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS, &grandchild);
 
-        if (grandchild < 0)
-                return log_error_errno(errno, "Failed to double fork: %m");
+        if (r < 0)
+                return log_error_errno(errno, "Failed to fork daemon: %m");
 
         if (grandchild)
                 /* Exit immediately! */
                 return grandchild;
 
-        close_all_fds(NULL, 0);
+        /* safe_fork_full() does not close stdin/stdout/stderr */
+        close(0);
+        close(1);
+        close(2);
+
         umask(0022);
 
 #ifdef ENABLE_DEBUG_ELOGIND
