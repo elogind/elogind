@@ -2310,16 +2310,16 @@ int manager_setup_cgroup(Manager *m) {
 #endif // 0
         log_debug_elogind("Created control group \"%s\"", scope_path);
 
-#if 0 /// elogind is not a "sub-controller" like systemd, so migration is not needed.
-#endif // 0
                 /* 6. And pin it, so that it cannot be unmounted */
                 safe_close(m->pin_cgroupfs_fd);
                 m->pin_cgroupfs_fd = open(path, O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOCTTY|O_NONBLOCK);
                 if (m->pin_cgroupfs_fd < 0)
                         return log_error_errno(errno, "Failed to open pin file: %m");
 
+#if 0 /// this is from the cgroup migration above that elogind does not need.
         } else if (r < 0 && !m->test_run_flags)
                 return log_error_errno(r, "Failed to create %s control group: %m", scope_path);
+#endif // 0
 
         /* 7. Always enable hierarchical support if it exists... */
         if (!all_unified && m->test_run_flags == 0)
@@ -2338,12 +2338,12 @@ int manager_setup_cgroup(Manager *m) {
 void manager_shutdown_cgroup(Manager *m, bool delete) {
         assert(m);
 
+#if 0 /// elogind is not init
         /* We can't really delete the group, since we are in it. But
          * let's trim it. */
         if (delete && m->cgroup_root && m->test_run_flags != MANAGER_TEST_RUN_MINIMAL)
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
-#if 0 /// elogind is not init
         m->cgroup_empty_event_source = sd_event_source_unref(m->cgroup_empty_event_source);
 
         m->cgroup_inotify_wd_unit = hashmap_free(m->cgroup_inotify_wd_unit);
