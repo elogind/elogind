@@ -1,0 +1,3 @@
+[submodule "pwx"]
+	path = pwx
+	url = https://github.com/Yamakuzure/pwx-elogind-migration-tools.git
