@@ -38,10 +38,10 @@
 #include "string-util.h"
 
 typedef enum MountMode {
-        MNT_NONE  =           0,
-        MNT_FATAL =           1 <<  0,
-        MNT_IN_CONTAINER =    1 <<  1,
-        MNT_CHECK_WRITABLE  = 1 <<  2,
+        MNT_NONE           = 0,
+        MNT_FATAL          = 1 << 0,
+        MNT_IN_CONTAINER   = 1 << 1,
+        MNT_CHECK_WRITABLE = 1 << 2,
 } MountMode;
 
 typedef struct MountPoint {
