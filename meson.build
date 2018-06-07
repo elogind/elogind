@@ -635,8 +635,9 @@ stat = find_program('stat')
 git = find_program('git', required : false)
 env = find_program('env')
 
-meson_make_symlink = meson.source_root() + '/tools/meson-make-symlink.sh'
-#if 1 /// Needed by elogind
+#if 0 /// elogind does not use this but needs a tool to symlink its installed headers.
+# meson_make_symlink = meson.source_root() + '/tools/meson-make-symlink.sh'
+#else /// Needed by elogind
 meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
@@ -683,11 +684,10 @@ endforeach
 
 #if 0 /// unneeded by elogind
 # conf.set_quoted('TELINIT', get_option('telinit-path'))
+# if run_command('ln', '--relative', '--help').returncode() != 0
+#         error('ln does not support --relative')
+# endif
 #endif // 0
-
-if run_command('ln', '--relative', '--help').returncode() != 0
-        error('ln does not support --relative (added in coreutils 8.16)')
-endif
 
 ############################################################
 
