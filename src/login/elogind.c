@@ -103,7 +103,7 @@ static int elogind_daemonize(void) {
         log_notice("Parent SID     : %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
 
-        r = safe_fork_full("daemon leader", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_WAIT, &child);
+        r = safe_fork_full("elogind-forker", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT, &child);
 
         if (r < 0)
                 return log_error_errno(errno, "Failed to fork daemon leader: %m");
@@ -112,18 +112,13 @@ static int elogind_daemonize(void) {
          * are safe to return here. The child already has forked off the
          * daemon itself.
          */
-        if (child)
+        if (r)
                 return child;
 
 #ifdef ENABLE_DEBUG_ELOGIND
         log_notice("Child PID      : %5d", getpid_cached());
         log_notice("Child SID      : %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
-
-        /* safe_fork_full() does not close stdin/stdout/stderr */
-        close(0);
-        close(1);
-        close(2);
 
         SID = setsid();
         if ((pid_t)-1 == SID)
@@ -136,19 +131,14 @@ static int elogind_daemonize(void) {
         umask(0022);
 
         /* Now the grandchild, the true daemon, can be created. */
-        r = safe_fork_full("daemon leader", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS, &grandchild);
+        r = safe_fork_full("elogind-daemon", NULL, 0, FORK_REOPEN_LOG, &grandchild);
 
         if (r < 0)
                 return log_error_errno(errno, "Failed to fork daemon: %m");
 
-        if (grandchild)
+        if (r)
                 /* Exit immediately! */
                 return grandchild;
-
-        /* safe_fork_full() does not close stdin/stdout/stderr */
-        close(0);
-        close(1);
-        close(2);
 
         umask(0022);
 
