@@ -249,11 +249,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 return PAM_SESSION_ERR;
 
         if (debug)
-#if 0 /// This is pam-elogind, not pam-systemd
-                pam_syslog(handle, LOG_DEBUG, "pam-systemd initializing");
-#else
                 pam_syslog(handle, LOG_DEBUG, "pam-elogind initializing");
-#endif // 0
 
         r = get_user_data(handle, &username, &pw);
         if (r != PAM_SUCCESS) {
@@ -262,17 +258,13 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         }
 
         /* Make sure we don't enter a loop by talking to
-         * systemd-logind when it is actually waiting for the
+         * elogind when it is actually waiting for the
          * background to finish start-up. If the service is
-         * "systemd-user" we simply set XDG_RUNTIME_DIR and
+         * "elogind-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
 
         pam_get_item(handle, PAM_SERVICE, (const void**) &service);
-#if 0 /// Actually it is elogind-user with elogind.
-        if (streq_ptr(service, "systemd-user")) {
-#else
         if (streq_ptr(service, "elogind-user")) {
-#endif // 0
                 _cleanup_free_ char *rt = NULL;
 
                 if (asprintf(&rt, "/run/user/"UID_FMT, pw->pw_uid) < 0)
