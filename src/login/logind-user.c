@@ -45,16 +45,13 @@
 #include "path-util.h"
 #include "rm-rf.h"
 #include "smack-util.h"
-//#include "special.h"
+#include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
 #include "unit-name.h"
 #include "user-util.h"
 #include "util.h"
 
-#if 1 /// elogind uses a static value here
-#  define SPECIAL_USER_SLICE "user.slice"
-#endif // 1
 int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
