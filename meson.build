@@ -386,6 +386,7 @@ endif
 #         '-Wstrict-aliasing=2',
 #         '-Wwrite-strings',
 #         '-Werror=overflow',
+#         '-Werror=shift-count-overflow',
 #         '-Wdate-time',
 #         '-Wnested-externs',
 #         '-ffast-math',
@@ -1915,6 +1916,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
