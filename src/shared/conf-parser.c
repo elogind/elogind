@@ -50,6 +50,7 @@
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
+//#include "rlimit-util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -656,7 +657,7 @@ int config_parse_bool(const char* unit,
                 return fatal ? -ENOEXEC : 0;
         }
 
-        *b = !!k;
+        *b = k;
         return 0;
 }
 
