@@ -22,7 +22,7 @@
 
 #include <libintl.h>
 #include <stdbool.h>
-//#include <locale.h>
+#include <locale.h>
 
 #include "macro.h"
 
