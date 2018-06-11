@@ -1476,15 +1476,21 @@ int cg_path_decode_unit(const char *cgroup, char **unit) {
         assert(cgroup);
         assert(unit);
 
+#if 0 /// elogind has a different naming: <controller>:/<session id>. So prefix is always len < 3
         n = strcspn(cgroup, "/");
         if (n < 3)
                 return -ENXIO;
+#else
+        n = strspn(cgroup, "/") + 1;
+#endif // 0
 
         c = strndupa(cgroup, n);
         c = cg_unescape(c);
 
+#if 0 /// elogind session ids are never valid unit names.
         if (!unit_name_is_valid(c, UNIT_NAME_PLAIN|UNIT_NAME_INSTANCE))
                 return -ENXIO;
+#endif // 0
 
         s = strdup(c);
         if (!s)
