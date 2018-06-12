@@ -107,7 +107,7 @@ static int shutdown_or_sleep(Manager *m, HandleAction action) {
 
         switch (action) {
         case HANDLE_POWEROFF:
-                return run_helper(HALT);
+                return run_helper(POWEROFF);
         case HANDLE_REBOOT:
                 return run_helper(REBOOT);
         case HANDLE_HALT:
@@ -172,7 +172,7 @@ static int execute_shutdown_or_sleep(
          * sleeping processes to wake up, we have to tell them all
          * by ourselves. */
         if (w == INHIBIT_SLEEP) {
-                send_prepare_for(m, w, false);
+                (void) send_prepare_for(m, w, false);
                 m->action_what = 0;
         } else
                 m->action_what = w;
@@ -273,7 +273,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         assert(w <= _INHIBIT_WHAT_MAX);
 
         /* Tell everybody to prepare for shutdown/sleep */
-        send_prepare_for(m, w, true);
+        (void) send_prepare_for(m, w, true);
 
         delayed =
                 m->inhibit_delay_max > 0 &&
