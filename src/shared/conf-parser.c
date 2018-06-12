@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 /***
-  This file is part of systemd.
-
   Copyright 2010 Lennart Poettering
 ***/
 
@@ -37,6 +35,7 @@
 /// Additional includes needed by elogind
 #include "def.h"
 #include "fileio.h"
+//#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"

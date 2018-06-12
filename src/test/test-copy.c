@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 /***
-  This file is part of systemd
-
   Copyright 2014 Ronny Chevalier
 ***/
 
@@ -242,26 +240,7 @@ static void test_copy_bytes_regular_file(const char *src, bool try_reflink, uint
         unlink(fn3);
 }
 
-static void test_copy_atomic(void) {
-        _cleanup_(rm_rf_physical_and_freep) char *p = NULL;
-        const char *q;
-        int r;
-
-        assert_se(mkdtemp_malloc(NULL, &p) >= 0);
-
-        q = strjoina(p, "/fstab");
-
-        r = copy_file_atomic("/etc/fstab", q, 0644, 0, COPY_REFLINK);
-        if (r == -ENOENT)
-                return;
-
-        assert_se(copy_file_atomic("/etc/fstab", q, 0644, 0, COPY_REFLINK) == -EEXIST);
-
-        assert_se(copy_file_atomic("/etc/fstab", q, 0644, 0, COPY_REPLACE) >= 0);
-}
-
 int main(int argc, char *argv[]) {
-        log_set_max_level(LOG_DEBUG);
 
 #if 0 /// UNNEEDED by elogind
         test_copy_file();
@@ -275,7 +254,6 @@ int main(int argc, char *argv[]) {
         test_copy_bytes_regular_file(argv[0], true, 1000);
         test_copy_bytes_regular_file(argv[0], false, 32000); /* larger than copy buffer size */
         test_copy_bytes_regular_file(argv[0], true, 32000);
-        test_copy_atomic();
 
         return 0;
 }
