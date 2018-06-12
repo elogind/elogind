@@ -71,6 +71,8 @@ static OutputMode arg_output = OUTPUT_SHORT;
 extern BusTransport arg_transport;
 static char *arg_host = NULL;
 extern bool arg_ask_password;
+extern bool arg_dry_run;
+extern bool arg_quiet;
 extern bool arg_no_wall;
 extern usec_t arg_when;
 extern bool arg_ignore_inhibitors;
@@ -1395,8 +1397,10 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -h --help                Show this help\n"
                "     --version             Show package version\n"
                "     --no-pager            Do not pipe output into a pager\n"
-#if 1 /// elogind supports --no-wall
+#if 1 /// elogind supports --no-wall and --dry-run
                "     --no-wall             Do not print any wall message\n"
+               "     --dry-run             Only print what would be done\n"
+               "  -q --quiet               Suppress output\n"
 #endif // 1
                "     --no-legend           Do not show the headers and footers\n"
                "     --no-ask-password     Don't prompt for password\n"
@@ -1470,8 +1474,9 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_VERSION = 0x100,
                 ARG_VALUE,
                 ARG_NO_PAGER,
-#if 1 /// elogind supports --no-wall
+#if 1 /// elogind supports --no-wall and --dry-run
                 ARG_NO_WALL,
+                ARG_DRY_RUN,
 #endif // 1
                 ARG_NO_LEGEND,
                 ARG_KILL_WHO,
@@ -1486,8 +1491,10 @@ static int parse_argv(int argc, char *argv[]) {
                 { "value",           no_argument,       NULL, ARG_VALUE           },
                 { "full",            no_argument,       NULL, 'l'                 },
                 { "no-pager",        no_argument,       NULL, ARG_NO_PAGER        },
-#if 1 /// elogind supports --no-wall
+#if 1 /// elogind supports --no-wall, --dry-run and --quiet
                 { "no-wall",         no_argument,       NULL, ARG_NO_WALL         },
+                { "dry-run",         no_argument,       NULL, ARG_DRY_RUN         },
+                { "quiet",           no_argument,       NULL, 'q'                 },
 #endif // 1
                 { "no-legend",       no_argument,       NULL, ARG_NO_LEGEND       },
                 { "kill-who",        required_argument, NULL, ARG_KILL_WHO        },
@@ -1569,10 +1576,19 @@ static int parse_argv(int argc, char *argv[]) {
                 case ARG_NO_PAGER:
                         arg_no_pager = true;
                         break;
-#if 1 /// elogind supports --no-wall
+#if 1 /// elogind supports --no-wall, -dry-run and --quiet
                 case ARG_NO_WALL:
                         arg_no_wall = true;
                         break;
+
+                case ARG_DRY_RUN:
+                        arg_dry_run = true;
+                        break;
+
+                case 'q':
+                        arg_quiet = true;
+                        break;
+
 #endif // 1
 
                 case ARG_NO_LEGEND:

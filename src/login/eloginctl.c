@@ -36,6 +36,8 @@
 
 elogind_action arg_action            = _ACTION_INVALID;
 bool           arg_ask_password      = true;
+bool           arg_dry_run           = false;
+bool           arg_quiet             = false;
 bool           arg_ignore_inhibitors = false;
 bool           arg_no_wall           = false;
 BusTransport   arg_transport         = BUS_TRANSPORT_LOCAL;
@@ -69,7 +71,7 @@ static enum elogind_action verb_to_action(const char *verb) {
 }
 
 /* Original:
- * systemctl/systemctl.c:3292:logind_check_inhibitors()
+ * systemctl/systemctl.c:3314:logind_check_inhibitors()
  */
 static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
@@ -123,8 +125,10 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
                 if (!sv)
                         return log_oom();
 
-                if ((pid_t) pid < 0)
-                        return log_error_errno(ERANGE, "Bad PID %"PRIu32": %m", pid);
+                if (!pid_is_valid((pid_t) pid)) {
+                        log_error("Invalid PID "PID_FMT".", (pid_t) pid);
+                        return -ERANGE;
+                }
 
                 if (!strv_contains(sv,
                                    IN_SET(a,
@@ -160,7 +164,7 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
                 if (sd_session_get_class(*s, &class) < 0 || !streq(class, "user"))
                         continue;
 
-                if (sd_session_get_type(*s, &type) < 0 || !STR_IN_SET(type, "x11", "tty"))
+                if (sd_session_get_type(*s, &type) < 0 || !STR_IN_SET(type, "x11", "wayland", "tty", "mir"))
                         continue;
 
                 sd_session_get_tty(*s, &tty);
@@ -182,7 +186,7 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
 }
 
 /* Original:
- * systemctl/systemctl.c:8410:logind_cancel_shutdown()
+ * systemctl/systemctl.c:8683:logind_cancel_shutdown()
  */
 int elogind_cancel_shutdown(sd_bus *bus) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -212,7 +216,7 @@ void elogind_cleanup(void) {
         strv_free(arg_wall);
 }
 
-/* Littel debug log helper, helps debugging systemctl comands we mimic. */
+/* Little debug log helper, helps debugging systemctl comands we mimic. */
 static void elogind_log_special(enum elogind_action a) {
 #ifdef ENABLE_DEBUG_ELOGIND
         switch (a) {
@@ -271,15 +275,16 @@ static void elogind_log_special(enum elogind_action a) {
 }
 
 /* Original:
- * systemctl/systemctl.c:3229:logind_reboot()
+ * systemctl/systemctl.c:3242:logind_reboot()
  */
 static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         const char *method  = NULL, *description = NULL;
         int r;
         static const char *table[_ACTION_MAX] = {
-                [ACTION_REBOOT]          = "The system is going down for reboot NOW!",
-                [ACTION_POWEROFF]        = "The system is going down for power-off NOW!"
+                [ACTION_HALT]     = "The system is going down for halt NOW!",
+                [ACTION_REBOOT]   = "The system is going down for reboot NOW!",
+                [ACTION_POWEROFF] = "The system is going down for power-off NOW!"
         };
 
         if (!bus)
@@ -287,14 +292,19 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
 
         switch (a) {
 
-        case ACTION_REBOOT:
-                method = "Reboot";
-                description = "reboot system";
+        case ACTION_HALT:
+                method = "Halt";
+                description = "halt system";
                 break;
 
         case ACTION_POWEROFF:
                 method = "PowerOff";
                 description = "power off system";
+                break;
+
+        case ACTION_REBOOT:
+                method = "Reboot";
+                description = "reboot system";
                 break;
 
         case ACTION_SUSPEND:
@@ -316,10 +326,16 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
                 return -EINVAL;
         }
 
+        /* No need for polkit_agent_open_maybe() in elogind. Do it directly. */
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
-        if ( IN_SET(a, ACTION_POWEROFF, ACTION_REBOOT) )
+        if ( IN_SET(a, ACTION_HALT, ACTION_POWEROFF, ACTION_REBOOT) )
                 (void) elogind_set_wall_message(bus, table[a]);
+
+        log_debug("%s org.freedesktop.login1.Manager %s dbus call.", arg_dry_run ? "Would execute" : "Executing", method);
+
+        if (arg_dry_run)
+                return 0;
 
         /* Now call elogind itself to request the operation */
         r = sd_bus_call_method(
@@ -341,7 +357,7 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
 }
 
 /* Original:
- * systemctl/systemctl.c:8281:logind_schedule_shutdown()
+ * systemctl/systemctl.c:8553:logind_schedule_shutdown()
  */
 static int elogind_schedule_shutdown(sd_bus *bus, enum elogind_action a) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -368,6 +384,9 @@ static int elogind_schedule_shutdown(sd_bus *bus, enum elogind_action a) {
                 break;
         }
 
+        if (arg_dry_run)
+                action = strjoina("dry-", action);
+
         (void) elogind_set_wall_message(bus, NULL);
 
         r = sd_bus_call_method(
@@ -387,14 +406,14 @@ static int elogind_schedule_shutdown(sd_bus *bus, enum elogind_action a) {
                                 "Failed to call ScheduleShutdown in logind, proceeding with immediate shutdown: %s",
                                 bus_error_message(&error, r));
 
-        log_info("Shutdown scheduled for %s, use 'shutdown -c' to cancel.",
-                 format_timestamp(date, sizeof(date), arg_when));
+        if (!arg_quiet)
+                log_info("Shutdown scheduled for %s, use 'shutdown -c' to cancel.", format_timestamp(date, sizeof(date), arg_when));
 
         return 0;
 }
 
 /* Original:
- * systemctl/systemctl.c:3193:logind_set_wall_message()
+ * systemctl/systemctl.c:3204:logind_set_wall_message()
  * (Tweaked to allow an extra message to be appended.)
  */
 static int elogind_set_wall_message(sd_bus* bus, const char* msg) {
@@ -408,6 +427,10 @@ static int elogind_set_wall_message(sd_bus* bus, const char* msg) {
         m = strv_join(arg_wall, " ");
         if (!m)
                 return log_oom();
+
+        log_debug("%s wall message \"%s\".", arg_dry_run ? "Would set" : "Setting", m);
+        if (arg_dry_run)
+                return 0;
 
         r = sd_bus_call_method(
                         bus,
