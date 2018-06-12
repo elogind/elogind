@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Copyright 2017 Zbigniew Jędrzejewski-Szmek
+# Copyright © 2017 Zbigniew Jędrzejewski-Szmek
 
 id128_sources = files('''
         sd-id128/id128-util.c
@@ -141,15 +141,15 @@ libelogind_c_args = ['-fvisibility=default']
 #         dependencies : [threads,
 #                         librt],
 #         c_args : libsystemd_c_args)
+# 
+# libsystemd_sym = 'src/libsystemd/libsystemd.sym'
+# 
+# libsystemd_pc = configure_file(
+#         input : 'libsystemd.pc.in',
+#         output : 'libsystemd.pc',
+# install_data(libsystemd_pc,
 #else
         dependencies : [threads],
 #endif // 0
-
-libelogind_sym = 'src/libelogind/libelogind.sym'
-
-libelogind_pc = configure_file(
-        input : 'libelogind.pc.in',
-        output : 'libelogind.pc',
         configuration : substs)
-install_data(libelogind_pc,
              install_dir : pkgconfiglibdir)
