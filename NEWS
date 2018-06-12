@@ -52,12 +52,6 @@ CHANGES WITH 239 in spe:
           configuration settings to change the resolution explicitly.
 
         * The elogind-resolve tool has been renamed to resolvectl (it also
-        * elogind-resolved now supports DNS-over-TLS ("PrivateDNS"). It's still
-          turned off by default, use PrivateDNS=yes to turn it on in
-          resolved.conf. We intend to make this the default as soon as couple
-          of additional techniques for optimizing the initial latency caused by
-          establishing a TLS/TCP connection are implemented.
-
           remains available under the old name, for compatibility), and its
           interface is now verb-based, similar in style to the other <xyz>ctl
           tools, such as systemctl or loginctl.
@@ -284,6 +278,15 @@ CHANGES WITH 239 in spe:
         * The "elogind-path search-binaries-default" command may now be use to
           query the default, built-in $PATH PID 1 will pass to the services it
           manages.
+
+        * A new unit file setting PrivateMounts= has been added. It's a boolean
+          option. If enabled the unit's processes are invoked in their own file
+          system namespace. Note that this behaviour is also implied if any
+          other file system namespacing options (such as PrivateTmp=,
+          PrivateDevices=, ProtectSystem=, …) are used. This option is hence
+          primarily useful for services that do not use any of the other file
+          system namespacing options. One such service is elogind-udevd.service
+          wher this is now used by default.
 
         Contributions from: Adam Duskett, Alan Jenkins, Alessandro Casale,
         Alexander Kurtz, Alex Gartrell, Anssi Hannula, Antique, Arnaud
