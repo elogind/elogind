@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 /***
-  This file is part of systemd.
-
   Copyright 2010 Lennart Poettering
 ***/
 
@@ -1571,29 +1569,21 @@ int read_nul_string(FILE *f, char **ret) {
 }
 
 int mkdtemp_malloc(const char *template, char **ret) {
-        _cleanup_free_ char *p = NULL;
-        int r;
+        char *p;
 
+        assert(template);
         assert(ret);
 
-        if (template)
-                p = strdup(template);
-        else {
-                const char *tmp;
-
-                r = tmp_dir(&tmp);
-                if (r < 0)
-                        return r;
-
-                p = strjoin(tmp, "/XXXXXX");
-        }
+        p = strdup(template);
         if (!p)
                 return -ENOMEM;
 
-        if (!mkdtemp(p))
+        if (!mkdtemp(p)) {
+                free(p);
                 return -errno;
+        }
 
-        *ret = TAKE_PTR(p);
+        *ret = p;
         return 0;
 }
 #endif // 0

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 /***
-  This file is part of systemd.
-
   Copyright 2016 Lennart Poettering
 ***/
 
@@ -12,6 +10,8 @@
 #include "macro.h"
 #include "signal-util.h"
 /// Additional includes needed by elogind
+//#include "stdio-util.h"
+//#include "string-util.h"
 //#include "stdio-util.h"
 //#include "string-util.h"
 //#include "stdio-util.h"

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 /***
-  This file is part of systemd.
-
   Copyright 2010 Lennart Poettering
 ***/
 
@@ -234,22 +232,6 @@ int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
 
         if (uid != UID_INVALID || gid != GID_INVALID)
                 if (chown(path, uid, gid) < 0)
-                        return -errno;
-
-        return 0;
-}
-
-int fchmod_and_chown(int fd, mode_t mode, uid_t uid, gid_t gid) {
-        /* Under the assumption that we are running privileged we
-         * first change the access mode and only then hand out
-         * ownership to avoid a window where access is too open. */
-
-        if (mode != MODE_INVALID)
-                if (fchmod(fd, mode) < 0)
-                        return -errno;
-
-        if (uid != UID_INVALID || gid != GID_INVALID)
-                if (fchown(fd, uid, gid) < 0)
                         return -errno;
 
         return 0;
