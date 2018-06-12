@@ -1,7 +1,4 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-/***
-  Copyright 2010 Lennart Poettering
-***/
 
 #include <errno.h>
 #include <limits.h>
@@ -35,6 +32,7 @@
 /// Additional includes needed by elogind
 #include "def.h"
 #include "fileio.h"
+//#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"
 //#include "rlimit-util.h"

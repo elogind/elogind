@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-/***
-  Copyright 2010 Lennart Poettering
-***/
 
 #if 0 /// elogind is musl-libc compatible and does not directly include printf.h
 #include <printf.h>
