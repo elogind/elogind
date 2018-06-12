@@ -46,11 +46,14 @@ static const struct {
         HandleAction action;
         const char*  verb;
 } action_table[_ACTION_MAX] = {
+        [ACTION_HALT]         = { HANDLE_HALT,         "halt"         },
         [ACTION_POWEROFF]     = { HANDLE_POWEROFF,     "poweroff",    },
         [ACTION_REBOOT]       = { HANDLE_REBOOT,       "reboot",      },
+        [ACTION_KEXEC]        = { HANDLE_KEXEC,        "kexec",       },
         [ACTION_SUSPEND]      = { HANDLE_SUSPEND,      "suspend",     },
         [ACTION_HIBERNATE]    = { HANDLE_HIBERNATE,    "hibernate",   },
-        [ACTION_HYBRID_SLEEP] = { HANDLE_HYBRID_SLEEP, "hybrid-sleep" },
+        [ACTION_HYBRID_SLEEP] = { HANDLE_HYBRID_SLEEP, "hybrid-sleep" }
+        /* ACTION_CANCEL_SHUTDOWN is handled differently */
 };
 
 static int elogind_set_wall_message(sd_bus* bus, const char* msg);

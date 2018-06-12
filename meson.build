@@ -663,9 +663,10 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #          ['setfont',    '/usr/bin/setfont',    'KBD_SETFONT'],
 #         ]
 #else
-progs = [['kexec',      '/usr/sbin/kexec',     'KEXEC'],
+progs = [['halt',       '/sbin/halt',          'HALT'],
+         ['kexec',      '/usr/sbin/kexec',     'KEXEC'],
+         ['poweroff',   '/sbin/poweroff',      'POWEROFF'],
          ['reboot',     '/sbin/reboot',        'REBOOT'],
-         ['halt',       '/sbin/halt',          'HALT'],
         ]
 #endif // 0
 foreach prog : progs
