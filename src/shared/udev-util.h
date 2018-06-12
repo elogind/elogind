@@ -2,7 +2,7 @@
 #pragma once
 
 /***
-  Copyright 2013 Zbigniew Jędrzejewski-Szmek
+  Copyright © 2013 Zbigniew Jędrzejewski-Szmek
 ***/
 
 #if 0 /// elogind needs the systems udev header
