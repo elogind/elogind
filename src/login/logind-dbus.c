@@ -54,6 +54,7 @@
 
 /// Additional includes needed by elogind
 #include "elogind-dbus.h"
+
 static int get_sender_session(Manager *m, sd_bus_message *message, sd_bus_error *error, Session **ret) {
 
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
