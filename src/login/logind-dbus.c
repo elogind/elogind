@@ -1804,11 +1804,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         return r;
 }
 
-#if 0 /// elogind-dbus.c needs to access this
 static int verify_shutdown_creds(
-#else
-int verify_shutdown_creds(
-#endif // 0
                 Manager *m,
                 sd_bus_message *message,
                 InhibitWhat w,
@@ -1870,11 +1866,14 @@ int verify_shutdown_creds(
         return 0;
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
+#if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
+#else
+                HandleAction unit_name,
+#endif // 0
                 InhibitWhat w,
                 const char *action,
                 const char *action_multiple_sessions,
@@ -1886,7 +1885,9 @@ static int method_do_shutdown_or_sleep(
 
         assert(m);
         assert(message);
+#if 0 /// elogind does not need this to be checked
         assert(unit_name);
+#endif // 0
         assert(w >= 0);
         assert(w <= _INHIBIT_WHAT_MAX);
 
@@ -1894,12 +1895,20 @@ static int method_do_shutdown_or_sleep(
         if (r < 0)
                 return r;
 
+        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
+                          __FUNCTION__, action, sleep_verb,
+                          interactive ? "" : "NOT ");
+
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
 
         if (sleep_verb) {
+#if 0 /// Within elogind the manager m must be provided, too
                 r = can_sleep(sleep_verb);
+#else
+                r = can_sleep(m, sleep_verb);
+#endif // 0
                 if (r < 0)
                         return r;
 
@@ -1907,11 +1916,20 @@ static int method_do_shutdown_or_sleep(
                         return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Sleep verb not supported");
         }
 
+#if 0 /// Within elogind it does not make sense to verify shutdown creds when suspending
         r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
                                   action_ignore_inhibit, error);
-        log_debug_elogind("verify_shutdown_creds() returned %d", r);
         if (r != 0)
                 return r;
+#else
+        if (IN_SET(unit_name, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
+                r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
+                                          action_ignore_inhibit, error);
+                log_debug_elogind("verify_shutdown_creds() returned %d", r);
+                if (r != 0)
+                        return r;
+        }
+#endif // 0
 
         r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
         if (r < 0)
@@ -1923,9 +1941,15 @@ static int method_do_shutdown_or_sleep(
 static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
+#if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_POWEROFF_TARGET,
+#else
+                        HANDLE_POWEROFF,
+#endif // 0
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.power-off",
                         "org.freedesktop.login1.power-off-multiple-sessions",
@@ -1937,9 +1961,15 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
 static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
+#if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_REBOOT_TARGET,
+#else
+                        HANDLE_REBOOT,
+#endif // 0
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.reboot",
                         "org.freedesktop.login1.reboot-multiple-sessions",
@@ -1951,9 +1981,15 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
 static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
+#if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_HALT_TARGET,
+#else
+                        HANDLE_HALT,
+#endif // 0
                         INHIBIT_SHUTDOWN,
                         "org.freedesktop.login1.halt",
                         "org.freedesktop.login1.halt-multiple-sessions",
@@ -1965,9 +2001,15 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
 static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
+#if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_SUSPEND_TARGET,
+#else
+                        HANDLE_SUSPEND,
+#endif // 0
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.suspend",
                         "org.freedesktop.login1.suspend-multiple-sessions",
@@ -1979,9 +2021,15 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
 static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
+#if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_HIBERNATE_TARGET,
+#else
+                        HANDLE_HIBERNATE,
+#endif // 0
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -1993,9 +2041,15 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
 static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
+        log_debug_elogind("%s called", __FUNCTION__);
+
         return method_do_shutdown_or_sleep(
                         m, message,
+#if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_HYBRID_SLEEP_TARGET,
+#else
+                        HANDLE_HYBRID_SLEEP,
+#endif // 0
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -2003,7 +2057,6 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
                         "hybrid-sleep",
                         error);
 }
-#endif // 0
 
 static int nologin_timeout_handler(
                         sd_event_source *s,
