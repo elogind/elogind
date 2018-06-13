@@ -186,41 +186,6 @@ int execute_shutdown_or_sleep(
         return 0;
 }
 
-static int delay_shutdown_or_sleep(
-                Manager *m,
-                InhibitWhat w,
-                HandleAction action) {
-
-        int r;
-        usec_t timeout_val;
-
-        assert(m);
-        assert(w >= 0);
-        assert(w < _INHIBIT_WHAT_MAX);
-
-        timeout_val = now(CLOCK_MONOTONIC) + m->inhibit_delay_max;
-
-        if (m->inhibit_timeout_source) {
-                r = sd_event_source_set_time(m->inhibit_timeout_source, timeout_val);
-                if (r < 0)
-                        return log_error_errno(r, "sd_event_source_set_time() failed: %m");
-
-                r = sd_event_source_set_enabled(m->inhibit_timeout_source, SD_EVENT_ONESHOT);
-                if (r < 0)
-                        return log_error_errno(r, "sd_event_source_set_enabled() failed: %m");
-        } else {
-                r = sd_event_add_time(m->event, &m->inhibit_timeout_source, CLOCK_MONOTONIC,
-                                      timeout_val, 0, manager_inhibit_timeout_handler, m);
-                if (r < 0)
-                        return r;
-        }
-
-        m->pending_action = action;
-        m->action_what = w;
-
-        return 0;
-}
-
 int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
                 HandleAction action,

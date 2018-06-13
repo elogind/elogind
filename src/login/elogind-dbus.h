@@ -36,6 +36,7 @@ int method_suspend     (sd_bus_message *message, void *userdata, sd_bus_error *e
 
 
 /* prototypes for former static functions in logind-dbus.c */
+int delay_shutdown_or_sleep(Manager *m, InhibitWhat w, HandleAction action);
 int  manager_inhibit_timeout_handler(sd_event_source *s, uint64_t usec, void *userdata);
 void reset_scheduled_shutdown(Manager *m);
 int  send_prepare_for(Manager *m, InhibitWhat w, bool _active);

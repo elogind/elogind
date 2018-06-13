@@ -1710,19 +1710,26 @@ int manager_inhibit_timeout_handler(
         return (r < 0) ? r : 0;
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
+#if 0 /// elogind does not have unit_name but action
 static int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
                 const char *unit_name) {
-
+#else
+int delay_shutdown_or_sleep(
+                Manager *m,
+                InhibitWhat w,
+                HandleAction action) {
+#endif // 0
         int r;
         usec_t timeout_val;
 
         assert(m);
         assert(w >= 0);
         assert(w < _INHIBIT_WHAT_MAX);
+#if 0 /// UNNEEDED by elogind
         assert(unit_name);
+#endif // 0
 
         timeout_val = now(CLOCK_MONOTONIC) + m->inhibit_delay_max;
 
@@ -1741,12 +1748,15 @@ static int delay_shutdown_or_sleep(
                         return r;
         }
 
+#if 0 /// elogind does not have unit_name but pendig_action
         m->action_unit = unit_name;
+#else
+        m->pending_action = action;
+#endif // 0
         m->action_what = w;
 
         return 0;
 }
-#endif // 0
 
 #if 0 /// elogind has its own variant in elogind-dbus.c
 int bus_manager_shutdown_or_sleep_now_or_later(
