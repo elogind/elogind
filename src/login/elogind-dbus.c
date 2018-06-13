@@ -442,6 +442,19 @@ int manager_scheduled_shutdown_handler(
                 return -EALREADY;
         }
 
+        if (m->shutdown_dry_run) {
+                /* We do not process delay inhibitors here.  Otherwise, we
+                 * would have to be considered "in progress" (like the check
+                 * above) for some seconds after our admin has seen the final
+                 * wall message. */
+
+                bus_manager_log_shutdown(m, target);
+                log_info("Running in dry run, suppressing action.");
+                reset_scheduled_shutdown(m);
+
+                return 0;
+        }
+
         r = execute_shutdown_or_sleep(m, 0, action, &error);
         if (r < 0)
                 return log_error_errno(r, "Scheduled shutdown to %s failed: %m",
