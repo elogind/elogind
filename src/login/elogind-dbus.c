@@ -437,9 +437,10 @@ int manager_scheduled_shutdown_handler(
 
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what) {
+                r = -EALREADY;
                 log_error("Scheduled shutdown to %s failed: shutdown or sleep operation already in progress",
                           m->scheduled_shutdown_type);
-                return -EALREADY;
+                goto error;
         }
 
         if (m->shutdown_dry_run) {
@@ -456,11 +457,17 @@ int manager_scheduled_shutdown_handler(
         }
 
         r = execute_shutdown_or_sleep(m, 0, action, &error);
-        if (r < 0)
-                return log_error_errno(r, "Scheduled shutdown to %s failed: %m",
+        if (r < 0) {
+                log_error_errno(r, "Scheduled shutdown to %s failed: %m",
                                        m->scheduled_shutdown_type);
+                goto error;
+        }
 
         return 0;
+
+error:
+        reset_scheduled_shutdown(m);
+        return r;
 }
 
 int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
