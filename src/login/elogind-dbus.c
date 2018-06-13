@@ -186,42 +186,6 @@ int execute_shutdown_or_sleep(
         return 0;
 }
 
-int bus_manager_shutdown_or_sleep_now_or_later(
-                Manager *m,
-                HandleAction action,
-                InhibitWhat w,
-                sd_bus_error *error) {
-
-        bool delayed;
-        int r;
-
-        assert(m);
-        assert(w >= 0);
-        assert(w <= _INHIBIT_WHAT_MAX);
-
-        /* Tell everybody to prepare for shutdown/sleep */
-        (void) send_prepare_for(m, w, true);
-
-        delayed =
-                m->inhibit_delay_max > 0 &&
-                manager_is_inhibited(m, w, INHIBIT_DELAY, NULL, false, false, 0, NULL);
-
-        log_debug_elogind("%s called for %s (%sdelayed)", __FUNCTION__,
-                          handle_action_to_string(action),
-                          delayed ? "" : "NOT ");
-
-        if (delayed)
-                /* Shutdown is delayed, keep in mind what we
-                 * want to do, and start a timeout */
-                r = delay_shutdown_or_sleep(m, w, action);
-        else
-                /* Shutdown is not delayed, execute it
-                 * immediately */
-                r = execute_shutdown_or_sleep(m, w, action, error);
-
-        return r;
-}
-
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
