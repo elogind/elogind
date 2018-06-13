@@ -125,7 +125,7 @@ static int shutdown_or_sleep(Manager *m, HandleAction action) {
         }
 }
 
-static int execute_shutdown_or_sleep(
+int execute_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
                 HandleAction action,
@@ -184,44 +184,6 @@ static int execute_shutdown_or_sleep(
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
 
         return 0;
-}
-
-int manager_dispatch_delayed(Manager *manager, bool timeout) {
-
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        Inhibitor *offending = NULL;
-        int r;
-
-        assert(manager);
-
-        if ( (0 == manager->action_what) || (HANDLE_IGNORE == manager->pending_action) )
-                return 0;
-
-        if (manager_is_inhibited(manager, manager->action_what, INHIBIT_DELAY, NULL, false, false, 0, &offending)) {
-                _cleanup_free_ char *comm = NULL, *u = NULL;
-
-                if (!timeout)
-                        return 0;
-
-                (void) get_process_comm(offending->pid, &comm);
-                u = uid_to_name(offending->uid);
-
-                log_notice("Delay lock is active (UID "UID_FMT"/%s, PID "PID_FMT"/%s) but inhibitor timeout is reached.",
-                           offending->uid, strna(u),
-                           offending->pid, strna(comm));
-        }
-
-        /* Actually do the operation */
-        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->pending_action, &error);
-        if (r < 0) {
-                log_warning("Failed to send delayed message: %s", bus_error_message(&error, r));
-
-                manager->pending_action = HANDLE_IGNORE;
-                manager->action_what    = 0;
-                /* It is not a critical error for elogind if suspending fails */
-        }
-
-        return 1;
 }
 
 static int delay_shutdown_or_sleep(
@@ -449,7 +411,7 @@ int manager_scheduled_shutdown_handler(
                  * above) for some seconds after our admin has seen the final
                  * wall message. */
 
-                bus_manager_log_shutdown(m, target);
+                bus_manager_log_shutdown(m, INHIBIT_SHUTDOWN, action);
                 log_info("Running in dry run, suppressing action.");
                 reset_scheduled_shutdown(m);
 
