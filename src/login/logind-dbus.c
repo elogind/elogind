@@ -1635,6 +1635,7 @@ error:
 
         return r;
 }
+#endif // 0
 
 int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
@@ -1644,7 +1645,11 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
         assert(manager);
 
+#if 0 /// elogind has no action_job, but a pending_action
         if (manager->action_what == 0 || manager->action_job)
+#else
+        if ( (0 == manager->action_what) || (HANDLE_IGNORE == manager->pending_action) )
+#endif // 0
                 return 0;
 
         if (manager_is_inhibited(manager, manager->action_what, INHIBIT_DELAY, NULL, false, false, 0, &offending)) {
@@ -1662,19 +1667,29 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
         }
 
         /* Actually do the operation */
+#if 0 /// elogind has no action_unit but a pending_action
         r = execute_shutdown_or_sleep(manager, manager->action_what, manager->action_unit, &error);
+#else
+        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->pending_action, &error);
+#endif // 0
         if (r < 0) {
                 log_warning("Error during inhibitor-delayed operation (already returned success to client): %s",
                             bus_error_message(&error, r));
 
+
+#if 0 /// elogind has no action_unit but a pending_action
                 manager->action_unit = NULL;
                 manager->action_what = 0;
                 return r;
+#else
+                manager->pending_action = HANDLE_IGNORE;
+                manager->action_what    = 0;
+                /* It is not a critical error for elogind if suspending fails */
+#endif // 0
         }
 
         return 1;
 }
-#endif // 0
 
 #if 0 /// elogind-dbus.c needs to access this
 static int manager_inhibit_timeout_handler(
@@ -2043,7 +2058,11 @@ fail:
         return log_error_errno(r, "Failed to write information about scheduled shutdowns: %m");
 }
 
+#if 0 /// elogind must access this from elogind-dbus.c
 static void reset_scheduled_shutdown(Manager *m) {
+#else
+void reset_scheduled_shutdown(Manager *m) {
+#endif // 0
         assert(m);
 
         m->scheduled_shutdown_timeout_source = sd_event_source_unref(m->scheduled_shutdown_timeout_source);
