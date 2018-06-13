@@ -18,19 +18,13 @@
 ***/
 
 
-#include "bus-common-errors.h"
-#include "bus-error.h"
-#include "bus-util.h"
 #include "elogind-dbus.h"
-#include "fd-util.h"
 #include "process-util.h"
 #include "sd-messages.h"
 #include "sleep.h"
-#include "sleep-config.h"
 #include "string-util.h"
 #include "strv.h"
 #include "update-utmp.h"
-#include "user-util.h"
 
 
 static int bus_manager_log_shutdown(
