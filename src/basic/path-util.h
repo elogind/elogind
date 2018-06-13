@@ -64,10 +64,10 @@ static inline bool path_equal_ptr(const char *a, const char *b) {
 /* Note: the search terminates on the first NULL item. */
 #define PATH_IN_SET(p, ...)                                     \
         ({                                                      \
-                char **s;                                       \
+                char **_s;                                      \
                 bool _found = false;                            \
-                STRV_FOREACH(s, STRV_MAKE(__VA_ARGS__))         \
-                        if (path_equal(p, *s)) {                \
+                STRV_FOREACH(_s, STRV_MAKE(__VA_ARGS__))        \
+                        if (path_equal(p, *_s)) {               \
                                _found = true;                   \
                                break;                           \
                         }                                       \
@@ -146,7 +146,6 @@ char* dirname_malloc(const char *path);
 const char *last_path_component(const char *path);
 
 bool filename_is_valid(const char *p) _pure_;
-bool path_is_valid(const char *p) _pure_;
 bool path_is_normalized(const char *p) _pure_;
 
 char *file_in_same_dir(const char *path, const char *filename);
