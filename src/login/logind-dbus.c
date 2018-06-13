@@ -1691,11 +1691,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
         return 1;
 }
 
-#if 0 /// elogind-dbus.c needs to access this
 static int manager_inhibit_timeout_handler(
-#else
-int manager_inhibit_timeout_handler(
-#endif // 0
                         sd_event_source *s,
                         uint64_t usec,
                         void *userdata) {
