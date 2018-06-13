@@ -1758,21 +1758,28 @@ int delay_shutdown_or_sleep(
         return 0;
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
 int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
+#if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
+#else
+                HandleAction unit_name,
+#endif // 0
                 InhibitWhat w,
                 sd_bus_error *error) {
-
         bool delayed;
         int r;
 
         assert(m);
+#if 0 /// for elogind only w has to be checked.
         assert(unit_name);
         assert(w > 0);
         assert(w <= _INHIBIT_WHAT_MAX);
         assert(!m->action_job);
+#else
+        assert(w > 0);
+        assert(w <= _INHIBIT_WHAT_MAX);
+#endif // 0
 
         /* Tell everybody to prepare for shutdown/sleep */
         (void) send_prepare_for(m, w, true);
@@ -1782,8 +1789,9 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 manager_is_inhibited(m, w, INHIBIT_DELAY, NULL, false, false, 0, NULL);
 
         log_debug_elogind("%s called for %s (%sdelayed)", __FUNCTION__,
-                          handle_action_to_string(action),
+                          handle_action_to_string(unit_name),
                           delayed ? "" : "NOT ");
+
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
@@ -1795,7 +1803,6 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 
         return r;
 }
-#endif // 0
 
 #if 0 /// elogind-dbus.c needs to access this
 static int verify_shutdown_creds(
