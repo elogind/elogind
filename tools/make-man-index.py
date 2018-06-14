@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #  -*- Mode: python; coding: utf-8; indent-tabs-mode: nil -*- */
 # SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2013 Zbigniew Jędrzejewski-Szmek
 
 import collections
 import sys
@@ -15,14 +17,6 @@ TEMPLATE = '''\
   <refentryinfo>
     <title>elogind.index</title>
     <productname>elogind</productname>
-
-    <authorgroup>
-      <author>
-        <contrib>Developer</contrib>
-        <firstname>Lennart</firstname>
-        <surname>Poettering</surname>
-        <email>lennart@poettering.net</email>
-      </author>
       <!-- 1 /// Must add elogind authors for the additions and changes -->
       <author>
         <contrib>Developer</contrib>
@@ -31,7 +25,6 @@ TEMPLATE = '''\
         <email>sven.eden@gmx.de</email>
       </author>
       <!-- // 1 -->
-    </authorgroup>
   </refentryinfo>
 
   <refmeta>

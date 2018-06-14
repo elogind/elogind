@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #  -*- Mode: python; coding: utf-8; indent-tabs-mode: nil -*- */
 # SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2012-2013 Zbigniew Jędrzejewski-Szmek
 
 import sys
 import collections
@@ -14,15 +16,6 @@ TEMPLATE = '''\
         <refentryinfo>
                 <title>elogind.directives</title>
                 <productname>elogind</productname>
-
-                <authorgroup>
-                        <author>
-                                <contrib>Developer</contrib>
-                                <firstname>Zbigniew</firstname>
-                                <surname>Jędrzejewski-Szmek</surname>
-                                <email>zbyszek@in.waw.pl</email>
-                        </author>
-                </authorgroup>
         </refentryinfo>
 
         <refmeta>
