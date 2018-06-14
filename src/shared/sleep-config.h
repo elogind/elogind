@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-/***
-  Copyright © 2013 Zbigniew Jędrzejewski-Szmek
-***/
 
 #if 0 /// UNNEEDED by elogind
 //#include <linux/fiemap.h>
