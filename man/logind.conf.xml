@@ -21,15 +21,6 @@
     <title>logind.conf</title>
     <productname>elogind</productname>
 <!-- // 0 -->
-
-    <authorgroup>
-      <author>
-        <contrib>Developer</contrib>
-        <firstname>Lennart</firstname>
-        <surname>Poettering</surname>
-        <email>lennart@poettering.net</email>
-      </author>
-    </authorgroup>
   </refentryinfo>
 
   <refmeta>

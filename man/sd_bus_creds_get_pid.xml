@@ -4,6 +4,8 @@
 
 <!--
   SPDX-License-Identifier: LGPL-2.1+
+
+  Copyright © 2014 Zbigniew Jędrzejewski-Szmek
 -->
 
 <refentry id="sd_bus_creds_get_pid" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -11,15 +13,6 @@
   <refentryinfo>
     <title>sd_bus_creds_get_pid</title>
     <productname>systemd</productname>
-
-    <authorgroup>
-      <author>
-        <contrib>A monkey with a typewriter</contrib>
-        <firstname>Zbigniew</firstname>
-        <surname>Jędrzejewski-Szmek</surname>
-        <email>zbyszek@in.waw.pl</email>
-      </author>
-    </authorgroup>
   </refentryinfo>
 
   <refmeta>
