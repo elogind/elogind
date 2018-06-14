@@ -1,6 +1,4 @@
 # SPDX-License-Identifier: LGPL-2.1+
-#
-# Copyright © 2017 Zbigniew Jędrzejewski-Szmek
 #if 0 /// rename to elogind
 # 
 # systemd_logind_sources = files('''
