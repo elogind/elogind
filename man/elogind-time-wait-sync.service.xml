@@ -13,15 +13,6 @@
   <refentryinfo>
     <title>elogind-time-wait-sync.service</title>
     <productname>elogind</productname>
-
-    <authorgroup>
-      <author>
-        <contrib>Developer</contrib>
-        <firstname>Peter</firstname>
-        <surname>Bigot</surname>
-        <email>pab@pabigot.com</email>
-      </author>
-    </authorgroup>
   </refentryinfo>
 
   <refmeta>
