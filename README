@@ -177,11 +177,11 @@ During runtime, you need the following additional dependencies:
   To build in directory build/:
     meson build/ && ninja -C build
 
-  Any configuration options can be specfied as -Darg=value... arguments
-  to meson. After the build directory is initially configured, meson will
-  refuse to run again, and options must be changed with:
-    mesonconf -Darg=value...
-  mesonconf without any arguments will print out available options and
+  Any configuration options can be specified as -Darg=value... arguments
+  to meson. After the build directory is initially configured, the configuration
+  can be changed with:
+    meson configure -Darg=value... build/
+  'meson configure' without any arguments will print out available options and
   their current values.
 
   Useful commands:
@@ -191,4 +191,4 @@ During runtime, you need the following additional dependencies:
     DESTDIR=... ninja install
 
   A tarball can be created with:
-    git archive --format=tar --prefix=elogind-234/ v234 | xz > elogind-234.tar.xz
+    git archive --format=tar --prefix=elogind-238/ v238 | xz > elogind-238.tar.xz
