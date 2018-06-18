@@ -97,7 +97,7 @@ static int elogind_daemonize(void) {
         pid_t SID;
         int r;
 
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         log_notice("Double forking elogind");
         log_notice("Parent PID     : %5d", getpid_cached());
         log_notice("Parent SID     : %5d", getsid(getpid_cached()));
@@ -118,7 +118,7 @@ static int elogind_daemonize(void) {
                 return child;
         }
 
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         log_notice("Child PID      : %5d", getpid_cached());
         log_notice("Child SID      : %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
@@ -135,7 +135,7 @@ static int elogind_daemonize(void) {
         if ((pid_t)-1 == SID)
                 return log_error_errno(errno, "Failed to create new SID: %m");
 
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         log_notice("Child new SID  : %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
 
@@ -154,7 +154,7 @@ static int elogind_daemonize(void) {
         close_all_fds(NULL, 0);
         umask(0022);
 
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         log_notice("Grand child PID: %5d", getpid_cached());
         log_notice("Grand child SID: %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
@@ -331,7 +331,7 @@ int elogind_startup(int argc, char *argv[]) {
 
         /* Note: At this point, the logging is not initialized, so we can not
                  use log_debug_elogind(). */
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         log_notice("elogind startup: Daemonize: %s, Show Help: %s, Wrong arg: %s",
                 daemonize ? "True" : "False",
                 show_help ? "True" : "False",
@@ -416,7 +416,7 @@ int elogind_manager_new(Manager* m) {
 /// Add-On for manager_reset_config()
 void elogind_manager_reset_config(Manager* m) {
 
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         int dbg_cnt;
 #endif // ENABLE_DEBUG_ELOGIND
 
@@ -432,7 +432,7 @@ void elogind_manager_reset_config(Manager* m) {
         if (!m->hybrid_sleep_state)
                 m->hybrid_sleep_state = strv_new("disk", NULL);
 
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         dbg_cnt = -1;
         while (m->suspend_mode && m->suspend_mode[++dbg_cnt])
                 log_debug_elogind("suspend_mode[%d] = %s",
