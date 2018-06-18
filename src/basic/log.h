@@ -275,7 +275,7 @@ void log_assert_failed_return_realm(
 #  define log_trace(...) do {} while (0)
 #endif
 
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
 #  define log_debug_elogind(...) log_debug(__VA_ARGS__);usleep(25*USEC_PER_MSEC)
 #else
 #  define log_debug_elogind(...) do {} while (0)
