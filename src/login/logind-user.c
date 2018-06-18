@@ -722,8 +722,8 @@ bool user_may_gc(User *u, bool drop_not_started) {
                 return false;
 
         if (u->service_job && manager_job_is_active(u->manager, u->service_job))
-#endif // 0
                 return false;
+#endif // 0
 
         return true;
 }
