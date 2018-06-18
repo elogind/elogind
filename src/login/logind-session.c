@@ -732,7 +732,14 @@ static int session_stop_cgroup(Session *s, bool force) {
 
         assert(s);
 
+#if 0 /// elogind must not kill lingering user processes alive
         if (force || manager_shall_kill(s->manager, s->user->name)) {
+#else
+        if (force
+          || ( manager_shall_kill(s->manager, s->user->name)
+            && (user_check_linger_file(s->user) < 1) ) ) {
+#endif // 1
+
                 r = session_kill(s, KILL_ALL, SIGTERM);
                 if (r < 0)
                         return r;
