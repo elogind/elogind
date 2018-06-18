@@ -218,7 +218,7 @@ void elogind_cleanup(void) {
 
 /* Little debug log helper, helps debugging systemctl comands we mimic. */
 static void elogind_log_special(enum elogind_action a) {
-#ifdef ENABLE_DEBUG_ELOGIND
+#if ENABLE_DEBUG_ELOGIND
         switch (a) {
         case ACTION_HALT:
                 log_struct(LOG_INFO,
