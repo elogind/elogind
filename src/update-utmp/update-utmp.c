@@ -237,7 +237,7 @@ static int on_runlevel(Context *c) {
 #if 0 /// elogind needs this to be a callable function
 int main(int argc, char *argv[]) {
 #else
-void update_utmp(int argc, char* argv[], sd_bus *bus) {
+void update_utmp(int argc, char* argv[]) {
 #endif // 0
         Context c = {
 #if HAVE_AUDIT
@@ -265,7 +265,6 @@ void update_utmp(int argc, char* argv[], sd_bus *bus) {
 #else
         assert(2 == argc);
         assert(argv[1]);
-        assert(bus);
 #endif // 0
 
 #if HAVE_AUDIT
@@ -300,7 +299,6 @@ void update_utmp(int argc, char* argv[], sd_bus *bus) {
 
 finish:
 #else
-        c.bus = bus;
         if (streq(argv[1], "reboot"))
                 (void)on_reboot(&c);
         else if (streq(argv[1], "shutdown"))
@@ -311,8 +309,9 @@ finish:
                 audit_close(c.audit_fd);
 #endif
 
-        sd_bus_flush_close_unref(c.bus);
 #if 0 /// UNNEEDED by elogind
+        sd_bus_flush_close_unref(c.bus);
+
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 #endif // 0
 }
