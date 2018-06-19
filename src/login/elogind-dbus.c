@@ -157,7 +157,7 @@ static int execute_shutdown_or_sleep(
                 }
 
                  /* This comes from our patched update-utmp/update-utmp.c */
-                update_utmp(2, argv_utmp, m->bus);
+                update_utmp(2, argv_utmp);
                 strv_free(argv_utmp);
         }
 

@@ -6,7 +6,7 @@
 * Make the old main() from update-utmp.c visible as update_utmp() *
 ******************************************************************/
 
-void update_utmp(int argc, char* argv[], sd_bus *bus);
+void update_utmp(int argc, char* argv[]);
 
 
 #endif // ELOGIND_SRC_UPDATE_UTMP_UPDATE_UTMP_H_INCLUDED
