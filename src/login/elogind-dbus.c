@@ -75,23 +75,21 @@ static int bus_manager_log_shutdown(
 
 /* elogind specific helper to make HALT and REBOOT possible. */
 static int run_helper(const char *helper) {
-        pid_t pid = 0;
         int   r   = 0;
 
-        r = safe_fork_full(helper, NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_WAIT, &pid);
+        r = safe_fork_full(helper, NULL, 0, FORK_RESET_SIGNALS|FORK_REOPEN_LOG, NULL);
 
         if (r < 0)
                 return log_error_errno(errno, "Failed to fork run %s: %m", helper);
 
-        if (pid == 0) {
+        if (0 == r) {
                 /* Child */
-
                 execlp(helper, helper, NULL);
                 log_error_errno(errno, "Failed to execute %s: %m", helper);
                 _exit(EXIT_FAILURE);
         }
 
-        return r;
+        return 0;
 }
 
 /* elogind specific executor */
@@ -152,7 +150,7 @@ int execute_shutdown_or_sleep(
                 }
 
                  /* This comes from our patched update-utmp/update-utmp.c */
-                update_utmp(2, argv_utmp, m->bus);
+                update_utmp(2, argv_utmp);
                 strv_free(argv_utmp);
         }
 
