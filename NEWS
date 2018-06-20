@@ -302,8 +302,6 @@ CHANGES WITH 239 in spe:
           https://github.com/systemd/systemd/blob/master/doc/PORTABLE_SERVICES.md
           https://github.com/systemd/systemd/blob/master/doc/CODE_QUALITY.md
 
-        * pam_elogind will now look for PAM userdata fields elogind.memory_max,
-          elogind.tasks_max, elogind.cpu_weight, elogind.io_weight set by
         * The Boot Loader Specification has been added to the source tree.
 
           https://github.com/systemd/systemd/blob/master/doc/BOOT_LOADER_SPECIFICATION.md
@@ -311,6 +309,8 @@ CHANGES WITH 239 in spe:
           While moving it into our source tree we have updated it and further
           changes are now accepted through the usual github PR workflow.
 
+        * pam_elogind will now look for PAM userdata fields elogind.memory_max,
+          elogind.tasks_max, elogind.cpu_weight, elogind.io_weight set by
           earlier PAM modules. The data in these fields is used to initialize
           the session scope's resource properties. Thus external PAM modules
           may now configure per-session limits, for example sourced from
@@ -332,6 +332,9 @@ CHANGES WITH 239 in spe:
           primarily useful for services that do not use any of the other file
           system namespacing options. One such service is elogind-udevd.service
           wher this is now used by default.
+
+        * ConditionSecurity= gained a new value "uefi-secureboot" that is true
+          when the system is booted in UEFI "secure mode".
 
         * A new unit "system-update-pre.target" is added, which defines an
           optional synchronization point for offline system updates, as
