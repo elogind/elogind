@@ -304,6 +304,13 @@ CHANGES WITH 239 in spe:
 
         * pam_elogind will now look for PAM userdata fields elogind.memory_max,
           elogind.tasks_max, elogind.cpu_weight, elogind.io_weight set by
+        * The Boot Loader Specification has been added to the source tree.
+
+          https://github.com/systemd/systemd/blob/master/doc/BOOT_LOADER_SPECIFICATION.md
+
+          While moving it into our source tree we have updated it and further
+          changes are now accepted through the usual github PR workflow.
+
           earlier PAM modules. The data in these fields is used to initialize
           the session scope's resource properties. Thus external PAM modules
           may now configure per-session limits, for example sourced from
