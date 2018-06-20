@@ -161,9 +161,10 @@ option('fallback-hostname', type : 'string', value : 'localhost',
 option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
        description : '''default cgroup hierarchy if elogind must be its own controller:
-                "legacy"  assumes cgroups version 1 mounted on /sys/fs/cgroup
-                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified and
-                                  cgroups version 1 mounted on /sys/fs/cgroup.
+                "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its
+                                  subfolders.
+                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified.
+                                  /sys/fs/cgroup is legacy, then.
                 "unified" assumes cgroups version 2 on /sys/fs/cgroup''')
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
