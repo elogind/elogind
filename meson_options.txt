@@ -189,9 +189,10 @@ option('default-hierarchy', type : 'combo',
 #        description : 'time epoch for time clients')
 #else
        description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
-                "legacy"  assumes cgroups version 1 mounted on /sys/fs/cgroup
-                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified and
-                                  cgroups version 1 mounted on /sys/fs/cgroup.
+                "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its
+                                  subfolders.
+                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified.
+                                  /sys/fs/cgroup is legacy, then.
                 "unified" assumes cgroups version 2 on /sys/fs/cgroup''')
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
