@@ -1298,12 +1298,23 @@ conf.set10('HAVE_DBUS', have)
 #          'DNSSEC_' + default_dnssec.underscorify().to_upper())
 # substs.set('DEFAULT_DNSSEC_MODE', default_dnssec)
 # 
+# dns_over_tls = get_option('dns-over-tls')
+# if dns_over_tls != 'false'
+#         have = conf.get('HAVE_GNUTLS') == 1
+#         if dns_over_tls == 'true' and not have
+#                 error('DNS-over-TLS support was requested, but dependencies are not available')
+#         endif
+# else
+#         have = false
+# endif
+# conf.set10('ENABLE_DNS_OVER_TLS', have)
+# 
 # default_dns_over_tls = get_option('default-dns-over-tls')
 # if fuzzer_build
 #         default_dns_over_tls = 'no'
 # endif
-# if default_dns_over_tls != 'no' and conf.get('HAVE_GNUTLS') == 0
-#         message('default-dns-over-tls cannot be set to strict or opportunistic when gnutls is disabled. Setting default-dns-over-tls to no.')
+# if default_dns_over_tls != 'no' and conf.get('ENABLE_DNS_OVER_TLS') == 0
+#         message('default-dns-over-tls cannot be set to opportunistic when DNS-over-TLS support is disabled. Setting default-dns-over-tls to no.')
 #         default_dns_over_tls = 'no'
 # endif
 # conf.set('DEFAULT_DNS_OVER_TLS_MODE',
@@ -1805,11 +1816,7 @@ test_dlopen = executable(
 #                    link_with : [libshared,
 #                                 libbasic_gcrypt,
 #                                 libsystemd_resolve_core],
-#                    dependencies : [threads,
-#                                    libgnutls,
-#                                    libgpg_error,
-#                                    libm,
-#                                    libidn],
+#                    dependencies : systemd_resolved_dependencies,
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
@@ -1928,6 +1935,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
@@ -3312,6 +3320,7 @@ foreach tuple : [
 #         ['localed'],
 #         ['networkd'],
 #         ['resolve'],
+#         ['DNS-over-TLS'],
 #         ['coredump'],
 #endif // 0
         ['polkit'],
