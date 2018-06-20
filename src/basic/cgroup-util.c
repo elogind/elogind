@@ -2740,8 +2740,10 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
 
 bool cg_is_unified_wanted(void) {
         static thread_local int wanted = -1;
+#if 0 /// UNNEEDED by elogind
         int r;
         bool b;
+#endif // 0
         const bool is_default = DEFAULT_HIERARCHY == CGROUP_UNIFIED_ALL;
 
         /* If we have a cached value, return that. */
@@ -2757,9 +2759,11 @@ bool cg_is_unified_wanted(void) {
         /* Otherwise, let's see what the kernel command line has to say.
          * Since checking is expensive, cache a non-error result. */
         r = proc_cmdline_get_bool("systemd.unified_cgroup_hierarchy", &b);
-#endif // 0
 
         return (wanted = r > 0 ? b : is_default);
+#else
+        return is_default;
+#endif // 0
 }
 
 bool cg_is_legacy_wanted(void) {
@@ -2781,8 +2785,10 @@ bool cg_is_legacy_wanted(void) {
 
 bool cg_is_hybrid_wanted(void) {
         static thread_local int wanted = -1;
+#if 0 /// UNNEEDED by elogind
         int r;
         bool b;
+#endif // 0
         const bool is_default = DEFAULT_HIERARCHY >= CGROUP_UNIFIED_SYSTEMD;
         /* We default to true if the default is "hybrid", obviously,
          * but also when the default is "unified", because if we get
@@ -2802,11 +2808,13 @@ bool cg_is_hybrid_wanted(void) {
         /* Otherwise, let's see what the kernel command line has to say.
          * Since checking is expensive, cache a non-error result. */
         r = proc_cmdline_get_bool("systemd.legacy_systemd_cgroup_controller", &b);
-#endif // 0
 
         /* The meaning of the kernel option is reversed wrt. to the return value
          * of this function, hence the negation. */
         return (wanted = r > 0 ? !b : is_default);
+#else
+        return is_default;
+#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind
