@@ -220,9 +220,10 @@ CHANGES WITH 239 in spe:
           example, "elogind-tmpfiles --cat-config" will now output the full
           list of tmpfiles.d/ lines in place.
 
-        * timedatectl gained two new verbs "timesync-status" (to show the
-          current NTP synchronization state of elogind-timesyncd) and
-          "show-timesync" (to show bus properties of elogind-timesyncd).
+        * timedatectl gained three new verbs: "show" shows bus properties of
+          elogind-timedated, "timesync-status" shows the current NTP
+          synchronization state of elogind-timesyncd, and "show-timesync"
+          shows bus properties of elogind-timesyncd.
 
         * elogind-timesyncd gained a bus interface on which it exposes details
           about its state.
