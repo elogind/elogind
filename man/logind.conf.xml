@@ -26,12 +26,15 @@
 <!-- 0 /// elogind does not have to enable itself in configure
 <refentry id="logind.conf" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
+  <refentryinfo>
+    <title>logind.conf</title>
     <productname>systemd</productname>
 --><!-- else -->
 <refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
-<!-- // 0 -->
   <refentryinfo>
     <title>logind.conf</title>
+    <productname>elogind</productname>
+<!-- // 0 -->
 
     <authorgroup>
       <author>
@@ -305,7 +308,7 @@
         <term><varname>HibernateKeyIgnoreInhibited=</varname></term>
         <term><varname>LidSwitchIgnoreInhibited=</varname></term>
 
-        <listitem><para>Controls whether actions that <command>systemd-logind</command>
+        <listitem><para>Controls whether actions that <command>elogind</command>
         takes when the power and sleep keys and the lid switch are triggered are subject
         to high-level inhibitor locks ("shutdown", "sleep", "idle"). Low level inhibitor
         locks (<literal>handle-power-key</literal>, <literal>handle-suspend-key</literal>,
@@ -319,7 +322,7 @@
         <varname>SuspendKeyIgnoreInhibited=</varname>, and
         <varname>HibernateKeyIgnoreInhibited=</varname> default to <literal>no</literal>.
         <varname>LidSwitchIgnoreInhibited=</varname> defaults to <literal>yes</literal>.
-        This means that when <command>systemd-logind</command> is handling events by
+        This means that when <command>elogind</command> is handling events by
         itself (no low level inhibitor locks are taken by another application), the lid
         switch does not respect suspend blockers by default, but the power and sleep keys
         do.</para></listitem>
@@ -368,7 +371,7 @@
         <listitem><para>Controls the maximum number of concurrent user sessions to manage. Defaults to 8192
         (8K). Depending on how the <filename>pam_systemd.so</filename> module is included in the PAM stack
         configuration, further login sessions will either be refused, or permitted but not tracked by
-        <filename>systemd-logind</filename>.</para></listitem>
+        <filename>elogind</filename>.</para></listitem>
       </varlistentry>
 
       <varlistentry>

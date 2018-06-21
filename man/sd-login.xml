@@ -57,7 +57,7 @@
     </funcsynopsis>
 
     <cmdsynopsis>
-      <command>pkg-config --cflags --libs libsystemd</command>
+      <command>pkg-config --cflags --libs libelogind</command>
     </cmdsynopsis>
   </refsynopsisdiv>
 
@@ -252,7 +252,7 @@
     about seats.</para>
   </refsect1>
 
-  <xi:include href="libsystemd-pkgconfig.xml" />
+  <xi:include href="libelogind-pkgconfig.xml" />
 
   <refsect1>
     <title>See Also</title>
