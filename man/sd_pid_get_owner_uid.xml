@@ -336,7 +336,7 @@
     <function>sd_peer_get_slice()</function> and
     <function>sd_peer_get_user_slice()</function> interfaces are
     available as a shared library, which can be compiled and linked to
-    with the <constant>libsystemd</constant> <citerefentry
+    with the <constant>libelogind</constant> <citerefentry
     project='die-net'><refentrytitle>pkg-config</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     file.</para>
 
