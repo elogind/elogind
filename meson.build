@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '238',
+        version : '239',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -13,8 +13,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.22.0'
-# libudev_version = '1.6.10'
+# libsystemd_version = '0.23.0'
+# libudev_version = '1.6.11'
 #else
 libelogind_version = '0.22.0'
 #endif // 0
@@ -1935,6 +1935,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
 executable('elogind-user-runtime-dir',
