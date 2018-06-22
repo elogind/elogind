@@ -36,7 +36,6 @@ option('static-libelogind', type : 'combo',
 #
 # option('quotaon-path', type : 'string', description : 'path to quotaon')
 # option('quotacheck-path', type : 'string', description : 'path to quotacheck')
-# option('kill-path', type : 'string', description : 'path to kill')
 # option('kmod-path', type : 'string', description : 'path to kmod')
 #else
 # elogind must have a configurable rootlibexecdir
@@ -72,7 +71,7 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
 #        description : 'specify the tty device for debug shell')
-# option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache'], value : [],
+# option('debug', type : 'array', choices : ['hashmap', 'mmap-cache'], value : [],
 #        description : 'enable extra debugging')
 # option('memory-accounting-default', type : 'boolean',
 #        description : 'enable MemoryAccounting= by default')
@@ -343,9 +342,9 @@ option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
 #if 0 /// UNNEEDED BY elogind
 # option('gnu-efi', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'gnu-efi support for sd-boot')
-# option('efi-cc', type : 'array',
+# option('efi-cc', type : 'string', value : 'gcc',
 #        description : 'the compiler to use for EFI modules')
-# option('efi-ld', type : 'string',
+# option('efi-ld', type : 'string', value : 'ld',
 #        description : 'the linker to use for EFI modules')
 # option('efi-libdir', type : 'string',
 #        description : 'path to the EFI lib directory')
