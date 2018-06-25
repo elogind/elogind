@@ -98,5 +98,7 @@ BUS_ERROR_MAP_ELF_REGISTER const sd_bus_error_map bus_common_errors[] = {
         SD_BUS_ERROR_MAP(BUS_ERROR_TRANSFER_IN_PROGRESS,         EBUSY),
 #endif // 0
 
+        SD_BUS_ERROR_MAP(BUS_ERROR_NO_PRODUCT_UUID,              EOPNOTSUPP),
+
         SD_BUS_ERROR_MAP_END
 };
