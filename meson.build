@@ -1342,7 +1342,7 @@ conf.set10('HAVE_DBUS', have)
 # 
 # dns_over_tls = get_option('dns-over-tls')
 # if dns_over_tls != 'false'
-#         have = conf.get('HAVE_GNUTLS') == 1
+#         have = libgnutls != [] and libgnutls.version().version_compare('>=3.5.3')
 #         if dns_over_tls == 'true' and not have
 #                 error('DNS-over-TLS support was requested, but dependencies are not available')
 #         endif
@@ -2001,6 +2001,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+        executable('elogind-user-runtime-dir',
         executable('elogind-user-runtime-dir',
                    user_runtime_dir_sources,
                    include_directories : includes,
