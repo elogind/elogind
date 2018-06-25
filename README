@@ -1,196 +1,328 @@
-Elogind User, Seat and Session Manager
+elogind System and Service Manager
 
-Introduction
-------------
+DETAILS:
+        http://0pointer.de/blog/projects/elogind.html
 
-Elogind is the systemd project's "logind", extracted out to be a
-standalone daemon.  It integrates with PAM to know the set of users
-that are logged in to a system and whether they are logged in
-graphically, on the console, or remotely.  Elogind exposes this
-information via the standard org.freedesktop.login1 D-Bus interface,
-as well as through the file system using systemd's standard
-/run/systemd layout.  Elogind also provides "libelogind", which is a
-subset of the facilities offered by "libsystemd".  There is a
-"libelogind.pc" pkg-config file as well.
+WEB SITE:
+        https://www.freedesktop.org/wiki/Software/elogind
 
-All of the credit for elogind should go to the systemd developers.
-For more on systemd, see
-  http://www.freedesktop.org/wiki/Software/systemd
-All of the blame should go to Andy Wingo, who extracted elogind
-from systemd.
-All complaints should go to Sven Eden, who is maintaining elogind.
+GIT:
+        git@github.com:elogind/elogind.git
+        https://github.com/systemd/systemd
 
-Contributing
-------------
+MAILING LIST:
+        https://lists.freedesktop.org/mailman/listinfo/elogind-devel
 
-Elogind was branched from systemd version 219, and preserves the git
-history of the systemd project.  The version of elogind is the
-upstream systemd version, followed by the patchlevel of elogind.  For
-example version 219.12 is the twelfth elogind release, which aims to
-provide a subset of the interfaces of systemd 219.
+IRC:
+        #elogind on irc.freenode.org
 
-To contribute to elogind, fork the current source code from github:
-  https://github.com/elogind/elogind
-Send a pull request for the changes you like.
+BUG REPORTS:
+        https://github.com/systemd/systemd/issues
 
-If you do not have a github account, the elogind wiki page at
-  https://github.com/elogind/elogind/wiki
-lists further possibilities to contact the maintainers.
+AUTHOR:
+        Lennart Poettering
+        Kay Sievers
+        ...and many others
 
-To chat about elogind:
-  #elogind on freenode
+LICENSE:
+        LGPLv2.1+ for all code
+        - except src/basic/MurmurHash2.c which is Public Domain
+        - except src/basic/siphash24.c which is CC0 Public Domain
+        - except src/journal/lookup3.c which is Public Domain
+        - except src/udev/* which is (currently still) GPLv2, GPLv2+
 
-Finally, bug reports:
-  https://github.com/elogind/elogind/issues
+REQUIREMENTS:
+        Linux kernel >= 3.13
+        Linux kernel >= 4.2 for unified cgroup hierarchy support
 
-Why bother?
------------
+        Kernel Config Options:
+          CONFIG_DEVTMPFS
+          CONFIG_CGROUPS (it is OK to disable all controllers)
+          CONFIG_INOTIFY_USER
+          CONFIG_SIGNALFD
+          CONFIG_TIMERFD
+          CONFIG_EPOLL
+          CONFIG_NET
+          CONFIG_SYSFS
+          CONFIG_PROC_FS
+          CONFIG_FHANDLE (libudev, mount and bind mount handling)
 
-Elogind has been developed for use in GuixSD, the OS distribution of
-GNU Guix.  See http://gnu.org/s/guix for more on Guix.  GuixSD uses a
-specific init manager (GNU Shepherd), for reasons that are not relevant
-here, but still aims to eventually be a full-featured distribution that
-can run GNOME and other desktop environments.  However, to run GNOME
-these days means that you need to have support for the login1 D-Bus
-interface, which is currently only provided by systemd.  That is the
-origin of this project: to take the excellent logind functionality
-from systemd and provide it as a standalone package.
+        Kernel crypto/hash API
+          CONFIG_CRYPTO_USER_API_HASH
+          CONFIG_CRYPTO_HMAC
+          CONFIG_CRYPTO_SHA256
 
-You're welcome to use elogind for whatever purpose you like --
-as-is, or as a jumping-off point for other things -- but please don't
-use it as part of some anti-systemd vendetta. We are appreciative of
-the systemd developers logind effort and think that everyone deserves
-to run it if they like. Not matter what kind of PID1 they use.
+        udev will fail to work with the legacy sysfs layout:
+          CONFIG_SYSFS_DEPRECATED=n
 
-Differences relative to systemd
--------------------------------
+        Legacy hotplug slows down the system and confuses udev:
+          CONFIG_UEVENT_HELPER_PATH=""
 
-The pkg-config file is called libelogind, not libsystemd or
-libsystemd-logind.
+        Userspace firmware loading is not supported and should
+        be disabled in the kernel:
+          CONFIG_FW_LOADER_USER_HELPER=n
 
-The headers are in <elogind/...>, so like <elogind/sd-login.h> instead
-of <systemd/sd-login.h>.
+        Some udev rules and virtualization detection relies on it:
+          CONFIG_DMIID
 
-Libelogind just implements login-related functionality.  It also
-provides the sd-bus API.
+        Support for some SCSI devices serial number retrieval, to
+        create additional symlinks in /dev/disk/ and /dev/tape:
+          CONFIG_BLK_DEV_BSG
 
-Unlike systemd, whose logind arranges to manage resources for user
-sessions via RPC calls to systemd, in elogind there is no systemd so
-there is no global cgroup-based resource management.  This has a few
-implications:
+        Required for PrivateNetwork= in service units:
+          CONFIG_NET_NS
+        Note that elogind-localed.service and other elogind units use
+        PrivateNetwork so this is effectively required.
 
-  * Elogind does not create "slices" for users.  Elogind will not
-    record that users are associated with slices.
+        Required for PrivateUsers= in service units:
+          CONFIG_USER_NS
 
-  * The /run/systemd/slices directory will always be empty.
+        Optional but strongly recommended:
+          CONFIG_IPV6
+          CONFIG_AUTOFS4_FS
+          CONFIG_TMPFS_XATTR
+          CONFIG_{TMPFS,EXT4_FS,XFS,BTRFS_FS,...}_POSIX_ACL
+          CONFIG_SECCOMP
+          CONFIG_SECCOMP_FILTER (required for seccomp support)
+          CONFIG_CHECKPOINT_RESTORE (for the kcmp() syscall)
 
-  * Elogind does not have the concept of a "scope", internally, as
-    it's the same as a session.  Any API that refers to scopes will
-    always return an error code.
+        Required for CPUShares= in resource control unit settings
+          CONFIG_CGROUP_SCHED
+          CONFIG_FAIR_GROUP_SCHED
 
-On the other hand, elogind does use a similar strategy to systemd in
-that it places processes in a private cgroup for organizational
-purposes, without installing any controllers (see
-http://0pointer.de/blog/projects/cgroups-vs-cgroups.html).  This
-allows elogind to map arbitrary processes to sessions, even if the
-process does the usual double-fork to be reparented to PID 1.
+        Required for CPUQuota= in resource control unit settings
+          CONFIG_CFS_BANDWIDTH
 
-Elogind does not manage virtual terminals.
+        Required for IPAddressDeny= and IPAddressAllow= in resource control
+        unit settings
+          CONFIG_CGROUP_BPF
 
-Elogind does monitor power button and the lid switch, like systemd,
-but instead of doing RPC to systemd to suspend, poweroff, or restart
-the machine, elogind just does this directly.  For suspend, hibernate,
-and hybrid-sleep, elogind uses the same code as systemd-sleep.
-Instead of using a separate sleep.conf file to configure the sleep
-behavior, this is included in the [Sleep] section of
-/etc/elogind/login.conf.  See the example login.conf for more.  For
-shutdown, reboot, and kexec, elogind shells out to "halt", "reboot",
-and "kexec" binaries.
+        For UEFI systems:
+          CONFIG_EFIVAR_FS
+          CONFIG_EFI_PARTITION
 
-The loginctl command has the poweroff, reboot, sleep, hibernate, and
-hybrid-sleep commands from systemd, as well as the --ignore-inhibitors
-flag.
+        We recommend to turn off Real-Time group scheduling in the
+        kernel when using elogind. RT group scheduling effectively
+        makes RT scheduling unavailable for most userspace, since it
+        requires explicit assignment of RT budgets to each unit whose
+        processes making use of RT. As there's no sensible way to
+        assign these budgets automatically this cannot really be
+        fixed, and it's best to disable group scheduling hence.
+           CONFIG_RT_GROUP_SCHED=n
 
-The PAM module is called pam_elogind.so, not pam_systemd.so.
+        It's a good idea to disable the implicit creation of networking bonding
+        devices by the kernel networking bonding module, so that the
+        automatically created "bond0" interface doesn't conflict with any such
+        device created by elogind-networkd (or other tools). Ideally there
+        would be a kernel compile-time option for this, but there currently
+        isn't. The next best thing is to make this change through a modprobe.d
+        drop-in. This is shipped by default, see modprobe.d/elogind.conf.
 
-Elogind and the running cgroup controller
------------------------------------------
-While 'configure' runs, it will detect which controller is in place.
-If no controller is in place, configure will determine, that elogind
-should be its own controller, which will be a very limited one.
+        Required for elogind-nspawn:
+          CONFIG_DEVPTS_MULTIPLE_INSTANCES or Linux kernel >= 4.7
 
-This approach should generally work, but if you just have no cgroup
-controller in place, yet, or if you are currently switching to
-another one, this approach will fail.
+        Note that kernel auditing is broken when used with elogind's
+        container code. When using elogind in conjunction with
+        containers, please make sure to either turn off auditing at
+        runtime using the kernel command line option "audit=0", or
+        turn it off at kernel compile time using:
+          CONFIG_AUDIT=n
+        If elogind is compiled with libseccomp support on
+        architectures which do not use socketcall() and where seccomp
+        is supported (this effectively means x86-64 and ARM, but
+        excludes 32-bit x86!), then nspawn will now install a
+        work-around seccomp filter that makes containers boot even
+        with audit being enabled. This works correctly only on kernels
+        3.14 and newer though. TL;DR: turn audit off, still.
 
-In this case you can do one of the two following things:
+        glibc >= 2.16
+        libcap
+        libmount >= 2.30 (from util-linux)
+                (util-linux *must* be built without --enable-libmount-support-mtab)
+        libseccomp >= 2.3.1 (optional)
+        libblkid >= 2.24 (from util-linux) (optional)
+        libkmod >= 15 (optional)
+        PAM >= 1.1.2 (optional)
+        libcryptsetup (optional)
+        libaudit (optional)
+        libacl (optional)
+        libselinux (optional)
+        liblzma (optional)
+        liblz4 >= 119 (optional)
+        libgcrypt (optional)
+        libqrencode (optional)
+        libmicrohttpd (optional)
+        libpython (optional)
+        libidn2 or libidn (optional)
+        gnutls >= 3.1.4 (optional, >= 3.5.3 is necessary to support DNS-over-TLS)
+        elfutils >= 158 (optional)
+        polkit (optional)
+        pkg-config
+        gperf
+        docbook-xsl (optional, required for documentation)
+        xsltproc    (optional, required for documentation)
+        python-lxml (optional, required to build the indices)
+        python >= 3.4, meson >= 0.44, ninja
+        gcc, awk, sed, grep, m4, and similar tools
 
- 1) Boot your system with the target init system and cgroup
-    controller, before configuring and building elogind, or
- 2) Use the --with-cgroup-controller=name option.
+        During runtime, you need the following additional
+        dependencies:
 
-Example: If you plan to use openrc, but openrc has not yet booted
-         the machine, you can use
-         --with-cgroup-controller=openrc
-         to let elogind know that openrc will be the controller
-         in charge.
+        util-linux >= v2.27.1 required
+        dbus >= 1.4.0 (strictly speaking optional, but recommended)
+                NOTE: If using dbus < 1.9.18, you should override the default
+                policy directory (--with-dbuspolicydir=/etc/dbus-1/system.d).
+        dracut (optional)
+        PolicyKit (optional)
 
-However, if you set the controller at configure time to something
-different than what is in place, elogind will not start until that
-controller is actively used as the primary controller.
+        To build in directory build/:
+          meson build/ && ninja -C build
 
-License
--------
+        Any configuration options can be specfied as -Darg=value... arguments
+        to meson. After the build directory is initially configured, meson will
+        refuse to run again, and options must be changed with:
+          mesonconf -Darg=value...
+        mesonconf without any arguments will print out available options and
+        their current values.
 
-LGPLv2.1+ for all code
+        Useful commands:
+          ninja -v some/target
+          ninja test
+          sudo ninja install
+          DESTDIR=... ninja install
 
-  - except src/basic/siphash24.c which is CC0 Public Domain
+        A tarball can be created with:
+          git archive --format=tar --prefix=elogind-222/ v222 | xz > elogind-222.tar.xz
 
-Dependencies
-------------
+        When elogind-hostnamed is used, it is strongly recommended to
+        install nss-myhostname to ensure that, in a world of
+        dynamically changing hostnames, the hostname stays resolvable
+        under all circumstances. In fact, elogind-hostnamed will warn
+        if nss-myhostname is not installed.
 
-  glibc >= 2.16
-  libcap
-  libmount >= 2.27.1 (from util-linux)
-          (util-linux < 2.29 *must* be built with --enable-libmount-force-mountinfo,
-          and later versions without --enable-libmount-support-mtab.)
-  libseccomp >= 2.3.1 (optional)
-  libblkid >= 2.24 (from util-linux) (optional)
-  PAM >= 1.1.2 (optional)
-  libacl (optional)
-  libselinux (optional)
-  libpython (optional)
-  pkg-config
-  gperf >= 3.1
-  docbook-xsl (optional, required for documentation)
-  xsltproc    (optional, required for documentation)
-  python-lxml (optional, required to build the indices)
-  python, meson, ninja
-  gcc, awk, sed, grep, m4, and similar tools
+        nss-elogind must be enabled on elogind systems, as that's required for
+        DynamicUser= to work. Note that we ship services out-of-the-box that
+        make use of DynamicUser= now, hence enabling nss-elogind is not
+        optional.
 
-During runtime, you need the following additional dependencies:
+        Note that the build prefix for elogind must be /usr. -Dsplit-usr=false
+        (which is the default and does not need to be specified) is the
+        recommended setting, and -Dsplit-usr=true should be used on systems
+        which have /usr on a separate partition.
 
-  util-linux >= v2.27.1 required
-  dbus >= 1.9.14 (strictly speaking optional, but recommended)
-          NOTE: If using dbus < 1.9.18, you should override the default
-          policy directory (--with-dbuspolicydir=/etc/dbus-1/system.d).
-  PolicyKit (optional)
+        Additional packages are necessary to run some tests:
+        - busybox            (used by test/TEST-13-NSPAWN-SMOKE)
+        - nc                 (used by test/TEST-12-ISSUE-3171)
+        - python3-pyparsing
+        - python3-evdev      (used by hwdb parsing tests)
+        - strace             (used by test/test-functions)
+        - capsh              (optional, used by test-execute)
 
-  To build in directory build/:
-    meson build/ && ninja -C build
+USERS AND GROUPS:
+        Default udev rules use the following standard system group
+        names, which need to be resolvable by getgrnam() at any time,
+        even in the very early boot stages, where no other databases
+        and network are available:
 
-  Any configuration options can be specified as -Darg=value... arguments
-  to meson. After the build directory is initially configured, the configuration
-  can be changed with:
-    meson configure -Darg=value... build/
-  'meson configure' without any arguments will print out available options and
-  their current values.
+        audio, cdrom, dialout, disk, input, kmem, kvm, lp, render, tape, tty, video
 
-  Useful commands:
-    ninja -v some/target
-    ninja test
-    sudo ninja install
-    DESTDIR=... ninja install
+        During runtime, the journal daemon requires the
+        "elogind-journal" system group to exist. New journal files will
+        be readable by this group (but not writable), which may be used
+        to grant specific users read access. In addition, system
+        groups "wheel" and "adm" will be given read-only access to
+        journal files using elogind-tmpfiles.service.
 
-  A tarball can be created with:
-    git archive --format=tar --prefix=elogind-238/ v238 | xz > elogind-238.tar.xz
+        The journal remote daemon requires the
+        "elogind-journal-remote" system user and group to
+        exist. During execution this network facing service will drop
+        privileges and assume this uid/gid for security reasons.
+
+        Similarly, the network management daemon requires the
+        "elogind-network" system user and group to exist.
+
+        Similarly, the name resolution daemon requires the
+        "elogind-resolve" system user and group to exist.
+
+        Similarly, the coredump support requires the
+        "elogind-coredump" system user and group to exist.
+
+NSS:
+        elogind ships with four glibc NSS modules:
+
+        nss-myhostname resolves the local hostname to locally
+        configured IP addresses, as well as "localhost" to
+        127.0.0.1/::1.
+
+        nss-resolve enables DNS resolution via the elogind-resolved
+        DNS/LLMNR caching stub resolver "elogind-resolved".
+
+        nss-mymachines enables resolution of all local containers registered
+        with machined to their respective IP addresses. It also maps UID/GIDs
+        ranges used by containers to useful names.
+
+        nss-elogind enables resolution of all dynamically allocated service
+        users. (See the DynamicUser= setting in unit files.)
+
+        To make use of these NSS modules, please add them to the "hosts:",
+        "passwd:" and "group:" lines in /etc/nsswitch.conf. The "resolve"
+        module should replace the glibc "dns" module in this file (and don't
+        worry, it chain-loads the "dns" module if it can't talk to resolved).
+
+        The four modules should be used in the following order:
+
+                passwd: compat mymachines elogind
+                group: compat mymachines elogind
+                hosts: files mymachines resolve [!UNAVAIL=return] dns myhostname
+
+SYSV INIT.D SCRIPTS:
+        When calling "systemctl enable/disable/is-enabled" on a unit which is a
+        SysV init.d script, it calls /usr/lib/elogind/elogind-sysv-install;
+        this needs to translate the action into the distribution specific
+        mechanism such as chkconfig or update-rc.d. Packagers need to provide
+        this script if you need this functionality (you don't if you disabled
+        SysV init support).
+
+        Please see src/systemctl/elogind-sysv-install.SKELETON for how this
+        needs to look like, and provide an implementation at the marked places.
+
+WARNINGS:
+        elogind will warn during early boot if /usr is not already mounted at
+        this point (that means: either located on the same file system as / or
+        already mounted in the initrd). While in elogind itself very little
+        will break if /usr is on a separate, late-mounted partition, many of
+        its dependencies very likely will break sooner or later in one form or
+        another. For example, udev rules tend to refer to binaries in /usr,
+        binaries that link to libraries in /usr or binaries that refer to data
+        files in /usr. Since these breakages are not always directly visible,
+        elogind will warn about this, since this kind of file system setup is
+        not really supported anymore by the basic set of Linux OS components.
+
+        elogind requires that the /run mount point exists. elogind also
+        requires that /var/run is a symlink to /run.
+
+        For more information on this issue consult
+        https://www.freedesktop.org/wiki/Software/elogind/separate-usr-is-broken
+
+        To run elogind under valgrind, compile with meson option
+        -Dvalgrind=true and have valgrind development headers installed
+        (i.e. valgrind-devel or equivalent). Otherwise, false positives will be
+        triggered by code which violates some rules but is actually safe. Note
+        that valgrind generates nice output only on exit(), hence on shutdown
+        we don't execve() elogind-shutdown.
+
+STABLE BRANCHES AND BACKPORTS
+
+       Stable branches with backported patches are available in the
+       systemd-stable repo at https://github.com/systemd/systemd-stable.
+
+       Stable branches are started for certain releases of elogind and named
+       after them, e.g. v238-stable. Stable branches are managed by
+       distribution maintainers on an as needed basis. See
+       https://www.freedesktop.org/wiki/Software/elogind/Backports/ for some
+       more information and examples.
+
+ENGINEERING AND CONSULTING SERVICES:
+        Kinvolk (https://kinvolk.io) offers professional engineering
+        and consulting services for elogind. Please contact Chris Kühl
+        <chris@kinvolk.io> for more information.

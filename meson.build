@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239.3',
+        version : '239',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -445,10 +445,6 @@ foreach arg : ['unused-parameter',
                'unused-result',
                'format-signedness',
                'error=nonnull', # work-around for gcc 7.1 turning this on on its own
-
-               # Disable -Wmaybe-uninitialized, since it's noisy on gcc 8 with
-               # optimizations enabled, producing essentially false positives.
-               'maybe-uninitialized',
               ]
         if cc.has_argument('-W' + arg)
                 add_project_arguments('-Wno-' + arg, language : 'c')
@@ -464,7 +460,7 @@ if cc.compiles('''
            struct timespec now;
            return 0;
    }
-''', args: '-Werror=shadow', name : '-Werror=shadow with local shadowing')
+''', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -505,6 +501,7 @@ decl_headers = '''
 #include <uchar.h>
 #include <linux/ethtool.h>
 #include <linux/fib_rules.h>
+//#include <linux/stat.h>
 #include <sys/stat.h>
 '''
 # FIXME: key_serial_t is only defined in keyutils.h, this is bound to fail
@@ -518,23 +515,9 @@ foreach decl : ['char16_t',
                ]
 
         # We get -1 if the size cannot be determined
-        have = cc.sizeof(decl, prefix : decl_headers, args : '-D_GNU_SOURCE') > 0
-
-        if decl == 'struct statx'
-                if have
-                        want_linux_stat_h = false
-                else
-                        have = cc.sizeof(decl,
-                                         prefix : decl_headers + '#include <linux/stat.h>',
-                                         args : '-D_GNU_SOURCE') > 0
-                        want_linux_stat_h = have
-                endif
-        endif
-
+        have = cc.sizeof(decl, prefix : decl_headers) > 0
         conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
 endforeach
-
-conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
 
 foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
@@ -655,7 +638,6 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// elogind has a bit different list and some adaptions
 # progs = [['quotaon',    '/usr/sbin/quotaon'    ],
 #          ['quotacheck', '/usr/sbin/quotacheck' ],
-#          ['kill',       '/usr/bin/kill'        ],
 #          ['kmod',       '/usr/bin/kmod'        ],
 #          ['kexec',      '/usr/sbin/kexec'      ],
 #          ['sulogin',    '/usr/sbin/sulogin'    ],
@@ -840,43 +822,41 @@ message('maximum system GID is @0@'.format(system_gid_max))
 nobody_user = get_option('nobody-user')
 nobody_group = get_option('nobody-group')
 
-if not meson.is_cross_build()
-        getent_result = run_command('getent', 'passwd', '65534')
-        if getent_result.returncode() == 0
-                name = getent_result.stdout().split(':')[0]
-                if name != nobody_user
-                        warning('\n' +
-                                'The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
-                                'Your build will result in an user table setup that is incompatible with the local system.')
-                endif
+getent_result = run_command('getent', 'passwd', '65534')
+if getent_result.returncode() == 0
+        name = getent_result.stdout().split(':')[0]
+        if name != nobody_user
+                warning('\n' +
+                        'The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
+                        'Your build will result in an user table setup that is incompatible with the local system.')
         endif
-        id_result = run_command('id', '-u', nobody_user)
-        if id_result.returncode() == 0
-                id = id_result.stdout().to_int()
-                if id != 65534
-                        warning('\n' +
-                                'The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
-                                'Your build will result in an user table setup that is incompatible with the local system.')
-                endif
+endif
+id_result = run_command('id', '-u', nobody_user)
+if id_result.returncode() == 0
+        id = id_result.stdout().to_int()
+        if id != 65534
+                warning('\n' +
+                        'The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
+                        'Your build will result in an user table setup that is incompatible with the local system.')
         endif
+endif
 
-        getent_result = run_command('getent', 'group', '65534')
-        if getent_result.returncode() == 0
-                name = getent_result.stdout().split(':')[0]
-                if name != nobody_group
-                        warning('\n' +
-                                'The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
-                                'Your build will result in an group table setup that is incompatible with the local system.')
-                endif
+getent_result = run_command('getent', 'group', '65534')
+if getent_result.returncode() == 0
+        name = getent_result.stdout().split(':')[0]
+        if name != nobody_group
+                warning('\n' +
+                        'The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
+                        'Your build will result in an group table setup that is incompatible with the local system.')
         endif
-        id_result = run_command('id', '-g', nobody_group)
-        if id_result.returncode() == 0
-                id = id_result.stdout().to_int()
-                if id != 65534
-                        warning('\n' +
-                                'The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
-                                'Your build will result in an group table setup that is incompatible with the local system.')
-                endif
+endif
+id_result = run_command('id', '-g', nobody_group)
+if id_result.returncode() == 0
+        id = id_result.stdout().to_int()
+        if id != 65534
+                warning('\n' +
+                        'The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
+                        'Your build will result in an group table setup that is incompatible with the local system.')
         endif
 endif
 if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
@@ -906,9 +886,7 @@ substs.set('TTY_GID', tty_gid)
 # conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
 # conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
 #
-# dev_kvm_mode = get_option('dev-kvm-mode')
-# substs.set('DEV_KVM_MODE', dev_kvm_mode)
-# conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
+# substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
 # substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
 #endif // 0
 
@@ -939,7 +917,7 @@ enable_debug_mmap_cache = false
 #if 1 /// additional elogind debug mode
 enable_debug_elogind = false
 #endif // 1
-foreach name : get_option('debug-extra')
+foreach name : get_option('debug')
         if name == 'hashmap'
                 enable_debug_hashmap = true
         elif name == 'mmap-cache'
@@ -1257,7 +1235,6 @@ conf.set10('HAVE_PAM', have)
 # want_lz4 = get_option('lz4')
 # if want_lz4 != 'false' and not fuzzer_build
 #         liblz4 = dependency('liblz4',
-#                             version : '>= 1.3.0',
 #                             required : want_lz4 == 'true')
 #         have = liblz4.found()
 # else
@@ -1377,6 +1354,7 @@ conf.set10('HAVE_DBUS', have)
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
 #                 conf.get('HAVE_ZLIB') == 1 and
+#                 conf.get('HAVE_BZIP2') == 1 and
 #                 conf.get('HAVE_XZ') == 1 and
 #                 conf.get('HAVE_GCRYPT') == 1)
 #         if want_importd == 'true' and not have
@@ -1576,8 +1554,8 @@ subdir('src/login')
 libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sym)
 libelogind = shared_library(
         'elogind',
-        disable_mempool_c,
         version : libelogind_version,
+        'src/elogind/sd-id128.h', # pick a header file at random to work around old meson bug
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -1613,7 +1591,6 @@ install_libelogind_static = static_library(
 #if 0 /// No gcrypt with elogind
 #         basic_gcrypt_sources,
 #endif // 0
-        disable_mempool_c,
         include_directories : includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
@@ -1686,7 +1663,6 @@ subdir('src/test')
 test_dlopen = executable(
         'test-dlopen',
         test_dlopen_c,
-        disable_mempool_c,
         include_directories : includes,
         link_with : [libbasic],
         dependencies : [libdl])
@@ -1707,7 +1683,6 @@ test_dlopen = executable(
 #                 nss = shared_library(
 #                         'nss_' + module,
 #                         'src/nss-@0@/nss-@0@.c'.format(module),
-#                         disable_mempool_c,
 #                         version : '2',
 #                         include_directories : includes,
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
@@ -1978,14 +1953,15 @@ test_dlopen = executable(
 #                      test_dlopen,
 #                      args : [pam_systemd.full_path()]) # path to dlopen must include a slash
 #         endif
+# endif
 #
-#         executable('systemd-user-runtime-dir',
-#                    user_runtime_dir_sources,
-#                    include_directories : includes,
-#                    link_with : [libshared],
-#                    install_rpath : rootlibexecdir,
-#                    install : true,
-#                    install_dir : rootlibexecdir)
+# executable('systemd-user-runtime-dir',
+#            user_runtime_dir_sources,
+#            include_directories : includes,
+#            link_with : [libshared, liblogind_core],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : rootlibexecdir)
 #else
 
 executable('elogind',
@@ -2025,27 +2001,6 @@ public_programs += [exe]
 #endif // 0
 
 if conf.get('HAVE_PAM') == 1
-        version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)
-        pam_elogind = shared_library(
-                'pam_elogind',
-                pam_elogind_c,
-                name_prefix : '',
-                include_directories : includes,
-                link_args : ['-shared',
-                                '-Wl,--version-script=' + version_script_arg],
-                link_with : [libelogind_static,
-                             libshared_static],
-                dependencies : [threads,
-                                libpam,
-                                libpam_misc],
-                link_depends : pam_elogind_sym,
-                install : true,
-                install_dir : pamlibdir)
-
-        test('dlopen-pam_elogind',
-             test_dlopen,
-             args : [pam_elogind.full_path()]) # path to dlopen must include a slash
-endif
 
 #if 0 /// UNNEEDED by elogind
 #         executable('systemd-user-sessions',
@@ -3075,6 +3030,8 @@ subdir('shell-completion/zsh')
 # subdir('doc/var-log')
 #endif // 0
 
+# FIXME: figure out if the warning is true:
+# https://github.com/mesonbuild/meson/wiki/Reference-manual#install_subdir
 install_subdir('factory/etc',
                install_dir : factorydir)
 
@@ -3308,11 +3265,7 @@ status = [
 # status += [
 #         'time epoch:                        @0@ (@1@)'.format(time_epoch, alt_time_epoch)]
 #endif // 0
-
-status += [
-        'static libelogind:                 @0@'.format(get_option('static-libelogind')),
 #if 0 /// elogind does not ship libudeb. Obviously.
-#         'static libudev:                    @0@'.format(get_option('static-libudev'))]
 #
 #else
         ]
@@ -3436,8 +3389,6 @@ foreach tuple : [
         ['debug mmap cache'],
         ['valgrind',         conf.get('VALGRIND') == 1],
 #if 0 /// elogind neither ships libudev nor systemctl.
-#         ['link-udev-shared',      get_option('link-udev-shared')],
-#         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #endif // 0
 ]
 
