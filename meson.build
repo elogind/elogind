@@ -16,7 +16,7 @@
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 project('elogind', 'c',
-        version : '238',
+        version : '238.1',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -31,7 +31,7 @@ project('elogind', 'c',
 # libsystemd_version = '0.22.0'
 # libudev_version = '1.6.10'
 #else
-libelogind_version = '0.20.0'
+libelogind_version = '0.22.0'
 #endif // 0
 
 # We need the same data in three different formats, ugh!
