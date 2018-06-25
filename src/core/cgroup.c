@@ -2293,7 +2293,7 @@ int manager_setup_cgroup(Manager *m) {
                         return log_error_errno(errno, "Failed to open pin file: %m");
 
 #if 0 /// this is from the cgroup migration above that elogind does not need.
-        } else if (r < 0 && !m->test_run_flags)
+        } else if (!m->test_run_flags)
                 return log_error_errno(r, "Failed to create %s control group: %m", scope_path);
 #endif // 0
 
