@@ -2100,6 +2100,15 @@ if conf.get('HAVE_PAM') == 1
 #                          install_rpath : rootlibexecdir,
 #                          install : true)
 #         public_programs += exe
+#
+#         executable('systemd-bless-boot',
+#                    'src/boot/bless-boot.c',
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [libblkid],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
 # endif
 #
 # exe = executable('systemd-socket-activate', 'src/activate/activate.c',
