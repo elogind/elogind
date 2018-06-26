@@ -622,6 +622,7 @@ manpages = [
  ['elogind-cgtop', '1', [], ''],
  ['elogind-coredump',
   ''],
+ ['elogind-bless-boot.service', '8', [], 'ENABLE_EFI'],
   '8',
   ['elogind-coredump.socket', 'elogind-coredump@.service'],
   'ENABLE_COREDUMP'],
