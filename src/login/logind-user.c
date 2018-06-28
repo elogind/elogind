@@ -26,10 +26,8 @@
 #include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
-#include "strv.h"
 #include "unit-name.h"
 #include "user-util.h"
-//#include "util.h"
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
 
@@ -39,32 +37,28 @@ int user_new(User **ret,
              gid_t gid,
              const char *name,
              const char *home) {
+//#include "util.h"
 
+int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
         int r;
 
-        assert(ret);
+        assert(out);
         assert(m);
         assert(name);
 
-        u = new(User, 1);
+        u = new0(User, 1);
         if (!u)
                 return -ENOMEM;
 
-        *u = (User) {
-                .manager = m,
-                .uid = uid,
-                .gid = gid,
-                .last_session_timestamp = USEC_INFINITY,
-        };
+        u->manager = m;
+        u->uid = uid;
+        u->gid = gid;
+        xsprintf(lu, UID_FMT, uid);
 
         u->name = strdup(name);
         if (!u->name)
-                return -ENOMEM;
-
-        u->home = strdup(home);
-        if (!u->home)
                 return -ENOMEM;
 
         if (asprintf(&u->state_file, "/run/systemd/users/"UID_FMT, uid) < 0)
@@ -73,16 +67,11 @@ int user_new(User **ret,
         if (asprintf(&u->runtime_path, "/run/user/"UID_FMT, uid) < 0)
                 return -ENOMEM;
 
-        xsprintf(lu, UID_FMT, uid);
         r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &u->slice);
         if (r < 0)
                 return r;
 
         r = unit_name_build("user", lu, ".service", &u->service);
-        if (r < 0)
-                return r;
-
-        r = unit_name_build("user-runtime-dir", lu, ".service", &u->runtime_dir_service);
         if (r < 0)
                 return r;
 
@@ -99,12 +88,9 @@ int user_new(User **ret,
         if (r < 0)
                 return r;
 
-        r = hashmap_put(m->user_units, u->runtime_dir_service, u);
-        if (r < 0)
-                return r;
 #endif // 0
+        *out = TAKE_PTR(u);
 
-        *ret = TAKE_PTR(u);
         return 0;
 }
 
@@ -113,7 +99,6 @@ User *user_free(User *u) {
                 return NULL;
 
         log_debug_elogind("Freeing User %s ...", u->name);
-
         if (u->in_gc_queue)
                 LIST_REMOVE(gc_queue, u->manager->user_gc_queue, u);
 
@@ -124,28 +109,23 @@ User *user_free(User *u) {
         if (u->service)
                 hashmap_remove_value(u->manager->user_units, u->service, u);
 
-        if (u->runtime_dir_service)
-                hashmap_remove_value(u->manager->user_units, u->runtime_dir_service, u);
-
         if (u->slice)
                 hashmap_remove_value(u->manager->user_units, u->slice, u);
 #endif // 0
 
         hashmap_remove_value(u->manager->users, UID_TO_PTR(u->uid), u);
 
-        (void) sd_event_source_unref(u->timer_event_source);
 
+        u->slice_job = mfree(u->slice_job);
 #if 0 /// elogind neither supports slice nor service jobs.
         u->service_job = mfree(u->service_job);
 #endif // 0
 
         u->service = mfree(u->service);
-        u->runtime_dir_service = mfree(u->runtime_dir_service);
         u->slice = mfree(u->slice);
         u->runtime_path = mfree(u->runtime_path);
         u->state_file = mfree(u->state_file);
         u->name = mfree(u->name);
-        u->home = mfree(u->home);
 
         return mfree(u);
 }
@@ -172,11 +152,9 @@ static int user_save_internal(User *u) {
         fprintf(f,
                 "# This is private data. Do not parse.\n"
                 "NAME=%s\n"
-                "STATE=%s\n"         /* friendly user-facing state */
-                "STOPPING=%s\n",     /* low-level state */
+                "STATE=%s\n",
                 u->name,
-                user_state_to_string(user_get_state(u)),
-                yes_no(u->stopping));
+                user_state_to_string(user_get_state(u)));
 
         /* LEGACY: no-one reads RUNTIME= anymore, drop it at some point */
         if (u->runtime_path)
@@ -187,6 +165,9 @@ static int user_save_internal(User *u) {
                 fprintf(f, "SERVICE_JOB=%s\n", u->service_job);
 
 #endif // 0
+        if (u->slice_job)
+                fprintf(f, "SLICE_JOB=%s\n", u->slice_job);
+
         if (u->display)
                 fprintf(f, "DISPLAY=%s\n", u->display->id);
 
@@ -196,10 +177,6 @@ static int user_save_internal(User *u) {
                         "MONOTONIC="USEC_FMT"\n",
                         u->timestamp.realtime,
                         u->timestamp.monotonic);
-
-        if (u->last_session_timestamp != USEC_INFINITY)
-                fprintf(f, "LAST_SESSION_TIMESTAMP=" USEC_FMT "\n",
-                        u->last_session_timestamp);
 
         if (u->sessions) {
                 Session *i;
@@ -314,44 +291,32 @@ int user_save(User *u) {
         if (!u->started)
                 return 0;
 
-        return user_save_internal(u);
+        return user_save_internal (u);
 }
 
 int user_load(User *u) {
-        _cleanup_free_ char *realtime = NULL, *monotonic = NULL, *stopping = NULL, *last_session_timestamp = NULL;
+        _cleanup_free_ char *display = NULL, *realtime = NULL, *monotonic = NULL;
+        Session *s = NULL;
         int r;
 
         assert(u);
 
         r = parse_env_file(NULL, u->state_file, NEWLINE,
 #if 0 /// elogind neither supports service nor slice jobs
-                           "SERVICE_JOB",            &u->service_job,
 #endif // 0
-                           "STOPPING",               &stopping,
-                           "REALTIME",               &realtime,
-                           "MONOTONIC",              &monotonic,
-                           "LAST_SESSION_TIMESTAMP", &last_session_timestamp,
+                           "SERVICE_JOB", &u->service_job,
+                           "SLICE_JOB",   &u->slice_job,
+                           "DISPLAY",     &display,
+                           "REALTIME",    &realtime,
+                           "MONOTONIC",   &monotonic,
                            NULL);
-        if (r == -ENOENT)
-                return 0;
-        if (r < 0)
-                return log_error_errno(r, "Failed to read %s: %m", u->state_file);
+        if (r < 0) {
+                if (r == -ENOENT)
+                        return 0;
 
-        if (stopping) {
-                r = parse_boolean(stopping);
-                if (r < 0)
-                        log_debug_errno(r, "Failed to parse 'STOPPING' boolean: %s", stopping);
-                else
-                        u->stopping = r;
                 log_debug_elogind(" --> User stopping    : %d", u->stopping);
+                return log_error_errno(r, "Failed to read %s: %m", u->state_file);
         }
-
-        if (realtime)
-                (void) timestamp_deserialize(realtime, &u->timestamp.realtime);
-        if (monotonic)
-                (void) timestamp_deserialize(monotonic, &u->timestamp.monotonic);
-        if (last_session_timestamp)
-                (void) timestamp_deserialize(last_session_timestamp, &u->last_session_timestamp);
 
         log_debug_elogind(" --> User realtime    : %lu", u->timestamp.realtime);
         log_debug_elogind(" --> User monotonic   : %lu", u->timestamp.monotonic);
@@ -361,6 +326,8 @@ int user_load(User *u) {
         _cleanup_free_ char *sv = NULL;
         Session *i;
         bool first;
+        if (display)
+                s = hashmap_get(u->manager->sessions, display);
 
         first = true;
         LIST_FOREACH(sessions_by_user, i, u->sessions) {
@@ -370,45 +337,68 @@ int user_load(User *u) {
                         strv_extend(&sa, " ");
                 strv_extend(&sa, i->id);
         }
+        if (s && s->display && display_is_local(s->display))
+                u->display = s;
 
         if (false == first) {
                 sv = strv_join(sa, " ");
         }
 #endif // ENABLE_DEBUG_ELOGIND
         log_debug_elogind(" --> User sessions    : %s",  u->sessions ? sv : "none");
+        if (realtime)
+                timestamp_deserialize(realtime, &u->timestamp.realtime);
+        if (monotonic)
+                timestamp_deserialize(monotonic, &u->timestamp.monotonic);
 
-        return 0;
+        return r;
 }
 
 #if 0 /// elogind neither spawns systemd --user nor suports systemd units and services.
-static void user_start_service(User *u) {
+static int user_start_service(User *u) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job;
         int r;
 
         assert(u);
 
-        /* Start the service containing the "systemd --user" instance (user@.service). Note that we don't explicitly
-         * start the per-user slice or the systemd-runtime-dir@.service instance, as those are pulled in both by
-         * user@.service and the session scopes as dependencies. */
-
         u->service_job = mfree(u->service_job);
 
-        r = manager_start_unit(u->manager, u->service, &error, &u->service_job);
+        r = manager_start_unit(
+                        u->manager,
+                        u->service,
+                        &error,
+                        &job);
         if (r < 0)
-                log_warning_errno(r, "Failed to start user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
+                /* we don't fail due to this, let's try to continue */
+                log_error_errno(r, "Failed to start user service, ignoring: %s", bus_error_message(&error, r));
+        else
+                u->service_job = job;
+
+        return 0;
 }
 #endif // 0
 
 int user_start(User *u) {
+        int r;
+
         assert(u);
 
         if (u->started && !u->stopping)
                 return 0;
 
-        /* If u->stopping is set, the user is marked for removal and service stop-jobs are queued. We have to clear
-         * that flag before queing the start-jobs again. If they succeed, the user object can be re-used just fine
-         * (pid1 takes care of job-ordering and proper restart), but if they fail, we want to force another user_stop()
-         * so possibly pending units are stopped. */
+        /*
+         * If u->stopping is set, the user is marked for removal and the slice
+         * and service stop-jobs are queued. We have to clear that flag before
+         * queing the start-jobs again. If they succeed, the user object can be
+         * re-used just fine (pid1 takes care of job-ordering and proper
+         * restart), but if they fail, we want to force another user_stop() so
+         * possibly pending units are stopped.
+         * Note that we don't clear u->started, as we have no clue what state
+         * the user is in on failure here. Hence, we pretend the user is
+         * running so it will be properly taken down by GC. However, we clearly
+         * return an error from user_start() in that case, so no further
+         * reference to the user is taken.
+         */
         u->stopping = false;
 
         if (!u->started)
@@ -420,14 +410,18 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 #endif // 1
-        /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
-         * systemd --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+        /* Save the user data so far, because pam_elogind will read the
+         * XDG_RUNTIME_DIR out of it while starting up elogind --user.
+         * We need to do user_save_internal() because we have not
+         * "officially" started yet. */
         user_save_internal(u);
 
 #if 0 /// elogind does not spawn user instances of systemd
-        /* Start user@UID.service */
-        user_start_service(u);
 #endif // 0
+        /* Spawn user elogind */
+        r = user_start_service(u);
+        if (r < 0)
+                return r;
 
         if (!u->started) {
                 if (!dual_timestamp_is_set(&u->timestamp))
@@ -444,7 +438,9 @@ int user_start(User *u) {
 
 #if 0 /// elogind does not support user services and systemd units
 static void user_stop_service(User *u) {
+static int user_stop_slice(User *u) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job;
         int r;
 
         assert(u);
@@ -452,45 +448,68 @@ static void user_stop_service(User *u) {
 
         /* The reverse of user_start_service(). Note that we only stop user@UID.service here, and let StopWhenUnneeded=
          * deal with the slice and the user-runtime-dir@.service instance. */
+        r = manager_stop_unit(u->manager, u->slice, &error, &job);
+        if (r < 0) {
+                log_error("Failed to stop user slice: %s", bus_error_message(&error, r));
+                return r;
+        }
 
         u->service_job = mfree(u->service_job);
+        free(u->slice_job);
+        u->slice_job = job;
 
         r = manager_stop_unit(u->manager, u->service, &error, &u->service_job);
         if (r < 0)
                 log_warning_errno(r, "Failed to stop user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
+        return r;
 }
 #endif // 0
 
-int user_stop(User *u, bool force) {
-        Session *s;
-        int r = 0;
+static int user_stop_service(User *u) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        char *job;
+        int r;
+
         assert(u);
 
-        /* This is called whenever we begin with tearing down a user record. It's called in two cases: explicit API
-         * request to do so via the bus (in which case 'force' is true) and automatically due to GC, if there's no
-         * session left pinning it (in which case 'force' is false). Note that this just initiates tearing down of the
-         * user, the User object will remain in memory until user_finalize() is called, see below. */
+        r = manager_stop_unit(u->manager, u->service, &error, &job);
+        if (r < 0) {
+                log_error("Failed to stop user service: %s", bus_error_message(&error, r));
+                return r;
+        }
 
-        if (!u->started)
-                return 0;
+        free_and_replace(u->service_job, job);
+        return r;
+}
 
-        if (u->stopping) { /* Stop jobs have already been queued */
+int user_stop(User *u, bool force) {
+        Session *s;
+        int r = 0, k;
+        assert(u);
+
+        /* Stop jobs have already been queued */
+        if (u->stopping) {
                 user_save(u);
-                return 0;
+                return r;
         }
 
         log_debug_elogind("Stopping user %s %s ...", u->name, force ? "(forced)" : "");
-
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
-                int k;
-
                 k = session_stop(s, force);
                 if (k < 0)
                         r = k;
         }
 
 #if 0 /// elogind does not support service or slice jobs...
-        user_stop_service(u);
+        /* Kill systemd */
+        k = user_stop_service(u);
+        if (k < 0)
+                r = k;
+
+        /* Kill cgroup */
+        k = user_stop_slice(u);
+        if (k < 0)
+                r = k;
 #else
         user_add_to_gc_queue(u);
 #endif // 0
@@ -508,12 +527,8 @@ int user_finalize(User *u) {
 
         assert(u);
 
-        /* Called when the user is really ready to be freed, i.e. when all unit stop jobs and suchlike for it are
-         * done. This is called as a result of an earlier user_done() when all jobs are completed. */
-
         if (u->started)
                 log_debug("User %s logged out.", u->name);
-        else
                 log_debug_elogind("User %s not started, finalizing...", u->name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
@@ -540,7 +555,7 @@ int user_finalize(User *u) {
                         r = k;
         }
 
-        (void) unlink(u->state_file);
+        unlink(u->state_file);
         user_add_to_gc_queue(u);
 
         if (u->started) {
@@ -596,44 +611,15 @@ int user_check_linger_file(User *u) {
                 return -ENOMEM;
 
         p = strjoina("/var/lib/elogind/linger/", cc);
-        if (access(p, F_OK) < 0) {
-                if (errno != ENOENT)
-                        return -errno;
 
-                return false;
-        }
-
-        return true;
+        return access(p, F_OK) >= 0;
 }
 
 #if 0 /// elogind does not support systemd units
-static bool user_unit_active(User *u) {
-        const char *i;
-        int r;
-
-        assert(u->service);
-        assert(u->runtime_dir_service);
-        assert(u->slice);
-
-        FOREACH_STRING(i, u->service, u->runtime_dir_service, u->slice) {
-                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-
-                r = manager_unit_is_active(u->manager, i, &error);
-                if (r < 0)
-                        log_debug_errno(r, "Failed to determine whether unit '%s' is active, ignoring: %s", u->service, bus_error_message(&error, r));
-                if (r != 0)
-                        return true;
-        }
-
-        return false;
-}
 #endif // 0
-
 bool user_may_gc(User *u, bool drop_not_started) {
 #if 0 /// UNNEEDED by elogind
-        int r;
 #endif // 0
-
         assert(u);
 
         log_debug_elogind("User %s may gc ?", u->name);
@@ -641,47 +627,24 @@ bool user_may_gc(User *u, bool drop_not_started) {
         log_debug_elogind("  is sessionless : %s", yes_no(!u->sessions));
         log_debug_elogind("  not lingering  : %s", yes_no(user_check_linger_file(u) > 0));
         log_debug_elogind("  dns or stopping: %s", yes_no(drop_not_started || u->stopping));
-
         if (drop_not_started && !u->started)
                 return true;
 
         if (u->sessions)
                 return false;
 
-        if (u->last_session_timestamp != USEC_INFINITY) {
-                /* All sessions have been closed. Let's see if we shall leave the user record around for a bit */
-
-                if (u->manager->user_stop_delay == USEC_INFINITY)
-                        return false; /* Leave it around forever! */
-                if (u->manager->user_stop_delay > 0 &&
-                    now(CLOCK_MONOTONIC) < usec_add(u->last_session_timestamp, u->manager->user_stop_delay))
-                        return false; /* Leave it around for a bit longer. */
-        }
-
-        /* Is this a user that shall stay around forever ("linger")? Before we say "no" to GC'ing for lingering users, let's check
-         * if any of the three units that we maintain for this user is still around. If none of them is,
-         * there's no need to keep this user around even if lingering is enabled. */
 #if 0 /// elogind does not support systemd units
-        if (user_check_linger_file(u) > 0 && user_unit_active(u))
 #else
         if (user_check_linger_file(u) > 0)
 #endif // 0
                 return false;
 
 #if 0 /// elogind neither supports service nor slice jobs
-        /* Check if our job is still pending */
-        if (u->service_job) {
-                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        if (u->slice_job && manager_job_is_active(u->manager, u->slice_job))
+                return false;
 
-                r = manager_job_is_active(u->manager, u->service_job, &error);
-                if (r < 0)
-                        log_debug_errno(r, "Failed to determine whether job '%s' is pending, ignoring: %s", u->service_job, bus_error_message(&error, r));
-                if (r != 0)
-                        return false;
-        }
-
-        /* Note that we don't care if the three units we manage for each user object are up or not, as we are managing
-         * their state rather than tracking it. */
+        if (u->service_job && manager_job_is_active(u->manager, u->service_job))
+                return false;
 
         return true;
 #else
@@ -709,7 +672,7 @@ UserState user_get_state(User *u) {
                 return USER_CLOSING;
 
 #if 0 /// elogind neither supports service nor slice jobs.
-        if (!u->started || u->service_job)
+        if (!u->started || u->slice_job || u->service_job)
 #else
         if (!u->started)
 #endif // 0
@@ -732,7 +695,6 @@ UserState user_get_state(User *u) {
         }
 
 #if 0 /// elogind does not support systemd units
-        if (user_check_linger_file(u) > 0 && user_unit_active(u))
 #else
         if (user_check_linger_file(u) > 0)
 #endif // 0
@@ -763,10 +725,11 @@ int user_kill(User *u, int signo) {
 }
 
 static bool elect_display_filter(Session *s) {
-        /* Return true if the session is a candidate for the user’s ‘primary session’ or ‘display’. */
+        /* Return true if the session is a candidate for the user’s ‘primary
+         * session’ or ‘display’. */
         assert(s);
 
-        return s->class == SESSION_USER && s->started && !s->stopping;
+        return (s->class == SESSION_USER && !s->stopping);
 }
 
 static int elect_display_compare(Session *s1, Session *s2) {
@@ -812,8 +775,9 @@ void user_elect_display(User *u) {
 
         assert(u);
 
-        /* This elects a primary session for each user, which we call the "display". We try to keep the assignment
-         * stable, but we "upgrade" to better choices. */
+        /* This elects a primary session for each user, which we call
+         * the "display". We try to keep the assignment stable, but we
+         * "upgrade" to better choices. */
         log_debug("Electing new display for user %s", u->name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
@@ -826,59 +790,6 @@ void user_elect_display(User *u) {
                         log_debug("Choosing session %s in preference to %s", s->id, u->display ? u->display->id : "-");
                         u->display = s;
                 }
-        }
-}
-
-static int user_stop_timeout_callback(sd_event_source *es, uint64_t usec, void *userdata) {
-        User *u = userdata;
-
-        assert(u);
-        user_add_to_gc_queue(u);
-
-        return 0;
-}
-
-void user_update_last_session_timer(User *u) {
-        int r;
-
-        assert(u);
-
-        if (u->sessions) {
-                /* There are sessions, turn off the timer */
-                u->last_session_timestamp = USEC_INFINITY;
-                u->timer_event_source = sd_event_source_unref(u->timer_event_source);
-                return;
-        }
-
-        if (u->last_session_timestamp != USEC_INFINITY)
-                return; /* Timer already started */
-
-        u->last_session_timestamp = now(CLOCK_MONOTONIC);
-
-        assert(!u->timer_event_source);
-
-        if (u->manager->user_stop_delay == 0 || u->manager->user_stop_delay == USEC_INFINITY)
-                return;
-
-        if (sd_event_get_state(u->manager->event) == SD_EVENT_FINISHED) {
-                log_debug("Not allocating user stop timeout, since we are already exiting.");
-                return;
-        }
-
-        r = sd_event_add_time(u->manager->event,
-                              &u->timer_event_source,
-                              CLOCK_MONOTONIC,
-                              usec_add(u->last_session_timestamp, u->manager->user_stop_delay), 0,
-                              user_stop_timeout_callback, u);
-        if (r < 0)
-                log_warning_errno(r, "Failed to enqueue user stop event source, ignoring: %m");
-
-        if (DEBUG_LOGGING) {
-                char s[FORMAT_TIMESPAN_MAX];
-
-                log_debug("Last session of user '%s' logged out, terminating user context in %s.",
-                          u->name,
-                          format_timespan(s, sizeof(s), u->manager->user_stop_delay, USEC_PER_MSEC));
         }
 }
 
@@ -923,8 +834,10 @@ int config_parse_tmpfs_size(
                 /* If the passed argument was not a percentage, or out of range, parse as byte size */
 
                 r = parse_size(rvalue, 1024, &k);
-                if (r < 0 || k <= 0 || (uint64_t) (size_t) k != k) {
-                        log_syntax(unit, LOG_ERR, filename, line, r, "Failed to parse size value, ignoring: %s", rvalue);
+                if (r >= 0 && (k <= 0 || (uint64_t) (size_t) k != k))
+                        r = -ERANGE;
+                if (r < 0) {
+                        log_syntax(unit, LOG_ERR, filename, line, r, "Failed to parse size value '%s', ignoring: %m", rvalue);
                         return 0;
                 }
 
@@ -954,7 +867,7 @@ int config_parse_compat_user_tasks_max(
         log_syntax(unit, LOG_NOTICE, filename, line, 0,
                    "Support for option %s= has been removed.",
                    lvalue);
-        log_info("Hint: try creating /etc/elogind/system/user-.slice.d/50-limits.conf with:\n"
+        log_info("Hint: try creating /etc/elogind/system/user-.slice/50-limits.conf with:\n"
                  "        [Slice]\n"
                  "        TasksMax=%s",
                  rvalue);
