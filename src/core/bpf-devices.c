@@ -84,6 +84,32 @@ int cgroup_bpf_whitelist_major(BPFProgram *prog, int type, int major, const char
         return r;
 }
 
+int cgroup_bpf_whitelist_class(BPFProgram *prog, int type, const char *acc) {
+        struct bpf_insn insn[] = {
+                BPF_JMP_IMM(BPF_JNE, BPF_REG_2, type, 5), /* compare device type */
+                BPF_MOV32_REG(BPF_REG_1, BPF_REG_3), /* calculate access type */
+                BPF_ALU32_IMM(BPF_AND, BPF_REG_1, 0),
+                BPF_JMP_REG(BPF_JNE, BPF_REG_1, BPF_REG_3, 1), /* compare access type */
+                BPF_JMP_A(PASS_JUMP_OFF), /* jump to PASS */
+        };
+        int r, access;
+
+        assert(prog);
+        assert(acc);
+
+        access = bpf_access_type(acc);
+        if (access <= 0)
+                return -EINVAL;
+
+        insn[2].imm = access;
+
+        r = bpf_program_add_instructions(prog, insn, ELEMENTSOF(insn));
+        if (r < 0)
+                log_error_errno(r, "Extending device control BPF program failed: %m");
+
+        return r;
+}
+
 int cgroup_init_device_bpf(BPFProgram **ret, CGroupDevicePolicy policy, bool whitelist) {
         struct bpf_insn pre_insn[] = {
                 /* load device type to r2 */
@@ -142,7 +168,6 @@ int cgroup_apply_device_bpf(Unit *u, BPFProgram *prog, CGroupDevicePolicy policy
         };
 
         _cleanup_free_ char *path = NULL;
-        uint32_t flags;
         int r;
 
         if (!prog) {
@@ -177,14 +202,13 @@ int cgroup_apply_device_bpf(Unit *u, BPFProgram *prog, CGroupDevicePolicy policy
         if (r < 0)
                 return log_error_errno(r, "Failed to determine cgroup path: %m");
 
-        flags = (u->type == UNIT_SLICE || unit_cgroup_delegate(u)) ? BPF_F_ALLOW_MULTI : 0;
+
+        r = bpf_program_cgroup_attach(prog, BPF_CGROUP_DEVICE, path, BPF_F_ALLOW_MULTI);
+        if (r < 0)
+                return log_error_errno(r, "Attaching device control BPF program to cgroup %s failed: %m", path);
 
         /* Unref the old BPF program (which will implicitly detach it) right before attaching the new program. */
         u->bpf_device_control_installed = bpf_program_unref(u->bpf_device_control_installed);
-
-        r = bpf_program_cgroup_attach(prog, BPF_CGROUP_DEVICE, path, flags);
-        if (r < 0)
-                return log_error_errno(r, "Attaching device control BPF program to cgroup %s failed: %m", path);
 
         /* Remember that this BPF program is installed now. */
         u->bpf_device_control_installed = bpf_program_ref(prog);
@@ -243,5 +267,5 @@ int bpf_devices_supported(void) {
                 return supported = 0;
         }
 
-        return supported;
+        return supported = 1;
 }
