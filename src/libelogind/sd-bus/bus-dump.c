@@ -1,6 +1,4 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-/***
-***/
 
 #include "alloc-util.h"
 #include "bus-dump.h"
@@ -59,14 +57,8 @@ int bus_message_dump(sd_bus_message *m, FILE *f, unsigned flags) {
                         "%s%s%s Type=%s%s%s  Endian=%c  Flags=%u  Version=%u  Priority=%"PRIi64,
                         m->header->type == SD_BUS_MESSAGE_METHOD_ERROR ? ansi_highlight_red() :
                         m->header->type == SD_BUS_MESSAGE_METHOD_RETURN ? ansi_highlight_green() :
-                        m->header->type != SD_BUS_MESSAGE_SIGNAL ? ansi_highlight() : "",
-                        special_glyph(TRIANGULAR_BULLET),
-                        ansi_normal(),
-
-                        ansi_highlight(),
-                        bus_message_type_to_string(m->header->type) ?: "(unknown)",
-                        ansi_normal(),
-
+                        m->header->type != SD_BUS_MESSAGE_SIGNAL ? ansi_highlight() : "", special_glyph(TRIANGULAR_BULLET), ansi_normal(),
+                        ansi_highlight(), bus_message_type_to_string(m->header->type), ansi_normal(),
                         m->header->endian,
                         m->header->flags,
                         m->header->version,
@@ -329,6 +321,7 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
         const char *prefix, *color, *suffix, *s;
 #if 0 /// elogind does not support systemd units and slices. v and w are only used with them
         int r, q, v, w, z;
+
 #else
         int r, q, z;
 #endif // 0

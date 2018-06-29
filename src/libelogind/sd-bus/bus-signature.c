@@ -1,6 +1,4 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-/***
-***/
 
 #include <util.h>
 
@@ -57,12 +55,6 @@ static int signature_element_length_internal(
 
                         p += t;
                 }
-
-                if (p - s < 2)
-                        /* D-Bus spec: Empty structures are not allowed; there
-                         * must be at least one type code between the parentheses.
-                         */
-                        return -EINVAL;
 
                 *l = p - s + 1;
                 return 0;

@@ -1,6 +1,4 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-/***
-***/
 
 #include <endian.h>
 #include <netdb.h>
@@ -975,11 +973,9 @@ static int parse_container_unix_address(sd_bus *b, const char **p, char **guid) 
         } else
                 b->nspid = 0;
 
-        b->sockaddr.un = (struct sockaddr_un) {
-                .sun_family = AF_UNIX,
-                /* Note that we use the old /var/run prefix here, to increase compatibility with really old containers */
-                .sun_path = "/var/run/dbus/system_bus_socket",
-        };
+        b->sockaddr.un.sun_family = AF_UNIX;
+        /* Note that we use the old /var/run prefix here, to increase compatibility with really old containers */
+        strncpy(b->sockaddr.un.sun_path, "/var/run/dbus/system_bus_socket", sizeof(b->sockaddr.un.sun_path));
         b->sockaddr_size = SOCKADDR_UN_LEN(b->sockaddr.un);
         b->is_local = false;
 
