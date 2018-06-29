@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-
 #include "bus-error.h"
 
 #if 0 /// only system command elogind knows are needed
