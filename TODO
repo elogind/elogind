@@ -41,6 +41,9 @@ Features:
 
 * bootctl,sd-boot: actually honour the "architecture" key
 
+* when a socket unit is spawned with an AF_UNIX path in /var/run, complain and
+  patch it to use /run instead
+
 * consider splitting out all temporary file creation APIs (we have so many in
   fileio.h and elsewhere!) into a new util file of its own.
 
@@ -91,6 +94,29 @@ Features:
   and "boot into macos".
 
 * bootspec.c: also enumerate EFI unified kernel images.
+
+* maybe set a special xattr on cgroups that have delegate=yes set, to make it
+  easy to mark cut points
+
+* introduce an option (or replacement) for "systemctl show" that outputs all
+  properties as JSON, similar to busctl's new JSON output. In contrast to that
+  it should skip the variant type string though.
+
+* augment CODE_FILE=, CODE_LINE= with something like CODE_BASE= or so which
+  contains some identifier for the project, which allows us to include
+  clickable links to source files generating these log messages. The identifier
+  could be some abberviated URL prefix or so (taking inspiration from Go
+  imports). For example, for elogind we could use
+  CODE_BASE=github.com/systemd/systemd/blob/98b0b1123cc or so which is
+  sufficient to build a link by prefixing "http://" and suffixing the
+  CODE_FILE.
+
+* when outputting log data with journalctl and the log data includes references
+  to configuration files (CONFIG_FILE=), create a clickable link for it.
+
+* Augment MESSAGE_ID with MESSAGE_BASE, in a similar fashion so that we can
+  make clickable links from log messages carrying a MESSAGE_ID, that lead to
+  some explanatory text online.
 
 * maybe extend .path units to expose fanotify() per-mount change events
 
@@ -235,8 +261,7 @@ Features:
   the runtime dir as we maintain for the fdstore: i.e. keep it around as long
   as the unit is running or has a job queued.
 
-* support projid-based quota in machinectl for containers, and then drop
-  implicit btrfs loopback magic in machined
+* support projid-based quota in machinectl for containers
 
 * Add NetworkNamespacePath= to specify a path to a network namespace
 
@@ -880,9 +905,6 @@ Features:
   - "machinectl diff"
   - "machinectl commit" that takes a writable snapshot of a tree, invokes a
     shell in it, and marks it read-only after use
-
-* importd:
-  - generate a nice warning if mkfs.btrfs is missing
 
 * cryptsetup:
   - cryptsetup-generator: allow specification of passwords in crypttab itself
