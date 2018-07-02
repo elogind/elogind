@@ -39,6 +39,7 @@ int user_new(User **ret,
              const char *home) {
 //#include "util.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
@@ -412,16 +413,15 @@ int user_start(User *u) {
 #endif // 1
         /* Save the user data so far, because pam_elogind will read the
          * XDG_RUNTIME_DIR out of it while starting up elogind --user.
-        /* Save the user data so far, because pam_elogind will read the
-         * XDG_RUNTIME_DIR out of it while starting up elogind --user.
+        /* Save the user data so far, because pam_systemd will read the
+         * XDG_RUNTIME_DIR out of it while starting up systemd --user.
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
         user_save_internal(u);
 
 #if 0 /// elogind does not spawn user instances of systemd
 #endif // 0
-        /* Spawn user elogind */
-        /* Spawn user elogind */
+        /* Spawn user systemd */
         r = user_start_service(u);
         if (r < 0)
                 return r;
@@ -820,9 +820,9 @@ int config_parse_tmpfs_size(
         assert(data);
 
         /* First, try to parse as percentage */
-        r = parse_percent(rvalue);
-        if (r > 0 && r < 100)
-                *sz = physical_memory_scale(r, 100U);
+        r = parse_permille(rvalue);
+        if (r > 0 && r < 1000)
+                *sz = physical_memory_scale(r, 1000U);
         else {
                 uint64_t k;
 

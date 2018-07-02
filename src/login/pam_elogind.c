@@ -16,7 +16,6 @@
 #include "bus-common-errors.h"
 #include "bus-error.h"
 #include "bus-util.h"
-//#include "cgroup-util.h"
 #include "def.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -25,19 +24,19 @@
 #include "login-util.h"
 #include "macro.h"
 #include "parse-util.h"
-//#include "path-util.h"
 #include "process-util.h"
 #include "socket-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "util.h"
+//#include "path-util.h"
+//#include "cgroup-util.h"
 
 static int parse_argv(
                 pam_handle_t *handle,
                 int argc, const char **argv,
                 const char **class,
                 const char **type,
-                const char **desktop,
                 bool *debug) {
 
         unsigned i;
@@ -53,10 +52,6 @@ static int parse_argv(
                 } else if (startswith(argv[i], "type=")) {
                         if (type)
                                 *type = argv[i] + 5;
-
-                } else if (startswith(argv[i], "desktop=")) {
-                        if (desktop)
-                                *desktop = argv[i] + 8;
 
                 } else if (streq(argv[i], "debug")) {
                         if (debug)
@@ -114,31 +109,6 @@ static int get_user_data(
         return PAM_SUCCESS;
 }
 
-static int socket_from_display(const char *display, char **path) {
-        size_t k;
-        char *f, *c;
-
-        assert(display);
-        assert(path);
-
-        if (!display_is_local(display))
-                return -EINVAL;
-
-        k = strspn(display+1, "0123456789");
-
-        f = new(char, STRLEN("/tmp/.X11-unix/X") + k + 1);
-        if (!f)
-                return -ENOMEM;
-
-        c = stpcpy(f, "/tmp/.X11-unix/X");
-        memcpy(c, display+1, k);
-        c[k] = 0;
-
-        *path = f;
-
-        return 0;
-}
-
 static int get_seat_from_display(const char *display, const char **seat, uint32_t *vtnr) {
         union sockaddr_union sa = {
                 .un.sun_family = AF_UNIX,
@@ -190,6 +160,40 @@ static int get_seat_from_display(const char *display, const char **seat, uint32_
         return 0;
 }
 
+static int export_legacy_dbus_address(
+                pam_handle_t *handle,
+                uid_t uid,
+                const char *runtime) {
+
+        _cleanup_free_ char *s = NULL;
+        int r = PAM_BUF_ERR;
+
+        /* FIXME: We *really* should move the access() check into the
+         * daemons that spawn dbus-daemon, instead of forcing
+         * DBUS_SESSION_BUS_ADDRESS= here. */
+
+        s = strjoin(runtime, "/bus");
+        if (!s)
+                goto error;
+
+        if (access(s, F_OK) < 0)
+                return PAM_SUCCESS;
+
+        s = mfree(s);
+        if (asprintf(&s, DEFAULT_USER_BUS_ADDRESS_FMT, runtime) < 0)
+                goto error;
+
+        r = pam_misc_setenv(handle, "DBUS_SESSION_BUS_ADDRESS", s, 0);
+        if (r != PAM_SUCCESS)
+                goto error;
+
+        return PAM_SUCCESS;
+
+error:
+        pam_syslog(handle, LOG_ERR, "Failed to set bus variable.");
+        return r;
+}
+
 static int append_session_memory_max(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
         uint64_t val;
         int r;
@@ -204,9 +208,9 @@ static int append_session_memory_max(pam_handle_t *handle, sd_bus_message *m, co
                         return r;
                 }
         } else {
-                r = parse_percent(limit);
+                r = parse_permille(limit);
                 if (r >= 0) {
-                        r = sd_bus_message_append(m, "(sv)", "MemoryMaxScale", "u", (uint32_t) (((uint64_t) UINT32_MAX * r) / 100U));
+                        r = sd_bus_message_append(m, "(sv)", "MemoryMaxScale", "u", (uint32_t) (((uint64_t) r * UINT32_MAX) / 1000U));
                         if (r < 0) {
                                 pam_syslog(handle, LOG_ERR, "Failed to append to bus message: %s", strerror(-r));
                                 return r;
@@ -227,7 +231,8 @@ static int append_session_memory_max(pam_handle_t *handle, sd_bus_message *m, co
         return 0;
 }
 
-static int append_session_tasks_max(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
+static int append_session_tasks_max(pam_handle_t *handle, sd_bus_message *m, const char *limit)
+{
         uint64_t val;
         int r;
 
@@ -252,60 +257,21 @@ static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, con
         uint64_t val;
         int r;
 
-        if (isempty(limit))
-                return 0;
-
-        r = cg_weight_parse(limit, &val);
-        if (r >= 0) {
-                r = sd_bus_message_append(m, "(sv)", field, "t", val);
-                if (r < 0) {
-                        pam_syslog(handle, LOG_ERR, "Failed to append to bus message: %s", strerror(-r));
-                        return r;
-                }
-        } else if (streq(field, "CPUWeight"))
                 pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.cpu_weight: %s, ignoring.", limit);
-        else
                 pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.io_weight: %s, ignoring.", limit);
+        if (!isempty(limit)) {
+                r = cg_weight_parse(limit, &val);
+                if (r >= 0) {
+                        r = sd_bus_message_append(m, "(sv)", field, "t", val);
+                        if (r < 0) {
+                                pam_syslog(handle, LOG_ERR, "Failed to append to bus message: %s", strerror(-r));
+                                return r;
+                        }
+                } else if (streq(field, "CPUWeight"))
+                else
+        }
 
         return 0;
-}
-
-static const char* getenv_harder(pam_handle_t *handle, const char *key, const char *fallback) {
-        const char *v;
-
-        assert(handle);
-        assert(key);
-
-        /* Looks for an environment variable, preferrably in the environment block associated with the specified PAM
-         * handle, falling back to the process' block instead. */
-
-        v = pam_getenv(handle, key);
-        if (!isempty(v))
-                return v;
-
-        v = getenv(key);
-        if (!isempty(v))
-                return v;
-
-        return fallback;
-}
-
-static int update_environment(pam_handle_t *handle, const char *key, const char *value) {
-        int r;
-
-        assert(handle);
-        assert(key);
-
-        /* Updates the environment, but only if there's actually a value set. Also, log about errors */
-
-        if (isempty(value))
-                return PAM_SUCCESS;
-
-        r = pam_misc_setenv(handle, key, value, 0);
-        if (r != PAM_SUCCESS)
-                pam_syslog(handle, LOG_ERR, "Failed to set environment variable %s.", key);
-
-        return r;
 }
 
 _public_ PAM_EXTERN int pam_sm_open_session(
@@ -322,7 +288,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 *remote_user = NULL, *remote_host = NULL,
                 *seat = NULL,
                 *type = NULL, *class = NULL,
-                *class_pam = NULL, *type_pam = NULL, *cvtnr = NULL, *desktop = NULL, *desktop_pam = NULL,
+                *class_pam = NULL, *type_pam = NULL, *cvtnr = NULL, *desktop = NULL,
                 *memory_max = NULL, *tasks_max = NULL, *cpu_weight = NULL, *io_weight = NULL;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         int session_fd = -1, existing, r;
@@ -343,7 +309,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                        argc, argv,
                        &class_pam,
                        &type_pam,
-                       &desktop_pam,
                        &debug) < 0)
                 return PAM_SESSION_ERR;
 
@@ -376,6 +341,10 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                         return r;
                 }
 
+                r = export_legacy_dbus_address(handle, pw->pw_uid, rt);
+                if (r != PAM_SUCCESS)
+                        return r;
+
                 return PAM_SUCCESS;
         }
 #endif // 0
@@ -387,11 +356,29 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         pam_get_item(handle, PAM_RUSER, (const void**) &remote_user);
         pam_get_item(handle, PAM_RHOST, (const void**) &remote_host);
 
-        seat = getenv_harder(handle, "XDG_SEAT", NULL);
-        cvtnr = getenv_harder(handle, "XDG_VTNR", NULL);
-        type = getenv_harder(handle, "XDG_SESSION_TYPE", type_pam);
-        class = getenv_harder(handle, "XDG_SESSION_CLASS", class_pam);
-        desktop = getenv_harder(handle, "XDG_SESSION_DESKTOP", desktop_pam);
+        seat = pam_getenv(handle, "XDG_SEAT");
+        if (isempty(seat))
+                seat = getenv("XDG_SEAT");
+
+        cvtnr = pam_getenv(handle, "XDG_VTNR");
+        if (isempty(cvtnr))
+                cvtnr = getenv("XDG_VTNR");
+
+        type = pam_getenv(handle, "XDG_SESSION_TYPE");
+        if (isempty(type))
+                type = getenv("XDG_SESSION_TYPE");
+        if (isempty(type))
+                type = type_pam;
+
+        class = pam_getenv(handle, "XDG_SESSION_CLASS");
+        if (isempty(class))
+                class = getenv("XDG_SESSION_CLASS");
+        if (isempty(class))
+                class = class_pam;
+
+        desktop = pam_getenv(handle, "XDG_SESSION_DESKTOP");
+        if (isempty(desktop))
+                desktop = getenv("XDG_SESSION_DESKTOP");
 
         tty = strempty(tty);
 
@@ -432,9 +419,9 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         if (!isempty(display) && !vtnr) {
                 if (isempty(seat))
-                        (void) get_seat_from_display(display, &seat, &vtnr);
+                        get_seat_from_display(display, &seat, &vtnr);
                 else if (streq(seat, "seat0"))
-                        (void) get_seat_from_display(display, NULL, &vtnr);
+                        get_seat_from_display(display, NULL, &vtnr);
         }
 
         if (seat && !streq(seat, "seat0") && vtnr != 0) {
@@ -567,9 +554,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                            "id=%s object_path=%s runtime_path=%s session_fd=%d seat=%s vtnr=%u original_uid=%u",
                            id, object_path, runtime_path, session_fd, seat, vtnr, original_uid);
 
-        r = update_environment(handle, "XDG_SESSION_ID", id);
-        if (r != PAM_SUCCESS)
+        r = pam_misc_setenv(handle, "XDG_SESSION_ID", id, 0);
+        if (r != PAM_SUCCESS) {
+                pam_syslog(handle, LOG_ERR, "Failed to set session id.");
                 return r;
+        }
 
         if (original_uid == pw->pw_uid) {
                 /* Don't set $XDG_RUNTIME_DIR if the user we now
@@ -578,38 +567,34 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                  * in privileged apps clobbering the runtime directory
                  * unnecessarily. */
 
-                r = update_environment(handle, "XDG_RUNTIME_DIR", runtime_path);
+                r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", runtime_path, 0);
+                if (r != PAM_SUCCESS) {
+                        pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
+                        return r;
+                }
+
+                r = export_legacy_dbus_address(handle, pw->pw_uid, runtime_path);
                 if (r != PAM_SUCCESS)
                         return r;
         }
 
-        /* Most likely we got the session/type/class from environment variables, but might have gotten the data
-         * somewhere else (for example PAM module parameters). Let's now update the environment variables, so that this
-         * data is inherited into the session processes, and programs can rely on them to be initialized. */
-
-        r = update_environment(handle, "XDG_SESSION_TYPE", type);
-        if (r != PAM_SUCCESS)
-                return r;
-
-        r = update_environment(handle, "XDG_SESSION_CLASS", class);
-        if (r != PAM_SUCCESS)
-                return r;
-
-        r = update_environment(handle, "XDG_SESSION_DESKTOP", desktop);
-        if (r != PAM_SUCCESS)
-                return r;
-
-        r = update_environment(handle, "XDG_SEAT", seat);
-        if (r != PAM_SUCCESS)
-                return r;
+        if (!isempty(seat)) {
+                r = pam_misc_setenv(handle, "XDG_SEAT", seat, 0);
+                if (r != PAM_SUCCESS) {
+                        pam_syslog(handle, LOG_ERR, "Failed to set seat.");
+                        return r;
+                }
+        }
 
         if (vtnr > 0) {
                 char buf[DECIMAL_STR_MAX(vtnr)];
                 sprintf(buf, "%u", vtnr);
 
-                r = update_environment(handle, "XDG_VTNR", buf);
-                if (r != PAM_SUCCESS)
+                r = pam_misc_setenv(handle, "XDG_VTNR", buf, 0);
+                if (r != PAM_SUCCESS) {
+                        pam_syslog(handle, LOG_ERR, "Failed to set virtual terminal number.");
                         return r;
+                }
         }
 
         r = pam_set_data(handle, "systemd.existing", INT_TO_PTR(!!existing), NULL);
@@ -651,7 +636,7 @@ _public_ PAM_EXTERN int pam_sm_close_session(
 
         /* Only release session if it wasn't pre-existing when we
          * tried to create it */
-        (void) pam_get_data(handle, "elogind.existing", &existing);
+        pam_get_data(handle, "elogind.existing", &existing);
 
         id = pam_getenv(handle, "XDG_SESSION_ID");
         if (id && !existing) {
