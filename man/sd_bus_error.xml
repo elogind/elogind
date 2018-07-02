@@ -1,4 +1,4 @@
-<?xml version='1.0'?>
+<?xml version='1.0'?> <!--*- Mode: nxml; nxml-child-indent: 2; indent-tabs-mode: nil -*-->
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
@@ -100,7 +100,7 @@
         <paramdef>sd_bus_error *<parameter>e</parameter></paramdef>
         <paramdef>int <parameter>error</parameter></paramdef>
         <paramdef>const char *<parameter>format</parameter></paramdef>
-        <paramdef>va_list ap</paramdef>
+        <paramdef>va_list <parameter>ap</parameter></paramdef>
       </funcprototype>
 
       <funcprototype>
