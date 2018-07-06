@@ -37,7 +37,6 @@
 #         dropin.h
 #         efivars.c
 #         efivars.h
-#         enable-mempool.c
 #         fdset.c
 #         fdset.h
 #         firewall-util.h
@@ -66,6 +65,7 @@
 #         machine-pool.c
 #         machine-pool.h
 #         module-util.h
+#         module-util.c
 #         nsflags.c
 #         nsflags.h
 #         output-mode.c
@@ -151,12 +151,8 @@ endif
 #         shared_sources += files('firewall-util.c')
 # endif
 #endif // 0
-
 libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #if 0 /// elogind does not play around with kernel modules. Not its job.
-# if conf.get('HAVE_KMOD') == 1
-#         shared_sources += files('module-util.c')
-# endif
 #endif // 0
 
 
