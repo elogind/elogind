@@ -64,6 +64,8 @@
 #         machine-image.h
 #         machine-pool.c
 #         machine-pool.h
+#         module-util.h
+#         module-util.c
 #         nsflags.c
 #         nsflags.h
 #         output-mode.c
@@ -157,6 +159,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libcryptsetup,
 #                   libgcrypt,
 #                   libiptc,
+#                   libkmod,
 #                   libseccomp,
 #                   libselinux,
 #                   libidn,
