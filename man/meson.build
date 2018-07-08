@@ -126,8 +126,8 @@ elogind_index_xml = custom_target(
         output : 'elogind.index.xml',
         command : [make_man_index_py, '@OUTPUT@'] + nonindex_xml_files)
 
-foreach tuple : want_man or want_html ? [['elogind.directives', '7', elogind_directives_xml],
                                          ['elogind.index',      '7', elogind_index_xml]] : []
+foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directives_xml],
         stem = tuple[0]
         section = tuple[1]
         xml = tuple[2]
@@ -177,8 +177,7 @@ foreach tuple : want_man or want_html ? [['elogind.directives', '7', elogind_dir
         html_pages += [p3]
 endforeach
 
-# Cannot use run_target because those targets are used in depends
-# Also see https://github.com/mesonbuild/meson/issues/368.
+# cannot use run_target until https://github.com/mesonbuild/meson/issues/1644 is resolved
 man = custom_target(
         'man',
         output : 'man',
