@@ -3,16 +3,13 @@
 #include <stdint.h>
 #include <sys/mount.h>
 
-//#include "sd-bus.h"
-
-//#include "bus-error.h"
 #include "fs-util.h"
 #include "label.h"
+//#include "logind.h"
 #include "mkdir.h"
 #include "mount-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
-//#include "selinux-util.h"
 #include "smack-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
@@ -22,29 +19,22 @@
 #include "user-runtime-dir.h"
 
 #if 0 /// UNNEEDED by elogind
-static int acquire_runtime_dir_size(uint64_t *ret) {
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        _cleanup_(sd_bus_unrefp) sd_bus *bus = NULL;
+static int gather_configuration(size_t *runtime_dir_size) {
+        Manager m = {};
         int r;
 
-        r = sd_bus_default_system(&bus);
-        if (r < 0)
-                return log_error_errno(r, "Failed to connect to system bus: %m");
+        manager_reset_config(&m);
 
-        r = sd_bus_get_property_trivial(bus, "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "RuntimeDirectorySize", &error, 't', ret);
+        r = manager_parse_config_file(&m);
         if (r < 0)
-                return log_error_errno(r, "Failed to acquire runtime directory size: %s", bus_error_message(&error, r));
+                log_warning_errno(r, "Failed to parse logind.conf: %m");
 
+        *runtime_dir_size = m.runtime_dir_size;
         return 0;
 }
 #endif // 0
 
-static int user_mkdir_runtime_path(
-                const char *runtime_path,
-                uid_t uid,
-                gid_t gid,
-                uint64_t runtime_dir_size) {
-
+static int user_mkdir_runtime_path(const char *runtime_path, uid_t uid, gid_t gid, size_t runtime_dir_size) {
         int r;
 
         assert(runtime_path);
@@ -62,10 +52,10 @@ static int user_mkdir_runtime_path(
                 char options[sizeof("mode=0700,uid=,gid=,size=,smackfsroot=*")
                              + DECIMAL_STR_MAX(uid_t)
                              + DECIMAL_STR_MAX(gid_t)
-                             + DECIMAL_STR_MAX(uint64_t)];
+                             + DECIMAL_STR_MAX(size_t)];
 
                 xsprintf(options,
-                         "mode=0700,uid=" UID_FMT ",gid=" GID_FMT ",size=%" PRIu64 "%s",
+                         "mode=0700,uid=" UID_FMT ",gid=" GID_FMT ",size=%zu%s",
                          uid, gid, runtime_dir_size,
                          mac_smack_use() ? ",smackfsroot=*" : "");
 
@@ -109,25 +99,26 @@ static int user_remove_runtime_path(const char *runtime_path) {
 
         r = rm_rf(runtime_path, 0);
         if (r < 0)
-                log_debug_errno(r, "Failed to remove runtime directory %s (before unmounting), ignoring: %m", runtime_path);
+                log_error_errno(r, "Failed to remove runtime directory %s (before unmounting): %m", runtime_path);
 
-        /* Ignore cases where the directory isn't mounted, as that's quite possible, if we lacked the permissions to
-         * mount something */
+        /* Ignore cases where the directory isn't mounted, as that's
+         * quite possible, if we lacked the permissions to mount
+         * something */
         r = umount2(runtime_path, MNT_DETACH);
         if (r < 0 && !IN_SET(errno, EINVAL, ENOENT))
-                log_debug_errno(errno, "Failed to unmount user runtime directory %s, ignoring: %m", runtime_path);
+                log_error_errno(errno, "Failed to unmount user runtime directory %s: %m", runtime_path);
 
         r = rm_rf(runtime_path, REMOVE_ROOT);
-        if (r < 0 && r != -ENOENT)
-                return log_error_errno(r, "Failed to remove runtime directory %s (after unmounting): %m", runtime_path);
+        if (r < 0)
+                log_error_errno(r, "Failed to remove runtime directory %s (after unmounting): %m", runtime_path);
 
-        return 0;
+        return r;
 }
 
 #if 0 /// having a User instance, elogind can ask its manager directly.
 static int do_mount(const char *user) {
         char runtime_path[sizeof("/run/user") + DECIMAL_STR_MAX(uid_t)];
-        uint64_t runtime_dir_size;
+        size_t runtime_dir_size;
         uid_t uid;
         gid_t gid;
         int r;
@@ -140,11 +131,9 @@ static int do_mount(const char *user) {
                                                     : "Failed to look up user \"%s\": %m",
                                        user);
 
-        r = acquire_runtime_dir_size(&runtime_dir_size);
-        if (r < 0)
-                return r;
-
         xsprintf(runtime_path, "/run/user/" UID_FMT, uid);
+
+        assert_se(gather_configuration(&runtime_dir_size) == 0);
 #else
 static int do_mount(const char *runtime_path, size_t runtime_dir_size, uid_t uid, gid_t gid) {
 #endif // 0
@@ -193,12 +182,6 @@ int main(int argc, char *argv[]) {
         }
         if (!STR_IN_SET(argv[1], "start", "stop")) {
                 log_error("First argument must be either \"start\" or \"stop\".");
-                return EXIT_FAILURE;
-        }
-
-        r = mac_selinux_init();
-        if (r < 0) {
-                log_error_errno(r, "Could not initialize labelling: %m\n");
                 return EXIT_FAILURE;
         }
 
