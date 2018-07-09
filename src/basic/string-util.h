@@ -81,21 +81,16 @@ char *endswith_no_case(const char *s, const char *postfix) _pure_;
 
 char *first_word(const char *s, const char *word) _pure_;
 
-typedef enum SplitFlags {
-        SPLIT_QUOTES                     = 0x01 << 0,
-        SPLIT_RELAX                      = 0x01 << 1,
-} SplitFlags;
-
-const char* split(const char **state, size_t *l, const char *separator, SplitFlags flags);
+const char* split(const char **state, size_t *l, const char *separator, bool quoted);
 
 #define FOREACH_WORD(word, length, s, state)                            \
-        _FOREACH_WORD(word, length, s, WHITESPACE, 0, state)
+        _FOREACH_WORD(word, length, s, WHITESPACE, false, state)
 
 #define FOREACH_WORD_SEPARATOR(word, length, s, separator, state)       \
-        _FOREACH_WORD(word, length, s, separator, 0, state)
+        _FOREACH_WORD(word, length, s, separator, false, state)
 
-#define _FOREACH_WORD(word, length, s, separator, flags, state)         \
-        for ((state) = (s), (word) = split(&(state), &(length), (separator), (flags)); (word); (word) = split(&(state), &(length), (separator), (flags)))
+#define _FOREACH_WORD(word, length, s, separator, quoted, state)        \
+        for ((state) = (s), (word) = split(&(state), &(length), (separator), (quoted)); (word); (word) = split(&(state), &(length), (separator), (quoted)))
 
 char *strappend(const char *s, const char *suffix);
 char *strnappend(const char *s, const char *suffix, size_t length);
@@ -183,6 +178,7 @@ char *strrep(const char *s, unsigned n);
 int split_pair(const char *s, const char *sep, char **l, char **r);
 
 int free_and_strdup(char **p, const char *s);
+int free_and_strndup(char **p, const char *s, size_t l);
 
 /* Normal memmem() requires haystack to be nonnull, which is annoying for zero-length buffers */
 static inline void *memmem_safe(const void *haystack, size_t haystacklen, const void *needle, size_t needlelen) {
