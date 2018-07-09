@@ -1140,14 +1140,12 @@ int table_print(Table *t, FILE *f) {
                                 assert(weight_sum >= column_weight[j]);
                                 weight_sum -= column_weight[j];
 
-                                if (restart)
+                                if (restart && !finalize)
                                         break;
                         }
 
-                        if (finalize) {
-                                assert(!restart);
+                        if (finalize)
                                 break;
-                        }
 
                         if (!restart)
                                 finalize = true;
