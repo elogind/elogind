@@ -505,6 +505,7 @@ decl_headers = '''
 #include <sys/stat.h>
 '''
 # FIXME: key_serial_t is only defined in keyutils.h, this is bound to fail
+# FIXME: these should use -D_GNU_SOURCE, since that is defined at build time
 
 foreach decl : ['char16_t',
                 'char32_t',
@@ -518,6 +519,10 @@ foreach decl : ['char16_t',
         have = cc.sizeof(decl, prefix : decl_headers) > 0
         conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
 endforeach
+
+conf.set10('HAVE_STRUCT_STATX_IN_SYS_STAT_H', cc.sizeof('struct statx', prefix : '''
+//#include <sys/stat.h>
+''', args : '-D_GNU_SOURCE') > 0)
 
 foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
@@ -886,9 +891,7 @@ substs.set('TTY_GID', tty_gid)
 # conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
 # conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
 #
-# dev_kvm_mode = get_option('dev-kvm-mode')
-# substs.set('DEV_KVM_MODE', dev_kvm_mode)
-# conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
+# substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
 # substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
 #endif // 0
 
