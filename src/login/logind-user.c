@@ -38,6 +38,7 @@ int user_new(User **ret,
              const char *name,
              const char *home) {
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
@@ -114,7 +115,6 @@ User *user_free(User *u) {
 #endif // 0
 
         hashmap_remove_value(u->manager->users, UID_TO_PTR(u->uid), u);
-
 
         u->slice_job = mfree(u->slice_job);
 #if 0 /// elogind neither supports slice nor service jobs.
@@ -412,12 +412,15 @@ int user_start(User *u) {
 #endif // 1
         /* Save the user data so far, because pam_elogind will read the
          * XDG_RUNTIME_DIR out of it while starting up elogind --user.
+        /* Save the user data so far, because pam_elogind will read the
+         * XDG_RUNTIME_DIR out of it while starting up elogind --user.
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
         user_save_internal(u);
 
 #if 0 /// elogind does not spawn user instances of systemd
 #endif // 0
+        /* Spawn user elogind */
         /* Spawn user elogind */
         r = user_start_service(u);
         if (r < 0)
@@ -437,30 +440,22 @@ int user_start(User *u) {
 }
 
 #if 0 /// elogind does not support user services and systemd units
-static void user_stop_service(User *u) {
 static int user_stop_slice(User *u) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         char *job;
         int r;
 
         assert(u);
-        assert(u->service);
 
-        /* The reverse of user_start_service(). Note that we only stop user@UID.service here, and let StopWhenUnneeded=
-         * deal with the slice and the user-runtime-dir@.service instance. */
         r = manager_stop_unit(u->manager, u->slice, &error, &job);
         if (r < 0) {
                 log_error("Failed to stop user slice: %s", bus_error_message(&error, r));
                 return r;
         }
 
-        u->service_job = mfree(u->service_job);
         free(u->slice_job);
         u->slice_job = job;
 
-        r = manager_stop_unit(u->manager, u->service, &error, &u->service_job);
-        if (r < 0)
-                log_warning_errno(r, "Failed to stop user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
         return r;
 }
 #endif // 0
@@ -867,7 +862,7 @@ int config_parse_compat_user_tasks_max(
         log_syntax(unit, LOG_NOTICE, filename, line, 0,
                    "Support for option %s= has been removed.",
                    lvalue);
-        log_info("Hint: try creating /etc/elogind/system/user-.slice/50-limits.conf with:\n"
+        log_info("Hint: try creating /etc/elogind/system/user-.slice.d/50-limits.conf with:\n"
                  "        [Slice]\n"
                  "        TasksMax=%s",
                  rvalue);
