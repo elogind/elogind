@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239.1',
+        version : '239',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -209,7 +209,6 @@ varrunissymllink = run_command('test', '-L', '/var/run').returncode() == 0
 message('Setting VARRUN_IS_SYMLINK to: @0@'.format(varrunissymllink))
 conf.set10('VARRUN_IS_SYMLINK', varrunissymllink)
 #endif // 1
-
 pamlibdir = get_option('pamlibdir')
 if pamlibdir == ''
         pamlibdir = join_paths(rootlibdir, 'security')
@@ -501,6 +500,7 @@ decl_headers = '''
 #include <sys/stat.h>
 '''
 # FIXME: key_serial_t is only defined in keyutils.h, this is bound to fail
+# FIXME: these should use -D_GNU_SOURCE, since that is defined at build time
 
 foreach decl : ['char16_t',
                 'char32_t',
@@ -514,6 +514,10 @@ foreach decl : ['char16_t',
         have = cc.sizeof(decl, prefix : decl_headers) > 0
         conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
 endforeach
+
+conf.set10('HAVE_STRUCT_STATX_IN_SYS_STAT_H', cc.sizeof('struct statx', prefix : '''
+//#include <sys/stat.h>
+''', args : '-D_GNU_SOURCE') > 0)
 
 foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
@@ -910,7 +914,7 @@ enable_debug_mmap_cache = false
 #if 1 /// additional elogind debug mode
 enable_debug_elogind = false
 #endif // 1
-foreach name : get_option('debug-extra')
+foreach name : get_option('debug')
         if name == 'hashmap'
                 enable_debug_hashmap = true
         elif name == 'mmap-cache'
@@ -1476,7 +1480,6 @@ conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
 #####################################################################
 
 #endif // 1
-
 config_h = configure_file(
         output : 'config.h',
         configuration : conf)
@@ -1602,10 +1605,10 @@ install_libelogind_static = static_library(
                         libselinux,
 #if 0 /// No grypt with elogind
 #                         libgcrypt],
+#         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #else
                         ],
 #endif // 0
-        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 
 ############################################################
 
@@ -3215,14 +3218,14 @@ status = [
         'rootexeclib dir:                   @0@'.format(rootlibexecdir),
 #endif // 1
 #if 0 /// UNNEEDED by elogind
-#        'SysV init scripts:                 @0@'.format(sysvinit_path),
-#        'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
 #endif // 0
+        'SysV init scripts:                 @0@'.format(sysvinit_path),
+        'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
         'PAM modules directory:             @0@'.format(pamlibdir),
         'PAM configuration directory:       @0@'.format(pamconfdir),
 #if 0 /// UNNEEDED by elogind
-#        'RPM macros directory:              @0@'.format(rpmmacrosdir),
 #endif // 0
+        'RPM macros directory:              @0@'.format(rpmmacrosdir),
         'modprobe.d directory:              @0@'.format(modprobedir),
         'D-Bus policy directory:            @0@'.format(dbuspolicydir),
         'D-Bus session directory:           @0@'.format(dbussessionservicedir),
@@ -3388,12 +3391,12 @@ foreach tuple : [
 #         ['wheel group',      get_option('wheel-group')],
 #         ['gshadow'],
 #endif // 0
-        ['valgrind',         conf.get('VALGRIND') == 1],
 #if 1 /// Extra debugging for elogind
         ['debug elogind'],
 #endif // 1
         ['debug hashmap'],
         ['debug mmap cache'],
+        ['valgrind',         conf.get('VALGRIND') == 1],
 ]
 
         if tuple.length() >= 2
