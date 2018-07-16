@@ -380,7 +380,6 @@ int user_start(User *u) {
                 if (r < 0)
                         return r;
         }
-#endif // 1
 
         /* Save the user data so far, because pam_systemd will read the
          * XDG_RUNTIME_DIR out of it while starting up systemd --user.
@@ -406,7 +405,6 @@ int user_start(User *u) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int user_stop_slice(User *u) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         char *job;
@@ -483,7 +481,6 @@ int user_stop(User *u, bool force) {
 #if 1 /// elogind must queue this user again
         user_add_to_gc_queue(u);
 #endif // 1
-
         return r;
 }
 
@@ -508,7 +505,6 @@ int user_finalize(User *u) {
         if (k < 0)
                 r = k;
 #endif // 1
-
         /* Clean SysV + POSIX IPC objects, but only if this is not a system user. Background: in many setups cronjobs
          * are run in full PAM and thus logind sessions, even if the code run doesn't belong to actual users but to
          * system components. Since enable RemoveIPC= globally for all users, we need to be a bit careful with such
@@ -813,7 +809,7 @@ int config_parse_compat_user_tasks_max(
         log_syntax(unit, LOG_NOTICE, filename, line, 0,
                    "Support for option %s= has been removed.",
                    lvalue);
-        log_info("Hint: try creating /etc/elogind/system/user-.slice/50-limits.conf with:\n"
+        log_info("Hint: try creating /etc/elogind/system/user-.slice.d/50-limits.conf with:\n"
                  "        [Slice]\n"
                  "        TasksMax=%s",
                  rvalue);
