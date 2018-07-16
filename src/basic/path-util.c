@@ -112,10 +112,7 @@ int path_make_absolute_cwd(const char *p, char **ret) {
                 if (r < 0)
                         return r;
 
-                if (endswith(cwd, "/"))
-                        c = strjoin(cwd, p);
-                else
-                        c = strjoin(cwd, "/", p);
+                c = path_join(NULL, cwd, p);
         }
         if (!c)
                 return -ENOMEM;
@@ -782,18 +779,7 @@ bool filename_is_valid(const char *p) {
         if (*e != 0)
                 return false;
 
-        if (e - p > FILENAME_MAX) /* FILENAME_MAX is counted *without* the trailing NUL byte */
-                return false;
-
-        return true;
-}
-
-bool path_is_valid(const char *p) {
-
-        if (isempty(p))
-                return false;
-
-        if (strlen(p) >= PATH_MAX) /* PATH_MAX is counted *with* the trailing NUL byte */
+        if (e - p > FILENAME_MAX)
                 return false;
 
         return true;
@@ -801,13 +787,16 @@ bool path_is_valid(const char *p) {
 
 bool path_is_normalized(const char *p) {
 
-        if (!path_is_valid(p))
+        if (isempty(p))
                 return false;
 
         if (dot_or_dot_dot(p))
                 return false;
 
         if (startswith(p, "../") || endswith(p, "/..") || strstr(p, "/../"))
+                return false;
+
+        if (strlen(p)+1 > PATH_MAX)
                 return false;
 
         if (startswith(p, "./") || endswith(p, "/.") || strstr(p, "/./"))
@@ -1065,13 +1054,6 @@ int path_simplify_and_warn(
                 log_syntax(unit, LOG_ERR, filename, line, 0,
                            "%s= path is not normalized%s: %s",
                            lvalue, fatal ? "" : ", ignoring", path);
-                return -EINVAL;
-        }
-
-        if (!path_is_valid(path)) {
-                log_syntax(unit, LOG_ERR, filename, line, 0,
-                           "%s= path has invalid length (%zu bytes)%s.",
-                           lvalue, strlen(path), fatal ? "" : ", ignoring");
                 return -EINVAL;
         }
 
