@@ -128,13 +128,6 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
-        if (max_length == 0) {
-                /* This is supposed to be a safety guard against runaway command lines. */
-                long l = sysconf(_SC_ARG_MAX);
-                assert(l > 0);
-                max_length = l;
-        }
-
         if (max_length == 1) {
 
                 /* If there's only room for one byte, return the empty string */
@@ -144,6 +137,32 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
 
                 *line = ans;
                 return 0;
+
+        } else if (max_length == 0) {
+                size_t len = 0, allocated = 0;
+
+                while ((c = getc(f)) != EOF) {
+
+                        if (!GREEDY_REALLOC(ans, allocated, len+3)) {
+                                free(ans);
+                                return -ENOMEM;
+                        }
+
+                        if (isprint(c)) {
+                                if (space) {
+                                        ans[len++] = ' ';
+                                        space = false;
+                                }
+
+                                ans[len++] = c;
+                        } else if (len > 0)
+                                space = true;
+               }
+
+                if (len > 0)
+                        ans[len] = '\0';
+                else
+                        ans = mfree(ans);
 
         } else {
                 bool dotdotdot = false;
@@ -216,30 +235,34 @@ int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char *
                 if (h < 0)
                         return h;
 
-                size_t l = strlen(t);
-
-                if (l + 3 <= max_length) {
+                if (max_length == 0)
                         ans = strjoin("[", t, "]");
-                        if (!ans)
-                                return -ENOMEM;
+                else {
+                        size_t l;
 
-                } else if (max_length <= 6) {
-                        ans = new(char, max_length);
-                        if (!ans)
-                                return -ENOMEM;
+                        l = strlen(t);
 
-                        memcpy(ans, "[...]", max_length-1);
-                        ans[max_length-1] = 0;
-                } else {
-                        t[max_length - 6] = 0;
+                        if (l + 3 <= max_length)
+                                ans = strjoin("[", t, "]");
+                        else if (max_length <= 6) {
 
-                        /* Chop off final spaces */
-                        delete_trailing_chars(t, WHITESPACE);
+                                ans = new(char, max_length);
+                                if (!ans)
+                                        return -ENOMEM;
 
-                        ans = strjoin("[", t, "...]");
-                        if (!ans)
-                                return -ENOMEM;
+                                memcpy(ans, "[...]", max_length-1);
+                                ans[max_length-1] = 0;
+                        } else {
+                                t[max_length - 6] = 0;
+
+                                /* Chop off final spaces */
+                                delete_trailing_chars(t, WHITESPACE);
+
+                                ans = strjoin("[", t, "...]");
+                        }
                 }
+                if (!ans)
+                        return -ENOMEM;
         }
 
         *line = ans;
@@ -319,33 +342,15 @@ int rename_process(const char name[]) {
 
                 /* Now, let's tell the kernel about this new memory */
                 if (prctl(PR_SET_MM, PR_SET_MM_ARG_START, (unsigned long) nn, 0, 0) < 0) {
-                        /* HACK: prctl() API is kind of dumb on this point.  The existing end address may already be
-                         * below the desired start address, in which case the kernel may have kicked this back due
-                         * to a range-check failure (see linux/kernel/sys.c:validate_prctl_map() to see this in
-                         * action).  The proper solution would be to have a prctl() API that could set both start+end
-                         * simultaneously, or at least let us query the existing address to anticipate this condition
-                         * and respond accordingly.  For now, we can only guess at the cause of this failure and try
-                         * a workaround--which will briefly expand the arg space to something potentially huge before
-                         * resizing it to what we want. */
-                        log_debug_errno(errno, "PR_SET_MM_ARG_START failed, attempting PR_SET_MM_ARG_END hack: %m");
-
-                        if (prctl(PR_SET_MM, PR_SET_MM_ARG_END, (unsigned long) nn + l + 1, 0, 0) < 0) {
-                                log_debug_errno(errno, "PR_SET_MM_ARG_END hack failed, proceeding without: %m");
-                                (void) munmap(nn, nn_size);
-                                goto use_saved_argv;
-                        }
-
-                        if (prctl(PR_SET_MM, PR_SET_MM_ARG_START, (unsigned long) nn, 0, 0) < 0) {
-                                log_debug_errno(errno, "PR_SET_MM_ARG_START still failed, proceeding without: %m");
-                                goto use_saved_argv;
-                        }
-                } else {
-                        /* And update the end pointer to the new end, too. If this fails, we don't really know what
-                         * to do, it's pretty unlikely that we can rollback, hence we'll just accept the failure,
-                         * and continue. */
-                        if (prctl(PR_SET_MM, PR_SET_MM_ARG_END, (unsigned long) nn + l + 1, 0, 0) < 0)
-                                log_debug_errno(errno, "PR_SET_MM_ARG_END failed, proceeding without: %m");
+                        log_debug_errno(errno, "PR_SET_MM_ARG_START failed, proceeding without: %m");
+                        (void) munmap(nn, nn_size);
+                        goto use_saved_argv;
                 }
+
+                /* And update the end pointer to the new end, too. If this fails, we don't really know what to do, it's
+                 * pretty unlikely that we can rollback, hence we'll just accept the failure, and continue. */
+                if (prctl(PR_SET_MM, PR_SET_MM_ARG_END, (unsigned long) nn + l + 1, 0, 0) < 0)
+                        log_debug_errno(errno, "PR_SET_MM_ARG_END failed, proceeding without: %m");
 
                 if (mm)
                         (void) munmap(mm, mm_size);
@@ -812,7 +817,7 @@ int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout) {
 void sigkill_wait(pid_t pid) {
         assert(pid > 1);
 
-        if (kill(pid, SIGKILL) >= 0)
+        if (kill(pid, SIGKILL) > 0)
                 (void) wait_for_terminate(pid, NULL);
 }
 
@@ -831,7 +836,7 @@ void sigkill_waitp(pid_t *pid) {
 void sigterm_wait(pid_t pid) {
         assert(pid > 1);
 
-        if (kill_and_sigcont(pid, SIGTERM) >= 0)
+        if (kill_and_sigcont(pid, SIGTERM) > 0)
                 (void) wait_for_terminate(pid, NULL);
 }
 
@@ -1165,7 +1170,7 @@ void reset_cached_pid(void) {
  * headers. __register_atfork() is mostly equivalent to pthread_atfork(), but doesn't require us to link against
  * libpthread, as it is part of glibc anyway. */
 #ifdef __GLIBC__
-extern int __register_atfork(void (*prepare) (void), void (*parent) (void), void (*child) (void), void * __dso_handle);
+extern int __register_atfork(void (*prepare) (void), void (*parent) (void), void (*child) (void), void *dso_handle);
 extern void* __dso_handle __attribute__ ((__weak__));
 #endif // ifdef __GLIBC__
 
