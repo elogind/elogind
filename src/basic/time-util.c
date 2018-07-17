@@ -1010,10 +1010,10 @@ int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
         }
 
         for (;;) {
-                long long l, z = 0;
-                char *e;
-                unsigned n = 0;
                 usec_t multiplier = default_unit, k;
+                long long l, z = 0;
+                unsigned n = 0;
+                char *e;
 
                 p += strspn(p, WHITESPACE);
 
@@ -1023,6 +1023,9 @@ int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
 
                         break;
                 }
+
+                if (*p == '-') /* Don't allow "-0" */
+                        return -ERANGE;
 
                 errno = 0;
                 l = strtoll(p, &e, 10);
@@ -1034,14 +1037,15 @@ int parse_time(const char *t, usec_t *usec, usec_t default_unit) {
                 if (*e == '.') {
                         char *b = e + 1;
 
+                        if (*b == '-') /* Don't allow 0.-0 */
+                                return -EINVAL;
+
                         errno = 0;
                         z = strtoll(b, &e, 10);
                         if (errno > 0)
                                 return -errno;
-
                         if (z < 0)
                                 return -ERANGE;
-
                         if (e == b)
                                 return -EINVAL;
 
@@ -1073,19 +1077,18 @@ int parse_sec(const char *t, usec_t *usec) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int parse_sec_fix_0(const char *t, usec_t *ret) {
-        usec_t k;
-        int r;
-
+int parse_sec_fix_0(const char *t, usec_t *usec) {
         assert(t);
-        assert(ret);
+        assert(usec);
 
-        r = parse_sec(t, &k);
-        if (r < 0)
-                return r;
+        t += strspn(t, WHITESPACE);
 
-        *ret = k == 0 ? USEC_INFINITY : k;
-        return r;
+        if (streq(t, "0")) {
+                *usec = USEC_INFINITY;
+                return 0;
+        }
+
+        return parse_sec(t, usec);
 }
 
 int parse_nsec(const char *t, nsec_t *nsec) {
@@ -1160,26 +1163,28 @@ int parse_nsec(const char *t, nsec_t *nsec) {
                         break;
                 }
 
+                if (*p == '-')
+                        return -ERANGE;
+
                 errno = 0;
                 l = strtoll(p, &e, 10);
-
                 if (errno > 0)
                         return -errno;
-
                 if (l < 0)
                         return -ERANGE;
 
                 if (*e == '.') {
                         char *b = e + 1;
 
+                        if (*b == '-')
+                                return -EINVAL;
+
                         errno = 0;
                         z = strtoll(b, &e, 10);
                         if (errno > 0)
                                 return -errno;
-
                         if (z < 0)
                                 return -ERANGE;
-
                         if (e == b)
                                 return -EINVAL;
 
