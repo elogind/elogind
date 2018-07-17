@@ -186,8 +186,7 @@ static sd_bus* bus_free(sd_bus *b) {
                  * apps, but are dead. */
 
                 assert(s->floating);
-                bus_slot_disconnect(s);
-                sd_bus_slot_unref(s);
+                bus_slot_disconnect(s, true);
         }
 
         if (b->default_bus_ptr)
@@ -2368,10 +2367,8 @@ static int process_timeout(sd_bus *bus) {
         bus->current_slot = NULL;
         bus->current_message = NULL;
 
-        if (slot->floating) {
-                bus_slot_disconnect(slot);
-                sd_bus_slot_unref(slot);
-        }
+        if (slot->floating)
+                bus_slot_disconnect(slot, true);
 
         sd_bus_slot_unref(slot);
 
@@ -2473,10 +2470,8 @@ static int process_reply(sd_bus *bus, sd_bus_message *m) {
         bus->current_handler = NULL;
         bus->current_slot = NULL;
 
-        if (slot->floating) {
-                bus_slot_disconnect(slot);
-                sd_bus_slot_unref(slot);
-        }
+        if (slot->floating)
+                bus_slot_disconnect(slot, true);
 
         sd_bus_slot_unref(slot);
 
@@ -2818,10 +2813,8 @@ static int process_closing_reply_callback(sd_bus *bus, struct reply_callback *c)
         bus->current_slot = NULL;
         bus->current_message = NULL;
 
-        if (slot->floating) {
-                bus_slot_disconnect(slot);
-                sd_bus_slot_unref(slot);
-        }
+        if (slot->floating)
+                bus_slot_disconnect(slot, true);
 
         sd_bus_slot_unref(slot);
 
@@ -3176,10 +3169,8 @@ static int add_match_callback(
                 r = 1;
         }
 
-        if (failed && match_slot->floating) {
-                bus_slot_disconnect(match_slot);
-                sd_bus_slot_unref(match_slot);
-        }
+        if (failed && match_slot->floating)
+                bus_slot_disconnect(match_slot, true);
 
         sd_bus_slot_unref(match_slot);
 
