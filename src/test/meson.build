@@ -67,11 +67,6 @@ tests += [
 #           libmount,
 #           libblkid]],
 #
-#         [['src/test/test-chown-rec.c'],
-#          [libcore,
-#           libshared],
-#          []],
-#
 #         [['src/test/test-job-type.c'],
 #          [libcore,
 #           libshared],
@@ -431,9 +426,6 @@ tests += [
          [],
          []],
 
-        [['src/test/test-set-disable-mempool.c'],
-         [],
-         [threads]],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-bitmap.c'],
@@ -710,7 +702,7 @@ tests += [
 #         [['src/test/test-nss.c'],
 #          [],
 #          [libdl],
-#          '', 'manual'],
+#          'ENABLE_NSS', 'manual'],
 #
 #         [['src/test/test-umount.c',
 #           'src/core/mount-setup.c',
@@ -954,11 +946,6 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-device/test-udev-device-thread.c'],
-#          [libbasic,
-#           libshared_static,
-#           libudev],
-#          [threads]],
 # ]
 #
 # if cxx.found()
