@@ -1190,9 +1190,7 @@ struct input_mask {
 #endif
 #endif // 0
 
-#if ! HAVE_KEY_SERIAL_T
 typedef int32_t key_serial_t;
-#endif
 
 #ifndef KEYCTL_JOIN_SESSION_KEYRING
 #define KEYCTL_JOIN_SESSION_KEYRING 1
