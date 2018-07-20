@@ -1229,8 +1229,12 @@ int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
         const char *fn;
         char *t;
 
-        assert(p);
         assert(ret);
+
+        if (isempty(p))
+                return -EINVAL;
+        if (path_equal(p, "/"))
+                return -EINVAL;
 
         /*
          * Turns this:
@@ -1262,8 +1266,12 @@ int tempfn_random(const char *p, const char *extra, char **ret) {
         uint64_t u;
         unsigned i;
 
-        assert(p);
         assert(ret);
+
+        if (isempty(p))
+                return -EINVAL;
+        if (path_equal(p, "/"))
+                return -EINVAL;
 
         /*
          * Turns this:
@@ -1316,7 +1324,8 @@ int tempfn_random_child(const char *p, const char *extra, char **ret) {
                 r = tmp_dir(&p);
                 if (r < 0)
                         return r;
-        }
+        } else if (isempty(p))
+                return -EINVAL;
 
         extra = strempty(extra);
 
@@ -1410,7 +1419,8 @@ int open_tmpfile_unlinkable(const char *directory, int flags) {
                 r = tmp_dir(&directory);
                 if (r < 0)
                         return r;
-        }
+        } else if (isempty(directory))
+                return -EINVAL;
 
         /* Returns an unlinked temporary file that cannot be linked into the file system anymore */
 
@@ -1497,7 +1507,6 @@ int open_serialization_fd(const char *ident) {
 
 #if 0 /// UNNEEDED by elogind
 int link_tmpfile(int fd, const char *path, const char *target) {
-        int r;
 
         assert(fd >= 0);
         assert(target);
@@ -1510,9 +1519,8 @@ int link_tmpfile(int fd, const char *path, const char *target) {
          * operation currently (renameat2() does), and there is no nice way to emulate this. */
 
         if (path) {
-                r = rename_noreplace(AT_FDCWD, path, AT_FDCWD, target);
-                if (r < 0)
-                        return r;
+                if (rename_noreplace(AT_FDCWD, path, AT_FDCWD, target) < 0)
+                        return -errno;
         } else {
                 char proc_fd_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(fd) + 1];
 
@@ -1627,9 +1635,6 @@ int read_line(FILE *f, size_t limit, char **ret) {
                         int c;
 
                         if (n >= limit)
-                                return -ENOBUFS;
-
-                        if (count >= INT_MAX) /* We couldn't return the counter anymore as "int", hence refuse this */
                                 return -ENOBUFS;
 
                         errno = 0;
