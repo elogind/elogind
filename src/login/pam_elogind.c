@@ -252,8 +252,6 @@ static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, con
         uint64_t val;
         int r;
 
-                        pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.cpu_weight: %s, ignoring.", limit);
-                        pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.io_weight: %s, ignoring.", limit);
         if (isempty(limit))
                 return 0;
 
@@ -265,7 +263,9 @@ static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, con
                         return r;
                 }
         } else if (streq(field, "CPUWeight"))
+                pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.cpu_weight: %s, ignoring.", limit);
         else
+                pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.io_weight: %s, ignoring.", limit);
 
         return 0;
 }
@@ -432,9 +432,9 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         if (!isempty(display) && !vtnr) {
                 if (isempty(seat))
-                        get_seat_from_display(display, &seat, &vtnr);
+                        (void) get_seat_from_display(display, &seat, &vtnr);
                 else if (streq(seat, "seat0"))
-                        get_seat_from_display(display, NULL, &vtnr);
+                        (void) get_seat_from_display(display, NULL, &vtnr);
         }
 
         if (seat && !streq(seat, "seat0") && vtnr != 0) {
@@ -651,7 +651,7 @@ _public_ PAM_EXTERN int pam_sm_close_session(
 
         /* Only release session if it wasn't pre-existing when we
          * tried to create it */
-        pam_get_data(handle, "systemd.existing", &existing);
+        (void) pam_get_data(handle, "elogind.existing", &existing);
 
         id = pam_getenv(handle, "XDG_SESSION_ID");
         if (id && !existing) {
