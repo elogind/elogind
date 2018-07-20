@@ -14,6 +14,7 @@
 int is_symlink(const char *path);
 #endif // 0
 int is_dir(const char *path, bool follow);
+int is_dir_fd(int fd);
 #if 0 /// UNNEEDED by elogind
 int is_device_node(const char *path);
 
