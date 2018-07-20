@@ -52,7 +52,6 @@ bool plymouth_running(void);
 #endif // 0
 
 bool display_is_local(const char *display) _pure_;
-int socket_from_display(const char *display, char **path);
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
@@ -164,7 +163,7 @@ static inline unsigned u64log2(uint64_t n) {
 
 static inline unsigned u32ctz(uint32_t n) {
 #if __SIZEOF_INT__ == 4
-        return n != 0 ? __builtin_ctz(n) : 32;
+        return __builtin_ctz(n);
 #else
 #error "Wut?"
 #endif

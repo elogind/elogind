@@ -23,7 +23,6 @@
 //#include "def.h"
 //#include "device-nodes.h"
 #include "dirent-util.h"
-//#include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 //#include "format-util.h"
@@ -82,30 +81,6 @@ bool display_is_local(const char *display) {
                 display[1] <= '9';
 }
 
-int socket_from_display(const char *display, char **path) {
-        size_t k;
-        char *f, *c;
-
-        assert(display);
-        assert(path);
-
-        if (!display_is_local(display))
-                return -EINVAL;
-
-        k = strspn(display+1, "0123456789");
-
-        f = new(char, STRLEN("/tmp/.X11-unix/X") + k + 1);
-        if (!f)
-                return -ENOMEM;
-
-        c = stpcpy(f, "/tmp/.X11-unix/X");
-        memcpy(c, display+1, k);
-        c[k] = 0;
-
-        *path = f;
-
-        return 0;
-}
 
 #if 0 /// UNNEEDED by elogind
 bool kexec_loaded(void) {
@@ -137,7 +112,6 @@ int prot_from_flags(int flags) {
 
 bool in_initrd(void) {
         struct statfs s;
-        int r;
 
         if (saved_in_initrd >= 0)
                 return saved_in_initrd;
@@ -152,16 +126,9 @@ bool in_initrd(void) {
          * emptying when transititioning to the main systemd.
          */
 
-        r = getenv_bool_secure("SYSTEMD_IN_INITRD");
-        if (r < 0 && r != -ENXIO)
-                log_debug_errno(r, "Failed to parse $SYSTEMD_IN_INITRD, ignoring: %m");
-
-        if (r >= 0)
-                saved_in_initrd = r > 0;
-        else
-                saved_in_initrd = access("/etc/initrd-release", F_OK) >= 0 &&
-                                  statfs("/", &s) >= 0 &&
-                                  is_temporary_fs(&s);
+        saved_in_initrd = access("/etc/initrd-release", F_OK) >= 0 &&
+                          statfs("/", &s) >= 0 &&
+                          is_temporary_fs(&s);
 
         return saved_in_initrd;
 }
