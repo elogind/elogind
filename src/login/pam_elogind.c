@@ -130,7 +130,7 @@ static int get_seat_from_display(const char *display, const char **seat, uint32_
         r = socket_from_display(display, &p);
         if (r < 0)
                 return r;
-        strncpy(sa.un.sun_path, p, sizeof(sa.un.sun_path));
+        strncpy(sa.un.sun_path, p, sizeof(sa.un.sun_path)-1);
 
         fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
         if (fd < 0)
@@ -158,6 +158,40 @@ static int get_seat_from_display(const char *display, const char **seat, uint32_
         *vtnr = (uint32_t) v;
 
         return 0;
+}
+
+static int export_legacy_dbus_address(
+                pam_handle_t *handle,
+                uid_t uid,
+                const char *runtime) {
+
+        _cleanup_free_ char *s = NULL;
+        int r = PAM_BUF_ERR;
+
+        /* FIXME: We *really* should move the access() check into the
+         * daemons that spawn dbus-daemon, instead of forcing
+         * DBUS_SESSION_BUS_ADDRESS= here. */
+
+        s = strjoin(runtime, "/bus");
+        if (!s)
+                goto error;
+
+        if (access(s, F_OK) < 0)
+                return PAM_SUCCESS;
+
+        s = mfree(s);
+        if (asprintf(&s, DEFAULT_USER_BUS_ADDRESS_FMT, runtime) < 0)
+                goto error;
+
+        r = pam_misc_setenv(handle, "DBUS_SESSION_BUS_ADDRESS", s, 0);
+        if (r != PAM_SUCCESS)
+                goto error;
+
+        return PAM_SUCCESS;
+
+error:
+        pam_syslog(handle, LOG_ERR, "Failed to set bus variable.");
+        return r;
 }
 
 static int append_session_memory_max(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
@@ -240,36 +274,6 @@ static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, con
         return 0;
 }
 
-static bool validate_runtime_directory(pam_handle_t *handle, const char *path, uid_t uid) {
-        struct stat st;
-
-        assert(path);
-
-        /* Just some extra paranoia: let's not set $XDG_RUNTIME_DIR if the directory we'd set it to isn't actually set
-         * up properly for us. */
-
-        if (lstat(path, &st) < 0) {
-                pam_syslog(handle, LOG_ERR, "Failed to stat() runtime directory '%s': %s", path, strerror(errno));
-                goto fail;
-        }
-
-        if (!S_ISDIR(st.st_mode)) {
-                pam_syslog(handle, LOG_ERR, "Runtime directory '%s' is not actually a directory.", path);
-                goto fail;
-        }
-
-        if (st.st_uid != uid) {
-                pam_syslog(handle, LOG_ERR, "Runtime directory '%s' is not owned by UID " UID_FMT ", as it should.", path, uid);
-                goto fail;
-        }
-
-        return true;
-
-fail:
-        pam_syslog(handle, LOG_WARNING, "Not setting $XDG_RUNTIME_DIR, as the directory is not in order.");
-        return false;
-}
-
 _public_ PAM_EXTERN int pam_sm_open_session(
                 pam_handle_t *handle,
                 int flags,
@@ -318,7 +322,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         }
 
         /* Make sure we don't enter a loop by talking to
-         * systemd-login when it is actually waiting for the
+         * elogind when it is actually waiting for the
          * background to finish start-up. If the service is
          * "systemd-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
@@ -331,13 +335,15 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 if (asprintf(&rt, "/run/user/"UID_FMT, pw->pw_uid) < 0)
                         return PAM_BUF_ERR;
 
-                if (validate_runtime_directory(handle, rt, pw->pw_uid)) {
-                        r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", rt, 0);
-                        if (r != PAM_SUCCESS) {
-                                pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
-                                return r;
-                        }
+                r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", rt, 0);
+                if (r != PAM_SUCCESS) {
+                        pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
+                        return r;
                 }
+
+                r = export_legacy_dbus_address(handle, pw->pw_uid, rt);
+                if (r != PAM_SUCCESS)
+                        return r;
 
                 return PAM_SUCCESS;
         }
@@ -472,7 +478,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         r = sd_bus_message_append(m, "uusssssussbss",
                         (uint32_t) pw->pw_uid,
-                        0,
+                        (uint32_t) getpid_cached(),
                         service,
                         type,
                         class,
@@ -561,13 +567,15 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                  * in privileged apps clobbering the runtime directory
                  * unnecessarily. */
 
-                if (validate_runtime_directory(handle, runtime_path, pw->pw_uid)) {
-                        r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", runtime_path, 0);
-                        if (r != PAM_SUCCESS) {
-                                pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
-                                return r;
-                        }
+                r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", runtime_path, 0);
+                if (r != PAM_SUCCESS) {
+                        pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
+                        return r;
                 }
+
+                r = export_legacy_dbus_address(handle, pw->pw_uid, runtime_path);
+                if (r != PAM_SUCCESS)
+                        return r;
         }
 
         if (!isempty(seat)) {
