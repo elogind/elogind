@@ -1336,7 +1336,8 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
                "                             short-iso, short-iso-precise, short-full,\n"
                "                             short-monotonic, short-unix, verbose, export,\n"
-               "                             json, json-pretty, json-sse, cat)\n"
+               "                             json, json-pretty, json-sse, json-seq, cat,\n"
+               "                             with-unit)\n"
 #else
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
