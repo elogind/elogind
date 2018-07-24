@@ -35,13 +35,6 @@ substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
 #endif // 0
 substs.set('PACKAGE_VERSION',      meson.project_version())
 
-want_ossfuzz = get_option('oss-fuzz')
-want_libfuzzer = get_option('llvm-fuzz')
-if want_ossfuzz and want_libfuzzer
-        error('only one of oss-fuzz and llvm-fuzz can be specified')
-endif
-fuzzer_build = want_ossfuzz or want_libfuzzer
-
 #####################################################################
 #if 0 /// elogind does not need this
 #
@@ -352,19 +345,23 @@ want_tests = get_option('tests')
 slow_tests = want_tests != 'false' and get_option('slow-tests')
 install_tests = get_option('install-tests')
 
-cxx = find_program('c++', required : fuzzer_build)
+cxx = find_program('c++', required : false)
 if cxx.found()
         #  Used only for tests
         add_languages('cpp')
-        cxx_cmd = ' '.join(meson.get_compiler('cpp').cmd_array())
-else
-        cxx_cmd = ''
 endif
 
+want_ossfuzz = get_option('oss-fuzz')
+want_libfuzzer = get_option('llvm-fuzz')
+fuzzer_build = want_ossfuzz or want_libfuzzer
+if want_ossfuzz and want_libfuzzer
+        error('only one of oss-fuzz and llvm-fuzz can be specified')
+endif
 #if 0 /// elogind does not support fuzz stress testing (, yet).
 # if want_libfuzzer
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('Fuzzer')
-# elif want_ossfuzz
+# endif
+# if want_ossfuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
 # endif
 #else
@@ -470,7 +467,7 @@ if cc.compiles('''
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
-cpp = ' '.join(cc.cmd_array() + get_option('c_args')) + ' -E'
+cpp = ' '.join(cc.cmd_array()) + ' -E'
 
 #####################################################################
 # compilation result tests
@@ -1619,7 +1616,6 @@ libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sy
 libelogind = shared_library(
         'elogind',
         version : libelogind_version,
-        'src/elogind/sd-id128.h', # pick a header file at random to work around old meson bug
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -2141,7 +2137,7 @@ if conf.get('HAVE_PAM') == 1
 #                          dependencies : [threads],
 #                          install_rpath : rootlibexecdir,
 #                          install : true,
-#                          install_dir : rootbindir)
+#                          install_dir : rootlibexecdir)
 #         public_programs += exe
 # endif
 #
@@ -3361,6 +3357,10 @@ status = [
 #endif // 0
 #if 0 /// elogind does not ship libudeb. Obviously.
 #
+# status += [
+#         'static libsystemd:                 @0@'.format(get_option('static-libsystemd')),
+#         'static libudev:                    @0@'.format(get_option('static-libudev'))]
+#
 #else
         ]
 #endif // 0
@@ -3488,6 +3488,8 @@ foreach tuple : [
 #if 0 /// elogind neither ships libudev nor systemctl.
 #endif // 0
         ['trace logging',    conf.get('LOG_TRACE') == 1],
+        ['link-udev-shared',      get_option('link-udev-shared')],
+        ['link-systemctl-shared', get_option('link-systemctl-shared')],
 ]
 
         if tuple.length() >= 2
