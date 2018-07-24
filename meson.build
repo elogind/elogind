@@ -1566,7 +1566,6 @@ subdir('src/login')
 libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sym)
 libelogind = shared_library(
         'elogind',
-        'src/systemd/sd-id128.h', # pick a header file at random to work around old meson bug
         version : libelogind_version,
         include_directories : includes,
         link_args : ['-shared',
