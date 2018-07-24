@@ -177,7 +177,8 @@ foreach tuple : want_man or want_html ? [['elogind.directives', '7', elogind_dir
         html_pages += [p3]
 endforeach
 
-# cannot use run_target until https://github.com/mesonbuild/meson/issues/1644 is resolved
+# Cannot use run_target because those targets are used in depends
+# Also see https://github.com/mesonbuild/meson/issues/368.
 man = custom_target(
         'man',
         output : 'man',
