@@ -3057,8 +3057,6 @@ subdir('shell-completion/zsh')
 # subdir('doc/var-log')
 #endif // 0
 
-# FIXME: figure out if the warning is true:
-# https://github.com/mesonbuild/meson/wiki/Reference-manual#install_subdir
 install_subdir('factory/etc',
                install_dir : factorydir)
 
