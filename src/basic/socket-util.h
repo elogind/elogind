@@ -74,12 +74,7 @@ int socket_address_parse_and_warn(SocketAddress *a, const char *s);
 int socket_address_parse_netlink(SocketAddress *a, const char *s);
 int socket_address_print(const SocketAddress *a, char **p);
 int socket_address_verify(const SocketAddress *a) _pure_;
-
-int sockaddr_un_unlink(const struct sockaddr_un *sa);
-
-static inline int socket_address_unlink(const SocketAddress *a) {
-        return socket_address_family(a) == AF_UNIX ? sockaddr_un_unlink(&a->sockaddr.un) : 0;
-}
+int socket_address_unlink(SocketAddress *a);
 
 bool socket_address_can_accept(const SocketAddress *a) _pure_;
 
@@ -143,11 +138,19 @@ int getpeercred(int fd, struct ucred *ucred);
 int getpeersec(int fd, char **ret);
 int getpeergroups(int fd, gid_t **ret);
 
+ssize_t send_one_fd_iov_sa(
+                int transport_fd,
+                int fd,
+                struct iovec *iov, size_t iovlen,
+                const struct sockaddr *sa, socklen_t len,
+                int flags);
 int send_one_fd_sa(int transport_fd,
                    int fd,
                    const struct sockaddr *sa, socklen_t len,
                    int flags);
-#define send_one_fd(transport_fd, fd, flags) send_one_fd_sa(transport_fd, fd, NULL, 0, flags)
+#define send_one_fd_iov(transport_fd, fd, iov, iovlen, flags) send_one_fd_iov_sa(transport_fd, fd, iov, iovlen, NULL, 0, flags)
+#define send_one_fd(transport_fd, fd, flags) send_one_fd_iov_sa(transport_fd, fd, NULL, 0, NULL, 0, flags)
+ssize_t receive_one_fd_iov(int transport_fd, struct iovec *iov, size_t iovlen, int flags, int *ret_fd);
 #if 0 /// UNNEEDED by elogind
 int receive_one_fd(int transport_fd, int flags);
 

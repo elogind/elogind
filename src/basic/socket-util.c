@@ -774,6 +774,21 @@ int socknameinfo_pretty(union sockaddr_union *sa, socklen_t salen, char **_ret) 
         return 0;
 }
 
+int socket_address_unlink(SocketAddress *a) {
+        assert(a);
+
+        if (socket_address_family(a) != AF_UNIX)
+                return 0;
+
+        if (a->sockaddr.un.sun_path[0] == 0)
+                return 0;
+
+        if (unlink(a->sockaddr.un.sun_path) < 0)
+                return -errno;
+
+        return 1;
+}
+
 static const char* const netlink_family_table[] = {
         [NETLINK_ROUTE] = "route",
         [NETLINK_FIREWALL] = "firewall",
@@ -848,8 +863,8 @@ int fd_inc_sndbuf(int fd, size_t n) {
         /* If we have the privileges we will ignore the kernel limit. */
 
         value = (int) n;
-        if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &value, sizeof(value)) < 0)
-                if (setsockopt(fd, SOL_SOCKET, SO_SNDBUFFORCE, &value, sizeof(value)) < 0)
+        if (setsockopt(fd, SOL_SOCKET, SO_SNDBUFFORCE, &value, sizeof(value)) < 0)
+                if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &value, sizeof(value)) < 0)
                         return -errno;
 
         return 1;
@@ -866,8 +881,8 @@ int fd_inc_rcvbuf(int fd, size_t n) {
         /* If we have the privileges we will ignore the kernel limit. */
 
         value = (int) n;
-        if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &value, sizeof(value)) < 0)
-                if (setsockopt(fd, SOL_SOCKET, SO_RCVBUFFORCE, &value, sizeof(value)) < 0)
+        if (setsockopt(fd, SOL_SOCKET, SO_RCVBUFFORCE, &value, sizeof(value)) < 0)
+                if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &value, sizeof(value)) < 0)
                         return -errno;
         return 1;
 }
@@ -1026,9 +1041,10 @@ int getpeergroups(int fd, gid_t **ret) {
         return (int) n;
 }
 
-int send_one_fd_sa(
+ssize_t send_one_fd_iov_sa(
                 int transport_fd,
                 int fd,
+                struct iovec *iov, size_t iovlen,
                 const struct sockaddr *sa, socklen_t len,
                 int flags) {
 
@@ -1039,29 +1055,59 @@ int send_one_fd_sa(
         struct msghdr mh = {
                 .msg_name = (struct sockaddr*) sa,
                 .msg_namelen = len,
-                .msg_control = &control,
-                .msg_controllen = sizeof(control),
+                .msg_iov = iov,
+                .msg_iovlen = iovlen,
         };
-        struct cmsghdr *cmsg;
+        ssize_t k;
 
         assert(transport_fd >= 0);
-        assert(fd >= 0);
 
-        cmsg = CMSG_FIRSTHDR(&mh);
-        cmsg->cmsg_level = SOL_SOCKET;
-        cmsg->cmsg_type = SCM_RIGHTS;
-        cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-        memcpy(CMSG_DATA(cmsg), &fd, sizeof(int));
+        /*
+         * We need either an FD or data to send.
+         * If there's nothing, return an error.
+         */
+        if (fd < 0 && !iov)
+                return -EINVAL;
 
-        mh.msg_controllen = CMSG_SPACE(sizeof(int));
-        if (sendmsg(transport_fd, &mh, MSG_NOSIGNAL | flags) < 0)
-                return -errno;
+        if (fd >= 0) {
+                struct cmsghdr *cmsg;
 
-        return 0;
+                mh.msg_control = &control;
+                mh.msg_controllen = sizeof(control);
+
+                cmsg = CMSG_FIRSTHDR(&mh);
+                cmsg->cmsg_level = SOL_SOCKET;
+                cmsg->cmsg_type = SCM_RIGHTS;
+                cmsg->cmsg_len = CMSG_LEN(sizeof(int));
+                memcpy(CMSG_DATA(cmsg), &fd, sizeof(int));
+
+                mh.msg_controllen = CMSG_SPACE(sizeof(int));
+        }
+        k = sendmsg(transport_fd, &mh, MSG_NOSIGNAL | flags);
+        if (k < 0)
+                return (ssize_t) -errno;
+
+        return k;
 }
 
 #if 0 /// UNNEEDED by elogind
-int receive_one_fd(int transport_fd, int flags) {
+int send_one_fd_sa(
+                int transport_fd,
+                int fd,
+                const struct sockaddr *sa, socklen_t len,
+                int flags) {
+
+        assert(fd >= 0);
+
+        return (int) send_one_fd_iov_sa(transport_fd, fd, NULL, 0, sa, len, flags);
+}
+
+ssize_t receive_one_fd_iov(
+                int transport_fd,
+                struct iovec *iov, size_t iovlen,
+                int flags,
+                int *ret_fd) {
+
         union {
                 struct cmsghdr cmsghdr;
                 uint8_t buf[CMSG_SPACE(sizeof(int))];
@@ -1069,10 +1115,14 @@ int receive_one_fd(int transport_fd, int flags) {
         struct msghdr mh = {
                 .msg_control = &control,
                 .msg_controllen = sizeof(control),
+                .msg_iov = iov,
+                .msg_iovlen = iovlen,
         };
         struct cmsghdr *cmsg, *found = NULL;
+        ssize_t k;
 
         assert(transport_fd >= 0);
+        assert(ret_fd);
 
         /*
          * Receive a single FD via @transport_fd. We don't care for
@@ -1082,8 +1132,9 @@ int receive_one_fd(int transport_fd, int flags) {
          * combination with send_one_fd().
          */
 
-        if (recvmsg(transport_fd, &mh, MSG_CMSG_CLOEXEC | flags) < 0)
-                return -errno;
+        k = recvmsg(transport_fd, &mh, MSG_CMSG_CLOEXEC | flags);
+        if (k < 0)
+                return (ssize_t) -errno;
 
         CMSG_FOREACH(cmsg, &mh) {
                 if (cmsg->cmsg_level == SOL_SOCKET &&
@@ -1095,12 +1146,33 @@ int receive_one_fd(int transport_fd, int flags) {
                 }
         }
 
-        if (!found) {
+        if (!found)
                 cmsg_close_all(&mh);
-                return -EIO;
-        }
 
-        return *(int*) CMSG_DATA(found);
+        /* If didn't receive an FD or any data, return an error. */
+        if (k == 0 && !found)
+                return -EIO;
+
+        if (found)
+                *ret_fd = *(int*) CMSG_DATA(found);
+        else
+                *ret_fd = -1;
+
+        return k;
+}
+
+int receive_one_fd(int transport_fd, int flags) {
+        int fd;
+        ssize_t k;
+
+        k = receive_one_fd_iov(transport_fd, NULL, 0, flags, &fd);
+        if (k == 0)
+                return fd;
+
+        /* k must be negative, since receive_one_fd_iov() only returns
+         * a positive value if data was received through the iov. */
+        assert(k < 0);
+        return (int) k;
 }
 
 ssize_t next_datagram_size_fd(int fd) {
@@ -1204,29 +1276,5 @@ int socket_ioctl_fd(void) {
                 return -errno;
 
         return fd;
-}
-
-int sockaddr_un_unlink(const struct sockaddr_un *sa) {
-        const char *p, * nul;
-
-        assert(sa);
-
-        if (sa->sun_family != AF_UNIX)
-                return -EPROTOTYPE;
-
-        if (sa->sun_path[0] == 0) /* Nothing to do for abstract sockets */
-                return 0;
-
-        /* The path in .sun_path is not necessarily NUL terminated. Let's fix that. */
-        nul = memchr(sa->sun_path, 0, sizeof(sa->sun_path));
-        if (nul)
-                p = sa->sun_path;
-        else
-                p = memdupa_suffix0(sa->sun_path, sizeof(sa->sun_path));
-
-        if (unlink(p) < 0)
-                return -errno;
-
-        return 1;
 }
 #endif // 0
