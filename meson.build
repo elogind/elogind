@@ -883,7 +883,9 @@ substs.set('TTY_GID', tty_gid)
 # conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
 # conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
 #
-# substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
+# dev_kvm_mode = get_option('dev-kvm-mode')
+# substs.set('DEV_KVM_MODE', dev_kvm_mode)
+# conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
 # substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
 #endif // 0
 
@@ -1185,6 +1187,18 @@ conf.set10('HAVE_PAM', have)
 # endif
 # conf.set10('HAVE_GNUTLS', have)
 #
+# want_openssl = get_option('openssl')
+# if want_openssl != 'false' and not fuzzer_build
+#         libopenssl = dependency('openssl',
+#                                 version : '>= 1.1.0',
+#                                 required : want_openssl == 'true')
+#         have = libopenssl.found()
+# else
+#         have = false
+#         libopenssl = []
+# endif
+# conf.set10('HAVE_OPENSSL', have)
+#
 # want_elfutils = get_option('elfutils')
 # if want_elfutils != 'false' and not fuzzer_build
 #         libdw = dependency('libdw',
@@ -1326,15 +1340,30 @@ conf.set10('HAVE_DBUS', have)
 #
 # dns_over_tls = get_option('dns-over-tls')
 # if dns_over_tls != 'false'
-#         have = (conf.get('HAVE_GNUTLS') == 1 and
-#                 libgnutls.version().version_compare('>=3.5.3'))
-#         if dns_over_tls == 'true' and not have
-#                 error('DNS-over-TLS support was requested, but dependencies are not available')
+#         if dns_over_tls == 'openssl'
+#                 have_gnutls = false
+#         else
+#                 have_gnutls = (conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.5.3'))
+#                 if dns_over_tls == 'gnutls' and not have_gnutls
+#                         error('DNS-over-TLS support was requested with gnutls, but dependencies are not available')
+#                 endif
 #         endif
+#         if dns_over_tls == 'gnutls' or have_gnutls
+#                 have_openssl = false
+#         else
+#                 have_openssl = conf.get('HAVE_OPENSSL') == 1
+#                 if dns_over_tls != 'auto' and not have_openssl
+#                         str = dns_over_tls == 'openssl' ? ' with openssl' : ''
+#                         error('DNS-over-TLS support was requested$0$, but dependencies are not available'.format(str))
+#                 endif
+#         endif
+#         have = have_gnutls or have_openssl
 # else
-#         have = false
+#         have = have_gnutls = have_openssl = false
 # endif
 # conf.set10('ENABLE_DNS_OVER_TLS', have)
+# conf.set10('DNS_OVER_TLS_USE_GNUTLS', have_gnutls)
+# conf.set10('DNS_OVER_TLS_USE_OPENSSL', have_openssl)
 #
 # default_dns_over_tls = get_option('default-dns-over-tls')
 # if fuzzer_build
@@ -3339,6 +3368,7 @@ foreach tuple : [
 #         ['qrencode'],
 #         ['microhttpd'],
 #         ['gnutls'],
+#         ['openssl'],
 #         ['libcurl'],
 #         ['idn'],
 #         ['libidn2'],
@@ -3365,7 +3395,8 @@ foreach tuple : [
 #         ['localed'],
 #         ['networkd'],
 #         ['resolve'],
-#         ['DNS-over-TLS'],
+#         ['DNS-over-TLS(gnutls)',  conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1],
+#         ['DNS-over-TLS(openssl)', conf.get('DNS_OVER_TLS_USE_OPENSSL') == 1],
 #         ['coredump'],
 #endif // 0
         ['polkit'],
