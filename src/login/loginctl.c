@@ -878,9 +878,10 @@ static int show_session(int argc, char *argv[], void *userdata) {
                 session = getenv("XDG_SESSION_ID");
                 if (session) {
                         r = get_session_path(bus, session, &error, &path);
-                        if (r < 0)
-                                return log_error_errno(r, "Failed to get session path: %s", bus_error_message(&error, r));
-
+                        if (r < 0) {
+                                log_error("Failed to get session path: %s", bus_error_message(&error, r));
+                                return r;
+                        }
                         p = path;
                 }
 
@@ -889,8 +890,10 @@ static int show_session(int argc, char *argv[], void *userdata) {
 
         for (i = 1; i < argc; i++) {
                 r = get_session_path(bus, argv[i], &error, &path);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to get session path: %s", bus_error_message(&error, r));
+                if (r < 0) {
+                        log_error("Failed to get session path: %s", bus_error_message(&error, r));
+                        return r;
+                }
 
                 if (properties)
                         r = show_properties(bus, path, &new_line);
@@ -931,7 +934,7 @@ static int show_user(int argc, char *argv[], void *userdata) {
                 const char *path = NULL;
                 uid_t uid;
 
-                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL);
+                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
                 if (r < 0)
                         return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
 
@@ -943,8 +946,10 @@ static int show_user(int argc, char *argv[], void *userdata) {
                                 "GetUser",
                                 &error, &reply,
                                 "u", (uint32_t) uid);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to get user: %s", bus_error_message(&error, r));
+                if (r < 0) {
+                        log_error("Failed to get user: %s", bus_error_message(&error, r));
+                        return r;
+                }
 
                 r = sd_bus_message_read(reply, "o", &path);
                 if (r < 0)
@@ -996,8 +1001,10 @@ static int show_seat(int argc, char *argv[], void *userdata) {
                                 "GetSeat",
                                 &error, &reply,
                                 "s", argv[i]);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to get seat: %s", bus_error_message(&error, r));
+                if (r < 0) {
+                        log_error("Failed to get seat: %s", bus_error_message(&error, r));
+                        return r;
+                }
 
                 r = sd_bus_message_read(reply, "o", &path);
                 if (r < 0)
@@ -1051,8 +1058,10 @@ static int activate(int argc, char *argv[], void *userdata) {
                                                                       "ActivateSession",
                                 &error, NULL,
                                 "s", argv[i]);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to issue method call: %s", bus_error_message(&error, -r));
+                if (r < 0) {
+                        log_error("Failed to issue method call: %s", bus_error_message(&error, -r));
+                        return r;
+                }
         }
 
         return 0;
@@ -1081,8 +1090,10 @@ static int kill_session(int argc, char *argv[], void *userdata) {
                         "KillSession",
                         &error, NULL,
                         "ssi", argv[i], arg_kill_who, arg_signal);
-                if (r < 0)
-                        return log_error_errno(r, "Could not kill session: %s", bus_error_message(&error, -r));
+                if (r < 0) {
+                        log_error("Could not kill session: %s", bus_error_message(&error, -r));
+                        return r;
+                }
         }
 
         return 0;
@@ -1119,7 +1130,7 @@ static int enable_linger(int argc, char *argv[], void *userdata) {
                 if (isempty(argv[i]))
                         uid = UID_INVALID;
                 else {
-                        r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL);
+                        r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
                 }
@@ -1132,8 +1143,10 @@ static int enable_linger(int argc, char *argv[], void *userdata) {
                         "SetUserLinger",
                         &error, NULL,
                         "ubb", (uint32_t) uid, b, true);
-                if (r < 0)
-                        return log_error_errno(r, "Could not enable linger: %s", bus_error_message(&error, -r));
+                if (r < 0) {
+                        log_error("Could not enable linger: %s", bus_error_message(&error, -r));
+                        return r;
+                }
         }
 
         return 0;
@@ -1152,7 +1165,7 @@ static int terminate_user(int argc, char *argv[], void *userdata) {
         for (i = 1; i < argc; i++) {
                 uid_t uid;
 
-                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL);
+                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
                 if (r < 0)
                         return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
 
@@ -1164,8 +1177,10 @@ static int terminate_user(int argc, char *argv[], void *userdata) {
                         "TerminateUser",
                         &error, NULL,
                         "u", (uint32_t) uid);
-                if (r < 0)
-                        return log_error_errno(r, "Could not terminate user: %s", bus_error_message(&error, -r));
+                if (r < 0) {
+                        log_error("Could not terminate user: %s", bus_error_message(&error, -r));
+                        return r;
+                }
         }
 
         return 0;
@@ -1187,7 +1202,7 @@ static int kill_user(int argc, char *argv[], void *userdata) {
         for (i = 1; i < argc; i++) {
                 uid_t uid;
 
-                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL);
+                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
                 if (r < 0)
                         return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
 
@@ -1199,8 +1214,10 @@ static int kill_user(int argc, char *argv[], void *userdata) {
                         "KillUser",
                         &error, NULL,
                         "ui", (uint32_t) uid, arg_signal);
-                if (r < 0)
-                        return log_error_errno(r, "Could not kill user: %s", bus_error_message(&error, -r));
+                if (r < 0) {
+                        log_error("Could not kill user: %s", bus_error_message(&error, -r));
+                        return r;
+                }
         }
 
         return 0;
@@ -1227,8 +1244,10 @@ static int attach(int argc, char *argv[], void *userdata) {
                         &error, NULL,
                         "ssb", argv[1], argv[i], true);
 
-                if (r < 0)
-                        return log_error_errno(r, "Could not attach device: %s", bus_error_message(&error, -r));
+                if (r < 0) {
+                        log_error("Could not attach device: %s", bus_error_message(&error, -r));
+                        return r;
+                }
         }
 
         return 0;
@@ -1253,9 +1272,9 @@ static int flush_devices(int argc, char *argv[], void *userdata) {
                         &error, NULL,
                         "b", true);
         if (r < 0)
-                return log_error_errno(r, "Could not flush devices: %s", bus_error_message(&error, -r));
+                log_error("Could not flush devices: %s", bus_error_message(&error, -r));
 
-        return 0;
+        return r;
 }
 
 static int lock_sessions(int argc, char *argv[], void *userdata) {
@@ -1277,9 +1296,9 @@ static int lock_sessions(int argc, char *argv[], void *userdata) {
                         &error, NULL,
                         NULL);
         if (r < 0)
-                return log_error_errno(r, "Could not lock sessions: %s", bus_error_message(&error, -r));
+                log_error("Could not lock sessions: %s", bus_error_message(&error, -r));
 
-        return 0;
+        return r;
 }
 
 static int terminate_seat(int argc, char *argv[], void *userdata) {
@@ -1302,22 +1321,16 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
                         "TerminateSeat",
                         &error, NULL,
                         "s", argv[i]);
-                if (r < 0)
-                        return log_error_errno(r, "Could not terminate seat: %s", bus_error_message(&error, -r));
+                if (r < 0) {
+                        log_error("Could not terminate seat: %s", bus_error_message(&error, -r));
+                        return r;
+                }
         }
 
         return 0;
 }
 
 static int help(int argc, char *argv[], void *userdata) {
-        _cleanup_free_ char *link = NULL;
-        int r;
-
-        (void) pager_open(arg_no_pager, false);
-
-        r = terminal_urlify_man("loginctl", "1", &link);
-        if (r < 0)
-                return log_oom();
 
         printf("%s [OPTIONS...] {COMMAND} ...\n\n"
                "Send control commands to or query the login manager.\n\n"
@@ -1381,10 +1394,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  flush-devices            Flush all device associations\n"
 #if 0 /// elogind adds some system commands to loginctl
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
-               "\nSee the %s for details.\n"
-               , program_invocation_short_name
-               , link
-        );
+               , program_invocation_short_name);
 #else
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
                "System Commands:\n"
@@ -1458,7 +1468,8 @@ static int parse_argv(int argc, char *argv[]) {
                 switch (c) {
 
                 case 'h':
-                        return help(0, NULL, NULL);
+                        help(0, NULL, NULL);
+                        return 0;
 
                 case ARG_VERSION:
                         return version();

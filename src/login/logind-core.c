@@ -170,7 +170,7 @@ int manager_add_user_by_name(Manager *m, const char *name, User **_user) {
         assert(m);
         assert(name);
 
-        r = get_user_creds(&name, &uid, &gid, NULL, NULL);
+        r = get_user_creds(&name, &uid, &gid, NULL, NULL, 0);
         if (r < 0)
                 return r;
 
@@ -571,9 +571,9 @@ int manager_spawn_autovt(Manager *m, unsigned int vtnr) {
                         NULL,
                         "ss", name, "fail");
         if (r < 0)
-                return log_error_errno(r, "Failed to start %s: %s", name, bus_error_message(&error, r));
+                log_error("Failed to start %s: %s", name, bus_error_message(&error, r));
 
-        return 0;
+        return r;
 }
 #endif // 0
 
