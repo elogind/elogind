@@ -31,6 +31,7 @@
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **ret, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
@@ -288,8 +289,7 @@ int user_save(User *u) {
 }
 
 int user_load(User *u) {
-        _cleanup_free_ char *display = NULL, *realtime = NULL, *monotonic = NULL;
-        Session *s = NULL;
+        _cleanup_free_ char *realtime = NULL, *monotonic = NULL;
         int r;
 
         assert(u);
@@ -299,18 +299,14 @@ int user_load(User *u) {
 #endif // 0
                            "SERVICE_JOB", &u->service_job,
                            "SLICE_JOB",   &u->slice_job,
-                           "DISPLAY",     &display,
                            "REALTIME",    &realtime,
                            "MONOTONIC",   &monotonic,
                            NULL);
-        if (r < 0) {
-                if (r == -ENOENT)
-                        return 0;
-
                 log_debug_elogind(" --> User stopping    : %d", u->stopping);
+        if (r == -ENOENT)
+                return 0;
+        if (r < 0)
                 return log_error_errno(r, "Failed to read %s: %m", u->state_file);
-        }
-
         log_debug_elogind(" --> User realtime    : %lu", u->timestamp.realtime);
         log_debug_elogind(" --> User monotonic   : %lu", u->timestamp.monotonic);
         log_debug_elogind(" --> User last session: %lu", u->last_session_timestamp);
