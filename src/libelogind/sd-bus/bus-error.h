@@ -47,3 +47,5 @@ int bus_error_set_errnofv(sd_bus_error *e, int error, const char *format, va_lis
 #define BUS_ERROR_MAP_END_MARKER -'x'
 
 BUS_ERROR_MAP_ELF_USE(bus_standard_errors);
+
+int sd_bus_error_move(sd_bus_error *dest, sd_bus_error *e);
