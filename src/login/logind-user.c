@@ -35,6 +35,7 @@
 //#include "util.h"
 //#include "util.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **ret, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
@@ -541,7 +542,7 @@ int user_finalize(User *u) {
                         r = k;
         }
 
-        unlink(u->state_file);
+        (void) unlink(u->state_file);
         user_add_to_gc_queue(u);
 
         if (u->started) {

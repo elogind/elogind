@@ -1112,7 +1112,7 @@ static void session_remove_fifo(Session *s) {
 #if 1 /// end elogind extra if
                 }
 #endif // 1
-                unlink(s->fifo_path);
+                (void) unlink(s->fifo_path);
                 s->fifo_path = mfree(s->fifo_path);
         }
 }
