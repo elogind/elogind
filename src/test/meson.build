@@ -842,6 +842,10 @@ tests += [
 ############################################################
 
 tests += [
+        [['src/libelogind/sd-bus/test-bus-address.c'],
+         [],
+         [threads]],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/libsystemd/sd-bus/test-bus-marshal.c'],
 #          [],
