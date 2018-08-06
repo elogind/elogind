@@ -33,6 +33,7 @@
 //#include "util.h"
 //#include "util.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **ret, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
@@ -604,6 +605,8 @@ int user_check_linger_file(User *u) {
 bool user_may_gc(User *u, bool drop_not_started) {
 #if 0 /// UNNEEDED by elogind
 #endif // 0
+        int r;
+
         assert(u);
 
         log_debug_elogind("User %s may gc ?", u->name);
@@ -624,11 +627,19 @@ bool user_may_gc(User *u, bool drop_not_started) {
                 return false;
 
 #if 0 /// elogind neither supports service nor slice jobs
-        if (u->slice_job && manager_job_is_active(u->manager, u->slice_job))
-                return false;
+        /* Check if our job is still pending */
+        if (u->service_job) {
+                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
 
-        if (u->service_job && manager_job_is_active(u->manager, u->service_job))
-                return false;
+                r = manager_job_is_active(u->manager, u->service_job, &error);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to determine whether job '%s' is pending, ignoring: %s", u->service_job, bus_error_message(&error, r));
+                if (r != 0)
+                        return false;
+        }
+
+        /* Note that we don't care if the three units we manage for each user object are up or not, as we are managing
+         * their state rather than tracking it. */
 
         return true;
 #else

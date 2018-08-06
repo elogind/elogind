@@ -225,8 +225,8 @@ int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, c
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
 int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
 #endif // 0
-int manager_unit_is_active(Manager *manager, const char *unit);
-int manager_job_is_active(Manager *manager, const char *path);
+int manager_unit_is_active(Manager *manager, const char *unit, sd_bus_error *error);
+int manager_job_is_active(Manager *manager, const char *path, sd_bus_error *error);
 
 /* gperf lookup function */
 const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
