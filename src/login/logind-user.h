@@ -25,12 +25,13 @@ struct User {
         char *name;
         char *state_file;
         char *runtime_path;
-        char *slice;
-        char *service;
+
+        char *slice;                     /* user-UID.slice */
+        char *service;                   /* user@UID.service */
+        char *runtime_dir_service;       /* user-runtime-dir@UID.service */
 
 #if 0 /// UNNEEDED by elogind
         char *service_job;
-        char *slice_job;
 #endif // 0
 
         Session *display;
