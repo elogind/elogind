@@ -32,6 +32,7 @@
 #include "user-runtime-dir.h"
 //#include "util.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **ret, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
@@ -146,9 +147,11 @@ static int user_save_internal(User *u) {
         fprintf(f,
                 "# This is private data. Do not parse.\n"
                 "NAME=%s\n"
-                "STATE=%s\n",
+                "STATE=%s\n"         /* friendly user-facing state */
+                "STOPPING=%s\n",     /* low-level state */
                 u->name,
-                user_state_to_string(user_get_state(u)));
+                user_state_to_string(user_get_state(u)),
+                yes_no(u->stopping));
 
         /* LEGACY: no-one reads RUNTIME= anymore, drop it at some point */
         if (u->runtime_path)
@@ -289,7 +292,7 @@ int user_save(User *u) {
 }
 
 int user_load(User *u) {
-        _cleanup_free_ char *realtime = NULL, *monotonic = NULL;
+        _cleanup_free_ char *realtime = NULL, *monotonic = NULL, *stopping = NULL;
         int r;
 
         assert(u);
@@ -298,7 +301,7 @@ int user_load(User *u) {
 #if 0 /// elogind neither supports service nor slice jobs
 #endif // 0
                            "SERVICE_JOB", &u->service_job,
-                           "SLICE_JOB",   &u->slice_job,
+                           "STOPPING",    &stopping,
                            "REALTIME",    &realtime,
                            "MONOTONIC",   &monotonic,
                            NULL);
@@ -322,9 +325,15 @@ int user_load(User *u) {
         LIST_FOREACH(sessions_by_user, i, u->sessions) {
                 if (first)
                         first = false;
+
+        if (stopping) {
+                r = parse_boolean(stopping);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to parse 'STOPPING' boolean: %s", stopping);
                 else
                         strv_extend(&sa, " ");
                 strv_extend(&sa, i->id);
+                        u->stopping = r;
         }
         if (s && s->display && display_is_local(s->display))
                 u->display = s;
@@ -339,7 +348,7 @@ int user_load(User *u) {
         if (monotonic)
                 timestamp_deserialize(monotonic, &u->timestamp.monotonic);
 
-        return r;
+        return 0;
 }
 
 #if 0 /// elogind neither spawns systemd --user nor suports systemd units and services.

@@ -23,25 +23,20 @@ struct User {
         uid_t uid;
         gid_t gid;
         char *name;
-        char *home;
         char *state_file;
         char *runtime_path;
+        char *slice;
+        char *service;
 
-        char *slice;                     /* user-UID.slice */
-        char *service;                   /* user@UID.service */
-        char *runtime_dir_service;       /* user-runtime-dir@UID.service */
 
 #if 0 /// UNNEEDED by elogind
         char *service_job;
 #endif // 0
+        char *slice_job;
 
         Session *display;
 
-        dual_timestamp timestamp;      /* When this User object was 'started' the first time */
-        usec_t last_session_timestamp; /* When the number of sessions of this user went from 1 to 0 the last time */
-
-        /* Set up when the last session of the user logs out */
-        sd_event_source *timer_event_source;
+        dual_timestamp timestamp;
 
         bool in_gc_queue:1;
 
@@ -52,7 +47,7 @@ struct User {
         LIST_FIELDS(User, gc_queue);
 };
 
-int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name, const char *home);
+int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name);
 User *user_free(User *u);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(User *, user_free);
@@ -69,7 +64,6 @@ int user_load(User *u);
 int user_kill(User *u, int signo);
 int user_check_linger_file(User *u);
 void user_elect_display(User *u);
-void user_update_last_session_timer(User *u);
 
 extern const sd_bus_vtable user_vtable[];
 int user_node_enumerator(sd_bus *bus, const char *path, void *userdata, char ***nodes, sd_bus_error *error);
