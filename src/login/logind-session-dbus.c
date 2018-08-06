@@ -708,9 +708,7 @@ int session_send_create_reply(Session *s, sd_bus_error *error) {
                 return 0;
 #endif // 0
 
-        c = s->create_message;
-        s->create_message = NULL;
-
+        c = TAKE_PTR(s->create_message);
         if (error)
                 return sd_bus_reply_method_error(c, error);
 
