@@ -1072,6 +1072,8 @@ static void session_remove_fifo(Session *s) {
 }
 
 bool session_may_gc(Session *s, bool drop_not_started) {
+        int r;
+
         assert(s);
 
         if (drop_not_started && !s->started)
@@ -1086,12 +1088,26 @@ bool session_may_gc(Session *s, bool drop_not_started) {
         }
 
 #if 0 /// elogind supports neither scopes nor jobs
-        if (s->scope_job && manager_job_is_active(s->manager, s->scope_job))
-                return false;
-
-        if (s->scope && manager_unit_is_active(s->manager, s->scope))
-                return false;
 #endif // 0
+        if (s->scope_job) {
+                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+
+                r = manager_job_is_active(s->manager, s->scope_job, &error);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to determine whether job '%s' is pending, ignoring: %s", s->scope_job, bus_error_message(&error, r));
+                if (r != 0)
+                        return false;
+        }
+
+        if (s->scope) {
+                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+
+                r = manager_unit_is_active(s->manager, s->scope, &error);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to determine whether unit '%s' is active, ignoring: %s", s->scope, bus_error_message(&error, r));
+                if (r != 0)
+                        return false;
+        }
 
         return true;
 }
