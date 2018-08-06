@@ -1066,7 +1066,7 @@ static void session_remove_fifo(Session *s) {
         s->fifo_fd = safe_close(s->fifo_fd);
 
         if (s->fifo_path) {
-                unlink(s->fifo_path);
+                (void) unlink(s->fifo_path);
                 s->fifo_path = mfree(s->fifo_path);
         }
 }
