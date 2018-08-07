@@ -421,8 +421,11 @@ static int user_stop_slice(User *u) {
 
         free(u->slice_job);
         u->slice_job = job;
+        if (r < 0)
+                return log_error_errno(r, "Failed to stop user slice: %s", bus_error_message(&error, r));
 
         return r;
+        return free_and_replace(u->slice_job, job);
 }
 
 static int user_stop_service(User *u) {
@@ -437,9 +440,12 @@ static int user_stop_service(User *u) {
                 log_error("Failed to stop user service: %s", bus_error_message(&error, r));
                 return r;
         }
+        if (r < 0)
+                return log_error_errno(r, "Failed to stop user service: %s", bus_error_message(&error, r));
 
         free_and_replace(u->service_job, job);
         return r;
+        return free_and_replace(u->service_job, job);
 }
 #endif // 0
 
