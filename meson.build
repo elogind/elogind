@@ -941,6 +941,7 @@ conf.set10('ENABLE_DEBUG_ELOGIND', enable_debug_elogind)
 #endif // 1
 
 conf.set10('VALGRIND', get_option('valgrind'))
+conf.set10('LOG_TRACE', get_option('log-trace'))
 
 #####################################################################
 
@@ -3471,6 +3472,7 @@ foreach tuple : [
         ['valgrind',         conf.get('VALGRIND') == 1],
 #if 0 /// elogind neither ships libudev nor systemctl.
 #endif // 0
+        ['trace logging',    conf.get('LOG_TRACE') == 1],
 ]
 
         if tuple.length() >= 2

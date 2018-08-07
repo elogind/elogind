@@ -82,6 +82,8 @@ option('valgrind', type : 'boolean', value : false,
 option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache'], value : [],
        description : 'enable extra debugging')
 #endif // 1
+option('log-trace', type : 'boolean', value : false,
+       description : 'enable low level debug logging')
 
 option('utmp', type : 'boolean',
        description : 'support for utmp/wtmp log handling')
