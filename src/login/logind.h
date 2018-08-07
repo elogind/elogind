@@ -38,6 +38,7 @@ struct Manager {
         Hashmap *devices;
         Hashmap *seats;
         Hashmap *sessions;
+        Hashmap *sessions_by_leader;
         Hashmap *users;
         Hashmap *inhibitors;
         Hashmap *buttons;
