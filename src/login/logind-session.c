@@ -60,6 +60,7 @@ int session_new(Session **ret, Manager *m, const char *id) {
                 .fifo_fd = -1,
                 .vtfd = -1,
                 .audit_id = AUDIT_SESSION_INVALID,
+                .tty_validity = _TTY_VALIDITY_INVALID,
         };
 
         s->state_file = strappend("/run/systemd/sessions/", id);
@@ -254,6 +255,9 @@ int session_save(Session *s) {
         if (s->tty)
                 fprintf(f, "TTY=%s\n", s->tty);
 
+        if (s->tty_validity >= 0)
+                fprintf(f, "TTY_VALIDITY=%s\n", tty_validity_to_string(s->tty_validity));
+
         if (s->display)
                 fprintf(f, "DISPLAY=%s\n", s->display);
 
@@ -390,6 +394,7 @@ static int session_load_devices(Session *s, const char *devices) {
 int session_load(Session *s) {
         _cleanup_free_ char *remote = NULL,
                 *seat = NULL,
+                *tty_validity = NULL,
                 *vtnr = NULL,
                 *state = NULL,
                 *position = NULL,
@@ -417,6 +422,7 @@ int session_load(Session *s) {
                            "FIFO",           &s->fifo_path,
                            "SEAT",           &seat,
                            "TTY",            &s->tty,
+                           "TTY_VALIDITY",   &tty_validity,
                            "DISPLAY",        &s->display,
                            "REMOTE_HOST",    &s->remote_host,
                            "REMOTE_USER",    &s->remote_user,
@@ -491,6 +497,16 @@ int session_load(Session *s) {
 
                 safe_atou(position, &npos);
                 seat_claim_position(s->seat, s, npos);
+        }
+
+        if (tty_validity) {
+                TTYValidity v;
+
+                v = tty_validity_from_string(tty_validity);
+                if (v < 0)
+                        log_debug("Failed to parse TTY validity: %s", tty_validity);
+                else
+                        s->tty_validity = v;
         }
 
         if (leader) {
@@ -1481,3 +1497,11 @@ static const char* const kill_who_table[_KILL_WHO_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(kill_who, KillWho);
+
+static const char* const tty_validity_table[_TTY_VALIDITY_MAX] = {
+        [TTY_FROM_PAM] = "from-pam",
+        [TTY_FROM_UTMP] = "from-utmp",
+        [TTY_UTMP_INCONSISTENT] = "utmp-inconsistent",
+};
+
+DEFINE_STRING_TABLE_LOOKUP(tty_validity, TTYValidity);
