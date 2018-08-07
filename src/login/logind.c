@@ -160,6 +160,10 @@ static Manager* manager_unref(Manager *m) {
         sd_event_source_unref(m->udev_button_event_source);
         sd_event_source_unref(m->lid_switch_ignore_event_source);
 
+#if ENABLE_UTMP
+        sd_event_source_unref(m->utmp_event_source);
+#endif
+
         safe_close(m->console_active_fd);
 
         udev_monitor_unref(m->udev_seat_monitor);
@@ -1133,6 +1137,9 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to register elogind signal handlers: %m");
 #endif // 1
+        /* Connect to utmp */
+        manager_connect_utmp(m);
+
         /* Connect to console */
         r = manager_connect_console(m);
         if (r < 0)
@@ -1189,6 +1196,9 @@ static int manager_startup(Manager *m) {
 #if 0 /// elogind does not support autospawning of vts
         manager_reserve_vt(m);
 #endif // 0
+
+        /* Read in utmp if it exists */
+        manager_read_utmp(m);
 
         /* And start everything */
         HASHMAP_FOREACH(seat, m->seats, i)
