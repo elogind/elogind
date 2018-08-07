@@ -129,18 +129,10 @@ int manager_handle_action(
         else
                 supported = true;
 
-        if (!supported && IN_SET(handle, HANDLE_HIBERNATE, HANDLE_HYBRID_SLEEP, HANDLE_SUSPEND_THEN_HIBERNATE)) {
 #if 0 /// elogind needs the manager
-                supported = can_sleep("suspend") > 0;
 #else
                 supported = can_sleep(m, "suspend") > 0;
 #endif // 0
-                if (supported) {
-                        log_notice("Operation '%s' requested but not supported, using regular suspend instead.", handle_action_to_string(handle));
-                        handle = HANDLE_SUSPEND;
-                }
-        }
-
         if (!supported) {
                 log_warning("Requested operation not supported, ignoring.");
                 return -EOPNOTSUPP;
@@ -188,13 +180,11 @@ int manager_handle_action(
 
 #if 0 /// elogind uses its own variant, which can use the handle directly.
         r = bus_manager_shutdown_or_sleep_now_or_later(m, target, inhibit_operation, &error);
+        if (r < 0)
+                return log_error_errno(r, "Failed to execute operation: %s", bus_error_message(&error, r));
 #else
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
 #endif // 0
-        if (r < 0) {
-                log_error("Failed to execute operation: %s", bus_error_message(&error, r));
-                return r;
-        }
 
         return 1;
 }
