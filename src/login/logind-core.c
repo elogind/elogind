@@ -32,6 +32,8 @@ void manager_reset_config(Manager *m) {
         m->remove_ipc = true;
         m->inhibit_delay_max = 5 * USEC_PER_SEC;
 #if 0 /// elogind does not start a user service manager, the delay is unneeded.
+        m->user_stop_delay = 10 * USEC_PER_SEC;
+
 #else
         m->user_stop_delay = 0;
 #endif // 0
