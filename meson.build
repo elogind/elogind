@@ -3442,10 +3442,10 @@ foreach tuple : [
         ['dbus'],
         ['glib'],
 #if 0 /// UNNEEDED by elogind
-#         ['nss-myhostname',   conf.get('ENABLE_NSS_MYHOSTNAME') == 1],
-#         ['nss-mymachines',   conf.get('ENABLE_NSS_MYMACHINES') == 1],
-#         ['nss-resolve',      conf.get('ENABLE_NSS_RESOLVE') == 1],
-#         ['nss-systemd',      conf.get('ENABLE_NSS_SYSTEMD') == 1],
+#         ['nss-myhostname'],
+#         ['nss-mymachines'],
+#         ['nss-resolve'],
+#         ['nss-systemd'],
 #         ['hwdb'],
 #         ['tpm'],
 #endif // 0
