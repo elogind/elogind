@@ -362,6 +362,7 @@ static void user_start_service(User *u) {
          * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
          * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
          * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
+         * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
          * user@.service and the session scopes as dependencies. */
 
         hashmap_put(u->manager->user_units, u->service, u);
@@ -400,6 +401,7 @@ int user_start(User *u) {
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
         /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
@@ -610,8 +612,14 @@ int user_check_linger_file(User *u) {
                 return -ENOMEM;
 
         p = strjoina("/var/lib/elogind/linger/", cc);
+        if (access(p, F_OK) < 0) {
+                if (errno != ENOENT)
+                        return -errno;
 
-        return access(p, F_OK) >= 0;
+                return false;
+        }
+
+        return true;
 }
 
 bool user_may_gc(User *u, bool drop_not_started) {
