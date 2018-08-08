@@ -83,7 +83,6 @@ loginctl_sources = files('''
 #if 0 /// UNNEEDED by elogind
 # user_runtime_dir_sources = files('''
 #         user-runtime-dir.c
-#         logind.h
 # '''.split())
 #endif // 0
 

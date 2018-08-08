@@ -2027,15 +2027,14 @@ test_dlopen = executable(
 #                              args : pam_systemd.full_path())
 #                 endif
 #         endif
+#         executable('systemd-user-runtime-dir',
+#                    user_runtime_dir_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
 # endif
-#
-# executable('systemd-user-runtime-dir',
-#            user_runtime_dir_sources,
-#            include_directories : includes,
-#            link_with : [libshared, liblogind_core],
-#            install_rpath : rootlibexecdir,
-#            install : true,
-#            install_dir : rootlibexecdir)
 #else
 
 executable('elogind',
