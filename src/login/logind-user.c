@@ -39,6 +39,7 @@
 //#include "util.h"
 //#include "util.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **ret,
              Manager *m,
@@ -438,6 +439,8 @@ int user_start(User *u) {
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
 
 #if 0 /// elogind does not spawn user instances of systemd
@@ -610,8 +613,14 @@ int user_check_linger_file(User *u) {
                 return -ENOMEM;
 
         p = strjoina("/var/lib/elogind/linger/", cc);
+        if (access(p, F_OK) < 0) {
+                if (errno != ENOENT)
+                        return -errno;
 
-        return access(p, F_OK) >= 0;
+                return false;
+        }
+
+        return true;
 }
 
 #if 0 /// elogind does not support systemd units
