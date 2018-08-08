@@ -26,10 +26,12 @@
 #include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
+//#include "strv.h"
 #include "unit-name.h"
 #include "user-util.h"
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
+//#include "util.h"
 //#include "util.h"
 //#include "util.h"
 //#include "util.h"
@@ -441,6 +443,8 @@ int user_start(User *u) {
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
 
 #if 0 /// elogind does not spawn user instances of systemd
@@ -625,6 +629,27 @@ int user_check_linger_file(User *u) {
 
 #if 0 /// elogind does not support systemd units
 #endif // 0
+static bool user_unit_active(User *u) {
+        const char *i;
+        int r;
+
+        assert(u->service);
+        assert(u->runtime_dir_service);
+        assert(u->slice);
+
+        FOREACH_STRING(i, u->service, u->runtime_dir_service, u->slice) {
+                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+
+                r = manager_unit_is_active(u->manager, i, &error);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to determine whether unit '%s' is active, ignoring: %s", u->service, bus_error_message(&error, r));
+                if (r != 0)
+                        return true;
+        }
+
+        return false;
+}
+
 bool user_may_gc(User *u, bool drop_not_started) {
 #if 0 /// UNNEEDED by elogind
 #endif // 0
@@ -658,6 +683,10 @@ bool user_may_gc(User *u, bool drop_not_started) {
         /* Is this a user that shall stay around forever? */
         if (user_check_linger_file(u) > 0)
 #endif // 0
+        /* Is this a user that shall stay around forever ("linger")? Before we say "no" to GC'ing for lingering users, let's check
+         * if any of the three units that we maintain for this user is still around. If none of them is,
+         * there's no need to keep this user around even if lingering is enabled. */
+        if (user_check_linger_file(u) > 0 && user_unit_active(u))
                 return false;
 
 #if 0 /// elogind neither supports service nor slice jobs
@@ -724,6 +753,7 @@ UserState user_get_state(User *u) {
         }
 
 #if 0 /// elogind does not support systemd units
+        if (user_check_linger_file(u) > 0 && user_unit_active(u))
 #else
         if (user_check_linger_file(u) > 0)
 #endif // 0
