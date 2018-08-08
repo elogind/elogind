@@ -23,6 +23,7 @@ struct User {
         uid_t uid;
         gid_t gid;
         char *name;
+        char *home;
         char *state_file;
         char *runtime_path;
 
@@ -51,7 +52,7 @@ struct User {
         LIST_FIELDS(User, gc_queue);
 };
 
-int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name);
+int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name, const char *home);
 User *user_free(User *u);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(User *, user_free);

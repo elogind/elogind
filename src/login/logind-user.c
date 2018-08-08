@@ -32,7 +32,13 @@
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
 
-int user_new(User **ret, Manager *m, uid_t uid, gid_t gid, const char *name) {
+int user_new(User **ret,
+             Manager *m,
+             uid_t uid,
+             gid_t gid,
+             const char *name,
+             const char *home) {
+
         _cleanup_(user_freep) User *u = NULL;
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
         int r;
@@ -54,6 +60,10 @@ int user_new(User **ret, Manager *m, uid_t uid, gid_t gid, const char *name) {
 
         u->name = strdup(name);
         if (!u->name)
+                return -ENOMEM;
+
+        u->home = strdup(home);
+        if (!u->home)
                 return -ENOMEM;
 
         if (asprintf(&u->state_file, "/run/systemd/users/"UID_FMT, uid) < 0)
@@ -128,6 +138,7 @@ User *user_free(User *u) {
         u->runtime_path = mfree(u->runtime_path);
         u->state_file = mfree(u->state_file);
         u->name = mfree(u->name);
+        u->home = mfree(u->home);
 
         return mfree(u);
 }
@@ -350,6 +361,7 @@ static void user_start_service(User *u) {
         /* Start the service containing the "systemd --user" instance (user@.service). Note that we don't explicitly
          * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
          * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
+         * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
          * user@.service and the session scopes as dependencies. */
 
         hashmap_put(u->manager->user_units, u->service, u);
@@ -388,6 +400,7 @@ int user_start(User *u) {
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
         /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
