@@ -1310,6 +1310,14 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
 }
 
 static int help(int argc, char *argv[], void *userdata) {
+        _cleanup_free_ char *link = NULL;
+        int r;
+
+        (void) pager_open(arg_no_pager, false);
+
+        r = terminal_urlify_man("loginctl", "1", &link);
+        if (r < 0)
+                return log_oom();
 
         printf("%s [OPTIONS...] {COMMAND} ...\n\n"
                "Send control commands to or query the login manager.\n\n"
@@ -1373,6 +1381,10 @@ static int help(int argc, char *argv[], void *userdata) {
                "  flush-devices            Flush all device associations\n"
 #if 0 /// elogind adds some system commands to loginctl
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+               "\nSee the %s for details.\n"
+               , program_invocation_short_name
+               , link
+        );
 #else
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
                "System Commands:\n"
@@ -1384,7 +1396,6 @@ static int help(int argc, char *argv[], void *userdata) {
                "  suspend-then-hibernate    Suspend the system, wake after a period of\n"
                "                            time and put it into hibernate\n"
 #endif // 0
-               , program_invocation_short_name);
 
         return 0;
 }
@@ -1447,8 +1458,7 @@ static int parse_argv(int argc, char *argv[]) {
                 switch (c) {
 
                 case 'h':
-                        help(0, NULL, NULL);
-                        return 0;
+                        return help(0, NULL, NULL);
 
                 case ARG_VERSION:
                         return version();

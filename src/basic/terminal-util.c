@@ -830,11 +830,11 @@ unsigned columns(void) {
         if (e)
                 (void) safe_atoi(e, &c);
 
-        if (c <= 0 || c > USHRT_MAX) {
+        if (c <= 0)
                 c = fd_columns(STDOUT_FILENO);
-                if (c <= 0)
-                        c = 80;
-        }
+
+        if (c <= 0)
+                c = 80;
 
         cached_columns = c;
         return cached_columns;
@@ -864,11 +864,11 @@ unsigned lines(void) {
         if (e)
                 (void) safe_atoi(e, &l);
 
-        if (l <= 0 || l > USHRT_MAX) {
+        if (l <= 0)
                 l = fd_lines(STDOUT_FILENO);
-                if (l <= 0)
-                        l = 24;
-        }
+
+        if (l <= 0)
+                l = 24;
 
         cached_lines = l;
         return cached_lines;
@@ -1385,6 +1385,15 @@ int terminal_urlify_path(const char *path, const char *text, char **ret) {
          * careful with validating the strings either. */
 
         url = strjoina("file://", u.nodename, path);
+
+        return terminal_urlify(url, text, ret);
+}
+
+int terminal_urlify_man(const char *page, const char *section, char **ret) {
+        const char *url, *text;
+
+        url = strjoina("man:", page, "(", section, ")");
+        text = strjoina(page, "(", section, ") man page");
 
         return terminal_urlify(url, text, ret);
 }
