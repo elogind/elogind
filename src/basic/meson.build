@@ -459,9 +459,11 @@ foreach item : [['cap',    cap_list_txt,    'capability', ''],
 endforeach
 
 basic_sources += [missing_h] + generated_gperf_headers
-basic_gcrypt_sources = files(
-        'gcrypt-util.c',
-        'gcrypt-util.h')
+#if 0 /// elogind does not need gcrypt
+# basic_gcrypt_sources = files(
+#         'gcrypt-util.c',
+#         'gcrypt-util.h')
+#endif // 0
 
 libbasic = static_library(
         'basic',
@@ -469,7 +471,7 @@ libbasic = static_library(
         include_directories : includes,
         dependencies : [threads,
                         libcap,
-#if 0 /// no blkid in elogind
+#if 0 /// Neither blkid nor libmount in elogind
 #                         libblkid,
 #                         libmount,
 #endif // 0

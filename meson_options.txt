@@ -14,9 +14,11 @@ option('rootprefix', type : 'string',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
 # option('link-systemctl-shared', type: 'boolean',
 #        description : 'link systemctl against libsystemd-shared.so')
-# option('static-libsystemd', type : 'combo',
-#        choices : ['false', 'true', 'pic', 'no-pic'],
-#        description : '''install a static library for libsystemd''')
+#endif // 0
+option('static-libelogind', type : 'combo',
+       choices : ['false', 'true', 'pic', 'no-pic'],
+       description : '''install a static library for libelogind''')
+#if 0 /// UNNEEDED by elogind
 # option('static-libudev', type : 'combo',
 #        choices : ['false', 'true', 'pic', 'no-pic'],
 #        description : '''install a static library for libudev''')
@@ -77,8 +79,8 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 # option('valgrind', type : 'boolean', value : false,
 #        description : 'do extra operations to avoid valgrind warnings')
 #else
-option('debug', type : 'string',
-       description : 'enable extra debugging (elogind,hashmap,mmap-cache)')
+option('debug', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache'], value : [],
+       description : 'enable extra debugging')
 #endif // 0
 
 option('utmp', type : 'boolean',

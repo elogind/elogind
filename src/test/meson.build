@@ -607,9 +607,9 @@ tests += [
 #           libseccomp,
 #           libselinux,
 #           libmount,
+#           libblkid],
+#          '', 'timeout=360'],
 #endif // 0
-          libblkid],
-         '', 'timeout=360'],
 
         [['src/test/test-siphash24.c'],
          [],
@@ -700,15 +700,15 @@ tests += [
 #          [],
 #          [libdl],
 #          '', 'manual'],
+# 
+#         [['src/test/test-umount.c',
+#           'src/core/mount-setup.c',
+#           'src/core/mount-setup.h',
+#           'src/core/umount.c',
+#           'src/core/umount.h'],
+#          [],
+#          [libmount]],
 #endif // 0
-
-        [['src/test/test-umount.c',
-          'src/core/mount-setup.c',
-          'src/core/mount-setup.h',
-          'src/core/umount.c',
-          'src/core/umount.h'],
-         [],
-         [libmount]],
 
         [['src/test/test-bus-util.c'],
          [],

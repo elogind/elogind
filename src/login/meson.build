@@ -83,115 +83,79 @@ loginctl_sources = files('''
         sysfs-show.c
 '''.split())
 
+#if 0 /// UNNEEDED by elogind
+# user_runtime_dir_sources = files('''
+#         user-runtime-dir.c
+#         logind.h
+# '''.split())
+#endif // 0
+
 #if 1 /// elogind has some additional files:
 loginctl_sources += files('''
         eloginctl.c
         eloginctl.h
-user_runtime_dir_sources = files('''
-        user-runtime-dir.c
-        logind.h
 '''.split())
 #endif // 1
 
-#if 0 /// elogind builds itself unconditionally and with some adaptations
+#if 0 /// elogind builds itself unconditionally
 # if conf.get('ENABLE_LOGIND') == 1
-#         logind_conf = configure_file(
-#                 input : 'logind.conf.in',
-#                 output : 'logind.conf',
-#                 configuration : substs)
-#         install_data(logind_conf,
-#                      install_dir : pkgsysconfdir)
-# 
-#         pam_systemd_sym = 'src/login/pam_systemd.sym'
-#         pam_systemd_c = files('pam_systemd.c')
-# 
-#         install_data('org.freedesktop.login1.conf',
-#                      install_dir : dbuspolicydir)
+#endif // 0
+        logind_conf = configure_file(
+                input : 'logind.conf.in',
+                output : 'logind.conf',
+                configuration : substs)
+        install_data(logind_conf,
+                     install_dir : pkgsysconfdir)
+
+        pam_elogind_sym = 'src/login/pam_elogind.sym'
+        pam_elogind_c = files('pam_elogind.c')
+
+        install_data('org.freedesktop.login1.conf',
+                     install_dir : dbuspolicydir)
+#if 0 /// Works a bit differently here, as elogind alows dbus activation.
 #         install_data('org.freedesktop.login1.service',
 #                      install_dir : dbussystemservicedir)
-#         install_data('org.freedesktop.login1.policy',
-#                      install_dir : polkitpolicydir)
-# 
-#         install_data('70-power-switch.rules', install_dir : udevrulesdir)
-# 
-#         if conf.get('HAVE_ACL') == 1
-#                 install_data('70-uaccess.rules', install_dir : udevrulesdir)
-#         endif
-# 
-#         seat_rules = configure_file(
-#                 input : '71-seat.rules.in',
-#                 output : '71-seat.rules',
-#                 configuration : substs)
-#         install_data(seat_rules,
-#                      install_dir : udevrulesdir)
-# 
-#         custom_target(
-#                 '73-seat-late.rules',
-#                 input : '73-seat-late.rules.m4',
-#                 output: '73-seat-late.rules',
-#                 command : [meson_apply_m4, config_h, '@INPUT@'],
-#                 capture : true,
-#                 install : true,
-#                 install_dir : udevrulesdir)
-# 
-#         custom_target(
-#                 'systemd-user',
-#                 input : 'systemd-user.m4',
-#                 output: 'systemd-user',
-#                 command : [meson_apply_m4, config_h, '@INPUT@'],
-#                 capture : true,
-#                 install : pamconfdir != 'no',
-#                 install_dir : pamconfdir)
-# endif
 #else
-logind_conf = configure_file(
-        input : 'logind.conf.in',
-        output : 'logind.conf',
-        configuration : substs)
-install_data(logind_conf,
-                install_dir : pkgsysconfdir)
-
-pam_elogind_sym = 'src/login/pam_elogind.sym'
-pam_elogind_c = files('pam_elogind.c')
-
-install_data('org.freedesktop.login1.conf',
-                install_dir : dbuspolicydir)
 logind_service = configure_file(
         input : 'org.freedesktop.login1.service.in',
         output : 'org.freedesktop.login1.service',
         configuration : substs)
 install_data(logind_service,
                 install_dir : dbussystemservicedir)
+#endif // 0
+        install_data('org.freedesktop.login1.policy',
+                     install_dir : polkitpolicydir)
 
-i18n.merge_file(
-        'org.freedesktop.login1.policy',
-        input : 'org.freedesktop.login1.policy.in',
-        output : 'org.freedesktop.login1.policy',
-        po_dir : po_dir,
-        data_dirs : po_dir,
-        install : install_polkit,
-        install_dir : polkitpolicydir)
+        install_data('70-power-switch.rules', install_dir : udevrulesdir)
 
-install_data('70-power-switch.rules',
-                '70-uaccess.rules',
+        if conf.get('HAVE_ACL') == 1
+                install_data('70-uaccess.rules', install_dir : udevrulesdir)
+        endif
+
+        seat_rules = configure_file(
+                input : '71-seat.rules.in',
+                output : '71-seat.rules',
+                configuration : substs)
+        install_data(seat_rules,
+                     install_dir : udevrulesdir)
+
+        custom_target(
+                '73-seat-late.rules',
+                input : '73-seat-late.rules.m4',
+                output: '73-seat-late.rules',
+                command : [meson_apply_m4, config_h, '@INPUT@'],
+                capture : true,
+                install : true,
                 install_dir : udevrulesdir)
 
-foreach file : ['71-seat.rules',
-                '73-seat-late.rules']
-        gen = configure_file(
-                input : file + '.in',
-                output : file,
-                configuration : substs)
-        install_data(gen,
-                        install_dir : udevrulesdir)
-endforeach
-
-custom_target(
-        'elogind-user',
-        input : 'elogind-user.m4',
-        output: 'elogind-user',
-        command : [m4, '-P'] + m4_defines + ['@INPUT@'],
-        capture : true,
-        install : pamconfdir != 'no',
-        install_dir : pamconfdir)
+        custom_target(
+                'elogind-user',
+                input : 'elogind-user.m4',
+                output: 'elogind-user',
+                command : [meson_apply_m4, config_h, '@INPUT@'],
+                capture : true,
+                install : pamconfdir != 'no',
+                install_dir : pamconfdir)
+#if 0 /// elogind builds itself unconditionally
+# endif
 #endif //0
