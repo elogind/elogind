@@ -1740,7 +1740,7 @@ test_dlopen = executable(
 #                 module = tuple[0]
 #
 #                 sym = 'src/nss-@0@/nss-@0@.sym'.format(module)
-#                 version_script_arg = join_paths(meson.current_source_dir(), sym)
+#                 version_script_arg = join_paths(meson.source_root(), sym)
 #
 #                 nss = shared_library(
 #                         'nss_' + module,
@@ -1997,7 +1997,7 @@ test_dlopen = executable(
 #         public_programs += exe
 #
 #         if conf.get('HAVE_PAM') == 1
-#                 version_script_arg = join_paths(meson.current_source_dir(), pam_systemd_sym)
+#                 version_script_arg = join_paths(meson.source_root(), pam_systemd_sym)
 #                 pam_systemd = shared_library(
 #                         'pam_systemd',
 #                         pam_systemd_c,
@@ -3212,7 +3212,7 @@ endforeach
 if git.found()
         all_files = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.current_source_dir()),
+                ['--git-dir=@0@/.git'.format(meson.source_root()),
                  'ls-files',
                  ':/*.[ch]'])
         all_files = files(all_files.stdout().split())
@@ -3220,10 +3220,10 @@ if git.found()
         custom_target(
                 'tags',
                 output : 'tags',
-                command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.current_source_dir())] + all_files)
+                command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.source_root())] + all_files)
         run_target(
                 'ctags',
-                command : [env, 'ctags', '-o', '@0@/tags'.format(meson.current_source_dir())] + all_files)
+                command : [env, 'ctags', '-o', '@0@/tags'.format(meson.source_root())] + all_files)
 endif
 
 #if 0 /// UNNEEDED by elogind
@@ -3238,17 +3238,17 @@ endif
 if git.found()
         git_head = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.current_source_dir()),
+                ['--git-dir=@0@/.git'.format(meson.source_root()),
                  'rev-parse', 'HEAD']).stdout().strip()
         git_head_short = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.current_source_dir()),
+                ['--git-dir=@0@/.git'.format(meson.source_root()),
                  'rev-parse', '--short=7', 'HEAD']).stdout().strip()
 
         run_target(
                 'git-snapshot',
                 command : ['git', 'archive',
-                           '-o', '@0@/systemd-@1@.tar.gz'.format(meson.current_source_dir(),
+                           '-o', '@0@/elogind-@1@.tar.gz'.format(meson.source_root(),
                                                                  git_head_short),
                            '--prefix', 'systemd-@0@/'.format(git_head),
                            'HEAD'])
