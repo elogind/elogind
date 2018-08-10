@@ -1881,6 +1881,14 @@ test_dlopen = executable(
 #                      args : [pam_systemd.full_path()]) # path to dlopen must include a slash
 #         endif
 # endif
+# 
+# executable('systemd-user-runtime-dir',
+#            user_runtime_dir_sources,
+#            include_directories : includes,
+#            link_with : [libshared, liblogind_core],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : rootlibexecdir)
 #else
 
 executable('elogind',
@@ -1915,14 +1923,6 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-           user_runtime_dir_sources,
-           include_directories : includes,
-           link_with : [libshared, liblogind_core],
-           install_rpath : rootlibexecdir,
-           install : true,
-           install_dir : rootlibexecdir)
 
 if conf.get('HAVE_PAM') == 1
         version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)
