@@ -3199,7 +3199,7 @@ endforeach
 #                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      args : [exe.full_path(),
-#                                              join_paths(meson.source_root(), 'test/fuzz', p)])
+#                                              join_paths(meson.source_root(), p)])
 #                         endif
 #                 endforeach
 #         endif
