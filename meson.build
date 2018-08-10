@@ -278,8 +278,8 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('USER_KEYRING_PATH',                          join_paths(pkgsysconfdir, 'import-pubring.gpg'))
 # conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
 # conf.set('MEMORY_ACCOUNTING_DEFAULT',                         memory_accounting_default ? 'true' : 'false')
+# conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
 #endif // 0
-conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
 
 conf.set_quoted('ABS_BUILD_DIR',                              meson.build_root())
 conf.set_quoted('ABS_SRC_DIR',                                meson.source_root())
@@ -302,8 +302,8 @@ substs.set('rootlibexecdir',                                  rootlibexecdir)
 #endif // 0
 substs.set('udevrulesdir',                                    udevrulesdir)
 substs.set('udevlibexecdir',                                  udevlibexecdir)
-substs.set('environmentdir',                                  environmentdir)
 #if 0 /// UNNEEDED by elogind
+# substs.set('environmentdir',                                  environmentdir)
 # substs.set('catalogdir',                                      catalogdir)
 # substs.set('tmpfilesdir',                                     tmpfilesdir)
 # substs.set('sysusersdir',                                     sysusersdir)
@@ -358,55 +358,55 @@ endif
 # if want_ossfuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
 # endif
-# 
-# possible_cc_flags = [
-#         '-Wextra',
-#         '-Werror=undef',
-#         '-Wlogical-op',
-#         '-Wmissing-include-dirs',
-#         '-Wold-style-definition',
-#         '-Wpointer-arith',
-#         '-Winit-self',
-#         '-Wfloat-equal',
-#         '-Wsuggest-attribute=noreturn',
-#         '-Werror=missing-prototypes',
-#         '-Werror=implicit-function-declaration',
-#         '-Werror=missing-declarations',
-#         '-Werror=return-type',
-#         '-Werror=incompatible-pointer-types',
-#         '-Werror=format=2',
-#         '-Wstrict-prototypes',
-#         '-Wredundant-decls',
-#         '-Wmissing-noreturn',
-#         '-Wimplicit-fallthrough=5',
-#         '-Wshadow',
-#         '-Wendif-labels',
-#         '-Wstrict-aliasing=2',
-#         '-Wwrite-strings',
-#         '-Werror=overflow',
-#         '-Werror=shift-count-overflow',
-#         '-Werror=shift-overflow=2',
-#         '-Wdate-time',
-#         '-Wnested-externs',
-#         '-ffast-math',
-#         '-fno-common',
-#         '-fdiagnostics-show-option',
-#         '-fno-strict-aliasing',
-#         '-fvisibility=hidden',
-#         '-fstack-protector',
-#         '-fstack-protector-strong',
-#         '--param=ssp-buffer-size=4',
-# ]
-# 
-# # --as-needed and --no-undefined are provided by meson by default,
-# # run mesonconf to see what is enabled
-# possible_link_flags = [
-#         '-Wl,-z,relro',
-#         '-Wl,-z,now',
-# ]
 #else
 fuzzer_build = false
 #endif // 0
+
+possible_cc_flags = [
+        '-Wextra',
+        '-Werror=undef',
+        '-Wlogical-op',
+        '-Wmissing-include-dirs',
+        '-Wold-style-definition',
+        '-Wpointer-arith',
+        '-Winit-self',
+        '-Wfloat-equal',
+        '-Wsuggest-attribute=noreturn',
+        '-Werror=missing-prototypes',
+        '-Werror=implicit-function-declaration',
+        '-Werror=missing-declarations',
+        '-Werror=return-type',
+        '-Werror=incompatible-pointer-types',
+        '-Werror=format=2',
+        '-Wstrict-prototypes',
+        '-Wredundant-decls',
+        '-Wmissing-noreturn',
+        '-Wimplicit-fallthrough=5',
+        '-Wshadow',
+        '-Wendif-labels',
+        '-Wstrict-aliasing=2',
+        '-Wwrite-strings',
+        '-Werror=overflow',
+        '-Werror=shift-count-overflow',
+        '-Werror=shift-overflow=2',
+        '-Wdate-time',
+        '-Wnested-externs',
+        '-ffast-math',
+        '-fno-common',
+        '-fdiagnostics-show-option',
+        '-fno-strict-aliasing',
+        '-fvisibility=hidden',
+        '-fstack-protector',
+        '-fstack-protector-strong',
+        '--param=ssp-buffer-size=4',
+]
+
+# --as-needed and --no-undefined are provided by meson by default,
+# run mesonconf to see what is enabled
+possible_link_flags = [
+        '-Wl,-z,relro',
+        '-Wl,-z,now',
+]
 
 # the oss-fuzz fuzzers are not built with -fPIE, so don't
 # enable it when we are linking against them
@@ -684,8 +684,10 @@ foreach header : ['crypt.h',
                   'linux/memfd.h',
                   'linux/vm_sockets.h',
                   'sys/auxv.h',
-                  'valgrind/memcheck.h',
-                  'valgrind/valgrind.h',
+#if 0 /// UNNEEDED by elogind
+#                   'valgrind/memcheck.h',
+#                   'valgrind/valgrind.h',
+#endif // 0
                  ]
 
         conf.set10('HAVE_' + header.underscorify().to_upper(),
@@ -888,15 +890,15 @@ enable_debug_mmap_cache = false
 #if 1 /// additional elogind debug mode
 enable_debug_elogind = false
 #endif // 1
-#if 1 /// additional elogind debug mode
-                elif name == 'elogind'
-                        enable_debug_elogind = true
-#endif // 1
 foreach name : get_option('debug')
         if name == 'hashmap'
                 enable_debug_hashmap = true
         elif name == 'mmap-cache'
                 enable_debug_mmap_cache = true
+#if 1 /// additional elogind debug mode
+        elif name == 'elogind'
+                enable_debug_elogind = true
+#endif // 1
         else
                 message('unknown debug option "@0@", ignoring'.format(name))
         endif
@@ -907,7 +909,9 @@ conf.set10('ENABLE_DEBUG_MMAP_CACHE', enable_debug_mmap_cache)
 conf.set10('ENABLE_DEBUG_ELOGIND', enable_debug_elogind)
 #endif // 1
 
-conf.set10('VALGRIND', get_option('valgrind'))
+#if 0 /// UNNEEDED by elogind
+# conf.set10('VALGRIND', get_option('valgrind'))
+#endif // 0
 
 #####################################################################
 
@@ -1395,7 +1399,9 @@ foreach term : ['utmp',
         conf.set10(name, have)
 endforeach
 
-conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
+#if 0 /// UNNEEDED by elogind
+# conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
+#endif // 0
 
 want_tests = get_option('tests')
 install_tests = get_option('install-tests')
@@ -1455,8 +1461,8 @@ includes = include_directories('src/basic',
 #                                'src/nspawn',
 #                                'src/resolve',
 #                                'src/timesync',
+#                                'src/time-wait-sync',
 #endif // 0
-                               'src/time-wait-sync',
                                'src/login',
 #if 0 /// UNNEEDED by elogind
 #                                'src/udev',
@@ -1541,9 +1547,13 @@ static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic
 install_libelogind_static = static_library(
         'elogind',
         libelogind_sources,
-        journal_client_sources,
+#if 0 /// No journald with elogind (And before you ask: NO!)
+#         journal_client_sources,
+#endif // 0
         basic_sources,
-        basic_gcrypt_sources,
+#if 0 /// No gcrypt with elogind
+#         basic_gcrypt_sources,
+#endif // 0
         include_directories : includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
@@ -1555,9 +1565,15 @@ install_libelogind_static = static_library(
                         liblz4,
                         libcap,
                         libblkid,
-                        libmount,
+#if 0 /// libmount isn't built with elogind (and absolutely not needed anyway.)
+#                         libmount,
+#endif // 0
                         libselinux,
-                        libgcrypt],
+#if 0 /// No grypt with elogind
+#                         libgcrypt],
+#else
+                        ],
+#endif // 0
         c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 
 ############################################################
@@ -1901,6 +1917,14 @@ test_dlopen = executable(
 #         endif
 # endif
 # 
+# executable('systemd-user-runtime-dir',
+#            user_runtime_dir_sources,
+#            include_directories : includes,
+#            link_with : [libshared, liblogind_core],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : rootlibexecdir)
+# 
 #else
 
 executable('elogind',
@@ -1935,33 +1959,6 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-executable('elogind-user-runtime-dir',
-           user_runtime_dir_sources,
-           include_directories : includes,
-           link_with : [libshared, liblogind_core],
-           install_rpath : rootlibexecdir,
-           install : true,
-           install_dir : rootlibexecdir)
 
 if conf.get('HAVE_PAM') == 1
         version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)
@@ -3008,9 +3005,9 @@ subdir('man')
 subdir('shell-completion/bash')
 subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
+# subdir('doc/sysvinit')
+# subdir('doc/var-log')
 #endif // 0
-subdir('doc/sysvinit')
-subdir('doc/var-log')
 
 # FIXME: figure out if the warning is true:
 # https://github.com/mesonbuild/meson/wiki/Reference-manual#install_subdir
@@ -3384,9 +3381,11 @@ status += [
         '']
 message('\n         '.join(status))
 
-if rootprefixdir != rootprefix_default
-        warning('\n' +
-                'Note that the installation prefix was changed to "@0@".\n'.format(rootprefixdir) +
-                'elogind used fixed names for unit file directories and other paths, so anything\n' +
-                'except the default ("@0@") is strongly discouraged.'.format(rootprefix_default))
-endif
+#if 0 /// Nicely enough this isn't true for elogind. :-)
+# if rootprefixdir != rootprefix_default
+#         warning('\n' +
+#                 'Note that the installation prefix was changed to "@0@".\n'.format(rootprefixdir) +
+#                 'systemd used fixed names for unit file directories and other paths, so anything\n' +
+#                 'except the default ("@0@") is strongly discouraged.'.format(rootprefix_default))
+# endif
+#endif // 0

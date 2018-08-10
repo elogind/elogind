@@ -127,27 +127,27 @@ libelogind_sources = files('''
 '''.split()) + sd_login_c
 #endif // 0
 
-libelogind_static = static_library(
-        libelogind_sources,
 libelogind_c_args = ['-fvisibility=default']
 
+libelogind_static = static_library(
         'elogind_static',
+        libelogind_sources,
         install : false,
         include_directories : includes,
         link_with : libbasic,
 #if 0 /// elogind does not need librt
 #         dependencies : [threads,
 #                         librt],
-#         c_args : libsystemd_c_args)
-# 
-# libsystemd_sym = 'src/libsystemd/libsystemd.sym'
-# 
-# libsystemd_pc = configure_file(
-#         input : 'libsystemd.pc.in',
-#         output : 'libsystemd.pc',
-# install_data(libsystemd_pc,
 #else
         dependencies : [threads],
 #endif // 0
+        c_args : libelogind_c_args)
+
+libelogind_sym = 'src/libelogind/libelogind.sym'
+
+libelogind_pc = configure_file(
+        input : 'libelogind.pc.in',
+        output : 'libelogind.pc',
         configuration : substs)
+install_data(libelogind_pc,
              install_dir : pkgconfiglibdir)
