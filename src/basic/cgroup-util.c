@@ -1807,7 +1807,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
 #else
         p = strappend("/run/systemd/sessions/", slice);
 
-        r = parse_env_file(p, NEWLINE, "UID", &s, NULL);
+        r = parse_env_file(NULL, p, NEWLINE, "UID", &s, NULL);
         if (r == -ENOENT)
                 return -ENXIO;
         if (r < 0)

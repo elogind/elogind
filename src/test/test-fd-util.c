@@ -246,6 +246,7 @@ static void assert_equal_fd(int fd1, int fd2) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_fd_duplicate_data_fd(void) {
         _cleanup_close_ int fd1 = -1, fd2 = -1;
         _cleanup_(close_pairp) int sfd[2] = { -1, -1 };
@@ -311,6 +312,7 @@ static void test_fd_duplicate_data_fd(void) {
 
         assert_se(read(fd2, &j, sizeof(j)) == 0);
 }
+#endif // 0
 
 static void test_read_nr_open(void) {
         log_info("nr-open: %i", read_nr_open());
@@ -329,7 +331,9 @@ int main(int argc, char *argv[]) {
         test_acquire_data_fd();
         test_fd_move_above_stdio();
         test_rearrange_stdio();
+#if 0 /// UNNEEDED by elogind
         test_fd_duplicate_data_fd();
+#endif // 0
         test_read_nr_open();
 
         return 0;

@@ -106,6 +106,7 @@ int maybe_setgroups(size_t size, const gid_t *list);
 
 bool synthesize_nobody(void);
 
+#if 0 /// UNNEEDED by elogind
 int fgetpwent_sane(FILE *stream, struct passwd **pw);
 int fgetspent_sane(FILE *stream, struct spwd **sp);
 int fgetgrent_sane(FILE *stream, struct group **gr);
@@ -116,3 +117,4 @@ int putgrent_sane(const struct group *gr, FILE *stream);
 int fgetsgent_sane(FILE *stream, struct sgrp **sg);
 int putsgent_sane(const struct sgrp *sg, FILE *stream);
 #endif
+#endif // 0

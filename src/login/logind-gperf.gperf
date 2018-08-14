@@ -17,8 +17,6 @@ struct ConfigPerfItem;
 %struct-type
 %includes
 %%
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 #if 1 /// Additions for elogind
 Sleep.SuspendMode,                 config_parse_strv,          0, offsetof(Manager, suspend_mode)
 Sleep.SuspendState,                config_parse_strv,          0, offsetof(Manager, suspend_state)
@@ -27,8 +25,10 @@ Sleep.HibernateState,              config_parse_strv,          0, offsetof(Manag
 Sleep.HybridSleepMode,             config_parse_strv,          0, offsetof(Manager, hybrid_sleep_mode)
 Sleep.HybridSleepState,            config_parse_strv,          0, offsetof(Manager, hybrid_sleep_state)
 #endif // 1
-Login.NAutoVTs,                     config_parse_n_autovts,             0, offsetof(Manager, n_autovts)
-Login.ReserveVT,                    config_parse_unsigned,              0, offsetof(Manager, reserve_vt)
+#if 0 /// UNNEEDED by elogind
+# Login.NAutoVTs,                     config_parse_n_autovts,             0, offsetof(Manager, n_autovts)
+# Login.ReserveVT,                    config_parse_unsigned,              0, offsetof(Manager, reserve_vt)
+#endif // 0
 Login.KillUserProcesses,            config_parse_bool,                  0, offsetof(Manager, kill_user_processes)
 Login.KillOnlyUsers,                config_parse_strv,                  0, offsetof(Manager, kill_only_users)
 Login.KillExcludeUsers,             config_parse_strv,                  0, offsetof(Manager, kill_exclude_users)

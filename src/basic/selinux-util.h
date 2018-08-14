@@ -6,7 +6,7 @@
 #include <sys/types.h>
 
 #include "macro.h"
-//#include "label.h"
+#include "label.h"
 
 bool mac_selinux_use(void);
 void mac_selinux_retest(void);

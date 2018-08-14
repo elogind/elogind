@@ -21,7 +21,7 @@
 #include <inttypes.h>
 #include <signal.h>
 #include <sys/epoll.h>
-//#include <sys/inotify.h>
+#include <sys/inotify.h>
 #include <sys/signalfd.h>
 #include <sys/types.h>
 /*#include <time.h>*/
