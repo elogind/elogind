@@ -724,6 +724,7 @@ bool synthesize_nobody(void) {
 #endif
 }
 
+#if 0 /// UNNEEDED by elogind
 int putpwent_sane(const struct passwd *pw, FILE *stream) {
         assert(pw);
         assert(stream);
@@ -831,3 +832,4 @@ int fgetsgent_sane(FILE *stream, struct sgrp **sg) {
         return !!s;
 }
 #endif
+#endif // 0

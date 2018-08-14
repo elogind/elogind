@@ -431,7 +431,6 @@ static void test_delete_trailing_slashes(void) {
         assert_se(streq(delete_trailing_chars(s4, "/"), ""));
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_skip_leading_chars(void) {
         char input1[] = " \n \r k \n \r ",
                 input2[] = "kkkkthiskkkiskkkaktestkkk",
@@ -443,7 +442,6 @@ static void test_skip_leading_chars(void) {
         assert_se(streq(skip_leading_chars(input3, WHITESPACE), "abcdef"));
         assert_se(streq(skip_leading_chars(input3, "bcaef"), "def"));
 }
-#endif // 0
 
 static void test_in_charset(void) {
         assert_se(in_charset("dddaaabbbcccc", "abcd"));
@@ -533,9 +531,7 @@ int main(int argc, char *argv[]) {
 #endif // 0
         test_delete_trailing_chars();
         test_delete_trailing_slashes();
-#if 0 /// UNNEEDED by elogind
         test_skip_leading_chars();
-#endif // 0
         test_in_charset();
         test_split_pair();
         test_first_word();

@@ -2367,6 +2367,7 @@ static int method_can_shutdown_or_sleep(
                 const char *target;
 
                 target = manager_target_for_action(handle);
+#if 0 /// elogind does not support systemd units units. A valid handle is enough
                 if (target) {
                         _cleanup_free_ char *load_state = NULL;
 
@@ -2375,9 +2376,14 @@ static int method_can_shutdown_or_sleep(
                                 return r;
 
                         if (!streq(load_state, "loaded")) {
+#else
+                if (NULL == target) {
+#endif // 0
                                 result = "no";
                                 goto finish;
+#if 0 /// one less with elogind...
                         }
+#endif // 0
                 }
         }
 
