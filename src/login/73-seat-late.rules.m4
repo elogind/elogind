@@ -1,8 +1,8 @@
 #  SPDX-License-Identifier: LGPL-2.1+
 #
-#  This file is part of systemd.
+#  This file is part of elogind.
 #
-#  systemd is free software; you can redistribute it and/or modify it
+#  elogind is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 2.1 of the License, or
 #  (at your option) any later version.
@@ -13,11 +13,14 @@ ENV{ID_SEAT}=="", ENV{ID_AUTOSEAT}=="1", ENV{ID_FOR_SEAT}!="", ENV{ID_SEAT}="sea
 ENV{ID_SEAT}=="", IMPORT{parent}="ID_SEAT"
 
 ENV{ID_SEAT}!="", TAG+="$env{ID_SEAT}"
-
 #if 0 /// elogind uses its own uaccess replacement command
-# TAG=="uaccess", ENV{MAJOR}!="", RUN{builtin}+="uaccess"
+# m4_ifdef(`HAVE_ACL',``
+# TAG=="uaccess", ENV{MAJOR}!="", RUN{builtin}+="uaccess"''
+# )m4_dnl
 #else
-TAG=="uaccess", ENV{MAJOR}!="", RUN{program}+="@rootlibexecdir@/elogind-uaccess-command %N $env{ID_SEAT}"
+m4_ifdef(`HAVE_ACL',``
+TAG=="uaccess", ENV{MAJOR}!="", RUN{program}+="@rootlibexecdir@/elogind-uaccess-command %N $env{ID_SEAT}"''
+)m4_dnl
 #endif // 0
 
 LABEL="seat_late_end"
