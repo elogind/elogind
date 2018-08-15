@@ -490,11 +490,6 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/set.c">
-			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
 		<Unit filename="../src/basic/set.h">
 			<Option target="all" />
 			<Option target="clean" />
