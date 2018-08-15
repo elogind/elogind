@@ -958,6 +958,7 @@ chased_one:
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int chase_symlinks_and_open(
                 const char *path,
                 const char *root,
@@ -1077,6 +1078,7 @@ int chase_symlinks_and_stat(
 
         return 1;
 }
+#endif // 0
 
 int access_fd(int fd, int mode) {
         char p[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(fd) + 1];
