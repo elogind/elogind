@@ -6,17 +6,9 @@
 //#include "log.h"
 #include "macro.h"
 #include "signal-util.h"
+#include "stdio-util.h"
+#include "string-util.h"
 /// Additional includes needed by elogind
-//#include "stdio-util.h"
-//#include "string-util.h"
-//#include "stdio-util.h"
-//#include "string-util.h"
-//#include "stdio-util.h"
-//#include "string-util.h"
-//#include "stdio-util.h"
-//#include "string-util.h"
-//#include "stdio-util.h"
-//#include "string-util.h"
 #include "process-util.h"
 
 #define info(sig) log_info(#sig " = " STRINGIFY(sig) " = %d", sig)

@@ -3,16 +3,12 @@
 #include "conf-parser.h"
 #include "fd-util.h"
 #include "fileio.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 #include "log.h"
 #include "macro.h"
 #include "string-util.h"
 #include "strv.h"
 #include "util.h"
-
-/// Additional includes needed by elogind
-#include "fd-util.h"
-#include "fileio.h"
 
 static void test_config_parse_path_one(const char *rvalue, const char *expected) {
         _cleanup_free_ char *path = NULL;

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "bus-util.h"
-//#include "log.h"
+#include "bus-util.h"
+#include "log.h"
 
 static void test_name_async(unsigned n_messages) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;

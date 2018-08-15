@@ -13,7 +13,7 @@
 //#include "terminal-util.h"
 //#include "time-util.h"
 //#include "utf8.h"
-//#include "util.h"
+#include "util.h"
 
 #define DEFAULT_WEIGHT 100
 

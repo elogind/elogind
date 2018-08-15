@@ -8,10 +8,10 @@
 
 #include "alloc-util.h"
 #include "conf-files.h"
-//#include "fileio.h"
+#include "fileio.h"
 #include "fs-util.h"
 #include "macro.h"
-//#include "mkdir.h"
+#include "mkdir.h"
 #include "parse-util.h"
 #include "rm-rf.h"
 #include "string-util.h"

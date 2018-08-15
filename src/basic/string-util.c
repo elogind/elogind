@@ -17,7 +17,7 @@
 //#include "terminal-util.h"
 #include "utf8.h"
 #include "util.h"
-//#include "fileio.h"
+#include "fileio.h"
 
 int strcmp_ptr(const char *a, const char *b) {
 

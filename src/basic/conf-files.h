@@ -21,4 +21,6 @@ int conf_files_list_with_replacement(
                 const char *replacement,
                 char ***files,
                 char **replace_file);
+#if 0 /// UNNEEDED by elogind
 int conf_files_cat(const char *root, const char *name);
+#endif // 0

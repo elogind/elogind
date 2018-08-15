@@ -392,7 +392,6 @@
 			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/basic/mount-util.c">
-			<Option compilerVar="CC" />
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
@@ -1243,11 +1242,6 @@
 			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/shared/tests.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/shared/udev-util.c">
-			<Option compilerVar="CC" />
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
