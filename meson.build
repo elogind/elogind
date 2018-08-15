@@ -684,10 +684,8 @@ foreach header : ['crypt.h',
                   'linux/memfd.h',
                   'linux/vm_sockets.h',
                   'sys/auxv.h',
-#if 0 /// UNNEEDED by elogind
-#                   'valgrind/memcheck.h',
-#                   'valgrind/valgrind.h',
-#endif // 0
+                  'valgrind/memcheck.h',
+                  'valgrind/valgrind.h',
                  ]
 
         conf.set10('HAVE_' + header.underscorify().to_upper(),
@@ -909,9 +907,7 @@ conf.set10('ENABLE_DEBUG_MMAP_CACHE', enable_debug_mmap_cache)
 conf.set10('ENABLE_DEBUG_ELOGIND', enable_debug_elogind)
 #endif // 1
 
-#if 0 /// UNNEEDED by elogind
-# conf.set10('VALGRIND', get_option('valgrind'))
-#endif // 0
+conf.set10('VALGRIND', get_option('valgrind'))
 
 #####################################################################
 
@@ -3351,10 +3347,11 @@ foreach tuple : [
 #         ['adm group',        get_option('adm-group')],
 #         ['wheel group',      get_option('wheel-group')],
 #         ['gshadow'],
-#         ['valgrind',         conf.get('VALGRIND') == 1],
-#else
-        ['debug elogind'],
 #endif // 0
+        ['valgrind',         conf.get('VALGRIND') == 1],
+#if 1 /// Extra debugging for elogind
+        ['debug elogind'],
+#endif // 1
         ['debug hashmap'],
         ['debug mmap cache'],
 ]
