@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <locale.h>
 #include <math.h>
-//#include <sys/socket.h>
+#include <sys/socket.h>
 
 #include "alloc-util.h"
 #include "errno-list.h"

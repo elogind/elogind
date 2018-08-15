@@ -30,7 +30,7 @@
 #include "terminal-util.h"
 #include "util.h"
 #include "path-util.h"
-//#include "cgroup-util.h"
+#include "cgroup-util.h"
 
 static int parse_argv(
                 pam_handle_t *handle,

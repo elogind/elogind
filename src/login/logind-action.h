@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "conf-parser.h"
+#include "conf-parser.h"
 
 typedef enum HandleAction {
         HANDLE_IGNORE,

@@ -8,7 +8,7 @@
 #include <sys/statfs.h>
 #include <unistd.h>
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 //#include "btrfs-util.h"
 #include "cgroup-util.h"
 #include "dirent-util.h"

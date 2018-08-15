@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "conf-files.h"
-//#include "def.h"
+#include "def.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "hashmap.h"
@@ -16,7 +16,7 @@
 #include "macro.h"
 #include "missing.h"
 #include "path-util.h"
-//#include "set.h"
+#include "set.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -333,6 +333,7 @@ int conf_files_list_with_replacement(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_cat(const char *root, const char *name) {
         _cleanup_strv_free_ char **dirs = NULL, **files = NULL;
         _cleanup_free_ char *path = NULL;
@@ -365,3 +366,4 @@ int conf_files_cat(const char *root, const char *name) {
         /* show */
         return cat_files(path, files, CAT_FLAGS_MAIN_FILE_OPTIONAL);
 }
+#endif // 0

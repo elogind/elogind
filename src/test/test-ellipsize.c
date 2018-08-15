@@ -5,10 +5,10 @@
 #include "alloc-util.h"
 #include "def.h"
 #include "string-util.h"
-//#include "strv.h"
+#include "strv.h"
 #include "terminal-util.h"
 #include "util.h"
-//#include "utf8.h"
+#include "utf8.h"
 
 static void test_ellipsize_mem_one(const char *s, size_t old_length, size_t new_length) {
         _cleanup_free_ char *n = NULL;

@@ -2338,11 +2338,11 @@ static int method_can_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_verb);
-                if (IN_SET(r,  0, -ENOSPC))
-                        return sd_bus_reply_method_return(message, "s", "na");
 #else
                 r = can_sleep(m, sleep_verb);
 #endif // 0
+                if (IN_SET(r,  0, -ENOSPC))
+                        return sd_bus_reply_method_return(message, "s", "na");
                 if (r < 0)
                         return r;
         }
@@ -2385,6 +2385,10 @@ static int method_can_shutdown_or_sleep(
                         }
 #endif // 0
                 }
+#else
+                if ( (handle <= HANDLE_IGNORE) || (handle >= _HANDLE_ACTION_MAX) ) {
+                        result = "no";
+                        goto finish;
         }
 
         if (multiple_sessions) {
@@ -2430,6 +2434,7 @@ static int method_can_shutdown_or_sleep(
         }
 
  finish:
+
         return sd_bus_reply_method_return(message, "s", result);
 }
 

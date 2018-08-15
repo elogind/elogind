@@ -6,14 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <sys/socket.h>
+#include <sys/socket.h>
 
 #include "alloc-util.h"
 #include "errno-list.h"
 //#include "extract-word.h"
 #include "locale-util.h"
 #include "macro.h"
-//#include "missing.h"
+#include "missing.h"
 #include "parse-util.h"
 #include "process-util.h"
 #include "string-util.h"
