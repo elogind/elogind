@@ -23,8 +23,10 @@
 void manager_reset_config(Manager *m) {
         assert(m);
 
+#if 0 /// elogind does not support autospawning of vts
         m->n_autovts = 6;
         m->reserve_vt = 6;
+#endif // 0
         m->remove_ipc = true;
         m->inhibit_delay_max = 5 * USEC_PER_SEC;
         m->handle_power_key = HANDLE_POWEROFF;
@@ -331,25 +333,28 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
         s = hashmap_get(m->session_units, unit);
         if (!s)
                 goto not_found;
-
-        if (ret)
-                *ret = s;
 #else
         log_debug_elogind("Searching session for PID %u", pid);
         r = cg_pid_get_session(pid, &session_name);
         if (r < 0)
-                return 0;
+                goto not_found;
 
         s = hashmap_get(m->sessions, session_name);
         log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
                           session_name, s && s->id ? s->id : "NULL");
+        if (NULL == s)
+                goto not_found;
 #endif // 0
+
+        if (ret)
+                *ret = s;
 
         return 1;
 
 not_found:
         if (ret)
                 *ret = NULL;
+
         return 0;
 }
 
