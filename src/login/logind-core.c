@@ -384,6 +384,15 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
         if (ret)
                 *ret = u;
 
+#else
+        r = manager_get_session_by_pid (m, pid, &s);
+        if (r <= 0)
+                goto not_found;
+
+        if (ret)
+                *ret =  s->user;
+#endif // 0
+
         return 1;
 
 not_found:
@@ -391,15 +400,6 @@ not_found:
                 *ret = NULL;
 
         return 0;
-#else
-        r = manager_get_session_by_pid (m, pid, &s);
-        if (r <= 0)
-                return r;
-        if (ret)
-                *ret = u;
-
-        *user = s->user;
-#endif // 0
 }
 
 int manager_get_idle_hint(Manager *m, dual_timestamp *t) {
