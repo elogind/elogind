@@ -848,7 +848,7 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 # substs.set('DEBUGTTY', get_option('debug-tty'))
 #endif // 0
 
-debug = get_option('debug')
+debug = get_option('debug-extra')
 enable_debug_hashmap = false
 enable_debug_mmap_cache = false
 #if 1 /// additional elogind debug mode
