@@ -72,7 +72,7 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
 #        description : 'specify the tty device for debug shell')
-# option('debug', type : 'array', choices : ['hashmap', 'mmap-cache'], value : [],
+# option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache'], value : [],
 #        description : 'enable extra debugging')
 # option('memory-accounting-default', type : 'boolean',
 #        description : 'enable MemoryAccounting= by default')
@@ -80,7 +80,7 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 option('valgrind', type : 'boolean', value : false,
        description : 'do extra operations to avoid valgrind warnings')
 #if 1 /// Add an extra debugging option for elogind
-option('debug', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache'], value : [],
+option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache'], value : [],
        description : 'enable extra debugging')
 #endif // 1
 
