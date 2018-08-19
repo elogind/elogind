@@ -895,7 +895,7 @@ enable_debug_mmap_cache = false
 #if 1 /// additional elogind debug mode
 enable_debug_elogind = false
 #endif // 1
-foreach name : get_option('debug')
+foreach name : get_option('debug-extra')
         if name == 'hashmap'
                 enable_debug_hashmap = true
         elif name == 'mmap-cache'
