@@ -53,10 +53,10 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
 #        description : 'specify the tty device for debug shell')
-# option('debug', type : 'string',
+# option('debug-extra', type : 'string',
 #        description : 'enable extra debugging (hashmap,mmap-cache)')
 #else
-option('debug', type : 'string',
+option('debug-extra', type : 'string',
        description : 'enable extra debugging (elogind,hashmap,mmap-cache)')
 #endif // 0
 
