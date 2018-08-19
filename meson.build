@@ -1,5 +1,5 @@
 project('elogind', 'c',
-        version : '235.5',
+        version : '235',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -11,6 +11,7 @@ project('elogind', 'c',
        )
 
 libelogind_version = '0.19.1'
+libudev_version = '1.6.7'
 
 # We need the same data in three different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -21,7 +22,7 @@ conf.set_quoted('PACKAGE_STRING',  meson.project_name() + ' ' + meson.project_ve
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 substs = configuration_data()
-substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
+substs.set('PACKAGE_URL',          'https://www.freedesktop.org/wiki/Software/elogind')
 substs.set('PACKAGE_VERSION',      meson.project_version())
 
 m4_defines = []
@@ -98,8 +99,8 @@ varlogdir = join_paths(localstatedir, 'log')
 #if 0 /// UNNEEDED by elogind
 # xinitrcdir = join_paths(sysconfdir, 'X11/xinit/xinitrc.d')
 # rpmmacrosdir = get_option('rpmmacrosdir')
-# modprobedir = join_paths(prefixdir, 'lib/modprobe.d')
 #endif // 0
+modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 
 # Our own paths
 #if 0 /// elogind has a bit different layout and does not need all of theses
@@ -350,7 +351,7 @@ foreach arg : ['unused-parameter',
         endif
 endforeach
 
-if cc.compiles('''
+if cc.compiles('
    #include <time.h>
    #include <inttypes.h>
    typedef uint64_t usec_t;
@@ -359,7 +360,7 @@ if cc.compiles('''
            struct timespec now;
            return 0;
    }
-''', name : '-Werror=shadow with local shadowing')
+', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -481,8 +482,7 @@ foreach ident : ['secure_getenv', '__secure_getenv']
 endforeach
 
 foreach ident : [
-        ['memfd_create',      '''#define _GNU_SOURCE
-                                 #include <sys/mman.h>'''],
+        ['memfd_create',      '''#include <sys/memfd.h>'''],
         ['gettid',            '''#include <sys/types.h>'''],
         ['pivot_root',        '''#include <stdlib.h>'''],     # no known header declares pivot_root
         ['name_to_handle_at', '''#define _GNU_SOURCE
@@ -495,8 +495,7 @@ foreach ident : [
         ['kcmp',              '''#include <linux/kcmp.h>'''],
         ['keyctl',            '''#include <sys/types.h>
                                  #include <keyutils.h>'''],
-        ['copy_file_range',   '''#define _GNU_SOURCE
-                                 #include <sys/syscall.h>
+        ['copy_file_range',   '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
         ['bpf',               '''#include <sys/syscall.h>
                                  #include <unistd.h>'''],
@@ -737,14 +736,14 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 # substs.set('DEBUGTTY', get_option('debug-tty'))
 #endif // 0
 
-debug = get_option('debug-extra')
+debug_extra = get_option('debug-extra')
 enable_debug_hashmap = false
 enable_debug_mmap_cache = false
 #if 1 /// additional elogind debug mode
 enable_debug_elogind = false
 #endif // 1
-if debug != ''
-        foreach name : debug.split(',')
+if debug_extra != ''
+        foreach name : debug_extra.split(',')
                 if name == 'hashmap'
                         enable_debug_hashmap = true
                 elif name == 'mmap-cache'
@@ -1211,6 +1210,7 @@ foreach term : ['utmp',
 #                 'efi',
 #                 'tpm',
 #                 'ima',
+#                 'smack',
 #                 'gshadow',
 #                 'idn',
 #                 'nss-systemd']
@@ -2527,18 +2527,6 @@ executable('elogind-cgroups-agent',
 #         public_programs += [exe]
 # endif
 #endif // 0
-
-executable('elogind-uaccess-command',
-           'src/uaccess-command/uaccess-command.c',
-           include_directories : includes,
-           link_with : [liblogind_core,
-                        libshared_static],
-           dependencies: [libacl,
-                          libudev],
-           install_rpath : rootlibexecdir,
-           install : true,
-           install_dir : rootlibexecdir)
-
 ############################################################
 
 foreach tuple : tests
@@ -2908,8 +2896,8 @@ foreach tuple : [
         ['debug mmap cache'],
 ]
 
-        cond = tuple.get(1, false)
-        if not cond
+        cond = tuple.get(1, '')
+        if cond == ''
                 ident1 = 'HAVE_' + tuple[0].underscorify().to_upper()
                 ident2 = 'ENABLE_' + tuple[0].underscorify().to_upper()
                 cond = conf.get(ident1, 0) == 1 or conf.get(ident2, 0) == 1
