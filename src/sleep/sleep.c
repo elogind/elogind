@@ -11,15 +11,15 @@
 
 #include "sd-messages.h"
 
-//#include "parse-util.h"
+#include "parse-util.h"
 #include "def.h"
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 //#include "log.h"
-//#include "sleep-config.h"
-//#include "stdio-util.h"
-//#include "string-util.h"
+#include "sleep-config.h"
+#include "stdio-util.h"
+#include "string-util.h"
 #include "strv.h"
 //#include "util.h"
 
@@ -219,6 +219,7 @@ static int execute_s2h(usec_t hibernate_delay_sec) {
         char time_str[DECIMAL_STR_MAX(uint64_t)];
         int r;
 
+#if 0 /// Already parsed by elogind config
         r = parse_sleep_config("suspend", &suspend_modes, &suspend_states,
                                NULL);
         if (r < 0)
@@ -228,6 +229,7 @@ static int execute_s2h(usec_t hibernate_delay_sec) {
                                &hibernate_states, NULL);
         if (r < 0)
                 return r;
+#endif // 0
 
         r = read_wakealarm(&orig_time);
         if (r < 0)
@@ -347,17 +349,21 @@ int main(int argc, char *argv[]) {
         if (r < 0)
                 goto finish;
 
+#else
+int do_sleep(const char *verb, char **modes, char **states, usec_t delay) {
+        int r;
+
+        assert(verb);
+        arg_verb = (char*)verb;
+#endif // 0
         if (streq(arg_verb, "suspend-then-hibernate"))
                 r = execute_s2h(delay);
         else
                 r = execute(modes, states);
+#if 0 /// In elogind we give the result back, no interpretation here.
 finish:
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
-}
 #else
-int do_sleep(const char *verb, char **modes, char **states) {
-        assert(verb);
-        arg_verb = (char*)verb;
-        return execute(modes, states);
+        return r;
 }
 #endif // 0

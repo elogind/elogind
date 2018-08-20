@@ -21,6 +21,8 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-int do_sleep(const char *verb, char **modes, char **states);
+#include "time-util.h"
+
+int do_sleep(const char *verb, char **modes, char **states, usec_t delay);
 
 #endif // ELOGIND_SRC_SLEEP_SLEEP_H_INCLUDED

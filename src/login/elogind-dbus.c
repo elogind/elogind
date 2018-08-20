@@ -107,11 +107,11 @@ static int shutdown_or_sleep(Manager *m, HandleAction action) {
         case HANDLE_KEXEC:
                 return run_helper(KEXEC);
         case HANDLE_SUSPEND:
-                return do_sleep("suspend", m->suspend_mode, m->suspend_state);
+                return do_sleep("suspend", m->suspend_mode, m->suspend_state, 0);
         case HANDLE_HIBERNATE:
-                return do_sleep("hibernate", m->hibernate_mode, m->hibernate_state);
+                return do_sleep("hibernate", m->hibernate_mode, m->hibernate_state, 0);
         case HANDLE_HYBRID_SLEEP:
-                return do_sleep("hybrid-sleep", m->hybrid_sleep_mode, m->hybrid_sleep_state);
+                return do_sleep("hybrid-sleep", m->hybrid_sleep_mode, m->hybrid_sleep_state, 0);
         default:
                 return -EINVAL;
         }
