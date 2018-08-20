@@ -20,10 +20,6 @@ logind_gperf_c = custom_target(
         output : 'logind-gperf.c',
         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
 
-#if 0 /// rename to elogind
-#else
-elogind_sources += [logind_gperf_c]
-#endif // 0
 liblogind_core_sources = files('''
         logind-core.c
         logind-device.c
