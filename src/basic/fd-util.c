@@ -13,7 +13,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
-//#include "io-util.h"
+#include "io-util.h"
 #include "macro.h"
 #include "memfd-util.h"
 #include "missing.h"
@@ -570,6 +570,7 @@ try_dev_shm_without_o_tmpfile:
 /* If memfd/pipe didn't work out, then let's use a file in /tmp up to a size of 1M. If it's large than that use /var/tmp instead. */
 #define DATA_FD_TMP_LIMIT (1024U*1024U)
 
+#if 0 /// UNNEEDED by elogind
 int fd_duplicate_data_fd(int fd) {
 
         _cleanup_close_ int copy_fd = -1, tmp_fd = -1;
@@ -758,6 +759,7 @@ finish:
 
         return fd_reopen(tmp_fd, O_RDONLY|O_CLOEXEC);
 }
+#endif // 0
 
 int fd_move_above_stdio(int fd) {
         int flags, copy;
