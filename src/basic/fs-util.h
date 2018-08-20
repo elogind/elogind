@@ -64,7 +64,6 @@ int var_tmp_dir(const char **ret);
 
 int unlink_or_warn(const char *filename);
 
-#if 0 /// UNNEEDED by elogind
 #define INOTIFY_EVENT_MAX (sizeof(struct inotify_event) + NAME_MAX + 1)
 
 #define FOREACH_INOTIFY_EVENT(e, buffer, sz) \
@@ -77,9 +76,10 @@ union inotify_event_buffer {
         uint8_t raw[INOTIFY_EVENT_MAX];
 };
 
+#if 0 /// UNNEEDED by elogind
 int inotify_add_watch_fd(int fd, int what, uint32_t mask);
-
 #endif // 0
+
 enum {
         CHASE_PREFIX_ROOT = 1 << 0, /* If set, the specified path will be prefixed by the specified root before beginning the iteration */
         CHASE_NONEXISTENT = 1 << 1, /* If set, it's OK if the path doesn't actually exist. */
