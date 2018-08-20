@@ -1015,6 +1015,7 @@ bool empty_or_root(const char *root) {
         return root[strspn(root, "/")] == 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int path_simplify_and_warn(
                 char *path,
                 unsigned flag,
@@ -1061,3 +1062,4 @@ int path_simplify_and_warn(
 
         return 0;
 }
+#endif // 0
