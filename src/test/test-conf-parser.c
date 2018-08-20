@@ -10,6 +10,7 @@
 #include "strv.h"
 #include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 static void test_config_parse_path_one(const char *rvalue, const char *expected) {
         _cleanup_free_ char *path = NULL;
 
@@ -24,14 +25,12 @@ static void test_config_parse_log_level_one(const char *rvalue, int expected) {
         assert_se(expected == log_level);
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_config_parse_log_facility_one(const char *rvalue, int expected) {
         int log_facility = 0;
 
         assert_se(config_parse_log_facility("unit", "filename", 1, "section", 1, "lvalue", 0, rvalue, &log_facility, NULL) >= 0);
         assert_se(expected == log_facility);
 }
-#endif // 0
 
 static void test_config_parse_iec_size_one(const char *rvalue, size_t expected) {
         size_t iec_size = 0;
@@ -40,7 +39,6 @@ static void test_config_parse_iec_size_one(const char *rvalue, size_t expected) 
         assert_se(expected == iec_size);
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_config_parse_si_size_one(const char *rvalue, size_t expected) {
         size_t si_size = 0;
 
@@ -70,12 +68,14 @@ static void test_config_parse_strv_one(const char *rvalue, char **expected) {
         assert_se(strv_equal(expected, strv));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_config_parse_mode_one(const char *rvalue, mode_t expected) {
         mode_t v = 0;
 
         assert_se(config_parse_mode("unit", "filename", 1, "section", 1, "lvalue", 0, rvalue, &v, NULL) >= 0);
         assert_se(expected == v);
 }
+#endif // 0
 
 static void test_config_parse_sec_one(const char *rvalue, usec_t expected) {
         usec_t v = 0;
@@ -91,7 +91,6 @@ static void test_config_parse_nsec_one(const char *rvalue, nsec_t expected) {
         assert_se(config_parse_nsec("unit", "filename", 1, "nsection", 1, "lvalue", 0, rvalue, &v, NULL) >= 0);
         assert_se(expected == v);
 }
-#endif // 0
 
 static void test_config_parse_path(void) {
         test_config_parse_path_one("/path", "/path");
@@ -111,14 +110,12 @@ static void test_config_parse_log_level(void) {
         test_config_parse_log_level_one("garbage", 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_config_parse_log_facility(void) {
         test_config_parse_log_facility_one("mail", LOG_MAIL);
         test_config_parse_log_facility_one("user", LOG_USER);
 
         test_config_parse_log_facility_one("garbage", 0);
 }
-#endif // 0
 
 static void test_config_parse_iec_size(void) {
         test_config_parse_iec_size_one("1024", 1024);
@@ -133,7 +130,6 @@ static void test_config_parse_iec_size(void) {
         test_config_parse_iec_size_one("garbage", 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_config_parse_si_size(void) {
         test_config_parse_si_size_one("1024", 1024);
         test_config_parse_si_size_one("2K", 2000);
@@ -179,6 +175,7 @@ static void test_config_parse_strv(void) {
         test_config_parse_strv_one("\xc3\x7f", STRV_MAKE("\xc3\x7f"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_config_parse_mode(void) {
         test_config_parse_mode_one("777", 0777);
         test_config_parse_mode_one("644", 0644);
@@ -189,6 +186,7 @@ static void test_config_parse_mode(void) {
         test_config_parse_mode_one("777garbage", 0);
         test_config_parse_mode_one("777 garbage", 0);
 }
+#endif // 0
 
 static void test_config_parse_sec(void) {
         test_config_parse_sec_one("1", 1 * USEC_PER_SEC);
@@ -398,19 +396,19 @@ int main(int argc, char **argv) {
         log_parse_environment();
         log_open();
 
+#if 0 /// UNNEEDED by elogind
         test_config_parse_path();
         test_config_parse_log_level();
-#if 0 /// UNNEEDED by elogind
         test_config_parse_log_facility();
-#endif // 0
         test_config_parse_iec_size();
-#if 0 /// UNNEEDED by elogind
         test_config_parse_si_size();
 #endif // 0
         test_config_parse_int();
         test_config_parse_unsigned();
         test_config_parse_strv();
+#if 0 /// UNNEEDED by elogind
         test_config_parse_mode();
+#endif // 0
         test_config_parse_sec();
 #if 0 /// UNNEEDED by elogind
         test_config_parse_nsec();

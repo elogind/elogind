@@ -21,6 +21,7 @@
 #include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
+//#include "rlimit-util.h"
 #include "signal-util.h"
 #include "socket-util.h"
 #include "string-util.h"
@@ -32,22 +33,6 @@
 /// Additional includes needed by elogind
 #include "def.h"
 #include "fileio.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
-//#include "rlimit-util.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -536,6 +521,7 @@ DEFINE_PARSER(nsec, nsec_t, parse_nsec);
 DEFINE_PARSER(sec, usec_t, parse_sec);
 DEFINE_PARSER(mode, mode_t, parse_mode);
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_iec_size(const char* unit,
                             const char *filename,
                             unsigned line,
@@ -566,7 +552,6 @@ int config_parse_iec_size(const char* unit,
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_si_size(
                 const char* unit,
                 const char *filename,
@@ -718,6 +703,7 @@ int config_parse_string(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_path(
                 const char *unit,
                 const char *filename,
@@ -754,6 +740,7 @@ int config_parse_path(
 finalize:
         return free_and_replace(*s, n);
 }
+#endif // 0
 
 int config_parse_strv(
                 const char *unit,
@@ -801,6 +788,7 @@ int config_parse_strv(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_warn_compat(
                 const char *unit,
                 const char *filename,
@@ -836,7 +824,6 @@ int config_parse_warn_compat(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_log_facility(
                 const char *unit,
                 const char *filename,
@@ -866,7 +853,6 @@ int config_parse_log_facility(
 
         return 0;
 }
-#endif // 0
 
 int config_parse_log_level(
                 const char *unit,
@@ -930,7 +916,6 @@ int config_parse_signal(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_personality(
                 const char *unit,
                 const char *filename,
@@ -1152,8 +1137,7 @@ int config_parse_join_controllers(
 
         return 0;
 }
-#endif // 0
-
+x
 int config_parse_mtu(
                 const char *unit,
                 const char *filename,
@@ -1258,3 +1242,4 @@ int config_parse_permille(const char* unit,
 
         return 0;
 }
+#endif // 0
