@@ -170,6 +170,7 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode);
 int vt_default_utf8(void);
 int vt_reset_keyboard(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int terminal_urlify(const char *url, const char *text, char **ret);
 int terminal_urlify_path(const char *path, const char *text, char **ret);
 
@@ -180,3 +181,4 @@ typedef enum CatFlags {
 int cat_files(const char *file, char **dropins, CatFlags flags);
 
 void print_separator(void);
+#endif // 0
