@@ -22,7 +22,7 @@
 #include "format-util.h"
 #include "fs-util.h"
 #include "logind.h"
-//#include "parse-util.h"
+#include "parse-util.h"
 //#include "process-util.h"
 #include "selinux-util.h"
 #include "signal-util.h"
@@ -74,7 +74,7 @@ static int manager_new(Manager **ret) {
 #if 1 /// elogind needs some more data
         r = elogind_manager_new(m);
         if (r < 0)
-                goto fail;
+                return r;
 #endif // 1
         m->udev = udev_new();
         if (!m->udev)
@@ -1107,18 +1107,6 @@ static int manager_dispatch_idle_action(sd_event_source *s, uint64_t t, void *us
         return 0;
 }
 
-#if 0 /// elogind parses its own config file
-#else
-         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
-
-         assert(m);
-
-         if (!logind_conf)
-                 logind_conf = PKGSYSCONFDIR "/logind.conf";
-
-         return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
-                             config_item_perf_lookup, logind_gperf_lookup,
-#endif // 0
 static int manager_dispatch_reload_signal(sd_event_source *s, const struct signalfd_siginfo *si, void *userdata) {
         Manager *m = userdata;
         int r;

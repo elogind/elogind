@@ -59,10 +59,22 @@ void manager_reset_config(Manager *m) {
 int manager_parse_config_file(Manager *m) {
         assert(m);
 
+#if 0 /// elogind parses its own config file
         return config_parse_many_nulstr(PKGSYSCONFDIR "/logind.conf",
-                                        CONF_PATHS_NULSTR("elogind/logind.conf.d"),
+                                        CONF_PATHS_NULSTR("systemd/logind.conf.d"),
                                         "Login\0",
                                         config_item_perf_lookup, logind_gperf_lookup,
+#else
+        const char* logind_conf = getenv("ELOGIND_CONF_FILE");
+
+        assert(m);
+
+        if (!logind_conf)
+                logind_conf = PKGSYSCONFDIR "/logind.conf";
+
+        return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
+                            config_item_perf_lookup, logind_gperf_lookup,
+#endif // 0
                                         CONFIG_PARSE_WARN, m);
 }
 
