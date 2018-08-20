@@ -124,7 +124,6 @@ char *delete_chars(char *s, const char *bad);
 char *delete_trailing_chars(char *s, const char *bad);
 char *truncate_nl(char *s);
 
-#if 0 /// UNNEEDED by elogind
 static inline char *skip_leading_chars(const char *s, const char *bad) {
 
         if (!s)
@@ -136,6 +135,7 @@ static inline char *skip_leading_chars(const char *s, const char *bad) {
         return (char*) s + strspn(s, bad);
 }
 
+#if 0 /// UNNEEDED by elogind
 char ascii_tolower(char x);
 char *ascii_strlower(char *s);
 char *ascii_strlower_n(char *s, size_t n);
