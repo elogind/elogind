@@ -3,9 +3,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-//#include <linux/kd.h>
-//#include <linux/tiocl.h>
-//#include <linux/vt.h>
+#include <linux/kd.h>
+#include <linux/tiocl.h>
+#include <linux/vt.h>
 //#include <poll.h>
 //#include <signal.h>
 #include <stdarg.h>
@@ -1297,6 +1297,7 @@ int vt_reset_keyboard(int fd) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static bool urlify_enabled(void) {
         static int cached_urlify_enabled = -1;
 
@@ -1468,3 +1469,4 @@ void print_separator(void) {
         } else
                 fputs("\n\n", stdout);
 }
+#endif // 0
