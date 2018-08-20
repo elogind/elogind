@@ -9,9 +9,9 @@
 #include <string.h>
 
 #include "alloc-util.h"
-//#include "escape.h"
+#include "escape.h"
 #include "gunicode.h"
-//#include "locale-util.h"
+#include "locale-util.h"
 #include "macro.h"
 #include "string-util.h"
 //#include "terminal-util.h"
