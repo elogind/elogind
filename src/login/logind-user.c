@@ -316,7 +316,6 @@ int user_load(User *u) {
         return r;
 }
 
-
 static int user_start_service(User *u) {
 #if 0 /// elogind can not ask systemd via dbus to start user services
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;

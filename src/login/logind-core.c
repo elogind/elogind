@@ -354,7 +354,6 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
 not_found:
         if (ret)
                 *ret = NULL;
-
         return 0;
 }
 
@@ -392,7 +391,6 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
         if (ret)
                 *ret =  s->user;
 #endif // 0
-
         return 1;
 
 not_found:

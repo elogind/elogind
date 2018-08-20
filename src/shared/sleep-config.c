@@ -4,7 +4,7 @@
 ***/
 
 //#include <errno.h>
-//#include <linux/fs.h>
+#include <linux/fs.h>
 //#include <stdbool.h>
 //#include <stddef.h>
 //#include <stdio.h>
@@ -347,8 +347,11 @@ int read_fiemap(int fd, struct fiemap **ret) {
         return 0;
 }
 
-#if 0 /// elogind has to do, or better, *can* do it differently
+#if 0 /// elogind has to ask the manager for some stuff
 static bool can_s2h(void) {
+#else
+static bool can_s2h(Manager *m) {
+#endif // 0
         const char *p;
         int r;
 
@@ -360,7 +363,7 @@ static bool can_s2h(void) {
         }
 
         FOREACH_STRING(p, "suspend", "hibernate") {
-                r = can_sleep(p);
+                r = can_sleep(m, p);
                 if (IN_SET(r, 0, -ENOSPC)) {
                         log_debug("Unable to %s system.", p);
                         return false;
@@ -371,49 +374,35 @@ static bool can_s2h(void) {
 
         return true;
 }
+
+
+#if 0 /// elogind has to ask the manager for some stuff
+int can_sleep(const char *verb) {
 #else
 int can_sleep(Manager *m, const char *verb) {
-
-        assert(streq(verb, "suspend") ||
-               streq(verb, "hibernate") ||
-               streq(verb, "hybrid-sleep"));
-int can_sleep(const char *verb) {
+#endif // 0
         _cleanup_strv_free_ char **modes = NULL, **states = NULL;
         int r;
 
-        if ( streq(verb, "suspend")
-          && ( !can_sleep_state(m->suspend_state)
-            || !can_sleep_disk(m->suspend_mode) ) )
-                return false;
-        assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-to-hibernate"));
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 
-        if ( streq(verb, "hibernate")
-          && ( !can_sleep_state(m->hibernate_state)
-            || !can_sleep_disk(m->hibernate_mode) ) )
-                return false;
-        if (streq(verb, "suspend-to-hibernate"))
         if (streq(verb, "suspend-then-hibernate"))
-                return can_s2h();
+                return can_s2h(m);
 
-        if ( streq(verb, "hybrid-sleep")
-          && ( !can_sleep_state(m->hybrid_sleep_state)
-            || !can_sleep_disk(m->hybrid_sleep_mode) ) )
+#if 0 /// already parsed by elogind config
         r = parse_sleep_config(verb, &modes, &states, NULL);
         if (r < 0)
                 return false;
+#endif // 0
 
         if (!can_sleep_state(states) || !can_sleep_disk(modes))
                 return false;
 
-        return streq(verb, "suspend") || enough_memory_for_hibernation();
         if (streq(verb, "suspend"))
                 return true;
 
-        if (!enough_memory_for_hibernation())
         if (!enough_swap_for_hibernation())
                 return -ENOSPC;
 
         return true;
 }
-#endif // 0

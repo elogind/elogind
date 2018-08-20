@@ -1137,7 +1137,7 @@ int config_parse_join_controllers(
 
         return 0;
 }
-x
+
 int config_parse_mtu(
                 const char *unit,
                 const char *filename,

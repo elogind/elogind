@@ -155,7 +155,6 @@
     </variablelist>
   </refsect1>
 
-  <xi:include href="libelogind-pkgconfig.xml" />
   <!-- 0 /// elogind has no inotify test program.
   <refsect1>
     <title>Examples</title>
@@ -167,6 +166,8 @@
     </example>
   </refsect1>
   // 0 -->
+
+  <xi:include href="libelogind-pkgconfig.xml" />
 
   <refsect1>
     <title>See Also</title>
