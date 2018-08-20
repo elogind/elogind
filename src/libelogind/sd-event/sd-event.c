@@ -12,7 +12,7 @@
 
 #include "alloc-util.h"
 #include "fd-util.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 #include "hashmap.h"
 #include "list.h"
 #include "macro.h"
