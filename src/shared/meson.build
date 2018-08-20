@@ -118,8 +118,6 @@ shared_sources = '''
         nsflags.h
         output-mode.c
         output-mode.h
-        pager.c
-        pager.h
         sleep-config.c
         sleep-config.h
         spawn-polkit-agent.c

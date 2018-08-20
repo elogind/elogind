@@ -297,6 +297,8 @@ basic_sources = files('''
         mkdir-label.c
         mount-util.c
         mount-util.h
+        pager.c
+        pager.h
         parse-printf-format.c
         parse-printf-format.h
         parse-util.c
