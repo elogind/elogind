@@ -29,7 +29,7 @@
 #include <string.h>
 
 #include "alloc-util.h"
-//#include "gunicode.h"
+#include "gunicode.h"
 #include "hexdecoct.h"
 #include "macro.h"
 #include "utf8.h"
