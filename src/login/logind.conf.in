@@ -35,3 +35,12 @@
 #RemoveIPC=yes
 #InhibitorsMax=8192
 #SessionsMax=8192
+
+[Sleep]
+#SuspendState=mem standby freeze
+#SuspendMode=
+#HibernateState=disk
+#HibernateMode=platform shutdown
+#HybridSleepState=disk
+#HybridSleepMode=suspend platform shutdown
+#HibernateDelaySec=10800

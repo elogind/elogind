@@ -118,6 +118,8 @@ int manager_handle_action(
                 supported = can_sleep(m, "hibernate") > 0;
         else if (handle == HANDLE_HYBRID_SLEEP)
                 supported = can_sleep(m, "hybrid-sleep") > 0;
+        else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
+                supported = can_sleep(m, "suspend-then-hibernate") > 0;
 #endif // 0
         else if (handle == HANDLE_KEXEC)
                 supported = access(KEXEC, X_OK) >= 0;

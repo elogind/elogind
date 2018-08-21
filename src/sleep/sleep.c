@@ -6,7 +6,7 @@
 
 //#include <errno.h>
 //#include <getopt.h>
-//#include <linux/fiemap.h>
+#include <linux/fiemap.h>
 //#include <stdio.h>
 
 #include "sd-messages.h"
@@ -133,7 +133,22 @@ static int write_state(FILE **f, char **states) {
         return r;
 }
 
+#if 0 /// elogind uses the values stored in its manager instance
 static int execute(char **modes, char **states) {
+#else
+static int execute(Manager *m, const char *verb) {
+        assert(m);
+
+        if (verb)
+                arg_verb = (char*)verb;
+
+        char **modes  = streq(arg_verb, "suspend")   ? m->suspend_mode     :
+                        streq(arg_verb, "hibernate") ? m->hibernate_mode   :
+                                                       m->hybrid_sleep_mode;
+        char **states = streq(arg_verb, "suspend")   ? m->suspend_state     :
+                        streq(arg_verb, "hibernate") ? m->hibernate_state   :
+                                                       m->hybrid_sleep_state;
+#endif // 0
 
         char *arguments[] = {
                 NULL,
@@ -211,10 +226,17 @@ static int write_wakealarm(const char *str) {
         return 0;
 }
 
+#if 0 /// elogind uses the values stored in its manager instance
 static int execute_s2h(usec_t hibernate_delay_sec) {
 
         _cleanup_strv_free_ char **hibernate_modes = NULL, **hibernate_states = NULL,
                                  **suspend_modes = NULL, **suspend_states = NULL;
+#else
+static int execute_s2h(Manager *m) {
+        assert(m);
+
+        usec_t hibernate_delay_sec = m->hibernate_delay_sec;
+#endif // 0
         usec_t orig_time, cmp_time;
         char time_str[DECIMAL_STR_MAX(uint64_t)];
         int r;
@@ -244,7 +266,11 @@ static int execute_s2h(usec_t hibernate_delay_sec) {
 
         log_debug("Set RTC wake alarm for %s", time_str);
 
+#if 0 /// elogind uses its manager instance values
         r = execute(suspend_modes, suspend_states);
+#else
+        r = execute(m, "suspend");
+#endif // 0
         if (r < 0)
                 return r;
 
@@ -261,7 +287,11 @@ static int execute_s2h(usec_t hibernate_delay_sec) {
 
         /* if woken up after alarm time, hibernate */
         if (cmp_time >= orig_time)
+#if 0 /// elogind uses its manager instance values
                 r = execute(hibernate_modes, hibernate_states);
+#else
+                r = execute(m, "hibernate");
+#endif // 0
 
         return r;
 }
@@ -349,21 +379,22 @@ int main(int argc, char *argv[]) {
         if (r < 0)
                 goto finish;
 
-#else
-int do_sleep(const char *verb, char **modes, char **states, usec_t delay) {
-        int r;
-
-        assert(verb);
-        arg_verb = (char*)verb;
-#endif // 0
         if (streq(arg_verb, "suspend-then-hibernate"))
                 r = execute_s2h(delay);
         else
                 r = execute(modes, states);
-#if 0 /// In elogind we give the result back, no interpretation here.
-finish:
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+}
 #else
-        return r;
+int do_sleep(Manager *m, const char *verb) {
+        assert(verb);
+        assert(m);
+
+        arg_verb = (char*)verb;
+
+        if (streq(arg_verb, "suspend-then-hibernate"))
+                return execute_s2h(m);
+
+        return execute(m, NULL);
 }
 #endif // 0

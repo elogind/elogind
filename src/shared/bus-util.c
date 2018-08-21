@@ -1302,16 +1302,18 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
 #if 0 /// elogind does not support a user bus
                 if (user)
                         r = sd_bus_default_user(&bus);
-#endif // 0
                 else {
                         if (sd_booted() <= 0) {
                                 /* Print a friendly message when the local system is actually not running systemd as PID 1. */
-                                log_error("System has not been booted with elogind as init system (PID 1). Can't operate.");
+                                log_error("System has not been booted with systemd as init system (PID 1). Can't operate.");
 
                                 return -EHOSTDOWN;
                         }
+#endif // 0
                         r = sd_bus_default_system(&bus);
+#if 0 /// No closing bracket with elogind... Ain't we simple? ;-)
                 }
+#endif // 0
                 break;
 
         case BUS_TRANSPORT_REMOTE:
