@@ -2636,6 +2636,14 @@ executable('elogind-cgroups-agent',
            install_dir : rootlibexecdir)
 #endif // 0
 
+exe = executable('elogind-id128',
+                 'src/id128/id128.c',
+                 include_directories : includes,
+                 link_with : [libshared],
+                 install_rpath : rootlibexecdir,
+                 install : true)
+public_programs += exe
+
 #if 0 /// UNNEEDED by elogind
 # exe = executable('systemd-path',
 #                  'src/path/path.c',
