@@ -662,6 +662,7 @@ manpages = [
  ['elogind-importd.service', '8', ['elogind-importd'], 'ENABLE_IMPORTD'],
  ['elogind-inhibit', '1', [], ''],
  ['elogind-initctl.service',
+ ['elogind-id128', '1', [], ''],
   '8',
   ['elogind-initctl', 'elogind-initctl.socket'],
   ''],
