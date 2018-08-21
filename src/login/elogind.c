@@ -379,12 +379,13 @@ int elogind_manager_new(Manager* m) {
         m->test_run_flags   = 0;
 
         /* Init sleep modes and states */
-        m->suspend_mode       = NULL;
-        m->suspend_state      = NULL;
-        m->hibernate_mode     = NULL;
-        m->hibernate_state    = NULL;
-        m->hybrid_sleep_mode  = NULL;
-        m->hybrid_sleep_state = NULL;
+        m->suspend_mode        = NULL;
+        m->suspend_state       = NULL;
+        m->hibernate_mode      = NULL;
+        m->hibernate_state     = NULL;
+        m->hybrid_sleep_mode   = NULL;
+        m->hybrid_sleep_state  = NULL;
+        m->hibernate_delay_sec = 0;
 
         /* If elogind should be its own controller, mount its cgroup */
         if (streq(SYSTEMD_CGROUP_CONTROLLER, "_elogind")) {
@@ -419,6 +420,8 @@ void elogind_manager_reset_config(Manager* m) {
                 m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
         if (!m->hybrid_sleep_state)
                 m->hybrid_sleep_state = strv_new("disk", NULL);
+        if (!m->hibernate_delay_sec)
+                m->hibernate_delay_sec = 180 * USEC_PER_MINUTE;
 
 #if ENABLE_DEBUG_ELOGIND
         dbg_cnt = -1;
@@ -445,6 +448,9 @@ void elogind_manager_reset_config(Manager* m) {
         while (m->hybrid_sleep_state[++dbg_cnt])
                 log_debug_elogind("hybrid_sleep_state[%d] = %s",
                                   dbg_cnt, m->hybrid_sleep_state[dbg_cnt]);
+        log_debug_elogind("hibernate_delay_sec: %ul seconds (%ul minutes)",
+                          m->hibernate_delay_sec / USEC_PER_SEC,
+                          m->hibernate_delay_sec / USEC_PER_MINUTE);
 #endif // ENABLE_DEBUG_ELOGIND
 }
 

@@ -378,11 +378,19 @@ static bool can_s2h(Manager *m) {
 
 #if 0 /// elogind has to ask the manager for some stuff
 int can_sleep(const char *verb) {
-#else
-int can_sleep(Manager *m, const char *verb) {
-#endif // 0
         _cleanup_strv_free_ char **modes = NULL, **states = NULL;
         int r;
+#else
+int can_sleep(Manager *m, const char *verb) {
+        assert(m);
+
+        char **modes  = streq(verb, "suspend")   ? m->suspend_mode     :
+                        streq(verb, "hibernate") ? m->hibernate_mode   :
+                                                       m->hybrid_sleep_mode;
+        char **states = streq(verb, "suspend")   ? m->suspend_state     :
+                        streq(verb, "hibernate") ? m->hibernate_state   :
+                                                   m->hybrid_sleep_state;
+#endif // 0
 
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 

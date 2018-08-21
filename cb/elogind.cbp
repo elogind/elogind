@@ -68,614 +68,289 @@
 		</Unit>
 		<Unit filename="../src/basic/alloc-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/alloc-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/alloc-util.h" />
 		<Unit filename="../src/basic/audit-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/audit-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/build.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/audit-util.h" />
+		<Unit filename="../src/basic/build.h" />
 		<Unit filename="../src/basic/bus-label.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/bus-label.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/bus-label.h" />
 		<Unit filename="../src/basic/cap-list.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/cap-list.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/cap-list.h" />
 		<Unit filename="../src/basic/capability-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/capability-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/capability-util.h" />
 		<Unit filename="../src/basic/cgroup-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/cgroup-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/cgroup-util.h" />
 		<Unit filename="../src/basic/conf-files.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/conf-files.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/conf-files.h" />
 		<Unit filename="../src/basic/copy.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/copy.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/def.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/copy.h" />
+		<Unit filename="../src/basic/def.h" />
 		<Unit filename="../src/basic/dirent-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/dirent-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/dirent-util.h" />
 		<Unit filename="../src/basic/env-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/env-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/env-util.h" />
 		<Unit filename="../src/basic/errno-list.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/errno-list.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/errno-list.h" />
 		<Unit filename="../src/basic/escape.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/escape.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/escape.h" />
 		<Unit filename="../src/basic/exec-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/exec-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/exec-util.h" />
 		<Unit filename="../src/basic/extract-word.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/extract-word.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/extract-word.h" />
 		<Unit filename="../src/basic/fd-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/fd-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/fd-util.h" />
 		<Unit filename="../src/basic/fileio-label.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/fileio-label.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/fileio-label.h" />
 		<Unit filename="../src/basic/fileio.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/fileio.h">
-			<Option target="all" />
-			<Option target="clean" />
+		<Unit filename="../src/basic/fileio.h" />
+		<Unit filename="../src/basic/format-table.c">
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/basic/format-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/format-table.h" />
+		<Unit filename="../src/basic/format-util.h" />
 		<Unit filename="../src/basic/fs-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/fs-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/fs-util.h" />
 		<Unit filename="../src/basic/gunicode.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/gunicode.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/gunicode.h" />
 		<Unit filename="../src/basic/hash-funcs.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/hash-funcs.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/hash-funcs.h" />
 		<Unit filename="../src/basic/hashmap.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/hashmap.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/hashmap.h" />
 		<Unit filename="../src/basic/hexdecoct.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/hexdecoct.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/hexdecoct.h" />
 		<Unit filename="../src/basic/hostname-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/hostname-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/hostname-util.h" />
 		<Unit filename="../src/basic/io-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/io-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/io-util.h" />
 		<Unit filename="../src/basic/khash.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/khash.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/khash.h" />
 		<Unit filename="../src/basic/label.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/label.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/list.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/label.h" />
+		<Unit filename="../src/basic/list.h" />
 		<Unit filename="../src/basic/locale-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/locale-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/locale-util.h" />
 		<Unit filename="../src/basic/log.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/log.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/log.h" />
 		<Unit filename="../src/basic/login-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/login-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/macro.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/login-util.h" />
+		<Unit filename="../src/basic/macro.h" />
 		<Unit filename="../src/basic/memfd-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/memfd-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/memfd-util.h" />
 		<Unit filename="../src/basic/mempool.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/mempool.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/mempool.h" />
 		<Unit filename="../src/basic/meson.build">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/missing.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/missing_syscall.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/missing.h" />
+		<Unit filename="../src/basic/missing_syscall.h" />
 		<Unit filename="../src/basic/mkdir-label.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/basic/mkdir.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/mkdir.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/mkdir.h" />
 		<Unit filename="../src/basic/mount-util.c">
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/mount-util.h">
-			<Option target="all" />
-			<Option target="clean" />
+		<Unit filename="../src/basic/mount-util.h" />
+		<Unit filename="../src/basic/os-util.c">
+			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/basic/os-util.h" />
 		<Unit filename="../src/basic/pager.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/pager.h" />
 		<Unit filename="../src/basic/parse-printf-format.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/parse-printf-format.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/parse-printf-format.h" />
 		<Unit filename="../src/basic/parse-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/parse-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/parse-util.h" />
 		<Unit filename="../src/basic/path-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/path-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/path-util.h" />
 		<Unit filename="../src/basic/prioq.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/prioq.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/prioq.h" />
 		<Unit filename="../src/basic/proc-cmdline.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/proc-cmdline.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/proc-cmdline.h" />
 		<Unit filename="../src/basic/process-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/process-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/process-util.h" />
 		<Unit filename="../src/basic/procfs-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/procfs-util.h" />
 		<Unit filename="../src/basic/random-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/random-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/random-util.h" />
 		<Unit filename="../src/basic/raw-clone.h" />
-		<Unit filename="../src/basic/refcnt.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/refcnt.h" />
 		<Unit filename="../src/basic/rm-rf.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/rm-rf.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/rm-rf.h" />
 		<Unit filename="../src/basic/selinux-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/selinux-util.h">
-			<Option target="all" />
-			<Option target="clean" />
+		<Unit filename="../src/basic/selinux-util.h" />
+		<Unit filename="../src/basic/set.h" />
+		<Unit filename="../src/basic/sigbus.c">
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/basic/set.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/sigbus.h" />
 		<Unit filename="../src/basic/signal-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/signal-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/signal-util.h" />
 		<Unit filename="../src/basic/siphash24.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/siphash24.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/siphash24.h" />
 		<Unit filename="../src/basic/smack-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/smack-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/smack-util.h" />
 		<Unit filename="../src/basic/socket-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/socket-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/sparse-endian.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/socket-util.h" />
+		<Unit filename="../src/basic/sparse-endian.h" />
 		<Unit filename="../src/basic/special.h" />
 		<Unit filename="../src/basic/stat-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/stat-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/stdio-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/stat-util.h" />
+		<Unit filename="../src/basic/stdio-util.h" />
 		<Unit filename="../src/basic/string-table.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/string-table.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/string-table.h" />
 		<Unit filename="../src/basic/string-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/string-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/string-util.h" />
 		<Unit filename="../src/basic/strv.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/strv.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/strv.h" />
 		<Unit filename="../src/basic/syslog-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/syslog-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/syslog-util.h" />
 		<Unit filename="../src/basic/terminal-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/terminal-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/terminal-util.h" />
 		<Unit filename="../src/basic/time-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/time-util.h">
-			<Option target="all" />
-			<Option target="clean" />
+		<Unit filename="../src/basic/time-util.h" />
+		<Unit filename="../src/basic/umask-util.h" />
+		<Unit filename="../src/basic/unaligned.h" />
+		<Unit filename="../src/basic/unit-def.c">
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/basic/umask-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/basic/unaligned.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/unit-def.h" />
 		<Unit filename="../src/basic/unit-name.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/unit-name.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/unit-name.h" />
 		<Unit filename="../src/basic/user-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/user-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/user-util.h" />
 		<Unit filename="../src/basic/utf8.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/utf8.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/utf8.h" />
 		<Unit filename="../src/basic/util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/util.h" />
 		<Unit filename="../src/basic/verbs.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/verbs.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/verbs.h" />
 		<Unit filename="../src/basic/virt.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/virt.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/virt.h" />
 		<Unit filename="../src/basic/xattr-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/basic/xattr-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/xattr-util.h" />
 		<Unit filename="../src/cgroups-agent/cgroups-agent.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
@@ -1231,12 +906,6 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/tests.c">
-			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/shared/tests.h">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>

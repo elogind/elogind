@@ -1979,6 +1979,9 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_HYBRID_SLEEP_TARGET,
+#else
+                        HANDLE_HYBRID_SLEEP,
+#endif // 0
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
@@ -1992,9 +1995,10 @@ static int method_suspend_then_hibernate(sd_bus_message *message, void *userdata
 
         return method_do_shutdown_or_sleep(
                         m, message,
+#if 0 /// elogind uses HandleAction instead of const char* unti names
                         SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
 #else
-                        HANDLE_HYBRID_SLEEP,
+                        HANDLE_SUSPEND_THEN_HIBERNATE,
 #endif // 0
                         INHIBIT_SLEEP,
                         "org.freedesktop.login1.hibernate",

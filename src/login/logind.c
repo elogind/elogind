@@ -1314,8 +1314,6 @@ int main(int argc, char *argv[]) {
         if ( r < 0 && (-EEXIST != r) )
                 return log_error_errno(r, "Failed to create /run/systemd/machines : %m");
 #endif // 0
-                goto finish;
-        }
 
         (void) manager_parse_config_file(m);
 

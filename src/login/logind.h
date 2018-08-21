@@ -116,7 +116,7 @@ struct Manager {
         char **suspend_state,      **suspend_mode;
         char **hibernate_state,    **hibernate_mode;
         char **hybrid_sleep_state, **hybrid_sleep_mode;
-
+        usec_t hibernate_delay_sec;
 #endif // 0
         sd_event_source *inhibit_timeout_source;
 
