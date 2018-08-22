@@ -21,44 +21,34 @@
 #include "terminal-util.h"
 #include "util.h"
 
-int seat_new(Seat** ret, Manager *m, const char *id) {
-        _cleanup_(seat_freep) Seat *s = NULL;
-        int r;
+Seat *seat_new(Manager *m, const char *id) {
+        Seat *s;
 
-        assert(ret);
         assert(m);
         assert(id);
 
-        if (!seat_name_is_valid(id))
-                return -EINVAL;
-
-        s = new(Seat, 1);
-        if (!s)
-                return -ENOMEM;
-
-        *s = (Seat) {
-                .manager = m,
-        };
-
-        s->state_file = strappend("/run/systemd/seats/", id);
-        if (!s->state_file)
-                return -ENOMEM;
-
-        s->id = basename(s->state_file);
-
-        r = hashmap_put(m->seats, s->id, s);
-        if (r < 0)
-                return r;
-
-        *ret = TAKE_PTR(s);
-        return 0;
-}
-
-Seat* seat_free(Seat *s) {
+        s = new0(Seat, 1);
         if (!s)
                 return NULL;
 
+        s->state_file = strappend("/run/systemd/seats/", id);
+        if (!s->state_file)
+                return mfree(s);
+
+        s->id = basename(s->state_file);
+        s->manager = m;
+
+        if (hashmap_put(m->seats, s->id, s) < 0) {
+                free(s->state_file);
+                return mfree(s);
+        }
+
+        return s;
+}
+
         log_debug_elogind("Freeing Seat %s ...", s->id);
+void seat_free(Seat *s) {
+        assert(s);
 
         if (s->in_gc_queue)
                 LIST_REMOVE(gc_queue, s->manager->seat_gc_queue, s);
@@ -75,8 +65,7 @@ Seat* seat_free(Seat *s) {
 
         free(s->positions);
         free(s->state_file);
-
-        return mfree(s);
+        free(s);
 }
 
 int seat_save(Seat *s) {
@@ -178,7 +167,7 @@ static int vt_allocate(unsigned int vtnr) {
         xsprintf(p, "/dev/tty%u", vtnr);
         fd = open_terminal(p, O_RDWR|O_NOCTTY|O_CLOEXEC);
         if (fd < 0)
-                return fd;
+                return -errno;
 
         return 0;
 }
@@ -202,8 +191,10 @@ int seat_preallocate_vts(Seat *s) {
                 int q;
 
                 q = vt_allocate(i);
-                if (q < 0)
-                        r = log_error_errno(q, "Failed to preallocate VT %u: %m", i);
+                if (q < 0) {
+                        log_error_errno(q, "Failed to preallocate VT %u: %m", i);
+                        r = q;
+                }
         }
 
         return r;
@@ -215,16 +206,15 @@ int seat_apply_acls(Seat *s, Session *old_active) {
 
         assert(s);
 
-        r = devnode_acl_all(s->manager->udev,
-                            s->id,
+        r = devnode_acl_all(s->id,
                             false,
                             !!old_active, old_active ? old_active->user->uid : 0,
                             !!s->active, s->active ? s->active->user->uid : 0);
 
         if (r < 0)
-                return log_error_errno(r, "Failed to apply ACLs: %m");
+                log_error_errno(r, "Failed to apply ACLs: %m");
 
-        return 0;
+        return r;
 }
 
 int seat_set_active(Seat *s, Session *session) {
@@ -244,7 +234,7 @@ int seat_set_active(Seat *s, Session *session) {
                 session_send_changed(old_active, "Active", NULL);
         }
 
-        (void) seat_apply_acls(s, old_active);
+        seat_apply_acls(s, old_active);
 
         if (session && session->started) {
                 session_send_changed(session, "Active", NULL);
@@ -437,7 +427,7 @@ int seat_start(Seat *s) {
 }
 
 int seat_stop(Seat *s, bool force) {
-        int r;
+        int r = 0;
 
         assert(s);
 
@@ -447,9 +437,9 @@ int seat_stop(Seat *s, bool force) {
                            "SEAT_ID=%s", s->id,
                            LOG_MESSAGE("Removed seat %s.", s->id));
 
-        r = seat_stop_sessions(s, force);
+        seat_stop_sessions(s, force);
 
-        (void) unlink(s->state_file);
+        unlink(s->state_file);
         seat_add_to_gc_queue(s);
 
         if (s->started)
@@ -468,7 +458,6 @@ int seat_stop_sessions(Seat *s, bool force) {
 
         log_debug_elogind("Stopping all sessions of seat %s %s",
                           s->id, force ? "(forced)" : "");
-
         LIST_FOREACH(sessions_by_seat, session, s->sessions) {
                 k = session_stop(session, force);
                 if (k < 0)
@@ -644,7 +633,6 @@ bool seat_may_gc(Seat *s, bool drop_not_started) {
         log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !s->started));
         log_debug_elogind("  is not seat0   : %s", yes_no(!seat_is_seat0(s)));
         log_debug_elogind("  no master dev  : %s", yes_no(!seat_has_master_device(s)));
-
         if (drop_not_started && !s->started)
                 return true;
 

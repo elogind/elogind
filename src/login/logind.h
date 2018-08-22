@@ -5,6 +5,7 @@
 
 #if 0 /// elogind needs the systems udev header
 #include "libudev.h"
+//#include "sd-device.h"
 #else
 #include <libudev.h>
 #endif // 0
@@ -37,7 +38,6 @@ struct Manager {
         Hashmap *devices;
         Hashmap *seats;
         Hashmap *sessions;
-        Hashmap *sessions_by_leader;
         Hashmap *users;
         Hashmap *inhibitors;
         Hashmap *buttons;
@@ -46,7 +46,6 @@ struct Manager {
         LIST_HEAD(Session, session_gc_queue);
         LIST_HEAD(User, user_gc_queue);
 
-        struct udev *udev;
         struct udev_monitor *udev_seat_monitor, *udev_device_monitor, *udev_vcsa_monitor, *udev_button_monitor;
 
         sd_event_source *console_active_event_source;
@@ -55,14 +54,9 @@ struct Manager {
         sd_event_source *udev_vcsa_event_source;
         sd_event_source *udev_button_event_source;
 
-#if ENABLE_UTMP
-        sd_event_source *utmp_event_source;
-#endif
-
         int console_active_fd;
 
 #if 0 /// elogind does not support autospawning of vts
-
         unsigned n_autovts;
 
         unsigned reserve_vt;
@@ -100,7 +94,6 @@ struct Manager {
 #endif // 0
 
         usec_t inhibit_delay_max;
-        usec_t user_stop_delay;
 
         /* If an action is currently being executed or is delayed,
          * this is != 0 and encodes what is being done */
@@ -185,13 +178,13 @@ int manager_add_device(Manager *m, const char *sysfs, bool master, Device **_dev
 int manager_add_button(Manager *m, const char *name, Button **_button);
 int manager_add_seat(Manager *m, const char *id, Seat **_seat);
 int manager_add_session(Manager *m, const char *id, Session **_session);
-int manager_add_user(Manager *m, uid_t uid, gid_t gid, const char *name, const char *home, User **_user);
+int manager_add_user(Manager *m, uid_t uid, gid_t gid, const char *name, User **_user);
 int manager_add_user_by_name(Manager *m, const char *name, User **_user);
 int manager_add_user_by_uid(Manager *m, uid_t uid, User **_user);
 int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 
-int manager_process_seat_device(Manager *m, struct udev_device *d);
-int manager_process_button_device(Manager *m, struct udev_device *d);
+int manager_process_seat_device(Manager *m, sd_device *d);
+int manager_process_button_device(Manager *m, sd_device *d);
 
 #if 0 /// UNNEEDED by elogind
 int manager_spawn_autovt(Manager *m, unsigned int vtnr);
@@ -207,10 +200,6 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **session);
 bool manager_is_docked_or_external_displays(Manager *m);
 bool manager_is_on_external_power(void);
 bool manager_all_buttons_ignored(Manager *m);
-
-int manager_read_utmp(Manager *m);
-void manager_connect_utmp(Manager *m);
-void manager_reconnect_utmp(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
@@ -230,14 +219,14 @@ int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 
 #if 0 /// UNNEEDED by elogind
-int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, char **wants, char **after, const char *requires_mounts_for, sd_bus_message *more_properties, sd_bus_error *error, char **job);
+int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, const char *after, const char *after2, sd_bus_message *more_properties, sd_bus_error *error, char **job);
 int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
 int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
-int manager_unit_is_active(Manager *manager, const char *unit, sd_bus_error *error);
-int manager_job_is_active(Manager *manager, const char *path, sd_bus_error *error);
 #endif // 0
+int manager_unit_is_active(Manager *manager, const char *unit);
+int manager_job_is_active(Manager *manager, const char *path);
 
 /* gperf lookup function */
 const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
