@@ -71,6 +71,8 @@ DEFINE_STRING_TABLE_LOOKUP(socket_address_type, int);
 int socket_address_parse(SocketAddress *a, const char *s) {
         char *e, *n;
         unsigned u;
+        _cleanup_free_ char *n = NULL;
+        char *e;
         int r;
 
         assert(a);
@@ -89,6 +91,9 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                         return -EINVAL;
 
                 n = strndupa(s+1, e-s-1);
+                n = strndup(s+1, e-s-1);
+                if (!n)
+                        return -ENOMEM;
 
                 errno = 0;
                 if (inet_pton(AF_INET6, n, &a->sockaddr.in6.sin6_addr) <= 0)
@@ -152,6 +157,10 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                         return r;
 
                 n = strndupa(cid_start, e - cid_start);
+                n = strndup(cid_start, e - cid_start);
+                if (!n)
+                        return -ENOMEM;
+
                 if (!isempty(n)) {
                         r = safe_atou(n, &a->sockaddr.vm.svm_cid);
                         if (r < 0)
@@ -178,6 +187,9 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                                 return -EINVAL;
 
                         n = strndupa(s, e-s);
+                        n = strndup(s, e-s);
+                        if (!n)
+                                return -ENOMEM;
 
                         /* IPv4 in w.x.y.z:p notation? */
                         r = inet_pton(AF_INET, n, &a->sockaddr.in.sin_addr);
