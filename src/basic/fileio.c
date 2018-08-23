@@ -1564,6 +1564,7 @@ int read_nul_string(FILE *f, char **ret) {
 
         return 0;
 }
+#endif // 0
 
 int mkdtemp_malloc(const char *template, char **ret) {
         _cleanup_free_ char *p = NULL;
@@ -1591,7 +1592,6 @@ int mkdtemp_malloc(const char *template, char **ret) {
         *ret = TAKE_PTR(p);
         return 0;
 }
-#endif // 0
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, funlockfile);
 
