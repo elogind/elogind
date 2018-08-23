@@ -262,9 +262,11 @@ tests += [
          [],
          []],
 
-        [['src/test/test-os-util.c'],
-         [],
-         []],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-os-util.c'],
+#          [],
+#          []],
+#endif // 0
 
         [['src/test/test-escape.c'],
          [],
