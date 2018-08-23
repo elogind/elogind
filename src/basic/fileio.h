@@ -101,8 +101,8 @@ int open_serialization_fd(const char *ident);
 int link_tmpfile(int fd, const char *path, const char *target);
 
 int read_nul_string(FILE *f, char **ret);
+#endif // 0
 
 int mkdtemp_malloc(const char *template, char **ret);
-#endif // 0
 
 int read_line(FILE *f, size_t limit, char **ret);
