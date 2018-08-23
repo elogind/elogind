@@ -589,7 +589,6 @@ int unlink_or_warn(const char *filename) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
         char path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
         int r;
@@ -603,7 +602,6 @@ int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
 
         return r;
 }
-#endif // 0
 
 static bool safe_transition(const struct stat *a, const struct stat *b) {
         /* Returns true if the transition from a to b is safe, i.e. that we never transition from unprivileged to
