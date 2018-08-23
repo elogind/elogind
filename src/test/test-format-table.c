@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "alloc-util.h"
-//#include "format-table.h"
-//#include "string-util.h"
-//#include "time-util.h"
+#include "alloc-util.h"
+#include "format-table.h"
+#include "string-util.h"
+#include "time-util.h"
 
 int main(int argc, char *argv[]) {
 
