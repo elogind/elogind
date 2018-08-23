@@ -225,6 +225,7 @@ static void test_rearrange_stdio(void) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static void assert_equal_fd(int fd1, int fd2) {
 
         for (;;) {
@@ -246,7 +247,6 @@ static void assert_equal_fd(int fd1, int fd2) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_fd_duplicate_data_fd(void) {
         _cleanup_close_ int fd1 = -1, fd2 = -1;
         _cleanup_(close_pairp) int sfd[2] = { -1, -1 };

@@ -237,6 +237,7 @@ static void test_copy_bytes_regular_file(const char *src, bool try_reflink, uint
         unlink(fn3);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_copy_atomic(void) {
         _cleanup_(rm_rf_physical_and_freep) char *p = NULL;
         const char *q;
@@ -254,6 +255,7 @@ static void test_copy_atomic(void) {
 
         assert_se(copy_file_atomic("/etc/fstab", q, 0644, 0, COPY_REPLACE) >= 0);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         log_set_max_level(LOG_DEBUG);
@@ -270,7 +272,9 @@ int main(int argc, char *argv[]) {
         test_copy_bytes_regular_file(argv[0], true, 1000);
         test_copy_bytes_regular_file(argv[0], false, 32000); /* larger than copy buffer size */
         test_copy_bytes_regular_file(argv[0], true, 32000);
+#if 0 /// UNNEEDED by elogind
         test_copy_atomic();
+#endif // 0
 
         return 0;
 }
