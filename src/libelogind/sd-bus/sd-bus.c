@@ -1362,13 +1362,13 @@ _public_ int sd_bus_open_user_with_description(sd_bus **ret, const char *descrip
 
         *ret = TAKE_PTR(b);
         return 0;
+#else
+        return sd_bus_open_system_with_description(ret, description);
+#endif // 0
 }
 
 _public_ int sd_bus_open_user(sd_bus **ret) {
         return sd_bus_open_user_with_description(ret, NULL);
-#else
-        return sd_bus_open_system(ret);
-#endif // 0
 }
 
 int bus_set_address_system_remote(sd_bus *b, const char *host) {
