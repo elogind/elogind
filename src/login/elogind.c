@@ -448,7 +448,7 @@ void elogind_manager_reset_config(Manager* m) {
         while (m->hybrid_sleep_state[++dbg_cnt])
                 log_debug_elogind("hybrid_sleep_state[%d] = %s",
                                   dbg_cnt, m->hybrid_sleep_state[dbg_cnt]);
-        log_debug_elogind("hibernate_delay_sec: %ul seconds (%ul minutes)",
+        log_debug_elogind("hibernate_delay_sec: %lu seconds (%lu minutes)",
                           m->hibernate_delay_sec / USEC_PER_SEC,
                           m->hibernate_delay_sec / USEC_PER_MINUTE);
 #endif // ENABLE_DEBUG_ELOGIND

@@ -13,7 +13,7 @@
 #include "bus-util.h"
 #include "fd-util.h"
 #include "format-util.h"
-//#include "pager.h"
+#include "pager.h"
 #include "process-util.h"
 #include "signal-util.h"
 #include "strv.h"

@@ -1291,12 +1291,6 @@ int main(int argc, char *argv[]) {
         (void) mkdir_label("/run/systemd/seats", 0755);
         (void) mkdir_label("/run/systemd/users", 0755);
         (void) mkdir_label("/run/systemd/sessions", 0755);
-
-        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, -1) >= 0);
-
-        r = manager_new(&m);
-        if (r < 0) {
-                log_error_errno(r, "Failed to allocate manager object: %m");
 #else
         r = mkdir_label("/run/systemd", 0755);
         if ( (r < 0) && (-EEXIST != r) )
@@ -1314,6 +1308,14 @@ int main(int argc, char *argv[]) {
         if ( r < 0 && (-EEXIST != r) )
                 return log_error_errno(r, "Failed to create /run/systemd/machines : %m");
 #endif // 0
+
+        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, -1) >= 0);
+
+        r = manager_new(&m);
+        if (r < 0) {
+                log_error_errno(r, "Failed to allocate manager object: %m");
+                goto finish;
+        }
 
         (void) manager_parse_config_file(m);
 
