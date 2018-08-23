@@ -122,7 +122,6 @@ shared_sources = '''
         sleep-config.h
         spawn-polkit-agent.c
         spawn-polkit-agent.h
-        udev-util.c
         udev-util.h
 '''.split()
 #endif // 0
