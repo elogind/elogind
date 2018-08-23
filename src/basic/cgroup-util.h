@@ -257,8 +257,8 @@ bool cg_is_hybrid_wanted(void);
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 int cg_weight_parse(const char *s, uint64_t *ret);
+#if 0 /// UNNEEDED by elogind
 int cg_cpu_shares_parse(const char *s, uint64_t *ret);
 int cg_blkio_weight_parse(const char *s, uint64_t *ret);
 #endif // 0
