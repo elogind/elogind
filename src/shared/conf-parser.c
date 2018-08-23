@@ -519,9 +519,9 @@ DEFINE_PARSER(double, double, safe_atod);
 DEFINE_PARSER(nsec, nsec_t, parse_nsec);
 #endif // 0
 DEFINE_PARSER(sec, usec_t, parse_sec);
+#if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(mode, mode_t, parse_mode);
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_iec_size(const char* unit,
                             const char *filename,
                             unsigned line,
