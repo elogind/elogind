@@ -260,6 +260,8 @@ basic_sources = files('''
         fileio.h
         fileio-label.c
         fileio-label.h
+        format-table.c
+        format-table.h
         format-util.h
         fs-util.c
         fs-util.h

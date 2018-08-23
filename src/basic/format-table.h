@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <stdbool.h>
-//#include <stdio.h>
-//#include <sys/types.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <sys/types.h>
 
-//#include "macro.h"
+#include "macro.h"
 
 typedef enum TableDataType {
         TABLE_EMPTY,
@@ -34,14 +34,18 @@ static inline int table_add_cell(Table *t, TableCell **ret_cell, TableDataType t
         return table_add_cell_full(t, ret_cell, type, data, (size_t) -1, (size_t) -1, (unsigned) -1, (unsigned) -1, (unsigned) -1);
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_dup_cell(Table *t, TableCell *cell);
 
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width);
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width);
 int table_set_weight(Table *t, TableCell *cell, unsigned weight);
+#endif // 0
 int table_set_align_percent(Table *t, TableCell *cell, unsigned percent);
+#if 0 /// UNNEEDED by elogind
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent);
 int table_set_color(Table *t, TableCell *cell, const char *color);
+#endif // 0
 
 int table_add_many_internal(Table *t, TableDataType first_type, ...);
 #define table_add_many(t, ...) table_add_many_internal(t, __VA_ARGS__, _TABLE_DATA_TYPE_MAX)
@@ -59,4 +63,6 @@ static inline TableCell* TABLE_HEADER_CELL(size_t i) {
 }
 
 size_t table_get_rows(Table *t);
+#if 0 /// UNNEEDED by elogind
 size_t table_get_columns(Table *t);
+#endif // 0

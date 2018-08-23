@@ -1,18 +1,18 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <stdio_ext.h>
+#include <stdio_ext.h>
 
-//#include "alloc-util.h"
-//#include "fd-util.h"
-//#include "fileio.h"
-//#include "format-table.h"
-//#include "gunicode.h"
-//#include "pager.h"
-//#include "parse-util.h"
-//#include "string-util.h"
-//#include "terminal-util.h"
-//#include "time-util.h"
-//#include "utf8.h"
+#include "alloc-util.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "format-table.h"
+#include "gunicode.h"
+#include "pager.h"
+#include "parse-util.h"
+#include "string-util.h"
+#include "terminal-util.h"
+#include "time-util.h"
+#include "utf8.h"
 #include "util.h"
 
 #define DEFAULT_WEIGHT 100
@@ -373,6 +373,7 @@ int table_add_cell_full(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_dup_cell(Table *t, TableCell *cell) {
         size_t i;
 
@@ -390,6 +391,7 @@ int table_dup_cell(Table *t, TableCell *cell) {
         t->data[t->n_cells++] = table_data_ref(t->data[i]);
         return 0;
 }
+#endif // 0
 
 static int table_dedup_cell(Table *t, TableCell *cell) {
         TableData *nd, *od;
@@ -440,6 +442,7 @@ static TableData *table_get_data(Table *t, TableCell *cell) {
         return t->data[i];
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         int r;
 
@@ -487,6 +490,7 @@ int table_set_weight(Table *t, TableCell *cell, unsigned weight) {
         table_get_data(t, cell)->weight = weight;
         return 0;
 }
+#endif // 0
 
 int table_set_align_percent(Table *t, TableCell *cell, unsigned percent) {
         int r;
@@ -507,6 +511,7 @@ int table_set_align_percent(Table *t, TableCell *cell, unsigned percent) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent) {
         int r;
 
@@ -539,6 +544,7 @@ int table_set_color(Table *t, TableCell *cell, const char *color) {
         table_get_data(t, cell)->color = empty_to_null(color);
         return 0;
 }
+#endif // 0
 
 int table_add_many_internal(Table *t, TableDataType first_type, ...) {
         TableDataType type;
@@ -1238,6 +1244,7 @@ size_t table_get_rows(Table *t) {
         return t->n_cells / t->n_columns;
 }
 
+#if 0 /// UNNEEDED by elogind
 size_t table_get_columns(Table *t) {
         if (!t)
                 return 0;
@@ -1245,3 +1252,4 @@ size_t table_get_columns(Table *t) {
         assert(t->n_columns > 0);
         return t->n_columns;
 }
+#endif // 0
