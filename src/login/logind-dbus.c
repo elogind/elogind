@@ -2367,11 +2367,11 @@ static int method_can_shutdown_or_sleep(
         blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
 
         handle = handle_action_from_string(sleep_verb);
+#if 0 /// elogind uses its own variant, which can use the handle directly.
         if (handle >= 0) {
                 const char *target;
 
                 target = manager_target_for_action(handle);
-#if 0 /// elogind does not support systemd units units. A valid handle is enough
                 if (target) {
                         _cleanup_free_ char *load_state = NULL;
 
@@ -2380,20 +2380,16 @@ static int method_can_shutdown_or_sleep(
                                 return r;
 
                         if (!streq(load_state, "loaded")) {
-#else
-                if (NULL == target) {
-#endif // 0
                                 result = "no";
                                 goto finish;
-#if 0 /// one less with elogind...
                         }
-#endif // 0
                 }
 #else
                 if ( (handle <= HANDLE_IGNORE) || (handle >= _HANDLE_ACTION_MAX) ) {
                         result = "no";
                         goto finish;
         }
+#endif // 0
 
         if (multiple_sessions) {
                 r = bus_test_polkit(message, CAP_SYS_BOOT, action_multiple_sessions, NULL, UID_INVALID, &challenge, error);

@@ -20,6 +20,8 @@
 #include "fileio.h"
 #include "sd-messages.h"
 #include "strv.h"
+
+#if 0 /// elogind does this itself. No target table required
 const char* manager_target_for_action(HandleAction handle) {
         static const char * const target_table[_HANDLE_ACTION_MAX] = {
                 [HANDLE_POWEROFF] = SPECIAL_POWEROFF_TARGET,
@@ -37,6 +39,7 @@ const char* manager_target_for_action(HandleAction handle) {
                 return target_table[handle];
         return NULL;
 }
+#endif // 0
 
 int manager_handle_action(
                 Manager *m,
@@ -56,13 +59,13 @@ int manager_handle_action(
                 [HANDLE_SUSPEND_THEN_HIBERNATE] = "Suspending, then hibernating...",
         };
 
-#if 0 /// elogind does this itself. No target table required
-#endif // 0
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         InhibitWhat inhibit_operation;
         Inhibitor *offending = NULL;
         bool supported;
+#if 0 /// elogind uses its own variant, which can use the handle directly.
         const char *target;
+#endif // 0
         int r;
 
         assert(m);
@@ -136,7 +139,9 @@ int manager_handle_action(
                 return -EALREADY;
         }
 
+#if 0 /// elogind uses its own variant, which can use the handle directly.
         assert_se(target = manager_target_for_action(handle));
+#endif // 0
 
         inhibit_operation = IN_SET(handle, HANDLE_SUSPEND, HANDLE_HIBERNATE,
                                            HANDLE_HYBRID_SLEEP,

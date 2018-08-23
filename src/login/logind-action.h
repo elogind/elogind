@@ -31,6 +31,8 @@ int manager_handle_action(
 const char* handle_action_to_string(HandleAction h) _const_;
 HandleAction handle_action_from_string(const char *s) _pure_;
 
+#if 0 /// elogind does this itself. No target table required
 const char* manager_target_for_action(HandleAction handle);
+#endif // 0
 
 CONFIG_PARSER_PROTOTYPE(config_parse_handle_action);
