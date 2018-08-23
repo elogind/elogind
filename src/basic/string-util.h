@@ -118,9 +118,7 @@ char *strjoin_real(const char *x, ...) _sentinel_;
         })
 
 char *strstrip(char *s);
-#if 0 /// UNNEEDED by elogind
 char *delete_chars(char *s, const char *bad);
-#endif // 0
 char *delete_trailing_chars(char *s, const char *bad);
 char *truncate_nl(char *s);
 

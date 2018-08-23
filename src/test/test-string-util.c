@@ -384,7 +384,6 @@ static void test_endswith_no_case(void) {
         assert_se(!endswith_no_case("foobar", "FOOBARFOOFOO"));
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_delete_chars(void) {
         char *s, input[] = "   hello, waldo.   abc";
 
@@ -392,7 +391,6 @@ static void test_delete_chars(void) {
         assert_se(streq(s, "hello,waldo.abc"));
         assert_se(s == input);
 }
-#endif // 0
 
 static void test_delete_trailing_chars(void) {
 
@@ -526,9 +524,7 @@ int main(int argc, char *argv[]) {
         test_foreach_word_quoted();
         test_endswith();
         test_endswith_no_case();
-#if 0 /// UNNEEDED by elogind
         test_delete_chars();
-#endif // 0
         test_delete_trailing_chars();
         test_delete_trailing_slashes();
         test_skip_leading_chars();

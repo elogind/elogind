@@ -272,7 +272,6 @@ char *strstrip(char *s) {
         return delete_trailing_chars(skip_leading_chars(s, WHITESPACE), WHITESPACE);
 }
 
-#if 0 /// UNNEEDED by elogind
 char *delete_chars(char *s, const char *bad) {
         char *f, *t;
 
@@ -295,7 +294,6 @@ char *delete_chars(char *s, const char *bad) {
 
         return s;
 }
-#endif // 0
 
 char *delete_trailing_chars(char *s, const char *bad) {
         char *p, *c = s;
