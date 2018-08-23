@@ -2812,7 +2812,6 @@ bool cg_is_hybrid_wanted(void) {
 #endif // 0
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_weight_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;
@@ -2833,6 +2832,7 @@ int cg_weight_parse(const char *s, uint64_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 const uint64_t cgroup_io_limit_defaults[_CGROUP_IO_LIMIT_TYPE_MAX] = {
         [CGROUP_IO_RBPS_MAX]    = CGROUP_LIMIT_MAX,
         [CGROUP_IO_WBPS_MAX]    = CGROUP_LIMIT_MAX,
