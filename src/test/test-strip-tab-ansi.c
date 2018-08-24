@@ -2,13 +2,17 @@
 
 #include <stdio.h>
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "string-util.h"
 #include "terminal-util.h"
 #include "util.h"
 
 int main(int argc, char *argv[]) {
+#if 0 /// urlified is UNNEEDED by elogind
         _cleanup_free_ char *urlified = NULL, *q = NULL, *qq = NULL;
+#else
+        _cleanup_free_ char *q = NULL, *qq = NULL;
+#endif // 0
         char *p, *z;
 
         assert_se(p = strdup("\tFoobar\tbar\twaldo\t"));
@@ -33,6 +37,7 @@ int main(int argc, char *argv[]) {
         assert_se(streq(p, "\x1B[waldo"));
         free(p);
 
+#if 0 /// UNNEEDED by elogind
         assert_se(terminal_urlify_path("/etc/fstab", "i am a fabulous link", &urlified) >= 0);
         assert_se(p = strjoin("something ", urlified, " something-else"));
         assert_se(q = strdup(p));
@@ -41,6 +46,7 @@ int main(int argc, char *argv[]) {
         printf("<%s>\n", p);
         assert_se(streq(p, "something i am a fabulous link something-else"));
         p = mfree(p);
+#endif // 0
 
         /* Truncate the formatted string in the middle of an ANSI sequence (in which case we shouldn't touch the
          * incomplete sequence) */
