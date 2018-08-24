@@ -26,12 +26,10 @@ custom_man_xsl = files('custom-man.xsl')
 custom_html_xsl = files('custom-html.xsl')
 xslt_cmd = [xsltproc, '-o', '@OUTPUT0@'] + xsltproc_flags
 
-#if 0 /// UNNEEDED by elogind
-# custom_entities_ent = configure_file(
-#         input : 'custom-entities.ent.in',
-#         output : 'custom-entities.ent',
-#         configuration : conf)
-#endif // 0
+custom_entities_ent = configure_file(
+        input : 'custom-entities.ent.in',
+        output : 'custom-entities.ent',
+        configuration : conf)
 
 man_pages = []
 html_pages = []
