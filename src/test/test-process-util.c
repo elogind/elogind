@@ -564,6 +564,7 @@ static void test_pid_to_ptr(void) {
 #endif
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_ioprio_class_from_to_string_one(const char *val, int expected) {
         assert_se(ioprio_class_from_string(val) == expected);
         if (expected >= 0) {
@@ -589,6 +590,7 @@ static void test_ioprio_class_from_to_string(void) {
         test_ioprio_class_from_to_string_one("9", -1);
         test_ioprio_class_from_to_string_one("-1", -1);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         log_set_max_level(LOG_DEBUG);
@@ -622,7 +624,9 @@ int main(int argc, char *argv[]) {
         test_getpid_measure();
         test_safe_fork();
         test_pid_to_ptr();
+#if 0 /// UNNEEDED by elogind
         test_ioprio_class_from_to_string();
+#endif // 0
 
         return 0;
 }
