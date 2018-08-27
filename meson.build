@@ -1442,6 +1442,19 @@ conf.set10('ENABLE_EFI', have)
 
 #####################################################################
 
+#if 1 /// These are not needed by elogind, but meson wants them although they are commented out.
+conf.set_quoted('CERTIFICATE_ROOT',                 '/dev/null')
+conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO', 'N/A')
+conf.set_quoted('MOUNT_PATH',                       '/dev/null')
+conf.set_quoted('SYSTEM_ENV_GENERATOR_PATH',        '/dev/null')
+conf.set_quoted('SYSTEM_GENERATOR_PATH',            '/dev/null')
+conf.set_quoted('UMOUNT_PATH',                      '/dev/null')
+conf.set_quoted('USER_ENV_GENERATOR_PATH',          '/dev/null')
+conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
+#####################################################################
+
+#endif // 1
+
 config_h = configure_file(
         output : 'config.h',
         configuration : conf)

@@ -2434,7 +2434,6 @@ static int method_can_shutdown_or_sleep(
         }
 
  finish:
-
         return sd_bus_reply_method_return(message, "s", result);
 }
 

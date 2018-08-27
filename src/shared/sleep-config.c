@@ -363,7 +363,11 @@ static bool can_s2h(Manager *m) {
         }
 
         FOREACH_STRING(p, "suspend", "hibernate") {
+#if 0 /// elogind must transport a pointer to its managers instance
+                r = can_sleep(p);
+#else
                 r = can_sleep(m, p);
+#endif // 0
                 if (IN_SET(r, 0, -ENOSPC)) {
                         log_debug("Unable to %s system.", p);
                         return false;
@@ -395,7 +399,11 @@ int can_sleep(Manager *m, const char *verb) {
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 
         if (streq(verb, "suspend-then-hibernate"))
+#if 0 /// elogind must transport a pointer to its managers instance
+                return can_s2h();
+#else
                 return can_s2h(m);
+#endif // 0
 
 #if 0 /// already parsed by elogind config
         r = parse_sleep_config(verb, &modes, &states, NULL);

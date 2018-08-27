@@ -383,6 +383,7 @@ int main(int argc, char *argv[]) {
                 r = execute_s2h(delay);
         else
                 r = execute(modes, states);
+finish:
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 #else
