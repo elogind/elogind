@@ -3183,28 +3183,31 @@ status = [
 
         'split /usr:                        @0@'.format(split_usr),
         'split bin-sbin:                    @0@'.format(split_bin),
-#if 0 /// UNSUPPORTED by elogind
-#         'prefix directory:                  @0@'.format(prefixdir),
-#         'rootprefix directory:              @0@'.format(rootprefixdir),
-#         'sysconf directory:                 @0@'.format(sysconfdir),
-#         'include directory:                 @0@'.format(includedir),
-#         'lib directory:                     @0@'.format(libdir),
-#         'rootlib directory:                 @0@'.format(rootlibdir),
-#         'SysV init scripts:                 @0@'.format(sysvinit_path),
-#         'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
-#else
+        'prefix directory:                  @0@'.format(prefixdir),
+        'rootprefix directory:              @0@'.format(rootprefixdir),
+        'sysconf directory:                 @0@'.format(sysconfdir),
+        'include directory:                 @0@'.format(includedir),
+        'lib directory:                     @0@'.format(libdir),
+        'rootlib directory:                 @0@'.format(rootlibdir),
+#if 1 /// Needed by elogind
         'rootexeclib dir:                   @0@'.format(rootlibexecdir),
+#endif // 1
+#if 0 /// UNNEEDED by elogind
+#        'SysV init scripts:                 @0@'.format(sysvinit_path),
+#        'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
 #endif // 0
+        'PAM modules directory:             @0@'.format(pamlibdir),
+        'PAM configuration directory:       @0@'.format(pamconfdir),
+#if 0 /// UNNEEDED by elogind
+#        'RPM macros directory:              @0@'.format(rpmmacrosdir),
+#endif // 0
+        'modprobe.d directory:              @0@'.format(modprobedir),
+        'D-Bus policy directory:            @0@'.format(dbuspolicydir),
+        'D-Bus session directory:           @0@'.format(dbussessionservicedir),
+        'D-Bus system directory:            @0@'.format(dbussystemservicedir),
+        'bash completions directory:        @0@'.format(bashcompletiondir),
+        'zsh completions directory:         @0@'.format(zshcompletiondir),
 #if 0 /// UNSUPPORTED by elogind
-#         'PAM modules directory:             @0@'.format(pamlibdir),
-#         'PAM configuration directory:       @0@'.format(pamconfdir),
-#         'RPM macros directory:              @0@'.format(rpmmacrosdir),
-#         'modprobe.d directory:              @0@'.format(modprobedir),
-#         'D-Bus policy directory:            @0@'.format(dbuspolicydir),
-#         'D-Bus session directory:           @0@'.format(dbussessionservicedir),
-#         'D-Bus system directory:            @0@'.format(dbussystemservicedir),
-#         'bash completions directory:        @0@'.format(bashcompletiondir),
-#         'zsh completions directory:         @0@'.format(zshcompletiondir),
 #         'extra start script:                @0@'.format(get_option('rc-local')),
 #         'extra stop script:                 @0@'.format(get_option('halt-local')),
 #         'debug shell:                       @0@ @ @1@'.format(get_option('debug-shell'),
@@ -3225,8 +3228,10 @@ status = [
 #         'render group access mode:          @0@'.format(get_option('group-render-mode')),
 #         'certificate root directory:        @0@'.format(get_option('certificate-root')),
 #         'support URL:                       @0@'.format(support_url),
-#         'nobody user name:                  @0@'.format(nobody_user),
-#         'nobody group name:                 @0@'.format(nobody_group),
+#endif // 0
+        'nobody user name:                  @0@'.format(nobody_user),
+        'nobody group name:                 @0@'.format(nobody_group),
+#if 0 /// UNSUPPORTED by elogind
 #         'fallback hostname:                 @0@'.format(get_option('fallback-hostname')),
 #         'symbolic gateway hostnames:        @0@'.format(', '.join(gateway_hostnames)),
 # 
