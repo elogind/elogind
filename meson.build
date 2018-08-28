@@ -16,7 +16,7 @@ project('elogind', 'c',
 # libsystemd_version = '0.23.0'
 # libudev_version = '1.6.11'
 #else
-libelogind_version = '0.22.0'
+libelogind_version = '0.23.0'
 #endif // 0
 
 # We need the same data in two different formats, ugh!
