@@ -280,7 +280,7 @@ int same_fd(int a, int b) {
                 return true;
         if (r > 0)
                 return false;
-        if (errno != ENOSYS)
+        if (!IN_SET(errno, ENOSYS, EACCES, EPERM))
                 return -errno;
 
         /* We don't have kcmp(), use fstat() instead. */
@@ -357,22 +357,22 @@ bool fdname_is_valid(const char *s) {
 #endif // 0
 
 int fd_get_path(int fd, char **ret) {
-        char procfs_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int)];
+        _cleanup_close_ int dir = -1;
+        char fdname[DECIMAL_STR_MAX(int)];
         int r;
 
-        xsprintf(procfs_path, "/proc/self/fd/%i", fd);
-        r = readlink_malloc(procfs_path, ret);
-        if (r == -ENOENT) {
-                /* ENOENT can mean two things: that the fd does not exist or that /proc is not mounted. Let's make
-                 * things debuggable and distuingish the two. */
+        dir = open("/proc/self/fd/", O_CLOEXEC | O_DIRECTORY | O_PATH);
+        if (dir < 0)
+                /* /proc is not available or not set up properly, we're most likely
+                 * in some chroot environment. */
+                return errno == ENOENT ? -EOPNOTSUPP : -errno;
 
-                if (access("/proc/self/fd/", F_OK) < 0)
-                        /* /proc is not available or not set up properly, we're most likely in some chroot
-                         * environment. */
-                        return errno == ENOENT ? -EOPNOTSUPP : -errno;
+        xsprintf(fdname, "%i", fd);
 
-                return -EBADF; /* The directory exists, hence it's the fd that doesn't. */
-        }
+        r = readlinkat_malloc(dir, fdname, ret);
+        if (r == -ENOENT)
+                /* If the file doesn't exist the fd is invalid */
+                return -EBADF;
 
         return r;
 }
