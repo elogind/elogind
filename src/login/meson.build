@@ -108,15 +108,15 @@ loginctl_sources += files('''
 
         install_data('org.freedesktop.login1.conf',
                      install_dir : dbuspolicydir)
-#if 0 /// Works a bit differently here, as elogind alows dbus activation.
+#if 0 /// Works a bit differently here, as elogind allows dbus activation.
 #         install_data('org.freedesktop.login1.service',
 #                      install_dir : dbussystemservicedir)
 #else
-logind_service = configure_file(
-        input : 'org.freedesktop.login1.service.in',
-        output : 'org.freedesktop.login1.service',
-        configuration : substs)
-install_data(logind_service,
+        logind_service = configure_file(
+                input : 'org.freedesktop.login1.service.in',
+                output : 'org.freedesktop.login1.service',
+                configuration : substs)
+        install_data(logind_service,
                 install_dir : dbussystemservicedir)
 #endif // 0
         install_data('org.freedesktop.login1.policy',
@@ -135,9 +135,20 @@ install_data(logind_service,
         install_data(seat_rules,
                      install_dir : udevrulesdir)
 
+#if 1 /// elogind needs two passes of this file
+        seat_late_rules = configure_file(
+                input : '73-seat-late.rules.in',
+                output : '73-seat-late.rules.m4',
+                configuration : substs)
+#endif // 1
+
         custom_target(
                 '73-seat-late.rules',
-                input : '73-seat-late.rules.m4',
+#if 0 /// elogind must configure the source
+#                 input : '73-seat-late.rules.m4',
+#else
+                input : seat_late_rules,
+#endif // 0
                 output: '73-seat-late.rules',
                 command : [meson_apply_m4, config_h, '@INPUT@'],
                 capture : true,
