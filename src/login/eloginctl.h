@@ -34,6 +34,7 @@ typedef enum elogind_action {
         ACTION_SUSPEND,
         ACTION_HIBERNATE,
         ACTION_HYBRID_SLEEP,
+        ACTION_SUSPEND_THEN_HIBERNATE,
         ACTION_CANCEL_SHUTDOWN,
         _ACTION_MAX
 } elogind_action;

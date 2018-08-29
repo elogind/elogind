@@ -48,13 +48,14 @@ static const struct {
         HandleAction action;
         const char*  verb;
 } action_table[_ACTION_MAX] = {
-        [ACTION_HALT]         = { HANDLE_HALT,         "halt"         },
-        [ACTION_POWEROFF]     = { HANDLE_POWEROFF,     "poweroff",    },
-        [ACTION_REBOOT]       = { HANDLE_REBOOT,       "reboot",      },
-        [ACTION_KEXEC]        = { HANDLE_KEXEC,        "kexec",       },
-        [ACTION_SUSPEND]      = { HANDLE_SUSPEND,      "suspend",     },
-        [ACTION_HIBERNATE]    = { HANDLE_HIBERNATE,    "hibernate",   },
-        [ACTION_HYBRID_SLEEP] = { HANDLE_HYBRID_SLEEP, "hybrid-sleep" }
+        [ACTION_HALT]                   = { HANDLE_HALT,                   "halt"         },
+        [ACTION_POWEROFF]               = { HANDLE_POWEROFF,               "poweroff",    },
+        [ACTION_REBOOT]                 = { HANDLE_REBOOT,                 "reboot",      },
+        [ACTION_KEXEC]                  = { HANDLE_KEXEC,                  "kexec",       },
+        [ACTION_SUSPEND]                = { HANDLE_SUSPEND,                "suspend",     },
+        [ACTION_HIBERNATE]              = { HANDLE_HIBERNATE,              "hibernate",   },
+        [ACTION_HYBRID_SLEEP]           = { HANDLE_HYBRID_SLEEP,           "hybrid-sleep" },
+        [ACTION_SUSPEND_THEN_HIBERNATE] = { HANDLE_SUSPEND_THEN_HIBERNATE, "suspend-then-hibernate" }
         /* ACTION_CANCEL_SHUTDOWN is handled differently */
 };
 
@@ -262,6 +263,12 @@ static void elogind_log_special(enum elogind_action a) {
                            "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                            NULL);
                 break;
+        case ACTION_SUSPEND_THEN_HIBERNATE:
+                log_struct(LOG_INFO,
+                           LOG_MESSAGE("Suspend-Then-Hibernate action called."),
+                           "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
+                           NULL);
+                break;
         case ACTION_CANCEL_SHUTDOWN:
                 log_struct(LOG_INFO,
                            LOG_MESSAGE("Cancel Shutdown called."),
@@ -320,6 +327,11 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
         case ACTION_HYBRID_SLEEP:
                 method = "HybridSleep";
                 description = "put system into hybrid sleep";
+                break;
+
+        case ACTION_SUSPEND_THEN_HIBERNATE:
+                method = "SuspendThenHibernate";
+                description = "put system into suspend followed by hibernate";
                 break;
 
         default:
@@ -570,7 +582,8 @@ int start_special(int argc, char *argv[], void *userdata) {
                    ACTION_REBOOT,
                    ACTION_SUSPEND,
                    ACTION_HIBERNATE,
-                   ACTION_HYBRID_SLEEP)) {
+                   ACTION_HYBRID_SLEEP,
+                   ACTION_SUSPEND_THEN_HIBERNATE)) {
                 if (arg_when > 0)
                         return elogind_schedule_shutdown(bus, a);
                 else

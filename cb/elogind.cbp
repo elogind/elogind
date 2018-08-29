@@ -700,6 +700,10 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/login/70-power-switch.rules" />
+		<Unit filename="../src/login/70-uaccess.rules" />
+		<Unit filename="../src/login/71-seat.rules.in" />
+		<Unit filename="../src/login/73-seat-late.rules.in" />
 		<Unit filename="../src/login/eloginctl.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -788,6 +792,8 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/login/org.freedesktop.login1.conf" />
+		<Unit filename="../src/login/org.freedesktop.login1.policy" />
 		<Unit filename="../src/login/pam_elogind.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -1402,6 +1402,8 @@ static int help(int argc, char *argv[], void *userdata) {
                "  suspend                   Suspend the machine to memory\n"
                "  hibernate                 Suspend the machine to disk\n"
                "  hybrid-sleep              Suspend the machine to memory and disk\n"
+               "  suspend-then-hibernate    Suspend the system, wake after a period of\n"
+               "                            time and put it into hibernate\n"
 #endif // 0
                , program_invocation_short_name);
 
@@ -1627,6 +1629,7 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "suspend",           VERB_ANY, 1,        0,            start_special     },
                 { "hibernate",         VERB_ANY, 1,        0,            start_special     },
                 { "hybrid-sleep",      VERB_ANY, 1,        0,            start_special     },
+                { "suspend-then-hibernate", VERB_ANY, 1,   0,            start_special     },
                 { "cancel-shutdown",   VERB_ANY, 1,        0,            start_special     },
 #endif // 1
                 {}
