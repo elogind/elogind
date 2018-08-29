@@ -1,34 +1,36 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
+//#include <errno.h>
+//#include <string.h>
+//#include <unistd.h>
 #include <stdio_ext.h>
 
 #include "alloc-util.h"
-#include "bus-common-errors.h"
-#include "bus-error.h"
-#include "bus-util.h"
-#include "cgroup-util.h"
+//#include "bus-common-errors.h"
+//#include "bus-error.h"
+//#include "bus-util.h"
+//#include "cgroup-util.h"
 #include "clean-ipc.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "format-util.h"
-#include "fs-util.h"
-#include "hashmap.h"
-#include "label.h"
-#include "logind-user.h"
+//#include "format-util.h"
+//#include "fs-util.h"
+//#include "hashmap.h"
+//#include "label.h"
+//#include "logind-user.h"
 #include "mkdir.h"
-#include "parse-util.h"
-#include "path-util.h"
-#include "rm-rf.h"
+//#include "parse-util.h"
+//#include "path-util.h"
+//#include "rm-rf.h"
 #include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
 #include "unit-name.h"
 #include "user-util.h"
-#include "util.h"
+//#include "util.h"
+/// Additional includes needed by elogind
+#include "user-runtime-dir.h"
 
 int user_new(User **out, Manager *m, uid_t uid, gid_t gid, const char *name) {
         _cleanup_(user_freep) User *u = NULL;
@@ -368,8 +370,17 @@ int user_start(User *u) {
          */
         u->stopping = false;
 
+#if 0 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
         if (!u->started)
                 log_debug("Starting services for new user %s.", u->name);
+#else
+        if (!u->started) {
+                log_debug("Starting services for new user %s.", u->name);
+                r = user_runtime_dir("start", u);
+                if (r < 0)
+                        return r;
+        }
+#endif // 1
 
         /* Save the user data so far, because pam_systemd will read the
          * XDG_RUNTIME_DIR out of it while starting up systemd --user.
@@ -441,6 +452,9 @@ int user_stop(User *u, bool force) {
         /* Stop jobs have already been queued */
         if (u->stopping) {
                 user_save(u);
+#if 1 /// elogind must queue this user again
+                user_add_to_gc_queue(u);
+#endif // 1
                 return r;
         }
 
@@ -469,6 +483,7 @@ int user_stop(User *u, bool force) {
 #if 1 /// elogind must queue this user again
         user_add_to_gc_queue(u);
 #endif // 1
+
         return r;
 }
 
@@ -486,6 +501,13 @@ int user_finalize(User *u) {
                 if (k < 0)
                         r = k;
         }
+
+#if 1 /// elogind has to remove the XDG_RUNTIME_DIR by itself
+        /* Kill XDG_RUNTIME_DIR */
+        k = user_runtime_dir("stop", u);
+        if (k < 0)
+                r = k;
+#endif // 1
 
         /* Clean SysV + POSIX IPC objects, but only if this is not a system user. Background: in many setups cronjobs
          * are run in full PAM and thus logind sessions, even if the code run doesn't belong to actual users but to

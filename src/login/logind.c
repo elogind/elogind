@@ -39,8 +39,6 @@
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
 
-#if 0 /// elogind does not support autospawning of vts
-#endif // 0
 static int manager_new(Manager **ret) {
         _cleanup_(manager_unrefp) Manager *m = NULL;
         int r;

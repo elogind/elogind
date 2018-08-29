@@ -702,207 +702,112 @@
 		</Unit>
 		<Unit filename="../src/login/eloginctl.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/eloginctl.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/eloginctl.h" />
 		<Unit filename="../src/login/elogind-dbus.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/elogind-dbus.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/elogind-dbus.h" />
 		<Unit filename="../src/login/elogind.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/elogind.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/elogind.h" />
 		<Unit filename="../src/login/inhibit.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/loginctl.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind-acl.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-acl.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-acl.h" />
 		<Unit filename="../src/login/logind-action.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-action.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-action.h" />
 		<Unit filename="../src/login/logind-button.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-button.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-button.h" />
 		<Unit filename="../src/login/logind-core.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind-dbus.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind-device.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-device.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/login/logind-gperf.c">
-			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-device.h" />
 		<Unit filename="../src/login/logind-gperf.gperf">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind-inhibit.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-inhibit.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-inhibit.h" />
 		<Unit filename="../src/login/logind-seat-dbus.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind-seat.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-seat.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-seat.h" />
 		<Unit filename="../src/login/logind-session-dbus.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind-session-device.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-session-device.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-session-device.h" />
 		<Unit filename="../src/login/logind-session.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-session.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-session.h" />
 		<Unit filename="../src/login/logind-user-dbus.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind-user.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind-user.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-user.h" />
 		<Unit filename="../src/login/logind-utmp.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/logind.conf.in">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/logind.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind.h" />
 		<Unit filename="../src/login/meson.build">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/pam_elogind.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/sysfs-show.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/login/sysfs-show.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/sysfs-show.h" />
 		<Unit filename="../src/login/test-inhibit.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/test-login-shared.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/test-login-tables.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/login/user-runtime-dir.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/user-runtime-dir.h" />
 		<Unit filename="../src/shared/acl-util.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
