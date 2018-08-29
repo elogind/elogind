@@ -1,21 +1,24 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <stdint.h>
-//#include <sys/mount.h>
+#include <stdint.h>
+#include <sys/mount.h>
 
-//#include "fs-util.h"
-//#include "label.h"
+#include "fs-util.h"
+#include "label.h"
 //#include "logind.h"
-//#include "mkdir.h"
-//#include "mount-util.h"
-//#include "path-util.h"
-//#include "rm-rf.h"
-//#include "smack-util.h"
-//#include "stdio-util.h"
-//#include "string-util.h"
-//#include "strv.h"
-//#include "user-util.h"
+#include "mkdir.h"
+#include "mount-util.h"
+#include "path-util.h"
+#include "rm-rf.h"
+#include "smack-util.h"
+#include "stdio-util.h"
+#include "string-util.h"
+#include "strv.h"
+#include "user-util.h"
+/// Additional includes needed by elogind
+#include "user-runtime-dir.h"
 
+#if 0 /// UNNEEDED by elogind
 static int gather_configuration(size_t *runtime_dir_size) {
         Manager m = {};
         int r;
@@ -29,6 +32,7 @@ static int gather_configuration(size_t *runtime_dir_size) {
         *runtime_dir_size = m.runtime_dir_size;
         return 0;
 }
+#endif // 0
 
 static int user_mkdir_runtime_path(const char *runtime_path, uid_t uid, gid_t gid, size_t runtime_dir_size) {
         int r;
@@ -111,10 +115,14 @@ static int user_remove_runtime_path(const char *runtime_path) {
         return r;
 }
 
+#if 0 /// having a User instance, elogind can ask its manager directly.
 static int do_mount(const char *runtime_path, uid_t uid, gid_t gid) {
         size_t runtime_dir_size;
 
         assert_se(gather_configuration(&runtime_dir_size) == 0);
+#else
+static int do_mount(const char *runtime_path, size_t runtime_dir_size, uid_t uid, gid_t gid) {
+#endif // 0
 
         log_debug("Will mount %s owned by "UID_FMT":"GID_FMT, runtime_path, uid, gid);
         return user_mkdir_runtime_path(runtime_path, uid, gid, runtime_dir_size);
@@ -125,6 +133,7 @@ static int do_umount(const char *runtime_path) {
         return user_remove_runtime_path(runtime_path);
 }
 
+#if 0 /// elogind does this internally as we have no unit chain being init.
 int main(int argc, char *argv[]) {
         const char *user;
         uid_t uid;
@@ -156,7 +165,6 @@ int main(int argc, char *argv[]) {
                                 user);
                 return EXIT_FAILURE;
         }
-
         xsprintf(runtime_path, "/run/user/" UID_FMT, uid);
 
         if (streq(argv[1], "start"))
@@ -168,3 +176,21 @@ int main(int argc, char *argv[]) {
 
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
+#else
+int user_runtime_dir(const char *verb, User *u) {
+        int r;
+
+        assert_se(verb);
+        assert_se(u);
+        assert_se(u->manager);
+        
+        if (streq(verb, "start"))
+                r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->uid, u->gid);
+        else if (streq(verb, "stop"))
+                r = do_umount(u->runtime_path);
+        else
+                assert_not_reached("Unknown verb!");
+
+        return r;
+}
+#endif // 0

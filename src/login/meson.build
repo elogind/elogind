@@ -50,6 +50,7 @@ liblogind_core_sources = files('''
 liblogind_core_sources += [files('''
         elogind-dbus.c
         elogind-dbus.h
+        user-runtime-dir.c
 '''.split()),
         libcore_la_sources,
         sleep_files,
@@ -86,7 +87,7 @@ loginctl_sources = files('''
 # '''.split())
 #endif // 0
 
-#if 1 /// elogind has some additional files:
+#if 1 /// elogind has and needs some additional files:
 loginctl_sources += files('''
         eloginctl.c
         eloginctl.h
