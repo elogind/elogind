@@ -2385,7 +2385,7 @@ static int method_can_shutdown_or_sleep(
                         }
                 }
 #else
-                if ( (handle <= HANDLE_IGNORE) || (handle >= _HANDLE_ACTION_MAX) ) {
+                if ( _HANDLE_ACTION_INVALID == handle ) {
                         result = "no";
                         goto finish;
         }
