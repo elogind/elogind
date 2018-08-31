@@ -2367,8 +2367,9 @@ static int method_can_shutdown_or_sleep(
         blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
 
         handle = handle_action_from_string(sleep_verb);
-#if 0 /// elogind uses its own variant, which can use the handle directly.
+
         if (handle >= 0) {
+#if 0 /// elogind uses its own variant, which can use the handle directly.
                 const char *target;
 
                 target = manager_target_for_action(handle);
@@ -2384,12 +2385,12 @@ static int method_can_shutdown_or_sleep(
                                 goto finish;
                         }
                 }
-#else
-                if ( _HANDLE_ACTION_INVALID == handle ) {
-                        result = "no";
-                        goto finish;
         }
+#else
+                log_debug_elogind("CanShutDownOrSleep: %s [%d] %s blocked",
+                                  sleep_verb, handle, blocked ? "is" : "not");
 #endif // 0
+        }
 
         if (multiple_sessions) {
                 r = bus_test_polkit(message, CAP_SYS_BOOT, action_multiple_sessions, NULL, UID_INVALID, &challenge, error);
@@ -2402,6 +2403,8 @@ static int method_can_shutdown_or_sleep(
                         result = "challenge";
                 else
                         result = "no";
+                log_debug_elogind("CanShutDownOrSleep: multiple_sessions: %s = %s",
+                                  action_multiple_sessions, result);
         }
 
         if (blocked) {
@@ -2415,6 +2418,8 @@ static int method_can_shutdown_or_sleep(
                         result = "challenge";
                 else
                         result = "no";
+                log_debug_elogind("CanShutDownOrSleep: blocked          : %s = %s",
+                                  action_ignore_inhibit, result);
         }
 
         if (!multiple_sessions && !blocked) {
@@ -2431,6 +2436,8 @@ static int method_can_shutdown_or_sleep(
                         result = "challenge";
                 else
                         result = "no";
+                log_debug_elogind("CanShutDownOrSleep: regular          : %s = %s",
+                                  action, result);
         }
 
  finish:

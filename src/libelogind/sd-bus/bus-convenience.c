@@ -529,6 +529,11 @@ _public_ int sd_bus_query_sender_creds(sd_bus_message *call, uint64_t mask, sd_b
                         return sd_bus_get_owner_creds(call->bus, mask, creds);
         }
 
+        log_debug_elogind("Called by UID %u ; %s [%s] (%s)", c->uid,
+                          c->unique_name ? c->unique_name : "no name",
+                          c->label       ? c->label       : "no label",
+                          c->description ? c->description : "no desc");
+
         return bus_creds_extend_by_pid(c, mask, creds);
 }
 
