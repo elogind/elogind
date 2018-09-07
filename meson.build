@@ -3116,7 +3116,7 @@ install_data('LICENSE.GPL2',
 #endif // 0
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              'docs/CODING_STYLE',
-             'docs/DISTRO_PORTING',
+             'docs/DISTRO_PORTING.md',
              'docs/ENVIRONMENT.md',
              'docs/HACKING',
              'docs/TRANSIENT-SETTINGS.md',
