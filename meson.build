@@ -3120,7 +3120,7 @@ install_data('LICENSE.GPL2',
              'docs/ENVIRONMENT.md',
              'docs/HACKING',
              'docs/TRANSIENT-SETTINGS.md',
-             'docs/TRANSLATORS',
+             'docs/TRANSLATORS.md',
              'docs/UIDS-GIDS.md',
              install_dir : docdir)
 
