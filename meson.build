@@ -3111,7 +3111,6 @@ install_data('LICENSE.GPL2',
              'README',
 #if 0 /// irrelevant for elogind
 #endif // 0
-             'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              'doc/CODING_STYLE',
              'doc/DISTRO_PORTING',
              'doc/ENVIRONMENT.md',
@@ -3119,6 +3118,7 @@ install_data('LICENSE.GPL2',
              'doc/TRANSIENT-SETTINGS.md',
              'doc/TRANSLATORS',
              'doc/UIDS-GIDS.md',
+             'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind
