@@ -396,6 +396,20 @@ possible_cc_flags = [
         '-Werror=shift-overflow=2',
         '-Wdate-time',
         '-Wnested-externs',
+
+        # negative arguments are correctly detected starting with meson 0.46.
+        '-Wno-unused-parameter',
+        '-Wno-missing-field-initializers',
+        '-Wno-unused-result',
+        '-Wno-format-signedness',
+
+        # work-around for gcc 7.1 turning this on on its own.
+        '-Wno-error=nonnull',
+
+        # Disable -Wmaybe-uninitialized, since it's noisy on gcc 8 with
+        # optimizations enabled, producing essentially false positives.
+        '-Wno-maybe-uninitialized',
+
         '-ffast-math',
         '-fno-common',
         '-fdiagnostics-show-option',
@@ -438,23 +452,6 @@ endif
 
 add_project_arguments(cc.get_supported_arguments(possible_cc_flags), language : 'c')
 add_project_link_arguments(cc.get_supported_link_arguments(possible_link_flags), language : 'c')
-
-# "negative" arguments: gcc on purpose does not return an error for "-Wno-"
-# arguments, just emits a warning. So test for the "positive" version instead.
-foreach arg : ['unused-parameter',
-               'missing-field-initializers',
-               'unused-result',
-               'format-signedness',
-               'error=nonnull', # work-around for gcc 7.1 turning this on on its own
-
-               # Disable -Wmaybe-uninitialized, since it's noisy on gcc 8 with
-               # optimizations enabled, producing essentially false positives.
-               'maybe-uninitialized',
-              ]
-        if cc.has_argument('-W' + arg)
-                add_project_arguments('-Wno-' + arg, language : 'c')
-        endif
-endforeach
 
 if cc.compiles('''
    #include <time.h>
@@ -3093,8 +3090,8 @@ subdir('shell-completion/bash')
 subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
 #endif // 0
-subdir('docs/sysvinit')
-subdir('docs/var-log')
+subdir('doc/sysvinit')
+subdir('doc/var-log')
 
 # FIXME: figure out if the warning is true:
 # https://github.com/mesonbuild/meson/wiki/Reference-manual#install_subdir
@@ -3115,13 +3112,13 @@ install_data('LICENSE.GPL2',
 #if 0 /// irrelevant for elogind
 #endif // 0
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
-             'docs/CODING_STYLE',
-             'docs/DISTRO_PORTING.md',
-             'docs/ENVIRONMENT.md',
-             'docs/HACKING',
-             'docs/TRANSIENT-SETTINGS.md',
-             'docs/TRANSLATORS.md',
-             'docs/UIDS-GIDS.md',
+             'doc/CODING_STYLE',
+             'doc/DISTRO_PORTING',
+             'doc/ENVIRONMENT.md',
+             'doc/HACKING',
+             'doc/TRANSIENT-SETTINGS.md',
+             'doc/TRANSLATORS',
+             'doc/UIDS-GIDS.md',
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind
