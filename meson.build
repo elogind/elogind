@@ -2018,7 +2018,7 @@ test_dlopen = executable(
 #                         test('dlopen-pam_systemd',
 #                              test_dlopen,
 #                              # path to dlopen must include a slash
-#                              args : [pam_systemd.full_path()])
+#                              args : pam_systemd.full_path())
 #                 endif
 #         endif
 # endif
@@ -2800,7 +2800,7 @@ public_programs += exe
 # exe = executable('systemd-udevd',
 #                  systemd_udevd_sources,
 #                  include_directories : includes,
-#                  c_args : ['-DLOG_REALM=LOG_REALM_UDEV'],
+#                  c_args : '-DLOG_REALM=LOG_REALM_UDEV',
 #                  link_with : [libudev_core,
 #                               libsystemd_network,
 #                               libudev_static],
@@ -2816,7 +2816,7 @@ public_programs += exe
 #
 # exe = executable('udevadm',
 #                  udevadm_sources,
-#                  c_args : ['-DLOG_REALM=LOG_REALM_UDEV'],
+#                  c_args : '-DLOG_REALM=LOG_REALM_UDEV',
 #                  include_directories : includes,
 #                  link_with : [libudev_core,
 #                               libsystemd_network,
@@ -3025,7 +3025,7 @@ endforeach
 #         'test-libudev-sym',
 #         test_libudev_sym_c,
 #         include_directories : includes,
-#         c_args : ['-Wno-deprecated-declarations'],
+#         c_args : '-Wno-deprecated-declarations',
 #         link_with : [libudev],
 #         build_by_default : want_tests != 'false',
 #         install : install_tests,
@@ -3038,7 +3038,7 @@ endforeach
 #         'test-libudev-static-sym',
 #         test_libudev_sym_c,
 #         include_directories : includes,
-#         c_args : ['-Wno-deprecated-declarations'],
+#         c_args : '-Wno-deprecated-declarations',
 #         link_with : [install_libudev_static],
 #         build_by_default : want_tests != 'false' and static_libudev_pic,
 #         install : install_tests and static_libudev_pic,
@@ -3157,7 +3157,7 @@ foreach exec : public_programs
         if want_tests != 'false'
                 test('check-help-' + name,
                      meson_check_help,
-                     args : [exec.full_path()])
+                     args : exec.full_path())
         endif
 endforeach
 
