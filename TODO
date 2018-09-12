@@ -73,6 +73,17 @@ Features:
   with full privs and without userns.
 
 * portables: introduce a new unit file directory /etc/elogind/system.attached/
+* hibernate/s2h: make this robust and safe to enable in Fedora by default.
+  Specifically:
+
+  1. add resume_offset support to the resume code (i.e. support swap files
+     properly)
+  2. check of swap is on weird storage and refuse if so
+  3. add env-var based option to disable hibernation
+  4. figure out what to do with swap-on-luks
+  5. add autodetection of hibernation images, and add "noresume" to disable
+     this
+
   or so, where we attach portable services to
 
 * cgroups: use inotify to get notified when somebody else modifies cgroups
@@ -437,6 +448,8 @@ Features:
   http://lists.freedesktop.org/archives/systemd-devel/2015-January/027451.html
 
 * hostnamectl: show root image uuid
+
+* sysfs set api in libudev is not const
 
 * Find a solution for SMACK capabilities stuff:
   http://lists.freedesktop.org/archives/systemd-devel/2014-December/026188.html
