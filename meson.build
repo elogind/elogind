@@ -269,6 +269,7 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 # conf.set_quoted('SYSTEMD_KBD_MODEL_MAP',                      join_paths(pkgdatadir, 'kbd-model-map'))
 # conf.set_quoted('SYSTEMD_LANGUAGE_FALLBACK_MAP',              join_paths(pkgdatadir, 'language-fallback-map'))
 #endif // 0
+conf.set_quoted('SYSTEMD_TEST_DATA',                          join_paths(testsdir, 'testdata'))
 conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
 conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   join_paths(bindir, 'pkttyagent'))
 conf.set_quoted('LIBDIR',                                     libdir)
@@ -287,7 +288,6 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 #endif // 0
 
 conf.set_quoted('ABS_BUILD_DIR',                              meson.build_root())
-conf.set_quoted('ABS_SRC_DIR',                                meson.source_root())
 
 substs.set('prefix',                                          prefixdir)
 substs.set('exec_prefix',                                     prefixdir)
@@ -2935,6 +2935,14 @@ executable('elogind-uaccess-command',
 
 ############################################################
 
+custom_target(
+        'elogind-runtest.env',
+        output : 'elogind-runtest.env',
+        command : ['sh', '-c', '{ ' +
+                   'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(meson.current_source_dir(), 'test')) +
+                   '} >@OUTPUT@'],
+        build_by_default : true)
+
 foreach tuple : tests
         sources = tuple[0]
         link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
@@ -3090,8 +3098,8 @@ subdir('shell-completion/bash')
 subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
 #endif // 0
-subdir('doc/sysvinit')
-subdir('doc/var-log')
+subdir('docs/sysvinit')
+subdir('docs/var-log')
 
 # FIXME: figure out if the warning is true:
 # https://github.com/mesonbuild/meson/wiki/Reference-manual#install_subdir
@@ -3111,14 +3119,14 @@ install_data('LICENSE.GPL2',
              'README',
 #if 0 /// irrelevant for elogind
 #endif // 0
-             'doc/CODING_STYLE',
-             'doc/DISTRO_PORTING',
-             'doc/ENVIRONMENT.md',
-             'doc/HACKING',
-             'doc/TRANSIENT-SETTINGS.md',
-             'doc/TRANSLATORS',
-             'doc/UIDS-GIDS.md',
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
+             'docs/CODING_STYLE',
+             'docs/DISTRO_PORTING.md',
+             'docs/ENVIRONMENT.md',
+             'docs/HACKING',
+             'docs/TRANSIENT-SETTINGS.md',
+             'docs/TRANSLATORS.md',
+             'docs/UIDS-GIDS.md',
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind
