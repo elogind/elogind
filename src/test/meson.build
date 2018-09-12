@@ -6,7 +6,8 @@ test_hashmap_ordered_c = custom_target(
         input : [awkscript, 'test-hashmap-plain.c'],
         output : 'test-hashmap-ordered.c',
         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
-        capture : true)
+        capture : true,
+        build_by_default : want_tests != 'false')
 
 test_include_dir = include_directories('.')
 
@@ -28,7 +29,8 @@ test_libelogind_sym_c = custom_target(
         input : [libelogind_sym_path] + systemd_headers,
         output : 'test-libelogind-sym.c',
         command : [generate_sym_test_py, libelogind_sym_path] + systemd_headers,
-        capture : true)
+        capture : true,
+        build_by_default : want_tests != 'false')
 
 #if 0 /// UNNEEDED in elogind
 # test_libudev_sym_c = custom_target(
@@ -36,8 +38,9 @@ test_libelogind_sym_c = custom_target(
 #         input : [libudev_sym_path, libudev_h_path],
 #         output : 'test-libudev-sym.c',
 #         command : [generate_sym_test_py, '@INPUT0@', '@INPUT1@'],
-#         capture : true)
 #endif // 0
+        capture : true,
+        build_by_default : want_tests != 'false')
 
 test_dlopen_c = files('test-dlopen.c')
 
