@@ -348,13 +348,13 @@ CHANGES WITH 239:
         * New documentation has been added to document cgroups delegation,
           portable services and the various code quality tools we have set up:
 
-          https://github.com/systemd/systemd/blob/master/doc/CGROUP_DELEGATION.md
-          https://github.com/systemd/systemd/blob/master/doc/PORTABLE_SERVICES.md
-          https://github.com/systemd/systemd/blob/master/doc/CODE_QUALITY.md
+          https://github.com/systemd/systemd/blob/master/docs/CGROUP_DELEGATION.md
+          https://github.com/systemd/systemd/blob/master/docs/PORTABLE_SERVICES.md
+          https://github.com/systemd/systemd/blob/master/docs/CODE_QUALITY.md
 
         * The Boot Loader Specification has been added to the source tree.
 
-          https://github.com/systemd/systemd/blob/master/doc/BOOT_LOADER_SPECIFICATION.md
+          https://github.com/systemd/systemd/blob/master/docs/BOOT_LOADER_SPECIFICATION.md
 
           While moving it into our source tree we have updated it and further
           changes are now accepted through the usual github PR workflow.
@@ -594,9 +594,10 @@ CHANGES WITH 237:
           different from what the documentation said, and not particularly
           useful, as repeated elogind-tmpfiles invocations would not be
           idempotent and grow such files without bounds. With this release
-          behaviour has been altered to match what the documentation says:
-          lines of this type only have an effect if the indicated files don't
-          exist yet, and only then the argument string is written to the file.
+          behaviour has been altered slightly, to match what the documentation
+          says: lines of this type only have an effect if the indicated files
+          don't exist yet, and only then the argument string is written to the
+          file.
 
         * FUTURE INCOMPATIBILITY: In elogind v238 we intend to slightly change
           elogind-tmpfiles behaviour: previously, read-only files owned by root
@@ -1669,7 +1670,7 @@ CHANGES WITH 233:
         * Documentation has been added that lists all of systemd's low-level
           environment variables:
 
-          https://github.com/systemd/systemd/blob/master/doc/ENVIRONMENT.md
+          https://github.com/systemd/systemd/blob/master/docs/ENVIRONMENT.md
 
         * sd-daemon gained a new API sd_is_socket_sockaddr() for determining
           whether a specific socket file descriptor matches a specified socket
