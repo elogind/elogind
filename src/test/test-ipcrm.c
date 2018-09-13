@@ -2,6 +2,7 @@
 
 #include "clean-ipc.h"
 #include "user-util.h"
+//#include "tests.h"
 #include "util.h"
 
 int main(int argc, char *argv[]) {
@@ -14,11 +15,11 @@ int main(int argc, char *argv[]) {
 #endif // 0
 
         r = get_user_creds(&name, &uid, NULL, NULL, NULL, 0);
+        if (r == -ESRCH)
+                return log_tests_skipped("Failed to resolve user");
         if (r < 0) {
-                log_full_errno(r == -ESRCH ? LOG_NOTICE : LOG_ERR,
-                               r, "Failed to resolve \"%s\"%s: %m", name,
-                               r == -ESRCH ? ", skipping tests" : "");
-                return r == -ESRCH ? EXIT_TEST_SKIP : EXIT_FAILURE;
+                log_error_errno(r, "Failed to resolve \"%s\": %m", name);
+                return EXIT_FAILURE;
         }
 
         r = clean_ipc_by_uid(uid);
