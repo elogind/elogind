@@ -24,6 +24,7 @@
 #include "string-util.h"
 #include "terminal-util.h"
 #include "test-helper.h"
+//#include "tests.h"
 #include "util.h"
 #include "virt.h"
 
@@ -608,9 +609,7 @@ static void test_ioprio_class_from_to_string(void) {
 #endif // 0
 
 int main(int argc, char *argv[]) {
-        log_set_max_level(LOG_DEBUG);
-        log_parse_environment();
-        log_open();
+        test_setup_logging(LOG_DEBUG);
 
         saved_argc = argc;
         saved_argv = argv;

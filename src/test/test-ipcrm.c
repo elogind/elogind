@@ -10,6 +10,8 @@ int main(int argc, char *argv[]) {
         int r;
 #if 0 /// not configurable in elogind
         const char* name = argv[1] ?: NOBODY_USER_NAME;
+
+        test_setup_logging(LOG_INFO);
 #else
         const char* name = argv[1] ?: "nobody";
 #endif // 0

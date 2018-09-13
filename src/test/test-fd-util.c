@@ -12,6 +12,7 @@
 #include "random-util.h"
 #include "string-util.h"
 #include "util.h"
+//#include "tests.h"
 
 static void test_close_many(void) {
         int fds[3];
@@ -320,7 +321,7 @@ static void test_read_nr_open(void) {
 
 int main(int argc, char *argv[]) {
 
-        log_set_max_level(LOG_DEBUG);
+        test_setup_logging(LOG_DEBUG);
 
         test_close_many();
         test_close_nointr();

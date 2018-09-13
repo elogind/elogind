@@ -14,6 +14,7 @@
 #include "rm-rf.h"
 #include "string-util.h"
 #include "strv.h"
+//#include "tests.h"
 #include "user-util.h"
 #include "util.h"
 
@@ -258,7 +259,7 @@ static void test_copy_atomic(void) {
 #endif // 0
 
 int main(int argc, char *argv[]) {
-        log_set_max_level(LOG_DEBUG);
+        test_setup_logging(LOG_DEBUG);
 
 #if 0 /// UNNEEDED by elogind
         test_copy_file();
