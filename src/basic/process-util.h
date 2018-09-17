@@ -120,7 +120,7 @@ static inline void* PID_TO_PTR(pid_t pid) {
 
 void valgrind_summary_hack(void);
 
-int pid_compare_func(const void *a, const void *b);
+int pid_compare_func(const pid_t *a, const pid_t *b);
 
 #if 0 /// UNNEEDED by elogind
 static inline bool nice_is_valid(int n) {
@@ -150,6 +150,12 @@ static inline bool pid_is_valid(pid_t p) {
         return p > 0;
 }
 
+static inline int sched_policy_to_string_alloc_with_check(int n, char **s) {
+        if (!sched_policy_is_valid(n))
+                return -EINVAL;
+
+        return sched_policy_to_string_alloc(n, s);
+}
 
 #if 0 /// UNNEEDED by elogind
 int ioprio_parse_priority(const char *s, int *ret);

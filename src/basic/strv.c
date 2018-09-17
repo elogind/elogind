@@ -343,22 +343,21 @@ int strv_split_extract(char ***t, const char *s, const char *separators, Extract
         return (int) n;
 }
 
-char *strv_join_prefix(char **l, const char *separator, const char *prefix) {
+char *strv_join(char **l, const char *separator) {
         char *r, *e;
         char **s;
-        size_t n, k, m;
+        size_t n, k;
 
         if (!separator)
                 separator = " ";
 
         k = strlen(separator);
-        m = strlen_ptr(prefix);
 
         n = 0;
         STRV_FOREACH(s, l) {
                 if (s != l)
                         n += k;
-                n += m + strlen(*s);
+                n += strlen(*s);
         }
 
         r = new(char, n+1);
@@ -369,9 +368,6 @@ char *strv_join_prefix(char **l, const char *separator, const char *prefix) {
         STRV_FOREACH(s, l) {
                 if (s != l)
                         e = stpcpy(e, separator);
-
-                if (prefix)
-                        e = stpcpy(e, prefix);
 
                 e = stpcpy(e, *s);
         }
@@ -727,14 +723,12 @@ bool strv_overlap(char **a, char **b) {
 }
 #endif // 0
 
-static int str_compare(const void *_a, const void *_b) {
-        const char **a = (const char**) _a, **b = (const char**) _b;
-
+static int str_compare(char * const *a, char * const *b) {
         return strcmp(*a, *b);
 }
 
 char **strv_sort(char **l) {
-        qsort_safe(l, strv_length(l), sizeof(char*), str_compare);
+        typesafe_qsort(l, strv_length(l), str_compare);
         return l;
 }
 
