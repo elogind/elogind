@@ -59,6 +59,7 @@ sd_login_c = files('sd-login/sd-login.c')
 #         sd-device/device-util.h
 #         sd-device/sd-device.c
 #         sd-hwdb/hwdb-internal.h
+#         sd-hwdb/hwdb-util.c
 #         sd-hwdb/hwdb-util.h
 #         sd-hwdb/sd-hwdb.c
 #         sd-netlink/generic-netlink.c
@@ -81,6 +82,7 @@ sd_login_c = files('sd-login/sd-login.c')
 #         sd-utf8/sd-utf8.c
 # '''.split()) + id128_sources + sd_daemon_c + sd_event_c + sd_login_c
 #
+# libsystemd_c_args = ['-fvisibility=default']
 #else
 libelogind_sources = files('''
         sd-bus/bus-common-errors.c
@@ -125,10 +127,6 @@ libelogind_sources = files('''
 '''.split()) + id128_sources + sd_daemon_c + sd_event_c + sd_login_c
 #endif // 0
 
-disable_mempool_c = files('disable-mempool.c')
-
-libelogind_c_args = ['-fvisibility=default']
-
 libelogind_static = static_library(
         'elogind_static',
         libelogind_sources,
@@ -138,10 +136,10 @@ libelogind_static = static_library(
 #if 0 /// elogind does not need librt
 #         dependencies : [threads,
 #                         librt],
+#         c_args : libsystemd_c_args)
 #else
         dependencies : [threads],
 #endif // 0
-        c_args : libelogind_c_args)
 
 libelogind_sym = 'src/libelogind/libelogind.sym'
 
