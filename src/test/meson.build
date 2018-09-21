@@ -685,8 +685,8 @@ tests += [
 #           libblkid,
 #           libkmod,
 #           libacl],
-#          '', 'manual'],
 #endif // 0
+         '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
 
         [['src/test/test-id128.c'],
          [],
