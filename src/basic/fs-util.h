@@ -48,7 +48,7 @@ int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gi
 int touch(const char *path);
 
 #if 0 /// UNNEEDED by elogind
-int symlink_idempotent(const char *from, const char *to);
+int symlink_idempotent(const char *from, const char *to, bool make_relative);
 
 int symlink_atomic(const char *from, const char *to);
 int mknod_atomic(const char *path, mode_t mode, dev_t dev);

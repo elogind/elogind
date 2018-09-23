@@ -356,11 +356,26 @@ int touch(const char *path) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int symlink_idempotent(const char *from, const char *to) {
+int symlink_idempotent(const char *from, const char *to, bool make_relative) {
+        _cleanup_free_ char *relpath = NULL;
         int r;
 
         assert(from);
         assert(to);
+
+        if (make_relative) {
+                _cleanup_free_ char *parent = NULL;
+
+                parent = dirname_malloc(to);
+                if (!parent)
+                        return -ENOMEM;
+
+                r = path_make_relative(parent, from, &relpath);
+                if (r < 0)
+                        return r;
+
+                from = relpath;
+        }
 
         if (symlink(from, to) < 0) {
                 _cleanup_free_ char *p = NULL;
