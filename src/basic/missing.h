@@ -1371,7 +1371,7 @@ struct fib_rule_uid_range {
 #define PF_KTHREAD 0x00200000
 #endif
 
-#if ! HAVE_STRUCT_STATX
+#if !HAVE_STRUCT_STATX_IN_SYS_STAT_H && !HAVE_STRUCT_STATX_IN_LINUX_STAT_H
 struct statx_timestamp {
         int64_t tv_sec;
         uint32_t tv_nsec;
