@@ -1367,7 +1367,6 @@ conf.set10('HAVE_DBUS', have)
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
 #                 conf.get('HAVE_ZLIB') == 1 and
-#                 conf.get('HAVE_BZIP2') == 1 and
 #                 conf.get('HAVE_XZ') == 1 and
 #                 conf.get('HAVE_GCRYPT') == 1)
 #         if want_importd == 'true' and not have
