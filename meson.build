@@ -509,6 +509,10 @@ foreach decl : ['char16_t',
         conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
 endforeach
 
+conf.set10('HAVE_STRUCT_STATX_IN_SYS_STAT_H', cc.sizeof('struct statx', prefix : '''
+#include <sys/stat.h>
+''', args : '-D_GNU_SOURCE') > 0)
+
 foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
                 ['IFLA_VRF_TABLE',                   'linux/if_link.h'],
