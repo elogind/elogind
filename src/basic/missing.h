@@ -1372,8 +1372,6 @@ struct fib_rule_uid_range {
 #endif
 
 #if !HAVE_STRUCT_STATX_IN_SYS_STAT_H && !HAVE_STRUCT_STATX_IN_LINUX_STAT_H
-#include <linux/stat.h>
-#include <sys/stat.h>
 struct statx_timestamp {
         int64_t tv_sec;
         uint32_t tv_nsec;
