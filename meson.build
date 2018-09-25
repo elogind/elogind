@@ -512,6 +512,9 @@ endforeach
 conf.set10('HAVE_STRUCT_STATX_IN_SYS_STAT_H', cc.sizeof('struct statx', prefix : '''
 #include <sys/stat.h>
 ''', args : '-D_GNU_SOURCE') > 0)
+conf.set10('HAVE_STRUCT_STATX_IN_LINUX_STAT_H', cc.sizeof('struct statx', prefix : '''
+#include <linux/stat.h>
+''', args : '-D_GNU_SOURCE') > 0)
 
 foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
