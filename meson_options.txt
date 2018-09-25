@@ -196,7 +196,7 @@ option('fallback-hostname', type : 'string', value : 'localhost',
 #        description : 'allow "gateway" as the symbolic name for default gateway')
 #endif // 0
 option('default-hierarchy', type : 'combo',
-       choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
+       choices : ['legacy', 'hybrid', 'unified'], value : 'unified',
 #if 0 /// elogind interprets this a bit different
 #        description : 'default cgroup hierarchy')
 #else
