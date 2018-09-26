@@ -48,7 +48,16 @@
 
 /* Note that we use the new /run prefix here (instead of /var/run) since we require them to be aliases and that way we
  * become independent of /var being mounted */
+#if 0 /// elogind should support both /run/dbus & /var/run/dbus (per Linux FHS)
 #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/run/dbus/system_bus_socket"
+#else
+/* Not all systems have dbus heirarchy in /run (as preferred by systemd) */
+#if VARRUN_IS_SYMLINK
+  #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/run/dbus/system_bus_socket"
+#else
+  #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/var/run/dbus/system_bus_socket"
+#endif // VARRUN_IS_SYMLINK
+#endif // 0
 #define DEFAULT_USER_BUS_ADDRESS_FMT "unix:path=%s/bus"
 
 #define PLYMOUTH_SOCKET {                                       \
