@@ -247,7 +247,7 @@ int strv_extend_strv_concat(char ***a, char **b, const char *suffix) {
 }
 #endif // 0
 
-char **strv_split(const char *s, const char *separator) {
+char **strv_split_full(const char *s, const char *separator, bool quoted) {
         const char *word, *state;
         size_t l;
         size_t n, i;
@@ -260,7 +260,7 @@ char **strv_split(const char *s, const char *separator) {
                 return new0(char*, 1);
 
         n = 0;
-        FOREACH_WORD_SEPARATOR(word, l, s, separator, state)
+        _FOREACH_WORD(word, l, s, separator, quoted, state)
                 n++;
 
         r = new(char*, n+1);
@@ -268,7 +268,7 @@ char **strv_split(const char *s, const char *separator) {
                 return NULL;
 
         i = 0;
-        FOREACH_WORD_SEPARATOR(word, l, s, separator, state) {
+        _FOREACH_WORD(word, l, s, separator, quoted, state) {
                 r[i] = strndup(word, l);
                 if (!r[i]) {
                         strv_free(r);
@@ -343,21 +343,22 @@ int strv_split_extract(char ***t, const char *s, const char *separators, Extract
         return (int) n;
 }
 
-char *strv_join(char **l, const char *separator) {
+char *strv_join_prefix(char **l, const char *separator, const char *prefix) {
         char *r, *e;
         char **s;
-        size_t n, k;
+        size_t n, k, m;
 
         if (!separator)
                 separator = " ";
 
         k = strlen(separator);
+        m = strlen_ptr(prefix);
 
         n = 0;
         STRV_FOREACH(s, l) {
                 if (s != l)
                         n += k;
-                n += strlen(*s);
+                n += m + strlen(*s);
         }
 
         r = new(char, n+1);
@@ -368,6 +369,9 @@ char *strv_join(char **l, const char *separator) {
         STRV_FOREACH(s, l) {
                 if (s != l)
                         e = stpcpy(e, separator);
+
+                if (prefix)
+                        e = stpcpy(e, prefix);
 
                 e = stpcpy(e, *s);
         }
