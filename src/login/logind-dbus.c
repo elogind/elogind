@@ -1842,8 +1842,9 @@ static int method_do_shutdown_or_sleep(
 #if 0 /// Within elogind the manager m must be provided, too
                 r = can_sleep(sleep_verb);
                 if (r == -ENOSPC)
-                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
-                                                "Not enough swap space for hibernation");
+                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Not enough swap space for hibernation");
+                if (r == -EADV)
+                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Resume not configured, can't hibernate");
                 if (r == 0)
                         return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
                                                  "Sleep verb \"%s\" not supported", sleep_verb);
@@ -2342,10 +2343,10 @@ static int method_can_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_verb);
+                if (IN_SET(r,  0, -ENOSPC, -EADV))
 #else
                 r = can_sleep(m, sleep_verb);
 #endif // 0
-                if (IN_SET(r,  0, -ENOSPC))
                         return sd_bus_reply_method_return(message, "s", "na");
                 if (r < 0)
                         return r;
@@ -2367,7 +2368,6 @@ static int method_can_shutdown_or_sleep(
         blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
 
         handle = handle_action_from_string(sleep_verb);
-
         if (handle >= 0) {
 #if 0 /// elogind uses its own variant, which can use the handle directly.
                 const char *target;
@@ -2390,7 +2390,6 @@ static int method_can_shutdown_or_sleep(
                 log_debug_elogind("CanShutDownOrSleep: %s [%d] %s blocked",
                                   sleep_verb, handle, blocked ? "is" : "not");
 #endif // 0
-        }
 
         if (multiple_sessions) {
                 r = bus_test_polkit(message, CAP_SYS_BOOT, action_multiple_sessions, NULL, UID_INVALID, &challenge, error);
