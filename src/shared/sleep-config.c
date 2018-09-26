@@ -32,8 +32,10 @@
 #include "strv.h"
 
 #if 0 /// UNNEEDED by elogind
-int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t *_delay) {
-
+int parse_sleep_config(const char *verb, bool *ret_allow, char ***ret_modes, char ***ret_states, usec_t *ret_delay) {
+        int allow_suspend = -1, allow_hibernate = -1,
+            allow_s2h = -1, allow_hybrid_sleep = -1;
+        bool allow;
         _cleanup_strv_free_ char
                 **suspend_mode = NULL, **suspend_state = NULL,
                 **hibernate_mode = NULL, **hibernate_state = NULL,
@@ -42,13 +44,19 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
         usec_t delay = 180 * USEC_PER_MINUTE;
 
         const ConfigTableItem items[] = {
-                { "Sleep",   "SuspendMode",      config_parse_strv,  0, &suspend_mode  },
-                { "Sleep",   "SuspendState",     config_parse_strv,  0, &suspend_state },
-                { "Sleep",   "HibernateMode",    config_parse_strv,  0, &hibernate_mode  },
-                { "Sleep",   "HibernateState",   config_parse_strv,  0, &hibernate_state },
-                { "Sleep",   "HybridSleepMode",  config_parse_strv,  0, &hybrid_mode  },
-                { "Sleep",   "HybridSleepState", config_parse_strv,  0, &hybrid_state },
-                { "Sleep",   "HibernateDelaySec", config_parse_sec,  0, &delay},
+                { "Sleep", "AllowSuspend",              config_parse_tristate, 0, &allow_suspend },
+                { "Sleep", "AllowHibernation",          config_parse_tristate, 0, &allow_hibernate },
+                { "Sleep", "AllowSuspendThenHibernate", config_parse_tristate, 0, &allow_s2h },
+                { "Sleep", "AllowHybridSleep",          config_parse_tristate, 0, &allow_hybrid_sleep },
+
+                { "Sleep", "SuspendMode",               config_parse_strv, 0, &suspend_mode  },
+                { "Sleep", "SuspendState",              config_parse_strv, 0, &suspend_state },
+                { "Sleep", "HibernateMode",             config_parse_strv, 0, &hibernate_mode  },
+                { "Sleep", "HibernateState",            config_parse_strv, 0, &hibernate_state },
+                { "Sleep", "HybridSleepMode",           config_parse_strv, 0, &hybrid_mode  },
+                { "Sleep", "HybridSleepState",          config_parse_strv, 0, &hybrid_state },
+
+                { "Sleep", "HibernateDelaySec",         config_parse_sec,  0, &delay},
                 {}
         };
 
@@ -58,6 +66,8 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
                                         CONFIG_PARSE_WARN, NULL);
 
         if (streq(verb, "suspend")) {
+                allow = allow_suspend != 0;
+
                 /* empty by default */
                 modes = TAKE_PTR(suspend_mode);
 
@@ -67,6 +77,8 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
                         states = strv_new("mem", "standby", "freeze", NULL);
 
         } else if (streq(verb, "hibernate")) {
+                allow = allow_hibernate != 0;
+
                 if (hibernate_mode)
                         modes = TAKE_PTR(hibernate_mode);
                 else
@@ -78,6 +90,9 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
                         states = strv_new("disk", NULL);
 
         } else if (streq(verb, "hybrid-sleep")) {
+                allow = allow_hybrid_sleep > 0 ||
+                        (allow_suspend != 0 && allow_hibernate != 0);
+
                 if (hybrid_mode)
                         modes = TAKE_PTR(hybrid_mode);
                 else
@@ -88,21 +103,26 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states, usec_t
                 else
                         states = strv_new("disk", NULL);
 
-        } else if (streq(verb, "suspend-then-hibernate"))
+        } else if (streq(verb, "suspend-then-hibernate")) {
+                allow = allow_s2h > 0 ||
+                        (allow_suspend != 0 && allow_hibernate != 0);
+
                 modes = states = NULL;
-        else
+        } else
                 assert_not_reached("what verb");
 
         if ((!modes && STR_IN_SET(verb, "hibernate", "hybrid-sleep")) ||
             (!states && !streq(verb, "suspend-then-hibernate")))
                 return log_oom();
 
-        if (_modes)
-                *_modes = TAKE_PTR(modes);
-        if (_states)
-                *_states = TAKE_PTR(states);
-        if (_delay)
-                *_delay = delay;
+        if (ret_allow)
+                *ret_allow = allow;
+        if (ret_modes)
+                *ret_modes = TAKE_PTR(modes);
+        if (ret_states)
+                *ret_states = TAKE_PTR(states);
+        if (ret_delay)
+                *ret_delay = delay;
 
         return 0;
 }
@@ -517,6 +537,7 @@ int read_fiemap(int fd, struct fiemap **ret) {
 }
 
 #if 0 /// elogind has to ask the manager for some stuff
+static int can_sleep_internal(const char *verb, bool check_allowed);
 #else
 static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed);
 #endif // 0
@@ -538,7 +559,7 @@ static bool can_s2h(Manager *m) {
 
         FOREACH_STRING(p, "suspend", "hibernate") {
 #if 0 /// elogind must transport a pointer to its managers instance
-                r = can_sleep(p);
+                r = can_sleep_internal(p, false);
                 if (IN_SET(r, 0, -ENOSPC, -ENOMEDIUM, -EADV)) {
 #else
                 r = can_sleep(m, p);
@@ -555,7 +576,8 @@ static bool can_s2h(Manager *m) {
 
 
 #if 0 /// elogind has to ask the manager for some stuff
-int can_sleep(const char *verb) {
+static int can_sleep_internal(const char *verb, bool check_allowed) {
+        bool allow;
         _cleanup_strv_free_ char **modes = NULL, **states = NULL;
         int r;
 
@@ -576,14 +598,19 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
 #else
         if (check_allowed && !STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
 #endif // 0
-
-        if (streq(verb, "suspend-then-hibernate"))
 #if 0 /// elogind must transport a pointer to its managers instance
-                return can_s2h();
 
-        r = parse_sleep_config(verb, &modes, &states, NULL);
+        r = parse_sleep_config(verb, &allow, &modes, &states, NULL);
         if (r < 0)
                 return false;
+
+        if (check_allowed && !allow) {
+                log_debug("Sleep mode \"%s\" is disabled by configuration.", verb);
+                return false;
+        }
+
+        if (streq(verb, "suspend-then-hibernate"))
+                return can_s2h();
 #else
                 return can_s2h(m);
 #endif // 0
@@ -607,7 +634,11 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
                 /* We squash all errors (e.g. EPERM) into a single value for reporting. */
                 return -EADV;
 
+
 #if 0 /// elogind has to ask the manager for some stuff
+int can_sleep(const char *verb) {
+        return can_sleep_internal(verb, true);
+}
 #else
 int can_sleep(Manager *m, const char *verb) {
         return can_sleep_internal(m, verb, true);
