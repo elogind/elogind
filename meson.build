@@ -491,8 +491,8 @@ decl_headers = '''
 #include <uchar.h>
 #include <linux/ethtool.h>
 #include <linux/fib_rules.h>
-//#include <linux/stat.h>
-//#include <sys/stat.h>
+#include <linux/stat.h>
+#include <sys/stat.h>
 '''
 # FIXME: key_serial_t is only defined in keyutils.h, this is bound to fail
 
@@ -508,13 +508,6 @@ foreach decl : ['char16_t',
         have = cc.sizeof(decl, prefix : decl_headers) > 0
         conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
 endforeach
-
-conf.set10('HAVE_STRUCT_STATX_IN_SYS_STAT_H', cc.sizeof('struct statx', prefix : '''
-#include <sys/stat.h>
-''', args : '-D_GNU_SOURCE') > 0)
-conf.set10('HAVE_STRUCT_STATX_IN_LINUX_STAT_H', cc.sizeof('struct statx', prefix : '''
-#include <linux/stat.h>
-''', args : '-D_GNU_SOURCE') > 0)
 
 foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
