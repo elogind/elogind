@@ -204,6 +204,12 @@ if dbussystemservicedir == ''
         dbussystemservicedir = join_paths(datadir, 'dbus-1/system-services')
 endif
 
+#if 1 /// Will elogind find system_bus_socket in /run/dbus or /var/run/dbus ?
+varrunissymllink = run_command('test', '-L', '/var/run').returncode() == 0
+message('Setting VARRUN_IS_SYMLINK to: @0@'.format(varrunissymllink))
+conf.set10('VARRUN_IS_SYMLINK', varrunissymllink)
+#endif // 1
+
 pamlibdir = get_option('pamlibdir')
 if pamlibdir == ''
         pamlibdir = join_paths(rootlibdir, 'security')
