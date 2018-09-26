@@ -8,7 +8,15 @@
 
 #include "sd-bus-vtable.h"
 
+#if 0 /// elogind should support both /run/dbus & /var/run/dbus (per Linux FHS)
 #define DEFAULT_BUS_PATH "unix:path=/run/dbus/system_bus_socket"
+#else
+#if VARRUN_IS_SYMLINK
+  #define DEFAULT_BUS_PATH "unix:path=/run/dbus/system_bus_socket"
+#else
+  #define DEFAULT_BUS_PATH "unix:path=/var/run/dbus/system_bus_socket"
+#endif // VARRUN_IS_SYMLINK
+#endif // 0
 
 struct context {
         bool quit;
