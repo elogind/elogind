@@ -39,11 +39,16 @@ int proc_cmdline(char **ret) {
                 return read_one_line_file("/proc/cmdline", ret);
 }
 
-int proc_cmdline_parse_given(const char *line, proc_cmdline_parse_t parse_item, void *data, unsigned flags) {
+int proc_cmdline_parse(proc_cmdline_parse_t parse_item, void *data, unsigned flags) {
+        _cleanup_free_ char *line = NULL;
         const char *p;
         int r;
 
         assert(parse_item);
+
+        r = proc_cmdline(&line);
+        if (r < 0)
+                return r;
 
         p = line;
         for (;;) {
@@ -84,21 +89,7 @@ int proc_cmdline_parse_given(const char *line, proc_cmdline_parse_t parse_item, 
         return 0;
 }
 
-int proc_cmdline_parse(proc_cmdline_parse_t parse_item, void *data, unsigned flags) {
-        _cleanup_free_ char *line = NULL;
-        int r;
-
-        assert(parse_item);
-
-        r = proc_cmdline(&line);
-        if (r < 0)
-                return r;
-
-        return proc_cmdline_parse_given(line, parse_item, data, flags);
-}
-
 static bool relaxed_equal_char(char a, char b) {
-
         return a == b ||
                 (a == '_' && b == '-') ||
                 (a == '-' && b == '_');
@@ -106,7 +97,6 @@ static bool relaxed_equal_char(char a, char b) {
 
 #if 0 /// UNNEEDED by elogind
 char *proc_cmdline_key_startswith(const char *s, const char *prefix) {
-
         assert(s);
         assert(prefix);
 
