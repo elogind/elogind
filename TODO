@@ -17,6 +17,15 @@ Janitorial Clean-ups:
 
 Features:
 
+* set memory.oom.group in cgroupsv2 for all leaf cgroups
+
+* whenever oom_kill memory.event event is triggered print a nice log message
+
+* Move RestrictAddressFamily= to the new cgroup create socket
+
+* support the bind/connect/sendmsg cgroup stuff for sandboxing, and possibly
+  patching around
+
 * chown() tty a service is attached to after the service goes down
 
 * optionally, if a per-partition GPT flag is set for the root/home/… partitions
@@ -248,15 +257,6 @@ Features:
 * add "systemctl wait" or so, which does what "systemd-run --wait" does, but
   for all units. It should be both a way to pin units into memory as well as a
   wait to retrieve their exit data.
-
-* maybe set a new set of env vars for services, based on RuntimeDirectory=,
-  StateDirectory=, LogsDirectory=, CacheDirectory= and ConfigurationDirectory=
-  automatically. For example, there could be $RUNTIME_DIRECTORY,
-  $STATE_DIRECTORY, $LOGS_DIRECTORY=, $CACHE_DIRECTORY and
-  $CONFIGURATION_DIRECTORY or so. This could be useful to write services that
-  can adapt to varying directories for these purposes. Special care has to be
-  taken if multiple dirs are configured. Maybe avoid setting the env vars in
-  that case?
 
 * expose IO accounting data on the bus, show it in systemd-run --wait and log
   about it in the resource log message
