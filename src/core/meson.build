@@ -221,6 +221,10 @@ libcore_la_sources = files('''
 #endif // 0
 meson.add_install_script('sh', '-c', mkdir_p.format(systemshutdowndir))
 meson.add_install_script('sh', '-c', mkdir_p.format(systemsleepdir))
+#if 1 /// some package sytems like portage might strip empty directories created for elogind
+meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(systemshutdowndir))
+meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(systemsleepdir))
+#endif // 1
 #if 0 /// UNNEEDED by elogind
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemgeneratordir))
 # meson.add_install_script('sh', '-c', mkdir_p.format(usergeneratordir))
