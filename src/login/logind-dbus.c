@@ -2440,7 +2440,9 @@ static int method_can_shutdown_or_sleep(
                                   action, result);
         }
 
+#if 0 /// UNNEEDED by elogind
  finish:
+#endif // 0
         return sd_bus_reply_method_return(message, "s", result);
 }
 
