@@ -955,6 +955,9 @@ tests += [
          [],
          []],
 
+        [['src/libelogind/sd-device/test-sd-device.c'],
+         [],
+         []],
 #if 0 /// UNNEEDED in elogind
 # ]
 #
