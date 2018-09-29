@@ -8,12 +8,13 @@
 #include "util.h"
 
 int main(int argc, char *argv[]) {
-#if 0 /// urlified is UNNEEDED by elogind
+#if 0 /// urlified and z are UNNEEDED by elogind
         _cleanup_free_ char *urlified = NULL, *q = NULL, *qq = NULL;
+        char *p, *z;
 #else
         _cleanup_free_ char *q = NULL, *qq = NULL;
+        char *p;
 #endif // 0
-        char *p, *z;
 
         assert_se(p = strdup("\tFoobar\tbar\twaldo\t"));
         assert_se(strip_tab_ansi(&p, NULL, NULL));
@@ -46,7 +47,6 @@ int main(int argc, char *argv[]) {
         printf("<%s>\n", p);
         assert_se(streq(p, "something i am a fabulous link something-else"));
         p = mfree(p);
-#endif // 0
 
         /* Truncate the formatted string in the middle of an ANSI sequence (in which case we shouldn't touch the
          * incomplete sequence) */
@@ -57,6 +57,7 @@ int main(int argc, char *argv[]) {
                 assert_se(strip_tab_ansi(&q, NULL, NULL));
                 assert_se(streq(q, qq));
         }
+#endif // 0
 
         return 0;
 }
