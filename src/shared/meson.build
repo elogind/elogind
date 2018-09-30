@@ -90,8 +90,6 @@
 #         switch-root.h
 #         sysctl-util.c
 #         sysctl-util.h
-#         tests.c
-#         tests.h
 #         tomoyo-util.c
 #         tomoyo-util.h
 #         udev-util.h
@@ -107,6 +105,10 @@
 #         watchdog.h
 #         wireguard-netlink.h
 # '''.split())
+#
+# if get_option('tests') != 'false'
+#         shared_sources += files('tests.c', 'tests.h')
+# endif
 #else
 shared_sources = '''
         bus-util.c
