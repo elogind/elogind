@@ -688,18 +688,6 @@ tests += [
 #endif // 0
          '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
 
-        [['src/test/test-udev-build-argv.c'],
-         [libudev_core,
-          libudev_static,
-          libelogind_network,
-          libshared],
-         [threads,
-          librt,
-          libblkid,
-          libkmod,
-          libacl],
-         '', '', '-DLOG_REALM=LOG_REALM_UDEV'],
-
         [['src/test/test-id128.c'],
          [],
          []],
@@ -729,6 +717,10 @@ tests += [
 #endif // 0
 
         [['src/test/test-bus-util.c'],
+         [],
+         []],
+
+        [['src/test/test-sd-hwdb.c'],
          [],
          []],
 ]
