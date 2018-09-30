@@ -8,6 +8,7 @@
 #         sd-daemon.h
 #         sd-device.h
 #         sd-event.h
+#         sd-hwdb.h
 #         sd-id128.h
 #         sd-journal.h
 #         sd-login.h
@@ -29,7 +30,6 @@ _systemd_headers = '''
 # https://github.com/mesonbuild/meson/issues/1633
 systemd_headers = files(_systemd_headers)
 
-#  sd-hwdb.h
 #  sd-dhcp6-client.h
 #  sd-dhcp6-lease.h
 #  sd-dhcp-client.h
