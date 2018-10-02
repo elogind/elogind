@@ -27,6 +27,31 @@ CHANGES WITH 240 in spe:
           non-transient services (i.e. those defined with unit files on disk)
           we will continue to default to Type=simple.
 
+        * The Linux kernel's current default RLIMIT_NOFILE resource limit for
+          userspace processes is set to 1024 (soft) and 4096
+          (hard). Previously, elogind passed this on unmodified to all
+          processes it forked off. With this elogind release the hard limit
+          elogind passes on is increased to 256K, overriding the kernel's
+          defaults and substantially increasing the number of simultaneous file
+          descriptors unprivileged userspace processes can allocate. Note that
+          the soft limit remains at 1024 for compatibility reasons: the
+          traditional UNIX select() call cannot deal with file descriptors >=
+          1024 and increasing the soft limit globally might thus result in
+          programs unexpectedly allocating a high file descriptor and thus
+          failing abnormally when attempting to use it with select() (of
+          course, programs shouldn't use select() anymore, and prefer
+          poll()/epoll, but the call unfortunately remains undeservedly popular
+          at this time). This change reflects the fact that file descriptor
+          handling in the Linux kernel has been optimized in more recent
+          kernels and allocating large numbers of them should be much cheaper
+          both in memory and in performance than it used to be. Programs that
+          want to take benefit of the increased limit have to "opt-in" into
+          high file descriptors explicitly by setting their soft limit to the
+          hard limit during initialization. Of course, when doing that they
+          must do this acknowledging the fact that they cannot use select()
+          anymore (and neither can any shared library they use — or any shared
+          library used by any shared library they use and so on).
+
 CHANGES WITH 239:
 
         * NETWORK INTERFACE DEVICE NAMING CHANGES: elogind-udevd's "net_id"
@@ -594,10 +619,9 @@ CHANGES WITH 237:
           different from what the documentation said, and not particularly
           useful, as repeated elogind-tmpfiles invocations would not be
           idempotent and grow such files without bounds. With this release
-          behaviour has been altered slightly, to match what the documentation
-          says: lines of this type only have an effect if the indicated files
-          don't exist yet, and only then the argument string is written to the
-          file.
+          behaviour has been altered to match what the documentation says:
+          lines of this type only have an effect if the indicated files don't
+          exist yet, and only then the argument string is written to the file.
 
         * FUTURE INCOMPATIBILITY: In elogind v238 we intend to slightly change
           elogind-tmpfiles behaviour: previously, read-only files owned by root
