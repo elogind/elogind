@@ -53,10 +53,10 @@
     <citerefentry><refentrytitle>sd-id128</refentrytitle><manvolnum>3</manvolnum></citerefentry>.</para>
 
 <!-- 0 /// elogind does not support journalctl
-    <para><citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>'s
-    <option>&#x2D;&#x2D;new-id128</option> option may be used as a command line
-    front-end for <function>sd_id128_randomize()</function>.</para>
 // 0 -->
+    <para><citerefentry><refentrytitle>elogind-id128</refentrytitle><manvolnum>1</manvolnum></citerefentry>'s
+    <command>new</command> command may be used as a command line front-end for
+    <function>sd_id128_randomize()</function>.</para>
   </refsect1>
 
   <refsect1>
