@@ -26,6 +26,7 @@ _SD_BEGIN_DECLARATIONS;
 /* Hey! If you add a new message here, you *must* also update the message catalog with an appropriate explanation */
 
 /* And if you add a new ID here, make sure to generate a random one with "elogind-id128 new". Do not use any other IDs,
+/* And if you add a new ID here, make sure to generate a random one with "elogind-id128 new". Do not use any other IDs,
  * and do not count them up manually. */
 
 #define SD_MESSAGE_JOURNAL_START          SD_ID128_MAKE(f7,73,79,a8,49,0b,40,8b,be,5f,69,40,50,5a,77,7b)
