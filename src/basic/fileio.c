@@ -1499,6 +1499,7 @@ int open_serialization_fd(const char *ident) {
 
 #if 0 /// UNNEEDED by elogind
 int link_tmpfile(int fd, const char *path, const char *target) {
+        int r;
 
         assert(fd >= 0);
         assert(target);
@@ -1511,8 +1512,9 @@ int link_tmpfile(int fd, const char *path, const char *target) {
          * operation currently (renameat2() does), and there is no nice way to emulate this. */
 
         if (path) {
-                if (rename_noreplace(AT_FDCWD, path, AT_FDCWD, target) < 0)
-                        return -errno;
+                r = rename_noreplace(AT_FDCWD, path, AT_FDCWD, target);
+                if (r < 0)
+                        return r;
         } else {
                 char proc_fd_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(fd) + 1];
 
