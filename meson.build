@@ -467,7 +467,7 @@ if cc.compiles('''
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
-cpp = ' '.join(cc.cmd_array() + get_option('c_args')) + ' -E'
+cpp = ' '.join(cc.cmd_array()) + ' -E'
 
 #####################################################################
 # compilation result tests
@@ -2138,7 +2138,7 @@ if conf.get('HAVE_PAM') == 1
 #                          dependencies : [threads],
 #                          install_rpath : rootlibexecdir,
 #                          install : true,
-#                          install_dir : rootbindir)
+#                          install_dir : rootlibexecdir)
 #         public_programs += exe
 # endif
 #
@@ -3358,6 +3358,10 @@ status = [
 #endif // 0
 #if 0 /// elogind does not ship libudeb. Obviously.
 #
+# status += [
+#         'static libsystemd:                 @0@'.format(get_option('static-libsystemd')),
+#         'static libudev:                    @0@'.format(get_option('static-libudev'))]
+#
 #else
         ]
 #endif // 0
@@ -3485,6 +3489,8 @@ foreach tuple : [
 #if 0 /// elogind neither ships libudev nor systemctl.
 #endif // 0
         ['trace logging',    conf.get('LOG_TRACE') == 1],
+        ['link-udev-shared',      get_option('link-udev-shared')],
+        ['link-systemctl-shared', get_option('link-systemctl-shared')],
 ]
 
         if tuple.length() >= 2
