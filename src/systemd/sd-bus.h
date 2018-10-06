@@ -154,6 +154,8 @@ int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b);
 int sd_bus_get_allow_interactive_authorization(sd_bus *bus);
 int sd_bus_set_exit_on_disconnect(sd_bus *bus, int b);
 int sd_bus_get_exit_on_disconnect(sd_bus *bus);
+int sd_bus_set_close_on_exit(sd_bus *bus, int b);
+int sd_bus_get_close_on_exit(sd_bus *bus);
 int sd_bus_set_watch_bind(sd_bus *bus, int b);
 int sd_bus_get_watch_bind(sd_bus *bus);
 int sd_bus_set_connected_signal(sd_bus *bus, int b);
@@ -426,6 +428,7 @@ int sd_bus_error_set_errnof(sd_bus_error *e, int error, const char *format, ...)
 int sd_bus_error_set_errnofv(sd_bus_error *e, int error, const char *format, va_list ap) _sd_printf_(3,0);
 int sd_bus_error_get_errno(const sd_bus_error *e);
 int sd_bus_error_copy(sd_bus_error *dest, const sd_bus_error *e);
+int sd_bus_error_move(sd_bus_error *dest, sd_bus_error *e);
 int sd_bus_error_is_set(const sd_bus_error *e);
 int sd_bus_error_has_name(const sd_bus_error *e, const char *name);
 
