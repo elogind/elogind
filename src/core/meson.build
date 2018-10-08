@@ -6,6 +6,8 @@
 #         audit-fd.h
 #         automount.c
 #         automount.h
+#         bpf-devices.c
+#         bpf-devices.h
 #         bpf-firewall.c
 #         bpf-firewall.h
 #         cgroup.c
