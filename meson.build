@@ -2138,7 +2138,7 @@ if conf.get('HAVE_PAM') == 1
 #                          dependencies : [threads],
 #                          install_rpath : rootlibexecdir,
 #                          install : true,
-#                          install_dir : rootlibexecdir)
+#                          install_dir : rootbindir)
 #         public_programs += exe
 # endif
 #
