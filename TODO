@@ -17,6 +17,9 @@ Janitorial Clean-ups:
 
 Features:
 
+* consider splitting out all temporary file creation APIs (we have so many in
+  fileio.h and elsewhere!) into a new util file of its own.
+
 * set memory.oom.group in cgroupsv2 for all leaf cgroups
 
 * whenever oom_kill memory.event event is triggered print a nice log message
@@ -86,11 +89,11 @@ Features:
 
   1. add resume_offset support to the resume code (i.e. support swap files
      properly)
-  2. check if swap is on weird storage and refuse if so
-  3. add autodetection of hibernation images
-
-* portables: introduce a new unit file directory /etc/elogind/system.attached/
-  or so, where we attach portable services to
+  2. check of swap is on weird storage and refuse if so
+  3. add env-var based option to disable hibernation
+  4. figure out what to do with swap-on-luks
+  5. add autodetection of hibernation images, and add "noresume" to disable
+     this
 
 * cgroups: use inotify to get notified when somebody else modifies cgroups
   owned by us, then log a friendly warning.
@@ -177,10 +180,6 @@ Features:
 
 * add bpf-based implementation of devices cgroup controller logic for compat
   with cgroupsv2 as supported by newest kernel
-
-* introduce sd_id128_get_boot_app_specific() which is like
-  sd_id128_get_machine_app_specific(). After all on long-running systems both
-  IDs have similar properties.
 
 * sd-bus: add vtable flag, that may be used to request client creds implicitly
   and asynchronously before dispatching the operation
