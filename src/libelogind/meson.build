@@ -82,6 +82,8 @@ sd_login_c = files('sd-login/sd-login.c')
 #         sd-utf8/sd-utf8.c
 # '''.split()) + id128_sources + sd_daemon_c + sd_event_c + sd_login_c
 #
+# disable_mempool_c = files('disable-mempool.c')
+#
 # libsystemd_c_args = ['-fvisibility=default']
 #else
 libelogind_sources = files('''
@@ -137,15 +139,15 @@ libelogind_static = static_library(
 #         dependencies : [threads,
 #                         librt],
 #         c_args : libsystemd_c_args)
+#
+# libsystemd_sym = 'src/libsystemd/libsystemd.sym'
+#
+# libsystemd_pc = configure_file(
+#         input : 'libsystemd.pc.in',
+#         output : 'libsystemd.pc',
+# install_data(libsystemd_pc,
 #else
         dependencies : [threads],
 #endif // 0
-
-libelogind_sym = 'src/libelogind/libelogind.sym'
-
-libelogind_pc = configure_file(
-        input : 'libelogind.pc.in',
-        output : 'libelogind.pc',
         configuration : substs)
-install_data(libelogind_pc,
              install_dir : pkgconfiglibdir)

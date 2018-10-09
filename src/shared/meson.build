@@ -37,6 +37,7 @@
 #         dropin.h
 #         efivars.c
 #         efivars.h
+#         enable-mempool.c
 #         fdset.c
 #         fdset.h
 #         firewall-util.h
@@ -90,6 +91,8 @@
 #         switch-root.h
 #         sysctl-util.c
 #         sysctl-util.h
+#         tests.c
+#         tests.h
 #         tomoyo-util.c
 #         tomoyo-util.h
 #         udev-util.h
@@ -106,9 +109,6 @@
 #         wireguard-netlink.h
 # '''.split())
 #
-# if get_option('tests') != 'false'
-#         shared_sources += files('tests.c', 'tests.h')
-# endif
 #else
 shared_sources = '''
         bus-util.c
@@ -133,7 +133,6 @@ shared_sources = '''
         udev-util.h
 '''.split()
 #endif // 0
-
 test_tables_h = files('test-tables.h')
 shared_sources += test_tables_h
 
