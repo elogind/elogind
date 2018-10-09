@@ -2290,6 +2290,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
 
         if (cancelled && m->enable_wall_messages) {
                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
+                _cleanup_free_ char *username = NULL;
                 const char *tty = NULL;
                 uid_t uid = 0;
                 int r;
@@ -2300,9 +2301,10 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                         (void) sd_bus_creds_get_tty(creds, &tty);
                 }
 
+                username = uid_to_name(uid);
 #if 0 /// elogind wants to allow extra cancellation messages
                 utmp_wall("The system shutdown has been cancelled",
-                          uid_to_name(uid), tty, logind_wall_tty_filter, m);
+                          username, tty, logind_wall_tty_filter, m);
 #else
                 r = asprintf(&l, "%s%sThe system shutdown has been cancelled!",
                              strempty(m->wall_message),
