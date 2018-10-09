@@ -37,6 +37,7 @@
 #         dropin.h
 #         efivars.c
 #         efivars.h
+#         enable-mempool.c
 #         fdset.c
 #         fdset.h
 #         firewall-util.h

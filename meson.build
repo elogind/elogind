@@ -1567,6 +1567,7 @@ libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sy
 libelogind = shared_library(
         'elogind',
         version : libelogind_version,
+        disable_mempool_c,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -1673,6 +1674,7 @@ subdir('src/test')
 test_dlopen = executable(
         'test-dlopen',
         test_dlopen_c,
+        disable_mempool_c,
         include_directories : includes,
         link_with : [libbasic],
         dependencies : [libdl])
@@ -1693,6 +1695,7 @@ test_dlopen = executable(
 #                 nss = shared_library(
 #                         'nss_' + module,
 #                         'src/nss-@0@/nss-@0@.c'.format(module),
+#                         disable_mempool_c,
 #                         version : '2',
 #                         include_directories : includes,
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
