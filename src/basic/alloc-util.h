@@ -46,29 +46,17 @@ static inline void *mfree(void *memory) {
 void* memdup(const void *p, size_t l) _alloc_(2);
 void* memdup_suffix0(const void *p, size_t l) _alloc_(2);
 
-#define memdupa(p, l)                           \
-        ({                                      \
-                void *_q_;                      \
-                _q_ = alloca(l);                \
-                memcpy(_q_, p, l);              \
-        })
-
-#define memdupa_suffix0(p, l)                   \
-        ({                                      \
-                void *_q_;                      \
-                _q_ = alloca(l + 1);            \
-                ((uint8_t*) _q_)[l] = 0;        \
-                memcpy(_q_, p, l);              \
-        })
-
 static inline void freep(void *p) {
         free(*(void**) p);
 }
 
 #define _cleanup_free_ _cleanup_(freep)
 
+/* Checks the size arguments of allocation functions for overflow in multiplication. In addition, checks if either of
+ * them is 0; that is almost certainly an error (e.g., an overflow in computing _need_), so it's better to fail (and
+ * we cannot leave this check to malloc, because the behavior of malloc(0) is impl. specific). */
 static inline bool size_multiply_overflow(size_t size, size_t need) {
-        return _unlikely_(need != 0 && size > (SIZE_MAX / need));
+        return _unlikely_(need == 0 || size == 0 || size > (SIZE_MAX / need));
 }
 
 _malloc_  _alloc_(1, 2) static inline void *malloc_multiply(size_t size, size_t need) {
