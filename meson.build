@@ -349,6 +349,9 @@ cxx = find_program('c++', required : false)
 if cxx.found()
         #  Used only for tests
         add_languages('cpp')
+        cpp_cmd = ' '.join(meson.get_compiler('cpp').cmd_array())
+else
+        cpp_cmd = ''
 endif
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
@@ -467,7 +470,7 @@ if cc.compiles('''
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
-cpp = ' '.join(cc.cmd_array()) + ' -E'
+cpp = ' '.join(cc.cmd_array() + get_option('c_args')) + ' -E'
 
 #####################################################################
 # compilation result tests
@@ -2138,7 +2141,7 @@ if conf.get('HAVE_PAM') == 1
 #                          dependencies : [threads],
 #                          install_rpath : rootlibexecdir,
 #                          install : true,
-#                          install_dir : rootlibexecdir)
+#                          install_dir : rootbindir)
 #         public_programs += exe
 # endif
 #
@@ -3358,10 +3361,6 @@ status = [
 #endif // 0
 #if 0 /// elogind does not ship libudeb. Obviously.
 #
-# status += [
-#         'static libsystemd:                 @0@'.format(get_option('static-libsystemd')),
-#         'static libudev:                    @0@'.format(get_option('static-libudev'))]
-#
 #else
         ]
 #endif // 0
@@ -3489,8 +3488,6 @@ foreach tuple : [
 #if 0 /// elogind neither ships libudev nor systemctl.
 #endif // 0
         ['trace logging',    conf.get('LOG_TRACE') == 1],
-        ['link-udev-shared',      get_option('link-udev-shared')],
-        ['link-systemctl-shared', get_option('link-systemctl-shared')],
 ]
 
         if tuple.length() >= 2
