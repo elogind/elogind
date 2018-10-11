@@ -91,6 +91,9 @@ endif
 #            description : 'SysV init scripts and rcN.d links are supported')
 #endif // 0
 
+conf.set10('BUMP_PROC_SYS_FS_FILE_MAX', get_option('bump-proc-sys-fs-file-max'))
+conf.set10('BUMP_PROC_SYS_FS_NR_OPEN',  get_option('bump-proc-sys-fs-nr-open'))
+
 # join_paths ignore the preceding arguments if an absolute component is
 # encountered, so this should canonicalize various paths when they are
 # absolute or relative.
@@ -2027,6 +2030,7 @@ test_dlopen = executable(
 #                              args : pam_systemd.full_path())
 #                 endif
 #         endif
+#
 #         executable('systemd-user-runtime-dir',
 #                    user_runtime_dir_sources,
 #                    include_directories : includes,

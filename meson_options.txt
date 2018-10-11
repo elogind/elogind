@@ -76,6 +76,10 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 # option('memory-accounting-default', type : 'boolean',
 #        description : 'enable MemoryAccounting= by default')
 #endif // 0
+option('bump-proc-sys-fs-file-max', type : 'boolean',
+       description : 'bump /proc/sys/fs/file-max to ULONG_MAX')
+option('bump-proc-sys-fs-nr-open', type : 'boolean',
+       description : 'bump /proc/sys/fs/nr_open to INT_MAX')
 option('valgrind', type : 'boolean', value : false,
        description : 'do extra operations to avoid valgrind warnings')
 #if 1 /// Add an extra debugging option for elogind
