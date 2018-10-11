@@ -3359,8 +3359,8 @@ status = [
 #if 0 /// elogind does not ship libudeb. Obviously.
 #
 # status += [
-#         'static libsystemd:                 @0@'.format(get_option('static-libsystemd')),
-#         'static libudev:                    @0@'.format(get_option('static-libudev'))]
+#         'static libsystemd:                 @0@'.format(static_libsystemd),
+#         'static libudev:                    @0@'.format(static_libudev)]
 #
 #else
         ]
