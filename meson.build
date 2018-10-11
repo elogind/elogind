@@ -35,6 +35,13 @@ substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
 #endif // 0
 substs.set('PACKAGE_VERSION',      meson.project_version())
 
+want_ossfuzz = get_option('oss-fuzz')
+want_libfuzzer = get_option('llvm-fuzz')
+if want_ossfuzz and want_libfuzzer
+        error('only one of oss-fuzz and llvm-fuzz can be specified')
+endif
+fuzzer_build = want_ossfuzz or want_libfuzzer
+
 #####################################################################
 #if 0 /// elogind does not need this
 #
@@ -345,23 +352,19 @@ want_tests = get_option('tests')
 slow_tests = want_tests != 'false' and get_option('slow-tests')
 install_tests = get_option('install-tests')
 
-cxx = find_program('c++', required : false)
+cxx = find_program('c++', required : fuzzer_build)
 if cxx.found()
         #  Used only for tests
         add_languages('cpp')
+        cxx_cmd = ' '.join(meson.get_compiler('cpp').cmd_array())
+else
+        cxx_cmd = ''
 endif
 
-want_ossfuzz = get_option('oss-fuzz')
-want_libfuzzer = get_option('llvm-fuzz')
-fuzzer_build = want_ossfuzz or want_libfuzzer
-if want_ossfuzz and want_libfuzzer
-        error('only one of oss-fuzz and llvm-fuzz can be specified')
-endif
 #if 0 /// elogind does not support fuzz stress testing (, yet).
 # if want_libfuzzer
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('Fuzzer')
-# endif
-# if want_ossfuzz
+# elif want_ossfuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
 # endif
 #else
@@ -2140,7 +2143,7 @@ if conf.get('HAVE_PAM') == 1
 #                          dependencies : [threads],
 #                          install_rpath : rootlibexecdir,
 #                          install : true,
-#                          install_dir : rootlibexecdir)
+#                          install_dir : rootbindir)
 #         public_programs += exe
 # endif
 #
