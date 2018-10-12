@@ -947,6 +947,12 @@ tests += [
         [['src/libelogind/sd-login/test-login.c'],
          [],
          []],
+
+        [['src/libelogind/sd-device/test-udev-device-thread.c'],
+         [libbasic,
+          libshared_static,
+          libudev],
+         [threads]],
 ]
 
 #if 0 /// UNNEEDED in elogind
