@@ -426,6 +426,10 @@ tests += [
          [],
          []],
 
+        [['src/test/test-set-disable-mempool.c'],
+         [],
+         [threads]],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-bitmap.c'],
 #          [],
