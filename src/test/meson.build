@@ -983,6 +983,12 @@ tests += [
           libshared_static,
           libelogind],
          [threads]],
+
+        [['src/libelogind/sd-device/test-udev-device-thread.c'],
+         [libbasic,
+          libshared_static,
+          libudev],
+         [threads]],
 #if 0 /// UNNEEDED in elogind
 # ]
 #
