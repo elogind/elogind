@@ -977,6 +977,12 @@ tests += [
         [['src/libelogind/sd-device/test-sd-device.c'],
          [],
          []],
+
+        [['src/libelogind/sd-device/test-sd-device-thread.c'],
+         [libbasic,
+          libshared_static,
+          libelogind],
+         [threads]],
 #if 0 /// UNNEEDED in elogind
 # ]
 #
