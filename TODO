@@ -17,6 +17,9 @@ Janitorial Clean-ups:
 
 Features:
 
+* rework sd_netlink_call_async() to return a new "sd_netlink_slot" object, á la
+  sd_bus_slot
+
 * consider splitting out all temporary file creation APIs (we have so many in
   fileio.h and elsewhere!) into a new util file of its own.
 
@@ -89,11 +92,8 @@ Features:
 
   1. add resume_offset support to the resume code (i.e. support swap files
      properly)
-  2. check of swap is on weird storage and refuse if so
-  3. add env-var based option to disable hibernation
-  4. figure out what to do with swap-on-luks
-  5. add autodetection of hibernation images, and add "noresume" to disable
-     this
+  2. check if swap is on weird storage and refuse if so
+  3. add autodetection of hibernation images
 
 * cgroups: use inotify to get notified when somebody else modifies cgroups
   owned by us, then log a friendly warning.
