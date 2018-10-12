@@ -42,9 +42,7 @@ static void test_one(const char *val) {
 }
 
 int main(int argc, char *argv[]) {
-        log_set_max_level(LOG_DEBUG);
-        log_parse_environment();
-        log_open();
+        test_setup_logging(LOG_DEBUG);
 
         test_one("0");
         /* The value $SYSTEMD_MEMPOOL= is cached. So the following
