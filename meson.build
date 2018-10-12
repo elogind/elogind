@@ -1603,6 +1603,7 @@ install_libelogind_static = static_library(
 #if 0 /// No gcrypt with elogind
 #         basic_gcrypt_sources,
 #endif // 0
+        disable_mempool_c,
         include_directories : includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
