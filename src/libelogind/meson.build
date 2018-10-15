@@ -67,6 +67,8 @@ sd_login_c = files('sd-login/sd-login.c')
 #         sd-netlink/local-addresses.h
 #         sd-netlink/netlink-internal.h
 #         sd-netlink/netlink-message.c
+#         sd-netlink/netlink-slot.c
+#         sd-netlink/netlink-slot.h
 #         sd-netlink/netlink-socket.c
 #         sd-netlink/netlink-types.c
 #         sd-netlink/netlink-types.h
