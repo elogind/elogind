@@ -787,9 +787,9 @@ static int manager_connect_bus(Manager *m) {
                         "Subscribe",
                         NULL, NULL,
                         NULL);
-#endif // 0
         if (r < 0)
                 return log_error_errno(r, "Failed to enable subscription: %m");
+#endif // 0
 
         r = sd_bus_request_name_async(m->bus, NULL, "org.freedesktop.login1", 0, NULL, NULL);
         if (r < 0)
@@ -972,8 +972,8 @@ static int manager_connect_udev(Manager *m) {
                         return r;
         }
 
-        /* Don't bother watching VCSA devices, if nobody cares */
 #if 0 /// elogind does not support autospawning of vts
+        /* Don't bother watching VCSA devices, if nobody cares */
         if (m->n_autovts > 0 && m->console_active_fd >= 0) {
 
                 m->udev_vcsa_monitor = udev_monitor_new_from_netlink(m->udev, "udev");

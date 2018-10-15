@@ -1083,8 +1083,8 @@ bool session_may_gc(Session *s, bool drop_not_started) {
                 return false;
 
         if (s->scope && manager_unit_is_active(s->manager, s->scope))
-#endif // 0
                 return false;
+#endif // 0
 
         return true;
 }
