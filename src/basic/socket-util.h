@@ -202,3 +202,5 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
 #if 0 /// UNNEEDED by elogind
 int socket_ioctl_fd(void);
 #endif // 0
+
+int sockaddr_un_set_path(struct sockaddr_un *ret, const char *path);
