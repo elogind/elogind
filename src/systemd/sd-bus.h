@@ -234,7 +234,7 @@ int sd_bus_slot_set_destroy_callback(sd_bus_slot *s, sd_bus_destroy_t callback);
 int sd_bus_slot_get_destroy_callback(sd_bus_slot *s, sd_bus_destroy_t *callback);
 
 sd_bus_message* sd_bus_slot_get_current_message(sd_bus_slot *slot);
-sd_bus_message_handler_t sd_bus_slot_get_current_handler(sd_bus_slot *bus);
+sd_bus_message_handler_t sd_bus_slot_get_current_handler(sd_bus_slot *slot);
 void *sd_bus_slot_get_current_userdata(sd_bus_slot *slot);
 
 /* Message object */
@@ -426,7 +426,6 @@ int sd_bus_error_set_errnof(sd_bus_error *e, int error, const char *format, ...)
 int sd_bus_error_set_errnofv(sd_bus_error *e, int error, const char *format, va_list ap) _sd_printf_(3,0);
 int sd_bus_error_get_errno(const sd_bus_error *e);
 int sd_bus_error_copy(sd_bus_error *dest, const sd_bus_error *e);
-int sd_bus_error_move(sd_bus_error *dest, sd_bus_error *e);
 int sd_bus_error_is_set(const sd_bus_error *e);
 int sd_bus_error_has_name(const sd_bus_error *e, const char *name);
 
