@@ -1552,6 +1552,11 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../tools/meson-build.sh" />
+		<Unit filename="../tools/meson-check-compilation.sh" />
+		<Unit filename="../tools/meson-link-test.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<envvars />
 			<code_completion />

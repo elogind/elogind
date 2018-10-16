@@ -23,10 +23,10 @@
 
 #include "alloc-util.h"
 
-#ifndef __GLIBC__
+#if HAVE_PROGRAM_INVOCATION_NAME == 0
 char *program_invocation_name       = NULL;
 char *program_invocation_short_name = NULL;
-#endif // __GLIBC__
+#endif // libc does not provide these variables
 
 const char *program_arg_name = NULL;
 
@@ -55,8 +55,8 @@ void elogind_set_program_name(const char* pcall) {
                 program_invocation_name       = strdup(program_arg_name);
         if (NULL == program_invocation_short_name)
                 program_invocation_short_name = strdup(basename(program_arg_name));
-#ifndef __GLIBC__
+#if HAVE_PROGRAM_INVOCATION_NAME == 0
         atexit(elogind_free_program_name);
-#endif // __GLIBC__
+#endif // libc does not provide these variables
 }
 
