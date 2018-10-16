@@ -552,6 +552,22 @@ else
         conf.set10('HAVE_GETRANDOM', have)
 endif
 
+#if 1 /// elogind shall be usable with non-glibc libc variations
+#####################################################################
+# Find out whether program_invocation[_short]_name is supported
+have_pisn = cc.links('''
+  #define _GNU_SOURCE 1
+  #include <errno.h>
+  int main(void) {
+          if (program_invocation_name && program_invocation_short_name)
+                  return 0;
+          return 1;
+  }
+''', name : 'program_invocation[_short]_name test')
+conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
+           description : 'program_invocation[_short]_name is provided by libc')
+
+#endif // 1
 #####################################################################
 
 sed = find_program('sed')
