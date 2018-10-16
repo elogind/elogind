@@ -27,11 +27,6 @@ void elogind_set_program_name(const char* pcall);
 
 #define strerror_r(e, m, k) (strerror_r(e, m, k) < 0 ? strdup("strerror_r() failed") : m);
 
-#ifndef _ERRNO_H
-extern char *program_invocation_name;
-extern char *program_invocation_short_name;
-#endif // errno.h included beforehand
-
 /*
  * Possibly TODO according to http://man7.org/linux/man-pages/man3/getenv.3.html
  * + test if the process's effective user ID does not match its real user ID or
