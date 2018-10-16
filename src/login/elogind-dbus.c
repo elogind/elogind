@@ -19,6 +19,7 @@
 
 
 #include "elogind-dbus.h"
+#include "exec-util.h"
 #include "process-util.h"
 #include "sd-messages.h"
 #include "sleep.h"
@@ -74,8 +75,15 @@ static int bus_manager_log_shutdown(
 }
 
 /* elogind specific helper to make HALT and REBOOT possible. */
-static int run_helper(const char *helper) {
+static int run_helper(const char *helper, const char *arg_verb) {
+        char *arguments[3];
+        static const char* const dirs[] = { SYSTEM_SHUTDOWN_PATH, NULL };
         int   r   = 0;
+
+        arguments[0] = NULL;
+        arguments[1] = (char*)arg_verb;
+        arguments[2] = NULL;
+        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments);
 
         r = safe_fork_full(helper, NULL, 0, FORK_RESET_SIGNALS|FORK_REOPEN_LOG, NULL);
 
@@ -99,13 +107,13 @@ static int shutdown_or_sleep(Manager *m, HandleAction action) {
 
         switch (action) {
         case HANDLE_POWEROFF:
-                return run_helper(POWEROFF);
+                return run_helper(POWEROFF, "poweroff");
         case HANDLE_REBOOT:
-                return run_helper(REBOOT);
+                return run_helper(REBOOT,   "reboot");
         case HANDLE_HALT:
-                return run_helper(HALT);
+                return run_helper(HALT,     "halt");
         case HANDLE_KEXEC:
-                return run_helper(KEXEC);
+                return run_helper(KEXEC,    "kexec");
         case HANDLE_SUSPEND:
                 return do_sleep(m, "suspend");
         case HANDLE_HIBERNATE:
