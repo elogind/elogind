@@ -16,7 +16,7 @@
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
 project('elogind', 'c',
-        version : '238.1',
+        version : '238.2',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
