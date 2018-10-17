@@ -26,6 +26,7 @@
 #include "parse-util.h"
 #include "path-util.h"
 //#include "process-util.h"
+//#include "serialize.h"
 #include "string-table.h"
 //#include "strv.h"
 #include "terminal-util.h"
@@ -579,9 +580,9 @@ int session_load(Session *s) {
         }
 
         if (realtime)
-                timestamp_deserialize(realtime, &s->timestamp.realtime);
+                (void) deserialize_usec(realtime, &s->timestamp.realtime);
         if (monotonic)
-                timestamp_deserialize(monotonic, &s->timestamp.monotonic);
+                (void) deserialize_usec(monotonic, &s->timestamp.monotonic);
 
         if (active) {
                 k = parse_boolean(active);

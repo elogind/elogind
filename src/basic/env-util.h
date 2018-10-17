@@ -48,7 +48,4 @@ char *strv_env_get(char **x, const char *n) _pure_;
 int getenv_bool(const char *p);
 #if 0 /// UNNEEDED by elogind
 int getenv_bool_secure(const char *p);
-
-int serialize_environment(FILE *f, char **environment);
-int deserialize_environment(char ***environment, const char *line);
 #endif // 0

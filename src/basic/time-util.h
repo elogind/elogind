@@ -119,10 +119,7 @@ char *format_timestamp_relative(char *buf, size_t l, usec_t t);
 char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 
 #if 0 /// UNNEEDED by elogind
-void dual_timestamp_serialize(FILE *f, const char *name, dual_timestamp *t);
-int dual_timestamp_deserialize(const char *value, dual_timestamp *t);
 #endif // 0
-int timestamp_deserialize(const char *value, usec_t *timestamp);
 
 #if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec);

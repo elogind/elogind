@@ -23,6 +23,7 @@
 //#include "parse-util.h"
 //#include "path-util.h"
 //#include "rm-rf.h"
+//#include "serialize.h"
 #include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
@@ -31,6 +32,7 @@
 #include "user-util.h"
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
+//#include "util.h"
 //#include "util.h"
 //#include "util.h"
 //#include "util.h"
@@ -380,11 +382,11 @@ int user_load(User *u) {
 #endif // ENABLE_DEBUG_ELOGIND
         log_debug_elogind(" --> User sessions    : %s",  u->sessions ? sv : "none");
         if (realtime)
-                (void) timestamp_deserialize(realtime, &u->timestamp.realtime);
+                (void) deserialize_usec(realtime, &u->timestamp.realtime);
         if (monotonic)
-                (void) timestamp_deserialize(monotonic, &u->timestamp.monotonic);
+                (void) deserialize_usec(monotonic, &u->timestamp.monotonic);
         if (last_session_timestamp)
-                (void) timestamp_deserialize(last_session_timestamp, &u->last_session_timestamp);
+                (void) deserialize_usec(last_session_timestamp, &u->last_session_timestamp);
 
         return 0;
 }
@@ -435,6 +437,8 @@ int user_start(User *u) {
          * XDG_RUNTIME_DIR out of it while starting up systemd --user.
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up

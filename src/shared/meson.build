@@ -53,10 +53,10 @@
 #         import-util.c
 #         import-util.h
 #         initreq.h
-#         install.c
-#         install.h
 #         install-printf.c
 #         install-printf.h
+#         install.c
+#         install.h
 #         journal-util.c
 #         journal-util.h
 #         logs-show.c
@@ -79,6 +79,8 @@
 #         resolve-util.c
 #         resolve-util.h
 #         seccomp-util.h
+#         serialize.c
+#         serialize.h
 #         sleep-config.c
 #         sleep-config.h
 #         spawn-ask-password-agent.c
@@ -91,12 +93,10 @@
 #         switch-root.h
 #         sysctl-util.c
 #         sysctl-util.h
-#         tests.c
-#         tests.h
 #         tomoyo-util.c
 #         tomoyo-util.h
-#         udev-util.h
 #         udev-util.c
+#         udev-util.h
 #         uid-range.c
 #         uid-range.h
 #         utmp-wtmp.h
@@ -108,6 +108,10 @@
 #         watchdog.h
 #         wireguard-netlink.h
 # '''.split())
+#
+# if get_option('tests') != 'false'
+#         shared_sources += files('tests.c', 'tests.h')
+# endif
 #
 #else
 shared_sources = '''
