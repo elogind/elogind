@@ -16,7 +16,7 @@ project('elogind', 'c',
 # You should have received a copy of the GNU Lesser General Public License
 # along with elogind; If not, see <http://www.gnu.org/licenses/>.
 
-        version : '236.2',
+        version : '236.3',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
