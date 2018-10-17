@@ -93,6 +93,7 @@ endif
 
 conf.set10('BUMP_PROC_SYS_FS_FILE_MAX', get_option('bump-proc-sys-fs-file-max'))
 conf.set10('BUMP_PROC_SYS_FS_NR_OPEN',  get_option('bump-proc-sys-fs-nr-open'))
+conf.set('HIGH_RLIMIT_NOFILE',          256*1024)
 
 # join_paths ignore the preceding arguments if an absolute component is
 # encountered, so this should canonicalize various paths when they are
@@ -343,6 +344,7 @@ substs.set('VARLOGDIR',                                       varlogdir)
 # substs.set('RC_LOCAL_SCRIPT_PATH_STOP',                       get_option('halt-local'))
 # substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
 #endif // 0
+substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
 
 #####################################################################
 
