@@ -993,14 +993,13 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
-        char line[LINE_MAX];
 #if 0 /// At elogind we do not want that (false alarm) "maybe uninitialized" warning
         const char *fs, *controller_str;
+        int unified, r;
 #else
         const char *fs, *controller_str = NULL;
 #endif // 0
         size_t cs = 0;
-        int unified;
 
         assert(path);
         assert(pid >= 0);
@@ -1032,10 +1031,15 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
-        FOREACH_LINE(line, f, return -errno) {
+        for (;;) {
+                _cleanup_free_ char *line = NULL;
                 char *e, *p;
 
-                truncate_nl(line);
+                r = read_line(f, LONG_LINE_MAX, &line);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        break;
 
                 if (unified) {
                         e = startswith(line, "0:");
