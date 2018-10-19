@@ -982,6 +982,11 @@ tests += [
           libshared_static,
           libudev],
          [threads]],
+
+        [['src/libelogind/sd-device/test-sd-device-monitor.c'],
+         [],
+         []],
+
 #if 0 /// UNNEEDED in elogind
 # ]
 #
