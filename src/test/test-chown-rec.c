@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
         log_open();
 
         if (geteuid() != 0)
-                return EXIT_TEST_SKIP;
+                return log_tests_skipped("not running as root");
 
         test_chown_recursive();
 

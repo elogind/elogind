@@ -75,6 +75,11 @@ tests += [
 #           libshared],
 #          []],
 #
+#         [['src/test/test-chown-rec.c'],
+#          [libcore,
+#           libshared],
+#          []],
+#
 #         [['src/test/test-job-type.c'],
 #          [libcore,
 #           libshared],
@@ -150,10 +155,6 @@ tests += [
 #           libmount,
 #           libblkid]],
 #endif // 0
-
-        [['src/test/test-serialize.c'],
-         [],
-         []],
 
         [['src/test/test-utf8.c'],
          [],
