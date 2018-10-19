@@ -1763,8 +1763,7 @@ static int json_parse_string(const char **p, char **ret) {
 
                         *p = c + 1;
 
-                        *ret = s;
-                        s = NULL;
+                        *ret = TAKE_PTR(s);
                         return JSON_TOKEN_STRING;
                 }
 
@@ -1919,7 +1918,7 @@ static int json_parse_number(const char **p, JsonValue *ret) {
                 } while (strchr("0123456789", *c) && *c != 0);
         }
 
-        if (*c == 'e' || *c == 'E') {
+        if (IN_SET(*c, 'e', 'E')) {
                 is_real = true;
                 c++;
 
@@ -2560,7 +2559,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
         };
 
         for (;;) {
-                JsonVariant *add = NULL;
+                _cleanup_(json_variant_unrefp) JsonVariant *add = NULL;
                 JsonStack *current;
                 int command;
 
@@ -2899,7 +2898,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                                 goto finish;
                         }
 
-                        current->elements[current->n_elements++] = add;
+                        current->elements[current->n_elements++] = TAKE_PTR(add);
                 }
         }
 

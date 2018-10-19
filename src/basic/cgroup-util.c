@@ -2235,7 +2235,7 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
         r = cg_create(SYSTEMD_CGROUP_CONTROLLER, path);
         if (r < 0)
                 return r;
-        created = !!r;
+        created = r;
 
         /* If we are in the unified hierarchy, we are done now */
         r = cg_all_unified();
