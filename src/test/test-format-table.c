@@ -5,6 +5,9 @@
 #include "string-util.h"
 #include "time-util.h"
 
+/// Additional includes needed by elogind
+#include "locale-util.h"
+
 int main(int argc, char *argv[]) {
 
         _cleanup_(table_unrefp) Table *t = NULL;
@@ -50,6 +53,10 @@ int main(int argc, char *argv[]) {
 
         table_set_width(t, 12);
         assert_se(table_format(t, &formatted) >= 0);
+
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1 
         printf("%s\n", formatted);
 
         assert_se(streq(formatted,
@@ -80,6 +87,9 @@ int main(int argc, char *argv[]) {
                         "… … …\n"));
 
         formatted = mfree(formatted);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1 
 
         table_set_width(t, (size_t) -1);
         assert_se(table_set_sort(t, (size_t) 0, (size_t) 2, (size_t) -1) >= 0);
@@ -96,6 +106,9 @@ int main(int argc, char *argv[]) {
 
         table_set_header(t, false);
 
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1 
         assert_se(table_add_many(t,
                                  TABLE_STRING, "fäää",
                                  TABLE_STRING, "uuu",
@@ -134,6 +147,9 @@ int main(int argc, char *argv[]) {
                         " yes fäää       yes fäää      fäää      \n"
                         " yes xxx        yes xxx       xxx       \n"
                         "5min           5min                     \n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1 
 
         return 0;
 }

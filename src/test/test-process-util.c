@@ -27,6 +27,9 @@
 #include "util.h"
 #include "virt.h"
 
+/// Additional includes needed by elogind
+#include "locale-util.h"
+
 static void test_get_process_comm(pid_t pid) {
         struct stat st;
         _cleanup_free_ char *a = NULL, *c = NULL, *d = NULL, *f = NULL, *i = NULL;
@@ -113,12 +116,18 @@ static void test_get_process_comm_escape(void) {
         test_get_process_comm_escape_one("foo", "foo");
         test_get_process_comm_escape_one("012345678901234", "012345678901234");
         test_get_process_comm_escape_one("0123456789012345", "012345678901234");
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1 
         test_get_process_comm_escape_one("äöüß", "\\303\\244\\303…");
         test_get_process_comm_escape_one("xäöüß", "x\\303\\244…");
         test_get_process_comm_escape_one("xxäöüß", "xx\\303\\244…");
         test_get_process_comm_escape_one("xxxäöüß", "xxx\\303\\244…");
         test_get_process_comm_escape_one("xxxxäöüß", "xxxx\\303\\244…");
         test_get_process_comm_escape_one("xxxxxäöüß", "xxxxx\\303…");
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1 
 
         assert_se(prctl(PR_SET_NAME, saved) >= 0);
 }
