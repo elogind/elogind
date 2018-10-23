@@ -494,6 +494,11 @@ conf.set('SIZEOF_TIME_T', cc.sizeof('time_t', prefix : '#include <sys/time.h>'))
 conf.set('SIZEOF_RLIM_T', cc.sizeof('rlim_t', prefix : '#include <sys/resource.h>'))
 
 decl_headers = '''
+#if 1 /// elogind supports system where _GNU_SOURCE is not set in ENV
+# ifndef _GNU_SOURCE
+#   define _GNU_SOURCE 1
+# endif // _GNU_SOURCE
+#endif // 1
 #include <uchar.h>
 #include <linux/ethtool.h>
 #include <linux/fib_rules.h>
@@ -561,7 +566,7 @@ foreach ident : [
                                  #include <fcntl.h>'''],
         ['setns',             '''#include <sched.h>'''],
         ['renameat2',         '''#include <stdio.h>
-//                                 #include <fcntl.h>'''],
+                                 #include <fcntl.h>'''],
         ['kcmp',              '''#include <linux/kcmp.h>'''],
         ['keyctl',            '''#include <sys/types.h>
                                  #include <keyutils.h>'''],
@@ -571,7 +576,7 @@ foreach ident : [
                                  #include <unistd.h>'''],
         ['statx',             '''#include <sys/types.h>
                                  #include <sys/stat.h>
-//                                 #include <unistd.h>'''],
+                                 #include <unistd.h>'''],
         ['explicit_bzero' ,   '''#include <string.h>'''],
         ['reallocarray',      '''#include <malloc.h>'''],
 ]
