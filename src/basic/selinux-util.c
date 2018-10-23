@@ -16,12 +16,12 @@
 #endif
 
 #include "alloc-util.h"
-//#include "fd-util.h"
+#include "fd-util.h"
 #include "log.h"
 #include "macro.h"
 #include "path-util.h"
 #include "selinux-util.h"
-//#include "stdio-util.h"
+#include "stdio-util.h"
 #include "time-util.h"
 #include "util.h"
 
