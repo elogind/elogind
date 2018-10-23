@@ -285,18 +285,6 @@ static const char* const config_file[] = {
         "3\n",
 
         "[Section]\n"
-        "#hogehoge\\\n"      /* continuation is ignored in comment */
-        "setting1=1\\\n"     /* normal continuation */
-        "2\\\n"
-        "3\n",
-
-        "[Section]\n"
-        "setting1=1\\\n"     /* normal continuation */
-        "#hogehoge\\\n"      /* commented out line in continuation is ignored */
-        "2\\\n"
-        "3\n",
-
-        "[Section]\n"
         "setting1=1\\\n"     /* continuation with extra trailing backslash at the end */
         "2\\\n"
         "3\\\n",
@@ -333,9 +321,9 @@ static const char* const config_file[] = {
 
 static void test_config_parse(unsigned i, const char *s) {
         _cleanup_(unlink_tempfilep) char name[] = "/tmp/test-conf-parser.XXXXXX";
-        int fd, r;
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *setting1 = NULL;
+        int r;
 
         const ConfigTableItem items[] = {
                 { "Section", "setting1",  config_parse_string,   0, &setting1},
@@ -344,12 +332,9 @@ static void test_config_parse(unsigned i, const char *s) {
 
         log_info("== %s[%i] ==", __func__, i);
 
-        fd = mkostemp_safe(name);
-        assert_se(fd >= 0);
-        assert_se((size_t) write(fd, s, strlen(s)) == strlen(s));
-
-        assert_se(lseek(fd, 0, SEEK_SET) == 0);
-        assert_se(f = fdopen(fd, "r"));
+        assert_se(fmkostemp_safe(name, "r+", &f) == 0);
+        assert_se(fwrite(s, strlen(s), 1, f) == 1);
+        rewind(f);
 
         /*
         int config_parse(const char *unit,
@@ -375,27 +360,27 @@ static void test_config_parse(unsigned i, const char *s) {
                 assert_se(streq(setting1, "1"));
                 break;
 
-        case 4 ... 7:
+        case 4 ... 5:
                 assert_se(r == 0);
                 assert_se(streq(setting1, "1 2 3"));
                 break;
 
-        case 8:
+        case 6:
                 assert_se(r == 0);
                 assert_se(streq(setting1, "1\\\\ \\\\2"));
                 break;
 
-        case 9:
+        case 7:
                 assert_se(r == 0);
                 assert_se(streq(setting1, x1000("ABCD")));
                 break;
 
-        case 10 ... 11:
+        case 8 ... 9:
                 assert_se(r == 0);
                 assert_se(streq(setting1, x1000("ABCD") " foobar"));
                 break;
 
-        case 12 ... 13:
+        case 10 ... 11:
                 assert_se(r == -ENOBUFS);
                 assert_se(setting1 == NULL);
                 break;
