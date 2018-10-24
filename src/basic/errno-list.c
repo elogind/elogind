@@ -35,5 +35,3 @@ int errno_from_name(const char *name) {
         assert(sc->id > 0);
         return sc->id;
 }
-#if 0 /// UNNEEDED by elogind
-#endif // 0

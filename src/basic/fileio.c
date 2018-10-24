@@ -780,7 +780,6 @@ int load_env_file(FILE *f, const char *fname, const char *newline, char ***rl) {
         *rl = m;
         return 0;
 }
-#endif // 0
 
 static int load_env_file_push_pairs(
                 const char *filename, unsigned line,
@@ -830,7 +829,6 @@ int load_env_file_pairs(FILE *f, const char *fname, const char *newline, char **
         *rl = m;
         return 0;
 }
-#if 0 /// UNNEEDED by elogind
 
 static int merge_env_file_push(
                 const char *filename, unsigned line,

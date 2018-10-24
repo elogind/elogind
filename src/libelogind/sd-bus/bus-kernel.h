@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-/***
-***/
-
 #include "sd-bus.h"
 
 #define MEMFD_CACHE_MAX 32
@@ -23,9 +20,5 @@ struct memfd_cache {
         size_t allocated;
 };
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 void close_and_munmap(int fd, void *address, size_t size);
 void bus_flush_memfd(sd_bus *bus);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
