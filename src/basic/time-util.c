@@ -502,7 +502,7 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
                 /* Let's see if we should shows this in dot notation */
                 if (t < USEC_PER_MINUTE && b > 0) {
                         usec_t cc;
-                        signed char j;
+                        int j;
 
                         j = 0;
                         for (cc = table[i].usec; cc > 1; cc /= 10)
@@ -1088,18 +1088,19 @@ int parse_sec(const char *t, usec_t *usec) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int parse_sec_fix_0(const char *t, usec_t *usec) {
+int parse_sec_fix_0(const char *t, usec_t *ret) {
+        usec_t k;
+        int r;
+
         assert(t);
-        assert(usec);
+        assert(ret);
 
-        t += strspn(t, WHITESPACE);
+        r = parse_sec(t, &k);
+        if (r < 0)
+                return r;
 
-        if (streq(t, "0")) {
-                *usec = USEC_INFINITY;
-                return 0;
-        }
-
-        return parse_sec(t, usec);
+        *ret = k == 0 ? USEC_INFINITY : k;
+        return r;
 }
 
 int parse_nsec(const char *t, nsec_t *nsec) {
