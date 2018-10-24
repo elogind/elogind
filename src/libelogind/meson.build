@@ -92,6 +92,8 @@ libelogind_sources = files('''
         sd-bus/bus-convenience.c
         sd-bus/bus-creds.c
         sd-bus/bus-creds.h
+        sd-bus/bus-dump.c
+        sd-bus/bus-dump.h
         sd-bus/bus-error.c
         sd-bus/bus-error.h
         sd-bus/bus-gvariant.c

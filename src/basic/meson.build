@@ -367,6 +367,8 @@ basic_sources = files('''
         virt.h
         xattr-util.c
         xattr-util.h
+        xml.c
+        xml.h
 '''.split())
 #endif // 0
 
