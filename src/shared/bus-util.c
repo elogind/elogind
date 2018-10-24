@@ -1299,7 +1299,6 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         switch (transport) {
 
         case BUS_TRANSPORT_LOCAL:
-#if 0 /// elogind does not support a user bus
                 if (user)
                         r = sd_bus_default_user(&bus);
                 else {
@@ -1309,11 +1308,8 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
 
                                 return -EHOSTDOWN;
                         }
-#endif // 0
                         r = sd_bus_default_system(&bus);
-#if 0 /// No closing bracket with elogind... Ain't we simple? ;-)
                 }
-#endif // 0
                 break;
 
         case BUS_TRANSPORT_REMOTE:

@@ -396,14 +396,10 @@ void bus_close_io_fds(sd_bus *b);
         _cleanup_(sd_bus_unrefp) _unused_ sd_bus *_dont_destroy_##bus = sd_bus_ref(bus)
 
 int bus_set_address_system(sd_bus *bus);
-#if 0 /// UNNEEDED by elogind
 int bus_set_address_user(sd_bus *bus);
-#endif // 0
 int bus_set_address_system_remote(sd_bus *b, const char *host);
 int bus_set_address_system_machine(sd_bus *b, const char *machine);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int bus_get_root_path(sd_bus *bus);
 
 int bus_maybe_reply_error(sd_bus_message *m, int r, sd_bus_error *error);

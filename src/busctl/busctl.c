@@ -92,17 +92,13 @@ static int acquire_bus(bool set_monitor, sd_bus **ret) {
                 switch (arg_transport) {
 
                 case BUS_TRANSPORT_LOCAL:
-#if 0 /// elogind does not support user buses
                         if (arg_user) {
                                 bus->is_user = true;
                                 r = bus_set_address_user(bus);
                         } else {
                                 bus->is_system = true;
-#endif // 0
                                 r = bus_set_address_system(bus);
-#if 0 /// elogind does not support user buses
                         }
-#endif // 0
                         break;
 
                 case BUS_TRANSPORT_REMOTE:
