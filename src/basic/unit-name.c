@@ -102,6 +102,7 @@ bool unit_instance_is_valid(const char *i) {
 
         return in_charset(i, "@" VALID_CHARS);
 }
+#if 0 /// UNNEEDED by elogind
 
 bool unit_suffix_is_valid(const char *s) {
         if (isempty(s))
@@ -116,7 +117,6 @@ bool unit_suffix_is_valid(const char *s) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
 int unit_name_to_prefix(const char *n, char **ret) {
         const char *p;
         char *s;
@@ -193,7 +193,6 @@ int unit_name_to_prefix_and_instance(const char *n, char **ret) {
         *ret = s;
         return 0;
 }
-#endif // 0
 
 UnitType unit_name_to_type(const char *n) {
         const char *e;
@@ -208,7 +207,6 @@ UnitType unit_name_to_type(const char *n) {
         return unit_type_from_string(e + 1);
 }
 
-#if 0 /// UNNEEDED by elogind
 int unit_name_change_suffix(const char *n, const char *suffix, char **ret) {
         char *e, *s;
         size_t a, b;

@@ -8,8 +8,6 @@
 
 #define UNIT_NAME_MAX 256
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 typedef enum UnitNameFlags {
         UNIT_NAME_PLAIN = 1,      /* Allow foo.service */
         UNIT_NAME_INSTANCE = 2,   /* Allow foo@bar.service */
@@ -20,9 +18,9 @@ typedef enum UnitNameFlags {
 bool unit_name_is_valid(const char *n, UnitNameFlags flags) _pure_;
 bool unit_prefix_is_valid(const char *p) _pure_;
 bool unit_instance_is_valid(const char *i) _pure_;
+#if 0 /// UNNEEDED by elogind
 bool unit_suffix_is_valid(const char *s) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 static inline int unit_prefix_and_instance_is_valid(const char *p) {
         /* For prefix+instance and instance the same rules apply */
         return unit_instance_is_valid(p);
@@ -31,11 +29,9 @@ static inline int unit_prefix_and_instance_is_valid(const char *p) {
 int unit_name_to_prefix(const char *n, char **prefix);
 int unit_name_to_instance(const char *n, char **instance);
 int unit_name_to_prefix_and_instance(const char *n, char **ret);
-#endif // 0
 
 UnitType unit_name_to_type(const char *n) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 int unit_name_change_suffix(const char *n, const char *suffix, char **ret);
 #endif // 0
 

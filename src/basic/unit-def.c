@@ -34,6 +34,7 @@ int unit_name_from_dbus_path(const char *path, char **name) {
         return 0;
 }
 
+#if 0 /// elogind does not support systemd units
 const char* unit_dbus_interface_from_type(UnitType t) {
 
         static const char *const table[_UNIT_TYPE_MAX] = {
@@ -67,6 +68,7 @@ const char *unit_dbus_interface_from_name(const char *name) {
 
         return unit_dbus_interface_from_type(t);
 }
+#endif // 0
 
 static const char* const unit_type_table[_UNIT_TYPE_MAX] = {
         [UNIT_SERVICE] = "service",

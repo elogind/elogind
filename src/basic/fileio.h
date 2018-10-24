@@ -45,8 +45,8 @@ int parse_env_filev(FILE *f, const char *fname, const char *separator, va_list a
 int parse_env_file(FILE *f, const char *fname, const char *separator, ...) _sentinel_;
 #if 0 /// UNNEEDED by elogind
 int load_env_file(FILE *f, const char *fname, const char *separator, char ***l);
-#endif // 0
 int load_env_file_pairs(FILE *f, const char *fname, const char *separator, char ***l);
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int merge_env_file(char ***env, FILE *f, const char *fname);
