@@ -40,6 +40,7 @@
 //#include "terminal-util.h"
 //#include "terminal-util.h"
 //#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static char* arg_verb = NULL;
 
@@ -348,7 +349,17 @@ static int execute_s2h(Manager *m) {
 #endif // 0
 
         /* If woken up after alarm time, hibernate */
-        return execute(hibernate_modes, hibernate_states);
+        r = execute(hibernate_modes, hibernate_states);
+        if (r < 0) {
+                log_notice("Couldn't hibernate, will try to suspend again.");
+                r = execute(suspend_modes, suspend_states);
+                if (r < 0) {
+                        log_notice("Could neither hibernate nor suspend again, giving up.");
+                        return r;
+                }
+        }
+
+        return 0;
 }
 
 #if 0 /// elogind calls execute() by itself and does not need another binary
