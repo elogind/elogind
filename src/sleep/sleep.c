@@ -33,6 +33,7 @@
 //#include "terminal-util.h"
 //#include "terminal-util.h"
 //#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static char* arg_verb = NULL;
 
@@ -249,7 +250,7 @@ static int execute(Manager *m, const char *verb) {
         return r;
 }
 
-static int read_wakealarm(uint64_t *result) {
+static int rtc_read_time(uint64_t *ret_sec) {
         _cleanup_free_ char *t = NULL;
         int r;
 
@@ -257,7 +258,7 @@ static int read_wakealarm(uint64_t *result) {
         if (r < 0)
                 return r;
 
-        return safe_atou64(t, result);
+        return safe_atou64(t, ret_sec);
 }
 
 static int write_wakealarm(const char *str) {
@@ -295,7 +296,7 @@ static int execute_s2h(Manager *m) {
                 return r;
 #endif // 0
 
-        r = read_wakealarm(&orig_time);
+        r = rtc_read_time(&orig_time);
         if (r < 0)
                 return log_error_errno(r, "Failed to read time: %d", r);
 
@@ -316,7 +317,7 @@ static int execute_s2h(Manager *m) {
         if (r < 0)
                 return r;
 
-        r = read_wakealarm(&cmp_time);
+        r = rtc_read_time(&cmp_time);
         if (r < 0)
                 return log_error_errno(r, "Failed to read time: %d", r);
 
