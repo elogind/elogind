@@ -36,6 +36,7 @@
 //#include "terminal-util.h"
 //#include "terminal-util.h"
 //#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static char* arg_verb = NULL;
 
@@ -308,7 +309,7 @@ static int execute_s2h(Manager *m) {
         if (r < 0)
                 return r;
 
-        wake_time = original_time + (hibernate_delay_sec / USEC_PER_SEC);
+        wake_time = original_time + DIV_ROUND_UP(hibernate_delay_sec, USEC_PER_SEC);
         r = rtc_write_wake_alarm(wake_time);
         if (r < 0)
                 return r;
