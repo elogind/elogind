@@ -31,6 +31,7 @@
 //#include "terminal-util.h"
 //#include "terminal-util.h"
 //#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static char* arg_verb = NULL;
 
@@ -249,10 +250,13 @@ static int execute(Manager *m, const char *verb) {
 
 static int read_wakealarm(uint64_t *result) {
         _cleanup_free_ char *t = NULL;
+        int r;
 
-        if (read_one_line_file("/sys/class/rtc/rtc0/since_epoch", &t) >= 0)
-                return safe_atou64(t, result);
-        return -EBADF;
+        r = read_one_line_file("/sys/class/rtc/rtc0/since_epoch", &t);
+        if (r < 0)
+                return r;
+
+        return safe_atou64(t, result);
 }
 
 static int write_wakealarm(const char *str) {
