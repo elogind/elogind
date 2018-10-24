@@ -37,6 +37,7 @@
 //#include "terminal-util.h"
 //#include "terminal-util.h"
 //#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static char* arg_verb = NULL;
 
@@ -324,26 +325,26 @@ static int execute_s2h(Manager *m) {
         if (r < 0)
                 return r;
 
-        r = rtc_read_time(&cmp_time);
+        /* Reset RTC right-away */
+        r = rtc_write_wake_alarm(0);
         if (r < 0)
                 return r;
 
-        /* reset RTC */
-        r = rtc_write_wake_alarm(0);
+        r = rtc_read_time(&cmp_time);
         if (r < 0)
                 return r;
 
         log_debug("Woke up at %"PRIu64, cmp_time);
 
-        /* if woken up after alarm time, hibernate */
-        if (cmp_time >= wake_time)
 #if 0 /// elogind uses its manager instance values
-                r = execute(hibernate_modes, hibernate_states);
+        if (cmp_time < wake_time) /* We woke up before the alarm time, we are done. */
+                return 0;
 #else
                 r = execute(m, "hibernate");
 #endif // 0
 
-        return r;
+        /* If woken up after alarm time, hibernate */
+        return execute(hibernate_modes, hibernate_states);
 }
 
 #if 0 /// elogind calls execute() by itself and does not need another binary
