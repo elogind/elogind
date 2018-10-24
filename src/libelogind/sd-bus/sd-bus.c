@@ -1238,19 +1238,15 @@ _public_ int sd_bus_open(sd_bus **ret) {
         if (e) {
                 if (streq(e, "system"))
                         return sd_bus_open_system(ret);
-#if 0 /// elogind does not support systemd user instances
                 else if (STR_IN_SET(e, "session", "user"))
                         return sd_bus_open_user(ret);
-#endif // 0
         }
 
         e = secure_getenv("DBUS_STARTER_ADDRESS");
         if (!e) {
-#if 0 /// elogind does not support systemd user instances
                 if (cg_pid_get_owner_uid(0, NULL) >= 0)
                         return sd_bus_open_user(ret);
                 else
-#endif // 0
                         return sd_bus_open_system(ret);
         }
 
@@ -1328,7 +1324,6 @@ fail:
         return r;
 }
 
-#if 0 /// elogind can not open/use a user bus
 int bus_set_address_user(sd_bus *b) {
         const char *e;
         _cleanup_free_ char *ee = NULL, *s = NULL;
@@ -1355,10 +1350,8 @@ int bus_set_address_user(sd_bus *b) {
 
         return 0;
 }
-#endif // 0
 
 _public_ int sd_bus_open_user(sd_bus **ret) {
-#if 0 /// elogind does not support user buses
         sd_bus *b;
         int r;
 
@@ -1390,9 +1383,6 @@ _public_ int sd_bus_open_user(sd_bus **ret) {
 fail:
         bus_free(b);
         return r;
-#else
-        return sd_bus_open_system(ret);
-#endif // 0
 }
 
 int bus_set_address_system_remote(sd_bus *b, const char *host) {
@@ -3311,8 +3301,6 @@ finish:
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 _public_ int sd_bus_add_match(
                 sd_bus *bus,
                 sd_bus_slot **slot,
@@ -3687,11 +3675,7 @@ _public_ int sd_bus_default_system(sd_bus **ret) {
 
 
 _public_ int sd_bus_default_user(sd_bus **ret) {
-#if 0 /// elogind does not support user buses
         return bus_default(sd_bus_open_user, &default_user_bus, ret);
-#else
-        return sd_bus_default_system(ret);
-#endif // 0
 }
 
 _public_ int sd_bus_default(sd_bus **ret) {
@@ -4066,9 +4050,7 @@ static void flush_close(sd_bus *bus) {
 
 _public_ void sd_bus_default_flush_close(void) {
         flush_close(default_starter_bus);
-#if 0 /// elogind does not support user buses
         flush_close(default_user_bus);
-#endif // 0
         flush_close(default_system_bus);
 }
 

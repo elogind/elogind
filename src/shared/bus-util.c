@@ -1264,11 +1264,9 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
         switch (transport) {
 
         case BUS_TRANSPORT_LOCAL:
-#if 0 /// elogind does not support a user bus
                 if (user)
                         r = sd_bus_default_user(&bus);
                 else
-#endif // 0
                         r = sd_bus_default_system(&bus);
 
                 break;

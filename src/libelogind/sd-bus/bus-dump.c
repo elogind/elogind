@@ -453,7 +453,11 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
         if (z != -ENODATA)
                 fprintf(f, "%sSession=%s%s%s", prefix, color, strna(s), suffix);
 
+#if 0 /// elogind does not support systemd units, and q is only used with them until now
         if (terse && ((c->mask & SD_BUS_CREDS_CGROUP) || r != -ENODATA || q != -ENODATA || v != -ENODATA || w != -ENODATA || z != -ENODATA))
+#else
+        if (terse && ((c->mask & SD_BUS_CREDS_CGROUP) || r != -ENODATA || v != -ENODATA || w != -ENODATA || z != -ENODATA))
+#endif // 0
                 fputs("\n", f);
 
         r = sd_bus_creds_get_audit_login_uid(c, &audit_loginuid);

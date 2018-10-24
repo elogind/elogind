@@ -69,10 +69,6 @@ static usec_t arg_timeout = 0;
 #define NAME_IS_ACTIVATABLE INT_TO_PTR(2)
 
 static int list_bus_names(sd_bus *bus, char **argv) {
-#if 0 /// elogind does not support user buses
-#endif // 0
-#if 0 /// elogind does not support user buses
-#endif // 0
         _cleanup_strv_free_ char **acquired = NULL, **activatable = NULL;
         _cleanup_free_ char **merged = NULL;
         _cleanup_hashmap_free_ Hashmap *names = NULL;
