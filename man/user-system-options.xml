@@ -25,7 +25,6 @@
 -->
 
 <variablelist>
-  <!-- 0 /// With elogind there is no calling user systemd instance.
   <varlistentry id='user'>
     <term><option>&#x2D;&#x2D;user</option></term>
 
@@ -43,7 +42,6 @@
       implied default.</para>
     </listitem>
   </varlistentry>
-  // 0 -->
 
   <varlistentry id='host'>
     <term><option>-H</option></term>

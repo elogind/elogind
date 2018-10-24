@@ -1436,12 +1436,10 @@ int bus_log_parse_error(int r) {
         return log_error_errno(r, "Failed to parse bus message: %m");
 }
 
-#if 0 /// UNNEEDED by elogind
 int bus_log_create_error(int r) {
         return log_error_errno(r, "Failed to create bus message: %m");
 }
 
-#endif // 0
 #if 0 /// UNNEEDED by elogind
 /**
  * bus_path_encode_unique() - encode unique object path

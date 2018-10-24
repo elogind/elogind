@@ -440,11 +440,11 @@ tests += [
 #         [['src/test/test-bitmap.c'],
 #          [],
 #          []],
-# 
-#         [['src/test/test-xml.c'],
-#          [],
-#          []],
 #endif // 0
+
+        [['src/test/test-xml.c'],
+         [],
+         []],
 
         [['src/test/test-list.c'],
          [],
