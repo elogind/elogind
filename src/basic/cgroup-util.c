@@ -2251,6 +2251,9 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *n;
 
+                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
+                        continue;
+
                 n = cgroup_controller_to_string(c);
 
                 if (mask & bit)
@@ -2279,6 +2282,9 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *p = NULL;
+
+                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
+                        continue;
 
                 if (!(supported & bit))
                         continue;
@@ -2332,6 +2338,9 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *p = NULL;
 
+                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
+                        continue;
+
                 if (!(supported & bit))
                         continue;
 
@@ -2363,6 +2372,9 @@ int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root)
 
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
+
+                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
+                        continue;
 
                 if (!(supported & bit))
                         continue;
@@ -2714,6 +2726,9 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *n;
+
+                if (!FLAGS_SET(CGROUP_MASK_V2, bit))
+                        continue;
 
                 if (!(supported & bit))
                         continue;
