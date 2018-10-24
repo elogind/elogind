@@ -432,6 +432,17 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/xattr-util.h" />
+		<Unit filename="../src/basic/xml.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/xml.h" />
+		<Unit filename="../src/busctl/busctl-introspect.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/busctl/busctl-introspect.h" />
+		<Unit filename="../src/busctl/busctl.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/cgroups-agent/cgroups-agent.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
@@ -505,6 +516,10 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-dump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-dump.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-error.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />

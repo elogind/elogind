@@ -2671,17 +2671,19 @@ executable('elogind-cgroups-agent',
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += [exe]
-# 
-# exe = executable('busctl',
-#                  'src/busctl/busctl.c',
-#                  'src/busctl/busctl-introspect.c',
-#                  'src/busctl/busctl-introspect.h',
-#                  include_directories : includes,
-#                  link_with : [libshared],
-#                  install_rpath : rootlibexecdir,
-#                  install : true)
-# public_programs += [exe]
-# 
+#endif // 0
+
+exe = executable('busctl',
+                 'src/busctl/busctl.c',
+                 'src/busctl/busctl-introspect.c',
+                 'src/busctl/busctl-introspect.h',
+                 include_directories : includes,
+                 link_with : [libshared],
+                 install_rpath : rootlibexecdir,
+                 install : true)
+public_programs += [exe]
+
+#if 0 /// UNNEEDED by elogind
 # if conf.get('ENABLE_SYSUSERS') == 1
 #         exe = executable('systemd-sysusers',
 #                          'src/sysusers/sysusers.c',

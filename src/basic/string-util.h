@@ -52,11 +52,9 @@ static inline const char *empty_to_null(const char *p) {
         return isempty(p) ? NULL : p;
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline const char *empty_to_dash(const char *str) {
         return isempty(str) ? "-" : str;
 }
-#endif // 0
 
 static inline char *startswith(const char *s, const char *prefix) {
         size_t l;
