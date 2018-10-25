@@ -862,6 +862,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/output-mode.h" />
+		<Unit filename="../src/shared/qsort_r_missing.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/qsort_r_missing.h" />
 		<Unit filename="../src/shared/sleep-config.c">
 			<Option compilerVar="CC" />
 		</Unit>

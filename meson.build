@@ -577,6 +577,9 @@ foreach ident : [
                                  #include <unistd.h>'''],
         ['pivot_root',        '''#include <stdlib.h>
                                  #include <unistd.h>'''],     # no known header declares pivot_root
+#if 1 /// elogind supports musl, but upstream refuses to add qsort_r
+        ['qsort_r',           '''#include <stdlib.h>'''],
+#endif // 1
         ['name_to_handle_at', '''#include <sys/types.h>
                                  #include <sys/stat.h>
                                  #include <fcntl.h>'''],

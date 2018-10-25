@@ -121,6 +121,8 @@ shared_sources = '''
         nsflags.h
         output-mode.c
         output-mode.h
+        qsort_r_missing.c
+        qsort_r_missing.h
         sleep-config.c
         sleep-config.h
         spawn-polkit-agent.c

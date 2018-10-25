@@ -19,8 +19,9 @@
 
 void elogind_set_program_name(const char* pcall);
 
+#include "qsort_r_missing.h"
+
 #if !defined(__GLIBC__)
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h> /* for pthread_atfork */
