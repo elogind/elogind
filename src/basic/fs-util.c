@@ -137,7 +137,7 @@ int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char
 #endif // 0
 
 int readlinkat_malloc(int fd, const char *p, char **ret) {
-        size_t l = 100;
+        size_t l = FILENAME_MAX+1;
         int r;
 
         assert(p);
@@ -1188,7 +1188,7 @@ int unlinkat_deallocate(int fd, const char *name, int flags) {
                 return 0;
 
         if (fstat(truncate_fd, &st) < 0) {
-                log_debug_errno(errno, "Failed to stat file '%s' for deallocation, ignoring.", name);
+                log_debug_errno(errno, "Failed to stat file '%s' for deallocation, ignoring: %m", name);
                 return 0;
         }
 
