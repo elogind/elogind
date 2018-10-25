@@ -17,8 +17,6 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <stdlib.h>
-
 #include "qsort_r_missing.h"
 
 #if HAVE_QSORT_R == 0
@@ -82,7 +80,7 @@ static void msort_with_tmp ( const struct msort_param* p, void* b, size_t n ) {
 
         char* tmp = p->t;
         const size_t s = p->s;
-        __compar_d_fn_t cmp = p->cmp;
+        compare_fn_t cmp = p->cmp;
         void* arg = p->arg;
         switch ( p->var ) {
                 case 0:
@@ -296,14 +294,14 @@ void qsort_r ( void* b, size_t n, size_t s, compare_fn_t cmp, void* arg ) {
 #define SWAP(a, b, size)           \
   do                               \
     {                              \
-      size_t __size = (size);      \
-      char *__a = (a), *__b = (b); \
+      size_t size_ = (size);       \
+      char *a_ = (a), *b_ = (b);   \
       do                           \
     {                              \
-      char __tmp = *__a;           \
-      *__a++ = *__b;               \
-      *__b++ = __tmp;              \
-    } while (--__size > 0);        \
+      char tmp_ = *a_;             \
+      *a_++ = *b_;                 \
+      *b_++ = tmp_;                \
+    } while (--size_ > 0);         \
     } while (0)
 
 /* Discontinue quicksort algorithm when partition gets below this size.
