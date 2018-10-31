@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Traditional Chinese translation for systemd.
-# Copyright (C) 2015 systemd's COPYRIGHT HOLDER
-# This file is distributed under the same license as the systemd package.
 # Jeff Huang <s8321414@gmail.com>, 2015, 2016.
 msgid ""
 msgstr ""
@@ -130,7 +128,6 @@ msgstr ""
 # msgstr "設定系統鍵盤設定需要驗證。"
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "允許應用程式阻止系統關機"
@@ -520,4 +517,3 @@ msgstr "設定 wall 訊息需要驗證。"
 # msgstr "在 '$(unit)' 上設定屬性需要驗證。"
 #
 #endif // 0
-

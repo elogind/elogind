@@ -1,8 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Hungarian translation of systemd
-# Copyright (C) 2015, 2016. Free Software Foundation, Inc.
-# This file is distributed under the same license as the systemd package.
+# Copyright © 2015, 2016. Free Software Foundation, Inc.
 #
 # Gabor Kelemen <kelemeng at gnome dot hu>, 2015, 2016.
 # Balázs Úr <urbalazs at gmail dot com>, 2016.
@@ -142,7 +141,6 @@ msgstr ""
 # "Hitelesítés szükséges a rendszer billentyűzetbeállításainak megadásához."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Alkalmazások meggátolhatják a rendszer leállítását"
@@ -601,4 +599,3 @@ msgstr "Hitelesítés szükséges a falüzenet beállításához"
 # "Hitelesítés szükséges a következő tulajdonságainak beállításához: „$(unit)”."
 #
 #endif // 0
-

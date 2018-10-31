@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Belarusian translation for systemd.
-# Copyright (C) 2015 systemd's COPYRIGHT HOLDER
-# This file is distributed under the same license as the systemd package.
 #
 #
 # Viktar Vaŭčkievič <victorenator@gmail.com>, 2015, 2016.
@@ -142,7 +140,6 @@ msgstr ""
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання сістэмных налад клавіятуры."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Дазволіць праграмам перашкаджаць выключэнню сістэмы"
@@ -597,4 +594,3 @@ msgstr "Неабходна аўтэнтыфікацыя для ўсталява�
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання ўласцівасцей '$(unit)'."
 #endif // 0
-

@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Swedish translation for systemd.
-# Copyright © 2015 systemd's COPYRIGHT HOLDER
-# This file is distributed under the same license as the systemd package.
 # Sebastian Rasmussen <sebras@gmail.com>, 2015.
 # Andreas Henriksson <andreas@fatal.se>, 2016.
 # Josef Andersson <l10nl18nsweja@gmail.com>, 2015, 2017.
@@ -140,7 +138,6 @@ msgstr ""
 # "Autentisering krävs för att ställa in systeminställningar för tangentbord."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Tillåt program att hindra systemavstängning"
@@ -374,7 +371,6 @@ msgstr ""
 # "Autentisering krävs för att stoppa systemet även då ett program hindrar det."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:39
 msgid "Suspend the system"
 msgstr "Försätt system i vänteläge"
@@ -634,4 +630,3 @@ msgstr "Autentisering krävs för att ställa in ett väggmeddelande"
 # #~ msgstr[0] "Kontroll pågår på %d disk (%3.1f%% klart)"
 # #~ msgstr[1] "Kontroll pågår på %d diskar (%3.1f%% klart)"
 #endif // 0
-

@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Romanian translation for systemd.
-# Copyright (C) 2015 systemd's COPYRIGHT HOLDER
-# This file is distributed under the same license as the systemd package.
 # va511e <va511e@yahoo.com>, 2015.
 # Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>, 2015, 2017.
 msgid ""
@@ -153,7 +151,6 @@ msgstr ""
 # "sistemului."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Permite aplicațiilor să împiedice închiderea sistemului"
@@ -623,4 +620,3 @@ msgstr "Autentificarea este necesară pentru a stabili un mesaj de perete"
 # msgstr ""
 # "Autentificarea este necesară pentru a stabili proprietățile pe „$(unit)”."
 #endif // 0
-

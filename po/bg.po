@@ -1,8 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Bulgarian translation of systemd po-file.
-# Copyright (C) 2016 Alexander Shopov <ash@kambanaria.org>
-# This file is distributed under the same license as the systemd package.
+# Copyright © 2016 Alexander Shopov <ash@kambanaria.org>
 # Alexander Shopov <ash@kambanaria.org>, 2016.
 #
 msgid ""
@@ -145,7 +144,6 @@ msgstr ""
 # msgstr "За задаване на настройките на клавиатурата е необходима идентификация."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Позволяване на програмите да предотвратяват спирането на системата"
@@ -622,4 +620,3 @@ msgstr "За задаване на системно съобщение „wall�
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "За задаване на свойствата на „$(unit)“ е необходима идентификация."
 #endif // 0
-

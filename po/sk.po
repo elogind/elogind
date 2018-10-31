@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Slovak translation for systemd.
-# Copyright (C) 2017 systemd's COPYRIGHT HOLDER
-# This file is distributed under the same license as the systemd package.
 # Dušan Kazik <prescott66@gmail.com>, 2017.
 #
 msgid ""
@@ -146,7 +144,6 @@ msgstr ""
 # "klávesnice."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr ""
@@ -561,4 +558,3 @@ msgstr ""
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 #endif // 0
-

@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Greek translation for systemd.
-# Copyright (C) 2014 systemd's COPYRIGHT HOLDER
-# This file is distributed under the same license as the systemd package.
 # Dimitris Spingos <dmtrs32@gmail.com>, 2014.
 # Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>, 2014.
 msgid ""
@@ -153,7 +151,6 @@ msgstr ""
 # "συστήματος."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr ""
@@ -619,4 +616,3 @@ msgstr "Απαιτείται πιστοποίηση για να ορίσετε �
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #endif // 0
-

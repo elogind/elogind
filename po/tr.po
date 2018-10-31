@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Turkish translation for systemd.
-# This file is distributed under the same license as the systemd package.
 # Necdet Yücel <necdetyucel@gmail.com>, 2014.
 # Gökhan Gurbetoğlu <ggurbet@gmail.com>, 2015.
 # Muhammet Kara <muhammetk@gnome.org>, 2015, 2016, 2017, 2018.
@@ -10,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: systemd master\n"
 "Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
-"POT-Creation-Date: 2018-10-26 19:14+0000\n"
-"PO-Revision-Date: 2018-10-31 00:12+0300\n"
+"POT-Creation-Date: 2018-08-23 15:26+0000\n"
+"PO-Revision-Date: 2018-10-01 20:20+0300\n"
 "Last-Translator: Muhammet Kara <muhammetk@gnome.org>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
 "Language: tr_TR\n"
@@ -104,6 +103,7 @@ msgstr ""
 # msgstr "Ürün UUID'ini al"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:52
+# #| msgid "Authentication is required to reload '$(unit)'."
 # msgid "Authentication is required to get product UUID."
 # msgstr "Ürün UUID'ini almak için kimlik doğrulaması gereklidir."
 #
@@ -585,6 +585,7 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 # msgstr "Bir taşınabilir hizmet kalıbını incele"
 #
 # #: src/portable/org.freedesktop.portable1.policy:14
+# #| msgid "Authentication is required to import a VM or container image"
 # msgid "Authentication is required to inspect a portable service image."
 # msgstr ""
 # "Bir taşınabilir hizmet kalıbını incelemek için kimlik doğrulaması gereklidir."
@@ -594,6 +595,7 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 # msgstr "Bir taşınabilir hizmet kalıbını tuttur ya da ayır"
 #
 # #: src/portable/org.freedesktop.portable1.policy:24
+# #| msgid "Authentication is required for attaching a device to a seat."
 # msgid ""
 # "Authentication is required to attach or detach a portable service image."
 # msgstr ""
@@ -605,6 +607,7 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 # msgstr "Taşınabilir hizmet kalıbını sil ya da değiştir"
 #
 # #: src/portable/org.freedesktop.portable1.policy:35
+# #| msgid "Authentication is required to download a VM or container image"
 # msgid ""
 # "Authentication is required to delete or modify a portable service image."
 # msgstr ""
@@ -684,13 +687,8 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 # msgstr "'$(unit)' yeniden başlatmak için kimlik doğrulaması gereklidir."
 #
 # #: src/core/dbus-unit.c:437
-# #| msgid "Authentication is required to set properties on '$(unit)'."
-# msgid ""
-# "Authentication is required to send a UNIX signal to the processes of "
-# "'$(unit)'."
-# msgstr ""
-# "'$(unit)' süreçlerine bir UNIX sinyali göndermek için kimlik doğrulaması "
-# "gereklidir."
+# msgid "Authentication is required to kill '$(unit)'."
+# msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."
 #
 # #: src/core/dbus-unit.c:468
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
@@ -704,6 +702,3 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 # "'$(unit)' üzerindeki özellikleri ayarlamak için kimlik doğrulaması "
 # "gereklidir."
 #endif // 0
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."

@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Simplified Chinese translation for systemd.
-# Copyright (C) 2015 systemd's COPYRIGHT HOLDER
-# This file is distributed under the same license as the systemd package.
 #
 # Frank Hill <hxf.prc@gmail.com>, 2014.
 # Boyuan Yang <073plan@gmail.com>, 2015.
@@ -137,7 +135,6 @@ msgstr ""
 # msgstr "设置系统键盘需要认证。"
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "允许应用程序阻止系统关机"
@@ -529,4 +526,3 @@ msgstr "设置 wall 消息需要认证。"
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "设置“$(unit)”的属性需要认证。"
 #endif // 0
-

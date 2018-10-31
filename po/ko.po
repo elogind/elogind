@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Korean translation for the systemd.
-# Copyright (C) 2015 systemd author and translators.
-# This file is distributed under the same license as the systemd package.
 # Seong-ho Cho <shcho@gnome.org>, 2015.
 # Dongsu Park <dongsu@endocode.com>, 2015.
 #
@@ -137,7 +135,6 @@ msgstr ""
 # msgstr "시스템 키보드를 설정하려면 인증이 필요합니다."
 #
 #endif // 0
-
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "프로그램의 시스템 전원 끄기 방지 요청 허용"
@@ -550,4 +547,3 @@ msgstr "wall 메시지를 설정하려면 인증이 필요합니다"
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "'$(unit)' 서비스 유닛 속성을 설정하려면 인증이 필요합니다."
 #endif // 0
-
