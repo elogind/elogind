@@ -535,7 +535,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IFLA_MACVLAN_FLAGS',               'linux/if_link.h'],
                 ['IFLA_IPVLAN_FLAGS',                'linux/if_link.h'],
                 ['IFLA_PHYS_PORT_ID',                'linux/if_link.h'],
-                ['IFLA_BOND_AD_INFO',                'linux/if_link.h'],
+                ['IFLA_BOND_AD_ACTOR_SYSTEM',        'linux/if_link.h'],
                 ['IFLA_VLAN_PROTOCOL',               'linux/if_link.h'],
                 ['IFLA_VXLAN_REMCSUM_NOPARTIAL',     'linux/if_link.h'],
                 ['IFLA_VXLAN_GPE',                   'linux/if_link.h'],
@@ -1266,6 +1266,7 @@ conf.set10('HAVE_PAM', have)
 # want_lz4 = get_option('lz4')
 # if want_lz4 != 'false' and not fuzzer_build
 #         liblz4 = dependency('liblz4',
+#                             version : '>= 1.3.0',
 #                             required : want_lz4 == 'true')
 #         have = liblz4.found()
 # else
