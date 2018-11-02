@@ -608,6 +608,10 @@ tests += [
          [],
          '', 'manual'],
 
+        [['src/test/test-cgroup-cpu.c'],
+         [libcore,
+          libshared],
+         []],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-cgroup-mask.c',
