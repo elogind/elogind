@@ -89,7 +89,7 @@ static int manager_new(Manager **ret) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind uses its own signal handler, installed at elogind_manager_new()
+#if 0 /// elogind uses its own signal handler, installed at elogind_manager_startup()
         r = sd_event_add_signal(m->event, NULL, SIGINT, NULL, NULL);
         if (r < 0)
                 return r;
@@ -1153,6 +1153,12 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to register SIGHUP handler: %m");
 
+#if 1 /// install elogind specific signal handlers
+        r = elogind_manager_startup(m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register elogind signal handlers: %m");
+#endif // 1
+
         /* Connect to utmp */
         manager_connect_utmp(m);
 
@@ -1326,7 +1332,11 @@ int main(int argc, char *argv[]) {
                 return log_error_errno(r, "Failed to create /run/systemd/machines : %m");
 #endif // 0
 
+#if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, -1) >= 0);
+#else
+        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGQUIT, -1) >= 0);
+#endif // 0
 
         r = manager_new(&m);
         if (r < 0) {
