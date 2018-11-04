@@ -12,6 +12,7 @@
 #include <sys/types.h>
 
 #include "macro.h"
+//#include "util.h"
 
 #define snprintf_ok(buf, len, fmt, ...) \
         ((size_t) snprintf(buf, len, fmt, __VA_ARGS__) < (len))
@@ -23,6 +24,9 @@
 do {                                                                    \
         int _argtypes[128];                                             \
         size_t _i, _k;                                                  \
+        /* See https://github.com/google/sanitizers/issues/992 */       \
+        if (HAS_FEATURE_MEMORY_SANITIZER)                               \
+                zero(_argtypes);                                        \
         _k = parse_printf_format((format), ELEMENTSOF(_argtypes), _argtypes); \
         assert(_k < ELEMENTSOF(_argtypes));                             \
         for (_i = 0; _i < _k; _i++) {                                   \
