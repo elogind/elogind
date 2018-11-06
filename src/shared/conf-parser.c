@@ -178,7 +178,7 @@ static int parse_line(
         if (!*l)
                 return 0;
 
-        if (strchr(COMMENTS "\n", *l))
+        if (*l == '\n')
                 return 0;
 
         include = first_word(l, ".include");
@@ -330,6 +330,9 @@ int config_parse(const char *unit,
 
                         return r;
                 }
+
+                if (strchr(COMMENTS, *buf))
+                        continue;
 
                 l = buf;
                 if (!(flags & CONFIG_PARSE_REFUSE_BOM)) {
