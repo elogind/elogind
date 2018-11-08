@@ -296,9 +296,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mount-util.h" />
-		<Unit filename="../src/basic/os-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/basic/os-util.h" />
 		<Unit filename="../src/basic/pager.c">
 			<Option compilerVar="CC" />
@@ -456,14 +453,14 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/libelogind/disable-mempool.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/libelogind/libelogind.sym">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/meson.build" />
 		<Unit filename="../src/libelogind/sd-bus/bus-common-errors.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
@@ -816,101 +813,55 @@
 		<Unit filename="../src/login/user-runtime-dir.h" />
 		<Unit filename="../src/shared/acl-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/acl-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/shared/acl-util.h" />
 		<Unit filename="../src/shared/bus-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/bus-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/shared/bus-util.h" />
 		<Unit filename="../src/shared/clean-ipc.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/clean-ipc.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/shared/clean-ipc.h" />
 		<Unit filename="../src/shared/conf-parser.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/conf-parser.h">
-			<Option target="all" />
-			<Option target="clean" />
+		<Unit filename="../src/shared/conf-parser.h" />
+		<Unit filename="../src/shared/enable-mempool.c">
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/shared/libshared.sym">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/shared/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
+		<Unit filename="../src/shared/libshared.sym" />
+		<Unit filename="../src/shared/meson.build" />
+		<Unit filename="../src/shared/module-util.c">
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/musl_missing.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/musl_missing.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/shared/musl_missing.h" />
 		<Unit filename="../src/shared/nsflags.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/nsflags.h">
-			<Option target="all" />
-			<Option target="clean" />
+		<Unit filename="../src/shared/nsflags.h" />
+		<Unit filename="../src/shared/output-mode.c">
+			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/shared/output-mode.h" />
 		<Unit filename="../src/shared/sleep-config.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/sleep-config.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/shared/sleep-config.h" />
 		<Unit filename="../src/shared/spawn-polkit-agent.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/spawn-polkit-agent.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/shared/test-tables.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/shared/udev-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/shared/spawn-polkit-agent.h" />
+		<Unit filename="../src/shared/test-tables.h" />
+		<Unit filename="../src/shared/udev-util.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/shared/utmp-wtmp.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/shared/utmp-wtmp.h" />
+		<Unit filename="../src/shared/wireguard-netlink.h" />
 		<Unit filename="../src/sleep/sleep.c">
 			<Option compilerVar="CC" />
 			<Option target="all" />
@@ -971,6 +922,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-cgroup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-chown-rec.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-conf-files.c">
@@ -1067,6 +1021,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-selinux.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-set-disable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-set.c">
