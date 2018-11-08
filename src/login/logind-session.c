@@ -5,7 +5,7 @@
 #include <linux/kd.h>
 #include <linux/vt.h>
 #include <signal.h>
-//#include <stdio_ext.h>
+#include <stdio_ext.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -120,10 +120,12 @@ Session* session_free(Session *s) {
                 LIST_REMOVE(sessions_by_seat, s->seat->sessions, s);
         }
 
+#if 0 /// elogind does not support systemd units and scope_jobs
         if (s->scope) {
                 hashmap_remove(s->manager->session_units, s->scope);
                 free(s->scope);
         }
+#endif // 0
 
         if (pid_is_valid(s->leader))
                 (void) hashmap_remove_value(s->manager->sessions_by_leader, PID_TO_PTR(s->leader), s);
@@ -668,7 +670,6 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
 
         return 0;
 }
-int session_start(Session *s, sd_bus_message *properties, sd_bus_error *error) {
 #else
 static int session_start_cgroup(Session *s) {
         int r;
@@ -689,6 +690,8 @@ static int session_start_cgroup(Session *s) {
         return 0;
 }
 #endif // 0
+
+int session_start(Session *s, sd_bus_message *properties, sd_bus_error *error) {
         int r;
 
         assert(s);
@@ -1137,7 +1140,9 @@ static void session_remove_fifo(Session *s) {
 }
 
 bool session_may_gc(Session *s, bool drop_not_started) {
+#if 0 /// UNNEEDED by elogind
         int r;
+#endif // 0
 
         assert(s);
 
@@ -1153,7 +1158,6 @@ bool session_may_gc(Session *s, bool drop_not_started) {
         }
 
 #if 0 /// elogind supports neither scopes nor jobs
-#endif // 0
         if (s->scope_job) {
                 _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
 
@@ -1173,6 +1177,7 @@ bool session_may_gc(Session *s, bool drop_not_started) {
                 if (r != 0)
                         return false;
         }
+#endif // 0
 
         return true;
 }

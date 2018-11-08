@@ -153,6 +153,7 @@ static int do_mount(const char *runtime_path, size_t runtime_dir_size, uid_t uid
         return user_mkdir_runtime_path(runtime_path, uid, gid, runtime_dir_size);
 }
 
+#if 0 /// elogind already has the runtime path
 static int do_umount(const char *user) {
         char runtime_path[sizeof("/run/user") + DECIMAL_STR_MAX(uid_t)];
         uid_t uid;
@@ -171,6 +172,9 @@ static int do_umount(const char *user) {
         }
 
         xsprintf(runtime_path, "/run/user/" UID_FMT, uid);
+#else
+static int do_umount(const char *runtime_path) {
+#endif // 0
 
         log_debug("Will remove %s", runtime_path);
         return user_remove_runtime_path(runtime_path);

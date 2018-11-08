@@ -94,8 +94,10 @@ struct Manager {
         unsigned long session_counter;
         unsigned long inhibit_counter;
 
+#if 0 /// elogind does not support units
         Hashmap *session_units;
         Hashmap *user_units;
+#endif // 0
 
         usec_t inhibit_delay_max;
         usec_t user_stop_delay;
@@ -227,9 +229,9 @@ int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, 
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
 int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
-#endif // 0
 int manager_unit_is_active(Manager *manager, const char *unit, sd_bus_error *error);
 int manager_job_is_active(Manager *manager, const char *path, sd_bus_error *error);
+#endif // 0
 
 /* gperf lookup function */
 const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);

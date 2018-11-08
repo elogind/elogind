@@ -2349,10 +2349,10 @@ static int method_can_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_verb);
-                if (IN_SET(r,  0, -ENOSPC, -EADV))
 #else
                 r = can_sleep(m, sleep_verb);
 #endif // 0
+                if (IN_SET(r,  0, -ENOSPC, -EADV))
                         return sd_bus_reply_method_return(message, "s", "na");
                 if (r < 0)
                         return r;
@@ -2391,11 +2391,11 @@ static int method_can_shutdown_or_sleep(
                                 goto finish;
                         }
                 }
-        }
 #else
                 log_debug_elogind("CanShutDownOrSleep: %s [%d] %s blocked",
                                   sleep_verb, handle, blocked ? "is" : "not");
 #endif // 0
+        }
 
         if (multiple_sessions) {
                 r = bus_test_polkit(message, CAP_SYS_BOOT, action_multiple_sessions, NULL, UID_INVALID, &challenge, error);

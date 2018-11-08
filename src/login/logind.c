@@ -49,11 +49,11 @@ static int manager_new(Manager **ret) {
         if (!m)
                 return -ENOMEM;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         *m = (Manager) {
                 .console_active_fd = -1,
+#if 0 /// elogind does not support autospawning of vts
                 .reserve_vt_fd = -1,
+#endif // 0
         };
 
         m->idle_action_not_before_usec = now(CLOCK_MONOTONIC);
@@ -66,10 +66,14 @@ static int manager_new(Manager **ret) {
         m->inhibitors = hashmap_new(&string_hash_ops);
         m->buttons = hashmap_new(&string_hash_ops);
 
+#if 0 /// elogind does not support units
         m->user_units = hashmap_new(&string_hash_ops);
         m->session_units = hashmap_new(&string_hash_ops);
 
         if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
+#else
+        if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons)
+#endif // 0
                 return -ENOMEM;
 
 #if 1 /// elogind needs some more data
@@ -138,8 +142,10 @@ static Manager* manager_unref(Manager *m) {
         hashmap_free(m->inhibitors);
         hashmap_free(m->buttons);
 
+#if 0 /// elogind does not support systemd units.
         hashmap_free(m->user_units);
         hashmap_free(m->session_units);
+#endif // 0
 
         sd_event_source_unref(m->idle_action_event_source);
         sd_event_source_unref(m->inhibit_timeout_source);

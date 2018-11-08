@@ -83,7 +83,7 @@ static int run_helper(const char *helper, const char *arg_verb) {
         arguments[0] = NULL;
         arguments[1] = (char*)arg_verb;
         arguments[2] = NULL;
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments);
+        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL);
 
         r = safe_fork_full(helper, NULL, 0, FORK_RESET_SIGNALS|FORK_REOPEN_LOG, NULL);
 

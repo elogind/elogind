@@ -90,6 +90,7 @@ int user_new(User **ret,
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not support systemd units
         r = hashmap_put(m->user_units, u->slice, u);
         if (r < 0)
                 return r;
@@ -101,6 +102,7 @@ int user_new(User **ret,
         r = hashmap_put(m->user_units, u->runtime_dir_service, u);
         if (r < 0)
                 return r;
+#endif // 0
 
         *ret = TAKE_PTR(u);
         return 0;
@@ -116,6 +118,7 @@ User *user_free(User *u) {
         while (u->sessions)
                 session_free(u->sessions);
 
+#if 0 /// elogind does not support systemd units
         if (u->service)
                 hashmap_remove_value(u->manager->user_units, u->service, u);
 
@@ -124,6 +127,7 @@ User *user_free(User *u) {
 
         if (u->slice)
                 hashmap_remove_value(u->manager->user_units, u->slice, u);
+#endif // 0
 
         hashmap_remove_value(u->manager->users, UID_TO_PTR(u->uid), u);
 
@@ -319,8 +323,8 @@ int user_load(User *u) {
 
         r = parse_env_file(NULL, u->state_file, NEWLINE,
 #if 0 /// elogind neither supports service nor slice jobs
-#endif // 0
                            "SERVICE_JOB",            &u->service_job,
+#endif // 0
                            "STOPPING",               &stopping,
                            "REALTIME",               &realtime,
                            "MONOTONIC",              &monotonic,
@@ -349,31 +353,24 @@ int user_load(User *u) {
         return 0;
 }
 
+#if 0 /// elogind neither spawns systemd --user nor suports systemd units and services.
 static void user_start_service(User *u) {
-#if 0 /// elogind can not ask systemd via dbus to start user services
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(u);
 
-        u->service_job = mfree(u->service_job);
-#else
-        assert(u);
         /* Start the service containing the "systemd --user" instance (user@.service). Note that we don't explicitly
-         * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
-         * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
-         * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
-         * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
-         * start the per-user slice or the elogind-runtime-dir@.service instance, as those are pulled in both by
+         * start the per-user slice or the systemd-runtime-dir@.service instance, as those are pulled in both by
          * user@.service and the session scopes as dependencies. */
 
-        hashmap_put(u->manager->user_units, u->service, u);
-#endif // 0
+        u->service_job = mfree(u->service_job);
 
         r = manager_start_unit(u->manager, u->service, &error, &u->service_job);
         if (r < 0)
                 log_warning_errno(r, "Failed to start user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
 }
+#endif // 0
 
 int user_start(User *u) {
         assert(u);
@@ -387,35 +384,24 @@ int user_start(User *u) {
          * so possibly pending units are stopped. */
         u->stopping = false;
 
-#if 0 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
         if (!u->started)
                 log_debug("Starting services for new user %s.", u->name);
-#else
-        if (!u->started) {
-                log_debug("Starting services for new user %s.", u->name);
-                r = user_runtime_dir("start", u);
-                if (r < 0)
-                        return r;
-        }
 
-        /* Save the user data so far, because pam_systemd will read the
-         * XDG_RUNTIME_DIR out of it while starting up systemd --user.
-         * We need to do user_save_internal() because we have not
-         * "officially" started yet. */
-        /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        user_save_internal(u);
-
-        /* Spawn user systemd */
-        r = user_start_service(u);
+#if 1 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
+        int r;
+        r = user_runtime_dir("start", u);
         if (r < 0)
                 return r;
+#endif // 1
+
+        /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
+         * systemd --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+        user_save_internal(u);
+
+#if 0 /// elogind does not spawn user instances of systemd
         /* Start user@UID.service */
         user_start_service(u);
+#endif // 0
 
         if (!u->started) {
                 if (!dual_timestamp_is_set(&u->timestamp))
@@ -430,52 +416,21 @@ int user_start(User *u) {
         return 0;
 }
 
-static int user_stop_slice(User *u) {
+#if 0 /// elogind does not support user services and systemd units
 static void user_stop_service(User *u) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        char *job;
         int r;
 
         assert(u);
         assert(u->service);
 
-        r = manager_stop_unit(u->manager, u->slice, &error, &job);
-        if (r < 0) {
-                log_error("Failed to stop user slice: %s", bus_error_message(&error, r));
-                return r;
-        }
-
-        free(u->slice_job);
-        u->slice_job = job;
-        if (r < 0)
-                return log_error_errno(r, "Failed to stop user slice: %s", bus_error_message(&error, r));
-
-        return r;
-        return free_and_replace(u->slice_job, job);
-}
-
-static int user_stop_service(User *u) {
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        char *job;
-        int r;
         /* The reverse of user_start_service(). Note that we only stop user@UID.service here, and let StopWhenUnneeded=
          * deal with the slice and the user-runtime-dir@.service instance. */
 
-        assert(u);
         u->service_job = mfree(u->service_job);
 
-        r = manager_stop_unit(u->manager, u->service, &error, &job);
-        if (r < 0) {
-                log_error("Failed to stop user service: %s", bus_error_message(&error, r));
-                return r;
-        }
         r = manager_stop_unit(u->manager, u->service, &error, &u->service_job);
         if (r < 0)
-                return log_error_errno(r, "Failed to stop user service: %s", bus_error_message(&error, r));
-
-        free_and_replace(u->service_job, job);
-        return r;
-        return free_and_replace(u->service_job, job);
                 log_warning_errno(r, "Failed to stop user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
 }
 #endif // 0
@@ -495,9 +450,6 @@ int user_stop(User *u, bool force) {
 
         if (u->stopping) { /* Stop jobs have already been queued */
                 user_save(u);
-#if 1 /// elogind must queue this user again
-                user_add_to_gc_queue(u);
-#endif // 1
                 return 0;
         }
 
@@ -510,16 +462,13 @@ int user_stop(User *u, bool force) {
         }
 
 #if 0 /// elogind does not support service or slice jobs
-#endif // 0
         user_stop_service(u);
+#endif // 0
 
         u->stopping = true;
 
         user_save(u);
 
-#if 1 /// elogind must queue this user again
-        user_add_to_gc_queue(u);
-#endif // 1
         return r;
 }
 
@@ -625,6 +574,7 @@ int user_check_linger_file(User *u) {
         return true;
 }
 
+#if 0 /// elogind does not support systemd units
 static bool user_unit_active(User *u) {
         const char *i;
         int r;
@@ -645,9 +595,12 @@ static bool user_unit_active(User *u) {
 
         return false;
 }
+#endif // 0
 
 bool user_may_gc(User *u, bool drop_not_started) {
+#if 0 /// UNNEEDED by elogind
         int r;
+#endif // 0
 
         assert(u);
 
@@ -670,7 +623,11 @@ bool user_may_gc(User *u, bool drop_not_started) {
         /* Is this a user that shall stay around forever ("linger")? Before we say "no" to GC'ing for lingering users, let's check
          * if any of the three units that we maintain for this user is still around. If none of them is,
          * there's no need to keep this user around even if lingering is enabled. */
+#if 0 /// elogind does not support systemd units
         if (user_check_linger_file(u) > 0 && user_unit_active(u))
+#else
+        if (user_check_linger_file(u) > 0)
+#endif // 0
                 return false;
 
 #if 0 /// elogind neither supports service nor slice jobs
@@ -678,16 +635,15 @@ bool user_may_gc(User *u, bool drop_not_started) {
         if (u->service_job) {
                 _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
 
-#endif // 0
                 r = manager_job_is_active(u->manager, u->service_job, &error);
                 if (r < 0)
                         log_debug_errno(r, "Failed to determine whether job '%s' is pending, ignoring: %s", u->service_job, bus_error_message(&error, r));
                 if (r != 0)
                         return false;
         }
-
         /* Note that we don't care if the three units we manage for each user object are up or not, as we are managing
          * their state rather than tracking it. */
+#endif // 0
 
         return true;
 }
@@ -733,7 +689,11 @@ UserState user_get_state(User *u) {
                 return all_closing ? USER_CLOSING : USER_ONLINE;
         }
 
+#if 0 /// elogind does not support systemd units
         if (user_check_linger_file(u) > 0 && user_unit_active(u))
+#else
+        if (user_check_linger_file(u) > 0)
+#endif // 0
                 return USER_LINGERING;
 
         return USER_CLOSING;
