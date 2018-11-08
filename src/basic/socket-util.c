@@ -1205,7 +1205,6 @@ int socket_ioctl_fd(void) {
 
         return fd;
 }
-#endif // 0
 
 int sockaddr_un_unlink(const struct sockaddr_un *sa) {
         const char *p, * nul;
@@ -1230,3 +1229,4 @@ int sockaddr_un_unlink(const struct sockaddr_un *sa) {
 
         return 1;
 }
+#endif // 0

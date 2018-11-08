@@ -7,7 +7,7 @@
 
 #include "alloc-util.h"
 #include "fileio.h"
-//#include "hashmap.h"
+#include "hashmap.h"
 #include "macro.h"
 #include "mempool.h"
 #include "process-util.h"

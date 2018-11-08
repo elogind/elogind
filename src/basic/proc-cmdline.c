@@ -61,11 +61,15 @@ int proc_cmdline_parse_given(const char *line, proc_cmdline_parse_t parse_item, 
                 /* Filter out arguments that are intended only for the initrd */
                 q = startswith(word, "rd.");
                 if (q) {
+#if 0 /// elogind is never in initrd. Doesn't make any sense.
                         if (!in_initrd())
                                 continue;
 
                         if (flags & PROC_CMDLINE_STRIP_RD_PREFIX)
                                 key = q;
+#else
+                        continue;
+#endif // 0
                 }
 
                 value = strchr(key, '=');

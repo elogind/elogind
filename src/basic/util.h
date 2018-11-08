@@ -69,10 +69,8 @@ extern char **saved_argv;
 bool kexec_loaded(void);
 
 int prot_from_flags(int flags) _const_;
-#endif // 0
 
 bool in_initrd(void);
-#if 0 /// UNNEEDED by elogind
 void in_initrd_force(bool value);
 
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,

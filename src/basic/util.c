@@ -49,7 +49,9 @@
 
 int saved_argc = 0;
 char **saved_argv = NULL;
+#if 0 /// UNNEEDED by elogind
 static int saved_in_initrd = -1;
+#endif // 0
 
 size_t page_size(void) {
         static thread_local size_t pgsz = 0;
@@ -132,7 +134,6 @@ int prot_from_flags(int flags) {
                 return -EINVAL;
         }
 }
-#endif // 0
 
 bool in_initrd(void) {
         struct statfs s;
@@ -165,7 +166,6 @@ bool in_initrd(void) {
         return saved_in_initrd;
 }
 
-#if 0 /// UNNEEDED by elogind
 void in_initrd_force(bool value) {
         saved_in_initrd = value;
 }

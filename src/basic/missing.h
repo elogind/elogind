@@ -15,20 +15,17 @@
 #include <linux/neighbour.h>
 #include <linux/oom.h>
 #include <linux/rtnetlink.h>
-//#include <linux/stat.h>
 #include <net/ethernet.h>
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <sys/syscall.h>
 #include <uchar.h>
 #include <unistd.h>
 
-/// Additional includes needed by elogind
-#include "musl_missing.h"
-#if !HAVE_STRUCT_STATX_IN_SYS_STAT_H
 #if WANT_LINUX_STAT_H
+#include <linux/stat.h>
 #endif
 
 #if HAVE_AUDIT
@@ -59,6 +56,9 @@ struct sockaddr_vm {
                                sizeof(unsigned int)];
 };
 #endif /* !HAVE_LINUX_VM_SOCKETS_H */
+
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 #ifndef RLIMIT_RTTIME
 #define RLIMIT_RTTIME 15
