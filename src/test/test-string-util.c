@@ -556,9 +556,12 @@ static void test_memory_startswith(void) {
         assert_se(streq(memory_startswith("xxx", 4, "x"), "xx"));
         assert_se(streq(memory_startswith("xxx", 4, "xx"), "x"));
         assert_se(streq(memory_startswith("xxx", 4, "xxx"), ""));
+#if 0 /// This is not used anywhere in elogind and thus masked.
         assert_se(!memory_startswith("xxx", 4, "xxxx"));
+#endif // 0
 }
 
+#if 0 /// This is not used anywhere in elogind and thus masked.
 static void test_memory_startswith_no_case(void) {
         assert_se(streq(memory_startswith_no_case("", 0, ""), ""));
         assert_se(streq(memory_startswith_no_case("", 1, ""), ""));
@@ -581,6 +584,7 @@ static void test_memory_startswith_no_case(void) {
         assert_se(memory_startswith_no_case((char[2]){'X', 'x'}, 2, "Xx"));
         assert_se(memory_startswith_no_case((char[2]){'X', 'X'}, 2, "XX"));
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_string_erase();
@@ -616,7 +620,9 @@ int main(int argc, char *argv[]) {
         test_first_word();
         test_strlen_ptr();
         test_memory_startswith();
+#if 0 /// This is not used anywhere in elogind and thus masked.
         test_memory_startswith_no_case();
-
+#endif // 0
+        
         return 0;
 }

@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <pthread.h>
+#include <pthread.h>
 
-//#include "process-util.h"
-//#include "set.h"
+#include "process-util.h"
+#include "set.h"
 //#include "tests.h"
 
 #define NUM 100

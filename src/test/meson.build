@@ -953,14 +953,15 @@ tests += [
          [],
          []],
 
-        [['src/libelogind/sd-device/test-udev-device-thread.c'],
-         [libbasic,
-          libshared_static,
-          libudev],
-         [threads]],
-]
-
 #if 0 /// UNNEEDED in elogind
+#         [['src/libelogind/sd-device/test-udev-device-thread.c'],
+#          [libbasic,
+#           libshared_static,
+#           libudev],
+#          [threads]],
+# ]
+# 
+# 
 # if cxx.found()
 #         tests += [
 #                 [['src/libelogind/sd-bus/test-bus-vtable-cc.cc'],
@@ -968,6 +969,8 @@ tests += [
 #                  []]
 #         ]
 # endif
+#else
+]
 #endif // 0
 
 ############################################################

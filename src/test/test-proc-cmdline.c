@@ -170,7 +170,6 @@ static void test_proc_cmdline_key_startswith(void) {
         assert_se(proc_cmdline_key_startswith("foo-bar", "foo_"));
         assert_se(!proc_cmdline_key_startswith("foo-bar", "foo_xx"));
 }
-#endif // 0
 
 static void test_runlevel_to_target(void) {
         log_info("/* %s */", __func__);
@@ -189,16 +188,19 @@ static void test_runlevel_to_target(void) {
         assert_se(streq_ptr(runlevel_to_target("3"), NULL));
         assert_se(streq_ptr(runlevel_to_target("rd.rescue"), SPECIAL_RESCUE_TARGET));
 }
+#endif // 0
 
 int main(void) {
         log_parse_environment();
         log_open();
 
         test_proc_cmdline_parse();
+#if 0 /// UNNEEDED by elogind
         test_proc_cmdline_override();
         test_proc_cmdline_given(false);
         /* Repeat the same thing, but now flip our ininitrdness */
         test_proc_cmdline_given(true);
+#endif // 0
         test_proc_cmdline_key_streq();
 #if 0 /// UNNEEDED by elogind
         test_proc_cmdline_key_startswith();
