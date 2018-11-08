@@ -114,6 +114,7 @@ shared_sources = '''
         clean-ipc.h
         conf-parser.c
         conf-parser.h
+        enable-mempool.c
         musl_missing.c
         musl_missing.h
         nsflags.c
@@ -150,10 +151,11 @@ endif
 #endif // 0
 
 libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
-if conf.get('HAVE_KMOD') == 1
-        shared_sources += files('module-util.c')
-endif
-
+#if 0 /// elogind does not play around with kernel modules. Not its job.
+# if conf.get('HAVE_KMOD') == 1
+#         shared_sources += files('module-util.c')
+# endif
+#endif // 0
 
 #if 0 /// elogind doesn't need all this
 # libshared_deps = [threads,

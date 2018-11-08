@@ -22,8 +22,8 @@
 //#include "log.h"
 //#include "macro.h"
 #include "parse-util.h"
-//#include "path-util.h"
-//#include "proc-cmdline.h"
+#include "path-util.h"
+#include "proc-cmdline.h"
 #include "sleep-config.h"
 #include "string-util.h"
 #include "strv.h"
@@ -298,6 +298,7 @@ static bool enough_swap_for_hibernation(void) {
         return r;
 }
 
+#if 0 /// elogind is not init and can not check boot devices and partitions.
 static int check_resume_keys(const char *key, const char *value, void *data) {
         assert_se(key);
         assert_se(data);
@@ -379,6 +380,7 @@ static int resume_configured(void) {
         log_debug("Couldn't detect any resume mechanism, hibernation is disabled.");
         return false;
 }
+#endif // 0
 
 int read_fiemap(int fd, struct fiemap **ret) {
         _cleanup_free_ struct fiemap *fiemap = NULL, *result_fiemap = NULL;
@@ -464,7 +466,11 @@ int read_fiemap(int fd, struct fiemap **ret) {
         return 0;
 }
 
+#if 0 /// elogind has to ask the manager for some stuff
 static int can_sleep_internal(const char *verb, bool check_allowed);
+#else
+static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed);
+#endif // 0
 
 #if 0 /// elogind has to ask the manager for some stuff
 static bool can_s2h(void) {
@@ -484,10 +490,10 @@ static bool can_s2h(Manager *m) {
         FOREACH_STRING(p, "suspend", "hibernate") {
 #if 0 /// elogind must transport a pointer to its managers instance
                 r = can_sleep_internal(p, false);
-                if (IN_SET(r, 0, -ENOSPC, -EADV)) {
 #else
                 r = can_sleep(m, p);
 #endif // 0
+                if (IN_SET(r, 0, -ENOSPC, -EADV)) {
                         log_debug("Unable to %s system.", p);
                         return false;
                 }
@@ -504,8 +510,11 @@ static int can_sleep_internal(const char *verb, bool check_allowed) {
         bool allow;
         _cleanup_strv_free_ char **modes = NULL, **states = NULL;
         int r;
+
+
+        assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 #else
-int can_sleep(Manager *m, const char *verb) {
+static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) {
         assert(m);
 
         char **modes  = streq(verb, "suspend")   ? m->suspend_mode     :
@@ -516,26 +525,27 @@ int can_sleep(Manager *m, const char *verb) {
                                                    m->hybrid_sleep_state;
 #endif // 0
 
-        assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
-
-#if 0 /// elogind must transport a pointer to its managers instance
-#else
-                return can_s2h(m);
-#endif // 0
 
 #if 0 /// already parsed by elogind config
         r = parse_sleep_config(verb, &allow, &modes, &states, NULL);
         if (r < 0)
                 return false;
-#endif // 0
 
         if (check_allowed && !allow) {
+#else
+        if (check_allowed && !STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
+#endif // 0
+
                 log_debug("Sleep mode \"%s\" is disabled by configuration.", verb);
                 return false;
         }
 
         if (streq(verb, "suspend-then-hibernate"))
+#if 0 /// elogind must transport a pointer to its managers instance
                 return can_s2h();
+#else
+                return can_s2h(m);
+#endif // 0
 
         if (!can_sleep_state(states) || !can_sleep_disk(modes))
                 return false;
@@ -546,14 +556,22 @@ int can_sleep(Manager *m, const char *verb) {
         if (!enough_swap_for_hibernation())
                 return -ENOSPC;
 
+#if 0 /// elogind is not init and can not check this
         r = resume_configured();
         if (r <= 0)
                 /* We squash all errors (e.g. EPERM) into a single value for reporting. */
                 return -EADV;
+#endif // 0
 
         return true;
 }
 
+#if 0 /// elogind has to ask the manager for some stuff
 int can_sleep(const char *verb) {
         return can_sleep_internal(verb, true);
 }
+#else
+int can_sleep(Manager *m, const char *verb) {
+        return can_sleep_internal(m, verb, true);
+}
+#endif // 0

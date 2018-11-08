@@ -6,8 +6,8 @@
 
 int read_fiemap(int fd, struct fiemap **ret);
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int parse_sleep_config(const char *verb, bool *ret_allow, char ***ret_modes, char ***ret_states, usec_t *ret_delay);
+#endif // 0
 int find_hibernate_location(char **device, char **type, size_t *size, size_t *used);
 
 #if 0 /// elogind has to transport its manager instance
