@@ -5,7 +5,7 @@
 <refentry id="user@.service">
   <refentryinfo>
     <title>user@.service</title>
-    <productname>elogind</productname>
+    <productname>systemd</productname>
   </refentryinfo>
 
   <refmeta>
@@ -29,14 +29,14 @@
     <title>Description</title>
 
     <para>The
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     system manager (PID 1) starts user manager instances as
     <filename>user@<replaceable>UID</replaceable>.service</filename>, where the user's numerical UID
-    is used as the instance identifier. Each <command>elogind --user</command> instance manages a
+    is used as the instance identifier. Each <command>systemd --user</command> instance manages a
     hierarchy of its own units. See
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry> for
-    a discussion of elogind units and
-    <citerefentry><refentrytitle>elogind.special</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry> for
+    a discussion of systemd units and
+    <citerefentry><refentrytitle>systemd.special</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     for a list of units that form the basis of the unit hierarchies of system and user units.</para>
 
     <para><filename>user@<replaceable>UID</replaceable>.service</filename> is accompanied by the
@@ -50,13 +50,13 @@
     for example by
     <citerefentry><refentrytitle>sshd</refentrytitle><manvolnum>8</manvolnum></citerefentry> or a
     display manager like <command>gdm</command>, in which case they form a .scope unit (see
-    <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>).
+    <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>).
     Both <filename>user@<replaceable>UID</replaceable>.service</filename> and the scope units are
     collected under a <filename>user-<replaceable>UID</replaceable>.slice</filename>.</para>
 
     <para>Individual <filename>user-<replaceable>UID</replaceable>.slice</filename> slices are
     collected under <filename>user.slice</filename>, see
-    <citerefentry><refentrytitle>elogind.special</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>systemd.special</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     </para>
   </refsect1>
 
@@ -67,35 +67,35 @@
     different levels. As described in the previous section, <filename>user.slice</filename> contains
     processes of all users, so any resource limits on that slice apply to all users together. The
     usual way to configure them would be through drop-ins, e.g. <filename
-    noindex='true'>/etc/elogind/system/user.slice.d/resources.conf</filename>.
+    noindex='true'>/etc/systemd/system/user.slice.d/resources.conf</filename>.
     </para>
 
     <para>The processes of a single user are collected under
     <filename>user-<replaceable>UID</replaceable>.slice</filename>. Resource limits for that user
     can be configured through drop-ins for that unit, e.g. <filename
-    noindex='true'>/etc/elogind/system/user-1000.slice.d/resources.conf</filename>. If the limits
+    noindex='true'>/etc/systemd/system/user-1000.slice.d/resources.conf</filename>. If the limits
     should apply to all users instead, they may be configured through drop-ins for the truncated
     unit name, <filename>user-.slice</filename>. For example, configuration in <filename
-    noindex='true'>/etc/elogind/system/user-.slice.d/resources.conf</filename> is included in all
+    noindex='true'>/etc/systemd/system/user-.slice.d/resources.conf</filename> is included in all
     <filename>user-<replaceable>UID</replaceable>.slice</filename> units, see
-    <citerefentry><refentrytitle>elogind.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for a discussion of the drop-in mechanism.</para>
 
     <para>When a user logs in and a .scope unit is created for the session (see previous section),
     the creation of the scope may be managed through
-    <citerefentry><refentrytitle>pam_elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>pam_systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     This PAM module communicates with
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>systemd-logind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     to create the session scope and provide access to hardware resources. Resource limits for the
     scope may be configured through the PAM module configuration, see
-    <citerefentry><refentrytitle>pam_elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>pam_systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     Configuring them through the normal unit configuration is also possible, but since
     the name of the slice unit is generally unpredictable, this is less useful.</para>
 
     <para>In general any resources that apply to units may be set for
     <filename>user@<replaceable>UID</replaceable>.service</filename> and the slice
     units discussed above, see
-    <citerefentry><refentrytitle>elogind.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for an overview.</para>
   </refsect1>
 
@@ -104,7 +104,7 @@
     <example>
       <title>Hierarchy of control groups with two logged in users</title>
 
-      <programlisting>$ elogind-cgls
+      <programlisting>$ systemd-cgls
 Control group /:
 -.slice
 ├─user.slice
@@ -125,7 +125,7 @@ Control group /:
 │ │   ├─6497 sshd: zbyszek [priv]
 │ │   ├─6502 sshd: zbyszek@pts/6
 │ │   ├─6509 -zsh
-│ │   └─6602 elogind-cgls --no-pager
+│ │   └─6602 systemd-cgls --no-pager
 │ …
 │ └─user-1001.slice
 │   ├─session-20.scope
@@ -134,7 +134,7 @@ Control group /:
 │   │ └─6717 -bash
 │   └─user@1001.service
 │     ├─init.scope
-│     │ ├─6680 /usr/lib/elogind/elogind --user
+│     │ ├─6680 /usr/lib/systemd/systemd --user
 │     │ └─6688 (sd-pam)
 │     └─sleep.service
 │       └─6706 /usr/bin/sleep 30
@@ -161,11 +161,11 @@ Control group /:
       <title>Default user resource limits</title>
 
       <programlisting>$ systemctl cat user-1000.slice
-# /usr/lib/elogind/system/user-.slice.d/10-defaults.conf
+# /usr/lib/systemd/system/user-.slice.d/10-defaults.conf
 # …
 [Unit]
 Description=User Slice of UID %j
-After=elogind-user-sessions.service
+After=systemd-user-sessions.service
 
 [Slice]
 TasksMax=33%</programlisting>
@@ -178,12 +178,12 @@ TasksMax=33%</programlisting>
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.special</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.special</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     </para>
   </refsect1>
