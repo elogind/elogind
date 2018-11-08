@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239',
+        version : '239.1',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -1566,8 +1566,8 @@ subdir('src/login')
 libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sym)
 libelogind = shared_library(
         'elogind',
-        version : libelogind_version,
         disable_mempool_c,
+        version : libelogind_version,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -1621,10 +1621,10 @@ install_libelogind_static = static_library(
                         libselinux,
 #if 0 /// No grypt with elogind
 #                         libgcrypt],
-#         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #else
                         ],
 #endif // 0
+        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 
 ############################################################
 
@@ -1967,6 +1967,14 @@ test_dlopen = executable(
 #                      test_dlopen,
 #                      args : [pam_systemd.full_path()]) # path to dlopen must include a slash
 #         endif
+#
+#         executable('systemd-user-runtime-dir',
+#                    user_runtime_dir_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
 #else
 
 executable('elogind',
@@ -2001,15 +2009,6 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
-        executable('elogind-user-runtime-dir',
-        executable('elogind-user-runtime-dir',
-                   user_runtime_dir_sources,
-                   include_directories : includes,
-                   link_with : [libshared],
-                   install_rpath : rootlibexecdir,
-                   install : true,
-                   install_dir : rootlibexecdir)
-endif
 
 if conf.get('HAVE_PAM') == 1
         version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)
@@ -3233,14 +3232,14 @@ status = [
         'rootexeclib dir:                   @0@'.format(rootlibexecdir),
 #endif // 1
 #if 0 /// UNNEEDED by elogind
+#         'SysV init scripts:                 @0@'.format(sysvinit_path),
+#         'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
 #endif // 0
-        'SysV init scripts:                 @0@'.format(sysvinit_path),
-        'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
         'PAM modules directory:             @0@'.format(pamlibdir),
         'PAM configuration directory:       @0@'.format(pamconfdir),
 #if 0 /// UNNEEDED by elogind
+#         'RPM macros directory:              @0@'.format(rpmmacrosdir),
 #endif // 0
-        'RPM macros directory:              @0@'.format(rpmmacrosdir),
         'modprobe.d directory:              @0@'.format(modprobedir),
         'D-Bus policy directory:            @0@'.format(dbuspolicydir),
         'D-Bus session directory:           @0@'.format(dbussessionservicedir),
@@ -3296,8 +3295,11 @@ status = [
 
 status += [
         'static libelogind:                 @0@'.format(get_option('static-libelogind')),
-        'static libudev:                    @0@'.format(get_option('static-libudev'))]
-
+#if 0 /// elogind does not ship libudeb. Obviously.
+#         'static libudev:                    @0@'.format(get_option('static-libudev'))]
+#else
+        ]
+#endif // 0
 # TODO:
 # CFLAGS:   ${OUR_CFLAGS} ${CFLAGS}
 # CPPFLAGS: ${OUR_CPPFLAGS} ${CPPFLAGS}
@@ -3416,9 +3418,11 @@ foreach tuple : [
         ['debug hashmap'],
         ['debug mmap cache'],
         ['valgrind',         conf.get('VALGRIND') == 1],
-        ['link-udev-shared',      get_option('link-udev-shared')],
-        ['link-systemctl-shared', get_option('link-systemctl-shared')],
-]
+#if 0 /// elogind neither ships libudev nor systemctl.
+#         ['link-udev-shared',      get_option('link-udev-shared')],
+#         ['link-systemctl-shared', get_option('link-systemctl-shared')],
+#endif // 0
+        ]
 
         if tuple.length() >= 2
                 cond = tuple[1]
