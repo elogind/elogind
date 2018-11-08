@@ -310,6 +310,7 @@ finish:
         return -bus_error_name_to_errno(e->name);
 }
 
+#if 0 /// UNNEEDED by elogind
 int sd_bus_error_move(sd_bus_error *dest, sd_bus_error *e) {
         int r;
 
@@ -331,6 +332,7 @@ int sd_bus_error_move(sd_bus_error *dest, sd_bus_error *e) {
 
         return r;
 }
+#endif // 0
 
 _public_ int sd_bus_error_set_const(sd_bus_error *e, const char *name, const char *message) {
         if (!name)

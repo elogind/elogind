@@ -48,4 +48,6 @@ int bus_error_set_errnofv(sd_bus_error *e, int error, const char *format, va_lis
 
 BUS_ERROR_MAP_ELF_USE(bus_standard_errors);
 
+#if 0 /// UNNEEDED by elogind
 int sd_bus_error_move(sd_bus_error *dest, sd_bus_error *e);
+#endif // 0
