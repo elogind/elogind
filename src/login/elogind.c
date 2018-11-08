@@ -461,17 +461,14 @@ int elogind_manager_startup(Manager *m) {
 
         assert(m);
 
-        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGINT, -1) >= 0);
         r = sd_event_add_signal(m->event, NULL, SIGINT, elogind_signal_handler, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to register SIGINT handler: %m");
 
-        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGQUIT, -1) >= 0);
         r = sd_event_add_signal(m->event, NULL, SIGQUIT, elogind_signal_handler, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to register SIGQUIT handler: %m");
 
-        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGTERM, -1) >= 0);
         r = sd_event_add_signal(m->event, NULL, SIGTERM, elogind_signal_handler, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to register SIGTERM handler: %m");
