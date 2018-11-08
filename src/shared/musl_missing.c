@@ -26,14 +26,14 @@
 #if HAVE_PROGRAM_INVOCATION_NAME == 0
 char *program_invocation_name       = NULL;
 char *program_invocation_short_name = NULL;
-#endif // libc does not provide these variables
 
-const char *program_arg_name = NULL;
+const char *program_arg_name = NULL; /* Helper */
+#endif // libc does not provide program_invocation_[short_]name
 
 #include "musl_missing.h"
 
+#if HAVE_PROGRAM_INVOCATION_NAME == 0
 static void elogind_free_program_name(void) {
-
         if (program_invocation_name && (program_invocation_name != program_arg_name) && strlen(program_invocation_name))
                 program_invocation_name       = mfree(program_invocation_name);
         if (program_invocation_short_name && (program_invocation_short_name != program_arg_name) && strlen(program_invocation_short_name))
@@ -55,8 +55,11 @@ void elogind_set_program_name(const char* pcall) {
                 program_invocation_name       = strdup(program_arg_name);
         if (NULL == program_invocation_short_name)
                 program_invocation_short_name = strdup(basename(program_arg_name));
-#if HAVE_PROGRAM_INVOCATION_NAME == 0
         atexit(elogind_free_program_name);
-#endif // libc does not provide these variables
 }
+#else
+void elogind_set_program_name(const char* pcall) {
+        assert(pcall && pcall[0]);
+}
+#endif // libc does not provide program_invocation_[short_]name
 
