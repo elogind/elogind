@@ -398,6 +398,22 @@ int elogind_manager_new(Manager* m) {
         if (r > -1)
                 r = manager_setup_cgroup(m);
 
+        /* Install our signal handler */
+        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGINT, -1) >= 0);
+        r = sd_event_add_signal(m->event, NULL, SIGINT, elogind_signal_handler, m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register SIGINT handler: %m");
+
+        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGQUIT, -1) >= 0);
+        r = sd_event_add_signal(m->event, NULL, SIGQUIT, elogind_signal_handler, m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register SIGQUIT handler: %m");
+
+        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGTERM, -1) >= 0);
+        r = sd_event_add_signal(m->event, NULL, SIGTERM, elogind_signal_handler, m);
+        if (r < 0)
+                return log_error_errno(r, "Failed to register SIGTERM handler: %m");
+
         return r;
 }
 
@@ -452,26 +468,4 @@ void elogind_manager_reset_config(Manager* m) {
                           m->hibernate_delay_sec / USEC_PER_SEC,
                           m->hibernate_delay_sec / USEC_PER_MINUTE);
 #endif // ENABLE_DEBUG_ELOGIND
-}
-
-
-/// Add-On for manager_startup()
-int elogind_manager_startup(Manager *m) {
-        int r;
-
-        assert(m);
-
-        r = sd_event_add_signal(m->event, NULL, SIGINT, elogind_signal_handler, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to register SIGINT handler: %m");
-
-        r = sd_event_add_signal(m->event, NULL, SIGQUIT, elogind_signal_handler, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to register SIGQUIT handler: %m");
-
-        r = sd_event_add_signal(m->event, NULL, SIGTERM, elogind_signal_handler, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to register SIGTERM handler: %m");
-
-        return 0;
 }
