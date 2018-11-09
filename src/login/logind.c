@@ -89,6 +89,7 @@ static int manager_new(Manager **ret) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind uses its own signal handler, installed at elogind_manager_new()
         r = sd_event_add_signal(m->event, NULL, SIGINT, NULL, NULL);
         if (r < 0)
                 return r;
@@ -96,6 +97,7 @@ static int manager_new(Manager **ret) {
         r = sd_event_add_signal(m->event, NULL, SIGTERM, NULL, NULL);
         if (r < 0)
                 return r;
+#endif // 0
 
         (void) sd_event_set_watchdog(m->event, true);
 
@@ -1151,9 +1153,6 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to register SIGHUP handler: %m");
 
-#if 1 /// elogind needs some extra preparations before connecting...
-        elogind_manager_startup(m);
-#endif // 1
         /* Connect to utmp */
         manager_connect_utmp(m);
 
