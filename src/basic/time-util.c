@@ -14,7 +14,6 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "def.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
@@ -1215,7 +1214,7 @@ int get_timezones(char ***ret) {
 
         assert(ret);
 
-        zones = strv_new("UTC", NULL);
+        zones = strv_new("UTC");
         if (!zones)
                 return -ENOMEM;
 
