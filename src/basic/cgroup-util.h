@@ -9,8 +9,6 @@
 #include <sys/types.h>
 
 #include "def.h"
-//#include "hashmap.h"
-//#include "macro.h"
 #include "set.h"
 
 #if 0 /// elogind has them set through config.h
