@@ -45,6 +45,7 @@
 //#include "util.h"
 //#include "util.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **ret,
              Manager *m,
@@ -342,9 +343,8 @@ int user_load(User *u) {
                            "STOPPING",               &stopping,
                            "REALTIME",               &realtime,
                            "MONOTONIC",              &monotonic,
-                           "LAST_SESSION_TIMESTAMP", &last_session_timestamp,
-                           NULL);
                 log_debug_elogind(" --> User stopping    : %d", u->stopping);
+                           "LAST_SESSION_TIMESTAMP", &last_session_timestamp);
         if (r == -ENOENT)
                 return 0;
         if (r < 0)
@@ -438,6 +438,8 @@ int user_start(User *u) {
          * XDG_RUNTIME_DIR out of it while starting up systemd --user.
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
