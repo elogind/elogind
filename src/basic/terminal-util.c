@@ -1109,17 +1109,14 @@ int openpt_in_namespace(pid_t pid, int flags) {
         if (socketpair(AF_UNIX, SOCK_DGRAM, 0, pair) < 0)
                 return -errno;
 
-        r = safe_fork("(sd-openpt)", FORK_RESET_SIGNALS|FORK_DEATHSIG, &child);
+        r = namespace_fork("(sd-openptns)", "(sd-openpt)", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG,
+                           pidnsfd, mntnsfd, -1, usernsfd, rootfd, &child);
         if (r < 0)
                 return r;
         if (r == 0) {
                 int master;
 
                 pair[0] = safe_close(pair[0]);
-
-                r = namespace_enter(pidnsfd, mntnsfd, -1, usernsfd, rootfd);
-                if (r < 0)
-                        _exit(EXIT_FAILURE);
 
                 master = posix_openpt(flags|O_NOCTTY|O_CLOEXEC);
                 if (master < 0)
@@ -1136,7 +1133,7 @@ int openpt_in_namespace(pid_t pid, int flags) {
 
         pair[1] = safe_close(pair[1]);
 
-        r = wait_for_terminate_and_check("(sd-openpt)", child, 0);
+        r = wait_for_terminate_and_check("(sd-openptns)", child, 0);
         if (r < 0)
                 return r;
         if (r != EXIT_SUCCESS)
@@ -1158,17 +1155,14 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode) {
         if (socketpair(AF_UNIX, SOCK_DGRAM, 0, pair) < 0)
                 return -errno;
 
-        r = safe_fork("(sd-terminal)", FORK_RESET_SIGNALS|FORK_DEATHSIG, &child);
+        r = namespace_fork("(sd-terminalns)", "(sd-terminal)", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG,
+                           pidnsfd, mntnsfd, -1, usernsfd, rootfd, &child);
         if (r < 0)
                 return r;
         if (r == 0) {
                 int master;
 
                 pair[0] = safe_close(pair[0]);
-
-                r = namespace_enter(pidnsfd, mntnsfd, -1, usernsfd, rootfd);
-                if (r < 0)
-                        _exit(EXIT_FAILURE);
 
                 master = open_terminal(name, mode|O_NOCTTY|O_CLOEXEC);
                 if (master < 0)
@@ -1182,7 +1176,7 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode) {
 
         pair[1] = safe_close(pair[1]);
 
-        r = wait_for_terminate_and_check("(sd-terminal)", child, 0);
+        r = wait_for_terminate_and_check("(sd-terminalns)", child, 0);
         if (r < 0)
                 return r;
         if (r != EXIT_SUCCESS)
