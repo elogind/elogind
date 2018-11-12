@@ -48,7 +48,6 @@ void inhibitor_free(Inhibitor *i) {
         assert(i);
 
         log_debug_elogind("Freeing inhibitor %s", i->id);
-
         hashmap_remove(i->manager->inhibitors, i->id);
 
         inhibitor_remove_fifo(i);
@@ -168,7 +167,6 @@ int inhibitor_stop(Inhibitor *i) {
         assert(i);
 
         log_debug_elogind("Stopping inhibitor %s ...", i->id);
-
         if (i->started)
                 log_debug("Inhibitor %s (%s) pid="PID_FMT" uid="UID_FMT" mode=%s stopped.",
                           strna(i->who), strna(i->why),
@@ -200,7 +198,7 @@ int inhibitor_load(Inhibitor *i) {
         char *cc;
         int r;
 
-        r = parse_env_file(NULL, i->state_file, NEWLINE,
+        r = parse_env_file(NULL, i->state_file,
                            "WHAT", &what,
                            "UID", &uid,
                            "PID", &pid,
@@ -272,7 +270,6 @@ int inhibitor_load(Inhibitor *i) {
                         i->fifo_path = mfree(i->fifo_path);
                 }
 #endif // 1
-
                 fd = inhibitor_create_fifo(i);
                 safe_close(fd);
         }
@@ -288,7 +285,6 @@ static int inhibitor_dispatch_fifo(sd_event_source *s, int fd, uint32_t revents,
         assert(i);
 
         log_debug_elogind("EOF on Inhibitor %s FIFO: Inhibitor went away, stopping...", i->id);
-
         inhibitor_stop(i);
         inhibitor_free(i);
 

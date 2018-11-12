@@ -44,6 +44,7 @@
 //#include "util.h"
 //#include "util.h"
 //#include "util.h"
+//#include "util.h"
 
 int user_new(User **ret,
              Manager *m,
@@ -334,9 +335,9 @@ int user_load(User *u) {
 
         assert(u);
 
-        r = parse_env_file(NULL, u->state_file, NEWLINE,
 #if 0 /// elogind neither supports service nor slice jobs
 #endif // 0
+        r = parse_env_file(NULL, u->state_file,
                            "SERVICE_JOB",            &u->service_job,
                            "STOPPING",               &stopping,
                            "REALTIME",               &realtime,
@@ -437,6 +438,8 @@ int user_start(User *u) {
          * XDG_RUNTIME_DIR out of it while starting up systemd --user.
          * We need to do user_save_internal() because we have not
          * "officially" started yet. */
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
