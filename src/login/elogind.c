@@ -156,7 +156,7 @@ static int elogind_daemonize(void) {
 
 /// Simple tool to see, if elogind is already running
 static pid_t elogind_is_already_running(bool need_pid_file) {
-        _cleanup_free_ char *s = NULL;
+        _cleanup_free_ char *s = NULL, *comm = NULL;
         pid_t pid;
         int r;
 
@@ -170,8 +170,17 @@ static pid_t elogind_is_already_running(bool need_pid_file) {
         if (r < 0)
                 goto we_are_alone;
 
-        if ( (pid != getpid_cached()) && pid_is_alive(pid))
-                return pid;
+        if ( (pid != getpid_cached()) && pid_is_alive(pid)) {
+                /* If the old elogind process currently running was forked into
+                 * background, its name will be "elogind-daemon", while this
+                 * process will be "elogind".
+                 * Therefore check comm with startswith().
+                 */
+                get_process_comm(pid, &comm);
+                if (NULL == startswith(strna(comm), program_invocation_short_name))
+                        goto we_are_alone;
+        }
+        return pid;
 
 we_are_alone:
 
@@ -372,7 +381,7 @@ void elogind_manager_free(Manager* m) {
 
 /// Add-On for manager_new()
 int elogind_manager_new(Manager* m) {
-        int r = 0, e = 0;
+        int r = 0;
 
         m->cgroups_agent_fd = -1;
         m->pin_cgroupfs_fd  = -1;
