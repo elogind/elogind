@@ -308,6 +308,12 @@ int rename_process(const char name[]) {
                 strncpy(program_invocation_name, name, k);
                 if (l > k)
                         truncated = true;
+
+#if 1 /// elogind takes care of situations where the short name points into the long.
+                if ( (program_invocation_short_name >= program_invocation_name)
+                  && (program_invocation_short_name <  program_invocation_name + k) )
+                        program_invocation_short_name = program_invocation_name;
+#endif // 1
         }
 
         /* Third step, completely replace the argv[] array the kernel maintains for us. This requires privileges, but
