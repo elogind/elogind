@@ -34,9 +34,9 @@ const char *program_arg_name = NULL; /* Helper */
 
 #if HAVE_PROGRAM_INVOCATION_NAME == 0
 static void elogind_free_program_name(void) {
-        if (program_invocation_name && (program_invocation_name != program_arg_name) && strlen(program_invocation_name))
+        if (program_invocation_name)
                 program_invocation_name       = mfree(program_invocation_name);
-        if (program_invocation_short_name && (program_invocation_short_name != program_arg_name) && strlen(program_invocation_short_name))
+        if (program_invocation_short_name)
                 program_invocation_short_name = mfree(program_invocation_short_name);
 }
 
