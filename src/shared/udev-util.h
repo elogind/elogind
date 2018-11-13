@@ -18,7 +18,8 @@ const char *resolve_name_timing_to_string(ResolveNameTiming i) _const_;
 int udev_parse_config_full(
                 unsigned *ret_children_max,
                 usec_t *ret_exec_delay_usec,
-                usec_t *ret_event_timeout_usec);
+                usec_t *ret_event_timeout_usec,
+                ResolveNameTiming *ret_resolve_name_timing);
 #else
 #include <libudev.h>
 #endif // 0
@@ -29,5 +30,5 @@ int udev_parse_config_full(
 #if 0 /// UNNEEDED by elogind
 #endif // 0
 static inline int udev_parse_config(void) {
-        return udev_parse_config_full(NULL, NULL, NULL);
+        return udev_parse_config_full(NULL, NULL, NULL, NULL);
 }
