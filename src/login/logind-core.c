@@ -33,7 +33,11 @@ void manager_reset_config(Manager *m) {
 #endif // 0
         m->remove_ipc = true;
         m->inhibit_delay_max = 5 * USEC_PER_SEC;
+#if 0 /// elogind does not start a user service manager, the delay is unneeded.
         m->user_stop_delay = 10 * USEC_PER_SEC;
+#else
+        m->user_stop_delay = 0;
+#endif // 0
 
         m->handle_power_key = HANDLE_POWEROFF;
         m->handle_suspend_key = HANDLE_SUSPEND;
@@ -419,8 +423,9 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
                 *ret = u;
 
 #else
+        // If a session was found, ignore it if it is already closing.
         r = manager_get_session_by_pid (m, pid, &s);
-        if (r <= 0)
+        if (r <= 0 || SESSION_CLOSING == session_get_state(s))
                 goto not_found;
 
         if (ret)
