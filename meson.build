@@ -93,7 +93,7 @@ endif
 
 conf.set10('BUMP_PROC_SYS_FS_FILE_MAX', get_option('bump-proc-sys-fs-file-max'))
 conf.set10('BUMP_PROC_SYS_FS_NR_OPEN',  get_option('bump-proc-sys-fs-nr-open'))
-conf.set('HIGH_RLIMIT_NOFILE',          256*1024)
+conf.set('HIGH_RLIMIT_NOFILE',          512*1024)
 
 # join_paths ignore the preceding arguments if an absolute component is
 # encountered, so this should canonicalize various paths when they are
@@ -506,7 +506,6 @@ decl_headers = '''
 foreach decl : ['char16_t',
                 'char32_t',
                 'struct fib_rule_uid_range',
-                'struct fib_rule_port_range',
                 'struct statx',
                ]
 
@@ -552,7 +551,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',                'linux/if_link.h'],
                 ['IPVLAN_F_PRIVATE',                        'linux/if_link.h'],
                 ['NDA_IFINDEX',                             'linux/neighbour.h'],
                 ['IFA_FLAGS',                               'linux/if_addr.h'],
-                ['FRA_DPORT_RANGE',                         'linux/fib_rules.h'],
+                ['FRA_UID_RANGE',                           'linux/fib_rules.h'],
                 ['LO_FLAGS_PARTSCAN',                       'linux/loop.h'],
                 ['VXCAN_INFO_PEER',                         'linux/can/vxcan.h'],
                 ['FOU_ATTR_REMCSUM_NOPARTIAL',              'linux/fou.h'],
