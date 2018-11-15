@@ -116,6 +116,12 @@ struct Manager {
          * the job of it */
         char *action_job;
 #else
+        /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or
+           SYSTEM_POWEROFF_PATH that fail, the ongoing suspend/poweroff
+           action will be cancelled if any of these are set to true. */
+        bool allow_poweroff_interrupts, allow_suspend_interrupts;
+        bool callback_failed, callback_must_succeed;
+
         /* If a shutdown/suspend was delayed due to a inhibitor this
            contains the action we are supposed to perform after the
            delay is over */

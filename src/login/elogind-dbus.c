@@ -19,13 +19,16 @@
 
 
 #include "elogind-dbus.h"
-#include "exec-util.h"
+//#include "exec-util.h"
 #include "process-util.h"
 #include "sd-messages.h"
 #include "sleep.h"
 #include "string-util.h"
 #include "strv.h"
 #include "update-utmp.h"
+/// Additional includes needed by elogind
+#include "exec-elogind.h"
+#include "utmp-wtmp.h"
 
 
 static int bus_manager_log_shutdown(
@@ -75,15 +78,46 @@ static int bus_manager_log_shutdown(
 }
 
 /* elogind specific helper to make HALT and REBOOT possible. */
-static int run_helper(const char *helper, const char *arg_verb) {
-        char *arguments[3];
+static int run_helper(Manager* m, const char *helper, const char *arg_verb) {
         static const char* const dirs[] = { SYSTEM_SHUTDOWN_PATH, NULL };
-        int   r   = 0;
+        _cleanup_free_ char* l = NULL;
+        int r, e;
+        void* gather_args[] = {
+                [STDOUT_GENERATE] = m,
+                [STDOUT_COLLECT] = m,
+                [STDOUT_CONSUME] = m,
+        };
+        char* verb_args[] = {
+                NULL,
+                (char*)arg_verb,
+                NULL
+        };
 
-        arguments[0] = NULL;
-        arguments[1] = (char*)arg_verb;
-        arguments[2] = NULL;
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL);
+        m->callback_failed = false;
+        m->callback_must_succeed = m->allow_poweroff_interrupts;
+
+        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL);
+
+        if ( m->callback_must_succeed && ((r < 0) || m->callback_failed) ) {
+                e = asprintf(&l, "A shutdown script in %s failed! [%d]\n"
+                                 "The system %s has been cancelled!",
+                             SYSTEM_SHUTDOWN_PATH, r, arg_verb);
+                if (e < 0) {
+                        log_oom();
+                        return -ENOMEM;
+                }
+
+                utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
+
+                log_struct_errno(LOG_ERR, r,
+                                 "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                                 LOG_MESSAGE("A shutdown script in %s failed [%d]: %m\n"
+                                             "The system %s has been cancelled!",
+                                             SYSTEM_SHUTDOWN_PATH, r, arg_verb),
+                                 "SHUTDOWN=%s", arg_verb);
+
+                return -ECANCELED;
+        }
 
         r = safe_fork_full(helper, NULL, 0, FORK_RESET_SIGNALS|FORK_REOPEN_LOG, NULL);
 
@@ -107,13 +141,13 @@ static int shutdown_or_sleep(Manager *m, HandleAction action) {
 
         switch (action) {
         case HANDLE_POWEROFF:
-                return run_helper(POWEROFF, "poweroff");
+                return run_helper(m, POWEROFF, "poweroff");
         case HANDLE_REBOOT:
-                return run_helper(REBOOT,   "reboot");
+                return run_helper(m, REBOOT,   "reboot");
         case HANDLE_HALT:
-                return run_helper(HALT,     "halt");
+                return run_helper(m, HALT,     "halt");
         case HANDLE_KEXEC:
-                return run_helper(KEXEC,    "kexec");
+                return run_helper(m, KEXEC,    "kexec");
         case HANDLE_SUSPEND:
                 return do_sleep(m, "suspend");
         case HANDLE_HIBERNATE:
@@ -170,6 +204,9 @@ int execute_shutdown_or_sleep(
         /* no more pending actions, whether this failed or not */
         m->pending_action = HANDLE_IGNORE;
 
+        if (r < 0)
+                return r;
+
         /* As elogind can not rely on a systemd manager to call all
          * sleeping processes to wake up, we have to tell them all
          * by ourselves. */
@@ -178,9 +215,6 @@ int execute_shutdown_or_sleep(
                 m->action_what = 0;
         } else
                 m->action_what = w;
-
-        if (r < 0)
-                return r;
 
         /* Make sure the lid switch is ignored for a while */
         manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
