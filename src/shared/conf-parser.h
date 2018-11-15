@@ -146,7 +146,6 @@ CONFIG_PARSER_PROTOTYPE(config_parse_personality);
 CONFIG_PARSER_PROTOTYPE(config_parse_permille);
 CONFIG_PARSER_PROTOTYPE(config_parse_ifname);
 CONFIG_PARSER_PROTOTYPE(config_parse_ip_port);
-CONFIG_PARSER_PROTOTYPE(config_parse_join_controllers);
 CONFIG_PARSER_PROTOTYPE(config_parse_mtu);
 CONFIG_PARSER_PROTOTYPE(config_parse_rlimit);
 #endif // 0
