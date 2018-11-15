@@ -2,7 +2,7 @@
 /***
   This file is part of elogind.
 
-  Copyright 2017 Sven Eden
+  Copyright 2017-2018 Sven Eden
 
   elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
