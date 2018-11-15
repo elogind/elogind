@@ -196,6 +196,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/escape.h" />
+		<Unit filename="../src/basic/exec-elogind.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/exec-elogind.h" />
 		<Unit filename="../src/basic/exec-util.c">
 			<Option compilerVar="CC" />
 		</Unit>

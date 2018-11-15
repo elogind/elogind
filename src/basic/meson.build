@@ -250,6 +250,8 @@ basic_sources = files('''
         errno-list.h
         escape.c
         escape.h
+        exec-elogind.c
+        exec-elogind.h
         exec-util.c
         exec-util.h
         extract-word.c

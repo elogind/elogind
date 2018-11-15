@@ -412,6 +412,15 @@
         </varlistentry>
 
         <varlistentry>
+          <term>suspend-then-hibernate</term>
+
+          <listitem><para>enter suspend state
+          with a timeout that will activate
+          hibernate later.
+          </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><varname>SuspendMode=</varname></term>
           <term><varname>HibernateMode=</varname></term>
           <term><varname>HybridSleepMode=</varname></term>
@@ -440,6 +449,8 @@
         </varlistentry>
 
       </variablelist>
+
+      <para></para>
     </refsect2>
     <!-- // 1 -->
   </refsect1>

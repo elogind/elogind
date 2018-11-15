@@ -387,6 +387,12 @@ int elogind_manager_new(Manager* m) {
         m->pin_cgroupfs_fd  = -1;
         m->test_run_flags   = 0;
 
+        /* Init poweroff/suspend interruption */
+        m->allow_poweroff_interrupts = false;
+        m->allow_suspend_interrupts  = false;
+        m->callback_failed           = false;
+        m->callback_must_succeed     = false;
+
         /* Init sleep modes and states */
         m->suspend_mode        = NULL;
         m->suspend_state       = NULL;

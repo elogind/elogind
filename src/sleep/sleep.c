@@ -13,7 +13,7 @@
 
 #include "parse-util.h"
 #include "def.h"
-#include "exec-util.h"
+//#include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 //#include "log.h"
@@ -24,7 +24,9 @@
 //#include "util.h"
 
 /// Additional includes needed by elogind
+#include "exec-elogind.h"
 #include "sleep.h"
+#include "utmp-wtmp.h"
 
 static char* arg_verb = NULL;
 
@@ -139,6 +141,14 @@ static int execute(char **modes, char **states) {
 static int execute(Manager *m, const char *verb) {
         assert(m);
 
+        int e;
+        _cleanup_free_ char *l = NULL;
+        void* gather_args[] = {
+                [STDOUT_GENERATE] = m,
+                [STDOUT_COLLECT] = m,
+                [STDOUT_CONSUME] = m,
+        };
+
         if (verb)
                 arg_verb = (char*)verb;
 
@@ -177,10 +187,38 @@ static int execute(Manager *m, const char *verb) {
                         return log_error_errno(r, "Failed to write hibernation disk offset: %m");
                 r = write_mode(modes);
                 if (r < 0)
-                        return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");;
+                        return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
         }
 
+#if 0 /// elogind needs its own callbacks to enable cancellation by erroneous scripts
         execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments);
+#else
+        m->callback_failed = false;
+        m->callback_must_succeed = m->allow_suspend_interrupts;
+
+        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments);
+
+        if ( m->callback_must_succeed && ((r < 0) || m->callback_failed) ) {
+                e = asprintf(&l, "A sleep script in %s failed! [%d]\n"
+                                 "The system %s has been cancelled!",
+                             SYSTEM_SLEEP_PATH, r, arg_verb);
+                if (e < 0) {
+                        log_oom();
+                        return -ENOMEM;
+                }
+
+                utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
+
+                log_struct_errno(LOG_ERR, r,
+                                 "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                                 LOG_MESSAGE("A sleep script in %s failed [%d]: %m\n"
+                                             "The system %s has been cancelled!",
+                                             SYSTEM_SLEEP_PATH, r, arg_verb),
+                                 "SLEEP=%s", arg_verb);
+
+                return -ECANCELED;
+        }
+#endif // 0
 
         log_struct(LOG_INFO,
                    "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,

@@ -66,7 +66,6 @@ static inline char *startswith(const char *s, const char *prefix) {
         return NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline char *startswith_no_case(const char *s, const char *prefix) {
         size_t l;
 
@@ -76,7 +75,6 @@ static inline char *startswith_no_case(const char *s, const char *prefix) {
 
         return NULL;
 }
-#endif // 0
 
 char *endswith(const char *s, const char *postfix) _pure_;
 char *endswith_no_case(const char *s, const char *postfix) _pure_;
