@@ -1896,6 +1896,14 @@ test_dlopen = executable(
 #            install : true,
 #            install_dir : systemgeneratordir)
 #
+# executable('systemd-run-generator',
+#            'src/run-generator/run-generator.c',
+#            include_directories : includes,
+#            link_with : [libshared],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : systemgeneratordir)
+#
 # executable('systemd-fstab-generator',
 #            'src/fstab-generator/fstab-generator.c',
 #            'src/core/mount-setup.c',
