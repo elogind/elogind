@@ -130,6 +130,14 @@ int manager_handle_action(
                 supported = true;
 
 #if 0 /// elogind needs the manager
+        if (!supported && IN_SET(handle, HANDLE_HIBERNATE, HANDLE_HYBRID_SLEEP, HANDLE_SUSPEND_THEN_HIBERNATE)) {
+                supported = can_sleep("suspend") > 0;
+                if (supported) {
+                        log_notice("Operation '%s' requested but not supported, using regular suspend instead.", handle_action_to_string(handle));
+                        handle = HANDLE_SUSPEND;
+                }
+        }
+
 #else
                 supported = can_sleep(m, "suspend") > 0;
 #endif // 0
