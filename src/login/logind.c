@@ -1230,7 +1230,7 @@ static int manager_run(Manager *m) {
         }
 }
 
-int main(int argc, char *argv[]) {
+static int run(int argc, char *argv[]) {
         _cleanup_(manager_unrefp) Manager *m = NULL;
         int r;
 
@@ -1254,21 +1254,15 @@ int main(int argc, char *argv[]) {
 #if 0 /// elogind has some extra functionality at startup, argc can be != 1
         if (argc != 1) {
                 log_error("This program takes no arguments.");
-                r = -EINVAL;
-                goto finish;
+                return -EINVAL;
         }
 #endif // 0
 
         r = mac_selinux_init();
-        if (r < 0) {
-                log_error_errno(r, "Could not initialize labelling: %m");
-                goto finish;
-        }
+        if (r < 0)
+                return log_error_errno(r, "Could not initialize labelling: %m");
 
 #if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
-        mkdir_label("/run/systemd/seats", 0755);
-        mkdir_label("/run/systemd/users", 0755);
-        mkdir_label("/run/systemd/sessions", 0755);
         /* Always create the directories people can create inotify watches in. Note that some applications might check
          * for the existence of /run/systemd/seats/ to determine whether logind is available, so please always make
          * sure these directories are created early on and unconditionally. */
@@ -1300,10 +1294,8 @@ int main(int argc, char *argv[]) {
 #endif // 0
 
         r = manager_new(&m);
-        if (r < 0) {
-                log_error_errno(r, "Failed to allocate manager object: %m");
-                goto finish;
-        }
+        if (r < 0)
+                return log_error_errno(r, "Failed to allocate manager object: %m");
 
         (void) manager_parse_config_file(m);
 
@@ -1311,12 +1303,9 @@ int main(int argc, char *argv[]) {
         elogind_manager_reset_config(m);
 #endif // 1
         r = manager_startup(m);
-        if (r < 0) {
-                log_error_errno(r, "Failed to fully start up daemon: %m");
-                goto finish;
-        }
-
         log_debug("elogind running as pid "PID_FMT, getpid_cached());
+        if (r < 0)
+                return log_error_errno(r, "Failed to fully start up daemon: %m");
 
         (void) sd_notify(false,
                          "READY=1\n"
@@ -1330,7 +1319,6 @@ int main(int argc, char *argv[]) {
         } else {
 #endif /// 1
         log_debug("elogind stopped as pid "PID_FMT, getpid_cached());
-
         (void) sd_notify(false,
                          "STOPPING=1\n"
                          "STATUS=Shutting down...");
@@ -1338,6 +1326,7 @@ int main(int argc, char *argv[]) {
         }
 #endif // 1
 
-finish:
-        return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+        return r;
 }
+
+DEFINE_MAIN_FUNCTION(run);
