@@ -7,7 +7,12 @@ id128_sources = files('''
 '''.split())
 
 sd_daemon_c = files('sd-daemon/sd-daemon.c')
-sd_event_c = files('sd-event/sd-event.c')
+
+sd_event_c = files('''
+        sd-event/event-source.h
+        sd-event/sd-event.c
+'''.split())
+
 sd_login_c = files('sd-login/sd-login.c')
 
 #if 0 /// elogind has a shorter list, of course...
@@ -69,6 +74,8 @@ sd_login_c = files('sd-login/sd-login.c')
 #         sd-netlink/local-addresses.h
 #         sd-netlink/netlink-internal.h
 #         sd-netlink/netlink-message.c
+#         sd-netlink/netlink-slot.c
+#         sd-netlink/netlink-slot.h
 #         sd-netlink/netlink-socket.c
 #         sd-netlink/netlink-types.c
 #         sd-netlink/netlink-types.h

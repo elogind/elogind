@@ -1581,6 +1581,7 @@ includes = include_directories('src/basic',
 #if 0 /// elogind has a different list
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
+#                                'src/libsystemd/sd-event',
 #                                'src/libsystemd/sd-hwdb',
 #                                'src/libsystemd/sd-id128',
 #                                'src/libsystemd/sd-netlink',
