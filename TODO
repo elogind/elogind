@@ -41,9 +41,6 @@ Features:
 
 * bootctl,sd-boot: actually honour the "architecture" key
 
-* when a socket unit is spawned with an AF_UNIX path in /var/run, complain and
-  patch it to use /run instead
-
 * consider splitting out all temporary file creation APIs (we have so many in
   fileio.h and elsewhere!) into a new util file of its own.
 
@@ -238,7 +235,8 @@ Features:
   the runtime dir as we maintain for the fdstore: i.e. keep it around as long
   as the unit is running or has a job queued.
 
-* support projid-based quota in machinectl for containers
+* support projid-based quota in machinectl for containers, and then drop
+  implicit btrfs loopback magic in machined
 
 * Add NetworkNamespacePath= to specify a path to a network namespace
 
@@ -657,8 +655,6 @@ Features:
 
 * add a pam module that on password changes updates any LUKS slot where the password matches
 
-* maybe add a generator that looks for "systemd.run=" on the kernel cmdline for container usercases...
-
 * test/:
   - add unit tests for config_parse_device_allow()
 
@@ -884,6 +880,9 @@ Features:
   - "machinectl diff"
   - "machinectl commit" that takes a writable snapshot of a tree, invokes a
     shell in it, and marks it read-only after use
+
+* importd:
+  - generate a nice warning if mkfs.btrfs is missing
 
 * cryptsetup:
   - cryptsetup-generator: allow specification of passwords in crypttab itself
