@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 //#include <sys/statfs.h>
 #include <sys/types.h>
+//#include <sys/utsname.h>
 #include <sys/xattr.h>
 #include <unistd.h>
 
@@ -2220,6 +2221,7 @@ done:
 
 int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path) {
         CGroupController c;
+        CGroupMask done;
         bool created;
         int r;
 
@@ -2244,20 +2246,28 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
         if (r > 0)
                 return created;
 
+        supported &= CGROUP_MASK_V1;
+        mask = CGROUP_MASK_EXTEND_JOINED(mask);
+        done = 0;
+
         /* Otherwise, do the same in the other hierarchies */
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *n;
 
-                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
+                if (!FLAGS_SET(supported, bit))
+                        continue;
+
+                if (FLAGS_SET(done, bit))
                         continue;
 
                 n = cgroup_controller_to_string(c);
-
                 if (FLAGS_SET(mask, bit))
                         (void) cg_create(n, path);
-                else if (FLAGS_SET(supported, bit))
+                else
                         (void) cg_trim(n, path, true);
+
+                done |= CGROUP_MASK_EXTEND_JOINED(bit);
         }
 
         return created;
@@ -2265,6 +2275,7 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
 
 int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t path_callback, void *userdata) {
         CGroupController c;
+        CGroupMask done;
         int r;
 
         r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, path, pid);
@@ -2277,23 +2288,26 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
         if (r > 0)
                 return 0;
 
+        supported &= CGROUP_MASK_V1;
+        done = 0;
+
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *p = NULL;
 
-                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
+                if (!FLAGS_SET(supported, bit))
                         continue;
 
-                if (!FLAGS_SET(supported, bit))
+                if (FLAGS_SET(done, bit))
                         continue;
 
                 if (path_callback)
                         p = path_callback(bit, userdata);
-
                 if (!p)
                         p = path;
 
                 (void) cg_attach_fallback(cgroup_controller_to_string(c), p, pid);
+                done |= CGROUP_MASK_EXTEND_JOINED(bit);
         }
 
         return 0;
@@ -2318,6 +2332,7 @@ int cg_attach_many_everywhere(CGroupMask supported, const char *path, Set* pids,
 
 int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to, cg_migrate_callback_t to_callback, void *userdata) {
         CGroupController c;
+        CGroupMask done;
         int r = 0, q;
 
         if (!path_equal(from, to))  {
@@ -2332,30 +2347,34 @@ int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to
         if (q > 0)
                 return r;
 
+        supported &= CGROUP_MASK_V1;
+        done = 0;
+
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *p = NULL;
 
-                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
+                if (!FLAGS_SET(supported, bit))
                         continue;
 
-                if (!FLAGS_SET(supported, bit))
+                if (FLAGS_SET(done, bit))
                         continue;
 
                 if (to_callback)
                         p = to_callback(bit, userdata);
-
                 if (!p)
                         p = to;
 
                 (void) cg_migrate_recursive_fallback(SYSTEMD_CGROUP_CONTROLLER, to, cgroup_controller_to_string(c), p, 0);
+                done |= CGROUP_MASK_EXTEND_JOINED(bit);
         }
 
-        return 0;
+        return r;
 }
 
 int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root) {
         CGroupController c;
+        CGroupMask done;
         int r, q;
 
         r = cg_trim(SYSTEMD_CGROUP_CONTROLLER, path, delete_root);
@@ -2368,19 +2387,23 @@ int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root)
         if (q > 0)
                 return r;
 
+        supported &= CGROUP_MASK_V1;
+        done = 0;
+
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
-
-                if (!FLAGS_SET(CGROUP_MASK_V1, bit))
-                        continue;
 
                 if (!FLAGS_SET(supported, bit))
                         continue;
 
+                if (FLAGS_SET(done, bit))
+                        continue;
+
                 (void) cg_trim(cgroup_controller_to_string(c), path, delete_root);
+                done |= CGROUP_MASK_EXTEND_JOINED(bit);
         }
 
-        return 0;
+        return r;
 }
 #endif // 0
 
@@ -2944,3 +2967,54 @@ static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_controller, CGroupController);
+
+CGroupMask get_cpu_accounting_mask(void) {
+        static CGroupMask needed_mask = (CGroupMask) -1;
+
+        /* On kernel ≥4.15 with unified hierarchy, cpu.stat's usage_usec is
+         * provided externally from the CPU controller, which means we don't
+         * need to enable the CPU controller just to get metrics. This is good,
+         * because enabling the CPU controller comes at a minor performance
+         * hit, especially when it's propagated deep into large hierarchies.
+         * There's also no separate CPU accounting controller available within
+         * a unified hierarchy.
+         *
+         * This combination of factors results in the desired cgroup mask to
+         * enable for CPU accounting varying as follows:
+         *
+         *                   ╔═════════════════════╤═════════════════════╗
+         *                   ║     Linux ≥4.15     │     Linux <4.15     ║
+         *   ╔═══════════════╬═════════════════════╪═════════════════════╣
+         *   ║ Unified       ║ nothing             │ CGROUP_MASK_CPU     ║
+         *   ╟───────────────╫─────────────────────┼─────────────────────╢
+         *   ║ Hybrid/Legacy ║ CGROUP_MASK_CPUACCT │ CGROUP_MASK_CPUACCT ║
+         *   ╚═══════════════╩═════════════════════╧═════════════════════╝
+         *
+         * We check kernel version here instead of manually checking whether
+         * cpu.stat is present for every cgroup, as that check in itself would
+         * already be fairly expensive.
+         *
+         * Kernels where this patch has been backported will therefore have the
+         * CPU controller enabled unnecessarily. This is more expensive than
+         * necessary, but harmless. ☺️
+         */
+
+        if (needed_mask == (CGroupMask) -1) {
+                if (cg_all_unified()) {
+                        struct utsname u;
+                        assert_se(uname(&u) >= 0);
+
+                        if (str_verscmp(u.release, "4.15") < 0)
+                                needed_mask = CGROUP_MASK_CPU;
+                        else
+                                needed_mask = 0;
+                } else
+                        needed_mask = CGROUP_MASK_CPUACCT;
+        }
+
+        return needed_mask;
+}
+
+bool cpu_accounting_is_cheap(void) {
+        return get_cpu_accounting_mask() == 0;
+}
