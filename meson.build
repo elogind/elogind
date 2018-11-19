@@ -1931,7 +1931,7 @@ test_dlopen = executable(
 # if conf.get('HAVE_BLKID') == 1
 #         executable('systemd-gpt-auto-generator',
 #                    'src/gpt-auto-generator/gpt-auto-generator.c',
-#                    'src/basic/blkid-util.h',
+#                    'src/shared/blkid-util.h',
 #                    include_directories : includes,
 #                    link_with : [libshared],
 #                    dependencies : libblkid,
