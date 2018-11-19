@@ -383,7 +383,7 @@ static inline int __coverity_check__(int condition) {
 #define SET_FLAG(v, flag, b) \
         (v) = (b) ? ((v) | (flag)) : ((v) & ~(flag))
 #define FLAGS_SET(v, flags) \
-        (((v) & (flags)) == (flags))
+        ((~(v) & (flags)) == 0)
 
 #define CASE_F(X) case X:
 #define CASE_F_1(CASE, X) CASE_F(X)
@@ -505,24 +505,5 @@ static inline int __coverity_check__(int condition) {
 #define DEFINE_PUBLIC_TRIVIAL_REF_UNREF_FUNC(type, name, free_func)    \
         DEFINE_PUBLIC_TRIVIAL_REF_FUNC(type, name);                    \
         DEFINE_PUBLIC_TRIVIAL_UNREF_FUNC(type, name, free_func);
-
-/* Negative return values from impl are mapped to EXIT_FAILURE, and
- * everything else means success! */
-#define DEFINE_MAIN_FUNCTION(impl)                                      \
-        int main(int argc, char *argv[]) {                              \
-                int r;                                                  \
-                r = impl(argc, argv);                                   \
-                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;             \
-        }
-
-/* Zero is mapped to EXIT_SUCCESS, and both negative and positive values
- * are mapped to EXIT_FAILURE.
- * Note: this means "true" maps to EXIT_FAILURE. */
-#define DEFINE_MAIN_FUNCTION_WITH_POSITIVE_FAILURE(impl)                \
-        int main(int argc, char *argv[]) {                              \
-                int r;                                                  \
-                r = impl(argc, argv);                                   \
-                return r != 0 ? EXIT_FAILURE : EXIT_SUCCESS;            \
-        }
 
 #include "log.h"
