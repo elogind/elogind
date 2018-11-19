@@ -130,10 +130,10 @@
 #         nss-util.h
 #         ordered-set.c
 #         ordered-set.h
-#         pager.c
-#         pager.h
 #         os-util.c
 #         os-util.h
+#         pager.c
+#         pager.h
 #         parse-util.c
 #         parse-util.h
 #         path-util.c
@@ -184,7 +184,6 @@
 #         special.h
 #         stat-util.c
 #         stat-util.h
-#         static-destruct.h
 #         stdio-util.h
 #         strbuf.c
 #         strbuf.h
