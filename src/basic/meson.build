@@ -436,7 +436,6 @@ libbasic = static_library(
         dependencies : [threads,
                         libcap,
 #if 0 /// Neither blkid nor libmount in elogind
-#                         libblkid,
 #                         libmount,
 #endif // 0
                         libselinux,
