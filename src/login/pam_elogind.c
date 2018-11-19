@@ -308,6 +308,36 @@ static int update_environment(pam_handle_t *handle, const char *key, const char 
         return r;
 }
 
+static bool validate_runtime_directory(pam_handle_t *handle, const char *path, uid_t uid) {
+        struct stat st;
+
+        assert(path);
+
+        /* Just some extra paranoia: let's not set $XDG_RUNTIME_DIR if the directory we'd set it to isn't actually set
+         * up properly for us. */
+
+        if (lstat(path, &st) < 0) {
+                pam_syslog(handle, LOG_ERR, "Failed to stat() runtime directory '%s': %s", path, strerror(errno));
+                goto fail;
+        }
+
+        if (!S_ISDIR(st.st_mode)) {
+                pam_syslog(handle, LOG_ERR, "Runtime directory '%s' is not actually a directory.", path);
+                goto fail;
+        }
+
+        if (st.st_uid != uid) {
+                pam_syslog(handle, LOG_ERR, "Runtime directory '%s' is not owned by UID " UID_FMT ", as it should.", path, uid);
+                goto fail;
+        }
+
+        return true;
+
+fail:
+        pam_syslog(handle, LOG_WARNING, "Not setting $XDG_RUNTIME_DIR, as the directory is not in order.");
+        return false;
+}
+
 _public_ PAM_EXTERN int pam_sm_open_session(
                 pam_handle_t *handle,
                 int flags,
@@ -370,10 +400,12 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 if (asprintf(&rt, "/run/user/"UID_FMT, pw->pw_uid) < 0)
                         return PAM_BUF_ERR;
 
-                r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", rt, 0);
-                if (r != PAM_SUCCESS) {
-                        pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
-                        return r;
+                if (validate_runtime_directory(handle, rt, pw->pw_uid)) {
+                        r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", rt, 0);
+                        if (r != PAM_SUCCESS) {
+                                pam_syslog(handle, LOG_ERR, "Failed to set runtime dir.");
+                                return r;
+                        }
                 }
 
                 return PAM_SUCCESS;
@@ -438,7 +470,8 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         }
 
         if (seat && !streq(seat, "seat0") && vtnr != 0) {
-                pam_syslog(handle, LOG_DEBUG, "Ignoring vtnr %"PRIu32" for %s which is not seat0", vtnr, seat);
+                if (debug)
+                        pam_syslog(handle, LOG_DEBUG, "Ignoring vtnr %"PRIu32" for %s which is not seat0", vtnr, seat);
                 vtnr = 0;
         }
 
@@ -539,7 +572,8 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         r = sd_bus_call(bus, m, 0, &error, &reply);
         if (r < 0) {
                 if (sd_bus_error_has_name(&error, BUS_ERROR_SESSION_BUSY)) {
-                        pam_syslog(handle, LOG_DEBUG, "Cannot create session: %s", bus_error_message(&error, r));
+                        if (debug)
+                                pam_syslog(handle, LOG_DEBUG, "Cannot create session: %s", bus_error_message(&error, r));
                         return PAM_SUCCESS;
                 } else {
                         pam_syslog(handle, LOG_ERR, "Failed to create session: %s", bus_error_message(&error, r));
@@ -578,9 +612,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                  * in privileged apps clobbering the runtime directory
                  * unnecessarily. */
 
-                r = update_environment(handle, "XDG_RUNTIME_DIR", runtime_path);
-                if (r != PAM_SUCCESS)
-                        return r;
+                if (validate_runtime_directory(handle, runtime_path, pw->pw_uid)) {
+                        r = update_environment(handle, "XDG_RUNTIME_DIR", runtime_path);
+                        if (r != PAM_SUCCESS)
+                                return r;
+                }
         }
 
         /* Most likely we got the session/type/class from environment variables, but might have gotten the data
