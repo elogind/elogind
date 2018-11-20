@@ -97,6 +97,7 @@
 #         machine-image.h
 #         machine-pool.c
 #         machine-pool.h
+#         main-func.h
 #         module-util.h
 #         nsflags.c
 #         nsflags.h
@@ -104,8 +105,12 @@
 #         os-util.h
 #         output-mode.c
 #         output-mode.h
+#         pager.c
+#         pager.h
 #         path-lookup.c
 #         path-lookup.h
+#         pretty-print.c
+#         pretty-print.h
 #         ptyfwd.c
 #         ptyfwd.h
 #         reboot-util.c

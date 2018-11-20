@@ -156,6 +156,10 @@ tests += [
 #           libblkid]],
 #endif // 0
 
+        [['src/test/test-serialize.c'],
+         [],
+         []],
+
         [['src/test/test-utf8.c'],
          [],
          []],
@@ -327,6 +331,10 @@ tests += [
 #          []],
 #
 #         [['src/test/test-path-lookup.c'],
+#          [],
+#          []],
+#
+#         [['src/test/test-pretty-print.c'],
 #          [],
 #          []],
 #
