@@ -27,9 +27,7 @@ int main(int argc, char *argv[]) {
         }
 
         elogind_set_program_name(argv[0]);
-        log_set_target(LOG_TARGET_AUTO);
-        log_parse_environment();
-        log_open();
+        log_setup_service();
 
         fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0);
         if (fd < 0) {

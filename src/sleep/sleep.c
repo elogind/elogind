@@ -45,6 +45,7 @@
 //#include "terminal-util.h"
 //#include "terminal-util.h"
 //#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static char* arg_verb = NULL;
 
@@ -448,9 +449,7 @@ static int run(int argc, char *argv[]) {
         usec_t delay = 0;
         int r;
 
-        log_set_target(LOG_TARGET_AUTO);
-        log_parse_environment();
-        log_open();
+        log_setup_service();
 
         r = parse_argv(argc, argv);
         if (r <= 0)

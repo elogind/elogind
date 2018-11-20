@@ -1241,14 +1241,12 @@ static int run(int argc, char *argv[]) {
                 return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 #endif // 1
         elogind_set_program_name(argv[0]);
-        log_set_target(LOG_TARGET_AUTO);
         log_set_facility(LOG_AUTH);
-        log_parse_environment();
 #if ENABLE_DEBUG_ELOGIND
         log_set_max_level(LOG_DEBUG);
         log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
-        log_open();
+        log_setup_service();
 
         umask(0022);
 
