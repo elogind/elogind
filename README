@@ -15,8 +15,10 @@ subset of the facilities offered by "libsystemd".  There is a
 
 All of the credit for elogind should go to the systemd developers.
 For more on systemd, see
-http://www.freedesktop.org/wiki/Software/systemd.  All of the blame
-should go to Andy Wingo, who extracted elogind from systemd.
+  http://www.freedesktop.org/wiki/Software/systemd
+All of the blame should go to Andy Wingo, who extracted elogind
+from systemd.
+All complaints should go to Sven Eden, who is maintaining elogind.
 
 Contributing
 ------------
@@ -28,17 +30,17 @@ example version 219.12 is the twelfth elogind release, which aims to
 provide a subset of the interfaces of systemd 219.
 
 To contribute to elogind, fork the current source code from github:
-
   https://github.com/elogind/elogind
-
 Send a pull request for the changes you like.
 
-To chat about elogind:
+If you do not have a github account, the elogind wiki page at
+  https://github.com/elogind/elogind/wiki
+lists further possibilities to contact the maintainers.
 
-  #guix on irc.freenode.org
+To chat about elogind:
+  #elogind on freenode
 
 Finally, bug reports:
-
   https://github.com/elogind/elogind/issues
 
 Why bother?
