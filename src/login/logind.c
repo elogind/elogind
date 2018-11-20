@@ -37,6 +37,7 @@
 #include "process-util.h"
 #include "cgroup-util.h"
 //#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -876,10 +877,10 @@ static int manager_connect_console(Manager *m) {
          * release events immediately.
          */
 
-        if (SIGRTMIN + 1 > SIGRTMAX) {
-                log_error("Not enough real-time signals available: %u-%u", SIGRTMIN, SIGRTMAX);
-                return -EINVAL;
-        }
+        if (SIGRTMIN + 1 > SIGRTMAX)
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                       "Not enough real-time signals available: %u-%u",
+                                       SIGRTMIN, SIGRTMAX);
 
         assert_se(ignore_signals(SIGRTMIN + 1, -1) >= 0);
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGRTMIN, -1) >= 0);

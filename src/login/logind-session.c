@@ -454,10 +454,10 @@ int session_load(Session *s) {
                 uid_t u;
                 User *user;
 
-                if (!uid) {
-                        log_error("UID not specified for session %s", s->id);
-                        return -ENOENT;
-                }
+                if (!uid)
+                        return log_error_errno(SYNTHETIC_ERRNO(ENOENT),
+                                               "UID not specified for session %s",
+                                               s->id);
 
                 r = parse_uid(uid, &u);
                 if (r < 0)  {
@@ -466,10 +466,10 @@ int session_load(Session *s) {
                 }
 
                 user = hashmap_get(s->manager->users, UID_TO_PTR(u));
-                if (!user) {
-                        log_error("User of session %s not known.", s->id);
-                        return -ENOENT;
-                }
+                if (!user)
+                        return log_error_errno(SYNTHETIC_ERRNO(ENOENT),
+                                               "User of session %s not known.",
+                                               s->id);
 
                 log_debug_elogind("Attaching session %s to user %d", s->id, user->uid);
                 session_set_user(s, user);

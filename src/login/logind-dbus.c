@@ -1718,10 +1718,10 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         if (r < 0)
                 return r;
 
-        if (!streq(load_state, "loaded")) {
-                log_notice("Unit %s is %s, refusing operation.", unit_name, load_state);
-                return -EACCES;
-        }
+        if (!streq(load_state, "loaded"))
+                return log_notice_errno(SYNTHETIC_ERRNO(EACCES),
+                                        "Unit %s is %s, refusing operation.",
+                                        unit_name, load_state);
 #else
         assert(w > 0);
         assert(w <= _INHIBIT_WHAT_MAX);

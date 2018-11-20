@@ -785,10 +785,10 @@ static int print_property(const char *name, const char *expected_value, sd_bus_m
                         if (r < 0)
                                 return bus_log_parse_error(r);
 
-                        if (!uid_is_valid(uid)) {
-                                log_error("Invalid user ID: " UID_FMT, uid);
-                                return -EINVAL;
-                        }
+                        if (!uid_is_valid(uid))
+                                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                                       "Invalid user ID: " UID_FMT,
+                                                       uid);
 
                         bus_print_property_value(name, expected_value, value, UID_FMT, uid);
                         return 1;
@@ -1487,10 +1487,9 @@ static int parse_argv(int argc, char *argv[]) {
 
 #if 0 /// UNNEEDED by elogind
                 case 'n':
-                        if (safe_atou(optarg, &arg_lines) < 0) {
-                                log_error("Failed to parse lines '%s'", optarg);
-                                return -EINVAL;
-                        }
+                        if (safe_atou(optarg, &arg_lines) < 0)
+                                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                                       "Failed to parse lines '%s'", optarg);
                         break;
 
                 case 'o':
@@ -1500,10 +1499,9 @@ static int parse_argv(int argc, char *argv[]) {
                         }
 
                         arg_output = output_mode_from_string(optarg);
-                        if (arg_output < 0) {
-                                log_error("Unknown output '%s'.", optarg);
-                                return -EINVAL;
-                        }
+                        if (arg_output < 0)
+                                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                                       "Unknown output '%s'.", optarg);
                         break;
 #endif // 0
 
@@ -1542,10 +1540,9 @@ static int parse_argv(int argc, char *argv[]) {
                         }
 
                         arg_signal = signal_from_string(optarg);
-                        if (arg_signal < 0) {
-                                log_error("Failed to parse signal string %s.", optarg);
-                                return -EINVAL;
-                        }
+                        if (arg_signal < 0)
+                                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                                       "Failed to parse signal string %s.", optarg);
                         break;
 
                 case 'H':
