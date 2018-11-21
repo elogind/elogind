@@ -661,7 +661,7 @@ env = find_program('env')
 # meson_make_symlink = meson.source_root() + '/tools/meson-make-symlink.sh'
 #else /// Needed by elogind
 meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
-#endif // 1
+#endif // 0
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// unneeded by elogind
 # test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
