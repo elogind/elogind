@@ -13,7 +13,6 @@
 //#include <unistd.h>
 
 #include "alloc-util.h"
-//#include "bootspec.h"
 //#include "conf-parser.h"
 //#include "def.h"
 //#include "env-util.h"
@@ -23,7 +22,6 @@
 //#include "macro.h"
 #include "parse-util.h"
 #include "path-util.h"
-#include "proc-cmdline.h"
 #include "sleep-config.h"
 #include "string-util.h"
 #include "strv.h"
@@ -299,89 +297,7 @@ static bool enough_swap_for_hibernation(void) {
 }
 
 #if 0 /// elogind is not init and can not check boot devices and partitions.
-static int check_resume_keys(const char *key, const char *value, void *data) {
-        assert_se(key);
-        assert_se(data);
-
-        int *resume = data;
-
-        if (*resume == 0)
-                /* Exit if we already know we can't resume. */
-                return 0;
-
-        if (streq(key, "noresume")) {
-                log_debug("Found \"noresume\" on the kernel command line, hibernation is disabled.");
-                *resume = 0;
-
-        } else if (streq(key, "resume")) {
-                log_debug("Found resume= option on the kernel command line, hibernation is possible.");
-                *resume = 1;
-        }
-
-        return 0;
-}
-
-static int resume_configured_in_options(const char *options) {
-        int resume = -1, r;
-
-        /* We don't use PROC_CMDLINE_STRIP_RD_PREFIX here, so rd.resume is *not* supported. */
-        r = proc_cmdline_parse_given(options, check_resume_keys, &resume, 0);
-        if (r < 0)
-                return r;
-
-        if (resume < 0)
-                log_debug("Couldn't find resume= option, hibernation is disabled.");
-        return resume > 0;
-}
-
-static int resume_configured(void) {
-        _cleanup_(boot_config_free) BootConfig config = {};
-        const BootEntry *e;
-        int r;
-
-        /* Check whether a valid resume= option is present. If possible, we query the boot options
-         * for the default kernel. If the system is not using sd-boot, fall back to checking the
-         * current kernel command line. This is not perfect, but should suffice for most cases. */
-
-        r = find_default_boot_entry(NULL, NULL, &config, &e);
-        if (r == -ENOKEY)
-                log_debug_errno(r, "Cannot find the ESP partition mount point, falling back to other checks.");
-        else if (r < 0)
-                return log_debug_errno(r, "Cannot read boot configuration from ESP, assuming hibernation is not possible.");
-        else {
-                _cleanup_free_ char *options = NULL;
-
-                options = strv_join(e->options, " ");
-                if (!options)
-                        return log_oom();
-
-                r = resume_configured_in_options(options);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to parse kernel options in \"%s\": %m",
-                                               strnull(e->path));
-                return r;
-        }
-
-        /* If we can't figure out the default boot entry, let's fall back to current kernel cmdline */
-        _cleanup_free_ char *line = NULL;
-        r = proc_cmdline(&line);
-        if (IN_SET(r, -EPERM, -EACCES, -ENOENT))
-                log_debug_errno(r, "Cannot access /proc/cmdline: %m");
-        else if (r < 0)
-                return log_error_errno(r, "Failed to query /proc/cmdline: %m");
-        else {
-                r = resume_configured_in_options(line);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to parse kernel proc cmdline: %m");
-
-                return r;
-        }
-
-        log_debug("Couldn't detect any resume mechanism, hibernation is disabled.");
-        return false;
-}
 #endif // 0
-
 int read_fiemap(int fd, struct fiemap **ret) {
         _cleanup_free_ struct fiemap *fiemap = NULL, *result_fiemap = NULL;
         struct stat statinfo;
@@ -554,12 +470,7 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
                 return -ENOSPC;
 
 #if 0 /// elogind is not init and can not check this
-        r = resume_configured();
-        if (r <= 0)
-                /* We squash all errors (e.g. EPERM) into a single value for reporting. */
-                return -EADV;
 #endif // 0
-
         return true;
 }
 
