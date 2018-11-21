@@ -953,14 +953,13 @@ tests += [
 #           'src/libsystemd-network/dhcp-protocol.h',
 #           'src/libsystemd-network/dhcp-internal.h'],
 #          [libshared,
-#           libelogind_network],
 #           libsystemd_network],
 #          []],
 # 
 #         [['src/libsystemd-network/test-sd-dhcp-lease.c',
 #           'src/libsystemd-network/dhcp-lease-internal.h'],
 #          [libshared,
-#           libelogind_network],
+#           libsystemd_network],
 #          []],
 # 
 #         [['src/libsystemd-network/test-dhcp-client.c',
@@ -968,13 +967,11 @@ tests += [
 #           'src/libsystemd-network/dhcp-internal.h',
 #           'src/systemd/sd-dhcp-client.h'],
 #          [libshared,
-#           libelogind_network],
 #           libsystemd_network],
 #          []],
 # 
 #         [['src/libelogind-network/test-dhcp-server.c'],
 #          [libshared,
-#           libelogind_network],
 #           libsystemd_network],
 #          []],
 # 
@@ -982,14 +979,12 @@ tests += [
 #           'src/libsystemd-network/arp-util.h',
 #           'src/systemd/sd-ipv4ll.h'],
 #          [libshared,
-#           libelogind_network],
 #           libsystemd_network],
 #          []],
 # 
 #         [['src/libelogind-network/test-ipv4ll-manual.c',
 #           'src/systemd/sd-ipv4ll.h'],
 #          [libshared,
-#           libelogind_network],
 #           libsystemd_network],
 #          [],
 #          '', 'manual'],
@@ -997,7 +992,7 @@ tests += [
 #         [['src/libelogind-network/test-acd.c',
 #           'src/systemd/sd-ipv4acd.h'],
 #          [libshared,
-#           libelogind_network],
+#           libsystemd_network],
 #          [],
 #          '', 'manual'],
 # 
@@ -1008,7 +1003,6 @@ tests += [
 #           'src/systemd/sd-dhcp6-client.h',
 #           'src/systemd/sd-ndisc.h'],
 #          [libshared,
-#           libelogind_network],
 #           libsystemd_network],
 #          []],
 # 
@@ -1016,7 +1010,7 @@ tests += [
 #           'src/libsystemd-network/icmp6-util.h',
 #           'src/systemd/sd-ndisc.h'],
 #          [libshared,
-#           libelogind_network],
+#           libsystemd_network],
 #          []],
 # 
 #         [['src/libsystemd-network/test-dhcp6-client.c',
@@ -1025,13 +1019,12 @@ tests += [
 #           'src/libsystemd-network/dhcp6-internal.h',
 #           'src/systemd/sd-dhcp6-client.h'],
 #          [libshared,
-#           libelogind_network],
 #           libsystemd_network],
 #          []],
 # 
 #         [['src/libelogind-network/test-lldp.c'],
 #          [libshared,
-#           libelogind_network],
+#           libsystemd_network],
 #          []],
 # ]
 #endif // 0
