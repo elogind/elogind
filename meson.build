@@ -227,7 +227,6 @@ varrunissymllink = run_command('test', '-L', '/var/run').returncode() == 0
 message('Setting VARRUN_IS_SYMLINK to: @0@'.format(varrunissymllink))
 conf.set10('VARRUN_IS_SYMLINK', varrunissymllink)
 #endif // 1
-
 pamlibdir = get_option('pamlibdir')
 if pamlibdir == ''
         pamlibdir = join_paths(rootlibdir, 'security')
@@ -544,6 +543,7 @@ decl_headers = '''
 #include <sys/stat.h>
 '''
 # FIXME: key_serial_t is only defined in keyutils.h, this is bound to fail
+# FIXME: these should use -D_GNU_SOURCE, since that is defined at build time
 
 foreach decl : ['char16_t',
                 'char32_t',
@@ -557,6 +557,10 @@ foreach decl : ['char16_t',
         have = cc.sizeof(decl, prefix : decl_headers) > 0
         conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
 endforeach
+
+conf.set10('HAVE_STRUCT_STATX_IN_SYS_STAT_H', cc.sizeof('struct statx', prefix : '''
+#include <sys/stat.h>
+''', args : '-D_GNU_SOURCE') > 0)
 
 foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',         'linux/if_link.h'],
                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY', 'linux/if_link.h'],
@@ -707,8 +711,9 @@ endforeach
 
 #if 0 /// unneeded by elogind
 # conf.set_quoted('TELINIT', get_option('telinit-path'))
+#
 # if run_command('ln', '--relative', '--help').returncode() != 0
-#         error('ln does not support --relative')
+#         error('ln does not support --relative (added in coreutils 8.16)')
 # endif
 #endif // 0
 
