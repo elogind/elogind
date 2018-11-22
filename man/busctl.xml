@@ -421,7 +421,7 @@ s "debug"</programlisting>
       else -->
       <literal>/org/freedesktop/login1</literal> object of the
       <literal>org.freedesktop.login1</literal> service. The name of
-      the property is <literal>LogLevel</literal> on the
+      the property is <literal>EnableWallMessages</literal> on the
       <literal>org.freedesktop.login1.Manager</literal>
       interface. The property contains a boolean:</para>
 
