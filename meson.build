@@ -935,6 +935,7 @@ enable_debug_mmap_cache = false
 #if 1 /// additional elogind debug mode
 enable_debug_elogind = false
 #endif // 1
+enable_debug_udev = false
 foreach name : get_option('debug-extra')
         if name == 'hashmap'
                 enable_debug_hashmap = true
@@ -944,6 +945,8 @@ foreach name : get_option('debug-extra')
         elif name == 'elogind'
                 enable_debug_elogind = true
 #endif // 1
+        elif name == 'udev'
+                enable_debug_udev = true
         else
                 message('unknown debug option "@0@", ignoring'.format(name))
         endif
@@ -953,6 +956,7 @@ conf.set10('ENABLE_DEBUG_MMAP_CACHE', enable_debug_mmap_cache)
 #if 1 /// additional elogind debug mode
 conf.set10('ENABLE_DEBUG_ELOGIND', enable_debug_elogind)
 #endif // 1
+conf.set10('ENABLE_DEBUG_UDEV', enable_debug_udev)
 
 conf.set10('VALGRIND', get_option('valgrind'))
 conf.set10('LOG_TRACE', get_option('log-trace'))
@@ -3532,6 +3536,7 @@ foreach tuple : [
 #endif // 1
         ['debug hashmap'],
         ['debug mmap cache'],
+        ['debug udev'],
         ['valgrind',         conf.get('VALGRIND') == 1],
 #if 0 /// elogind neither ships libudev nor systemctl.
 #endif // 0
