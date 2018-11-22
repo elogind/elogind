@@ -2665,6 +2665,7 @@ static int cg_unified_update(void) {
                                           (unsigned long long) fs.f_type);
                                 unified_cache = CGROUP_UNIFIED_NONE;
                         }
+                }
         } else
                 return log_debug_errno(SYNTHETIC_ERRNO(ENOMEDIUM),
                                        "Unknown filesystem type %llx mounted on /sys/fs/cgroup.",
@@ -2672,7 +2673,6 @@ static int cg_unified_update(void) {
 #else
                         unified_cache = CGROUP_UNIFIED_NONE;
 #endif // 0
-                }
 
         return 0;
 }
@@ -2764,10 +2764,8 @@ int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p) {
 
                         if (!f) {
                                 f = fopen(fs, "we");
-                                if (!f) {
-                                        log_debug_errno(errno, "Failed to open cgroup.subtree_control file of %s: %m", p);
-                                        break;
-                                }
+                                if (!f)
+                                        return log_debug_errno(errno, "Failed to open cgroup.subtree_control file of %s: %m", p);
                         }
 
                         r = write_string_stream(f, s, WRITE_STRING_FILE_DISABLE_BUFFER);
