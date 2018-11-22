@@ -34,6 +34,17 @@ typedef struct Context {
 #endif
 } Context;
 
+static void context_clear(Context *c) {
+        assert(c);
+
+        c->bus = sd_bus_flush_close_unref(c->bus);
+#if HAVE_AUDIT
+        if (c->audit_fd >= 0)
+                audit_close(c->audit_fd);
+        c->audit_fd = -1;
+#endif
+}
+
 #if 0 /// UNNEEDED by elogind
 static usec_t get_startup_time(Context *c) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -218,10 +229,10 @@ static int on_runlevel(Context *c) {
 
 #if 0 /// elogind needs this to be a callable function
 int main(int argc, char *argv[]) {
+        _cleanup_(context_clear) Context c = {
 #else
 void update_utmp(int argc, char* argv[]) {
 #endif // 0
-        Context c = {
 #if HAVE_AUDIT
                 .audit_fd = -1
 #endif
@@ -258,8 +269,7 @@ void update_utmp(int argc, char* argv[]) {
         r = bus_connect_system_systemd(&c.bus);
         if (r < 0) {
                 log_error_errno(r, "Failed to get D-Bus connection: %m");
-                r = -EIO;
-                goto finish;
+                return EXIT_FAILURE;
         }
 
         log_debug("systemd-update-utmp running as pid "PID_FMT, getpid_cached());
@@ -272,25 +282,19 @@ void update_utmp(int argc, char* argv[]) {
                 r = on_runlevel(&c);
         else {
                 log_error("Unknown command %s", argv[1]);
-                r = -EINVAL;
+                return EXIT_FAILURE;
         }
 
         log_debug("systemd-update-utmp stopped as pid "PID_FMT, getpid_cached());
 
-finish:
 #else
         if (streq(argv[1], "reboot"))
                 (void)on_reboot(&c);
         else if (streq(argv[1], "shutdown"))
                 (void)on_shutdown(&c);
 #endif // 0
-#if HAVE_AUDIT
-        if (c.audit_fd >= 0)
-                audit_close(c.audit_fd);
-#endif
 
 #if 0 /// UNNEEDED by elogind
-        sd_bus_flush_close_unref(c.bus);
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 #endif // 0
 }
