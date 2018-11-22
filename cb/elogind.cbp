@@ -1326,9 +1326,6 @@
 		<Unit filename="../src/test/test-cgroup.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-chown-rec.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/test/test-conf-files.c">
 			<Option compilerVar="CC" />
 		</Unit>
