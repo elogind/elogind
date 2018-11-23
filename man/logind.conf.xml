@@ -74,7 +74,7 @@
     <para>These files configure various parameters of the elogind
     <!-- 0 /// elogind does not need a service file.
     login manager,
-    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     </para>
     --><!-- else -->
     login manager.</para>

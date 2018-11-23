@@ -832,7 +832,7 @@ tests += [
 
 tests += [
 #if 0 /// UNNEEDED in elogind
-#         [['src/libelogind/sd-bus/test-bus-marshal.c'],
+#         [['src/libsystemd/sd-bus/test-bus-marshal.c'],
 #          [],
 #          [threads,
 #           libglib,
@@ -854,7 +854,7 @@ tests += [
 #          [],
 #          [threads]],
 # 
-#         [['src/libelogind/sd-bus/test-bus-cleanup.c'],
+#         [['src/libsystemd/sd-bus/test-bus-cleanup.c'],
 #          [],
 #          [threads,
 #           libseccomp]],
@@ -866,7 +866,7 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libelogind/sd-bus/test-bus-track.c'],
+#         [['src/libsystemd/sd-bus/test-bus-track.c'],
 #          [],
 #          [libseccomp]],
 #endif // 0
@@ -876,7 +876,7 @@ tests += [
          [threads]],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libelogind/sd-bus/test-bus-objects.c'],
+#         [['src/libsystemd/sd-bus/test-bus-objects.c'],
 #          [],
 #          [threads]],
 #endif // 0
@@ -886,13 +886,13 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libelogind/sd-bus/test-bus-gvariant.c'],
+#         [['src/libsystemd/sd-bus/test-bus-gvariant.c'],
 #          [],
 #          [libglib,
 #           libgobject,
 #           libgio]],
 # 
-#         [['src/libelogind/sd-bus/test-bus-creds.c'],
+#         [['src/libsystemd/sd-bus/test-bus-creds.c'],
 #          [],
 #          []],
 #endif // 0
@@ -902,7 +902,7 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libelogind/sd-bus/test-bus-benchmark.c'],
+#         [['src/libsystemd/sd-bus/test-bus-benchmark.c'],
 #          [],
 #          [threads],
 #          '', 'manual'],
@@ -917,15 +917,15 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libelogind/sd-netlink/test-netlink.c'],
+#         [['src/libsystemd/sd-netlink/test-netlink.c'],
 #          [],
 #          []],
 # 
-#         [['src/libelogind/sd-netlink/test-local-addresses.c'],
+#         [['src/libsystemd/sd-netlink/test-local-addresses.c'],
 #          [],
 #          []],
 # 
-#         [['src/libelogind/sd-resolve/test-resolve.c'],
+#         [['src/libsystemd/sd-resolve/test-resolve.c'],
 #          [],
 #          [threads]],
 #endif // 0
@@ -938,7 +938,7 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 # if cxx.found()
 #         tests += [
-#                 [['src/libelogind/sd-bus/test-bus-vtable-cc.cc'],
+#                 [['src/libsystemd/sd-bus/test-bus-vtable-cc.cc'],
 #                  [],
 #                  []]
 #         ]
@@ -970,7 +970,7 @@ tests += [
 #           libsystemd_network],
 #          []],
 # 
-#         [['src/libelogind-network/test-dhcp-server.c'],
+#         [['src/libsystemd-network/test-dhcp-server.c'],
 #          [libshared,
 #           libsystemd_network],
 #          []],
@@ -982,14 +982,14 @@ tests += [
 #           libsystemd_network],
 #          []],
 # 
-#         [['src/libelogind-network/test-ipv4ll-manual.c',
+#         [['src/libsystemd-network/test-ipv4ll-manual.c',
 #           'src/systemd/sd-ipv4ll.h'],
 #          [libshared,
 #           libsystemd_network],
 #          [],
 #          '', 'manual'],
 # 
-#         [['src/libelogind-network/test-acd.c',
+#         [['src/libsystemd-network/test-acd.c',
 #           'src/systemd/sd-ipv4acd.h'],
 #          [libshared,
 #           libsystemd_network],
@@ -1022,7 +1022,7 @@ tests += [
 #           libsystemd_network],
 #          []],
 # 
-#         [['src/libelogind-network/test-lldp.c'],
+#         [['src/libsystemd-network/test-lldp.c'],
 #          [libshared,
 #           libsystemd_network],
 #          []],
