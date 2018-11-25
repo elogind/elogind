@@ -48,10 +48,10 @@ Why bother?
 
 Elogind has been developed for use in GuixSD, the OS distribution of
 GNU Guix.  See http://gnu.org/s/guix for more on Guix.  GuixSD uses a
-specific init manager (DMD), for reasons that are not relevant here,
-but still aims to eventually be a full-featured distribution that can
-run GNOME and other desktop environments.  However, to run GNOME these
-days means that you need to have support for the login1 D-Bus
+specific init manager (GNU Shepherd), for reasons that are not relevant
+here, but still aims to eventually be a full-featured distribution that
+can run GNOME and other desktop environments.  However, to run GNOME
+these days means that you need to have support for the login1 D-Bus
 interface, which is currently only provided by systemd.  That is the
 origin of this project: to take the excellent logind functionality
 from systemd and provide it as a standalone package.
