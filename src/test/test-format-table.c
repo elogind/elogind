@@ -22,6 +22,9 @@ static void test_issue_9549(void) {
                                  TABLE_STRING, "Wed 2018-07-11 00:10:33 JST",
                                  TABLE_STRING, "Wed 2018-07-11 00:16:00 JST") >= 0);
 
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1 
         table_set_width(table, 75);
         assert_se(table_format(table, &formatted) >= 0);
 
@@ -30,6 +33,9 @@ static void test_issue_9549(void) {
                         "NAME  TYPE RO  USAGE CREATED                    MODIFIED                   \n"
                         "foooo raw  no 673.6M Wed 2018-07-11 00:10:33 J… Wed 2018-07-11 00:16:00 JST\n"
                         ));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1 
 }
 
 int main(int argc, char *argv[]) {
