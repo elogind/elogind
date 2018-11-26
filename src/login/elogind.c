@@ -451,24 +451,26 @@ void elogind_manager_reset_config(Manager* m) {
 
 /// Add-On for manager_startup()
 int elogind_manager_startup(Manager *m) {
-        int r;
+        int r, e = 0;
 
-        assert(m);
-
-        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGINT, -1) >= 0);
+        /* Install our signal handler */
         r = sd_event_add_signal(m->event, NULL, SIGINT, elogind_signal_handler, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to register SIGINT handler: %m");
+        if (r < 0) {
+                if (e == 0) e = r;
+                log_error_errno(r, "Failed to register SIGINT handler: %m");
+        }
 
-        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGQUIT, -1) >= 0);
         r = sd_event_add_signal(m->event, NULL, SIGQUIT, elogind_signal_handler, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to register SIGQUIT handler: %m");
+        if (r < 0) {
+                if (e == 0) e = r;
+                log_error_errno(r, "Failed to register SIGQUIT handler: %m");
+        }
 
-        assert_se(sigprocmask_many(SIG_SETMASK, NULL, SIGTERM, -1) >= 0);
         r = sd_event_add_signal(m->event, NULL, SIGTERM, elogind_signal_handler, m);
-        if (r < 0)
-                return log_error_errno(r, "Failed to register SIGTERM handler: %m");
+        if (r < 0) {
+                if (e == 0) e = r;
+                log_error_errno(r, "Failed to register SIGTERM handler: %m");
+        }
 
-        return 0;
+        return e;
 }
