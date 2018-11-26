@@ -28,7 +28,7 @@
     xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
     <title>logind.conf</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
 --><!-- else -->
 <refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
