@@ -23,8 +23,9 @@ Janitorial Clean-ups:
 
 Features:
 
-* elogind-gpt-auto: if we find the root dir mounted read-only and the gpt flag
-* when we fork off generators and such, lower LIMIT_NOFILE soft limit to 1K
+* Maybe introduce a helper safe_exec() or so, which is to execve() which
+  safe_fork() is to fork(). And then make revert the RLIMIT_NOFILE soft limit
+  to 1K implicitly, unless explicitly opted-out.
 
 * rework seccomp/nnp logic that that even if User= is used in combination with
   a seccomp option we don't have to set NNP. For that, change uid first whil
@@ -34,6 +35,7 @@ Features:
   inserting them into the kernel keyring. Maybe SecretsDirectory= similar to
   ConfigurationDirectory=.
 
+* elogind-gpt-auto: if we find the root dir mounted read-only and the gpt flag
   doesn't say so generate job that remounts it writable
 
 * when no locale is configured, default to UEFI's PlatformLang variable
