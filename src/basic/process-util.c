@@ -1539,6 +1539,8 @@ int fork_agent(const char *name, const int except[], size_t n_except, pid_t *ret
                 safe_close_above_stdio(fd);
         }
 
+        (void) rlimit_nofile_safe();
+
         /* Count arguments */
         va_start(ap, path);
         for (n = 0; va_arg(ap, char*); n++)
