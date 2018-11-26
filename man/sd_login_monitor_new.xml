@@ -11,7 +11,7 @@
 
   <refentryinfo>
     <title>sd_login_monitor_new</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -33,7 +33,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;systemd/sd-login.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;elogind/sd-login.h&gt;</funcsynopsisinfo>
 
       <funcprototype>
         <funcdef>int <function>sd_login_monitor_new</function></funcdef>
@@ -240,7 +240,7 @@ else {
     <title>See Also</title>
 
     <para>
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_get_seats</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>poll</refentrytitle><manvolnum>2</manvolnum></citerefentry>,

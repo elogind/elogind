@@ -11,7 +11,7 @@
 
   <refentryinfo>
     <title>sd_booted</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -26,7 +26,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;systemd/sd-daemon.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;elogind/sd-daemon.h&gt;</funcsynopsisinfo>
 
       <funcprototype>
         <funcdef>int <function>sd_booted</function></funcdef>
@@ -63,7 +63,7 @@
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     </para>
   </refsect1>

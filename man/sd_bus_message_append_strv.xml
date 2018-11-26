@@ -11,7 +11,7 @@
 
   <refentryinfo>
     <title>sd_bus_message_append_strv</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -27,7 +27,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;systemd/sd-bus.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;elogind/sd-bus.h&gt;</funcsynopsisinfo>
 
       <funcprototype>
         <funcdef>int sd_bus_message_append_strv</funcdef>
@@ -73,7 +73,7 @@
     <title>See Also</title>
 
     <para>
-      <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-bus</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_bus_message_append</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_bus_message_append_array</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

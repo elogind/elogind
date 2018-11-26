@@ -10,7 +10,7 @@
 
   <refentryinfo>
     <title>sd_event_source_unref</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -28,7 +28,7 @@
 
   <refsynopsisdiv>
     <funcsynopsis>
-      <funcsynopsisinfo>#include &lt;systemd/sd-event.h&gt;</funcsynopsisinfo>
+      <funcsynopsisinfo>#include &lt;elogind/sd-event.h&gt;</funcsynopsisinfo>
 
       <funcprototype>
         <funcdef>sd_event_source* <function>sd_event_source_unref</function></funcdef>
