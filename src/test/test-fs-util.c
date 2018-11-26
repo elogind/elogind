@@ -193,6 +193,12 @@ static void test_chase_symlinks(void) {
         result = mfree(result);
 
         r = chase_symlinks("/etc/machine-id/foo", NULL, 0, &result);
+#if 1 /// elogind supports setups, where the machine-id is in the dbus default path
+        if (r != -ENOTDIR) {
+                result = mfree(result);
+                chase_symlinks("/var/lib/dbus/machine-id/foo", NULL, 0, &result);
+        }
+#endif // 1
         assert_se(r == -ENOTDIR);
         result = mfree(result);
 
