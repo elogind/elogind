@@ -505,8 +505,8 @@ decl_headers = '''
 
 foreach decl : ['char16_t',
                 'char32_t',
-                'struct ethtool_link_settings',
                 'struct fib_rule_uid_range',
+                'struct fib_rule_port_range',
                 'struct statx',
                ]
 
@@ -552,7 +552,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',                'linux/if_link.h'],
                 ['IPVLAN_F_PRIVATE',                        'linux/if_link.h'],
                 ['NDA_IFINDEX',                             'linux/neighbour.h'],
                 ['IFA_FLAGS',                               'linux/if_addr.h'],
-                ['FRA_UID_RANGE',                           'linux/fib_rules.h'],
+                ['FRA_DPORT_RANGE',                         'linux/fib_rules.h'],
                 ['LO_FLAGS_PARTSCAN',                       'linux/loop.h'],
                 ['VXCAN_INFO_PEER',                         'linux/can/vxcan.h'],
                 ['FOU_ATTR_REMCSUM_NOPARTIAL',              'linux/fou.h'],
@@ -1611,8 +1611,6 @@ includes = include_directories('src/basic',
                                '.')
 
 add_project_arguments('-include', 'config.h', language : 'c')
-
-generate_gperfs = find_program('tools/generate-gperfs.py')
 
 subdir('po')
 #if 0 /// UNNEEDED by elogind

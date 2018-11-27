@@ -119,5 +119,6 @@ int parse_nice(const char *p, int *ret);
 
 int parse_ip_port(const char *s, uint16_t *ret);
 #endif // 0
+int parse_ip_port_range(const char *s, uint16_t *low, uint16_t *high);
 
 int parse_oom_score_adjust(const char *s, int *ret);
