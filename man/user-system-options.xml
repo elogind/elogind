@@ -8,7 +8,7 @@
 
 <variablelist>
   <varlistentry id='user'>
-    <term><option>&#x2D;&#x2D;user</option></term>
+    <term><option>--user</option></term>
 
     <listitem id='user-text'>
       <para>Talk to the service manager of the calling user,
@@ -17,7 +17,7 @@
   </varlistentry>
 
   <varlistentry id='system'>
-    <term><option>&#x2D;&#x2D;system</option></term>
+    <term><option>--system</option></term>
 
     <listitem id='system-text'>
       <para>Talk to the service manager of the system. This is the
