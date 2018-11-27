@@ -111,8 +111,13 @@
 
     <para><function>sd_id128_get_invocation()</function> returns the invocation ID of the currently executed
     service. In its current implementation, this reads and parses the <varname>$INVOCATION_ID</varname> environment
+    <!-- 0 /// as elogind does not run under systemd, be a bit more generic
     variable that the service manager sets when activating a service, see
     <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry> for details. The
+    --><!-- else -->
+    variable that the service manager has to set when activating a service. If <varname>$INVOCATION_ID</varname> was
+    not set by the service manager, the function returns -ENXIO. The
+    <!-- // 0 -->
     ID is cached internally. In future a different mechanism to determine the invocation ID may be added.</para>
 
     <para>Note that <function>sd_id128_get_machine_app_specific()</function>, <function>sd_id128_get_boot()</function>

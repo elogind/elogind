@@ -84,10 +84,15 @@
     descriptors follow at 4, 5, 6, …, if any.</para>
 
     <para>If a daemon receives more than one file descriptor, they
+    <!-- 0 /// Be more vague for elogind, as this is a systemd feature not implemented by other service managers(, yet?)
     will be passed in the same order as configured in the systemd
     socket unit file (see
     <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for details). Nonetheless, it is recommended to verify the correct
+    --><!-- else -->
+    will be passed in the same order as configured in the service manager.
+    It is thereforce recommended to verify the correct
+    <!-- // 0 -->
     socket types before using them. To simplify this checking, the
     functions
     <citerefentry><refentrytitle>sd_is_fifo</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
@@ -106,7 +111,11 @@
     passed file descriptors to avoid further inheritance to children
     of the calling process.</para>
 
+    <!-- 0 /// Do not use the systemd unit term with elogind
     <para>If multiple socket units activate the same service, the order
+    --><!-- else -->
+    <para>If socket activation is used multiple times at once, the order
+    <!-- // 0 -->
     of the file descriptors passed to its main process is undefined.
     If additional file descriptors have been passed to the service
     manager using
@@ -130,12 +139,17 @@
     descriptors, if that is available and the
     <parameter>names</parameter> parameter is non-NULL. This
     information is read from the <varname>$LISTEN_FDNAMES</varname>
+    <!-- 0 /// elogind has no systemd.socket
     variable, which may contain a colon-separated list of names. For
     socket-activated services, these names may be configured with the
     <varname>FileDescriptorName=</varname> setting in socket unit
     files, see
     <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for details. For file descriptors pushed into the file descriptor
+    --><!-- else -->
+    variable, which may contain a colon-separated list of names.
+    For file descriptors pushed into the file descriptor
+    <!-- // 0 -->
     store (see above), the name is set via the
     <varname>FDNAME=</varname> field transmitted via
     <function>sd_pid_notify_with_fds()</function>. The primary usecase
@@ -182,7 +196,11 @@
 
           <row>
             <entry><literal>connection</literal></entry>
+            <!-- 0 /// elogind does not have or support unit files
             <entry>The service was activated in per-connection style using <varname>Accept=yes</varname> in the socket unit file, and the file descriptor is the connection socket.</entry>
+            --><!-- else -->
+            <entry>The service was activated in per-connection style and the file descriptor is the connection socket.</entry>
+            <!-- // 0 -->
           </row>
         </tbody>
       </tgroup>
@@ -207,6 +225,12 @@
     <title>Notes</title>
 
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
+
+    <!-- 1 /// It is important that we tell people that this is a systemd feature not provided by elogind ! -->
+    <para>Please note that this is a description of the socket activation technique as
+    used by systemd. If the service manager you use does not set the needed environment
+    variables, none of the functions described here do anything but return 0.</para>
+    <!-- // 1 -->
 
     <para>Internally, <function>sd_listen_fds()</function> checks
     whether the <varname>$LISTEN_PID</varname> environment variable
@@ -258,9 +282,7 @@
       <citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>
-      --><!-- else -->
-      <citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry>
-      <!-- // 0 -->
+      // 0 -->
     </para>
   </refsect1>
 

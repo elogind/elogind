@@ -125,8 +125,12 @@
         <term>READY=1</term>
 
         <listitem><para>Tells the service manager that service startup is finished, or the service finished loading its
-        configuration. This is only used by elogind if the service definition file has <varname>Type=notify</varname>
+        <!-- 0 /// Do not imply systemd mechanics, elogind is only providing the sd_bus functions.
+        configuration. This is only used by systemd if the service definition file has <varname>Type=notify</varname>
         set. Since there is little value in signaling non-readiness, the only value services should send is
+        --><!-- else -->
+        configuration. Since there is little value in signaling non-readiness, the only value services should send is
+        <!-- // 0 -->
         <literal>READY=1</literal> (i.e.  <literal>READY=0</literal> is not defined).</para></listitem>
       </varlistentry>
 
@@ -193,10 +197,15 @@
 
         <listitem><para>Tells the service manager to update the
         watchdog timestamp. This is the keep-alive ping that services
+        <!-- 0 /// elogind has to be more vague here, as those are systemd service configuration variables.
         need to issue in regular intervals if
         <varname>WatchdogSec=</varname> is enabled for it. See
         <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for information how to enable this functionality and
+        --><!-- else -->
+        watchdog timestamp. This is the keep-alive ping that services
+        need to issue in regular intervals if a watchdog is enabled for them. See
+        <!-- // 0 -->
         <citerefentry><refentrytitle>sd_watchdog_enabled</refentrytitle><manvolnum>3</manvolnum></citerefentry>
         for the details of how the service can check whether the
         watchdog is enabled. </para></listitem>
@@ -216,11 +225,15 @@
 
         <listitem><para>Tells the service manager to extend the startup, runtime or shutdown service timeout
         corresponding the current state. The value specified is a time in microseconds during which the service must
+        <!-- 0 /// elogind has to be more vague here, as those are systemd service configuration variables.
         send a new message. A service timeout will occur if the message isn't received, but only if the runtime of the
         current state is beyond the original maximium times of <varname>TimeoutStartSec=</varname>, <varname>RuntimeMaxSec=</varname>,
         and <varname>TimeoutStopSec=</varname>.
-        See <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        See <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for effects on the service timeouts.</para></listitem>
+        --><!-- else -->
+        send a new message.</para></listitem>
+        <!-- // 0 -->
       </varlistentry>
 
       <varlistentry>
@@ -234,14 +247,25 @@
         state. Any open sockets and other file descriptors which should not be closed during the restart may be stored
         this way. Application state can either be serialized to a file in <filename>/run</filename>, or better, stored
         in a <citerefentry><refentrytitle>memfd_create</refentrytitle><manvolnum>2</manvolnum></citerefentry> memory
+        <!-- 0 /// Tell people that this is depending on the service manager, elogind is only the messenger here.
         file descriptor. Note that the service manager will accept messages for a service only if its
         <varname>FileDescriptorStoreMax=</varname> setting is non-zero (defaults to zero, see
         <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>). If file
         descriptors sent are pollable (see
         <citerefentry><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>), then any
         <constant>EPOLLHUP</constant> or <constant>EPOLLERR</constant> event seen on them will result in their
+        --><!-- else -->
+        file descriptor. Note that it depends on the service manager if it will accept messages for a service.
+        If file descriptors sent are pollable (see
+        <citerefentry><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>), then any
+        <constant>EPOLLHUP</constant> or <constant>EPOLLERR</constant> event seen on them should result in their
+        <!-- // 0 -->
         automatic removal from the store. Multiple arrays of file descriptors may be sent in separate messages, in
+        <!-- 0 /// Another wish for the service manager in use not provided by elogind
         which case the arrays are combined. Note that the service manager removes duplicate (pointing to the same
+        --><!-- else -->
+        which case the arrays are combined. Note that the service manager should remove duplicate (pointing to the same
+        <!-- // 0 -->
         object) file descriptors before passing them to the service. Use <function>sd_pid_notify_with_fds()</function>
         to send messages with <literal>FDSTORE=1</literal>, see below.</para></listitem>
       </varlistentry>
@@ -274,7 +298,8 @@
     listed above with <varname>X_</varname> to avoid namespace
     clashes.</para>
 
-    <para>Note that elogind will accept status data sent from a
+    <!-- 0 /// systemd feature not provided by elogind
+    <para>Note that systemd will accept status data sent from a
     service only if the <varname>NotifyAccess=</varname> option is
     correctly set in the service definition file. See
     <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
@@ -288,6 +313,7 @@
     <function>sd_notify()</function> message and immediately exits, the service manager might not be able to properly
     attribute the message to the unit, and thus will ignore it, even if
     <varname>NotifyAccess=</varname><option>all</option> is set for it.</para>
+    // 0 -->
 
     <para><function>sd_notifyf()</function> is similar to
     <function>sd_notify()</function> but takes a
@@ -338,6 +364,12 @@
     <title>Notes</title>
 
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
+
+    <!-- 1 /// It is important that we tell people that this is a systemd feature not provided by elogind ! -->
+    <para>Please note that this is a description of the notification technique as
+    used by systemd. If the service manager you use does not set the needed environment
+    variables, none of the functions described here do anything but return 0.</para>
+    <!-- // 1 -->
 
     <para>These functions send a single datagram with the
     state string as payload to the <constant>AF_UNIX</constant> socket
@@ -426,9 +458,7 @@
       <!-- 0 /// elogind does not provide systemd.service
       <citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
-      --><!-- else -->
-      <citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry>
-      <!-- // 0 -->
+      // 0 -->
     </para>
   </refsect1>
 

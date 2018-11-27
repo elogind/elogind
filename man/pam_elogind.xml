@@ -272,6 +272,10 @@
         as <literal>seat0</literal>)</para></listitem>
       </varlistentry>
 
+    <!-- 0 /// elogind does not start any user instances
+    --><!-- else -->
+    they do not apply to all user processes as a combined whole.
+    <!-- // 0 -->
     </variablelist>
   </refsect1>
 
