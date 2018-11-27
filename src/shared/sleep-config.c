@@ -58,7 +58,7 @@ int parse_sleep_config(const char *verb, bool *ret_allow, char ***ret_modes, cha
         };
 
         (void) config_parse_many_nulstr(PKGSYSCONFDIR "/sleep.conf",
-                                        CONF_PATHS_NULSTR("elogind/sleep.conf.d"),
+                                        CONF_PATHS_NULSTR("systemd/sleep.conf.d"),
                                         "Sleep\0", config_item_table_lookup, items,
                                         CONFIG_PARSE_WARN, NULL);
 
@@ -511,7 +511,6 @@ static int can_sleep_internal(const char *verb, bool check_allowed) {
         _cleanup_strv_free_ char **modes = NULL, **states = NULL;
         int r;
 
-
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 #else
 static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) {
@@ -525,7 +524,6 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
                                                    m->hybrid_sleep_state;
 #endif // 0
 
-
 #if 0 /// already parsed by elogind config
         r = parse_sleep_config(verb, &allow, &modes, &states, NULL);
         if (r < 0)
@@ -535,7 +533,6 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
 #else
         if (check_allowed && !STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
 #endif // 0
-
                 log_debug("Sleep mode \"%s\" is disabled by configuration.", verb);
                 return false;
         }

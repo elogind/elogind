@@ -393,7 +393,6 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 #endif // 1
-
         /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
          * systemd --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
@@ -644,6 +643,7 @@ bool user_may_gc(User *u, bool drop_not_started) {
                 if (r != 0)
                         return false;
         }
+
         /* Note that we don't care if the three units we manage for each user object are up or not, as we are managing
          * their state rather than tracking it. */
 #endif // 0

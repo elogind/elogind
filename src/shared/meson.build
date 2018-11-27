@@ -159,6 +159,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 # endif
 #endif // 0
 
+
 #if 0 /// elogind doesn't need all this
 # libshared_deps = [threads,
 #                   librt,

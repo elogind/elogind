@@ -1158,7 +1158,6 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to register elogind signal handlers: %m");
 #endif // 1
-
         /* Connect to utmp */
         manager_connect_utmp(m);
 

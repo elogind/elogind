@@ -647,6 +647,6 @@ int main(int argc, char *argv[]) {
 #if 0 /// This is not used anywhere in elogind and thus masked.
         test_memory_startswith_no_case();
 #endif // 0
-        
+
         return 0;
 }

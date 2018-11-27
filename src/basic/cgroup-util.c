@@ -946,7 +946,7 @@ int cg_set_access(
                         /* Always propagate access mode from unified to legacy controller */
                         r = cg_set_access(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, uid, gid);
                         if (r < 0)
-                                log_debug_errno(r, "Failed to set access on compatibility elogind cgroup %s, ignoring: %m", path);
+                                log_debug_errno(r, "Failed to set access on compatibility systemd cgroup %s, ignoring: %m", path);
                 }
         }
 
