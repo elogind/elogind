@@ -345,7 +345,6 @@ manpages = [
    'sd_uid_get_sessions',
    'sd_uid_is_on_seat'],
   'HAVE_PAM'],
- ['sd_watchdog_enabled', '3', [], ''],
- ['user@.service', '5', ['user-runtime-dir@.service'], '']
+ ['sd_watchdog_enabled', '3', [], '']
 ]
 # Really, do not edit.

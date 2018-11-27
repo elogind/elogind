@@ -228,12 +228,18 @@
       <varlistentry>
         <term><varname>UserStopDelaySec=</varname></term>
 
+        <!-- 0 /// elogind does not start user service managers and systemd instances
         <listitem><para>Specifies how long to keep the user record and per-user service
         <filename>user@.service</filename> around for a user after they logged out fully. If set to zero, the per-user
         service is terminated immediately when the last session of the user has ended. If this option is configured to
         non-zero rapid logout/login cycles are sped up, as the user's service manager is not constantly restarted. If
         set to <literal>infinity</literal> the per-user service for a user is never terminated again after first login,
         and continues to run until system shutdown. Defaults to 10s.</para></listitem>
+        --><!-- else -->
+        <listitem><para>Specifies how long to keep the user record around for a user after they logged out fully. If
+        set to zero, the user is terminated immediately when the last session of the user has ended. Defaults to 10s.
+        </para></listitem>
+        <!-- // 0 -->
       </varlistentry>
 
       <varlistentry>
@@ -322,6 +328,7 @@
         <term><varname>HoldoffTimeoutSec=</varname></term>
 
         <listitem><para>Specifies the timeout after system startup or
+        <!-- 0 /// Wow. Unbelievable how often you can write 'systemd' in one tiny paragraph. Lets improve this for elogind a bit.
         system resume in which systemd will hold off on reacting to
         lid events. This is required for the system to properly
         detect any hotplugged devices so systemd can ignore lid events
@@ -329,6 +336,15 @@
         systemd will always react immediately, possibly before the
         kernel fully probed all hotplugged devices. This is safe, as
         long as you do not care for systemd to account for devices
+        --><!-- else -->
+        system resume in which elogind will hold off on reacting to
+        lid events. This is required for the system to properly
+        detect any hotplugged devices so lid events can be ignored
+        if external monitors or docks are connected. If set to 0,
+        elogind will always react immediately, possibly before the
+        kernel fully probed all hotplugged devices. This is safe, as
+        long as you do not care for devices
+        <!-- // 0 -->
         that have been plugged or unplugged while the system was off.
         Defaults to 30s.</para></listitem>
       </varlistentry>
@@ -359,9 +375,17 @@
         <term><varname>SessionsMax=</varname></term>
 
         <listitem><para>Controls the maximum number of concurrent user sessions to manage. Defaults to 8192
+        <!-- 0 /// rename me to elogind
         (8K). Depending on how the <filename>pam_systemd.so</filename> module is included in the PAM stack
+        --><!-- else -->
+        (8K). Depending on how the <filename>pam_elogind.so</filename> module is included in the PAM stack
+        <!-- // 0 -->
         configuration, further login sessions will either be refused, or permitted but not tracked by
+        <!-- 0 /// rename me to elogind
+        <filename>systemd-logind</filename>.</para></listitem>
+        --><!-- else -->
         <filename>elogind</filename>.</para></listitem>
+        <!-- // 0 -->
       </varlistentry>
 
       <varlistentry>

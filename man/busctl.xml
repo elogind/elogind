@@ -64,7 +64,7 @@
           <!-- 0 /// elogind does not provide this 
           See
           <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
-	  // 0 -->
+          // 0 -->
           </para></listitem>
       </varlistentry>
 
