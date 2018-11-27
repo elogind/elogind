@@ -4,6 +4,23 @@
 
 <!--
   SPDX-License-Identifier: LGPL-2.1+
+
+  This file is part of elogind.
+
+  Copyright 2014 Zbigniew Jędrzejewski-Szmek
+
+  elogind is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation; either version 2.1 of the License, or
+  (at your option) any later version.
+
+  elogind is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <refentry id="busctl"
@@ -12,6 +29,15 @@
   <refentryinfo>
     <title>busctl</title>
     <productname>elogind</productname>
+
+    <authorgroup>
+      <author>
+        <contrib>A monkey with a typewriter</contrib>
+        <firstname>Zbigniew</firstname>
+        <surname>Jędrzejewski-Szmek</surname>
+        <email>zbyszek@in.waw.pl</email>
+      </author>
+    </authorgroup>
   </refentryinfo>
 
   <refmeta>
@@ -418,7 +444,7 @@
       <programlisting># busctl set-property org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager LogLevel s debug
 # busctl get-property org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager LogLevel
 s "debug"</programlisting>
-      else -->
+      --><!-- else -->
       <literal>/org/freedesktop/login1</literal> object of the
       <literal>org.freedesktop.login1</literal> service. The name of
       the property is <literal>EnableWallMessages</literal> on the
@@ -447,7 +473,7 @@ ARRAY "s" {
         STRING "LANG=en_US.UTF-8";
         STRING "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin";
 };</programlisting>
-      else -->
+      --><!-- else -->
       <programlisting>$ busctl get-property org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager KillExcludeUsers
 as 2 "root" "admin"
 $ busctl --verbose get-property org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager KillExcludeUsers
@@ -476,7 +502,7 @@ ARRAY "s" {
 
       <programlisting># busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager StartUnit ss "cups.service" "replace"
 o "/org/freedesktop/systemd1/job/42684"</programlisting>
-      else -->
+      --><!-- else -->
       <literal>ListSeats</literal> method on the
       <literal>org.freedesktop.login1.Manager</literal>
       interface of the
@@ -502,7 +528,7 @@ a(so) 1 "seat0" "/org/freedesktop/login1/seat/seat0"</programlisting>
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>machinectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry project='die-net'><refentrytitle>wireshark</refentrytitle><manvolnum>1</manvolnum></citerefentry>
-      else -->
+      --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
     </para>

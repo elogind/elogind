@@ -353,7 +353,7 @@
 
       <xi:include href="standard-options.xml" xpointer="help" />
       <xi:include href="standard-options.xml" xpointer="version" />
-      else -->
+      --><!-- else -->
       <varlistentry>
         <term><option>-D</option></term>
         <term><option>--daemon</option></term>
@@ -1329,7 +1329,7 @@
       <citerefentry><refentrytitle>kernel-command-line</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>bootup</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
-      else -->
+      --><!-- else -->
       The <ulink url="https://github.com/elogind/elogind/">elogind Homepage</ulink>,
       <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
