@@ -505,7 +505,6 @@ decl_headers = '''
 
 foreach decl : ['char16_t',
                 'char32_t',
-                'struct ethtool_link_settings',
                 'struct fib_rule_uid_range',
                 'struct statx',
                ]
@@ -1890,14 +1889,6 @@ test_dlopen = executable(
 #
 # executable('systemd-debug-generator',
 #            'src/debug-generator/debug-generator.c',
-#            include_directories : includes,
-#            link_with : [libshared],
-#            install_rpath : rootlibexecdir,
-#            install : true,
-#            install_dir : systemgeneratordir)
-#
-# executable('systemd-run-generator',
-#            'src/run-generator/run-generator.c',
 #            include_directories : includes,
 #            link_with : [libshared],
 #            install_rpath : rootlibexecdir,
