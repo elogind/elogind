@@ -505,6 +505,7 @@ decl_headers = '''
 
 foreach decl : ['char16_t',
                 'char32_t',
+                'struct ethtool_link_settings',
                 'struct fib_rule_uid_range',
                 'struct statx',
                ]
@@ -1610,6 +1611,8 @@ includes = include_directories('src/basic',
                                '.')
 
 add_project_arguments('-include', 'config.h', language : 'c')
+
+generate_gperfs = find_program('tools/generate-gperfs.py')
 
 subdir('po')
 #if 0 /// UNNEEDED by elogind

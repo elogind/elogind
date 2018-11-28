@@ -332,7 +332,6 @@ basic_sources = files('''
 
 missing_h = files('missing.h')
 
-generate_gperfs = find_program('generate-gperfs.py')
 
 #if 0 /// elogind has only the cap and errno list.
 # generate_af_list = find_program('generate-af-list.sh')
