@@ -451,26 +451,24 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
         if (c->mask & SD_BUS_CREDS_CGROUP)
                 fprintf(f, "%sCGroup=%s%s%s", prefix, color, c->cgroup, suffix);
         s = NULL;
-#if 0 /// elogind does not support systemd units
+#if 0 /// elogind does not support systemd units and slices (Would only display the session anyway)
         r = sd_bus_creds_get_unit(c, &s);
         if (r != -ENODATA)
                 fprintf(f, "%sUnit=%s%s%s", prefix, color, strna(s), suffix);
         s = NULL;
-#endif // 0
         v = sd_bus_creds_get_slice(c, &s);
         if (v != -ENODATA)
                 fprintf(f, "%sSlice=%s%s%s", prefix, color, strna(s), suffix);
         s = NULL;
-#if 0 /// elogind does not support systemd units
         q = sd_bus_creds_get_user_unit(c, &s);
         if (q != -ENODATA)
                 fprintf(f, "%sUserUnit=%s%s%s", prefix, color, strna(s), suffix);
         s = NULL;
-#endif // 0
         w = sd_bus_creds_get_user_slice(c, &s);
         if (w != -ENODATA)
                 fprintf(f, "%sUserSlice=%s%s%s", prefix, color, strna(s), suffix);
         s = NULL;
+#endif // 0
         z = sd_bus_creds_get_session(c, &s);
         if (z != -ENODATA)
                 fprintf(f, "%sSession=%s%s%s", prefix, color, strna(s), suffix);
