@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239.3',
+        version : '239',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -655,7 +655,6 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// elogind has a bit different list and some adaptions
 # progs = [['quotaon',    '/usr/sbin/quotaon'    ],
 #          ['quotacheck', '/usr/sbin/quotacheck' ],
-#          ['kill',       '/usr/bin/kill'        ],
 #          ['kmod',       '/usr/bin/kmod'        ],
 #          ['kexec',      '/usr/sbin/kexec'      ],
 #          ['sulogin',    '/usr/sbin/sulogin'    ],
@@ -1631,10 +1630,10 @@ install_libelogind_static = static_library(
                         libselinux,
 #if 0 /// No grypt with elogind
 #                         libgcrypt],
+#         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #else
                         ],
 #endif // 0
-        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 
 ############################################################
 
