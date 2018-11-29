@@ -343,7 +343,11 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
         uint32_t audit_sessionid;
         char **cmdline = NULL, **well_known = NULL;
         const char *prefix, *color, *suffix, *s;
+#if 0 /// elogind does not support systemd units and slices. q, v and w are only used with them
         int r, q, v, w, z;
+#else
+        int r, q, z;
+#endif // 0
 
         assert(c);
 
@@ -473,10 +477,10 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
         if (z != -ENODATA)
                 fprintf(f, "%sSession=%s%s%s", prefix, color, strna(s), suffix);
 
-#if 0 /// elogind does not support systemd units, and q is only used with them until now
+#if 0 /// elogind does not support systemd units and slices. q, v and w are only used with them
         if (terse && ((c->mask & SD_BUS_CREDS_CGROUP) || r != -ENODATA || q != -ENODATA || v != -ENODATA || w != -ENODATA || z != -ENODATA))
 #else
-        if (terse && ((c->mask & SD_BUS_CREDS_CGROUP) || r != -ENODATA || v != -ENODATA || w != -ENODATA || z != -ENODATA))
+        if (terse && ((c->mask & SD_BUS_CREDS_CGROUP) || r != -ENODATA || z != -ENODATA))
 #endif // 0
                 fputs("\n", f);
 
