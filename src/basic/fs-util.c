@@ -15,6 +15,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
+//#include "locale-util.h"
 //#include "log.h"
 //#include "macro.h"
 //#include "missing.h"
@@ -220,62 +221,31 @@ int readlink_and_make_absolute(const char *p, char **r) {
 #if 0 /// UNNEEDED by elogind
 #endif // 0
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
-        char fd_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
-        _cleanup_close_ int fd = -1;
         assert(path);
 
-        /* Under the assumption that we are running privileged we first change the access mode and only then hand out
+        /* Under the assumption that we are running privileged we
+         * first change the access mode and only then hand out
          * ownership to avoid a window where access is too open. */
 
-        fd = open(path, O_PATH|O_CLOEXEC|O_NOFOLLOW); /* Let's acquire an O_PATH fd, as precaution to change mode/owner
-                                                       * on the same file */
-        if (fd < 0)
-                return -errno;
-
-        xsprintf(fd_path, "/proc/self/fd/%i", fd);
-
-        if (mode != MODE_INVALID) {
-
-                if ((mode & S_IFMT) != 0) {
-                        struct stat st;
-
-                        if (stat(fd_path, &st) < 0)
-                                return -errno;
-
-                        if ((mode & S_IFMT) != (st.st_mode & S_IFMT))
-                                return -EINVAL;
-                }
-
-                if (chmod(fd_path, mode & 07777) < 0)
+        if (mode != MODE_INVALID)
+                if (chmod(path, mode) < 0)
                         return -errno;
-        }
 
         if (uid != UID_INVALID || gid != GID_INVALID)
-                if (chown(fd_path, uid, gid) < 0)
+                if (chown(path, uid, gid) < 0)
                         return -errno;
 
         return 0;
 }
 
 int fchmod_and_chown(int fd, mode_t mode, uid_t uid, gid_t gid) {
-        /* Under the assumption that we are running privileged we first change the access mode and only then hand out
+        /* Under the assumption that we are running privileged we
+         * first change the access mode and only then hand out
          * ownership to avoid a window where access is too open. */
 
-        if (mode != MODE_INVALID) {
-
-                if ((mode & S_IFMT) != 0) {
-                        struct stat st;
-
-                        if (fstat(fd, &st) < 0)
-                                return -errno;
-
-                        if ((mode & S_IFMT) != (st.st_mode & S_IFMT))
-                                return -EINVAL;
-                }
-
-                if (fchmod(fd, mode & 0777) < 0)
+        if (mode != MODE_INVALID)
+                if (fchmod(fd, mode) < 0)
                         return -errno;
-        }
 
         if (uid != UID_INVALID || gid != GID_INVALID)
                 if (fchown(fd, uid, gid) < 0)
@@ -303,6 +273,7 @@ int fchmod_opath(int fd, mode_t m) {
          * fchownat() does. */
 
         xsprintf(procfs_path, "/proc/self/fd/%i", fd);
+
         if (chmod(procfs_path, m) < 0)
                 return -errno;
 
@@ -687,6 +658,20 @@ static bool safe_transition(const struct stat *a, const struct stat *b) {
         return a->st_uid == b->st_uid; /* Otherwise we need to stay within the same UID */
 }
 
+static int log_unsafe_transition(int a, int b, const char *path, unsigned flags) {
+        _cleanup_free_ char *n1 = NULL, *n2 = NULL;
+
+        if (!FLAGS_SET(flags, CHASE_WARN))
+                return -EPERM;
+
+        (void) fd_get_path(a, &n1);
+        (void) fd_get_path(b, &n2);
+
+        return log_warning_errno(SYNTHETIC_ERRNO(EPERM),
+                                 "Detected unsafe path transition %s %s %s during canonicalization of %s.",
+                                 n1, special_glyph(ARROW), n2, path);
+}
+
 int chase_symlinks(const char *path, const char *original_root, unsigned flags, char **ret) {
         _cleanup_free_ char *buffer = NULL, *done = NULL, *root = NULL;
         _cleanup_close_ int fd = -1;
@@ -862,7 +847,7 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
                                         return -errno;
 
                                 if (!safe_transition(&previous_stat, &st))
-                                        return -EPERM;
+                                        return log_unsafe_transition(fd, fd_parent, path, flags);
 
                                 previous_stat = st;
                         }
@@ -903,7 +888,7 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
                         return -errno;
                 if ((flags & CHASE_SAFE) &&
                     !safe_transition(&previous_stat, &st))
-                        return -EPERM;
+                        return log_unsafe_transition(fd, child, path, flags);
 
                 previous_stat = st;
 
@@ -942,7 +927,7 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
                                                 return -errno;
 
                                         if (!safe_transition(&previous_stat, &st))
-                                                return -EPERM;
+                                                return log_unsafe_transition(child, fd, path, flags);
 
                                         previous_stat = st;
                                 }
