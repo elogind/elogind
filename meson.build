@@ -291,6 +291,7 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('BOOTLIBDIR',                                 bootlibdir)
 # conf.set_quoted('SYSTEMD_PULL_PATH',                          join_paths(rootlibexecdir, 'systemd-pull'))
 # conf.set_quoted('SYSTEMD_IMPORT_PATH',                        join_paths(rootlibexecdir, 'systemd-import'))
+# conf.set_quoted('SYSTEMD_IMPORT_FS_PATH',                     join_paths(rootlibexecdir, 'systemd-import-fs'))
 # conf.set_quoted('SYSTEMD_EXPORT_PATH',                        join_paths(rootlibexecdir, 'systemd-export'))
 # conf.set_quoted('VENDOR_KEYRING_PATH',                        join_paths(rootlibexecdir, 'import-pubring.gpg'))
 # conf.set_quoted('USER_KEYRING_PATH',                          join_paths(pkgsysconfdir, 'import-pubring.gpg'))
@@ -471,7 +472,7 @@ if cc.compiles('''
            struct timespec now;
            return 0;
    }
-''', name : '-Werror=shadow with local shadowing')
+''', args: '-Werror=shadow', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -506,6 +507,7 @@ decl_headers = '''
 foreach decl : ['char16_t',
                 'char32_t',
                 'struct fib_rule_uid_range',
+                'struct fib_rule_port_range',
                 'struct statx',
                ]
 
@@ -551,7 +553,7 @@ foreach decl : [['IFLA_INET6_ADDR_GEN_MODE',                'linux/if_link.h'],
                 ['IPVLAN_F_PRIVATE',                        'linux/if_link.h'],
                 ['NDA_IFINDEX',                             'linux/neighbour.h'],
                 ['IFA_FLAGS',                               'linux/if_addr.h'],
-                ['FRA_UID_RANGE',                           'linux/fib_rules.h'],
+                ['FRA_DPORT_RANGE',                         'linux/fib_rules.h'],
                 ['LO_FLAGS_PARTSCAN',                       'linux/loop.h'],
                 ['VXCAN_INFO_PEER',                         'linux/can/vxcan.h'],
                 ['FOU_ATTR_REMCSUM_NOPARTIAL',              'linux/fou.h'],
@@ -1611,6 +1613,8 @@ includes = include_directories('src/basic',
 
 add_project_arguments('-include', 'config.h', language : 'c')
 
+generate_gperfs = find_program('tools/generate-gperfs.py')
+
 subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
@@ -1889,6 +1893,14 @@ test_dlopen = executable(
 #
 # executable('systemd-debug-generator',
 #            'src/debug-generator/debug-generator.c',
+#            include_directories : includes,
+#            link_with : [libshared],
+#            install_rpath : rootlibexecdir,
+#            install : true,
+#            install_dir : systemgeneratordir)
+#
+# executable('systemd-run-generator',
+#            'src/run-generator/run-generator.c',
 #            include_directories : includes,
 #            link_with : [libshared],
 #            install_rpath : rootlibexecdir,
@@ -2430,6 +2442,14 @@ if conf.get('HAVE_PAM') == 1
 #                                     install : true,
 #                                     install_dir : rootlibexecdir)
 #
+#         systemd_import_fs = executable('systemd-import-fs',
+#                                     systemd_import_fs_sources,
+#                                     include_directories : includes,
+#                                     link_with : [libshared],
+#                                     install_rpath : rootlibexecdir,
+#                                     install : true,
+#                                     install_dir : rootlibexecdir)
+#
 #         systemd_export = executable('systemd-export',
 #                                     systemd_export_sources,
 #                                     include_directories : includes,
@@ -2441,7 +2461,8 @@ if conf.get('HAVE_PAM') == 1
 #                                     install_rpath : rootlibexecdir,
 #                                     install : true,
 #                                     install_dir : rootlibexecdir)
-#         public_programs += [systemd_pull, systemd_import, systemd_export]
+#
+#         public_programs += [systemd_pull, systemd_import, systemd_import_fs, systemd_export]
 # endif
 #
 # if conf.get('ENABLE_REMOTE') == 1 and conf.get('HAVE_LIBCURL') == 1
