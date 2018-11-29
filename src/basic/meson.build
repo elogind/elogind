@@ -95,8 +95,6 @@
 #         mkdir-label.c
 #         mkdir.c
 #         mkdir.h
-#         mount-util.c
-#         mount-util.h
 #         mountpoint-util.c
 #         mountpoint-util.h
 #         nss-util.h
@@ -426,7 +424,6 @@ libbasic = static_library(
         dependencies : [threads,
                         libcap,
 #if 0 /// Neither blkid nor libmount in elogind
-#                         libmount,
 #endif // 0
                         libselinux,
                         libm],

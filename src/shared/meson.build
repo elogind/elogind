@@ -99,6 +99,8 @@
 #         machine-pool.h
 #         main-func.h
 #         module-util.h
+#         mount-util.c
+#         mount-util.h
 #         nsflags.c
 #         nsflags.h
 #         os-util.c
@@ -208,7 +210,6 @@ endif
 #         shared_sources += files('firewall-util.c')
 # endif
 #endif // 0
-libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #if 0 /// elogind does not play around with kernel modules. Not its job.
 #endif // 0
 
@@ -255,6 +256,7 @@ target2 = custom_target(
 
 shared_sources += [target1, target2]
 
+libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 
 #if 0 /// elogind doesn't need all this
 # libshared_deps = [threads,
@@ -265,6 +267,7 @@ shared_sources += [target1, target2]
 #                   libgcrypt,
 #                   libiptc,
 #                   libkmod,
+#                   libmount,
 #                   libseccomp,
 #                   libselinux,
 #                   libidn,
