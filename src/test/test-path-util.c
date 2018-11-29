@@ -6,7 +6,7 @@
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "macro.h"
-#include "mount-util.h"
+//#include "mountpoint-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
 #include "stat-util.h"
@@ -571,43 +571,6 @@ static void test_path_startswith_set(void) {
         assert_se(streq_ptr(PATH_STARTSWITH_SET("/foo2/bar", "/foo/quux", "", "/zzz"), NULL));
 }
 
-static void test_path_join_many(void) {
-        char *j;
-
-        assert_se(streq_ptr(j = path_join_many("", NULL), ""));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("foo", NULL), "foo"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("foo", "bar"), "foo/bar"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("", "foo", "", "bar", ""), "foo/bar"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("", "", "", "", "foo", "", "", "", "bar", "", "", ""), "foo/bar"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("", "/", "", "/foo/", "", "/", "", "/bar/", "", "/", ""), "//foo///bar//"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("/", "foo", "/", "bar", "/"), "/foo/bar/"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("foo", "bar", "baz"), "foo/bar/baz"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("foo/", "bar", "/baz"), "foo/bar/baz"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("foo/", "/bar/", "/baz"), "foo//bar//baz"));
-        free(j);
-
-        assert_se(streq_ptr(j = path_join_many("//foo/", "///bar/", "///baz//"), "//foo////bar////baz//"));
-        free(j);
-}
-
 int main(int argc, char **argv) {
         test_setup_logging(LOG_DEBUG);
 
@@ -631,7 +594,6 @@ int main(int argc, char **argv) {
         test_skip_dev_prefix();
         test_empty_or_root();
         test_path_startswith_set();
-        test_path_join_many();
 
 #if 0 /// UNNEEDED by elogind
         test_systemd_installation_has_version(argv[1]); /* NULL is OK */

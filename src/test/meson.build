@@ -164,9 +164,6 @@ tests += [
          [],
          []],
 
-        [['src/test/test-dev-setup.c'],
-         [],
-         []],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-capability.c'],
@@ -232,6 +229,10 @@ tests += [
 #          [],
 #          []],
 #endif // 0
+
+        [['src/test/test-mountpoint-util.c'],
+         [],
+         []],
 
         [['src/test/test-exec-util.c'],
          [],
