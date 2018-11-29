@@ -164,6 +164,9 @@ tests += [
          [],
          []],
 
+        [['src/test/test-dev-setup.c'],
+         [],
+         []],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-capability.c'],
@@ -694,6 +697,11 @@ tests += [
 #
 #         [['src/test/test-arphrd-list.c',
 #           generated_gperf_headers],
+#          [],
+#          []],
+#
+#         [['src/test/test-ip-protocol-list.c',
+#           shared_generated_gperf_headers],
 #          [],
 #          []],
 #
