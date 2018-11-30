@@ -189,11 +189,12 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
          * - do nothing if our new entry matches the existing entry,
          * - replace the existing entry if our new entry has higher priority.
          */
-        size_t i;
+        size_t i, n;
         char *t;
         int r;
 
-        for (i = 0; i < strv_length(*strv); i++) {
+        n = strv_length(*strv);
+        for (i = 0; i < n; i++) {
                 int c;
 
                 c = base_cmp((char* const*) *strv + i, (char* const*) &path);
@@ -216,7 +217,7 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
                                 p2 = path_startswith(path, *dir);
                                 if (p2) {
                                         /* Our new entry has higher priority */
-                                        t = path_join(strempty(root), path);
+                                        t = path_join(root, path, NULL);
                                         if (!t)
                                                 return log_oom();
 
@@ -232,7 +233,7 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
                 /* … we are not there yet, let's continue */
         }
 
-        t = path_join(strempty(root), path);
+        t = path_join(root, path, NULL);
         if (!t)
                 return log_oom();
 
@@ -318,7 +319,7 @@ int conf_files_list_with_replacement(
                 if (r < 0)
                         return log_error_errno(r, "Failed to extend config file list: %m");
 
-                p = path_join(strempty(root), replacement);
+                p = path_join(root, replacement, NULL);
                 if (!p)
                         return log_oom();
         }
