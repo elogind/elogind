@@ -39,7 +39,6 @@ int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_err
 
 int bus_message_map_all_properties(sd_bus_message *m, const struct bus_properties_map *map, unsigned flags, sd_bus_error *error, void *userdata);
 #if 0 /// UNNEEDED by elogind
-int bus_message_map_properties_changed(sd_bus_message *m, const struct bus_properties_map *map, unsigned flags, sd_bus_error *error, void *userdata);
 #endif // 0
 int bus_map_all_properties(sd_bus *bus, const char *destination, const char *path, const struct bus_properties_map *map,
                            unsigned flags, sd_bus_error *error, sd_bus_message **reply, void *userdata);
