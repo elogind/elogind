@@ -1486,7 +1486,7 @@ int open_tmpfile_linkable(const char *target, int flags, char **ret_path) {
 #endif // 0
 
 int open_serialization_fd(const char *ident) {
-        int fd = -1;
+        int fd;
 
         fd = memfd_create(ident, MFD_CLOEXEC);
         if (fd < 0) {
