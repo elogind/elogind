@@ -4,6 +4,8 @@
 
 #include "alloc-util.h"
 #include "fd-util.h"
+//#include "fd-util.h"
+//#include "fileio.h"
 #include "fs-util.h"
 #include "id128-util.h"
 #include "macro.h"
@@ -14,7 +16,6 @@
 #include "string-util.h"
 #include "strv.h"
 //#include "tests.h"
-//#include "tmpfile-util.h"
 #include "user-util.h"
 #include "util.h"
 //#include "virt.h"
@@ -254,11 +255,11 @@ static void test_chase_symlinks(void) {
                 assert_se(chase_symlinks(q, NULL, CHASE_SAFE, NULL) >= 0);
 
                 assert_se(chown(q, 0, 0) >= 0);
-                assert_se(chase_symlinks(q, NULL, CHASE_SAFE, NULL) == -EPERM);
+                assert_se(chase_symlinks(q, NULL, CHASE_SAFE, NULL) == -ENOLINK);
 
                 assert_se(rmdir(q) >= 0);
                 assert_se(symlink("/etc/passwd", q) >= 0);
-                assert_se(chase_symlinks(q, NULL, CHASE_SAFE, NULL) == -EPERM);
+                assert_se(chase_symlinks(q, NULL, CHASE_SAFE, NULL) == -ENOLINK);
 
                 assert_se(chown(p, 0, 0) >= 0);
                 assert_se(chase_symlinks(q, NULL, CHASE_SAFE, NULL) >= 0);
