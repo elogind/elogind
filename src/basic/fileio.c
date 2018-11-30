@@ -9,7 +9,6 @@
 #include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -25,7 +24,6 @@
 #include "missing.h"
 #include "parse-util.h"
 #include "path-util.h"
-#include "process-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -1228,25 +1226,6 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
-
-int open_serialization_fd(const char *ident) {
-        int fd;
-
-        fd = memfd_create(ident, MFD_CLOEXEC);
-        if (fd < 0) {
-                const char *path;
-
-                path = getpid_cached() == 1 ? "/run/systemd" : "/tmp";
-                fd = open_tmpfile_unlinkable(path, O_RDWR|O_CLOEXEC);
-                if (fd < 0)
-                        return fd;
-
-                log_debug("Serializing %s to %s.", ident, path);
-        } else
-                log_debug("Serializing %s to memfd.", ident);
-
-        return fd;
-}
 
 #if 0 /// UNNEEDED by elogind
 int read_nul_string(FILE *f, char **ret) {

@@ -81,7 +81,6 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
-int open_serialization_fd(const char *ident);
 
 #if 0 /// UNNEEDED by elogind
 int read_nul_string(FILE *f, char **ret);
