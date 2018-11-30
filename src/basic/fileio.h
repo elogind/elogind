@@ -10,6 +10,8 @@
 #include "macro.h"
 #include "time-util.h"
 
+#define LONG_LINE_MAX (1U*1024U*1024U)
+
 typedef enum {
         WRITE_STRING_FILE_CREATE            = 1 << 0,
         WRITE_STRING_FILE_ATOMIC            = 1 << 1,
@@ -70,33 +72,19 @@ int search_and_fopen_nulstr(const char *path, const char *mode, const char *root
 int fflush_and_check(FILE *f);
 int fflush_sync_and_check(FILE *f);
 
-int fopen_temporary(const char *path, FILE **_f, char **_temp_path);
-int mkostemp_safe(char *pattern);
-int fmkostemp_safe(char *pattern, const char *mode, FILE**_f);
-
-int tempfn_xxxxxx(const char *p, const char *extra, char **ret);
-int tempfn_random(const char *p, const char *extra, char **ret);
 #if 0 /// UNNEEDED by elogind
-int tempfn_random_child(const char *p, const char *extra, char **ret);
-
 int write_timestamp_file_atomic(const char *fn, usec_t n);
 int read_timestamp_file(const char *fn, usec_t *ret);
 
 int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space);
 #endif // 0
 
-int open_tmpfile_unlinkable(const char *directory, int flags);
 #if 0 /// UNNEEDED by elogind
-int open_tmpfile_linkable(const char *target, int flags, char **ret_path);
 #endif // 0
 int open_serialization_fd(const char *ident);
 
 #if 0 /// UNNEEDED by elogind
-int link_tmpfile(int fd, const char *path, const char *target);
-
 int read_nul_string(FILE *f, char **ret);
 #endif // 0
-
-int mkdtemp_malloc(const char *template, char **ret);
 
 int read_line(FILE *f, size_t limit, char **ret);

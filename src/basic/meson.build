@@ -121,8 +121,6 @@
 #         refcnt.h
 #         replace-var.c
 #         replace-var.h
-#         rlimit-util.c
-#         rlimit-util.h
 #         rm-rf.c
 #         rm-rf.h
 #         securebits.h
@@ -162,6 +160,8 @@
 #         terminal-util.h
 #         time-util.c
 #         time-util.h
+#         tmpfile-util.c
+#         tmpfile-util.h
 #         umask-util.h
 #         unaligned.h
 #         unit-def.c
