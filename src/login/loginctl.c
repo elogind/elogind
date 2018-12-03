@@ -162,7 +162,7 @@ static int list_sessions(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return bus_log_parse_error(r);
 
-        table = table_new("SESSION", "UID", "USER", "SEAT", "TTY");
+        table = table_new("session", "uid", "user", "seat", "tty");
         if (!table)
                 return log_oom();
 
@@ -243,7 +243,7 @@ static int list_users(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return bus_log_parse_error(r);
 
-        table = table_new("UID", "USER");
+        table = table_new("uid", "user");
         if (!table)
                 return log_oom();
 
@@ -300,7 +300,7 @@ static int list_seats(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return bus_log_parse_error(r);
 
-        table = table_new("SEAT");
+        table = table_new("seat");
         if (!table)
                 return log_oom();
 
