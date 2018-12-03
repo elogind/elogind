@@ -117,7 +117,10 @@ static int show_table(Table *table, const char *word) {
 
                 table_set_header(table, arg_legend);
 
-                r = table_print(table, NULL);
+                if (OUTPUT_MODE_IS_JSON(arg_output))
+                        r = table_print_json(table, NULL, output_mode_to_json_format_flags(arg_output) | JSON_FORMAT_COLOR_AUTO);
+                else
+                        r = table_print(table, NULL);
                 if (r < 0)
                         return log_error_errno(r, "Failed to show table: %m");
         }
@@ -1502,14 +1505,14 @@ static int parse_argv(int argc, char *argv[]) {
                         if (arg_output < 0)
                                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                                        "Unknown output '%s'.", optarg);
-                        break;
 #endif // 0
 
-                case ARG_NO_PAGER:
 #if 1 /// elogind supports --no-wall, -dry-run and --quiet
                 case ARG_NO_WALL:
                         arg_no_wall = true;
                         break;
+                        if (OUTPUT_MODE_IS_JSON(arg_output))
+                                arg_legend = false;
 
                 case ARG_DRY_RUN:
                         arg_dry_run = true;
@@ -1518,6 +1521,8 @@ static int parse_argv(int argc, char *argv[]) {
 
                 case 'q':
                         arg_quiet = true;
+                case ARG_NO_PAGER:
+                        arg_pager_flags |= PAGER_DISABLE;
                         break;
 
 #endif // 1
