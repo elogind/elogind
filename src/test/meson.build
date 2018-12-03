@@ -187,6 +187,10 @@ tests += [
          [],
          []],
 
+        [['src/test/test-static-destruct.c'],
+         [],
+         []],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-sigbus.c'],
 #          [],
