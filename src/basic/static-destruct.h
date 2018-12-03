@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "alloc-util.h"
 //#include "macro.h"
 
 /* A framework for registering static variables that shall be freed on shutdown of a process. It's a bit like gcc's
@@ -10,7 +9,7 @@
 
 typedef struct StaticDestructor {
         void *data;
-        free_func_t destroy;
+        void (*destroy)(void *p);
 } StaticDestructor;
 
 #define STATIC_DESTRUCTOR_REGISTER(variable, func) \
@@ -33,8 +32,8 @@ typedef struct StaticDestructor {
 
 /* Beginning and end of our section listing the destructors. We define these as weak as we want this to work even if
  * there's not a single destructor is defined in which case the section will be missing. */
-extern const struct StaticDestructor __attribute__((__weak__)) __start_SYSTEMD_STATIC_DESTRUCT[];
-extern const struct StaticDestructor __attribute__((__weak__)) __stop_SYSTEMD_STATIC_DESTRUCT[];
+extern const struct StaticDestructor _weak_ __start_SYSTEMD_STATIC_DESTRUCT[];
+extern const struct StaticDestructor _weak_ __stop_SYSTEMD_STATIC_DESTRUCT[];
 
 /* The function to destroy everything. (Note that this must be static inline, as it's key that it remains in the same
  * linking unit as the variables we want to destroy. */

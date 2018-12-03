@@ -276,7 +276,7 @@ static const struct hashmap_type_info hashmap_type_info[_HASHMAP_TYPE_MAX] = {
 };
 
 #if VALGRIND
-__attribute__((destructor)) static void cleanup_pools(void) {
+_destructor_ static void cleanup_pools(void) {
         _cleanup_free_ char *t = NULL;
         int r;
 
@@ -848,7 +848,7 @@ int internal_set_ensure_allocated(Set **s, const struct hash_ops *hash_ops  HASH
 
 static void hashmap_free_no_clear(HashmapBase *h) {
         assert(!h->has_indirect);
-        assert(h->n_direct_entries == 0);
+        assert(!h->n_direct_entries);
 
 #if ENABLE_DEBUG_HASHMAP
         assert_se(pthread_mutex_lock(&hashmap_debug_list_mutex) == 0);
@@ -864,37 +864,46 @@ static void hashmap_free_no_clear(HashmapBase *h) {
                 free(h);
 }
 
-HashmapBase *internal_hashmap_free(HashmapBase *h, free_func_t default_free_key, free_func_t default_free_value) {
+HashmapBase *internal_hashmap_free(HashmapBase *h) {
+
+        /* Free the hashmap, but nothing in it */
+
         if (h) {
-                internal_hashmap_clear(h, default_free_key, default_free_value);
+                internal_hashmap_clear(h);
                 hashmap_free_no_clear(h);
         }
 
         return NULL;
 }
 
-void internal_hashmap_clear(HashmapBase *h, free_func_t default_free_key, free_func_t default_free_value) {
-        free_func_t free_key, free_value;
+HashmapBase *internal_hashmap_free_free(HashmapBase *h) {
+
+        /* Free the hashmap and all data objects in it, but not the
+         * keys */
+
+        if (h) {
+                internal_hashmap_clear_free(h);
+                hashmap_free_no_clear(h);
+        }
+
+        return NULL;
+}
+
+Hashmap *hashmap_free_free_free(Hashmap *h) {
+
+        /* Free the hashmap and all data and key objects in it */
+
+        if (h) {
+                hashmap_clear_free_free(h);
+                hashmap_free_no_clear(HASHMAP_BASE(h));
+        }
+
+        return NULL;
+}
+
+void internal_hashmap_clear(HashmapBase *h) {
         if (!h)
                 return;
-
-        free_key = h->hash_ops->free_key ?: default_free_key;
-        free_value = h->hash_ops->free_value ?: default_free_value;
-
-        if (free_key || free_value) {
-                unsigned idx;
-
-                for (idx = skip_free_buckets(h, 0); idx != IDX_NIL;
-                     idx = skip_free_buckets(h, idx + 1)) {
-                        struct hashmap_base_entry *e = bucket_at(h, idx);
-
-                        if (free_key)
-                                free_key((void *) e->key);
-
-                        if (free_value)
-                                free_value(entry_value(h, e));
-                }
-        }
 
         if (h->has_indirect) {
                 free(h->indirect.storage);
@@ -910,6 +919,35 @@ void internal_hashmap_clear(HashmapBase *h, free_func_t default_free_key, free_f
         }
 
         base_set_dirty(h);
+}
+
+void internal_hashmap_clear_free(HashmapBase *h) {
+        unsigned idx;
+
+        if (!h)
+                return;
+
+        for (idx = skip_free_buckets(h, 0); idx != IDX_NIL;
+             idx = skip_free_buckets(h, idx + 1))
+                free(entry_value(h, bucket_at(h, idx)));
+
+        internal_hashmap_clear(h);
+}
+
+void hashmap_clear_free_free(Hashmap *h) {
+        unsigned idx;
+
+        if (!h)
+                return;
+
+        for (idx = skip_free_buckets(HASHMAP_BASE(h), 0); idx != IDX_NIL;
+             idx = skip_free_buckets(HASHMAP_BASE(h), idx + 1)) {
+                struct plain_hashmap_entry *e = plain_bucket_at(h, idx);
+                free((void*)e->b.key);
+                free(e->value);
+        }
+
+        internal_hashmap_clear(HASHMAP_BASE(h));
 }
 
 static int resize_buckets(HashmapBase *h, unsigned entries_add);
@@ -1704,7 +1742,7 @@ HashmapBase *internal_hashmap_copy(HashmapBase *h) {
         }
 
         if (r < 0) {
-                internal_hashmap_free(copy, false, false);
+                internal_hashmap_free(copy);
                 return NULL;
         }
 
