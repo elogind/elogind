@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <linux/audit.h>
-#include <linux/capability.h>
 //#include <linux/falloc.h>
 #include <linux/oom.h>
 #include <net/ethernet.h>
@@ -277,29 +276,6 @@ struct sockaddr_vm {
 #define AUDIT_NLGRP_READLOG 1
 #endif
 
-#ifndef CAP_MAC_OVERRIDE
-#define CAP_MAC_OVERRIDE 32
-#endif
-
-#ifndef CAP_MAC_ADMIN
-#define CAP_MAC_ADMIN 33
-#endif
-
-#ifndef CAP_SYSLOG
-#define CAP_SYSLOG 34
-#endif
-
-#ifndef CAP_WAKE_ALARM
-#define CAP_WAKE_ALARM 35
-#endif
-
-#ifndef CAP_BLOCK_SUSPEND
-#define CAP_BLOCK_SUSPEND 36
-#endif
-
-#ifndef CAP_AUDIT_READ
-#define CAP_AUDIT_READ 37
-#endif
 
 #if 0 /// UNNEEDED by elogind
 #ifndef RENAME_NOREPLACE
@@ -364,6 +340,7 @@ struct sockaddr_vm {
 #else
 #else
 //#include "missing_btrfs_tree.h"
+//#include "missing_capability.h"
 //#include "missing_input.h"
 //#include "missing_magic.h"
 //#include "missing_network.h"

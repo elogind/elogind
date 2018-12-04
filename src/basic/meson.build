@@ -94,6 +94,7 @@
 #         mempool.h
 #         missing_btrfs.h
 #         missing_btrfs_tree.h
+#         missing_capability.h
 #         missing_ethtool.h
 #         missing_fib_rules.h
 #         missing_fou.h
