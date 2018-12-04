@@ -3,6 +3,8 @@
 
 /* Missing glibc definitions to access certain kernel APIs */
 
+//#include <fcntl.h>
+//#include <sys/syscall.h>
 #if 0 /// UNNEEDED by elogind
 #include <sys/types.h>
 
