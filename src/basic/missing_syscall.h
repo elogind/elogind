@@ -6,6 +6,8 @@
 #if 0 /// UNNEEDED by elogind
 #include <sys/types.h>
 
+//#include "missing_keyctl.h"
+
 #if !HAVE_PIVOT_ROOT
 static inline int missing_pivot_root(const char *new_root, const char *put_old) {
         return syscall(__NR_pivot_root, new_root, put_old);
