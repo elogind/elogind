@@ -629,7 +629,13 @@ int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret) {
+int sockaddr_pretty(
+                const struct sockaddr *_sa,
+                socklen_t salen,
+                bool translate_ipv6,
+                bool include_port,
+                char **ret) {
+
         union sockaddr_union *sa = (union sockaddr_union*) _sa;
         char *p;
         int r;
