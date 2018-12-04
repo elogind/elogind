@@ -14,7 +14,6 @@
 #include <sys/resource.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
-#include <uchar.h>
 #include <unistd.h>
 
 #if HAVE_AUDIT
@@ -287,14 +286,6 @@ struct sockaddr_vm {
 #endif
 
 #endif // 0
-#if !HAVE_CHAR32_T
-#define char32_t uint32_t
-#endif
-
-#if !HAVE_CHAR16_T
-#define char16_t uint16_t
-#endif
-
 #ifndef ETHERTYPE_LLDP
 #define ETHERTYPE_LLDP 0x88cc
 #endif
@@ -345,5 +336,6 @@ struct sockaddr_vm {
 //#include "missing_magic.h"
 //#include "missing_network.h"
 //#include "missing_prctl.h"
+//#include "missing_type.h"
 
 #include "missing_syscall.h"
