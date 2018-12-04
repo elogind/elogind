@@ -11,7 +11,7 @@
 /// Additional includes needed by elogind
 #include "process-util.h"
 
-int main(int argc, char*argv[]) {
+int main(int argc, char *argv[]) {
         char *path;
         char *c, *p;
 

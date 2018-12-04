@@ -65,7 +65,7 @@ static inline int unit_name_mangle(const char *name, UnitNameMangle flags, char 
 
 int slice_build_parent_slice(const char *slice, char **ret);
 #endif // 0
-int slice_build_subslice(const char *slice, const char*name, char **subslice);
+int slice_build_subslice(const char *slice, const char *name, char **subslice);
 bool slice_name_is_valid(const char *name);
 #if 0 /// UNNEEDED by elogind
 #endif // 0
