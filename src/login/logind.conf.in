@@ -41,3 +41,4 @@
 #HibernateState=disk
 #HibernateMode=platform shutdown
 #HybridSleepState=disk
+#HybridSleepMode=suspend platform shutdown
