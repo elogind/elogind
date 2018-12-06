@@ -9,7 +9,6 @@
 #include <linux/audit.h>
 //#include <linux/falloc.h>
 #include <linux/oom.h>
-#include <net/ethernet.h>
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
@@ -273,10 +272,6 @@ struct sockaddr_vm {
 #endif
 
 #endif // 0
-#ifndef ETHERTYPE_LLDP
-#define ETHERTYPE_LLDP 0x88cc
-#endif
-
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
