@@ -2,6 +2,7 @@
 #pragma once
 
 //#include <assert.h>
+//#include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <sys/param.h>
@@ -484,6 +485,11 @@ static inline int __coverity_check__(int condition) {
 #define thread_local __thread
 #endif
 #endif
+
+#define DEFINE_TRIVIAL_DESTRUCTOR(name, type, func)             \
+        static inline void name(type *p) {                      \
+                func(p);                                        \
+        }
 
 #define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                 \
         static inline void func##p(type *p) {                   \
