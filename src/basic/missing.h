@@ -3,10 +3,6 @@
 
 /* Missing glibc definitions to access certain kernel APIs */
 
-#include <errno.h>
-#include <inttypes.h>
-#include <sys/syscall.h>
-
 #else
 
 /// Additional includes needed by elogind
