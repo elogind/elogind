@@ -365,6 +365,8 @@ basic_sources = files('''
 
 missing_audit_h = files('missing_audit.h')
 missing_capability_h = files('missing_capability.h')
+missing_network_h = files('missing_network.h')
+missing_socket_h = files('missing_socket.h')
 
 
 #if 0 /// elogind has only the cap and errno list.
@@ -372,14 +374,14 @@ missing_capability_h = files('missing_capability.h')
 # af_list_txt = custom_target(
 #         'af-list.txt',
 #         output : 'af-list.txt',
-#         command : [generate_af_list, cpp],
+#         command : [generate_af_list, cpp, config_h, missing_socket_h],
 #         capture : true)
 #
 # generate_arphrd_list = find_program('generate-arphrd-list.sh')
 # arphrd_list_txt = custom_target(
 #         'arphrd-list.txt',
 #         output : 'arphrd-list.txt',
-#         command : [generate_arphrd_list, cpp],
+#         command : [generate_arphrd_list, cpp, config_h, missing_network_h],
 #         capture : true)
 #endif // 0
 
