@@ -111,6 +111,7 @@
 #         missing_prctl.h
 #         missing_random.h
 #         missing_resource.h
+#         missing_sched.h
 #         missing_securebits.h
 #         missing_socket.h
 #         missing_stat.h

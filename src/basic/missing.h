@@ -25,10 +25,6 @@
 
 #if 0 /// UNNEEDED by elogind (It can not support BTRFS at all)
 #endif // 0
-#ifndef CLONE_NEWCGROUP
-#define CLONE_NEWCGROUP 0x02000000
-#endif
-
 #ifndef MS_MOVE
 #define MS_MOVE 8192
 #endif
@@ -100,17 +96,6 @@
 #define FALLOC_FL_PUNCH_HOLE 0x02
 #endif
 
-#ifndef PF_KTHREAD
-#define PF_KTHREAD 0x00200000
-#endif
-
-/* The maximum thread/process name length including trailing NUL byte. This mimics the kernel definition of the same
- * name, which we need in userspace at various places but is not defined in userspace currently, neither under this
- * name nor any other. */
-#ifndef TASK_COMM_LEN
-#define TASK_COMM_LEN 16
-#endif
-
 #else
 #else
 //#include "missing_audit.h"
@@ -124,6 +109,7 @@
 //#include "missing_prctl.h"
 //#include "missing_random.h"
 //#include "missing_resource.h"
+//#include "missing_sched.h"
 //#include "missing_socket.h"
 //#include "missing_stdlib.h"
 //#include "missing_timerfd.h"
