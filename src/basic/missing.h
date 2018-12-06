@@ -19,10 +19,6 @@
 #endif
 
 /* If RLIMIT_RTTIME is not defined, then we cannot use RLIMIT_NLIMITS as is */
-#ifndef TIOCVHANGUP
-#define TIOCVHANGUP 0x5437
-#endif
-
 #ifndef GRND_NONBLOCK
 #define GRND_NONBLOCK 0x0001
 #endif
