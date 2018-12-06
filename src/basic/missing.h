@@ -19,14 +19,6 @@
 #endif
 
 /* If RLIMIT_RTTIME is not defined, then we cannot use RLIMIT_NLIMITS as is */
-#ifndef GRND_NONBLOCK
-#define GRND_NONBLOCK 0x0001
-#endif
-
-#ifndef GRND_RANDOM
-#define GRND_RANDOM 0x0002
-#endif
-
 #ifndef FS_NOCOW_FL
 #define FS_NOCOW_FL 0x00800000
 #endif
@@ -155,6 +147,7 @@
 //#include "missing_mman.h"
 //#include "missing_network.h"
 //#include "missing_prctl.h"
+//#include "missing_random.h"
 //#include "missing_resource.h"
 //#include "missing_socket.h"
 //#include "missing_timerfd.h"
