@@ -3,10 +3,14 @@
 #include <fcntl.h>
 #include <linux/input.h>
 #include <string.h>
+//#include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
 #if 0 /// elogind needs the systems udev header
+/* Old drm.h may needs to be included after stdint.h and sys/types.h */
+//#include <drm/drm.h>
+
 //#include "sd-device.h"
 #else
 #include <libudev.h>

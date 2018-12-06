@@ -73,14 +73,6 @@
 #  define CIFS_MAGIC_NUMBER 0xFF534D42
 #endif
 
-#ifndef DRM_IOCTL_SET_MASTER
-#  define DRM_IOCTL_SET_MASTER _IO('d', 0x1e)
-#endif
-
-#ifndef DRM_IOCTL_DROP_MASTER
-#  define DRM_IOCTL_DROP_MASTER _IO('d', 0x1f)
-#endif
-
 #else
 
 #if 0 /// UNNEEDED by elogind
