@@ -82,10 +82,6 @@
 #endif
 
 #else
-#ifndef BPF_XOR
-#define BPF_XOR 0xa0
-#endif
-
 
 #if 0 /// UNNEEDED by elogind
 #ifndef RENAME_NOREPLACE
