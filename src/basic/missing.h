@@ -12,14 +12,9 @@
 #include <sys/resource.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
-#include <unistd.h>
 
 #if HAVE_AUDIT
 #include <libaudit.h>
-#endif
-
-#ifdef ARCH_MIPS
-#include <asm/sgidefs.h>
 #endif
 
 #if HAVE_LINUX_VM_SOCKETS_H
@@ -256,10 +251,6 @@ struct sockaddr_vm {
 #if 0 /// UNNEEDED by elogind
 #ifndef RENAME_NOREPLACE
 #define RENAME_NOREPLACE (1 << 0)
-#endif
-
-#ifndef KCMP_FILE
-#define KCMP_FILE 0
 #endif
 
 #endif // 0
