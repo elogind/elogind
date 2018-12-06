@@ -92,6 +92,7 @@
 #         memfd-util.h
 #         mempool.c
 #         mempool.h
+#         missing_audit.h
 #         missing_btrfs.h
 #         missing_btrfs_tree.h
 #         missing_capability.h
