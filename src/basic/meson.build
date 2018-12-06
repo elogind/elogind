@@ -150,6 +150,8 @@
 #         refcnt.h
 #         replace-var.c
 #         replace-var.h
+#         rlimit-util.c
+#         rlimit-util.h
 #         rm-rf.c
 #         rm-rf.h
 #         selinux-util.c
@@ -361,6 +363,7 @@ basic_sources = files('''
 #endif // 0
 
 missing_h = files('missing.h')
+missing_capability_h = files('missing_capability.h')
 
 
 #if 0 /// elogind has only the cap and errno list.
@@ -384,7 +387,7 @@ cap_list_txt = custom_target(
         'cap-list.txt',
         output : 'cap-list.txt',
 #if 0 /// elogind needs musl_missing.h, so generate_cap_list must know the source root
-#         command : [generate_cap_list, cpp, config_h, missing_h],
+#         command : [generate_cap_list, cpp, config_h, missing_capability_h],
 #else
         command : [generate_cap_list, cpp, meson.source_root(), config_h, missing_h],
 #endif // 0
