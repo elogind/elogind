@@ -19,14 +19,6 @@
 #endif
 
 /* If RLIMIT_RTTIME is not defined, then we cannot use RLIMIT_NLIMITS as is */
-#ifndef MFD_ALLOW_SEALING
-#define MFD_ALLOW_SEALING 0x0002U
-#endif
-
-#ifndef MFD_CLOEXEC
-#define MFD_CLOEXEC 0x0001U
-#endif
-
 #ifndef TIOCVHANGUP
 #define TIOCVHANGUP 0x5437
 #endif
@@ -164,6 +156,7 @@
 //#include "missing_fcntl.h"
 //#include "missing_input.h"
 //#include "missing_magic.h"
+//#include "missing_mman.h"
 //#include "missing_network.h"
 //#include "missing_prctl.h"
 //#include "missing_resource.h"
