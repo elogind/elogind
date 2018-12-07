@@ -97,6 +97,7 @@
 #         missing_btrfs.h
 #         missing_btrfs_tree.h
 #         missing_capability.h
+#         missing_drm.h
 #         missing_ethtool.h
 #         missing_fcntl.h
 #         missing_fib_rules.h
