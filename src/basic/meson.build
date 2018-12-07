@@ -92,6 +92,7 @@
 #         memfd-util.h
 #         mempool.c
 #         mempool.h
+#         missing.h
 #         missing_audit.h
 #         missing_btrfs.h
 #         missing_btrfs_tree.h
@@ -362,7 +363,7 @@ basic_sources = files('''
 '''.split())
 #endif // 0
 
-missing_h = files('missing.h')
+missing_audit_h = files('missing_audit.h')
 missing_capability_h = files('missing_capability.h')
 
 
@@ -443,7 +444,7 @@ foreach item : [['cap',    cap_list_txt,    'capability', ''],
         generated_gperf_headers += [target1, target2]
 endforeach
 
-basic_sources += [missing_h] + generated_gperf_headers
+basic_sources += generated_gperf_headers
 #if 0 /// elogind does not need gcrypt
 # basic_gcrypt_sources = files(
 #         'gcrypt-util.c',
