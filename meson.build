@@ -811,6 +811,9 @@ else
         conf.set('DEFAULT_HIERARCHY', 'CGROUP_UNIFIED_ALL')
 endif
 
+default_net_naming_scheme = get_option('default-net-naming-scheme')
+conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
+
 #if 0 /// UNNEEDED by elogind
 # time_epoch = get_option('time-epoch')
 # if time_epoch == -1
@@ -3468,6 +3471,7 @@ status = [
 #         'default DNS-over-TLS mode:         @0@'.format(default_dns_over_tls),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #endif // 0
+        'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
 
 #if 0 /// UNSUPPORTED by elogind
