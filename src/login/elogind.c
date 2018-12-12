@@ -179,8 +179,8 @@ static pid_t elogind_is_already_running(bool need_pid_file) {
                 get_process_comm(pid, &comm);
                 if (NULL == startswith(strna(comm), program_invocation_short_name))
                         goto we_are_alone;
+                return pid;
         }
-        return pid;
 
 we_are_alone:
 
