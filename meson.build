@@ -15,7 +15,7 @@ project('elogind', 'c',
 
 /// elogind empty mask removed (UNNEEDED by elogind - libudev is external)
 libelogind_version = '0.29.0'
-libudev_version = '1.6.18'
+libudev_version = '1.7.0'
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
