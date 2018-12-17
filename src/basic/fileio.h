@@ -74,9 +74,20 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-int read_nul_string(FILE *f, char **ret);
 #endif // 0
 
-int read_line(FILE *f, size_t limit, char **ret);
+typedef enum ReadLineFlags {
+        READ_LINE_ONLY_NUL = 1 << 0,
+} ReadLineFlags;
+
+int read_line_full(FILE *f, size_t limit, ReadLineFlags flags, char **ret);
+
+static inline int read_line(FILE *f, size_t limit, char **ret) {
+        return read_line_full(f, limit, 0, ret);
+}
+
+static inline int read_nul_string(FILE *f, size_t limit, char **ret) {
+        return read_line_full(f, limit, READ_LINE_ONLY_NUL, ret);
+}
 
 int safe_fgetc(FILE *f, char *ret);
