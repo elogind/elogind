@@ -35,6 +35,7 @@
 #include "missing.h"
 #include "process-util.h"
 #include "raw-clone.h"
+//#include "rlimit-util.h"
 #include "signal-util.h"
 //#include "stat-util.h"
 #include "string-table.h"
@@ -608,12 +609,14 @@ int get_process_root(pid_t pid, char **root) {
         return get_process_link_contents(p, root);
 }
 
+#define ENVIRONMENT_BLOCK_MAX (5U*1024U*1024U)
+
 int get_process_environ(pid_t pid, char **env) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *outcome = NULL;
-        int c;
-        const char *p;
         size_t allocated = 0, sz = 0;
+        const char *p;
+        int r;
 
         assert(pid >= 0);
         assert(env);
@@ -629,9 +632,20 @@ int get_process_environ(pid_t pid, char **env) {
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
-        while ((c = fgetc(f)) != EOF) {
+        for (;;) {
+                char c;
+
+                if (sz >= ENVIRONMENT_BLOCK_MAX)
+                        return -ENOBUFS;
+
                 if (!GREEDY_REALLOC(outcome, allocated, sz + 5))
                         return -ENOMEM;
+
+                r = safe_fgetc(f, &c);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        break;
 
                 if (c == '\0')
                         outcome[sz++] = '\n';
@@ -639,13 +653,7 @@ int get_process_environ(pid_t pid, char **env) {
                         sz += cescape_char(c, outcome + sz);
         }
 
-        if (!outcome) {
-                outcome = strdup("");
-                if (!outcome)
-                        return -ENOMEM;
-        } else
-                outcome[sz] = '\0';
-
+        outcome[sz] = '\0';
         *env = TAKE_PTR(outcome);
 
         return 0;
@@ -1419,6 +1427,14 @@ int safe_fork_full(
                 }
         }
 
+        if (flags & FORK_RLIMIT_NOFILE_SAFE) {
+                r = rlimit_nofile_safe();
+                if (r < 0) {
+                        log_full_errno(prio, r, "Failed to lower RLIMIT_NOFILE's soft limit to 1K: %m");
+                        _exit(EXIT_FAILURE);
+                }
+        }
+
         if (ret_pid)
                 *ret_pid = getpid_cached();
 
@@ -1529,6 +1545,8 @@ int fork_agent(const char *name, const int except[], size_t n_except, pid_t *ret
 
                 safe_close_above_stdio(fd);
         }
+
+        (void) rlimit_nofile_safe();
 
         /* Count arguments */
         va_start(ap, path);
