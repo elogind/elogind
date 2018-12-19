@@ -24,15 +24,16 @@ libelogind_version = '0.23.0'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
+conf.set('PROJECT_VERSION',        meson.project_version())
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 substs = configuration_data()
 #if 0 /// Set elogind Package PACKAGE_URL
-# substs.set('PACKAGE_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
+# substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
+# substs.set('PROJECT_VERSION',      meson.project_version())
 #else
 substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
 #endif // 0
-substs.set('PACKAGE_VERSION',      meson.project_version())
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
