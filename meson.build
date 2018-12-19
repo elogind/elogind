@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '240',
+        version : '239',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -13,8 +13,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.24.0'
-# libudev_version = '1.6.12'
+# libsystemd_version = '0.23.0'
+# libudev_version = '1.6.11'
 #else
 libelogind_version = '0.23.0'
 #endif // 0
@@ -24,7 +24,6 @@ libelogind_version = '0.23.0'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
-conf.set_quoted('PACKAGE_STRING',  meson.project_name() + ' ' + meson.project_version())
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 substs = configuration_data()
@@ -794,6 +793,7 @@ endif
 #                   'valgrind/memcheck.h',
 #                   'valgrind/valgrind.h',
 #                  ]
+#
 #else
 foreach header : ['linux/memfd.h',
                   'linux/vm_sockets.h',
