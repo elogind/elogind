@@ -58,7 +58,7 @@ Features:
 * when a socket unit is spawned with an AF_UNIX path in /var/run, complain and
   patch it to use /run instead
 
-* set memory.oom.group in cgroup v2 for all leaf cgroups (kernel v4.19+)
+* set memory.oom.group in cgroupsv2 for all leaf cgroups (kernel v4.19+)
 
 * add a new syscall group "@esoteric" for more esoteric stuff such as bpf() and
   usefaultd() and make elogind-analyze check for it.
@@ -825,6 +825,7 @@ Features:
   - man: document the very specific env the shutdown drop-in tools live in
   - man: add more examples to man pages
   - man: maybe sort directives in man pages, and take sections from --help and apply them to man too
+  - document root=gpt-auto properly
 
 * systemctl:
   - add systemctl switch to dump transaction without executing it
@@ -1114,5 +1115,3 @@ Regularly:
 * use secure_getenv() instead of getenv() where appropriate
 
 * link up selected blog stories from man pages and unit files Documentation= fields
-String is not UTF-8 clean, ignoring assignment
- timedatex.service: Consumed 26ms CPU time.
