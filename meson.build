@@ -25,7 +25,6 @@ libelogind_version = '0.24.0'
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
 conf.set('PROJECT_VERSION',        meson.project_version())
-conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -687,7 +686,9 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
            description : 'program_invocation[_short]_name is provided by libc')
 
 #endif // 1
-#####################################################################
+vcs_tagger = [meson.source_root() + '/tools/meson-vcs-tag.sh',
+              '@0@/.git'.format(meson.source_root()),
+              meson.project_version()]
 
 sed = find_program('sed')
 awk = find_program('awk')

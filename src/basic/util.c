@@ -564,7 +564,7 @@ uint64_t system_tasks_max_scale(uint64_t v, uint64_t max) {
 }
 
 int version(void) {
-        puts("elogind " PACKAGE_VERSION "\n"
+        puts("elogind " GIT_VERSION "\n"
              SYSTEMD_FEATURES);
         return 0;
 }
