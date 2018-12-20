@@ -170,12 +170,11 @@ libsystemd_c_args = ['-fvisibility=default']
 #
 # libsystemd_sym = 'src/libsystemd/libsystemd.sym'
 #
-# libsystemd_pc = configure_file(
+# configure_file(
 #         input : 'libsystemd.pc.in',
 #         output : 'libsystemd.pc',
-#         configuration : substs)
-# install_data(libsystemd_pc,
-#              install_dir : pkgconfiglibdir)
+#         configuration : substs,
+#         install_dir : pkgconfiglibdir == 'no' ? '' : pkgconfiglibdir)
 #else
 libelogind_static = static_library(
         'elogind_static',
