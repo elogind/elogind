@@ -1854,11 +1854,11 @@ static int method_do_shutdown_or_sleep(
 #if 0 /// Within elogind the manager m must be provided, too
                 r = can_sleep(sleep_verb);
                 if (r == -ENOSPC)
-                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Not enough swap space for hibernation");
-                if (r == -ENOMEDIUM)
-                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Kernel image has been removed, can't hibernate");
+                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
+                                                "Not enough swap space for hibernation");
                 if (r == 0)
-                        return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Sleep verb \"%s\" not supported", sleep_verb);
+                        return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
+                                                 "Sleep verb \"%s\" not supported", sleep_verb);
 #else
                 r = can_sleep(m, sleep_verb);
 #endif // 0
@@ -2356,7 +2356,7 @@ static int method_can_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_verb);
-                if (IN_SET(r,  0, -ENOSPC, -ENOMEDIUM))
+                if (IN_SET(r,  0, -ENOSPC))
 #else
                 r = can_sleep(m, sleep_verb);
 #endif // 0
