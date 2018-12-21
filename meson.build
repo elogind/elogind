@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239',
+        version : '240',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -13,8 +13,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.23.0'
-# libudev_version = '1.6.11'
+# libsystemd_version = '0.24.0'
+# libudev_version = '1.6.12'
 #else
 libelogind_version = '0.23.0'
 #endif // 0
@@ -1655,6 +1655,7 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-id128',
 #                                'src/libsystemd/sd-netlink',
 #                                'src/libsystemd/sd-network',
+#                                'src/libsystemd/sd-resolve',
 #                                'src/libsystemd-network',
 #else
                                'src/libelogind/sd-bus',
