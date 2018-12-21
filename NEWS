@@ -1,6 +1,6 @@
 systemd System and Service Manager
 
-CHANGES WITH 240 in spe:
+CHANGES WITH 240:
 
         * NoNewPrivileges=yes has been set for all long-running services
           implemented by elogind. Previously, this was problematic due to
@@ -126,6 +126,10 @@ CHANGES WITH 240 in spe:
 
         * Support for disabling a particular cgroup controller within a sub-tree
           has been added through the DisableControllers= directive.
+
+        * cgroup_no_v1=all on the kernel command line now also implies
+          using the unified cgroup hierarchy, unless one explicitly passes
+          elogind.unified_cgroup_hierarchy=0 on the kernel command line.
 
         * The new "MemoryMin=" unit file property may now be used to set the
           memory usage protection limit of processes invoked by the unit. This
@@ -458,24 +462,25 @@ CHANGES WITH 240 in spe:
         Ellsel, Colin Guthrie, dana, Daniel, Daniele Medri, Daniel Kahn
         Gillmor, Daniel Rusek, Daniel van Vugt, Dariusz Gadomski, Dave Reisner,
         David Anderson, Davide Cavalca, David Leeds, David Malcolm, David
-        Strauss, David Tardon, Dimitri John Ledkov, dj-kaktus, Dongsu Park,
-        Elias Probst, Emil Soleyman, Erik Kooistra, Ervin Peters, Evgeni Golov,
-        Evgeny Vereshchagin, Fabrice Fontaine, Faheel Ahmad, Faizal Luthfi,
-        Felix Yan, Filipe Brandenburger, Franck Bui, Frank Schaefer, Frantisek
-        Sumsal, Gautier Husson, Gianluca Boiano, Giuseppe Scrivano, glitsj16,
-        Hans de Goede, Harald Hoyer, Harry Mallon, Harshit Jain, Helmut Grohne,
-        Henry Tung, Hui Yiqun, imayoda, Insun Pyo, Iwan Timmer, Jan Janssen,
-        Jan Pokorný, Jan Synacek, Jason A. Donenfeld, javitoom, Jérémy Nouhaud,
-        Jiuyang Liu, João Paulo Rechi Vita, Joe Hershberger, Joe Rayhawk, Joerg
-        Behrmann, Joerg Steffens, Jonas Dorel, Jon Ringle, Josh Soref, Julian
-        Andres Klode, Jun Bo Bi, Jürg Billeter, Keith Busch, Khem Raj, Kirill
-        Marinushkin, Larry Bernstone, Lennart Poettering, Lion Yang, Li Song,
-        Lorenz Hübschle-Schneider, Lubomir Rintel, Lucas Werkmeister, Ludwin
-        Janvier, Lukáš Nykrýn, Luke Shumaker, mal, Marc-Antoine Perennou,
-        Marcin Skarbek, Marco Trevisan (Treviño), Marian Cepok, Mario Hros,
-        Marko Myllynen, Markus Grimm, Martin Pitt, Martin Sobotka, Martin
-        Wilck, Mathieu Trudel-Lapierre, Matthew Leeds, Michael Biebl, Michael
-        Olbrich, Michael 'pbone' Pobega, Michael Scherer, Michal Koutný, Michal
+        Strauss, David Tardon, Dimitri John Ledkov, Dmitry Torokhov, dj-kaktus,
+        Dongsu Park, Elias Probst, Emil Soleyman, Erik Kooistra, Ervin Peters,
+        Evgeni Golov, Evgeny Vereshchagin, Fabrice Fontaine, Faheel Ahmad,
+        Faizal Luthfi, Felix Yan, Filipe Brandenburger, Franck Bui, Frank
+        Schaefer, Frantisek Sumsal, Gautier Husson, Gianluca Boiano, Giuseppe
+        Scrivano, glitsj16, Hans de Goede, Harald Hoyer, Harry Mallon, Harshit
+        Jain, Helmut Grohne, Henry Tung, Hui Yiqun, imayoda, Insun Pyo, Iwan
+        Timmer, Jan Janssen, Jan Pokorný, Jan Synacek, Jason A. Donenfeld,
+        javitoom, Jérémy Nouhaud, Jeremy Su, Jiuyang Liu, João Paulo Rechi
+        Vita, Joe Hershberger, Joe Rayhawk, Joerg Behrmann, Joerg Steffens,
+        Jonas Dorel, Jon Ringle, Josh Soref, Julian Andres Klode, Jun Bo Bi,
+        Jürg Billeter, Keith Busch, Khem Raj, Kirill Marinushkin, Larry
+        Bernstone, Lennart Poettering, Lion Yang, Li Song, Lorenz
+        Hübschle-Schneider, Lubomir Rintel, Lucas Werkmeister, Ludwin Janvier,
+        Lukáš Nykrýn, Luke Shumaker, mal, Marc-Antoine Perennou, Marcin
+        Skarbek, Marco Trevisan (Treviño), Marian Cepok, Mario Hros, Marko
+        Myllynen, Markus Grimm, Martin Pitt, Martin Sobotka, Martin Wilck,
+        Mathieu Trudel-Lapierre, Matthew Leeds, Michael Biebl, Michael Olbrich,
+        Michael 'pbone' Pobega, Michael Scherer, Michal Koutný, Michal
         Sekletar, Michal Soltys, Mike Gilbert, Mike Palmer, Muhammet Kara, Neal
         Gompa, Neil Brown, Network Silence, Niklas Tibbling, Nikolas Nyby,
         Nogisaka Sadata, Oliver Smith, Patrik Flykt, Pavel Hrdina, Paweł
@@ -494,7 +499,7 @@ CHANGES WITH 240 in spe:
         Xiang Fan, Xi Ruoyao, Xuanwo, Yann E. Morin, YmrDtnJu, Yu Watanabe,
         Zbigniew Jędrzejewski-Szmek, Zhang Xianwei, Zsolt Dollenstein
 
-        — Somewhere, 2018-12-yy
+        — Warsaw, 2018-12-21
 
 CHANGES WITH 239:
 
