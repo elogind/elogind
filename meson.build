@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239',
+        version : '240',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -13,8 +13,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.23.0'
-# libudev_version = '1.6.11'
+# libsystemd_version = '0.24.0'
+# libudev_version = '1.6.12'
 #else
 libelogind_version = '0.24.0'
 #endif // 0
@@ -24,15 +24,16 @@ libelogind_version = '0.24.0'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
-conf.set('PROJECT_VERSION',        meson.project_version())
+conf.set_quoted('PACKAGE_STRING',  meson.project_name() + ' ' + meson.project_version())
+conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
-# substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
 #else
 substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 #endif // 0
-substs.set('PROJECT_VERSION',      meson.project_version())
+substs.set('PACKAGE_URL',          'https://www.freedesktop.org/wiki/Software/elogind')
+substs.set('PACKAGE_VERSION',      meson.project_version())
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
@@ -686,10 +687,6 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
            description : 'program_invocation[_short]_name is provided by libc')
 
 #endif // 1
-vcs_tagger = [meson.source_root() + '/tools/meson-vcs-tag.sh',
-              meson.source_root(),
-              get_option('version-tag'),
-              meson.project_version()]
 
 sed = find_program('sed')
 awk = find_program('awk')
@@ -3234,9 +3231,8 @@ endforeach
 # endforeach
 # endif
 #
-# run_target(
-#         'fuzzers',
-#         depends : [fuzzer_exes, version_h],
+# run_target('fuzzers',
+#         depends : fuzzer_exes,
 #         command : ['true'])
 #
 # ############################################################
