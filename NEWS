@@ -10,15 +10,6 @@ CHANGES WITH 240 in spe:
           (See e.g. https://github.com/fedora-selinux/selinux-policy/pull/234.)
 
         * When unit files are loaded from disk, previously elogind would
-        * DynamicUser=yes is dropped from elogind-networkd.service,
-          elogind-resolved.service and elogind-timesyncd.service, which was
-          enabled in v239 for elogind-networkd.service and elogind-resolved.service,
-          and since v236 for elogind-timesyncd.service. The users and groups
-          elogind-network, elogind-resolve and elogind-timesync are created
-          by elogind-sysusers again. Distributors or system administrators
-          may need to create these users and groups if they not exist (or need
-          to re-enable DynamicUser= for those units) while upgrading elogind.
-
           sometimes (depending on the unit loading order) load units from the
           target path of symlinks in .wants/ or .requires/ directories of other
           units. This meant that unit could be loaded from different paths
@@ -126,6 +117,10 @@ CHANGES WITH 240 in spe:
 
         * Support for disabling a particular cgroup controller within a sub-tree
           has been added through the DisableControllers= directive.
+
+        * cgroup_no_v1=all on the kernel command line now also implies
+          using the unified cgroup hierarchy, unless one explicitly passes
+          elogind.unified_cgroup_hierarchy=0 on the kernel command line.
 
         * The new "MemoryMin=" unit file property may now be used to set the
           memory usage protection limit of processes invoked by the unit. This
