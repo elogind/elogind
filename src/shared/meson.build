@@ -38,6 +38,8 @@
 #         cgroup-setup.h
 #         cgroup-show.c
 #         cgroup-show.h
+#         chown-recursive.c
+#         chown-recursive.h
 #         clean-ipc.c
 #         clean-ipc.h
 #         clock-util.c
