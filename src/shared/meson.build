@@ -51,6 +51,8 @@
 #         dev-setup.h
 #         dissect-image.c
 #         dissect-image.h
+#         dm-util.c
+#         dm-util.h
 #         dns-domain.c
 #         dns-domain.h
 #         dropin.c
