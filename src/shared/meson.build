@@ -75,6 +75,7 @@
 #         firewall-util.h
 #         format-table.c
 #         format-table.h
+#         fsck-util.h
 #         fstab-util.c
 #         fstab-util.h
 #         generator.c
