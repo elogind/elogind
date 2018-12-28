@@ -1,9 +1,6 @@
 # -*- mode: meson -*-
 # SPDX-License-Identifier: LGPL-2.1+
 
-option('version-tag', type : 'string',
-       description : 'override the git version string')
-
 option('split-usr', type : 'combo', choices : ['auto', 'true', 'false'],
        description : '''/bin, /sbin aren't symlinks into /usr''')
 option('split-bin', type : 'combo', choices : ['auto', 'true', 'false'],
@@ -257,6 +254,8 @@ option('default-kill-user-processes', type : 'boolean',
        description : 'the default value for KillUserProcesses= setting')
 option('gshadow', type : 'boolean',
        description : 'support for shadow group')
+option('default-locale', type : 'string', value : 'C',
+       description : 'default locale used when /etc/locale.conf does not exist')
 
 #if 0 /// UNNEEDED by elogind
 # option('default-dnssec', type : 'combo',

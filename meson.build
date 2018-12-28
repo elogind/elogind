@@ -988,6 +988,9 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 # ntp_servers = get_option('ntp-servers')
 # conf.set_quoted('NTP_SERVERS', ntp_servers)
 # substs.set('NTP_SERVERS', ntp_servers)
+#
+# default_locale = get_option('default-locale')
+# conf.set_quoted('SYSTEMD_DEFAULT_LOCALE', default_locale)
 #endif // 0
 
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
@@ -3501,7 +3504,8 @@ status = [
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #endif // 0
-        'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
+        'default KillUserProcesses setting: @0@'.format(kill_user_processes),
+        'default locale:                    @0@'.format(default_locale)]
 
 #if 0 /// UNSUPPORTED by elogind
 # alt_dns_servers = '\n                                            '.join(dns_servers.split(' '))
