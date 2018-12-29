@@ -990,6 +990,10 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 # substs.set('NTP_SERVERS', ntp_servers)
 #
 # default_locale = get_option('default-locale')
+# if default_locale == ''
+#         choose_default_locale_sh = find_program('tools/choose-default-locale.sh')
+#         default_locale = run_command(choose_default_locale_sh).stdout().strip()
+# endif
 # conf.set_quoted('SYSTEMD_DEFAULT_LOCALE', default_locale)
 #endif // 0
 
