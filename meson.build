@@ -3440,10 +3440,6 @@ run_target(
         command : [meson_check_api_docs_sh, libelogind.full_path()])
 #endif // 0
 
-run_target(
-        'make-index-md',
-        command : ['sh', '@0@/tools/make-index-md.sh'.format(meson.source_root()), meson.source_root()])
-
 ############################################################
 
 status = [
