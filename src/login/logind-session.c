@@ -469,6 +469,7 @@ int session_load(Session *s) {
                         return -ENOENT;
                 }
 
+                log_debug_elogind("Attaching session %s to user %d", s->id, user->uid);
                 session_set_user(s, user);
         }
 
@@ -832,6 +833,8 @@ int session_stop(Session *s, bool force) {
         if (s->stopping)
                 return 0;
 
+        log_debug_elogind("Stopping session %s %s ...", s->id, force ? "(forced)" : "");
+
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 
         if (s->seat)
@@ -854,9 +857,6 @@ int session_stop(Session *s, bool force) {
         session_save(s);
         user_save(s->user);
 
-#if 1 /// elogind must queue this session again
-        session_add_to_gc_queue(s);
-#endif // 1
         return r;
 }
 
@@ -875,6 +875,8 @@ int session_finalize(Session *s) {
                            "USER_ID=%s", s->user->name,
                            "LEADER="PID_FMT, s->leader,
                            LOG_MESSAGE("Removed session %s.", s->id));
+        else
+                log_debug_elogind("Session %s not started, finalizing...", s->id);
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 

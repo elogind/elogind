@@ -323,12 +323,14 @@ static int manager_enumerate_seats(Manager *m) {
 
                 s = hashmap_get(m->seats, de->d_name);
                 if (!s) {
+                        log_debug_elogind("Removing stale seat at /run/systemd/seats/%s", de->d_name);
                         if (unlinkat(dirfd(d), de->d_name, 0) < 0)
                                 log_warning("Failed to remove /run/systemd/seats/%s: %m",
                                             de->d_name);
                         continue;
                 }
 
+                log_debug_elogind("Loading seat /run/systemd/seats/%s", de->d_name);
                 k = seat_load(s);
                 if (k < 0)
                         r = k;
@@ -401,6 +403,7 @@ static int manager_enumerate_users(Manager *m) {
                         continue;
                 }
 
+                log_debug_elogind("Loading user %d \"%s\"", u->uid, u->name ? u->name : "n/a");
                 user_add_to_gc_queue(u);
 
                 k = user_load(u);
@@ -546,6 +549,7 @@ static int manager_enumerate_sessions(Manager *m) {
                         continue;
                 }
 
+                log_debug_elogind("Adding session /run/systemd/sessions/%s", de->d_name);
                 k = manager_add_session(m, de->d_name, &s);
                 if (k < 0) {
                         log_error_errno(k, "Failed to add session by file name %s: %m", de->d_name);
@@ -555,6 +559,7 @@ static int manager_enumerate_sessions(Manager *m) {
 
                 session_add_to_gc_queue(s);
 
+                log_debug_elogind("Loading session /run/systemd/sessions/%s", de->d_name);
                 k = session_load(s);
                 if (k < 0)
                         r = k;

@@ -908,9 +908,12 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
         if (r < 0)
                 return r;
 
-#if 1 /// elogind must queue this session
+#if 1 /// We have to gc queue session and user in elogind, as no systemd manager will call back on us.
         session_add_to_gc_queue(session);
+        if (session->user)
+                user_add_to_gc_queue(session->user);
 #endif // 1
+
         return sd_bus_reply_method_return(message, NULL);
 }
 

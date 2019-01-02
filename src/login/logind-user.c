@@ -26,7 +26,7 @@
 #include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
-//#include "strv.h"
+#include "strv.h"
 #include "unit-name.h"
 #include "user-util.h"
 //#include "util.h"
@@ -341,6 +341,7 @@ int user_load(User *u) {
                         log_debug_errno(r, "Failed to parse 'STOPPING' boolean: %s", stopping);
                 else
                         u->stopping = r;
+                log_debug_elogind(" --> User stopping    : %d", u->stopping);
         }
 
         if (realtime)
@@ -349,6 +350,30 @@ int user_load(User *u) {
                 (void) timestamp_deserialize(monotonic, &u->timestamp.monotonic);
         if (last_session_timestamp)
                 (void) timestamp_deserialize(last_session_timestamp, &u->last_session_timestamp);
+
+        log_debug_elogind(" --> User realtime    : %lu", u->timestamp.realtime);
+        log_debug_elogind(" --> User monotonic   : %lu", u->timestamp.monotonic);
+        log_debug_elogind(" --> User last session: %lu", u->last_session_timestamp);
+#if ENABLE_DEBUG_ELOGIND
+        _cleanup_strv_free_ char **sa = NULL;
+        _cleanup_free_ char *sv = NULL;
+        Session *i;
+        bool first;
+
+        first = true;
+        LIST_FOREACH(sessions_by_user, i, u->sessions) {
+                if (first)
+                        first = false;
+                else
+                        strv_extend(&sa, " ");
+                strv_extend(&sa, i->id);
+        }
+
+        if (false == first) {
+                sv = strv_join(sa, " ");
+        }
+#endif // ENABLE_DEBUG_ELOGIND
+        log_debug_elogind(" --> User sessions    : %s",  u->sessions ? sv : "none");
 
         return 0;
 }
@@ -452,6 +477,8 @@ int user_stop(User *u, bool force) {
                 return 0;
         }
 
+        log_debug_elogind("Stopping user %s %s ...", u->name, force ? "(forced)" : "");
+
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
                 int k;
 
@@ -460,17 +487,16 @@ int user_stop(User *u, bool force) {
                         r = k;
         }
 
-#if 0 /// elogind does not support service or slice jobs
+#if 0 /// elogind does not support service or slice jobs...
         user_stop_service(u);
+#else
+        user_add_to_gc_queue(u);
 #endif // 0
 
         u->stopping = true;
 
         user_save(u);
 
-#if 1 /// elogind must queue this user again
-        user_add_to_gc_queue(u);
-#endif // 1
         return r;
 }
 
@@ -485,6 +511,8 @@ int user_finalize(User *u) {
 
         if (u->started)
                 log_debug("User %s logged out.", u->name);
+        else
+                log_debug_elogind("User %s not started, finalizing...", u->name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
                 k = session_finalize(s);
