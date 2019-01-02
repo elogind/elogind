@@ -24,16 +24,15 @@ libelogind_version = '0.24.0'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
-conf.set_quoted('PACKAGE_STRING',  meson.project_name() + ' ' + meson.project_version())
-conf.set_quoted('PACKAGE_VERSION', meson.project_version())
+conf.set('PROJECT_VERSION',        meson.project_version())
 
 substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
 #else
 substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 #endif // 0
-substs.set('PACKAGE_URL',          'https://www.freedesktop.org/wiki/Software/elogind')
-substs.set('PACKAGE_VERSION',      meson.project_version())
+substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/elogind')
+substs.set('PROJECT_VERSION',      meson.project_version())
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
@@ -685,6 +684,10 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
            description : 'program_invocation[_short]_name is provided by libc')
 
 #endif // 1
+vcs_tagger = [meson.source_root() + '/tools/meson-vcs-tag.sh',
+              meson.source_root(),
+              get_option('version-tag'),
+              meson.project_version()]
 
 sed = find_program('sed')
 awk = find_program('awk')
@@ -2711,6 +2714,9 @@ public_programs += [exe]
 #            install : true,
 #            install_dir : rootlibexecdir)
 #
+# install_data('src/sleep/sleep.conf',
+#              install_dir : pkgsysconfdir)
+#
 # exe = executable('systemd-sysctl',
 #                  'src/sysctl/sysctl.c',
 #                  include_directories : includes,
@@ -3236,8 +3242,9 @@ endforeach
 # endforeach
 # endif
 #
-# run_target('fuzzers',
-#         depends : fuzzer_exes,
+# run_target(
+#         'fuzzers',
+#         depends : [fuzzer_exes, version_h],
 #         command : ['true'])
 #
 # ############################################################
@@ -3435,6 +3442,10 @@ run_target(
 #if 0 /// libudev is external, elogind does not need to document it.
 #         depends : [man, libsystemd, libudev],
 #         command : [meson_check_api_docs_sh, libsystemd.full_path(), libudev.full_path()])
+#
+# run_target(
+#         'make-index-md',
+#         command : ['sh', '@0@/tools/make-index-md.sh'.format(meson.source_root()), meson.source_root()])
 #else
         depends : [man, libelogind],
         command : [meson_check_api_docs_sh, libelogind.full_path()])
