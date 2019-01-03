@@ -674,9 +674,12 @@ bool user_may_gc(User *u, bool drop_not_started) {
 
         /* Note that we don't care if the three units we manage for each user object are up or not, as we are managing
          * their state rather than tracking it. */
-#endif // 0
 
         return true;
+#else
+        // elogind has to rely on drop_not_started and that the state is correctly loaded
+        return (drop_not_started || u->stopping);
+#endif // 0
 }
 
 void user_add_to_gc_queue(User *u) {

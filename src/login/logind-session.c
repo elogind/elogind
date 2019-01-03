@@ -1179,9 +1179,12 @@ bool session_may_gc(Session *s, bool drop_not_started) {
                 if (r != 0)
                         return false;
         }
-#endif // 0
 
         return true;
+#else
+        // elogind has to rely on drop_not_started, and that the state is correctyl loaded
+        return (drop_not_started || s->stopping);
+#endif // 0
 }
 
 void session_add_to_gc_queue(Session *s) {
