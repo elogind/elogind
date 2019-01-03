@@ -173,6 +173,8 @@ typedef enum JsonFormatFlags {
 int json_variant_format(JsonVariant *v, JsonFormatFlags flags, char **ret);
 void json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const char *prefix);
 
+int json_variant_filter(JsonVariant **v, char **to_remove);
+
 int json_parse(const char *string, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
 #if 0 /// UNNEEDED by elogind
 int json_parse_continue(const char **p, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
