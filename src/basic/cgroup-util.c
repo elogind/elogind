@@ -1744,13 +1744,13 @@ int cg_path_get_session(const char *path, char **session) {
         e = path + 1;
         n = strchrnul(e, '/');
         if (e == n)
-                return -ENOENT;
+                return -ENXIO;
 
         start = strndupa(e, n - e);
         start = cg_unescape(start);
 
         if (!start[0])
-                return -ENOENT;
+                return -ENXIO;
 #endif // 0
 
         if (session) {
