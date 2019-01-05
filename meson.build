@@ -994,8 +994,12 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 #
 # default_locale = get_option('default-locale')
 # if default_locale == ''
-#         choose_default_locale_sh = find_program('tools/choose-default-locale.sh')
-#         default_locale = run_command(choose_default_locale_sh).stdout().strip()
+#         if not meson.is_cross_build()
+#                 choose_default_locale_sh = find_program('tools/choose-default-locale.sh')
+#                 default_locale = run_command(choose_default_locale_sh).stdout().strip()
+#         else
+#                 default_locale = 'C.UTF-8'
+#         endif
 # endif
 # conf.set_quoted('SYSTEMD_DEFAULT_LOCALE', default_locale)
 #endif // 0
@@ -3242,8 +3246,9 @@ endforeach
 # endforeach
 # endif
 #
-# run_target('fuzzers',
-#         depends : fuzzer_exes,
+# run_target(
+#         'fuzzers',
+#         depends : [fuzzer_exes, version_h],
 #         command : ['true'])
 #
 # ############################################################
