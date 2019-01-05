@@ -216,6 +216,7 @@ version_h = vcs_tag(
 #         xattr-util.c
 #         xattr-util.h
 # '''.split())
+# basic_sources += version_h
 #else
 basic_sources = files('''
         MurmurHash2.c
