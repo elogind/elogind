@@ -848,6 +848,7 @@ int session_stop(Session *s, bool force) {
         r = session_stop_scope(s, force);
 #else
         r = session_stop_cgroup(s, force);
+        session_add_to_gc_queue(s);
 #endif // 0
 
         s->stopping = true;
@@ -1182,7 +1183,7 @@ bool session_may_gc(Session *s, bool drop_not_started) {
 
         return true;
 #else
-        // elogind has to rely on drop_not_started, and that the state is correctyl loaded
+        // elogind has to rely on drop_not_started, and that the state is correctly loaded
         return (drop_not_started || s->stopping);
 #endif // 0
 }
