@@ -318,13 +318,14 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         }
 
         /* Make sure we don't enter a loop by talking to
-         * elogind when it is actually waiting for the
+         * systemd-login when it is actually waiting for the
          * background to finish start-up. If the service is
-         * "elogind-user" we simply set XDG_RUNTIME_DIR and
+         * "systemd-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
 
         pam_get_item(handle, PAM_SERVICE, (const void**) &service);
-        if (streq_ptr(service, "elogind-user")) {
+#if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
+        if (streq_ptr(service, "systemd-user")) {
                 _cleanup_free_ char *rt = NULL;
 
                 if (asprintf(&rt, "/run/user/"UID_FMT, pw->pw_uid) < 0)
@@ -340,6 +341,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
                 return PAM_SUCCESS;
         }
+#endif // 0
 
         /* Otherwise, we ask logind to create a session for us */
 
