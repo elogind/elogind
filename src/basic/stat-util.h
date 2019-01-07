@@ -18,7 +18,10 @@ int is_dir_fd(int fd);
 #if 0 /// UNNEEDED by elogind
 int is_device_node(const char *path);
 
-int dir_is_empty(const char *path);
+int dir_is_empty_at(int dir_fd, const char *path);
+static inline int dir_is_empty(const char *path) {
+        return dir_is_empty_at(AT_FDCWD, path);
+}
 
 static inline int dir_is_populated(const char *path) {
         int r;
