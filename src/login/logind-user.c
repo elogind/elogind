@@ -112,6 +112,8 @@ User *user_free(User *u) {
         if (!u)
                 return NULL;
 
+        log_debug_elogind("Freeing User %s ...", u->name);
+
         if (u->in_gc_queue)
                 LIST_REMOVE(gc_queue, u->manager->user_gc_queue, u);
 
@@ -633,6 +635,12 @@ bool user_may_gc(User *u, bool drop_not_started) {
 #endif // 0
 
         assert(u);
+
+        log_debug_elogind("User %s may gc ?", u->name);
+        log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !u->started));
+        log_debug_elogind("  is sessionless : %s", yes_no(!u->sessions));
+        log_debug_elogind("  not lingering  : %s", yes_no(user_check_linger_file(u) > 0));
+        log_debug_elogind("  dns or stopping: %s", yes_no(drop_not_started || u->stopping));
 
         if (drop_not_started && !u->started)
                 return true;

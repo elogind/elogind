@@ -162,6 +162,8 @@ int inhibitor_start(Inhibitor *i) {
 int inhibitor_stop(Inhibitor *i) {
         assert(i);
 
+        log_debug_elogind("Stopping inhibitor %s ...", i->id);
+
         if (i->started)
                 log_debug("Inhibitor %s (%s) pid="PID_FMT" uid="UID_FMT" mode=%s stopped.",
                           strna(i->who), strna(i->why),
@@ -246,6 +248,26 @@ int inhibitor_load(Inhibitor *i) {
         if (i->fifo_path) {
                 int fd;
 
+#if 1 /// elogind has no systemd in the background preserving FIFOs ...
+#if ENABLE_DEBUG_ELOGIND
+                struct stat st;
+                bool exists = stat(i->fifo_path, &st) ? false : true;
+#endif
+                log_debug_elogind("Recreating fifo for inhibitor %s at %s (%s)",
+                                  i->id, i->fifo_path,
+                                  exists ? "exists" : "must be created");
+
+                if (mkfifo(i->fifo_path, 0600) < 0 && errno != EEXIST) {
+                        /* Do not let anyone try to open it for writing when the
+                         * file no longer exists. inhibitor_create_fifo() only
+                         * creates a new file when inhibitor->fifo_path is NULL.
+                         */
+                        log_debug_elogind("Recreation of inhibitor %s fifo failed: %d %s",
+                                          i->id, errno, strerror(errno));
+                        i->fifo_path = mfree(i->fifo_path);
+                }
+#endif // 1
+
                 fd = inhibitor_create_fifo(i);
                 safe_close(fd);
         }
@@ -259,6 +281,8 @@ static int inhibitor_dispatch_fifo(sd_event_source *s, int fd, uint32_t revents,
         assert(s);
         assert(fd == i->fifo_fd);
         assert(i);
+
+        log_debug_elogind("EOF on Inhibitor %s FIFO: Inhibitor went away, stopping...", i->id);
 
         inhibitor_stop(i);
         inhibitor_free(i);
@@ -281,28 +305,33 @@ int inhibitor_create_fifo(Inhibitor *i) {
                 if (!i->fifo_path)
                         return -ENOMEM;
 
+                log_debug_elogind("Creating fifo for inhibitor %s at %s", i->id, i->fifo_path);
                 if (mkfifo(i->fifo_path, 0600) < 0 && errno != EEXIST)
                         return -errno;
         }
 
         /* Open reading side */
         if (i->fifo_fd < 0) {
+                log_debug_elogind("Opening reading side of fifo for inhibitor %s", i->id);
                 i->fifo_fd = open(i->fifo_path, O_RDONLY|O_CLOEXEC|O_NONBLOCK);
                 if (i->fifo_fd < 0)
                         return -errno;
         }
 
         if (!i->event_source) {
+                log_debug_elogind("Adding event source to fifo for inhibitor %s", i->id);
                 r = sd_event_add_io(i->manager->event, &i->event_source, i->fifo_fd, 0, inhibitor_dispatch_fifo, i);
                 if (r < 0)
                         return r;
 
+                log_debug_elogind("Raising event priority for inhibitor %s fifo", i->id);
                 r = sd_event_source_set_priority(i->event_source, SD_EVENT_PRIORITY_IDLE-10);
                 if (r < 0)
                         return r;
         }
 
         /* Open writing side */
+        log_debug_elogind("Opening writing side of fifo for inhibitor %s", i->id);
         r = open(i->fifo_path, O_WRONLY|O_CLOEXEC|O_NONBLOCK);
         if (r < 0)
                 return -errno;
@@ -312,6 +341,9 @@ int inhibitor_create_fifo(Inhibitor *i) {
 
 void inhibitor_remove_fifo(Inhibitor *i) {
         assert(i);
+
+        log_debug_elogind("Removing FIFO %d at %s for inhibitor %s",
+                          i->fifo_fd, i->fifo_path, i->id);
 
         i->event_source = sd_event_source_unref(i->event_source);
         i->fifo_fd = safe_close(i->fifo_fd);

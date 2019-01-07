@@ -87,6 +87,8 @@ Session* session_free(Session *s) {
         if (!s)
                 return NULL;
 
+        log_debug_elogind("Freeing Session %s ...", s->id);
+
         if (s->in_gc_queue)
                 LIST_REMOVE(gc_queue, s->manager->session_gc_queue, s);
 
@@ -547,6 +549,26 @@ int session_load(Session *s) {
         if (s->fifo_path) {
                 int fd;
 
+#if 1 /// elogind has no systemd in the background preserving FIFOs ...
+#if ENABLE_DEBUG_ELOGIND
+                struct stat st;
+                bool exists = stat(s->fifo_path, &st) ? false : true;
+#endif
+                log_debug_elogind("Recreating fifo for session %s at %s (%s)",
+                                  s->id, s->fifo_path,
+                                  exists ? "exists" : "must be created");
+
+                if (mkfifo(s->fifo_path, 0600) < 0 && errno != EEXIST) {
+                        /* Do not let anyone try to open it for writing when the
+                         * file no longer exists. session_create_fifo() only
+                         * creates a new file when session->fifo_path is NULL.
+                         */
+                        log_debug_elogind("Recreation of session %s fifo failed: %d %s",
+                                          s->id, errno, strerror(errno));
+                        s->fifo_path = mfree(s->fifo_path);
+                }
+#endif // 1
+
                 /* If we open an unopened pipe for reading we will not
                    get an EOF. to trigger an EOF we hence open it for
                    writing, but close it right away which then will
@@ -916,12 +938,20 @@ static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *us
         assert(es);
         assert(s);
 
+        log_debug_elogind("Session release timeout reached, stopping session %s", s->id);
+
         session_stop(s, false);
         return 0;
 }
 
 int session_release(Session *s) {
         assert(s);
+
+        log_debug_elogind("Session %s release? %s", s->id,
+                          !s->started ? "No, not started, yet." :
+                          s->stopping ? "No, already stopping." :
+                          s->timer_event_source ? "No, timer already running." :
+                          "Yes, releasing in 20 seconds."); /* RELEASE_USEC is a formula :( */
 
         if (!s->started || s->stopping)
                 return 0;
@@ -1078,6 +1108,8 @@ static int session_dispatch_fifo(sd_event_source *es, int fd, uint32_t revents, 
 
         /* EOF on the FIFO means the session died abnormally. */
 
+        log_debug_elogind("EOF on Session %s FIFO: Session died abnormally, stopping...", s->id);
+
         session_remove_fifo(s);
         session_stop(s, false);
 
@@ -1099,30 +1131,35 @@ int session_create_fifo(Session *s) {
                 if (!s->fifo_path)
                         return -ENOMEM;
 
+                log_debug_elogind("Creating fifo for session %s at %s", s->id, s->fifo_path);
                 if (mkfifo(s->fifo_path, 0600) < 0 && errno != EEXIST)
                         return -errno;
         }
 
         /* Open reading side */
         if (s->fifo_fd < 0) {
+                log_debug_elogind("Opening reading side of fifo for session %s", s->id);
                 s->fifo_fd = open(s->fifo_path, O_RDONLY|O_CLOEXEC|O_NONBLOCK);
                 if (s->fifo_fd < 0)
                         return -errno;
         }
 
         if (!s->fifo_event_source) {
+                log_debug_elogind("Adding event source to fifo for session %s", s->id);
                 r = sd_event_add_io(s->manager->event, &s->fifo_event_source, s->fifo_fd, 0, session_dispatch_fifo, s);
                 if (r < 0)
                         return r;
 
                 /* Let's make sure we noticed dead sessions before we process new bus requests (which might create new
                  * sessions). */
+                log_debug_elogind("Raising event priority for session %s fifo", s->id);
                 r = sd_event_source_set_priority(s->fifo_event_source, SD_EVENT_PRIORITY_NORMAL-10);
                 if (r < 0)
                         return r;
         }
 
         /* Open writing side */
+        log_debug_elogind("Opening writing side of fifo for session %s", s->id);
         r = open(s->fifo_path, O_WRONLY|O_CLOEXEC|O_NONBLOCK);
         if (r < 0)
                 return -errno;
@@ -1132,6 +1169,9 @@ int session_create_fifo(Session *s) {
 
 static void session_remove_fifo(Session *s) {
         assert(s);
+
+        log_debug_elogind("Removing FIFO %d at %s for session %s",
+                          s->fifo_fd, s->fifo_path, s->id);
 
         s->fifo_event_source = sd_event_source_unref(s->fifo_event_source);
         s->fifo_fd = safe_close(s->fifo_fd);
@@ -1148,6 +1188,15 @@ bool session_may_gc(Session *s, bool drop_not_started) {
 #endif // 0
 
         assert(s);
+
+        log_debug_elogind("Session %s may gc ?", s->id);
+        log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !s->started));
+        log_debug_elogind("  is userless    : %s", yes_no(!s->user));
+        log_debug_elogind("  dns or stopping: %s", yes_no(drop_not_started || s->stopping));
+        log_debug_elogind("  FIFO state     : %s",
+                          s->fifo_fd < 0           ? "No FIFO opened"   :
+                          pipe_eof(s->fifo_fd) > 0 ? "FIFO reached EOF" :
+                          "FIFO up and running!");
 
         if (drop_not_started && !s->started)
                 return true;

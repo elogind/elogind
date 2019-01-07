@@ -446,28 +446,16 @@
 		</Unit>
 		<Unit filename="../src/cgroups-agent/cgroups-agent.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/core/cgroup.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/core/cgroup.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/core/cgroup.h" />
 		<Unit filename="../src/core/meson.build" />
 		<Unit filename="../src/core/mount-setup.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/core/mount-setup.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/core/mount-setup.h" />
 		<Unit filename="../src/libelogind/disable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -478,243 +466,122 @@
 		<Unit filename="../src/libelogind/meson.build" />
 		<Unit filename="../src/libelogind/sd-bus/bus-common-errors.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-common-errors.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-common-errors.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-container.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-container.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-container.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-control.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-control.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-control.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-convenience.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/bus-creds.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-creds.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-creds.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-dump.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/bus-dump.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-error.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-error.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-error.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-gvariant.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-gvariant.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-gvariant.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-internal.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-internal.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-internal.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-introspect.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-introspect.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-introspect.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-kernel.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-kernel.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-kernel.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-match.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-match.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-match.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-message.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-message.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-message.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-objects.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-objects.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-protocol.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-objects.h" />
+		<Unit filename="../src/libelogind/sd-bus/bus-protocol.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-signature.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-signature.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-signature.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-slot.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-slot.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-slot.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-socket.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-socket.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-socket.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-track.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-track.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-track.h" />
 		<Unit filename="../src/libelogind/sd-bus/bus-type.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-bus/bus-type.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/bus-type.h" />
 		<Unit filename="../src/libelogind/sd-bus/sd-bus.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-error.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-introspect.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-match.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-server.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-signature.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-vtable.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-daemon/sd-daemon.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-event/sd-event.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-event/test-event.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-id128/id128-util.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/libelogind/sd-id128/id128-util.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/sd-id128/id128-util.h" />
 		<Unit filename="../src/libelogind/sd-id128/sd-id128.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-login/sd-login.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-login/test-login.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/login/70-power-switch.rules" />
 		<Unit filename="../src/login/70-uaccess.rules" />
@@ -887,53 +754,21 @@
 		<Unit filename="../src/shared/wireguard-netlink.h" />
 		<Unit filename="../src/sleep/sleep.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/sleep/sleep.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/_sd-common.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/sleep/sleep.h" />
+		<Unit filename="../src/systemd/_sd-common.h" />
 		<Unit filename="../src/systemd/meson.build">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/systemd/sd-bus-protocol.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/sd-bus-vtable.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/sd-bus.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/sd-daemon.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/sd-event.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/sd-id128.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/sd-login.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
-		<Unit filename="../src/systemd/sd-messages.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/systemd/sd-bus-protocol.h" />
+		<Unit filename="../src/systemd/sd-bus-vtable.h" />
+		<Unit filename="../src/systemd/sd-bus.h" />
+		<Unit filename="../src/systemd/sd-daemon.h" />
+		<Unit filename="../src/systemd/sd-event.h" />
+		<Unit filename="../src/systemd/sd-id128.h" />
+		<Unit filename="../src/systemd/sd-login.h" />
+		<Unit filename="../src/systemd/sd-messages.h" />
 		<Unit filename="../src/test/meson.build">
 			<Option target="all" />
 			<Option target="clean" />
@@ -1085,19 +920,17 @@
 		<Unit filename="../src/test/test-verbs.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/uaccess-command/uaccess-command.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/update-utmp/meson.build">
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
 		<Unit filename="../src/update-utmp/update-utmp.c">
 			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
 		</Unit>
-		<Unit filename="../src/update-utmp/update-utmp.h">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/update-utmp/update-utmp.h" />
 		<Unit filename="../tools/meson-build.sh" />
 		<Unit filename="../tools/meson-check-compilation.sh" />
 		<Unit filename="../tools/meson-link-test.c">

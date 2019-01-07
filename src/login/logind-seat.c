@@ -58,6 +58,8 @@ Seat* seat_free(Seat *s) {
         if (!s)
                 return NULL;
 
+        log_debug_elogind("Freeing Seat %s ...", s->id);
+
         if (s->in_gc_queue)
                 LIST_REMOVE(gc_queue, s->manager->seat_gc_queue, s);
 
@@ -464,6 +466,9 @@ int seat_stop_sessions(Seat *s, bool force) {
 
         assert(s);
 
+        log_debug_elogind("Stopping all sessions of seat %s %s",
+                          s->id, force ? "(forced)" : "");
+
         LIST_FOREACH(sessions_by_seat, session, s->sessions) {
                 k = session_stop(session, force);
                 if (k < 0)
@@ -634,6 +639,11 @@ int seat_get_idle_hint(Seat *s, dual_timestamp *t) {
 
 bool seat_may_gc(Seat *s, bool drop_not_started) {
         assert(s);
+
+        log_debug_elogind("Seat %s may gc ?", s->id);
+        log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !s->started));
+        log_debug_elogind("  is not seat0   : %s", yes_no(!seat_is_seat0(s)));
+        log_debug_elogind("  no master dev  : %s", yes_no(!seat_has_master_device(s)));
 
         if (drop_not_started && !s->started)
                 return true;

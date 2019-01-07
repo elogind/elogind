@@ -118,6 +118,8 @@ static Manager* manager_unref(Manager *m) {
         if (!m)
                 return NULL;
 
+        log_debug_elogind("Tearing down all references (manager_unref) ...");
+
         while ((session = hashmap_first(m->sessions)))
                 session_free(session);
 
@@ -603,6 +605,7 @@ static int manager_enumerate_inhibitors(Manager *m) {
                         continue;
                 }
 
+                log_debug_elogind("Loading inhibitor /run/systemd/inhibit/%s", de->d_name);
                 k = inhibitor_load(i);
                 if (k < 0)
                         r = k;

@@ -904,6 +904,8 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
         if (r < 0)
                 return r;
 
+        log_debug_elogind("ReleaseSession called for session %s (%s)", session->id, name ? name : "NULL");
+
         r = session_release(session);
         if (r < 0)
                 return r;

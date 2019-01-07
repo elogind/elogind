@@ -133,8 +133,6 @@ int path_is_read_only_fs(const char *path) {
         return false;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int files_same(const char *filea, const char *fileb, int flags) {
         struct stat a, b;
 
