@@ -1882,7 +1882,7 @@ static int method_do_shutdown_or_sleep(
                           __FUNCTION__, action, sleep_verb,
                           interactive ? "" : "NOT ");
         /* Don't allow multiple jobs being executed at the same time */
-        if (m->action_what)
+        if (m->action_what > 0)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
 
         if (sleep_verb) {
@@ -2174,7 +2174,7 @@ static int manager_scheduled_shutdown_handler(
                 assert_not_reached("unexpected shutdown type");
 
         /* Don't allow multiple jobs being executed at the same time */
-        if (m->action_what) {
+        if (m->action_what > 0) {
                 r = -EALREADY;
                 log_error("Scheduled shutdown to %s failed: shutdown or sleep operation already in progress", target);
                 goto error;
