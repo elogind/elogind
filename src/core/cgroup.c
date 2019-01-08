@@ -2427,18 +2427,26 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
 }
 #else
 int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
+        _cleanup_free_ char *path = NULL;
+	int r = 0;
         Session *s;
 
         assert(m);
         assert(cgroup);
 
-        log_debug("Got cgroup empty notification for: %s", cgroup);
+        log_debug_elogind("Got cgroup empty notification for: %s", cgroup);
 
         s = hashmap_get(m->sessions, cgroup);
 
         if (s) {
-                session_finalize(s);
-                session_free(s);
+                /* Let's verify that the cgroup is really empty */
+                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, s->id, &path);
+                if (r < 0)
+                        return log_error_errno(r, "Cannot find session %s cgroup path: %m", s->id);
+                if (cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, path) > 0) {
+                        log_debug_elogind("Queing session %s for gc, its cgroup is empty!", s->id);
+                        session_add_to_gc_queue(s);
+                }
         } else
                 log_warning("Session not found: %s", cgroup);
 
