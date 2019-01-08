@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
+#include <fcntl.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -183,7 +184,11 @@ int json_parse(const char *string, JsonVariant **ret, unsigned *ret_line, unsign
 #if 0 /// UNNEEDED by elogind
 int json_parse_continue(const char **p, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
 #endif // 0
-int json_parse_file(FILE *f, const char *path, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
+int json_parse_file_at(FILE *f, int dir_fd, const char *path, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
+
+static inline int json_parse_file(FILE *f, const char *path, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column) {
+        return json_parse_file_at(f, AT_FDCWD, path, ret, ret_line, ret_column);
+}
 
 enum {
         _JSON_BUILD_STRING,

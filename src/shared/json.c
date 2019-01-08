@@ -2837,7 +2837,7 @@ int json_parse_continue(const char **p, JsonVariant **ret, unsigned *ret_line, u
 }
 #endif // 0
 
-int json_parse_file(FILE *f, const char *path, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column) {
+int json_parse_file_at(FILE *f, int dir_fd, const char *path, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column) {
         _cleanup_(json_source_unrefp) JsonSource *source = NULL;
         _cleanup_free_ char *text = NULL;
         const char *p;
@@ -2846,7 +2846,7 @@ int json_parse_file(FILE *f, const char *path, JsonVariant **ret, unsigned *ret_
         if (f)
                 r = read_full_stream(f, &text, NULL);
         else if (path)
-                r = read_full_file(path, &text, NULL);
+                r = read_full_file_full(dir_fd, path, 0, &text, NULL);
         else
                 return -EINVAL;
         if (r < 0)
