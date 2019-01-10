@@ -1168,16 +1168,27 @@ int session_create_fifo(Session *s) {
 }
 
 static void session_remove_fifo(Session *s) {
+#if 1 /// Don't keep invalid FIFOs on elogind restart
+        int current_fifo_fd = s->fifo_fd;
+#endif // 1
         assert(s);
-
-        log_debug_elogind("Removing FIFO %d at %s for session %s",
-                          s->fifo_fd, s->fifo_path, s->id);
 
         s->fifo_event_source = sd_event_source_unref(s->fifo_event_source);
         s->fifo_fd = safe_close(s->fifo_fd);
 
         if (s->fifo_path) {
+#if 1 /// Do not remove the fifo if elogind is to be restarted
+                if (s->manager->do_interrupt && (current_fifo_fd >= 0)) {
+                        log_debug_elogind("Keeping FIFO %d at %s for session %s",
+                                          current_fifo_fd, s->fifo_path, s->id);
+                } else {
+                        log_debug_elogind("Removing FIFO %d at %s for session %s",
+                                          current_fifo_fd, s->fifo_path, s->id);
+#endif // 1
                 (void) unlink(s->fifo_path);
+#if 1 /// end elogind extra if
+                }
+#endif // 1
                 s->fifo_path = mfree(s->fifo_path);
         }
 }

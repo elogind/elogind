@@ -59,8 +59,9 @@ struct Manager {
         sd_event_source *utmp_event_source;
 #endif
 
-#if 0 /// elogind does not support autospawning of vts
         int console_active_fd;
+
+#if 0 /// elogind does not support autospawning of vts
 
         unsigned n_autovts;
 
@@ -78,12 +79,11 @@ struct Manager {
         /* Flags */
         unsigned test_run_flags;
         bool is_system:1; /* true if elogind is its own cgroups manager */
+        bool do_interrupt:1;  /* true if SIGINT is used to stop elogind. See elogind_signal_handler() */
 
         /* Data specific to the cgroup subsystem */
         CGroupMask cgroup_supported;
         char *cgroup_root;
-
-        int console_active_fd;
 #endif // 0
 
         Seat *seat0;

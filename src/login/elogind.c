@@ -18,6 +18,7 @@
 ***/
 
 
+#include "bus-slot.h"
 #include "bus-util.h"
 #include "cgroup.h"
 #include "elogind.h"
@@ -27,6 +28,7 @@
 #include "mount-setup.h"
 #include "parse-util.h"
 #include "process-util.h"
+#include "refcnt.h"
 #include "signal-util.h"
 #include "socket-util.h"
 #include "stdio-util.h"
@@ -34,13 +36,24 @@
 #include "strv.h"
 #include "umask-util.h"
 
+/// defined in sd-bus.c
+void bus_reset_queues(sd_bus *b);
 
 #define CGROUPS_AGENT_RCVBUF_SIZE (8*1024*1024)
 #ifndef ELOGIND_PID_FILE
 #  define ELOGIND_PID_FILE "/run/elogind.pid"
 #endif // ELOGIND_PID_FILE
 
-
+/* The elogind specific signal handler sends an exit event, so eleogind can
+   gracefully shutdown.
+   Caught are SIGINT, SIGQUIT and SIGTERM.
+   While QUIT and TERMinate mean to power down the service completely, INTerrupt
+   is taken by its very meaning: Interrupt, but do not stop the service.
+   To achieve this, only the internal references will be freed when
+   m->do_interrupt is true, which we set here in the case of catching a SIGINT.
+   This should make restarting elogind (when it has been updated for instance)
+   a lot less difficult.
+*/
 static int elogind_signal_handler(sd_event_source *s,
                                    const struct signalfd_siginfo *si,
                                    void *userdata) {
@@ -52,8 +65,11 @@ static int elogind_signal_handler(sd_event_source *s,
 
         r = sd_event_get_state(m->event);
 
-        if (r != SD_EVENT_FINISHED)
+        if (r != SD_EVENT_FINISHED) {
+                if (SIGINT == si->ssi_signo)
+                        m->do_interrupt = true;
                 sd_event_exit(m->event, si->ssi_signo);
+        }
 
         return 0;
 }
@@ -363,8 +379,8 @@ int elogind_startup(int argc, char *argv[]) {
 
 /// Add-On for manager_free()
 void elogind_manager_free(Manager* m) {
-
-        manager_shutdown_cgroup(m, true);
+        if (!m->do_interrupt)
+                manager_shutdown_cgroup(m, true);
 
         sd_event_source_unref(m->cgroups_agent_event_source);
 
@@ -386,6 +402,7 @@ int elogind_manager_new(Manager* m) {
         m->cgroups_agent_fd = -1;
         m->pin_cgroupfs_fd  = -1;
         m->test_run_flags   = 0;
+        m->do_interrupt     = false;
 
         /* Init poweroff/suspend interruption */
         m->allow_poweroff_interrupts = false;

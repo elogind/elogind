@@ -47,6 +47,8 @@ Inhibitor* inhibitor_new(Manager *m, const char* id) {
 void inhibitor_free(Inhibitor *i) {
         assert(i);
 
+        log_debug_elogind("Freeing inhibitor %s", i->id);
+
         hashmap_remove(i->manager->inhibitors, i->id);
 
         inhibitor_remove_fifo(i);
@@ -55,6 +57,9 @@ void inhibitor_free(Inhibitor *i) {
         free(i->why);
 
         if (i->state_file) {
+#if 1 /// Do not remove the state file if elogind got interrupted
+                if (!i->manager->do_interrupt)
+#endif // 1
                 unlink(i->state_file);
                 free(i->state_file);
         }
@@ -340,16 +345,27 @@ int inhibitor_create_fifo(Inhibitor *i) {
 }
 
 void inhibitor_remove_fifo(Inhibitor *i) {
+#if 1 /// Don't keep invalid FIFOs on elogind restart
+        int current_fifo_fd = i->fifo_fd;
+#endif // 1
         assert(i);
-
-        log_debug_elogind("Removing FIFO %d at %s for inhibitor %s",
-                          i->fifo_fd, i->fifo_path, i->id);
 
         i->event_source = sd_event_source_unref(i->event_source);
         i->fifo_fd = safe_close(i->fifo_fd);
 
         if (i->fifo_path) {
+#if 1 /// Do not remove the fifo if elogind is to be restarted
+                if (i->manager->do_interrupt && (current_fifo_fd >= 0)) {
+                        log_debug_elogind("Keeping FIFO %d at %s for inhibitor %s",
+                                          current_fifo_fd, i->fifo_path, i->id);
+                } else {
+                        log_debug_elogind("Removing FIFO %d at %s for inhibitor %s",
+                                          current_fifo_fd, i->fifo_path, i->id);
+#endif // 1
                 unlink(i->fifo_path);
+#if 1 /// Close elogind extra if
+                }
+#endif // 1
                 i->fifo_path = mfree(i->fifo_path);
         }
 }

@@ -1362,7 +1362,7 @@ int main(int argc, char *argv[]) {
                 goto finish;
         }
 
-        log_debug("elogind running as pid "PID_FMT, getpid_cached());
+        log_debug("elogind started (PID "PID_FMT")", getpid_cached());
 
         (void) sd_notify(false,
                          "READY=1\n"
@@ -1370,11 +1370,19 @@ int main(int argc, char *argv[]) {
 
         r = manager_run(m);
 
-        log_debug("elogind stopped as pid "PID_FMT, getpid_cached());
+#if 1 /// Do not tell anybody if elogind is restarted through an INTerrupt
+        if (m->do_interrupt) {
+                log_debug_elogind("elogind interrupted (PID "PID_FMT"), going down silently...", getpid_cached());
+        } else {
+#endif /// 1
+        log_debug("elogind stopped (PID "PID_FMT")", getpid_cached());
 
         (void) sd_notify(false,
                          "STOPPING=1\n"
                          "STATUS=Shutting down...");
+#if 1 /// extra bracket for elogind here
+        }
+#endif // 1
 
 finish:
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
