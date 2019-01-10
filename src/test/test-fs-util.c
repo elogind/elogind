@@ -367,11 +367,11 @@ static void test_unlink_noerrno(void) {
 
         {
                 PROTECT_ERRNO;
-                errno = 42;
+                errno = -42;
                 assert_se(unlink_noerrno(name) >= 0);
-                assert_se(errno == 42);
+                assert_se(errno == -42);
                 assert_se(unlink_noerrno(name) < 0);
-                assert_se(errno == 42);
+                assert_se(errno == -42);
         }
 }
 
