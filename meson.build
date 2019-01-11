@@ -559,6 +559,7 @@ conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
 #                 ['IFLA_TARGET_NETNSID',                     'linux/if_link.h'],
 #                 ['IFLA_NEW_IFINDEX',                        'linux/if_link.h'],
 #                 ['IFLA_MAX_MTU',                            'linux/if_link.h'],
+#                 ['IFLA_BOND_MODE',                          'linux/if_link.h'],
 #                 ['IFLA_BOND_ACTIVE_SLAVE',                  'linux/if_link.h'],
 #                 ['IFLA_BOND_AD_INFO',                       'linux/if_link.h'],
 #                 ['IFLA_BOND_AD_ACTOR_SYSTEM',               'linux/if_link.h'],
