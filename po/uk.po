@@ -600,7 +600,7 @@ msgstr "Потрібна автентифікація, щоб вказати п�
 # msgid ""
 # "Authentication is required to control whether the RTC stores the local or "
 # "UTC time."
-# msgstr "Потрібна автентифікація, щоб контролювати, чи RTC зберігає час, чи UTC."
+# msgstr "Потрібна автентифікація, щоб контролювати, чи зберігає RTC локальний час або UTC."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:54
 # msgid "Turn network time synchronization on or off"
