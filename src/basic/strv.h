@@ -170,17 +170,10 @@ void strv_print(char **l);
                 _found;                                         \
         })
 
-#define FOREACH_STRING(x, ...)                               \
-        for (char **_l = ({                                  \
-                char **_ll = STRV_MAKE(__VA_ARGS__);         \
-                x = _ll ? _ll[0] : NULL;                     \
-                _ll;                                         \
-        });                                                  \
-        _l && *_l;                                           \
-        x = ({                                               \
-                _l ++;                                       \
-                _l[0];                                       \
-        }))
+#define FOREACH_STRING(x, y, ...)                                       \
+        for (char **_l = STRV_MAKE(({ x = y; }), ##__VA_ARGS__);        \
+             x;                                                         \
+             x = *(++_l))
 
 #if 0 /// UNNEEDED by elogind
 char **strv_reverse(char **l);
