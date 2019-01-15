@@ -741,9 +741,6 @@ int maybe_setgroups(size_t size, const gid_t *list) {
 }
 
 bool synthesize_nobody(void) {
-
-#ifdef NOLEGACY
-        return true;
 #else
         /* Returns true when we shall synthesize the "nobody" user (which we do by default). This can be turned off by
          * touching /etc/systemd/dont-synthesize-nobody in order to provide upgrade compatibility with legacy systems
@@ -758,7 +755,6 @@ bool synthesize_nobody(void) {
                 cache = access("/etc/elogind/dont-synthesize-nobody", F_OK) < 0;
 
         return cache;
-#endif
 }
 
 #if 0 /// UNNEEDED by elogind
