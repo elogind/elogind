@@ -22,29 +22,29 @@ CHANGES WITH 241 in spe:
         * $DBUS_SESSION_BUS_ADDRESS environment variable is set by pam_elogind
           again.
 
+        * A new network device NamePolicy "keep" is implemented for link files,
+          and used by default in 99-default.link (the fallback configuration
+          provided by elogind). With this policy, if the network device name
+          was already set by userspace, the device will not be renamed again.
+          This matches the naming scheme that was implemented before
+          elogind-240. If naming-scheme < 240 is specified, the "keep" policy
+          is also enabled by default, even if not specified. Effectively, this
+          means that if naming-scheme >= 240 is specified, network devices will
+          be renamed according to the configuration, even if they have been
+          renamed already, if "keep" is not specified as the naming policy in
+          the .link file. The 99-default.link file provided by elogind includes
+          "keep" for backwards compatibility, but it is recommended for user
+          installed .link files to *not* include it.
+
+          The "kernel" policy, which keeps kernel names declared to be
+          "persistent", now works again as documented.
+
         * kernel-install script now optionally takes a path to an initrd file,
           and passes it to all plugins.
-
-        * The mincore() system call has been dropped from the @system-service
-          system call filter group, as it is pretty exotic and may potentially
-          used for side-channel attacks.
 
         * -fPIE is dropped from compiler and linker options. Please specify
           -Db_pie=true option to meson to build position-independent
           executables. Note that the meson option is supported since meson-0.49.
-
-        * The fs.protected_regular and fs.protected_fifos sysctls, which were
-          added in Linux 4.19 to make some data spoofing attacks harder, are
-          now enabled by default. While this will hopefully improve the
-          security of most installations, it is technically a backwards
-          incompatible change; to disable these sysctls again, place the
-          following lines in /etc/sysctl.d/60-protected.conf or a similar file:
-
-              fs.protected_regular = 0
-              fs.protected_fifos = 0
-
-          Note that the similar hardlink and symlink protection has been
-          enabled since v199, and may be disabled likewise.
 
 CHANGES WITH 240:
 
@@ -508,6 +508,11 @@ CHANGES WITH 240:
 
         * $DBUS_SESSION_BUS_ADDRESS environment variable is not set by
           pam_elogind anymore.
+
+        * The naming scheme for network devices was changed to always rename
+          devices, even if they were already renamed by userspace. The "kernel"
+          policy was changed to only apply as a fallback, if no other naming
+          policy took effect.
 
         * The requirements to build elogind is bumped to meson-0.46 and
           python-3.5.
