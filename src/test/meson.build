@@ -931,6 +931,10 @@ tests += [
          [],
          [threads]],
 
+        [['src/libelogind/sd-bus/test-bus-queue-ref-cycle.c'],
+         [],
+         [threads]],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/libsystemd/sd-bus/test-bus-watch-bind.c'],
 #          [],
