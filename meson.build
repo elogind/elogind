@@ -464,7 +464,7 @@ if cc.compiles('''
            struct timespec now;
            return 0;
    }
-''', name : '-Werror=shadow with local shadowing')
+''', args: '-Werror=shadow', name : '-Werror=shadow with local shadowing')
         add_project_arguments('-Werror=shadow', language : 'c')
 endif
 
@@ -655,6 +655,7 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// elogind has a bit different list and some adaptions
 # progs = [['quotaon',    '/usr/sbin/quotaon'    ],
 #          ['quotacheck', '/usr/sbin/quotacheck' ],
+#          ['kill',       '/usr/bin/kill'        ],
 #          ['kmod',       '/usr/bin/kmod'        ],
 #          ['kexec',      '/usr/sbin/kexec'      ],
 #          ['sulogin',    '/usr/sbin/sulogin'    ],
@@ -1256,6 +1257,7 @@ conf.set10('HAVE_PAM', have)
 # want_lz4 = get_option('lz4')
 # if want_lz4 != 'false' and not fuzzer_build
 #         liblz4 = dependency('liblz4',
+#                             version : '>= 1.3.0',
 #                             required : want_lz4 == 'true')
 #         have = liblz4.found()
 # else
@@ -1975,7 +1977,7 @@ test_dlopen = executable(
 #                      test_dlopen,
 #                      args : [pam_systemd.full_path()]) # path to dlopen must include a slash
 #         endif
-#
+# 
 #         executable('systemd-user-runtime-dir',
 #                    user_runtime_dir_sources,
 #                    include_directories : includes,
@@ -2017,6 +2019,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+endif
 
 if conf.get('HAVE_PAM') == 1
         version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)
@@ -2507,7 +2510,7 @@ endif
 #            install : true,
 #            install_dir : rootlibexecdir)
 # 
-# executable('elogind-growfs',
+# executable('systemd-growfs',
 #            'src/partition/growfs.c',
 #            include_directories : includes,
 #            link_with : [libshared],
@@ -2516,7 +2519,7 @@ endif
 #            install : true,
 #            install_dir : rootlibexecdir)
 # 
-# executable('elogind-makefs',
+# executable('systemd-makefs',
 #            'src/partition/makefs.c',
 #            include_directories : includes,
 #            link_with : [libshared],
@@ -3307,6 +3310,7 @@ status += [
         'static libelogind:                 @0@'.format(get_option('static-libelogind')),
 #if 0 /// elogind does not ship libudeb. Obviously.
 #         'static libudev:                    @0@'.format(get_option('static-libudev'))]
+#
 #else
         ]
 #endif // 0
@@ -3432,7 +3436,7 @@ foreach tuple : [
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #endif // 0
-        ]
+]
 
         if tuple.length() >= 2
                 cond = tuple[1]
