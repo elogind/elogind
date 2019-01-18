@@ -42,9 +42,26 @@ CHANGES WITH 241 in spe:
         * kernel-install script now optionally takes a path to an initrd file,
           and passes it to all plugins.
 
+        * The mincore() system call has been dropped from the @system-service
+          system call filter group, as it is pretty exotic and may potentially
+          used for side-channel attacks.
+
         * -fPIE is dropped from compiler and linker options. Please specify
           -Db_pie=true option to meson to build position-independent
           executables. Note that the meson option is supported since meson-0.49.
+
+        * The fs.protected_regular and fs.protected_fifos sysctls, which were
+          added in Linux 4.19 to make some data spoofing attacks harder, are
+          now enabled by default. While this will hopefully improve the
+          security of most installations, it is technically a backwards
+          incompatible change; to disable these sysctls again, place the
+          following lines in /etc/sysctl.d/60-protected.conf or a similar file:
+
+              fs.protected_regular = 0
+              fs.protected_fifos = 0
+
+          Note that the similar hardlink and symlink protection has been
+          enabled since v199, and may be disabled likewise.
 
 CHANGES WITH 240:
 
@@ -929,6 +946,8 @@ CHANGES WITH 239:
           implemented by the pre-existing "system-update.target" unit. It
           allows ordering services before the service that executes the actual
           update process in a generic way.
+
+        * Systemd now emits warnings whenever .include syntax is used.
 
         Contributions from: Adam Duskett, Alan Jenkins, Alessandro Casale,
         Alexander Kurtz, Alex Gartrell, Anssi Hannula, Arnaud Rebillout, Brian
@@ -6298,6 +6317,9 @@ CHANGES WITH 210:
           for other architectures like x86 and does not support
           IFUNC. Please make sure to use --enable-compat-libs only
           during a transitional period!
+
+        * The .include syntax has been deprecated and is not documented
+          anymore. Drop-in files in .d directories should be used instead.
 
         Contributions from: Andreas Fuchs, Armin K., Colin Walters,
         Daniel Mack, Dave Reisner, David Herrmann, Djalal Harouni,
