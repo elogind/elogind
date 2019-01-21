@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239',
+        version : '239.3',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -1634,6 +1634,7 @@ install_libelogind_static = static_library(
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #else
                         ],
+        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 #endif // 0
 
 ############################################################
@@ -2019,7 +2020,9 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
-endif
+#if 0 /// although superfluous, diff wants the endif here, and removes it from above.
+# endif
+#endif // 0
 
 if conf.get('HAVE_PAM') == 1
         version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)

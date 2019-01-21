@@ -296,8 +296,6 @@ static bool enough_swap_for_hibernation(void) {
         return r;
 }
 
-#if 0 /// elogind is not init and can not check boot devices and partitions.
-#endif // 0
 int read_fiemap(int fd, struct fiemap **ret) {
         _cleanup_free_ struct fiemap *fiemap = NULL, *result_fiemap = NULL;
         struct stat statinfo;
@@ -469,8 +467,6 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
         if (!enough_swap_for_hibernation())
                 return -ENOSPC;
 
-#if 0 /// elogind is not init and can not check this
-#endif // 0
         return true;
 }
 

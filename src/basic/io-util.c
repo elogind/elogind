@@ -254,6 +254,7 @@ ssize_t sparse_write(int fd, const void *p, size_t sz, size_t run_length) {
         return q - (const uint8_t*) p;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *field, const char *value) {
         char *x;
 
@@ -262,3 +263,4 @@ char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *f
                 iovec[(*n_iovec)++] = IOVEC_MAKE_STRING(x);
         return x;
 }
+#endif // 0

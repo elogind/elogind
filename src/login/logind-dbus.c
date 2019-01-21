@@ -2350,10 +2350,10 @@ static int method_can_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_verb);
-                if (IN_SET(r,  0, -ENOSPC))
 #else
                 r = can_sleep(m, sleep_verb);
 #endif // 0
+                if (IN_SET(r,  0, -ENOSPC))
                         return sd_bus_reply_method_return(message, "s", "na");
                 if (r < 0)
                         return r;
