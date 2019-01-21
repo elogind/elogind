@@ -1,9 +1,5 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
-version_h = vcs_tag(
-        command: vcs_tagger,
-        input : 'version.h.in',
-        output : 'version.h')
 
 #if 0 /// elogind has a shorter list
 # basic_sources = files('''
@@ -216,7 +212,6 @@ version_h = vcs_tag(
 #         xattr-util.c
 #         xattr-util.h
 # '''.split())
-# basic_sources += version_h
 #else
 basic_sources = files('''
         MurmurHash2.c
@@ -486,7 +481,8 @@ libbasic = static_library(
         'basic',
         basic_sources,
         include_directories : includes,
-        dependencies : [threads,
+        dependencies : [versiondep,
+                        threads,
                         libcap,
 #if 0 /// Neither blkid nor libmount in elogind
 #endif // 0
