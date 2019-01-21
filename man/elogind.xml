@@ -678,8 +678,8 @@
         <para>systemd user managers treat this signal the same way as
         <constant>SIGTERM</constant>.</para></listitem>
         --><!-- else -->
-        <listitem><para>Upon receiving this signal elogind exits, cleaning up
-        all sessions and seats.</para></listitem>
+        <listitem><para>Upon receiving this signal elogind exits, leaving all
+        sessions and seats in place.</para></listitem>
         <!-- // 0 -->
       </varlistentry>
 
@@ -892,7 +892,6 @@
       // 0 -->
     </variablelist>
   </refsect1>
-  // 0 -->
 
   <!-- 0 /// The whole environment section is unneeded in elogind 
   <refsect1>
