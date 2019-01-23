@@ -937,7 +937,6 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
                 if (fstat(child, &st) < 0)
                         return -errno;
                 if ((flags & CHASE_SAFE) &&
-                    (empty_or_root(root) || (size_t)(todo - buffer) > strlen(root)) &&
                     unsafe_transition(&previous_stat, &st))
                         return log_unsafe_transition(fd, child, path, flags);
 
@@ -1339,6 +1338,21 @@ int fsync_path_at(int at_fd, const char *path) {
         }
 
         if (fsync(fd) < 0)
+                return -errno;
+
+        return 0;
+}
+
+int syncfs_path(int atfd, const char *path) {
+        _cleanup_close_ int fd = -1;
+
+        assert(path);
+
+        fd = openat(atfd, path, O_CLOEXEC|O_RDONLY|O_NONBLOCK);
+        if (fd < 0)
+                return -errno;
+
+        if (syncfs(fd) < 0)
                 return -errno;
 
         return 0;
