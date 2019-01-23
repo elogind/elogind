@@ -56,6 +56,7 @@ static void test_string_compare_func(void) {
         assert_se(string_compare_func("fred", "fred") == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_path_hashmap(void) {
         _cleanup_(hashmap_freep) Hashmap *h = NULL;
 
@@ -83,6 +84,7 @@ static void test_path_hashmap(void) {
         assert_se(hashmap_get(h, "foo////bar////quux/////") == INT_TO_PTR(6));
         assert_se(!hashmap_get(h, "/foo////bar////quux/////"));
 }
+#endif // 0
 
 int main(int argc, const char *argv[]) {
         test_hashmap_funcs();
@@ -92,7 +94,9 @@ int main(int argc, const char *argv[]) {
         test_uint64_compare_func();
         test_trivial_compare_func();
         test_string_compare_func();
+#if 0 /// UNNEEDED by elogind
         test_path_hashmap();
+#endif // 0
 
         return 0;
 }

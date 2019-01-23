@@ -27,7 +27,7 @@
 #include "bus-error.h"
 #include "bus-kernel.h"
 #include "bus-match.h"
-//#include "def.h"
+#include "def.h"
 #include "hashmap.h"
 #include "kdbus.h"
 #include "list.h"

@@ -34,7 +34,7 @@ const struct hash_ops string_hash_ops = {
         .compare = string_compare_func
 };
 
-
+#if 0 /// UNNEEDED by elogind
 void path_hash_func(const void *p, struct siphash *state) {
         const char *q = p;
         size_t n;
@@ -82,6 +82,7 @@ const struct hash_ops path_hash_ops = {
         .hash = path_hash_func,
         .compare = path_compare_func
 };
+#endif // 0
 
 void trivial_hash_func(const void *p, struct siphash *state) {
         siphash24_compress(&p, sizeof(p), state);

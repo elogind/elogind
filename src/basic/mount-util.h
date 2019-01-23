@@ -47,8 +47,8 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, endmntent);
 
 #if 0 /// UNNEEDED by elogind
 bool fstype_is_network(const char *fstype);
-#endif // 0
 bool fstype_is_api_vfs(const char *fstype);
+#endif // 0
 
 union file_handle_union {
         struct file_handle handle;

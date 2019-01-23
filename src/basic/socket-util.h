@@ -44,9 +44,9 @@ union sockaddr_union {
         struct sockaddr_storage storage;
         struct sockaddr_ll ll;
         struct sockaddr_vm vm;
-#endif // 0
         /* Ensure there is enough space to store Infiniband addresses */
         uint8_t ll_buffer[offsetof(struct sockaddr_ll, sll_addr) + CONST_MAX(ETH_ALEN, INFINIBAND_ALEN)];
+#endif // 0
 };
 
 #if 0 /// UNNEEDED by elogind

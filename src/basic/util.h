@@ -208,5 +208,7 @@ int update_reboot_parameter_and_warn(const char *param);
 
 int version(void);
 
+#if 0 /// UNNEEDED by elogind
 int get_block_device(const char *path, dev_t *dev);
 int get_block_device_harder(const char *path, dev_t *dev);
+#endif // 0

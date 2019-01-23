@@ -1497,7 +1497,11 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
         return r;
 }
 
+#if 0 /// elogind-debus.c has to access this
 static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+#else
+int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
+#endif // 0
 
         static const char * const signal_name[_INHIBIT_WHAT_MAX] = {
                 [INHIBIT_SHUTDOWN] = "PrepareForShutdown",
@@ -1673,11 +1677,6 @@ static int delay_shutdown_or_sleep(
 
         return 0;
 }
-#endif // 0
-
-#if 0 /// elogind-dbus.c needs to access this
-#else
-int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 #endif // 0
 
 #if 0 /// elogind has its own variant in elogind-dbus.c

@@ -317,6 +317,7 @@ static void test_dot_or_dot_dot(void) {
         assert_se(!dot_or_dot_dot("..foo"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_unlinkat_deallocate(void) {
         _cleanup_free_ char *p = NULL;
         _cleanup_close_ int fd = -1;
@@ -341,6 +342,7 @@ static void test_unlinkat_deallocate(void) {
         assert_se(st.st_blocks == 0);
         assert_se(st.st_nlink == 0);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_unlink_noerrno();
@@ -351,7 +353,9 @@ int main(int argc, char *argv[]) {
 #endif // 0
         test_chase_symlinks();
         test_dot_or_dot_dot();
+#if 0 /// UNNEEDED by elogind
         test_unlinkat_deallocate();
+#endif // 0
 
         return 0;
 }

@@ -35,9 +35,11 @@ void string_hash_func(const void *p, struct siphash *state);
 int string_compare_func(const void *a, const void *b) _pure_;
 extern const struct hash_ops string_hash_ops;
 
+#if 0 /// UNNEEDED by elogind
 void path_hash_func(const void *p, struct siphash *state);
 int path_compare_func(const void *a, const void *b) _pure_;
 extern const struct hash_ops path_hash_ops;
+#endif // 0
 
 /* This will compare the passed pointers directly, and will not dereference them. This is hence not useful for strings
  * or suchlike. */

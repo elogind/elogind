@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-//#include <linux/magic.h>
+#include <linux/magic.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -820,6 +820,7 @@ int chase_symlinks(const char *path, const char *original_root, unsigned flags, 
         return exists;
 }
 
+#if 0 /// UNNEEDED by elogind
 int unlinkat_deallocate(int fd, const char *name, int flags) {
         _cleanup_close_ int truncate_fd = -1;
         struct stat st;
@@ -888,3 +889,4 @@ int unlinkat_deallocate(int fd, const char *name, int flags) {
 
         return 0;
 }
+#endif // 0
