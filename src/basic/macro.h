@@ -404,7 +404,6 @@ static inline unsigned long ALIGN_POWER2(unsigned long u) {
 #endif
 #endif
 
-#else
 #define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                 \
         static inline void func##p(type *p) {                   \
                 if (*p)                                         \
