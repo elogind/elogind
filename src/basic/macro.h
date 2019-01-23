@@ -23,7 +23,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <sys/param.h>
-//#include <sys/sysmacros.h>
+#include <sys/sysmacros.h>
 #include <sys/types.h>
 
 #define _printf_(a,b) __attribute__ ((__format__ (printf, a, b)))
@@ -391,7 +391,6 @@ static inline unsigned long ALIGN_POWER2(unsigned long u) {
 #endif
 #endif
 
-#else
 #define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                 \
         static inline void func##p(type *p) {                   \
                 if (*p)                                         \
