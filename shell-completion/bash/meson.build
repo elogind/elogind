@@ -33,7 +33,7 @@ if bashcompletiondir != 'no'
 #                 input : 'systemctl.in',
 #                 output : 'systemctl',
 #                 configuration : substs)
-# 
+#
 #         items = [['busctl',              ''],
 #                  ['journalctl',          ''],
 #                  ['systemd-analyze',     ''],

@@ -26,12 +26,14 @@
 <!-- 0 /// elogind does not have to enable itself in configure
 <refentry id="logind.conf" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
+    <productname>systemd</productname>
 --><!-- else -->
 <refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+    <productname>elogind</productname>
 <!-- // 0 -->
   <refentryinfo>
     <title>logind.conf</title>
-    <productname>elogind</productname>
 
     <authorgroup>
       <author>
@@ -71,7 +73,7 @@
     <para>These files configure various parameters of the elogind
     <!-- 0 /// elogind does not need a service file.
     login manager,
-    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     </para>
     --><!-- else -->
     login manager.</para>
@@ -170,6 +172,7 @@
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
         </para>
         // 0 -->
+
         <para>Note that setting <varname>KillUserProcesses=yes</varname>
         will break tools like
         <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>

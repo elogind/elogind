@@ -4,6 +4,23 @@
 
 <!--
   SPDX-License-Identifier: LGPL-2.1+
+
+  This file is part of elogind.
+
+  Copyright 2012 Lennart Poettering
+
+  elogind is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation; either version 2.1 of the License, or
+  (at your option) any later version.
+
+  elogind is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with elogind; If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <refentry id="elogind-inhibit"
@@ -12,6 +29,15 @@
   <refentryinfo>
     <title>elogind-inhibit</title>
     <productname>elogind</productname>
+
+    <authorgroup>
+      <author>
+        <contrib>Developer</contrib>
+        <firstname>Lennart</firstname>
+        <surname>Poettering</surname>
+        <email>lennart@poettering.net</email>
+      </author>
+    </authorgroup>
   </refentryinfo>
 
   <refmeta>
@@ -118,8 +144,6 @@
         acquiring one.</para></listitem>
       </varlistentry>
 
-      <xi:include href="standard-options.xml" xpointer="no-pager" />
-      <xi:include href="standard-options.xml" xpointer="no-legend" />
       <xi:include href="standard-options.xml" xpointer="help" />
       <xi:include href="standard-options.xml" xpointer="version" />
     </variablelist>
@@ -143,8 +167,6 @@
     and inhibits system sleeping, shutdown and idle while
     doing so.</para>
   </refsect1>
-
-  <xi:include href="less-variables.xml" />
 
   <refsect1>
     <title>See Also</title>

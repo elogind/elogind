@@ -61,7 +61,7 @@ int parse_sleep_config(const char *verb, char ***_modes, char ***_states) {
         };
 
         (void) config_parse_many_nulstr(PKGSYSCONFDIR "/sleep.conf",
-                                        CONF_PATHS_NULSTR("elogind/sleep.conf.d"),
+                                        CONF_PATHS_NULSTR("systemd/sleep.conf.d"),
                                         "Sleep\0", config_item_table_lookup, items,
                                         CONFIG_PARSE_WARN, NULL);
 
