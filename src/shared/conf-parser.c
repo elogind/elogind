@@ -516,6 +516,7 @@ DEFINE_PARSER(double, double, safe_atod);
 DEFINE_PARSER(nsec, nsec_t, parse_nsec);
 #endif // 0
 DEFINE_PARSER(sec, usec_t, parse_sec);
+DEFINE_PARSER(sec_def_infinity, usec_t, parse_sec_def_infinity);
 #if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(mode, mode_t, parse_mode);
 
