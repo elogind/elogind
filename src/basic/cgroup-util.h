@@ -35,8 +35,8 @@
 #if 0 /// elogind has them set through config.h
 #define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=systemd"
 #define SYSTEMD_CGROUP_CONTROLLER_HYBRID "name=unified"
+#define SYSTEMD_CGROUP_CONTROLLER "_systemd"
 #endif // 0
-#define SYSTEMD_CGROUP_CONTROLLER "_elogind"
 
 /* An enum of well known cgroup controllers */
 typedef enum CGroupController {

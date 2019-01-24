@@ -26,14 +26,16 @@
 <!-- 0 /// elogind does not have to enable itself in configure
 <refentry id="logind.conf" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
-    <productname>systemd</productname>
 --><!-- else -->
 <refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
-    xmlns:xi="http://www.w3.org/2001/XInclude">
-    <productname>elogind</productname>
 <!-- // 0 -->
   <refentryinfo>
     <title>logind.conf</title>
+<!-- 0 /// rename to elogind
+    <productname>systemd</productname>
+--><!--else -->
+    <productname>elogind</productname>
+<!-- // 0 -->
 
     <authorgroup>
       <author>
