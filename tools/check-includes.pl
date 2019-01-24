@@ -6,9 +6,9 @@
 #if 0 // 5 errors and 2 warnings are inaccaptable for elogind - See PerlCritic.
 # foreach $file (@ARGV) {
 # 	open(FILE, $file) or die "Cannot open $file: $!.\n";
-# 
+#
 # 	my %includedfiles = ();
-# 
+#
 # 	while (<FILE>) {
 # 		if (m/^\s*#\s*include\s*[<"](\S*)[>"]/o) {
 # 			++$includedfiles{$1};
@@ -19,7 +19,7 @@
 # 			print "$file: $filename is included more than once.\n";
 # 		}
 # 	}
-# 
+#
 # 	close(FILE);
 # }
 #else

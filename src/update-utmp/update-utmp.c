@@ -310,7 +310,6 @@ finish:
 
 #if 0 /// UNNEEDED by elogind
         sd_bus_flush_close_unref(c.bus);
-
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 #endif // 0
 }

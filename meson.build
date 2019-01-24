@@ -708,11 +708,11 @@ substs.set('TTY_GID', tty_gid)
 # if get_option('adm-group')
 #         m4_defines += ['-DENABLE_ADM_GROUP']
 # endif
-
+#
 # if get_option('wheel-group')
 #         m4_defines += ['-DENABLE_WHEEL_GROUP']
 # endif
-
+#
 # substs.set('DEV_KVM_MODE', get_option('dev-kvm-mode'))
 #endif // 0
 
@@ -724,7 +724,7 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 # dns_servers = get_option('dns-servers')
 # conf.set_quoted('DNS_SERVERS', dns_servers)
 # substs.set('DNS_SERVERS', dns_servers)
-
+#
 # ntp_servers = get_option('ntp-servers')
 # conf.set_quoted('NTP_SERVERS', ntp_servers)
 # substs.set('NTP_SERVERS', ntp_servers)
@@ -781,7 +781,7 @@ endif
 #if 0 /// UNNEEDED by elogind
 # libmount = dependency('mount',
 #                       version : '>= 2.30')
-
+#
 # want_seccomp = get_option('seccomp')
 # if want_seccomp != 'false'
 #         libseccomp = dependency('libseccomp',
@@ -879,7 +879,7 @@ conf.set10('HAVE_AUDIT', have)
 #         libblkid = []
 # endif
 # conf.set10('HAVE_BLKID', have)
-
+#
 # want_kmod = get_option('kmod')
 # if want_kmod != 'false'
 #         libkmod = dependency('libkmod',
@@ -922,7 +922,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_MICROHTTPD', have)
 # m4_defines += have ? ['-DHAVE_MICROHTTPD'] : []
-
+#
 # want_libcryptsetup = get_option('libcryptsetup')
 # if want_libcryptsetup != 'false'
 #         libcryptsetup = dependency('libcryptsetup',
@@ -934,7 +934,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libcryptsetup = []
 # endif
 # conf.set10('HAVE_LIBCRYPTSETUP', have)
-
+#
 # want_libcurl = get_option('libcurl')
 # if want_libcurl != 'false'
 #         libcurl = dependency('libcurl',
@@ -947,13 +947,13 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBCURL', have)
 # m4_defines += have ? ['-DHAVE_LIBCURL'] : []
-
+#
 # want_libidn = get_option('libidn')
 # want_libidn2 = get_option('libidn2')
 # if want_libidn == 'true' and want_libidn2 == 'true'
 #         error('libidn and libidn2 cannot be requested simultaneously')
 # endif
-
+#
 # if want_libidn != 'false' and want_libidn2 != 'true'
 #         libidn = dependency('libidn',
 #                             required : want_libidn == 'true')
@@ -974,7 +974,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBIDN2', have)
 # m4_defines += have ? ['-DHAVE_LIBIDN2'] : []
-
+#
 # want_libiptc = get_option('libiptc')
 # if want_libiptc != 'false'
 #         libiptc = dependency('libiptc',
@@ -986,7 +986,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 # endif
 # conf.set10('HAVE_LIBIPTC', have)
 # m4_defines += have ? ['-DHAVE_LIBIPTC'] : []
-
+#
 # want_qrencode = get_option('qrencode')
 # if want_qrencode != 'false'
 #         libqrencode = dependency('libqrencode',
@@ -997,7 +997,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libqrencode = []
 # endif
 # conf.set10('HAVE_QRENCODE', have)
-
+#
 # want_gcrypt = get_option('gcrypt')
 # if want_gcrypt != 'false'
 #         libgcrypt = cc.find_library('gcrypt', required : want_gcrypt == 'true')
@@ -1012,7 +1012,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libgpg_error = []
 # endif
 # conf.set10('HAVE_GCRYPT', have)
-
+#
 # want_gnutls = get_option('gnutls')
 # if want_gnutls != 'false'
 #         libgnutls = dependency('gnutls',
@@ -1024,7 +1024,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libgnutls = []
 # endif
 # conf.set10('HAVE_GNUTLS', have)
-
+#
 # want_elfutils = get_option('elfutils')
 # if want_elfutils != 'false'
 #         libdw = dependency('libdw',
@@ -1035,7 +1035,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libdw = []
 # endif
 # conf.set10('HAVE_ELFUTILS', have)
-
+#
 # want_zlib = get_option('zlib')
 # if want_zlib != 'false'
 #         libz = dependency('zlib',
@@ -1046,7 +1046,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libz = []
 # endif
 # conf.set10('HAVE_ZLIB', have)
-
+#
 # want_bzip2 = get_option('bzip2')
 # if want_bzip2 != 'false'
 #         libbzip2 = cc.find_library('bz2',
@@ -1057,7 +1057,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libbzip2 = []
 # endif
 # conf.set10('HAVE_BZIP2', have)
-
+#
 # want_xz = get_option('xz')
 # if want_xz != 'false'
 #         libxz = dependency('liblzma',
@@ -1068,7 +1068,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         libxz = []
 # endif
 # conf.set10('HAVE_XZ', have)
-
+#
 # want_lz4 = get_option('lz4')
 # if want_lz4 != 'false'
 #         liblz4 = dependency('liblz4',
@@ -1079,7 +1079,7 @@ m4_defines += have ? ['-DHAVE_PAM'] : []
 #         liblz4 = []
 # endif
 # conf.set10('HAVE_LZ4', have)
-
+#
 # want_xkbcommon = get_option('xkbcommon')
 # if want_xkbcommon != 'false'
 #         libxkbcommon = dependency('xkbcommon',
@@ -1149,7 +1149,7 @@ conf.set10('HAVE_DBUS', have)
 # conf.set('DEFAULT_DNSSEC_MODE',
 #          'DNSSEC_' + default_dnssec.underscorify().to_upper())
 # substs.set('DEFAULT_DNSSEC_MODE', default_dnssec)
-
+#
 # want_importd = get_option('importd')
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
@@ -1164,7 +1164,7 @@ conf.set10('HAVE_DBUS', have)
 #         have = false
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
-
+#
 # want_remote = get_option('remote')
 # if want_remote != 'false'
 #         have_deps = [conf.get('HAVE_MICROHTTPD') == 1,
@@ -1234,7 +1234,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', get_option('slow-tests'))
 #if 0 /// UNNEEDED by elogind
 # if get_option('efi')
 #         efi_arch = host_machine.cpu_family()
-
+#
 #         if efi_arch == 'x86'
 #                 EFI_MACHINE_TYPE_NAME = 'ia32'
 #                 gnu_efi_arch = 'ia32'
@@ -1251,10 +1251,10 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', get_option('slow-tests'))
 #                 EFI_MACHINE_TYPE_NAME = ''
 #                 gnu_efi_arch = ''
 #         endif
-
+#
 #         have = true
 #         conf.set_quoted('EFI_MACHINE_TYPE_NAME', EFI_MACHINE_TYPE_NAME)
-
+#
 #         conf.set('SD_TPM_PCR', get_option('tpm-pcrindex').to_int())
 # else
 #         have = false
@@ -1331,7 +1331,7 @@ subdir('src/login')
 #         journald_gperf_c,
 #         include_directories : includes,
 #         install : false)
-
+#
 # libsystemd_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libsystemd_sym)
 # libsystemd = shared_library(
 #         'systemd',
@@ -1383,7 +1383,7 @@ subdir('src/shared')
 # subdir('src/core')
 # subdir('src/udev')
 # subdir('src/network')
-
+#
 # subdir('src/analyze')
 # subdir('src/journal-remote')
 # subdir('src/coredump')
@@ -2623,7 +2623,7 @@ make_man_index_py = find_program('tools/make-man-index.py')
 xml_helper_py = find_program('tools/xml_helper.py')
 #if 0 /// UNNEEDED by elogind
 # hwdb_update_sh = find_program('tools/meson-hwdb-update.sh')
-
+#
 # subdir('units')
 # subdir('sysctl.d')
 # subdir('sysusers.d')
@@ -2773,7 +2773,7 @@ status = [
 #         'nobody group name:                 @0@'.format(get_option('nobody-group')),
 #         'fallback hostname:                 @0@'.format(get_option('fallback-hostname')),
 #         'symbolic gateway hostnames:        @0@'.format(', '.join(gateway_hostnames)),
-
+#
 #         'default DNSSEC mode:               @0@'.format(default_dnssec),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #endif // 0
@@ -2785,7 +2785,7 @@ status = [
 # status += [
 #         'default DNS servers:               @0@'.format(alt_dns_servers),
 #         'default NTP servers:               @0@'.format(alt_ntp_servers)]
-
+#
 # alt_time_epoch = run_command('date', '-Is', '-u', '-d',
 #                              '@@0@'.format(time_epoch)).stdout().strip()
 # status += [
@@ -2801,7 +2801,7 @@ status = [
 # if conf.get('ENABLE_EFI') == 1
 #         status += [
 #                 'efi arch:                          @0@'.format(efi_arch)]
-
+#
 #         if have_gnu_efi
 #                 status += [
 #                         'EFI machine type:                  @0@'.format(EFI_MACHINE_TYPE_NAME),

@@ -24,7 +24,7 @@
 #if 0 /// only system command elogind knows are needed
 #define BUS_ERROR_NO_SUCH_UNIT "org.freedesktop.systemd1.NoSuchUnit"
 #define BUS_ERROR_NO_UNIT_FOR_PID "org.freedesktop.systemd1.NoUnitForPID"
-#define BUS_ERROR_NO_UNIT_FOR_INVOCATION_ID "org.freedesktop.elogind1.NoUnitForInvocationID"
+#define BUS_ERROR_NO_UNIT_FOR_INVOCATION_ID "org.freedesktop.systemd1.NoUnitForInvocationID"
 #define BUS_ERROR_UNIT_EXISTS "org.freedesktop.systemd1.UnitExists"
 #define BUS_ERROR_LOAD_FAILED "org.freedesktop.systemd1.LoadFailed"
 #define BUS_ERROR_JOB_FAILED "org.freedesktop.systemd1.JobFailed"
