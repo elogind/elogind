@@ -96,6 +96,11 @@ static void test_struct(void) {
         s = set_new(&test_hash_ops);
         assert_se(s);
 
+        assert_se(prioq_peek(q) == NULL);
+        assert_se(prioq_peek_by_index(q, 0) == NULL);
+        assert_se(prioq_peek_by_index(q, 1) == NULL);
+        assert_se(prioq_peek_by_index(q, (unsigned) -1) == NULL);
+
         for (i = 0; i < SET_SIZE; i++) {
                 struct test *t;
 
@@ -111,6 +116,18 @@ static void test_struct(void) {
                         assert_se(r >= 0);
                 }
         }
+
+        for (i = 0; i < SET_SIZE; i++)
+                assert_se(prioq_peek_by_index(q, i));
+        assert_se(prioq_peek_by_index(q, SET_SIZE) == NULL);
+
+        unsigned count = 0;
+        void *tt;
+        PRIOQ_FOREACH_ITEM(q, tt) {
+                assert_se(tt);
+                count++;
+        }
+        assert_se(count == SET_SIZE);
 
         for (;;) {
                 struct test *t;
