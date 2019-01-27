@@ -1005,7 +1005,8 @@ tests += [
 #
 #         [['src/libsystemd/sd-resolve/test-resolve.c'],
 #          [],
-#          [threads]],
+#          [threads],
+#          '', 'timeout=120'],
 #endif // 0
 
         [['src/libelogind/sd-login/test-login.c'],
