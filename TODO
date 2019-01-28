@@ -51,14 +51,12 @@ Features:
 * When logind.conf contains HandleLidSwitch=suspend-then-hibernate and we can't
   hibernate because the swap partition isn't large enough, still suspend
 
-* bootctl: implement Type #2 boot loader entry discovery
-
 * bootctl,sd-boot: actually honour the "architecture" key
 
 * when a socket unit is spawned with an AF_UNIX path in /var/run, complain and
   patch it to use /run instead
 
-* set memory.oom.group in cgroupsv2 for all leaf cgroups (kernel v4.19+)
+* set memory.oom.group in cgroup v2 for all leaf cgroups (kernel v4.19+)
 
 * add a new syscall group "@esoteric" for more esoteric stuff such as bpf() and
   usefaultd() and make elogind-analyze check for it.
@@ -90,22 +88,16 @@ Features:
   show state of these flags, and optionally trigger such a factory reset on
   next boot by setting the flag.
 
-* sd-boot: search drop-ins in $BOOT, too
-
 * sd-boot: add "oneshot boot timeout" variable support
 
 * sd-boot: automatically load EFI modules from some drop-in dir, so that people
   can add in file system drivers and such
-
-* esp generator: also mount $BOOT if found
 
 * sd-boot: optionally, show boot menu when previous default boot item has
   non-zero "tries done" count
 
 * logind: add "boot into bootmenu" API, and possibly even "boot into windows"
   and "boot into macos".
-
-* bootspec.c: also enumerate EFI unified kernel images.
 
 * maybe set a special xattr on cgroups that have delegate=yes set, to make it
   easy to mark cut points
@@ -1115,3 +1107,5 @@ Regularly:
 * use secure_getenv() instead of getenv() where appropriate
 
 * link up selected blog stories from man pages and unit files Documentation= fields
+String is not UTF-8 clean, ignoring assignment
+ timedatex.service: Consumed 26ms CPU time.
