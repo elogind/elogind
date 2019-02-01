@@ -166,7 +166,6 @@ int write_string_file_ts(
 #ifndef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems when going this route
                 if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                         flags ^= WRITE_STRING_FILE_DISABLE_BUFFER;
-#endif // __GLIBC__
         }
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
@@ -230,6 +229,7 @@ int read_one_line_file(const char *fn, char **line) {
 
         r = read_line(f, LONG_LINE_MAX, line);
         return r < 0 ? r : 0;
+        return read_line(f, LONG_LINE_MAX, line);
 }
 
 int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
@@ -374,7 +374,6 @@ int read_full_file(const char *fn, char **contents, size_t *size) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
 int executable_is_script(const char *path, char **interpreter) {
         _cleanup_free_ char *line = NULL;
         size_t len;
@@ -405,7 +404,6 @@ int executable_is_script(const char *path, char **interpreter) {
         *interpreter = ans;
         return 1;
 }
-#endif // 0
 
 /**
  * Retrieve one field from a file like /proc/self/status.  pattern
@@ -499,7 +497,6 @@ DIR *xopendirat(int fd, const char *name, int flags) {
         return d;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int search_and_fopen_internal(const char *path, const char *mode, const char *root, char **search, FILE **_f) {
         char **i;
 
@@ -581,7 +578,6 @@ int search_and_fopen_nulstr(const char *path, const char *mode, const char *root
 
         return search_and_fopen_internal(path, mode, root, s, _f);
 }
-#endif // 0
 
 int fflush_and_check(FILE *f) {
         assert(f);
@@ -615,7 +611,6 @@ int fflush_sync_and_check(FILE *f) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
 int write_timestamp_file_atomic(const char *fn, usec_t n) {
         char ln[DECIMAL_STR_MAX(n)+2];
 
@@ -678,13 +673,6 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 
         return fputs(s, f);
 }
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 /* A bitmask of the EOL markers we know */
 typedef enum EndOfLineMarker {
