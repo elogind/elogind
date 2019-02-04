@@ -80,7 +80,7 @@ sd_login_c = files('sd-login/sd-login.c')
 #         sd-resolve/sd-resolve.c
 #         sd-utf8/sd-utf8.c
 # '''.split()) + id128_sources + sd_daemon_c + sd_event_c + sd_login_c
-# 
+#
 #else
 libelogind_sources = files('''
         sd-bus/bus-common-errors.c
