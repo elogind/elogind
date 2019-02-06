@@ -2046,7 +2046,7 @@ if conf.get('HAVE_PAM') == 1
              test_dlopen,
              args : [pam_elogind.full_path()]) # path to dlopen must include a slash
 endif
-#endif // 0
+
 #if 0 /// UNNEEDED by elogind
 #         executable('systemd-user-sessions',
 #                    'src/user-sessions/user-sessions.c',
