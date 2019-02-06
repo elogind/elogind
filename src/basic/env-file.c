@@ -560,7 +560,7 @@ int write_env_file(const char *fname, char **l) {
                 r = -errno;
         }
 
-        unlink(p);
+        (void) unlink(p);
         return r;
 }
 #endif // 0
