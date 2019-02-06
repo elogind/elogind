@@ -1,6 +1,9 @@
 # -*- mode: meson -*-
 # SPDX-License-Identifier: LGPL-2.1+
 
+option('version-tag', type : 'string',
+       description : 'override the git version string')
+
 option('split-usr', type : 'combo', choices : ['auto', 'true', 'false'],
        description : '''/bin, /sbin aren't symlinks into /usr''')
 option('split-bin', type : 'combo', choices : ['auto', 'true', 'false'],
@@ -8,7 +11,7 @@ option('split-bin', type : 'combo', choices : ['auto', 'true', 'false'],
 option('rootlibdir', type : 'string',
        description : '''[/usr]/lib/x86_64-linux-gnu or such''')
 option('rootprefix', type : 'string',
-       description : '''override the root prefix [default '/' if split-usr and '/usr' otherwise]''')
+       description : '''override the root prefix''')
 #if 0 /// UNNEEDED by elogind
 # option('link-udev-shared', type : 'boolean',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
@@ -74,6 +77,7 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 #else
 option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache', 'siphash'], value : [],
 option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache'], value : [],
+option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache', 'siphash', 'udev'], value : [],
        description : 'enable extra debugging')
 #endif // 0
 #if 0 /// UNNEEDED by elogind
@@ -206,6 +210,9 @@ option('default-hierarchy', type : 'combo',
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
 #endif // 0
+option('default-net-naming-scheme', type : 'combo',
+       choices : ['latest', 'v238', 'v239', 'v240'],
+       description : 'default net.naming-scheme= value')
 #if 0 /// UNNEEDED by elogind
 # option('time-epoch', type : 'integer', value : '-1',
 #        description : 'time epoch for time clients')
@@ -250,6 +257,8 @@ option('default-kill-user-processes', type : 'boolean',
        description : 'the default value for KillUserProcesses= setting')
 option('gshadow', type : 'boolean',
        description : 'support for shadow group')
+option('default-locale', type : 'string', value : '',
+       description : 'default locale used when /etc/locale.conf does not exist')
 
 #if 0 /// UNNEEDED by elogind
 # option('default-dnssec', type : 'combo',
@@ -264,7 +273,7 @@ option('gshadow', type : 'boolean',
 #        description : 'DNS-over-TLS support')
 # option('dns-servers', type : 'string',
 #        description : 'space-separated list of default DNS servers',
-#        value : '8.8.8.8 8.8.4.4 2001:4860:4860::8888 2001:4860:4860::8844')
+#        value : '1.1.1.1 8.8.8.8 1.0.0.1 8.8.4.4 2606:4700:4700::1111 2001:4860:4860::8888 2606:4700:4700::1001 2001:4860:4860::8844')
 # option('ntp-servers', type : 'string',
 #        description : 'space-separated list of default NTP servers',
 #        value : 'time1.google.com time2.google.com time3.google.com time4.google.com')
