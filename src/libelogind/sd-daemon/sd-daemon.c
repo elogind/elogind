@@ -610,7 +610,13 @@ _public_ int sd_booted(void) {
          * guaranteed to happen very early during boot. */
 
 #if 0 /// elogind is always used without systemd running the show. (Well, it should...)
-        return laccess("/run/systemd/system/", F_OK) >= 0;
+        if (laccess("/run/systemd/system/", F_OK) >= 0)
+                return true;
+
+        if (errno == ENOENT)
+                return false;
+
+        return -errno;
 #else
         return 0;
 #endif // 0
