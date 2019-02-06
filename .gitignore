@@ -40,10 +40,6 @@ __pycache__/
 /test-libelogind*
 
 # Local Helper Scripts and Tools - Not for distribution
-pwx/patches/*
-!pwx/patches/.keep_dir
-pwx/patches_port/*
-!pwx/patches_port/.keep_dir
 *.orig
 *.rej
 *.remote
@@ -64,9 +60,8 @@ pwx/patches_port/*
 /.github
 /sysctl.d
 /coccinelle
-mask_po_files.sh
-cccc
-*.v234
-*.v234.diff
-.project
-patches_port/
+/cccc
+/.project
+
+# Development files that remain to be local
+cb/elogind.layout
