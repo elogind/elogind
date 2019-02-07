@@ -3400,14 +3400,14 @@ run_target(
 #if 0 /// libudev is external, elogind does not need to document it.
 #         depends : [man, libsystemd, libudev],
 #         command : [meson_check_api_docs_sh, libsystemd.full_path(), libudev.full_path()])
-#
-# run_target(
-#         'make-index-md',
-#         command : ['sh', '@0@/tools/make-index-md.sh'.format(meson.source_root()), meson.source_root()])
 #else
         depends : [man, libelogind],
         command : [meson_check_api_docs_sh, libelogind.full_path()])
 #endif // 0
+
+run_target(
+        'make-index-md',
+        command : ['sh', '@0@/tools/make-index-md.sh'.format(meson.source_root()), meson.source_root()])
 
 ############################################################
 
