@@ -35,3 +35,37 @@
 /mkosi.output/
 /tags
 __pycache__/
+
+#if 1 /// elogind specific stuff
+/elogind
+/elogind-cgroups-agent
+/elogind-inhibit
+/test-libelogind*
+
+# Local Helper Scripts and Tools - Not for distribution
+*.orig
+*.rej
+*.remote
+*.bak
+*.layout
+
+# directories not needed by elogind
+/sysusers.d
+/hwdb
+/catalog
+/xorg
+/network
+/system-preset
+/tmpfiles.d
+/units
+/rules
+/test
+/.github
+/sysctl.d
+/coccinelle
+/cccc
+/.project
+
+# Development files that remain to be local
+cb/elogind.layout
+#endif // 1
