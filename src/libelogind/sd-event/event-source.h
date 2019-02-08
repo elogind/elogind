@@ -1,16 +1,16 @@
 #pragma once
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <sys/epoll.h>
-//#include <sys/timerfd.h>
-//#include <sys/wait.h>
+#include <sys/epoll.h>
+#include <sys/timerfd.h>
+#include <sys/wait.h>
 
-//#include "sd-event.h"
+#include "sd-event.h"
 
-//#include "fs-util.h"
-//#include "hashmap.h"
-//#include "list.h"
-//#include "prioq.h"
+#include "fs-util.h"
+#include "hashmap.h"
+#include "list.h"
+#include "prioq.h"
 
 typedef enum EventSourceType {
         SOURCE_IO,

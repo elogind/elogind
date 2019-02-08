@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <sys/time.h>
+#include <sys/time.h>
 
 #include "alloc-util.h"
 #include "bus-dump.h"

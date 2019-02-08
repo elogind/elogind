@@ -191,5 +191,5 @@ int id128_compare_func(const sd_id128_t *a, const sd_id128_t *b) {
         return memcmp(a, b, 16);
 }
 
-#endif // 0
 DEFINE_HASH_OPS(id128_hash_ops, sd_id128_t, id128_hash_func, id128_compare_func);
+#endif // 0

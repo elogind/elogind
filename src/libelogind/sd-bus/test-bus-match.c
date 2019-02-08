@@ -6,7 +6,7 @@
 #include "bus-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "tests.h"
+#include "tests.h"
 
 static bool mask[32];
 

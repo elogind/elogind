@@ -9,7 +9,7 @@
 #include "sd-id128.h"
 
 #include "alloc-util.h"
-//#include "event-source.h"
+#include "event-source.h"
 #include "fd-util.h"
 #include "fs-util.h"
 #include "hashmap.h"

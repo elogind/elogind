@@ -1,12 +1,13 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <errno.h>
+#include <errno.h>
 
-//#include "event-source.h"
-//#include "event-util.h"
+#include "event-source.h"
+#include "event-util.h"
 //#include "log.h"
 //#include "string-util.h"
 
+#if 0 /// UNNEEDED by elogind
 int event_reset_time(
                 sd_event *e,
                 sd_event_source **s,
@@ -42,8 +43,11 @@ int event_reset_time(
                         return log_debug_errno(r, "sd-event: Failed to get clock id of event source \"%s\": %m", strna((*s)->description ?: description));
 
                 if (c != clock)
-                        return log_debug_errno(EINVAL, "sd-event: Current clock id %i of event source \"%s\" is different from specified one %i.",
-                                               (int) c, strna((*s)->description ?: description), (int) clock);
+                        return log_debug_errno(SYNTHETIC_ERRNO(EINVAL),
+                                               "sd-event: Current clock id %i of event source \"%s\" is different from specified one %i.",
+                                               (int)c,
+                                               strna((*s)->description ? : description),
+                                               (int)clock);
 
                 r = sd_event_source_set_time(*s, usec);
                 if (r < 0)
@@ -79,4 +83,19 @@ int event_reset_time(
         }
 
         return created;
+}
+#endif // 0
+
+int event_source_disable(sd_event_source *s) {
+        if (!s)
+                return 0;
+
+        return sd_event_source_set_enabled(s, SD_EVENT_OFF);
+}
+
+int event_source_is_enabled(sd_event_source *s) {
+        if (!s)
+                return false;
+
+        return sd_event_source_get_enabled(s, NULL);
 }

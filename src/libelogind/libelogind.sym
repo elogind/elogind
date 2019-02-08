@@ -645,15 +645,15 @@ global:
         sd_device_enumerator_add_match_parent;
         sd_device_enumerator_allow_uninitialized;
 
-        sd_hwdb_ref;
-        sd_hwdb_unref;
+        /* sd_hwdb_ref; */
+        /* sd_hwdb_unref; */
 
-        sd_hwdb_new;
+        /* sd_hwdb_new; */
 
-        sd_hwdb_get;
+        /* sd_hwdb_get; */
 
-        sd_hwdb_seek;
-        sd_hwdb_enumerate;
+        /* sd_hwdb_seek; */
+        /* sd_hwdb_enumerate; */
 
         sd_id128_get_boot_app_specific;
 

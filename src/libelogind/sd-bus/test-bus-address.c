@@ -1,9 +1,9 @@
-//#include "sd-bus.h"
+#include "sd-bus.h"
 
-//#include "bus-internal.h"
-//#include "log.h"
-//#include "string-util.h"
-//#include "strv.h"
+#include "bus-internal.h"
+#include "log.h"
+#include "string-util.h"
+#include "strv.h"
 
 static void test_one_address(sd_bus *b,
                              const char *host,
