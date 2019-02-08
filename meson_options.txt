@@ -73,19 +73,20 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 #        description : 'specify the tty device for debug shell')
 # option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache', 'siphash', 'udev'], value : [],
 #        description : 'enable extra debugging')
+#else
+option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache', 'siphash'], value : [],
+       description : 'enable extra debugging')
+#endif // 0
+#if 0 /// UNNEEDED by elogind
 # option('memory-accounting-default', type : 'boolean',
 #        description : 'enable MemoryAccounting= by default')
+# option('bump-proc-sys-fs-file-max', type : 'boolean',
+#        description : 'bump /proc/sys/fs/file-max to ULONG_MAX')
+# option('bump-proc-sys-fs-nr-open', type : 'boolean',
+#        description : 'bump /proc/sys/fs/nr_open to INT_MAX')
 #endif // 0
-option('bump-proc-sys-fs-file-max', type : 'boolean',
-       description : 'bump /proc/sys/fs/file-max to ULONG_MAX')
-option('bump-proc-sys-fs-nr-open', type : 'boolean',
-       description : 'bump /proc/sys/fs/nr_open to INT_MAX')
 option('valgrind', type : 'boolean', value : false,
        description : 'do extra operations to avoid valgrind warnings')
-#if 1 /// Add an extra debugging option for elogind
-option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache'], value : [],
-       description : 'enable extra debugging')
-#endif // 1
 option('log-trace', type : 'boolean', value : false,
        description : 'enable low level debug logging')
 
@@ -196,13 +197,6 @@ option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'hybrid',
 #if 0 /// elogind interprets this a bit different
 #        description : 'default cgroup hierarchy')
-# option('default-net-naming-scheme', type : 'combo',
-#        choices : ['latest', 'v238', 'v239', 'v240'],
-#        description : 'default net.naming-scheme= value')
-# option('time-epoch', type : 'integer', value : '-1',
-#        description : 'time epoch for time clients')
-# option('system-uid-max', type : 'integer', value : '-1',
-# option('system-gid-max', type : 'integer', value : '-1',
 #else
        description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
                 "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its
@@ -213,10 +207,17 @@ option('default-hierarchy', type : 'combo',
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
 #endif // 0
-       description : 'maximum system UID')
-       description : 'maximum system GID')
 #if 0 /// UNNEEDED by elogind
+# option('default-net-naming-scheme', type : 'combo',
+#        choices : ['latest', 'v238', 'v239', 'v240'],
+#        description : 'default net.naming-scheme= value')
+# option('time-epoch', type : 'integer', value : '-1',
+#        description : 'time epoch for time clients')
 #endif // 0
+option('system-uid-max', type : 'integer', value : '-1',
+       description : 'maximum system UID')
+option('system-gid-max', type : 'integer', value : '-1',
+       description : 'maximum system GID')
 #if 0 /// UNNEEDED by elogind
 # option('dynamic-uid-min', type : 'integer', value : 0x0000EF00,
 #        description : 'minimum dynamic UID')
@@ -226,8 +227,10 @@ option('cgroup-controller', type : 'string',
 #        description : 'minimum container UID base')
 # option('container-uid-base-max', type : 'integer', value : 0x6FFF0000,
 #        description : 'maximum container UID base')
-# option('tty-gid', type : 'integer', value : 5,
-#        description : 'the numeric GID of the "tty" group')
+#endif // 0
+option('tty-gid', type : 'integer', value : 5,
+       description : 'the numeric GID of the "tty" group')
+#if 0 /// UNNEEDED by elogind
 # option('users-gid', type : 'integer', value : '-1',
 #        description : 'the numeric GID of the "users" group')
 # option('adm-group', type : 'boolean',

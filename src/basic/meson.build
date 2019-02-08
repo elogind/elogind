@@ -233,26 +233,20 @@ basic_sources = files('''
         def.h
         dirent-util.c
         dirent-util.h
+        env-file.c
+        env-file.h
         env-util.c
         env-util.h
         errno-list.c
         errno-list.h
         escape.c
         escape.h
-        exec-elogind.c
-        exec-elogind.h
-        exec-util.c
-        exec-util.h
         extract-word.c
         extract-word.h
         fd-util.c
         fd-util.h
         fileio.c
         fileio.h
-        fileio-label.c
-        fileio-label.h
-        format-table.c
-        format-table.h
         format-util.h
         fs-util.c
         fs-util.h
@@ -284,16 +278,36 @@ basic_sources = files('''
         memfd-util.h
         mempool.c
         mempool.h
+        missing.h
+        missing_btrfs.h
+        missing_btrfs_tree.h
+        missing_drm.h
+        missing_ethtool.h
+        missing_fcntl.h
+        missing_fib_rules.h
+        missing_fou.h
+        missing_fs.h
+        missing_if_bridge.h
+        missing_if_link.h
+        missing_if_tunnel.h
+        missing_input.h
+        missing_keyctl.h
+        missing_magic.h
+        missing_mman.h
+        missing_prctl.h
+        missing_random.h
+        missing_resource.h
+        missing_sched.h
+        missing_securebits.h
+        missing_stat.h
+        missing_stdlib.h
         missing_syscall.h
+        missing_timerfd.h
+        missing_type.h
+        missing_vxcan.h
         mkdir.c
         mkdir.h
         mkdir-label.c
-        mount-util.c
-        mount-util.h
-        pager.c
-        pager.h
-        parse-printf-format.c
-        parse-printf-format.h
         parse-util.c
         parse-util.h
         path-util.c
@@ -308,6 +322,7 @@ basic_sources = files('''
         process-util.h
         random-util.c
         random-util.h
+        raw-clone.h
         refcnt.h
         rm-rf.c
         rm-rf.h
@@ -328,6 +343,7 @@ basic_sources = files('''
         special.h
         stat-util.c
         stat-util.h
+        static-destruct.h
         stdio-util.h
         string-table.c
         string-table.h
@@ -341,6 +357,8 @@ basic_sources = files('''
         terminal-util.h
         time-util.c
         time-util.h
+        tmpfile-util.c
+        tmpfile-util.h
         umask-util.h
         unaligned.h
         unit-def.c
@@ -353,24 +371,21 @@ basic_sources = files('''
         utf8.h
         util.c
         util.h
-        verbs.c
-        verbs.h
         virt.c
         virt.h
         xattr-util.c
         xattr-util.h
-        xml.c
-        xml.h
 '''.split())
+
+missing_h = files('missing.h')
 #endif // 0
 
-missing_audit_h = files('missing_audit.h')
-missing_capability_h = files('missing_capability.h')
-missing_network_h = files('missing_network.h')
-missing_socket_h = files('missing_socket.h')
-
-
 #if 0 /// elogind has only the cap and errno list.
+# missing_audit_h = files('missing_audit.h')
+# missing_capability_h = files('missing_capability.h')
+# missing_network_h = files('missing_network.h')
+# missing_socket_h = files('missing_socket.h')
+#
 # generate_af_list = find_program('generate-af-list.sh')
 # af_list_txt = custom_target(
 #         'af-list.txt',

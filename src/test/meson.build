@@ -38,9 +38,9 @@ test_libelogind_sym_c = custom_target(
 #         input : [libudev_sym_path, libudev_h_path],
 #         output : 'test-libudev-sym.c',
 #         command : [generate_sym_test_py, '@INPUT0@', '@INPUT1@'],
+#         capture : true,
+#         build_by_default : want_tests != 'false')
 #endif // 0
-        capture : true,
-        build_by_default : want_tests != 'false')
 
 test_dlopen_c = files('test-dlopen.c')
 
@@ -356,11 +356,13 @@ tests += [
 #         [['src/test/test-path-lookup.c'],
 #          [],
 #          []],
-#
-#         [['src/test/test-pretty-print.c'],
-#          [],
-#          []],
-#
+#endif // 0
+
+        [['src/test/test-pretty-print.c'],
+         [],
+         []],
+
+#if 0 /// UNNEEDED in elogind
 #         [['src/test/test-uid-range.c'],
 #          [],
 #          []],
@@ -738,8 +740,8 @@ tests += [
 #           libblkid,
 #           libkmod,
 #           libacl],
+#          '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
 #endif // 0
-         '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
 
         [['src/test/test-id128.c'],
          [],
@@ -1019,10 +1021,16 @@ tests += [
          [threads]],
 
         [['src/libelogind/sd-device/test-udev-device-thread.c'],
+#if 0 /// elogind does not ship libudev itself
+#          [libbasic,
+#           libshared_static,
+#           libudev],
+#          [threads]],
+#else
          [libbasic,
-          libshared_static,
-          libudev],
-         [threads]],
+          libshared_static],
+         [threads, libudev]],
+#endif // 0
 
         [['src/libelogind/sd-device/test-sd-device-monitor.c'],
          [],

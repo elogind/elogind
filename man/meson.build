@@ -126,8 +126,8 @@ elogind_index_xml = custom_target(
         output : 'elogind.index.xml',
         command : [make_man_index_py, '@OUTPUT@'] + nonindex_xml_files)
 
-                                         ['elogind.index',      '7', elogind_index_xml]] : []
 foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directives_xml],
+                                         ['elogind.index',      '7', elogind_index_xml]] : []
         stem = tuple[0]
         section = tuple[1]
         xml = tuple[2]

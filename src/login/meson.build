@@ -51,6 +51,7 @@ liblogind_core_sources += [files('''
         elogind-dbus.c
         elogind-dbus.h
         user-runtime-dir.c
+        user-runtime-dir.h
 '''.split()),
         libcore_la_sources,
         sleep_files,

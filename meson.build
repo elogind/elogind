@@ -35,12 +35,14 @@ substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
 #endif // 0
 substs.set('PACKAGE_VERSION',      meson.project_version())
 
-want_ossfuzz = get_option('oss-fuzz')
-want_libfuzzer = get_option('llvm-fuzz')
-if want_ossfuzz and want_libfuzzer
-        error('only one of oss-fuzz and llvm-fuzz can be specified')
-endif
-fuzzer_build = want_ossfuzz or want_libfuzzer
+#if 0 /// fuzz regression tests are not supported by elogind
+# want_ossfuzz = get_option('oss-fuzz')
+# want_libfuzzer = get_option('llvm-fuzz')
+# if want_ossfuzz and want_libfuzzer
+#         error('only one of oss-fuzz and llvm-fuzz can be specified')
+# endif
+# fuzzer_build = want_ossfuzz or want_libfuzzer
+#endif // 0
 
 #####################################################################
 #if 0 /// elogind does not need this
@@ -89,10 +91,10 @@ endif
 # sysvrcnd_path = get_option('sysvrcnd-path')
 # conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
 #            description : 'SysV init scripts and rcN.d links are supported')
+#
+# conf.set10('BUMP_PROC_SYS_FS_FILE_MAX', get_option('bump-proc-sys-fs-file-max'))
+# conf.set10('BUMP_PROC_SYS_FS_NR_OPEN',  get_option('bump-proc-sys-fs-nr-open'))
 #endif // 0
-
-conf.set10('BUMP_PROC_SYS_FS_FILE_MAX', get_option('bump-proc-sys-fs-file-max'))
-conf.set10('BUMP_PROC_SYS_FS_NR_OPEN',  get_option('bump-proc-sys-fs-nr-open'))
 conf.set('HIGH_RLIMIT_NOFILE',          512*1024)
 
 # join_paths ignore the preceding arguments if an absolute component is
@@ -191,7 +193,6 @@ udevlibexecdir = get_option('udevbindir')
 udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : join_paths(rootprefixdir, 'lib/udev')
 udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : join_paths(udevlibexecdir, 'rules.d')
-udevhomedir = udevlibexecdir
 factorydir = join_paths(datadir, 'factory')
 docdir = get_option('docdir')
 docdir = docdir != '' ? docdir: '-'.join([join_paths(datadir, 'doc/elogind'),
@@ -279,10 +280,10 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SYSTEMD_KBD_MODEL_MAP',                      join_paths(pkgdatadir, 'kbd-model-map'))
 # conf.set_quoted('SYSTEMD_LANGUAGE_FALLBACK_MAP',              join_paths(pkgdatadir, 'language-fallback-map'))
+# conf.set_quoted('SYSTEMD_TEST_DATA',                          join_paths(testsdir, 'testdata'))
+# conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
+# conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
 #endif // 0
-conf.set_quoted('SYSTEMD_TEST_DATA',                          join_paths(testsdir, 'testdata'))
-conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
-conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
 conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   join_paths(bindir, 'pkttyagent'))
 conf.set_quoted('LIBDIR',                                     libdir)
 conf.set_quoted('ROOTLIBDIR',                                 rootlibdir)
@@ -358,16 +359,16 @@ want_tests = get_option('tests')
 slow_tests = want_tests != 'false' and get_option('slow-tests')
 install_tests = get_option('install-tests')
 
-cxx = find_program('c++', required : fuzzer_build)
-if cxx.found()
-        #  Used only for tests
-        add_languages('cpp')
-        cxx_cmd = ' '.join(meson.get_compiler('cpp').cmd_array())
-else
-        cxx_cmd = ''
-endif
-
 #if 0 /// elogind does not support fuzz stress testing (, yet).
+# cxx = find_program('c++', required : fuzzer_build)
+# if cxx.found()
+#         #  Used only for tests
+#         add_languages('cpp')
+#         cxx_cmd = ' '.join(meson.get_compiler('cpp').cmd_array())
+# else
+#         cxx_cmd = ''
+# endif
+#
 # if want_libfuzzer
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('Fuzzer')
 # elif want_ossfuzz
@@ -375,6 +376,7 @@ endif
 # endif
 #else
 fuzzer_build = false
+cxx_cmd = ''
 #endif // 0
 
 possible_cc_flags = [
@@ -530,94 +532,96 @@ endforeach
 
 conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
 
-foreach decl : [['ETHTOOL_LINK_MODE_10baseT_Half_BIT',      'linux/ethtool.h'],
-                ['ETHTOOL_LINK_MODE_25000baseCR_Full_BIT',  'linux/ethtool.h'],
-                ['ETHTOOL_LINK_MODE_50000baseSR2_Full_BIT', 'linux/ethtool.h'],
-                ['ETHTOOL_LINK_MODE_1000baseX_Full_BIT',    'linux/ethtool.h'],
-                ['ETHTOOL_LINK_MODE_2500baseT_Full_BIT',    'linux/ethtool.h'],
-                ['ETHTOOL_LINK_MODE_FEC_NONE_BIT',          'linux/ethtool.h'],
-                ['FRA_TUN_ID',                              'linux/fib_rules.h'],
-                ['FRA_SUPPRESS_PREFIXLEN',                  'linux/fib_rules.h'],
-                ['FRA_PAD',                                 'linux/fib_rules.h'],
-                ['FRA_L3MDEV',                              'linux/fib_rules.h'],
-                ['FRA_UID_RANGE',                           'linux/fib_rules.h'],
-                ['FRA_DPORT_RANGE',                         'linux/fib_rules.h'],
-                ['FOU_ATTR_REMCSUM_NOPARTIAL',              'linux/fou.h'],
-                ['FOU_CMD_GET',                             'linux/fou.h'],
-                ['IFA_FLAGS',                               'linux/if_addr.h'],
-                ['IFLA_BRIDGE_VLAN_TUNNEL_INFO',            'linux/if_bridge.h'],
-                ['IFLA_INET6_ADDR_GEN_MODE',                'linux/if_link.h'],
-                ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY',        'linux/if_link.h'],
-                ['IN6_ADDR_GEN_MODE_RANDOM',                'linux/if_link.h'],
-                ['IFLA_IPVLAN_MODE',                        'linux/if_link.h'],
-                ['IPVLAN_MODE_L3S',                         'linux/if_link.h'],
-                ['IFLA_IPVLAN_FLAGS',                       'linux/if_link.h'],
-                ['IFLA_PHYS_PORT_ID',                       'linux/if_link.h'],
-                ['IFLA_CARRIER_CHANGES',                    'linux/if_link.h'],
-                ['IFLA_PHYS_SWITCH_ID',                     'linux/if_link.h'],
-                ['IFLA_LINK_NETNSID',                       'linux/if_link.h'],
-                ['IFLA_PHYS_PORT_NAME',                     'linux/if_link.h'],
-                ['IFLA_PROTO_DOWN',                         'linux/if_link.h'],
-                ['IFLA_GSO_MAX_SIZE',                       'linux/if_link.h'],
-                ['IFLA_PAD',                                'linux/if_link.h'],
-                ['IFLA_XDP',                                'linux/if_link.h'],
-                ['IFLA_EVENT',                              'linux/if_link.h'],
-                ['IFLA_IF_NETNSID',                         'linux/if_link.h'],
-                ['IFLA_TARGET_NETNSID',                     'linux/if_link.h'],
-                ['IFLA_NEW_IFINDEX',                        'linux/if_link.h'],
-                ['IFLA_MAX_MTU',                            'linux/if_link.h'],
-                ['IFLA_BOND_ACTIVE_SLAVE',                  'linux/if_link.h'],
-                ['IFLA_BOND_AD_INFO',                       'linux/if_link.h'],
-                ['IFLA_BOND_AD_ACTOR_SYSTEM',               'linux/if_link.h'],
-                ['IFLA_BOND_TLB_DYNAMIC_LB',                'linux/if_link.h'],
-                ['IFLA_VXLAN_UDP_ZERO_CSUM6_RX',            'linux/if_link.h'],
-                ['IFLA_VXLAN_REMCSUM_NOPARTIAL',            'linux/if_link.h'],
-                ['IFLA_VXLAN_COLLECT_METADATA',             'linux/if_link.h'],
-                ['IFLA_VXLAN_LABEL',                        'linux/if_link.h'],
-                ['IFLA_VXLAN_GPE',                          'linux/if_link.h'],
-                ['IFLA_VXLAN_TTL_INHERIT',                  'linux/if_link.h'],
-                ['IFLA_GENEVE_TOS',                         'linux/if_link.h'],
-                ['IFLA_GENEVE_COLLECT_METADATA',            'linux/if_link.h'],
-                ['IFLA_GENEVE_REMOTE6',                     'linux/if_link.h'],
-                ['IFLA_GENEVE_UDP_ZERO_CSUM6_RX',           'linux/if_link.h'],
-                ['IFLA_GENEVE_LABEL',                       'linux/if_link.h'],
-                ['IFLA_GENEVE_TTL_INHERIT',                 'linux/if_link.h'],
-                ['IFLA_BR_MAX_AGE',                         'linux/if_link.h'],
-                ['IFLA_BR_PRIORITY',                        'linux/if_link.h'],
-                ['IFLA_BR_VLAN_PROTOCOL',                   'linux/if_link.h'],
-                ['IFLA_BR_VLAN_DEFAULT_PVID',               'linux/if_link.h'],
-                ['IFLA_BR_VLAN_STATS_ENABLED',              'linux/if_link.h'],
-                ['IFLA_BR_MCAST_STATS_ENABLED',             'linux/if_link.h'],
-                ['IFLA_BR_MCAST_MLD_VERSION',               'linux/if_link.h'],
-                ['IFLA_BR_VLAN_STATS_PER_PORT',             'linux/if_link.h'],
-                ['IFLA_BRPORT_LEARNING_SYNC',               'linux/if_link.h'],
-                ['IFLA_BRPORT_PROXYARP_WIFI',               'linux/if_link.h'],
-                ['IFLA_BRPORT_MULTICAST_ROUTER',            'linux/if_link.h'],
-                ['IFLA_BRPORT_PAD',                         'linux/if_link.h'],
-                ['IFLA_BRPORT_MCAST_FLOOD',                 'linux/if_link.h'],
-                ['IFLA_BRPORT_VLAN_TUNNEL',                 'linux/if_link.h'],
-                ['IFLA_BRPORT_BCAST_FLOOD',                 'linux/if_link.h'],
-                ['IFLA_BRPORT_NEIGH_SUPPRESS',              'linux/if_link.h'],
-                ['IFLA_BRPORT_ISOLATED',                    'linux/if_link.h'],
-                ['IFLA_BRPORT_BACKUP_PORT',                 'linux/if_link.h'],
-                ['IFLA_VRF_TABLE',                          'linux/if_link.h'],
-                # if_tunnel.h is buggy and cannot be included on its own
-                ['IFLA_VTI_FWMARK',                         'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_IPTUN_ENCAP_DPORT',                  'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_IPTUN_COLLECT_METADATA',             'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_IPTUN_FWMARK',                       'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_GRE_ENCAP_DPORT',                    'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_GRE_COLLECT_METADATA',               'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_GRE_IGNORE_DF',                      'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_GRE_FWMARK',                         'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_GRE_ERSPAN_INDEX',                   'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['IFLA_GRE_ERSPAN_HWID',                    'linux/if_tunnel.h', '#include <net/if.h>'],
-                ['LO_FLAGS_PARTSCAN',                       'linux/loop.h'],
-               ]
-        prefix = decl.length() > 2 ? decl[2] : ''
-        have = cc.has_header_symbol(decl[1], decl[0], prefix : prefix)
-        conf.set10('HAVE_' + decl[0], have)
-endforeach
+#if 0 /// elogind does not need any of this networking stuff
+# foreach decl : [['ETHTOOL_LINK_MODE_10baseT_Half_BIT',      'linux/ethtool.h'],
+#                 ['ETHTOOL_LINK_MODE_25000baseCR_Full_BIT',  'linux/ethtool.h'],
+#                 ['ETHTOOL_LINK_MODE_50000baseSR2_Full_BIT', 'linux/ethtool.h'],
+#                 ['ETHTOOL_LINK_MODE_1000baseX_Full_BIT',    'linux/ethtool.h'],
+#                 ['ETHTOOL_LINK_MODE_2500baseT_Full_BIT',    'linux/ethtool.h'],
+#                 ['ETHTOOL_LINK_MODE_FEC_NONE_BIT',          'linux/ethtool.h'],
+#                 ['FRA_TUN_ID',                              'linux/fib_rules.h'],
+#                 ['FRA_SUPPRESS_PREFIXLEN',                  'linux/fib_rules.h'],
+#                 ['FRA_PAD',                                 'linux/fib_rules.h'],
+#                 ['FRA_L3MDEV',                              'linux/fib_rules.h'],
+#                 ['FRA_UID_RANGE',                           'linux/fib_rules.h'],
+#                 ['FRA_DPORT_RANGE',                         'linux/fib_rules.h'],
+#                 ['FOU_ATTR_REMCSUM_NOPARTIAL',              'linux/fou.h'],
+#                 ['FOU_CMD_GET',                             'linux/fou.h'],
+#                 ['IFA_FLAGS',                               'linux/if_addr.h'],
+#                 ['IFLA_BRIDGE_VLAN_TUNNEL_INFO',            'linux/if_bridge.h'],
+#                 ['IFLA_INET6_ADDR_GEN_MODE',                'linux/if_link.h'],
+#                 ['IN6_ADDR_GEN_MODE_STABLE_PRIVACY',        'linux/if_link.h'],
+#                 ['IN6_ADDR_GEN_MODE_RANDOM',                'linux/if_link.h'],
+#                 ['IFLA_IPVLAN_MODE',                        'linux/if_link.h'],
+#                 ['IPVLAN_MODE_L3S',                         'linux/if_link.h'],
+#                 ['IFLA_IPVLAN_FLAGS',                       'linux/if_link.h'],
+#                 ['IFLA_PHYS_PORT_ID',                       'linux/if_link.h'],
+#                 ['IFLA_CARRIER_CHANGES',                    'linux/if_link.h'],
+#                 ['IFLA_PHYS_SWITCH_ID',                     'linux/if_link.h'],
+#                 ['IFLA_LINK_NETNSID',                       'linux/if_link.h'],
+#                 ['IFLA_PHYS_PORT_NAME',                     'linux/if_link.h'],
+#                 ['IFLA_PROTO_DOWN',                         'linux/if_link.h'],
+#                 ['IFLA_GSO_MAX_SIZE',                       'linux/if_link.h'],
+#                 ['IFLA_PAD',                                'linux/if_link.h'],
+#                 ['IFLA_XDP',                                'linux/if_link.h'],
+#                 ['IFLA_EVENT',                              'linux/if_link.h'],
+#                 ['IFLA_IF_NETNSID',                         'linux/if_link.h'],
+#                 ['IFLA_TARGET_NETNSID',                     'linux/if_link.h'],
+#                 ['IFLA_NEW_IFINDEX',                        'linux/if_link.h'],
+#                 ['IFLA_MAX_MTU',                            'linux/if_link.h'],
+#                 ['IFLA_BOND_ACTIVE_SLAVE',                  'linux/if_link.h'],
+#                 ['IFLA_BOND_AD_INFO',                       'linux/if_link.h'],
+#                 ['IFLA_BOND_AD_ACTOR_SYSTEM',               'linux/if_link.h'],
+#                 ['IFLA_BOND_TLB_DYNAMIC_LB',                'linux/if_link.h'],
+#                 ['IFLA_VXLAN_UDP_ZERO_CSUM6_RX',            'linux/if_link.h'],
+#                 ['IFLA_VXLAN_REMCSUM_NOPARTIAL',            'linux/if_link.h'],
+#                 ['IFLA_VXLAN_COLLECT_METADATA',             'linux/if_link.h'],
+#                 ['IFLA_VXLAN_LABEL',                        'linux/if_link.h'],
+#                 ['IFLA_VXLAN_GPE',                          'linux/if_link.h'],
+#                 ['IFLA_VXLAN_TTL_INHERIT',                  'linux/if_link.h'],
+#                 ['IFLA_GENEVE_TOS',                         'linux/if_link.h'],
+#                 ['IFLA_GENEVE_COLLECT_METADATA',            'linux/if_link.h'],
+#                 ['IFLA_GENEVE_REMOTE6',                     'linux/if_link.h'],
+#                 ['IFLA_GENEVE_UDP_ZERO_CSUM6_RX',           'linux/if_link.h'],
+#                 ['IFLA_GENEVE_LABEL',                       'linux/if_link.h'],
+#                 ['IFLA_GENEVE_TTL_INHERIT',                 'linux/if_link.h'],
+#                 ['IFLA_BR_MAX_AGE',                         'linux/if_link.h'],
+#                 ['IFLA_BR_PRIORITY',                        'linux/if_link.h'],
+#                 ['IFLA_BR_VLAN_PROTOCOL',                   'linux/if_link.h'],
+#                 ['IFLA_BR_VLAN_DEFAULT_PVID',               'linux/if_link.h'],
+#                 ['IFLA_BR_VLAN_STATS_ENABLED',              'linux/if_link.h'],
+#                 ['IFLA_BR_MCAST_STATS_ENABLED',             'linux/if_link.h'],
+#                 ['IFLA_BR_MCAST_MLD_VERSION',               'linux/if_link.h'],
+#                 ['IFLA_BR_VLAN_STATS_PER_PORT',             'linux/if_link.h'],
+#                 ['IFLA_BRPORT_LEARNING_SYNC',               'linux/if_link.h'],
+#                 ['IFLA_BRPORT_PROXYARP_WIFI',               'linux/if_link.h'],
+#                 ['IFLA_BRPORT_MULTICAST_ROUTER',            'linux/if_link.h'],
+#                 ['IFLA_BRPORT_PAD',                         'linux/if_link.h'],
+#                 ['IFLA_BRPORT_MCAST_FLOOD',                 'linux/if_link.h'],
+#                 ['IFLA_BRPORT_VLAN_TUNNEL',                 'linux/if_link.h'],
+#                 ['IFLA_BRPORT_BCAST_FLOOD',                 'linux/if_link.h'],
+#                 ['IFLA_BRPORT_NEIGH_SUPPRESS',              'linux/if_link.h'],
+#                 ['IFLA_BRPORT_ISOLATED',                    'linux/if_link.h'],
+#                 ['IFLA_BRPORT_BACKUP_PORT',                 'linux/if_link.h'],
+#                 ['IFLA_VRF_TABLE',                          'linux/if_link.h'],
+#                 # if_tunnel.h is buggy and cannot be included on its own
+#                 ['IFLA_VTI_FWMARK',                         'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_IPTUN_ENCAP_DPORT',                  'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_IPTUN_COLLECT_METADATA',             'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_IPTUN_FWMARK',                       'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_GRE_ENCAP_DPORT',                    'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_GRE_COLLECT_METADATA',               'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_GRE_IGNORE_DF',                      'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_GRE_FWMARK',                         'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_GRE_ERSPAN_INDEX',                   'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['IFLA_GRE_ERSPAN_HWID',                    'linux/if_tunnel.h', '#include <net/if.h>'],
+#                 ['LO_FLAGS_PARTSCAN',                       'linux/loop.h'],
+#                ]
+#         prefix = decl.length() > 2 ? decl[2] : ''
+#         have = cc.has_header_symbol(decl[1], decl[0], prefix : prefix)
+#         conf.set10('HAVE_' + decl[0], have)
+# endforeach
+#endif // 0
 
 foreach ident : ['secure_getenv', '__secure_getenv']
         conf.set10('HAVE_' + ident.to_upper(), cc.has_function(ident))
@@ -811,10 +815,10 @@ else
         conf.set('DEFAULT_HIERARCHY', 'CGROUP_UNIFIED_ALL')
 endif
 
-default_net_naming_scheme = get_option('default-net-naming-scheme')
-conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
-
 #if 0 /// UNNEEDED by elogind
+# default_net_naming_scheme = get_option('default-net-naming-scheme')
+# conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
+#
 # time_epoch = get_option('time-epoch')
 # if time_epoch == -1
 #         NEWS = files('NEWS')
@@ -1542,33 +1546,33 @@ foreach term : ['utmp',
         conf.set10(name, have)
 endforeach
 
-foreach tuple : [['nss-mymachines', 'machined'],
-                 ['nss-resolve',    'resolve']]
-        want = get_option(tuple[0])
-        if want != 'false'
-                have = get_option(tuple[1])
-                if want == 'true' and not have
-                        error('@0@ is requested but @1@ is disabled'.format(tuple[0], tuple[1]))
-                endif
-        else
-                have = false
-        endif
-        name = 'ENABLE_' + tuple[0].underscorify().to_upper()
-        conf.set10(name, have)
-endforeach
-
-enable_nss = false
-foreach term : ['ENABLE_NSS_MYHOSTNAME',
-                'ENABLE_NSS_MYMACHINES',
-                'ENABLE_NSS_RESOLVE',
-                'ENABLE_NSS_SYSTEMD']
-        if conf.get(term) == 1
-                enable_nss = true
-        endif
-endforeach
-conf.set10('ENABLE_NSS', enable_nss)
-
 #if 0 /// UNNEEDED by elogind
+# foreach tuple : [['nss-mymachines', 'machined'],
+#                  ['nss-resolve',    'resolve']]
+#         want = get_option(tuple[0])
+#         if want != 'false'
+#                 have = get_option(tuple[1])
+#                 if want == 'true' and not have
+#                         error('@0@ is requested but @1@ is disabled'.format(tuple[0], tuple[1]))
+#                 endif
+#         else
+#                 have = false
+#         endif
+#         name = 'ENABLE_' + tuple[0].underscorify().to_upper()
+#         conf.set10(name, have)
+# endforeach
+#
+# enable_nss = false
+# foreach term : ['ENABLE_NSS_MYHOSTNAME',
+#                 'ENABLE_NSS_MYMACHINES',
+#                 'ENABLE_NSS_RESOLVE',
+#                 'ENABLE_NSS_SYSTEMD']
+#         if conf.get(term) == 1
+#                 enable_nss = true
+#         endif
+# endforeach
+# conf.set10('ENABLE_NSS', enable_nss)
+#
 # conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
 #endif // 0
 
@@ -1699,8 +1703,8 @@ subdir('src/login')
 libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sym)
 libelogind = shared_library(
         'elogind',
-        version : libelogind_version,
         disable_mempool_c,
+        version : libelogind_version,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -1742,22 +1746,22 @@ install_libelogind_static = static_library(
         install : static_libelogind != 'false',
         install_dir : rootlibdir,
         pic : static_libelogind == 'true' or static_libelogind == 'pic',
-        dependencies : [threads,
-                        librt,
-                        libxz,
-                        liblz4,
-                        libcap,
-                        libblkid,
-#if 0 /// libmount isn't built with elogind (and absolutely not needed anyway.)
+#if 0 /// elogind only needs libcap, threads and selinux.
+#         dependencies : [threads,
+#                         librt,
+#                         libxz,
+#                         liblz4,
+#                         libcap,
+#                         libblkid,
 #                         libmount,
-#endif // 0
-                        libselinux,
-#if 0 /// No grypt with elogind
+#                         libselinux,
 #                         libgcrypt],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #else
-                        ],
-        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
+        dependencies : [threads,
+                        libcap,
+                        libselinux],
+        c_args : libsystemd_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 #endif // 0
 
 ############################################################
@@ -2163,9 +2167,8 @@ public_programs += [exe]
 # endif
 #endif // 0
 
-if conf.get('HAVE_PAM') == 1
-
 #if 0 /// UNNEEDED by elogind
+# if conf.get('HAVE_PAM') == 1
 #         executable('systemd-user-sessions',
 #                    'src/user-sessions/user-sessions.c',
 #                    include_directories : includes,
@@ -2767,15 +2770,15 @@ executable('elogind-cgroups-agent',
            install_dir : rootlibexecdir)
 #endif // 0
 
-exe = executable('elogind-id128',
-                 'src/id128/id128.c',
-                 include_directories : includes,
-                 link_with : [libshared],
-                 install_rpath : rootlibexecdir,
-                 install : true)
-public_programs += exe
-
 #if 0 /// UNNEEDED by elogind
+# exe = executable('systemd-id128',
+#                  'src/id128/id128.c',
+#                  include_directories : includes,
+#                  link_with : [libshared],
+#                  install_rpath : rootlibexecdir,
+#                  install : true)
+# public_programs += exe
+#
 # exe = executable('systemd-path',
 #                  'src/path/path.c',
 #                  include_directories : includes,
@@ -3223,15 +3226,30 @@ endforeach
 # ############################################################
 #
 #else
-test_libelogind_sym = executable(
+exe = executable(
         'test-libelogind-sym',
         test_libelogind_sym_c,
         include_directories : includes,
         link_with : [libelogind],
+        build_by_default : want_tests != 'false',
         install : install_tests,
         install_dir : testsdir)
-test('test-libelogind-sym',
-     test_libelogind_sym)
+if want_tests != 'false'
+        test('test-libelogind-sym', exe)
+endif
+
+exe = executable(
+        'test-libelogind-static-sym',
+        test_libelogind_sym_c,
+        include_directories : includes,
+        link_with : [install_libelogind_static],
+        dependencies : [threads],
+        build_by_default : want_tests != 'false' and static_libelogind_pic,
+        install : install_tests and static_libelogind_pic,
+        install_dir : testsdir)
+if want_tests != 'false' and static_libelogind_pic
+        test('test-libelogind-static-sym', exe)
+endif
 #endif // 0
 make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
@@ -3251,9 +3269,9 @@ subdir('man')
 subdir('shell-completion/bash')
 subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
+# subdir('docs/sysvinit')
+# subdir('docs/var-log')
 #endif // 0
-subdir('docs/sysvinit')
-subdir('docs/var-log')
 
 install_subdir('factory/etc',
                install_dir : factorydir)
@@ -3269,15 +3287,15 @@ install_data('LICENSE.GPL2',
              'LICENSE.LGPL2.1',
              'NEWS',
              'README',
-#if 0 /// irrelevant for elogind
-#endif // 0
              'docs/CODING_STYLE.md',
-             'docs/DISTRO_PORTING.md',
-             'docs/ENVIRONMENT.md',
-             'docs/HACKING.md',
-             'docs/TRANSIENT-SETTINGS.md',
-             'docs/TRANSLATORS.md',
-             'docs/UIDS-GIDS.md',
+#if 0 /// irrelevant for elogind
+#              'docs/DISTRO_PORTING.md',
+#              'docs/ENVIRONMENT.md',
+#              'docs/HACKING.md',
+#              'docs/TRANSIENT-SETTINGS.md',
+#              'docs/TRANSLATORS.md',
+#              'docs/UIDS-GIDS.md',
+#endif // 0
              'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
              install_dir : docdir)
 
@@ -3448,8 +3466,8 @@ status = [
 #endif // 0
         'TTY GID:                           @0@'.format(tty_gid),
 #if 0 /// UNSUPPORTED by elogind
+#         'users GID:                         @0@'.format(substs.get('USERS_GID')),
 #endif // 0
-        'users GID:                         @0@'.format(substs.get('USERS_GID')),
         'maximum system UID:                @0@'.format(system_uid_max),
         'maximum system GID:                @0@'.format(system_gid_max),
 #if 0 /// UNSUPPORTED by elogind
@@ -3471,8 +3489,8 @@ status = [
 #         'default DNSSEC mode:               @0@'.format(default_dnssec),
 #         'default DNS-over-TLS mode:         @0@'.format(default_dns_over_tls),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
+#         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #endif // 0
-        'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
 
 #if 0 /// UNSUPPORTED by elogind
@@ -3493,8 +3511,6 @@ status = [
 #         'static libsystemd:                 @0@'.format(static_libsystemd),
 #         'static libudev:                    @0@'.format(static_libudev)]
 #
-#else
-        ]
 #endif // 0
 # TODO:
 # CFLAGS:   ${OUR_CFLAGS} ${CFLAGS}
@@ -3617,13 +3633,15 @@ foreach tuple : [
         ['debug hashmap'],
         ['debug mmap cache'],
         ['debug siphash'],
-        ['debug udev'],
-        ['valgrind',         conf.get('VALGRIND') == 1],
-#if 0 /// elogind neither ships libudev nor systemctl.
+#if 0 /// elogind does not ships libudev.
+#         ['debug udev'],
 #endif // 0
+        ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
-        ['link-udev-shared',      get_option('link-udev-shared')],
-        ['link-systemctl-shared', get_option('link-systemctl-shared')],
+#if 0 /// elogind ships neitehr libudev nor systemctl
+#         ['link-udev-shared',      get_option('link-udev-shared')],
+#         ['link-systemctl-shared', get_option('link-systemctl-shared')],
+#endif // 0
 ]
 
         if tuple.length() >= 2

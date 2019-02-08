@@ -173,26 +173,59 @@
 #
 #else
 shared_sources = '''
+        acl-util.h
         bus-util.c
         bus-util.h
         clean-ipc.c
         clean-ipc.h
         conf-parser.c
         conf-parser.h
+        daemon-util.h
         enable-mempool.c
+        env-file-label.c
+        env-file-label.h
+        exec-elogind.c
+        exec-elogind.h
+        exec-util.c
+        exec-util.h
+        fileio-label.c
+        fileio-label.h
+        format-table.c
+        format-table.h
+        ip-protocol-list.c
+        ip-protocol-list.h
+        json.c
+        json.h
+        json-internal.h
+        main-func.h
+        mount-util.c
+        mount-util.h
         musl_missing.c
         musl_missing.h
         nsflags.c
         nsflags.h
         output-mode.c
         output-mode.h
+        pager.c
+        pager.h
+        pretty-print.c
+        pretty-print.h
         qsort_r_missing.c
         qsort_r_missing.h
+        serialize.c
+        serialize.h
         sleep-config.c
         sleep-config.h
         spawn-polkit-agent.c
         spawn-polkit-agent.h
+        tmpfile-util-label.c
+        tmpfile-util-label.h
         udev-util.h
+        utmp-wtmp.h
+        verbs.c
+        verbs.h
+        xml.c
+        xml.h
 '''.split()
 #endif // 0
 test_tables_h = files('test-tables.h')
@@ -215,52 +248,54 @@ endif
 #         shared_sources += files('firewall-util.c')
 # endif
 #endif // 0
+
 #if 0 /// elogind does not play around with kernel modules. Not its job.
+# if conf.get('HAVE_KMOD') == 1
+#         shared_sources += files('module-util.c')
+# endif
 #endif // 0
 
-if conf.get('HAVE_KMOD') == 1
-        shared_sources += files('module-util.c')
-endif
-
-generate_ip_protocol_list = find_program('generate-ip-protocol-list.sh')
-ip_protocol_list_txt = custom_target(
-        'ip-protocol-list.txt',
-        output : 'ip-protocol-list.txt',
-        command : [generate_ip_protocol_list, cpp],
-        capture : true)
-
-fname = 'ip-protocol-from-name.gperf'
-gperf_file = custom_target(
-        fname,
-        input : ip_protocol_list_txt,
-        output : fname,
-        command : [generate_gperfs, 'ip_protocol', 'IPPROTO_', '@INPUT@'],
-        capture : true)
-
-fname = 'ip-protocol-from-name.h'
-target1 = custom_target(
-        fname,
-        input : gperf_file,
-        output : fname,
-        command : [gperf,
-                   '-L', 'ANSI-C', '-t', '--ignore-case',
-                   '-N', 'lookup_ip_protocol',
-                   '-H', 'hash_ip_protocol_name',
-                   '-p', '-C',
-                   '@INPUT@'],
-        capture : true)
-
-fname = 'ip-protocol-to-name.h'
-awkscript = 'ip-protocol-to-name.awk'
-target2 = custom_target(
-        fname,
-        input : [awkscript, ip_protocol_list_txt],
-        output : fname,
-        command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
-        capture : true)
-
-shared_generated_gperf_headers = [target1, target2]
-shared_sources += shared_generated_gperf_headers
+#if 0 /// elogind does not need all this networking stuff
+# generate_ip_protocol_list = find_program('generate-ip-protocol-list.sh')
+# ip_protocol_list_txt = custom_target(
+#         'ip-protocol-list.txt',
+#         output : 'ip-protocol-list.txt',
+#         command : [generate_ip_protocol_list, cpp],
+#         capture : true)
+#
+# fname = 'ip-protocol-from-name.gperf'
+# gperf_file = custom_target(
+#         fname,
+#         input : ip_protocol_list_txt,
+#         output : fname,
+#         command : [generate_gperfs, 'ip_protocol', 'IPPROTO_', '@INPUT@'],
+#         capture : true)
+#
+# fname = 'ip-protocol-from-name.h'
+# target1 = custom_target(
+#         fname,
+#         input : gperf_file,
+#         output : fname,
+#         command : [gperf,
+#                    '-L', 'ANSI-C', '-t', '--ignore-case',
+#                    '-N', 'lookup_ip_protocol',
+#                    '-H', 'hash_ip_protocol_name',
+#                    '-p', '-C',
+#                    '@INPUT@'],
+#         capture : true)
+#
+# fname = 'ip-protocol-to-name.h'
+# awkscript = 'ip-protocol-to-name.awk'
+# target2 = custom_target(
+#         fname,
+#         input : [awkscript, ip_protocol_list_txt],
+#         output : fname,
+#         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
+#         capture : true)
+#
+# shared_generated_gperf_headers = [target1, target2]
+# shared_sources += shared_generated_gperf_headers
+#endif // 0
 
 libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 

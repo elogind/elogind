@@ -89,13 +89,10 @@ sd_login_sources = files('sd-login/sd-login.c')
 #         sd-network/network-util.h
 #         sd-network/sd-network.c
 #         sd-path/sd-path.c
+#         sd-resolve/resolve-private.h
 #         sd-resolve/sd-resolve.c
 #         sd-utf8/sd-utf8.c
 # '''.split()) + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
-#
-# disable_mempool_c = files('disable-mempool.c')
-#
-# libsystemd_c_args = ['-fvisibility=default']
 #else
 libelogind_sources = files('''
         sd-bus/bus-common-errors.c
@@ -137,16 +134,29 @@ libelogind_sources = files('''
         sd-bus/bus-type.c
         sd-bus/bus-type.h
         sd-bus/sd-bus.c
-'''.split()) + id128_sources + sd_daemon_c + sd_event_c + sd_login_c
+        sd-device/device-enumerator-private.h
+        sd-device/device-enumerator.c
+        sd-device/device-internal.h
+        sd-device/device-monitor-private.h
+        sd-device/device-monitor.c
+        sd-device/device-private.c
+        sd-device/device-private.h
+        sd-device/device-util.h
+        sd-device/sd-device.c
+'''.split()) + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
 
-libelogind_static = static_library(
-        'elogind_static',
-        libelogind_sources,
-        install : false,
-        include_directories : includes,
-        link_with : libbasic,
-#if 0 /// elogind does not need librt
+disable_mempool_c = files('disable-mempool.c')
+
+libsystemd_c_args = ['-fvisibility=default']
+
+#if 0 /// rename to libelogind
+# libsystemd_static = static_library(
+#         'systemd_static',
+#         libsystemd_sources,
+#         install : false,
+#         include_directories : includes,
+#         link_with : libbasic,
 #         dependencies : [threads,
 #                         librt],
 #         c_args : libsystemd_c_args)
@@ -156,9 +166,26 @@ libelogind_static = static_library(
 # libsystemd_pc = configure_file(
 #         input : 'libsystemd.pc.in',
 #         output : 'libsystemd.pc',
+#         configuration : substs)
 # install_data(libsystemd_pc,
+#              install_dir : pkgconfiglibdir)
 #else
-        dependencies : [threads],
-#endif // 0
+libelogind_static = static_library(
+        'elogind_static',
+        libelogind_sources,
+        install : false,
+        include_directories : includes,
+        link_with : libbasic,
+        dependencies : [threads,
+                        librt],
+        c_args : libsystemd_c_args)
+
+libelogind_sym = 'src/libelogind/libelogind.sym'
+
+libelogind_pc = configure_file(
+        input : 'libelogind.pc.in',
+        output : 'libelogind.pc',
         configuration : substs)
+install_data(libelogind_pc,
              install_dir : pkgconfiglibdir)
+#endif // 0

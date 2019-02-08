@@ -163,6 +163,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/cap-list.h" />
+		<Unit filename="../src/basic/cap-to-name.awk" />
 		<Unit filename="../src/basic/capability-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -184,6 +185,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/dirent-util.h" />
+		<Unit filename="../src/basic/env-file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/env-file.h" />
 		<Unit filename="../src/basic/env-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -192,18 +197,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/errno-list.h" />
+		<Unit filename="../src/basic/errno-to-name.awk" />
 		<Unit filename="../src/basic/escape.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/escape.h" />
-		<Unit filename="../src/basic/exec-elogind.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/exec-elogind.h" />
-		<Unit filename="../src/basic/exec-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/exec-util.h" />
 		<Unit filename="../src/basic/extract-word.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -212,23 +210,17 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/fd-util.h" />
-		<Unit filename="../src/basic/fileio-label.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/fileio-label.h" />
 		<Unit filename="../src/basic/fileio.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/fileio.h" />
-		<Unit filename="../src/basic/format-table.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/format-table.h" />
 		<Unit filename="../src/basic/format-util.h" />
 		<Unit filename="../src/basic/fs-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/fs-util.h" />
+		<Unit filename="../src/basic/generate-cap-list.sh" />
+		<Unit filename="../src/basic/generate-errno-list.sh" />
 		<Unit filename="../src/basic/gunicode.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -283,12 +275,38 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mempool.h" />
-		<Unit filename="../src/basic/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/basic/meson.build" />
 		<Unit filename="../src/basic/missing.h" />
+		<Unit filename="../src/basic/missing_audit.h" />
+		<Unit filename="../src/basic/missing_btrfs.h" />
+		<Unit filename="../src/basic/missing_btrfs_tree.h" />
+		<Unit filename="../src/basic/missing_capability.h" />
+		<Unit filename="../src/basic/missing_drm.h" />
+		<Unit filename="../src/basic/missing_ethtool.h" />
+		<Unit filename="../src/basic/missing_fcntl.h" />
+		<Unit filename="../src/basic/missing_fib_rules.h" />
+		<Unit filename="../src/basic/missing_fou.h" />
+		<Unit filename="../src/basic/missing_fs.h" />
+		<Unit filename="../src/basic/missing_if_bridge.h" />
+		<Unit filename="../src/basic/missing_if_link.h" />
+		<Unit filename="../src/basic/missing_if_tunnel.h" />
+		<Unit filename="../src/basic/missing_input.h" />
+		<Unit filename="../src/basic/missing_keyctl.h" />
+		<Unit filename="../src/basic/missing_magic.h" />
+		<Unit filename="../src/basic/missing_mman.h" />
+		<Unit filename="../src/basic/missing_network.h" />
+		<Unit filename="../src/basic/missing_prctl.h" />
+		<Unit filename="../src/basic/missing_random.h" />
+		<Unit filename="../src/basic/missing_resource.h" />
+		<Unit filename="../src/basic/missing_sched.h" />
+		<Unit filename="../src/basic/missing_securebits.h" />
+		<Unit filename="../src/basic/missing_socket.h" />
+		<Unit filename="../src/basic/missing_stat.h" />
+		<Unit filename="../src/basic/missing_stdlib.h" />
 		<Unit filename="../src/basic/missing_syscall.h" />
+		<Unit filename="../src/basic/missing_timerfd.h" />
+		<Unit filename="../src/basic/missing_type.h" />
+		<Unit filename="../src/basic/missing_vxcan.h" />
 		<Unit filename="../src/basic/mkdir-label.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -296,19 +314,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mkdir.h" />
-		<Unit filename="../src/basic/mount-util.c">
+		<Unit filename="../src/basic/mountpoint-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/basic/mount-util.h" />
-		<Unit filename="../src/basic/os-util.h" />
-		<Unit filename="../src/basic/pager.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/pager.h" />
-		<Unit filename="../src/basic/parse-printf-format.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/parse-printf-format.h" />
+		<Unit filename="../src/basic/mountpoint-util.h" />
 		<Unit filename="../src/basic/parse-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -374,6 +383,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/stat-util.h" />
+		<Unit filename="../src/basic/static-destruct.h" />
 		<Unit filename="../src/basic/stdio-util.h" />
 		<Unit filename="../src/basic/string-table.c">
 			<Option compilerVar="CC" />
@@ -399,6 +409,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/time-util.h" />
+		<Unit filename="../src/basic/tmpfile-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/tmpfile-util.h" />
 		<Unit filename="../src/basic/umask-util.h" />
 		<Unit filename="../src/basic/unaligned.h" />
 		<Unit filename="../src/basic/unit-def.c">
@@ -421,10 +435,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/util.h" />
-		<Unit filename="../src/basic/verbs.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/verbs.h" />
 		<Unit filename="../src/basic/virt.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -433,10 +443,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/xattr-util.h" />
-		<Unit filename="../src/basic/xml.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/xml.h" />
 		<Unit filename="../src/busctl/busctl-introspect.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -459,11 +465,10 @@
 		<Unit filename="../src/libelogind/disable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/libelogind/libelogind.sym">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/libelogind/libelogind.pc.in" />
+		<Unit filename="../src/libelogind/libelogind.sym" />
 		<Unit filename="../src/libelogind/meson.build" />
+		<Unit filename="../src/libelogind/sd-bus/GVARIANT-SERIALIZATION" />
 		<Unit filename="../src/libelogind/sd-bus/bus-common-errors.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -543,6 +548,9 @@
 		<Unit filename="../src/libelogind/sd-bus/sd-bus.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-address.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-error.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -564,6 +572,40 @@
 		<Unit filename="../src/libelogind/sd-daemon/sd-daemon.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-device/device-enumerator-private.h" />
+		<Unit filename="../src/libelogind/sd-device/device-enumerator.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-device/device-internal.h" />
+		<Unit filename="../src/libelogind/sd-device/device-monitor-private.h" />
+		<Unit filename="../src/libelogind/sd-device/device-monitor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-device/device-private.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-device/device-private.h" />
+		<Unit filename="../src/libelogind/sd-device/device-util.h" />
+		<Unit filename="../src/libelogind/sd-device/sd-device.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-device/test-sd-device-monitor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-device/test-sd-device-thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-device/test-sd-device.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-device/test-udev-device-thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-event/event-source.h" />
+		<Unit filename="../src/libelogind/sd-event/event-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-event/event-util.h" />
 		<Unit filename="../src/libelogind/sd-event/sd-event.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -584,7 +626,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/70-power-switch.rules" />
-		<Unit filename="../src/login/70-uaccess.rules" />
+		<Unit filename="../src/login/70-uaccess.rules.m4" />
 		<Unit filename="../src/login/71-seat.rules.in" />
 		<Unit filename="../src/login/73-seat-late.rules.in" />
 		<Unit filename="../src/login/eloginctl.c">
@@ -595,6 +637,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/elogind-dbus.h" />
+		<Unit filename="../src/login/elogind-user.m4" />
 		<Unit filename="../src/login/elogind.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -627,10 +670,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-device.h" />
-		<Unit filename="../src/login/logind-gperf.gperf">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind-gperf.gperf" />
 		<Unit filename="../src/login/logind-inhibit.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -666,20 +706,16 @@
 		<Unit filename="../src/login/logind.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/login/logind.conf.in">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/logind.conf.in" />
 		<Unit filename="../src/login/logind.h" />
-		<Unit filename="../src/login/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/login/meson.build" />
 		<Unit filename="../src/login/org.freedesktop.login1.conf" />
 		<Unit filename="../src/login/org.freedesktop.login1.policy" />
+		<Unit filename="../src/login/org.freedesktop.login1.service.in" />
 		<Unit filename="../src/login/pam_elogind.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/pam_elogind.sym" />
 		<Unit filename="../src/login/sysfs-show.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -713,14 +749,49 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
+		<Unit filename="../src/shared/daemon-util.h" />
 		<Unit filename="../src/shared/enable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/shared/env-file-label.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/env-file-label.h" />
+		<Unit filename="../src/shared/exec-elogind.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/exec-elogind.h" />
+		<Unit filename="../src/shared/exec-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/exec-util.h" />
+		<Unit filename="../src/shared/fileio-label.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/fileio-label.h" />
+		<Unit filename="../src/shared/format-table.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/format-table.h" />
+		<Unit filename="../src/shared/ip-protocol-list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/ip-protocol-list.h" />
+		<Unit filename="../src/shared/json-internal.h" />
+		<Unit filename="../src/shared/json.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/json.h" />
 		<Unit filename="../src/shared/libshared.sym" />
+		<Unit filename="../src/shared/main-func.h" />
 		<Unit filename="../src/shared/meson.build" />
 		<Unit filename="../src/shared/module-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/shared/mount-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/mount-util.h" />
 		<Unit filename="../src/shared/musl_missing.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -733,10 +804,22 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/output-mode.h" />
+		<Unit filename="../src/shared/pager.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/pager.h" />
+		<Unit filename="../src/shared/pretty-print.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/pretty-print.h" />
 		<Unit filename="../src/shared/qsort_r_missing.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/qsort_r_missing.h" />
+		<Unit filename="../src/shared/serialize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/serialize.h" />
 		<Unit filename="../src/shared/sleep-config.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -746,33 +829,42 @@
 		</Unit>
 		<Unit filename="../src/shared/spawn-polkit-agent.h" />
 		<Unit filename="../src/shared/test-tables.h" />
+		<Unit filename="../src/shared/tmpfile-util-label.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/tmpfile-util-label.h" />
 		<Unit filename="../src/shared/udev-util.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/utmp-wtmp.h" />
+		<Unit filename="../src/shared/verbs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/verbs.h" />
 		<Unit filename="../src/shared/wireguard-netlink.h" />
+		<Unit filename="../src/shared/xml.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/xml.h" />
+		<Unit filename="../src/sleep/meson.build" />
 		<Unit filename="../src/sleep/sleep.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/sleep/sleep.h" />
 		<Unit filename="../src/systemd/_sd-common.h" />
-		<Unit filename="../src/systemd/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/systemd/meson.build" />
 		<Unit filename="../src/systemd/sd-bus-protocol.h" />
 		<Unit filename="../src/systemd/sd-bus-vtable.h" />
 		<Unit filename="../src/systemd/sd-bus.h" />
 		<Unit filename="../src/systemd/sd-daemon.h" />
+		<Unit filename="../src/systemd/sd-device.h" />
 		<Unit filename="../src/systemd/sd-event.h" />
 		<Unit filename="../src/systemd/sd-id128.h" />
 		<Unit filename="../src/systemd/sd-login.h" />
 		<Unit filename="../src/systemd/sd-messages.h" />
-		<Unit filename="../src/test/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/test/generate-sym-test.py" />
+		<Unit filename="../src/test/meson.build" />
 		<Unit filename="../src/test/test-alloc-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -782,9 +874,6 @@
 		<Unit filename="../src/test/test-cgroup.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-chown-rec.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/test/test-conf-files.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -792,6 +881,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-copy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-dev-setup.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-dlopen.c">
@@ -821,11 +913,7 @@
 		<Unit filename="../src/test/test-hash.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-hashmap-ordered.c">
-			<Option compilerVar="CC" />
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/test/test-hashmap-ordered.awk" />
 		<Unit filename="../src/test/test-hashmap-plain.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -845,6 +933,9 @@
 		<Unit filename="../src/test/test-ipcrm.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/test/test-json.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/test/test-list.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -854,13 +945,16 @@
 		<Unit filename="../src/test/test-log.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-os-util.c">
+		<Unit filename="../src/test/test-mountpoint-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-parse-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-path-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-pretty-print.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-prioq.c">
@@ -878,7 +972,13 @@
 		<Unit filename="../src/test/test-random-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/test/test-sd-hwdb.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/test/test-selinux.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-serialize.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-set-disable-mempool.c">
@@ -897,6 +997,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-stat-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-static-destruct.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-string-util.c">
@@ -923,19 +1026,26 @@
 		<Unit filename="../src/uaccess-command/uaccess-command.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/update-utmp/meson.build">
-			<Option target="all" />
-			<Option target="clean" />
-		</Unit>
+		<Unit filename="../src/update-utmp/meson.build" />
 		<Unit filename="../src/update-utmp/update-utmp.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/update-utmp/update-utmp.h" />
+		<Unit filename="../tools/check-includes.pl" />
+		<Unit filename="../tools/find-double-newline.sh" />
+		<Unit filename="../tools/gdb-sd_dump_hashmaps.py" />
+		<Unit filename="../tools/make-directive-index.py" />
+		<Unit filename="../tools/make-index-md.sh" />
+		<Unit filename="../tools/make-man-index.py" />
+		<Unit filename="../tools/make-man-rules.py" />
+		<Unit filename="../tools/meson-apply-m4.sh" />
 		<Unit filename="../tools/meson-build.sh" />
+		<Unit filename="../tools/meson-check-api-docs.sh" />
 		<Unit filename="../tools/meson-check-compilation.sh" />
-		<Unit filename="../tools/meson-link-test.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../tools/meson-check-help.sh" />
+		<Unit filename="../tools/meson-get-cg-controller.sh" />
+		<Unit filename="../tools/meson-symlink_headers.sh" />
+		<Unit filename="../tools/xml_helper.py" />
 		<Extensions>
 			<envvars />
 			<code_completion />

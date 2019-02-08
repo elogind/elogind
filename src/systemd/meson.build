@@ -20,6 +20,7 @@ _systemd_headers = '''
         sd-bus-protocol.h
         sd-bus-vtable.h
         sd-daemon.h
+        sd-device.h
         sd-event.h
         sd-id128.h
         sd-login.h
@@ -30,23 +31,25 @@ _systemd_headers = '''
 # https://github.com/mesonbuild/meson/issues/1633
 systemd_headers = files(_systemd_headers)
 
-_not_installed_headers = '''
-        sd-dhcp6-client.h
-        sd-dhcp6-lease.h
-        sd-dhcp-client.h
-        sd-dhcp-lease.h
-        sd-dhcp-server.h
-        sd-ipv4acd.h
-        sd-ipv4ll.h
-        sd-lldp.h
-        sd-ndisc.h
-        sd-netlink.h
-        sd-network.h
-        sd-path.h
-        sd-radv.h
-        sd-resolve.h
-        sd-utf8.h
-'''.split()
+#if 0 /// elogind has none of them
+# _not_installed_headers = '''
+#         sd-dhcp6-client.h
+#         sd-dhcp6-lease.h
+#         sd-dhcp-client.h
+#         sd-dhcp-lease.h
+#         sd-dhcp-server.h
+#         sd-ipv4acd.h
+#         sd-ipv4ll.h
+#         sd-lldp.h
+#         sd-ndisc.h
+#         sd-netlink.h
+#         sd-network.h
+#         sd-path.h
+#         sd-radv.h
+#         sd-resolve.h
+#         sd-utf8.h
+# '''.split()
+#endif // 0
 
 install_headers(
         systemd_headers,
@@ -87,7 +90,11 @@ if cxx.found()
         endif
 endif
 
-foreach header : _elogind_headers + _not_installed_headers + ['../libudev/libudev.h']
+#if 0 /// neither not installed nor libudev headers get shipped with elogind
+# foreach header : _systemd_headers + _not_installed_headers + ['../libudev/libudev.h']
+#else
+foreach header : _systemd_headers
+#endif // 0
         foreach opt : opts
                 name = ''.join(['cc-', header.split('/')[-1], ':'] + opt)
                 if want_tests != 'false'
