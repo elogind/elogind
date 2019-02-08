@@ -15,6 +15,7 @@
 #include "string-util.h"
 #include "tests.h"
 
+#if 0 /// UNNEEDED by elogind
 static void test_mount_propagation_flags(const char *name, int ret, unsigned long expected) {
         long unsigned flags;
 
@@ -34,6 +35,7 @@ static void test_mount_propagation_flags(const char *name, int ret, unsigned lon
                         assert_se(streq(c, name));
         }
 }
+#endif // 0
 
 static void test_mnt_id(void) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -253,6 +255,7 @@ static void test_path_is_mount_point(void) {
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
 
+#if 0 /// UNNEEDED by elogind
         test_mount_propagation_flags("shared", 0, MS_SHARED);
         test_mount_propagation_flags("slave", 0, MS_SLAVE);
         test_mount_propagation_flags("private", 0, MS_PRIVATE);
@@ -260,6 +263,7 @@ int main(int argc, char *argv[]) {
         test_mount_propagation_flags("", 0, 0);
         test_mount_propagation_flags("xxxx", -EINVAL, 0);
         test_mount_propagation_flags(" ", -EINVAL, 0);
+#endif // 0
 
         test_mnt_id();
         test_path_is_mount_point();

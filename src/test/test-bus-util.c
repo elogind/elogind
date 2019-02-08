@@ -2,7 +2,7 @@
 
 #include "bus-util.h"
 #include "log.h"
-//#include "tests.h"
+#include "tests.h"
 
 static int callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
         return 1;

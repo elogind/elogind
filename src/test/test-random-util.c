@@ -3,7 +3,7 @@
 #include "hexdecoct.h"
 #include "random-util.h"
 #include "log.h"
-//#include "tests.h"
+#include "tests.h"
 
 static void test_genuine_random_bytes(RandomFlags flags) {
         uint8_t buf[16] = {};

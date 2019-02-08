@@ -1,17 +1,17 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <math.h>
+#include <math.h>
 #if HAVE_VALGRIND_VALGRIND_H
-//#include <valgrind/valgrind.h>
+#include <valgrind/valgrind.h>
 #endif
 
-//#include "alloc-util.h"
-//#include "fd-util.h"
-//#include "json-internal.h"
-//#include "json.h"
-//#include "string-util.h"
-//#include "strv.h"
-//#include "util.h"
+#include "alloc-util.h"
+#include "fd-util.h"
+#include "json-internal.h"
+#include "json.h"
+#include "string-util.h"
+#include "strv.h"
+#include "util.h"
 
 static void test_tokenizer(const char *data, ...) {
         unsigned line = 0, column = 0;

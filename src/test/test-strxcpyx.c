@@ -23,6 +23,7 @@ static void test_strpcpy(void) {
         assert_se(space_left == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strpcpyf(void) {
         char target[25];
         char *s = target;
@@ -55,6 +56,7 @@ static void test_strpcpyl(void) {
         assert_se(streq(target, "waldo test waldo. Banana"));
         assert_se(space_left == 1);
 }
+#endif // 0
 
 static void test_strscpy(void) {
         char target[25];
@@ -80,8 +82,10 @@ static void test_strscpyl(void) {
 
 int main(int argc, char *argv[]) {
         test_strpcpy();
+#if 0 /// UNNEEDED by elogind
         test_strpcpyf();
         test_strpcpyl();
+#endif // 0
         test_strscpy();
         test_strscpyl();
 

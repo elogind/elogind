@@ -2,7 +2,7 @@
 
 #include "clean-ipc.h"
 #include "user-util.h"
-//#include "tests.h"
+#include "tests.h"
 #include "util.h"
 
 int main(int argc, char *argv[]) {

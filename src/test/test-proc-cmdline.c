@@ -150,7 +150,6 @@ static void test_proc_cmdline_get_bool(void) {
         assert_se(proc_cmdline_get_bool("x_y_z", &value) > 0 && value == false);
         assert_se(proc_cmdline_get_bool("quux", &value) == -EINVAL && value == false);
 }
-#endif // 0
 
 static void test_proc_cmdline_get_key_many(void) {
         _cleanup_free_ char *value1 = NULL, *value2 = NULL, *value3 = NULL, *value4 = NULL, *value5 = NULL, *value6 = NULL;
@@ -173,6 +172,7 @@ static void test_proc_cmdline_get_key_many(void) {
         assert_se(streq_ptr(value5, "one two"));
         assert_se(streq_ptr(value6, " aaa aaa "));
 }
+#endif // 0
 
 static void test_proc_cmdline_key_streq(void) {
         log_info("/* %s */", __func__);

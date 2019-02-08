@@ -9,9 +9,9 @@
 #include "macro.h"
 #include "missing.h"
 //#include "mountpoint-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "stat-util.h"
-//#include "tmpfile-util.h"
+#include "tmpfile-util.h"
 
 static void test_files_same(void) {
         _cleanup_close_ int fd = -1;
@@ -68,7 +68,6 @@ static void test_path_is_temporary_fs(void) {
         assert_se(path_is_temporary_fs("/proc") == 0);
         assert_se(path_is_temporary_fs("/i-dont-exist") == -ENOENT);
 }
-#endif // 0
 
 static void test_fd_is_network_ns(void) {
         _cleanup_close_ int fd = -1;
@@ -83,6 +82,7 @@ static void test_fd_is_network_ns(void) {
         assert_se((fd = open("/proc/self/ns/net", O_CLOEXEC|O_RDONLY)) >= 0);
         assert_se(IN_SET(fd_is_network_ns(fd), 1, -EUCLEAN));
 }
+#endif // 0
 
 static void test_device_major_minor_valid(void) {
         /* on glibc dev_t is 64bit, even though in the kernel it is only 32bit */
@@ -151,10 +151,12 @@ static void test_device_path_make_canonical(void) {
         test_device_path_make_canonical_one("/dev/urandom");
         test_device_path_make_canonical_one("/dev/tty");
 
+#if 0 /// UNNEEDED by elogind
         if (is_device_node("/run/systemd/inaccessible/chr") > 0) {
                 test_device_path_make_canonical_one("/run/systemd/inaccessible/chr");
                 test_device_path_make_canonical_one("/run/systemd/inaccessible/blk");
         }
+#endif // 0
 }
 
 int main(int argc, char *argv[]) {
@@ -163,8 +165,8 @@ int main(int argc, char *argv[]) {
         test_is_symlink();
         test_path_is_fs_type();
         test_path_is_temporary_fs();
-#endif // 0
         test_fd_is_network_ns();
+#endif // 0
         test_device_major_minor_valid();
         test_device_path_make_canonical();
 

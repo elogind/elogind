@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "alloc-util.h"
-//#include "static-destruct.h"
-//#include "tests.h"
+#include "alloc-util.h"
+#include "static-destruct.h"
+#include "tests.h"
 
 static int foo = 0;
 static int bar = 0;

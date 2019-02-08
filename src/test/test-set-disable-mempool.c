@@ -4,7 +4,7 @@
 
 #include "process-util.h"
 #include "set.h"
-//#include "tests.h"
+#include "tests.h"
 
 #define NUM 100
 

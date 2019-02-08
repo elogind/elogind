@@ -3,10 +3,10 @@
 #include "alloc-util.h"
 #include "hashmap.h"
 #include "log.h"
-//#include "stdio-util.h"
+#include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tests.h"
+#include "tests.h"
 #include "util.h"
 
 void test_hashmap_funcs(void);

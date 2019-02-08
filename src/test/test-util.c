@@ -14,7 +14,7 @@
 #include "raw-clone.h"
 #include "rm-rf.h"
 #include "string-util.h"
-//#include "tests.h"
+#include "tests.h"
 #include "util.h"
 
 static void test_align_power2(void) {

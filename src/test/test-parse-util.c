@@ -71,6 +71,7 @@ static void test_parse_pid(void) {
         assert_se(r == -EINVAL);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_parse_mode(void) {
         mode_t m;
 
@@ -84,6 +85,7 @@ static void test_parse_mode(void) {
         assert_se(parse_mode("7777", &m) >= 0 && m == 07777);
         assert_se(parse_mode("0", &m) >= 0 && m == 0);
 }
+#endif // 0
 
 static void test_parse_size(void) {
         uint64_t bytes;
@@ -623,6 +625,7 @@ static void test_safe_atod(void) {
         assert_se(r == -EINVAL);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_parse_percent(void) {
         assert_se(parse_percent("") == -EINVAL);
         assert_se(parse_percent("foo") == -EINVAL);
@@ -646,6 +649,7 @@ static void test_parse_percent_unbounded(void) {
         assert_se(parse_percent_unbounded("101%") == 101);
         assert_se(parse_percent_unbounded("400%") == 400);
 }
+#endif // 0
 
 static void test_parse_permille(void) {
         assert_se(parse_permille("") == -EINVAL);
@@ -741,6 +745,7 @@ static void test_parse_dev(void) {
         assert_se(parse_dev("0:0", &dev) >= 0 && major(dev) == 0 && minor(dev) == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_parse_errno(void) {
         assert_se(parse_errno("EILSEQ") == EILSEQ);
         assert_se(parse_errno("EINVAL") == EINVAL);
@@ -829,6 +834,7 @@ static void test_parse_mtu(void) {
         assert_se(parse_mtu(AF_UNSPEC, "0", &mtu) == -ERANGE);
         assert_se(parse_mtu(AF_UNSPEC, "", &mtu) == -EINVAL);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         log_parse_environment();
@@ -836,7 +842,9 @@ int main(int argc, char *argv[]) {
 
         test_parse_boolean();
         test_parse_pid();
+#if 0 /// UNNEEDED by elogind
         test_parse_mode();
+#endif // 0
         test_parse_size();
 #if 0 /// UNNEEDED by elogind
         test_parse_range();
@@ -848,17 +856,22 @@ int main(int argc, char *argv[]) {
         test_safe_atou64();
         test_safe_atoi64();
         test_safe_atod();
+#if 0 /// UNNEEDED by elogind
         test_parse_percent();
         test_parse_percent_unbounded();
+
+#endif // 0
         test_parse_permille();
         test_parse_permille_unbounded();
 #if 0 /// UNNEEDED by elogind
         test_parse_nice();
 #endif // 0
         test_parse_dev();
+#if 0 /// UNNEEDED by elogind
         test_parse_errno();
         test_parse_syscall_and_errno();
         test_parse_mtu();
+#endif // 0
 
         return 0;
 }

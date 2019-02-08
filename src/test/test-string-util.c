@@ -5,7 +5,7 @@
 #include "macro.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tests.h"
+#include "tests.h"
 #include "utf8.h"
 
 static void test_string_erase(void) {

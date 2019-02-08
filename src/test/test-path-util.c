@@ -6,13 +6,13 @@
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "macro.h"
-//#include "mountpoint-util.h"
+#include "mountpoint-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tests.h"
+#include "tests.h"
 #include "util.h"
 
 #define test_path_compare(a, b, result) {                 \

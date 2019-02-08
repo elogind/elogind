@@ -7,7 +7,7 @@
 #include "macro.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tmpfile-util.h"
+#include "tmpfile-util.h"
 #include "util.h"
 
 #if 0 /// UNNEEDED by elogind

@@ -4,8 +4,6 @@
 
 #include "alloc-util.h"
 #include "fd-util.h"
-//#include "fd-util.h"
-//#include "fileio.h"
 #include "fs-util.h"
 #include "id128-util.h"
 #include "macro.h"
@@ -15,7 +13,8 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tests.h"
+#include "tests.h"
+#include "tmpfile-util.h"
 #include "user-util.h"
 #include "util.h"
 //#include "virt.h"
@@ -665,6 +664,7 @@ static void test_fsync_directory_of_file(void) {
         assert_se(fsync_directory_of_file(fd) >= 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_rename_noreplace(void) {
         static const char* const table[] = {
                 "/reg",
@@ -732,6 +732,7 @@ static void test_rename_noreplace(void) {
                 assert_se(rename_noreplace(AT_FDCWD, y, AT_FDCWD, x) >= 0);
         }
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_INFO);
@@ -752,7 +753,9 @@ int main(int argc, char *argv[]) {
         test_unlinkat_deallocate();
 #endif // 0
         test_fsync_directory_of_file();
+#if 0 /// UNNEEDED by elogind
         test_rename_noreplace();
+#endif // 0
 
         return 0;
 }

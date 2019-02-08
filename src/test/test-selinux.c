@@ -7,7 +7,7 @@
 #include "log.h"
 #include "selinux-util.h"
 #include "string-util.h"
-//#include "tests.h"
+#include "tests.h"
 #include "time-util.h"
 #include "util.h"
 

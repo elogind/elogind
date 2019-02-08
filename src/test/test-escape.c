@@ -3,7 +3,7 @@
 #include "alloc-util.h"
 #include "escape.h"
 #include "macro.h"
-//#include "tests.h"
+#include "tests.h"
 
 static void test_cescape(void) {
         _cleanup_free_ char *escaped;

@@ -7,7 +7,7 @@
 #include "log.h"
 #include "string-util.h"
 #include "khash.h"
-//#include "tests.h"
+#include "tests.h"
 
 int main(int argc, char *argv[]) {
         _cleanup_(khash_unrefp) khash *h = NULL, *copy = NULL;

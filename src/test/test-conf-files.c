@@ -13,11 +13,11 @@
 #include "macro.h"
 #include "mkdir.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "rm-rf.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tests.h"
+#include "tests.h"
 #include "user-util.h"
 #include "util.h"
 

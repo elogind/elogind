@@ -17,7 +17,7 @@
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "missing.h"
+#include "missing.h"
 #include "parse-util.h"
 #include "process-util.h"
 #include "signal-util.h"
@@ -25,7 +25,7 @@
 #include "string-util.h"
 #include "terminal-util.h"
 #include "test-helper.h"
-//#include "tests.h"
+#include "tests.h"
 #include "util.h"
 #include "virt.h"
 
