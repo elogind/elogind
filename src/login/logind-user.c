@@ -11,7 +11,7 @@
 //#include "bus-util.h"
 //#include "cgroup-util.h"
 #include "clean-ipc.h"
-//#include "env-file.h"
+#include "env-file.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -24,32 +24,17 @@
 //#include "parse-util.h"
 //#include "path-util.h"
 //#include "rm-rf.h"
-//#include "serialize.h"
+#include "serialize.h"
 #include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
-//#include "strv.h"
-//#include "tmpfile-util.h"
+#include "strv.h"
+#include "tmpfile-util.h"
 #include "unit-name.h"
 #include "user-util.h"
+//#include "util.h"
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
-//#include "util.h"
 
 int user_new(User **ret,
              Manager *m,
@@ -117,10 +102,10 @@ int user_new(User **ret,
         if (r < 0)
                 return r;
 
-#endif // 0
         r = hashmap_put(m->user_units, u->runtime_dir_service, u);
         if (r < 0)
                 return r;
+#endif // 0
 
         *ret = TAKE_PTR(u);
         return 0;
@@ -340,52 +325,26 @@ int user_load(User *u) {
 
         assert(u);
 
-#if 0 /// elogind neither supports service nor slice jobs
-#endif // 0
         r = parse_env_file(NULL, u->state_file,
+#if 0 /// elogind neither supports service jobs
                            "SERVICE_JOB",            &u->service_job,
+#endif // 0
                            "STOPPING",               &stopping,
                            "REALTIME",               &realtime,
                            "MONOTONIC",              &monotonic,
-                log_debug_elogind(" --> User stopping    : %d", u->stopping);
                            "LAST_SESSION_TIMESTAMP", &last_session_timestamp);
         if (r == -ENOENT)
                 return 0;
         if (r < 0)
                 return log_error_errno(r, "Failed to read %s: %m", u->state_file);
-        log_debug_elogind(" --> User realtime    : %lu", u->timestamp.realtime);
-        log_debug_elogind(" --> User monotonic   : %lu", u->timestamp.monotonic);
-        log_debug_elogind(" --> User last session: %lu", u->last_session_timestamp);
-#if ENABLE_DEBUG_ELOGIND
-        _cleanup_strv_free_ char **sa = NULL;
-        _cleanup_free_ char *sv = NULL;
-        Session *i;
-        bool first;
-        if (display)
-                s = hashmap_get(u->manager->sessions, display);
-
-        first = true;
-        LIST_FOREACH(sessions_by_user, i, u->sessions) {
-                if (first)
-                        first = false;
 
         if (stopping) {
                 r = parse_boolean(stopping);
                 if (r < 0)
                         log_debug_errno(r, "Failed to parse 'STOPPING' boolean: %s", stopping);
                 else
-                        strv_extend(&sa, " ");
-                strv_extend(&sa, i->id);
                         u->stopping = r;
         }
-        if (s && s->display && display_is_local(s->display))
-                u->display = s;
-
-        if (false == first) {
-                sv = strv_join(sa, " ");
-        }
-#endif // ENABLE_DEBUG_ELOGIND
-        log_debug_elogind(" --> User sessions    : %s",  u->sessions ? sv : "none");
         if (realtime)
                 (void) deserialize_usec(realtime, &u->timestamp.realtime);
         if (monotonic)
@@ -393,10 +352,15 @@ int user_load(User *u) {
         if (last_session_timestamp)
                 (void) deserialize_usec(last_session_timestamp, &u->last_session_timestamp);
 
+        log_debug_elogind(" --> User stopping    : %d",  u->stopping);
+        log_debug_elogind(" --> User realtime    : %lu", u->timestamp.realtime);
+        log_debug_elogind(" --> User monotonic   : %lu", u->timestamp.monotonic);
+        log_debug_elogind(" --> User last session: %lu", u->last_session_timestamp);
+
         return 0;
 }
 
-#if 0 /// elogind neither spawns systemd --user nor suports systemd units and services.
+#if 0 /// elogind neither spawns systemd --user nor supports systemd units and services.
 static void user_start_service(User *u) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
@@ -436,38 +400,14 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 #endif // 1
-        /* Save the user data so far, because pam_elogind will read the
-         * XDG_RUNTIME_DIR out of it while starting up elogind --user.
-        /* Save the user data so far, because pam_systemd will read the
-         * XDG_RUNTIME_DIR out of it while starting up systemd --user.
-         * We need to do user_save_internal() because we have not
-         * "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
 
 #if 0 /// elogind does not spawn user instances of systemd
-#endif // 0
         /* Start user@UID.service */
         user_start_service(u);
+#endif // 0
 
         if (!u->started) {
                 if (!dual_timestamp_is_set(&u->timestamp))
@@ -490,7 +430,6 @@ static void user_stop_service(User *u) {
         assert(u);
         assert(u->service);
 
-#endif // 0
         /* The reverse of user_start_service(). Note that we only stop user@UID.service here, and let StopWhenUnneeded=
          * deal with the slice and the user-runtime-dir@.service instance. */
 
@@ -500,6 +439,7 @@ static void user_stop_service(User *u) {
         if (r < 0)
                 log_warning_errno(r, "Failed to stop user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
 }
+#endif // 0
 
 int user_stop(User *u, bool force) {
         Session *s;
@@ -644,8 +584,7 @@ int user_check_linger_file(User *u) {
         return true;
 }
 
-#if 0 /// elogind does not support systemd units
-#endif // 0
+#if 0 /// UNNEEDED by elogind
 static bool user_unit_active(User *u) {
         const char *i;
         int r;
@@ -666,11 +605,12 @@ static bool user_unit_active(User *u) {
 
         return false;
 }
+#endif // 0
 
 bool user_may_gc(User *u, bool drop_not_started) {
 #if 0 /// UNNEEDED by elogind
-#endif // 0
         int r;
+#endif // 0
 
         assert(u);
 
@@ -685,8 +625,6 @@ bool user_may_gc(User *u, bool drop_not_started) {
         if (u->sessions)
                 return false;
 
-#if 0 /// elogind does not support systemd units
-#else
         if (u->last_session_timestamp != USEC_INFINITY) {
                 /* All sessions have been closed. Let's see if we shall leave the user record around for a bit */
 
@@ -697,13 +635,14 @@ bool user_may_gc(User *u, bool drop_not_started) {
                         return false; /* Leave it around for a bit longer. */
         }
 
-        /* Is this a user that shall stay around forever? */
-        if (user_check_linger_file(u) > 0)
-#endif // 0
         /* Is this a user that shall stay around forever ("linger")? Before we say "no" to GC'ing for lingering users, let's check
          * if any of the three units that we maintain for this user is still around. If none of them is,
          * there's no need to keep this user around even if lingering is enabled. */
+#if 0 /// elogind does not support systemd units
         if (user_check_linger_file(u) > 0 && user_unit_active(u))
+#else
+        if (user_check_linger_file(u) > 0)
+#endif // 0
                 return false;
 
 #if 0 /// elogind neither supports service nor slice jobs

@@ -10,7 +10,7 @@
 #include "label.h"
 //#include "main-func.h"
 #include "mkdir.h"
-//#include "mountpoint-util.h"
+#include "mountpoint-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
 //#include "selinux-util.h"
@@ -198,12 +198,6 @@ static int run(int argc, char *argv[]) {
         r = mac_selinux_init();
         if (r < 0)
                 return log_error_errno(r, "Could not initialize labelling: %m\n");
-
-        umask(0022);
-
-        if (streq(argv[1], "start"))
-
-DEFINE_MAIN_FUNCTION(run);
 #else
 int user_runtime_dir(const char *verb, User *u) {
         int r;
@@ -212,6 +206,17 @@ int user_runtime_dir(const char *verb, User *u) {
         assert_se(u);
         assert_se(u->manager);
         
+#endif // 0
+
+        umask(0022);
+
+#if 0 /// elogind has more information and can do this more conveniently
+        if (streq(argv[1], "start"))
+                return do_mount(argv[2]);
+        if (streq(argv[1], "stop"))
+                return do_umount(argv[2]);
+        assert_not_reached("Unknown verb!");
+#else
         if (streq(verb, "start"))
                 r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->uid, u->gid);
         else if (streq(verb, "stop"))
@@ -220,9 +225,10 @@ int user_runtime_dir(const char *verb, User *u) {
                 assert_not_reached("Unknown verb!");
 
         return r;
-                return do_mount(argv[2]);
-        if (streq(argv[1], "stop"))
-                return do_umount(argv[2]);
-        assert_not_reached("Unknown verb!");
-}
 #endif // 0
+}
+
+#if 0 /// No main function needed in elogind
+DEFINE_MAIN_FUNCTION(run);
+#endif // 0
+

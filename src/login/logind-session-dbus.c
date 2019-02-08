@@ -11,9 +11,9 @@
 #include "logind-session-device.h"
 #include "logind-session.h"
 #include "logind.h"
-//#include "missing_capability.h"
+#include "missing_capability.h"
 #include "signal-util.h"
-//#include "stat-util.h"
+#include "stat-util.h"
 #include "strv.h"
 #include "util.h"
 
@@ -702,7 +702,6 @@ int session_send_lock_all(Manager *m, bool lock) {
 }
 
 #if 0 /// elogind does not support scope and service jobs
-#endif // 0
 static bool session_ready(Session *s) {
         assert(s);
 
@@ -711,6 +710,7 @@ static bool session_ready(Session *s) {
         return !s->scope_job &&
                 !s->user->service_job;
 }
+#endif // 0
 
 int session_send_create_reply(Session *s, sd_bus_error *error) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *c = NULL;

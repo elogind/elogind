@@ -5,7 +5,7 @@
 #include <linux/kd.h>
 #include <linux/vt.h>
 #include <signal.h>
-//#include <stdio_ext.h>
+#include <stdio_ext.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -16,7 +16,7 @@
 #include "audit-util.h"
 #include "bus-error.h"
 #include "bus-util.h"
-//#include "env-file.h"
+#include "env-file.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -27,11 +27,11 @@
 #include "parse-util.h"
 #include "path-util.h"
 //#include "process-util.h"
-//#include "serialize.h"
+#include "serialize.h"
 #include "string-table.h"
 //#include "strv.h"
 #include "terminal-util.h"
-//#include "tmpfile-util.h"
+#include "tmpfile-util.h"
 #include "user-util.h"
 #include "util.h"
 
@@ -1181,18 +1181,18 @@ static void session_remove_fifo(Session *s) {
                         log_debug_elogind("Removing FIFO %d at %s for session %s",
                                           current_fifo_fd, s->fifo_path, s->id);
 #endif // 1
+                (void) unlink(s->fifo_path);
+                s->fifo_path = mfree(s->fifo_path);
 #if 1 /// end elogind extra if
                 }
 #endif // 1
-                (void) unlink(s->fifo_path);
-                s->fifo_path = mfree(s->fifo_path);
         }
 }
 
 bool session_may_gc(Session *s, bool drop_not_started) {
 #if 0 /// UNNEEDED by elogind
-#endif // 0
         int r;
+#endif // 0
 
         assert(s);
 

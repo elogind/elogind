@@ -6,21 +6,21 @@
 #include <sys/types.h>
 #include <linux/vt.h>
 #if ENABLE_UTMP
-//#include <utmpx.h>
+#include <utmpx.h>
 #endif
 
-//#include "sd-device.h"
+#include "sd-device.h"
 
 #include "alloc-util.h"
 #include "bus-error.h"
 #include "bus-util.h"
 #include "cgroup-util.h"
 //#include "conf-parser.h"
-//#include "device-util.h"
+#include "device-util.h"
 #include "fd-util.h"
 #include "logind.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "process-util.h"
 #include "strv.h"
 #include "terminal-util.h"
@@ -377,28 +377,29 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
         if (!pid_is_valid(pid))
                 return -EINVAL;
 
-#if 0 /// elogind does not support systemd units, but its own session system
-        }
-#else
-                log_debug_elogind("Searching session for PID %u", pid);
-                r = cg_pid_get_session(pid, &session_name);
         s = hashmap_get(m->sessions_by_leader, PID_TO_PTR(pid));
         if (!s) {
+#if 0 /// elogind does not support systemd units, but its own session system
                 r = cg_pid_get_unit(pid, &unit);
                 if (r < 0)
                         goto not_found;
-        r = cg_pid_get_unit(pid, &unit);
-        if (r < 0)
-                goto not_found;
 
-                s = hashmap_get(m->sessions, session_name);
-                log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
-                                  session_name, s && s->id ? s->id : "NULL");
-                if (NULL == s)
                 s = hashmap_get(m->session_units, unit);
                 if (!s)
                         goto not_found;
+#else
+                log_debug_elogind("Searching session for PID %u", pid);
+                r = cg_pid_get_session(pid, &session_name);
+                if (r < 0)
+                        goto not_found;
+
+                s = hashmap_get(m->sessions, session_name);
+                if (!s)
+                        goto not_found;
+                log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
+                                  session_name, s && s->id ? s->id : "NULL");
 #endif // 0
+        }
 
         if (ret)
                 *ret = s;

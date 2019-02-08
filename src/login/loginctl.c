@@ -18,12 +18,12 @@
 #include "log.h"
 //#include "logs-show.h"
 #include "macro.h"
-//#include "main-func.h"
+#include "main-func.h"
 #include "pager.h"
 #include "parse-util.h"
-//#include "pretty-print.h"
+#include "pretty-print.h"
 #include "process-util.h"
-//#include "rlimit-util.h"
+#include "rlimit-util.h"
 #include "sigbus.h"
 #include "signal-util.h"
 #include "spawn-polkit-agent.h"
@@ -38,6 +38,7 @@
 
 /// Additional includes needed by elogind
 #include "eloginctl.h"
+#include "musl_missing.h"
 
 static char **arg_property = NULL;
 static bool arg_all = false;
@@ -52,9 +53,6 @@ static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
 static bool arg_ask_password = true;
 static unsigned arg_lines = 10;
-static OutputMode arg_output = OUTPUT_SHORT;
-
-STATIC_DESTRUCTOR_REGISTER(arg_property, strv_freep);
 #else
 /// Instead we need this:
 extern BusTransport arg_transport;
@@ -67,6 +65,9 @@ extern usec_t arg_when;
 extern bool arg_ignore_inhibitors;
 extern elogind_action arg_action;
 #endif // 0
+static OutputMode arg_output = OUTPUT_SHORT;
+
+STATIC_DESTRUCTOR_REGISTER(arg_property, strv_freep);
 
 static OutputFlags get_output_flags(void) {
 
@@ -1341,16 +1342,16 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -s --signal=SIGNAL       Which signal to send\n"
 #if 0 /// UNNEEDED by elogind
                "  -n --lines=INTEGER       Number of journal entries to show\n"
-               "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
-               "                             short-iso, short-iso-precise, short-full,\n"
-               "                             short-monotonic, short-unix, verbose, export,\n"
-               "                             json, json-pretty, json-sse, json-seq, cat,\n"
-               "                             with-unit)\n"
 #else
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
 #endif // 0
+               "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
+               "                             short-iso, short-iso-precise, short-full,\n"
+               "                             short-monotonic, short-unix, verbose, export,\n"
+               "                             json, json-pretty, json-sse, json-seq, cat,\n"
+               "                             with-unit)\n"
                "Session Commands:\n"
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
                "  list-sessions            List sessions\n"
@@ -1382,10 +1383,6 @@ static int help(int argc, char *argv[], void *userdata) {
                "  flush-devices            Flush all device associations\n"
 #if 0 /// elogind adds some system commands to loginctl
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
-               "\nSee the %s for details.\n"
-               , program_invocation_short_name
-               , link
-        );
 #else
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
                "System Commands:\n"
@@ -1397,6 +1394,10 @@ static int help(int argc, char *argv[], void *userdata) {
                "  suspend-then-hibernate    Suspend the system, wake after a period of\n"
                "                            time and put it into hibernate\n"
 #endif // 0
+               "\nSee the %s for details.\n"
+               , program_invocation_short_name
+               , link
+        );
 
         return 0;
 }
@@ -1494,6 +1495,7 @@ static int parse_argv(int argc, char *argv[]) {
                                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                                        "Failed to parse lines '%s'", optarg);
                         break;
+#endif // 0
 
                 case 'o':
                         if (streq(optarg, "help")) {
@@ -1505,14 +1507,15 @@ static int parse_argv(int argc, char *argv[]) {
                         if (arg_output < 0)
                                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                                        "Unknown output '%s'.", optarg);
-#endif // 0
 
+                        if (OUTPUT_MODE_IS_JSON(arg_output))
+                                arg_legend = false;
+
+                        break;
 #if 1 /// elogind supports --no-wall, -dry-run and --quiet
                 case ARG_NO_WALL:
                         arg_no_wall = true;
                         break;
-                        if (OUTPUT_MODE_IS_JSON(arg_output))
-                                arg_legend = false;
 
                 case ARG_DRY_RUN:
                         arg_dry_run = true;
@@ -1521,11 +1524,12 @@ static int parse_argv(int argc, char *argv[]) {
 
                 case 'q':
                         arg_quiet = true;
+                        break;
+#endif // 1
                 case ARG_NO_PAGER:
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
 
-#endif // 1
                 case ARG_NO_LEGEND:
                         arg_legend = false;
                         break;
@@ -1648,18 +1652,21 @@ static int run(int argc, char *argv[]) {
                 return r;
 
         r = bus_connect_transport(arg_transport, arg_host, false, &bus);
-#if 0 /// elogind does that in elogind_cleanup()
-#endif // 0
 
-#if 1 /// elogind has some own cleanups to do
-        elogind_cleanup();
-#endif // 1
         if (r < 0)
                 return log_error_errno(r, "Failed to create bus connection: %m");
 
         (void) sd_bus_set_allow_interactive_authorization(bus, arg_ask_password);
 
+#if 0 /// elogind has some own cleanups to do
         return loginctl_main(argc, argv, bus);
+#else
+        r = loginctl_main(argc, argv, bus);
+
+        elogind_cleanup();
+
+        return r;
+#endif // 0
 }
 
 DEFINE_MAIN_FUNCTION(run);

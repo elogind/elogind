@@ -5,11 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#if 0 /// elogind needs the systems udev header
-//#include "sd-device.h"
-#else
-#include <libudev.h>
-#endif // 0
+#include "sd-device.h"
 #include "sd-daemon.h"
 
 #include "alloc-util.h"
@@ -17,18 +13,19 @@
 #include "bus-util.h"
 //#include "cgroup-util.h"
 #include "def.h"
-//#include "device-util.h"
+#include "device-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "format-util.h"
 #include "fs-util.h"
 #include "logind.h"
-//#include "main-func.h"
+#include "main-func.h"
 #include "parse-util.h"
 //#include "process-util.h"
 #include "selinux-util.h"
 #include "signal-util.h"
 #include "strv.h"
+#include "terminal-util.h"
 /// Additional includes needed by elogind
 #include "cgroup.h"       // From src/core/
 #include "elogind.h"
@@ -36,8 +33,6 @@
 #include "musl_missing.h"
 #include "process-util.h"
 #include "cgroup-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -52,11 +47,11 @@ static int manager_new(Manager **ret) {
         if (!m)
                 return -ENOMEM;
 
-#if 0 /// elogind does not support autospawning of vts
-#endif // 0
         *m = (Manager) {
                 .console_active_fd = -1,
+#if 0 /// elogind does not support autospawning of vts
                 .reserve_vt_fd = -1,
+#endif // 0
         };
 
         m->idle_action_not_before_usec = now(CLOCK_MONOTONIC);

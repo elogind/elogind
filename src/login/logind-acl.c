@@ -3,11 +3,11 @@
 #include <errno.h>
 #include <string.h>
 
-//#include "sd-device.h"
+#include "sd-device.h"
 
 #include "acl-util.h"
 #include "alloc-util.h"
-//#include "device-util.h"
+#include "device-util.h"
 #include "dirent-util.h"
 #include "escape.h"
 #include "fd-util.h"

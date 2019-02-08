@@ -3,15 +3,11 @@
 
 #include <stdbool.h>
 
-#if 0 /// elogind needs the systems udev header
-//#include "sd-device.h"
-#else
-#include <libudev.h>
-#endif // 0
+#include "sd-device.h"
 #include "sd-bus.h"
 #include "sd-event.h"
 
-//#include "conf-parser.h"
+#include "conf-parser.h"
 #include "hashmap.h"
 #include "list.h"
 #include "set.h"
@@ -27,8 +23,9 @@ typedef struct Manager Manager;
 #include "cgroup-util.h"
 
 #if 1 /// elogind has to ident itself
-#define MANAGER_IS_SYSTEM(m) ((m)->is_system)
-#define MANAGER_IS_USER(m) (!((m)->is_system))
+#define MANAGER_IS_SYSTEM(m)   (  (m)->is_system)
+#define MANAGER_IS_TEST_RUN(m) (  (m)->test_run_flags != 0)
+#define MANAGER_IS_USER(m)     (!((m)->is_system))
 #endif // 1
 struct Manager {
         sd_event *event;
@@ -110,6 +107,9 @@ struct Manager {
          * the job of it */
         char *action_job;
 #else
+        /* Suspension and hibernation can be disabled in logind.conf. */
+        bool allow_suspend, allow_hibernation, allow_suspend_then_hibernate, allow_hybrid_sleep;
+
         /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or
            SYSTEM_POWEROFF_PATH that fail, the ongoing suspend/poweroff
            action will be cancelled if any of these are set to true. */
@@ -230,9 +230,9 @@ int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, 
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *error);
 int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
-#endif // 0
 int manager_unit_is_active(Manager *manager, const char *unit, sd_bus_error *error);
 int manager_job_is_active(Manager *manager, const char *path, sd_bus_error *error);
+#endif // 0
 
 /* gperf lookup function */
 const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);

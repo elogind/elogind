@@ -6,11 +6,7 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
-#if 0 /// elogind needs the systems udev header
-//#include "sd-device.h"
-#else
-#include <libudev.h>
-#endif // 0
+#include "sd-device.h"
 
 #include "alloc-util.h"
 #include "bus-util.h"

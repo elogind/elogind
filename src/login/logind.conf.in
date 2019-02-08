@@ -35,6 +35,10 @@
 #SessionsMax=8192
 
 [Sleep]
+#AllowSuspend=yes
+#AllowHibernation=yes
+#AllowSuspendThenHibernate=yes
+#AllowHybridSleep=yes
 #AllowPowerOffInterrupts=no
 #AllowSuspendInterrupts=no
 #SuspendState=mem standby freeze

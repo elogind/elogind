@@ -18,6 +18,10 @@ struct ConfigPerfItem;
 %includes
 %%
 #if 1 /// Additions for elogind
+Sleep.AllowSuspend,                config_parse_tristate,      0, offsetof(Manager, allow_suspend)
+Sleep.AllowHibernation,            config_parse_tristate,      0, offsetof(Manager, allow_hibernation)
+Sleep.AllowSuspendThenHibernate,   config_parse_tristate,      0, offsetof(Manager, allow_suspend_then_hibernate)
+Sleep.AllowHybridSleep,            config_parse_tristate,      0, offsetof(Manager, allow_hybrid_sleep)
 Sleep.AllowPowerOffInterrupts,     config_parse_bool,          0, offsetof(Manager, allow_poweroff_interrupts)
 Sleep.AllowSuspendInterrupts,      config_parse_bool,          0, offsetof(Manager, allow_suspend_interrupts)
 Sleep.SuspendMode,                 config_parse_strv,          0, offsetof(Manager, suspend_mode)

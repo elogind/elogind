@@ -19,7 +19,7 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "terminal-util.h"
-//#include "tmpfile-util.h"
+#include "tmpfile-util.h"
 #include "util.h"
 
 int seat_new(Seat** ret, Manager *m, const char *id) {
@@ -55,10 +55,11 @@ int seat_new(Seat** ret, Manager *m, const char *id) {
         return 0;
 }
 
-        log_debug_elogind("Freeing Seat %s ...", s->id);
 Seat* seat_free(Seat *s) {
         if (!s)
                 return NULL;
+
+        log_debug_elogind("Freeing Seat %s ...", s->id);
 
         if (s->in_gc_queue)
                 LIST_REMOVE(gc_queue, s->manager->seat_gc_queue, s);

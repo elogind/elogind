@@ -15,17 +15,17 @@
 //#include "bus-unit-util.h"
 #include "bus-util.h"
 //#include "cgroup-util.h"
-//#include "device-util.h"
+#include "device-util.h"
 #include "dirent-util.h"
 //#include "efivars.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio-label.h"
-//#include "fileio.h"
+#include "fileio.h"
 #include "format-util.h"
 #include "fs-util.h"
 #include "logind.h"
-//#include "missing_capability.h"
+#include "missing_capability.h"
 #include "mkdir.h"
 #include "path-util.h"
 #include "process-util.h"
@@ -34,7 +34,7 @@
 //#include "special.h"
 #include "strv.h"
 #include "terminal-util.h"
-//#include "tmpfile-util.h"
+#include "tmpfile-util.h"
 #include "unit-name.h"
 #include "user-util.h"
 #include "utmp-wtmp.h"
@@ -1894,7 +1894,7 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
         log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unti names
+#if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_POWEROFF_TARGET,
 #else
                         HANDLE_POWEROFF,
@@ -1913,7 +1913,7 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
         log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unti names
+#if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_REBOOT_TARGET,
 #else
                         HANDLE_REBOOT,
@@ -1932,7 +1932,7 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
         log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unti names
+#if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_HALT_TARGET,
 #else
                         HANDLE_HALT,
@@ -1951,7 +1951,7 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
         log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unti names
+#if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_SUSPEND_TARGET,
 #else
                         HANDLE_SUSPEND,
@@ -1970,7 +1970,7 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
         log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unti names
+#if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_HIBERNATE_TARGET,
 #else
                         HANDLE_HIBERNATE,
@@ -1989,7 +1989,7 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
         log_debug_elogind("%s called", __FUNCTION__);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unti names
+#if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_HYBRID_SLEEP_TARGET,
 #else
                         HANDLE_HYBRID_SLEEP,
@@ -2007,7 +2007,7 @@ static int method_suspend_then_hibernate(sd_bus_message *message, void *userdata
 
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unti names
+#if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
 #else
                         HANDLE_SUSPEND_THEN_HIBERNATE,
