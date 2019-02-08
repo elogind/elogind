@@ -94,6 +94,7 @@
 
   <xi:include href="libelogind-pkgconfig.xml" />
 
+  <!-- 0 /// The example uses UnitFilesChanged which elogind does not have
   <refsect1>
     <title>Examples</title>
 
@@ -102,11 +103,12 @@
 
       <programlisting><xi:include href="send-unit-files-changed.c" parse="text" /></programlisting>
 
-      <para>This function in elogind sources is used to emit the
+      <para>This function in systemd sources is used to emit the
       <literal>UnitFilesChanged</literal> signal when the unit files have been changed.
       </para>
     </example>
   </refsect1>
+  // 0 -->
 
   <refsect1>
     <title>See Also</title>

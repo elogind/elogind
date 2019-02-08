@@ -133,6 +133,7 @@
 
   <xi:include href="libelogind-pkgconfig.xml" />
 
+  <!-- 0 /// elogind does not ship systemd-id128
   <refsect1>
     <title>Examples</title>
 
@@ -140,7 +141,7 @@
       <title>Application-specific machine ID</title>
 
       <para>First, generate the application ID:</para>
-      <programlisting>$ elogind-id128 -p new
+      <programlisting>$ systemd-id128 -p new
 As string:
 c273277323db454ea63bb96e79b53e97
 
@@ -157,6 +158,7 @@ As man:sd-id128(3) macro:
       <programlisting><xi:include href="id128-app-specific.c" parse="text" /></programlisting>
     </example>
   </refsect1>
+  // 0 -->
 
   <refsect1>
     <title>See Also</title>

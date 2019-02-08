@@ -281,11 +281,11 @@
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>sd_event_add_inotify</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <citerefentry project='man-pages'><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>,
       --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
+      <citerefentry><refentrytitle>sd_event_add_inotify</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+      <citerefentry project='man-pages'><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-event</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_event_new</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_event_now</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

@@ -140,6 +140,7 @@
 
   <xi:include href="libelogind-pkgconfig.xml" />
 
+  <!-- 0 /// This uses GetUnitByPID, which elogind does not support.
   <refsect1>
     <title>Examples</title>
 
@@ -152,6 +153,7 @@
       error handling and proper memory management.</para>
     </example>
   </refsect1>
+ // 0 -->
 
   <refsect1>
     <title>See Also</title>

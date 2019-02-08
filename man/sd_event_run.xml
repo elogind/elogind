@@ -150,13 +150,13 @@
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>sd-event</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>sd_event_add_child</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>sd_event_add_inotify</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <ulink url="https://developer.gnome.org/glib/unstable/glib-The-Main-Event-Loop.html">GLib Main Event Loop</ulink>
       --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
+      <citerefentry><refentrytitle>sd_event_add_child</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>sd_event_add_inotify</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+      <ulink url="https://developer.gnome.org/glib/unstable/glib-The-Main-Event-Loop.html">GLib Main Event Loop</ulink>
+      <citerefentry><refentrytitle>sd-event</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_event_new</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_event_add_io</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_event_add_time</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
