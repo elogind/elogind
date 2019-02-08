@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
-//#include <string.h>
+#include <string.h>
 #include <sys/types.h>
 
 struct siphash {

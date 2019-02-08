@@ -225,6 +225,7 @@ char **strv_env_merge(size_t n_lists, ...) {
 
         return TAKE_PTR(ret);
 }
+#endif // 0
 
 static bool env_match(const char *t, const char *pattern) {
         assert(t);
@@ -265,6 +266,7 @@ static bool env_entry_has_name(const char *entry, const char *name) {
         return *t == '=';
 }
 
+#if 0 /// UNNEEDED by elogind
 char **strv_env_delete(char **x, size_t n_lists, ...) {
         size_t n, i = 0;
         char **k, **r;
@@ -312,6 +314,7 @@ char **strv_env_delete(char **x, size_t n_lists, ...) {
 
         return r;
 }
+#endif // 0
 
 char **strv_env_unset(char **l, const char *p) {
 
@@ -339,6 +342,7 @@ char **strv_env_unset(char **l, const char *p) {
         return l;
 }
 
+#if 0 /// UNNEEDED by elogind
 char **strv_env_unset_many(char **l, ...) {
 
         char **f, **t;
@@ -375,6 +379,7 @@ char **strv_env_unset_many(char **l, ...) {
         *t = NULL;
         return l;
 }
+#endif // 0
 
 int strv_env_replace(char ***l, char *p) {
         const char *t, *name;
@@ -408,6 +413,7 @@ int strv_env_replace(char ***l, char *p) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 char **strv_env_set(char **x, const char *p) {
 
         _cleanup_strv_free_ char **ret = NULL;

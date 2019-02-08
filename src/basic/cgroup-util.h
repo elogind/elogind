@@ -62,6 +62,7 @@ typedef enum CGroupMask {
         _CGROUP_MASK_ALL = CGROUP_CONTROLLER_TO_MASK(_CGROUP_CONTROLLER_MAX) - 1
 } CGroupMask;
 
+#if 0 /// UNNEEDED by elogind
 static inline CGroupMask CGROUP_MASK_EXTEND_JOINED(CGroupMask mask) {
         /* We always mount "cpu" and "cpuacct" in the same hierarchy. Hence, when one bit is set also set the other */
 
@@ -73,6 +74,7 @@ static inline CGroupMask CGROUP_MASK_EXTEND_JOINED(CGroupMask mask) {
 
 CGroupMask get_cpu_accounting_mask(void);
 bool cpu_accounting_is_cheap(void);
+#endif // 0
 
 /* Special values for all weight knobs on unified hierarchy */
 #define CGROUP_WEIGHT_INVALID ((uint64_t) -1)

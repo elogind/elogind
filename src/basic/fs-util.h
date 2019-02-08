@@ -23,12 +23,8 @@ int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char
 
 int readlinkat_malloc(int fd, const char *p, char **ret);
 int readlink_malloc(const char *p, char **r);
-#if 0 /// UNNEEDED by elogind
 int readlink_value(const char *p, char **ret);
-#endif // 0
 int readlink_and_make_absolute(const char *p, char **r);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid);
 int fchmod_and_chown(int fd, mode_t mode, uid_t uid, gid_t gid);
@@ -53,8 +49,8 @@ int symlink_idempotent(const char *from, const char *to, bool make_relative);
 int symlink_atomic(const char *from, const char *to);
 int mknod_atomic(const char *path, mode_t mode, dev_t dev);
 int mkfifo_atomic(const char *path, mode_t mode);
-#endif // 0
 int mkfifoat_atomic(int dir_fd, const char *path, mode_t mode);
+#endif // 0
 
 int get_files_in_directory(const char *path, char ***list);
 

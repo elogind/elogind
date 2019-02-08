@@ -124,8 +124,6 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                 size_t l;
 
                 l = strlen(s+1);
-                if (l >= sizeof(a->sockaddr.un.sun_path) - 1)
-                if (l >= sizeof(a->sockaddr.un.sun_path) - 1) /* Note that we refuse non-NUL-terminate sockets here
                 if (l >= sizeof(a->sockaddr.un.sun_path) - 1) /* Note that we refuse non-NUL-terminated sockets here
                                                                * when parsing, even though abstract namespace sockets
                                                                * explicitly allow embedded NUL bytes and don't consider
@@ -1314,6 +1312,7 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
 
         return NULL;
 }
+#endif // 0
 
 int socket_ioctl_fd(void) {
         int fd;
@@ -1331,8 +1330,8 @@ int socket_ioctl_fd(void) {
 
         return fd;
 }
-#endif // 0
 
+#if 0 /// UNNEEDED by elogind
 int sockaddr_un_unlink(const struct sockaddr_un *sa) {
         const char *p, * nul;
 
@@ -1356,6 +1355,7 @@ int sockaddr_un_unlink(const struct sockaddr_un *sa) {
 
         return 1;
 }
+#endif // 0
 
 int sockaddr_un_set_path(struct sockaddr_un *ret, const char *path) {
         size_t l;

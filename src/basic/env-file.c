@@ -1,18 +1,18 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <stdio_ext.h>
+#include <stdio_ext.h>
 
-//#include "alloc-util.h"
-//#include "env-file.h"
-//#include "env-util.h"
+#include "alloc-util.h"
+#include "env-file.h"
+#include "env-util.h"
 //#include "escape.h"
 //#include "fd-util.h"
-//#include "fileio.h"
+#include "fileio.h"
 //#include "fs-util.h"
-//#include "string-util.h"
-//#include "strv.h"
+#include "string-util.h"
+#include "strv.h"
 //#include "tmpfile-util.h"
-//#include "utf8.h"
+#include "utf8.h"
 
 static int parse_env_file_internal(
                 FILE *f,
@@ -420,6 +420,7 @@ int load_env_file(FILE *f, const char *fname, char ***rl) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int load_env_file_push_pairs(
                 const char *filename, unsigned line,
                 const char *key, char *value,
@@ -572,3 +573,4 @@ int write_env_file(const char *fname, char **l) {
         unlink(p);
         return r;
 }
+#endif // 0

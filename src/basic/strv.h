@@ -9,7 +9,7 @@
 #include "alloc-util.h"
 #include "extract-word.h"
 #include "macro.h"
-//#include "string-util.h"
+#include "string-util.h"
 #include "util.h"
 
 char *strv_find(char **l, const char *name) _pure_;

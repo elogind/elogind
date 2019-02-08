@@ -13,8 +13,8 @@
 #define CAP_ALL (uint64_t) -1
 
 unsigned long cap_last_cap(void);
-#if 0 /// UNNEEDED by elogind
 int have_effective_cap(int value);
+#if 0 /// UNNEEDED by elogind
 int capability_bounding_set_drop(uint64_t keep, bool right_now);
 int capability_bounding_set_drop_usermode(uint64_t keep);
 
@@ -24,6 +24,7 @@ int capability_update_inherited_set(cap_t caps, uint64_t ambient_set);
 int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities);
 
 int drop_capability(cap_value_t cv);
+#endif // 0
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(cap_t, cap_free);
 #define _cleanup_cap_free_ _cleanup_(cap_freep)
@@ -33,7 +34,6 @@ static inline void cap_free_charpp(char **p) {
                 cap_free(*p);
 }
 #define _cleanup_cap_free_charp_ _cleanup_(cap_free_charpp)
-#endif // 0
 
 static inline bool cap_test_all(uint64_t caps) {
         uint64_t m;
@@ -49,6 +49,7 @@ bool ambient_capabilities_supported(void);
  * order to avoid complaints about shifting a signed int left by 31 bits, which would make it negative. */
 #define CAP_TO_MASK_CORRECTED(x) (1U << ((x) & 31U))
 
+#if 0 /// UNNEEDED by elogind
 typedef struct CapabilityQuintet {
         /* Stores all five types of capabilities in one go. Note that we use (uint64_t) -1 for unset here. This hence
          * needs to be updated as soon as Linux learns more than 63 caps. */
@@ -72,3 +73,4 @@ static inline bool capability_quintet_is_set(const CapabilityQuintet *q) {
 }
 
 int capability_quintet_enforce(const CapabilityQuintet *q);
+#endif // 0

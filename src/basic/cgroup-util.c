@@ -3,16 +3,16 @@
 #include <dirent.h>
 #include <errno.h>
 #include <ftw.h>
-//#include <limits.h>
+#include <limits.h>
 #include <signal.h>
-//#include <stddef.h>
+#include <stddef.h>
 #include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-//#include <sys/statfs.h>
+#include <sys/statfs.h>
 #include <sys/types.h>
-//#include <sys/utsname.h>
+#include <sys/utsname.h>
 #include <sys/xattr.h>
 #include <unistd.h>
 
@@ -28,7 +28,7 @@
 //#include "log.h"
 #include "login-util.h"
 #include "macro.h"
-//#include "missing.h"
+#include "missing.h"
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
@@ -996,10 +996,10 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
 #if 0 /// At elogind we do not want that (false alarm) "maybe uninitialized" warning
         const char *fs, *controller_str;
-        int unified, r;
 #else
         const char *fs, *controller_str = NULL;
 #endif // 0
+        int unified, r;
         size_t cs = 0;
 
         assert(path);
@@ -1814,7 +1814,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
 #else
         p = strappend("/run/systemd/sessions/", slice);
 
-        r = parse_env_file(NULL, p, NEWLINE, "UID", &s, NULL);
+        r = read_one_line_file(p, &s);
         if (r == -ENOENT)
                 return -ENXIO;
         if (r < 0)
@@ -2670,6 +2670,8 @@ static int cg_unified_update(void) {
                                        (unsigned long long)fs.f_type);
 #else
                         unified_cache = CGROUP_UNIFIED_NONE;
+                }
+        }
 #endif // 0
 
         return 0;
@@ -3019,12 +3021,15 @@ static const char *cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_MEMORY] = "memory",
         [CGROUP_CONTROLLER_DEVICES] = "devices",
         [CGROUP_CONTROLLER_PIDS] = "pids",
+#if 0 /// elogind does not control/manage Berkeley packet filters
         [CGROUP_CONTROLLER_BPF_FIREWALL] = "bpf-firewall",
         [CGROUP_CONTROLLER_BPF_DEVICES] = "bpf-devices",
+#endif // 0
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_controller, CGroupController);
 
+#if 0 /// UNNEEDED by elogind
 CGroupMask get_cpu_accounting_mask(void) {
         static CGroupMask needed_mask = (CGroupMask) -1;
 
@@ -3075,3 +3080,4 @@ CGroupMask get_cpu_accounting_mask(void) {
 bool cpu_accounting_is_cheap(void) {
         return get_cpu_accounting_mask() == 0;
 }
+#endif // 0

@@ -240,7 +240,6 @@ int get_user_creds(
         }
 
 
-#if 0 /// UNNEEDED by elogind
         if (home) {
                 if (FLAGS_SET(flags, USER_CREDS_CLEAN) && empty_or_root(p->pw_dir))
                         *home = NULL;
@@ -258,6 +257,7 @@ int get_user_creds(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int get_group_creds(const char **groupname, gid_t *gid, UserCredsFlags flags) {
         struct group *g;
         gid_t id;

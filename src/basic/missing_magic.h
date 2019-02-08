@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <linux/magic.h>
+#include <linux/magic.h>
 
 /* 62aa81d7c4c24b90fdb61da70ac0dbbc414f9939 (4.13) */
 #ifndef OCFS2_SUPER_MAGIC

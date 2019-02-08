@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <ctype.h>
+#include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -24,7 +24,7 @@
 #include "path-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
-//#include "tmpfile-util.h"
+#include "tmpfile-util.h"
 
 #define READ_FULL_BYTES_MAX (4U*1024U*1024U)
 

@@ -14,7 +14,7 @@
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "fs-util.h"
-//#include "locale-util.h"
+#include "locale-util.h"
 //#include "log.h"
 //#include "macro.h"
 //#include "missing.h"
@@ -174,7 +174,6 @@ int readlink_malloc(const char *p, char **ret) {
         return readlinkat_malloc(AT_FDCWD, p, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 int readlink_value(const char *p, char **ret) {
         _cleanup_free_ char *link = NULL;
         char *value;
@@ -196,7 +195,6 @@ int readlink_value(const char *p, char **ret) {
 
         return 0;
 }
-#endif // 0
 
 int readlink_and_make_absolute(const char *p, char **r) {
         _cleanup_free_ char *target = NULL;
@@ -493,7 +491,6 @@ int mkfifo_atomic(const char *path, mode_t mode) {
 
         return 0;
 }
-#endif // 0
 
 int mkfifoat_atomic(int dirfd, const char *path, mode_t mode) {
         _cleanup_free_ char *t = NULL;
@@ -519,6 +516,7 @@ int mkfifoat_atomic(int dirfd, const char *path, mode_t mode) {
 
         return 0;
 }
+#endif // 0
 
 int get_files_in_directory(const char *path, char ***list) {
         _cleanup_closedir_ DIR *d = NULL;

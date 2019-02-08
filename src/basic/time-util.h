@@ -141,9 +141,9 @@ bool timezone_is_valid(const char *name, int log_level);
 #endif // 0
 bool clock_boottime_supported(void);
 bool clock_supported(clockid_t clock);
-#if 0 /// UNNEEDED by elogind
 clockid_t clock_boottime_or_monotonic(void);
 
+#if 0 /// UNNEEDED by elogind
 usec_t usec_shift_clock(usec_t, clockid_t from, clockid_t to);
 #endif // 0
 

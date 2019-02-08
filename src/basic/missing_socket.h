@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <sys/socket.h>
+#include <sys/socket.h>
 
 #if HAVE_LINUX_VM_SOCKETS_H
-//#include <linux/vm_sockets.h>
+#include <linux/vm_sockets.h>
 #else
 #define VMADDR_CID_ANY -1U
 struct sockaddr_vm {

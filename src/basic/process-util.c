@@ -35,7 +35,7 @@
 #include "missing.h"
 #include "process-util.h"
 #include "raw-clone.h"
-//#include "rlimit-util.h"
+#include "rlimit-util.h"
 #include "signal-util.h"
 //#include "stat-util.h"
 #include "string-table.h"
@@ -608,9 +608,11 @@ int get_process_root(pid_t pid, char **root) {
 
         return get_process_link_contents(p, root);
 }
+#endif // 0
 
 #define ENVIRONMENT_BLOCK_MAX (5U*1024U*1024U)
 
+#if 0 /// UNNEEDED by elogind
 int get_process_environ(pid_t pid, char **env) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *outcome = NULL;

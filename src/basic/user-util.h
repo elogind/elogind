@@ -2,9 +2,11 @@
 #pragma once
 
 //#include <grp.h>
+#if 0 /// No gshadow needed in elogind
 #if ENABLE_GSHADOW
 //#include <gshadow.h>
 #endif
+#endif // 0
 //#include <pwd.h>
 //#include <shadow.h>
 #include <stdbool.h>

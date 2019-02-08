@@ -72,8 +72,8 @@ bool in_initrd(void);
 void in_initrd_force(bool value);
 
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
-#endif // 0
                  __compar_d_fn_t compar, void *arg);
+#endif // 0
 
 #define typesafe_bsearch_r(k, b, n, func, userdata)                     \
         ({                                                              \

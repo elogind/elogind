@@ -1,20 +1,20 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <errno.h>
-//#include <fcntl.h>
-//#include <stdio_ext.h>
-//#include <sys/mount.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio_ext.h>
+#include <sys/mount.h>
 
-//#include "alloc-util.h"
-//#include "fd-util.h"
-//#include "fileio.h"
-//#include "fs-util.h"
-//#include "missing.h"
-//#include "mountpoint-util.h"
-//#include "parse-util.h"
-//#include "path-util.h"
-//#include "stdio-util.h"
-//#include "strv.h"
+#include "alloc-util.h"
+#include "fd-util.h"
+#include "fileio.h"
+#include "fs-util.h"
+#include "missing.h"
+#include "mountpoint-util.h"
+#include "parse-util.h"
+#include "path-util.h"
+#include "stdio-util.h"
+#include "strv.h"
 
 /* This is the original MAX_HANDLE_SZ definition from the kernel, when the API was introduced. We use that in place of
  * any more currently defined value to future-proof things: if the size is increased in the API headers, and our code
@@ -98,7 +98,7 @@ static int fd_fdinfo_mnt_id(int fd, const char *filename, int flags, int *mnt_id
         if ((flags & AT_EMPTY_PATH) && isempty(filename))
                 xsprintf(path, "/proc/self/fdinfo/%i", fd);
         else {
-                subfd = openat(fd, filename, O_CLOEXEC|O_PATH);
+                subfd = openat(fd, filename, O_CLOEXEC|O_PATH|(flags & AT_SYMLINK_FOLLOW ? 0 : O_NOFOLLOW));
                 if (subfd < 0)
                         return -errno;
 
@@ -289,6 +289,7 @@ int path_get_mnt_id(const char *path, int *ret) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool fstype_is_network(const char *fstype) {
         const char *x;
 
@@ -368,6 +369,7 @@ bool fstype_can_uid_gid(const char *fstype) {
                           "ntfs",
                           "vfat");
 }
+#endif // 0
 
 int dev_is_devtmpfs(void) {
         _cleanup_fclose_ FILE *proc_self_mountinfo = NULL;
@@ -428,6 +430,7 @@ const char *mount_propagation_flags_to_string(unsigned long flags) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
 
         if (isempty(name))
@@ -442,3 +445,4 @@ int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
                 return -EINVAL;
         return 0;
 }
+#endif // 0

@@ -307,6 +307,8 @@ basic_sources = files('''
         mkdir.c
         mkdir.h
         mkdir-label.c
+        mountpoint-util.c
+        mountpoint-util.h
         parse-printf-format.c
         parse-printf-format.h
         parse-util.c

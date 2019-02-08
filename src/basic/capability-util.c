@@ -17,7 +17,6 @@
 #include "user-util.h"
 #include "util.h"
 
-#if 0 /// UNNEEDED by elogind
 int have_effective_cap(int value) {
         _cleanup_cap_free_ cap_t cap;
         cap_flag_value_t fv;
@@ -31,7 +30,6 @@ int have_effective_cap(int value) {
         else
                 return fv == CAP_SET;
 }
-#endif // 0
 
 unsigned long cap_last_cap(void) {
         static thread_local unsigned long saved;
@@ -362,7 +360,6 @@ bool ambient_capabilities_supported(void) {
 
         return cache;
 }
-#endif // 0
 
 int capability_quintet_enforce(const CapabilityQuintet *q) {
         _cleanup_cap_free_ cap_t c = NULL;
@@ -488,3 +485,4 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
 
         return 0;
 }
+#endif // 0

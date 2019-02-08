@@ -16,7 +16,7 @@
 
 #include "def.h"
 #include "dirent-util.h"
-//#include "env-util.h"
+#include "env-util.h"
 #include "fd-util.h"
 #include "hashmap.h"
 #include "locale-util.h"

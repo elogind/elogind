@@ -77,7 +77,6 @@ static inline bool path_equal_ptr(const char *a, const char *b) {
                 _found;                                         \
         })
 
-#if 0 /// UNNEEDED by elogind
 #define PATH_STARTSWITH_SET(p, ...)                             \
         ({                                                      \
                 const char *_p = (p);                           \
@@ -90,6 +89,7 @@ static inline bool path_equal_ptr(const char *a, const char *b) {
                 _found;                                         \
         })
 
+#if 0 /// UNNEEDED by elogind
 int path_strv_make_absolute_cwd(char **l);
 #endif // 0
 char** path_strv_resolve(char **l, const char *root);

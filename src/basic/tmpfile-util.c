@@ -2,20 +2,20 @@
 
 //#include <sys/mman.h>
 
-//#include "alloc-util.h"
-//#include "fd-util.h"
-//#include "fs-util.h"
+#include "alloc-util.h"
+#include "fd-util.h"
+#include "fs-util.h"
 //#include "hexdecoct.h"
-//#include "macro.h"
+#include "macro.h"
 //#include "memfd-util.h"
 //#include "missing_syscall.h"
-//#include "path-util.h"
+#include "path-util.h"
 //#include "process-util.h"
 //#include "random-util.h"
 //#include "stdio-util.h"
-//#include "string-util.h"
-//#include "tmpfile-util.h"
-//#include "umask-util.h"
+#include "string-util.h"
+#include "tmpfile-util.h"
+#include "umask-util.h"
 
 int fopen_temporary(const char *path, FILE **_f, char **_temp_path) {
         FILE *f;
@@ -119,6 +119,7 @@ int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int tempfn_random(const char *p, const char *extra, char **ret) {
         const char *fn;
         char *t, *x;
@@ -206,6 +207,7 @@ int tempfn_random_child(const char *p, const char *extra, char **ret) {
         *ret = path_simplify(t, false);
         return 0;
 }
+#endif // 0
 
 int open_tmpfile_unlinkable(const char *directory, int flags) {
         char *p;
@@ -237,6 +239,7 @@ int open_tmpfile_unlinkable(const char *directory, int flags) {
         return fd;
 }
 
+#if 0 /// UNNEEDED by elogind
 int open_tmpfile_linkable(const char *target, int flags, char **ret_path) {
         _cleanup_free_ char *tmp = NULL;
         int r, fd;
@@ -300,6 +303,7 @@ int link_tmpfile(int fd, const char *path, const char *target) {
 
         return 0;
 }
+#endif // 0
 
 int mkdtemp_malloc(const char *template, char **ret) {
         _cleanup_free_ char *p = NULL;

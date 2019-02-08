@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <inttypes.h>
-//#include <linux/netlink.h>
+#include <inttypes.h>
+#include <linux/netlink.h>
 //#include <linux/if_infiniband.h>
 //#include <linux/if_packet.h>
 #include <netinet/ether.h>
@@ -14,7 +14,7 @@
 #include <sys/un.h>
 
 #include "macro.h"
-//#include "missing_socket.h"
+#include "missing_socket.h"
 //#include "sparse-endian.h"
 
 union sockaddr_union {
@@ -28,18 +28,20 @@ union sockaddr_union {
         struct sockaddr_in in;
         struct sockaddr_in6 in6;
         struct sockaddr_un un;
-#if 0 /// UNNEEDED by elogind.
         struct sockaddr_nl nl;
+#if 0 /// UNNEEDED by elogind.
         struct sockaddr_ll ll;
 #endif // 0
         struct sockaddr_vm vm;
 
+#if 0 /// UNNEEDED by elogind
         /* Ensure there is enough space to store Infiniband addresses */
         uint8_t ll_buffer[offsetof(struct sockaddr_ll, sll_addr) + CONST_MAX(ETH_ALEN, INFINIBAND_ALEN)];
 
         /* Ensure there is enough space after the AF_UNIX sun_path for one more NUL byte, just to be sure that the path
          * component is always followed by at least one NUL byte. */
         uint8_t un_buffer[sizeof(struct sockaddr_un) + 1];
+#endif // 0
 };
 
 #if 0 /// UNNEEDED by elogind
@@ -200,9 +202,7 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
                          strnlen(_sa->sun_path, sizeof(_sa->sun_path))+1); \
         })
 
-#if 0 /// UNNEEDED by elogind
 int socket_ioctl_fd(void);
-#endif // 0
 
 int sockaddr_un_set_path(struct sockaddr_un *ret, const char *path);
 

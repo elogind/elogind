@@ -63,7 +63,6 @@ int reset_terminal(const char *name);
 #endif // 0
 
 int open_terminal(const char *name, int mode);
-#if 0 /// UNNEEDED by elogind
 
 /* Flags for tweaking the way we become the controlling process of a terminal. */
 typedef enum AcquireTerminalFlags {
@@ -81,6 +80,7 @@ typedef enum AcquireTerminalFlags {
 } AcquireTerminalFlags;
 
 int acquire_terminal(const char *name, AcquireTerminalFlags flags, usec_t timeout);
+#if 0 /// UNNEEDED by elogind
 int release_terminal(void);
 
 int terminal_vhangup_fd(int fd);

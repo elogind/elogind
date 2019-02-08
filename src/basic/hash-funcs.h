@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "macro.h"
 #include "siphash24.h"
 

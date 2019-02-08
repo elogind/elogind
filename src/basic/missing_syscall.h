@@ -3,24 +3,24 @@
 
 /* Missing glibc definitions to access certain kernel APIs */
 
-//#include <fcntl.h>
-//#include <sys/syscall.h>
-#if 0 /// UNNEEDED by elogind
+#include <fcntl.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
-//#include <unistd.h>
+#include <unistd.h>
 
 #ifdef ARCH_MIPS
-//#include <asm/sgidefs.h>
+#include <asm/sgidefs.h>
 #endif
 
-//#include "missing_keyctl.h"
-//#include "missing_stat.h"
+#include "missing_keyctl.h"
+#include "missing_stat.h"
 
 /* linux/kcmp.h */
 #ifndef KCMP_FILE /* 3f4994cfc15f38a3159c6e3a4b3ab2e1481a6b02 (3.19) */
 #define KCMP_FILE 0
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if !HAVE_PIVOT_ROOT
 static inline int missing_pivot_root(const char *new_root, const char *put_old) {
         return syscall(__NR_pivot_root, new_root, put_old);
@@ -343,6 +343,7 @@ static inline ssize_t missing_copy_file_range(int fd_in, loff_t *off_in,
 
 /* ======================================================================= */
 
+#if 0 /// elogind does not control/manage Berkeley packet filters
 #if !HAVE_BPF
 #  ifndef __NR_bpf
 #    if defined __i386__
@@ -377,6 +378,7 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 
 #  define bpf missing_bpf
 #endif
+#endif // 0
 
 /* ======================================================================= */
 

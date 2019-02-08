@@ -10,13 +10,13 @@
 //#include <sys/types.h>
 #include <unistd.h>
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "fs-util.h"
 #include "macro.h"
 #include "missing.h"
-//#include "parse-util.h"
+#include "parse-util.h"
 #include "stat-util.h"
 #include "string-util.h"
 

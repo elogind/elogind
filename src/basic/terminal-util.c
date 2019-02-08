@@ -6,14 +6,14 @@
 #include <linux/kd.h>
 #include <linux/tiocl.h>
 #include <linux/vt.h>
-//#include <poll.h>
+#include <poll.h>
 //#include <signal.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/inotify.h>
-//#include <sys/ioctl.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/sysmacros.h>
 #include <sys/time.h>
@@ -356,7 +356,6 @@ int open_terminal(const char *name, int mode) {
         return fd;
 }
 
-#if 0 /// UNNEEDED by elogind
 int acquire_terminal(
                 const char *name,
                 AcquireTerminalFlags flags,
@@ -485,7 +484,6 @@ int acquire_terminal(
 
         return TAKE_FD(fd);
 }
-#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int release_terminal(void) {

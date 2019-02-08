@@ -5,7 +5,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 typedef enum CopyFlags {
@@ -15,9 +15,8 @@ typedef enum CopyFlags {
         COPY_SAME_MOUNT = 1 << 3, /* Don't descend recursively into other file systems, across mount point boundaries */
 } CopyFlags;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 typedef int (*copy_progress_bytes_t)(uint64_t n_bytes, void *userdata);
+#if 0 /// UNNEEDED by elogind
 typedef int (*copy_progress_path_t)(const char *path, const struct stat *st, void *userdata);
 
 int copy_file_fd_full(const char *from, int to, CopyFlags copy_flags, copy_progress_bytes_t progress, void *userdata);
@@ -52,6 +51,7 @@ int copy_directory_full(const char *from, const char *to, CopyFlags copy_flags, 
 static inline int copy_directory(const char *from, const char *to, CopyFlags copy_flags) {
         return copy_directory_full(from, to, copy_flags, NULL, NULL, NULL);
 }
+#endif // 0
 
 int copy_bytes_full(int fdf, int fdt, uint64_t max_bytes, CopyFlags copy_flags, void **ret_remains, size_t *ret_remains_size, copy_progress_bytes_t progress, void *userdata);
 static inline int copy_bytes(int fdf, int fdt, uint64_t max_bytes, CopyFlags copy_flags) {

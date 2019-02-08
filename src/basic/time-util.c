@@ -1362,21 +1362,13 @@ bool clock_boottime_supported(void) {
         return supported;
 }
 
-#if 0 /// UNNEEDED by elogind
 clockid_t clock_boottime_or_monotonic(void) {
         if (clock_boottime_supported())
                 return CLOCK_BOOTTIME;
         else
                 return CLOCK_MONOTONIC;
 }
-#endif // 0
 
-#if 1 /// let's add a diagnostic push to silence -Wimplicit-fallthrough to elogind
-#  if defined(__GNUC__) && (__GNUC__ > 6)
-#    pragma GCC diagnostic push
-#    pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-#  endif // __GNUC__
-#endif // 1
 bool clock_supported(clockid_t clock) {
         struct timespec ts;
 
@@ -1399,11 +1391,6 @@ bool clock_supported(clockid_t clock) {
                 return clock_gettime(clock, &ts) >= 0;
         }
 }
-#if 1 /// end diagnostic push in elogind
-#  ifdef __GNUC__
-#    pragma GCC diagnostic pop
-#  endif // __GNUC__
-#endif // 1
 
 #if 0 /// UNNEEDED by elogind
 int get_timezone(char **tz) {

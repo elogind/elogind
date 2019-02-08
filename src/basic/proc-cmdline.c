@@ -69,8 +69,8 @@ static int proc_cmdline_extract_first(const char **p, char **ret_word, ProcCmdli
                 } else if (FLAGS_SET(flags, PROC_CMDLINE_RD_STRICT) && in_initrd())
                         continue; /* And optionally filter out arguments that are intended only for the host */
 #else
-                } else if (in_initrd() && flags & PROC_CMDLINE_RD_STRICT)
                         continue;
+                }
 #endif // 0
 
                 *p = q;

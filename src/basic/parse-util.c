@@ -17,7 +17,7 @@
 #include "missing.h"
 #include "parse-util.h"
 #include "process-util.h"
-//#include "stat-util.h"
+#include "stat-util.h"
 #include "string-util.h"
 
 /// Additional includes needed by elogind
@@ -59,6 +59,7 @@ int parse_pid(const char *s, pid_t* ret_pid) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_mode(const char *s, mode_t *ret) {
         char *x;
         long l;
@@ -82,6 +83,7 @@ int parse_mode(const char *s, mode_t *ret) {
         *ret = (mode_t) l;
         return 0;
 }
+#endif // 0
 
 int parse_ifindex(const char *s, int *ret) {
         int ifi, r;
@@ -96,6 +98,7 @@ int parse_ifindex(const char *s, int *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_mtu(int family, const char *s, uint32_t *ret) {
         uint64_t u;
         size_t m;
@@ -119,6 +122,7 @@ int parse_mtu(int family, const char *s, uint32_t *ret) {
         *ret = (uint32_t) u;
         return 0;
 }
+#endif // 0
 
 int parse_size(const char *t, uint64_t base, uint64_t *size) {
 
@@ -285,7 +289,6 @@ int parse_range(const char *t, unsigned *lower, unsigned *upper) {
         *upper = u;
         return 0;
 }
-#endif // 0
 
 int parse_errno(const char *t) {
         int r, e;
@@ -344,6 +347,7 @@ int parse_syscall_and_errno(const char *in, char **name, int *error) {
 
         return 0;
 }
+#endif // 0
 
 char *format_bytes(char *buf, size_t l, uint64_t t) {
         unsigned i;
@@ -571,6 +575,7 @@ int safe_atod(const char *s, double *ret_d) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
         size_t i;
         unsigned val = 0;
@@ -634,6 +639,7 @@ int parse_percent(const char *p) {
 
         return v;
 }
+#endif // 0
 
 int parse_permille_unbounded(const char *p) {
         const char *pc, *pm, *dot, *n;
@@ -718,7 +724,6 @@ int parse_ip_port(const char *s, uint16_t *ret) {
 
         return 0;
 }
-#endif // 0
 
 int parse_ip_port_range(const char *s, uint16_t *low, uint16_t *high) {
         unsigned l, h;
@@ -739,6 +744,7 @@ int parse_ip_port_range(const char *s, uint16_t *low, uint16_t *high) {
 
         return 0;
 }
+#endif // 0
 
 int parse_dev(const char *s, dev_t *ret) {
         const char *major;
@@ -768,6 +774,7 @@ int parse_dev(const char *s, dev_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_oom_score_adjust(const char *s, int *ret) {
         int r, v;
 
@@ -784,3 +791,4 @@ int parse_oom_score_adjust(const char *s, int *ret) {
         *ret = v;
         return 0;
 }
+#endif // 0

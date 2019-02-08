@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "macro.h"
+#include "macro.h"
 
 enum {
         CONF_FILES_EXECUTABLE    = 1 << 0,

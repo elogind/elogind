@@ -45,9 +45,6 @@ int read_full_stream(FILE *f, char **contents, size_t *size);
 int verify_file(const char *fn, const char *blob, bool accept_extra_nl);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 int executable_is_script(const char *path, char **interpreter);
 #endif // 0
 
@@ -68,12 +65,6 @@ int write_timestamp_file_atomic(const char *fn, usec_t n);
 int read_timestamp_file(const char *fn, usec_t *ret);
 
 int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space);
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0
 
 typedef enum ReadLineFlags {
