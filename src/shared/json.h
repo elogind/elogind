@@ -2,13 +2,13 @@
 
 #pragma once
 
-//#include <stdbool.h>
-//#include <stddef.h>
-//#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
-//#include "macro.h"
-//#include "string-util.h"
-//#include "util.h"
+#include "macro.h"
+#include "string-util.h"
+#include "util.h"
 
 /*
   In case you wonder why we have our own JSON implementation, here are a couple of reasons why this implementation has
@@ -150,17 +150,18 @@ struct json_variant_foreach_state {
 
 int json_variant_get_source(JsonVariant *v, const char **ret_source, unsigned *ret_line, unsigned *ret_column);
 
-enum {
-        JSON_FORMAT_NEWLINE = 1 << 0, /* suffix with newline */
-        JSON_FORMAT_PRETTY  = 1 << 1, /* add internal whitespace to appeal to human readers */
-        JSON_FORMAT_COLOR   = 1 << 2, /* insert ANSI color sequences */
-        JSON_FORMAT_SOURCE  = 1 << 3, /* prefix with source filename/line/column */
-        JSON_FORMAT_SSE     = 1 << 4, /* prefix/suffix with W3C server-sent events */
-        JSON_FORMAT_SEQ     = 1 << 5, /* prefix/suffix with RFC 7464 application/json-seq */
-};
+typedef enum JsonFormatFlags {
+        JSON_FORMAT_NEWLINE    = 1 << 0, /* suffix with newline */
+        JSON_FORMAT_PRETTY     = 1 << 1, /* add internal whitespace to appeal to human readers */
+        JSON_FORMAT_COLOR      = 1 << 2, /* insert ANSI color sequences */
+        JSON_FORMAT_COLOR_AUTO = 1 << 3, /* insetr ANSI color sequences if colors_enabled() says so */
+        JSON_FORMAT_SOURCE     = 1 << 4, /* prefix with source filename/line/column */
+        JSON_FORMAT_SSE        = 1 << 5, /* prefix/suffix with W3C server-sent events */
+        JSON_FORMAT_SEQ        = 1 << 6, /* prefix/suffix with RFC 7464 application/json-seq */
+} JsonFormatFlags;
 
-int json_variant_format(JsonVariant *v, unsigned flags, char **ret);
-void json_variant_dump(JsonVariant *v, unsigned flags, FILE *f, const char *prefix);
+int json_variant_format(JsonVariant *v, JsonFormatFlags flags, char **ret);
+void json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const char *prefix);
 
 int json_parse(const char *string, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
 int json_parse_continue(const char **p, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
@@ -177,6 +178,7 @@ enum {
         _JSON_BUILD_OBJECT_BEGIN,
         _JSON_BUILD_OBJECT_END,
         _JSON_BUILD_PAIR,
+        _JSON_BUILD_PAIR_CONDITION,
         _JSON_BUILD_NULL,
         _JSON_BUILD_VARIANT,
         _JSON_BUILD_LITERAL,
@@ -192,6 +194,7 @@ enum {
 #define JSON_BUILD_ARRAY(...) _JSON_BUILD_ARRAY_BEGIN, __VA_ARGS__, _JSON_BUILD_ARRAY_END
 #define JSON_BUILD_OBJECT(...) _JSON_BUILD_OBJECT_BEGIN, __VA_ARGS__, _JSON_BUILD_OBJECT_END
 #define JSON_BUILD_PAIR(n, ...) _JSON_BUILD_PAIR, ({ const char *_x = n; _x; }), __VA_ARGS__
+#define JSON_BUILD_PAIR_CONDITION(c, n, ...) _JSON_BUILD_PAIR_CONDITION, ({ bool _x = c; _x; }), ({ const char *_x = n; _x; }), __VA_ARGS__
 #define JSON_BUILD_NULL _JSON_BUILD_NULL
 #define JSON_BUILD_VARIANT(v) _JSON_BUILD_VARIANT, ({ JsonVariant *_x = v; _x; })
 #define JSON_BUILD_LITERAL(l) _JSON_BUILD_LITERAL, ({ const char *_x = l; _x; })
@@ -272,9 +275,9 @@ int json_log_internal(JsonVariant *variant, int level, int error, const char *fi
 
 #define JSON_VARIANT_STRING_CONST(x) _JSON_VARIANT_STRING_CONST(UNIQ, (x))
 
-#define _JSON_VARIANT_STRING_CONST(xq, x)                                       \
+#define _JSON_VARIANT_STRING_CONST(xq, x)                               \
         ({                                                              \
-                __attribute__((__aligned__(2))) static const char UNIQ_T(json_string_const, xq)[] = (x); \
+                _align_(2) static const char UNIQ_T(json_string_const, xq)[] = (x); \
                 assert((((uintptr_t) UNIQ_T(json_string_const, xq)) & 1) == 0); \
                 (JsonVariant*) ((uintptr_t) UNIQ_T(json_string_const, xq) + 1); \
         })

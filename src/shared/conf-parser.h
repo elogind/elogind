@@ -126,9 +126,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_si_size);
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_bool);
-#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
-#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_string);
 #if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_path);

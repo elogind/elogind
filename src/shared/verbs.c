@@ -23,7 +23,7 @@ bool running_in_chroot_or_offline(void) {
         /* Added to support use cases like rpm-ostree, where from %post scripts we only want to execute "preset", but
          * not "start"/"restart" for example.
          *
-         * See doc/ENVIRONMENT.md for docs.
+         * See docs/ENVIRONMENT.md for docs.
          */
         r = getenv_bool("SYSTEMD_OFFLINE");
         if (r < 0 && r != -ENXIO)
@@ -59,7 +59,9 @@ int dispatch_verb(int argc, char *argv[], const Verb verbs[], void *userdata) {
         assert(argc >= optind);
 
         left = argc - optind;
-        name = argv[optind];
+        argv += optind;
+        optind = 0;
+        name = argv[0];
 
         for (i = 0;; i++) {
                 bool found;
@@ -90,16 +92,14 @@ int dispatch_verb(int argc, char *argv[], const Verb verbs[], void *userdata) {
                 left = 1;
 
         if (verb->min_args != VERB_ANY &&
-            (unsigned) left < verb->min_args) {
-                log_error("Too few arguments.");
-                return -EINVAL;
-        }
+            (unsigned) left < verb->min_args)
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                       "Too few arguments.");
 
         if (verb->max_args != VERB_ANY &&
-            (unsigned) left > verb->max_args) {
-                log_error("Too many arguments.");
-                return -EINVAL;
-        }
+            (unsigned) left > verb->max_args)
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                       "Too many arguments.");
 
         if ((verb->flags & VERB_ONLINE_ONLY) && running_in_chroot_or_offline()) {
                 if (name)
@@ -116,7 +116,7 @@ int dispatch_verb(int argc, char *argv[], const Verb verbs[], void *userdata) {
         }
 
         if (name)
-                return verb->dispatch(left, argv + optind, userdata);
+                return verb->dispatch(left, argv, userdata);
         else {
                 char* fake[2] = {
                         (char*) verb->verb,

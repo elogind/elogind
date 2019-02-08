@@ -12,11 +12,14 @@
 
 #include "copy.h"
 #include "fd-util.h"
+#include "fileio.h"
+#include "io-util.h"
 #include "locale-util.h"
 #include "log.h"
 #include "macro.h"
 #include "pager.h"
 #include "process-util.h"
+//#include "rlimit-util.h"
 #include "signal-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -41,12 +44,50 @@ _noreturn_ static void pager_fallback(void) {
         _exit(EXIT_SUCCESS);
 }
 
-int pager_open(bool no_pager, bool jump_to_end) {
-        _cleanup_close_pair_ int fd[2] = { -1, -1 };
-        const char *pager;
+static int no_quit_on_interrupt(int exe_name_fd, const char *less_opts) {
+        _cleanup_fclose_ FILE *file = NULL;
+        _cleanup_free_ char *line = NULL;
         int r;
 
-        if (no_pager)
+        assert(exe_name_fd >= 0);
+        assert(less_opts);
+
+        /* This takes ownership of exe_name_fd */
+        file = fdopen(exe_name_fd, "r");
+        if (!file) {
+                safe_close(exe_name_fd);
+                return log_error_errno(errno, "Failed to create FILE object: %m");
+        }
+
+        /* Find the last line */
+        for (;;) {
+                _cleanup_free_ char *t = NULL;
+
+                r = read_line(file, LONG_LINE_MAX, &t);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to read from socket: %m");
+                if (r == 0)
+                        break;
+
+                free_and_replace(line, t);
+        }
+
+        /* We only treat "less" specially.
+         * Return true whenever option K is *not* set. */
+        r = streq_ptr(line, "less") && !strchr(less_opts, 'K');
+
+        log_debug("Pager executable is \"%s\", options \"%s\", quit_on_interrupt: %s",
+                  strnull(line), less_opts, yes_no(!r));
+        return r;
+}
+
+int pager_open(PagerFlags flags) {
+        _cleanup_close_pair_ int fd[2] = { -1, -1 }, exe_name_pipe[2] = { -1, -1 };
+        _cleanup_strv_free_ char **pager_args = NULL;
+        const char *pager, *less_opts;
+        int r;
+
+        if (flags & PAGER_DISABLE)
                 return 0;
 
         if (pager_pid > 0)
@@ -56,15 +97,21 @@ int pager_open(bool no_pager, bool jump_to_end) {
                 return 0;
 
         if (!is_main_thread())
-                return -EPERM;
+                return log_error_errno(SYNTHETIC_ERRNO(EPERM), "Pager invoked from wrong thread.");
 
         pager = getenv("SYSTEMD_PAGER");
         if (!pager)
                 pager = getenv("PAGER");
 
-        /* If the pager is explicitly turned off, honour it */
-        if (pager && STR_IN_SET(pager, "", "cat"))
-                return 0;
+        if (pager) {
+                pager_args = strv_split(pager, WHITESPACE);
+                if (!pager_args)
+                        return log_oom();
+
+                /* If the pager is explicitly turned off, honour it */
+                if (strv_isempty(pager_args) || strv_equal(pager_args, STRV_MAKE("cat")))
+                        return 0;
+        }
 
         /* Determine and cache number of columns/lines before we spawn the pager so that we get the value from the
          * actual tty */
@@ -74,25 +121,36 @@ int pager_open(bool no_pager, bool jump_to_end) {
         if (pipe2(fd, O_CLOEXEC) < 0)
                 return log_error_errno(errno, "Failed to create pager pipe: %m");
 
-        r = safe_fork("(pager)", FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_LOG, &pager_pid);
+        /* This is a pipe to feed the name of the executed pager binary into the parent */
+        if (pipe2(exe_name_pipe, O_CLOEXEC) < 0)
+                return log_error_errno(errno, "Failed to create exe_name pipe: %m");
+
+        /* Initialize a good set of less options */
+        less_opts = getenv("SYSTEMD_LESS");
+        if (!less_opts)
+                less_opts = "FRSXMK";
+        if (flags & PAGER_JUMP_TO_END)
+                less_opts = strjoina(less_opts, " +G");
+
+        r = safe_fork("(pager)", FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_RLIMIT_NOFILE_SAFE|FORK_LOG, &pager_pid);
         if (r < 0)
                 return r;
         if (r == 0) {
-                const char* less_opts, *less_charset;
+                const char *less_charset, *exe;
 
                 /* In the child start the pager */
 
-                (void) dup2(fd[0], STDIN_FILENO);
+                if (dup2(fd[0], STDIN_FILENO) < 0) {
+                        log_error_errno(errno, "Failed to duplicate file descriptor to STDIN: %m");
+                        _exit(EXIT_FAILURE);
+                }
+
                 safe_close_pair(fd);
 
-                /* Initialize a good set of less options */
-                less_opts = getenv("SYSTEMD_LESS");
-                if (!less_opts)
-                        less_opts = "FRSXMK";
-                if (jump_to_end)
-                        less_opts = strjoina(less_opts, " +G");
-                if (setenv("LESS", less_opts, 1) < 0)
+                if (setenv("LESS", less_opts, 1) < 0) {
+                        log_error_errno(errno, "Failed to set environment variable LESS: %m");
                         _exit(EXIT_FAILURE);
+                }
 
                 /* Initialize a good charset for less. This is
                  * particularly important if we output UTF-8
@@ -101,12 +159,21 @@ int pager_open(bool no_pager, bool jump_to_end) {
                 if (!less_charset && is_locale_utf8())
                         less_charset = "utf-8";
                 if (less_charset &&
-                    setenv("LESSCHARSET", less_charset, 1) < 0)
+                    setenv("LESSCHARSET", less_charset, 1) < 0) {
+                        log_error_errno(errno, "Failed to set environment variable LESSCHARSET: %m");
                         _exit(EXIT_FAILURE);
+                }
 
-                if (pager) {
-                        execlp(pager, pager, NULL);
-                        execl("/bin/sh", "sh", "-c", pager, NULL);
+                if (pager_args) {
+                        r = loop_write(exe_name_pipe[1], pager_args[0], strlen(pager_args[0]) + 1, false);
+                        if (r < 0) {
+                                log_error_errno(r, "Failed to write pager name to socket: %m");
+                                _exit(EXIT_FAILURE);
+                        }
+
+                        execvp(pager_args[0], pager_args);
+                        log_full_errno(errno == ENOENT ? LOG_DEBUG : LOG_WARNING, errno,
+                                       "Failed execute %s, using fallback pagers: %m", pager_args[0]);
                 }
 
                 /* Debian's alternatives command for pagers is
@@ -115,11 +182,22 @@ int pager_open(bool no_pager, bool jump_to_end) {
                  * shell script that implements a logic that
                  * is similar to this one anyway, but is
                  * Debian-specific. */
-                execlp("pager", "pager", NULL);
+                FOREACH_STRING(exe, "pager", "less", "more") {
+                        r = loop_write(exe_name_pipe[1], exe, strlen(exe) + 1, false);
+                        if (r  < 0) {
+                                log_error_errno(r, "Failed to write pager name to socket: %m");
+                                _exit(EXIT_FAILURE);
+                        }
+                        execlp(exe, exe, NULL);
+                        log_full_errno(errno == ENOENT ? LOG_DEBUG : LOG_WARNING, errno,
+                                       "Failed execute %s, using next fallback pager: %m", exe);
+                }
 
-                execlp("less", "less", NULL);
-                execlp("more", "more", NULL);
-
+                r = loop_write(exe_name_pipe[1], "(built-in)", strlen("(built-in") + 1, false);
+                if (r < 0) {
+                        log_error_errno(r, "Failed to write pager name to socket: %m");
+                        _exit(EXIT_FAILURE);
+                }
                 pager_fallback();
                 /* not reached */
         }
@@ -138,6 +216,14 @@ int pager_open(bool no_pager, bool jump_to_end) {
                 return log_error_errno(errno, "Failed to duplicate pager pipe: %m");
         }
         stderr_redirected = true;
+
+        exe_name_pipe[1] = safe_close(exe_name_pipe[1]);
+
+        r = no_quit_on_interrupt(TAKE_FD(exe_name_pipe[0]), less_opts);
+        if (r < 0)
+                return r;
+        if (r > 0)
+                (void) ignore_signals(SIGINT, -1);
 
         return 1;
 }
@@ -193,7 +279,7 @@ int show_man_page(const char *desc, bool null_stdio) {
         } else
                 args[1] = desc;
 
-        r = safe_fork("(man)", FORK_RESET_SIGNALS|FORK_DEATHSIG|(null_stdio ? FORK_NULL_STDIO : 0)|FORK_LOG, &pid);
+        r = safe_fork("(man)", FORK_RESET_SIGNALS|FORK_DEATHSIG|(null_stdio ? FORK_NULL_STDIO : 0)|FORK_RLIMIT_NOFILE_SAFE|FORK_LOG, &pid);
         if (r < 0)
                 return r;
         if (r == 0) {

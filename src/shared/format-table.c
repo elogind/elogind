@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
+#include <ctype.h>
 #include <stdio_ext.h>
 
 #include "alloc-util.h"
@@ -9,6 +10,7 @@
 #include "gunicode.h"
 #include "pager.h"
 #include "parse-util.h"
+#include "pretty-print.h"
 #include "string-util.h"
 #include "terminal-util.h"
 #include "time-util.h"
@@ -57,7 +59,10 @@ typedef struct TableData {
         unsigned ellipsize_percent; /* 0 … 100, where to place the ellipsis when compression is needed */
         unsigned align_percent;     /* 0 … 100, where to pad with spaces when expanding is needed. 0: left-aligned, 100: right-aligned */
 
+        bool uppercase;             /* Uppercase string on display */
+
         const char *color;          /* ANSI color string to use for this cell. When written to terminal should not move cursor. Will automatically be reset after the cell */
+        char *url;                  /* A URL to use for a clickable hyperlink */
         char *formatted;            /* A cached textual representation of the cell data, before ellipsation/alignment */
 
         union {
@@ -68,6 +73,8 @@ typedef struct TableData {
                 uint64_t size;
                 char string[0];
                 uint32_t uint32;
+                uint64_t uint64;
+                int percent;        /* we use 'int' as datatype for percent values in order to match the result of parse_percent() */
                 /* … add more here as we start supporting more cell data types … */
         };
 } TableData;
@@ -103,6 +110,8 @@ struct Table {
 
         size_t *sort_map;     /* The columns to order rows by, in order of preference. */
         size_t n_sort_map;
+
+        bool *reverse_map;
 };
 
 Table *table_new_raw(size_t n_columns) {
@@ -126,6 +135,7 @@ Table *table_new_raw(size_t n_columns) {
 Table *table_new_internal(const char *first_header, ...) {
         _cleanup_(table_unrefp) Table *t = NULL;
         size_t n_columns = 1;
+        const char *h;
         va_list ap;
         int r;
 
@@ -133,8 +143,6 @@ Table *table_new_internal(const char *first_header, ...) {
 
         va_start(ap, first_header);
         for (;;) {
-                const char *h;
-
                 h = va_arg(ap, const char*);
                 if (!h)
                         break;
@@ -147,19 +155,18 @@ Table *table_new_internal(const char *first_header, ...) {
         if (!t)
                 return NULL;
 
-        r = table_add_cell(t, NULL, TABLE_STRING, first_header);
-        if (r < 0)
-                return NULL;
-
         va_start(ap, first_header);
-        for (;;) {
-                const char *h;
+        for (h = first_header; h; h = va_arg(ap, const char*)) {
+                TableCell *cell;
 
-                h = va_arg(ap, const char*);
-                if (!h)
-                        break;
+                r = table_add_cell(t, &cell, TABLE_STRING, h);
+                if (r < 0) {
+                        va_end(ap);
+                        return NULL;
+                }
 
-                r = table_add_cell(t, NULL, TABLE_STRING, h);
+                /* Make the table header uppercase */
+                r = table_set_uppercase(t, cell, true);
                 if (r < 0) {
                         va_end(ap);
                         return NULL;
@@ -171,31 +178,17 @@ Table *table_new_internal(const char *first_header, ...) {
         return TAKE_PTR(t);
 }
 
-static TableData *table_data_unref(TableData *d) {
-        if (!d)
-                return NULL;
-
-        assert(d->n_ref > 0);
-        d->n_ref--;
-
-        if (d->n_ref > 0)
-                return NULL;
+static TableData *table_data_free(TableData *d) {
+        assert(d);
 
         free(d->formatted);
+        free(d->url);
+
         return mfree(d);
 }
 
+DEFINE_PRIVATE_TRIVIAL_REF_UNREF_FUNC(TableData, table_data, table_data_free);
 DEFINE_TRIVIAL_CLEANUP_FUNC(TableData*, table_data_unref);
-
-static TableData *table_data_ref(TableData *d) {
-        if (!d)
-                return NULL;
-
-        assert(d->n_ref > 0);
-        d->n_ref++;
-
-        return d;
-}
 
 Table *table_unref(Table *t) {
         size_t i;
@@ -209,6 +202,7 @@ Table *table_unref(Table *t) {
         free(t->data);
         free(t->display_map);
         free(t->sort_map);
+        free(t->reverse_map);
 
         return mfree(t);
 }
@@ -231,10 +225,14 @@ static size_t table_data_size(TableDataType type, const void *data) {
                 return sizeof(usec_t);
 
         case TABLE_SIZE:
+        case TABLE_UINT64:
                 return sizeof(uint64_t);
 
         case TABLE_UINT32:
                 return sizeof(uint32_t);
+
+        case TABLE_PERCENT:
+                return sizeof(int);
 
         default:
                 assert_not_reached("Uh? Unexpected cell type");
@@ -272,13 +270,21 @@ static bool table_data_matches(
         if (d->ellipsize_percent != ellipsize_percent)
                 return false;
 
+        /* If a color/url/uppercase flag is set, refuse to merge */
+        if (d->color)
+                return false;
+        if (d->url)
+                return false;
+        if (d->uppercase)
+                return false;
+
         k = table_data_size(type, data);
         l = table_data_size(d->type, d->data);
 
         if (k != l)
                 return false;
 
-        return memcmp(data, d->data, l) == 0;
+        return memcmp_safe(data, d->data, l) == 0;
 }
 
 static TableData *table_data_new(
@@ -394,6 +400,7 @@ int table_dup_cell(Table *t, TableCell *cell) {
 #endif // 0
 
 static int table_dedup_cell(Table *t, TableCell *cell) {
+        _cleanup_free_ char *curl = NULL;
         TableData *nd, *od;
         size_t i;
 
@@ -412,9 +419,26 @@ static int table_dedup_cell(Table *t, TableCell *cell) {
 
         assert(od->n_ref > 1);
 
-        nd = table_data_new(od->type, od->data, od->minimum_width, od->maximum_width, od->weight, od->align_percent, od->ellipsize_percent);
+        if (od->url) {
+                curl = strdup(od->url);
+                if (!curl)
+                        return -ENOMEM;
+        }
+
+        nd = table_data_new(
+                        od->type,
+                        od->data,
+                        od->minimum_width,
+                        od->maximum_width,
+                        od->weight,
+                        od->align_percent,
+                        od->ellipsize_percent);
         if (!nd)
                 return -ENOMEM;
+
+        nd->color = od->color;
+        nd->url = TAKE_PTR(curl);
+        nd->uppercase = od->uppercase;
 
         table_data_unref(od);
         t->data[i] = nd;
@@ -473,6 +497,7 @@ int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         table_get_data(t, cell)->maximum_width = maximum_width;
         return 0;
 }
+#endif // 0
 
 int table_set_weight(Table *t, TableCell *cell, unsigned weight) {
         int r;
@@ -490,7 +515,6 @@ int table_set_weight(Table *t, TableCell *cell, unsigned weight) {
         table_get_data(t, cell)->weight = weight;
         return 0;
 }
-#endif // 0
 
 int table_set_align_percent(Table *t, TableCell *cell, unsigned percent) {
         int r;
@@ -546,6 +570,88 @@ int table_set_color(Table *t, TableCell *cell, const char *color) {
 }
 #endif // 0
 
+int table_set_url(Table *t, TableCell *cell, const char *url) {
+        _cleanup_free_ char *copy = NULL;
+        int r;
+
+        assert(t);
+        assert(cell);
+
+        if (url) {
+                copy = strdup(url);
+                if (!copy)
+                        return -ENOMEM;
+        }
+
+        r = table_dedup_cell(t, cell);
+        if (r < 0)
+                return r;
+
+        return free_and_replace(table_get_data(t, cell)->url, copy);
+}
+
+int table_set_uppercase(Table *t, TableCell *cell, bool b) {
+        TableData *d;
+        int r;
+
+        assert(t);
+        assert(cell);
+
+        r = table_dedup_cell(t, cell);
+        if (r < 0)
+                return r;
+
+        assert_se(d = table_get_data(t, cell));
+
+        if (d->uppercase == b)
+                return 0;
+
+        d->formatted = mfree(d->formatted);
+        d->uppercase = b;
+        return 1;
+}
+
+int table_update(Table *t, TableCell *cell, TableDataType type, const void *data) {
+        _cleanup_free_ char *curl = NULL;
+        TableData *nd, *od;
+        size_t i;
+
+        assert(t);
+        assert(cell);
+
+        i = TABLE_CELL_TO_INDEX(cell);
+        if (i >= t->n_cells)
+                return -ENXIO;
+
+        assert_se(od = t->data[i]);
+
+        if (od->url) {
+                curl = strdup(od->url);
+                if (!curl)
+                        return -ENOMEM;
+        }
+
+        nd = table_data_new(
+                        type,
+                        data,
+                        od->minimum_width,
+                        od->maximum_width,
+                        od->weight,
+                        od->align_percent,
+                        od->ellipsize_percent);
+        if (!nd)
+                return -ENOMEM;
+
+        nd->color = od->color;
+        nd->url = TAKE_PTR(curl);
+        nd->uppercase = od->uppercase;
+
+        table_data_unref(od);
+        t->data[i] = nd;
+
+        return 0;
+}
+
 int table_add_many_internal(Table *t, TableDataType first_type, ...) {
         TableDataType type;
         va_list ap;
@@ -564,6 +670,8 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         uint64_t size;
                         usec_t usec;
                         uint32_t uint32;
+                        uint64_t uint64;
+                        int percent;
                         bool b;
                 } buffer;
 
@@ -596,6 +704,16 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                 case TABLE_UINT32:
                         buffer.uint32 = va_arg(ap, uint32_t);
                         data = &buffer.uint32;
+                        break;
+
+                case TABLE_UINT64:
+                        buffer.uint64 = va_arg(ap, uint64_t);
+                        data = &buffer.uint64;
+                        break;
+
+                case TABLE_PERCENT:
+                        buffer.percent = va_arg(ap, int);
+                        data = &buffer.percent;
                         break;
 
                 case _TABLE_DATA_TYPE_MAX:
@@ -710,32 +828,22 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
                         return 0;
 
                 case TABLE_TIMESTAMP:
-                        if (a->timestamp < b->timestamp)
-                                return -1;
-                        if (a->timestamp > b->timestamp)
-                                return 1;
-                        return 0;
+                        return CMP(a->timestamp, b->timestamp);
 
                 case TABLE_TIMESPAN:
-                        if (a->timespan < b->timespan)
-                                return -1;
-                        if (a->timespan > b->timespan)
-                                return 1;
-                        return 0;
+                        return CMP(a->timespan, b->timespan);
 
                 case TABLE_SIZE:
-                        if (a->size < b->size)
-                                return -1;
-                        if (a->size > b->size)
-                                return 1;
-                        return 0;
+                        return CMP(a->size, b->size);
 
                 case TABLE_UINT32:
-                        if (a->uint32 < b->uint32)
-                                return -1;
-                        if (a->uint32 > b->uint32)
-                                return 1;
-                        return 0;
+                        return CMP(a->uint32, b->uint32);
+
+                case TABLE_UINT64:
+                        return CMP(a->uint64, b->uint64);
+
+                case TABLE_PERCENT:
+                        return CMP(a->percent, b->percent);
 
                 default:
                         ;
@@ -743,17 +851,10 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
         }
 
         /* Generic fallback using the orginal order in which the cells where added. */
-        if (index_a < index_b)
-                return -1;
-        if (index_a > index_b)
-                return 1;
-
-        return 0;
+        return CMP(index_a, index_b);
 }
 
-static int table_data_compare(const void *x, const void *y, void *userdata) {
-        const size_t *a = x, *b = y;
-        Table *t = userdata;
+static int table_data_compare(const size_t *a, const size_t *b, Table *t) {
         size_t i;
         int r;
 
@@ -777,16 +878,11 @@ static int table_data_compare(const void *x, const void *y, void *userdata) {
 
                 r = cell_data_compare(d, *a, dd, *b);
                 if (r != 0)
-                        return r;
+                        return t->reverse_map && t->reverse_map[t->sort_map[i]] ? -r : r;
         }
 
         /* Order identical lines by the order there were originally added in */
-        if (*a < *b)
-                return -1;
-        if (*a > *b)
-                return 1;
-
-        return 0;
+        return CMP(*a, *b);
 }
 
 static const char *table_data_format(TableData *d) {
@@ -800,6 +896,20 @@ static const char *table_data_format(TableData *d) {
                 return "";
 
         case TABLE_STRING:
+                if (d->uppercase) {
+                        char *p, *q;
+
+                        d->formatted = new(char, strlen(d->string) + 1);
+                        if (!d->formatted)
+                                return NULL;
+
+                        for (p = d->string, q = d->formatted; *p; p++, q++)
+                                *q = (char) toupper((unsigned char) *p);
+                        *q = 0;
+
+                        return d->formatted;
+                }
+
                 return d->string;
 
         case TABLE_BOOLEAN:
@@ -826,7 +936,7 @@ static const char *table_data_format(TableData *d) {
                 if (!p)
                         return NULL;
 
-                if (!format_timespan(p, FORMAT_TIMESPAN_MAX, d->timestamp, 0))
+                if (!format_timespan(p, FORMAT_TIMESPAN_MAX, d->timespan, 0))
                         return "n/a";
 
                 d->formatted = TAKE_PTR(p);
@@ -855,6 +965,30 @@ static const char *table_data_format(TableData *d) {
                         return NULL;
 
                 sprintf(p, "%" PRIu32, d->uint32);
+                d->formatted = TAKE_PTR(p);
+                break;
+        }
+
+        case TABLE_UINT64: {
+                _cleanup_free_ char *p;
+
+                p = new(char, DECIMAL_STR_WIDTH(d->uint64) + 1);
+                if (!p)
+                        return NULL;
+
+                sprintf(p, "%" PRIu64, d->uint64);
+                d->formatted = TAKE_PTR(p);
+                break;
+        }
+
+        case TABLE_PERCENT: {
+                _cleanup_free_ char *p;
+
+                p = new(char, DECIMAL_STR_WIDTH(d->percent) + 2);
+                if (!p)
+                        return NULL;
+
+                sprintf(p, "%i%%" , d->percent);
                 d->formatted = TAKE_PTR(p);
                 break;
         }
@@ -888,11 +1022,13 @@ static int table_data_requested_width(TableData *d, size_t *ret) {
         return 0;
 }
 
-static char *align_string_mem(const char *str, size_t new_length, unsigned percent) {
-        size_t w = 0, space, lspace, old_length;
+static char *align_string_mem(const char *str, const char *url, size_t new_length, unsigned percent) {
+        size_t w = 0, space, lspace, old_length, clickable_length;
+        _cleanup_free_ char *clickable = NULL;
         const char *p;
         char *ret;
         size_t i;
+        int r;
 
         /* As with ellipsize_mem(), 'old_length' is a byte size while 'new_length' is a width in character cells */
 
@@ -900,6 +1036,15 @@ static char *align_string_mem(const char *str, size_t new_length, unsigned perce
         assert(percent <= 100);
 
         old_length = strlen(str);
+
+        if (url) {
+                r = terminal_urlify(url, str, &clickable);
+                if (r < 0)
+                        return NULL;
+
+                clickable_length = strlen(clickable);
+        } else
+                clickable_length = old_length;
 
         /* Determine current width on screen */
         p = str;
@@ -917,23 +1062,23 @@ static char *align_string_mem(const char *str, size_t new_length, unsigned perce
 
         /* Already wider than the target, if so, don't do anything */
         if (w >= new_length)
-                return strndup(str, old_length);
+                return clickable ? TAKE_PTR(clickable) : strdup(str);
 
         /* How much spaces shall we add? An how much on the left side? */
         space = new_length - w;
         lspace = space * percent / 100U;
 
-        ret = new(char, space + old_length + 1);
+        ret = new(char, space + clickable_length + 1);
         if (!ret)
                 return NULL;
 
         for (i = 0; i < lspace; i++)
                 ret[i] = ' ';
-        memcpy(ret + lspace, str, old_length);
-        for (i = lspace + old_length; i < space + old_length; i++)
+        memcpy(ret + lspace, clickable ?: str, clickable_length);
+        for (i = lspace + clickable_length; i < space + clickable_length; i++)
                 ret[i] = ' ';
 
-        ret[space + old_length] = 0;
+        ret[space + clickable_length] = 0;
         return ret;
 }
 
@@ -966,7 +1111,7 @@ int table_print(Table *t, FILE *f) {
                 for (i = 0; i < n_rows; i++)
                         sorted[i] = i * t->n_columns;
 
-                qsort_r_safe(sorted, n_rows, sizeof(size_t), table_data_compare, t);
+                typesafe_qsort_r(sorted, n_rows, table_data_compare, t);
         }
 
         if (t->display_map)
@@ -1186,23 +1331,41 @@ int table_print(Table *t, FILE *f) {
                         } else if (l < width[j]) {
                                 /* Field is shorter than allocated space. Let's align with spaces */
 
-                                buffer = align_string_mem(field, width[j], d->align_percent);
+                                buffer = align_string_mem(field, d->url, width[j], d->align_percent);
                                 if (!buffer)
                                         return -ENOMEM;
 
                                 field = buffer;
                         }
 
+                        if (l >= width[j] && d->url) {
+                                _cleanup_free_ char *clickable = NULL;
+
+                                r = terminal_urlify(d->url, field, &clickable);
+                                if (r < 0)
+                                        return r;
+
+                                free_and_replace(buffer, clickable);
+                                field = buffer;
+                        }
+
+                        if (row == t->data) /* underline header line fully, including the column separator */
+                                fputs(ansi_underline(), f);
+
                         if (j > 0)
                                 fputc(' ', f); /* column separator */
 
-                        if (d->color)
+                        if (d->color && colors_enabled()) {
+                                if (row == t->data) /* first undo header underliner */
+                                        fputs(ANSI_NORMAL, f);
+
                                 fputs(d->color, f);
+                        }
 
                         fputs(field, f);
 
-                        if (d->color)
-                                fputs(ansi_normal(), f);
+                        if (colors_enabled() && (d->color || row == t->data))
+                                fputs(ANSI_NORMAL, f);
                 }
 
                 fputc('\n', f);
@@ -1251,3 +1414,220 @@ size_t table_get_columns(Table *t) {
         return t->n_columns;
 }
 #endif // 0
+
+int table_set_reverse(Table *t, size_t column, bool b) {
+        assert(t);
+        assert(column < t->n_columns);
+
+        if (!t->reverse_map) {
+                if (!b)
+                        return 0;
+
+                t->reverse_map = new0(bool, t->n_columns);
+                if (!t->reverse_map)
+                        return -ENOMEM;
+        }
+
+        t->reverse_map[column] = b;
+        return 0;
+}
+
+TableCell *table_get_cell(Table *t, size_t row, size_t column) {
+        size_t i;
+
+        assert(t);
+
+        if (column >= t->n_columns)
+                return NULL;
+
+        i = row * t->n_columns + column;
+        if (i >= t->n_cells)
+                return NULL;
+
+        return TABLE_INDEX_TO_CELL(i);
+}
+
+const void *table_get(Table *t, TableCell *cell) {
+        TableData *d;
+
+        assert(t);
+
+        d = table_get_data(t, cell);
+        if (!d)
+                return NULL;
+
+        return d->data;
+}
+
+const void* table_get_at(Table *t, size_t row, size_t column) {
+        TableCell *cell;
+
+        cell = table_get_cell(t, row, column);
+        if (!cell)
+                return NULL;
+
+        return table_get(t, cell);
+}
+
+static int table_data_to_json(TableData *d, JsonVariant **ret) {
+
+        switch (d->type) {
+
+        case TABLE_EMPTY:
+                return json_variant_new_null(ret);
+
+        case TABLE_STRING:
+                return json_variant_new_string(ret, d->string);
+
+        case TABLE_BOOLEAN:
+                return json_variant_new_boolean(ret, d->boolean);
+
+        case TABLE_TIMESTAMP:
+                if (d->timestamp == USEC_INFINITY)
+                        return json_variant_new_null(ret);
+
+                return json_variant_new_unsigned(ret, d->timestamp);
+
+        case TABLE_TIMESPAN:
+                if (d->timespan == USEC_INFINITY)
+                        return json_variant_new_null(ret);
+
+                return json_variant_new_unsigned(ret, d->timespan);
+
+        case TABLE_SIZE:
+                if (d->size == (size_t) -1)
+                        return json_variant_new_null(ret);
+
+                return json_variant_new_unsigned(ret, d->size);
+
+        case TABLE_UINT32:
+                return json_variant_new_unsigned(ret, d->uint32);
+
+        case TABLE_UINT64:
+                return json_variant_new_unsigned(ret, d->uint64);
+
+        case TABLE_PERCENT:
+                return json_variant_new_integer(ret, d->percent);
+
+        default:
+                return -EINVAL;
+        }
+}
+
+int table_to_json(Table *t, JsonVariant **ret) {
+        JsonVariant **rows = NULL, **elements = NULL;
+        _cleanup_free_ size_t *sorted = NULL;
+        size_t n_rows, i, j, display_columns;
+        int r;
+
+        assert(t);
+
+        /* Ensure we have no incomplete rows */
+        assert(t->n_cells % t->n_columns == 0);
+
+        n_rows = t->n_cells / t->n_columns;
+        assert(n_rows > 0); /* at least the header row must be complete */
+
+        if (t->sort_map) {
+                /* If sorting is requested, let's calculate an index table we use to lookup the actual index to display with. */
+
+                sorted = new(size_t, n_rows);
+                if (!sorted) {
+                        r = -ENOMEM;
+                        goto finish;
+                }
+
+                for (i = 0; i < n_rows; i++)
+                        sorted[i] = i * t->n_columns;
+
+                typesafe_qsort_r(sorted, n_rows, table_data_compare, t);
+        }
+
+        if (t->display_map)
+                display_columns = t->n_display_map;
+        else
+                display_columns = t->n_columns;
+        assert(display_columns > 0);
+
+        elements = new0(JsonVariant*, display_columns * 2);
+        if (!elements) {
+                r = -ENOMEM;
+                goto finish;
+        }
+
+        for (j = 0; j < display_columns; j++) {
+                TableData *d;
+
+                assert_se(d = t->data[t->display_map ? t->display_map[j] : j]);
+
+                r = table_data_to_json(d, elements + j*2);
+                if (r < 0)
+                        goto finish;
+        }
+
+        rows = new0(JsonVariant*, n_rows-1);
+        if (!rows) {
+                r = -ENOMEM;
+                goto finish;
+        }
+
+        for (i = 1; i < n_rows; i++) {
+                TableData **row;
+
+                if (sorted)
+                        row = t->data + sorted[i];
+                else
+                        row = t->data + i * t->n_columns;
+
+                for (j = 0; j < display_columns; j++) {
+                        TableData *d;
+                        size_t k;
+
+                        assert_se(d = row[t->display_map ? t->display_map[j] : j]);
+
+                        k = j*2+1;
+                        elements[k] = json_variant_unref(elements[k]);
+
+                        r = table_data_to_json(d, elements + k);
+                        if (r < 0)
+                                goto finish;
+                }
+
+                r = json_variant_new_object(rows + i - 1, elements, display_columns * 2);
+                if (r < 0)
+                        goto finish;
+        }
+
+        r = json_variant_new_array(ret, rows, n_rows - 1);
+
+finish:
+        if (rows) {
+                json_variant_unref_many(rows, n_rows-1);
+                free(rows);
+        }
+
+        if (elements) {
+                json_variant_unref_many(elements, display_columns*2);
+                free(elements);
+        }
+
+        return r;
+}
+
+int table_print_json(Table *t, FILE *f, JsonFormatFlags flags) {
+        _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;
+        int r;
+
+        assert(t);
+
+        if (!f)
+                f = stdout;
+
+        r = table_to_json(t, &v);
+        if (r < 0)
+                return r;
+
+        json_variant_dump(v, flags, f, NULL);
+
+        return fflush_and_check(f);
+}

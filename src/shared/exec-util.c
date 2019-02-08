@@ -9,6 +9,7 @@
 
 #include "alloc-util.h"
 #include "conf-files.h"
+//#include "env-file.h"
 #include "env-util.h"
 #include "exec-util.h"
 #include "fd-util.h"
@@ -16,12 +17,15 @@
 #include "hashmap.h"
 #include "macro.h"
 #include "process-util.h"
+#include "rlimit-util.h"
+#include "serialize.h"
 #include "set.h"
 #include "signal-util.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "terminal-util.h"
+//#include "tmpfile-util.h"
 #include "util.h"
 
 /* Put this test here for a lack of better place */
@@ -48,6 +52,8 @@ static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid) {
                         if (r < 0)
                                 _exit(EXIT_FAILURE);
                 }
+
+                (void) rlimit_nofile_safe();
 
                 if (!argv) {
                         _argv[0] = (char*) path;
@@ -245,7 +251,7 @@ static int gather_environment_generate(int fd, void *arg) {
                 return -errno;
         }
 
-        r = load_env_file_pairs(f, NULL, NULL, &new);
+        r = load_env_file_pairs(f, NULL, &new);
         if (r < 0)
                 return r;
 
@@ -273,8 +279,8 @@ static int gather_environment_generate(int fd, void *arg) {
 }
 
 static int gather_environment_collect(int fd, void *arg) {
-        char ***env = arg;
         _cleanup_fclose_ FILE *f = NULL;
+        char ***env = arg;
         int r;
 
         /* Write out a series of env=cescape(VAR=value) assignments to fd. */
@@ -287,21 +293,21 @@ static int gather_environment_collect(int fd, void *arg) {
                 return -errno;
         }
 
-        r = serialize_environment(f, *env);
+        r = serialize_strv(f, "env", *env);
         if (r < 0)
                 return r;
 
-        if (ferror(f))
-                return errno > 0 ? -errno : -EIO;
+        r = fflush_and_check(f);
+        if (r < 0)
+                return r;
 
         return 0;
 }
 
 static int gather_environment_consume(int fd, void *arg) {
-        char ***env = arg;
         _cleanup_fclose_ FILE *f = NULL;
-        char line[LINE_MAX];
-        int r = 0, k;
+        char ***env = arg;
+        int r = 0;
 
         /* Read a series of env=cescape(VAR=value) assignments from fd into env. */
 
@@ -313,14 +319,33 @@ static int gather_environment_consume(int fd, void *arg) {
                 return -errno;
         }
 
-        FOREACH_LINE(line, f, return -EIO) {
-                truncate_nl(line);
+        for (;;) {
+                _cleanup_free_ char *line = NULL;
+                const char *v;
+                int k;
 
-                k = deserialize_environment(env, line);
+                k = read_line(f, LONG_LINE_MAX, &line);
                 if (k < 0)
-                        log_error_errno(k, "Invalid line \"%s\": %m", line);
-                if (k < 0 && r == 0)
-                        r = k;
+                        return k;
+                if (k == 0)
+                        break;
+
+                v = startswith(line, "env=");
+                if (!v) {
+                        log_debug("Serialization line \"%s\" unexpectedly didn't start with \"env=\".", line);
+                        if (r == 0)
+                                r = -EINVAL;
+
+                        continue;
+                }
+
+                k = deserialize_environment(v, env);
+                if (k < 0) {
+                        log_debug_errno(k, "Invalid serialization line \"%s\": %m", line);
+
+                        if (r == 0)
+                                r = k;
+                }
         }
 
         return r;

@@ -1,18 +1,19 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <sys/mman.h>
+#include <sys/mman.h>
 
-//#include "alloc-util.h"
-//#include "env-util.h"
-//#include "escape.h"
-//#include "fileio.h"
-//#include "missing.h"
-//#include "parse-util.h"
-//#include "process-util.h"
-//#include "serialize.h"
-//#include "strv.h"
-//#include "tmpfile-util.h"
+#include "alloc-util.h"
+#include "env-util.h"
+#include "escape.h"
+#include "fileio.h"
+#include "missing.h"
+#include "parse-util.h"
+#include "process-util.h"
+#include "serialize.h"
+#include "strv.h"
+#include "tmpfile-util.h"
 
+#if 0 /// UNNEEDED by elogind
 int serialize_item(FILE *f, const char *key, const char *value) {
         assert(f);
         assert(key);
@@ -129,6 +130,7 @@ int serialize_strv(FILE *f, const char *key, char **l) {
 
         return ret;
 }
+#endif // 0
 
 int deserialize_usec(const char *value, usec_t *ret) {
         int r;
@@ -142,6 +144,7 @@ int deserialize_usec(const char *value, usec_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int deserialize_dual_timestamp(const char *value, dual_timestamp *t) {
         uint64_t a, b;
         int r, pos;
@@ -193,6 +196,7 @@ int deserialize_environment(const char *value, char ***list) {
         unescaped = NULL; /* now part of 'list' */
         return 0;
 }
+#endif // 0
 
 int open_serialization_fd(const char *ident) {
         int fd;

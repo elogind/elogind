@@ -1,12 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-/***
-  Copyright © 2010 Harald Hoyer
-***/
 
 #include <sys/stat.h>
 
 #include "fileio-label.h"
-//#include "fileio.h"
+#include "fileio.h"
 #include "selinux-util.h"
 
 int write_string_file_atomic_label_ts(const char *fn, const char *line, struct timespec *ts) {
@@ -22,37 +19,6 @@ int write_string_file_atomic_label_ts(const char *fn, const char *line, struct t
 
         return r;
 }
-
-#if 0 /// UNNEEDED by elogind
-int write_env_file_label(const char *fname, char **l) {
-        int r;
-
-        r = mac_selinux_create_file_prepare(fname, S_IFREG);
-        if (r < 0)
-                return r;
-
-        r = write_env_file(fname, l);
-
-        mac_selinux_create_file_clear();
-
-        return r;
-}
-
-int fopen_temporary_label(const char *target,
-                          const char *path, FILE **f, char **temp_path) {
-        int r;
-
-        r = mac_selinux_create_file_prepare(target, S_IFREG);
-        if (r < 0)
-                return r;
-
-        r = fopen_temporary(path, f, temp_path);
-
-        mac_selinux_create_file_clear();
-
-        return r;
-}
-#endif // 0
 
 int create_shutdown_run_nologin_or_warn(void) {
         int r;

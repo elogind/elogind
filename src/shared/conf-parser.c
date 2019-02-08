@@ -644,7 +644,6 @@ int config_parse_bool(const char* unit,
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_tristate(
                 const char* unit,
                 const char *filename,
@@ -677,7 +676,6 @@ int config_parse_tristate(
         *t = !!k;
         return 0;
 }
-#endif // 0
 
 int config_parse_string(
                 const char *unit,

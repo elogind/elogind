@@ -1,21 +1,21 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <sys/utsname.h>
-//#include <errno.h>
-//#include <stdio.h>
+#include <sys/utsname.h>
+#include <errno.h>
+#include <stdio.h>
 
 //#include "alloc-util.h"
 //#include "conf-files.h"
 //#include "def.h"
-//#include "env-util.h"
+#include "env-util.h"
 //#include "fd-util.h"
 //#include "fileio.h"
-//#include "pager.h"
+#include "pager.h"
 //#include "path-util.h"
-//#include "pretty-print.h"
-//#include "string-util.h"
+#include "pretty-print.h"
+#include "string-util.h"
 //#include "strv.h"
-//#include "terminal-util.h"
+#include "terminal-util.h"
 //#include "util.h"
 
 static bool urlify_enabled(void) {
@@ -60,10 +60,39 @@ int terminal_urlify(const char *url, const char *text, char **ret) {
         return 0;
 }
 
-int terminal_urlify_path(const char *path, const char *text, char **ret) {
+#if 0 /// UNNEEDED by elogind
+int file_url_from_path(const char *path, char **ret) {
         _cleanup_free_ char *absolute = NULL;
         struct utsname u;
-        const char *url;
+        char *url = NULL;
+        int r;
+
+        if (uname(&u) < 0)
+                return -errno;
+
+        if (!path_is_absolute(path)) {
+                r = path_make_absolute_cwd(path, &absolute);
+                if (r < 0)
+                        return r;
+
+                path = absolute;
+        }
+
+        /* As suggested by https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda, let's include the local
+         * hostname here. Note that we don't use gethostname_malloc() or gethostname_strict() since we are interested
+         * in the raw string the kernel has set, whatever it may be, under the assumption that terminals are not overly
+         * careful with validating the strings either. */
+
+        url = strjoin("file://", u.nodename, path);
+        if (!url)
+                return -ENOMEM;
+
+        *ret = url;
+        return 0;
+}
+
+int terminal_urlify_path(const char *path, const char *text, char **ret) {
+        _cleanup_free_ char *url = NULL;
         int r;
 
         assert(path);
@@ -88,26 +117,13 @@ int terminal_urlify_path(const char *path, const char *text, char **ret) {
                 return 0;
         }
 
-        if (uname(&u) < 0)
-                return -errno;
-
-        if (!path_is_absolute(path)) {
-                r = path_make_absolute_cwd(path, &absolute);
-                if (r < 0)
-                        return r;
-
-                path = absolute;
-        }
-
-        /* As suggested by https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda, let's include the local
-         * hostname here. Note that we don't use gethostname_malloc() or gethostname_strict() since we are interested
-         * in the raw string the kernel has set, whatever it may be, under the assumption that terminals are not overly
-         * careful with validating the strings either. */
-
-        url = strjoina("file://", u.nodename, path);
+        r = file_url_from_path(path, &url);
+        if (r < 0)
+                return r;
 
         return terminal_urlify(url, text, ret);
 }
+#endif // 0
 
 int terminal_urlify_man(const char *page, const char *section, char **ret) {
         const char *url, *text;
@@ -118,6 +134,7 @@ int terminal_urlify_man(const char *page, const char *section, char **ret) {
         return terminal_urlify(url, text, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 static int cat_file(const char *filename, bool newline) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *urlified = NULL;
@@ -231,3 +248,4 @@ int conf_files_cat(const char *root, const char *name) {
         /* show */
         return cat_files(path, files, CAT_FLAGS_MAIN_FILE_OPTIONAL);
 }
+#endif // 0

@@ -9,7 +9,7 @@
 //#include <stddef.h>
 //#include <stdio.h>
 //#include <string.h>
-//#include <sys/ioctl.h>
+#include <sys/ioctl.h>
 //#include <syslog.h>
 //#include <unistd.h>
 
@@ -408,10 +408,10 @@ static bool can_s2h(Manager *m) {
         FOREACH_STRING(p, "suspend", "hibernate") {
 #if 0 /// elogind must transport a pointer to its managers instance
                 r = can_sleep_internal(p, false);
-                if (IN_SET(r, 0, -ENOSPC, -EADV)) {
 #else
-                r = can_sleep(m, p);
+                r = can_sleep_internal(m, p, false);
 #endif // 0
+                if (IN_SET(r, 0, -ENOSPC, -EADV)) {
                         log_debug("Unable to %s system.", p);
                         return false;
                 }
@@ -426,31 +426,38 @@ static bool can_s2h(Manager *m) {
 #if 0 /// elogind has to ask the manager for some stuff
 static int can_sleep_internal(const char *verb, bool check_allowed) {
         bool allow;
-        _cleanup_strv_free_ char **modes = NULL, **states = NULL;
-        int r;
 
-        assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 #else
 static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) {
         assert(m);
-
+#endif // 0
+        bool allow;
+#if 0 /// elogind has this parsed already
+        _cleanup_strv_free_ char **modes = NULL, **states = NULL;
+        int r;
+#else
         char **modes  = streq(verb, "suspend")   ? m->suspend_mode     :
                         streq(verb, "hibernate") ? m->hibernate_mode   :
-                                                       m->hybrid_sleep_mode;
+                                                   m->hybrid_sleep_mode;
         char **states = streq(verb, "suspend")   ? m->suspend_state     :
                         streq(verb, "hibernate") ? m->hibernate_state   :
                                                    m->hybrid_sleep_state;
 #endif // 0
 
-#if 0 /// already parsed by elogind config
-#else
-        if (check_allowed && !STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
-#endif // 0
-#if 0 /// elogind must transport a pointer to its managers instance
+        assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 
+#if 0 /// already parsed by elogind config
         r = parse_sleep_config(verb, &allow, &modes, &states, NULL);
         if (r < 0)
                 return false;
+#else
+        allow = false;
+        if ( (streq(verb, "suspend")                && m->allow_suspend)                || 
+             (streq(verb, "hibernate")              && m->allow_hibernation)            ||
+             (streq(verb, "suspend-then-hibernate") && m->allow_suspend_then_hibernate) ||
+             (streq(verb, "hybrid-sleep")           && m->allow_hybrid_sleep) )
+                allow = true;
+#endif // 0
 
         if (check_allowed && !allow) {
                 log_debug("Sleep mode \"%s\" is disabled by configuration.", verb);
@@ -458,6 +465,7 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
         }
 
         if (streq(verb, "suspend-then-hibernate"))
+#if 0 /// elogind can ask its manager.
                 return can_s2h();
 #else
                 return can_s2h(m);
@@ -482,6 +490,5 @@ int can_sleep(const char *verb) {
 #else
 int can_sleep(Manager *m, const char *verb) {
         return can_sleep_internal(m, verb, true);
-        return true;
 }
 #endif // 0
