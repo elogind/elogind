@@ -32,6 +32,7 @@
  * out specific attributes from us. */
 #define LOG_LEVEL_CGROUP_WRITE(r) (IN_SET(abs(r), ENOENT, EROFS, EACCES, EPERM) ? LOG_DEBUG : LOG_WARNING)
 
+#if 0 /// UNNEEDED by elogind
 bool manager_owns_host_root_cgroup(Manager *m) {
         assert(m);
 
@@ -49,7 +50,6 @@ bool manager_owns_host_root_cgroup(Manager *m) {
         return empty_or_root(m->cgroup_root);
 }
 
-#if 0 /// UNNEEDED by elogind
 bool unit_has_host_root_cgroup(Unit *u) {
         assert(u);
 
@@ -1486,7 +1486,7 @@ static const char *migrate_callback(CGroupMask mask, void *userdata) {
         return unit_get_realized_cgroup_path(userdata, mask);
 }
 
-char *unit_default_cgroup_path(Unit *u) {
+char *unit_default_cgroup_path(const Unit *u) {
         _cleanup_free_ char *escaped = NULL, *slice = NULL;
         int r;
 
@@ -2475,7 +2475,6 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                 }
         }
 }
-#endif // 0
 
 static int cg_bpf_mask_supported(CGroupMask *ret) {
         CGroupMask mask = 0;
@@ -2494,14 +2493,15 @@ static int cg_bpf_mask_supported(CGroupMask *ret) {
         *ret = mask;
         return 0;
 }
+#endif // 0
 
 int manager_setup_cgroup(Manager *m) {
         _cleanup_free_ char *path = NULL;
         const char *scope_path;
         CGroupController c;
         int r, all_unified;
-        CGroupMask mask;
 #if 0 /// UNNEEDED by elogind
+        CGroupMask mask;
         char *e;
 #endif // 0
 
@@ -2667,11 +2667,13 @@ int manager_setup_cgroup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Failed to determine supported controllers: %m");
 
+#if 0 /// elogind does not control/manage Berkeley packet filters
         /* 9. Figure out which bpf-based pseudo-controllers are supported */
         r = cg_bpf_mask_supported(&mask);
         if (r < 0)
                 return log_error_errno(r, "Failed to determine supported bpf-based pseudo-controllers: %m");
         m->cgroup_supported |= mask;
+#endif // 0
 
         /* 10. Log which controllers are supported */
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++)
