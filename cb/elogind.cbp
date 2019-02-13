@@ -978,9 +978,6 @@
 		<Unit filename="../src/test/test-selinux.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-serialize.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/test/test-set-disable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>

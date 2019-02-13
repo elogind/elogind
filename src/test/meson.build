@@ -165,11 +165,11 @@ tests += [
 #           libselinux,
 #           libmount,
 #           libblkid]],
+#
+#         [['src/test/test-serialize.c'],
+#          [],
+#          []],
 #endif // 0
-
-        [['src/test/test-serialize.c'],
-         [],
-         []],
 
         [['src/test/test-utf8.c'],
          [],
