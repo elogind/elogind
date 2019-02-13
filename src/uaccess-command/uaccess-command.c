@@ -28,6 +28,8 @@
 #include "login-util.h"
 #include "logind-acl.h"
 #include "util.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 /*
  * Copy of builtin_uaccess() from
