@@ -78,7 +78,7 @@
     <refsect2><title>[Login] section:</title>
     <!-- // 1 -->
 
-    <variablelist>
+    <variablelist class='config-directives'>
       <!-- 0 /// elogind has no support for AutoVT
 
       <varlistentry>
