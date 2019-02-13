@@ -143,7 +143,7 @@ License
 -------
 
 LGPLv2.1+ for all code
-
+  - except src/basic/MurmurHash2.c which is Public Domain
   - except src/basic/siphash24.c which is CC0 Public Domain
 
 Dependencies
