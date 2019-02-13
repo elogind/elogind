@@ -229,10 +229,10 @@ static int on_runlevel(Context *c) {
 
 #if 0 /// elogind needs this to be a callable function
 int main(int argc, char *argv[]) {
-        _cleanup_(context_clear) Context c = {
 #else
 void update_utmp(int argc, char* argv[]) {
 #endif // 0
+        _cleanup_(context_clear) Context c = {
 #if HAVE_AUDIT
                 .audit_fd = -1
 #endif
