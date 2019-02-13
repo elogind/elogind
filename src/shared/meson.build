@@ -166,11 +166,6 @@
 #         xml.c
 #         xml.h
 # '''.split())
-#
-# if get_option('tests') != 'false'
-#         shared_sources += files('tests.c', 'tests.h')
-# endif
-#
 #else
 shared_sources = '''
         acl-util.h
@@ -226,6 +221,11 @@ shared_sources = '''
         xml.h
 '''.split()
 #endif // 0
+
+if get_option('tests') != 'false'
+        shared_sources += files('tests.c', 'tests.h')
+endif
+
 test_tables_h = files('test-tables.h')
 shared_sources += test_tables_h
 
