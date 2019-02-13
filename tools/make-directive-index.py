@@ -98,6 +98,15 @@ TEMPLATE = '''\
         </refsect1>
 
         <refsect1>
+                <title><citerefentry><refentrytitle>elogind.nspawn</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+                directives</title>
+
+                <para>Directives for configuring elogind-nspawn containers.</para>
+
+                <variablelist id='nspawn-directives' />
+        </refsect1>
+
+        <refsect1>
                 <title>Program configuration options</title>
 
                 <para>Directives for configuring the behaviour of the
@@ -107,7 +116,7 @@ TEMPLATE = '''\
         </refsect1>
 
         <refsect1>
-                <title>command line options</title>
+                <title>Command line options</title>
 
                 <para>Command-line options accepted by programs in the
                 elogind suite.</para>
