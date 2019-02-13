@@ -775,9 +775,11 @@ tests += [
          [],
          []],
 
-        [['src/test/test-sd-hwdb.c'],
-         [],
-         []],
+#if 0 /// UNNEEDED by elogind
+#         [['src/test/test-sd-hwdb.c'],
+#          [],
+#          []],
+#endif // 0
 ]
 
 ############################################################

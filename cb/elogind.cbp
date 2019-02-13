@@ -833,6 +833,10 @@
 		</Unit>
 		<Unit filename="../src/shared/spawn-polkit-agent.h" />
 		<Unit filename="../src/shared/test-tables.h" />
+		<Unit filename="../src/shared/tests.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/tests.h" />
 		<Unit filename="../src/shared/udev-util.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
@@ -970,9 +974,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-random-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/test/test-sd-hwdb.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-selinux.c">
