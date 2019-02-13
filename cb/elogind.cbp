@@ -833,10 +833,6 @@
 		</Unit>
 		<Unit filename="../src/shared/spawn-polkit-agent.h" />
 		<Unit filename="../src/shared/test-tables.h" />
-		<Unit filename="../src/shared/tmpfile-util-label.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/tmpfile-util-label.h" />
 		<Unit filename="../src/shared/udev-util.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
