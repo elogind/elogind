@@ -4,10 +4,10 @@
   Copyright © 2018 Dell Inc.
 ***/
 
-//#include <errno.h>
-//#include <getopt.h>
+#include <errno.h>
+#include <getopt.h>
 #include <linux/fiemap.h>
-//#include <stdio.h>
+#include <stdio.h>
 
 #include "sd-messages.h"
 
@@ -17,36 +17,19 @@
 #include "fileio.h"
 //#include "log.h"
 //#include "main-func.h"
-//#include "parse-util.h"
+#include "parse-util.h"
 //#include "pretty-print.h"
 #include "sleep-config.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "util.h"
+//#include "terminal-util.h"
+#include "util.h"
 
 /// Additional includes needed by elogind
 #include "exec-elogind.h"
 #include "sleep.h"
 #include "utmp-wtmp.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
-//#include "terminal-util.h"
 
 static char* arg_verb = NULL;
 
@@ -298,13 +281,13 @@ static int execute_s2h(usec_t hibernate_delay_sec) {
 
         _cleanup_strv_free_ char **hibernate_modes = NULL, **hibernate_states = NULL,
                                  **suspend_modes = NULL, **suspend_states = NULL;
-        usec_t original_time, wake_time, cmp_time;
 #else
 static int execute_s2h(Manager *m) {
         assert(m);
 
         usec_t hibernate_delay_sec = m->hibernate_delay_sec;
 #endif // 0
+        usec_t original_time, wake_time, cmp_time;
         int r;
 
 #if 0 /// Already parsed by elogind config
@@ -347,18 +330,22 @@ static int execute_s2h(Manager *m) {
 
         log_debug("Woke up at %"PRIu64, cmp_time);
 
-#if 0 /// elogind uses its manager instance values
         if (cmp_time < wake_time) /* We woke up before the alarm time, we are done. */
                 return 0;
-#else
-                r = execute(m, "hibernate");
-#endif // 0
 
         /* If woken up after alarm time, hibernate */
+#if 0 /// elogind uses its manager instance values
         r = execute(hibernate_modes, hibernate_states);
+#else
+        r = execute(m, "hibernate");
+#endif // 0
         if (r < 0) {
                 log_notice("Couldn't hibernate, will try to suspend again.");
+#if 0 /// elogind uses its manager instance values
                 r = execute(suspend_modes, suspend_states);
+#else
+                r = execute(m, "suspend");
+#endif // 0
                 if (r < 0) {
                         log_notice("Could neither hibernate nor suspend again, giving up.");
                         return r;
