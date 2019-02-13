@@ -181,9 +181,9 @@ shared_sources = '''
         conf-parser.c
         conf-parser.h
         daemon-util.h
+        dev-setup.c
+        dev-setup.h
         enable-mempool.c
-        env-file-label.c
-        env-file-label.h
         exec-elogind.c
         exec-elogind.h
         exec-util.c
@@ -192,8 +192,6 @@ shared_sources = '''
         fileio-label.h
         format-table.c
         format-table.h
-        ip-protocol-list.c
-        ip-protocol-list.h
         json.c
         json.h
         json-internal.h

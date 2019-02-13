@@ -213,6 +213,8 @@
 # '''.split())
 #else
 basic_sources = files('''
+        MurmurHash2.c
+        MurmurHash2.h
         alloc-util.c
         alloc-util.h
         audit-util.c
@@ -279,13 +281,10 @@ basic_sources = files('''
         mempool.c
         mempool.h
         missing.h
-        missing_btrfs.h
-        missing_btrfs_tree.h
         missing_drm.h
         missing_ethtool.h
         missing_fcntl.h
         missing_fib_rules.h
-        missing_fou.h
         missing_fs.h
         missing_if_bridge.h
         missing_if_link.h
@@ -299,15 +298,17 @@ basic_sources = files('''
         missing_resource.h
         missing_sched.h
         missing_securebits.h
+        missing_socket.h
         missing_stat.h
         missing_stdlib.h
         missing_syscall.h
         missing_timerfd.h
         missing_type.h
-        missing_vxcan.h
         mkdir.c
         mkdir.h
         mkdir-label.c
+        parse-printf-format.c
+        parse-printf-format.h
         parse-util.c
         parse-util.h
         path-util.c
@@ -324,6 +325,8 @@ basic_sources = files('''
         random-util.h
         raw-clone.h
         refcnt.h
+        rlimit-util.c
+        rlimit-util.h
         rm-rf.c
         rm-rf.h
         selinux-util.c
@@ -351,6 +354,8 @@ basic_sources = files('''
         string-util.h
         strv.c
         strv.h
+        strxcpyx.c
+        strxcpyx.h
         syslog-util.c
         syslog-util.h
         terminal-util.c

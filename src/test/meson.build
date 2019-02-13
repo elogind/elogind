@@ -671,11 +671,11 @@ tests += [
          [],
          []],
 
+        [['src/test/test-strxcpyx.c'],
+         [],
+         []],
+
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-strxcpyx.c'],
-#          [],
-#          []],
-#
 #         [['src/test/test-install.c'],
 #          [libcore,
 #           libshared],

@@ -631,8 +631,10 @@ foreach ident : [
         ['memfd_create',      '''#include <sys/mman.h>'''],
         ['gettid',            '''#include <sys/types.h>
                                  #include <unistd.h>'''],
-        ['pivot_root',        '''#include <stdlib.h>
-                                 #include <unistd.h>'''],     # no known header declares pivot_root
+#if 0 /// Not used in elogind
+#         ['pivot_root',        '''#include <stdlib.h>
+#                                  #include <unistd.h>'''],     # no known header declares pivot_root
+#endif // 0
 #if 1 /// elogind supports musl, but upstream refuses to add qsort_r
         ['qsort_r',           '''#include <stdlib.h>'''],
 #endif // 1
@@ -781,17 +783,25 @@ conf.set('GPERF_LEN_TYPE', gperf_len_type,
 if not cc.has_header('sys/capability.h')
         error('POSIX caps headers not found')
 endif
-foreach header : ['crypt.h',
-                  'linux/btrfs_tree.h',
-                  'linux/fou.h',
-                  'linux/memfd.h',
+#if 0 /// elogind does not need all of these
+# foreach header : ['crypt.h',
+#                   'linux/btrfs_tree.h',
+#                   'linux/fou.h',
+#                   'linux/memfd.h',
+#                   'linux/vm_sockets.h',
+#                   'linux/can/vxcan.h',
+#                   'sys/auxv.h',
+#                   'valgrind/memcheck.h',
+#                   'valgrind/valgrind.h',
+#                  ]
+#else
+foreach header : ['linux/memfd.h',
                   'linux/vm_sockets.h',
-                  'linux/can/vxcan.h',
                   'sys/auxv.h',
                   'valgrind/memcheck.h',
                   'valgrind/valgrind.h',
                  ]
-
+#endif // 0
         conf.set10('HAVE_' + header.underscorify().to_upper(),
                    cc.has_header(header))
 endforeach
@@ -1663,6 +1673,8 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd-network',
 #else
                                'src/libelogind/sd-bus',
+                               'src/libelogind/sd-event',
+                               'src/libelogind/sd-device',
                                'src/libelogind/sd-id128',
                                'src/sleep',
                                'src/update-utmp',

@@ -146,6 +146,10 @@
 			<Option target="all" />
 			<Option target="clean" />
 		</Unit>
+		<Unit filename="../src/basic/MurmurHash2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/MurmurHash2.h" />
 		<Unit filename="../src/basic/alloc-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -278,14 +282,11 @@
 		<Unit filename="../src/basic/meson.build" />
 		<Unit filename="../src/basic/missing.h" />
 		<Unit filename="../src/basic/missing_audit.h" />
-		<Unit filename="../src/basic/missing_btrfs.h" />
-		<Unit filename="../src/basic/missing_btrfs_tree.h" />
 		<Unit filename="../src/basic/missing_capability.h" />
 		<Unit filename="../src/basic/missing_drm.h" />
 		<Unit filename="../src/basic/missing_ethtool.h" />
 		<Unit filename="../src/basic/missing_fcntl.h" />
 		<Unit filename="../src/basic/missing_fib_rules.h" />
-		<Unit filename="../src/basic/missing_fou.h" />
 		<Unit filename="../src/basic/missing_fs.h" />
 		<Unit filename="../src/basic/missing_if_bridge.h" />
 		<Unit filename="../src/basic/missing_if_link.h" />
@@ -306,7 +307,6 @@
 		<Unit filename="../src/basic/missing_syscall.h" />
 		<Unit filename="../src/basic/missing_timerfd.h" />
 		<Unit filename="../src/basic/missing_type.h" />
-		<Unit filename="../src/basic/missing_vxcan.h" />
 		<Unit filename="../src/basic/mkdir-label.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -318,6 +318,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mountpoint-util.h" />
+		<Unit filename="../src/basic/parse-printf-format.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/parse-printf-format.h" />
 		<Unit filename="../src/basic/parse-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -348,6 +352,10 @@
 		<Unit filename="../src/basic/random-util.h" />
 		<Unit filename="../src/basic/raw-clone.h" />
 		<Unit filename="../src/basic/refcnt.h" />
+		<Unit filename="../src/basic/rlimit-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/rlimit-util.h" />
 		<Unit filename="../src/basic/rm-rf.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -397,6 +405,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/strv.h" />
+		<Unit filename="../src/basic/strxcpyx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/strxcpyx.h" />
 		<Unit filename="../src/basic/syslog-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -602,10 +614,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-event/event-source.h" />
-		<Unit filename="../src/libelogind/sd-event/event-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/libelogind/sd-event/event-util.h" />
 		<Unit filename="../src/libelogind/sd-event/sd-event.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -750,13 +758,13 @@
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
 		<Unit filename="../src/shared/daemon-util.h" />
+		<Unit filename="../src/shared/dev-setup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/dev-setup.h" />
 		<Unit filename="../src/shared/enable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/shared/env-file-label.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/env-file-label.h" />
 		<Unit filename="../src/shared/exec-elogind.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -773,10 +781,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/format-table.h" />
-		<Unit filename="../src/shared/ip-protocol-list.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/ip-protocol-list.h" />
 		<Unit filename="../src/shared/json-internal.h" />
 		<Unit filename="../src/shared/json.c">
 			<Option compilerVar="CC" />
@@ -1006,6 +1010,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-strip-tab-ansi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-strxcpyx.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-unaligned.c">
