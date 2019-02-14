@@ -36,6 +36,9 @@ static char* arg_verb = NULL;
 static int write_hibernate_location_info(void) {
         _cleanup_free_ char *device = NULL, *type = NULL;
         _cleanup_free_ struct fiemap *fiemap = NULL;
+#if 1 /// To support LVM setups, elogind uses device numbers
+        char device_num_str [DECIMAL_STR_MAX(uint32_t) * 2 + 2];
+#endif // 1
         char offset_str[DECIMAL_STR_MAX(uint64_t)];
         char device_str[DECIMAL_STR_MAX(uint64_t)];
         _cleanup_close_ int fd = -1;
@@ -50,8 +53,21 @@ static int write_hibernate_location_info(void) {
         /* if it's a swap partition, we just write the disk to /sys/power/resume */
         if (streq(type, "partition")) {
                 r = write_string_file("/sys/power/resume", device, WRITE_STRING_FILE_DISABLE_BUFFER);
+
+#if 1 /// To support LVM setups, elogind uses device numbers if the direct approach failed
+                if (r < 0) {
+                        r = stat(device, &stb);
+                        if (r < 0)
+                                return log_debug_errno(errno, "Error while trying to get stats for %s: %m", device);
+
+                        (void) snprintf(device_num_str, DECIMAL_STR_MAX(uint32_t) * 2 + 2,
+                                        "%u:%u",
+                                        major(stb.st_rdev), minor(stb.st_rdev));
+                        r = write_string_file("/sys/power/resume", device_num_str, 0);
+                }
+#endif // 1
                 if (r < 0)
-                        return log_debug_errno(r, "Faileed to write partitoin device to /sys/power/resume: %m");
+                        return log_debug_errno(r, "Failed to write partition device to /sys/power/resume: %m");
 
                 return r;
         }
