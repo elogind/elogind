@@ -397,6 +397,13 @@ else -->
     <!-- 1 /// elogind additionally supports a few systemctl commands. -->
     <refsect2><title>System Commands</title><variablelist>
       <varlistentry>
+        <term><command>reload</command></term>
+
+        <listitem>
+          <para>Reload the elogind configuration.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><command>poweroff</command></term>
 
         <listitem>

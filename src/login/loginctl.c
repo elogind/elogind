@@ -1330,6 +1330,32 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
+#if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
+static int reload_config(int argc, char *argv[], void *userdata) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        sd_bus *bus = userdata;
+        int r;
+
+        assert(bus);
+        assert(argv);
+
+        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "ReloadConfig",
+                        &error, NULL,
+                        NULL);
+        if (r < 0)
+                return log_error_errno(r, "Could not reload configuration: %s", bus_error_message(&error, -r));
+
+        return 0;
+}
+#endif // 1
+
 static int help(int argc, char *argv[], void *userdata) {
 
         printf("%s [OPTIONS...] {COMMAND} ...\n\n"
@@ -1397,6 +1423,7 @@ static int help(int argc, char *argv[], void *userdata) {
 #else
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
                "System Commands:\n"
+               "  reload                    Reload the elogind config file\n"
                "  poweroff [TIME] [WALL...] Turn off the machine\n"
                "  reboot   [TIME] [WALL...] Reboot the machine\n"
                "  suspend                   Suspend the machine to memory\n"
@@ -1624,6 +1651,7 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "flush-devices",     VERB_ANY, 1,        0,            flush_devices     },
                 { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
 #if 1 /// elogind adds some system commands to loginctl
+                { "reload",            VERB_ANY, 1,        0,            reload_config     },
                 { "poweroff",          VERB_ANY, VERB_ANY, 0,            start_special     },
                 { "reboot",            VERB_ANY, VERB_ANY, 0,            start_special     },
                 { "suspend",           VERB_ANY, 1,        0,            start_special     },

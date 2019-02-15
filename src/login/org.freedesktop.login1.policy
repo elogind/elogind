@@ -357,4 +357,15 @@
                 </defaults>
         </action>
 
+        <!-- 1 /// Aditional action for elogind to reload its configuration --!>
+        <action id="org.freedesktop.login1.reload-config">
+                <description gettext-domain="elogind">Reload the elogind configuration</description>
+                <message gettext-domain="elogind">Authentication is required to reload the elogind configuration.</message>
+                <defaults>
+                        <allow_any>auth_admin_keep</allow_any>
+                        <allow_inactive>auth_admin_keep</allow_inactive>
+                        <allow_active>auth_admin_keep</allow_active>
+                </defaults>
+        </action>
+        <!-- // 1 --!>
 </policyconfig>

@@ -23,6 +23,8 @@
 #include "terminal-util.h"
 #include "udev-util.h"
 #include "user-util.h"
+/// Additional includes needed by elogind
+#include "elogind.h"
 
 void manager_reset_config(Manager *m) {
         assert(m);
@@ -66,6 +68,59 @@ void manager_reset_config(Manager *m) {
         m->kill_exclude_users = strv_free(m->kill_exclude_users);
 }
 
+#if 1 /// Add-On for manager_reset_config() used by elogind
+void elogind_manager_reset_config(Manager* m) {
+
+#if ENABLE_DEBUG_ELOGIND
+        int dbg_cnt;
+#endif // ENABLE_DEBUG_ELOGIND
+
+        /* Set default Sleep config if not already set by logind.conf */
+        if (!m->suspend_state)
+                m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
+        if (!m->hibernate_mode)
+                m->hibernate_mode = strv_new("platform", "shutdown", NULL);
+        if (!m->hibernate_state)
+                m->hibernate_state = strv_new("disk", NULL);
+        if (!m->hybrid_sleep_mode)
+                m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
+        if (!m->hybrid_sleep_state)
+                m->hybrid_sleep_state = strv_new("disk", NULL);
+        if (!m->hibernate_delay_sec)
+                m->hibernate_delay_sec = 180 * USEC_PER_MINUTE;
+
+#if ENABLE_DEBUG_ELOGIND
+        dbg_cnt = -1;
+        while (m->suspend_mode && m->suspend_mode[++dbg_cnt])
+                log_debug_elogind("suspend_mode[%d] = %s",
+                                  dbg_cnt, m->suspend_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->suspend_state[++dbg_cnt])
+                log_debug_elogind("suspend_state[%d] = %s",
+                                  dbg_cnt, m->suspend_state[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hibernate_mode[++dbg_cnt])
+                log_debug_elogind("hibernate_mode[%d] = %s",
+                                  dbg_cnt, m->hibernate_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hibernate_state[++dbg_cnt])
+                log_debug_elogind("hibernate_state[%d] = %s",
+                                  dbg_cnt, m->hibernate_state[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hybrid_sleep_mode[++dbg_cnt])
+                log_debug_elogind("hybrid_sleep_mode[%d] = %s",
+                                  dbg_cnt, m->hybrid_sleep_mode[dbg_cnt]);
+        dbg_cnt = -1;
+        while (m->hybrid_sleep_state[++dbg_cnt])
+                log_debug_elogind("hybrid_sleep_state[%d] = %s",
+                                  dbg_cnt, m->hybrid_sleep_state[dbg_cnt]);
+        log_debug_elogind("hibernate_delay_sec: %lu seconds (%lu minutes)",
+                          m->hibernate_delay_sec / USEC_PER_SEC,
+                          m->hibernate_delay_sec / USEC_PER_MINUTE);
+#endif // ENABLE_DEBUG_ELOGIND
+}
+#endif // 1
+
 int manager_parse_config_file(Manager *m) {
         assert(m);
 
@@ -76,8 +131,6 @@ int manager_parse_config_file(Manager *m) {
                                         config_item_perf_lookup, logind_gperf_lookup,
 #else
         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
-
-        assert(m);
 
         if (!logind_conf)
                 logind_conf = PKGSYSCONFDIR "/logind.conf";
