@@ -28,7 +28,6 @@
 #include "terminal-util.h"
 /// Additional includes needed by elogind
 #include "cgroup.h"       // From src/core/
-#include "elogind.h"
 #include "label.h"
 #include "musl_missing.h"
 #include "process-util.h"

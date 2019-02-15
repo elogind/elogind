@@ -29,9 +29,8 @@ int manager_scheduled_shutdown_handler(sd_event_source *s, uint64_t usec,
                                        void *userdata);
 
 /* prototypes for former static functions in logind-dbus.c */
-int delay_shutdown_or_sleep(Manager *m, InhibitWhat w, HandleAction action);
+int  delay_shutdown_or_sleep(Manager *m, InhibitWhat w, HandleAction action);
 void reset_scheduled_shutdown(Manager *m);
 int  send_prepare_for(Manager *m, InhibitWhat w, bool _active);
-
 
 #endif // ELOGIND_SRC_LOGIN_ELOGIND_DBUS_H_INCLUDED

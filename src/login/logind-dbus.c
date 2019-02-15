@@ -1389,6 +1389,42 @@ static int method_flush_devices(sd_bus_message *message, void *userdata, sd_bus_
         return sd_bus_reply_method_return(message, NULL);
 }
 
+#if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
+static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = userdata;
+        int r;
+
+        assert(message);
+        assert(m);
+
+        r = bus_verify_polkit_async(
+                        message,
+                        CAP_SYS_ADMIN,
+                        "org.freedesktop.login1.reload-config",
+                        NULL,
+                        false,
+                        UID_INVALID,
+                        &m->polkit_registry,
+                        error);
+        if (r < 0)
+                return r;
+        if (r == 0)
+                return 1; /* Will call us back */
+
+        manager_reset_config(m);
+        r = manager_parse_config_file(m);
+        if (r < 0) {
+                log_warning_errno(r, "Failed to parse config file, using defaults: %m");
+                return r;
+        } else
+                log_info("Config file reloaded.");
+
+        elogind_manager_reset_config(m);
+
+        return sd_bus_reply_method_return(message, NULL);
+}
+#endif // 1
+
 static int have_multiple_sessions(
                 Manager *m,
                 uid_t uid) {
@@ -1853,15 +1889,15 @@ static int method_do_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// Within elogind the manager m must be provided, too
                 r = can_sleep(sleep_verb);
+#else
+                r = can_sleep(m, sleep_verb);
+#endif // 0
                 if (r == -ENOSPC)
                         return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
                                                 "Not enough swap space for hibernation");
                 if (r == 0)
                         return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
                                                  "Sleep verb \"%s\" not supported", sleep_verb);
-#else
-                r = can_sleep(m, sleep_verb);
-#endif // 0
                 if (r < 0)
                         return r;
         }
@@ -2882,6 +2918,9 @@ const sd_bus_vtable manager_vtable[] = {
         SD_BUS_METHOD("SetUserLinger", "ubb", NULL, method_set_user_linger, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("AttachDevice", "ssb", NULL, method_attach_device, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("FlushDevices", "b", NULL, method_flush_devices, SD_BUS_VTABLE_UNPRIVILEGED),
+#if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
+        SD_BUS_METHOD("ReloadConfig", NULL, NULL, method_reload_config, SD_BUS_VTABLE_UNPRIVILEGED),
+#endif // 1
         SD_BUS_METHOD("PowerOff", "b", NULL, method_poweroff, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Reboot", "b", NULL, method_reboot, SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD("Halt", "b", NULL, method_halt, SD_BUS_VTABLE_UNPRIVILEGED),
