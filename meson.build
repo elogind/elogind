@@ -161,6 +161,7 @@ modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 # systemunitdir = join_paths(rootprefixdir, 'lib/systemd/system')
 # systempresetdir = join_paths(rootprefixdir, 'lib/systemd/system-preset')
 # udevlibexecdir = join_paths(rootprefixdir, 'lib/udev')
+# udevhomedir = udevlibexecdir
 # udevrulesdir = join_paths(udevlibexecdir, 'rules.d')
 # udevhwdbdir = join_paths(udevlibexecdir, 'hwdb.d')
 # catalogdir = join_paths(prefixdir, 'lib/systemd/catalog')
@@ -488,15 +489,11 @@ decl_headers = '''
 # endif // _GNU_SOURCE
 #endif // 1
 #include <uchar.h>
-#include <linux/ethtool.h>
-#include <linux/fib_rules.h>
 #include <sys/stat.h>
 '''
 
 foreach decl : ['char16_t',
                 'char32_t',
-                'struct fib_rule_uid_range',
-                'struct fib_rule_port_range',
                 'struct statx',
                ]
 
