@@ -146,7 +146,7 @@ endif
 # if conf.get('HAVE_SECCOMP') == 1
 #         shared_sources += files('seccomp-util.c')
 # endif
-# 
+#
 # if conf.get('HAVE_LIBIPTC') == 1
 #         shared_sources += files('firewall-util.c')
 # endif
