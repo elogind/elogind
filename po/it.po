@@ -1,6 +1,6 @@
-Italian translation for elogind package
 # SPDX-License-Identifier: LGPL-2.1+
 #
+# Italian translation for elogind package
 # Traduzione in italiano per il pacchetto elogind
 # This file is distributed under the same license as the elogind package.
 # Daniele Medri <dmedri@gmail.com>, 2013-2018.
