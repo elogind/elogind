@@ -48,10 +48,13 @@ static int write_hibernate_location_info(void) {
                 return log_debug_errno(r, "Unable to find hibernation location: %m");
 
         /* if it's a swap partition, we just write the disk to /sys/power/resume */
-         if (streq(type, "partition")) {
-                 r = write_string_file("/sys/power/resume", device, 0);
-#if 1 /// To support LVM setups, elogind uses device numbers if the direct approach failed
-                 if (r < 0) {
+#if 0 /// To support LVM setups, elogind uses device numbers if the direct approach failed
+        if (streq(type, "partition"))
+                return write_string_file("/sys/power/resume", device, 0);
+#else
+        if (streq(type, "partition")) {
+                r = write_string_file("/sys/power/resume", device, 0);
+                if (r < 0) {
                         r = stat(device, &stb);
                         if (r < 0)
                                 return log_debug_errno(errno, "Error while trying to get stats for %s: %m", device);
@@ -61,16 +64,12 @@ static int write_hibernate_location_info(void) {
                                         major(stb.st_rdev), minor(stb.st_rdev));
                         r = write_string_file("/sys/power/resume", device_num_str, 0);
                 }
-#endif // 1
-                 if (r < 0)
-                        return log_debug_errno(r, "Failed to write partition device to /sys/power/resume: %m");
-
-                 return r;
+                return r;
         }
-
-
-        if (!streq(type, "file"))
-                return log_debug_errno(EINVAL, "Invalid hibernate type %s: %m", type);
+#endif // 0
+        else if (!streq(type, "file"))
+                return log_debug_errno(EINVAL, "Invalid hibernate type %s: %m",
+                                       type);
 
         /* Only available in 4.17+ */
         if (access("/sys/power/resume_offset", F_OK) < 0) {
@@ -207,7 +206,7 @@ static int execute(Manager *m, const char *verb) {
                         return log_error_errno(r, "Failed to write hibernation disk offset: %m");
                 r = write_mode(modes);
                 if (r < 0)
-                        return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
+                        return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");;
         }
 
 #if 0 /// elogind needs its own callbacks to enable cancellation by erroneous scripts
