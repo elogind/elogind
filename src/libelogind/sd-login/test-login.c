@@ -68,7 +68,17 @@ static void test_login(void) {
         } else {
                 log_info("sd_pid_get_session(0, …) → \"%s\"", session);
 
+#if 0 /// elogind might just be getting installed, and /run/systemd be nonexistant
                 assert_se(sd_pid_get_owner_uid(0, &u2) == 0);
+#else
+                r = sd_pid_get_owner_uid(0, &u2);
+                if (-ENODATA == r) {
+                        log_info("No session data found, skipping session tests...");
+                        if (session)
+                                session = mfree(session);
+                } else {
+                        assert_se(r == 0);
+#endif
                 log_info("sd_pid_get_owner_uid(0, …) → "UID_FMT, u2);
 
                 assert_se(sd_pid_get_cgroup(0, &cgroup) == 0);
@@ -103,6 +113,9 @@ static void test_login(void) {
                 free(t);
 
                 assert_se(r == sd_uid_get_seats(u2, false, NULL));
+#if 1 /// another bracket for elogind ...
+                }
+#endif // 1
         }
 
         if (session) {
@@ -206,9 +219,19 @@ static void test_login(void) {
         assert_se(sd_get_seats(NULL) == r);
 
         r = sd_seat_get_active(NULL, &t, NULL);
+#if 1 /// If elogind is just installed, this might give -ENXIO back
+        if (-ENXIO == r) {
+                log_info("No seat data found, skipping seat tests... ");
+                if (t)
+                        t = mfree(t);
+        } else {
+#endif // 1
         assert_se(IN_SET(r, 0, -ENODATA));
         log_info("sd_seat_get_active(NULL, …) (active session on current seat) → %s", strnull(t));
         free(t);
+#if 1 /// another bracket for elogind ...
+        }
+#endif // 1
 
         r = sd_get_sessions(&sessions);
         assert_se(r >= 0);
