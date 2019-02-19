@@ -7,9 +7,11 @@
   comments easily discernable from explanatory, documenting code comments
   (i.e. committable stuff).
 
-- Don't break code lines too eagerly. We do *not* force line breaks at
-  80ch, all of today's screens should be much larger than that. But
-  then again, don't overdo it, ~119ch should be enough really.
+- Don't break code lines too eagerly. We do *not* force line breaks at 80ch,
+  all of today's screens should be much larger than that. But then again, don't
+  overdo it, ~119ch should be enough really. The .editorconfig, .vimrc and
+  .dir-locals.el files contained in the repository will set this limit up for
+  you automatically, if you let them (as well as a few other things).
 
 - Variables and functions *must* be static, unless they have a
   prototype, and are supposed to be exported.
@@ -67,7 +69,7 @@
   values. Do not mix usec and msec, and usec and whatnot.
 
 - Make use of _cleanup_free_ and friends. It makes your code much
-  nicer to read!
+  nicer to read (and shorter)!
 
 - Be exceptionally careful when formatting and parsing floating point
   numbers. Their syntax is locale dependent (i.e. "5.000" in en_US is
@@ -99,21 +101,15 @@
 
 - Do not write "foo ()", write "foo()".
 
-- Please use streq() and strneq() instead of strcmp(), strncmp() where applicable.
+- Please use streq() and strneq() instead of strcmp(), strncmp() where
+  applicable (i.e. wherever you just care about equality/inequality, not about
+  the sorting order).
 
-- Please do not allocate variables on the stack in the middle of code,
-  even if C99 allows it. Wrong:
-
-  {
-          a = 5;
-          int b;
-          b = a;
-  }
-
-  Right:
+- Preferably allocate stack variables on the top of the block:
 
   {
-          int b;
+          int a, b;
+
           a = 5;
           b = a;
   }
@@ -344,7 +340,7 @@
 - Avoid leaving long-running child processes around, i.e. fork()s that
   are not followed quickly by an execv() in the child. Resource
   management is unclear in this case, and memory CoW will result in
-  unexpected penalties in the parent much much later on.
+  unexpected penalties in the parent much, much later on.
 
 - Don't block execution for arbitrary amounts of time using usleep()
   or a similar call, unless you really know what you do. Just "giving
@@ -440,3 +436,25 @@
   string, always apply the C-style unescaping fist, followed by the specifier
   expansion. When doing the reverse, make sure to escape '%' in specifier-style
   first (i.e. '%' → '%%'), and then do C-style escaping where necessary.
+
+- It's a good idea to use O_NONBLOCK when opening 'foreign' regular files, i.e
+  file system objects that are supposed to be regular files whose paths where
+  specified by the user and hence might actually refer to other types of file
+  system objects. This is a good idea so that we don't end up blocking on
+  'strange' file nodes, for example if the user pointed us to a FIFO or device
+  node which may block when opening. Moreover even for actual regular files
+  O_NONBLOCK has a benefit: it bypasses any mandatory lock that might be in
+  effect on the regular file. If in doubt consider turning off O_NONBLOCK again
+  after opening.
+
+- When referring to a configuration file option in the documentation and such,
+  please always suffix it with "=", to indicate that it is a configuration file
+  setting.
+
+- When referring to a command line option in the documentation and such, please
+  always prefix with "--" or "-" (as appropriate), to indicate that it is a
+  command line option.
+
+- When referring to a file system path that is a directory, please always
+  suffix it with "/", to indicate that it is a directory, not a regular file
+  (or other file system object).
