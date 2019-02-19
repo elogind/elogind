@@ -113,7 +113,6 @@ User *user_free(User *u) {
                 return NULL;
 
         log_debug_elogind("Freeing User %s ...", u->name);
-
         if (u->in_gc_queue)
                 LIST_REMOVE(gc_queue, u->manager->user_gc_queue, u);
 
@@ -376,7 +375,6 @@ int user_load(User *u) {
         }
 #endif // ENABLE_DEBUG_ELOGIND
         log_debug_elogind(" --> User sessions    : %s",  u->sessions ? sv : "none");
-
         return 0;
 }
 
@@ -480,7 +478,6 @@ int user_stop(User *u, bool force) {
         }
 
         log_debug_elogind("Stopping user %s %s ...", u->name, force ? "(forced)" : "");
-
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
                 int k;
 
@@ -513,8 +510,10 @@ int user_finalize(User *u) {
 
         if (u->started)
                 log_debug("User %s logged out.", u->name);
+#if 1 /// extra message for elogind
         else
                 log_debug_elogind("User %s not started, finalizing...", u->name);
+#endif // 1
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
                 k = session_finalize(s);
@@ -641,7 +640,6 @@ bool user_may_gc(User *u, bool drop_not_started) {
         log_debug_elogind("  is sessionless : %s", yes_no(!u->sessions));
         log_debug_elogind("  not lingering  : %s", yes_no(user_check_linger_file(u) > 0));
         log_debug_elogind("  dns or stopping: %s", yes_no(drop_not_started || u->stopping));
-
         if (drop_not_started && !u->started)
                 return true;
 

@@ -546,4 +546,3 @@ msgstr ""
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "'$(unit)' 서비스 유닛 속성을 설정하려면 인증이 필요합니다."
 #endif // 0
-

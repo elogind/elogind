@@ -659,7 +659,6 @@
         all sessions and seats.</para></listitem>
       </varlistentry>
       <!-- // 1 -->
-
       <varlistentry>
         <term><constant>SIGINT</constant></term>
 

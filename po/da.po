@@ -610,4 +610,3 @@ msgstr ""
 # #~ msgstr[0] "Igangværende kontrollering på %d disk (%3.1f%% færdig)"
 # #~ msgstr[1] "Igangværende kontrollering på %d diske (%3.1f%% færdig)"
 #endif // 0
-

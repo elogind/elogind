@@ -606,4 +606,3 @@ msgstr ""
 # msgstr ""
 # "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia ŭlascivasciej '$(unit)'."
 #endif // 0
-

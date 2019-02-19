@@ -88,7 +88,6 @@ Session* session_free(Session *s) {
                 return NULL;
 
         log_debug_elogind("Freeing Session %s ...", s->id);
-
         if (s->in_gc_queue)
                 LIST_REMOVE(gc_queue, s->manager->session_gc_queue, s);
 
@@ -568,7 +567,6 @@ int session_load(Session *s) {
                         s->fifo_path = mfree(s->fifo_path);
                 }
 #endif // 1
-
                 /* If we open an unopened pipe for reading we will not
                    get an EOF. to trigger an EOF we hence open it for
                    writing, but close it right away which then will
@@ -856,7 +854,6 @@ int session_stop(Session *s, bool force) {
                 return 0;
 
         log_debug_elogind("Stopping session %s %s ...", s->id, force ? "(forced)" : "");
-
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 
         if (s->seat)
@@ -898,8 +895,10 @@ int session_finalize(Session *s) {
                            "USER_ID=%s", s->user->name,
                            "LEADER="PID_FMT, s->leader,
                            LOG_MESSAGE("Removed session %s.", s->id));
+#if 1 /// extra message for elogind
         else
                 log_debug_elogind("Session %s not started, finalizing...", s->id);
+#endif // 1
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 
@@ -939,7 +938,6 @@ static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *us
         assert(s);
 
         log_debug_elogind("Session release timeout reached, stopping session %s", s->id);
-
         session_stop(s, false);
         return 0;
 }
@@ -952,7 +950,6 @@ int session_release(Session *s) {
                           s->stopping ? "No, already stopping." :
                           s->timer_event_source ? "No, timer already running." :
                           "Yes, releasing in 20 seconds."); /* RELEASE_USEC is a formula :( */
-
         if (!s->started || s->stopping)
                 return 0;
 
@@ -1109,7 +1106,6 @@ static int session_dispatch_fifo(sd_event_source *es, int fd, uint32_t revents, 
         /* EOF on the FIFO means the session died abnormally. */
 
         log_debug_elogind("EOF on Session %s FIFO: Session died abnormally, stopping...", s->id);
-
         session_remove_fifo(s);
         session_stop(s, false);
 
@@ -1208,7 +1204,6 @@ bool session_may_gc(Session *s, bool drop_not_started) {
                           s->fifo_fd < 0           ? "No FIFO opened"   :
                           pipe_eof(s->fifo_fd) > 0 ? "FIFO reached EOF" :
                           "FIFO up and running!");
-
         if (drop_not_started && !s->started)
                 return true;
 

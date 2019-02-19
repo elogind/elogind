@@ -615,4 +615,3 @@ msgstr ""
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #endif // 0
-

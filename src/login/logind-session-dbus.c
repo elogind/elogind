@@ -169,7 +169,6 @@ int bus_session_method_terminate(sd_bus_message *message, void *userdata, sd_bus
                 return 1; /* Will call us back */
 
         log_debug_elogind("UID %u called dbus method 'terminate' on session %s", s->user->uid, s->id);
-
         r = session_stop(s, true);
         if (r < 0)
                 return r;

@@ -613,4 +613,3 @@ msgstr ""
 # #~ msgstr[0] "Comprobando progreso en %d disco (%3.1f %% completado)"
 # #~ msgstr[1] "Comprobando progreso en %d discos (%3.1f %% completado)"
 #endif // 0
-

@@ -63,7 +63,6 @@ struct Manager {
         int console_active_fd;
 
 #if 0 /// elogind does not support autospawning of vts
-
         unsigned n_autovts;
 
         unsigned reserve_vt;

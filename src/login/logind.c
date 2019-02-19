@@ -118,7 +118,6 @@ static Manager* manager_unref(Manager *m) {
                 return NULL;
 
         log_debug_elogind("Tearing down all references (manager_unref) ...");
-
         while ((session = hashmap_first(m->sessions)))
                 session_free(session);
 
@@ -1361,7 +1360,7 @@ int main(int argc, char *argv[]) {
                 goto finish;
         }
 
-        log_debug("elogind started (PID "PID_FMT")", getpid_cached());
+        log_debug("elogind running as pid "PID_FMT, getpid_cached());
 
         (void) sd_notify(false,
                          "READY=1\n"
@@ -1374,7 +1373,7 @@ int main(int argc, char *argv[]) {
                 log_debug_elogind("elogind interrupted (PID "PID_FMT"), going down silently...", getpid_cached());
         } else {
 #endif /// 1
-        log_debug("elogind stopped (PID "PID_FMT")", getpid_cached());
+        log_debug("elogind stopped as pid "PID_FMT, getpid_cached());
 
         (void) sd_notify(false,
                          "STOPPING=1\n"

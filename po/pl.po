@@ -694,4 +694,3 @@ msgstr ""
 # #~ msgstr[1] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"
 # #~ msgstr[2] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"
 #endif // 0
-
