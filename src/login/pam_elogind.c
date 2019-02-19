@@ -160,6 +160,40 @@ static int get_seat_from_display(const char *display, const char **seat, uint32_
         return 0;
 }
 
+static int export_legacy_dbus_address(
+                pam_handle_t *handle,
+                uid_t uid,
+                const char *runtime) {
+
+        _cleanup_free_ char *s = NULL;
+        int r = PAM_BUF_ERR;
+
+        /* FIXME: We *really* should move the access() check into the
+         * daemons that spawn dbus-daemon, instead of forcing
+         * DBUS_SESSION_BUS_ADDRESS= here. */
+
+        s = strjoin(runtime, "/bus");
+        if (!s)
+                goto error;
+
+        if (access(s, F_OK) < 0)
+                return PAM_SUCCESS;
+
+        s = mfree(s);
+        if (asprintf(&s, DEFAULT_USER_BUS_ADDRESS_FMT, runtime) < 0)
+                goto error;
+
+        r = pam_misc_setenv(handle, "DBUS_SESSION_BUS_ADDRESS", s, 0);
+        if (r != PAM_SUCCESS)
+                goto error;
+
+        return PAM_SUCCESS;
+
+error:
+        pam_syslog(handle, LOG_ERR, "Failed to set bus variable.");
+        return r;
+}
+
 static int append_session_memory_max(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
         uint64_t val;
         int r;
@@ -318,7 +352,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         }
 
         /* Make sure we don't enter a loop by talking to
-         * systemd-login when it is actually waiting for the
+         * elogind when it is actually waiting for the
          * background to finish start-up. If the service is
          * "systemd-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
@@ -338,6 +372,10 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                                 return r;
                         }
                 }
+
+                r = export_legacy_dbus_address(handle, pw->pw_uid, rt);
+                if (r != PAM_SUCCESS)
+                        return r;
 
                 return PAM_SUCCESS;
         }
@@ -568,6 +606,10 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                                 return r;
                         }
                 }
+
+                r = export_legacy_dbus_address(handle, pw->pw_uid, runtime_path);
+                if (r != PAM_SUCCESS)
+                        return r;
         }
 
         if (!isempty(seat)) {
