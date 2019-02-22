@@ -17,4 +17,3 @@ int merge_env_file(char ***env, FILE *f, const char *fname);
 
 int write_env_file(const char *fname, char **l);
 #endif // 0
-

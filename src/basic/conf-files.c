@@ -201,17 +201,14 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
                 if (c == 0) {
                         char **dir;
 
-                        /* Oh, there already is an entry with a matching name (the last component). */
-
+                        /* Oh, we found our spot and it already contains something. */
                         STRV_FOREACH(dir, dirs) {
-                                _cleanup_free_ char *rdir = NULL;
                                 char *p1, *p2;
 
-                                rdir = prefix_root(root, *dir);
-                                if (!rdir)
-                                        return -ENOMEM;
-
-                                p1 = path_startswith((*strv)[i], rdir);
+                                p1 = path_startswith((*strv)[i], root);
+                                if (p1)
+                                        /* Skip "/" in *dir, because p1 is without "/" too */
+                                        p1 = path_startswith(p1, *dir + 1);
                                 if (p1)
                                         /* Existing entry with higher priority
                                          * or same priority, no need to do anything. */
@@ -220,8 +217,7 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
                                 p2 = path_startswith(path, *dir);
                                 if (p2) {
                                         /* Our new entry has higher priority */
-
-                                        t = prefix_root(root, path);
+                                        t = path_join(root, path);
                                         if (!t)
                                                 return log_oom();
 
@@ -237,8 +233,7 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
                 /* … we are not there yet, let's continue */
         }
 
-        /* The new file has lower priority than all the existing entries */
-        t = prefix_root(root, path);
+        t = path_join(root, path);
         if (!t)
                 return -ENOMEM;
 
@@ -313,7 +308,7 @@ int conf_files_list_with_replacement(
                 if (r < 0)
                         return log_error_errno(r, "Failed to extend config file list: %m");
 
-                p = prefix_root(root, replacement);
+                p = path_join(root, replacement);
                 if (!p)
                         return log_oom();
         }

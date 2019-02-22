@@ -24,7 +24,6 @@ int label_fix(const char *path, LabelFixFlags flags) {
         return 0;
 }
 
-
 int symlink_label(const char *old_path, const char *new_path) {
         int r;
 

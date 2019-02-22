@@ -2637,13 +2637,13 @@ static int cg_unified_update(void) {
                 unified_cache = CGROUP_UNIFIED_ALL;
 #if 0 /// The handling of cgroups is a bit different with elogind
         } else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
-                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for systemd controller");
 #else
         } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)
               || F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #endif // 0
                 if (statfs("/sys/fs/cgroup/unified/", &fs) == 0 &&
                     F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
+                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for elogind controller");
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = false;
                 } else {
@@ -2840,7 +2840,6 @@ bool cg_is_unified_wanted(void) {
         bool b;
 #endif // 0
         const bool is_default = DEFAULT_HIERARCHY == CGROUP_UNIFIED_ALL;
-        _cleanup_free_ char *c = NULL;
 
         /* If we have a cached value, return that. */
         if (wanted >= 0)
@@ -2852,19 +2851,11 @@ bool cg_is_unified_wanted(void) {
                 return (wanted = unified_cache >= CGROUP_UNIFIED_ALL);
 
 #if 0 /// elogind is not init and has no business with kernel command line
-        /* If we were explicitly passed systemd.unified_cgroup_hierarchy,
-         * respect that. */
+        /* Otherwise, let's see what the kernel command line has to say.
+         * Since checking is expensive, cache a non-error result. */
         r = proc_cmdline_get_bool("systemd.unified_cgroup_hierarchy", &b);
-        if (r > 0)
-                return (wanted = b);
 
-        /* If we passed cgroup_no_v1=all with no other instructions, it seems
-         * highly unlikely that we want to use hybrid or legacy hierarchy. */
-        r = proc_cmdline_get_key("cgroup_no_v1", 0, &c);
-        if (r > 0 && streq_ptr(c, "all"))
-                return (wanted = true);
-
-        return (wanted = is_default);
+        return (wanted = r > 0 ? b : is_default);
 #else
         return is_default;
 #endif // 0

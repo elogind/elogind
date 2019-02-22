@@ -12,7 +12,7 @@ void* memdup(const void *p, size_t l) {
 
         assert(l == 0 || p);
 
-        ret = malloc(l ?: 1);
+        ret = malloc(l);
         if (!ret)
                 return NULL;
 

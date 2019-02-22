@@ -239,7 +239,6 @@ int get_user_creds(
                 *gid = p->pw_gid;
         }
 
-
         if (home) {
                 if (FLAGS_SET(flags, USER_CREDS_CLEAN) && empty_or_root(p->pw_dir))
                         *home = NULL;
