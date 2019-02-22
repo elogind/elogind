@@ -142,7 +142,6 @@ msgstr ""
 # "Autentificering er nødvendig for at sætte tastaturindstillinger "
 # "for systemet."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -614,6 +613,5 @@ msgstr "Autentificering er nødvendig for at sætte en broadcast-besked"
 # #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
 # #~ msgstr[0] "Igangværende kontrollering på %d disk (%3.1f%% færdig)"
 # #~ msgstr[1] "Igangværende kontrollering på %d diske (%3.1f%% færdig)"
-#
 #endif // 0
 

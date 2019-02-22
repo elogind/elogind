@@ -153,7 +153,6 @@ msgstr ""
 # "Legitimierung ist zum Festlegen der Tastatureinstellungen des Systems "
 # "erforderlich."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -638,6 +637,5 @@ msgstr "Legitimierung ist zum Einstellen einer Nachricht an alle notwendig"
 # #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
 # #~ msgstr[0] "Prüfe %d Laufwerk (%3.1f%% fertig)"
 # #~ msgstr[1] "Prüfe %d Laufwerke (%3.1f%% fertig)"
-#
 #endif // 0
 

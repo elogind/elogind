@@ -141,7 +141,6 @@ msgstr ""
 # msgstr ""
 # "Hitelesítés szükséges a rendszer billentyűzetbeállításainak megadásához."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -600,7 +599,6 @@ msgstr "Hitelesítés szükséges a falüzenet beállításához"
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 # "Hitelesítés szükséges a következő tulajdonságainak beállításához: „$(unit)”."
-#
 #
 #endif // 0
 

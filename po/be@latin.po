@@ -143,7 +143,6 @@ msgstr ""
 # msgstr ""
 # "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia sistemnych nalad klavijatury."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -610,6 +609,5 @@ msgstr ""
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 # "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia ŭlascivasciej '$(unit)'."
-#
 #endif // 0
 

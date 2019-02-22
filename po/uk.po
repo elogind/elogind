@@ -142,7 +142,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Засвідчення потрібно, щоб вказати налаштування системної клавіатури."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -574,6 +573,5 @@ msgstr "Засвідчення потрібне, щоб вказати пові�
 # #: ../src/core/dbus-unit.c:618
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Засвідчення потрібно, щоб вказати властивості на «$(unit)»."
-#
 #endif // 0
 

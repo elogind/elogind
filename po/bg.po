@@ -144,7 +144,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "За задаване на настройките на клавиатурата е необходима идентификация."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -622,6 +621,5 @@ msgstr "За задаване на системно съобщение „wall�
 # #: ../src/core/dbus-unit.c:622
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "За задаване на свойствата на „$(unit)“ е необходима идентификация."
-#
 #endif // 0
 

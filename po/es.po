@@ -148,7 +148,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Se requiere autenticación para configurar el teclado del sistema."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -617,6 +616,5 @@ msgstr "Se requiere autenticación para establecer un muro de texto"
 # #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
 # #~ msgstr[0] "Comprobando progreso en %d disco (%3.1f %% completado)"
 # #~ msgstr[1] "Comprobando progreso en %d discos (%3.1f %% completado)"
-#
 #endif // 0
 

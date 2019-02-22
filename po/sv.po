@@ -139,7 +139,6 @@ msgstr ""
 # msgstr ""
 # "Autentisering krävs för att ställa in systeminställningar för tangentbord."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -373,7 +372,6 @@ msgstr ""
 # "to inhibit it."
 # msgstr ""
 # "Autentisering krävs för att stoppa systemet även då ett program hindrar det."
-#
 #
 #endif // 0
 
@@ -635,6 +633,5 @@ msgstr "Autentisering krävs för att ställa in ett väggmeddelande"
 # #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
 # #~ msgstr[0] "Kontroll pågår på %d disk (%3.1f%% klart)"
 # #~ msgstr[1] "Kontroll pågår på %d diskar (%3.1f%% klart)"
-#
 #endif // 0
 

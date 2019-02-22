@@ -175,14 +175,12 @@ logind_service = configure_file(
 install_data(logind_service,
                 install_dir : dbussystemservicedir)
 
-i18n.merge_file(
-        'org.freedesktop.login1.policy',
+login1_policy = configure_file(
         input : 'org.freedesktop.login1.policy.in',
         output : 'org.freedesktop.login1.policy',
-        po_dir : po_dir,
-        data_dirs : po_dir,
-        install : install_polkit,
-        install_dir : polkitpolicydir)
+        configuration : substs)
+install_data(login1_policy,
+             install_dir : polkitpolicydir)
 
 install_data('70-power-switch.rules',
                 '70-uaccess.rules',

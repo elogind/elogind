@@ -136,7 +136,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "设置系统键盘需要认证。"
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -529,6 +528,5 @@ msgstr "设置 wall 消息需要认证。"
 # #: ../src/core/dbus-unit.c:599
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "设置“$(unit)”的属性需要认证。"
-#
 #endif // 0
 

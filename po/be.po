@@ -141,7 +141,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання сістэмных налад клавіятуры."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -597,6 +596,5 @@ msgstr "Неабходна аўтэнтыфікацыя для ўсталява�
 # #: ../src/core/dbus-unit.c:622
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Неабходна аўтэнтыфікацыя для ўсталявання ўласцівасцей '$(unit)'."
-#
 #endif // 0
 

@@ -152,7 +152,6 @@ msgstr ""
 # "Απαιτείται πιστοποίηση για να ορίσετε τις ρυθμίσεις πληκτρολογίου του "
 # "συστήματος."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -619,6 +618,5 @@ msgstr "Απαιτείται πιστοποίηση για να ορίσετε �
 # #, fuzzy
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
-#
 #endif // 0
 

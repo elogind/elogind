@@ -145,7 +145,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Sistem klavye ayarlarını ayarlamak kimlik doğrulaması gerektiriyor."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -655,6 +654,5 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 # msgstr ""
 # "'$(unit)' üzerindeki özellikleri ayarlamak için kimlik doğrulaması "
 # "gereklidir."
-#
 #endif // 0
 

@@ -1,656 +1,571 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Italian translation for elogind package
-# Traduzione in italiano per il pacchetto systemd
+# Japanese translation for systemd.
+# Copyright (C) 2018 systemd's COPYRIGHT HOLDER
 # This file is distributed under the same license as the systemd package.
-# Daniele Medri <dmedri@gmail.com>, 2013-2018.
+# Yu Watanabe <watanabe.yu+github@gmail.com>, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: systemd\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-23 09:35+0100\n"
-"PO-Revision-Date: 2018-02-23 09:45+0100\n"
-"Last-Translator: Daniele Medri <dmedri@gmail.com>\n"
-"Language-Team: Italian\n"
-"Language: it\n"
+"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"POT-Creation-Date: 2018-02-27 16:46+0900\n"
+"PO-Revision-Date: 2018-02-27 16:55+0900\n"
+"Last-Translator: Yu Watanabe <watanabe.yu+github@gmail.com>\n"
+"Language-Team: \n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.3\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
 # msgid "Send passphrase back to system"
-# msgstr "Invia la frase segreta (passphrase) al sistema"
+# msgstr "パスフレーズをシステムに送信"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:23
 # msgid ""
 # "Authentication is required to send the entered passphrase back to the system."
 # msgstr ""
-# "Autenticazione richiesta per inviare la frase segreta (passphrase) al "
-# "sistema."
+# "パスフレーズをシステムに送信するには認証が必要です。"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
 # msgid "Manage system services or other units"
-# msgstr "Gestisci i servizi o le altre unità di sistema"
+# msgstr "システムサービスやその他のユニットの管理"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:34
 # msgid "Authentication is required to manage system services or other units."
-# msgstr ""
-# "Autenticazione richiesta per gestire i servizi o le altre unità di sistema."
+# msgstr "システムサービスやその他のユニットを管理するには認証が必要です。"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:43
 # msgid "Manage system service or unit files"
-# msgstr "Gestisci i file dei servizi o delle unità di sistema"
+# msgstr "システムサービスファイルやその他のユニットファイルの管理"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:44
 # msgid "Authentication is required to manage system service or unit files."
-# msgstr ""
-# "Autenticazione richiesta per gestire i file dei servizi o delle unità di "
-# "sistema."
+# msgstr "システムサービスファイルやその他のユニットファイルを管理するには認証が必要です。"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:53
 # msgid "Set or unset system and service manager environment variables"
-# msgstr ""
-# "Configura le variabili d'ambiente per la gestione dei servizi e del sistema"
+# msgstr "システムマネージャ環境変数の設定もしくは解除"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:54
 # msgid ""
 # "Authentication is required to set or unset system and service manager "
 # "environment variables."
-# msgstr ""
-# "Autenticazione richiesta per configurare le variabili d'ambiente per la "
-# "gestione dei servizi e del sistema"
+# msgstr "システムマネージャ環境変数を設定もしくは解除するには認証が必要です。"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
 # msgid "Reload the systemd state"
-# msgstr "Ricarica lo stato di systemd"
+# msgstr "systemdの状態の再読込"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
 # msgid "Authentication is required to reload the systemd state."
-# msgstr "Autenticazione richiesta per riavviare lo stato di sistemd."
+# msgstr "systemdの状態を再読込するには認証が必要です。"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22
 # msgid "Set host name"
-# msgstr "Configura il nome host"
+# msgstr "ホスト名の設定"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:23
 # msgid "Authentication is required to set the local host name."
-# msgstr "Autenticazione richiesta per configurare il nome host locale."
+# msgstr "ホスト名を設定するには認証が必要です。"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:32
 # msgid "Set static host name"
-# msgstr "Configura il nome host statico"
+# msgstr "静的なホスト名の設定"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:33
 # msgid ""
 # "Authentication is required to set the statically configured local host name, "
 # "as well as the pretty host name."
-# msgstr ""
-# "Autenticazione richiesta per configurare staticamente il nome host locale e "
-# "il nome host descrittivo."
+# msgstr "静的なホスト名を設定するには認証が必要です。"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:43
 # msgid "Set machine information"
-# msgstr "Configura le informazioni sulla macchina"
+# msgstr "マシン情報の設定"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:44
 # msgid "Authentication is required to set local machine information."
-# msgstr ""
-# "Autenticazione richiesta per configurare le informazioni sulla macchina "
-# "locale."
+# msgstr "マシン情報を設定するには認証が必要です。"
 #
 # #: src/import/org.freedesktop.import1.policy:22
 # msgid "Import a VM or container image"
-# msgstr "Importa un'immagine VM o un container"
+# msgstr "仮想マシンもしくはコンテナイメージの読込"
 #
 # #: src/import/org.freedesktop.import1.policy:23
 # msgid "Authentication is required to import a VM or container image"
-# msgstr "Autenticazione richiesta per importare un'immagine VM o un container"
+# msgstr "仮想マシンもしくはコンテナイメージを読込むには認証が必要です。"
 #
 # #: src/import/org.freedesktop.import1.policy:32
 # msgid "Export a VM or container image"
-# msgstr "Esporta un'immagine VM o un container"
+# msgstr "仮想マシンもしくはコンテナイメージの書出し"
 #
 # #: src/import/org.freedesktop.import1.policy:33
 # msgid "Authentication is required to export a VM or container image"
-# msgstr "Autenticazione richiesta per esportare un'immagine VM o un container"
+# msgstr "仮想マシンもしくはコンテナイメージを書出すには認証が必要です。"
 #
 # #: src/import/org.freedesktop.import1.policy:42
 # msgid "Download a VM or container image"
-# msgstr "Scarica un'immagine VM o un container"
+# msgstr "仮想マシンもしくはコンテナイメージのダウンロード"
 #
 # #: src/import/org.freedesktop.import1.policy:43
 # msgid "Authentication is required to download a VM or container image"
-# msgstr "Autenticazione richiesta per scaricare un'immagine VM o un container"
+# msgstr "仮想マシンもしくはコンテナイメージをダウンロードするには認証が必要です。"
 #
 # #: src/locale/org.freedesktop.locale1.policy:22
 # msgid "Set system locale"
-# msgstr "Configura le impostazioni regionali di sistema"
+# msgstr "システムロケールの設定"
 #
 # #: src/locale/org.freedesktop.locale1.policy:23
 # msgid "Authentication is required to set the system locale."
-# msgstr ""
-# "Autenticazione richiesta per configurare le impostazioni regionali di "
-# "sistema."
+# msgstr "システムロケールを設定するには認証が必要です。"
 #
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
-# msgstr "Configura la tastiera di sistema"
+# msgstr "システムキーボードの設定"
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
-# msgstr "Autenticazione richiesta per configurare la tastiera di sistema."
+# msgstr "システムキーボードを設定するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:22
 # msgid "Allow applications to inhibit system shutdown"
-# msgstr "Consenti alle applicazioni di inibire lo spegnimento del sistema"
+# msgstr "アプリケーションがシステムのシャットダウンを阻害することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:23
 # msgid ""
 # "Authentication is required for an application to inhibit system shutdown."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per inibire lo spegnimento del "
-# "sistema."
+# msgstr "アプリケーションがシステムのシャットダウンを阻害するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:33
 # msgid "Allow applications to delay system shutdown"
-# msgstr "Consenti alle applicazioni di ritardare lo spegnimento del sistema"
+# msgstr "アプリケーションがシステムのシャットダウンを遅延させることを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:34
 # msgid "Authentication is required for an application to delay system shutdown."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per ritardare lo spegnimento "
-# "del sistema."
+# msgstr "アプリケーションがシステムのシャットダウンを遅延させるには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:44
 # msgid "Allow applications to inhibit system sleep"
-# msgstr "Consenti alle applicazioni di inibire il sistema in pausa"
+# msgstr "アプリケーションがシステムのスリープを阻害することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:45
 # msgid "Authentication is required for an application to inhibit system sleep."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per inibire il sistema in pausa."
+# msgstr "アプリケーションがシステムのスリープを阻害するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:55
 # msgid "Allow applications to delay system sleep"
-# msgstr "Consenti alle applicazioni di ritardare il sistema in pausa"
+# msgstr "アプリケーションがシステムのスリープを遅延させることを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:56
 # msgid "Authentication is required for an application to delay system sleep."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per ritardare il sistema in "
-# "pausa."
+# msgstr "アプリケーションがシステムのスリープを遅延させるには許可が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:65
 # msgid "Allow applications to inhibit automatic system suspend"
-# msgstr ""
-# "Consenti alle applicazioni di inibire la sospesione automatica del sistema"
+# msgstr "アプリケーションがシステムの自動的なサスペンドを阻害することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:66
 # msgid ""
 # "Authentication is required for an application to inhibit automatic system "
 # "suspend."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per inibire la sospensione "
-# "automatica del sistema."
+# msgstr "アプリケーションがシステムの自動的なサスペンドを阻害するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:75
 # msgid "Allow applications to inhibit system handling of the power key"
-# msgstr ""
-# "Consenti alle applicazioni di inibire la gestione di sistema del tasto di "
-# "accensione"
+# msgstr "アプリケーションが電源ボタンによる動作を阻害することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:76
 # msgid ""
 # "Authentication is required for an application to inhibit system handling of "
 # "the power key."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per inibire la gestione di "
-# "sistema del tasto di accensione."
+# msgstr "アプリケーションが電源ボタンによる動作を阻害するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:86
 # msgid "Allow applications to inhibit system handling of the suspend key"
-# msgstr ""
-# "Consenti alle applicazioni di inibire la gestione di sistema del tasto di "
-# "sospensione"
+# msgstr "アプリケーションがサスペンドキーによる動作を阻害することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:87
 # msgid ""
 # "Authentication is required for an application to inhibit system handling of "
 # "the suspend key."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per inibire la gestione di "
-# "sistema del tasto di sospensione."
+# msgstr "アプリケーションがサスペンドキーによる動作を阻害するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:97
 # msgid "Allow applications to inhibit system handling of the hibernate key"
-# msgstr ""
-# "Consenti alle applicazioni di inibire la gestione di sistema del tasto di "
-# "ibernazione"
+# msgstr "アプリケーションがハイバネートキーによる動作を阻害することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:98
 # msgid ""
 # "Authentication is required for an application to inhibit system handling of "
 # "the hibernate key."
-# msgstr ""
-# "Autenticazione richiesta per un'applicazione per inibire la gestione di "
-# "sistema del tasto di ibernazione."
+# msgstr "アプリケーションがハイバネートキーによる動作を阻害するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:107
 # msgid "Allow applications to inhibit system handling of the lid switch"
-# msgstr ""
-# "Consenti alle applicazioni di inibire la gestione di sistema alla apertura/"
-# "chiusura del portatile"
+# msgstr "アプリケーションが液晶開閉による動作を阻害することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:108
 # msgid ""
 # "Authentication is required for an application to inhibit system handling of "
 # "the lid switch."
-# msgstr ""
-# "Autenticazione richiesta per consentire ad un'applicazione di inibire la "
-# "gestione di sistema alla apertura/chiusura del portatile."
+# msgstr "アプリケーションが液晶開閉による動作を阻害するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:117
 # msgid "Allow non-logged-in user to run programs"
-# msgstr "Consenti agli utenti non connessi di eseguire programmi"
+# msgstr "ログインしていないユーザがプログラムを実行することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:118
 # msgid "Explicit request is required to run programs as a non-logged-in user."
-# msgstr ""
-# "E' necessaria un'esplicita richiesta per eseguire programmi come utenti non "
-# "connessi."
+# msgstr "ログインしていないユーザがプログラムを実行するには明示的な要求が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:127
 # msgid "Allow non-logged-in users to run programs"
-# msgstr "Consenti agli utenti non connessi di eseguire programmi"
+# msgstr "ログインしていないユーザがプログラムを実行することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:128
 # msgid "Authentication is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Autenticazione richiesta per consentire agli utenti non connessi di eseguire "
-# "programmi."
+# msgstr "ログインしていないユーザがプログラムを実行するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:137
 # msgid "Allow attaching devices to seats"
-# msgstr "Consenti di collegare dispositivi alle postazioni"
+# msgstr "シートにデバイスを接続することを許可"
 #
 # #: src/login/org.freedesktop.login1.policy:138
 # msgid "Authentication is required for attaching a device to a seat."
-# msgstr ""
-# "Autenticazione richiesta per collegare un dispositivo ad una postazione."
+# msgstr "シートにデバイスを接続するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:148
 # msgid "Flush device to seat attachments"
-# msgstr "Scollega i dispositivi dalla postazione"
+# msgstr "デバイスのシートへの接続のリセット"
 #
 # #: src/login/org.freedesktop.login1.policy:149
 # msgid ""
 # "Authentication is required for resetting how devices are attached to seats."
-# msgstr ""
-# "Autenticazione richiesta per ripristinare come i dispositivi sono collegati "
-# "alle postazioni."
+# msgstr "デバイスのシートへの接続をリセットするには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:158
 # msgid "Power off the system"
-# msgstr "Spegni il sistema"
+# msgstr "システムの電源を切る"
 #
 # #: src/login/org.freedesktop.login1.policy:159
 # msgid "Authentication is required for powering off the system."
-# msgstr "Autenticazione richiesta per spegnere il sistema."
+# msgstr "システムの電源を切るには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:169
 # msgid "Power off the system while other users are logged in"
-# msgstr "Spegni il sistema mentre altri utenti sono connessi"
+# msgstr "他のユーザがログインしている状態でシステムの電源を切る"
 #
 # #: src/login/org.freedesktop.login1.policy:170
 # msgid ""
 # "Authentication is required for powering off the system while other users are "
 # "logged in."
-# msgstr ""
-# "Autenticazione richiesta per spegnere il sistema mentre altri utenti sono "
-# "connessi."
+# msgstr "他のユーザがログインしている状態でシステムの電源を切るには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:180
 # msgid "Power off the system while an application asked to inhibit it"
-# msgstr "Spegni il sistema mentre un'applicazione chiede di inibirne l'azione"
+# msgstr "アプリケーションが使用されている状態でシステムの電源を切る"
 #
 # #: src/login/org.freedesktop.login1.policy:181
 # msgid ""
 # "Authentication is required for powering off the system while an application "
 # "asked to inhibit it."
-# msgstr ""
-# "Autenticazione richiesta per spegnere il sistema mentre un'applicazione "
-# "chiede di inibirne l'azione."
+# msgstr "アプリケーションが使用されている状態でシステムの電源を切るには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:191
 # msgid "Reboot the system"
-# msgstr "Riavvia il sistema"
+# msgstr "システムの再起動"
 #
 # #: src/login/org.freedesktop.login1.policy:192
 # msgid "Authentication is required for rebooting the system."
-# msgstr "Autenticazione richiesta per riavviare il sistema."
+# msgstr "システムの再起動には認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:202
 # msgid "Reboot the system while other users are logged in"
-# msgstr "Riavvia il sistema mentre altri utenti sono connessi"
+# msgstr "他のユーザがログインしている状態でシステムを再起動する"
 #
 # #: src/login/org.freedesktop.login1.policy:203
 # msgid ""
 # "Authentication is required for rebooting the system while other users are "
 # "logged in."
-# msgstr ""
-# "Autenticazione richiesta per riavviare il sistema mentre altri utenti sono "
-# "connessi."
+# msgstr "他のユーザがログインしている状態でシステムを再起動するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:213
 # msgid "Reboot the system while an application asked to inhibit it"
-# msgstr "Riavvia il sistema mentre un'applicazione chiede di inibirne l'azione"
+# msgstr "アプリケーションが使用されている状態でシステムを再起動する"
 #
 # #: src/login/org.freedesktop.login1.policy:214
 # msgid ""
 # "Authentication is required for rebooting the system while an application "
 # "asked to inhibit it."
-# msgstr ""
-# "Autenticazione richiesta per riavviare il sistema mentre un'applicazione "
-# "chiede di inibirne l'azione."
+# msgstr "アプリケーションが使用されている状態でシステムを再起動するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:224
 # msgid "Halt the system"
-# msgstr "Ferma il sistema"
+# msgstr "システムの停止"
 #
 # #: src/login/org.freedesktop.login1.policy:225
 # msgid "Authentication is required for halting the system."
-# msgstr "Autenticazione richiesta per fermare il sistema."
+# msgstr "システムを停止するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:235
 # msgid "Halt the system while other users are logged in"
-# msgstr "Ferma il sistema mentre altri utenti sono connessi"
+# msgstr "他のユーザがログインしている状態でシステムを停止する"
 #
 # #: src/login/org.freedesktop.login1.policy:236
 # msgid ""
 # "Authentication is required for halting the system while other users are "
 # "logged in."
-# msgstr ""
-# "Autenticazione richiesta per fermare il sistema mentre altri utenti sono "
-# "connessi."
+# msgstr "他のユーザがログインしている状態でシステムを停止するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:246
 # msgid "Halt the system while an application asked to inhibit it"
-# msgstr "Ferma il sistema mentre un'applicazione chiede di inibirne l'azione"
+# msgstr "アプリケーションが使用されている状態でシステムを停止する"
 #
 # #: src/login/org.freedesktop.login1.policy:247
 # msgid ""
 # "Authentication is required for halting the system while an application asked "
 # "to inhibit it."
-# msgstr ""
-# "Autenticazione richiesta per fermare il sistema mentre un'applicazione "
-# "chiede di inibirne l'azione."
+# msgstr "アプリケーションが使用されている状態でシステムを停止するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:257
 # msgid "Suspend the system"
-# msgstr "Sospendi il sistema"
+# msgstr "システムのサスペンド"
 #
 # #: src/login/org.freedesktop.login1.policy:258
 # msgid "Authentication is required for suspending the system."
-# msgstr "Autenticazione richiesta per sospendere il sistema."
+# msgstr "システムのサスペンドには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:267
 # msgid "Suspend the system while other users are logged in"
-# msgstr "Sospendi il sistema mentre altri utenti sono connessi"
+# msgstr "他のユーザがログインしている状態でシステムをサスペンドする"
 #
 # #: src/login/org.freedesktop.login1.policy:268
 # msgid ""
 # "Authentication is required for suspending the system while other users are "
 # "logged in."
-# msgstr ""
-# "Autenticazione richiesta per sospendere il sistema mentre altri utenti sono "
-# "connessi."
+# msgstr "他のユーザがログインしている状態でシステムをサスペンドするには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:278
 # msgid "Suspend the system while an application asked to inhibit it"
-# msgstr "Sospendi il sistema mentre un'applicazione chiede di inibirne l'azione"
+# msgstr "アプリケーションが使用されている状態でシステムをサスペンドする"
 #
 # #: src/login/org.freedesktop.login1.policy:279
 # msgid ""
 # "Authentication is required for suspending the system while an application "
 # "asked to inhibit it."
-# msgstr ""
-# "Autenticazione richiesta per sospendere il sistema mentre un'applicazione "
-# "chiede di inibirne l'azione."
+# msgstr "アプリケーションが使用されている状態でシステムをサスペンドするには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:289
 # msgid "Hibernate the system"
-# msgstr "Iberna il sistema"
+# msgstr "システムのハイバネート"
 #
 # #: src/login/org.freedesktop.login1.policy:290
 # msgid "Authentication is required for hibernating the system."
-# msgstr "Autenticazione richiesta per ibernare il sistema."
+# msgstr "システムのハイバネートには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:299
 # msgid "Hibernate the system while other users are logged in"
-# msgstr "Iberna il sistema mentre altri utenti sono connessi"
+# msgstr "他のユーザがログインしている状態でシステムをハイバネートする"
 #
 # #: src/login/org.freedesktop.login1.policy:300
 # msgid ""
 # "Authentication is required for hibernating the system while other users are "
 # "logged in."
-# msgstr ""
-# "Autenticazione richiesta per ibernare il sistema mentre altri utenti sono "
-# "connessi."
+# msgstr "他のユーザがログインしている状態でシステムをハイバネートするには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:310
 # msgid "Hibernate the system while an application asked to inhibit it"
-# msgstr "Iberna il sistema mentre un'applicazione chiede di inibirne l'azione"
+# msgstr "アプリケーションが使用されている状態でシステムをハイバネートする"
 #
 # #: src/login/org.freedesktop.login1.policy:311
 # msgid ""
 # "Authentication is required for hibernating the system while an application "
 # "asked to inhibit it."
-# msgstr ""
-# "Autenticazione richiesta per ibernare il sistema mentre un'applicazione "
-# "chiede di inibirne l'azione."
+# msgstr "アプリケーションが使用されている状態でシステムをハイバネートするには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:321
 # msgid "Manage active sessions, users and seats"
-# msgstr "Gestione delle sessioni attive, utenti e postazioni"
+# msgstr "アクティブなセッションやユーザ，シートの管理"
 #
 # #: src/login/org.freedesktop.login1.policy:322
 # msgid ""
 # "Authentication is required for managing active sessions, users and seats."
-# msgstr ""
-# "Autenticazione richiesta per gestire le sessioni attive, gli utenti e le "
-# "postazioni."
+# msgstr "アクティブなセッションやユーザ，シートを管理するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:331
 # msgid "Lock or unlock active sessions"
-# msgstr "Blocca/sblocca sessioni attive"
+# msgstr "アクティブなセッションのロックもしくはアンロック"
 #
 # #: src/login/org.freedesktop.login1.policy:332
 # msgid "Authentication is required to lock or unlock active sessions."
-# msgstr "Autenticazione richiesta per bloccare o sbloccare le sessioni attive."
+# msgstr "アクティブなセッションをロックもしくはアンロックするには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:341
 # msgid "Allow indication to the firmware to boot to setup interface"
-# msgstr ""
-# "Permette indicazioni al firmware per avviare l'interfaccia di configurazione"
+# msgstr "ファームウェアに「インターフェースの設定を起動」を表示する"
 #
 # #: src/login/org.freedesktop.login1.policy:342
 # msgid ""
 # "Authentication is required to indicate to the firmware to boot to setup "
 # "interface."
-# msgstr ""
-# "Autenticazione richiesta per indicare al firmware di avviare l'interfaccia "
-# "di configurazione."
+# msgstr "ファームウェアに「インターフェースの設定を起動」を表示するには認証が必要です。"
 #
 # #: src/login/org.freedesktop.login1.policy:351
 # msgid "Set a wall message"
-# msgstr "Configura un messaggio per gli utenti"
+# msgstr "全ユーザへのメッセージの設定"
 #
 # #: src/login/org.freedesktop.login1.policy:352
 # msgid "Authentication is required to set a wall message"
-# msgstr "Autenticazione richiesta per configurare un messaggio per gli utenti"
+# msgstr "全ユーザへのメッセージを設定するには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
-# msgstr "Accedi in un container locale"
+# msgstr "ローカルなコンテナへログイン"
 #
 # #: src/machine/org.freedesktop.machine1.policy:23
 # msgid "Authentication is required to log into a local container."
-# msgstr "Autenticazione richiesta per accedere in un container locale."
+# msgstr "ローカルなコンテナへログインするには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:32
 # msgid "Log into the local host"
-# msgstr "Accedi in un host locale"
+# msgstr "ローカルホストへログイン"
 #
 # #: src/machine/org.freedesktop.machine1.policy:33
 # msgid "Authentication is required to log into the local host."
-# msgstr "Autenticazione richiesta per accedere in un host locale."
+# msgstr "ローカルホストへログインするには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:42
 # msgid "Acquire a shell in a local container"
-# msgstr "Apri una shell in un container locale"
+# msgstr "ローカルなコンテナのシェルを取得"
 #
 # #: src/machine/org.freedesktop.machine1.policy:43
 # msgid "Authentication is required to acquire a shell in a local container."
-# msgstr "Autenticazione richiesta per aprire una shell in un container locale."
+# msgstr "ローカルなコンテナのシェルを取得するには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:53
 # msgid "Acquire a shell on the local host"
-# msgstr "Apri una shell in un host locale"
+# msgstr "ローカルホストのシェルを取得"
 #
 # #: src/machine/org.freedesktop.machine1.policy:54
 # msgid "Authentication is required to acquire a shell on the local host."
-# msgstr "Autenticazione richiesta per aprire una shell in un host locale."
+# msgstr "ローカルホストのシェルを取得するには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:64
 # msgid "Acquire a pseudo TTY in a local container"
-# msgstr "Apri un pseudo TTY in un container locale"
+# msgstr "ローカルなコンテナの仮想TTYを取得"
 #
 # #: src/machine/org.freedesktop.machine1.policy:65
 # msgid ""
 # "Authentication is required to acquire a pseudo TTY in a local container."
-# msgstr ""
-# "Autenticazione richiesta per aprire un pseudo TTY in un container locale."
+# msgstr "ローカルなコンテナの仮想TTYを取得するには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:74
 # msgid "Acquire a pseudo TTY on the local host"
-# msgstr "Apri un pseudo TTY in un host locale"
+# msgstr "ローカルホストの仮想TTYを取得する"
 #
 # #: src/machine/org.freedesktop.machine1.policy:75
 # msgid "Authentication is required to acquire a pseudo TTY on the local host."
-# msgstr "Autenticazione richiesta per aprire un pseudo TTY in un host locale."
+# msgstr "ローカルホストの仮想TTYを取得するには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:84
 # msgid "Manage local virtual machines and containers"
-# msgstr "Gestisci le virtual machine e i container locali"
+# msgstr "ローカルな仮想マシンやコンテナの管理"
 #
 # #: src/machine/org.freedesktop.machine1.policy:85
 # msgid ""
 # "Authentication is required to manage local virtual machines and containers."
-# msgstr ""
-# "Autenticazione richiesta per gestire le virtual machine e i container locali."
+# msgstr "ローカルな仮想マシンやコンテナを管理するには認証が必要です。"
 #
 # #: src/machine/org.freedesktop.machine1.policy:95
 # msgid "Manage local virtual machine and container images"
-# msgstr "Gestisci le immagini locali delle virtual machine e dei container"
+# msgstr "ローカルな仮想マシンやコンテナのイメージ管理"
 #
 # #: src/machine/org.freedesktop.machine1.policy:96
 # msgid ""
 # "Authentication is required to manage local virtual machine and container "
 # "images."
-# msgstr ""
-# "Autenticazione richiesta per gestire le immagini delle virtual machine e dei "
-# "container locali."
+# msgstr "ローカルな仮想マシンやコンテナのイメージを管理するには認証が必要です。"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:22
 # msgid "Register a DNS-SD service"
-# msgstr "Registra un servizio DNS-SD"
+# msgstr "DNS-SDサービスを登録"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:23
 # msgid "Authentication is required to register a DNS-SD service"
-# msgstr "Autenticazione richiesta per registrare un servizio DNS-SD"
+# msgstr "DNS-SDサービスを登録するには認証が必要です。"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:33
 # msgid "Unregister a DNS-SD service"
-# msgstr "Annulla la registrazione di un servizio DNS-SD"
+# msgstr "DNS-SDサービスへの登録を解除"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:34
 # msgid "Authentication is required to unregister a DNS-SD service"
-# msgstr ""
-# "Autenticazione richiesta per annullare la registrare di un servizio DNS-SD"
+# msgstr "DNS-SDサービスへの登録を解除するには認証が必要です。"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:22
 # msgid "Set system time"
-# msgstr "Configura l'orario di sistema"
+# msgstr "システムの時刻設定"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:23
 # msgid "Authentication is required to set the system time."
-# msgstr "Autenticazione richiesta per configurare l'orario di sistema."
+# msgstr "システムの時刻を設定するには認証が必要です。"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:33
 # msgid "Set system timezone"
-# msgstr "Configura il fuso orario di sistema"
+# msgstr "システムのタイムゾーンを設定"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:34
 # msgid "Authentication is required to set the system timezone."
-# msgstr "Autenticazione richiesta per configurare il fuso orario di sistema."
+# msgstr "システムのタイムゾーンを設定するには認証が必要です。"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:43
 # msgid "Set RTC to local timezone or UTC"
-# msgstr ""
-# "Configura l'orologio di sistema (RTC) al fuso orario locale o al tempo "
-# "civile (UTC)"
+# msgstr "ハードウェア時刻をローカルタイムゾーンもしくはUTCに設定"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:44
 # msgid ""
 # "Authentication is required to control whether the RTC stores the local or "
 # "UTC time."
-# msgstr ""
-# "Autenticazione richiesta per verificare se l'orologio di sistema (RTC) è "
-# "configurato all'orario locale o al tempo civile (UTC)."
+# msgstr "ハードウェア時刻をローカルタイムゾーンもしくはUTCに設定するには認証が必要です。"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:54
 # msgid "Turn network time synchronization on or off"
-# msgstr "Abilita o meno la sincronizzazione dell'orario in rete"
+# msgstr "ネットワーク経由の時刻同期の有効化もしくは無効化"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:55
 # msgid ""
 # "Authentication is required to control whether network time synchronization "
 # "shall be enabled."
-# msgstr ""
-# "Autenticazione richiesta per verificare se la sincronizzazione dell'orario "
-# "in rete possa essere attivata."
+# msgstr "ネットワーク経由の時刻同期を有効もしくは無効にするには認証が必要です。"
 #
 # #: src/core/dbus-unit.c:496
 # msgid "Authentication is required to start '$(unit)'."
-# msgstr "Autenticazione richiesta per avviare '$(unit)'."
+# msgstr "'$(unit)'を開始するには認証が必要です。"
 #
 # #: src/core/dbus-unit.c:497
 # msgid "Authentication is required to stop '$(unit)'."
-# msgstr "Autenticazione richiesta per fermare '$(unit)'."
+# msgstr "'$(unit)'を停止するには認証が必要です。"
 #
 # #: src/core/dbus-unit.c:498
 # msgid "Authentication is required to reload '$(unit)'."
-# msgstr "Autenticazione richiesta per ricaricare '$(unit)'."
+# msgstr "'$(unit)'を再読込するには認証が必要です。"
 #
 # #: src/core/dbus-unit.c:499 src/core/dbus-unit.c:500
 # msgid "Authentication is required to restart '$(unit)'."
-# msgstr "Autenticazione richiesta per riavviare '$(unit)'."
+# msgstr "'$(unit)'を再起動するには認証が必要です。"
 #
 # #: src/core/dbus-unit.c:607
 # msgid "Authentication is required to kill '$(unit)'."
-# msgstr "Autenticazione richiesta per terminare '$(unit)'."
+# msgstr "'$(unit)'を強制停止するには認証が必要です。"
 #
 # #: src/core/dbus-unit.c:638
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
-# msgstr ""
-# "Autenticazione richiesta per riconfigurare lo stato \"fallito\" di '$(unit)'."
+# msgstr "'$(unit)'の「失敗」状態をリセットするには認証が必要です。"
 #
 # #: src/core/dbus-unit.c:671
 # msgid "Authentication is required to set properties on '$(unit)'."
-# msgstr "Autenticazione richiesta per configurare le proprietà di '$(unit)'."
+# msgstr "'$(unit)'のプロパティを設定するには認証が必要です。"
 #endif // 0
 

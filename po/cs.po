@@ -74,7 +74,7 @@ msgstr ""
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:3
 # msgid "Set static host name"
-# msgstr "Nastavit statický název stoje"
+# msgstr "Nastavit statický název stroje"
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:4
 # msgid ""
@@ -131,7 +131,6 @@ msgstr ""
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Pro nastavení systémové konfigurace klávesnice je vyžadováno ověření."
-#
 #
 #endif // 0
 
@@ -537,6 +536,5 @@ msgstr "K nastavení zprávy všem uživatelům je vyžadováno ověření"
 # #: ../src/core/dbus-unit.c:633
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Pro nastavení vlastností na „$(unit)” je vyžadováno ověření."
-#
 #endif // 0
 

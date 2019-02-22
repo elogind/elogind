@@ -144,7 +144,6 @@ msgstr ""
 # "Requírese autenticación para estabelecer as preferencias do teclado do "
 # "sistema."
 #
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy.in.h:1
@@ -589,6 +588,5 @@ msgstr "Requírese autenticación para estabelecer unha mensaxe de muro"
 # #: ../src/core/dbus-unit.c:597
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Requírese autenticación para estabelecer as propiedades en '$(unit)'."
-#
 #endif // 0
 
