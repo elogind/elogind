@@ -161,7 +161,6 @@ modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 # systemunitdir = join_paths(rootprefixdir, 'lib/systemd/system')
 # systempresetdir = join_paths(rootprefixdir, 'lib/systemd/system-preset')
 # udevlibexecdir = join_paths(rootprefixdir, 'lib/udev')
-# udevhomedir = udevlibexecdir
 # udevrulesdir = join_paths(udevlibexecdir, 'rules.d')
 # udevhwdbdir = join_paths(udevlibexecdir, 'hwdb.d')
 # catalogdir = join_paths(prefixdir, 'lib/systemd/catalog')
@@ -409,6 +408,7 @@ possible_cc_flags = [
         '-Wno-missing-field-initializers',
         '-Wno-unused-result',
         '-Wno-format-signedness',
+        '-Wno-error=#warnings',
 
         # work-around for gcc 7.1 turning this on on its own.
         '-Wno-error=nonnull',
