@@ -667,6 +667,7 @@ bool valid_user_group_name_or_id(const char *u) {
         return parse_uid(u, NULL) >= 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool valid_gecos(const char *d) {
 
         if (!d)
@@ -710,6 +711,7 @@ bool valid_home(const char *p) {
 
         return true;
 }
+#endif // 0
 
 int maybe_setgroups(size_t size, const gid_t *list) {
         int r;
@@ -741,7 +743,6 @@ int maybe_setgroups(size_t size, const gid_t *list) {
 }
 
 bool synthesize_nobody(void) {
-#else
         /* Returns true when we shall synthesize the "nobody" user (which we do by default). This can be turned off by
          * touching /etc/systemd/dont-synthesize-nobody in order to provide upgrade compatibility with legacy systems
          * that used the "nobody" user name and group name for other UIDs/GIDs than 65534.

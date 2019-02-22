@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "version.h"
+#include "version.h"
 
 #if HAVE_PAM
 #define _PAM_FEATURE_ "+PAM"
