@@ -375,7 +375,8 @@ static void user_start_service(User *u) {
 
         r = manager_start_unit(u->manager, u->service, &error, &u->service_job);
         if (r < 0)
-                log_warning_errno(r, "Failed to start user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
+                log_full_errno(sd_bus_error_has_name(&error, BUS_ERROR_UNIT_MASKED) ? LOG_DEBUG : LOG_WARNING, r,
+                               "Failed to start user service '%s', ignoring: %s", u->service, bus_error_message(&error, r));
 }
 #endif // 0
 
