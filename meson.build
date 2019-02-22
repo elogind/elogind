@@ -16,7 +16,7 @@ project('elogind', 'c',
 # libsystemd_version = '0.23.0'
 # libudev_version = '1.6.11'
 #else
-libelogind_version = '0.23.0'
+libelogind_version = '0.24.0'
 #endif // 0
 
 # We need the same data in two different formats, ugh!
@@ -28,12 +28,12 @@ conf.set('PROJECT_VERSION',        meson.project_version())
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 substs = configuration_data()
-#if 0 /// Set elogind Package PACKAGE_URL
+#if 0 /// Set elogind Package PROJECT_URL
 # substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
-# substs.set('PROJECT_VERSION',      meson.project_version())
 #else
-substs.set('PACKAGE_URL',          'https://github.com/elogind/elogind')
+substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 #endif // 0
+substs.set('PROJECT_VERSION',      meson.project_version())
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')

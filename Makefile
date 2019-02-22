@@ -1,4 +1,4 @@
-#if 1 /// The original Makefile follows, which isn't enough for elogind.
+#if 0 /// The original Makefile follows, which isn't enough for elogind.
 # all:
 # 	ninja -C build
 #
