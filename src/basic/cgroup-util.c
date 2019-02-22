@@ -2592,13 +2592,13 @@ static int cg_unified_update(void) {
                 unified_cache = CGROUP_UNIFIED_ALL;
 #if 0 /// The handling of cgroups is a bit different with elogind
         } else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
-                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for systemd controller");
 #else
         } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)
               || F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #endif // 0
                 if (statfs("/sys/fs/cgroup/unified/", &fs) == 0 &&
                     F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
+                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for elogind controller");
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = false;
                 } else {
