@@ -76,15 +76,15 @@ foreach tuple : xsltproc.found() ? manpages : []
                         if want_html
 #if 0 /// This must be configurable in elogind
 #                                 dst = join_paths(docdir, 'html', htmlalias)
-#                                 p2 += link
-#                         html_pages += link
 #else
                                   dst = get_option('htmldir')
                                   dst = dst != '' ? dst: join_paths(docdir, 'html', htmlalias)
 #endif // 0
                                 cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
                                 meson.add_install_script('sh', '-c', cmd)
+                                p2 += link
                         endif
+                        html_pages += link
                 endforeach
 
                 p3 = custom_target(
