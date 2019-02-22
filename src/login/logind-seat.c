@@ -60,7 +60,6 @@ Seat* seat_free(Seat *s) {
                 return NULL;
 
         log_debug_elogind("Freeing Seat %s ...", s->id);
-
         if (s->in_gc_queue)
                 LIST_REMOVE(gc_queue, s->manager->seat_gc_queue, s);
 

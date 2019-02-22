@@ -231,4 +231,3 @@ int user_runtime_dir(const char *verb, User *u) {
 #if 0 /// No main function needed in elogind
 DEFINE_MAIN_FUNCTION(run);
 #endif // 0
-

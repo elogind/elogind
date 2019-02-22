@@ -1335,7 +1335,6 @@ static int reload_config(int argc, char *argv[], void *userdata) {
         return 0;
 }
 #endif // 1
-
 static int help(int argc, char *argv[], void *userdata) {
         _cleanup_free_ char *link = NULL;
         int r;
@@ -1680,7 +1679,6 @@ static int run(int argc, char *argv[]) {
                 return r;
 
         r = bus_connect_transport(arg_transport, arg_host, false, &bus);
-
         if (r < 0)
                 return log_error_errno(r, "Failed to create bus connection: %m");
 

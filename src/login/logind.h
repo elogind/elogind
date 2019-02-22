@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-#include "sd-device.h"
 #include "sd-bus.h"
+#include "sd-device.h"
 #include "sd-event.h"
 
 #include "conf-parser.h"

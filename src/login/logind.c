@@ -5,8 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "sd-device.h"
 #include "sd-daemon.h"
+#include "sd-device.h"
 
 #include "alloc-util.h"
 #include "bus-error.h"

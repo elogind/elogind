@@ -345,6 +345,7 @@ int user_load(User *u) {
                 else
                         u->stopping = r;
         }
+
         if (realtime)
                 (void) deserialize_usec(realtime, &u->timestamp.realtime);
         if (monotonic)
@@ -356,7 +357,6 @@ int user_load(User *u) {
         log_debug_elogind(" --> User realtime    : %lu", u->timestamp.realtime);
         log_debug_elogind(" --> User monotonic   : %lu", u->timestamp.monotonic);
         log_debug_elogind(" --> User last session: %lu", u->last_session_timestamp);
-
         return 0;
 }
 

@@ -1424,7 +1424,6 @@ static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_
         return sd_bus_reply_method_return(message, NULL);
 }
 #endif // 1
-
 static int have_multiple_sessions(
                 Manager *m,
                 uid_t uid) {
@@ -1736,13 +1735,13 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
-
-        _cleanup_free_ char *load_state = NULL;
 #else
                 HandleAction unit_name,
 #endif // 0
                 InhibitWhat w,
                 sd_bus_error *error) {
+
+        _cleanup_free_ char *load_state = NULL;
         bool delayed;
         int r;
 
@@ -1893,11 +1892,11 @@ static int method_do_shutdown_or_sleep(
                 r = can_sleep(m, sleep_verb);
 #endif // 0
                 if (r == -ENOSPC)
-                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
-                                                "Not enough swap space for hibernation");
+                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Not enough swap space for hibernation");
+                if (r == -ENOMEDIUM)
+                        return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Kernel image has been removed, can't hibernate");
                 if (r == 0)
-                        return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
-                                                 "Sleep verb \"%s\" not supported", sleep_verb);
+                        return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED, "Sleep verb \"%s\" not supported", sleep_verb);
                 if (r < 0)
                         return r;
         }
@@ -2392,10 +2391,10 @@ static int method_can_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_verb);
-                if (IN_SET(r,  0, -ENOSPC))
 #else
                 r = can_sleep(m, sleep_verb);
 #endif // 0
+                if (IN_SET(r,  0, -ENOSPC, -ENOMEDIUM))
                         return sd_bus_reply_method_return(message, "s", "na");
                 if (r < 0)
                         return r;
