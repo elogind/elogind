@@ -13,4 +13,3 @@ static inline int write_string_file_atomic_label(const char *fn, const char *lin
 }
 
 int create_shutdown_run_nologin_or_warn(void);
-

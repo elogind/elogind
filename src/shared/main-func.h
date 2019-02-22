@@ -12,7 +12,6 @@
 #if 1 /// elogind has no onw password agent, so do nothing.
 #define ask_password_agent_close() while(0){}
 #endif // 1
-
 #define _DEFINE_MAIN_FUNCTION(intro, impl, ret)                         \
         int main(int argc, char *argv[]) {                              \
                 int r;                                                  \
