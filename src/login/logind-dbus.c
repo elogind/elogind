@@ -1759,12 +1759,12 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
-
 #else
                 HandleAction unit_name,
 #endif // 0
                 InhibitWhat w,
                 sd_bus_error *error) {
+
         bool delayed;
         int r;
 

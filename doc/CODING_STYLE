@@ -101,19 +101,11 @@
 
 - Please use streq() and strneq() instead of strcmp(), strncmp() where applicable.
 
-- Please do not allocate variables on the stack in the middle of code,
-  even if C99 allows it. Wrong:
+- Preferably allocate stack variables on the top of the block:
 
   {
-          a = 5;
-          int b;
-          b = a;
-  }
+          int a, b;
 
-  Right:
-
-  {
-          int b;
           a = 5;
           b = a;
   }

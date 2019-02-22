@@ -63,7 +63,6 @@
     and hence the systemd control group hierarchy.</para>
 
     <para>On login, this module — in conjunction with <filename>systemd-logind.service</filename> — ensures the
-
     --><!-- else -->
     the elogind login manager
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
@@ -72,6 +71,7 @@
     <para>On login, this module — in conjunction with <filename>elogind</filename> — ensures the
     <!-- // 0 -->
     following:</para>
+
     <orderedlist>
       <listitem><para>If it does not exist yet, the user runtime directory <filename>/run/user/$UID</filename> is
       either created or mounted as new <literal>tmpfs</literal> file system with quota applied, and its ownership
