@@ -859,7 +859,6 @@ int main(int argc, char *argv[]) {
 #if 0 /// UNNEEDED by elogind
         test_parse_percent();
         test_parse_percent_unbounded();
-
 #endif // 0
         test_parse_permille();
         test_parse_permille_unbounded();
