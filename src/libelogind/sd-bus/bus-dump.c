@@ -329,6 +329,7 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
         const char *prefix, *color, *suffix, *s;
 #if 0 /// elogind does not support systemd units and slices. v and w are only used with them
         int r, q, v, w, z;
+
 #else
         int r, q, z;
 #endif // 0
