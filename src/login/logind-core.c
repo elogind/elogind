@@ -120,7 +120,6 @@ void elogind_manager_reset_config(Manager* m) {
 #endif // ENABLE_DEBUG_ELOGIND
 }
 #endif // 1
-
 int manager_parse_config_file(Manager *m) {
         assert(m);
 

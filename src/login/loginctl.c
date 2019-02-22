@@ -1355,7 +1355,6 @@ static int reload_config(int argc, char *argv[], void *userdata) {
         return 0;
 }
 #endif // 1
-
 static int help(int argc, char *argv[], void *userdata) {
 
         printf("%s [OPTIONS...] {COMMAND} ...\n\n"

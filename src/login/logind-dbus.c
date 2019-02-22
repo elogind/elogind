@@ -1419,7 +1419,6 @@ static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_
         return sd_bus_reply_method_return(message, NULL);
 }
 #endif // 1
-
 static int have_multiple_sessions(
                 Manager *m,
                 uid_t uid) {
@@ -1731,13 +1730,13 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
-
-        _cleanup_free_ char *load_state = NULL;
 #else
                 HandleAction unit_name,
 #endif // 0
                 InhibitWhat w,
                 sd_bus_error *error) {
+
+        _cleanup_free_ char *load_state = NULL;
         bool delayed;
         int r;
 
