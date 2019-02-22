@@ -76,7 +76,7 @@ static void test_login(void) {
                                 session = mfree(session);
                 } else {
                         assert_se(r == 0);
-#endif
+#endif // 0
                 log_info("sd_pid_get_owner_uid(0, …) → "UID_FMT, u2);
 
                 assert_se(sd_pid_get_cgroup(0, &cgroup) == 0);
