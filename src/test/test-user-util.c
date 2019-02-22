@@ -120,6 +120,7 @@ static void test_valid_user_group_name_or_id(void) {
         assert_se(valid_user_group_name_or_id("INNER5NUMBER"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_valid_gecos(void) {
         log_info("/* %s */", __func__);
 
@@ -148,6 +149,7 @@ static void test_valid_home(void) {
         assert_se(valid_home("/home"));
         assert_se(valid_home("/home/foo"));
 }
+#endif // 0
 
 static void test_get_user_creds_one(const char *id, const char *name, uid_t uid, gid_t gid, const char *home, const char *shell) {
         const char *rhome = NULL;
@@ -224,8 +226,10 @@ int main(int argc, char *argv[]) {
 
         test_valid_user_group_name();
         test_valid_user_group_name_or_id();
+#if 0 /// UNNEEDED by elogind
         test_valid_gecos();
         test_valid_home();
+#endif // 0
 
         return 0;
 }

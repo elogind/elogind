@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "macro.h"
 
 /* What is interpreted as whitespace? */

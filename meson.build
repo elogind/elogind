@@ -3514,9 +3514,11 @@ status = [
 #         'default DNS-over-TLS mode:         @0@'.format(default_dns_over_tls),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
+#         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
+#         'default locale:                    @0@'.format(default_locale)]
+#else
+        'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
 #endif // 0
-        'default KillUserProcesses setting: @0@'.format(kill_user_processes),
-        'default locale:                    @0@'.format(default_locale)]
 
 #if 0 /// UNSUPPORTED by elogind
 # alt_dns_servers = '\n                                            '.join(dns_servers.split(' '))
