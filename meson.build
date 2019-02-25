@@ -408,6 +408,7 @@ possible_cc_flags = [
         '-Wno-missing-field-initializers',
         '-Wno-unused-result',
         '-Wno-format-signedness',
+        '-Wno-error=#warnings',
 
         # work-around for gcc 7.1 turning this on on its own.
         '-Wno-error=nonnull',
@@ -1900,7 +1901,8 @@ test_dlopen = executable(
 #            include_directories : includes,
 #            link_with : [libcore,
 #                         libshared],
-#            dependencies : [threads,
+#            dependencies : [versiondep,
+#                            threads,
 #                            librt,
 #                            libseccomp,
 #                            libselinux,
