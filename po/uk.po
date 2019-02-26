@@ -138,8 +138,8 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Потрібна автентифікація, щоб вказати налаштування системної клавіатури."
-#
 #endif // 0
+
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Дозволити програмам перешкоджати вимкненню системи"
@@ -640,5 +640,5 @@ msgstr "Потрібна автентифікація, щоб вказати п�
 #
 # #: src/core/dbus-unit.c:671
 # msgid "Authentication is required to set properties on '$(unit)'."
+# msgstr "Потрібна автентифікація, щоб вказати властивості на «$(unit)»."
 #endif // 0
-msgstr "Потрібна автентифікація, щоб вказати властивості на «$(unit)»."

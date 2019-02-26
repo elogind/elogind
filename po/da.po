@@ -139,52 +139,52 @@ msgstr ""
 # msgstr ""
 # "Autentificering er nødvendig for at sætte tastaturindstillinger "
 # "for systemet."
-#
 #endif // 0
-#: ../src/login/org.freedesktop.login1.policy.in.h:1
+
+#: ../src/login/org.freedesktop.login1.policy:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Tillad applikationer at hæmme system nedlukning"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:2
+#: ../src/login/org.freedesktop.login1.policy:2
 msgid ""
 "Authentication is required for an application to inhibit system shutdown."
 msgstr ""
 "Autentificering er nødvendig for at en applikation kan hæmme "
 "system nedlukning."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:3
+#: ../src/login/org.freedesktop.login1.policy:3
 msgid "Allow applications to delay system shutdown"
 msgstr "Tillad applikationer at forsinke system nedlukning"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:4
+#: ../src/login/org.freedesktop.login1.policy:4
 msgid "Authentication is required for an application to delay system shutdown."
 msgstr ""
 "Autentificering er nødvendig for at en applikation kan forsinke "
 "system nedlukning."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:5
+#: ../src/login/org.freedesktop.login1.policy:5
 msgid "Allow applications to inhibit system sleep"
 msgstr "Tillad applikationer at hæmme system dvale"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:6
+#: ../src/login/org.freedesktop.login1.policy:6
 msgid "Authentication is required for an application to inhibit system sleep"
 msgstr "Autentificering er nødvendig for at en applikation kan hæmme system dvale"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:7
+#: ../src/login/org.freedesktop.login1.policy:7
 msgid "Allow applications to delay system sleep"
 msgstr "Tillad applikationer at forsinke system dvale"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:8
+#: ../src/login/org.freedesktop.login1.policy:8
 msgid "Authentication is required for an application to delay system sleep."
 msgstr ""
 "Autentificering er nødvendig for at en applikation kan forsinke system "
 "dvale."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:9
+#: ../src/login/org.freedesktop.login1.policy:9
 msgid "Allow applications to inhibit automatic system suspend"
 msgstr "Tillad applikationer at hæmme automatisk system standby"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:10
+#: ../src/login/org.freedesktop.login1.policy:10
 msgid ""
 "Authentication is required for an application to inhibit automatic system "
 "suspend."
@@ -192,11 +192,11 @@ msgstr ""
 "Autentificering er nødvendig for at en applikation kan hæmme automatisk "
 "system standby."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:11
+#: ../src/login/org.freedesktop.login1.policy:11
 msgid "Allow applications to inhibit system handling of the power key"
 msgstr "Tillad applikationer at hæmme systemhåndtering af tænd/sluk-knappen"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:12
+#: ../src/login/org.freedesktop.login1.policy:12
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the power key."
@@ -204,11 +204,11 @@ msgstr ""
 "Autentificering er nødvendig for at en applikation kan hæmme systemhåndtering "
 "af tænd/sluk-knappen."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:13
+#: ../src/login/org.freedesktop.login1.policy:13
 msgid "Allow applications to inhibit system handling of the suspend key"
 msgstr "Tillad applikationer at hæmme systemhåndtering af standby-knappen"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:14
+#: ../src/login/org.freedesktop.login1.policy:14
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the suspend key."
@@ -216,11 +216,11 @@ msgstr ""
 "Autentificering er nødvendig for at en applikation kan hæmme systemhåndtering "
 "af standby-knappen."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:15
+#: ../src/login/org.freedesktop.login1.policy:15
 msgid "Allow applications to inhibit system handling of the hibernate key"
 msgstr "Tillad applikationer at hæmme systemhåndtering af dvale-knappen"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:16
+#: ../src/login/org.freedesktop.login1.policy:16
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the hibernate key."
@@ -228,12 +228,12 @@ msgstr ""
 "Autentificering er nødvendig for at en applikation kan hæmme "
 "systemhåndtering af dvale-knappen."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:17
+#: ../src/login/org.freedesktop.login1.policy:17
 msgid "Allow applications to inhibit system handling of the lid switch"
 msgstr ""
 "Tillad applikationer at hæmme systemhåndtering af skærmlukning"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:18
+#: ../src/login/org.freedesktop.login1.policy:18
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the lid switch."
@@ -241,54 +241,54 @@ msgstr ""
 "Autentificering er nødvendig for at en applikation kan hæmme systemhåndtering "
 "af skærmlukning."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:19
+#: ../src/login/org.freedesktop.login1.policy:19
 msgid "Allow non-logged-in users to run programs"
 msgstr "Tillad brugere der ikke er logget ind, at køre programmer"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:20
+#: ../src/login/org.freedesktop.login1.policy:20
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr ""
 "Autentificering er nødvendig for at brugere, som ikke er logget ind, kan "
 "køre programmer."
 
 # www.freedesktop.org/wiki/Software/systemd/multiseat/
-#: ../src/login/org.freedesktop.login1.policy.in.h:21
+#: ../src/login/org.freedesktop.login1.policy:21
 msgid "Allow attaching devices to seats"
 msgstr "Tillad at montere af enheder til arbejdsstationer"
 
 # www.freedesktop.org/wiki/Software/systemd/multiseat/
-#: ../src/login/org.freedesktop.login1.policy.in.h:22
+#: ../src/login/org.freedesktop.login1.policy:22
 msgid "Authentication is required for attaching a device to a seat."
 msgstr ""
 "Autentificering er nødvendig for at montere en enhed til en "
 "arbejdsstation."
 
 # www.freedesktop.org/wiki/Software/systemd/multiseat/
-#: ../src/login/org.freedesktop.login1.policy.in.h:23
+#: ../src/login/org.freedesktop.login1.policy:23
 msgid "Flush device to seat attachments"
 msgstr "Nulstil enhed monteret til en arbejdsstation"
 
 # www.freedesktop.org/wiki/Software/systemd/multiseat/
-#: ../src/login/org.freedesktop.login1.policy.in.h:24
+#: ../src/login/org.freedesktop.login1.policy:24
 msgid ""
 "Authentication is required for resetting how devices are attached to seats."
 msgstr ""
 "Autentificering er nødvendig for at nulstille måden enheder er monteret "
 "arbejdsstationer."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:25
+#: ../src/login/org.freedesktop.login1.policy:25
 msgid "Power off the system"
 msgstr "Sluk for systemet"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:26
+#: ../src/login/org.freedesktop.login1.policy:26
 msgid "Authentication is required for powering off the system."
 msgstr "Autentificering er nødvendig for at slukke systemet"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:27
+#: ../src/login/org.freedesktop.login1.policy:27
 msgid "Power off the system while other users are logged in"
 msgstr "Sluk systemet mens andre brugere er logget på"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:28
+#: ../src/login/org.freedesktop.login1.policy:28
 msgid ""
 "Authentication is required for powering off the system while other users are "
 "logged in."
@@ -296,12 +296,12 @@ msgstr ""
 "Autentificering er nødvendig for at slukke systemet mens andre brugere "
 "er logget på."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:29
+#: ../src/login/org.freedesktop.login1.policy:29
 msgid "Power off the system while an application asked to inhibit it"
 msgstr ""
 "Sluk for systemet mens en applikation har forespurgt at hæmme det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:30
+#: ../src/login/org.freedesktop.login1.policy:30
 msgid ""
 "Authentication is required for powering off the system while an application "
 "asked to inhibit it."
@@ -309,19 +309,19 @@ msgstr ""
 "Autentificering er nødvendig for at slukke systemet mens en applikation har "
 "forespurgt at hæmme det."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:31
+#: ../src/login/org.freedesktop.login1.policy:31
 msgid "Reboot the system"
 msgstr "Genstart systemet"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:32
+#: ../src/login/org.freedesktop.login1.policy:32
 msgid "Authentication is required for rebooting the system."
 msgstr "Autentificering er nødvendig for at genstarte systemet."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:33
+#: ../src/login/org.freedesktop.login1.policy:33
 msgid "Reboot the system while other users are logged in"
 msgstr "Genstart systemet mens andre brugere er logget ind"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:34
+#: ../src/login/org.freedesktop.login1.policy:34
 msgid ""
 "Authentication is required for rebooting the system while other users are "
 "logged in."
@@ -329,12 +329,12 @@ msgstr ""
 "Autentificering er nødvendig for at genstarte systemet mens andre brugere "
 "er logget ind."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:35
+#: ../src/login/org.freedesktop.login1.policy:35
 msgid "Reboot the system while an application asked to inhibit it"
 msgstr ""
 "Genstart systemet mens en applikation har forespurgt at hæmme det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:36
+#: ../src/login/org.freedesktop.login1.policy:36
 msgid ""
 "Authentication is required for rebooting the system while an application "
 "asked to inhibit it."
@@ -342,19 +342,19 @@ msgstr ""
 "Autentificering er nødvendig for at genstarte systemet mens en applikation "
 "har forespurgt at hæmme det."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:37
+#: ../src/login/org.freedesktop.login1.policy:37
 msgid "Suspend the system"
 msgstr "Sæt systemet på standby"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:38
+#: ../src/login/org.freedesktop.login1.policy:38
 msgid "Authentication is required for suspending the system."
 msgstr "Autentificering er nødvendig for at sætte systemet på standby"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:39
+#: ../src/login/org.freedesktop.login1.policy:39
 msgid "Suspend the system while other users are logged in"
 msgstr "Sæt systemet på standby mens andre brugere er logget på"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:40
+#: ../src/login/org.freedesktop.login1.policy:40
 msgid ""
 "Authentication is required for suspending the system while other users are "
 "logged in."
@@ -362,13 +362,13 @@ msgstr ""
 "Autentificering er nødvendig for at sætte systemet på standby, mens andre "
 "brugere er logget på."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:41
+#: ../src/login/org.freedesktop.login1.policy:41
 msgid "Suspend the system while an application asked to inhibit it"
 msgstr ""
 "Sæt systemet på standby mens en applikation har forespurgt at hæmme"
 "det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:42
+#: ../src/login/org.freedesktop.login1.policy:42
 msgid ""
 "Authentication is required for suspending the system while an application "
 "asked to inhibit it."
@@ -376,21 +376,21 @@ msgstr ""
 "Autentificering er nødvendig for at sætte systemet på standby, mens en "
 "applikation har forespurgt at hæmme det."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:43
+#: ../src/login/org.freedesktop.login1.policy:43
 msgid "Hibernate the system"
 msgstr "Sæt systemet i dvale"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:44
+#: ../src/login/org.freedesktop.login1.policy:44
 msgid "Authentication is required for hibernating the system."
 msgstr ""
 "Autentificering er nødvendig for at sætte systemet i dvale-tilstand."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:45
+#: ../src/login/org.freedesktop.login1.policy:45
 msgid "Hibernate the system while other users are logged in"
 msgstr ""
 "Sæt systemet i dvale-tilstand mens andre brugere er logget på"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:46
+#: ../src/login/org.freedesktop.login1.policy:46
 msgid ""
 "Authentication is required for hibernating the system while other users are "
 "logged in."
@@ -398,12 +398,12 @@ msgstr ""
 "Autentificering er nødvendig for at sætte systemet i dvale-tilstand, mens "
 "andre brugere er logget på."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:47
+#: ../src/login/org.freedesktop.login1.policy:47
 msgid "Hibernate the system while an application asked to inhibit it"
 msgstr "Sæt systemet i dvale-tilstand mens en applikation har forespurgt at "
 "hæmme det"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:48
+#: ../src/login/org.freedesktop.login1.policy:48
 msgid ""
 "Authentication is required for hibernating the system while an application "
 "asked to inhibit it."
@@ -411,43 +411,43 @@ msgstr ""
 "Autentificering er nødvendig for at sætte systemet i dvale tilstand, mens "
 "en applikation har forespurgt at hæmme det."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:49
+#: ../src/login/org.freedesktop.login1.policy:49
 msgid "Manage active sessions, users and seats"
 msgstr "Håndtér aktive sessioner, brugere og arbejdsstationer"
 
 # www.freedesktop.org/wiki/Software/systemd/multiseat/
-#: ../src/login/org.freedesktop.login1.policy.in.h:50
+#: ../src/login/org.freedesktop.login1.policy:50
 msgid ""
 "Authentication is required for managing active sessions, users and seats."
 msgstr ""
 "Autentificering er nødvendig for at håndtere aktive sessioner, brugere "
 "og arbejdsstationer."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:51
+#: ../src/login/org.freedesktop.login1.policy:51
 msgid "Lock or unlock active sessions"
 msgstr "Lås eller oplås aktive sessioner"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:52
+#: ../src/login/org.freedesktop.login1.policy:52
 msgid "Authentication is required to lock or unlock active sessions."
 msgstr ""
 "Autentificering er nødvendig for at låse eller oplåse aktive sessioner."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:53
+#: ../src/login/org.freedesktop.login1.policy:53
 msgid "Allow indication to the firmware to boot to setup interface"
 msgstr "Tillad meddelelse til firmwaren om at starte op i opsætningsgrænseflade"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:54
+#: ../src/login/org.freedesktop.login1.policy:54
 msgid ""
 "Authentication is required to indicate to the firmware to boot to setup "
 "interface."
 msgstr "Autentificering er nødvendig for at meddele firmwaren om at starte "
 "op i opsætningsgrænseflade."
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:55
+#: ../src/login/org.freedesktop.login1.policy:55
 msgid "Set a wall message"
 msgstr "Sæt broadcast-besked"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:56
+#: ../src/login/org.freedesktop.login1.policy:56
 msgid "Authentication is required to set a wall message"
 msgstr "Autentificering er nødvendig for at sætte en broadcast-besked"
 

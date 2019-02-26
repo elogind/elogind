@@ -151,8 +151,8 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Authentification requise pour définir les paramètres de clavier du système."
-#
 #endif // 0
+
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Permet aux applications d'empêcher l'arrêt du système"

@@ -151,8 +151,8 @@ msgstr ""
 # msgstr ""
 # "É necessária autenticação para definir as configurações de teclado do "
 # "sistema."
-#
 #endif // 0
+
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Permitir que aplicativos inibam o desligamento do sistema"

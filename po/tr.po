@@ -150,8 +150,8 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Sistem klavye ayarlarını ayarlamak kimlik doğrulaması gerektiriyor."
-#
 #endif // 0
+
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Uygulamaların sistemin kapanmasına engel olmasına izin ver"
@@ -702,7 +702,7 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 # msgstr ""
 # "'$(unit)' üzerindeki özellikleri ayarlamak için kimlik doğrulaması "
 # "gereklidir."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."
 #endif // 0
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."
