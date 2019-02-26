@@ -135,6 +135,7 @@ msgstr ""
 # msgstr "Otentikasi diperlukan untuk menyetel pengaturan papan tik sistem."
 #
 #endif // 0
+
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Ijinkan aplikasi untuk mencegah shutdown sistem"
@@ -625,4 +626,5 @@ msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
 # #: src/core/dbus-unit.c:671
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk menata properti pada '$(unit)'."
+#
 #endif // 0

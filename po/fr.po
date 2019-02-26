@@ -153,6 +153,7 @@ msgstr ""
 # "Authentification requise pour définir les paramètres de clavier du système."
 #
 #endif // 0
+
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Permet aux applications d'empêcher l'arrêt du système"
@@ -726,4 +727,5 @@ msgstr "Authentification requise pour définir un message wall."
 # #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
 # #~ msgstr[0] "Vérification en cours sur %d disque (%3.1f%% complété)"
 # #~ msgstr[1] "Vérification en cours sur %d disques (%3.1f%% complété)"
+#
 #endif // 0

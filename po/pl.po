@@ -154,6 +154,7 @@ msgstr ""
 # msgstr "Wymagane jest uwierzytelnienie, aby ustawić klawiaturę systemu."
 #
 #endif // 0
+
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr "Zezwolenie programom na wstrzymywanie wyłączenia systemu"
@@ -703,4 +704,5 @@ msgstr "Wymagane jest uwierzytelnienie, aby ustawić komunikat wall"
 # #~ msgstr[0] "Trwa sprawdzanie %d dysku (ukończono %3.1f%%)"
 # #~ msgstr[1] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"
 # #~ msgstr[2] "Trwa sprawdzanie %d dysków (ukończono %3.1f%%)"
+#
 #endif // 0
