@@ -150,7 +150,6 @@ msgstr ""
 # msgstr ""
 # "Legitimierung ist zum Festlegen der Tastatureinstellungen des Systems "
 # "erforderlich."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1

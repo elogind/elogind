@@ -142,7 +142,6 @@ msgstr ""
 # msgstr ""
 # "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej "
 # "klávesnice."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1

@@ -136,7 +136,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Autentisering krävs för att ställa in systeminställningar för tangentbord."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1
@@ -370,7 +369,6 @@ msgstr ""
 # "to inhibit it."
 # msgstr ""
 # "Autentisering krävs för att stoppa systemet även då ett program hindrar det."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:39

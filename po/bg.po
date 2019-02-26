@@ -142,7 +142,6 @@ msgstr ""
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "За задаване на настройките на клавиатурата е необходима идентификация."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1

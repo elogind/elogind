@@ -139,7 +139,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Hitelesítés szükséges a rendszer billentyűzetbeállításainak megadásához."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1

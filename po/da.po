@@ -139,7 +139,6 @@ msgstr ""
 # msgstr ""
 # "Autentificering er nødvendig for at sætte tastaturindstillinger "
 # "for systemet."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1

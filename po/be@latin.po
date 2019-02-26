@@ -140,7 +140,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia sistemnych nalad klavijatury."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1

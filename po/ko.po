@@ -133,7 +133,6 @@ msgstr ""
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "시스템 키보드를 설정하려면 인증이 필요합니다."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1

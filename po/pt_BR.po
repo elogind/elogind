@@ -151,7 +151,6 @@ msgstr ""
 # msgstr ""
 # "É necessária autenticação para definir as configurações de teclado do "
 # "sistema."
-#
 #endif // 0
 
 #: src/login/org.freedesktop.login1.policy:22

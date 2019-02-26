@@ -149,7 +149,6 @@ msgstr ""
 # msgstr ""
 # "Autentificarea este necesară pentru a stabili configurările tastaturii "
 # "sistemului."
-#
 #endif // 0
 
 #: ../src/login/org.freedesktop.login1.policy:1
