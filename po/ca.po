@@ -151,362 +151,364 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Es requereix autenticació per establir els ajusts del teclat del sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:22
-# msgid "Allow applications to inhibit system shutdown"
-# msgstr "Permet a les aplicacions inhibir l'apagada del sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:23
-# msgid ""
-# "Authentication is required for an application to inhibit system shutdown."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació inhibeixi l'apagada del "
-# "sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:33
-# msgid "Allow applications to delay system shutdown"
-# msgstr "Permet a les aplicacions endarrerir l'apagada del sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:34
-# msgid ""
-# "Authentication is required for an application to delay system shutdown."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació endarrereixi l'apagada del "
-# "sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:44
-# msgid "Allow applications to inhibit system sleep"
-# msgstr "Permet a les aplicacions inhibir el repòs del sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:45
-# msgid "Authentication is required for an application to inhibit system sleep."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació inhibeixi el repòs del "
-# "sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:55
-# msgid "Allow applications to delay system sleep"
-# msgstr "Permet a les aplicacions endarrerir el repòs del sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:56
-# msgid "Authentication is required for an application to delay system sleep."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació endarrereixi el repòs del "
-# "sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:65
-# msgid "Allow applications to inhibit automatic system suspend"
-# msgstr "Permet a les aplicacions inhibir la suspensió automàtica del sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:66
-# msgid ""
-# "Authentication is required for an application to inhibit automatic system "
-# "suspend."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació inhibeixi la suspensió "
-# "automàtica del sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:75
-# msgid "Allow applications to inhibit system handling of the power key"
-# msgstr ""
-# "Permet a les aplicacions inhibir la gestió de la tecla d'encesa per part del "
-# "sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:76
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the power key."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació inhibeixi la gestió de la "
-# "tecla d'encesa per part del sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:86
-# msgid "Allow applications to inhibit system handling of the suspend key"
-# msgstr ""
-# "Permet a les aplicacions inhibir la tecla de suspensió per part del sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:87
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the suspend key."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació inhibeixi la gestió de la "
-# "tecla de suspensió per part del sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:97
-# msgid "Allow applications to inhibit system handling of the hibernate key"
-# msgstr ""
-# "Permet a les aplicacions inhibir la gestió de la tecla d'hibernació per part "
-# "del sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:98
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the hibernate key."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació inhibeixi la gestió de la "
-# "tecla d'hibernació per part del sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:107
-# msgid "Allow applications to inhibit system handling of the lid switch"
-# msgstr ""
-# "Permet a les aplicacions la gestió del tancament de la tapa per part del "
-# "sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:108
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the lid switch."
-# msgstr ""
-# "Es requereix autenticació perquè una aplicació inhibeixi la gestió del "
-# "tancament de la tapa per part del sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:117
-# msgid "Allow non-logged-in user to run programs"
-# msgstr "Permet a l'usuari sense inici de sessió executar programes"
-#
-# #: src/login/org.freedesktop.login1.policy:118
-# msgid "Explicit request is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Es requereix una sol·licitud explícita per executar programes com a usuari "
-# "sense inici de sessió."
-#
-# #: src/login/org.freedesktop.login1.policy:127
-# msgid "Allow non-logged-in users to run programs"
-# msgstr "Permet als usuaris sense inici de sessió executar programes"
-#
-# #: src/login/org.freedesktop.login1.policy:128
-# msgid "Authentication is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Es requereix una sol·licitud explícita per executar programes com a usuari "
-# "sense inici de sessió."
-#
-# #: src/login/org.freedesktop.login1.policy:137
-# msgid "Allow attaching devices to seats"
-# msgstr "Permet l'annexió de dispositius als llocs de treball"
-#
-# #: src/login/org.freedesktop.login1.policy:138
-# msgid "Authentication is required for attaching a device to a seat."
-# msgstr ""
-# "Es requereix autenticació per annexar un dispositiu a un lloc de treball."
-#
-# #: src/login/org.freedesktop.login1.policy:148
-# msgid "Flush device to seat attachments"
-# msgstr "Allibera els dispositius a les annexions dels llocs de treball"
-#
-# #: src/login/org.freedesktop.login1.policy:149
-# msgid ""
-# "Authentication is required for resetting how devices are attached to seats."
-# msgstr ""
-# "Es requereix autenticació per restablir com s'annexionen els dispositius als "
-# "llocs de treball."
-#
-# #: src/login/org.freedesktop.login1.policy:158
-# msgid "Power off the system"
-# msgstr "Apaga el sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:159
-# msgid "Authentication is required for powering off the system."
-# msgstr "Es requereix autenticació per apagar el sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:169
-# msgid "Power off the system while other users are logged in"
-# msgstr "Apaga el sistema mentre hi ha altres usuaris amb la sessió iniciada"
-#
-# #: src/login/org.freedesktop.login1.policy:170
-# msgid ""
-# "Authentication is required for powering off the system while other users are "
-# "logged in."
-# msgstr ""
-# "Es requereix autenticació per apagar el sistema mentre hi ha altres usuaris "
-# "amb la sessió iniciada."
-#
-# #: src/login/org.freedesktop.login1.policy:180
-# msgid "Power off the system while an application asked to inhibit it"
-# msgstr "Apaga el sistema mentre hi ha una aplicació que ha demanat inhibir-ho"
-#
-# #: src/login/org.freedesktop.login1.policy:181
-# msgid ""
-# "Authentication is required for powering off the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Es requereix autenticació per apagar el sistema mentre hi ha una aplicació "
-# "que ha demanat inhibir-ho."
-#
-# #: src/login/org.freedesktop.login1.policy:191
-# msgid "Reboot the system"
-# msgstr "Reinicia el sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:192
-# msgid "Authentication is required for rebooting the system."
-# msgstr "Es requereix autenticació per reiniciar el sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:202
-# msgid "Reboot the system while other users are logged in"
-# msgstr "Reinicia el sistema mentre hi ha usuaris amb la sessió iniciada"
-#
-# #: src/login/org.freedesktop.login1.policy:203
-# msgid ""
-# "Authentication is required for rebooting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Es requereix autenticació per reiniciar el sistema mentre hi ha usuaris amb "
-# "la sessió iniciada."
-#
-# #: src/login/org.freedesktop.login1.policy:213
-# msgid "Reboot the system while an application asked to inhibit it"
-# msgstr ""
-# "Reinicia el sistema mentre hi ha una aplicació que ha demanat inhibir-ho"
-#
-# #: src/login/org.freedesktop.login1.policy:214
-# msgid ""
-# "Authentication is required for rebooting the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Es requereix autenticació per reiniciar el sistema mentre hi ha una "
-# "aplicació que ha demanat inhibir-ho."
-#
-# #: src/login/org.freedesktop.login1.policy:224
-# msgid "Halt the system"
-# msgstr "Atura el sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:225
-# msgid "Authentication is required for halting the system."
-# msgstr "Es requereix autenticació per aturar el sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:235
-# msgid "Halt the system while other users are logged in"
-# msgstr "Atura el sistema mentre hi ha altres usuaris amb la sessió iniciada"
-#
-# #: src/login/org.freedesktop.login1.policy:236
-# msgid ""
-# "Authentication is required for halting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Es requereix autenticació per aturar el sistema mentre hi ha altres usuaris "
-# "amb la sessió iniciada."
-#
-# #: src/login/org.freedesktop.login1.policy:246
-# msgid "Halt the system while an application asked to inhibit it"
-# msgstr ""
-# "Atura el sistema mentre hi ha una aplicació que ha demanat d'inhibir-ho"
-#
-# #: src/login/org.freedesktop.login1.policy:247
-# msgid ""
-# "Authentication is required for halting the system while an application asked "
-# "to inhibit it."
-# msgstr ""
-# "Es requereix autenticació per aturar el sistema mentre hi ha una aplicació "
-# "que ha demanat d'inhibir-ho."
-#
-# #: src/login/org.freedesktop.login1.policy:257
-# msgid "Suspend the system"
-# msgstr "Suspèn el sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:258
-# msgid "Authentication is required for suspending the system."
-# msgstr "Es requereix autenticació per suspendre el sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:267
-# msgid "Suspend the system while other users are logged in"
-# msgstr "Suspèn el sistema mentre hi ha altres usuaris amb la sessió iniciada"
-#
-# #: src/login/org.freedesktop.login1.policy:268
-# msgid ""
-# "Authentication is required for suspending the system while other users are "
-# "logged in."
-# msgstr ""
-# "Es requereix autenticació per reiniciar el sistema mentre hi ha altres "
-# "usuaris amb la sessió iniciada."
-#
-# #: src/login/org.freedesktop.login1.policy:278
-# msgid "Suspend the system while an application asked to inhibit it"
-# msgstr ""
-# "Suspèn el sistema mentre hi ha una aplicació que ha demanat d'inhibir-ho"
-#
-# #: src/login/org.freedesktop.login1.policy:279
-# msgid ""
-# "Authentication is required for suspending the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Es requereix autenticació per suspendre el sistema mentre hi ha una "
-# "aplicació que ha demanat d'inhibir-ho."
-#
-# #: src/login/org.freedesktop.login1.policy:289
-# msgid "Hibernate the system"
-# msgstr "Hiberna el sistema"
-#
-# #: src/login/org.freedesktop.login1.policy:290
-# msgid "Authentication is required for hibernating the system."
-# msgstr "Es requereix autenticació per hibernar el sistema."
-#
-# #: src/login/org.freedesktop.login1.policy:299
-# msgid "Hibernate the system while other users are logged in"
-# msgstr "Hiberna el sistema mentre hi ha altres usuaris amb la sessió iniciada"
-#
-# #: src/login/org.freedesktop.login1.policy:300
-# msgid ""
-# "Authentication is required for hibernating the system while other users are "
-# "logged in."
-# msgstr ""
-# "Es requereix autenticació per hibernar el sistema mentre hi ha altres "
-# "usuaris amb la sessió iniciada."
-#
-# #: src/login/org.freedesktop.login1.policy:310
-# msgid "Hibernate the system while an application asked to inhibit it"
-# msgstr ""
-# "Hiberna el sistema mentre hi ha una aplicació que ha demanat d'inhibir-ho"
-#
-# #: src/login/org.freedesktop.login1.policy:311
-# msgid ""
-# "Authentication is required for hibernating the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Es requereix autenticació per hibernar el sistema mentre hi ha una aplicació "
-# "que ha demanat d'inhibir-ho."
-#
-# #: src/login/org.freedesktop.login1.policy:321
-# msgid "Manage active sessions, users and seats"
-# msgstr "Gestiona les sessions, usuaris i llocs de treball actius"
-#
-# #: src/login/org.freedesktop.login1.policy:322
-# msgid ""
-# "Authentication is required for managing active sessions, users and seats."
-# msgstr ""
-# "Es requereix autenticació per gestionar les sessions, usuaris i llocs de "
-# "treball actius."
-#
-# #: src/login/org.freedesktop.login1.policy:331
-# msgid "Lock or unlock active sessions"
-# msgstr "Bloqueja o desbloqueja les sessions actives"
-#
-# #: src/login/org.freedesktop.login1.policy:332
-# msgid "Authentication is required to lock or unlock active sessions."
-# msgstr ""
-# "Es requereix autenticació per bloquejar o desbloquejar les sessions actives."
-#
-# #: src/login/org.freedesktop.login1.policy:341
-# msgid "Allow indication to the firmware to boot to setup interface"
-# msgstr ""
-# "Permet la indicació al microprogramari en l'arrencada perquè prepari la "
-# "interfície"
-#
-# #: src/login/org.freedesktop.login1.policy:342
-# msgid ""
-# "Authentication is required to indicate to the firmware to boot to setup "
-# "interface."
-# msgstr ""
-# "Es requereix autenticació per indicar al microprogramari en l'arrencada "
-# "perquè prepari la interfície."
-#
-# #: src/login/org.freedesktop.login1.policy:351
-# msgid "Set a wall message"
-# msgstr "Estableix un missatge de mur"
-#
-# #: src/login/org.freedesktop.login1.policy:352
-# msgid "Authentication is required to set a wall message"
-# msgstr "Es requereix autenticació per establir un missatge de mur"
-#
+#endif // 0
+
+#: src/login/org.freedesktop.login1.policy:22
+msgid "Allow applications to inhibit system shutdown"
+msgstr "Permet a les aplicacions inhibir l'apagada del sistema"
+
+#: src/login/org.freedesktop.login1.policy:23
+msgid ""
+"Authentication is required for an application to inhibit system shutdown."
+msgstr ""
+"Es requereix autenticació perquè una aplicació inhibeixi l'apagada del "
+"sistema."
+
+#: src/login/org.freedesktop.login1.policy:33
+msgid "Allow applications to delay system shutdown"
+msgstr "Permet a les aplicacions endarrerir l'apagada del sistema"
+
+#: src/login/org.freedesktop.login1.policy:34
+msgid ""
+"Authentication is required for an application to delay system shutdown."
+msgstr ""
+"Es requereix autenticació perquè una aplicació endarrereixi l'apagada del "
+"sistema."
+
+#: src/login/org.freedesktop.login1.policy:44
+msgid "Allow applications to inhibit system sleep"
+msgstr "Permet a les aplicacions inhibir el repòs del sistema"
+
+#: src/login/org.freedesktop.login1.policy:45
+msgid "Authentication is required for an application to inhibit system sleep."
+msgstr ""
+"Es requereix autenticació perquè una aplicació inhibeixi el repòs del "
+"sistema."
+
+#: src/login/org.freedesktop.login1.policy:55
+msgid "Allow applications to delay system sleep"
+msgstr "Permet a les aplicacions endarrerir el repòs del sistema"
+
+#: src/login/org.freedesktop.login1.policy:56
+msgid "Authentication is required for an application to delay system sleep."
+msgstr ""
+"Es requereix autenticació perquè una aplicació endarrereixi el repòs del "
+"sistema."
+
+#: src/login/org.freedesktop.login1.policy:65
+msgid "Allow applications to inhibit automatic system suspend"
+msgstr "Permet a les aplicacions inhibir la suspensió automàtica del sistema"
+
+#: src/login/org.freedesktop.login1.policy:66
+msgid ""
+"Authentication is required for an application to inhibit automatic system "
+"suspend."
+msgstr ""
+"Es requereix autenticació perquè una aplicació inhibeixi la suspensió "
+"automàtica del sistema."
+
+#: src/login/org.freedesktop.login1.policy:75
+msgid "Allow applications to inhibit system handling of the power key"
+msgstr ""
+"Permet a les aplicacions inhibir la gestió de la tecla d'encesa per part del "
+"sistema"
+
+#: src/login/org.freedesktop.login1.policy:76
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the power key."
+msgstr ""
+"Es requereix autenticació perquè una aplicació inhibeixi la gestió de la "
+"tecla d'encesa per part del sistema."
+
+#: src/login/org.freedesktop.login1.policy:86
+msgid "Allow applications to inhibit system handling of the suspend key"
+msgstr ""
+"Permet a les aplicacions inhibir la tecla de suspensió per part del sistema"
+
+#: src/login/org.freedesktop.login1.policy:87
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the suspend key."
+msgstr ""
+"Es requereix autenticació perquè una aplicació inhibeixi la gestió de la "
+"tecla de suspensió per part del sistema."
+
+#: src/login/org.freedesktop.login1.policy:97
+msgid "Allow applications to inhibit system handling of the hibernate key"
+msgstr ""
+"Permet a les aplicacions inhibir la gestió de la tecla d'hibernació per part "
+"del sistema"
+
+#: src/login/org.freedesktop.login1.policy:98
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the hibernate key."
+msgstr ""
+"Es requereix autenticació perquè una aplicació inhibeixi la gestió de la "
+"tecla d'hibernació per part del sistema."
+
+#: src/login/org.freedesktop.login1.policy:107
+msgid "Allow applications to inhibit system handling of the lid switch"
+msgstr ""
+"Permet a les aplicacions la gestió del tancament de la tapa per part del "
+"sistema"
+
+#: src/login/org.freedesktop.login1.policy:108
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the lid switch."
+msgstr ""
+"Es requereix autenticació perquè una aplicació inhibeixi la gestió del "
+"tancament de la tapa per part del sistema."
+
+#: src/login/org.freedesktop.login1.policy:117
+msgid "Allow non-logged-in user to run programs"
+msgstr "Permet a l'usuari sense inici de sessió executar programes"
+
+#: src/login/org.freedesktop.login1.policy:118
+msgid "Explicit request is required to run programs as a non-logged-in user."
+msgstr ""
+"Es requereix una sol·licitud explícita per executar programes com a usuari "
+"sense inici de sessió."
+
+#: src/login/org.freedesktop.login1.policy:127
+msgid "Allow non-logged-in users to run programs"
+msgstr "Permet als usuaris sense inici de sessió executar programes"
+
+#: src/login/org.freedesktop.login1.policy:128
+msgid "Authentication is required to run programs as a non-logged-in user."
+msgstr ""
+"Es requereix una sol·licitud explícita per executar programes com a usuari "
+"sense inici de sessió."
+
+#: src/login/org.freedesktop.login1.policy:137
+msgid "Allow attaching devices to seats"
+msgstr "Permet l'annexió de dispositius als llocs de treball"
+
+#: src/login/org.freedesktop.login1.policy:138
+msgid "Authentication is required for attaching a device to a seat."
+msgstr ""
+"Es requereix autenticació per annexar un dispositiu a un lloc de treball."
+
+#: src/login/org.freedesktop.login1.policy:148
+msgid "Flush device to seat attachments"
+msgstr "Allibera els dispositius a les annexions dels llocs de treball"
+
+#: src/login/org.freedesktop.login1.policy:149
+msgid ""
+"Authentication is required for resetting how devices are attached to seats."
+msgstr ""
+"Es requereix autenticació per restablir com s'annexionen els dispositius als "
+"llocs de treball."
+
+#: src/login/org.freedesktop.login1.policy:158
+msgid "Power off the system"
+msgstr "Apaga el sistema"
+
+#: src/login/org.freedesktop.login1.policy:159
+msgid "Authentication is required for powering off the system."
+msgstr "Es requereix autenticació per apagar el sistema."
+
+#: src/login/org.freedesktop.login1.policy:169
+msgid "Power off the system while other users are logged in"
+msgstr "Apaga el sistema mentre hi ha altres usuaris amb la sessió iniciada"
+
+#: src/login/org.freedesktop.login1.policy:170
+msgid ""
+"Authentication is required for powering off the system while other users are "
+"logged in."
+msgstr ""
+"Es requereix autenticació per apagar el sistema mentre hi ha altres usuaris "
+"amb la sessió iniciada."
+
+#: src/login/org.freedesktop.login1.policy:180
+msgid "Power off the system while an application asked to inhibit it"
+msgstr "Apaga el sistema mentre hi ha una aplicació que ha demanat inhibir-ho"
+
+#: src/login/org.freedesktop.login1.policy:181
+msgid ""
+"Authentication is required for powering off the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Es requereix autenticació per apagar el sistema mentre hi ha una aplicació "
+"que ha demanat inhibir-ho."
+
+#: src/login/org.freedesktop.login1.policy:191
+msgid "Reboot the system"
+msgstr "Reinicia el sistema"
+
+#: src/login/org.freedesktop.login1.policy:192
+msgid "Authentication is required for rebooting the system."
+msgstr "Es requereix autenticació per reiniciar el sistema."
+
+#: src/login/org.freedesktop.login1.policy:202
+msgid "Reboot the system while other users are logged in"
+msgstr "Reinicia el sistema mentre hi ha usuaris amb la sessió iniciada"
+
+#: src/login/org.freedesktop.login1.policy:203
+msgid ""
+"Authentication is required for rebooting the system while other users are "
+"logged in."
+msgstr ""
+"Es requereix autenticació per reiniciar el sistema mentre hi ha usuaris amb "
+"la sessió iniciada."
+
+#: src/login/org.freedesktop.login1.policy:213
+msgid "Reboot the system while an application asked to inhibit it"
+msgstr ""
+"Reinicia el sistema mentre hi ha una aplicació que ha demanat inhibir-ho"
+
+#: src/login/org.freedesktop.login1.policy:214
+msgid ""
+"Authentication is required for rebooting the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Es requereix autenticació per reiniciar el sistema mentre hi ha una "
+"aplicació que ha demanat inhibir-ho."
+
+#: src/login/org.freedesktop.login1.policy:224
+msgid "Halt the system"
+msgstr "Atura el sistema"
+
+#: src/login/org.freedesktop.login1.policy:225
+msgid "Authentication is required for halting the system."
+msgstr "Es requereix autenticació per aturar el sistema."
+
+#: src/login/org.freedesktop.login1.policy:235
+msgid "Halt the system while other users are logged in"
+msgstr "Atura el sistema mentre hi ha altres usuaris amb la sessió iniciada"
+
+#: src/login/org.freedesktop.login1.policy:236
+msgid ""
+"Authentication is required for halting the system while other users are "
+"logged in."
+msgstr ""
+"Es requereix autenticació per aturar el sistema mentre hi ha altres usuaris "
+"amb la sessió iniciada."
+
+#: src/login/org.freedesktop.login1.policy:246
+msgid "Halt the system while an application asked to inhibit it"
+msgstr ""
+"Atura el sistema mentre hi ha una aplicació que ha demanat d'inhibir-ho"
+
+#: src/login/org.freedesktop.login1.policy:247
+msgid ""
+"Authentication is required for halting the system while an application asked "
+"to inhibit it."
+msgstr ""
+"Es requereix autenticació per aturar el sistema mentre hi ha una aplicació "
+"que ha demanat d'inhibir-ho."
+
+#: src/login/org.freedesktop.login1.policy:257
+msgid "Suspend the system"
+msgstr "Suspèn el sistema"
+
+#: src/login/org.freedesktop.login1.policy:258
+msgid "Authentication is required for suspending the system."
+msgstr "Es requereix autenticació per suspendre el sistema."
+
+#: src/login/org.freedesktop.login1.policy:267
+msgid "Suspend the system while other users are logged in"
+msgstr "Suspèn el sistema mentre hi ha altres usuaris amb la sessió iniciada"
+
+#: src/login/org.freedesktop.login1.policy:268
+msgid ""
+"Authentication is required for suspending the system while other users are "
+"logged in."
+msgstr ""
+"Es requereix autenticació per reiniciar el sistema mentre hi ha altres "
+"usuaris amb la sessió iniciada."
+
+#: src/login/org.freedesktop.login1.policy:278
+msgid "Suspend the system while an application asked to inhibit it"
+msgstr ""
+"Suspèn el sistema mentre hi ha una aplicació que ha demanat d'inhibir-ho"
+
+#: src/login/org.freedesktop.login1.policy:279
+msgid ""
+"Authentication is required for suspending the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Es requereix autenticació per suspendre el sistema mentre hi ha una "
+"aplicació que ha demanat d'inhibir-ho."
+
+#: src/login/org.freedesktop.login1.policy:289
+msgid "Hibernate the system"
+msgstr "Hiberna el sistema"
+
+#: src/login/org.freedesktop.login1.policy:290
+msgid "Authentication is required for hibernating the system."
+msgstr "Es requereix autenticació per hibernar el sistema."
+
+#: src/login/org.freedesktop.login1.policy:299
+msgid "Hibernate the system while other users are logged in"
+msgstr "Hiberna el sistema mentre hi ha altres usuaris amb la sessió iniciada"
+
+#: src/login/org.freedesktop.login1.policy:300
+msgid ""
+"Authentication is required for hibernating the system while other users are "
+"logged in."
+msgstr ""
+"Es requereix autenticació per hibernar el sistema mentre hi ha altres "
+"usuaris amb la sessió iniciada."
+
+#: src/login/org.freedesktop.login1.policy:310
+msgid "Hibernate the system while an application asked to inhibit it"
+msgstr ""
+"Hiberna el sistema mentre hi ha una aplicació que ha demanat d'inhibir-ho"
+
+#: src/login/org.freedesktop.login1.policy:311
+msgid ""
+"Authentication is required for hibernating the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Es requereix autenticació per hibernar el sistema mentre hi ha una aplicació "
+"que ha demanat d'inhibir-ho."
+
+#: src/login/org.freedesktop.login1.policy:321
+msgid "Manage active sessions, users and seats"
+msgstr "Gestiona les sessions, usuaris i llocs de treball actius"
+
+#: src/login/org.freedesktop.login1.policy:322
+msgid ""
+"Authentication is required for managing active sessions, users and seats."
+msgstr ""
+"Es requereix autenticació per gestionar les sessions, usuaris i llocs de "
+"treball actius."
+
+#: src/login/org.freedesktop.login1.policy:331
+msgid "Lock or unlock active sessions"
+msgstr "Bloqueja o desbloqueja les sessions actives"
+
+#: src/login/org.freedesktop.login1.policy:332
+msgid "Authentication is required to lock or unlock active sessions."
+msgstr ""
+"Es requereix autenticació per bloquejar o desbloquejar les sessions actives."
+
+#: src/login/org.freedesktop.login1.policy:341
+msgid "Allow indication to the firmware to boot to setup interface"
+msgstr ""
+"Permet la indicació al microprogramari en l'arrencada perquè prepari la "
+"interfície"
+
+#: src/login/org.freedesktop.login1.policy:342
+msgid ""
+"Authentication is required to indicate to the firmware to boot to setup "
+"interface."
+msgstr ""
+"Es requereix autenticació per indicar al microprogramari en l'arrencada "
+"perquè prepari la interfície."
+
+#: src/login/org.freedesktop.login1.policy:351
+msgid "Set a wall message"
+msgstr "Estableix un missatge de mur"
+
+#: src/login/org.freedesktop.login1.policy:352
+msgid "Authentication is required to set a wall message"
+msgstr "Es requereix autenticació per establir un missatge de mur"
+
+#if 0 /// UNNEEDED by elogind
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Inicia la sessió a un contenidor local"

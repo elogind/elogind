@@ -134,336 +134,338 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "Otentikasi diperlukan untuk menyetel pengaturan papan tik sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:22
-# msgid "Allow applications to inhibit system shutdown"
-# msgstr "Ijinkan aplikasi untuk mencegah shutdown sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:23
-# msgid ""
-# "Authentication is required for an application to inhibit system shutdown."
-# msgstr ""
-# "Otentikasi diperlukan bagi suatu aplikasi untuk mencegah shutdown sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:33
-# msgid "Allow applications to delay system shutdown"
-# msgstr "Ijinkan aplikasi untuk menunda shutdown sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:34
-# msgid "Authentication is required for an application to delay system shutdown."
-# msgstr ""
-# "Otentikasi diperlukan bagi suatu aplikasi untuk menunda shutdown sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:44
-# msgid "Allow applications to inhibit system sleep"
-# msgstr "Ijinkan aplikasi untuk mencegah tidur sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:45
-# msgid "Authentication is required for an application to inhibit system sleep."
-# msgstr "Otentikasi diperlukan bagi suatu aplikasi untuk menunda tidur sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:55
-# msgid "Allow applications to delay system sleep"
-# msgstr "Ijinkan aplikasi untuk menunda tidur sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:56
-# msgid "Authentication is required for an application to delay system sleep."
-# msgstr "Otentikasi diperlukan bagi suatu aplikasi untuk menunda tidur sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:65
-# msgid "Allow applications to inhibit automatic system suspend"
-# msgstr "Ijinkan aplikasi mencegah suspensi sistem otomatis"
-#
-# #: src/login/org.freedesktop.login1.policy:66
-# msgid ""
-# "Authentication is required for an application to inhibit automatic system "
-# "suspend."
-# msgstr ""
-# "Otentikasi diperlukan bagi suatu aplikasi untuk mencegah suspensi sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:75
-# msgid "Allow applications to inhibit system handling of the power key"
-# msgstr "Ijinkan aplikasi mencegah penanganan sistem atas tombol daya"
-#
-# #: src/login/org.freedesktop.login1.policy:76
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the power key."
-# msgstr ""
-# "Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
-# "atas tombol daya."
-#
-# #: src/login/org.freedesktop.login1.policy:86
-# msgid "Allow applications to inhibit system handling of the suspend key"
-# msgstr "Ijinkan aplikasi mencegah penanganan sistem atas tombol suspensi"
-#
-# #: src/login/org.freedesktop.login1.policy:87
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the suspend key."
-# msgstr ""
-# "Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
-# "atas tombol suspensi."
-#
-# #: src/login/org.freedesktop.login1.policy:97
-# msgid "Allow applications to inhibit system handling of the hibernate key"
-# msgstr "Ijinkan aplikasi mencegah penanganan sistem atas tombol hibernasi"
-#
-# #: src/login/org.freedesktop.login1.policy:98
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the hibernate key."
-# msgstr ""
-# "Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
-# "dari tombol hibernasi."
-#
-# #: src/login/org.freedesktop.login1.policy:107
-# msgid "Allow applications to inhibit system handling of the lid switch"
-# msgstr "Ijinkan aplikasi mencegah penanganan sistem atas saklar lid"
-#
-# #: src/login/org.freedesktop.login1.policy:108
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the lid switch."
-# msgstr ""
-# "Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
-# "atas saklar lid."
-#
-# #: src/login/org.freedesktop.login1.policy:117
-# msgid "Allow non-logged-in user to run programs"
-# msgstr "Ijinkan pengguna yang tidak log masuk menjalankan program"
-#
-# #: src/login/org.freedesktop.login1.policy:118
-# msgid "Explicit request is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Permintaan eksplisit diperlukan untuk menjalankan program sebagai pengguna "
-# "yang tidak log masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:127
-# msgid "Allow non-logged-in users to run programs"
-# msgstr "Ijinkan pengguna yang tidak log masuk menjalankan program"
-#
-# #: src/login/org.freedesktop.login1.policy:128
-# msgid "Authentication is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Otentikasi diperlukan untuk menjalankan program sebagai pengguna yang tidak "
-# "log masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:137
-# msgid "Allow attaching devices to seats"
-# msgstr "Ijinkan mencantolkan perangkat ke seat"
-#
-# #: src/login/org.freedesktop.login1.policy:138
-# msgid "Authentication is required for attaching a device to a seat."
-# msgstr "Otentikasi diperlukan untuk mencantol suatu perangkat ke sebuah seat."
-#
-# #: src/login/org.freedesktop.login1.policy:148
-# msgid "Flush device to seat attachments"
-# msgstr "Siram perangkat untuk mendudukkan lampiran"
-#
-# #: src/login/org.freedesktop.login1.policy:149
-# msgid ""
-# "Authentication is required for resetting how devices are attached to seats."
-# msgstr ""
-# "Otentikasi diperlukan untuk me-reset bagaimana perangkat dicantolkan ke seat."
-#
-# #: src/login/org.freedesktop.login1.policy:158
-# msgid "Power off the system"
-# msgstr "Matikan daya sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:159
-# msgid "Authentication is required for powering off the system."
-# msgstr "Otentikasi diperlukan untuk mematikan daya sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:169
-# msgid "Power off the system while other users are logged in"
-# msgstr "Matikan daya sistem ketika pengguna lain sedang log masuk"
-#
-# #: src/login/org.freedesktop.login1.policy:170
-# msgid ""
-# "Authentication is required for powering off the system while other users are "
-# "logged in."
-# msgstr ""
-# "Otentikasi diperlukan untuk mematikan daya sistem ketika pengguna lain "
-# "sedang log masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:180
-# msgid "Power off the system while an application asked to inhibit it"
-# msgstr "Matikan daya sistem ketika sebuah aplikasi meminta untuk mencegahnya"
-#
-# #: src/login/org.freedesktop.login1.policy:181
-# msgid ""
-# "Authentication is required for powering off the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Otentikasi diperlukan untuk mematikan daya sistem ketika sebuah aplikasi "
-# "meminta untuk mencegahnya."
-#
-# #: src/login/org.freedesktop.login1.policy:191
-# msgid "Reboot the system"
-# msgstr "Boot ulang sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:192
-# msgid "Authentication is required for rebooting the system."
-# msgstr "Otentikasi diperlukan untuk mem-boot ulang sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:202
-# msgid "Reboot the system while other users are logged in"
-# msgstr "Boot ulang sistem ketika pengguna lain sedang log masuk"
-#
-# #: src/login/org.freedesktop.login1.policy:203
-# msgid ""
-# "Authentication is required for rebooting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Otentikasi diperlukan untuk mem-boot ulang sistem ketika pengguna lain "
-# "sedang log masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:213
-# msgid "Reboot the system while an application asked to inhibit it"
-# msgstr "Boot ulang sistem ketika sebuah aplikasi meminta untuk mencegahnya"
-#
-# #: src/login/org.freedesktop.login1.policy:214
-# msgid ""
-# "Authentication is required for rebooting the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Otentikasi diperlukan untuk mem-boot ulang sistem ketika sebuah aplikasi "
-# "meminta untuk mencegahnya."
-#
-# #: src/login/org.freedesktop.login1.policy:224
-# msgid "Halt the system"
-# msgstr "Halt sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:225
-# msgid "Authentication is required for halting the system."
-# msgstr "Otentikasi diperlukan untuk meng-halt sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:235
-# msgid "Halt the system while other users are logged in"
-# msgstr "Halt sistem ketika pengguna lain sedang log masuk"
-#
-# #: src/login/org.freedesktop.login1.policy:236
-# msgid ""
-# "Authentication is required for halting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Otentikasi diperlukan untuk meng-halt sistem ketika pengguna lain sedang log "
-# "masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:246
-# msgid "Halt the system while an application asked to inhibit it"
-# msgstr "Halt sistem ketika sebuah aplikasi meminta untuk mencegahnya"
-#
-# #: src/login/org.freedesktop.login1.policy:247
-# msgid ""
-# "Authentication is required for halting the system while an application asked "
-# "to inhibit it."
-# msgstr ""
-# "Otentikasi diperlukan untuk meng-halt sistem ketika sebuah aplikasi meminta "
-# "untuk mencegahnya."
-#
-# #: src/login/org.freedesktop.login1.policy:257
-# msgid "Suspend the system"
-# msgstr "Suspensikan sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:258
-# msgid "Authentication is required for suspending the system."
-# msgstr "Otentikasi diperlukan untuk mensuspensi sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:267
-# msgid "Suspend the system while other users are logged in"
-# msgstr "Suspensikan sistem ketika pengguna lain sedang log masuk"
-#
-# #: src/login/org.freedesktop.login1.policy:268
-# msgid ""
-# "Authentication is required for suspending the system while other users are "
-# "logged in."
-# msgstr ""
-# "Otentikasi diperlukan untuk mensuspensi sistem ketika pengguna lain sedang "
-# "log masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:278
-# msgid "Suspend the system while an application asked to inhibit it"
-# msgstr "Suspensikan sistem ketika sebuah aplikasi meminta untuk mencegahnya"
-#
-# #: src/login/org.freedesktop.login1.policy:279
-# msgid ""
-# "Authentication is required for suspending the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Otentikasi diperlukan untuk mensuspensi sistem ketika suatu aplikasi meminta "
-# "untuk mencegahnya."
-#
-# #: src/login/org.freedesktop.login1.policy:289
-# msgid "Hibernate the system"
-# msgstr "Hibernasikan sistem"
-#
-# #: src/login/org.freedesktop.login1.policy:290
-# msgid "Authentication is required for hibernating the system."
-# msgstr "Otentikasi diperlukan untuk menghibernasi sistem."
-#
-# #: src/login/org.freedesktop.login1.policy:299
-# msgid "Hibernate the system while other users are logged in"
-# msgstr "Hibernasikan sistem ketika pengguna lain sedang log masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:300
-# msgid ""
-# "Authentication is required for hibernating the system while other users are "
-# "logged in."
-# msgstr ""
-# "Otentikasi diperlukan untuk menghibernasi sistem ketika pengguna lain sedang "
-# "log masuk."
-#
-# #: src/login/org.freedesktop.login1.policy:310
-# msgid "Hibernate the system while an application asked to inhibit it"
-# msgstr "Hibernasikan sistem ketika sebuah aplikasi meminta untuk mencegahnya."
-#
-# #: src/login/org.freedesktop.login1.policy:311
-# msgid ""
-# "Authentication is required for hibernating the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Otentikasi diperlukan untuk menghibernasi sistem ketika sebuah aplikasi "
-# "meminta mencegahnya."
-#
-# #: src/login/org.freedesktop.login1.policy:321
-# msgid "Manage active sessions, users and seats"
-# msgstr "Kelola seat, pengguna, dan sesi aktif"
-#
-# #: src/login/org.freedesktop.login1.policy:322
-# msgid ""
-# "Authentication is required for managing active sessions, users and seats."
-# msgstr "Otentikasi diperlukan untuk mengelola seat, pengguna, dan sesi aktif."
-#
-# #: src/login/org.freedesktop.login1.policy:331
-# msgid "Lock or unlock active sessions"
-# msgstr "Kunci/buka kunci sesi aktif"
-#
-# #: src/login/org.freedesktop.login1.policy:332
-# msgid "Authentication is required to lock or unlock active sessions."
-# msgstr "Otentikasi diperlukan untuk mengunci atau membuka kunci sesi aktif."
-#
-# #: src/login/org.freedesktop.login1.policy:341
-# msgid "Allow indication to the firmware to boot to setup interface"
-# msgstr "Ijinkan indikasi ke firmware untuk boot ke antar muka penyiapan"
-#
-# #: src/login/org.freedesktop.login1.policy:342
-# msgid ""
-# "Authentication is required to indicate to the firmware to boot to setup "
-# "interface."
-# msgstr ""
-# "Otentikasi diperlukan untuk mengindikasikan ke firmware agar boot ke "
-# "antarmuka penyiapan."
-#
-# #: src/login/org.freedesktop.login1.policy:351
-# msgid "Set a wall message"
-# msgstr "Setel suatu pesan wall"
-#
-# #: src/login/org.freedesktop.login1.policy:352
-# msgid "Authentication is required to set a wall message"
-# msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
-#
+#endif // 0
+
+#: src/login/org.freedesktop.login1.policy:22
+msgid "Allow applications to inhibit system shutdown"
+msgstr "Ijinkan aplikasi untuk mencegah shutdown sistem"
+
+#: src/login/org.freedesktop.login1.policy:23
+msgid ""
+"Authentication is required for an application to inhibit system shutdown."
+msgstr ""
+"Otentikasi diperlukan bagi suatu aplikasi untuk mencegah shutdown sistem."
+
+#: src/login/org.freedesktop.login1.policy:33
+msgid "Allow applications to delay system shutdown"
+msgstr "Ijinkan aplikasi untuk menunda shutdown sistem"
+
+#: src/login/org.freedesktop.login1.policy:34
+msgid "Authentication is required for an application to delay system shutdown."
+msgstr ""
+"Otentikasi diperlukan bagi suatu aplikasi untuk menunda shutdown sistem."
+
+#: src/login/org.freedesktop.login1.policy:44
+msgid "Allow applications to inhibit system sleep"
+msgstr "Ijinkan aplikasi untuk mencegah tidur sistem"
+
+#: src/login/org.freedesktop.login1.policy:45
+msgid "Authentication is required for an application to inhibit system sleep."
+msgstr "Otentikasi diperlukan bagi suatu aplikasi untuk menunda tidur sistem."
+
+#: src/login/org.freedesktop.login1.policy:55
+msgid "Allow applications to delay system sleep"
+msgstr "Ijinkan aplikasi untuk menunda tidur sistem"
+
+#: src/login/org.freedesktop.login1.policy:56
+msgid "Authentication is required for an application to delay system sleep."
+msgstr "Otentikasi diperlukan bagi suatu aplikasi untuk menunda tidur sistem."
+
+#: src/login/org.freedesktop.login1.policy:65
+msgid "Allow applications to inhibit automatic system suspend"
+msgstr "Ijinkan aplikasi mencegah suspensi sistem otomatis"
+
+#: src/login/org.freedesktop.login1.policy:66
+msgid ""
+"Authentication is required for an application to inhibit automatic system "
+"suspend."
+msgstr ""
+"Otentikasi diperlukan bagi suatu aplikasi untuk mencegah suspensi sistem."
+
+#: src/login/org.freedesktop.login1.policy:75
+msgid "Allow applications to inhibit system handling of the power key"
+msgstr "Ijinkan aplikasi mencegah penanganan sistem atas tombol daya"
+
+#: src/login/org.freedesktop.login1.policy:76
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the power key."
+msgstr ""
+"Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
+"atas tombol daya."
+
+#: src/login/org.freedesktop.login1.policy:86
+msgid "Allow applications to inhibit system handling of the suspend key"
+msgstr "Ijinkan aplikasi mencegah penanganan sistem atas tombol suspensi"
+
+#: src/login/org.freedesktop.login1.policy:87
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the suspend key."
+msgstr ""
+"Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
+"atas tombol suspensi."
+
+#: src/login/org.freedesktop.login1.policy:97
+msgid "Allow applications to inhibit system handling of the hibernate key"
+msgstr "Ijinkan aplikasi mencegah penanganan sistem atas tombol hibernasi"
+
+#: src/login/org.freedesktop.login1.policy:98
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the hibernate key."
+msgstr ""
+"Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
+"dari tombol hibernasi."
+
+#: src/login/org.freedesktop.login1.policy:107
+msgid "Allow applications to inhibit system handling of the lid switch"
+msgstr "Ijinkan aplikasi mencegah penanganan sistem atas saklar lid"
+
+#: src/login/org.freedesktop.login1.policy:108
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the lid switch."
+msgstr ""
+"Otentikasi diperlukan bagi suatu aplikasi untuk mencegah penanganan sistem "
+"atas saklar lid."
+
+#: src/login/org.freedesktop.login1.policy:117
+msgid "Allow non-logged-in user to run programs"
+msgstr "Ijinkan pengguna yang tidak log masuk menjalankan program"
+
+#: src/login/org.freedesktop.login1.policy:118
+msgid "Explicit request is required to run programs as a non-logged-in user."
+msgstr ""
+"Permintaan eksplisit diperlukan untuk menjalankan program sebagai pengguna "
+"yang tidak log masuk."
+
+#: src/login/org.freedesktop.login1.policy:127
+msgid "Allow non-logged-in users to run programs"
+msgstr "Ijinkan pengguna yang tidak log masuk menjalankan program"
+
+#: src/login/org.freedesktop.login1.policy:128
+msgid "Authentication is required to run programs as a non-logged-in user."
+msgstr ""
+"Otentikasi diperlukan untuk menjalankan program sebagai pengguna yang tidak "
+"log masuk."
+
+#: src/login/org.freedesktop.login1.policy:137
+msgid "Allow attaching devices to seats"
+msgstr "Ijinkan mencantolkan perangkat ke seat"
+
+#: src/login/org.freedesktop.login1.policy:138
+msgid "Authentication is required for attaching a device to a seat."
+msgstr "Otentikasi diperlukan untuk mencantol suatu perangkat ke sebuah seat."
+
+#: src/login/org.freedesktop.login1.policy:148
+msgid "Flush device to seat attachments"
+msgstr "Siram perangkat untuk mendudukkan lampiran"
+
+#: src/login/org.freedesktop.login1.policy:149
+msgid ""
+"Authentication is required for resetting how devices are attached to seats."
+msgstr ""
+"Otentikasi diperlukan untuk me-reset bagaimana perangkat dicantolkan ke seat."
+
+#: src/login/org.freedesktop.login1.policy:158
+msgid "Power off the system"
+msgstr "Matikan daya sistem"
+
+#: src/login/org.freedesktop.login1.policy:159
+msgid "Authentication is required for powering off the system."
+msgstr "Otentikasi diperlukan untuk mematikan daya sistem."
+
+#: src/login/org.freedesktop.login1.policy:169
+msgid "Power off the system while other users are logged in"
+msgstr "Matikan daya sistem ketika pengguna lain sedang log masuk"
+
+#: src/login/org.freedesktop.login1.policy:170
+msgid ""
+"Authentication is required for powering off the system while other users are "
+"logged in."
+msgstr ""
+"Otentikasi diperlukan untuk mematikan daya sistem ketika pengguna lain "
+"sedang log masuk."
+
+#: src/login/org.freedesktop.login1.policy:180
+msgid "Power off the system while an application asked to inhibit it"
+msgstr "Matikan daya sistem ketika sebuah aplikasi meminta untuk mencegahnya"
+
+#: src/login/org.freedesktop.login1.policy:181
+msgid ""
+"Authentication is required for powering off the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Otentikasi diperlukan untuk mematikan daya sistem ketika sebuah aplikasi "
+"meminta untuk mencegahnya."
+
+#: src/login/org.freedesktop.login1.policy:191
+msgid "Reboot the system"
+msgstr "Boot ulang sistem"
+
+#: src/login/org.freedesktop.login1.policy:192
+msgid "Authentication is required for rebooting the system."
+msgstr "Otentikasi diperlukan untuk mem-boot ulang sistem."
+
+#: src/login/org.freedesktop.login1.policy:202
+msgid "Reboot the system while other users are logged in"
+msgstr "Boot ulang sistem ketika pengguna lain sedang log masuk"
+
+#: src/login/org.freedesktop.login1.policy:203
+msgid ""
+"Authentication is required for rebooting the system while other users are "
+"logged in."
+msgstr ""
+"Otentikasi diperlukan untuk mem-boot ulang sistem ketika pengguna lain "
+"sedang log masuk."
+
+#: src/login/org.freedesktop.login1.policy:213
+msgid "Reboot the system while an application asked to inhibit it"
+msgstr "Boot ulang sistem ketika sebuah aplikasi meminta untuk mencegahnya"
+
+#: src/login/org.freedesktop.login1.policy:214
+msgid ""
+"Authentication is required for rebooting the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Otentikasi diperlukan untuk mem-boot ulang sistem ketika sebuah aplikasi "
+"meminta untuk mencegahnya."
+
+#: src/login/org.freedesktop.login1.policy:224
+msgid "Halt the system"
+msgstr "Halt sistem"
+
+#: src/login/org.freedesktop.login1.policy:225
+msgid "Authentication is required for halting the system."
+msgstr "Otentikasi diperlukan untuk meng-halt sistem."
+
+#: src/login/org.freedesktop.login1.policy:235
+msgid "Halt the system while other users are logged in"
+msgstr "Halt sistem ketika pengguna lain sedang log masuk"
+
+#: src/login/org.freedesktop.login1.policy:236
+msgid ""
+"Authentication is required for halting the system while other users are "
+"logged in."
+msgstr ""
+"Otentikasi diperlukan untuk meng-halt sistem ketika pengguna lain sedang log "
+"masuk."
+
+#: src/login/org.freedesktop.login1.policy:246
+msgid "Halt the system while an application asked to inhibit it"
+msgstr "Halt sistem ketika sebuah aplikasi meminta untuk mencegahnya"
+
+#: src/login/org.freedesktop.login1.policy:247
+msgid ""
+"Authentication is required for halting the system while an application asked "
+"to inhibit it."
+msgstr ""
+"Otentikasi diperlukan untuk meng-halt sistem ketika sebuah aplikasi meminta "
+"untuk mencegahnya."
+
+#: src/login/org.freedesktop.login1.policy:257
+msgid "Suspend the system"
+msgstr "Suspensikan sistem"
+
+#: src/login/org.freedesktop.login1.policy:258
+msgid "Authentication is required for suspending the system."
+msgstr "Otentikasi diperlukan untuk mensuspensi sistem."
+
+#: src/login/org.freedesktop.login1.policy:267
+msgid "Suspend the system while other users are logged in"
+msgstr "Suspensikan sistem ketika pengguna lain sedang log masuk"
+
+#: src/login/org.freedesktop.login1.policy:268
+msgid ""
+"Authentication is required for suspending the system while other users are "
+"logged in."
+msgstr ""
+"Otentikasi diperlukan untuk mensuspensi sistem ketika pengguna lain sedang "
+"log masuk."
+
+#: src/login/org.freedesktop.login1.policy:278
+msgid "Suspend the system while an application asked to inhibit it"
+msgstr "Suspensikan sistem ketika sebuah aplikasi meminta untuk mencegahnya"
+
+#: src/login/org.freedesktop.login1.policy:279
+msgid ""
+"Authentication is required for suspending the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Otentikasi diperlukan untuk mensuspensi sistem ketika suatu aplikasi meminta "
+"untuk mencegahnya."
+
+#: src/login/org.freedesktop.login1.policy:289
+msgid "Hibernate the system"
+msgstr "Hibernasikan sistem"
+
+#: src/login/org.freedesktop.login1.policy:290
+msgid "Authentication is required for hibernating the system."
+msgstr "Otentikasi diperlukan untuk menghibernasi sistem."
+
+#: src/login/org.freedesktop.login1.policy:299
+msgid "Hibernate the system while other users are logged in"
+msgstr "Hibernasikan sistem ketika pengguna lain sedang log masuk."
+
+#: src/login/org.freedesktop.login1.policy:300
+msgid ""
+"Authentication is required for hibernating the system while other users are "
+"logged in."
+msgstr ""
+"Otentikasi diperlukan untuk menghibernasi sistem ketika pengguna lain sedang "
+"log masuk."
+
+#: src/login/org.freedesktop.login1.policy:310
+msgid "Hibernate the system while an application asked to inhibit it"
+msgstr "Hibernasikan sistem ketika sebuah aplikasi meminta untuk mencegahnya."
+
+#: src/login/org.freedesktop.login1.policy:311
+msgid ""
+"Authentication is required for hibernating the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Otentikasi diperlukan untuk menghibernasi sistem ketika sebuah aplikasi "
+"meminta mencegahnya."
+
+#: src/login/org.freedesktop.login1.policy:321
+msgid "Manage active sessions, users and seats"
+msgstr "Kelola seat, pengguna, dan sesi aktif"
+
+#: src/login/org.freedesktop.login1.policy:322
+msgid ""
+"Authentication is required for managing active sessions, users and seats."
+msgstr "Otentikasi diperlukan untuk mengelola seat, pengguna, dan sesi aktif."
+
+#: src/login/org.freedesktop.login1.policy:331
+msgid "Lock or unlock active sessions"
+msgstr "Kunci/buka kunci sesi aktif"
+
+#: src/login/org.freedesktop.login1.policy:332
+msgid "Authentication is required to lock or unlock active sessions."
+msgstr "Otentikasi diperlukan untuk mengunci atau membuka kunci sesi aktif."
+
+#: src/login/org.freedesktop.login1.policy:341
+msgid "Allow indication to the firmware to boot to setup interface"
+msgstr "Ijinkan indikasi ke firmware untuk boot ke antar muka penyiapan"
+
+#: src/login/org.freedesktop.login1.policy:342
+msgid ""
+"Authentication is required to indicate to the firmware to boot to setup "
+"interface."
+msgstr ""
+"Otentikasi diperlukan untuk mengindikasikan ke firmware agar boot ke "
+"antarmuka penyiapan."
+
+#: src/login/org.freedesktop.login1.policy:351
+msgid "Set a wall message"
+msgstr "Setel suatu pesan wall"
+
+#: src/login/org.freedesktop.login1.policy:352
+msgid "Authentication is required to set a wall message"
+msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
+
+#if 0 /// UNNEEDED by elogind
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Log masuk ke dalam suatu kontainer lokal"
