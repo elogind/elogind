@@ -116,7 +116,7 @@
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
        <!-- 0 /// elogind has no machined
-      <citerefentry><refentrytitle>elogind-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
        // 0 -->
       <citerefentry><refentrytitle>sd_pid_get_machine_name</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     </para>
