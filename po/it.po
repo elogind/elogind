@@ -653,4 +653,3 @@ msgstr ""
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Autenticazione richiesta per configurare le proprietà di '$(unit)'."
 #endif // 0
-

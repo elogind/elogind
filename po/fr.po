@@ -145,366 +145,368 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Authentification requise pour définir les paramètres de clavier du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:22
-# msgid "Allow applications to inhibit system shutdown"
-# msgstr "Permet aux applications d'empêcher l'arrêt du système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:23
-# msgid ""
-# "Authentication is required for an application to inhibit system shutdown."
-# msgstr ""
-# "Authentification requise pour permettre à une application d'empêcher l'arrêt "
-# "du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:33
-# msgid "Allow applications to delay system shutdown"
-# msgstr "Permet aux applications de retarder l'arrêt du système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:34
-# msgid "Authentication is required for an application to delay system shutdown."
-# msgstr ""
-# "Authentification requise pour permettre à une application de retarder "
-# "l'arrêt du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:44
-# msgid "Allow applications to inhibit system sleep"
-# msgstr "Permet aux applications d'empêcher la mise en veille du système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:45
-# msgid "Authentication is required for an application to inhibit system sleep."
-# msgstr ""
-# "Authentification requise pour permettre à une application d'empêcher la mise "
-# "en veille du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:55
-# msgid "Allow applications to delay system sleep"
-# msgstr "Permet aux applications de retarder la mise en veille du système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:56
-# msgid "Authentication is required for an application to delay system sleep."
-# msgstr ""
-# "Authentification requise pour permettre à une application de retarder la "
-# "mise en veille du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:65
-# msgid "Allow applications to inhibit automatic system suspend"
-# msgstr ""
-# "Permet aux applications d'empêcher l'hibernation automatique du système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:66
-# msgid ""
-# "Authentication is required for an application to inhibit automatic system "
-# "suspend."
-# msgstr ""
-# "Authentification requise pour permettre à une application d'empêcher "
-# "l'hibernation automatique du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:75
-# msgid "Allow applications to inhibit system handling of the power key"
-# msgstr ""
-# "Permet aux applications d'empêcher la gestion du bouton d'alimentation du "
-# "système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:76
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the power key."
-# msgstr ""
-# "Authentification requise pour permettre à une application d'empêcher la "
-# "gestion du bouton d'alimentation du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:86
-# msgid "Allow applications to inhibit system handling of the suspend key"
-# msgstr ""
-# "Permet aux applications d'empêcher la gestion du bouton de mise en veille du "
-# "système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:87
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the suspend key."
-# msgstr ""
-# "Authentification requise pour permettre à une application d'empêcher la "
-# "gestion du bouton de mise en veille du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:97
-# msgid "Allow applications to inhibit system handling of the hibernate key"
-# msgstr ""
-# "Permet aux applications d'empêcher la gestion du bouton d'hibernation du "
-# "système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:98
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the hibernate key."
-# msgstr ""
-# "Authentification requise pour permettre à une application d'empêcher la "
-# "gestion du bouton d'hibernation du système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:107
-# msgid "Allow applications to inhibit system handling of the lid switch"
-# msgstr ""
-# "Permet aux applications d'empêcher la gestion par le système du rabat de "
-# "l'écran"
-#
-# #: src/login/org.freedesktop.login1.policy.in:108
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the lid switch."
-# msgstr ""
-# "Authentification requise pour permettre à une application d'empêcher la "
-# "gestion par le système du rabat de l'écran."
-#
-# #: src/login/org.freedesktop.login1.policy.in:117
-# msgid "Allow non-logged-in user to run programs"
-# msgstr "Permet à un utilisateur non connecté d'exécuter des programmes"
-#
-# #: src/login/org.freedesktop.login1.policy.in:118
-# msgid "Explicit request is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Requête explicite requise pour exécuter des programmes en tant "
-# "qu'utilisateur non connecté."
-#
-# #: src/login/org.freedesktop.login1.policy.in:127
-# msgid "Allow non-logged-in users to run programs"
-# msgstr "Permet aux utilisateurs non connectés d'exécuter des programmes"
-#
-# #: src/login/org.freedesktop.login1.policy.in:128
-# msgid "Authentication is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Authentification requise pour exécuter des programmes en tant qu'utilisateur "
-# "non connecté."
-#
-# #: src/login/org.freedesktop.login1.policy.in:137
-# msgid "Allow attaching devices to seats"
-# msgstr "Permet d'associer des périphériques à des postes (seats)"
-#
-# #: src/login/org.freedesktop.login1.policy.in:138
-# msgid "Authentication is required for attaching a device to a seat."
-# msgstr ""
-# "Authentification requise pour associer un périphérique à un poste (seat)."
-#
-# #: src/login/org.freedesktop.login1.policy.in:148
-# msgid "Flush device to seat attachments"
-# msgstr "Révoquer les associations de périphériques aux postes (seats)"
-#
-# #: src/login/org.freedesktop.login1.policy.in:149
-# msgid ""
-# "Authentication is required for resetting how devices are attached to seats."
-# msgstr ""
-# "Authentification requise pour révoquer les associations de périphériques aux "
-# "postes (seats)."
-#
-# #: src/login/org.freedesktop.login1.policy.in:158
-# msgid "Power off the system"
-# msgstr "Éteindre le système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:159
-# msgid "Authentication is required for powering off the system."
-# msgstr "Authentification requise pour éteindre le système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:169
-# msgid "Power off the system while other users are logged in"
-# msgstr "Éteindre le système alors que d'autres utilisateurs sont connectés"
-#
-# #: src/login/org.freedesktop.login1.policy.in:170
-# msgid ""
-# "Authentication is required for powering off the system while other users are "
-# "logged in."
-# msgstr ""
-# "Authentification requise pour éteindre le système alors que d'autres "
-# "utilisateurs sont connectés."
-#
-# #: src/login/org.freedesktop.login1.policy.in:180
-# msgid "Power off the system while an application asked to inhibit it"
-# msgstr "Éteindre le système alors qu'une application a demandé de l'empêcher"
-#
-# #: src/login/org.freedesktop.login1.policy.in:181
-# msgid ""
-# "Authentication is required for powering off the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Authentification requise pour éteindre le système alors qu'une application a "
-# "demandé de l'empêcher."
-#
-# #: src/login/org.freedesktop.login1.policy.in:191
-# msgid "Reboot the system"
-# msgstr "Redémarrer le système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:192
-# msgid "Authentication is required for rebooting the system."
-# msgstr "Authentification requise pour redémarrer le système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:202
-# msgid "Reboot the system while other users are logged in"
-# msgstr "Redémarrer le système alors que d'autres utilisateurs sont connectés"
-#
-# #: src/login/org.freedesktop.login1.policy.in:203
-# msgid ""
-# "Authentication is required for rebooting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Authentification requise pour redémarrer le système alors que d'autres "
-# "utilisateurs sont connectés."
-#
-# #: src/login/org.freedesktop.login1.policy.in:213
-# msgid "Reboot the system while an application asked to inhibit it"
-# msgstr "Redémarrer le système alors qu'une application a demandé de l'empêcher"
-#
-# #: src/login/org.freedesktop.login1.policy.in:214
-# msgid ""
-# "Authentication is required for rebooting the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Authentification requise pour redémarrer le système alors qu'une application "
-# "a demandé de l'empêcher."
-#
-# #: src/login/org.freedesktop.login1.policy.in:224
-# msgid "Halt the system"
-# msgstr "Arrêter le système"
-#
-# #: src/login/org.freedesktop.login1.policy.in:225
-# msgid "Authentication is required for halting the system."
-# msgstr "Authentification requise pour arrêter le système."
-#
-# #: src/login/org.freedesktop.login1.policy.in:235
-# msgid "Halt the system while other users are logged in"
-# msgstr "Arrêter le système alors que d'autres utilisateurs sont connectés"
-#
-# #: src/login/org.freedesktop.login1.policy.in:236
-# msgid ""
-# "Authentication is required for halting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Authentification requise pour arrêter le système alors que d'autres "
-# "utilisateurs sont connectés."
-#
-# #: src/login/org.freedesktop.login1.policy.in:246
-# msgid "Halt the system while an application asked to inhibit it"
-# msgstr "Arrêter le système alors qu'une application a demandé de l'empêcher"
-#
-# #: src/login/org.freedesktop.login1.policy.in:247
-# msgid ""
-# "Authentication is required for halting the system while an application asked "
-# "to inhibit it."
-# msgstr ""
-# "Authentification requise pour arrêter le système alors qu'une application a "
-# "demandé de l'empêcher."
-#
-# #: src/login/org.freedesktop.login1.policy.in:257
-# msgid "Suspend the system"
-# msgstr "Mettre le système en veille"
-#
-# #: src/login/org.freedesktop.login1.policy.in:258
-# msgid "Authentication is required for suspending the system."
-# msgstr "Authentification requise pour mettre le système en veille."
-#
-# #: src/login/org.freedesktop.login1.policy.in:267
-# msgid "Suspend the system while other users are logged in"
-# msgstr ""
-# "Mettre le système en veille alors que d'autres utilisateurs sont connectés"
-#
-# #: src/login/org.freedesktop.login1.policy.in:268
-# msgid ""
-# "Authentication is required for suspending the system while other users are "
-# "logged in."
-# msgstr ""
-# "Authentification requise pour mettre le système en veille alors que d'autres "
-# "utilisateurs sont connectés."
-#
-# #: src/login/org.freedesktop.login1.policy.in:278
-# msgid "Suspend the system while an application asked to inhibit it"
-# msgstr ""
-# "Mettre le système en veille alors qu'une application a demandé de l'empêcher"
-#
-# #: src/login/org.freedesktop.login1.policy.in:279
-# msgid ""
-# "Authentication is required for suspending the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Authentification requise pour mettre le système en veille alors qu'une "
-# "application a demandé de l'empêcher."
-#
-# #: src/login/org.freedesktop.login1.policy.in:289
-# msgid "Hibernate the system"
-# msgstr "Mettre le système en hibernation"
-#
-# #: src/login/org.freedesktop.login1.policy.in:290
-# msgid "Authentication is required for hibernating the system."
-# msgstr "Authentification requise pour mettre le système en hibernation."
-#
-# #: src/login/org.freedesktop.login1.policy.in:299
-# msgid "Hibernate the system while other users are logged in"
-# msgstr ""
-# "Mettre le système en hibernation alors que d'autres utilisateurs sont "
-# "connectés"
-#
-# #: src/login/org.freedesktop.login1.policy.in:300
-# msgid ""
-# "Authentication is required for hibernating the system while other users are "
-# "logged in."
-# msgstr ""
-# "Authentification requise pour mettre le système en hibernation alors que "
-# "d'autres utilisateurs sont connectés."
-#
-# #: src/login/org.freedesktop.login1.policy.in:310
-# msgid "Hibernate the system while an application asked to inhibit it"
-# msgstr ""
-# "Mettre le système en hibernation alors qu'une application a demandé de "
-# "l'empêcher"
-#
-# #: src/login/org.freedesktop.login1.policy.in:311
-# msgid ""
-# "Authentication is required for hibernating the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Authentification requise pour mettre le système en hibernation alors qu'une "
-# "application a demandé de l'empêcher."
-#
-# #: src/login/org.freedesktop.login1.policy.in:321
-# msgid "Manage active sessions, users and seats"
-# msgstr "Gérer les sessions actives, les utilisateurs et les postes (seats)"
-#
-# #: src/login/org.freedesktop.login1.policy.in:322
-# msgid ""
-# "Authentication is required for managing active sessions, users and seats."
-# msgstr ""
-# "Authentification requise pour gérer les sessions actives, les utilisateurs "
-# "et les postes (seats)."
-#
-# #: src/login/org.freedesktop.login1.policy.in:331
-# msgid "Lock or unlock active sessions"
-# msgstr "Verrouiller ou déverrouiller des sessions actives"
-#
-# #: src/login/org.freedesktop.login1.policy.in:332
-# msgid "Authentication is required to lock or unlock active sessions."
-# msgstr ""
-# "Authentification requise pour verrouiller ou déverrouiller des sessions "
-# "actives."
-#
-# #: src/login/org.freedesktop.login1.policy.in:341
-# msgid "Allow indication to the firmware to boot to setup interface"
-# msgstr ""
-# "Permet d'indiquer au micrologiciel de démarrer sur l'interface de "
-# "configuration"
-#
-# #: src/login/org.freedesktop.login1.policy.in:342
-# msgid ""
-# "Authentication is required to indicate to the firmware to boot to setup "
-# "interface."
-# msgstr ""
-# "Authentification requise pour indiquer au micrologiciel de démarrer sur "
-# "l'interface de configuration."
-#
-# #: src/login/org.freedesktop.login1.policy.in:351
-# msgid "Set a wall message"
-# msgstr "Définir un message wall"
-#
-# #: src/login/org.freedesktop.login1.policy.in:352
-# msgid "Authentication is required to set a wall message"
-# msgstr "Authentification requise pour définir un message wall."
-#
+#endif // 0
+
+#: src/login/org.freedesktop.login1.policy.in:22
+msgid "Allow applications to inhibit system shutdown"
+msgstr "Permet aux applications d'empêcher l'arrêt du système"
+
+#: src/login/org.freedesktop.login1.policy.in:23
+msgid ""
+"Authentication is required for an application to inhibit system shutdown."
+msgstr ""
+"Authentification requise pour permettre à une application d'empêcher l'arrêt "
+"du système."
+
+#: src/login/org.freedesktop.login1.policy.in:33
+msgid "Allow applications to delay system shutdown"
+msgstr "Permet aux applications de retarder l'arrêt du système"
+
+#: src/login/org.freedesktop.login1.policy.in:34
+msgid "Authentication is required for an application to delay system shutdown."
+msgstr ""
+"Authentification requise pour permettre à une application de retarder "
+"l'arrêt du système."
+
+#: src/login/org.freedesktop.login1.policy.in:44
+msgid "Allow applications to inhibit system sleep"
+msgstr "Permet aux applications d'empêcher la mise en veille du système"
+
+#: src/login/org.freedesktop.login1.policy.in:45
+msgid "Authentication is required for an application to inhibit system sleep."
+msgstr ""
+"Authentification requise pour permettre à une application d'empêcher la mise "
+"en veille du système."
+
+#: src/login/org.freedesktop.login1.policy.in:55
+msgid "Allow applications to delay system sleep"
+msgstr "Permet aux applications de retarder la mise en veille du système"
+
+#: src/login/org.freedesktop.login1.policy.in:56
+msgid "Authentication is required for an application to delay system sleep."
+msgstr ""
+"Authentification requise pour permettre à une application de retarder la "
+"mise en veille du système."
+
+#: src/login/org.freedesktop.login1.policy.in:65
+msgid "Allow applications to inhibit automatic system suspend"
+msgstr ""
+"Permet aux applications d'empêcher l'hibernation automatique du système"
+
+#: src/login/org.freedesktop.login1.policy.in:66
+msgid ""
+"Authentication is required for an application to inhibit automatic system "
+"suspend."
+msgstr ""
+"Authentification requise pour permettre à une application d'empêcher "
+"l'hibernation automatique du système."
+
+#: src/login/org.freedesktop.login1.policy.in:75
+msgid "Allow applications to inhibit system handling of the power key"
+msgstr ""
+"Permet aux applications d'empêcher la gestion du bouton d'alimentation du "
+"système"
+
+#: src/login/org.freedesktop.login1.policy.in:76
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the power key."
+msgstr ""
+"Authentification requise pour permettre à une application d'empêcher la "
+"gestion du bouton d'alimentation du système."
+
+#: src/login/org.freedesktop.login1.policy.in:86
+msgid "Allow applications to inhibit system handling of the suspend key"
+msgstr ""
+"Permet aux applications d'empêcher la gestion du bouton de mise en veille du "
+"système"
+
+#: src/login/org.freedesktop.login1.policy.in:87
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the suspend key."
+msgstr ""
+"Authentification requise pour permettre à une application d'empêcher la "
+"gestion du bouton de mise en veille du système."
+
+#: src/login/org.freedesktop.login1.policy.in:97
+msgid "Allow applications to inhibit system handling of the hibernate key"
+msgstr ""
+"Permet aux applications d'empêcher la gestion du bouton d'hibernation du "
+"système"
+
+#: src/login/org.freedesktop.login1.policy.in:98
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the hibernate key."
+msgstr ""
+"Authentification requise pour permettre à une application d'empêcher la "
+"gestion du bouton d'hibernation du système."
+
+#: src/login/org.freedesktop.login1.policy.in:107
+msgid "Allow applications to inhibit system handling of the lid switch"
+msgstr ""
+"Permet aux applications d'empêcher la gestion par le système du rabat de "
+"l'écran"
+
+#: src/login/org.freedesktop.login1.policy.in:108
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the lid switch."
+msgstr ""
+"Authentification requise pour permettre à une application d'empêcher la "
+"gestion par le système du rabat de l'écran."
+
+#: src/login/org.freedesktop.login1.policy.in:117
+msgid "Allow non-logged-in user to run programs"
+msgstr "Permet à un utilisateur non connecté d'exécuter des programmes"
+
+#: src/login/org.freedesktop.login1.policy.in:118
+msgid "Explicit request is required to run programs as a non-logged-in user."
+msgstr ""
+"Requête explicite requise pour exécuter des programmes en tant "
+"qu'utilisateur non connecté."
+
+#: src/login/org.freedesktop.login1.policy.in:127
+msgid "Allow non-logged-in users to run programs"
+msgstr "Permet aux utilisateurs non connectés d'exécuter des programmes"
+
+#: src/login/org.freedesktop.login1.policy.in:128
+msgid "Authentication is required to run programs as a non-logged-in user."
+msgstr ""
+"Authentification requise pour exécuter des programmes en tant qu'utilisateur "
+"non connecté."
+
+#: src/login/org.freedesktop.login1.policy.in:137
+msgid "Allow attaching devices to seats"
+msgstr "Permet d'associer des périphériques à des postes (seats)"
+
+#: src/login/org.freedesktop.login1.policy.in:138
+msgid "Authentication is required for attaching a device to a seat."
+msgstr ""
+"Authentification requise pour associer un périphérique à un poste (seat)."
+
+#: src/login/org.freedesktop.login1.policy.in:148
+msgid "Flush device to seat attachments"
+msgstr "Révoquer les associations de périphériques aux postes (seats)"
+
+#: src/login/org.freedesktop.login1.policy.in:149
+msgid ""
+"Authentication is required for resetting how devices are attached to seats."
+msgstr ""
+"Authentification requise pour révoquer les associations de périphériques aux "
+"postes (seats)."
+
+#: src/login/org.freedesktop.login1.policy.in:158
+msgid "Power off the system"
+msgstr "Éteindre le système"
+
+#: src/login/org.freedesktop.login1.policy.in:159
+msgid "Authentication is required for powering off the system."
+msgstr "Authentification requise pour éteindre le système."
+
+#: src/login/org.freedesktop.login1.policy.in:169
+msgid "Power off the system while other users are logged in"
+msgstr "Éteindre le système alors que d'autres utilisateurs sont connectés"
+
+#: src/login/org.freedesktop.login1.policy.in:170
+msgid ""
+"Authentication is required for powering off the system while other users are "
+"logged in."
+msgstr ""
+"Authentification requise pour éteindre le système alors que d'autres "
+"utilisateurs sont connectés."
+
+#: src/login/org.freedesktop.login1.policy.in:180
+msgid "Power off the system while an application asked to inhibit it"
+msgstr "Éteindre le système alors qu'une application a demandé de l'empêcher"
+
+#: src/login/org.freedesktop.login1.policy.in:181
+msgid ""
+"Authentication is required for powering off the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Authentification requise pour éteindre le système alors qu'une application a "
+"demandé de l'empêcher."
+
+#: src/login/org.freedesktop.login1.policy.in:191
+msgid "Reboot the system"
+msgstr "Redémarrer le système"
+
+#: src/login/org.freedesktop.login1.policy.in:192
+msgid "Authentication is required for rebooting the system."
+msgstr "Authentification requise pour redémarrer le système."
+
+#: src/login/org.freedesktop.login1.policy.in:202
+msgid "Reboot the system while other users are logged in"
+msgstr "Redémarrer le système alors que d'autres utilisateurs sont connectés"
+
+#: src/login/org.freedesktop.login1.policy.in:203
+msgid ""
+"Authentication is required for rebooting the system while other users are "
+"logged in."
+msgstr ""
+"Authentification requise pour redémarrer le système alors que d'autres "
+"utilisateurs sont connectés."
+
+#: src/login/org.freedesktop.login1.policy.in:213
+msgid "Reboot the system while an application asked to inhibit it"
+msgstr "Redémarrer le système alors qu'une application a demandé de l'empêcher"
+
+#: src/login/org.freedesktop.login1.policy.in:214
+msgid ""
+"Authentication is required for rebooting the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Authentification requise pour redémarrer le système alors qu'une application "
+"a demandé de l'empêcher."
+
+#: src/login/org.freedesktop.login1.policy.in:224
+msgid "Halt the system"
+msgstr "Arrêter le système"
+
+#: src/login/org.freedesktop.login1.policy.in:225
+msgid "Authentication is required for halting the system."
+msgstr "Authentification requise pour arrêter le système."
+
+#: src/login/org.freedesktop.login1.policy.in:235
+msgid "Halt the system while other users are logged in"
+msgstr "Arrêter le système alors que d'autres utilisateurs sont connectés"
+
+#: src/login/org.freedesktop.login1.policy.in:236
+msgid ""
+"Authentication is required for halting the system while other users are "
+"logged in."
+msgstr ""
+"Authentification requise pour arrêter le système alors que d'autres "
+"utilisateurs sont connectés."
+
+#: src/login/org.freedesktop.login1.policy.in:246
+msgid "Halt the system while an application asked to inhibit it"
+msgstr "Arrêter le système alors qu'une application a demandé de l'empêcher"
+
+#: src/login/org.freedesktop.login1.policy.in:247
+msgid ""
+"Authentication is required for halting the system while an application asked "
+"to inhibit it."
+msgstr ""
+"Authentification requise pour arrêter le système alors qu'une application a "
+"demandé de l'empêcher."
+
+#: src/login/org.freedesktop.login1.policy.in:257
+msgid "Suspend the system"
+msgstr "Mettre le système en veille"
+
+#: src/login/org.freedesktop.login1.policy.in:258
+msgid "Authentication is required for suspending the system."
+msgstr "Authentification requise pour mettre le système en veille."
+
+#: src/login/org.freedesktop.login1.policy.in:267
+msgid "Suspend the system while other users are logged in"
+msgstr ""
+"Mettre le système en veille alors que d'autres utilisateurs sont connectés"
+
+#: src/login/org.freedesktop.login1.policy.in:268
+msgid ""
+"Authentication is required for suspending the system while other users are "
+"logged in."
+msgstr ""
+"Authentification requise pour mettre le système en veille alors que d'autres "
+"utilisateurs sont connectés."
+
+#: src/login/org.freedesktop.login1.policy.in:278
+msgid "Suspend the system while an application asked to inhibit it"
+msgstr ""
+"Mettre le système en veille alors qu'une application a demandé de l'empêcher"
+
+#: src/login/org.freedesktop.login1.policy.in:279
+msgid ""
+"Authentication is required for suspending the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Authentification requise pour mettre le système en veille alors qu'une "
+"application a demandé de l'empêcher."
+
+#: src/login/org.freedesktop.login1.policy.in:289
+msgid "Hibernate the system"
+msgstr "Mettre le système en hibernation"
+
+#: src/login/org.freedesktop.login1.policy.in:290
+msgid "Authentication is required for hibernating the system."
+msgstr "Authentification requise pour mettre le système en hibernation."
+
+#: src/login/org.freedesktop.login1.policy.in:299
+msgid "Hibernate the system while other users are logged in"
+msgstr ""
+"Mettre le système en hibernation alors que d'autres utilisateurs sont "
+"connectés"
+
+#: src/login/org.freedesktop.login1.policy.in:300
+msgid ""
+"Authentication is required for hibernating the system while other users are "
+"logged in."
+msgstr ""
+"Authentification requise pour mettre le système en hibernation alors que "
+"d'autres utilisateurs sont connectés."
+
+#: src/login/org.freedesktop.login1.policy.in:310
+msgid "Hibernate the system while an application asked to inhibit it"
+msgstr ""
+"Mettre le système en hibernation alors qu'une application a demandé de "
+"l'empêcher"
+
+#: src/login/org.freedesktop.login1.policy.in:311
+msgid ""
+"Authentication is required for hibernating the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Authentification requise pour mettre le système en hibernation alors qu'une "
+"application a demandé de l'empêcher."
+
+#: src/login/org.freedesktop.login1.policy.in:321
+msgid "Manage active sessions, users and seats"
+msgstr "Gérer les sessions actives, les utilisateurs et les postes (seats)"
+
+#: src/login/org.freedesktop.login1.policy.in:322
+msgid ""
+"Authentication is required for managing active sessions, users and seats."
+msgstr ""
+"Authentification requise pour gérer les sessions actives, les utilisateurs "
+"et les postes (seats)."
+
+#: src/login/org.freedesktop.login1.policy.in:331
+msgid "Lock or unlock active sessions"
+msgstr "Verrouiller ou déverrouiller des sessions actives"
+
+#: src/login/org.freedesktop.login1.policy.in:332
+msgid "Authentication is required to lock or unlock active sessions."
+msgstr ""
+"Authentification requise pour verrouiller ou déverrouiller des sessions "
+"actives."
+
+#: src/login/org.freedesktop.login1.policy.in:341
+msgid "Allow indication to the firmware to boot to setup interface"
+msgstr ""
+"Permet d'indiquer au micrologiciel de démarrer sur l'interface de "
+"configuration"
+
+#: src/login/org.freedesktop.login1.policy.in:342
+msgid ""
+"Authentication is required to indicate to the firmware to boot to setup "
+"interface."
+msgstr ""
+"Authentification requise pour indiquer au micrologiciel de démarrer sur "
+"l'interface de configuration."
+
+#: src/login/org.freedesktop.login1.policy.in:351
+msgid "Set a wall message"
+msgstr "Définir un message wall"
+
+#: src/login/org.freedesktop.login1.policy.in:352
+msgid "Authentication is required to set a wall message"
+msgstr "Authentification requise pour définir un message wall."
+
+#if 0 /// UNNEEDED by elogind
 # #: src/machine/org.freedesktop.machine1.policy.in:22
 # msgid "Log into a local container"
 # msgstr "Connexion dans un conteneur local"
@@ -682,4 +684,3 @@ msgstr ""
 # #~ msgstr[0] "Vérification en cours sur %d disque (%3.1f%% complété)"
 # #~ msgstr[1] "Vérification en cours sur %d disques (%3.1f%% complété)"
 #endif // 0
-

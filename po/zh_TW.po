@@ -128,261 +128,260 @@ msgstr ""
 # #: ../src/locale/org.freedesktop.locale1.policy.in.h:4
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr "設定系統鍵盤設定需要驗證。"
-#
 #endif // 0
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:1
+#: ../src/login/org.freedesktop.login1.policy.in:1
 msgid "Allow applications to inhibit system shutdown"
 msgstr "允許應用程式阻止系統關機"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:2
+#: ../src/login/org.freedesktop.login1.policy.in:2
 msgid ""
 "Authentication is required for an application to inhibit system shutdown."
 msgstr "要讓應用程式阻止系統關機需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:3
+#: ../src/login/org.freedesktop.login1.policy.in:3
 msgid "Allow applications to delay system shutdown"
 msgstr "允許應用程式延遲系統關機"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:4
+#: ../src/login/org.freedesktop.login1.policy.in:4
 msgid "Authentication is required for an application to delay system shutdown."
 msgstr "要讓應用程式延遲系統關機需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:5
+#: ../src/login/org.freedesktop.login1.policy.in:5
 msgid "Allow applications to inhibit system sleep"
 msgstr "允許應用程式阻止系統睡眠"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:6
+#: ../src/login/org.freedesktop.login1.policy.in:6
 msgid "Authentication is required for an application to inhibit system sleep."
 msgstr "要讓應用程式阻止系統睡眠需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:7
+#: ../src/login/org.freedesktop.login1.policy.in:7
 msgid "Allow applications to delay system sleep"
 msgstr "允許應用程式延遲系統睡眠"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:8
+#: ../src/login/org.freedesktop.login1.policy.in:8
 msgid "Authentication is required for an application to delay system sleep."
 msgstr "要讓應用程式延遲系統睡眠需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:9
+#: ../src/login/org.freedesktop.login1.policy.in:9
 msgid "Allow applications to inhibit automatic system suspend"
 msgstr "允許應用程式阻止自動系統暫停"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:10
+#: ../src/login/org.freedesktop.login1.policy.in:10
 msgid ""
 "Authentication is required for an application to inhibit automatic system "
 "suspend."
 msgstr "要讓應用程式阻止自動系統暫停需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:11
+#: ../src/login/org.freedesktop.login1.policy.in:11
 msgid "Allow applications to inhibit system handling of the power key"
 msgstr "允許應用程式阻止系統處理電源鍵"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:12
+#: ../src/login/org.freedesktop.login1.policy.in:12
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the power key."
 msgstr "要讓應用程式阻止系統處理電源鍵需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:13
+#: ../src/login/org.freedesktop.login1.policy.in:13
 msgid "Allow applications to inhibit system handling of the suspend key"
 msgstr "允許應用程式阻止系統處理暫停鍵"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:14
+#: ../src/login/org.freedesktop.login1.policy.in:14
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the suspend key."
 msgstr "要讓應用程式阻止系統處理暫停鍵需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:15
+#: ../src/login/org.freedesktop.login1.policy.in:15
 msgid "Allow applications to inhibit system handling of the hibernate key"
 msgstr "允許應用程式阻止系統處理冬眠鍵"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:16
+#: ../src/login/org.freedesktop.login1.policy.in:16
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the hibernate key."
 msgstr "要讓應用程式阻止系統處理冬眠鍵需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:17
+#: ../src/login/org.freedesktop.login1.policy.in:17
 msgid "Allow applications to inhibit system handling of the lid switch"
 msgstr "允許應用程式阻止系統處理上蓋開關"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:18
+#: ../src/login/org.freedesktop.login1.policy.in:18
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the lid switch."
 msgstr "要讓應用程式阻止系統處理上蓋開關需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:19
+#: ../src/login/org.freedesktop.login1.policy.in:19
 msgid "Allow non-logged-in users to run programs"
 msgstr "允許未登入的使用者執行程式"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:20
+#: ../src/login/org.freedesktop.login1.policy.in:20
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr "要讓未登入的使用者執行程式需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:21
+#: ../src/login/org.freedesktop.login1.policy.in:21
 msgid "Allow attaching devices to seats"
 msgstr "允許將設備連接到座位"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:22
+#: ../src/login/org.freedesktop.login1.policy.in:22
 msgid "Authentication is required for attaching a device to a seat."
 msgstr "將設備連接到座位需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:23
+#: ../src/login/org.freedesktop.login1.policy.in:23
 msgid "Flush device to seat attachments"
 msgstr "暴露裝置以安裝附件"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:24
+#: ../src/login/org.freedesktop.login1.policy.in:24
 msgid ""
 "Authentication is required for resetting how devices are attached to seats."
 msgstr "要重置裝置如何連接到座位需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:25
+#: ../src/login/org.freedesktop.login1.policy.in:25
 msgid "Power off the system"
 msgstr "關閉系統電源"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:26
+#: ../src/login/org.freedesktop.login1.policy.in:26
 msgid "Authentication is required for powering off the system."
 msgstr "關閉系統電源需要驗證"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:27
+#: ../src/login/org.freedesktop.login1.policy.in:27
 msgid "Power off the system while other users are logged in"
 msgstr "在有其他使用者登入時關閉系統電源"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:28
+#: ../src/login/org.freedesktop.login1.policy.in:28
 msgid ""
 "Authentication is required for powering off the system while other users are "
 "logged in."
 msgstr "在有其他使用者登入時關閉系統電源需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:29
+#: ../src/login/org.freedesktop.login1.policy.in:29
 msgid "Power off the system while an application asked to inhibit it"
 msgstr "當應用程式阻止系統電源關閉時將其關閉"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:30
+#: ../src/login/org.freedesktop.login1.policy.in:30
 msgid ""
 "Authentication is required for powering off the system while an application "
 "asked to inhibit it."
 msgstr "當應用程式阻止系統電源關閉時將系統電源關閉需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:31
+#: ../src/login/org.freedesktop.login1.policy.in:31
 msgid "Reboot the system"
 msgstr "重新啟動系統"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:32
+#: ../src/login/org.freedesktop.login1.policy.in:32
 msgid "Authentication is required for rebooting the system."
 msgstr "重新啟動系統需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:33
+#: ../src/login/org.freedesktop.login1.policy.in:33
 msgid "Reboot the system while other users are logged in"
 msgstr "在有其他使用者登入時重新啟動系統"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:34
+#: ../src/login/org.freedesktop.login1.policy.in:34
 msgid ""
 "Authentication is required for rebooting the system while other users are "
 "logged in."
 msgstr "在有其他使用者登入時重新啟動系統需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:35
+#: ../src/login/org.freedesktop.login1.policy.in:35
 msgid "Reboot the system while an application asked to inhibit it"
 msgstr "當應用程式阻止重新啟動系統時將系統重新啟動"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:36
+#: ../src/login/org.freedesktop.login1.policy.in:36
 msgid ""
 "Authentication is required for rebooting the system while an application "
 "asked to inhibit it."
 msgstr "當應用程式阻止系統重新啟動時將系統重新啟動需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:37
+#: ../src/login/org.freedesktop.login1.policy.in:37
 msgid "Suspend the system"
 msgstr "暫停系統"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:38
+#: ../src/login/org.freedesktop.login1.policy.in:38
 msgid "Authentication is required for suspending the system."
 msgstr "暫停系統需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:39
+#: ../src/login/org.freedesktop.login1.policy.in:39
 msgid "Suspend the system while other users are logged in"
 msgstr "在有其他使用者登入時暫停系統"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:40
+#: ../src/login/org.freedesktop.login1.policy.in:40
 msgid ""
 "Authentication is required for suspending the system while other users are "
 "logged in."
 msgstr "在有其他使用者登入時暫停系統需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:41
+#: ../src/login/org.freedesktop.login1.policy.in:41
 msgid "Suspend the system while an application asked to inhibit it"
 msgstr "當應用程式阻止暫停系統時將系統暫停"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:42
+#: ../src/login/org.freedesktop.login1.policy.in:42
 msgid ""
 "Authentication is required for suspending the system while an application "
 "asked to inhibit it."
 msgstr "當應用程式阻止系統暫停時將系統暫停需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:43
+#: ../src/login/org.freedesktop.login1.policy.in:43
 msgid "Hibernate the system"
 msgstr "系統冬眠"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:44
+#: ../src/login/org.freedesktop.login1.policy.in:44
 msgid "Authentication is required for hibernating the system."
 msgstr "系統冬眠需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:45
+#: ../src/login/org.freedesktop.login1.policy.in:45
 msgid "Hibernate the system while other users are logged in"
 msgstr "在有其他使用者登入時冬眠系統"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:46
+#: ../src/login/org.freedesktop.login1.policy.in:46
 msgid ""
 "Authentication is required for hibernating the system while other users are "
 "logged in."
 msgstr "在有其他使用者登入時冬眠系統需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:47
+#: ../src/login/org.freedesktop.login1.policy.in:47
 msgid "Hibernate the system while an application asked to inhibit it"
 msgstr "當應用程式阻止冬眠系統時將系統冬眠"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:48
+#: ../src/login/org.freedesktop.login1.policy.in:48
 msgid ""
 "Authentication is required for hibernating the system while an application "
 "asked to inhibit it."
 msgstr "當應用程式阻止系統冬眠時將系統冬眠需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:49
+#: ../src/login/org.freedesktop.login1.policy.in:49
 msgid "Manage active sessions, users and seats"
 msgstr "管理活躍的工作階段、使用者與座位"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:50
+#: ../src/login/org.freedesktop.login1.policy.in:50
 msgid ""
 "Authentication is required for managing active sessions, users and seats."
 msgstr "管理活躍的工作階段、使用者與座位需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:51
+#: ../src/login/org.freedesktop.login1.policy.in:51
 msgid "Lock or unlock active sessions"
 msgstr "鎖定或解鎖活躍的工作階段"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:52
+#: ../src/login/org.freedesktop.login1.policy.in:52
 msgid "Authentication is required to lock or unlock active sessions."
 msgstr "鎖定或解鎖活躍的工作階段需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:53
+#: ../src/login/org.freedesktop.login1.policy.in:53
 msgid "Allow indication to the firmware to boot to setup interface"
 msgstr "允許對韌體的指示以開始設定介面"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:54
+#: ../src/login/org.freedesktop.login1.policy.in:54
 msgid ""
 "Authentication is required to indicate to the firmware to boot to setup "
 "interface."
 msgstr "對韌體的指示以開始設定介面需要驗證。"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:55
+#: ../src/login/org.freedesktop.login1.policy.in:55
 msgid "Set a wall message"
 msgstr "設定 wall 訊息"
 
-#: ../src/login/org.freedesktop.login1.policy.in.h:56
+#: ../src/login/org.freedesktop.login1.policy.in:56
 msgid "Authentication is required to set a wall message"
 msgstr "設定 wall 訊息需要驗證。"
 
@@ -520,4 +519,3 @@ msgstr "設定 wall 訊息需要驗證。"
 # msgstr "在 '$(unit)' 上設定屬性需要驗證。"
 #
 #endif // 0
-

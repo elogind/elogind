@@ -670,4 +670,3 @@ msgstr ""
 # msgstr "Es requereix autenticació per establir les propietats a «$(unit)»."
 #
 #endif // 0
-
