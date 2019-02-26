@@ -2406,7 +2406,7 @@ endif
 #            install : true,
 #            install_dir : rootlibexecdir)
 #
-# executable('elogind-growfs',
+# executable('systemd-growfs',
 #            'src/partition/growfs.c',
 #            include_directories : includes,
 #            link_with : [libshared],
