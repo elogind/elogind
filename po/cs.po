@@ -663,4 +663,5 @@ msgstr "K nastavení zprávy všem uživatelům je vyžadováno ověření"
 #
 # #~ msgid "Authentication is required to kill '$(unit)'."
 # #~ msgstr "Pro ukončení „$(unit)” je vyžadováno ověření."
+#
 #endif // 0

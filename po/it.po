@@ -696,4 +696,5 @@ msgstr "Autenticazione richiesta per configurare un messaggio per gli utenti"
 # #: src/core/dbus-unit.c:501
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Autenticazione richiesta per configurare le proprietà di '$(unit)'."
+#
 #endif // 0

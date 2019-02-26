@@ -692,4 +692,5 @@ msgstr "É necessária autenticação para definir uma mensagem de parede"
 # #: src/core/dbus-unit.c:501
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "É necessária autenticação para definir propriedades em '$(unit)'."
+#
 #endif // 0

@@ -572,4 +572,5 @@ msgstr "Potrebna je ovjera za postavljanje zaslonske pruke."
 # #: ../src/core/dbus-unit.c:597
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Potrebna je ovjera za postavljanje svojstava na '$(unit)'."
+#
 #endif // 0

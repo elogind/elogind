@@ -525,4 +525,5 @@ msgstr "设置 wall 消息需要认证。"
 # #: ../src/core/dbus-unit.c:599
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "设置“$(unit)”的属性需要认证。"
+#
 #endif // 0

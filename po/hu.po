@@ -598,4 +598,5 @@ msgstr "Hitelesítés szükséges a falüzenet beállításához"
 # msgstr ""
 # "Hitelesítés szükséges a következő tulajdonságainak beállításához: „$(unit)”."
 #
+#
 #endif // 0

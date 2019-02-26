@@ -629,4 +629,5 @@ msgstr "Autentisering krävs för att ställa in ett väggmeddelande"
 # #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
 # #~ msgstr[0] "Kontroll pågår på %d disk (%3.1f%% klart)"
 # #~ msgstr[1] "Kontroll pågår på %d diskar (%3.1f%% klart)"
+#
 #endif // 0

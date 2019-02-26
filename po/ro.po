@@ -619,4 +619,5 @@ msgstr "Autentificarea este necesară pentru a stabili un mesaj de perete"
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 # "Autentificarea este necesară pentru a stabili proprietățile pe „$(unit)”."
+#
 #endif // 0
