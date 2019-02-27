@@ -149,11 +149,18 @@
     <parameter>path</parameter> to the initial 0 byte of the socket
     address.</para>
 
+    <!-- 0 /// elogind does not need POSIX message queues, they'd cause additional dependencies, too.
     <para><function>sd_is_mq()</function> may be called to check
     whether the specified file descriptor refers to a POSIX message
     queue. If the <parameter>path</parameter> parameter is not
     <constant>NULL</constant>, it is checked whether the message queue
     is bound to the specified name.</para>
+    else -->
+    <para><function>sd_is_mq()</function> is meant to be called to check
+    whether the specified file descriptor refers to a POSIX message
+    queue. As elogind does not need and therefore does not support POSIX
+    message queues, this function is a stub that always returns 0.</para>
+    <!-- // 0 -->
 
     <para><function>sd_is_special()</function> may be called to check
     whether the specified file descriptor refers to a special file. If

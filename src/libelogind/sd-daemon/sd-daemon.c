@@ -2,7 +2,7 @@
 
 #include <errno.h>
 #include <limits.h>
-#include <mqueue.h>
+//#include <mqueue.h>
 #include <netinet/in.h>
 #include <stdarg.h>
 #include <stddef.h>
@@ -22,13 +22,10 @@
 #include "io-util.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "socket-util.h"
 #include "strv.h"
 #include "util.h"
-
-/// Additional includes needed by elogind
-#include "process-util.h"
 
 #define SNDBUF_SIZE (8*1024*1024)
 
@@ -405,8 +402,8 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_is_mq(int fd, const char *path) {
+#if 0 /// Only a stub, as elogind does not support POSIX message queues
         struct mq_attr attr;
 
         /* Check that the fd is valid */
@@ -440,8 +437,10 @@ _public_ int sd_is_mq(int fd, const char *path) {
         }
 
         return 1;
-}
+#else
+        return 0;
 #endif // 0
+}
 
 _public_ int sd_pid_notify_with_fds(
                 pid_t pid,

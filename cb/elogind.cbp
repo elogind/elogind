@@ -54,6 +54,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../README" />
 		<Unit filename="../man/custom-entities.ent.in" />
 		<Unit filename="../man/custom-html.xsl" />
 		<Unit filename="../man/custom-man.xsl" />
