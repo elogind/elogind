@@ -32,6 +32,10 @@ substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/elogind')
 substs.set('PROJECT_VERSION',      meson.project_version())
 
+# This is to be used instead of meson.source_root(), as the latter will return
+# the wrong result when elogind is being built as a meson subproject
+project_source_root = meson.current_source_dir()
+
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
@@ -45,7 +49,7 @@ substs.set('PROJECT_VERSION',      meson.project_version())
 #if 0 /// elogind does not need this
 #
 # # Try to install the git pre-commit hook
-# git_hook = run_command(join_paths(meson.source_root(), 'tools/add-git-hook.sh'))
+# git_hook = run_command(join_paths(project_source_root, 'tools/add-git-hook.sh'))
 # if git_hook.returncode() == 0
 #         message(git_hook.stdout().strip())
 # endif
@@ -676,8 +680,9 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
            description : 'program_invocation[_short]_name is provided by libc')
 
 #endif // 1
-vcs_tagger = [meson.source_root() + '/tools/meson-vcs-tag.sh',
-              meson.source_root(),
+
+vcs_tagger = [project_source_root + '/tools/meson-vcs-tag.sh',
+              project_source_root,
               get_option('version-tag'),
               meson.project_version()]
 
@@ -697,7 +702,7 @@ env = find_program('env')
 perl = find_program('perl', required : false)
 
 #if 0 /// elogind does not use this but needs a tool to symlink its installed headers.
-# meson_make_symlink = meson.source_root() + '/tools/meson-make-symlink.sh'
+# meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #else /// Needed by elogind
 meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 0
@@ -1730,9 +1735,9 @@ subdir('src/login')
 #         install : false)
 #endif // 0
 
-libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sym)
 libelogind = shared_library(
         'elogind',
+libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
         disable_mempool_c,
         version : libsystemd_version,
         include_directories : includes,
@@ -1862,7 +1867,7 @@ test_dlopen = executable(
 #                 module = tuple[0]
 #
 #                 sym = 'src/nss-@0@/nss-@0@.sym'.format(module)
-#                 version_script_arg = join_paths(meson.source_root(), sym)
+#                 version_script_arg = join_paths(project_source_root, sym)
 #
 #                 nss = shared_library(
 #                         'nss_' + module,
@@ -2130,7 +2135,7 @@ test_dlopen = executable(
 #         public_programs += exe
 #
 #         if conf.get('HAVE_PAM') == 1
-#                 version_script_arg = join_paths(meson.source_root(), pam_systemd_sym)
+#                 version_script_arg = join_paths(project_source_root, pam_systemd_sym)
 #                 pam_systemd = shared_library(
 #                         'pam_systemd',
 #                         pam_systemd_c,
@@ -3149,7 +3154,7 @@ custom_target(
         'elogind-runtest.env',
         output : 'elogind-runtest.env',
         command : ['sh', '-c', '{ ' +
-                   'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(meson.current_source_dir(), 'test')) +
+                   'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(project_source_root, 'test')) +
                    'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(meson.current_build_dir(), 'catalog')) +
                    '} >@OUTPUT@'],
         build_by_default : true)
@@ -3422,7 +3427,7 @@ endforeach
 #                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      args : [exe.full_path(),
-#                                              join_paths(meson.source_root(), p)])
+#                                              join_paths(project_source_root, p)])
 #                         endif
 #                 endforeach
 #         endif
@@ -3435,7 +3440,7 @@ endforeach
 if git.found()
         all_files = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.source_root()),
+                ['--git-dir=@0@/.git'.format(project_source_root),
                  'ls-files',
                  ':/*.[ch]'])
         all_files = files(all_files.stdout().split())
@@ -3443,10 +3448,10 @@ if git.found()
         custom_target(
                 'tags',
                 output : 'tags',
-                command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.source_root())] + all_files)
+                command : [env, 'etags', '-o', '@0@/TAGS'.format(project_source_root)] + all_files)
         run_target(
                 'ctags',
-                command : [env, 'ctags', '-o', '@0@/tags'.format(meson.source_root())] + all_files)
+                command : [env, 'ctags', '-o', '@0@/tags'.format(project_source_root)] + all_files)
 endif
 
 #if 0 /// UNNEEDED by elogind
@@ -3461,17 +3466,17 @@ endif
 if git.found()
         git_head = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.source_root()),
+                ['--git-dir=@0@/.git'.format(project_source_root),
                  'rev-parse', 'HEAD']).stdout().strip()
         git_head_short = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(meson.source_root()),
+                ['--git-dir=@0@/.git'.format(project_source_root),
                  'rev-parse', '--short=7', 'HEAD']).stdout().strip()
 
         run_target(
                 'git-snapshot',
                 command : ['git', 'archive',
-                           '-o', '@0@/elogind-@1@.tar.gz'.format(meson.source_root(),
+                           '-o', '@0@/elogind-@1@.tar.gz'.format(project_source_root,
                                                                  git_head_short),
                            '--prefix', 'systemd-@0@/'.format(git_head),
                            'HEAD'])
