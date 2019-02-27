@@ -55,7 +55,6 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="../README" />
-		<Unit filename="../man/busctl.xml" />
 		<Unit filename="../man/custom-entities.ent.in" />
 		<Unit filename="../man/custom-html.xsl" />
 		<Unit filename="../man/custom-man.xsl" />
