@@ -160,28 +160,6 @@
     whether the specified file descriptor refers to a POSIX message
     queue. As elogind does not need and therefore does not support POSIX
     message queues, this function is a stub that always returns 0.</para>
-
-    <para>The reason for not supporting this function is, that it would
-    pull in a dependency to librt, just for this one function.</para>
-
-    <para>If you need to check for POSIX message queues, you could implement
-    the check yourself like this:</para>
-
-    <programlisting>#include &lt;mqueue.h&gt;
-…
-int is_mq(int fd) {
-        struct mq_attr attr;
-
-        if (mq_getattr(fd, &amp;attr) &lt; 0) {
-                if (errno == EBADF)
-                        /* A non-mq fd */
-                        return 0;
-                return -errno;
-        }
-
-        return 1;
-}
-…</programlisting>
     <!-- // 0 -->
 
     <para><function>sd_is_special()</function> may be called to check
