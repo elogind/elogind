@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <mqueue.h>
+//#include <mqueue.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -411,8 +411,6 @@ int clean_ipc_internal(uid_t uid, gid_t gid, bool rm) {
                         ret = r;
         }
 
-#if 0 /// elogind does not use mq_open anywhere
-#endif // 0
         r = clean_sysvipc_sem(uid, gid, rm);
         if (r != 0) {
                 if (!rm)

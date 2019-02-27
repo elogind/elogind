@@ -70,6 +70,10 @@ libsystemd-logind.
 
 The headers are in <elogind/...>, so like <elogind/sd-login.h> instead
 of <systemd/sd-login.h>.
+To make it easier for projects to add support for elogind, there is a
+subfolder "systemd" in the elogind include directory. So if pkg-config
+is used to get the cflags, including <systemd/sd-login.h> will still
+work.
 
 Libelogind just implements login-related functionality.  It also
 provides the sd-bus API.
@@ -85,7 +89,7 @@ implications:
   * The /run/systemd/slices directory will always be empty.
 
   * Elogind does not have the concept of a "scope", internally, as
-    it's the same as a session.  Any API that refers to scopes will
+    it's the same as a session. Any API that refers to scopes will
     always return an error code.
 
 On the other hand, elogind does use a similar strategy to systemd in
@@ -138,6 +142,18 @@ Example: If you plan to use openrc, but openrc has not yet booted
 However, if you set the controller at configure time to something
 different than what is in place, elogind will not start until that
 controller is actively used as the primary controller.
+
+ABI compatibility with libsystemd
+---------------------------------
+
+Basically all symbols are included. But any API calls that require to
+call systemd, or need internal knowledge of systemd, are simple stubs.
+They are there to provide ABI compatibility, but will not work.
+
+One exception is sd_is_mq() that is found in sd-daemon.h. This is the
+only place using POSIX message queues, which would add further
+dependencies. As those would be completely unused in the rest of
+elogind, this function is also a stub, always returning 0.
 
 License
 -------
