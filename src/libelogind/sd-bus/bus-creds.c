@@ -399,7 +399,7 @@ _public_ int sd_bus_creds_get_unit(sd_bus_creds *c, const char **ret) {
         return 0;
 #else
         return -ENODATA;
-#endif // 0
+#endif
 }
 
 _public_ int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **ret) {
@@ -430,7 +430,7 @@ _public_ int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **ret) {
         return 0;
 #else
         return -ENODATA;
-#endif // 0
+#endif
 }
 
 _public_ int sd_bus_creds_get_slice(sd_bus_creds *c, const char **ret) {
