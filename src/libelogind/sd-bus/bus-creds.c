@@ -371,8 +371,8 @@ _public_ int sd_bus_creds_get_cgroup(sd_bus_creds *c, const char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_bus_creds_get_unit(sd_bus_creds *c, const char **ret) {
+#if 0 /// elogind does not support systemd units, so this is a stub
         int r;
 
         assert_return(c, -EINVAL);
@@ -397,9 +397,13 @@ _public_ int sd_bus_creds_get_unit(sd_bus_creds *c, const char **ret) {
 
         *ret = c->unit;
         return 0;
+#else
+        return -ENODATA;
+#endif
 }
 
 _public_ int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **ret) {
+#if 0 /// elogind does not support systemd units, so this is a stub
         int r;
 
         assert_return(c, -EINVAL);
@@ -424,8 +428,10 @@ _public_ int sd_bus_creds_get_user_unit(sd_bus_creds *c, const char **ret) {
 
         *ret = c->user_unit;
         return 0;
+#else
+        return -ENODATA;
+#endif
 }
-#endif // 0
 
 _public_ int sd_bus_creds_get_slice(sd_bus_creds *c, const char **ret) {
 #if 0 /// The "Slice" is the session in elogind

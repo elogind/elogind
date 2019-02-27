@@ -362,9 +362,9 @@ global:
         sd_bus_creds_get_exe;
         sd_bus_creds_get_cmdline;
         sd_bus_creds_get_cgroup;
-        /* sd_bus_creds_get_unit; */
+        sd_bus_creds_get_unit;
         sd_bus_creds_get_slice;
-        /* sd_bus_creds_get_user_unit; */
+        sd_bus_creds_get_user_unit;
         sd_bus_creds_get_user_slice;
         sd_bus_creds_get_session;
         sd_bus_creds_get_owner_uid;
