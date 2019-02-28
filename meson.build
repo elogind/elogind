@@ -2193,32 +2193,7 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
-
-if conf.get('HAVE_PAM') == 1
-        version_script_arg = join_paths(meson.source_root(), pam_elogind_sym)
-        pam_elogind = shared_library(
-                'pam_elogind',
-                pam_elogind_c,
-                name_prefix : '',
-                include_directories : includes,
-                link_args : ['-shared',
-                             '-Wl,--version-script=' + version_script_arg],
-                link_with : [libelogind_static,
-                             libshared_static],
-                dependencies : [threads,
-                                libpam,
-                                libpam_misc],
-                link_depends : pam_elogind_sym,
-                install : true,
-                install_dir : pamlibdir)
-#
-        if want_tests != 'false'
-                test('dlopen-pam_elogind',
-                     test_dlopen,
-                     # path to dlopen must include a slash
-                     args : pam_elogind.full_path())
-        endif
-endif
+#endif // 0
 
 if conf.get('HAVE_PAM') == 1
 #if 0 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
