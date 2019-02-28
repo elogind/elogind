@@ -211,7 +211,6 @@ shared_sources = '''
         sleep-config.h
         spawn-polkit-agent.c
         spawn-polkit-agent.h
-        udev-util.h
         utmp-wtmp.h
         verbs.c
         verbs.h
