@@ -1397,6 +1397,9 @@ libbzip2 = []
 libxz = []
 liblz4 = []
 libxkbcommon = []
+conf.set10('HAVE_GCRYPT', false)
+conf.set10('HAVE_LZ4', false)
+conf.set10('HAVE_XZ', false)
 #endif // 0
 conf.set10('HAVE_XKBCOMMON', have)
 
@@ -1660,8 +1663,8 @@ meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 includes = include_directories('src/basic',
                                'src/shared',
                                'src/systemd',
+                               'src/journal',
 #if 0 /// UNNEEDED by elogind
-#                                'src/journal',
 #                                'src/journal-remote',
 #                                'src/nspawn',
 #                                'src/resolve',
@@ -1710,6 +1713,7 @@ subdir('src/basic')
 # subdir('src/journal')
 #else
 subdir('src/core')
+subdir('src/journal')
 subdir('src/libelogind')
 subdir('src/sleep')
 subdir('src/update-utmp')
@@ -1733,7 +1737,7 @@ libelogind = shared_library(
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
-#if 0 /// elogind does not need gcrypt or libjournal_client, only threads.
+#if 0 /// elogind does not need gcrypt, only threads.
 #         link_with : [libbasic,
 #                      libbasic_gcrypt],
 #         link_whole : [libsystemd_static,
@@ -1745,7 +1749,8 @@ libelogind = shared_library(
 #         link_depends : libsystemd_sym,
 #else
         link_with : [libbasic],
-        link_whole : [libelogind_static],
+        link_whole : [libelogind_static,
+                      libjournal_client],
         dependencies : [threads],
         link_depends : libelogind_sym,
 #endif // 0

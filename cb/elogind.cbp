@@ -475,6 +475,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/core/mount-setup.h" />
+		<Unit filename="../src/journal/elogind-journal-stubs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/journal/elogind-journal-stubs.h" />
+		<Unit filename="../src/journal/journal-def.h" />
+		<Unit filename="../src/journal/journal-file.h" />
+		<Unit filename="../src/journal/journal-internal.h" />
+		<Unit filename="../src/journal/meson.build" />
+		<Unit filename="../src/journal/mmap-cache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/journal/mmap-cache.h" />
 		<Unit filename="../src/libelogind/disable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -609,9 +621,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-device/test-sd-device.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/libelogind/sd-device/test-udev-device-thread.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-event/event-source.h" />
@@ -838,7 +847,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/tests.h" />
-		<Unit filename="../src/shared/udev-util.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
 		</Unit>

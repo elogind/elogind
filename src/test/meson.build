@@ -24,13 +24,23 @@ test_env.prepend('PATH', meson.build_root())
 
 generate_sym_test_py = find_program('generate-sym-test.py')
 
+#if 0 /// Due to the journald stubs, elogind needs a bit different command
+# test_libsystemd_sym_c = custom_target(
+#         'test-libsystemd-sym.c',
+#         input : [libsystemd_sym_path] + systemd_headers,
+#         output : 'test-libsystemd-sym.c',
+#         command : [generate_sym_test_py, libsystemd_sym_path] + systemd_headers,
+#         capture : true,
+#         build_by_default : want_tests != 'false')
+#else
 test_libelogind_sym_c = custom_target(
         'test-libelogind-sym.c',
-        input : [libelogind_sym_path] + systemd_headers,
+        input : [libelogind_sym_path] + systemd_headers + journal_stub_header,
         output : 'test-libelogind-sym.c',
-        command : [generate_sym_test_py, libelogind_sym_path] + systemd_headers,
+        command : [generate_sym_test_py, libelogind_sym_path] + systemd_headers + journal_stub_header,
         capture : true,
         build_by_default : want_tests != 'false')
+#endif // 0
 
 #if 0 /// UNNEEDED in elogind
 # test_libudev_sym_c = custom_target(
