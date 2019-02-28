@@ -1,20 +1,5 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
-#if 0 /// No systemd-journal in elogind ...
-# _systemd_headers = '''
-#         sd-bus.h
-#         sd-bus-protocol.h
-#         sd-bus-vtable.h
-#         sd-daemon.h
-#         sd-device.h
-#         sd-event.h
-#         sd-hwdb.h
-#         sd-id128.h
-#         sd-journal.h
-#         sd-login.h
-#         sd-messages.h
-# '''.split()
-#else
 _systemd_headers = '''
         sd-bus.h
         sd-bus-protocol.h
@@ -23,10 +8,10 @@ _systemd_headers = '''
         sd-device.h
         sd-event.h
         sd-id128.h
+        sd-journal.h
         sd-login.h
         sd-messages.h
 '''.split()
-#endif // 0
 
 # https://github.com/mesonbuild/meson/issues/1633
 systemd_headers = files(_systemd_headers)
