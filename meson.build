@@ -12,11 +12,9 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
+libsystemd_version = '0.25.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.25.0'
 # libudev_version = '1.6.13'
-#else
-libelogind_version = '0.25.0'
 #endif // 0
 
 # We need the same data in two different formats, ugh!
@@ -799,6 +797,7 @@ endif
 #else
 foreach header : ['linux/memfd.h',
                   'linux/vm_sockets.h',
+                  'printf.h',
                   'sys/auxv.h',
                   'valgrind/memcheck.h',
                   'valgrind/valgrind.h',
@@ -1734,7 +1733,7 @@ libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sy
 libelogind = shared_library(
         'elogind',
         disable_mempool_c,
-        version : libelogind_version,
+        version : libsystemd_version,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -2194,8 +2193,18 @@ exe = executable('elogind-inhibit',
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
+#endif // 0
 
 if conf.get('HAVE_PAM') == 1
+#if 0 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
+#         executable('systemd-user-sessions',
+#                    'src/user-sessions/user-sessions.c',
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
+#else
         version_script_arg = join_paths(meson.source_root(), pam_elogind_sym)
         pam_elogind = shared_library(
                 'pam_elogind',
@@ -2212,26 +2221,17 @@ if conf.get('HAVE_PAM') == 1
                 link_depends : pam_elogind_sym,
                 install : true,
                 install_dir : pamlibdir)
-#
+
         if want_tests != 'false'
                 test('dlopen-pam_elogind',
                      test_dlopen,
                      # path to dlopen must include a slash
                      args : pam_elogind.full_path())
         endif
+#endif // 0
 endif
 
-#if 0 /// UNNEEDED by elogind
-# if conf.get('HAVE_PAM') == 1
-#         executable('systemd-user-sessions',
-#                    'src/user-sessions/user-sessions.c',
-#                    include_directories : includes,
-#                    link_with : [libshared],
-#                    install_rpath : rootlibexecdir,
-#                    install : true,
-#                    install_dir : rootlibexecdir)
-# endif
-#
+#if 0 /// UNNEEDED by elogind 
 # if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_BLKID') == 1
 #         exe = executable('bootctl',
 #                          'src/boot/bootctl.c',
