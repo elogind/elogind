@@ -12,11 +12,9 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
+libsystemd_version = '0.25.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.25.0'
 # libudev_version = '1.6.13'
-#else
-libelogind_version = '0.24.0'
 #endif // 0
 
 # We need the same data in two different formats, ugh!
@@ -1734,7 +1732,7 @@ libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sy
 libelogind = shared_library(
         'elogind',
         disable_mempool_c,
-        version : libelogind_version,
+        version : libsystemd_version,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
