@@ -149,6 +149,8 @@ libelogind_sources = files('''
         sd-device/device-private.c
         sd-device/device-private.h
         sd-device/device-util.h
+        sd-hwdb/hwdb-internal.h
+        sd-hwdb/sd-hwdb.c
         sd-device/sd-device.c
 '''.split()) + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
@@ -182,8 +184,7 @@ libelogind_static = static_library(
         install : false,
         include_directories : includes,
         link_with : libbasic,
-        dependencies : [threads,
-                        librt],
+        dependencies : [threads],
         c_args : libsystemd_c_args)
 
 libelogind_sym = 'src/libelogind/libelogind.sym'
