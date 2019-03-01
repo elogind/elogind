@@ -22,6 +22,7 @@ _systemd_headers = '''
         sd-daemon.h
         sd-device.h
         sd-event.h
+        sd-hwdb.h
         sd-id128.h
         sd-login.h
         sd-messages.h

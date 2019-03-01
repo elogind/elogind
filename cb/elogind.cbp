@@ -630,6 +630,10 @@
 		<Unit filename="../src/libelogind/sd-event/test-event.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-hwdb/hwdb-internal.h" />
+		<Unit filename="../src/libelogind/sd-hwdb/sd-hwdb.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/libelogind/sd-id128/id128-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -873,6 +877,7 @@
 		<Unit filename="../src/systemd/sd-daemon.h" />
 		<Unit filename="../src/systemd/sd-device.h" />
 		<Unit filename="../src/systemd/sd-event.h" />
+		<Unit filename="../src/systemd/sd-hwdb.h" />
 		<Unit filename="../src/systemd/sd-id128.h" />
 		<Unit filename="../src/systemd/sd-login.h" />
 		<Unit filename="../src/systemd/sd-messages.h" />
