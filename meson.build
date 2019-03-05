@@ -82,7 +82,6 @@ rootprefix_default = split_usr ? '/' : '/usr'
 if rootprefixdir == ''
         rootprefixdir = rootprefix_default
 endif
-rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 
 #if 0 /// UNNEEDED by elogind
 # sysvinit_path = get_option('sysvinit-path')
@@ -95,7 +94,7 @@ rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 #endif // 0
 conf.set('HIGH_RLIMIT_NOFILE',          512*1024)
 
-# join_paths ignores the preceding arguments if an absolute component is
+# join_paths ignore the preceding arguments if an absolute component is
 # encountered, so this should canonicalize various paths when they are
 # absolute or relative.
 prefixdir = get_option('prefix')
@@ -300,7 +299,6 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 
 substs.set('prefix',                                          prefixdir)
 substs.set('rootprefix',                                      rootprefixdir)
-substs.set('rootprefix_noslash',                              rootprefixdir_noslash)
 substs.set('exec_prefix',                                     prefixdir)
 substs.set('libdir',                                          libdir)
 substs.set('rootlibdir',                                      rootlibdir)
@@ -2000,9 +1998,9 @@ test_dlopen = executable(
 #
 # executable('systemd-fstab-generator',
 #            'src/fstab-generator/fstab-generator.c',
-#            'src/core/mount-setup.c',
 #            include_directories : includes,
-#            link_with : [libshared],
+#            link_with : [libcore_shared,
+#                         libshared],
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : systemgeneratordir)
@@ -2702,20 +2700,18 @@ endif
 #
 # executable('systemd-remount-fs',
 #            'src/remount-fs/remount-fs.c',
-#            'src/core/mount-setup.c',
-#            'src/core/mount-setup.h',
 #            include_directories : includes,
-#            link_with : [libshared],
+#            link_with : [libcore_shared,
+#                         libshared],
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
 #
 # executable('systemd-machine-id-setup',
 #            'src/machine-id-setup/machine-id-setup-main.c',
-#            'src/core/machine-id-setup.c',
-#            'src/core/machine-id-setup.h',
 #            include_directories : includes,
-#            link_with : [libshared],
+#            link_with : [libcore_shared,
+#                         libshared],
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootbindir)
@@ -3039,12 +3035,9 @@ public_programs += exe
 #
 # executable('systemd-shutdown',
 #            systemd_shutdown_sources,
-#            'src/core/mount-setup.c',
-#            'src/core/mount-setup.h',
-#            'src/core/killall.c',
-#            'src/core/killall.h',
 #            include_directories : includes,
-#            link_with : [libshared],
+#            link_with : [libcore_shared,
+#                         libshared],
 #            dependencies : [libmount],
 #            install_rpath : rootlibexecdir,
 #            install : true,
@@ -3085,12 +3078,9 @@ public_programs += exe
 #
 # exe = executable('systemd-nspawn',
 #                  systemd_nspawn_sources,
-#                  'src/core/mount-setup.c', # FIXME: use a variable?
-#                  'src/core/mount-setup.h',
-#                  'src/core/loopback-setup.c',
-#                  'src/core/loopback-setup.h',
 #                  include_directories : includes,
-#                  link_with : [libnspawn_core,
+#                  link_with : [libcore_shared,
+#                               libnspawn_core,
 #                               libshared],
 #                  dependencies : [libblkid],
 #                  install_rpath : rootlibexecdir,

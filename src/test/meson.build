@@ -771,11 +771,10 @@ tests += [
 #          'ENABLE_NSS', 'manual'],
 #
 #         [['src/test/test-umount.c',
-#           'src/core/mount-setup.c',
-#           'src/core/mount-setup.h',
 #           'src/shutdown/umount.c',
 #           'src/shutdown/umount.h'],
-#          [],
+#          [libcore_shared,
+#           libshared],
 #          [libmount]],
 #endif // 0
 

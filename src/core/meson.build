@@ -1,5 +1,16 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
+libcore_shared_sources = '''
+        killall.c
+        killall.h
+        loopback-setup.c
+        loopback-setup.h
+        machine-id-setup.c
+        machine-id-setup.h
+        mount-setup.c
+        mount-setup.h
+'''.split()
+
 #if 0 /// elogind has only two of the parts here in it...
 # libcore_la_sources = '''
 #         audit-fd.c
@@ -70,8 +81,6 @@
 #         job.h
 #         kill.c
 #         kill.h
-#         killall.c
-#         killall.h
 #         kmod-setup.c
 #         kmod-setup.h
 #         load-dropin.c
@@ -80,14 +89,8 @@
 #         load-fragment.h
 #         locale-setup.c
 #         locale-setup.h
-#         loopback-setup.c
-#         loopback-setup.h
-#         machine-id-setup.c
-#         machine-id-setup.h
 #         manager.c
 #         manager.h
-#         mount-setup.c
-#         mount-setup.h
 #         mount.c
 #         mount.h
 #         namespace.c
@@ -154,12 +157,22 @@ libcore_la_sources = files('''
 #         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
 #         capture : true)
 #
+# # A convenience library to share code with other binaries:
+# # systemd-shutdown, systemd-remount-fs, systemd-machine-id-setup, …
+# libcore_shared = static_library(
+#         'core-shared',
+#         libcore_shared_sources,
+#         include_directories : includes,
+#         dependencies : [versiondep,
+#                         libmount])
+#
 # libcore = static_library(
 #         'core',
 #         libcore_la_sources,
 #         load_fragment_gperf_c,
 #         load_fragment_gperf_nulstr_c,
 #         include_directories : includes,
+#         link_whole : libcore_shared,
 #         dependencies : [versiondep,
 #                         threads,
 #                         librt,
