@@ -11,8 +11,8 @@
 #include <sys/signalfd.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <sys/uio.h>
-#include <sys/un.h>
+//#include <sys/uio.h>
+//#include <sys/un.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -486,6 +486,7 @@ static int write_to_kmsg(
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int log_do_header(
                 char *header,
                 size_t size,
@@ -534,7 +535,6 @@ static int log_do_header(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int write_to_journal(
                 int level,
                 int error,
@@ -984,6 +984,7 @@ int log_struct_internal(
         return log_dispatch_internal(level, error, file, line, func, NULL, NULL, NULL, NULL, buf + 8);
 }
 
+#if 0 /// UNNEEDED by elogind
 int log_struct_iovec_internal(
                 int level,
                 int error,
@@ -1041,6 +1042,7 @@ int log_struct_iovec_internal(
 
         return log_dispatch_internal(level, error, file, line, func, NULL, NULL, NULL, NULL, m);
 }
+#endif // 0
 
 int log_set_target_from_string(const char *e) {
         LogTarget t;
