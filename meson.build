@@ -797,6 +797,7 @@ endif
 #else
 foreach header : ['linux/memfd.h',
                   'linux/vm_sockets.h',
+                  'printf.h',
                   'sys/auxv.h',
                   'valgrind/memcheck.h',
                   'valgrind/valgrind.h',
