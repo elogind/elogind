@@ -173,16 +173,6 @@ libcore_la_sources = files('''
 #
 # systemd_sources = files('main.c')
 #
-# systemd_shutdown_sources = files('''
-#         shutdown.c
-#         umount.c
-#         umount.h
-#         mount-setup.c
-#         mount-setup.h
-#         killall.c
-#         killall.h
-# '''.split())
-#
 # in_files = [['macros.systemd',   rpmmacrosdir],
 #             ['system.conf',      pkgsysconfdir],
 #             ['systemd.pc',       pkgconfigdatadir],

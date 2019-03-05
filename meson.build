@@ -298,11 +298,12 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 #endif // 0
 
 substs.set('prefix',                                          prefixdir)
+substs.set('rootprefix',                                      rootprefixdir)
 substs.set('exec_prefix',                                     prefixdir)
 substs.set('libdir',                                          libdir)
 substs.set('rootlibdir',                                      rootlibdir)
 substs.set('includedir',                                      includedir)
-substs.set('pkgsysconfdir',                                   pkgsysconfdir)
+substs.set('sysconfdir',                                      sysconfdir)
 substs.set('bindir',                                          bindir)
 substs.set('rootbindir',                                      rootbindir)
 substs.set('rootlibexecdir',                                  rootlibexecdir)
@@ -1672,6 +1673,7 @@ includes = include_directories('src/basic',
 #                                'src/libudev',
 #endif // 0
                                'src/core',
+                               'src/shutdown',
 #if 0 /// elogind has a different list
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
@@ -1805,6 +1807,7 @@ libudev = dependency('libudev', required : true)
 subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/core')
+# subdir('src/shutdown')
 # subdir('src/udev')
 # subdir('src/network')
 #
@@ -3034,6 +3037,10 @@ public_programs += exe
 #
 # executable('systemd-shutdown',
 #            systemd_shutdown_sources,
+#            'src/core/mount-setup.c',
+#            'src/core/mount-setup.h',
+#            'src/core/killall.c',
+#            'src/core/killall.h',
 #            include_directories : includes,
 #            link_with : [libshared],
 #            dependencies : [libmount],
