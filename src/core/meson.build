@@ -12,7 +12,7 @@ libcore_shared_sources = '''
 '''.split()
 
 #if 0 /// elogind has only two of the parts here in it...
-# libcore_la_sources = '''
+# libcore_sources = '''
 #         audit-fd.c
 #         audit-fd.h
 #         automount.c
@@ -168,7 +168,7 @@ libcore_la_sources = files('''
 #
 # libcore = static_library(
 #         'core',
-#         libcore_la_sources,
+#         libcore_sources,
 #         load_fragment_gperf_c,
 #         load_fragment_gperf_nulstr_c,
 #         include_directories : includes,
