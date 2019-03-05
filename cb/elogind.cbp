@@ -475,18 +475,20 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/core/mount-setup.h" />
-		<Unit filename="../src/journal/elogind-journal-stubs.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/journal/elogind-journal-stubs.h" />
 		<Unit filename="../src/journal/journal-def.h" />
 		<Unit filename="../src/journal/journal-file.h" />
 		<Unit filename="../src/journal/journal-internal.h" />
+		<Unit filename="../src/journal/journal-send.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/journal/meson.build" />
 		<Unit filename="../src/journal/mmap-cache.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/journal/mmap-cache.h" />
+		<Unit filename="../src/journal/sd-journal.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/libelogind/disable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -879,6 +881,7 @@
 		<Unit filename="../src/systemd/sd-event.h" />
 		<Unit filename="../src/systemd/sd-hwdb.h" />
 		<Unit filename="../src/systemd/sd-id128.h" />
+		<Unit filename="../src/systemd/sd-journal.h" />
 		<Unit filename="../src/systemd/sd-login.h" />
 		<Unit filename="../src/systemd/sd-messages.h" />
 		<Unit filename="../src/test/generate-sym-test.py" />

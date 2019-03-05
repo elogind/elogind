@@ -24,17 +24,13 @@
 # '''.split())
 #else
 journal_client_sources = files('''
-        elogind-journal-stubs.c
-        elogind-journal-stubs.h
         journal-def.h
         journal-file.h
         journal-internal.h
+        journal-send.c
         mmap-cache.c
         mmap-cache.h
-'''.split())
-
-journal_stub_header = files('''
-        elogind-journal-stubs.h
+        sd-journal.c
 '''.split())
 #endif // 0
 
