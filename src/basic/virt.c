@@ -440,10 +440,12 @@ int detect_container(void) {
                 { "systemd-nspawn", VIRTUALIZATION_SYSTEMD_NSPAWN },
                 { "docker",         VIRTUALIZATION_DOCKER         },
                 { "rkt",            VIRTUALIZATION_RKT            },
+                { "wsl",            VIRTUALIZATION_WSL            },
         };
 
         static thread_local int cached_found = _VIRTUALIZATION_INVALID;
         _cleanup_free_ char *m = NULL;
+        _cleanup_free_ char *o = NULL;
         const char *e = NULL;
         unsigned j;
         int r;
@@ -456,6 +458,15 @@ int detect_container(void) {
             access("/proc/bc", F_OK) < 0) {
                 r = VIRTUALIZATION_OPENVZ;
                 goto finish;
+        }
+
+        /* "Official" way of detecting WSL https://github.com/Microsoft/WSL/issues/423#issuecomment-221627364 */
+        r = read_one_line_file("/proc/sys/kernel/osrelease", &o);
+        if (r >= 0) {
+                if (strstr(o, "Microsoft") || strstr(o, "WSL")) {
+                        r = VIRTUALIZATION_WSL;
+                        goto finish;
+                }
         }
 
         if (getpid_cached() == 1) {
@@ -645,6 +656,7 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_OPENVZ] = "openvz",
         [VIRTUALIZATION_DOCKER] = "docker",
         [VIRTUALIZATION_RKT] = "rkt",
+        [VIRTUALIZATION_WSL] = "wsl",
         [VIRTUALIZATION_CONTAINER_OTHER] = "container-other",
 };
 
