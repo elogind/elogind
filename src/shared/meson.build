@@ -94,6 +94,7 @@
 #         json.h
 #         lockfile-util.c
 #         lockfile-util.h
+#         log-link.h
 #         logs-show.c
 #         logs-show.h
 #         loop-util.c
