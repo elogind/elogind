@@ -468,7 +468,7 @@ int get_home_dir(char **_h) {
                 if (!h)
                         return -ENOMEM;
 
-                *_h = h;
+                *_h = path_simplify(h, true);
                 return 0;
         }
 
@@ -506,7 +506,7 @@ int get_home_dir(char **_h) {
         if (!h)
                 return -ENOMEM;
 
-        *_h = h;
+        *_h = path_simplify(h, true);
         return 0;
 }
 
@@ -525,7 +525,7 @@ int get_shell(char **_s) {
                 if (!s)
                         return -ENOMEM;
 
-                *_s = s;
+                *_s = path_simplify(s, true);
                 return 0;
         }
 
@@ -563,7 +563,7 @@ int get_shell(char **_s) {
         if (!s)
                 return -ENOMEM;
 
-        *_s = s;
+        *_s = path_simplify(s, true);
         return 0;
 }
 #endif // 0
