@@ -463,7 +463,7 @@ int get_home_dir(char **_h) {
 
         /* Take the user specified one */
         e = secure_getenv("HOME");
-        if (e && path_is_absolute(e)) {
+        if (e && path_is_valid(e) && path_is_absolute(e)) {
                 h = strdup(e);
                 if (!h)
                         return -ENOMEM;
@@ -498,7 +498,8 @@ int get_home_dir(char **_h) {
         if (!p)
                 return errno > 0 ? -errno : -ESRCH;
 
-        if (!path_is_absolute(p->pw_dir))
+        if (!path_is_valid(p->pw_dir) ||
+            !path_is_absolute(p->pw_dir))
                 return -EINVAL;
 
         h = strdup(p->pw_dir);
@@ -519,7 +520,7 @@ int get_shell(char **_s) {
 
         /* Take the user specified one */
         e = getenv("SHELL");
-        if (e) {
+        if (e && path_is_valid(e) && path_is_absolute(e)) {
                 s = strdup(e);
                 if (!s)
                         return -ENOMEM;
@@ -554,7 +555,8 @@ int get_shell(char **_s) {
         if (!p)
                 return errno > 0 ? -errno : -ESRCH;
 
-        if (!path_is_absolute(p->pw_shell))
+        if (!path_is_valid(p->pw_shell) ||
+            !path_is_absolute(p->pw_shell))
                 return -EINVAL;
 
         s = strdup(p->pw_shell);
