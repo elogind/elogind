@@ -82,6 +82,7 @@ rootprefix_default = split_usr ? '/' : '/usr'
 if rootprefixdir == ''
         rootprefixdir = rootprefix_default
 endif
+rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 
 #if 0 /// UNNEEDED by elogind
 # sysvinit_path = get_option('sysvinit-path')
@@ -94,7 +95,7 @@ endif
 #endif // 0
 conf.set('HIGH_RLIMIT_NOFILE',          512*1024)
 
-# join_paths ignore the preceding arguments if an absolute component is
+# join_paths ignores the preceding arguments if an absolute component is
 # encountered, so this should canonicalize various paths when they are
 # absolute or relative.
 prefixdir = get_option('prefix')
@@ -299,6 +300,7 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 
 substs.set('prefix',                                          prefixdir)
 substs.set('rootprefix',                                      rootprefixdir)
+substs.set('rootprefix_noslash',                              rootprefixdir_noslash)
 substs.set('exec_prefix',                                     prefixdir)
 substs.set('libdir',                                          libdir)
 substs.set('rootlibdir',                                      rootlibdir)
@@ -409,7 +411,8 @@ possible_cc_flags = [
         '-Wno-missing-field-initializers',
         '-Wno-unused-result',
         '-Wno-format-signedness',
-        '-Wno-error=#warnings',
+        '-Wno-error=#warnings',  # clang
+        '-Wno-string-plus-int',  # clang
 
         # work-around for gcc 7.1 turning this on on its own.
         '-Wno-error=nonnull',
