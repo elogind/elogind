@@ -90,7 +90,7 @@
     <!-- // 0 -->
   </refsect1>
 
-  <!-- 0 /// UNNEEDED in elogind
+  <!-- UNNEEDED in elogind
   <refsect1>
     <title>Signal safety</title>
 

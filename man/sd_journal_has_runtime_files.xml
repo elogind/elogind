@@ -54,7 +54,7 @@
     if persistent journal files (present in /var/log/journal/) have been found.
     Otherwise returns 0.</para>
 
-    <!-- 1 /// Be clear that this will always be zero in elogind. -->
+    <!-- 1 /// Be clear that this will always be zero. -->
     <para>As elogind does not create journal files, the return value will always be 0.</para>
     <!-- // 1 -->
 
