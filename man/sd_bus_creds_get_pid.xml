@@ -36,13 +36,9 @@
     <refname>sd_bus_creds_get_exe</refname>
     <refname>sd_bus_creds_get_cmdline</refname>
     <refname>sd_bus_creds_get_cgroup</refname>
-    <!-- 0 /// elogind does not support systemd units
     <refname>sd_bus_creds_get_unit</refname>
-    // 0 -->
     <refname>sd_bus_creds_get_slice</refname>
-    <!-- 0 /// elogind does not support systemd units
     <refname>sd_bus_creds_get_user_unit</refname>
-    // 0 -->
     <refname>sd_bus_creds_get_user_slice</refname>
     <refname>sd_bus_creds_get_session</refname>
     <refname>sd_bus_creds_get_owner_uid</refname>
@@ -167,13 +163,11 @@
         <paramdef>const char **<parameter>cgroup</parameter></paramdef>
       </funcprototype>
 
-      <!-- 0 /// elogind does not support systemd units
       <funcprototype>
         <funcdef>int <function>sd_bus_creds_get_unit</function></funcdef>
         <paramdef>sd_bus_creds *<parameter>c</parameter></paramdef>
         <paramdef>const char **<parameter>unit</parameter></paramdef>
       </funcprototype>
-      // 0 -->
 
       <funcprototype>
         <funcdef>int <function>sd_bus_creds_get_slice</function></funcdef>
@@ -181,13 +175,11 @@
         <paramdef>const char **<parameter>slice</parameter></paramdef>
       </funcprototype>
 
-      <!-- 0 /// elogind does not support systemd units
       <funcprototype>
         <funcdef>int <function>sd_bus_creds_get_user_unit</function></funcdef>
         <paramdef>sd_bus_creds *<parameter>c</parameter></paramdef>
         <paramdef>const char **<parameter>unit</parameter></paramdef>
       </funcprototype>
-      // 0 -->
 
       <funcprototype>
         <funcdef>int <function>sd_bus_creds_get_user_slice</function></funcdef>
@@ -354,34 +346,43 @@
     url="https://www.kernel.org/doc/Documentation/cgroup-v1/cgroups.txt">cgroups.txt</ulink>.
     </para>
 
-    <!-- 0 /// elogind does not support systemd units
+    <!-- 0 /// elogind does not support systemd units, so this is a stub
     <para><function>sd_bus_creds_get_unit()</function> will retrieve
     the systemd unit name (in the system instance of systemd) that the
     process is a part of. See
     <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>. For
     processes that are not part of a unit, returns -ENXIO.
+    --><!-- else -->
+    <para><function>sd_bus_creds_get_unit()</function> will always return -ENODATA,
+    as elogind can not support systemd units.
+    <!-- // 0 -->
     </para>
-
+    <!-- 0 /// elogind does not support systemd units, so this is a stub
     <para><function>sd_bus_creds_get_user_unit()</function> will
     retrieve the systemd unit name (in the user instance of systemd)
     that the process is a part of. See
     <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>. For
     processes that are not part of a user unit, returns -ENXIO.
+    --><!-- else -->
+    <para><function>sd_bus_creds_get_user_unit()</function> will always return -ENODATA,
+    as elogind can not support systemd units.
+    <!-- // 0 -->
     </para>
-    // 0 -->
 
     <para><function>sd_bus_creds_get_slice()</function> will retrieve
-    <!-- 0 /// The "slice" is only simulated in elogind and actually the session.
+    <!-- 0 /// The "Slice" is the session in elogind.
     the systemd slice (a unit in the system instance of systemd) that
     the process is a part of. See
     <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>. Similarly,
+    --><!-- else -->
+    the current session, as this is the same as slices in elogind.
+    See <function>sd_bus_creds_get_session()</function>.
     <function>sd_bus_creds_get_user_slice()</function> retrieves the
+    <!-- 0 /// The "Use Slice" is the session in elogind, too
     systemd slice of the process, in the user instance of systemd.
     --><!-- else -->
-    the session that the process is running in. There is no instance of systemd
-    the process could have a systemd slice in, so elogind simulates the slice
-    by simply noting down the session. Similarly,
-    <function>sd_bus_creds_get_user_slice()</function> retrieves the session, too.
+    the user session, as this is the same as the user slice in elogind.
+    See <function>sd_bus_creds_get_user_session()</function>.
     <!-- // 0 -->
     </para>
 
@@ -389,35 +390,25 @@
     retrieve the identifier of the login session that the process is
     a part of. Please note the login session may be limited to a stub
     process or two.  User processes may instead be started from their
-    elogind user manager, e.g. GUI applications started using DBus
+    systemd user manager, e.g. GUI applications started using DBus
     activation, as well as service processes which are shared between
     multiple logins of the same user. For processes that are not part
     of a session, returns -ENXIO.</para>
 
     <para><function>sd_bus_creds_get_owner_uid()</function> will
     retrieve the numeric UID (user identifier) of the user who owns
-    <!-- 0 /// lets talk elogind here.
     the user unit or login session that the process is a part of. See
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     For processes that are not part of a user unit or session, returns
-    --><!-- else -->
-    the login session that the process is a part of. See
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
-    For processes that are not part of a session, returns
-    <!-- // 0 -->
     -ENXIO.
     </para>
 
     <para><function>sd_bus_creds_has_effective_cap()</function> will check whether the capability specified by
     <parameter>capability</parameter> was set in the effective capabilities mask. A positive return value means that it
-    <!-- 0 /// Dammit. So many replaces, just because elogind has no systemd.exec...
     was set, zero means that it was not set, and a negative return value indicates an error. See <citerefentry
     project='man-pages'><refentrytitle>capabilities</refentrytitle><manvolnum>7</manvolnum></citerefentry> and the
     <varname>AmbientCapabilities=</varname> and <varname>CapabilityBoundingSet=</varname> settings in
     <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
-    --><!-- else -->
-    was set, zero means that it was not set, and a negative return value indicates an error.
-    <!-- // 0 -->
     </para>
 
     <para><function>sd_bus_creds_has_permitted_cap()</function> is
@@ -506,27 +497,15 @@
 
         <listitem><para>The given field is not specified for the described
         process or peer. This will be returned by
-        <!-- 0 /// Nope, no units in elogind ...
         <function>sd_bus_creds_get_unit()</function>,
-        // 0 -->
         <function>sd_bus_creds_get_slice()</function>,
-        <!-- 0 /// Nope, no units in elogind ...
         <function>sd_bus_creds_get_user_unit()</function>,
-        // 0 -->
         <function>sd_bus_creds_get_user_slice()</function>, and
         <function>sd_bus_creds_get_session()</function> if the process is
-        <!-- 0 /// Lets tell the interested what that's in elogind instead.
         not part of a systemd system unit, systemd user unit, systemd
         slice, or logind session. It will be returned by
-        --><!-- else -->
-        not part of an elogind session. It will be returned by
-        <!-- // 0 -->
         <function>sd_bus_creds_get_owner_uid()</function> if the process is
-        <!-- 0 /// And again, this is not true with elogind ...
         not part of a systemd user unit or logind session. It will also be
-        --><!-- else -->
-        not part of an elogind session. It will also be
-        <!-- // 0 -->
         returned by <function>sd_bus_creds_get_exe()</function> and
         <function>sd_bus_creds_get_cmdline()</function> for kernel
         threads (since these are not started from an executable binary,
@@ -555,7 +534,11 @@
     </variablelist>
   </refsect1>
 
+  <!-- 0 /// rename for elogind
+  <xi:include href="libsystemd-pkgconfig.xml" />
+  --><!-- else -->
   <xi:include href="libelogind-pkgconfig.xml" />
+  <!-- // 0 -->
 
   <refsect1>
     <title>See Also</title>
@@ -572,11 +555,11 @@
       <citerefentry project='man-pages'><refentrytitle>execve</refentrytitle><manvolnum>2</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>credentials</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <!-- 0 /// elogind has no journald
       <citerefentry project='man-pages'><refentrytitle>proc</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <!-- 0 /// To be consistent, it is renamed for elogind
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
       --><!-- else -->
-      <citerefentry project='man-pages'><refentrytitle>proc</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
       <!-- // 0 -->
     </para>
   </refsect1>
