@@ -377,7 +377,6 @@
     --><!-- else -->
     the current session, as this is the same as slices in elogind.
     See <function>sd_bus_creds_get_session()</function>.
-    <!-- // 0 -->
     <function>sd_bus_creds_get_user_slice()</function> retrieves the
     <!-- 0 /// The "Use Slice" is the session in elogind, too
     systemd slice of the process, in the user instance of systemd.
