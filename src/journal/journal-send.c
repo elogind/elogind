@@ -231,9 +231,11 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
         bool have_syslog_identifier = false;
         bool seal = true;
 #else
-        int   i;
-        int   priority = LOG_INFO;
-        char *message  = NULL;
+        _cleanup_free_ char *file    = NULL;
+        _cleanup_free_ char *func    = NULL;
+        _cleanup_free_ char *line    = NULL;
+        _cleanup_free_ char *message = NULL;
+        int priority = LOG_INFO, i;
 #endif // 0
 
         assert_return(iov, -EINVAL);
@@ -287,11 +289,17 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
 
                 w[j++] = IOVEC_MAKE_STRING("\n");
 #else
-                if (startswith(iov[i].iov_base, "PRIORITY=")
-                                && (1 == sscanf(iov[i].iov_base, "PRIORITY=%i", &priority)))
-                        continue;
-                if ((message = startswith(iov[i].iov_base, "MESSAGE=")))
-                        break;
+                if ( startswith(iov[i].iov_base, "PRIORITY=") ) {
+                        if (1 != sscanf(iov[i].iov_base, "PRIORITY=%i", &priority))
+                                priority = LOG_NOTICE;
+                } else if ( (c = startswith(iov[i].iov_base, "CODE_FILE=")) )
+                        file = strdup(c);
+                else if ( (c = startswith(iov[i].iov_base, "CODE_FUNC=")) )
+                        func = strdup(c);
+                else if ( (c = startswith(iov[i].iov_base, "CODE_LINE=")) )
+                        line = strdup(c);
+                else if ( (c = startswith(iov[i].iov_base, "MESSAGE=")) )
+                        message = strdup(c);
 #endif // 0
         }
 
@@ -366,8 +374,13 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
                 return 0;
         return r;
 #else
-        if (message)
-                sd_journal_print(priority, "%s", message);
+        if (message) {
+                if (file || func || line)
+                        return sd_journal_print_with_location(priority, file,
+                                                              line, func, "%s",
+                                                              message);
+                return sd_journal_print(priority, "%s", message);
+        }
 
         return 0;
 #endif // 0
