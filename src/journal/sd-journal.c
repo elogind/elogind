@@ -338,12 +338,11 @@ fail:
 
         return -ENOMEM;
 #else
-        return -ENOSYS;
+        return 0;
 #endif // 0
 }
 
 _public_ int sd_journal_add_conjunction(sd_journal *j) {
-#if 0 /// UNSUPPORTED by elogind
         assert_return(j, -EINVAL);
         assert_return(!journal_pid_changed(j), -ECHILD);
 
@@ -360,13 +359,9 @@ _public_ int sd_journal_add_conjunction(sd_journal *j) {
         j->level2 = NULL;
 
         return 0;
-#else
-        return -ENOSYS;
-#endif // 0
 }
 
 _public_ int sd_journal_add_disjunction(sd_journal *j) {
-#if 0 /// UNSUPPORTED by elogind
         assert_return(j, -EINVAL);
         assert_return(!journal_pid_changed(j), -ECHILD);
 
@@ -384,9 +379,6 @@ _public_ int sd_journal_add_disjunction(sd_journal *j) {
 
         j->level2 = NULL;
         return 0;
-#else
-        return -ENOSYS;
-#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -1170,7 +1162,7 @@ _public_ int sd_journal_test_cursor(sd_journal *j, const char *cursor) {
 
         return 1;
 #else
-        return -ENOSYS;
+        return 0;
 #endif // 0
 }
 
@@ -2252,6 +2244,7 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
 #endif // 0
 }
 
+#if 0 /// UNNEEDED by elogind
 static bool field_is_valid(const char *field) {
         const char *p;
 
@@ -2279,6 +2272,7 @@ static bool field_is_valid(const char *field) {
 
         return true;
 }
+#endif // 0
 
 _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **data, size_t *size) {
 #if 0 /// UNSUPPORTED by elogind
@@ -2377,11 +2371,9 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
                 if (r < 0)
                         return r;
         }
+#endif // 0
 
         return -ENOENT;
-#else
-        return -ENOSYS;
-#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -2468,7 +2460,7 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
 
         return 1;
 #else
-        return -ENOSYS;
+        return 0;
 #endif // 0
 }
 
@@ -2803,7 +2795,7 @@ _public_ int sd_journal_get_cutoff_realtime_usec(sd_journal *j, uint64_t *from, 
 
         return first ? 0 : 1;
 #else
-        return -ENOSYS;
+        return 0;
 #endif // 0
 }
 
@@ -2846,7 +2838,7 @@ _public_ int sd_journal_get_cutoff_monotonic_usec(sd_journal *j, sd_id128_t boot
 
         return found;
 #else
-        return -ENOSYS;
+        return 0;
 #endif // 0
 }
 
@@ -2891,11 +2883,13 @@ _public_ int sd_journal_get_usage(sd_journal *j, uint64_t *bytes) {
         *bytes = sum;
         return 0;
 #else
-        return -ENOSYS;
+        *bytes = 0;
+        return 0;
 #endif // 0
 }
 
 _public_ int sd_journal_query_unique(sd_journal *j, const char *field) {
+#if 0 /// UNSUPPORTED by elogind (no enumeration, so this is a useless call anyway.)
         char *f;
 
         assert_return(j, -EINVAL);
@@ -2914,6 +2908,9 @@ _public_ int sd_journal_query_unique(sd_journal *j, const char *field) {
         j->unique_file_lost = false;
 
         return 0;
+#else
+        return 0;
+#endif // 0
 }
 
 _public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_t *l) {
@@ -3036,7 +3033,7 @@ _public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_
                 return 1;
         }
 #else
-        return -ENOSYS;
+        return 0;
 #endif // 0
 }
 
@@ -3188,7 +3185,7 @@ _public_ int sd_journal_enumerate_fields(sd_journal *j, const char **field) {
                 return 1;
         }
 #else
-        return -ENOSYS;
+        return 0;
 #endif // 0
 }
 
@@ -3266,7 +3263,7 @@ _public_ int sd_journal_get_catalog(sd_journal *j, char **ret) {
         *ret = t;
         return 0;
 #else
-        return -ENOSYS;
+        return -ENOENT;
 #endif // 0
 }
 
@@ -3276,7 +3273,7 @@ _public_ int sd_journal_get_catalog_for_message_id(sd_id128_t id, char **ret) {
 
         return catalog_get(CATALOG_DATABASE, id, ret);
 #else
-        return -ENOSYS;
+        return -ENOENT;
 #endif // 0
 }
 
@@ -3300,11 +3297,19 @@ _public_ int sd_journal_get_data_threshold(sd_journal *j, size_t *sz) {
 _public_ int sd_journal_has_runtime_files(sd_journal *j) {
         assert_return(j, -EINVAL);
 
+#if 0 /// this value is nowhere set in elogind
         return j->has_runtime_files;
+#else
+        return 0;
+#endif // 0 
 }
 
 _public_ int sd_journal_has_persistent_files(sd_journal *j) {
         assert_return(j, -EINVAL);
 
+#if 0 /// this value is nowhere set in elogind
         return j->has_persistent_files;
+#else
+        return 0;
+#endif // 0 
 }
