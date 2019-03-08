@@ -427,8 +427,15 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
                         if (q->inheritable != (uint64_t) -1) {
                                 cap_flag_value_t old_value, new_value;
 
-                                if (cap_get_flag(c, cv, CAP_INHERITABLE, &old_value) < 0)
+                                if (cap_get_flag(c, cv, CAP_INHERITABLE, &old_value) < 0) {
+                                        if (errno == EINVAL) /* If the kernel knows more caps than this
+                                                              * version of libcap, then this will return
+                                                              * EINVAL. In that case, simply ignore it,
+                                                              * pretend it doesn't exist. */
+                                                continue;
+
                                         return -errno;
+                                }
 
                                 new_value = (q->inheritable & m) ? CAP_SET : CAP_CLEAR;
 
@@ -443,8 +450,12 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
                         if (q->permitted != (uint64_t) -1) {
                                 cap_flag_value_t old_value, new_value;
 
-                                if (cap_get_flag(c, cv, CAP_PERMITTED, &old_value) < 0)
+                                if (cap_get_flag(c, cv, CAP_PERMITTED, &old_value) < 0) {
+                                        if (errno == EINVAL)
+                                                continue;
+
                                         return -errno;
+                                }
 
                                 new_value = (q->permitted & m) ? CAP_SET : CAP_CLEAR;
 
@@ -459,8 +470,12 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
                         if (q->effective != (uint64_t) -1) {
                                 cap_flag_value_t old_value, new_value;
 
-                                if (cap_get_flag(c, cv, CAP_EFFECTIVE, &old_value) < 0)
+                                if (cap_get_flag(c, cv, CAP_EFFECTIVE, &old_value) < 0) {
+                                        if (errno == EINVAL)
+                                                continue;
+
                                         return -errno;
+                                }
 
                                 new_value = (q->effective & m) ? CAP_SET : CAP_CLEAR;
 
