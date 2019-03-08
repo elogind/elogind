@@ -31,6 +31,7 @@
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     and related programs for:
     <itemizedlist>
+      <!-- 0 /// Completely irrelevant for elogind
       <listitem><para>elogind unit files, see
       <citerefentry><refentrytitle>elogind.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
@@ -44,16 +45,21 @@
       <citerefentry><refentrytitle>elogind.timer</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry></para></listitem>
+      // 0 -->
 
       <listitem><para>daemon config files, see
+      <!-- 0 /// Completely irrelevant for elogind
       <citerefentry><refentrytitle>elogind-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-user.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      // 0 -->
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <!-- 0 /// Completely irrelevant for elogind
       <citerefentry><refentrytitle>journald.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>journal-remote.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>journal-upload.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-sleep.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>timesyncd.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      // 0 -->
       </para></listitem>
     </itemizedlist>
     </para>
