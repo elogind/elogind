@@ -87,6 +87,7 @@
 		<Unit filename="../man/sd_bus_error.xml" />
 		<Unit filename="../man/sd_bus_error_add_map.xml" />
 		<Unit filename="../man/sd_bus_get_fd.xml" />
+		<Unit filename="../man/sd_bus_get_n_queued_read.xml" />
 		<Unit filename="../man/sd_bus_is_open.xml" />
 		<Unit filename="../man/sd_bus_message_append.xml" />
 		<Unit filename="../man/sd_bus_message_append_array.xml" />
