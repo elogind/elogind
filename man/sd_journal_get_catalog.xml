@@ -90,7 +90,7 @@
     new string, which must be freed with
     <citerefentry project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
     </para>
-    // 0 -->
+    -->
     <para><function>sd_journal_get_catalog()</function> and
     <function>sd_journal_get_catalog_for_message_id()</function>
     always return -ENOENT.</para>
