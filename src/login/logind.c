@@ -32,6 +32,7 @@
 #include "musl_missing.h"
 #include "process-util.h"
 #include "cgroup-util.h"
+//#include "udev-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -595,7 +596,7 @@ static int manager_dispatch_device_udev(sd_device_monitor *monitor, sd_device *d
 #if 0 /// UNNEEDED by elogind
 static int manager_dispatch_vcsa_udev(sd_device_monitor *monitor, sd_device *device, void *userdata) {
         Manager *m = userdata;
-        const char *name, *action;
+        const char *name;
 
         assert(m);
         assert(device);
@@ -605,8 +606,7 @@ static int manager_dispatch_vcsa_udev(sd_device_monitor *monitor, sd_device *dev
 
         if (sd_device_get_sysname(device, &name) >= 0 &&
             startswith(name, "vcsa") &&
-            sd_device_get_property_value(device, "ACTION", &action) >= 0 &&
-            streq(action, "remove"))
+            device_for_action(device, DEVICE_ACTION_REMOVE))
                 seat_preallocate_vts(m->seat0);
 
         return 0;

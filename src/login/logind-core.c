@@ -24,6 +24,7 @@
 #include "process-util.h"
 #include "strv.h"
 #include "terminal-util.h"
+//#include "udev-util.h"
 #include "user-util.h"
 /// Additional includes needed by elogind
 #include "elogind.h"
@@ -308,14 +309,12 @@ int manager_add_button(Manager *m, const char *name, Button **_button) {
 }
 
 int manager_process_seat_device(Manager *m, sd_device *d) {
-        const char *action;
         Device *device;
         int r;
 
         assert(m);
 
-        if (sd_device_get_property_value(d, "ACTION", &action) >= 0 &&
-            streq(action, "remove")) {
+        if (device_for_action(d, DEVICE_ACTION_REMOVE)) {
                 const char *syspath;
 
                 r = sd_device_get_syspath(d, &syspath);
@@ -375,7 +374,7 @@ int manager_process_seat_device(Manager *m, sd_device *d) {
 }
 
 int manager_process_button_device(Manager *m, sd_device *d) {
-        const char *action, *sysname;
+        const char *sysname;
         Button *b;
         int r;
 
@@ -385,8 +384,7 @@ int manager_process_button_device(Manager *m, sd_device *d) {
         if (r < 0)
                 return r;
 
-        if (sd_device_get_property_value(d, "ACTION", &action) >= 0 &&
-            streq(action, "remove")) {
+        if (device_for_action(d, DEVICE_ACTION_REMOVE)) {
 
                 b = hashmap_get(m->buttons, sysname);
                 if (!b)
