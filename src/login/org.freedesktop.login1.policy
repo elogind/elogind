@@ -337,6 +337,17 @@
                 </defaults>
         </action>
 
+        <action id="org.freedesktop.login1.set-reboot-parameter">
+                <description gettext-domain="elogind">Configure reboot parameter for kernel's reboot reason driver</description>
+                <message gettext-domain="elogind">Authentication is required to configure reboot parameter for kernel's reboot reason driver.</message>
+                <defaults>
+                        <allow_any>auth_admin_keep</allow_any>
+                        <allow_inactive>auth_admin_keep</allow_inactive>
+                        <allow_active>yes</allow_active>
+                </defaults>
+                <annotate key="org.freedesktop.policykit.imply">org.freedesktop.login1.reboot</annotate>
+        </action>
+
         <action id="org.freedesktop.login1.set-reboot-to-firmware-setup">
                 <description gettext-domain="elogind">Indicate to the firmware to boot to setup interface</description>
                 <message gettext-domain="systemd">Authentication is required to indicate to the firmware to boot to setup interface.</message>
@@ -375,6 +386,8 @@
                 <description gettext-domain="elogind">Reload the elogind configuration</description>
                 <message gettext-domain="elogind">Authentication is required to reload the elogind configuration.</message>
         <action id="org.freedesktop.login1.set-wall-message">
+                <description gettext-domain="elogind">Set a wall message</description>
+                <message gettext-domain="elogind">Authentication is required to set a wall message</message>
                 <description gettext-domain="elogind">Set a wall message</description>
                 <message gettext-domain="elogind">Authentication is required to set a wall message</message>
                 <defaults>
