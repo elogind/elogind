@@ -458,11 +458,15 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
 #endif // 0
 
         if (check_allowed && !allow) {
+#if 0 /// be a bit more verbose in elogind
+                log_debug("Sleep mode \"%s\" is disabled by configuration.", verb);
+#else
                 log_info("Sleep mode \"%s\" is disabled by configuration.", verb);
                 log_debug("allow_suspend               : %d", m->allow_suspend);
                 log_debug("allow_hibernation           : %d", m->allow_hibernation);
                 log_debug("allow_hybrid_sleep          : %d", m->allow_hybrid_sleep);
                 log_debug("allow_suspend_then_hibernate: %d", m->allow_suspend_then_hibernate);
+#endif // 0
                 return false;
         }
 
