@@ -116,6 +116,9 @@ struct Manager {
          * the job of it */
         char *action_job;
 #else
+        /* Suspension and hibernation can be disabled in logind.conf. */
+        bool allow_suspend, allow_hibernation, allow_suspend_then_hibernate, allow_hybrid_sleep;
+
         /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or
            SYSTEM_POWEROFF_PATH that fail, the ongoing suspend/poweroff
            action will be cancelled if any of these are set to true. */

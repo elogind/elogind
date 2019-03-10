@@ -418,6 +418,10 @@ int elogind_manager_new(Manager* m) {
         m->hybrid_sleep_mode   = NULL;
         m->hybrid_sleep_state  = NULL;
         m->hibernate_delay_sec = 0;
+        m->allow_suspend       = -1;
+        m->allow_hibernation   = -1;
+        m->allow_hybrid_sleep  = -1;
+        m->allow_suspend_then_hibernate = -1;
 
         /* If elogind should be its own controller, mount its cgroup */
         if (streq(SYSTEMD_CGROUP_CONTROLLER, "_elogind")) {
