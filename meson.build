@@ -27,11 +27,9 @@ project('elogind', 'c',
         meson_version : '>= 0.41',
        )
 
+libsystemd_version = '0.22.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.22.0'
 # libudev_version = '1.6.10'
-#else
-libelogind_version = '0.22.0'
 #endif // 0
 
 # We need the same data in three different formats, ugh!
@@ -1567,7 +1565,7 @@ libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sy
 libelogind = shared_library(
         'elogind',
         'src/systemd/sd-id128.h', # pick a header file at random to work around old meson bug
-        version : libelogind_version,
+        version : libsystemd_version,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
