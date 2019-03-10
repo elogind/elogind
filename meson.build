@@ -12,11 +12,9 @@ project('elogind', 'c',
         meson_version : '>= 0.44',
        )
 
+libsystemd_version = '0.23.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.23.0'
 # libudev_version = '1.6.11'
-#else
-libelogind_version = '0.23.0'
 #endif // 0
 
 # We need the same data in two different formats, ugh!
@@ -1577,7 +1575,7 @@ libelogind_sym_path = '@0@/@1@'.format(meson.current_source_dir(), libelogind_sy
 libelogind = shared_library(
         'elogind',
         disable_mempool_c,
-        version : libelogind_version,
+        version : libsystemd_version,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -2046,7 +2044,7 @@ if conf.get('HAVE_PAM') == 1
              test_dlopen,
              args : [pam_elogind.full_path()]) # path to dlopen must include a slash
 endif
-#endif // 0
+
 #if 0 /// UNNEEDED by elogind
 #         executable('systemd-user-sessions',
 #                    'src/user-sessions/user-sessions.c',
