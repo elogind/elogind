@@ -434,12 +434,12 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
         _cleanup_strv_free_ char **modes = NULL, **states = NULL;
         int r;
 #else
-        char **modes  = streq(verb, "suspend")   ? m->suspend_mode     :
-                        streq(verb, "hibernate") ? m->hibernate_mode   :
-                                                   m->hybrid_sleep_mode;
-        char **states = streq(verb, "suspend")   ? m->suspend_state     :
-                        streq(verb, "hibernate") ? m->hibernate_state   :
-                                                   m->hybrid_sleep_state;
+        char **modes  = streq(verb, "hibernate")    ? m->hibernate_mode    :
+                        streq(verb, "hybrid-sleep") ? m->hybrid_sleep_mode :
+                                                      m->suspend_mode;
+        char **states = streq(verb, "hibernate")    ? m->hibernate_state    :
+                        streq(verb, "hybrid-sleep") ? m->hybrid_sleep_state :
+                                                      m->suspend_state;
 #endif // 0
 
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
@@ -458,7 +458,11 @@ static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed) 
 #endif // 0
 
         if (check_allowed && !allow) {
-                log_debug("Sleep mode \"%s\" is disabled by configuration.", verb);
+                log_info("Sleep mode \"%s\" is disabled by configuration.", verb);
+                log_debug("allow_suspend               : %d", m->allow_suspend);
+                log_debug("allow_hibernation           : %d", m->allow_hibernation);
+                log_debug("allow_hybrid_sleep          : %d", m->allow_hybrid_sleep);
+                log_debug("allow_suspend_then_hibernate: %d", m->allow_suspend_then_hibernate);
                 return false;
         }
 
