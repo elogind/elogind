@@ -81,7 +81,7 @@ char* getlogname_malloc(void) {
 char *getusername_malloc(void) {
         const char *e;
 
-        e = getenv("USER");
+        e = secure_getenv("USER");
         if (e)
                 return strdup(e);
 
@@ -519,7 +519,7 @@ int get_shell(char **_s) {
         assert(_s);
 
         /* Take the user specified one */
-        e = getenv("SHELL");
+        e = secure_getenv("SHELL");
         if (e && path_is_valid(e) && path_is_absolute(e)) {
                 s = strdup(e);
                 if (!s)
