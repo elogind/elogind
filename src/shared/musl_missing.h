@@ -81,6 +81,7 @@ void elogind_set_program_name(const char* pcall);
 # define __COMPAR_FN_T
 typedef int (*__compar_fn_t) (const void *, const void *);
 typedef __compar_fn_t comparison_fn_t;
+typedef int (*__compar_d_fn_t) (const void *, const void *, void *);
 #endif
 
 /* Make musl utmp/wtmp stubs visible if needed. */
