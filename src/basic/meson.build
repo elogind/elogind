@@ -93,6 +93,8 @@
 #         macro.h
 #         memfd-util.c
 #         memfd-util.h
+#         memory-util.c
+#         memory-util.h
 #         mempool.c
 #         mempool.h
 #         missing.h
