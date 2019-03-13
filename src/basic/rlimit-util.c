@@ -308,13 +308,13 @@ int rlimit_format(const struct rlimit *rl, char **ret) {
         if (rl->rlim_cur >= RLIM_INFINITY && rl->rlim_max >= RLIM_INFINITY)
                 s = strdup("infinity");
         else if (rl->rlim_cur >= RLIM_INFINITY)
-                (void) asprintf(&s, "infinity:" RLIM_FMT, rl->rlim_max);
+                (void) asprintf(&s, "infinity:" RLIM_FMT, (uintmax_t)rl->rlim_max);
         else if (rl->rlim_max >= RLIM_INFINITY)
-                (void) asprintf(&s, RLIM_FMT ":infinity", rl->rlim_cur);
+                (void) asprintf(&s, RLIM_FMT ":infinity", (uintmax_t)rl->rlim_cur);
         else if (rl->rlim_cur == rl->rlim_max)
-                (void) asprintf(&s, RLIM_FMT, rl->rlim_cur);
+                (void) asprintf(&s, RLIM_FMT, (uintmax_t)rl->rlim_cur);
         else
-                (void) asprintf(&s, RLIM_FMT ":" RLIM_FMT, rl->rlim_cur, rl->rlim_max);
+                (void) asprintf(&s, RLIM_FMT ":" RLIM_FMT, (uintmax_t)rl->rlim_cur, (uintmax_t)rl->rlim_max);
 
         if (!s)
                 return -ENOMEM;
@@ -406,7 +406,7 @@ int rlimit_nofile_safe(void) {
 
         rl.rlim_cur = FD_SETSIZE;
         if (setrlimit(RLIMIT_NOFILE, &rl) < 0)
-                return log_debug_errno(errno, "Failed to lower RLIMIT_NOFILE's soft limit to " RLIM_FMT ": %m", rl.rlim_cur);
+                return log_debug_errno(errno, "Failed to lower RLIMIT_NOFILE's soft limit to " RLIM_FMT ": %m", (uintmax_t)rl.rlim_cur);
 
         return 1;
 }
