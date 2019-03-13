@@ -24,7 +24,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_PRINTF_H
+#if HAVE_PRINTF_H == 1
 #include <printf.h>
 #else
 
