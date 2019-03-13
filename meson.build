@@ -980,7 +980,9 @@ substs.set('TTY_GID', tty_gid)
 # dev_kvm_mode = get_option('dev-kvm-mode')
 # substs.set('DEV_KVM_MODE', dev_kvm_mode)
 # conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
-# substs.set('GROUP_RENDER_MODE', get_option('group-render-mode'))
+# group_render_mode = get_option('group-render-mode')
+# substs.set('GROUP_RENDER_MODE', group_render_mode)
+# conf.set10('GROUP_RENDER_UACCESS', group_render_mode != '0666')
 #endif // 0
 
 kill_user_processes = get_option('default-kill-user-processes')
