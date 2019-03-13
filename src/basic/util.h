@@ -27,6 +27,9 @@
 #include "macro.h"
 #include "time-util.h"
 
+/* Requires for __compar_fn_t and __compar_d_fn_t functions */
+#include "musl_missing.h"
+
 size_t page_size(void) _pure_;
 #define PAGE_ALIGN(l) ALIGN_TO((l), page_size())
 
