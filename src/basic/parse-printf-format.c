@@ -25,7 +25,7 @@
 
 #include "parse-printf-format.h"
 
-#ifndef HAVE_PRINTF_H
+#if HAVE_PRINTF_H == 0
 
 static const char *consume_nonarg(const char *fmt)
 {
