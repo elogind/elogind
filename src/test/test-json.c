@@ -10,6 +10,10 @@
 #include "strv.h"
 #include "util.h"
 
+#ifndef M_PIl
+#define M_PIl 3.141592653589793238462643383279502884L
+#endif
+
 static void test_tokenizer(const char *data, ...) {
         unsigned line = 0, column = 0;
         void *state = NULL;
