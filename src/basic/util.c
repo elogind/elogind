@@ -53,11 +53,7 @@ char **saved_argv = NULL;
 static int saved_in_initrd = -1;
 #endif // 0
 
-
 #if 0 /// UNNEEDED by elogind
-bool plymouth_running(void) {
-        return access("/run/plymouth/pid", F_OK) >= 0;
-}
 #endif // 0
 
 bool display_is_local(const char *display) {
