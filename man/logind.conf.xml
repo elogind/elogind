@@ -4,10 +4,8 @@
 <!ENTITY % entities SYSTEM "custom-entities.ent" >
 %entities;
 ]>
+<!-- SPDX-License-Identifier: LGPL-2.1+ -->
 
-<!--
-  SPDX-License-Identifier: LGPL-2.1+
--->
 
 <!-- 0 /// elogind does not have to enable itself in configure
 <refentry id="logind.conf" conditional='ENABLE_LOGIND'
