@@ -56,10 +56,6 @@ void elogind_set_program_name(const char* pcall);
         } ) )
 #endif
 
-/* See http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html */
-#define canonicalize_file_name(path) \
-        realpath(path, NULL)
-
 /* GLOB_BRACE is another glibc extension - ignore it for musl libc */
 #define GLOB_BRACE 0
 
