@@ -44,10 +44,6 @@ void elogind_set_program_name(const char* pcall);
 #  define HAVE_SECURE_GETENV 1
 #endif // HAVE_[__]SECURE_GETENV
 
-/* Poor man's basename */
-#define basename(path) \
-        (strrchr(path, '/') ? strrchr(path, '/')+1 : path)
-
 /* strndupa may already be defined in another compatibility header */
 #if !defined(strndupa)
 #define strndupa(x_src, x_n) \
@@ -59,10 +55,6 @@ void elogind_set_program_name(const char* pcall);
                 (char *) memcpy(x_out, x_in, x_len-1);        \
         } ) )
 #endif
-
-/* See http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html */
-#define canonicalize_file_name(path) \
-        realpath(path, NULL)
 
 /* getnameinfo(3) glibc extensions are undefined in musl libc */
 #define NI_IDN 0
@@ -78,6 +70,7 @@ void elogind_set_program_name(const char* pcall);
 # define __COMPAR_FN_T
 typedef int (*__compar_fn_t) (const void *, const void *);
 typedef __compar_fn_t comparison_fn_t;
+typedef int (*__compar_d_fn_t) (const void *, const void *, void *);
 #endif
 
 /* Make musl utmp/wtmp stubs visible if needed. */
