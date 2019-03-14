@@ -64,9 +64,6 @@ void elogind_set_program_name(const char* pcall);
 #define canonicalize_file_name(path) \
         realpath(path, NULL)
 
-/* GLOB_BRACE is another glibc extension - ignore it for musl libc */
-#define GLOB_BRACE 0
-
 /* getnameinfo(3) glibc extensions are undefined in musl libc */
 #define NI_IDN 0
 #define NI_IDN_USE_STD3_ASCII_RULES 0
