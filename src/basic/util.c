@@ -56,16 +56,6 @@ static int saved_in_initrd = -1;
 #if 0 /// UNNEEDED by elogind
 #endif // 0
 
-bool display_is_local(const char *display) {
-        assert(display);
-
-        return
-                display[0] == ':' &&
-                display[1] >= '0' &&
-                display[1] <= '9';
-}
-
-
 #if 0 /// UNNEEDED by elogind
 bool kexec_loaded(void) {
        _cleanup_free_ char *s = NULL;

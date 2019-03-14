@@ -50,7 +50,6 @@ static inline const char* enable_disable(bool b) {
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
-bool display_is_local(const char *display) _pure_;
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
