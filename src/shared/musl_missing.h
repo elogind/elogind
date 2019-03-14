@@ -56,10 +56,6 @@ void elogind_set_program_name(const char* pcall);
         } ) )
 #endif
 
-/* See http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html */
-#define canonicalize_file_name(path) \
-        realpath(path, NULL)
-
 /* getnameinfo(3) glibc extensions are undefined in musl libc */
 #define NI_IDN 0
 #define NI_IDN_USE_STD3_ASCII_RULES 0
