@@ -56,6 +56,11 @@ static inline const char* enable_disable(bool b) {
 extern int saved_argc;
 extern char **saved_argv;
 
+static inline void save_argc_argv(int argc, char **argv) {
+        saved_argc = argc;
+        saved_argv = argv;
+}
+
 #if 0 /// UNNEEDED by elogind
 bool kexec_loaded(void);
 
