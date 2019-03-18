@@ -948,6 +948,20 @@ int getenv_for_pid(pid_t pid, const char *field, char **ret) {
         return 0;
 }
 
+int pid_is_my_child(pid_t pid) {
+        pid_t ppid;
+        int r;
+
+        if (pid <= 1)
+                return false;
+
+        r = get_process_ppid(pid, &ppid);
+        if (r < 0)
+                return r;
+
+        return ppid == getpid_cached();
+}
+
 bool pid_is_unwaited(pid_t pid) {
         /* Checks whether a PID is still valid at all, including a zombie */
 
@@ -1555,39 +1569,6 @@ int set_oom_score_adjust(int value) {
                                  WRITE_STRING_FILE_VERIFY_ON_FAILURE|WRITE_STRING_FILE_DISABLE_BUFFER);
 }
 
-int cpus_in_affinity_mask(void) {
-        size_t n = 16;
-        int r;
-
-        for (;;) {
-                cpu_set_t *c;
-
-                c = CPU_ALLOC(n);
-                if (!c)
-                        return -ENOMEM;
-
-                if (sched_getaffinity(0, CPU_ALLOC_SIZE(n), c) >= 0) {
-                        int k;
-
-                        k = CPU_COUNT_S(CPU_ALLOC_SIZE(n), c);
-                        CPU_FREE(c);
-
-                        if (k <= 0)
-                                return -EINVAL;
-
-                        return k;
-                }
-
-                r = -errno;
-                CPU_FREE(c);
-
-                if (r != -EINVAL)
-                        return r;
-                if (n > SIZE_MAX/2)
-                        return -ENOMEM;
-                n *= 2;
-        }
-}
 
 #if 0 /// UNNEEDED by elogind
 static const char *const ioprio_class_table[] = {
