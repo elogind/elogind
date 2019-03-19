@@ -28,6 +28,7 @@
 #include "bus-util.h"
 #include "cgroup-util.h"
 #include "def.h"
+//#include "errno-util.h"
 #include "fd-util.h"
 #include "hexdecoct.h"
 #include "hostname-util.h"
@@ -1936,7 +1937,7 @@ _public_ int sd_bus_send(sd_bus *bus, sd_bus_message *_m, uint64_t *cookie) {
 
                 r = bus_write_message(bus, m, &idx);
                 if (r < 0) {
-                        if (IN_SET(r, -ENOTCONN, -ECONNRESET, -EPIPE, -ESHUTDOWN)) {
+                        if (ERRNO_IS_DISCONNECT(r)) {
                                 bus_enter_closing(bus);
                                 return -ECONNRESET;
                         }
@@ -2232,7 +2233,7 @@ _public_ int sd_bus_call(
 
                 r = bus_read_message(bus, false, 0);
                 if (r < 0) {
-                        if (IN_SET(r, -ENOTCONN, -ECONNRESET, -EPIPE, -ESHUTDOWN)) {
+                        if (ERRNO_IS_DISCONNECT(r)) {
                                 bus_enter_closing(bus);
                                 r = -ECONNRESET;
                         }
@@ -2265,7 +2266,7 @@ _public_ int sd_bus_call(
 
                 r = dispatch_wqueue(bus);
                 if (r < 0) {
-                        if (IN_SET(r, -ENOTCONN, -ECONNRESET, -EPIPE, -ESHUTDOWN)) {
+                        if (ERRNO_IS_DISCONNECT(r)) {
                                 bus_enter_closing(bus);
                                 r = -ECONNRESET;
                         }
@@ -3023,7 +3024,7 @@ static int bus_process_internal(sd_bus *bus, bool hint_priority, int64_t priorit
                 assert_not_reached("Unknown state");
         }
 
-        if (IN_SET(r, -ENOTCONN, -ECONNRESET, -EPIPE, -ESHUTDOWN)) {
+        if (ERRNO_IS_DISCONNECT(r)) {
                 bus_enter_closing(bus);
                 r = 1;
         } else if (r < 0)
@@ -3154,7 +3155,7 @@ _public_ int sd_bus_flush(sd_bus *bus) {
         for (;;) {
                 r = dispatch_wqueue(bus);
                 if (r < 0) {
-                        if (IN_SET(r, -ENOTCONN, -ECONNRESET, -EPIPE, -ESHUTDOWN)) {
+                        if (ERRNO_IS_DISCONNECT(r)) {
                                 bus_enter_closing(bus);
                                 return -ECONNRESET;
                         }
