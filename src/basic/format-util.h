@@ -42,7 +42,17 @@
 #  define PRI_TIMEX "li"
 #endif
 
+#ifdef __GLIBC__ /// Go directly for %ju in elogind if not. Enhances musl-libc compatibility.
+#if SIZEOF_RLIM_T == 8
+#  define RLIM_FMT "%" PRIu64
+#elif SIZEOF_RLIM_T == 4
+#  define RLIM_FMT "%" PRIu32
+#else
+#  error Unknown rlim_t size
+#endif
+#else
 #define RLIM_FMT "%ju"
+#endif // __GLIBC__
 
 #if SIZEOF_DEV_T == 8
 #  define DEV_FMT "%" PRIu64
