@@ -10,9 +10,11 @@
 #include "strv.h"
 #include "util.h"
 
+#ifndef __GLIBC__ /// M_PIl might be missing if elogind is built against a non-glibc libc
 #ifndef M_PIl
 #define M_PIl 3.141592653589793238462643383279502884L
 #endif
+#endif // __GLIBC__
 
 static void test_tokenizer(const char *data, ...) {
         unsigned line = 0, column = 0;
