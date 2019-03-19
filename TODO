@@ -62,16 +62,12 @@ Features:
 
 * bootctl,sd-boot: actually honour the "architecture" key
 
-* set memory.oom.group in cgroup v2 for all leaf cgroups (kernel v4.19+)
-
 * add a new syscall group "@esoteric" for more esoteric stuff such as bpf() and
   usefaultd() and make elogind-analyze check for it.
 
 * paranoia: whenever we process passwords, call mlock() on the memory
   first. i.e. look for all places we use string_erase()/string_free_erase() and
   augment them with mlock(). Also use MADV_DONTDUMP
-
-* whenever oom_kill memory.event event is triggered print a nice log message
 
 * Move RestrictAddressFamily= to the new cgroup create socket
 
@@ -686,7 +682,9 @@ Features:
   - honor timezone efi variables for default timezone selection (if there are any?)
   - change bootctl to be backed by systemd-bootd to control temporary and persistent default boot goal plus efi variables
 * bootctl
+  - verify that the files boot entries point to exist
   - recognize the case when not booted on EFI
+  - specify paths for boot entries
 
 * maybe do not install getty@tty1.service symlink in /etc but in /usr?
 
