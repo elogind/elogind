@@ -26,8 +26,7 @@
 #include "format-util.h"
 #include "macro.h"
 #include "time-util.h"
-
-/* Requires for __compar_fn_t and __compar_d_fn_t functions */
+/// Additional includes needed by elogind
 #include "musl_missing.h"
 
 size_t page_size(void) _pure_;
