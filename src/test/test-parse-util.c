@@ -598,8 +598,7 @@ static void test_safe_atod(void) {
                 assert_se(r == -EINVAL);
 
                 errno = 0;
-/// elogind supports musl_libc, and their strtod doesn't seem to use the set locale.
-#if defined(__GLIBC__)
+#ifdef __GLIBC__ /// elogind supports musl_libc, and their strtod doesn't seem to use the set locale.
                 assert_se(fabs(strtod("0,5", &e) - 0.5) < 0.00001);
 #endif // __GLIBC__
 
