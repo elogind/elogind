@@ -357,6 +357,7 @@
     as elogind can not support systemd units.
     <!-- // 0 -->
     </para>
+
     <!-- 0 /// elogind does not support systemd units, so this is a stub
     <para><function>sd_bus_creds_get_user_unit()</function> will
     retrieve the systemd unit name (in the user instance of systemd)

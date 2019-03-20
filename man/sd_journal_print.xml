@@ -125,9 +125,6 @@
     <!-- 0 /// Irrelevant for elogind, as we only pump MESSAGE by PRIORITY into syslog.
     specifies the number of structures in the array.  <function>sd_journal_sendv()</function> is particularly useful to
     submit binary objects to the journal where that is necessary. Note that this function will not strip trailing
-    whitespace of the passed fields, but passes the specified data along unmodified. This is different from both
-    <function>sd_journal_print()</function> and <function>sd_journal_send()</function> described above, which are based
-    on format strings, and do strip trailing whitespace.</para>
     --><!-- else -->
     specifies the number of structures in the array. A number of well-known fields are defined, see 
     <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry> for
@@ -137,6 +134,7 @@
     whitespace of the passed fields, but passes the specified data along unmodified. This is different from both
     <function>sd_journal_print()</function> and <function>sd_journal_send()</function> described above, which are based
     on format strings, and do strip trailing whitespace.</para>
+
     <para><function>sd_journal_perror()</function> is a similar to
     <citerefentry project='die-net'><refentrytitle>perror</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     <!-- 0 /// elogind reroutes to syslog

@@ -79,9 +79,9 @@
   <refsect1>
     <title>Return Value</title>
 
-    <!-- 0 /// Without journal support in elogind they will always 'fail'
     <para><function>sd_journal_get_catalog()</function> and
     <function>sd_journal_get_catalog_for_message_id()</function>
+    <!-- 0 /// Without journal support in elogind they will always 'fail'
     return 0 on success or a negative errno-style error code. If no
     matching message catalog entry is found, -ENOENT is
     returned.</para>
@@ -89,11 +89,10 @@
     <para>On successful return, <parameter>ret</parameter> points to a
     new string, which must be freed with
     <citerefentry project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
-    </para>
-    // 0 -->
-    <para><function>sd_journal_get_catalog()</function> and
-    <function>sd_journal_get_catalog_for_message_id()</function>
+    else -->
     always return -ENOENT.</para>
+    <!-- // 0 -->
+    </para>
   </refsect1>
 
   <!-- 0 /// In elogind these notes would be misleading.
