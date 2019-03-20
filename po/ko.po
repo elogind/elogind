@@ -546,5 +546,4 @@ msgstr "wall 메시지를 설정하려면 인증이 필요합니다"
 # #: ../src/core/dbus-unit.c:597
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "'$(unit)' 서비스 유닛 속성을 설정하려면 인증이 필요합니다."
-#
 #endif // 0

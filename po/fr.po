@@ -726,5 +726,4 @@ msgstr "Authentification requise pour définir un message wall."
 # #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
 # #~ msgstr[0] "Vérification en cours sur %d disque (%3.1f%% complété)"
 # #~ msgstr[1] "Vérification en cours sur %d disques (%3.1f%% complété)"
-#
 #endif // 0
