@@ -705,5 +705,4 @@ msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 #
 # #~ msgid "Authentication is required to kill '$(unit)'."
 # #~ msgstr "'$(unit)' sonlandırmak için kimlik doğrulaması gereklidir."
-#
 #endif // 0

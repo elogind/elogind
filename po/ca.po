@@ -149,7 +149,6 @@ msgstr ""
 # msgid "Authentication is required to set the system keyboard settings."
 # msgstr ""
 # "Es requereix autenticació per establir els ajusts del teclat del sistema."
-#
 #endif // 0
 
 #: src/login/org.freedesktop.login1.policy:22
@@ -668,6 +667,5 @@ msgstr "Es requereix autenticació per establir un missatge de mur"
 # #: src/core/dbus-unit.c:671
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Es requereix autenticació per establir les propietats a «$(unit)»."
-#
 #
 #endif // 0
