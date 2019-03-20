@@ -34,7 +34,7 @@ int fchmod_opath(int fd, mode_t m);
 
 int fd_warn_permissions(const char *path, int fd);
 
-#ifdef __GLIBC__
+#ifdef __GLIBC__ /// elogind supports musl-libc, where AT_SYMLINK_FOLLOW isn't available
 #define laccess(path, mode) faccessat(AT_FDCWD, (path), (mode), AT_SYMLINK_NOFOLLOW)
 #else
 #define laccess(path, mode) faccessat(AT_FDCWD, (path), (mode), 0)
