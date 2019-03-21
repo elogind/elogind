@@ -13,6 +13,8 @@
 #include "rm-rf.h"
 #include "string-util.h"
 #include "tests.h"
+/// Addition includes needed by elogind
+#include "virt.h"
 
 #if 0 /// UNNEEDED by elogind
 static void test_mount_propagation_flags(const char *name, int ret, unsigned long expected) {
@@ -84,7 +86,13 @@ static void test_mnt_id(void) {
                  * that's really the case */
                 char *t = hashmap_get(h, INT_TO_PTR(mnt_id2));
                 log_debug("the other path for mnt id %i is %s\n", mnt_id2, t);
+#if 0 /// Unfortunately this doesn't work in all cases where elogind is running in a chroot. (#127)
                 assert_se(path_equal(p, t));
+#else
+                assert_se(path_equal(p, t) || (
+                          running_in_chroot() && startswith(p, t)
+                ) );
+#endif // 0
         }
 
         hashmap_free_free(h);
