@@ -50,7 +50,7 @@ unsigned long cap_last_cap(void) {
 
                         if (p > 63) /* Safety for the future: if one day the kernel learns more than 64 caps,
                                      * then we are in trouble (since we, as much userspace and kernel space
-                                     * store capability masks in uint64_t types. Let's hence protect
+                                     * store capability masks in uint64_t types). Let's hence protect
                                      * ourselves against that and always cap at 63 for now. */
                                 p = 63;
 
@@ -368,7 +368,8 @@ bool ambient_capabilities_supported(void) {
 }
 
 int capability_quintet_enforce(const CapabilityQuintet *q) {
-        _cleanup_cap_free_ cap_t c = NULL, modified = NULL;
+        _cleanup_cap_free_ cap_t c = NULL;
+        bool need_set_proc_again = false;
         int r;
 
         if (q->ambient != (uint64_t) -1) {
@@ -493,6 +494,8 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
                 }
 
                 if (changed) {
+                        _cleanup_cap_free_ cap_t modified = NULL;
+
                         /* In order to change the bounding caps, we need to keep CAP_SETPCAP for a bit
                          * longer. Let's add it to our list hence for now. */
                         if (q->bounding != (uint64_t) -1) {
@@ -520,6 +523,8 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
                          * caps in inherited/permitted/effective anymore, but only lose them.*/
                         if (cap_set_proc(modified ?: c) < 0)
                                 return -errno;
+
+                        need_set_proc_again = !!modified;
                 }
         }
 
@@ -533,7 +538,7 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
          * we have already set only in the CAP_SETPCAP bit, which we needed for dropping the bounding
          * bits. This call only undoes bits and doesn't acquire any which means the bounding caps don't
          * matter. */
-        if (modified)
+        if (need_set_proc_again)
                 if (cap_set_proc(c) < 0)
                         return -errno;
 
