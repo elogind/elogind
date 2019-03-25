@@ -31,8 +31,8 @@
 
 #if 0 /// UNNEEDED by elogind
 int umount_recursive(const char *prefix, int flags) {
-        bool again;
         int n = 0, r;
+        bool again;
 
         /* Try to umount everything recursively below a
          * directory. Also, take care of stacked mounts, and keep
@@ -75,9 +75,9 @@ int umount_recursive(const char *prefix, int flags) {
                                 continue;
                         }
 
-                        r = cunescape(path, UNESCAPE_RELAX, &p);
-                        if (r < 0)
-                                return r;
+                        k = cunescape(path, UNESCAPE_RELAX, &p);
+                        if (k < 0)
+                                return k;
 
                         if (!path_startswith(p, prefix))
                                 continue;
@@ -97,7 +97,7 @@ int umount_recursive(const char *prefix, int flags) {
 
         } while (again);
 
-        return r ? r : n;
+        return r < 0 ? r : n;
 }
 
 static int get_mount_flags(const char *path, unsigned long *flags) {
