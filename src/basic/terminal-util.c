@@ -1053,6 +1053,10 @@ int ptsname_malloc(int fd, char **ret) {
                 }
 
                 free(c);
+
+                if (l > SIZE_MAX / 2)
+                        return -ENOMEM;
+
                 l *= 2;
         }
 }
