@@ -211,7 +211,7 @@ static int execute(Manager *m, const char *verb) {
         }
 
 #if 0 /// elogind needs its own callbacks to enable cancellation by erroneous scripts
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
+        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
 #else
         m->callback_failed = false;
         m->callback_must_succeed = m->allow_suspend_interrupts;
@@ -258,7 +258,7 @@ static int execute(Manager *m, const char *verb) {
                            "SLEEP=%s", arg_verb);
 
         arguments[1] = (char*) "post";
-        execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
+        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
 
         return r;
 }
