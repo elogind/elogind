@@ -49,6 +49,7 @@
 #include "elogind-dbus.h"
 //#include "virt.h"
 //#include "virt.h"
+//#include "virt.h"
 
 static int get_sender_session(Manager *m, sd_bus_message *message, sd_bus_error *error, Session **ret) {
 
@@ -1216,9 +1217,8 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
         if (r == 0)
                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
 
-        mkdir_p_label("/var/lib/elogind", 0755);
-
         r = mkdir_safe_label("/var/lib/elogind/linger", 0755, 0, 0, MKDIR_WARN_MODE);
+        (void) mkdir_p_label("/var/lib/elogind", 0755);
         if (r < 0)
                 return r;
 
