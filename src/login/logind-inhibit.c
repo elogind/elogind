@@ -63,7 +63,7 @@ void inhibitor_free(Inhibitor *i) {
 #if 1 /// Do not remove the state file if elogind got interrupted
                 if (!i->manager->do_interrupt)
 #endif // 1
-                unlink(i->state_file);
+                (void) unlink(i->state_file);
                 free(i->state_file);
         }
 
@@ -178,7 +178,7 @@ int inhibitor_stop(Inhibitor *i) {
                           inhibit_mode_to_string(i->mode));
 
         if (i->state_file)
-                unlink(i->state_file);
+                (void) unlink(i->state_file);
 
         i->started = false;
 
@@ -361,10 +361,10 @@ void inhibitor_remove_fifo(Inhibitor *i) {
                         log_debug_elogind("Removing FIFO %d at %s for inhibitor %s",
                                           current_fifo_fd, i->fifo_path, i->id);
 #endif // 1
-                unlink(i->fifo_path);
 #if 1 /// Close elogind extra if
                 }
 #endif // 1
+                (void) unlink(i->fifo_path);
                 i->fifo_path = mfree(i->fifo_path);
         }
 }
