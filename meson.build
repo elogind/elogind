@@ -13,8 +13,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.25.0'
-# libudev_version = '1.6.13'
+# libsystemd_version = '0.26.0'
+# libudev_version = '1.6.14'
 #endif // 0
 
 # We need the same data in two different formats, ugh!
