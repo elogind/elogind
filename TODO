@@ -4,8 +4,6 @@ Bugfixes:
   manager or system manager can be always set. It would be better to reject
   them when parsing config.
 
-* Clarify what IPAddress* matches (source, destination, both?)
-
 External:
 
 * Fedora: add an rpmlint check that verifies that all unit files in the RPM are listed in %systemd_post macros.
@@ -20,6 +18,12 @@ Janitorial Clean-ups:
   semantics, like we do for device.c now
 
 Features:
+
+* tweak journald context caching. In addition to caching per-process attributes
+  keyed by PID, cache per-cgroup attributes (i.e. the various xattrs we read)
+  keyed by cgroup path, and guarded by ctime changes. This should provide us
+  with a nice speed-up on services that have many processes running in the same
+  cgroup.
 
 * clean up sleep.c:
   - Use CLOCK_BOOTTIME_ALARM for waking up s2h instead of RTC ioctls
@@ -60,9 +64,6 @@ Features:
   hibernate because the swap partition isn't large enough, still suspend
 
 * bootctl,sd-boot: actually honour the "architecture" key
-
-* when a socket unit is spawned with an AF_UNIX path in /var/run, complain and
-  patch it to use /run instead
 
 * set memory.oom.group in cgroup v2 for all leaf cgroups (kernel v4.19+)
 
