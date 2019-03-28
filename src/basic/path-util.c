@@ -69,10 +69,7 @@ char *path_make_absolute(const char *p, const char *prefix) {
         if (path_is_absolute(p) || isempty(prefix))
                 return strdup(p);
 
-        if (endswith(prefix, "/"))
-                return strjoin(prefix, p);
-        else
-                return strjoin(prefix, "/", p);
+        return path_join(prefix, p);
 }
 #endif // 0
 
@@ -211,6 +208,18 @@ int path_make_relative(const char *from_dir, const char *to_path, char **_r) {
 
         *_r = r;
         return 0;
+}
+
+char* path_startswith_strv(const char *p, char **set) {
+        char **s, *t;
+
+        STRV_FOREACH(s, set) {
+                t = path_startswith(p, *s);
+                if (t)
+                        return t;
+        }
+
+        return NULL;
 }
 
 int path_strv_make_absolute_cwd(char **l) {
@@ -585,7 +594,7 @@ int find_binary(const char *name, char **ret) {
                 if (!path_is_absolute(element))
                         continue;
 
-                j = strjoin(element, "/", name);
+                j = path_join(element, name);
                 if (!j)
                         return -ENOMEM;
 
