@@ -235,6 +235,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 "%sStartupIOWeight=%" PRIu64 "\n"
                 "%sBlockIOWeight=%" PRIu64 "\n"
                 "%sStartupBlockIOWeight=%" PRIu64 "\n"
+                "%sDefaultMemoryLow=%" PRIu64 "\n"
                 "%sMemoryMin=%" PRIu64 "\n"
                 "%sMemoryLow=%" PRIu64 "\n"
                 "%sMemoryHigh=%" PRIu64 "\n"
@@ -260,6 +261,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 prefix, c->startup_io_weight,
                 prefix, c->blockio_weight,
                 prefix, c->startup_blockio_weight,
+                prefix, c->default_memory_low,
                 prefix, c->memory_min,
                 prefix, c->memory_low,
                 prefix, c->memory_high,
@@ -381,6 +383,32 @@ int cgroup_add_device_allow(CGroupContext *c, const char *dev, const char *mode)
         TAKE_PTR(a);
 
         return 0;
+}
+
+uint64_t unit_get_ancestor_memory_low(Unit *u) {
+        CGroupContext *c;
+
+        /* 1. Is MemoryLow set in this unit? If so, use that.
+         * 2. Is DefaultMemoryLow set in any ancestor? If so, use that.
+         * 3. Otherwise, return CGROUP_LIMIT_MIN. */
+
+        assert(u);
+
+        c = unit_get_cgroup_context(u);
+
+        if (c->memory_low_set)
+                return c->memory_low;
+
+        while (UNIT_ISSET(u->slice)) {
+                u = UNIT_DEREF(u->slice);
+                c = unit_get_cgroup_context(u);
+
+                if (c->default_memory_low_set)
+                        return c->default_memory_low;
+        }
+
+        /* We've reached the root, but nobody had DefaultMemoryLow set, so set it to the kernel default. */
+        return CGROUP_LIMIT_MIN;
 }
 
 static void cgroup_xattr_apply(Unit *u) {
@@ -878,8 +906,17 @@ static void cgroup_apply_blkio_device_limit(Unit *u, const char *dev_path, uint6
         (void) set_attribute_and_warn(u, "blkio", "blkio.throttle.write_bps_device", buf);
 }
 
-static bool cgroup_context_has_unified_memory_config(CGroupContext *c) {
-        return c->memory_min > 0 || c->memory_low > 0 || c->memory_high != CGROUP_LIMIT_MAX || c->memory_max != CGROUP_LIMIT_MAX || c->memory_swap_max != CGROUP_LIMIT_MAX;
+static bool unit_has_unified_memory_config(Unit *u) {
+        CGroupContext *c;
+
+        assert(u);
+
+        c = unit_get_cgroup_context(u);
+        assert(c);
+
+        return c->memory_min > 0 || unit_get_ancestor_memory_low(u) > 0 ||
+               c->memory_high != CGROUP_LIMIT_MAX || c->memory_max != CGROUP_LIMIT_MAX ||
+               c->memory_swap_max != CGROUP_LIMIT_MAX;
 }
 
 static void cgroup_apply_unified_memory_limit(Unit *u, const char *file, uint64_t v) {
@@ -1128,7 +1165,7 @@ static void cgroup_context_apply(
                 if (cg_all_unified() > 0) {
                         uint64_t max, swap_max = CGROUP_LIMIT_MAX;
 
-                        if (cgroup_context_has_unified_memory_config(c)) {
+                        if (unit_has_unified_memory_config(u)) {
                                 max = c->memory_max;
                                 swap_max = c->memory_swap_max;
                         } else {
@@ -1139,7 +1176,7 @@ static void cgroup_context_apply(
                         }
 
                         cgroup_apply_unified_memory_limit(u, "memory.min", c->memory_min);
-                        cgroup_apply_unified_memory_limit(u, "memory.low", c->memory_low);
+                        cgroup_apply_unified_memory_limit(u, "memory.low", unit_get_ancestor_memory_low(u));
                         cgroup_apply_unified_memory_limit(u, "memory.high", c->memory_high);
                         cgroup_apply_unified_memory_limit(u, "memory.max", max);
                         cgroup_apply_unified_memory_limit(u, "memory.swap.max", swap_max);
@@ -1150,7 +1187,7 @@ static void cgroup_context_apply(
                         char buf[DECIMAL_STR_MAX(uint64_t) + 1];
                         uint64_t val;
 
-                        if (cgroup_context_has_unified_memory_config(c)) {
+                        if (unit_has_unified_memory_config(u)) {
                                 val = c->memory_max;
                                 log_cgroup_compat(u, "Applying MemoryMax=%" PRIi64 " as MemoryLimit=", val);
                         } else
@@ -1324,8 +1361,13 @@ static bool unit_get_needs_bpf_firewall(Unit *u) {
         return false;
 }
 
-static CGroupMask cgroup_context_get_mask(CGroupContext *c) {
+static CGroupMask unit_get_cgroup_mask(Unit *u) {
         CGroupMask mask = 0;
+        CGroupContext *c;
+
+        assert(u);
+
+        c = unit_get_cgroup_context(u);
 
         /* Figure out which controllers we need, based on the cgroup context object */
 
@@ -1342,7 +1384,7 @@ static CGroupMask cgroup_context_get_mask(CGroupContext *c) {
 
         if (c->memory_accounting ||
             c->memory_limit != CGROUP_LIMIT_MAX ||
-            cgroup_context_has_unified_memory_config(c))
+            unit_has_unified_memory_config(u))
                 mask |= CGROUP_MASK_MEMORY;
 
         if (c->device_allow ||
@@ -1381,7 +1423,7 @@ CGroupMask unit_get_own_mask(Unit *u) {
         if (!c)
                 return 0;
 
-        return (cgroup_context_get_mask(c) | unit_get_bpf_mask(u) | unit_get_delegate_mask(u)) & ~unit_get_ancestor_disable_mask(u);
+        return (unit_get_cgroup_mask(u) | unit_get_bpf_mask(u) | unit_get_delegate_mask(u)) & ~unit_get_ancestor_disable_mask(u);
 }
 
 CGroupMask unit_get_delegate_mask(Unit *u) {
@@ -3247,140 +3289,21 @@ int unit_get_ip_accounting(
         return r;
 }
 
-static int unit_get_io_accounting_raw(Unit *u, uint64_t ret[static _CGROUP_IO_ACCOUNTING_METRIC_MAX]) {
-        static const char *const field_names[_CGROUP_IO_ACCOUNTING_METRIC_MAX] = {
-                [CGROUP_IO_READ_BYTES]       = "rbytes=",
-                [CGROUP_IO_WRITE_BYTES]      = "wbytes=",
-                [CGROUP_IO_READ_OPERATIONS]  = "rios=",
-                [CGROUP_IO_WRITE_OPERATIONS] = "wios=",
-        };
-        uint64_t acc[_CGROUP_IO_ACCOUNTING_METRIC_MAX] = {};
-        _cleanup_free_ char *path = NULL;
-        _cleanup_fclose_ FILE *f = NULL;
-        int r;
-
-        assert(u);
-
-        if (!u->cgroup_path)
-                return -ENODATA;
-
-        if (unit_has_host_root_cgroup(u))
-                return -ENODATA; /* TODO: return useful data for the top-level cgroup */
-
-        r = cg_all_unified();
-        if (r < 0)
-                return r;
-        if (r == 0) /* TODO: support cgroupv1 */
-                return -ENODATA;
-
-        if (!FLAGS_SET(u->cgroup_realized_mask, CGROUP_MASK_IO))
-                return -ENODATA;
-
-        r = cg_get_path("io", u->cgroup_path, "io.stat", &path);
-        if (r < 0)
-                return r;
-
-        f = fopen(path, "re");
-        if (!f)
-                return -errno;
-
-        for (;;) {
-                _cleanup_free_ char *line = NULL;
-                const char *p;
-
-                r = read_line(f, LONG_LINE_MAX, &line);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        break;
-
-                p = line;
-                p += strcspn(p, WHITESPACE); /* Skip over device major/minor */
-                p += strspn(p, WHITESPACE);  /* Skip over following whitespace */
-
-                for (;;) {
-                        _cleanup_free_ char *word = NULL;
-
-                        r = extract_first_word(&p, &word, NULL, EXTRACT_RETAIN_ESCAPE);
-                        if (r < 0)
-                                return r;
-                        if (r == 0)
-                                break;
-
-                        for (CGroupIOAccountingMetric i = 0; i < _CGROUP_IO_ACCOUNTING_METRIC_MAX; i++) {
-                                const char *x;
-
-                                x = startswith(word, field_names[i]);
-                                if (x) {
-                                        uint64_t w;
-
-                                        r = safe_atou64(x, &w);
-                                        if (r < 0)
-                                                return r;
-
-                                        /* Sum up the stats of all devices */
-                                        acc[i] += w;
-                                        break;
-                                }
-                        }
-                }
-        }
-
-        memcpy(ret, acc, sizeof(acc));
-        return 0;
-}
-
-int unit_get_io_accounting(
-                Unit *u,
-                CGroupIOAccountingMetric metric,
-                bool allow_cache,
-                uint64_t *ret) {
-
-        uint64_t raw[_CGROUP_IO_ACCOUNTING_METRIC_MAX];
-        int r;
-
-        /* Retrieve an IO account parameter. This will subtract the counter when the unit was started. */
-
-        if (!UNIT_CGROUP_BOOL(u, io_accounting))
-                return -ENODATA;
-
-        if (allow_cache && u->io_accounting_last[metric] != UINT64_MAX)
-                goto done;
-
-        r = unit_get_io_accounting_raw(u, raw);
-        if (r == -ENODATA && u->io_accounting_last[metric] != UINT64_MAX)
-                goto done;
-        if (r < 0)
-                return r;
-
-        for (CGroupIOAccountingMetric i = 0; i < _CGROUP_IO_ACCOUNTING_METRIC_MAX; i++) {
-                /* Saturated subtraction */
-                if (raw[i] > u->io_accounting_base[i])
-                        u->io_accounting_last[i] = raw[i] - u->io_accounting_base[i];
-                else
-                        u->io_accounting_last[i] = 0;
-        }
-
-done:
-        if (ret)
-                *ret = u->io_accounting_last[metric];
-
-        return 0;
-}
-
 int unit_reset_cpu_accounting(Unit *u) {
+        nsec_t ns;
         int r;
 
         assert(u);
 
         u->cpu_usage_last = NSEC_INFINITY;
 
-        r = unit_get_cpu_usage_raw(u, &u->cpu_usage_base);
+        r = unit_get_cpu_usage_raw(u, &ns);
         if (r < 0) {
                 u->cpu_usage_base = 0;
                 return r;
         }
 
+        u->cpu_usage_base = ns;
         return 0;
 }
 
@@ -3398,35 +3321,6 @@ int unit_reset_ip_accounting(Unit *u) {
         zero(u->ip_accounting_extra);
 
         return r < 0 ? r : q;
-}
-
-int unit_reset_io_accounting(Unit *u) {
-        int r;
-
-        assert(u);
-
-        for (CGroupIOAccountingMetric i = 0; i < _CGROUP_IO_ACCOUNTING_METRIC_MAX; i++)
-                u->io_accounting_last[i] = UINT64_MAX;
-
-        r = unit_get_io_accounting_raw(u, u->io_accounting_base);
-        if (r < 0) {
-                zero(u->io_accounting_base);
-                return r;
-        }
-
-        return 0;
-}
-
-int unit_reset_accounting(Unit *u) {
-        int r, q, v;
-
-        assert(u);
-
-        r = unit_reset_cpu_accounting(u);
-        q = unit_reset_io_accounting(u);
-        v = unit_reset_ip_accounting(u);
-
-        return r < 0 ? r : q < 0 ? q : v;
 }
 
 void unit_invalidate_cgroup(Unit *u, CGroupMask m) {

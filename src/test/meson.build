@@ -622,6 +622,12 @@ tests += [
           libshared],
          []],
 
+        [['src/test/test-cgroup-unit-default.c',
+          'src/test/test-helper.c'],
+         [libcore,
+          libshared],
+         []],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-cgroup-mask.c',
 #           'src/test/test-helper.c'],
