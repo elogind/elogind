@@ -492,6 +492,7 @@ static int synthesize_connected_signal(sd_bus *bus) {
                 return r;
 
         bus_message_set_sender_local(bus, m);
+        m->read_counter = ++bus->read_counter;
 
         r = bus_seal_synthetic_message(bus, m);
         if (r < 0)
@@ -2430,6 +2431,8 @@ static int process_timeout(sd_bus *bus) {
         if (r < 0)
                 return r;
 
+        m->read_counter = ++bus->read_counter;
+
         r = bus_seal_synthetic_message(bus, m);
         if (r < 0)
                 return r;
@@ -2532,6 +2535,7 @@ static int process_reply(sd_bus *bus, sd_bus_message *m) {
                 synthetic_reply->realtime = m->realtime;
                 synthetic_reply->monotonic = m->monotonic;
                 synthetic_reply->seqnum = m->seqnum;
+                synthetic_reply->read_counter = m->read_counter;
 
                 r = bus_seal_synthetic_message(bus, synthetic_reply);
                 if (r < 0)
@@ -2874,6 +2878,8 @@ static int process_closing_reply_callback(sd_bus *bus, struct reply_callback *c)
         if (r < 0)
                 return r;
 
+        m->read_counter = ++bus->read_counter;
+
         r = bus_seal_synthetic_message(bus, m);
         if (r < 0)
                 return r;
@@ -2938,6 +2944,7 @@ static int process_closing(sd_bus *bus, sd_bus_message **ret) {
                 return r;
 
         bus_message_set_sender_local(bus, m);
+        m->read_counter = ++bus->read_counter;
 
         r = bus_seal_synthetic_message(bus, m);
         if (r < 0)
