@@ -29,6 +29,8 @@
 #define BUS_ERROR_NO_SUCH_DYNAMIC_USER "org.freedesktop.elogind1.NoSuchDynamicUser"
 #define BUS_ERROR_NOT_REFERENCED "org.freedesktop.elogind1.NotReferenced"
 #define BUS_ERROR_DISK_FULL "org.freedesktop.elogind1.DiskFull"
+#define BUS_ERROR_NOTHING_TO_CLEAN "org.freedesktop.elogind1.NothingToClean"
+#define BUS_ERROR_UNIT_BUSY "org.freedesktop.elogind1.UnitBusy"
 
 #if 0 /// no machined in elogind
 #define BUS_ERROR_NO_SUCH_MACHINE "org.freedesktop.machine1.NoSuchMachine"
@@ -55,6 +57,7 @@
 #define BUS_ERROR_OPERATION_IN_PROGRESS "org.freedesktop.login1.OperationInProgress"
 #define BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED "org.freedesktop.login1.SleepVerbNotSupported"
 #define BUS_ERROR_SESSION_BUSY "org.freedesktop.login1.SessionBusy"
+#define BUS_ERROR_NOT_YOUR_DEVICE "org.freedesktop.login1.NotYourDevice"
 
 #if 0 /// more services unsupported by elogind
 #define BUS_ERROR_AUTOMATIC_TIME_SYNC_ENABLED "org.freedesktop.timedate1.AutomaticTimeSyncEnabled"
