@@ -180,6 +180,7 @@ static const char* const service_state_table[_SERVICE_STATE_MAX] = {
         [SERVICE_FINAL_SIGKILL] = "final-sigkill",
         [SERVICE_FAILED] = "failed",
         [SERVICE_AUTO_RESTART] = "auto-restart",
+        [SERVICE_CLEANING] = "cleaning",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(service_state, ServiceState);
