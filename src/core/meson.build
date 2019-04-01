@@ -227,6 +227,8 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 #if 0 /// UNNEEDED by elogind
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemgeneratordir))
 # meson.add_install_script('sh', '-c', mkdir_p.format(usergeneratordir))
+# meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfsystemgeneratordir))
+# meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfusergeneratordir))
 #
 # meson.add_install_script('sh', '-c',
 #                          mkdir_p.format(join_paths(pkgsysconfdir, 'system/multi-user.target.wants')))
