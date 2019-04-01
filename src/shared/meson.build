@@ -30,6 +30,8 @@
 #         bus-util.h
 #         bus-wait-for-jobs.c
 #         bus-wait-for-jobs.h
+#         bus-wait-for-units.c
+#         bus-wait-for-units.h
 #         calendarspec.c
 #         calendarspec.h
 #         cgroup-show.c
