@@ -134,9 +134,6 @@ Features:
   sufficient to build a link by prefixing "http://" and suffixing the
   CODE_FILE.
 
-* when outputting log data with journalctl and the log data includes references
-  to configuration files (CONFIG_FILE=), create a clickable link for it.
-
 * Augment MESSAGE_ID with MESSAGE_BASE, in a similar fashion so that we can
   make clickable links from log messages carrying a MESSAGE_ID, that lead to
   some explanatory text online.
@@ -315,9 +312,6 @@ Features:
 
 * expose IO accounting data on the bus, show it in systemd-run --wait and log
   about it in the resource log message
-
-* add "systemctl purge" for flushing out configuration, state, logs, ... of a
-  unit when it is stopped
 
 * show whether a service has out-of-date configuration in "systemctl status" by
   using mtime data of ConfigurationDirectory=.
@@ -523,8 +517,6 @@ Features:
 * firstboot: make it useful to be run immediately after yum --installroot to set up a machine. (most specifically, make --copy-root-password work even if /etc/passwd already exists
 
 * maybe add support for specifier expansion in user.conf, specifically DefaultEnvironment=
-
-* consider showing the unit names during boot up in the status output, not just the unit descriptions
 
 * maybe allow timer units with an empty Units= setting, so that they
   can be used for resuming the system but nothing else.
