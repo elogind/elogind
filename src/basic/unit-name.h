@@ -21,11 +21,6 @@ bool unit_instance_is_valid(const char *i) _pure_;
 #if 0 /// UNNEEDED by elogind
 bool unit_suffix_is_valid(const char *s) _pure_;
 
-static inline int unit_prefix_and_instance_is_valid(const char *p) {
-        /* For prefix+instance and instance the same rules apply */
-        return unit_instance_is_valid(p);
-}
-
 int unit_name_to_prefix(const char *n, char **prefix);
 int unit_name_to_instance(const char *n, char **instance);
 int unit_name_to_prefix_and_instance(const char *n, char **ret);
