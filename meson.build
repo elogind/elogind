@@ -13,8 +13,8 @@ project('elogind', 'c',
        )
 
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.26.0'
-# libudev_version = '1.6.14'
+# libsystemd_version = '0.25.0'
+# libudev_version = '1.6.13'
 #endif // 0
 
 # We need the same data in two different formats, ugh!
@@ -159,8 +159,6 @@ modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 # pkgincludedir = join_paths(includedir, 'systemd')
 # systemgeneratordir = join_paths(rootlibexecdir, 'system-generators')
 # usergeneratordir = join_paths(prefixdir, 'lib/systemd/user-generators')
-# pkgsysconfsystemgeneratordir = join_paths(pkgsysconfdir, 'system-generators')
-# pkgsysconfusergeneratordir = join_paths(pkgsysconfdir, 'user-generators')
 # systemenvgeneratordir = join_paths(prefixdir, 'lib/systemd/system-environment-generators')
 # userenvgeneratordir = join_paths(prefixdir, 'lib/systemd/user-environment-generators')
 # systemshutdowndir = join_paths(rootlibexecdir, 'system-shutdown')
