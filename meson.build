@@ -2828,6 +2828,7 @@ executable('elogind-cgroups-agent',
 #                  'src/mount/mount-tool.c',
 #                  include_directories : includes,
 #                  link_with : [libshared],
+#                  dependencies: [libmount],
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += exe
