@@ -29,6 +29,19 @@
 
 #define READ_FULL_BYTES_MAX (4U*1024U*1024U)
 
+int fopen_unlocked(const char *path, const char *options, FILE **ret) {
+        assert(ret);
+
+        FILE *f = fopen(path, options);
+        if (!f)
+                return -errno;
+
+        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+
+        *ret = f;
+        return 0;
+}
+
 int write_string_stream_ts(
                 FILE *f,
                 const char *line,
@@ -227,6 +240,9 @@ int read_one_line_file(const char *fn, char **line) {
                 return -errno;
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+        r = fopen_unlocked(fn, "re", &f);
+        if (r < 0)
+                return r;
 
         r = read_line(f, LONG_LINE_MAX, line);
         return r < 0 ? r : 0;
@@ -237,6 +253,7 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *buf = NULL;
         size_t l, k;
+        int r;
 
         assert(fn);
         assert(blob);
@@ -255,6 +272,9 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
                 return -errno;
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+        r = fopen_unlocked(fn, "re", &f);
+        if (r < 0)
+                return r;
 
         /* We try to read one byte more than we need, so that we know whether we hit eof */
         errno = 0;
@@ -422,6 +442,7 @@ finalize:
 int read_full_file(const char *fn, char **contents, size_t *size) {
 int read_full_file_full(const char *filename, ReadFullFileFlags flags, char **contents, size_t *size) {
         _cleanup_fclose_ FILE *f = NULL;
+        int r;
 
         assert(fn);
         assert(filename);
@@ -433,6 +454,9 @@ int read_full_file_full(const char *filename, ReadFullFileFlags flags, char **co
                 return -errno;
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
+        r = fopen_unlocked(filename, "re", &f);
+        if (r < 0)
+                return r;
 
         return read_full_stream(f, contents, size);
         return read_full_stream_full(f, flags, contents, size);
