@@ -92,6 +92,7 @@
 #         json-internal.h
 #         json.c
 #         json.h
+#         libmount-util.h
 #         lockfile-util.c
 #         lockfile-util.h
 #         logs-show.c
