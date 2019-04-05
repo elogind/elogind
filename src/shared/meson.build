@@ -22,14 +22,14 @@
 #         bootspec.h
 #         bpf-program.c
 #         bpf-program.h
+#         bus-unit-procs.c
+#         bus-unit-procs.h
 #         bus-unit-util.c
 #         bus-unit-util.h
 #         bus-util.c
 #         bus-util.h
 #         bus-wait-for-jobs.c
 #         bus-wait-for-jobs.h
-#         bus-unit-procs.c
-#         bus-unit-procs.h
 #         calendarspec.c
 #         calendarspec.h
 #         cgroup-show.c
@@ -96,7 +96,6 @@
 #         json-internal.h
 #         json.c
 #         json.h
-#         libmount-util.h
 #         lockfile-util.c
 #         lockfile-util.h
 #         log-link.h
