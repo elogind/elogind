@@ -242,6 +242,11 @@ tests += [
          [],
          []],
 
+        [['src/test/test-libmount.c'],
+         [],
+         [threads,
+          libmount]],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-mount-util.c'],
 #          [],
