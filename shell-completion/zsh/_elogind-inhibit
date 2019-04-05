@@ -1,4 +1,4 @@
-#compdef systemd-inhibit
+#compdef elogind-inhibit                    -*- shell-script -*-
 # SPDX-License-Identifier: LGPL-2.1+
 
 (( $+functions[_elogind-inhibit_commands] )) ||
