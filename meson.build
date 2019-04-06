@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239.4',
+        version : '239',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -1711,8 +1711,7 @@ test_dlopen = executable(
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
 #                         link_args : ['-Wl,-z,nodelete',
 #                                      '-shared',
-#                                      '-Wl,--version-script=' + version_script_arg,
-#                                      '-Wl,--undefined'],
+#                                      '-Wl,--version-script=' + version_script_arg],
 #                         link_with : [libsystemd_static,
 #                                      libbasic],
 #                         dependencies : [threads,
@@ -2021,30 +2020,9 @@ public_programs += [exe]
 #if 0 /// although superfluous, diff wants the endif here, and removes it from above.
 # endif
 #endif // 0
-
-if conf.get('HAVE_PAM') == 1
-        version_script_arg = join_paths(meson.current_source_dir(), pam_elogind_sym)
-        pam_elogind = shared_library(
-                'pam_elogind',
-                pam_elogind_c,
-                name_prefix : '',
-                include_directories : includes,
-                link_args : ['-shared',
-                                '-Wl,--version-script=' + version_script_arg],
-                link_with : [libelogind_static,
-                             libshared_static],
-                dependencies : [threads,
-                                libpam,
-                                libpam_misc],
-                link_depends : pam_elogind_sym,
-                install : true,
-                install_dir : pamlibdir)
-
-        test('dlopen-pam_elogind',
-             test_dlopen,
-             args : [pam_elogind.full_path()]) # path to dlopen must include a slash
 endif
 
+if conf.get('HAVE_PAM') == 1
 #if 0 /// UNNEEDED by elogind
 #         executable('systemd-user-sessions',
 #                    'src/user-sessions/user-sessions.c',
