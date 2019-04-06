@@ -1890,8 +1890,7 @@ test_dlopen = executable(
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
 #                         link_args : ['-Wl,-z,nodelete',
 #                                      '-shared',
-#                                      '-Wl,--version-script=' + version_script_arg,
-#                                      '-Wl,--undefined'],
+#                                      '-Wl,--version-script=' + version_script_arg],
 #                         link_with : [libsystemd_static,
 #                                      libbasic],
 #                         dependencies : [threads,
