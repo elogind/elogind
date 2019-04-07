@@ -50,6 +50,7 @@
 //#include "virt.h"
 //#include "virt.h"
 //#include "virt.h"
+//#include "virt.h"
 
 static int get_sender_session(Manager *m, sd_bus_message *message, sd_bus_error *error, Session **ret) {
 
@@ -127,7 +128,8 @@ static int get_sender_user(Manager *m, sd_bus_message *message, sd_bus_error *er
         return 0;
 
 err_no_user:
-        return sd_bus_error_setf(error, BUS_ERROR_NO_USER_FOR_PID, "Caller does not belong to any logged in user or lingering user");
+        return sd_bus_error_setf(error, BUS_ERROR_NO_USER_FOR_PID,
+                                 "Caller does not belong to any logged in user or lingering user");
 }
 
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret) {
@@ -142,7 +144,8 @@ int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, 
 
         user = hashmap_get(m->users, UID_TO_PTR(uid));
         if (!user)
-                return sd_bus_error_setf(error, BUS_ERROR_NO_SUCH_USER, "User ID "UID_FMT" is not logged in or lingering", uid);
+                return sd_bus_error_setf(error, BUS_ERROR_NO_SUCH_USER,
+                                         "User ID "UID_FMT" is not logged in or lingering", uid);
 
         *ret = user;
         return 0;
@@ -376,7 +379,8 @@ static int method_get_session_by_pid(sd_bus_message *message, void *userdata, sd
                         return r;
 
                 if (!session)
-                        return sd_bus_error_setf(error, BUS_ERROR_NO_SESSION_FOR_PID, "PID "PID_FMT" does not belong to any known session", pid);
+                        return sd_bus_error_setf(error, BUS_ERROR_NO_SESSION_FOR_PID,
+                                                 "PID "PID_FMT" does not belong to any known session", pid);
         }
 
         p = session_bus_path(session);
@@ -654,7 +658,9 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         assert_cc(sizeof(pid_t) == sizeof(uint32_t));
         assert_cc(sizeof(uid_t) == sizeof(uint32_t));
 
-        r = sd_bus_message_read(message, "uusssssussbss", &uid, &leader, &service, &type, &class, &desktop, &cseat, &vtnr, &tty, &display, &remote, &remote_user, &remote_host);
+        r = sd_bus_message_read(message, "uusssssussbss",
+                                &uid, &leader, &service, &type, &class, &desktop, &cseat,
+                                &vtnr, &tty, &display, &remote, &remote_user, &remote_host);
         if (r < 0)
                 return r;
 
@@ -668,7 +674,8 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         else {
                 t = session_type_from_string(type);
                 if (t < 0)
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid session type %s", type);
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "Invalid session type %s", type);
         }
 
         if (isempty(class))
@@ -676,14 +683,16 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         else {
                 c = session_class_from_string(class);
                 if (c < 0)
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid session class %s", class);
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "Invalid session class %s", class);
         }
 
         if (isempty(desktop))
                 desktop = NULL;
         else {
                 if (!string_is_safe(desktop))
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid desktop string %s", desktop);
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "Invalid desktop string %s", desktop);
         }
 
         if (isempty(cseat))
@@ -691,7 +700,8 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         else {
                 seat = hashmap_get(m->seats, cseat);
                 if (!seat)
-                        return sd_bus_error_setf(error, BUS_ERROR_NO_SUCH_SEAT, "No seat '%s' known", cseat);
+                        return sd_bus_error_setf(error, BUS_ERROR_NO_SUCH_SEAT,
+                                                 "No seat '%s' known", cseat);
         }
 
         if (tty_is_vc(tty)) {
@@ -700,35 +710,42 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                 if (!seat)
                         seat = m->seat0;
                 else if (seat != m->seat0)
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "TTY %s is virtual console but seat %s is not seat0", tty, seat->id);
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "TTY %s is virtual console but seat %s is not seat0", tty, seat->id);
 
                 v = vtnr_from_tty(tty);
                 if (v <= 0)
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Cannot determine VT number from virtual console TTY %s", tty);
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "Cannot determine VT number from virtual console TTY %s", tty);
 
                 if (vtnr == 0)
                         vtnr = (uint32_t) v;
                 else if (vtnr != (uint32_t) v)
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Specified TTY and VT number do not match");
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "Specified TTY and VT number do not match");
 
         } else if (tty_is_console(tty)) {
 
                 if (!seat)
                         seat = m->seat0;
                 else if (seat != m->seat0)
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Console TTY specified but seat is not seat0");
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "Console TTY specified but seat is not seat0");
 
                 if (vtnr != 0)
-                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Console TTY specified but VT number is not 0");
+                        return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                 "Console TTY specified but VT number is not 0");
         }
 
         if (seat) {
                 if (seat_has_vts(seat)) {
                         if (vtnr <= 0 || vtnr > 63)
-                                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "VT number out of range");
+                                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                         "VT number out of range");
                 } else {
                         if (vtnr != 0)
-                                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Seat has no VTs but VT number not 0");
+                                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                                         "Seat has no VTs but VT number not 0");
                 }
         }
 
@@ -760,13 +777,14 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                         return r;
         }
 
-        /* Check if we are already in a logind session. Or if we are in user@.service which is a special PAM session
-         * that avoids creating a logind session. */
+        /* Check if we are already in a logind session. Or if we are in user@.service
+         * which is a special PAM session that avoids creating a logind session. */
         r = manager_get_user_by_pid(m, leader, NULL);
         if (r < 0)
                 return r;
         if (r > 0)
-                return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY, "Already running in a session or user slice");
+                return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY,
+                                         "Already running in a session or user slice");
 
         /*
          * Old gdm and lightdm start the user-session on the same VT as
@@ -786,7 +804,9 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                 return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY, "Already occupied by a session");
 
         if (hashmap_size(m->sessions) >= m->sessions_max)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_LIMITS_EXCEEDED, "Maximum number of sessions (%" PRIu64 ") reached, refusing further sessions.", m->sessions_max);
+                return sd_bus_error_setf(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
+                                         "Maximum number of sessions (%" PRIu64 ") reached, refusing further sessions.",
+                                         m->sessions_max);
 
         (void) audit_session_from_pid(leader, &audit_id);
         if (audit_session_is_valid(audit_id)) {
@@ -1006,7 +1026,8 @@ static int method_activate_session_on_seat(sd_bus_message *message, void *userda
                 return r;
 
         if (session->seat != seat)
-                return sd_bus_error_setf(error, BUS_ERROR_SESSION_NOT_ON_SEAT, "Session %s not on seat %s", session_name, seat_name);
+                return sd_bus_error_setf(error, BUS_ERROR_SESSION_NOT_ON_SEAT,
+                                         "Session %s not on seat %s", session_name, seat_name);
 
         r = session_activate(session);
         if (r < 0)
@@ -1906,7 +1927,8 @@ static int method_do_shutdown_or_sleep(
                           interactive ? "" : "NOT ");
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what > 0)
-                return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "There's already a shutdown or sleep operation in progress");
+                return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS,
+                                         "There's already a shutdown or sleep operation in progress");
 
         if (sleep_verb) {
 #if 0 /// Within elogind the manager m must be provided, too
@@ -3338,22 +3360,26 @@ static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error 
 
         w = inhibit_what_from_string(what);
         if (w <= 0)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid what specification %s", what);
+                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                         "Invalid what specification %s", what);
 
         mm = inhibit_mode_from_string(mode);
         if (mm < 0)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid mode specification %s", mode);
+                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                         "Invalid mode specification %s", mode);
 
         /* Delay is only supported for shutdown/sleep */
         if (mm == INHIBIT_DELAY && (w & ~(INHIBIT_SHUTDOWN|INHIBIT_SLEEP)))
-                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Delay inhibitors only supported for shutdown and sleep");
+                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                         "Delay inhibitors only supported for shutdown and sleep");
 
         /* Don't allow taking delay locks while we are already
          * executing the operation. We shouldn't create the impression
          * that the lock was successful if the machine is about to go
          * down/suspend any moment. */
         if (m->action_what & w)
-                return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS, "The operation inhibition has been requested for is already running");
+                return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS,
+                                         "The operation inhibition has been requested for is already running");
 
         r = bus_verify_polkit_async(
                         message,
@@ -3388,7 +3414,9 @@ static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error 
                 return r;
 
         if (hashmap_size(m->inhibitors) >= m->inhibitors_max)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_LIMITS_EXCEEDED, "Maximum number of inhibitors (%" PRIu64 ") reached, refusing further inhibitors.", m->inhibitors_max);
+                return sd_bus_error_setf(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
+                                         "Maximum number of inhibitors (%" PRIu64 ") reached, refusing further inhibitors.",
+                                         m->inhibitors_max);
 
         do {
                 id = mfree(id);
@@ -3556,7 +3584,8 @@ static int session_jobs_reply(Session *s, const char *unit, const char *result) 
         if (result && !streq(result, "done")) {
                 _cleanup_(sd_bus_error_free) sd_bus_error e = SD_BUS_ERROR_NULL;
 
-                sd_bus_error_setf(&e, BUS_ERROR_JOB_FAILED, "Start job for unit '%s' failed with '%s'", unit, result);
+                sd_bus_error_setf(&e, BUS_ERROR_JOB_FAILED,
+                                  "Start job for unit '%s' failed with '%s'", unit, result);
                 return session_send_create_reply(s, &e);
         }
 
