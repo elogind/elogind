@@ -272,7 +272,9 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
 }
 
 int read_full_stream(
+int read_full_stream_full(
                 FILE *f,
+                ReadFullFileFlags flags,
                 char **ret_contents,
                 size_t *ret_size) {
 
@@ -280,17 +282,21 @@ int read_full_stream(
         struct stat st;
         size_t n, l;
         int fd;
+        size_t n, n_next, l;
+        int fd, r;
 
         assert(f);
         assert(ret_contents);
 
         n = LINE_MAX; /* Start size */
+        n_next = LINE_MAX; /* Start size */
 
         fd = fileno(f);
         if (fd >= 0) { /* If the FILE* object is backed by an fd (as opposed to memory or such, see fmemopen(), let's
                         * optimize our buffering) */
 
                 if (fstat(fileno(f), &st) < 0)
+                if (fstat(fd, &st) < 0)
                         return -errno;
 
                 if (S_ISREG(st.st_mode)) {
@@ -304,10 +310,12 @@ int read_full_stream(
                          * already makes us notice the EOF. */
                         if (st.st_size > 0)
                                 n = st.st_size + 1;
+                                n_next = st.st_size + 1;
                 }
         }
 
         l = 0;
+        n = l = 0;
         for (;;) {
                 char *t;
                 size_t k;
@@ -315,8 +323,23 @@ int read_full_stream(
                 t = realloc(buf, n + 1);
                 if (!t)
                         return -ENOMEM;
+                if (flags & READ_FULL_FILE_SECURE) {
+                        t = malloc(n_next + 1);
+                        if (!t) {
+                                r = -ENOMEM;
+                                goto finalize;
+                        }
+                        memcpy_safe(t, buf, n);
+                        explicit_bzero_safe(buf, n);
+                } else {
+                        t = realloc(buf, n_next + 1);
+                        if (!t)
+                                return -ENOMEM;
+                }
 
                 buf = t;
+                n = n_next;
+
                 errno = 0;
                 k = fread(buf + l, 1, n - l, f);
                 if (k > 0)
@@ -324,6 +347,10 @@ int read_full_stream(
 
                 if (ferror(f))
                         return errno > 0 ? -errno : -EIO;
+                if (ferror(f)) {
+                        r = errno > 0 ? -errno : -EIO;
+                        goto finalize;
+                }
 
                 if (feof(f))
                         break;
@@ -336,8 +363,13 @@ int read_full_stream(
                 /* Safety check */
                 if (n >= READ_FULL_BYTES_MAX)
                         return -E2BIG;
+                if (n >= READ_FULL_BYTES_MAX) {
+                        r = -E2BIG;
+                        goto finalize;
+                }
 
                 n = MIN(n * 2, READ_FULL_BYTES_MAX);
+                n_next = MIN(n * 2, READ_FULL_BYTES_MAX);
         }
 
         if (!ret_size) {
@@ -347,6 +379,10 @@ int read_full_stream(
 
                 if (memchr(buf, 0, l))
                         return -EBADMSG;
+                if (memchr(buf, 0, l)) {
+                        r = -EBADMSG;
+                        goto finalize;
+                }
         }
 
         buf[l] = 0;
@@ -356,21 +392,31 @@ int read_full_stream(
                 *ret_size = l;
 
         return 0;
+
+finalize:
+        if (flags & READ_FULL_FILE_SECURE)
+                explicit_bzero_safe(buf, n);
+
+        return r;
 }
 
 int read_full_file(const char *fn, char **contents, size_t *size) {
+int read_full_file_full(const char *filename, ReadFullFileFlags flags, char **contents, size_t *size) {
         _cleanup_fclose_ FILE *f = NULL;
 
         assert(fn);
+        assert(filename);
         assert(contents);
 
         f = fopen(fn, "re");
+        f = fopen(filename, "re");
         if (!f)
                 return -errno;
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         return read_full_stream(f, contents, size);
+        return read_full_stream_full(f, flags, contents, size);
 }
 
 
