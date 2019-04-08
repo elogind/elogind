@@ -75,12 +75,6 @@ CHANGES WITH 242:
           has been updated to include the new rseq() system call introduced in
           kernel 4.15.
 
-        * A new time-set.target has been added that indicates that the system
-          time has been set from a local source (possibly imprecise). The
-          existing time-sync.target is stronger and indicates that the time has
-          been synchronized with a precise external source. Services where
-          approximate time is sufficient should use the new target.
-
         * "systemctl start" (and related commands) learnt a new
           --show-transaction option. If specified brief information about all
           jobs queued because of the requested operation is shown.
@@ -116,8 +110,8 @@ CHANGES WITH 242:
         * The new TripleSampling= option in .network files may be used to
           configure CAN triple sampling.
 
-        * A new .netdev setting PrivateKeyFile= may be used to point to private
-          key for a WireGuard interface.
+        * A new .netdev settings PrivateKeyFile= and PresharedKeyFile= may be
+          used to point to private or preshared key for a WireGuard interface.
 
         * /etc/crypttab now supports the same-cpu-crypt and
           submit-from-crypt-cpus options to tweak encryption work scheduling
@@ -249,18 +243,17 @@ CHANGES WITH 242:
         Davide Cavalca, David Michael, David Rheinsberg, emersion, Evgeny
         Vereshchagin, Filipe Brandenburger, Franck Bui, Frantisek Sumsal,
         Giacinto Cifelli, Hans de Goede, Hugo Kindel, Ignat Korchagin, Insun
-        Pyo, Jan Engelhardt, Jonas Dorel, Jonathan Lebon, Jonathon Kowalski,
-        Jörg Sommer, Jörg Thalheim, Jussi Pakkanen, Kai-Heng Feng, Lennart
-        Poettering, Lubomir Rintel, Luís Ferreira, Martin Pitt, Matthias
-        Klumpp, Michael Biebl, Michael Niewöhner, Michael Olbrich, Michal
-        Sekletar, Mike Lothian, Paul Menzel, Piotr Drąg, Riccardo Schirone,
+        Pyo, Jan Engelhardt, Jonathan Lebon, Jonathon Kowalski, Jörg Sommer,
+        Jörg Thalheim, Kai-Heng Feng, Lennart Poettering, Lubomir Rintel,
+        Martin Pitt, Matthias Klumpp, Michael Biebl, Michael Niewöhner, Michael
+        Olbrich, Michal Sekletar, Mike Lothian, Piotr Drąg, Riccardo Schirone,
         Robin Elvedi, Roman Kulikov, Ronald Tschalär, Ross Burton, Ryan
         Gonzalez, Stephane Chazelas, StKob, Susant Sahani, Sylvain Plantefève,
         Szabolcs Fruhwald, Taro Yamada, Theo Ouzhinski, Thomas Haller, Tobias
         Jungel, Tom Yan, Tony Asleson, Topi Miettinen, unixsysadmin, Van Laser,
         Vesa Jääskeläinen, Yu, Li-Yu, Yu Watanabe, Zbigniew Jędrzejewski-Szmek
 
-        — Warsaw, 2019-04-08
+        — Warsaw, 2019-04-03
 
 CHANGES WITH 241:
 
