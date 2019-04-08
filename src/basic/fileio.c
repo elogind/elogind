@@ -274,6 +274,7 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
 int read_full_stream(
 int read_full_stream_full(
                 FILE *f,
+                const char *filename,
                 ReadFullFileFlags flags,
                 char **ret_contents,
                 size_t *ret_size) {
@@ -311,6 +312,9 @@ int read_full_stream_full(
                         if (st.st_size > 0)
                                 n = st.st_size + 1;
                                 n_next = st.st_size + 1;
+
+                        if (flags & READ_FULL_FILE_SECURE)
+                                (void) warn_file_is_world_accessible(filename, &st, NULL, 0);
                 }
         }
 
@@ -417,6 +421,7 @@ int read_full_file_full(const char *filename, ReadFullFileFlags flags, char **co
 
         return read_full_stream(f, contents, size);
         return read_full_stream_full(f, flags, contents, size);
+        return read_full_stream_full(f, filename, flags, contents, size);
 }
 
 
