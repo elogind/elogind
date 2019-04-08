@@ -1,6 +1,6 @@
 systemd System and Service Manager
 
-CHANGES WITH 242 in spe:
+CHANGES WITH 242:
 
         * In .link files, MACAddressPolicy=persistent (the default) is changed
           to cover more devices. For devices like bridges, tun, tap, bond, and
@@ -60,7 +60,6 @@ CHANGES WITH 242 in spe:
           in which case environment variable substitution is
           disabled. (Supported for the other ExecXYZ= settings, too.)
 
-        * elogind-networkd recognizes a new operation state 'enslaved', used
         * .timer units gained two new boolean settings OnClockChange= and
           OnTimezoneChange= which may be used to also trigger a unit when the
           system clock is changed or the local timezone is
@@ -80,6 +79,7 @@ CHANGES WITH 242 in spe:
           --show-transaction option. If specified brief information about all
           jobs queued because of the requested operation is shown.
 
+        * elogind-networkd recognizes a new operation state 'enslaved', used
           (instead of 'degraded' or 'carrier') for interfaces which form a
           bridge, bond, or similar, and an new 'degraded-carrier' operational
           state used for the bond or bridge master interface when one of the
@@ -243,17 +243,18 @@ CHANGES WITH 242 in spe:
         Davide Cavalca, David Michael, David Rheinsberg, emersion, Evgeny
         Vereshchagin, Filipe Brandenburger, Franck Bui, Frantisek Sumsal,
         Giacinto Cifelli, Hans de Goede, Hugo Kindel, Ignat Korchagin, Insun
-        Pyo, Jan Engelhardt, Jonathan Lebon, Jonathon Kowalski, Jörg Sommer,
-        Jörg Thalheim, Kai-Heng Feng, Lennart Poettering, Lubomir Rintel,
-        Martin Pitt, Matthias Klumpp, Michael Biebl, Michael Niewöhner, Michael
-        Olbrich, Michal Sekletar, Mike Lothian, Piotr Drąg, Riccardo Schirone,
-        Robin Elvedi, Roman Kulikov, Ronald Tschalär, Ross Burton, Ryan
-        Gonzalez, Stephane Chazelas, StKob, Susant Sahani, Sylvain Plantefève,
-        Szabolcs Fruhwald, Taro Yamada, Theo Ouzhinski, Thomas Haller, Tobias
-        Jungel, Tom Yan, Tony Asleson, Topi Miettinen, unixsysadmin, Van Laser,
-        Vesa Jääskeläinen, Yu, Li-Yu, Yu Watanabe, Zbigniew Jędrzejewski-Szmek
+        Pyo, Jan Engelhardt, Jonas Dorel, Jonathan Lebon, Jonathon Kowalski,
+        Jörg Sommer, Jörg Thalheim, Jussi Pakkanen, Kai-Heng Feng, Lennart
+        Poettering, Lubomir Rintel, Luís Ferreira, Martin Pitt, Matthias
+        Klumpp, Michael Biebl, Michael Niewöhner, Michael Olbrich, Michal
+        Sekletar, Mike Lothian, Piotr Drąg, Riccardo Schirone, Robin Elvedi,
+        Roman Kulikov, Ronald Tschalär, Ross Burton, Ryan Gonzalez, Stephane
+        Chazelas, StKob, Susant Sahani, Sylvain Plantefève, Szabolcs Fruhwald,
+        Taro Yamada, Theo Ouzhinski, Thomas Haller, Tobias Jungel, Tom Yan,
+        Tony Asleson, Topi Miettinen, unixsysadmin, Van Laser, Vesa
+        Jääskeläinen, Yu, Li-Yu, Yu Watanabe, Zbigniew Jędrzejewski-Szmek
 
-        — Somewhere, 2019-0X-YZ
+        — Warsaw, 2019-04-08
 
 CHANGES WITH 241:
 
