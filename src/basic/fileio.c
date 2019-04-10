@@ -290,6 +290,8 @@ int read_full_stream_full(
         assert(f);
         assert(ret_contents);
         assert(!(flags & READ_FULL_FILE_UNBASE64) || ret_size);
+        assert(!FLAGS_SET(flags, READ_FULL_FILE_UNBASE64 | READ_FULL_FILE_UNHEX));
+        assert(!(flags & (READ_FULL_FILE_UNBASE64 | READ_FULL_FILE_UNHEX)) || ret_size);
 
         n = LINE_MAX; /* Start size */
         n_next = LINE_MAX; /* Start size */
@@ -379,8 +381,13 @@ int read_full_stream_full(
         }
 
         if (flags & READ_FULL_FILE_UNBASE64) {
+        if (flags & (READ_FULL_FILE_UNBASE64 | READ_FULL_FILE_UNHEX)) {
                 buf[l++] = 0;
                 r = unbase64mem_full(buf, l, flags & READ_FULL_FILE_SECURE, (void **) ret_contents, ret_size);
+                if (flags & READ_FULL_FILE_UNBASE64)
+                        r = unbase64mem_full(buf, l, flags & READ_FULL_FILE_SECURE, (void **) ret_contents, ret_size);
+                else
+                        r = unhexmem_full(buf, l, flags & READ_FULL_FILE_SECURE, (void **) ret_contents, ret_size);
                 goto finalize;
         }
 
