@@ -96,6 +96,14 @@
 #         json-internal.h
 #         json.c
 #         json.h
+#         libmount-util.h
+#         linux/auto_dev-ioctl.h
+#         linux/bpf.h
+#         linux/bpf_common.h
+#         linux/bpf_insn.h
+#         linux/dm-ioctl.h
+#         linux/ethtool.h
+#         linux/netdevice.h
 #         lockfile-util.c
 #         lockfile-util.h
 #         log-link.h
@@ -168,7 +176,6 @@
 #         watchdog.h
 #         web-util.c
 #         web-util.h
-#         wireguard-netlink.h
 #         xml.c
 #         xml.h
 # '''.split())
