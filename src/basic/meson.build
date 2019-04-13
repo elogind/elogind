@@ -100,6 +100,8 @@
 #         linux/if_macsec.h
 #         linux/if_tun.h
 #         linux/if_tunnel.h
+#         linux/in.h
+#         linux/in6.h
 #         linux/libc-compat.h
 #         linux/netdevice.h
 #         linux/netlink.h
