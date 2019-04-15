@@ -96,6 +96,7 @@
 #         linux/if_arp.h
 #         linux/if_bonding.h
 #         linux/if_bridge.h
+#         linux/if_ether.h
 #         linux/if_link.h
 #         linux/if_macsec.h
 #         linux/if_tun.h
