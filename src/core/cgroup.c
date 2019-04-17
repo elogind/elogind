@@ -203,6 +203,7 @@ void cgroup_context_done(CGroupContext *c) {
 }
 
 void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
+        _cleanup_free_ char *disable_controllers_str = NULL;
         CGroupIODeviceLimit *il;
         CGroupIODeviceWeight *iw;
         CGroupIODeviceLatency *l;
@@ -217,6 +218,8 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
         assert(f);
 
         prefix = strempty(prefix);
+
+        (void) cg_mask_to_string(c->disable_controllers, &disable_controllers_str);
 
         fprintf(f,
                 "%sCPUAccounting=%s\n"
@@ -235,7 +238,6 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 "%sStartupIOWeight=%" PRIu64 "\n"
                 "%sBlockIOWeight=%" PRIu64 "\n"
                 "%sStartupBlockIOWeight=%" PRIu64 "\n"
-                "%sDefaultMemoryMin=%" PRIu64 "\n"
                 "%sDefaultMemoryLow=%" PRIu64 "\n"
                 "%sMemoryMin=%" PRIu64 "\n"
                 "%sMemoryLow=%" PRIu64 "\n"
@@ -245,6 +247,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 "%sMemoryLimit=%" PRIu64 "\n"
                 "%sTasksMax=%" PRIu64 "\n"
                 "%sDevicePolicy=%s\n"
+                "%sDisableControllers=%s\n"
                 "%sDelegate=%s\n",
                 prefix, yes_no(c->cpu_accounting),
                 prefix, yes_no(c->io_accounting),
@@ -262,7 +265,6 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 prefix, c->startup_io_weight,
                 prefix, c->blockio_weight,
                 prefix, c->startup_blockio_weight,
-                prefix, c->default_memory_min,
                 prefix, c->default_memory_low,
                 prefix, c->memory_min,
                 prefix, c->memory_low,
@@ -272,6 +274,7 @@ void cgroup_context_dump(CGroupContext *c, FILE* f, const char *prefix) {
                 prefix, c->memory_limit,
                 prefix, c->tasks_max,
                 prefix, cgroup_device_policy_to_string(c->device_policy),
+                prefix, strnull(disable_controllers_str),
                 prefix, yes_no(c->delegate));
 
         if (c->delegate) {
@@ -387,37 +390,31 @@ int cgroup_add_device_allow(CGroupContext *c, const char *dev, const char *mode)
         return 0;
 }
 
-#define UNIT_DEFINE_ANCESTOR_MEMORY_LOOKUP(entry)                       \
-        uint64_t unit_get_ancestor_##entry(Unit *u) {                   \
-                CGroupContext *c;                                       \
-                                                                        \
-                /* 1. Is entry set in this unit? If so, use that.       \
-                 * 2. Is the default for this entry set in any          \
-                 *    ancestor? If so, use that.                        \
-                 * 3. Otherwise, return CGROUP_LIMIT_MIN. */            \
-                                                                        \
-                assert(u);                                              \
-                                                                        \
-                c = unit_get_cgroup_context(u);                         \
-                                                                        \
-                if (c->entry##_set)                                     \
-                        return c->entry;                                \
-                                                                        \
-                while (UNIT_ISSET(u->slice)) {                          \
-                        u = UNIT_DEREF(u->slice);                       \
-                        c = unit_get_cgroup_context(u);                 \
-                                                                        \
-                        if (c->default_##entry##_set)                   \
-                                return c->default_##entry;              \
-                }                                                       \
-                                                                        \
-                /* We've reached the root, but nobody had default for   \
-                 * this entry set, so set it to the kernel default. */  \
-                return CGROUP_LIMIT_MIN;                                \
-}
+uint64_t unit_get_ancestor_memory_low(Unit *u) {
+        CGroupContext *c;
 
-UNIT_DEFINE_ANCESTOR_MEMORY_LOOKUP(memory_low);
-UNIT_DEFINE_ANCESTOR_MEMORY_LOOKUP(memory_min);
+        /* 1. Is MemoryLow set in this unit? If so, use that.
+         * 2. Is DefaultMemoryLow set in any ancestor? If so, use that.
+         * 3. Otherwise, return CGROUP_LIMIT_MIN. */
+
+        assert(u);
+
+        c = unit_get_cgroup_context(u);
+
+        if (c->memory_low_set)
+                return c->memory_low;
+
+        while (UNIT_ISSET(u->slice)) {
+                u = UNIT_DEREF(u->slice);
+                c = unit_get_cgroup_context(u);
+
+                if (c->default_memory_low_set)
+                        return c->default_memory_low;
+        }
+
+        /* We've reached the root, but nobody had DefaultMemoryLow set, so set it to the kernel default. */
+        return CGROUP_LIMIT_MIN;
+}
 
 static void cgroup_xattr_apply(Unit *u) {
         char ids[SD_ID128_STRING_MAX];
