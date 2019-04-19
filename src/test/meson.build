@@ -981,7 +981,8 @@ tests += [
 #          [threads]],
 #endif // 0
 
-        [['src/libelogind/sd-bus/test-bus-vtable.c'],
+        [['src/libelogind/sd-bus/test-bus-vtable.c',
+          'src/libelogind/sd-bus/test-vtable-data.h'],
          [],
          []],
 
@@ -1008,7 +1009,8 @@ tests += [
 #          '', 'manual'],
 #endif // 0
 
-        [['src/libelogind/sd-bus/test-bus-introspect.c'],
+        [['src/libelogind/sd-bus/test-bus-introspect.c',
+          'src/libelogind/sd-bus/test-vtable-data.h'],
          [],
          []],
 
