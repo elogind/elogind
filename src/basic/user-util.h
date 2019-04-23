@@ -128,4 +128,6 @@ int putgrent_sane(const struct group *gr, FILE *stream);
 int fgetsgent_sane(FILE *stream, struct sgrp **sg);
 int putsgent_sane(const struct sgrp *sg, FILE *stream);
 #endif
+
+int make_salt(char **ret);
 #endif // 0
