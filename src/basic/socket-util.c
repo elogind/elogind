@@ -1277,6 +1277,10 @@ fallback:
         return (ssize_t) k;
 }
 
+/* Put a limit on how many times will attempt to call accept4(). We loop
+ * only on "transient" errors, but let's make sure we don't loop forever. */
+#define MAX_FLUSH_ITERATIONS 1024
+
 int flush_accept(int fd) {
 
         struct pollfd pollfd = {
@@ -1300,7 +1304,7 @@ int flush_accept(int fd) {
                  * we can loop safely on transient errors below. */
                 return -ENOTTY;
 
-        for (;;) {
+        for (unsigned iteration = 0;; iteration++) {
                 int cfd;
 
                 r = poll(&pollfd, 1, 0);
@@ -1312,6 +1316,10 @@ int flush_accept(int fd) {
                 }
                 if (r == 0)
                         return 0;
+
+                if (iteration >= MAX_FLUSH_ITERATIONS)
+                        return log_debug_errno(SYNTHETIC_ERRNO(EBUSY),
+                                               "Failed to flush connections within " STRINGIFY(MAX_FLUSH_ITERATIONS) " iterations.");
 
                 cfd = accept4(fd, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC);
                 if (cfd < 0) {
