@@ -17,7 +17,9 @@ install:
 script:
 - docker exec -t test-img sh -c "
    echo 'dcb30309cd6c8b7cc20383d85a5c7012' > /etc/machine-id &&
-   echo 'dummy-file' > /etc/os-release"
+   echo 'dummy-file' > /etc/os-release &&
+   mkdir -p /run/systemd &&
+   echo 'docker' > /run/systemd/container"
 - docker exec -it test-img sh -c "
    cd /travis &&
    meson --werror -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true _build"
