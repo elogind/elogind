@@ -69,7 +69,9 @@ static void test_path(void) {
         assert_se(streq(basename("./aa/bb/../file.da."), "file.da."));
         assert_se(streq(basename("/aa///.file"), ".file"));
         assert_se(streq(basename("/aa///file..."), "file..."));
+#ifdef __GLIBC__ /// if elogind is not compiled against glibc, the POSIX variant is used and crashes.
         assert_se(streq(basename("file.../"), ""));
+#endif // __GLIBC__
 
         fd = open("/", O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOCTTY);
         assert_se(fd >= 0);
