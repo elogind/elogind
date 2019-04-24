@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '241',
+        version : '241.2',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -971,14 +971,14 @@ substs.set('TTY_GID', tty_gid)
 #
 # conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
 # conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
-#
-# dev_kvm_mode = get_option('dev-kvm-mode')
-# substs.set('DEV_KVM_MODE', dev_kvm_mode)
-# conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
-# group_render_mode = get_option('group-render-mode')
-# substs.set('GROUP_RENDER_MODE', group_render_mode)
-# conf.set10('GROUP_RENDER_UACCESS', group_render_mode != '0666')
 #endif // 0
+
+dev_kvm_mode = get_option('dev-kvm-mode')
+substs.set('DEV_KVM_MODE', dev_kvm_mode)
+conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
+group_render_mode = get_option('group-render-mode')
+substs.set('GROUP_RENDER_MODE', group_render_mode)
+conf.set10('GROUP_RENDER_UACCESS', group_render_mode != '0666')
 
 kill_user_processes = get_option('default-kill-user-processes')
 conf.set10('KILL_USER_PROCESSES', kill_user_processes)
@@ -3529,8 +3529,10 @@ status = [
 #         'maximum dynamic UID:               @0@'.format(dynamic_uid_max),
 #         'minimum container UID base:        @0@'.format(container_uid_base_min),
 #         'maximum container UID base:        @0@'.format(container_uid_base_max),
-#         '/dev/kvm access mode:              @0@'.format(get_option('dev-kvm-mode')),
-#         'render group access mode:          @0@'.format(get_option('group-render-mode')),
+#endif // 0
+        '/dev/kvm access mode:              @0@'.format(get_option('dev-kvm-mode')),
+        'render group access mode:          @0@'.format(get_option('group-render-mode')),
+#if 0 /// UNSUPPORTED by elogind
 #         'certificate root directory:        @0@'.format(get_option('certificate-root')),
 #         'support URL:                       @0@'.format(support_url),
 #endif // 0
