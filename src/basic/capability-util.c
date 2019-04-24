@@ -239,23 +239,20 @@ static int drop_from_file(const char *fn, uint64_t keep) {
         if (r < 0)
                 return r;
 
-        assert_cc(sizeof(hi) == sizeof(unsigned));
-        assert_cc(sizeof(lo) == sizeof(unsigned));
-
-        k = sscanf(p, "%u %u", &lo, &hi);
+        k = sscanf(p, "%" PRIu32 " %" PRIu32, &lo, &hi);
         if (k != 2)
                 return -EIO;
 
-        current = (uint64_t) lo | ((uint64_t) hi << 32ULL);
+        current = (uint64_t) lo | ((uint64_t) hi << 32);
         after = current & keep;
 
         if (current == after)
                 return 0;
 
-        lo = (unsigned) (after & 0xFFFFFFFFULL);
-        hi = (unsigned) ((after >> 32ULL) & 0xFFFFFFFFULL);
+        lo = after & UINT32_C(0xFFFFFFFF);
+        hi = (after >> 32) & UINT32_C(0xFFFFFFFF);
 
-        return write_string_filef(fn, WRITE_STRING_FILE_CREATE, "%u %u", lo, hi);
+        return write_string_filef(fn, 0, "%" PRIu32 " %" PRIu32, lo, hi);
 }
 
 int capability_bounding_set_drop_usermode(uint64_t keep) {
@@ -369,8 +366,7 @@ bool ambient_capabilities_supported(void) {
 }
 
 int capability_quintet_enforce(const CapabilityQuintet *q) {
-        _cleanup_cap_free_ cap_t c = NULL;
-        bool need_set_proc_again = false;
+        _cleanup_cap_free_ cap_t c = NULL, modified = NULL;
         int r;
 
         if (q->ambient != (uint64_t) -1) {
@@ -495,8 +491,6 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
                 }
 
                 if (changed) {
-                        _cleanup_cap_free_ cap_t modified = NULL;
-
                         /* In order to change the bounding caps, we need to keep CAP_SETPCAP for a bit
                          * longer. Let's add it to our list hence for now. */
                         if (q->bounding != (uint64_t) -1) {
@@ -524,8 +518,6 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
                          * caps in inherited/permitted/effective anymore, but only lose them. */
                         if (cap_set_proc(modified ?: c) < 0)
                                 return -errno;
-
-                        need_set_proc_again = !!modified;
                 }
         }
 
@@ -539,7 +531,7 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
          * we have already set only in the CAP_SETPCAP bit, which we needed for dropping the bounding
          * bits. This call only undoes bits and doesn't acquire any which means the bounding caps don't
          * matter. */
-        if (need_set_proc_again)
+        if (modified)
                 if (cap_set_proc(c) < 0)
                         return -errno;
 
