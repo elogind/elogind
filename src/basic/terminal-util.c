@@ -1266,11 +1266,35 @@ int vt_default_utf8(void) {
         return parse_boolean(b);
 }
 
+int vt_verify_kbmode(int fd) {
+        int curr_mode;
+
+        /*
+         * Make sure we only adjust consoles in K_XLATE or K_UNICODE mode.
+         * Otherwise we would (likely) interfere with X11's processing of the
+         * key events.
+         *
+         * http://lists.freedesktop.org/archives/elogind-devel/2013-February/008573.html
+         */
+
+        if (ioctl(fd, KDGKBMODE, &curr_mode) < 0)
+                return -errno;
+
+        return IN_SET(curr_mode, K_XLATE, K_UNICODE) ? 0 : -EBUSY;
+}
+
 int vt_reset_keyboard(int fd) {
-        int kb;
+        int kb, r;
 
         /* If we can't read the default, then default to unicode. It's 2017 after all. */
         kb = vt_default_utf8() != 0 ? K_UNICODE : K_XLATE;
+
+        r = vt_verify_kbmode(fd);
+        if (r == -EBUSY) {
+                log_debug_errno(r, "Keyboard is not in XLATE or UNICODE mode, not resetting: %m");
+                return 0;
+        } else if (r < 0)
+                return r;
 
         if (ioctl(fd, KDSKBMODE, kb) < 0)
                 return -errno;
@@ -1328,42 +1352,4 @@ int vt_release(int fd, bool restore) {
                 return vt_restore(fd);
 
         return 0;
-}
-
-void get_log_colors(int priority, const char **on, const char **off, const char **highlight) {
-        /* Note that this will initialize output variables only when there's something to output.
-         * The caller must pre-initalize to "" or NULL as appropriate. */
-
-        if (priority <= LOG_ERR) {
-                if (on)
-                        *on = ANSI_HIGHLIGHT_RED;
-                if (off)
-                        *off = ANSI_NORMAL;
-                if (highlight)
-                        *highlight = ANSI_HIGHLIGHT;
-
-        } else if (priority <= LOG_WARNING) {
-                if (on)
-                        *on = ANSI_HIGHLIGHT_YELLOW;
-                if (off)
-                        *off = ANSI_NORMAL;
-                if (highlight)
-                        *highlight = ANSI_HIGHLIGHT;
-
-        } else if (priority <= LOG_NOTICE) {
-                if (on)
-                        *on = ANSI_HIGHLIGHT;
-                if (off)
-                        *off = ANSI_NORMAL;
-                if (highlight)
-                        *highlight = ANSI_HIGHLIGHT_RED;
-
-        } else if (priority >= LOG_DEBUG) {
-                if (on)
-                        *on = ANSI_GREY;
-                if (off)
-                        *off = ANSI_NORMAL;
-                if (highlight)
-                        *highlight = ANSI_HIGHLIGHT_RED;
-        }
 }
