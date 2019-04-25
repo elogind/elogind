@@ -951,6 +951,7 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 #if 0 /// UNNEEDED by elogind
 # substs.set('SUSHELL', get_option('debug-shell'))
 # substs.set('DEBUGTTY', get_option('debug-tty'))
+# conf.set_quoted('DEBUGTTY', get_option('debug-tty'))
 #endif // 0
 
 enable_debug_hashmap = false
