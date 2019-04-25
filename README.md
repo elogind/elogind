@@ -1,7 +1,7 @@
 Elogind User, Seat and Session Manager
 
 Introduction
-------------
+============
 
 Elogind is the systemd project's "logind", extracted out to be a
 standalone daemon.  It integrates with PAM to know the set of users
@@ -20,8 +20,14 @@ All of the blame should go to Andy Wingo, who extracted elogind
 from systemd.
 All complaints should go to Sven Eden, who is maintaining elogind.
 
-Contributing
+Build Status
 ------------
+Listed are the master branch and the last stable branch
+ * master     : [![Build Status](https://travis-ci.org/elogind/elogind.svg?branch=master)](https://travis-ci.org/elogind/elogind)
+ * v241-stable: [![Build Status](https://travis-ci.org/elogind/elogind.svg?branch=v241-stable)](https://travis-ci.org/elogind/elogind)
+
+Contributing
+============
 
 Elogind was branched from systemd version 219, and preserves the git
 history of the systemd project.  The version of elogind is the
@@ -44,7 +50,7 @@ Finally, bug reports:
   https://github.com/elogind/elogind/issues
 
 Why bother?
------------
+===========
 
 Elogind has been developed for use in GuixSD, the OS distribution of
 GNU Guix.  See http://gnu.org/s/guix for more on Guix.  GuixSD uses a
@@ -63,7 +69,7 @@ the systemd developers logind effort and think that everyone deserves
 to run it if they like. Not matter what kind of PID1 they use.
 
 Differences relative to systemd
--------------------------------
+===============================
 
 The pkg-config file is called libelogind, not libsystemd or
 libsystemd-logind.
@@ -118,7 +124,7 @@ flag.
 The PAM module is called pam_elogind.so, not pam_systemd.so.
 
 Elogind and the running cgroup controller
------------------------------------------
+=========================================
 While 'configure' runs, it will detect which controller is in place.
 If no controller is in place, configure will determine, that elogind
 should be its own controller, which will be a very limited one.
@@ -144,7 +150,7 @@ different than what is in place, elogind will not start until that
 controller is actively used as the primary controller.
 
 ABI compatibility with libsystemd
----------------------------------
+=================================
 
 Basically all symbols are included. But any API calls that require to
 call systemd, or need internal knowledge of systemd, are simple stubs.
@@ -156,16 +162,16 @@ dependencies. As those would be completely unused in the rest of
 elogind, this function is also a stub, always returning 0.
 
 License
--------
+=======
 
 LGPLv2.1+ for all code
   - except src/basic/MurmurHash2.c which is Public Domain
   - except src/basic/siphash24.c which is CC0 Public Domain
 
 Dependencies
-------------
+============
 
-  glibc >= 2.16
+  glibc >= 2.16 (*or* musl-libc >= 1.1.20)
   libcap
   libmount >= 2.27.1 (from util-linux)
           (util-linux < 2.29 *must* be built with --enable-libmount-force-mountinfo,
@@ -209,4 +215,4 @@ During runtime, you need the following additional dependencies:
     DESTDIR=... ninja install
 
   A tarball can be created with:
-    git archive --format=tar --prefix=elogind-238/ v238 | xz > elogind-238.tar.xz
+    git archive --format=tar --prefix=elogind-241/ v241 | xz > elogind-241.tar.xz
