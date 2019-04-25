@@ -3344,7 +3344,11 @@ install_subdir('factory/etc',
 install_data('LICENSE.GPL2',
              'LICENSE.LGPL2.1',
              'NEWS',
-             'README',
+#if 0 /// elogind has upgraded to markdown
+#              'README',
+#else
+             'README.md',
+#endif // 0
              'docs/CODING_STYLE.md',
 #if 0 /// irrelevant for elogind
 #              'docs/DISTRO_PORTING.md',
