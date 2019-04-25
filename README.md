@@ -13,11 +13,11 @@ as well as through the file system using systemd's standard
 subset of the facilities offered by "libsystemd".  There is a
 "libelogind.pc" pkg-config file as well.
 
-All of the credit for elogind should go to the systemd developers.
-For more on systemd, see
-  http://www.freedesktop.org/wiki/Software/systemd
+All of the credit for elogind should go to the systemd developers.  
+For more on systemd, see  
+  http://www.freedesktop.org/wiki/Software/systemd  
 All of the blame should go to Andy Wingo, who extracted elogind
-from systemd.
+from systemd.  
 All complaints should go to Sven Eden, who is maintaining elogind.
 
 Build Status
@@ -35,16 +35,20 @@ upstream systemd version, followed by the patchlevel of elogind.  For
 example version 219.12 is the twelfth elogind release, which aims to
 provide a subset of the interfaces of systemd 219.
 
-To contribute to elogind, fork the current source code from github:
-  https://github.com/elogind/elogind
+To contribute to elogind, fork the current source code from github:  
+  https://github.com/elogind/elogind  
 Send a pull request for the changes you like.
 
-If you do not have a github account, the elogind wiki page at
+If you do not have a github account, the elogind wiki page at  
   https://github.com/elogind/elogind/wiki
 lists further possibilities to contact the maintainers.
 
 To chat about elogind:
   #elogind on freenode
+
+A forum subsection has been set up for elogind at  
+  https://forums.prydeworx.com  
+where you can register/login with your GitLab/GitHub account.
 
 Finally, bug reports:
   https://github.com/elogind/elogind/issues
@@ -66,7 +70,7 @@ You're welcome to use elogind for whatever purpose you like --
 as-is, or as a jumping-off point for other things -- but please don't
 use it as part of some anti-systemd vendetta. We are appreciative of
 the systemd developers logind effort and think that everyone deserves
-to run it if they like. Not matter what kind of PID1 they use.
+to run it if they like. No matter what kind of PID1 they use.
 
 Differences relative to systemd
 ===============================
@@ -74,12 +78,12 @@ Differences relative to systemd
 The pkg-config file is called libelogind, not libsystemd or
 libsystemd-logind.
 
-The headers are in <elogind/...>, so like <elogind/sd-login.h> instead
-of <systemd/sd-login.h>.
+The headers are in `<elogind/...>`, like `<elogind/sd-login.h>`
+instead of `<systemd/sd-login.h>`.  
 To make it easier for projects to add support for elogind, there is a
-subfolder "systemd" in the elogind include directory. So if pkg-config
-is used to get the cflags, including <systemd/sd-login.h> will still
-work.
+subfolder "systemd" in the elogind include directory. So if
+`pkg-config` is used to get the cflags, including
+`<systemd/sd-login.h>` will still work.
 
 Libelogind just implements login-related functionality.  It also
 provides the sd-bus API.
@@ -91,9 +95,7 @@ implications:
 
   * Elogind does not create "slices" for users.  Elogind will not
     record that users are associated with slices.
-
   * The /run/systemd/slices directory will always be empty.
-
   * Elogind does not have the concept of a "scope", internally, as
     it's the same as a session. Any API that refers to scopes will
     always return an error code.
@@ -113,19 +115,19 @@ the machine, elogind just does this directly.  For suspend, hibernate,
 and hybrid-sleep, elogind uses the same code as systemd-sleep.
 Instead of using a separate sleep.conf file to configure the sleep
 behavior, this is included in the [Sleep] section of
-/etc/elogind/login.conf.  See the example login.conf for more.  For
-shutdown, reboot, and kexec, elogind shells out to "halt", "reboot",
-and "kexec" binaries.
+`/etc/elogind/login.conf`. See the example `login.conf` for more.  
+For shutdown, reboot, and kexec, elogind shells out to `halt`,
+`reboot` and `kexec` binaries.
 
-The loginctl command has the poweroff, reboot, sleep, hibernate, and
-hybrid-sleep commands from systemd, as well as the --ignore-inhibitors
-flag.
+The loginctl command has the `poweroff`, `reboot`, `suspend`,
+`hibernate`, `hybrid-sleep` and `suspend-then-hibernate` commands
+from systemd, as well as the `--ignore-inhibitors` flag.
 
-The PAM module is called pam_elogind.so, not pam_systemd.so.
+The PAM module is called `pam_elogind.so`, not `pam_systemd.so`.
 
 Elogind and the running cgroup controller
 =========================================
-While 'configure' runs, it will detect which controller is in place.
+While `meson` runs, it will detect which controller is in place.
 If no controller is in place, configure will determine, that elogind
 should be its own controller, which will be a very limited one.
 
@@ -137,11 +139,11 @@ In this case you can do one of the two following things:
 
  1) Boot your system with the target init system and cgroup
     controller, before configuring and building elogind, or
- 2) Use the --with-cgroup-controller=name option.
+ 2) Use the `--with-cgroup-controller=name` option.
 
 Example: If you plan to use openrc, but openrc has not yet booted
-         the machine, you can use
-         --with-cgroup-controller=openrc
+         the machine, you can use  
+         `--with-cgroup-controller=openrc`  
          to let elogind know that openrc will be the controller
          in charge.
 
@@ -156,7 +158,7 @@ Basically all symbols are included. But any API calls that require to
 call systemd, or need internal knowledge of systemd, are simple stubs.
 They are there to provide ABI compatibility, but will not work.
 
-One exception is sd_is_mq() that is found in sd-daemon.h. This is the
+One exception is `sd_is_mq()` that is found in sd-daemon.h. This is the
 only place using POSIX message queues, which would add further
 dependencies. As those would be completely unused in the rest of
 elogind, this function is also a stub, always returning 0.
@@ -165,54 +167,55 @@ License
 =======
 
 LGPLv2.1+ for all code
-  - except src/basic/MurmurHash2.c which is Public Domain
-  - except src/basic/siphash24.c which is CC0 Public Domain
+  - except `src/basic/MurmurHash2.c` which is Public Domain
+  - except `src/basic/siphash24.c` which is CC0 Public Domain
 
 Dependencies
 ============
 
-  glibc >= 2.16 (*or* musl-libc >= 1.1.20)
-  libcap
-  libmount >= 2.27.1 (from util-linux)
-          (util-linux < 2.29 *must* be built with --enable-libmount-force-mountinfo,
-          and later versions without --enable-libmount-support-mtab.)
-  libseccomp >= 2.3.1 (optional)
-  libblkid >= 2.24 (from util-linux) (optional)
-  PAM >= 1.1.2 (optional)
-  libacl (optional)
-  libselinux (optional)
-  libpython (optional)
-  pkg-config
-  gperf >= 3.1
-  docbook-xsl (optional, required for documentation)
-  xsltproc    (optional, required for documentation)
-  python-lxml (optional, required to build the indices)
-  python, meson, ninja
-  gcc, awk, sed, grep, m4, and similar tools
+  * glibc >= 2.16 (*or* musl-libc >= 1.1.20)
+  * libcap
+  * libmount >= 2.27.1 (from util-linux)
+          (util-linux < 2.29 *must* be built with `--enable-libmount-force-mountinfo`,
+          and later versions without `--enable-libmount-support-mtab`.)
+  * libseccomp >= 2.3.1 (optional)
+  * libblkid >= 2.24 (from util-linux) (optional)
+  * PAM >= 1.1.2 (optional)
+  * libacl (optional)
+  * libselinux (optional)
+  * libpython (optional)
+  * pkg-config
+  * gperf >= 3.1
+  * docbook-xsl (optional, required for documentation)
+  * xsltproc    (optional, required for documentation)
+  * python-lxml (optional, required to build the indices)
+  * python, meson, ninja
+  * gcc, awk, sed, grep, m4, and similar tools
 
 During runtime, you need the following additional dependencies:
-
-  util-linux >= v2.27.1 required
-  dbus >= 1.9.14 (strictly speaking optional, but recommended)
+---------------------------------------------------------------
+  * util-linux >= v2.27.1 required
+  * dbus >= 1.9.14 (strictly speaking optional, but recommended)
           NOTE: If using dbus < 1.9.18, you should override the default
           policy directory (--with-dbuspolicydir=/etc/dbus-1/system.d).
-  PolicyKit (optional)
+  * PolicyKit (optional)
 
-  To build in directory build/:
-    meson build/ && ninja -C build
+  To build in directory build/:  
+    `meson build/ && ninja -C build`
 
   Any configuration options can be specified as -Darg=value... arguments
   to meson. After the build directory is initially configured, the configuration
-  can be changed with:
-    meson configure -Darg=value... build/
-  'meson configure' without any arguments will print out available options and
+  can be changed with:  
+    `meson configure -Darg=value... build/`  
+  `meson configure` without any arguments will print out available options and
   their current values.
 
-  Useful commands:
-    ninja -v some/target
-    ninja test
-    sudo ninja install
-    DESTDIR=... ninja install
+Useful commands:  
+----------------
+  * `ninja -v some/target`
+  * `ninja test`
+  * `sudo ninja install`
+  * `DESTDIR=... ninja install`
 
-  A tarball can be created with:
-    git archive --format=tar --prefix=elogind-241/ v241 | xz > elogind-241.tar.xz
+A tarball can be created with:  
+  `git archive --format=tar --prefix=elogind-241/ v241 | xz > elogind-241.tar.xz`
