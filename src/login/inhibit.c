@@ -274,6 +274,7 @@ static int run(int argc, char *argv[]) {
         int r;
 
         elogind_set_program_name(argv[0]);
+        log_show_color(true);
         log_parse_environment();
         log_open();
 
