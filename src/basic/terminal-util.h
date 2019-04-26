@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+//#include <syslog.h>
 #include <sys/types.h>
 
 #include "macro.h"
@@ -173,10 +174,11 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode);
 #endif // 0
 
 int vt_default_utf8(void);
-int vt_verify_kbmode(int fd);
 int vt_reset_keyboard(int fd);
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
 int vt_restore(int fd);
 int vt_release(int fd, bool restore_vt);
+
+void get_log_colors(int priority, const char **on, const char **off, const char **highlight);
