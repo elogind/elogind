@@ -1145,7 +1145,7 @@ static void cgroup_context_apply(
                         }
                 }
 
-                /* The bandwith limits are something that make sense to be applied to the host's root but not container
+                /* The bandwidth limits are something that make sense to be applied to the host's root but not container
                  * roots, as there we want the container manager to handle it */
                 if (is_host_root || !is_local_root) {
                         if (has_io) {
@@ -1311,7 +1311,7 @@ static void cgroup_context_apply(
                          * it also counts. But if the user never set a limit through us (i.e. we are the default of
                          * "unbounded") we leave things unmodified. For this we manage a global boolean that we turn on
                          * the first time we set a limit. Note that this boolean is flushed out on manager reload,
-                         * which is desirable so that there's an offical way to release control of the sysctl from
+                         * which is desirable so that there's an official way to release control of the sysctl from
                          * systemd: set the limit to unbounded and reload. */
 
                         if (c->tasks_max != CGROUP_LIMIT_MAX) {
@@ -3299,21 +3299,140 @@ int unit_get_ip_accounting(
         return r;
 }
 
+static int unit_get_io_accounting_raw(Unit *u, uint64_t ret[static _CGROUP_IO_ACCOUNTING_METRIC_MAX]) {
+        static const char *const field_names[_CGROUP_IO_ACCOUNTING_METRIC_MAX] = {
+                [CGROUP_IO_READ_BYTES]       = "rbytes=",
+                [CGROUP_IO_WRITE_BYTES]      = "wbytes=",
+                [CGROUP_IO_READ_OPERATIONS]  = "rios=",
+                [CGROUP_IO_WRITE_OPERATIONS] = "wios=",
+        };
+        uint64_t acc[_CGROUP_IO_ACCOUNTING_METRIC_MAX] = {};
+        _cleanup_free_ char *path = NULL;
+        _cleanup_fclose_ FILE *f = NULL;
+        int r;
+
+        assert(u);
+
+        if (!u->cgroup_path)
+                return -ENODATA;
+
+        if (unit_has_host_root_cgroup(u))
+                return -ENODATA; /* TODO: return useful data for the top-level cgroup */
+
+        r = cg_all_unified();
+        if (r < 0)
+                return r;
+        if (r == 0) /* TODO: support cgroupv1 */
+                return -ENODATA;
+
+        if (!FLAGS_SET(u->cgroup_realized_mask, CGROUP_MASK_IO))
+                return -ENODATA;
+
+        r = cg_get_path("io", u->cgroup_path, "io.stat", &path);
+        if (r < 0)
+                return r;
+
+        f = fopen(path, "re");
+        if (!f)
+                return -errno;
+
+        for (;;) {
+                _cleanup_free_ char *line = NULL;
+                const char *p;
+
+                r = read_line(f, LONG_LINE_MAX, &line);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        break;
+
+                p = line;
+                p += strcspn(p, WHITESPACE); /* Skip over device major/minor */
+                p += strspn(p, WHITESPACE);  /* Skip over following whitespace */
+
+                for (;;) {
+                        _cleanup_free_ char *word = NULL;
+
+                        r = extract_first_word(&p, &word, NULL, EXTRACT_RETAIN_ESCAPE);
+                        if (r < 0)
+                                return r;
+                        if (r == 0)
+                                break;
+
+                        for (CGroupIOAccountingMetric i = 0; i < _CGROUP_IO_ACCOUNTING_METRIC_MAX; i++) {
+                                const char *x;
+
+                                x = startswith(word, field_names[i]);
+                                if (x) {
+                                        uint64_t w;
+
+                                        r = safe_atou64(x, &w);
+                                        if (r < 0)
+                                                return r;
+
+                                        /* Sum up the stats of all devices */
+                                        acc[i] += w;
+                                        break;
+                                }
+                        }
+                }
+        }
+
+        memcpy(ret, acc, sizeof(acc));
+        return 0;
+}
+
+int unit_get_io_accounting(
+                Unit *u,
+                CGroupIOAccountingMetric metric,
+                bool allow_cache,
+                uint64_t *ret) {
+
+        uint64_t raw[_CGROUP_IO_ACCOUNTING_METRIC_MAX];
+        int r;
+
+        /* Retrieve an IO account parameter. This will subtract the counter when the unit was started. */
+
+        if (!UNIT_CGROUP_BOOL(u, io_accounting))
+                return -ENODATA;
+
+        if (allow_cache && u->io_accounting_last[metric] != UINT64_MAX)
+                goto done;
+
+        r = unit_get_io_accounting_raw(u, raw);
+        if (r == -ENODATA && u->io_accounting_last[metric] != UINT64_MAX)
+                goto done;
+        if (r < 0)
+                return r;
+
+        for (CGroupIOAccountingMetric i = 0; i < _CGROUP_IO_ACCOUNTING_METRIC_MAX; i++) {
+                /* Saturated subtraction */
+                if (raw[i] > u->io_accounting_base[i])
+                        u->io_accounting_last[i] = raw[i] - u->io_accounting_base[i];
+                else
+                        u->io_accounting_last[i] = 0;
+        }
+
+done:
+        if (ret)
+                *ret = u->io_accounting_last[metric];
+
+        return 0;
+}
+
 int unit_reset_cpu_accounting(Unit *u) {
-        nsec_t ns;
         int r;
 
         assert(u);
 
         u->cpu_usage_last = NSEC_INFINITY;
 
-        r = unit_get_cpu_usage_raw(u, &ns);
+        r = unit_get_cpu_usage_raw(u, &u->cpu_usage_base);
         if (r < 0) {
                 u->cpu_usage_base = 0;
                 return r;
         }
 
-        u->cpu_usage_base = ns;
         return 0;
 }
 
@@ -3331,6 +3450,35 @@ int unit_reset_ip_accounting(Unit *u) {
         zero(u->ip_accounting_extra);
 
         return r < 0 ? r : q;
+}
+
+int unit_reset_io_accounting(Unit *u) {
+        int r;
+
+        assert(u);
+
+        for (CGroupIOAccountingMetric i = 0; i < _CGROUP_IO_ACCOUNTING_METRIC_MAX; i++)
+                u->io_accounting_last[i] = UINT64_MAX;
+
+        r = unit_get_io_accounting_raw(u, u->io_accounting_base);
+        if (r < 0) {
+                zero(u->io_accounting_base);
+                return r;
+        }
+
+        return 0;
+}
+
+int unit_reset_accounting(Unit *u) {
+        int r, q, v;
+
+        assert(u);
+
+        r = unit_reset_cpu_accounting(u);
+        q = unit_reset_io_accounting(u);
+        v = unit_reset_ip_accounting(u);
+
+        return r < 0 ? r : q < 0 ? q : v;
 }
 
 void unit_invalidate_cgroup(Unit *u, CGroupMask m) {

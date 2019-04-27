@@ -235,7 +235,7 @@ static int detect_vm_xen_dom0(void) {
                 if (streq(cap, "control_d"))
                         break;
         if (!cap) {
-                log_debug("Virtualization XEN DomU found (/proc/xen/capabilites)");
+                log_debug("Virtualization XEN DomU found (/proc/xen/capabilities)");
                 return 0;
         }
 
@@ -430,6 +430,7 @@ finish:
 #endif // 0
 
 int detect_container(void) {
+
         static const struct {
                 const char *value;
                 int id;
@@ -438,7 +439,6 @@ int detect_container(void) {
                 { "lxc-libvirt",    VIRTUALIZATION_LXC_LIBVIRT    },
                 { "systemd-nspawn", VIRTUALIZATION_SYSTEMD_NSPAWN },
                 { "docker",         VIRTUALIZATION_DOCKER         },
-                { "podman",         VIRTUALIZATION_PODMAN         },
                 { "rkt",            VIRTUALIZATION_RKT            },
                 { "wsl",            VIRTUALIZATION_WSL            },
         };
@@ -470,15 +470,9 @@ int detect_container(void) {
         }
 
         if (getpid_cached() == 1) {
-                /* If we are PID 1 we can just check our own environment variable, and that's authoritative.
-                 * We distinguish three cases:
-                 * - the variable is not defined → we jump to other checks
-                 * - the variable is defined to an empty value → we are not in a container
-                 * - anything else → some container, either one of the known ones or "container-other"
-                 */
+                /* If we are PID 1 we can just check our own environment variable, and that's authoritative. */
+
                 e = getenv("container");
-                if (!e)
-                        goto check_sched;
                 if (isempty(e)) {
                         r = VIRTUALIZATION_NONE;
                         goto finish;
@@ -506,9 +500,8 @@ int detect_container(void) {
         if (r < 0) /* This only works if we have CAP_SYS_PTRACE, hence let's better ignore failures here */
                 log_debug_errno(r, "Failed to read $container of PID 1, ignoring: %m");
 
-        /* Interestingly /proc/1/sched actually shows the host's PID for what we see as PID 1. If the PID
-         * shown there is not 1, we know we are in a PID namespace and hence a container. */
- check_sched:
+        /* Interestingly /proc/1/sched actually shows the host's PID for what we see as PID 1. Hence, if the PID shown
+         * there is not 1, we know we are in a PID namespace. and hence a container. */
         r = read_one_line_file("/proc/1/sched", &m);
         if (r >= 0) {
                 const char *t;
@@ -662,7 +655,6 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_LXC] = "lxc",
         [VIRTUALIZATION_OPENVZ] = "openvz",
         [VIRTUALIZATION_DOCKER] = "docker",
-        [VIRTUALIZATION_PODMAN] = "podman",
         [VIRTUALIZATION_RKT] = "rkt",
         [VIRTUALIZATION_WSL] = "wsl",
         [VIRTUALIZATION_CONTAINER_OTHER] = "container-other",

@@ -26,7 +26,7 @@ static int message_append_basic(sd_bus_message *m, char type, const void *p, con
 
 static void *adjust_pointer(const void *p, void *old_base, size_t sz, void *new_base) {
 
-        if (!p)
+        if (p == NULL)
                 return NULL;
 
         if (old_base == new_base)
@@ -924,7 +924,7 @@ _public_ sd_bus_message* sd_bus_message_unref(sd_bus_message *m) {
 
         /* Unset the bus field if neither the user has a reference nor this message is queued. We are careful
          * to reset the field only after the last reference to the bus is dropped, after all we might keep
-         * multiple references to the bus, once for each reference kept on outselves. */
+         * multiple references to the bus, once for each reference kept on ourselves. */
         m->bus = NULL;
 
         return message_free(m);

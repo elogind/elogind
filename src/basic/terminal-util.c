@@ -1195,7 +1195,7 @@ bool colors_enabled(void) {
          * (which is the explicit way to turn colors on/off). If that didn't work we turn colors off unless we are on a
          * TTY. And if we are on a TTY we turn it off if $TERM is set to "dumb". There's one special tweak though: if
          * we are PID 1 then we do not check whether we are connected to a TTY, because we don't keep /dev/console open
-         * continously due to fear of SAK, and hence things are a bit weird. */
+         * continuously due to fear of SAK, and hence things are a bit weird. */
 
         if (cached_colors_enabled < 0) {
 #if 0 /// elogind does not allow such forcing, and we are never init!
@@ -1264,23 +1264,6 @@ int vt_default_utf8(void) {
                 return r;
 
         return parse_boolean(b);
-}
-
-int vt_verify_kbmode(int fd) {
-        int curr_mode;
-
-        /*
-         * Make sure we only adjust consoles in K_XLATE or K_UNICODE mode.
-         * Otherwise we would (likely) interfere with X11's processing of the
-         * key events.
-         *
-         * http://lists.freedesktop.org/archives/elogind-devel/2013-February/008573.html
-         */
-
-        if (ioctl(fd, KDGKBMODE, &curr_mode) < 0)
-                return -errno;
-
-        return IN_SET(curr_mode, K_XLATE, K_UNICODE) ? 0 : -EBUSY;
 }
 
 int vt_reset_keyboard(int fd) {

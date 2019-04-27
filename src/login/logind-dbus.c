@@ -51,6 +51,7 @@
 //#include "virt.h"
 //#include "virt.h"
 //#include "virt.h"
+//#include "virt.h"
 
 static int get_sender_session(Manager *m, sd_bus_message *message, sd_bus_error *error, Session **ret) {
 
@@ -836,7 +837,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
                 } while (hashmap_get(m->sessions, id));
         }
 
-        /* If we are not watching utmp aleady, try again */
+        /* If we are not watching utmp already, try again */
         manager_reconnect_utmp(m);
 
         r = manager_add_user_by_uid(m, uid, &user);
