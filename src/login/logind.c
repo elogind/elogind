@@ -34,6 +34,7 @@
 #include "cgroup-util.h"
 //#include "udev-util.h"
 //#include "udev-util.h"
+//#include "udev-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -52,10 +53,9 @@ static int manager_new(Manager **ret) {
                 .console_active_fd = -1,
 #if 0 /// elogind does not support autospawning of vts
                 .reserve_vt_fd = -1,
+                .idle_action_not_before_usec = now(CLOCK_MONOTONIC),
 #endif // 0
         };
-
-        m->idle_action_not_before_usec = now(CLOCK_MONOTONIC);
 
         m->devices = hashmap_new(&string_hash_ops);
         m->seats = hashmap_new(&string_hash_ops);
