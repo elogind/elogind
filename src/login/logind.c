@@ -35,6 +35,7 @@
 //#include "udev-util.h"
 //#include "udev-util.h"
 //#include "udev-util.h"
+//#include "udev-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -139,6 +140,7 @@ static Manager* manager_unref(Manager *m) {
         hashmap_free(m->users);
         hashmap_free(m->inhibitors);
         hashmap_free(m->buttons);
+        hashmap_free(m->brightness_writers);
 
 #if 0 /// elogind does not support systemd units.
         hashmap_free(m->user_units);
@@ -1306,7 +1308,8 @@ static int run(int argc, char *argv[]) {
 #endif // 0
 
 #if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
-        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, -1) >= 0);
+
+        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, -1) >= 0);
 #else
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGQUIT, -1) >= 0);
 #endif // 0
