@@ -1,3 +1,4 @@
+//#include <elogind/sd-bus.h>
 //#include <errno.h>
 //#include <stdbool.h>
 //#include <stddef.h>
@@ -59,7 +60,7 @@ int main(int argc, char **argv) {
                                  vtable,
                                  &object));
 
-  while (true) {
+  for (;;) {
     check(sd_bus_wait(bus, UINT64_MAX));
     check(sd_bus_process(bus, NULL));
   }
