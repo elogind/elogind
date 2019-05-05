@@ -11,7 +11,7 @@ option('split-bin', type : 'combo', choices : ['auto', 'true', 'false'],
 option('rootlibdir', type : 'string',
        description : '''[/usr]/lib/x86_64-linux-gnu or such''')
 option('rootprefix', type : 'string',
-       description : '''override the root prefix''')
+       description : '''override the root prefix [default '/' if split-usr and '/usr' otherwise]''')
 #if 0 /// UNNEEDED by elogind
 # option('link-udev-shared', type : 'boolean',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
@@ -399,4 +399,10 @@ option('ok-color', type: 'combo',
 #        description : 'build against oss-fuzz')
 # option('llvm-fuzz', type : 'boolean', value : 'false',
 #        description : 'build against LLVM libFuzzer')
+# option('fuzzbuzz', type : 'boolean', value : 'false',
+#        description : 'build against FuzzBuzz')
+# option('fuzzbuzz-engine', type : 'string',
+#        description : 'the name of the FuzzBuzz fuzzing engine')
+# option('fuzzbuzz-engine-dir', type : 'string',
+#        description : 'the directory where the FuzzBuzz fuzzing engine is')
 #endif // 0
