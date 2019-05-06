@@ -111,7 +111,7 @@ static int show_table(Table *table, const char *word) {
         assert(table);
         assert(word);
 
-        if (table_get_rows(table) > 1) {
+        if (table_get_rows(table) > 1 || OUTPUT_MODE_IS_JSON(arg_output)) {
                 r = table_set_sort(table, (size_t) 0, (size_t) -1);
                 if (r < 0)
                         return log_error_errno(r, "Failed to sort table: %m");
@@ -1666,7 +1666,6 @@ static int run(int argc, char *argv[]) {
 
         setlocale(LC_ALL, "");
         elogind_set_program_name(argv[0]);
-        log_show_color(true);
         log_parse_environment();
         log_open();
 
