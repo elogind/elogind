@@ -486,11 +486,14 @@ endif
 
 cpp = ' '.join(cc.cmd_array()) + ' -E'
 
+has_wstringop_truncation = cc.has_argument('-Wstringop-truncation')
+
 #####################################################################
 # compilation result tests
 
 conf.set('_GNU_SOURCE', true)
 conf.set('__SANE_USERSPACE_TYPES__', true)
+conf.set10('HAVE_WSTRINGOP_TRUNCATION', has_wstringop_truncation)
 
 conf.set('SIZEOF_PID_T', cc.sizeof('pid_t', prefix : '#include <sys/types.h>'))
 conf.set('SIZEOF_UID_T', cc.sizeof('uid_t', prefix : '#include <sys/types.h>'))
@@ -2828,6 +2831,7 @@ executable('elogind-cgroups-agent',
 #                  'src/mount/mount-tool.c',
 #                  include_directories : includes,
 #                  link_with : [libshared],
+#                  dependencies: [libmount],
 #                  install_rpath : rootlibexecdir,
 #                  install : true)
 # public_programs += exe
