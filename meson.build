@@ -353,6 +353,7 @@ substs.set('VARLOGDIR',                                       varlogdir)
 # substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
 #endif // 0
 substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
+substs.set('BUILD_ROOT',                                      meson.current_build_dir())
 
 #####################################################################
 
@@ -491,11 +492,14 @@ endif
 
 cpp = ' '.join(cc.cmd_array()) + ' -E'
 
+has_wstringop_truncation = cc.has_argument('-Wstringop-truncation')
+
 #####################################################################
 # compilation result tests
 
 conf.set('_GNU_SOURCE', true)
 conf.set('__SANE_USERSPACE_TYPES__', true)
+conf.set10('HAVE_WSTRINGOP_TRUNCATION', has_wstringop_truncation)
 
 conf.set('SIZEOF_PID_T', cc.sizeof('pid_t', prefix : '#include <sys/types.h>'))
 conf.set('SIZEOF_UID_T', cc.sizeof('uid_t', prefix : '#include <sys/types.h>'))

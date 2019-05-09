@@ -221,3 +221,15 @@ if git.found()
                 )
 #endif // 0
 endif
+
+############################################################
+
+configure_file(
+        input : 'man.in',
+        output : 'man',
+        configuration : substs)
+
+configure_file(
+        input : 'html.in',
+        output : 'html',
+        configuration : substs)
