@@ -160,6 +160,7 @@ option('utmp', type : 'boolean',
 #        description : 'support for the rfkill tools')
 #endif // 0
 option('man', type : 'combo', choices : ['auto', 'true', 'false'],
+       value : 'false',
        description : 'build and install man pages')
 option('html', type : 'combo', choices : ['auto', 'true', 'false'],
        value : 'false',
