@@ -246,7 +246,6 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 # conf.set_quoted('SYSTEM_SYSVINIT_PATH',                       sysvinit_path)
 # conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
 # conf.set_quoted('RC_LOCAL_SCRIPT_PATH_START',                 get_option('rc-local'))
-# conf.set_quoted('RC_LOCAL_SCRIPT_PATH_STOP',                  get_option('halt-local'))
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
 #
@@ -349,10 +348,10 @@ substs.set('VARLOGDIR',                                       varlogdir)
 # substs.set('SYSTEM_SYSVINIT_PATH',                            sysvinit_path)
 # substs.set('SYSTEM_SYSVRCND_PATH',                            sysvrcnd_path)
 # substs.set('RC_LOCAL_SCRIPT_PATH_START',                      get_option('rc-local'))
-# substs.set('RC_LOCAL_SCRIPT_PATH_STOP',                       get_option('halt-local'))
 # substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
 #endif // 0
 substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
+substs.set('BUILD_ROOT',                                      meson.current_build_dir())
 
 #####################################################################
 
@@ -3488,7 +3487,6 @@ status = [
         'zsh completions directory:         @0@'.format(zshcompletiondir),
 #if 0 /// UNSUPPORTED by elogind
 #         'extra start script:                @0@'.format(get_option('rc-local')),
-#         'extra stop script:                 @0@'.format(get_option('halt-local')),
 #         'debug shell:                       @0@ @ @1@'.format(get_option('debug-shell'),
 #                                                               get_option('debug-tty')),
 #endif // 0
