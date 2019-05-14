@@ -71,7 +71,7 @@ static int write_hibernate_location_info(void) {
                 }
 #endif // 1
                 if (r < 0)
-                        return log_debug_errno(r, "Faileed to write partitoin device to /sys/power/resume: %m");
+                        return log_debug_errno(r, "Failed to write partition device to /sys/power/resume: %m");
 
                 return r;
         }
