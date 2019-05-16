@@ -46,7 +46,10 @@ int cunescape_length(const char *s, size_t length, UnescapeFlags flags, char **r
 int cunescape_length_with_prefix(const char *s, size_t length, const char *prefix, UnescapeFlags flags, char **ret);
 int cunescape_one(const char *p, size_t length, char32_t *ret, bool *eight_bit);
 
-char *xescape(const char *s, const char *bad);
+char *xescape_full(const char *s, const char *bad, size_t console_width, bool eight_bits);
+static inline char *xescape(const char *s, const char *bad) {
+        return xescape_full(s, bad, SIZE_MAX, false);
+}
 #if 0 /// UNNEEDED by elogind
 char *octescape(const char *s, size_t len);
 
