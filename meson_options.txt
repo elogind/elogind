@@ -112,6 +112,8 @@ option('utmp', type : 'boolean',
 #        description : 'support for custom binary formats')
 # option('coredump', type : 'boolean',
 #        description : 'install the coredump handler')
+# option('pstore', type : 'boolean',
+#        description : 'install the pstore archival tool')
 # option('logind', type : 'boolean',
 #        description : 'install the systemd-logind stack')
 # option('hostnamed', type : 'boolean',
