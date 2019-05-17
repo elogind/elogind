@@ -21,7 +21,7 @@
 /* Bold/highlighted */
 #define ANSI_HIGHLIGHT_RED     "\x1B[0;1;31m"
 #define ANSI_HIGHLIGHT_GREEN   "\x1B[0;1;32m"
-#define ANSI_HIGHLIGHT_YELLOW  "\x1B[0;1;33m"
+#define ANSI_HIGHLIGHT_YELLOW  "\x1B[0;1;38;5;185m"
 #define ANSI_HIGHLIGHT_BLUE    "\x1B[0;1;34m"
 #define ANSI_HIGHLIGHT_MAGENTA "\x1B[0;1;35m"
 #define ANSI_HIGHLIGHT_GREY    "\x1B[0;1;38;5;245m"
@@ -175,6 +175,7 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode);
 #endif // 0
 
 int vt_default_utf8(void);
+int vt_verify_kbmode(int fd);
 int vt_reset_keyboard(int fd);
 
 #if 0 /// UNNEEDED by elogind
