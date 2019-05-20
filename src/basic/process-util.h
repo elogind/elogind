@@ -31,7 +31,6 @@
                 _r_;                                                    \
         })
 
-int get_process_state(pid_t pid);
 int get_process_comm(pid_t pid, char **name);
 int get_process_cmdline(pid_t pid, size_t max_length, bool comm_fallback, char **line);
 int get_process_exe(pid_t pid, char **name);
@@ -213,3 +212,5 @@ assert_cc(TASKS_MAX <= (unsigned long) PID_T_MAX)
                 (pid) = 0;                      \
                 _pid_;                          \
         })
+
+int cpus_in_affinity_mask(void);
