@@ -58,6 +58,7 @@
 #         fd-util.h
 #         fileio.c
 #         fileio.h
+#         format-util.c
 #         format-util.h
 #         fs-util.c
 #         fs-util.h
