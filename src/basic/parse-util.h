@@ -18,6 +18,7 @@ int parse_pid(const char *s, pid_t* ret_pid);
 int parse_mode(const char *s, mode_t *ret);
 #endif // 0
 int parse_ifindex(const char *s, int *ret);
+int parse_ifindex_or_ifname(const char *s, int *ret);
 #if 0 /// UNNEEDED by elogind
 int parse_mtu(int family, const char *s, uint32_t *ret);
 #endif // 0
