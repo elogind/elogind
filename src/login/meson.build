@@ -99,6 +99,8 @@ loginctl_sources += files('''
         eloginctl.h
 '''.split())
 #endif // 1
+pam_elogind_sym = 'src/login/pam_elogind.sym'
+pam_elogind_c = files('pam_elogind.c')
 
 #if 0 /// elogind builds itself unconditionally
 # if conf.get('ENABLE_LOGIND') == 1
@@ -109,9 +111,6 @@ loginctl_sources += files('''
                 configuration : substs)
         install_data(logind_conf,
                      install_dir : pkgsysconfdir)
-
-        pam_elogind_sym = 'src/login/pam_elogind.sym'
-        pam_elogind_c = files('pam_elogind.c')
 
         install_data('org.freedesktop.login1.conf',
                      install_dir : dbuspolicydir)
