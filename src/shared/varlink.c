@@ -228,10 +228,15 @@ static inline const char *varlink_server_description(VarlinkServer *s) {
 
 static void varlink_set_state(Varlink *v, VarlinkState state) {
         assert(v);
+        assert(state >= 0 && state < _VARLINK_STATE_MAX);
 
-        varlink_log(v, "varlink: changing state %s → %s",
-                  varlink_state_to_string(v->state),
-                  varlink_state_to_string(state));
+        if (v->state < 0)
+                varlink_log(v, "varlink: setting state %s",
+                            varlink_state_to_string(state));
+        else
+                varlink_log(v, "varlink: changing state %s → %s",
+                            varlink_state_to_string(v->state),
+                            varlink_state_to_string(state));
 
         v->state = state;
 }
@@ -241,7 +246,8 @@ static int varlink_new(Varlink **ret) {
 
         assert(ret);
 
-        v = new(Varlink, 1);
+        /* Here use new0 as the below structured initializer is nested. */
+        v = new0(Varlink, 1);
         if (!v)
                 return -ENOMEM;
 
@@ -335,25 +341,13 @@ int varlink_connect_fd(Varlink **ret, int fd) {
 static void varlink_detach_event_sources(Varlink *v) {
         assert(v);
 
-        if (v->io_event_source) {
-                (void) sd_event_source_set_enabled(v->io_event_source, SD_EVENT_OFF);
-                v->io_event_source = sd_event_source_unref(v->io_event_source);
-        }
+        v->io_event_source = sd_event_source_disable_unref(v->io_event_source);
 
-        if (v->time_event_source) {
-                (void) sd_event_source_set_enabled(v->time_event_source, SD_EVENT_OFF);
-                v->time_event_source = sd_event_source_unref(v->time_event_source);
-        }
+        v->time_event_source = sd_event_source_disable_unref(v->time_event_source);
 
-        if (v->quit_event_source) {
-                (void) sd_event_source_set_enabled(v->quit_event_source, SD_EVENT_OFF);
-                v->quit_event_source = sd_event_source_unref(v->quit_event_source);
-        }
+        v->quit_event_source = sd_event_source_disable_unref(v->quit_event_source);
 
-        if (v->defer_event_source) {
-                (void) sd_event_source_set_enabled(v->defer_event_source, SD_EVENT_OFF);
-                v->defer_event_source = sd_event_source_unref(v->defer_event_source);
-        }
+        v->defer_event_source = sd_event_source_disable_unref(v->defer_event_source);
 }
 
 static void varlink_clear(Varlink *v) {
@@ -1218,6 +1212,7 @@ static int varlink_enqueue_json(Varlink *v, JsonVariant *m) {
         r = json_variant_format(m, 0, &text);
         if (r < 0)
                 return r;
+        assert(text[r] == '\0');
 
         if (v->output_buffer_size + r + 1 > VARLINK_BUFFER_MAX)
                 return -ENOBUFS;
@@ -1241,15 +1236,16 @@ static int varlink_enqueue_json(Varlink *v, JsonVariant *m) {
 
         } else {
                 char *n;
+                const size_t new_size = v->output_buffer_size + r + 1;
 
-                n = new(char, v->output_buffer_size + r + 1);
+                n = new(char, new_size);
                 if (!n)
                         return -ENOMEM;
 
                 memcpy(mempcpy(n, v->output_buffer + v->output_buffer_index, v->output_buffer_size), text, r + 1);
 
                 free_and_replace(v->output_buffer, n);
-                v->output_buffer_size += r + 1;
+                v->output_buffer_allocated = v->output_buffer_size = new_size;
                 v->output_buffer_index = 0;
         }
 
@@ -2203,10 +2199,7 @@ static VarlinkServerSocket* varlink_server_socket_destroy(VarlinkServerSocket *s
         if (ss->server)
                 LIST_REMOVE(sockets, ss->server->sockets, ss);
 
-        if (ss->event_source) {
-                (void) sd_event_source_set_enabled(ss->event_source, SD_EVENT_OFF);
-                sd_event_source_unref(ss->event_source);
-        }
+        sd_event_source_disable_unref(ss->event_source);
 
         free(ss->address);
         safe_close(ss->fd);
