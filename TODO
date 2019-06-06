@@ -56,10 +56,6 @@ Features:
   with a nice speed-up on services that have many processes running in the same
   cgroup.
 
-* clean up sleep.c:
-  - Make sure resume= and resume_offset= on the kernel cmdline always take
-    precedence
-
 * make MAINPID= message reception checks even stricter: if service uses User=,
   then check sending UID and ignore message if it doesn't match the user or
   root.
@@ -527,8 +523,6 @@ Features:
 * firstboot: make it useful to be run immediately after yum --installroot to set up a machine. (most specifically, make --copy-root-password work even if /etc/passwd already exists
 
 * maybe add support for specifier expansion in user.conf, specifically DefaultEnvironment=
-
-* consider showing the unit names during boot up in the status output, not just the unit descriptions
 
 * maybe allow timer units with an empty Units= setting, so that they
   can be used for resuming the system but nothing else.
