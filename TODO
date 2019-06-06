@@ -27,6 +27,13 @@ Features:
 * when killing due to service watchdog timeout maybe detect whether target
   process is under ptracing and then log loudly and continue instead.
 
+* introduce a new group to own TPM devices
+
+* make rfkill uaccess controllable by default, i.e. steal rule from
+  gnome-bluetooth and friends
+
+* warn if udev rules files are marked executable (docker?)
+
 * tweak journald context caching. In addition to caching per-process attributes
   keyed by PID, cache per-cgroup attributes (i.e. the various xattrs we read)
   keyed by cgroup path, and guarded by ctime changes. This should provide us
@@ -201,9 +208,6 @@ Features:
   environment. Which we can use for /etc/machine-id and in particular
   /etc/resolv.conf. Should be smart and do something useful on read-only
   images, for example fallback to read-only bind mounting the file instead.
-
-* nspawn's console TTY should be allocated from within the container, not
-  mounted in from the outside
 
 * show invocation ID in elogind-run output
 
