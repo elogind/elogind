@@ -188,6 +188,7 @@ libcore_la_sources = files('''
 #
 # in_files = [['macros.systemd',   rpmmacrosdir],
 #             ['system.conf',      pkgsysconfdir],
+#             ['user.conf',        pkgsysconfdir],
 #             ['systemd.pc',       pkgconfigdatadir],
 #             ['triggers.systemd', '']]
 #
@@ -213,9 +214,6 @@ libcore_la_sources = files('''
 #         configuration : substs)
 # install_data(policy,
 #              install_dir : polkitpolicydir)
-#
-# install_data('user.conf',
-#              install_dir : pkgsysconfdir)
 #
 #endif // 0
 meson.add_install_script('sh', '-c', mkdir_p.format(systemshutdowndir))
