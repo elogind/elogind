@@ -35,6 +35,10 @@ substs.set('PROJECT_VERSION',      meson.project_version())
 # This is to be used instead of meson.source_root(), as the latter will return
 # the wrong result when elogind is being built as a meson subproject
 project_source_root = meson.current_source_dir()
+relative_source_path = run_command('realpath',
+                                   '--relative-to=@0@'.format(meson.current_build_dir()),
+                                   project_source_root).stdout().strip()
+conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
@@ -136,6 +140,7 @@ pkgconfiglibdir = get_option('pkgconfiglibdir') == '' ? join_paths(libdir, 'pkgc
 polkitpolicydir = join_paths(datadir, 'polkit-1/actions')
 polkitrulesdir = join_paths(datadir, 'polkit-1/rules.d')
 polkitpkladir = join_paths(localstatedir, 'lib/polkit-1/localauthority/10-vendor.d')
+varlogdir = join_paths(localstatedir, 'log')
 #if 0 /// UNNEEDED by elogind
 # xinitrcdir = join_paths(sysconfdir, 'X11/xinit/xinitrc.d')
 # rpmmacrosdir = get_option('rpmmacrosdir')
@@ -339,6 +344,7 @@ substs.set('udevlibexecdir',                                  udevlibexecdir)
 #endif // 0
 substs.set('systemshutdowndir',                               systemshutdowndir)
 substs.set('systemsleepdir',                                  systemsleepdir)
+substs.set('VARLOGDIR',                                       varlogdir)
 #if 0 /// UNNEEDED by elogind
 # substs.set('CERTIFICATEROOT',                                 get_option('certificate-root'))
 # substs.set('SYSTEMCTL',                                       join_paths(rootbindir, 'systemctl'))
@@ -949,7 +955,6 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 #if 0 /// UNNEEDED by elogind
 # substs.set('SUSHELL', get_option('debug-shell'))
 # substs.set('DEBUGTTY', get_option('debug-tty'))
-# conf.set_quoted('DEBUGTTY', get_option('debug-tty'))
 #endif // 0
 
 enable_debug_hashmap = false
