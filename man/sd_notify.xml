@@ -210,7 +210,7 @@
         corresponding the current state. The value specified is a time in microseconds during which the service must
         <!-- 0 /// elogind has to be more vague here, as those are systemd service configuration variables.
         send a new message. A service timeout will occur if the message isn't received, but only if the runtime of the
-        current state is beyond the original maximium times of <varname>TimeoutStartSec=</varname>, <varname>RuntimeMaxSec=</varname>,
+        current state is beyond the original maximum times of <varname>TimeoutStartSec=</varname>, <varname>RuntimeMaxSec=</varname>,
         and <varname>TimeoutStopSec=</varname>.
         See <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for effects on the service timeouts.</para></listitem>
