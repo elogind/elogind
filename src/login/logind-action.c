@@ -88,7 +88,9 @@ int manager_handle_action(
         /* If the key handling is inhibited, don't do anything */
         if (inhibit_key > 0) {
                 if (manager_is_inhibited(m, inhibit_key, INHIBIT_BLOCK, NULL, true, false, 0, NULL)) {
-                        log_debug("Refusing operation, %s is inhibited.", inhibit_what_to_string(inhibit_key));
+                        log_debug("Refusing %s operation, %s is inhibited.",
+                                  handle_action_to_string(handle),
+                                  inhibit_what_to_string(inhibit_key));
                         return 0;
                 }
         }
@@ -134,20 +136,22 @@ int manager_handle_action(
                 supported = can_sleep(m, "suspend") > 0;
 #endif // 0
                 if (supported) {
-                        log_notice("Operation '%s' requested but not supported, using regular suspend instead.", handle_action_to_string(handle));
+                        log_notice("Requested %s operation is not supported, using regular suspend instead.",
+                                   handle_action_to_string(handle));
                         handle = HANDLE_SUSPEND;
                 }
         }
 
-        if (!supported) {
-                log_warning("Requested operation not supported, ignoring.");
-                return -EOPNOTSUPP;
-        }
+        if (!supported)
+                return log_warning_errno(SYNTHETIC_ERRNO(EOPNOTSUPP),
+                                         "Requested %s operation not supported, ignoring.", handle_action_to_string(handle));
 
-        if (m->action_what > 0) {
-                log_debug("Action already in progress, ignoring.");
-                return -EALREADY;
-        }
+        if (m->action_what > 0)
+                return log_debug_errno(SYNTHETIC_ERRNO(EALREADY),
+                                       "Action already in progress (%s), ignoring requested %s operation.",
+                                       inhibit_what_to_string(m->action_what),
+                                       handle_action_to_string(handle));
+
 
 #if 0 /// elogind uses its own variant, which can use the handle directly.
         assert_se(target = manager_target_for_action(handle));
@@ -166,20 +170,14 @@ int manager_handle_action(
                 u = uid_to_name(offending->uid);
 
                 /* If this is just a recheck of the lid switch then don't warn about anything */
-                if (!is_edge) {
-                        log_debug("Refusing operation, %s is inhibited by UID "UID_FMT"/%s, PID "PID_FMT"/%s.",
-                                  inhibit_what_to_string(inhibit_operation),
-                                  offending->uid, strna(u),
-                                  offending->pid, strna(comm));
-                        return 0;
-                }
+                log_full(is_edge ? LOG_ERR : LOG_DEBUG,
+                         "Refusing %s operation, %s is inhibited by UID "UID_FMT"/%s, PID "PID_FMT"/%s.",
+                         handle_action_to_string(handle),
+                         inhibit_what_to_string(inhibit_operation),
+                         offending->uid, strna(u),
+                         offending->pid, strna(comm));
 
-                log_error("Refusing operation, %s is inhibited by UID "UID_FMT"/%s, PID "PID_FMT"/%s.",
-                          inhibit_what_to_string(inhibit_operation),
-                          offending->uid, strna(u),
-                          offending->pid, strna(comm));
-
-                return -EPERM;
+                return is_edge ? -EPERM : 0;
         }
 
         log_info("%s", message_table[handle]);
@@ -190,7 +188,9 @@ int manager_handle_action(
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
 #endif // 0
         if (r < 0)
-                return log_error_errno(r, "Failed to execute operation: %s", bus_error_message(&error, r));
+                return log_error_errno(r, "Failed to execute %s operation: %s",
+                                       handle_action_to_string(handle),
+                                       bus_error_message(&error, r));
 
         return 1;
 }
