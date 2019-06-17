@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '241.3',
+        version : '241',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -1475,7 +1475,7 @@ conf.set10('HAVE_DBUS', have)
 #                 have_openssl = conf.get('HAVE_OPENSSL') == 1
 #                 if dns_over_tls != 'auto' and not have_openssl
 #                         str = dns_over_tls == 'openssl' ? ' with openssl' : ''
-#                         error('DNS-over-TLS support was requested$0$, but dependencies are not available'.format(str))
+#                         error('DNS-over-TLS support was requested@0@, but dependencies are not available'.format(str))
 #                 endif
 #         endif
 #         have = have_gnutls or have_openssl
