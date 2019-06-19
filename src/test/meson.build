@@ -228,6 +228,10 @@ tests += [
          [],
          []],
 
+        [['src/test/test-format-util.c'],
+         [],
+         []],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-ratelimit.c'],
 #          [],
