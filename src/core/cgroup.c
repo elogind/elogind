@@ -1618,11 +1618,7 @@ char *unit_default_cgroup_path(const Unit *u) {
         if (!escaped)
                 return NULL;
 
-        if (slice)
-                return strjoin(u->manager->cgroup_root, "/", slice, "/",
-                               escaped);
-        else
-                return strjoin(u->manager->cgroup_root, "/", escaped);
+        return path_join(empty_to_root(u->manager->cgroup_root), slice, escaped);
 }
 
 int unit_set_cgroup_path(Unit *u, const char *path) {
@@ -2385,13 +2381,10 @@ void unit_prune_cgroup(Unit *u) {
         is_root_slice = unit_has_name(u, SPECIAL_ROOT_SLICE);
 
         r = cg_trim_everywhere(u->manager->cgroup_supported, u->cgroup_path, !is_root_slice);
-        if (r < 0)
-                /* One reason we could have failed here is, that the cgroup still contains a process.
-                 * However, if the cgroup becomes removable at a later time, it might be removed when
-                 * the containing slice is stopped. So even if we failed now, this unit shouldn't assume
-                 * that the cgroup is still realized the next time it is started. Do not return early
-                 * on error, continue cleanup. */
-                log_unit_full(u, r == -EBUSY ? LOG_DEBUG : LOG_WARNING, r, "Failed to destroy cgroup %s, ignoring: %m", u->cgroup_path);
+        if (r < 0) {
+                log_unit_debug_errno(u, r, "Failed to destroy cgroup %s, ignoring: %m", u->cgroup_path);
+                return;
+        }
 
         if (is_root_slice)
                 return;
@@ -2476,7 +2469,7 @@ static int unit_watch_pids_in_path(Unit *u, const char *path) {
                 while ((r = cg_read_subgroup(d, &fn)) > 0) {
                         _cleanup_free_ char *p = NULL;
 
-                        p = strjoin(path, "/", fn);
+                        p = path_join(path, fn);
                         free(fn);
 
                         if (!p)

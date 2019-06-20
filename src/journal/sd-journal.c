@@ -1614,10 +1614,7 @@ static int add_directory(sd_journal *j, const char *prefix, const char *dirname)
         /* Adds a journal file directory to watch. If the directory is already tracked this updates the inotify watch
          * and reenumerates directory contents */
 
-        if (dirname)
-                path = strjoin(prefix, "/", dirname);
-        else
-                path = strdup(prefix);
+        path = path_join(prefix, dirname);
         if (!path) {
                 r = -ENOMEM;
                 goto fail;

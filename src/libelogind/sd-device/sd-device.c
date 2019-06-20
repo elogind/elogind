@@ -167,7 +167,7 @@ int device_set_syspath(sd_device *device, const char *_syspath, bool verify) {
                                                        "sd-device: Canonicalized path '%s' does not starts with sysfs mount point '%s'",
                                                        syspath, real_sys);
 
-                        new_syspath = strjoin("/sys/", p);
+                        new_syspath = path_join("/sys", p);
                         if (!new_syspath)
                                 return -ENOMEM;
 
@@ -1600,16 +1600,14 @@ static int device_sysattrs_read_all(sd_device *device) {
                 return r;
 
         FOREACH_DIRENT_ALL(dent, dir, return -errno) {
-                _cleanup_free_ char *path = NULL;
+                char *path;
                 struct stat statbuf;
 
                 /* only handle symlinks and regular files */
                 if (!IN_SET(dent->d_type, DT_LNK, DT_REG))
                         continue;
 
-                path = path_join(syspath, dent->d_name);
-                if (!path)
-                        return -ENOMEM;
+                path = strjoina(syspath, "/", dent->d_name);
 
                 if (lstat(path, &statbuf) != 0)
                         continue;

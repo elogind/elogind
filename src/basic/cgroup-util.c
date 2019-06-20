@@ -91,9 +91,10 @@ int cg_read_event(
                 const char *controller,
                 const char *path,
                 const char *event,
-                char **ret) {
+                char **val) {
 
         _cleanup_free_ char *events = NULL, *content = NULL;
+        char *p, *line;
         int r;
 
         r = cg_get_path(controller, path, "cgroup.events", &events);
@@ -104,33 +105,22 @@ int cg_read_event(
         if (r < 0)
                 return r;
 
-        for (const char *p = content;;) {
-                _cleanup_free_ char *line = NULL, *key = NULL, *val = NULL;
-                const char *q;
+        p = content;
+        while ((line = strsep(&p, "\n"))) {
+                char *key;
 
-                r = extract_first_word(&p, &line, "\n", 0);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        return -ENOENT;
-
-                q = line;
-                r = extract_first_word(&q, &key, " ", 0);
-                if (r < 0)
-                        return r;
-                if (r == 0)
+                key = strsep(&line, " ");
+                if (!key || !line)
                         return -EINVAL;
 
-                if (!streq(key, event))
+                if (strcmp(key, event))
                         continue;
 
-                val = strdup(q);
-                if (!val)
-                        return -ENOMEM;
-
-                *ret = TAKE_PTR(val);
+                *val = strdup(line);
                 return 0;
         }
+
+        return -ENOENT;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -360,7 +350,7 @@ int cg_kill_recursive(
         while ((r = cg_read_subgroup(d, &fn)) > 0) {
                 _cleanup_free_ char *p = NULL;
 
-                p = strjoin(path, "/", fn);
+                p = path_join(path, fn);
                 free(fn);
                 if (!p)
                         return -ENOMEM;
@@ -498,7 +488,7 @@ int cg_migrate_recursive(
         while ((r = cg_read_subgroup(d, &fn)) > 0) {
                 _cleanup_free_ char *p = NULL;
 
-                p = strjoin(pfrom, "/", fn);
+                p = path_join(pfrom, fn);
                 free(fn);
                 if (!p)
                         return -ENOMEM;
@@ -586,13 +576,13 @@ static int join_path_legacy(const char *controller, const char *path, const char
         dn = controller_to_dirname(controller);
 
         if (isempty(path) && isempty(suffix))
-                t = strappend("/sys/fs/cgroup/", dn);
+                t = path_join("/sys/fs/cgroup", dn);
         else if (isempty(path))
-                t = strjoin("/sys/fs/cgroup/", dn, "/", suffix);
+                t = path_join("/sys/fs/cgroup", dn, suffix);
         else if (isempty(suffix))
-                t = strjoin("/sys/fs/cgroup/", dn, "/", path);
+                t = path_join("/sys/fs/cgroup", dn, path);
         else
-                t = strjoin("/sys/fs/cgroup/", dn, "/", path, "/", suffix);
+                t = path_join("/sys/fs/cgroup", dn, path, suffix);
         if (!t)
                 return -ENOMEM;
 
@@ -608,11 +598,11 @@ static int join_path_unified(const char *path, const char *suffix, char **fs) {
         if (isempty(path) && isempty(suffix))
                 t = strdup("/sys/fs/cgroup");
         else if (isempty(path))
-                t = strappend("/sys/fs/cgroup/", suffix);
+                t = path_join("/sys/fs/cgroup", suffix);
         else if (isempty(suffix))
-                t = strappend("/sys/fs/cgroup/", path);
+                t = path_join("/sys/fs/cgroup", path);
         else
-                t = strjoin("/sys/fs/cgroup/", path, "/", suffix);
+                t = path_join("/sys/fs/cgroup", path, suffix);
         if (!t)
                 return -ENOMEM;
 
@@ -639,7 +629,7 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
                 else if (!path)
                         t = strdup(suffix);
                 else
-                        t = strjoin(path, "/", suffix);
+                        t = path_join(path, suffix);
                 if (!t)
                         return -ENOMEM;
 
@@ -1254,7 +1244,7 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
                 while ((r = cg_read_subgroup(d, &fn)) > 0) {
                         _cleanup_free_ char *p = NULL;
 
-                        p = strjoin(path, "/", fn);
+                        p = path_join(path, fn);
                         free(fn);
                         if (!p)
                                 return -ENOMEM;

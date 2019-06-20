@@ -324,7 +324,7 @@ int mkdtemp_malloc(const char *template, char **ret) {
                 if (r < 0)
                         return r;
 
-                p = strjoin(tmp, "/XXXXXX");
+                p = path_join(tmp, "XXXXXX");
         }
         if (!p)
                 return -ENOMEM;
