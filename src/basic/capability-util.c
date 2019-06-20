@@ -86,7 +86,7 @@ int capability_update_inherited_set(cap_t caps, uint64_t set) {
         /* Add capabilities in the set to the inherited caps. Do not apply
          * them yet. */
 
-        for (i = 0; i < cap_last_cap(); i++) {
+        for (i = 0; i <= cap_last_cap(); i++) {
 
                 if (set & (UINT64_C(1) << i)) {
                         cap_value_t v;
@@ -122,7 +122,7 @@ int capability_ambient_set_apply(uint64_t set, bool also_inherit) {
                         return -errno;
         }
 
-        for (i = 0; i < cap_last_cap(); i++) {
+        for (i = 0; i <= cap_last_cap(); i++) {
 
                 if (set & (UINT64_C(1) << i)) {
 
