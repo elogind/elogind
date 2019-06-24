@@ -201,6 +201,10 @@ int device_set_syspath(sd_device *device, const char *_syspath, bool verify) {
 
         devpath = syspath + STRLEN("/sys");
 
+        if (devpath[0] == '\0')
+                /* '/sys' alone is not a valid device path */
+                return -ENODEV;
+
         r = device_add_property_internal(device, "DEVPATH", devpath);
         if (r < 0)
                 return r;
@@ -1735,7 +1739,8 @@ static int device_get_sysattr_value(sd_device *device, const char *_key, const c
  * with a NULL value in the cache, otherwise the returned string is stored */
 _public_ int sd_device_get_sysattr_value(sd_device *device, const char *sysattr, const char **_value) {
         _cleanup_free_ char *value = NULL;
-        const char *path, *syspath, *cached_value = NULL;
+        const char *syspath, *cached_value = NULL;
+        char *path;
         struct stat statbuf;
         int r;
 
@@ -1762,7 +1767,7 @@ _public_ int sd_device_get_sysattr_value(sd_device *device, const char *sysattr,
         if (r < 0)
                 return r;
 
-        path = prefix_roota(syspath, sysattr);
+        path = strjoina(syspath, "/", sysattr);
         r = lstat(path, &statbuf);
         if (r < 0) {
                 /* remember that we could not access the sysattr */
@@ -1837,7 +1842,7 @@ _public_ int sd_device_set_sysattr_value(sd_device *device, const char *sysattr,
         if (r < 0)
                 return r;
 
-        path = prefix_roota(syspath, sysattr);
+        path = strjoina(syspath, "/", sysattr);
 
         len = strlen(_value);
 
