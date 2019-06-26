@@ -17,6 +17,7 @@
 
 #include "sd-messages.h"
 
+//#include "btrfs-util.h"
 #include "def.h"
 //#include "exec-util.h"
 #include "fd-util.h"
@@ -101,7 +102,14 @@ static int write_hibernate_location_info(void) {
         if (r < 0)
                 return log_debug_errno(errno, "Unable to stat %s: %m", device);
 
-        // TODO check for btrfs and fail if offset is not provided; calculation will fail
+        r = btrfs_is_filesystem(fd);
+        if (r < 0)
+                return log_error_errno(r, "Error checking %s for Btrfs filesystem: %m", device);
+
+        if (r)
+                return log_debug_errno(SYNTHETIC_ERRNO(EOPNOTSUPP),
+                                       "Unable to calculate swapfile offset when using Btrfs: %s", device);
+
         r = read_fiemap(fd, &fiemap);
         if (r < 0)
                 return log_debug_errno(r, "Unable to read extent map for '%s': %m", device);
@@ -168,6 +176,19 @@ static int write_state(FILE **f, char **states) {
 
         return r;
 }
+
+static int configure_hibernation(void) {
+        _cleanup_free_ char *resume = NULL, *resume_offset = NULL;
+        int r;
+
+        /* check for proper hibernation configuration */
+        r = read_one_line_file("/sys/power/resume", &resume);
+        if (r < 0)
+                return log_debug_errno(r, "Error reading from /sys/power/resume: %m");
+
+        r = read_one_line_file("/sys/power/resume_offset", &resume_offset);
+        if (r < 0)
+                return log_debug_errno(r, "Error reading from /sys/power/resume_offset: %m");
 
 #if 0 /// elogind uses the values stored in its manager instance
         if (!streq(resume_offset, "0") && !streq(resume, "0:0")) {
