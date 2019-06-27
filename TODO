@@ -56,6 +56,10 @@ Features:
   with a nice speed-up on services that have many processes running in the same
   cgroup.
 
+* clean up sleep.c:
+  - Make sure resume= and resume_offset= on the kernel cmdline always take
+    precedence
+
 * make MAINPID= message reception checks even stricter: if service uses User=,
   then check sending UID and ignore message if it doesn't match the user or
   root.
@@ -71,7 +75,7 @@ Features:
   safe_fork() is to fork(). And then make revert the RLIMIT_NOFILE soft limit
   to 1K implicitly, unless explicitly opted-out.
 
-* rework seccomp/nnp logic that that even if User= is used in combination with
+* rework seccomp/nnp logic that even if User= is used in combination with
   a seccomp option we don't have to set NNP. For that, change uid first whil
   keeping CAP_SYS_ADMIN, then apply seccomp, the drop cap.
 
