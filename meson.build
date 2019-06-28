@@ -1172,24 +1172,24 @@ conf.set10('HAVE_PAM', have)
 #         error('libidn and libidn2 cannot be requested simultaneously')
 # endif
 #
-# if want_libidn != 'false' and want_libidn2 != 'true' and not skip_deps
-#         libidn = dependency('libidn',
-#                             required : want_libidn == 'true')
-#         have = libidn.found()
-# else
-#         have = false
-#         libidn = []
-# endif
-# conf.set10('HAVE_LIBIDN', have)
-# if not have and want_libidn2 != 'false' and not skip_deps
-#         # libidn is used for both libidn and libidn2 objects
+# if want_libidn2 != 'false' and want_libidn != 'true' and not skip_deps
 #         libidn = dependency('libidn2',
 #                             required : want_libidn2 == 'true')
 #         have = libidn.found()
 # else
 #         have = false
+#         libidn = []
 # endif
 # conf.set10('HAVE_LIBIDN2', have)
+# if not have and want_libidn != 'false' and not skip_deps
+#         # libidn is used for both libidn and libidn2 objects
+#         libidn = dependency('libidn',
+#                             required : want_libidn == 'true')
+#         have = libidn.found()
+# else
+#         have = false
+# endif
+# conf.set10('HAVE_LIBIDN', have)
 #
 # want_libiptc = get_option('libiptc')
 # if want_libiptc != 'false' and not skip_deps
