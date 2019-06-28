@@ -959,7 +959,6 @@ enable_debug_mmap_cache = false
 enable_debug_elogind = false
 #endif // 1
 enable_debug_siphash = false
-enable_debug_udev = false
 foreach name : get_option('debug-extra')
         if name == 'hashmap'
                 enable_debug_hashmap = true
@@ -971,8 +970,6 @@ foreach name : get_option('debug-extra')
 #endif // 1
         elif name == 'siphash'
                 enable_debug_siphash = true
-        elif name == 'udev'
-                enable_debug_udev = true
         else
                 message('unknown debug option "@0@", ignoring'.format(name))
         endif
@@ -983,7 +980,6 @@ conf.set10('ENABLE_DEBUG_MMAP_CACHE', enable_debug_mmap_cache)
 conf.set10('ENABLE_DEBUG_ELOGIND', enable_debug_elogind)
 #endif // 1
 conf.set10('ENABLE_DEBUG_SIPHASH', enable_debug_siphash)
-conf.set10('ENABLE_DEBUG_UDEV', enable_debug_udev)
 
 conf.set10('VALGRIND', get_option('valgrind'))
 conf.set10('LOG_TRACE', get_option('log-trace'))
@@ -3667,7 +3663,6 @@ foreach tuple : [
         ['debug mmap cache'],
 #if 0 /// elogind does not ships libudev.
 #         ['debug siphash'],
-#         ['debug udev'],
 #endif // 0
         ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
