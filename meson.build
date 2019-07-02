@@ -236,7 +236,6 @@ endif
 
 #if 0 /// UNNEEDED by elogind
 # memory_accounting_default = get_option('memory-accounting-default')
-# status_unit_format_default = get_option('status-unit-format-default')
 #endif // 0
 
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
@@ -302,7 +301,6 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
-# conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 #endif // 0
 
 substs.set('prefix',                                          prefixdir)
@@ -349,7 +347,6 @@ substs.set('systemsleepdir',                                  systemsleepdir)
 # substs.set('SYSTEM_SYSVRCND_PATH',                            sysvrcnd_path)
 # substs.set('RC_LOCAL_SCRIPT_PATH_START',                      get_option('rc-local'))
 # substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
-# substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
 substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
 substs.set('BUILD_ROOT',                                      meson.current_build_dir())
@@ -1600,6 +1597,7 @@ config_h = configure_file(
 meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
+                               'src/boot',
                                'src/shared',
                                'src/systemd',
                                'src/journal',
