@@ -656,6 +656,10 @@ tests += [
 #          [],
 #          []],
 #
+#         [['src/test/test-env-file.c'],
+#          [],
+#          []],
+#
 #         [['src/test/test-env-util.c'],
 #          [],
 #          []],
