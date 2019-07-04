@@ -2458,6 +2458,26 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootbindir)
+#
+#         if conf.get('HAVE_PAM') == 1
+#                 version_script_arg = join_paths(project_source_root, pam_systemd_home_sym)
+#                 pam_systemd = shared_library(
+#                         'pam_systemd_home',
+#                         pam_systemd_home_c,
+#                         name_prefix : '',
+#                         include_directories : includes,
+#                         link_args : ['-shared',
+#                                      '-Wl,--version-script=' + version_script_arg],
+#                         link_with : [libsystemd_static,
+#                                      libshared_static],
+#                         dependencies : [threads,
+#                                         libpam,
+#                                         libpam_misc,
+#                                         libcrypt],
+#                         link_depends : pam_systemd_home_sym,
+#                         install : true,
+#                         install_dir : pamlibdir)
+#         endif
 # endif
 #
 # foreach alias : ['halt', 'poweroff', 'reboot', 'runlevel', 'shutdown', 'telinit']
