@@ -308,6 +308,7 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('VENDOR_KEYRING_PATH',                        join_paths(rootlibexecdir, 'import-pubring.gpg'))
 # conf.set_quoted('USER_KEYRING_PATH',                          join_paths(pkgsysconfdir, 'import-pubring.gpg'))
 # conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
+# conf.set_quoted('SYSTEMD_HOMEWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-homework'))
 # conf.set_quoted('SYSTEMD_USERWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-userwork'))
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
@@ -1063,6 +1064,16 @@ endif
 # endif
 # conf.set10('HAVE_LIBFDISK', have)
 #
+# want_pwquality = get_option('pwquality')
+# if want_pwquality != 'false' and not skip_deps
+#         libpwquality = dependency('pwquality', required : want_pwquality == 'true')
+#         have = libpwquality.found()
+# else
+#         have = false
+#         libpwquality = []
+# endif
+# conf.set10('HAVE_PWQUALITY', have)
+#
 # want_seccomp = get_option('seccomp')
 # if want_seccomp != 'false' and not skip_deps
 #         libseccomp = dependency('libseccomp',
@@ -1205,6 +1216,9 @@ conf.set10('HAVE_PAM', have)
 #                                    version : '>= 2.0.1',
 #                                    required : want_libcryptsetup == 'true')
 #         have = libcryptsetup.found()
+#
+#         conf.set10('HAVE_CRYPT_SET_METADATA_SIZE',
+#                    have and cc.has_function('crypt_set_metadata_size', dependencies : libcryptsetup))
 # else
 #         have = false
 #         libcryptsetup = []
@@ -1531,6 +1545,19 @@ conf.set10('HAVE_DBUS', have)
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
 #
+# want_homed = get_option('homed')
+# if want_homed != 'false'
+#         have = (conf.get('HAVE_OPENSSL') == 1 and
+#                 conf.get('HAVE_LIBFDISK') == 1 and
+#                 conf.get('HAVE_LIBCRYPTSETUP') == 1)
+#         if want_homed == 'true' and not have
+#                 error('homed support was requested, but dependencies are not available')
+#         endif
+# else
+#         have = false
+# endif
+# conf.set10('ENABLE_HOMED', have)
+#
 # want_remote = get_option('remote')
 # if want_remote != 'false'
 #         have_deps = [conf.get('HAVE_MICROHTTPD') == 1,
@@ -1852,6 +1879,7 @@ subdir('src/shared')
 # subdir('src/machine')
 # subdir('src/portable')
 # subdir('src/userdb')
+# subdir('src/home')
 # subdir('src/nspawn')
 # subdir('src/resolve')
 # subdir('src/timedate')
@@ -2388,6 +2416,35 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootbindir)
+# endif
+#
+# if conf.get('ENABLE_HOMED') == 1
+#         executable('systemd-homework',
+#                    systemd_homework_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [threads,
+#                                    libcryptsetup,
+#                                    libblkid,
+#                                    libcrypt,
+#                                    libopenssl,
+#                                    libfdisk,
+#                                    libp11kit],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
+#
+#         executable('systemd-homed',
+#                    systemd_homed_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [threads,
+#                                    libcrypt,
+#                                    libopenssl,
+#                                    libpwquality],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
 # endif
 #
 # foreach alias : ['halt', 'poweroff', 'reboot', 'runlevel', 'shutdown', 'telinit']
@@ -3749,6 +3806,8 @@ foreach tuple : [
 #         ['libcryptsetup'],
 #endif // 0
         ['PAM'],
+        ['pwquality'],
+        ['fdisk'],
         ['p11kit'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
@@ -3794,6 +3853,7 @@ foreach tuple : [
 #         ['machined'],
 #         ['portabled'],
 #         ['userdb'],
+#         ['homed'],
 #         ['importd'],
 #         ['hostnamed'],
 #         ['timedated'],

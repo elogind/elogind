@@ -135,6 +135,8 @@ option('utmp', type : 'boolean',
 #        description : 'install the systemd-portabled stack')
 # option('userdb', type : 'boolean',
 #        description : 'install the systemd-userdbd stack')
+# option('homed', type : 'boolean',
+#        description : 'install the systemd-homed stack')
 # option('networkd', type : 'boolean',
 #        description : 'install the systemd-networkd stack')
 # option('timedated', type : 'boolean',
@@ -341,6 +343,8 @@ option('audit', type : 'combo', choices : ['auto', 'true', 'false'],
 option('pam', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'PAM support')
 #if 0 /// UNNEEDED by elogind
+# option('pwquality', type : 'combo', choices : ['auto', 'true', 'false'],
+#        description : 'libpwquality support')
 # option('microhttpd', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'libµhttpd support')
 # option('libcryptsetup', type : 'combo', choices : ['auto', 'true', 'false'],
