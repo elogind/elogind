@@ -363,13 +363,7 @@ static int write_to_console(
                 get_log_colors(LOG_PRI(level), &on, &off, NULL);
 
         if (show_location) {
-                const char *lon = "", *loff = "";
-                if (show_color) {
-                        lon = ANSI_HIGHLIGHT_YELLOW4;
-                        loff = ANSI_NORMAL;
-                }
-
-                (void) snprintf(location, sizeof location, "%s%s:%i%s: ", lon, file, line, loff);
+                (void) snprintf(location, sizeof location, "(%s:%i) ", file, line);
                 iovec[n++] = IOVEC_MAKE_STRING(location);
         }
 
@@ -1136,11 +1130,11 @@ void log_parse_environment_realm(LogRealm realm) {
 
         e = getenv("SYSTEMD_LOG_COLOR");
         if (e && log_show_color_from_string(e) < 0)
-                log_warning("Failed to parse bool '%s'. Ignoring.", e);
+                log_warning("Failed to parse log color '%s'. Ignoring.", e);
 
         e = getenv("SYSTEMD_LOG_LOCATION");
         if (e && log_show_location_from_string(e) < 0)
-                log_warning("Failed to parse bool '%s'. Ignoring.", e);
+                log_warning("Failed to parse log location '%s'. Ignoring.", e);
 }
 
 LogTarget log_get_target(void) {
@@ -1262,29 +1256,18 @@ int log_syntax_internal(
         if (unit)
                 unit_fmt = getpid_cached() == 1 ? "UNIT=%s" : "USER_UNIT=%s";
 
-        if (config_file) {
-                if (config_line > 0)
-                        return log_struct_internal(
-                                        LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
-                                        error,
-                                        file, line, func,
-                                        "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
-                                        "CONFIG_FILE=%s", config_file,
-                                        "CONFIG_LINE=%u", config_line,
-                                        LOG_MESSAGE("%s:%u: %s", config_file, config_line, buffer),
-                                        unit_fmt, unit,
-                                        NULL);
-                else
-                        return log_struct_internal(
-                                        LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
-                                        error,
-                                        file, line, func,
-                                        "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
-                                        "CONFIG_FILE=%s", config_file,
-                                        LOG_MESSAGE("%s: %s", config_file, buffer),
-                                        unit_fmt, unit,
-                                        NULL);
-        } else if (unit)
+        if (config_file)
+                return log_struct_internal(
+                                LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
+                                error,
+                                file, line, func,
+                                "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
+                                "CONFIG_FILE=%s", config_file,
+                                "CONFIG_LINE=%u", config_line,
+                                LOG_MESSAGE("%s:%u: %s", config_file, config_line, buffer),
+                                unit_fmt, unit,
+                                NULL);
+        else if (unit)
                 return log_struct_internal(
                                 LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
                                 error,
