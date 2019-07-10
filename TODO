@@ -90,8 +90,8 @@ Features:
   usefaultd() and make elogind-analyze check for it.
 
 * paranoia: whenever we process passwords, call mlock() on the memory
-  first. i.e. look for all places we use string_erase()/string_free_erase() and
-  augment them with mlock(). Also use MADV_DONTDUMP
+  first. i.e. look for all places we use free_and_erasep() and
+  augment them with mlock(). Also use MADV_DONTDUMP.
 
 * Move RestrictAddressFamily= to the new cgroup create socket
 
@@ -133,6 +133,9 @@ Features:
   CODE_BASE=github.com/systemd/systemd/blob/98b0b1123cc or so which is
   sufficient to build a link by prefixing "http://" and suffixing the
   CODE_FILE.
+
+* when outputting log data with journalctl and the log data includes references
+  to configuration files (CONFIG_FILE=), create a clickable link for it.
 
 * Augment MESSAGE_ID with MESSAGE_BASE, in a similar fashion so that we can
   make clickable links from log messages carrying a MESSAGE_ID, that lead to
