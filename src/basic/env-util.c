@@ -574,7 +574,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
 
                                 t = strv_env_get_n(env, word+2, e-word-2, flags);
 
-                                k = strappend(r, t);
+                                k = strjoin(r, t);
                                 if (!k)
                                         return NULL;
 
@@ -630,7 +630,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                                 else if (!t && state == DEFAULT_VALUE)
                                         t = v = replace_env_n(test_value, e-test_value, env, flags);
 
-                                k = strappend(r, t);
+                                k = strjoin(r, t);
                                 if (!k)
                                         return NULL;
 
@@ -649,7 +649,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
 
                                 t = strv_env_get_n(env, word+1, e-word-1, flags);
 
-                                k = strappend(r, t);
+                                k = strjoin(r, t);
                                 if (!k)
                                         return NULL;
 
@@ -668,7 +668,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
                 assert(flags & REPLACE_ENV_ALLOW_BRACELESS);
 
                 t = strv_env_get_n(env, word+1, e-word-1, flags);
-                return strappend(r, t);
+                return strjoin(r, t);
         } else
                 return strnappend(r, word, e-word);
 }
