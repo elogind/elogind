@@ -35,6 +35,10 @@ substs.set('PROJECT_VERSION',      meson.project_version())
 # This is to be used instead of meson.source_root(), as the latter will return
 # the wrong result when elogind is being built as a meson subproject
 project_source_root = meson.current_source_dir()
+relative_source_path = run_command('realpath',
+                                   '--relative-to=@0@'.format(meson.current_build_dir()),
+                                   project_source_root).stdout().strip()
+conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
@@ -236,6 +240,7 @@ endif
 
 #if 0 /// UNNEEDED by elogind
 # memory_accounting_default = get_option('memory-accounting-default')
+# status_unit_format_default = get_option('status-unit-format-default')
 #endif // 0
 
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
@@ -301,6 +306,7 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
+# conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 #endif // 0
 
 substs.set('prefix',                                          prefixdir)
@@ -347,6 +353,7 @@ substs.set('systemsleepdir',                                  systemsleepdir)
 # substs.set('SYSTEM_SYSVRCND_PATH',                            sysvrcnd_path)
 # substs.set('RC_LOCAL_SCRIPT_PATH_START',                      get_option('rc-local'))
 # substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
+# substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
 substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
 substs.set('BUILD_ROOT',                                      meson.current_build_dir())
@@ -3063,6 +3070,14 @@ public_programs += exe
 #                    install : true,
 #                    install_dir : rootbindir)
 #         public_programs += exe
+#
+#         executable('systemd-network-generator',
+#                    network_generator_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
 # endif
 #
 # executable('systemd-sulogin-shell',
