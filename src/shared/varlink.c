@@ -246,8 +246,7 @@ static int varlink_new(Varlink **ret) {
 
         assert(ret);
 
-        /* Here use new0 as the below structured initializer is nested. */
-        v = new0(Varlink, 1);
+        v = new(Varlink, 1);
         if (!v)
                 return -ENOMEM;
 
@@ -1003,7 +1002,6 @@ int varlink_wait(Varlink *v, usec_t timeout) {
         usec_t t;
 
         assert_return(v, -EINVAL);
-        assert_return(!v->server, -ENOTTY);
 
         if (v->state == VARLINK_DISCONNECTED)
                 return -ENOTCONN;
@@ -1876,7 +1874,6 @@ fail:
         return r;
 }
 
-
 void varlink_detach_event(Varlink *v) {
         if (!v)
                 return;
@@ -2054,12 +2051,14 @@ int varlink_server_add_connection(VarlinkServer *server, int fd, Varlink **ret) 
 
         varlink_set_state(v, VARLINK_IDLE_SERVER);
 
-        r = varlink_attach_event(v, server->event, server->event_priority);
-        if (r < 0) {
-                varlink_log_errno(v, r, "Failed to attach new connection: %m");
-                v->fd = -1; /* take the fd out of the connection again */
-                varlink_close(v);
-                return r;
+        if (server->event) {
+                r = varlink_attach_event(v, server->event, server->event_priority);
+                if (r < 0) {
+                        varlink_log_errno(v, r, "Failed to attach new connection: %m");
+                        v->fd = -1; /* take the fd out of the connection again */
+                        varlink_close(v);
+                        return r;
+                }
         }
 
         if (ret)
@@ -2305,7 +2304,7 @@ int varlink_server_bind_method(VarlinkServer *s, const char *method, VarlinkMeth
 
 int varlink_server_bind_method_many_internal(VarlinkServer *s, ...) {
         va_list ap;
-        int r;
+        int r = 0;
 
         assert_return(s, -EINVAL);
 
@@ -2322,10 +2321,11 @@ int varlink_server_bind_method_many_internal(VarlinkServer *s, ...) {
 
                 r = varlink_server_bind_method(s, method, callback);
                 if (r < 0)
-                        return r;
+                        break;
         }
+        va_end(ap);
 
-        return 0;
+        return r;
 }
 
 int varlink_server_bind_connect(VarlinkServer *s, VarlinkConnect callback) {
