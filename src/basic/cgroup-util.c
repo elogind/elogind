@@ -390,7 +390,7 @@ int cg_kill_recursive(
         while ((r = cg_read_subgroup(d, &fn)) > 0) {
                 _cleanup_free_ char *p = NULL;
 
-                p = path_join(path, fn);
+                p = path_join(empty_to_root(path), fn);
                 free(fn);
                 if (!p)
                         return -ENOMEM;
@@ -528,7 +528,7 @@ int cg_migrate_recursive(
         while ((r = cg_read_subgroup(d, &fn)) > 0) {
                 _cleanup_free_ char *p = NULL;
 
-                p = path_join(pfrom, fn);
+                p = path_join(empty_to_root(pfrom), fn);
                 free(fn);
                 if (!p)
                         return -ENOMEM;
