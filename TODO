@@ -220,6 +220,9 @@ Features:
 
 * add --vacuum-xyz options to coredumpctl, matching those journalctl already has.
 
+* SuccessExitStatus= and friends should probably also accept symbolic exit
+  codes names, i.e. error codes from the list maintained in exit-codes.[ch]
+
 * introduce Ephemeral= unit file switch, that creates an ephemeral copy of all
   files and directories that are left writable for a unit, and which are
   removed after the unit goes down again. A bit like --ephemeral for
@@ -622,8 +625,6 @@ Features:
 
 * transient units:
   - add field to transient units that indicate whether systemd or somebody else saves/restores its settings, for integration with libvirt
-
-* Automatically configure swap partition to use for hibernation by looking for largest swap partition on the root disk?
 
 * when we detect low battery and no AC on boot, show pretty splash and refuse boot
 
