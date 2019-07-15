@@ -29,7 +29,7 @@ int read_fiemap(int fd, struct fiemap **ret);
 #if 0 /// UNNEEDED by elogind
 int parse_sleep_config(SleepConfig **sleep_config);
 #endif // 0
-int find_hibernate_location(char **device, char **type, size_t *size, size_t *used);
+int find_hibernate_location(char **device, char **type, uint64_t *size, uint64_t *used);
 
 #if 0 /// elogind has to transport its manager instance
 int can_sleep(const char *verb);
