@@ -13,10 +13,7 @@ typedef enum TableDataType {
         TABLE_STRING,
         TABLE_BOOLEAN,
         TABLE_TIMESTAMP,
-        TABLE_TIMESTAMP_UTC,
-        TABLE_TIMESTAMP_RELATIVE,
         TABLE_TIMESPAN,
-        TABLE_TIMESPAN_MSEC,
         TABLE_SIZE,
         TABLE_BPS,
         TABLE_INT,
@@ -59,7 +56,7 @@ int table_set_align_percent(Table *t, TableCell *cell, unsigned percent);
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent);
 int table_set_color(Table *t, TableCell *cell, const char *color);
 #endif // 0
-int table_set_url(Table *t, TableCell *cell, const char *color);
+int table_set_url(Table *t, TableCell *cell, const char *url);
 int table_set_uppercase(Table *t, TableCell *cell, bool b);
 
 int table_update(Table *t, TableCell *cell, TableDataType type, const void *data);
