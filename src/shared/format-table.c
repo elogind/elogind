@@ -230,10 +230,7 @@ static size_t table_data_size(TableDataType type, const void *data) {
                 return sizeof(bool);
 
         case TABLE_TIMESTAMP:
-        case TABLE_TIMESTAMP_UTC:
-        case TABLE_TIMESTAMP_RELATIVE:
         case TABLE_TIMESPAN:
-        case TABLE_TIMESPAN_MSEC:
                 return sizeof(usec_t);
 
         case TABLE_SIZE:
@@ -687,6 +684,7 @@ int table_update(Table *t, TableCell *cell, TableDataType type, const void *data
 int table_add_many_internal(Table *t, TableDataType first_type, ...) {
         TableDataType type;
         va_list ap;
+        TableCell *last_cell = NULL;
         int r;
 
         assert(t);
@@ -728,10 +726,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         break;
 
                 case TABLE_TIMESTAMP:
-                case TABLE_TIMESTAMP_UTC:
-                case TABLE_TIMESTAMP_RELATIVE:
                 case TABLE_TIMESPAN:
-                case TABLE_TIMESPAN_MSEC:
                         buffer.usec = va_arg(ap, usec_t);
                         data = &buffer.usec;
                         break;
@@ -782,6 +777,55 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         data = &buffer.ifindex;
                         break;
 
+                case TABLE_SET_MINIMUM_WIDTH: {
+                        size_t w = va_arg(ap, size_t);
+
+                        r = table_set_minimum_width(t, last_cell, w);
+                        break;
+                }
+
+                case TABLE_SET_MAXIMUM_WIDTH: {
+                        size_t w = va_arg(ap, size_t);
+                        r = table_set_maximum_width(t, last_cell, w);
+                        break;
+                }
+
+                case TABLE_SET_WEIGHT: {
+                        unsigned w = va_arg(ap, unsigned);
+                        r = table_set_weight(t, last_cell, w);
+                        break;
+                }
+
+                case TABLE_SET_ALIGN_PERCENT: {
+                        unsigned p = va_arg(ap, unsigned);
+                        r = table_set_align_percent(t, last_cell, p);
+                        break;
+                }
+
+                case TABLE_SET_ELLIPSIZE_PERCENT: {
+                        unsigned p = va_arg(ap, unsigned);
+                        r = table_set_ellipsize_percent(t, last_cell, p);
+                        break;
+                }
+
+                case TABLE_SET_COLOR: {
+                        const char *c = va_arg(ap, const char*);
+                        r = table_set_color(t, last_cell, c);
+                        break;
+                }
+
+                case TABLE_SET_URL: {
+                        const char *u = va_arg(ap, const char*);
+                        r = table_set_url(t, last_cell, u);
+                        break;
+                }
+
+                case TABLE_SET_UPPERCASE: {
+                        int u = va_arg(ap, int);
+                        r = table_set_uppercase(t, last_cell, u);
+                        break;
+                }
+
                 case _TABLE_DATA_TYPE_MAX:
                         /* Used as end marker */
                         va_end(ap);
@@ -791,7 +835,9 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         assert_not_reached("Uh? Unexpected data type.");
                 }
 
-                r = table_add_cell(t, NULL, type, data);
+                if (type < _TABLE_DATA_TYPE_MAX)
+                        r = table_add_cell(t, &last_cell, type, data);
+
                 if (r < 0) {
                         va_end(ap);
                         return r;
@@ -894,12 +940,9 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
                         return 0;
 
                 case TABLE_TIMESTAMP:
-                case TABLE_TIMESTAMP_UTC:
-                case TABLE_TIMESTAMP_RELATIVE:
                         return CMP(a->timestamp, b->timestamp);
 
                 case TABLE_TIMESPAN:
-                case TABLE_TIMESPAN_MSEC:
                         return CMP(a->timespan, b->timespan);
 
                 case TABLE_SIZE:
@@ -1000,39 +1043,28 @@ static const char *table_data_format(TableData *d) {
         case TABLE_BOOLEAN:
                 return yes_no(d->boolean);
 
-        case TABLE_TIMESTAMP:
-        case TABLE_TIMESTAMP_UTC:
-        case TABLE_TIMESTAMP_RELATIVE: {
+        case TABLE_TIMESTAMP: {
                 _cleanup_free_ char *p;
-                char *ret;
 
                 p = new(char, FORMAT_TIMESTAMP_MAX);
                 if (!p)
                         return NULL;
 
-                if (d->type == TABLE_TIMESTAMP)
-                        ret = format_timestamp(p, FORMAT_TIMESTAMP_MAX, d->timestamp);
-                else if (d->type == TABLE_TIMESTAMP_UTC)
-                        ret = format_timestamp_utc(p, FORMAT_TIMESTAMP_MAX, d->timestamp);
-                else
-                        ret = format_timestamp_relative(p, FORMAT_TIMESTAMP_MAX, d->timestamp);
-                if (!ret)
+                if (!format_timestamp(p, FORMAT_TIMESTAMP_MAX, d->timestamp))
                         return "n/a";
 
                 d->formatted = TAKE_PTR(p);
                 break;
         }
 
-        case TABLE_TIMESPAN:
-        case TABLE_TIMESPAN_MSEC: {
+        case TABLE_TIMESPAN: {
                 _cleanup_free_ char *p;
 
                 p = new(char, FORMAT_TIMESPAN_MAX);
                 if (!p)
                         return NULL;
 
-                if (!format_timespan(p, FORMAT_TIMESPAN_MAX, d->timespan,
-                                     d->type == TABLE_TIMESPAN ? 0 : USEC_PER_MSEC))
+                if (!format_timespan(p, FORMAT_TIMESPAN_MAX, d->timespan, 0))
                         return "n/a";
 
                 d->formatted = TAKE_PTR(p);
@@ -1660,15 +1692,12 @@ static int table_data_to_json(TableData *d, JsonVariant **ret) {
                 return json_variant_new_boolean(ret, d->boolean);
 
         case TABLE_TIMESTAMP:
-        case TABLE_TIMESTAMP_UTC:
-        case TABLE_TIMESTAMP_RELATIVE:
                 if (d->timestamp == USEC_INFINITY)
                         return json_variant_new_null(ret);
 
                 return json_variant_new_unsigned(ret, d->timestamp);
 
         case TABLE_TIMESPAN:
-        case TABLE_TIMESPAN_MSEC:
                 if (d->timespan == USEC_INFINITY)
                         return json_variant_new_null(ret);
 
