@@ -1540,7 +1540,6 @@ int device_properties_prepare(sd_device *device) {
 
 _public_ const char *sd_device_get_property_first(sd_device *device, const char **_value) {
         const char *key;
-        const char *value;
         int r;
 
         assert_return(device, NULL);
@@ -1552,16 +1551,12 @@ _public_ const char *sd_device_get_property_first(sd_device *device, const char 
         device->properties_iterator_generation = device->properties_generation;
         device->properties_iterator = ITERATOR_FIRST;
 
-        ordered_hashmap_iterate(device->properties, &device->properties_iterator, (void**)&value, (const void**)&key);
-
-        if (_value)
-                *_value = value;
+        (void) ordered_hashmap_iterate(device->properties, &device->properties_iterator, (void**)_value, (const void**)&key);
         return key;
 }
 
 _public_ const char *sd_device_get_property_next(sd_device *device, const char **_value) {
         const char *key;
-        const char *value;
         int r;
 
         assert_return(device, NULL);
@@ -1573,10 +1568,7 @@ _public_ const char *sd_device_get_property_next(sd_device *device, const char *
         if (device->properties_iterator_generation != device->properties_generation)
                 return NULL;
 
-        ordered_hashmap_iterate(device->properties, &device->properties_iterator, (void**)&value, (const void**)&key);
-
-        if (_value)
-                *_value = value;
+        (void) ordered_hashmap_iterate(device->properties, &device->properties_iterator, (void**)_value, (const void**)&key);
         return key;
 }
 
@@ -1739,8 +1731,7 @@ static int device_get_sysattr_value(sd_device *device, const char *_key, const c
  * with a NULL value in the cache, otherwise the returned string is stored */
 _public_ int sd_device_get_sysattr_value(sd_device *device, const char *sysattr, const char **_value) {
         _cleanup_free_ char *value = NULL;
-        const char *syspath, *cached_value = NULL;
-        char *path;
+        const char *path, *syspath, *cached_value = NULL;
         struct stat statbuf;
         int r;
 
@@ -1767,7 +1758,7 @@ _public_ int sd_device_get_sysattr_value(sd_device *device, const char *sysattr,
         if (r < 0)
                 return r;
 
-        path = strjoina(syspath, "/", sysattr);
+        path = prefix_roota(syspath, sysattr);
         r = lstat(path, &statbuf);
         if (r < 0) {
                 /* remember that we could not access the sysattr */
@@ -1842,7 +1833,7 @@ _public_ int sd_device_set_sysattr_value(sd_device *device, const char *sysattr,
         if (r < 0)
                 return r;
 
-        path = strjoina(syspath, "/", sysattr);
+        path = prefix_roota(syspath, sysattr);
 
         len = strlen(_value);
 
