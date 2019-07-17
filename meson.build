@@ -667,6 +667,7 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #          ['umount',     '/usr/bin/umount',     'UMOUNT_PATH'],
 #          ['loadkeys',   '/usr/bin/loadkeys',   'KBD_LOADKEYS'],
 #          ['setfont',    '/usr/bin/setfont',    'KBD_SETFONT'],
+#          ['nologin',    '/usr/sbin/nologin',   ],
 #         ]
 #else
 progs = [['halt',       '/sbin/halt',          'HALT'],

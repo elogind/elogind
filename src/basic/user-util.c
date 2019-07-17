@@ -150,7 +150,7 @@ static int synthesize_user_creds(
                         *home = FLAGS_SET(flags, USER_CREDS_CLEAN) ? NULL : "/";
 
                 if (shell)
-                        *shell = FLAGS_SET(flags, USER_CREDS_CLEAN) ? NULL : "/sbin/nologin";
+                        *shell = FLAGS_SET(flags, USER_CREDS_CLEAN) ? NULL : NOLOGIN;
 
                 return 0;
         }
@@ -543,7 +543,7 @@ int get_shell(char **_s) {
         }
         if (synthesize_nobody() &&
             u == UID_NOBODY) {
-                s = strdup("/sbin/nologin");
+                s = strdup(NOLOGIN);
                 if (!s)
                         return -ENOMEM;
 
