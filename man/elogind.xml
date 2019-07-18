@@ -675,7 +675,7 @@
         <filename>exit.target</filename> unit when this signal is
         received. This is mostly equivalent to <command>systemctl
         &#x2D;&#x2D;user start exit.target
-        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para></listitem>
+        &#x2D;&#x2D;job-mode=replace-irreversibly</command>.</para></listitem>
         --><!-- else -->
         <listitem><para>Upon receiving this signal elogind exits, cleaning up
         all sessions and seats.</para></listitem>
@@ -695,7 +695,7 @@
         <!-- 0 /// SIGINT is caught by elogind and causes elogind to exit.
         <listitem><para>Upon receiving this signal the systemd system manager will start the
         <filename>ctrl-alt-del.target</filename> unit. This is mostly equivalent to
-        <command>systemctl start ctrl-alt-del.target &#x2D;&#x2D;job-mode=replace-irreversible</command>. If
+        <command>systemctl start ctrl-alt-del.target &#x2D;&#x2D;job-mode=replace-irreversibly</command>. If
         this signal is received more than 7 times per 2s, an immediate reboot is triggered. Note
         that pressing
         <keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Del</keycap></keycombo> on the
@@ -798,7 +798,7 @@
         <listitem><para>Halts the machine, starts the
         <filename>halt.target</filename> unit. This is mostly
         equivalent to <command>systemctl start halt.target
-        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversibly</command>.</para>
         </listitem>
       </varlistentry>
 
@@ -808,7 +808,7 @@
         <listitem><para>Powers off the machine, starts the
         <filename>poweroff.target</filename> unit. This is mostly
         equivalent to <command>systemctl start poweroff.target
-        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversibly</command>.</para>
         </listitem>
       </varlistentry>
 
@@ -818,7 +818,7 @@
         <listitem><para>Reboots the machine, starts the
         <filename>reboot.target</filename> unit. This is mostly
         equivalent to <command>systemctl start reboot.target
-        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversibly</command>.</para>
         </listitem>
       </varlistentry>
 
@@ -828,7 +828,7 @@
         <listitem><para>Reboots the machine via kexec, starts the
         <filename>kexec.target</filename> unit. This is mostly
         equivalent to <command>systemctl start kexec.target
-        &#x2D;&#x2D;job-mode=replace-irreversible</command>.</para>
+        &#x2D;&#x2D;job-mode=replace-irreversibly</command>.</para>
         </listitem>
       </varlistentry>
 
