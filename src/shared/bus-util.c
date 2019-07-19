@@ -1109,7 +1109,8 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, unsigne
 
         switch (type) {
 
-        case SD_BUS_TYPE_STRING: {
+        case SD_BUS_TYPE_STRING:
+        case SD_BUS_TYPE_OBJECT_PATH: {
                 const char **p = userdata;
                 const char *s;
 
