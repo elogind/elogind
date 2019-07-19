@@ -67,6 +67,8 @@ libcore_shared_sources = '''
 #         device.h
 #         dynamic-user.c
 #         dynamic-user.h
+#         efi-random.c
+#         efi-random.h
 #         emergency-action.c
 #         emergency-action.h
 #         execute.c
