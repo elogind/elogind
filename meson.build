@@ -2617,8 +2617,6 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
-#         public_programs += exe
 # endif
 #
 # if conf.get('ENABLE_BINFMT') == 1
