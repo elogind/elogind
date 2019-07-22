@@ -2,6 +2,12 @@ systemd System and Service Manager
 
 CHANGES WITH 243 in spe:
 
+        * Enable unprivileged programs, neither setuid nor having file
+          capabilities, to send ICMP Echo requests by turning on the
+          net.ipv4.ping_group_range parameter of the Linux kernel for all
+          groups. If this is not desirable, then it can be disabled by setting
+          the parameter to "1 0".
+
         * Previously, filters defined with SystemCallFilter= would have the
           effect that an calling an offending system call would terminate the
           calling thread. This behaviour never made much sense, since killing
@@ -207,7 +213,6 @@ CHANGES WITH 243 in spe:
         * elogind-networkd's DHCPv4 and DHCPv6 stacks can now be configured
           separately in the [DHCPv4] and [DHCPv6] sections.
 
-        * elogind-networkd's VXLAN support gained a new option
         * elogind-networkd's DHCP support will now optionally create an
           implicit host route to the DNS server specified in the DHCP lease, in
           addition to the routes listed explicitly in the lease. This should
@@ -216,6 +221,7 @@ CHANGES WITH 243 in spe:
           routes such as default routes exist. This behaviour may be turned on
           with the new RoutesToDNS= option.
 
+        * elogind-networkd's VXLAN support gained a new option
           GenericProtocolExtension= for enabling VXLAN Generic Protocol
           Extension support, as well as IPDoNotFragment= for setting the IP
           "Don't fragment" bit on outgoing packets. A similar option has been
