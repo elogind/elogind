@@ -173,8 +173,8 @@
 #         udev-util.h
 #         uid-range.c
 #         uid-range.h
-#         unit-file.h
 #         unit-file.c
+#         unit-file.h
 #         utmp-wtmp.h
 #         varlink.c
 #         varlink.h
