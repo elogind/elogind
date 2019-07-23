@@ -1824,6 +1824,7 @@ test_dlopen = executable(
 #                                      '-shared',
 #                                      '-Wl,--version-script=' + version_script_arg],
 #                         link_with : [libsystemd_static,
+#                                      libshared_static,
 #                                      libbasic],
 #                         dependencies : [threads,
 #                                         librt],
