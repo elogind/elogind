@@ -1327,7 +1327,7 @@ static int session_open_vt(Session *s) {
 
 int session_prepare_vt(Session *s) {
         int vt, r;
-        struct vt_mode mode = { 0 };
+        struct vt_mode mode = {};
 
         if (s->vtnr < 1)
                 return 0;
