@@ -43,6 +43,7 @@
 //#include "udev-util.h"
 //#include "udev-util.h"
 //#include "udev-util.h"
+//#include "udev-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -511,12 +512,6 @@ static int manager_enumerate_sessions(Manager *m) {
 
                 if (!dirent_is_file(de))
                         continue;
-
-                if (!session_id_valid(de->d_name)) {
-                        log_warning("Invalid session file name '%s', ignoring.", de->d_name);
-                        r = -EINVAL;
-                        continue;
-                }
 
                 log_debug_elogind("Adding session /run/systemd/sessions/%s", de->d_name);
                 k = manager_add_session(m, de->d_name, &s);
