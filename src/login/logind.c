@@ -42,6 +42,7 @@
 //#include "udev-util.h"
 //#include "udev-util.h"
 //#include "udev-util.h"
+//#include "udev-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -331,10 +332,8 @@ static int manager_enumerate_linger_users(Manager *m) {
                         continue;
 
                 k = manager_add_user_by_name(m, de->d_name, NULL);
-                if (k < 0) {
-                        log_notice_errno(k, "Couldn't add lingering user %s: %m", de->d_name);
-                        r = k;
-                }
+                if (k < 0)
+                        r = log_warning_errno(k, "Couldn't add lingering user %s, ignoring: %m", de->d_name);
         }
 
         return r;
@@ -367,9 +366,7 @@ static int manager_enumerate_users(Manager *m) {
 
                 k = manager_add_user_by_name(m, de->d_name, &u);
                 if (k < 0) {
-                        log_error_errno(k, "Failed to add user by file name %s: %m", de->d_name);
-
-                        r = k;
+                        r = log_warning_errno(k, "Failed to add user by file name %s, ignoring: %m", de->d_name);
                         continue;
                 }
 
@@ -524,8 +521,7 @@ static int manager_enumerate_sessions(Manager *m) {
                 log_debug_elogind("Adding session /run/systemd/sessions/%s", de->d_name);
                 k = manager_add_session(m, de->d_name, &s);
                 if (k < 0) {
-                        log_error_errno(k, "Failed to add session by file name %s: %m", de->d_name);
-                        r = k;
+                        r = log_warning_errno(k, "Failed to add session by file name %s, ignoring: %m", de->d_name);
                         continue;
                 }
 
@@ -568,8 +564,7 @@ static int manager_enumerate_inhibitors(Manager *m) {
 
                 k = manager_add_inhibitor(m, de->d_name, &i);
                 if (k < 0) {
-                        log_notice_errno(k, "Couldn't add inhibitor %s: %m", de->d_name);
-                        r = k;
+                        r = log_warning_errno(k, "Couldn't add inhibitor %s, ignoring: %m", de->d_name);
                         continue;
                 }
 
