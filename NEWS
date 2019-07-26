@@ -2,15 +2,6 @@ systemd System and Service Manager
 
 CHANGES WITH 243 in spe:
 
-        * This release enables unprivileged programs (i.e. requiring neither
-          setuid nor file capabilities) to send ICMP Echo (i.e. ping) requests
-          by turning on the net.ipv4.ping_group_range sysctl of the Linux
-          kernel for the whole UNIX group range, i.e. all processes. This
-          change should be reasonably safe, as the kernel support for it was
-          specifically implemented to allow safe access to ICMP Echo for
-          processes lacking any privileges. If this is not desirable, it can be
-          disabled again by setting the parameter to "1 0".
-
         * Previously, filters defined with SystemCallFilter= would have the
           effect that an calling an offending system call would terminate the
           calling thread. This behaviour never made much sense, since killing
@@ -256,6 +247,10 @@ CHANGES WITH 243 in spe:
           statistics.
 
         * elogind-networkd's .network and .link files gained a new Property=
+        * networkd.conf gained a new setting SpeedMeter= and
+          SpeedMeterIntervalSec=, to measure bitrate of network interfaces. The
+          measured speed may be shown by 'networkctl status'.
+
           setting in the [Match] section, to match against devices with
           specific udev properties.
 
@@ -347,9 +342,6 @@ CHANGES WITH 243 in spe:
 
         * "localectl list-locales" won't list non-UTF-8 locales anymore. It's
           2019. (You can set non-UTF-8 locales though, if you know there name.)
-
-        * If variable assignments in sysctl.d/ files are prefixed with "-" any
-          failures to apply them are now ignored.
 
         Contributions from: Aaron Barany, Adrian Bunk, Alan Jenkins, Andrej
         Valek, Anita Zhang, Arian van Putten, Balint Reczey, Bastien Nocera,
