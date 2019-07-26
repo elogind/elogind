@@ -242,7 +242,9 @@ CHANGES WITH 243 in spe:
 
         * elogind-networkd's bridging support gained two new options ProxyARP=
           and ProxyARPWifi= for configuring proxy ARP behaviour as well as
-          MulticastRouter= for configuring multicast routing behaviour.
+          MulticastRouter= for configuring multicast routing behaviour. A new
+          option MulticastIGMPVersion= may be used to change bridge's multicast
+          Internet Group Management Protocol (IGMP) version.
 
         * elogind-networkd's FooOverUDP support gained the ability to configure
           local and peer IP addresses via Local= and Peer=. A new option
@@ -315,7 +317,6 @@ CHANGES WITH 243 in spe:
           the StatusUnitFormat= setting in /etc/elogind/system.conf or the
           kernel command line option elogind.status_unit_format=.
 
-        * The elogind.debug_shell kernel command line option now optionally
         * PID 1 now understands a new option KExecWatchdogSec= in
           /etc/elogind/system.conf. It allows configuration of a watchdog
           timeout to write to a hardware watchdog device on kexec-based
@@ -329,6 +330,7 @@ CHANGES WITH 243 in spe:
           what it is about. The old name of the setting is still accepted for
           compatibility.
 
+        * The elogind.debug_shell kernel command line option now optionally
           takes a tty name to spawn the debug shell on, which allows selecting
           a different tty than the built-in default.
 
