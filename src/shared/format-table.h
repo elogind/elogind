@@ -13,7 +13,10 @@ typedef enum TableDataType {
         TABLE_STRING,
         TABLE_BOOLEAN,
         TABLE_TIMESTAMP,
+        TABLE_TIMESTAMP_UTC,
+        TABLE_TIMESTAMP_RELATIVE,
         TABLE_TIMESPAN,
+        TABLE_TIMESPAN_MSEC,
         TABLE_SIZE,
         TABLE_BPS,
         TABLE_INT,
@@ -24,6 +27,8 @@ typedef enum TableDataType {
         TABLE_UINT64,
         TABLE_PERCENT,
         TABLE_IFINDEX,
+        TABLE_IN_ADDR,  /* Takes a union in_addr_union (or a struct in_addr) */
+        TABLE_IN6_ADDR, /* Takes a union in_addr_union (or a struct in6_addr) */
         _TABLE_DATA_TYPE_MAX,
 
         /* The following are not really data types, but commands for table_add_cell_many() to make changes to
