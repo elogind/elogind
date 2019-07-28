@@ -128,8 +128,11 @@ assert_cc(sizeof(pid_t) == sizeof(uint32_t));
 assert_cc(sizeof(mode_t) == sizeof(uint32_t));
 #define bus_property_get_mode ((sd_bus_property_get_t) NULL)
 
-int bus_log_parse_error(int r);
-int bus_log_create_error(int r);
+#define bus_log_parse_error(r) \
+        log_error_errno(r, "Failed to parse bus message: %m")
+
+#define bus_log_create_error(r) \
+        log_error_errno(r, "Failed to create bus message: %m")
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
