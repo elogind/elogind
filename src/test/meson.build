@@ -329,6 +329,10 @@ tests += [
          [],
          []],
 
+        [['src/test/test-exit-status.c'],
+         [],
+         []],
+
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-specifier.c'],
 #          [],
@@ -818,6 +822,10 @@ tests += [
 #         [['src/test/test-sd-hwdb.c'],
 #          [],
 #          []],
+#
+#         [['src/test/test-local-addresses.c'],
+#          [],
+#          []],
 #endif // 0
 ]
 
@@ -1041,10 +1049,6 @@ tests += [
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/libsystemd/sd-netlink/test-netlink.c'],
-#          [],
-#          []],
-#
-#         [['src/libsystemd/sd-netlink/test-local-addresses.c'],
 #          [],
 #          []],
 #
