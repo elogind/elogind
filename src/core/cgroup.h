@@ -3,10 +3,11 @@
 
 //#include <stdbool.h>
 
-//#include "cgroup-util.h"
-//#include "ip-address-access.h"
-//#include "list.h"
-//#include "time-util.h"
+#include "cgroup-util.h"
+#include "cpu-set-util.h"
+#include "ip-address-access.h"
+#include "list.h"
+#include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
 typedef struct CGroupContext CGroupContext;
@@ -92,6 +93,9 @@ struct CGroupContext {
         uint64_t startup_cpu_weight;
         usec_t cpu_quota_per_sec_usec;
         usec_t cpu_quota_period_usec;
+
+        CPUSet cpuset_cpus;
+        CPUSet cpuset_mems;
 
         uint64_t io_weight;
         uint64_t startup_io_weight;
@@ -265,3 +269,5 @@ bool unit_cgroup_delegate(Unit *u);
 
 int compare_job_priority(const void *a, const void *b);
 #endif // 0
+
+int unit_get_cpuset(Unit *u, CPUSet *cpus, const char *name);

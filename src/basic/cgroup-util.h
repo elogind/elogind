@@ -22,6 +22,7 @@ typedef enum CGroupController {
         /* Original cgroup controllers */
         CGROUP_CONTROLLER_CPU,
         CGROUP_CONTROLLER_CPUACCT,    /* v1 only */
+        CGROUP_CONTROLLER_CPUSET,     /* v2 only */
         CGROUP_CONTROLLER_IO,         /* v2 only */
         CGROUP_CONTROLLER_BLKIO,      /* v1 only */
         CGROUP_CONTROLLER_MEMORY,
@@ -42,6 +43,7 @@ typedef enum CGroupController {
 typedef enum CGroupMask {
         CGROUP_MASK_CPU = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_CPU),
         CGROUP_MASK_CPUACCT = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_CPUACCT),
+        CGROUP_MASK_CPUSET = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_CPUSET),
         CGROUP_MASK_IO = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_IO),
         CGROUP_MASK_BLKIO = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_BLKIO),
         CGROUP_MASK_MEMORY = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_MEMORY),
@@ -54,7 +56,7 @@ typedef enum CGroupMask {
         CGROUP_MASK_V1 = CGROUP_MASK_CPU|CGROUP_MASK_CPUACCT|CGROUP_MASK_BLKIO|CGROUP_MASK_MEMORY|CGROUP_MASK_DEVICES|CGROUP_MASK_PIDS,
 
         /* All real cgroup v2 controllers */
-        CGROUP_MASK_V2 = CGROUP_MASK_CPU|CGROUP_MASK_IO|CGROUP_MASK_MEMORY|CGROUP_MASK_PIDS,
+        CGROUP_MASK_V2 = CGROUP_MASK_CPU|CGROUP_MASK_CPUSET|CGROUP_MASK_IO|CGROUP_MASK_MEMORY|CGROUP_MASK_PIDS,
 
         /* All cgroup v2 BPF pseudo-controllers */
         CGROUP_MASK_BPF = CGROUP_MASK_BPF_FIREWALL|CGROUP_MASK_BPF_DEVICES,
@@ -182,6 +184,10 @@ typedef int (*cg_kill_log_func_t)(pid_t pid, int sig, void *userdata);
 int cg_kill(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
 int cg_kill_recursive(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
 
+int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
+int cg_migrate_recursive(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
+int cg_migrate_recursive_fallback(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
+
 int cg_split_spec(const char *spec, char **controller, char **path);
 int cg_mangle_path(const char *path, char **result);
 
@@ -190,7 +196,14 @@ int cg_get_path_and_check(const char *controller, const char *path, const char *
 
 int cg_pid_get_path(const char *controller, pid_t pid, char **path);
 
+int cg_trim(const char *controller, const char *path, bool delete_root);
+
 int cg_rmdir(const char *controller, const char *path);
+
+int cg_create(const char *controller, const char *path);
+int cg_attach(const char *controller, const char *path, pid_t pid);
+int cg_attach_fallback(const char *controller, const char *path, pid_t pid);
+int cg_create_and_attach(const char *controller, const char *path, pid_t pid);
 
 int cg_set_attribute(const char *controller, const char *path, const char *attribute, const char *value);
 int cg_get_attribute(const char *controller, const char *path, const char *attribute, char **ret);
@@ -247,6 +260,13 @@ int cg_slice_to_path(const char *unit, char **ret);
 typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
 #endif // 0
+int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path);
+int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t callback, void *userdata);
+int cg_attach_many_everywhere(CGroupMask supported, const char *path, Set* pids, cg_migrate_callback_t callback, void *userdata);
+int cg_migrate_everywhere(CGroupMask supported, const char *from, const char *to, cg_migrate_callback_t callback, void *userdata);
+int cg_trim_everywhere(CGroupMask supported, const char *path, bool delete_root);
+int cg_enable_everywhere(CGroupMask supported, CGroupMask mask, const char *p, CGroupMask *ret_result_mask);
+
 int cg_mask_supported(CGroupMask *ret);
 int cg_mask_from_string(const char *s, CGroupMask *ret);
 int cg_mask_to_string(CGroupMask mask, char **ret);
@@ -260,16 +280,19 @@ bool cg_ns_supported(void);
 int cg_all_unified(void);
 int cg_hybrid_unified(void);
 int cg_unified_controller(const char *controller);
-int cg_unified_cached(bool flush);
-static inline int cg_unified(void) {
-        return cg_unified_cached(true);
-}
+int cg_unified_flush(void);
+
+bool cg_is_unified_wanted(void);
+bool cg_is_legacy_wanted(void);
+bool cg_is_hybrid_wanted(void);
 
 const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed ()
+int cg_weight_parse(const char *s, uint64_t *ret);
+int cg_cpu_shares_parse(const char *s, uint64_t *ret);
+int cg_blkio_weight_parse(const char *s, uint64_t *ret);
 
 bool is_cgroup_fs(const struct statfs *s);
 bool fd_is_cgroup_fs(int fd);

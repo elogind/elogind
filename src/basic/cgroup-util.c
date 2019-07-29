@@ -2752,35 +2752,27 @@ int cg_hybrid_unified(void) {
         if (r < 0)
                 return r;
 
-        return unified_cache == CGROUP_UNIFIED_SYSTEMD && !unified_elogind_v232;
+        return unified_cache == CGROUP_UNIFIED_SYSTEMD && !unified_systemd_v232;
 }
 
 int cg_unified_flush(void) {
         unified_cache = CGROUP_UNIFIED_UNKNOWN;
 
-/// elogind empty mask removed ()
         return cg_unified_update();
 }
 
-/// elogind empty mask removed ()
 int cg_enable_everywhere(
                 CGroupMask supported,
                 CGroupMask mask,
                 const char *p,
                 CGroupMask *ret_result_mask) {
 
-/// elogind empty mask else converted
-#if 1 /// 
-        return is_default;
-#endif // 1
-/// elogind empty mask removed ()
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *fs = NULL;
         CGroupController c;
         CGroupMask ret = 0;
         int r;
 
-#if 0 /// elogind is not init and has no business with kernel command line
         assert(p);
 
         if (supported == 0) {
@@ -2972,11 +2964,7 @@ int cg_weight_parse(const char *s, uint64_t *ret) {
         *ret = u;
         return 0;
 }
-#else
-        return is_default;
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 const uint64_t cgroup_io_limit_defaults[_CGROUP_IO_LIMIT_TYPE_MAX] = {
         [CGROUP_IO_RBPS_MAX]    = CGROUP_LIMIT_MAX,
         [CGROUP_IO_WBPS_MAX]    = CGROUP_LIMIT_MAX,
@@ -2993,7 +2981,6 @@ static const char* const cgroup_io_limit_type_table[_CGROUP_IO_LIMIT_TYPE_MAX] =
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_io_limit_type, CGroupIOLimitType);
 
-#endif // 0
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;
@@ -3051,6 +3038,7 @@ bool fd_is_cgroup_fs(int fd) {
 static const char *const cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_CPU] = "cpu",
         [CGROUP_CONTROLLER_CPUACCT] = "cpuacct",
+        [CGROUP_CONTROLLER_CPUSET] = "cpuset",
         [CGROUP_CONTROLLER_IO] = "io",
         [CGROUP_CONTROLLER_BLKIO] = "blkio",
         [CGROUP_CONTROLLER_MEMORY] = "memory",
