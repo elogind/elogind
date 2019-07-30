@@ -198,7 +198,6 @@ CHANGES WITH 243 in spe:
         * The predictable naming scheme for network devices now supports
           generating predictable names for "netdevsim" devices.
 
-        * elogind-networkd now supports MACsec, nlmon, IPVTAP and Xfrm
           Moreover, the "en" prefix was dropped from the ID_NET_NAME_ONBOARD
           udev property.
 
@@ -206,6 +205,7 @@ CHANGES WITH 243 in spe:
           Distributions which want to preserve naming stability may want to set
           the -Ddefault-net-naming-scheme= configuration option.
 
+        * elogind-networkd now supports MACsec, nlmon, IPVTAP and Xfrm
           interfaces natively.
 
         * elogind-networkd's bridge FDB support now allows configuration of a
@@ -264,7 +264,6 @@ CHANGES WITH 243 in spe:
           devices, as well as a new "--stats" switch for showing device
           statistics.
 
-        * elogind-networkd's .network and .link files gained a new Property=
         * networkd.conf gained a new setting SpeedMeter= and
           SpeedMeterIntervalSec=, to measure bitrate of network interfaces. The
           measured speed may be shown by 'networkctl status'.
@@ -272,6 +271,7 @@ CHANGES WITH 243 in spe:
         * "networkctl status" now displays MTU and queue lengths, and more
           detailed information about VXLAN and bridge devices.
 
+        * elogind-networkd's .network and .link files gained a new Property=
           setting in the [Match] section, to match against devices with
           specific udev properties.
 
@@ -303,7 +303,6 @@ CHANGES WITH 243 in spe:
           - "elogind-analyze condition" will parse and test ConditionXYZ=
             expressions.
 
-        * elogind now exposes a per-session SetBrightness() bus call,
           - "elogind-analyze exit-status" will parse and convert exit status
             codes to their names and back.
 
@@ -315,6 +314,7 @@ CHANGES WITH 243 in spe:
           is equivalent to "65"). Those exit status name mappings may be
           displayed with the sytemd-analyze exit-status verb describe above.
 
+        * elogind now exposes a per-session SetBrightness() bus call,
           which may be used to securely change the brightness of a kernel
           brightness device, if it belongs to the session's seat. By using this
           call unprivileged clients can make changes to "backlight" and "leds"
@@ -348,7 +348,6 @@ CHANGES WITH 243 in spe:
           kernel command line option elogind.status_unit_format=.
 
         * PID 1 now understands a new option KExecWatchdogSec= in
-        * The elogind.debug_shell kernel command line option now optionally
           /etc/elogind/system.conf to set a watchdog timeout for kexec reboots.
           Previously watchdog functionality was only available for regular
           reboots. The new setting defaults to off, because we don't know in
@@ -360,6 +359,7 @@ CHANGES WITH 243 in spe:
           RebootWatchdogSec= to more clearly communicate what it is about. The
           old name is still accepted for compatibility.
 
+        * The elogind.debug_shell kernel command line option now optionally
           takes a tty name to spawn the debug shell on, which allows a
           different tty to be selected than the built-in default.
 
