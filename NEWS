@@ -54,10 +54,6 @@ CHANGES WITH 243 in spe:
           explicit opting out of a default value propagated by an ancestor.
 
         * elogind now defaults to the "unified" cgroup hierarchy setup during
-        * A new setting DisableControllers= has been added that may be used to
-          explicitly disable one or more cgroups controllers for a unit and all
-          its children.
-
           build-time, i.e. -Ddefault-hierarchy=unified is now the build-time
           default. Previously, -Ddefault-hierarchy=hybrid was the default. This
           change reflects the fact that cgroupsv2 support has matured
