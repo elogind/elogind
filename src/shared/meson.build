@@ -61,8 +61,8 @@
 #         dns-domain.h
 #         dropin.c
 #         dropin.h
-#         efivars.c
-#         efivars.h
+#         efi-loader.c
+#         efi-loader.h
 #         enable-mempool.c
 #         env-file-label.c
 #         env-file-label.h

@@ -41,6 +41,8 @@
 #         device-nodes.h
 #         dirent-util.c
 #         dirent-util.h
+#         efivars.c
+#         efivars.h
 #         env-file.c
 #         env-file.h
 #         env-util.c
@@ -162,6 +164,7 @@
 #         parse-util.h
 #         path-util.c
 #         path-util.h
+#         plymouth-util.c
 #         plymouth-util.h
 #         prioq.c
 #         prioq.h
@@ -475,6 +478,7 @@ generated_gperf_headers = []
 # foreach item : [['af',     af_list_txt,     'af',         ''],
 #                 ['arphrd', arphrd_list_txt, 'arphrd',     'ARPHRD_'],
 #                 ['cap',    cap_list_txt,    'capability', ''],
+#                 ['errno',  errno_list_txt,  'errno',      '']]
 #else
 foreach item : [['cap',    cap_list_txt,    'capability', ''],
                 ['errno',  errno_list_txt,  'errno',      '']]
