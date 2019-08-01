@@ -137,7 +137,7 @@
 #endif
 #endif // 0
 
-#define _CGROUP_HIEARCHY_ "default-hierarchy=" DEFAULT_HIERARCHY_NAME
+#define _CGROUP_HIERARCHY_ "default-hierarchy=" DEFAULT_HIERARCHY_NAME
 
 #if 0 /// elogind has a much shorter list
 #define SYSTEMD_FEATURES                                                \
@@ -162,7 +162,7 @@
         _IDN2_FEATURE_ " "                                              \
         _IDN_FEATURE_ " "                                               \
         _PCRE2_FEATURE_ " "                                             \
-        _CGROUP_HIEARCHY_
+        _CGROUP_HIERARCHY_
 #else
 #define SYSTEMD_FEATURES                                                \
         _PAM_FEATURE_ " "                                               \
