@@ -6,7 +6,8 @@
 #include "alloc-util.h"
 #include "fileio.h"
 #include "log.h"
-//#include "raw-reboot.h"
+#include "proc-cmdline.h"
+#include "raw-reboot.h"
 #include "reboot-util.h"
 #include "string-util.h"
 #include "umask-util.h"
@@ -98,3 +99,14 @@ int reboot_with_parameter(RebootFlags flags) {
         return log_full_errno(flags & REBOOT_LOG ? LOG_ERR : LOG_DEBUG, errno, "Failed to reboot: %m");
 }
 #endif // 0
+
+int shall_restore_state(void) {
+        bool ret;
+        int r;
+
+        r = proc_cmdline_get_bool("elogind.restore_state", &ret);
+        if (r < 0)
+                return r;
+
+        return r > 0 ? ret : true;
+}
