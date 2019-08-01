@@ -12,8 +12,8 @@
   </refentryinfo>
 
   <refmeta>
-    <refentrytitle>elogind</refentrytitle>
     <!-- 0 /// elogind is in section 8
+    <refentrytitle>systemd</refentrytitle>
     <manvolnum>1</manvolnum>
     --><!-- else -->
     <manvolnum>8</manvolnum>
@@ -985,11 +985,23 @@
         script runlevel link farms.</para></listitem>
       </varlistentry>
 
-      <xi:include href="less-variables.xml" xpointer="pager"/>
-      <xi:include href="less-variables.xml" xpointer="less"/>
-      <xi:include href="less-variables.xml" xpointer="lesscharset"/>
-      <xi:include href="less-variables.xml" xpointer="colors"/>
-      <xi:include href="less-variables.xml" xpointer="urlify"/>
+      <varlistentry>
+        <term><varname>$SYSTEMD_COLORS</varname></term>
+
+        <listitem><para>The value must be a boolean. Controls whether colorized output should be
+        generated. This can be specified to override the decision that <command>systemd</command>
+        makes based on <varname>$TERM</varname> and what the console is connected to.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>$SYSTEMD_URLIFY</varname></term>
+
+        <listitem><para>The value must be a boolean. Controls whether clickable links should be generated in the output
+        for terminal emulators supporting this. This can be specified to override the decision that
+        <command>systemd</command> makes based on <varname>$TERM</varname> and other conditions.</para>
+        </listitem>
+      </varlistentry>
 
       <varlistentry>
         <term><varname>$LISTEN_PID</varname></term>
@@ -1021,13 +1033,13 @@
   <refsect1>
     <title>Kernel Command Line</title>
 
-    <para>When run as system instance systemd parses a number of
-    kernel command line arguments<footnote><para>If run inside a Linux
-    container these arguments may be passed as command line arguments
-    to systemd itself, next to any of the command line options listed
-    in the Options section above. If run outside of Linux containers,
-    these arguments are parsed from <filename>/proc/cmdline</filename>
-    instead.</para></footnote>:</para>
+    <para>When run as the system instance systemd parses a number of options listed below. They can be
+    specified as kernel command line arguments<footnote><para>If run inside a Linux container these arguments
+    may be passed as command line arguments to systemd itself, next to any of the command line options listed
+    in the Options section above. If run outside of Linux containers, these arguments are parsed from
+    <filename>/proc/cmdline</filename> instead.</para></footnote>, or through the
+    <literal>SystemdOptions</literal> EFI variable (on EFI systems). The kernel command line has higher
+    priority. Following variables are understood:</para>
 
     <variablelist class='kernel-commandline-options'>
       <varlistentry>
