@@ -415,8 +415,9 @@ char* gid_to_name(gid_t gid) {
 
 #if 0 /// UNNEEDED by elogind
 int in_gid(gid_t gid) {
+        long ngroups_max;
         gid_t *gids;
-        int ngroups, r, i;
+        int r, i;
 
         if (getgid() == gid)
                 return 1;
@@ -427,15 +428,12 @@ int in_gid(gid_t gid) {
         if (!gid_is_valid(gid))
                 return -EINVAL;
 
-        ngroups = getgroups(0, NULL);
-        if (ngroups < 0)
-                return -errno;
-        if (ngroups == 0)
-                return 0;
+        ngroups_max = sysconf(_SC_NGROUPS_MAX);
+        assert(ngroups_max > 0);
 
-        gids = newa(gid_t, ngroups);
+        gids = newa(gid_t, ngroups_max);
 
-        r = getgroups(ngroups, gids);
+        r = getgroups(ngroups_max, gids);
         if (r < 0)
                 return -errno;
 
@@ -655,26 +653,13 @@ bool valid_user_group_name_full(const char *u, bool strict) {
             u[0] != '_')
                 return false;
 
-        bool warned = false;
-
-        for (i = u+1; *i; i++) {
-                if (((*i >= 'a' && *i <= 'z') ||
-                     (*i >= 'A' && *i <= 'Z') ||
-                     (*i >= '0' && *i <= '9') ||
-                     IN_SET(*i, '_', '-')))
-                        continue;
-
-                if (*i == '.' && !strict) {
-                        if (!warned) {
-                                log_warning("Bad user or group name \"%s\", accepting for compatibility.", u);
-                                warned = true;
-                        }
-
-                        continue;
-                }
-
-                return false;
-        }
+        for (i = u+1; *i; i++)
+                if (!((*i >= 'a' && *i <= 'z') ||
+                      (*i >= 'A' && *i <= 'Z') ||
+                      (*i >= '0' && *i <= '9') ||
+                      IN_SET(*i, '_', '-') ||
+                      (!strict && *i == '.')))
+                        return false;
 
         sz = sysconf(_SC_LOGIN_NAME_MAX);
         assert_se(sz > 0);
