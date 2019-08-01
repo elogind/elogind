@@ -2851,7 +2851,7 @@ int manager_setup_cgroup(Manager *m) {
         if (r < 0)
                 return log_error_errno(r, "Cannot find cgroup mount point: %m");
 
-        r = cg_unified_flush();
+        r = cg_unified();
         if (r < 0)
                 return log_error_errno(r, "Couldn't determine if we are running in the unified hierarchy: %m");
 
@@ -3107,6 +3107,7 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         unit_add_to_cgroup_empty_queue(u);
         return 1;
 }
+
 #else
 int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         _cleanup_free_ char *path = NULL;
