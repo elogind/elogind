@@ -31,7 +31,6 @@ bool proc_cmdline_key_streq(const char *x, const char *y);
 
 #if 0 /// UNNEEDED by elogind
 int shall_restore_state(void);
-const char* runlevel_to_target(const char *rl);
 #endif // 0
 
 /* A little helper call, to be used in proc_cmdline_parse_t callbacks */
