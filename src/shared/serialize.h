@@ -5,6 +5,7 @@
 
 //#include "fdset.h"
 #include "macro.h"
+#include "string-util.h"
 #include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
