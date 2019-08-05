@@ -18,6 +18,7 @@
 //#include "format-util.h"
 //#include "log.h"
 //#include "macro.h"
+//#include "main-func.h"
 #include "process-util.h"
 //#include "special.h"
 #include "strv.h"
@@ -233,7 +234,7 @@ static int on_runlevel(Context *c) {
 #endif // 0
 
 #if 0 /// elogind needs this to be a callable function
-int main(int argc, char *argv[]) {
+static int run(int argc, char *argv[]) {
 #else
 void update_utmp(int argc, char* argv[]) {
 #endif // 0
@@ -245,15 +246,12 @@ void update_utmp(int argc, char* argv[]) {
 #if 0 /// UNNEEDED by elogind
         int r;
 
-        if (getppid() != 1) {
-                log_error("This program should be invoked by init only.");
-                return EXIT_FAILURE;
-        }
-
-        if (argc != 2) {
-                log_error("This program requires one argument.");
-                return EXIT_FAILURE;
-        }
+        if (getppid() != 1)
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                       "This program should be invoked by init only.");
+        if (argc != 2)
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                       "This program requires one argument.");
 
         log_setup_service();
 
@@ -264,34 +262,18 @@ void update_utmp(int argc, char* argv[]) {
 #endif // 0
 
 #if HAVE_AUDIT
-        /* If the kernel lacks netlink or audit support,
-         * don't worry about it. */
+        /* If the kernel lacks netlink or audit support, don't worry about it. */
         c.audit_fd = audit_open();
-        if (c.audit_fd < 0 && !IN_SET(errno, EAFNOSUPPORT, EPROTONOSUPPORT))
-                log_error_errno(errno, "Failed to connect to audit log: %m");
+        if (c.audit_fd < 0)
+                log_full_errno(IN_SET(errno, EAFNOSUPPORT, EPROTONOSUPPORT) ? LOG_DEBUG : LOG_ERR,
+                               errno, "Failed to connect to audit log: %m");
 #endif
 #if 0 /// UNNEEDED by elogind
         r = bus_connect_system_systemd(&c.bus);
-        if (r < 0) {
-                log_error_errno(r, "Failed to get D-Bus connection: %m");
-                return EXIT_FAILURE;
-        }
-
-        log_debug("systemd-update-utmp running as pid "PID_FMT, getpid_cached());
+        if (r < 0)
+                return log_error_errno(r, "Failed to get D-Bus connection: %m");
 
         if (streq(argv[1], "reboot"))
-                r = on_reboot(&c);
-        else if (streq(argv[1], "shutdown"))
-                r = on_shutdown(&c);
-        else if (streq(argv[1], "runlevel"))
-                r = on_runlevel(&c);
-        else {
-                log_error("Unknown command %s", argv[1]);
-                return EXIT_FAILURE;
-        }
-
-        log_debug("systemd-update-utmp stopped as pid "PID_FMT, getpid_cached());
-
 #else
         if (streq(argv[1], "reboot"))
                 (void)on_reboot(&c);
@@ -300,6 +282,13 @@ void update_utmp(int argc, char* argv[]) {
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-        return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+                return on_reboot(&c);
+        if (streq(argv[1], "shutdown"))
+                return on_shutdown(&c);
+        if (streq(argv[1], "runlevel"))
+                return on_runlevel(&c);
+        return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Unknown command %s", argv[1]);
 #endif // 0
 }
+
+DEFINE_MAIN_FUNCTION(run);
