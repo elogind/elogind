@@ -228,8 +228,7 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemgeneratordir))
 # meson.add_install_script('sh', '-c', mkdir_p.format(usergeneratordir))
 #
-# meson.add_install_script('sh', '-c',
-#                          mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
-# meson.add_install_script('sh', '-c',
-#                          mkdir_p.format(join_paths(sysconfdir, 'xdg/systemd')))
+# meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'system')))
+# meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
+# meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(sysconfdir, 'xdg/systemd')))
 #endif // 0
