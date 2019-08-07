@@ -208,7 +208,7 @@ static int list_sessions(int argc, char *argv[], void *userdata) {
 
                 r = table_add_many(table,
                                    TABLE_STRING, id,
-                                   TABLE_UINT32, uid,
+                                   TABLE_UID, (uid_t) uid,
                                    TABLE_STRING, user,
                                    TABLE_STRING, seat,
                                    TABLE_STRING, strna(tty));
@@ -267,7 +267,7 @@ static int list_users(int argc, char *argv[], void *userdata) {
                         break;
 
                 r = table_add_many(table,
-                                   TABLE_UINT32, uid,
+                                   TABLE_UID, (uid_t) uid,
                                    TABLE_STRING, user);
                 if (r < 0)
                         return log_error_errno(r, "Failed to add row to table: %m");
@@ -1543,19 +1543,18 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_no_wall = true;
                         break;
 
-                        arg_dry_run = true;
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
 
 #endif // 1
                 case ARG_NO_PAGER:
                         arg_pager_flags |= PAGER_DISABLE;
+
                         break;
 
                 case ARG_NO_LEGEND:
                         arg_legend = false;
                         break;
-
 
                 case ARG_NO_ASK_PASSWORD:
                         arg_ask_password = false;
@@ -1600,7 +1599,6 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_firmware_setup = true;
                         break;
 
-
                         r = parse_sec(optarg, &arg_boot_loader_menu);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to parse --boot-loader-menu= argument '%s': %m", optarg);
@@ -1615,9 +1613,9 @@ static int parse_argv(int argc, char *argv[]) {
                 case '?':
                         return -EINVAL;
 
-
                 default:
                         assert_not_reached("Unhandled option");
+
                 }
 
         return 1;
