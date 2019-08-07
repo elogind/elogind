@@ -68,6 +68,14 @@ int take_etc_passwd_lock(const char *root);
 #define ETC_PASSWD_LOCK_PATH "/etc/.pwd.lock"
 
 #if 0 /// UNNEEDED by elogind
+static inline bool uid_is_system(uid_t uid) {
+        return uid <= SYSTEM_UID_MAX;
+}
+
+static inline bool gid_is_system(gid_t gid) {
+        return gid <= SYSTEM_GID_MAX;
+}
+
 static inline bool uid_is_dynamic(uid_t uid) {
         return DYNAMIC_UID_MIN <= uid && uid <= DYNAMIC_UID_MAX;
 }
@@ -77,13 +85,13 @@ static inline bool gid_is_dynamic(gid_t gid) {
 }
 #endif // 0
 
-static inline bool uid_is_system(uid_t uid) {
-        return uid <= SYSTEM_UID_MAX;
+static inline bool uid_is_container(uid_t uid) {
+        return CONTAINER_UID_BASE_MIN <= uid && uid <= CONTAINER_UID_BASE_MAX;
 }
 
 #if 0 /// UNNEEDED by elogind
-static inline bool gid_is_system(gid_t gid) {
-        return gid <= SYSTEM_GID_MAX;
+static inline bool gid_is_container(gid_t gid) {
+        return uid_is_container((uid_t) gid);
 }
 #endif // 0
 
