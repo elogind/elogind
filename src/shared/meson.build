@@ -87,6 +87,8 @@
 #         generator.c
 #         generator.h
 #         gpt.h
+#         group-record.c
+#         group-record.h
 #         id128-print.c
 #         id128-print.h
 #         ima-util.c
@@ -190,6 +192,8 @@
 #         uid-range.h
 #         unit-file.c
 #         unit-file.h
+#         user-record.c
+#         user-record.h
 #         utmp-wtmp.h
 #         varlink.c
 #         varlink.h
