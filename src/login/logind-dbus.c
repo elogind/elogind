@@ -539,8 +539,8 @@ static int method_list_sessions(sd_bus_message *message, void *userdata, sd_bus_
 
                 r = sd_bus_message_append(reply, "(susso)",
                                           session->id,
-                                          (uint32_t) session->user->uid,
-                                          session->user->name,
+                                          (uint32_t) session->user->user_record->uid,
+                                          session->user->user_record->user_name,
                                           session->seat ? session->seat->id : "",
                                           p);
                 if (r < 0)
@@ -580,8 +580,8 @@ static int method_list_users(sd_bus_message *message, void *userdata, sd_bus_err
                         return -ENOMEM;
 
                 r = sd_bus_message_append(reply, "(uso)",
-                                          (uint32_t) user->uid,
-                                          user->name,
+                                          (uint32_t) user->user_record->uid,
+                                          user->user_record->user_name,
                                           p);
                 if (r < 0)
                         return r;
@@ -1540,7 +1540,7 @@ static int have_multiple_sessions(
          * count, and non-login sessions do not count either. */
         HASHMAP_FOREACH(session, m->sessions, i)
                 if (session->class == SESSION_USER &&
-                    session->user->uid != uid)
+                    session->user->user_record->uid != uid)
                         return true;
 
         return false;

@@ -120,7 +120,7 @@ int seat_save(Seat *s) {
                         "ACTIVE=%s\n"
                         "ACTIVE_UID="UID_FMT"\n",
                         s->active->id,
-                        s->active->user->uid);
+                        s->active->user->user_record->uid);
         }
 
         if (s->sessions) {
@@ -138,7 +138,7 @@ int seat_save(Seat *s) {
                 LIST_FOREACH(sessions_by_seat, i, s->sessions)
                         fprintf(f,
                                 UID_FMT"%c",
-                                i->user->uid,
+                                i->user->user_record->uid,
                                 i->sessions_by_seat_next ? ' ' : '\n');
         }
 
@@ -219,8 +219,8 @@ int seat_apply_acls(Seat *s, Session *old_active) {
 
         r = devnode_acl_all(s->id,
                             false,
-                            !!old_active, old_active ? old_active->user->uid : 0,
-                            !!s->active, s->active ? s->active->user->uid : 0);
+                            !!old_active, old_active ? old_active->user->user_record->uid : 0,
+                            !!s->active, s->active ? s->active->user->user_record->uid : 0);
 
         if (r < 0)
                 return log_error_errno(r, "Failed to apply ACLs: %m");

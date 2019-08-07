@@ -39,10 +39,7 @@
 
 int user_new(User **ret,
              Manager *m,
-             uid_t uid,
-             gid_t gid,
-             const char *name,
-             const char *home) {
+             UserRecord *ur) {
 
         _cleanup_(user_freep) User *u = NULL;
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
@@ -50,7 +47,13 @@ int user_new(User **ret,
 
         assert(ret);
         assert(m);
-        assert(name);
+        assert(ur);
+
+        if (!ur->user_name)
+                return -EINVAL;
+
+        if (!uid_is_valid(ur->uid))
+                return -EINVAL;
 
         u = new(User, 1);
         if (!u)
@@ -58,28 +61,17 @@ int user_new(User **ret,
 
         *u = (User) {
                 .manager = m,
-                .uid = uid,
-                .gid = gid,
+                .user_record = user_record_ref(ur),
                 .last_session_timestamp = USEC_INFINITY,
         };
 
-        u->name = strdup(name);
-        if (!u->name)
+        if (asprintf(&u->state_file, "/run/systemd/users/" UID_FMT, ur->uid) < 0)
                 return -ENOMEM;
 
-        u->home = strdup(home);
-        if (!u->home)
+        if (asprintf(&u->runtime_path, "/run/user/" UID_FMT, ur->uid) < 0)
                 return -ENOMEM;
 
-        path_simplify(u->home, true);
-
-        if (asprintf(&u->state_file, "/run/systemd/users/"UID_FMT, uid) < 0)
-                return -ENOMEM;
-
-        if (asprintf(&u->runtime_path, "/run/user/"UID_FMT, uid) < 0)
-                return -ENOMEM;
-
-        xsprintf(lu, UID_FMT, uid);
+        xsprintf(lu, UID_FMT, ur->uid);
         r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &u->slice);
         if (r < 0)
                 return r;
@@ -92,7 +84,7 @@ int user_new(User **ret,
         if (r < 0)
                 return r;
 
-        r = hashmap_put(m->users, UID_TO_PTR(uid), u);
+        r = hashmap_put(m->users, UID_TO_PTR(ur->uid), u);
         if (r < 0)
                 return r;
 
@@ -136,9 +128,9 @@ User *user_free(User *u) {
                 hashmap_remove_value(u->manager->user_units, u->slice, u);
 #endif // 0
 
-        hashmap_remove_value(u->manager->users, UID_TO_PTR(u->uid), u);
+        hashmap_remove_value(u->manager->users, UID_TO_PTR(u->user_record->uid), u);
 
-        (void) sd_event_source_unref(u->timer_event_source);
+        sd_event_source_unref(u->timer_event_source);
 
 #if 0 /// elogind neither supports slice nor service jobs.
         u->service_job = mfree(u->service_job);
@@ -149,8 +141,8 @@ User *user_free(User *u) {
         u->slice = mfree(u->slice);
         u->runtime_path = mfree(u->runtime_path);
         u->state_file = mfree(u->state_file);
-        u->name = mfree(u->name);
-        u->home = mfree(u->home);
+
+        user_record_unref(u->user_record);
 
         return mfree(u);
 }
@@ -178,7 +170,7 @@ static int user_save_internal(User *u) {
                 "NAME=%s\n"
                 "STATE=%s\n"         /* friendly user-facing state */
                 "STOPPING=%s\n",     /* low-level state */
-                u->name,
+                u->user_record->user_name,
                 user_state_to_string(user_get_state(u)),
                 yes_no(u->stopping));
 
@@ -395,7 +387,7 @@ int user_start(User *u) {
         u->stopping = false;
 
         if (!u->started)
-                log_debug("Starting services for new user %s.", u->name);
+                log_debug("Starting services for new user %s.", u->user_record->user_name);
 
 #if 1 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
         int r;
@@ -403,6 +395,8 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 #endif // 1
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
@@ -498,8 +492,8 @@ int user_finalize(User *u) {
          * done. This is called as a result of an earlier user_done() when all jobs are completed. */
 
         if (u->started)
-                log_debug("User %s logged out.", u->name);
                 log_debug_elogind("User %s not started, finalizing...", u->name);
+                log_debug("User %s logged out.", u->user_record->user_name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
                 k = session_finalize(s);
@@ -519,8 +513,8 @@ int user_finalize(User *u) {
          * cases, as we shouldn't accidentally remove a system service's IPC objects while it is running, just because
          * a cronjob running as the same user just finished. Hence: exclude system users generally from IPC clean-up,
          * and do it only for normal users. */
-        if (u->manager->remove_ipc && !uid_is_system(u->uid)) {
-                k = clean_ipc_by_uid(u->uid);
+        if (u->manager->remove_ipc && !uid_is_system(u->user_record->uid)) {
+                k = clean_ipc_by_uid(u->user_record->uid);
                 if (k < 0)
                         r = k;
         }
@@ -576,7 +570,7 @@ int user_check_linger_file(User *u) {
         _cleanup_free_ char *cc = NULL;
         char *p = NULL;
 
-        cc = cescape(u->name);
+        cc = cescape(u->user_record->user_name);
         if (!cc)
                 return -ENOMEM;
 
@@ -798,7 +792,7 @@ void user_elect_display(User *u) {
 
         /* This elects a primary session for each user, which we call the "display". We try to keep the assignment
          * stable, but we "upgrade" to better choices. */
-        log_debug("Electing new display for user %s", u->name);
+        log_debug("Electing new display for user %s", u->user_record->user_name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
                 if (!elect_display_filter(s)) {
@@ -861,7 +855,7 @@ void user_update_last_session_timer(User *u) {
                 char s[FORMAT_TIMESPAN_MAX];
 
                 log_debug("Last session of user '%s' logged out, terminating user context in %s.",
-                          u->name,
+                          u->user_record->user_name,
                           format_timespan(s, sizeof(s), u->manager->user_stop_delay, USEC_PER_MSEC));
         }
 }
