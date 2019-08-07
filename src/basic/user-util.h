@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <grp.h>
 #if 0 /// No gshadow needed in elogind
+#include <grp.h>
 #if ENABLE_GSHADOW
 //#include <gshadow.h>
 #endif
@@ -147,3 +147,5 @@ int putsgent_sane(const struct sgrp *sg, FILE *stream);
 
 int make_salt(char **ret);
 #endif // 0
+
+bool is_nologin_shell(const char *shell);
