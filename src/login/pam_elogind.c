@@ -463,10 +463,8 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 pam_syslog(handle, LOG_DEBUG, "pam-elogind initializing");
 
         r = get_user_data(handle, &username, &pw);
-        if (r != PAM_SUCCESS) {
-                pam_syslog(handle, LOG_ERR, "Failed to get user data.");
+        if (r != PAM_SUCCESS)
                 return r;
-        }
 
         /* Make sure we don't enter a loop by talking to
          * elogind when it is actually waiting for the
