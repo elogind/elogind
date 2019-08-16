@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: systemd master\n"
 "Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
-"POT-Creation-Date: 2019-03-26 15:29+0000\n"
-"PO-Revision-Date: 2019-04-29 19:03+0300\n"
+"POT-Creation-Date: 2019-07-29 15:34+0000\n"
+"PO-Revision-Date: 2019-08-16 09:11+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <kde-i18n-uk@kde.org>\n"
 "Language: uk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 19.03.70\n"
+"X-Generator: Lokalize 19.11.70\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -504,8 +504,8 @@ msgid ""
 "Authentication is required to indicate to the boot loader to boot to the "
 "boot loader menu."
 msgstr ""
-"Потрібна автентифікація, щоб вказати завантажувачу, що слід завантажитися до"
-" меню завантажувача."
+"Потрібна автентифікація, щоб вказати завантажувачу, що слід завантажитися до "
+"меню завантажувача."
 
 #: src/login/org.freedesktop.login1.policy:374
 msgid "Indicate to the boot loader to boot a specific entry"
@@ -516,8 +516,8 @@ msgid ""
 "Authentication is required to indicate to the boot loader to boot into a "
 "specific boot loader entry."
 msgstr ""
-"Потрібна автентифікація, щоб вказати завантажувачу, що слід завантажити"
-" певний пункт меню завантаження."
+"Потрібна автентифікація, щоб вказати завантажувачу, що слід завантажити "
+"певний пункт меню завантаження."
 
 #: src/login/org.freedesktop.login1.policy:385
 msgid "Set a wall message"
@@ -602,6 +602,95 @@ msgstr "Потрібна автентифікація, щоб вказати п�
 # "Потрібна автентифікація, щоб керувати локальними образами віртуальних машин "
 # "і контейнерів."
 #
+# #: src/network/org.freedesktop.network1.policy:22
+# msgid "Set NTP servers"
+# msgstr "Встановлення серверів NTP"
+#
+# #: src/network/org.freedesktop.network1.policy:23
+# msgid "Authentication is required to set NTP servers."
+# msgstr "Потрібна автентифікація, щоб встановити сервери NTP."
+#
+# #: src/network/org.freedesktop.network1.policy:33
+# msgid "Set DNS servers"
+# msgstr "Встановлення серверів DNS"
+#
+# #: src/network/org.freedesktop.network1.policy:34
+# msgid "Authentication is required to set DNS servers."
+# msgstr "Потрібна автентифікація, щоб встановити сервери DNS."
+#
+# #: src/network/org.freedesktop.network1.policy:44
+# msgid "Set domains"
+# msgstr "Встановлення доменів"
+#
+# #: src/network/org.freedesktop.network1.policy:45
+# msgid "Authentication is required to set domains."
+# msgstr "Потрібна автентифікація, щоб встановити домени."
+#
+# #: src/network/org.freedesktop.network1.policy:55
+# msgid "Set default route"
+# msgstr "Встановлення типового маршруту"
+#
+# #: src/network/org.freedesktop.network1.policy:56
+# msgid "Authentication is required to set default route."
+# msgstr "Потрібна автентифікація, щоб встановити типовий маршрут."
+#
+# #: src/network/org.freedesktop.network1.policy:66
+# msgid "Enable/disable LLMNR"
+# msgstr "Вмикання або вимикання LLMNR"
+#
+# #: src/network/org.freedesktop.network1.policy:67
+# msgid "Authentication is required to enable or disable LLMNR."
+# msgstr "Потрібна автентифікація, щоб увімкнути або вимкнути LLMNR."
+#
+# #: src/network/org.freedesktop.network1.policy:77
+# msgid "Enable/disable multicast DNS"
+# msgstr "Вмикання або вимикання трансляційного DNS"
+#
+# #: src/network/org.freedesktop.network1.policy:78
+# msgid "Authentication is required to enable or disable multicast DNS."
+# msgstr "Потрібна автентифікація, щоб увімкнути або вимкнути трансляційну DNS."
+#
+# #: src/network/org.freedesktop.network1.policy:88
+# msgid "Enable/disable DNS over TLS"
+# msgstr "Вмикання і вимикання DNS через TLS"
+#
+# #: src/network/org.freedesktop.network1.policy:89
+# msgid "Authentication is required to enable or disable DNS over TLS."
+# msgstr "Потрібна автентифікація, щоб увімкнути або вимкнути DNS через TLS."
+#
+# #: src/network/org.freedesktop.network1.policy:99
+# msgid "Enable/disable DNSSEC"
+# msgstr "Вмикання або вимикання DNSSEC"
+#
+# #: src/network/org.freedesktop.network1.policy:100
+# msgid "Authentication is required to enable or disable DNSSEC."
+# msgstr "Потрібна автентифікація, щоб увімкнути або вимкнути DNSSEC."
+#
+# #: src/network/org.freedesktop.network1.policy:110
+# msgid "Set DNSSEC Negative Trust Anchors"
+# msgstr "Встановлення прив'язок від'ємної довіри DNSSEC"
+#
+# #: src/network/org.freedesktop.network1.policy:111
+# msgid "Authentication is required to set DNSSEC Negative Trust Anchros."
+# msgstr ""
+# "Потрібна автентифікація, щоб встановити прив'язки від'ємної довіри DNSSEC."
+#
+# #: src/network/org.freedesktop.network1.policy:121
+# msgid "Revert NTP settings"
+# msgstr "Повернення до початкових параметрів NTP"
+#
+# #: src/network/org.freedesktop.network1.policy:122
+# msgid "Authentication is required to revert NTP settings."
+# msgstr "Потрібна автентифікація, щоб повернутися до початкових параметрів NTP."
+#
+# #: src/network/org.freedesktop.network1.policy:132
+# msgid "Revert DNS settings"
+# msgstr "Повернення до початкових параметрів DNS"
+#
+# #: src/network/org.freedesktop.network1.policy:133
+# msgid "Authentication is required to revert DNS settings."
+# msgstr "Потрібна автентифікація, щоб повернутися до початкових параметрів DNS."
+#
 # #: src/portable/org.freedesktop.portable1.policy:13
 # msgid "Inspect a portable service image"
 # msgstr "Інспектування образу портативної служби"
@@ -628,8 +717,8 @@ msgstr "Потрібна автентифікація, щоб вказати п�
 # msgid ""
 # "Authentication is required to delete or modify a portable service image."
 # msgstr ""
-# "Потрібна автентифікація, щоб вилучити образ портативної служби або внести до"
-# " нього зміни."
+# "Потрібна автентифікація, щоб вилучити образ портативної служби або внести до "
+# "нього зміни."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:22
 # msgid "Register a DNS-SD service"
@@ -687,35 +776,42 @@ msgstr "Потрібна автентифікація, щоб вказати п�
 # "Потрібна автентифікація, щоб контролювати, чи синхронізування часу через "
 # "мережу запущено."
 #
-# #: src/core/dbus-unit.c:325
+# #: src/core/dbus-unit.c:354
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Потрібна автентифікація, щоб запустити «$(unit)»."
 #
-# #: src/core/dbus-unit.c:326
+# #: src/core/dbus-unit.c:355
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Потрібна автентифікація, щоб зупинити «$(unit)»."
 #
-# #: src/core/dbus-unit.c:327
+# #: src/core/dbus-unit.c:356
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "Потрібна автентифікація, щоб перезавантажити «$(unit)»."
 #
-# #: src/core/dbus-unit.c:328 src/core/dbus-unit.c:329
+# #: src/core/dbus-unit.c:357 src/core/dbus-unit.c:358
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Потрібна автентифікація, щоб перезапустити «$(unit)»."
 #
-# #: src/core/dbus-unit.c:434
+# #: src/core/dbus-unit.c:530
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
 # msgstr ""
 # "Потрібна автентифікація, щоб надіслати сигнал UNIX до процесів «$(unit)»."
 #
-# #: src/core/dbus-unit.c:465
+# #: src/core/dbus-unit.c:561
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr "Потрібна автентифікація, щоб скинути «пошкоджений» стан з «$(unit)»."
 #
-# #: src/core/dbus-unit.c:498
+# #: src/core/dbus-unit.c:594
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Потрібна автентифікація, щоб вказати властивості на «$(unit)»."
 #
+# #: src/core/dbus-unit.c:703
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Потрібна автентифікація, щоб вилучити файли і каталоги, які пов'язано із"
+# " «$(unit)»."
 #endif // 0
