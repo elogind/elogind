@@ -19,7 +19,6 @@
 #include "cgroup-util.h"
 #include "def.h"
 #include "dirent-util.h"
-#include "env-file.h"
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
