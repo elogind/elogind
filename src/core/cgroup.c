@@ -934,7 +934,7 @@ static bool unit_has_unified_memory_config(Unit *u) {
         c = unit_get_cgroup_context(u);
         assert(c);
 
-        return unit_get_ancestor_memory_min(u) > 0 || unit_get_ancestor_memory_low(u) > 0 ||
+        return c->memory_min > 0 || unit_get_ancestor_memory_low(u) > 0 ||
                c->memory_high != CGROUP_LIMIT_MAX || c->memory_max != CGROUP_LIMIT_MAX ||
                c->memory_swap_max != CGROUP_LIMIT_MAX;
 }
@@ -1201,7 +1201,7 @@ static void cgroup_context_apply(
                                         log_cgroup_compat(u, "Applying MemoryLimit=%" PRIu64 " as MemoryMax=", max);
                         }
 
-                        cgroup_apply_unified_memory_limit(u, "memory.min", unit_get_ancestor_memory_min(u));
+                        cgroup_apply_unified_memory_limit(u, "memory.min", c->memory_min);
                         cgroup_apply_unified_memory_limit(u, "memory.low", unit_get_ancestor_memory_low(u));
                         cgroup_apply_unified_memory_limit(u, "memory.high", c->memory_high);
                         cgroup_apply_unified_memory_limit(u, "memory.max", max);
