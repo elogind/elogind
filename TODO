@@ -23,6 +23,8 @@ Features:
   may be used to mark a whole binary as non-coredumpable. Would fix:
   https://bugs.freedesktop.org/show_bug.cgi?id=69447
 
+* adjust OOM score slightly for journald
+
 * beef up hibernation to optionally do swapon/swapoff immediately before/after
   the hibernation
 
@@ -1107,11 +1109,6 @@ External:
   - <command> <verb> -<TAB> should complete options, but currently does not
   - systemctl add-wants,add-requires
 
-* systemctl status foo.service should say that it is trigger by foo.timer
-* systemctl status should know about 'elogind-analyze calendar ... --iterations='
-* systemctl list-timers foo should use .timer suffix by default
-* If timer has just OnInactiveSec=..., it should fire after a specified time
-  after being started.
 
 Regularly:
 
