@@ -89,13 +89,11 @@ static int log_open_console(void) {
         }
 
         if (console_fd < 3) {
-                int fd;
+                console_fd = open_terminal("/dev/console", O_WRONLY|O_NOCTTY|O_CLOEXEC);
+                if (console_fd < 0)
+                        return console_fd;
 
-                fd = open_terminal("/dev/console", O_WRONLY|O_NOCTTY|O_CLOEXEC);
-                if (fd < 0)
-                        return fd;
-
-                console_fd = fd_move_above_stdio(fd);
+                console_fd = fd_move_above_stdio(console_fd);
         }
 
         return 0;
