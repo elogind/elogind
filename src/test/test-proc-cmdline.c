@@ -7,6 +7,7 @@
 #include "proc-cmdline.h"
 #include "special.h"
 #include "string-util.h"
+#include "tests.h"
 #include "util.h"
 
 static int obj;
@@ -218,8 +219,7 @@ static void test_proc_cmdline_key_startswith(void) {
 #endif // 0
 
 int main(void) {
-        log_parse_environment();
-        log_open();
+        test_setup_logging(LOG_INFO);
 
         test_proc_cmdline_parse();
 #if 0 /// UNNEEDED by elogind
