@@ -832,6 +832,11 @@ tests += [
 #         [['src/test/test-local-addresses.c'],
 #          [],
 #          []],
+#
+#         [['src/test/test-fido-id-desc.c',
+#           'src/udev/fido_id/fido_id_desc.c'],
+#          [],
+#          []],
 #endif // 0
 ]
 
