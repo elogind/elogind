@@ -416,8 +416,7 @@ int bus_verify_polkit_async(
                         e = sd_bus_message_get_error(q->reply);
 
                         /* Treat no PK available as access denied */
-                        if (sd_bus_error_has_name(e, SD_BUS_ERROR_SERVICE_UNKNOWN) ||
-                            sd_bus_error_has_name(e, SD_BUS_ERROR_NAME_HAS_NO_OWNER))
+                        if (sd_bus_error_has_name(e, SD_BUS_ERROR_SERVICE_UNKNOWN))
                                 return -EACCES;
 
                         /* Copy error from polkit reply */
@@ -428,6 +427,7 @@ int bus_verify_polkit_async(
                 r = sd_bus_message_enter_container(q->reply, 'r', "bba{ss}");
                 if (r >= 0)
                         r = sd_bus_message_read(q->reply, "bb", &authorized, &challenge);
+
                 if (r < 0)
                         return r;
 
@@ -1699,8 +1699,7 @@ int bus_open_system_watch_bind_with_description(sd_bus **ret, const char *descri
 
         assert(ret);
 
-        /* Match like sd_bus_open_system(), but with the "watch_bind" feature and the Connected() signal
-         * turned on. */
+        /* Match like sd_bus_open_system(), but with the "watch_bind" feature and the Connected() signal turned on. */
 
         r = sd_bus_new(&bus);
         if (r < 0)
@@ -1753,8 +1752,8 @@ int bus_reply_pair_array(sd_bus_message *m, char **l) {
 
         assert(m);
 
-        /* Reply to the specified message with a message containing a dictionary put together from the
-         * specified strv */
+        /* Reply to the specified message with a message containing a dictionary put together from the specified
+         * strv */
 
         r = sd_bus_message_new_method_return(m, &reply);
         if (r < 0)
