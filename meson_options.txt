@@ -181,9 +181,9 @@ option('dbussessionservicedir', type : 'string',
 option('dbussystemservicedir', type : 'string',
        description : 'D-Bus system service directory')
 option('pkgconfigdatadir', type : 'string', value : '',
-       description : 'directory for ')
+       description : 'directory for arch-independent pkg-config files')
 option('pkgconfiglibdir', type : 'string', value : '',
-       description : 'directory for ')
+       description : 'directory for standard pkg-config files')
 #if 0 /// UNNEEDED by elogind
 # option('rpmmacrosdir', type : 'string', value : 'lib/rpm/macros.d',
 #        description : 'directory for rpm macros ["no" disables]')
