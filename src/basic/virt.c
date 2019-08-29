@@ -119,8 +119,6 @@ static int detect_vm_device_tree(void) {
                 return VIRTUALIZATION_KVM;
         else if (strstr(hvtype, "xen"))
                 return VIRTUALIZATION_XEN;
-        else if (strstr(hvtype, "vmware"))
-                return VIRTUALIZATION_VMWARE;
         else
                 return VIRTUALIZATION_VM_OTHER;
 #else
@@ -146,6 +144,9 @@ static int detect_vm_dmi(void) {
                 { "KVM",                 VIRTUALIZATION_KVM       },
                 { "QEMU",                VIRTUALIZATION_QEMU      },                
                 { "VMware",              VIRTUALIZATION_VMWARE    }, /* https://kb.vmware.com/s/article/1009458 */
+                { "QEMU",                VIRTUALIZATION_QEMU      },
+                /* http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1009458 */
+                { "VMware",              VIRTUALIZATION_VMWARE    },
                 { "VMW",                 VIRTUALIZATION_VMWARE    },
                 { "innotek GmbH",        VIRTUALIZATION_ORACLE    },
                 { "Oracle Corporation",  VIRTUALIZATION_ORACLE    },
