@@ -246,15 +246,6 @@ int unit_file_build_name_map(
                         char *filename;
                         _cleanup_free_ char *_filename_free = NULL, *simplified = NULL;
                         const char *suffix, *dst = NULL;
-                        bool valid_unit_name;
-
-                        valid_unit_name = unit_name_is_valid(de->d_name, UNIT_NAME_ANY);
-
-                        /* We only care about valid units and dirs with certain suffixes, let's ignore the
-                         * rest. */
-                        if (!valid_unit_name &&
-                            !ENDSWITH_SET(de->d_name, ".wants", ".requires", ".d"))
-                                continue;
 
                         filename = path_join(*dir, de->d_name);
                         if (!filename)
@@ -269,7 +260,7 @@ int unit_file_build_name_map(
                         } else
                                 _filename_free = filename; /* Make sure we free the filename. */
 
-                        if (!valid_unit_name)
+                        if (!unit_name_is_valid(de->d_name, UNIT_NAME_ANY))
                                 continue;
                         assert_se(suffix = strrchr(de->d_name, '.'));
 
@@ -279,7 +270,6 @@ int unit_file_build_name_map(
                         if (hashmap_contains(ids, de->d_name))
                                 continue;
 
-                        dirent_ensure_type(d, de);
                         if (de->d_type == DT_LNK) {
                                 /* We don't explicitly check for alias loops here. unit_ids_map_get() which
                                  * limits the number of hops should be used to access the map. */
