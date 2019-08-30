@@ -144,9 +144,6 @@ static int detect_vm_dmi(void) {
                 { "KVM",                 VIRTUALIZATION_KVM       },
                 { "QEMU",                VIRTUALIZATION_QEMU      },                
                 { "VMware",              VIRTUALIZATION_VMWARE    }, /* https://kb.vmware.com/s/article/1009458 */
-                { "QEMU",                VIRTUALIZATION_QEMU      },
-                /* http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1009458 */
-                { "VMware",              VIRTUALIZATION_VMWARE    },
                 { "VMW",                 VIRTUALIZATION_VMWARE    },
                 { "innotek GmbH",        VIRTUALIZATION_ORACLE    },
                 { "Oracle Corporation",  VIRTUALIZATION_ORACLE    },
