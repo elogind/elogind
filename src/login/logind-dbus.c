@@ -165,6 +165,7 @@ int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, 
         User *user;
 
         assert(m);
+        assert(message);
         assert(ret);
 
         if (!uid_is_valid(uid))
@@ -190,6 +191,7 @@ int manager_get_seat_from_creds(
         int r;
 
         assert(m);
+        assert(message);
         assert(ret);
 
         if (SEAT_IS_SELF(name) || SEAT_IS_AUTO(name)) {
@@ -1393,7 +1395,6 @@ static int flush_devices(Manager *m) {
                 struct dirent *de;
 
                 FOREACH_DIRENT_ALL(de, d, break) {
-                        dirent_ensure_type(d, de);
                         if (!dirent_is_file(de))
                                 continue;
 
@@ -2998,7 +2999,6 @@ static int method_set_reboot_to_boot_loader_menu(
                 return r;
 
         log_debug_elogind("Reboot to menu with %zu s", x);
-
         r = getenv_bool("SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU");
         if (r == -ENXIO) {
                 uint64_t features;
@@ -3006,9 +3006,7 @@ static int method_set_reboot_to_boot_loader_menu(
                 /* EFI case: let's see if booting into boot loader menu is supported. */
 
                 r = efi_loader_get_features(&features);
-
                 log_debug_elogind("efi_loader_features: 0x%08lx [%d]", features, r);
-
                 if (r < 0)
                         log_warning_errno(r, "Failed to determine whether reboot to boot loader menu is supported: %m");
                 if (r < 0 || !FLAGS_SET(features, EFI_LOADER_FEATURE_CONFIG_TIMEOUT_ONE_SHOT))
@@ -3016,6 +3014,7 @@ static int method_set_reboot_to_boot_loader_menu(
 
                 use_efi = true;
                 log_debug_elogind("EFI enabled");
+
         } else if (r <= 0) {
                 /* non-EFI case: $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU is set to off */
 
@@ -3023,14 +3022,12 @@ static int method_set_reboot_to_boot_loader_menu(
                         log_warning_errno(r, "Failed to parse $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU: %m");
 
                 log_debug_elogind("Non-EFI case: %d", r);
-
                 return sd_bus_error_setf(error, SD_BUS_ERROR_NOT_SUPPORTED, "Boot loader does not support boot into boot loader menu.");
         } else
                 /* non-EFI case: $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU is set to on */
                 use_efi = false;
 
         log_debug_elogind("Non-EFI case: %d", r);
-
         r = bus_verify_polkit_async(message,
                                     CAP_SYS_ADMIN,
                                     "org.freedesktop.login1.set-reboot-to-boot-loader-menu",
