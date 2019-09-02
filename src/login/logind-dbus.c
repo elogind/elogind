@@ -124,7 +124,6 @@ int manager_get_session_from_creds(
         Session *session;
 
         assert(m);
-        assert(message);
         assert(ret);
 
         if (SEAT_IS_SELF(name)) /* the caller's own session */
