@@ -1738,6 +1738,9 @@ static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic
 #                         libselinux,
 #                         libgcrypt],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
+#
+# #Generate autosuspend rules
+# make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
 #else
         dependencies : [threads,
                         libcap,
