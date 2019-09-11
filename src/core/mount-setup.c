@@ -512,9 +512,8 @@ static int relabel_extra(void) {
                         log_warning_errno(errno, "Failed to remove /run/systemd/relabel-extra.d/%s, ignoring: %m", de->d_name);
         }
 
-        /* Remove when we complete things. */
-        if (rmdir("/run/systemd/relabel-extra.d") < 0 &&
-            errno != ENOENT)
+        /* Remove when we completing things. */
+        if (rmdir("/run/systemd/relabel-extra.d") < 0)
                 log_warning_errno(errno, "Failed to remove /run/systemd/relabel-extra.d/ directory: %m");
 
         return c;
