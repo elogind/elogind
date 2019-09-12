@@ -254,7 +254,7 @@ struct hashmap_type_info {
         unsigned n_direct_buckets;
 };
 
-static const struct hashmap_type_info hashmap_type_info[_HASHMAP_TYPE_MAX] = {
+static _used_ const struct hashmap_type_info hashmap_type_info[_HASHMAP_TYPE_MAX] = {
         [HASHMAP_TYPE_PLAIN] = {
                 .head_size        = sizeof(Hashmap),
                 .entry_size       = sizeof(struct plain_hashmap_entry),
@@ -835,7 +835,7 @@ static int hashmap_base_ensure_allocated(HashmapBase **h, const struct hash_ops 
                 return -ENOMEM;
 
         *h = q;
-        return 1;
+        return 0;
 }
 
 int internal_hashmap_ensure_allocated(Hashmap **h, const struct hash_ops *hash_ops  HASHMAP_DEBUG_PARAMS) {
