@@ -11,10 +11,8 @@
 #include "bus-util.h"
 #include "cgroup-util.h"
 #include "conf-files.h"
-#include "cgroup-setup.h"
 #include "dev-setup.h"
-#include "dirent-util.h"
-#include "efi-loader.h"
+#include "efivars.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
@@ -488,7 +486,8 @@ static int relabel_extra(void) {
         }
 
         /* Remove when we complete things. */
-        if (rmdir("/run/systemd/relabel-extra.d") < 0)
+        if (rmdir("/run/systemd/relabel-extra.d") < 0 &&
+            errno != ENOENT)
                 log_warning_errno(errno, "Failed to remove /run/systemd/relabel-extra.d/ directory: %m");
 
         return c;
