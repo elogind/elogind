@@ -459,6 +459,7 @@ possible_cc_flags = [
 possible_link_flags = [
         '-Wl,-z,relro',
         '-Wl,-z,now',
+        '-fstack-protector',
 ]
 
 if cc.get_id() == 'clang'
