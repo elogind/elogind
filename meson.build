@@ -22,6 +22,8 @@ libsystemd_version = '0.27.0'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
+conf.set('PROJECT_VERSION',        meson.project_version())
+
 substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
 # substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
@@ -457,6 +459,7 @@ possible_cc_flags = [
 possible_link_flags = [
         '-Wl,-z,relro',
         '-Wl,-z,now',
+        '-fstack-protector',
 ]
 
 if cc.get_id() == 'clang'
