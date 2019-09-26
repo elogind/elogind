@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '243.4',
+        version : '243',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -459,7 +459,6 @@ possible_cc_flags = [
 possible_link_flags = [
         '-Wl,-z,relro',
         '-Wl,-z,now',
-        '-fstack-protector',
 ]
 
 if cc.get_id() == 'clang'
@@ -611,6 +610,7 @@ else
         conf.set10('HAVE_GETRANDOM', have)
 endif
 
+#####################################################################
 #if 1 /// elogind shall be usable with non-glibc libc variations
 #####################################################################
 # Find out whether program_invocation[_short]_name is supported
@@ -1153,20 +1153,14 @@ conf.set10('HAVE_PAM', have)
 # want_libcryptsetup = get_option('libcryptsetup')
 # if want_libcryptsetup != 'false' and not skip_deps
 #         libcryptsetup = dependency('libcryptsetup',
-#                                    version : '>= 1.6.0',
+#                                    version : '>= 2.0.1',
 #                                    required : want_libcryptsetup == 'true')
 #         have = libcryptsetup.found()
-#         have_sector = cc.has_member(
-#                     'struct crypt_params_plain',
-#                     'sector_size',
-#                     prefix : '#include <libcryptsetup.h>')
 # else
 #         have = false
-#         have_sector = false
 #         libcryptsetup = []
 # endif
 # conf.set10('HAVE_LIBCRYPTSETUP', have)
-# conf.set10('HAVE_LIBCRYPTSETUP_SECTOR_SIZE', have_sector)
 #
 # want_libcurl = get_option('libcurl')
 # if want_libcurl != 'false' and not skip_deps
@@ -1414,7 +1408,7 @@ conf.set10('HAVE_DBUS', have)
 #         if dns_over_tls == 'openssl'
 #                 have_gnutls = false
 #         else
-#                 have_gnutls = (conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.6.0'))
+#                 have_gnutls = (conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.5.3'))
 #                 if dns_over_tls == 'gnutls' and not have_gnutls
 #                         error('DNS-over-TLS support was requested with gnutls, but dependencies are not available')
 #                 endif
@@ -1692,8 +1686,8 @@ libelogind = shared_library(
         version : libsystemd_version,
         include_directories : includes,
         link_args : ['-shared',
-                     '-Wl,--version-script=' + libelogind_sym_path],
 #if 0 /// elogind does not need gcrypt, only threads.
+#                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
 #                      libbasic_gcrypt],
 #         link_whole : [libsystemd_static,
@@ -1716,10 +1710,10 @@ libelogind = shared_library(
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
-install_libelogind_static = static_library(
-        'elogind',
-        libelogind_sources,
 #if 0 /// No journald with elogind (And before you ask: NO!)
+# install_libsystemd_static = static_library(
+#         'systemd',
+#         libsystemd_sources,
 #         journal_client_sources,
 #endif // 0
         basic_sources,
@@ -1731,8 +1725,8 @@ install_libelogind_static = static_library(
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
         install_dir : rootlibdir,
-        pic : static_libelogind == 'true' or static_libelogind == 'pic',
 #if 0 /// elogind only needs libcap, threads and selinux.
+#         pic : static_libsystemd == 'true' or static_libsystemd == 'pic',
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
