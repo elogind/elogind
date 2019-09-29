@@ -1275,8 +1275,8 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
         if (r == 0)
                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
 
-        r = mkdir_safe_label("/var/lib/elogind/linger", 0755, 0, 0, MKDIR_WARN_MODE);
         (void) mkdir_p_label("/var/lib/elogind", 0755);
+        r = mkdir_safe_label("/var/lib/elogind/linger", 0755, 0, 0, MKDIR_WARN_MODE);
         if (r < 0)
                 return r;
 
@@ -1395,6 +1395,7 @@ static int flush_devices(Manager *m) {
                 struct dirent *de;
 
                 FOREACH_DIRENT_ALL(de, d, break) {
+                        dirent_ensure_type(d, de);
                         if (!dirent_is_file(de))
                                 continue;
 
@@ -2793,7 +2794,7 @@ static int property_get_reboot_to_firmware_setup(
         } else if (r < 0)
                 log_warning_errno(r, "Failed to parse $SYSTEMD_REBOOT_TO_FIRMWARE_SETUP: %m");
         else if (r > 0) {
-               /* Non-EFI case: let's see whether /run/systemd/reboot-to-firmware-setup exists. */
+                /* Non-EFI case: let's see whether /run/systemd/reboot-to-firmware-setup exists. */
                 if (access("/run/systemd/reboot-to-firmware-setup", F_OK) < 0) {
                         if (errno != ENOENT)
                                 log_warning_errno(errno, "Failed to check whether /run/systemd/reboot-to-firmware-setup exists: %m");
@@ -3093,6 +3094,7 @@ static int method_can_reboot_to_boot_loader_menu(
 
                 if (r < 0)
                         log_warning_errno(r, "Failed to parse $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU: %m");
+
                 return sd_bus_reply_method_return(message, "s", "na");
         }
 
