@@ -6,7 +6,6 @@
 #include "macro.h"
 #include "path-lookup.h"
 #include "set.h"
-#include "special.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -280,6 +279,7 @@ int unit_file_build_name_map(
                         if (hashmap_contains(ids, de->d_name))
                                 continue;
 
+                        dirent_ensure_type(d, de);
                         if (de->d_type == DT_LNK) {
                                 /* We don't explicitly check for alias loops here. unit_ids_map_get() which
                                  * limits the number of hops should be used to access the map. */
@@ -511,48 +511,4 @@ int unit_file_find_fragment(
 
         // FIXME: if instance, consider any unit names with different template name
         return 0;
-}
-
-static const char * const rlmap[] = {
-        "emergency", SPECIAL_EMERGENCY_TARGET,
-        "-b",        SPECIAL_EMERGENCY_TARGET,
-        "rescue",    SPECIAL_RESCUE_TARGET,
-        "single",    SPECIAL_RESCUE_TARGET,
-        "-s",        SPECIAL_RESCUE_TARGET,
-        "s",         SPECIAL_RESCUE_TARGET,
-        "S",         SPECIAL_RESCUE_TARGET,
-        "1",         SPECIAL_RESCUE_TARGET,
-        "2",         SPECIAL_MULTI_USER_TARGET,
-        "3",         SPECIAL_MULTI_USER_TARGET,
-        "4",         SPECIAL_MULTI_USER_TARGET,
-        "5",         SPECIAL_GRAPHICAL_TARGET,
-        NULL
-};
-
-static const char * const rlmap_initrd[] = {
-        "emergency", SPECIAL_EMERGENCY_TARGET,
-        "rescue",    SPECIAL_RESCUE_TARGET,
-        NULL
-};
-
-const char* runlevel_to_target(const char *word) {
-        const char * const *rlmap_ptr;
-        size_t i;
-
-        if (!word)
-                return NULL;
-
-        if (in_initrd()) {
-                word = startswith(word, "rd.");
-                if (!word)
-                        return NULL;
-        }
-
-        rlmap_ptr = in_initrd() ? rlmap_initrd : rlmap;
-
-        for (i = 0; rlmap_ptr[i]; i += 2)
-                if (streq(word, rlmap_ptr[i]))
-                        return rlmap_ptr[i+1];
-
-        return NULL;
 }

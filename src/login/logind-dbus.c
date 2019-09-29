@@ -20,7 +20,6 @@
 #include "device-util.h"
 #include "dirent-util.h"
 #include "efivars.h"
-#include "efi-loader.h"
 #include "env-util.h"
 #include "escape.h"
 #include "fd-util.h"
@@ -1396,6 +1395,7 @@ static int flush_devices(Manager *m) {
                 struct dirent *de;
 
                 FOREACH_DIRENT_ALL(de, d, break) {
+                        dirent_ensure_type(d, de);
                         if (!dirent_is_file(de))
                                 continue;
 
