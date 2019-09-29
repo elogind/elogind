@@ -30,8 +30,6 @@
 #include "cgroup.h"       // From src/core/
 #include "label.h"
 #include "musl_missing.h"
-#include "process-util.h"
-#include "cgroup-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);
@@ -317,6 +315,7 @@ static int manager_enumerate_linger_users(Manager *m) {
         FOREACH_DIRENT(de, d, return -errno) {
                 int k;
 
+                dirent_ensure_type(d, de);
                 if (!dirent_is_file(de))
                         continue;
 
@@ -1320,10 +1319,10 @@ static int run(int argc, char *argv[]) {
         elogind_manager_reset_config(m);
 #endif // 1
         r = manager_startup(m);
-        log_debug("elogind running as pid "PID_FMT, getpid_cached());
         if (r < 0)
                 return log_error_errno(r, "Failed to fully start up daemon: %m");
 
+        log_debug("elogind running as pid "PID_FMT, getpid_cached());
         (void) sd_notify(false,
                          "READY=1\n"
                          "STATUS=Processing requests...");
