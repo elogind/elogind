@@ -595,8 +595,8 @@ static void test_fsync_directory_of_file(void) {
 int main(int argc, char *argv[]) {
         test_unlink_noerrno();
         test_get_files_in_directory();
-        test_readlink_and_make_absolute();
 #if 0 /// UNNEEDED by elogind
+        test_readlink_and_make_absolute();
         test_var_tmp();
 #endif // 0
         test_chase_symlinks();

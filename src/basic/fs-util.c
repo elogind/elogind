@@ -192,7 +192,6 @@ int readlink_value(const char *p, char **ret) {
 
         return 0;
 }
-#endif // 0
 
 int readlink_and_make_absolute(const char *p, char **r) {
         _cleanup_free_ char *target = NULL;
@@ -213,9 +212,8 @@ int readlink_and_make_absolute(const char *p, char **r) {
         *r = k;
         return 0;
 }
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0
+
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
         assert(path);
 
