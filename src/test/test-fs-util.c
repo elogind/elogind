@@ -336,6 +336,7 @@ static void test_unlink_noerrno(void) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_readlink_and_make_absolute(void) {
         char tempdir[] = "/tmp/test-readlink_and_make_absolute";
         char name[] = "/tmp/test-readlink_and_make_absolute/original";
@@ -366,6 +367,7 @@ static void test_readlink_and_make_absolute(void) {
 
         assert_se(rm_rf(tempdir, REMOVE_ROOT|REMOVE_PHYSICAL) >= 0);
 }
+#endif // 0
 
 static void test_get_files_in_directory(void) {
         _cleanup_strv_free_ char **l = NULL, **t = NULL;
