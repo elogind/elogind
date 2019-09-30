@@ -88,9 +88,15 @@ static void test_max(void) {
 }
 
 #pragma GCC diagnostic push
+#if 0 /// elogind supports gcc9+, which also has this warning
 #ifdef __clang__
-#  pragma GCC diagnostic ignored "-Waddress-of-packed-member"
+#  pragma GCC diagnostic ignored "-Waddress-of-packed-member" -Waddress-of-packed-member
 #endif
+#else
+#if defined(__clang__) || (defined(__GNUC__) && __GNUC__ >= 9)
+#  pragma GCC diagnostic ignored "-Waddress-of-packed-member" -Waddress-of-packed-member
+#endif
+#endif // 0
 
 static void test_container_of(void) {
         struct mytype {
