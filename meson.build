@@ -2020,10 +2020,9 @@ public_programs += [exe]
 #if 0 /// although superfluous, diff wants the endif here, and removes it from above.
 # endif
 #endif // 0
-endif
 
-if conf.get('HAVE_PAM') == 1
 #if 0 /// UNNEEDED by elogind
+# if conf.get('HAVE_PAM') == 1
 #         executable('systemd-user-sessions',
 #                    'src/user-sessions/user-sessions.c',
 #                    include_directories : includes,
