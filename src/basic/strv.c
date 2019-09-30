@@ -373,8 +373,6 @@ char *strv_join(char **l, const char *separator) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int strv_push(char ***l, char *value) {
         char **c;
         size_t n, m;

@@ -130,8 +130,6 @@ assert_cc(sizeof(mode_t) == sizeof(uint32_t));
 int bus_log_parse_error(int r);
 int bus_log_create_error(int r);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 #define BUS_DEFINE_PROPERTY_GET_GLOBAL(function, bus_type, val)         \
         int function(sd_bus *bus,                                       \
                      const char *path,                                  \

@@ -408,8 +408,6 @@ int clean_ipc_internal(uid_t uid, gid_t gid, bool rm) {
                         ret = r;
         }
 
-#if 0 /// elogind does not use mq_open anywhere
-#endif // 0
         r = clean_sysvipc_sem(uid, gid, rm);
         if (r != 0) {
                 if (!rm)
