@@ -272,12 +272,12 @@ static char *format_timestamp_internal(
         assert(buf);
 
         if (l <
-            3 +                  /* week day */
+            (size_t)(3 +         /* week day */
             1 + 10 +             /* space and date */
             1 + 8 +              /* space and time */
             (us ? 1 + 6 : 0) +   /* "." and microsecond part */
             1 + 1 +              /* space and shortest possible zone */
-            1)
+            1) )
                 return NULL; /* Not enough space even for the shortest form. */
         if (t <= 0 || t == USEC_INFINITY)
                 return NULL; /* Timestamp is unset */
