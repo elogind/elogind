@@ -777,5 +777,3 @@ bool slice_name_is_valid(const char *name) {
 
         return true;
 }
-#if 0 /// UNNEEDED by elogind
-#endif // 0

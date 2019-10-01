@@ -54,8 +54,6 @@ bool plymouth_running(void);
 
 bool display_is_local(const char *display) _pure_;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 #define NULSTR_FOREACH(i, l)                                    \
         for ((i) = (l); (i) && *(i); (i) = strchr((i), 0)+1)
 

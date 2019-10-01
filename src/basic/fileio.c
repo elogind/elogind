@@ -680,12 +680,6 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 }
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 /* A bitmask of the EOL markers we know */
 typedef enum EndOfLineMarker {
         EOL_NONE     = 0,

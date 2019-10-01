@@ -541,9 +541,6 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
 }
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 static int parse_timestamp_impl(const char *t, usec_t *usec, bool with_tz) {
         static const struct {
                 const char *name;

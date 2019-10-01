@@ -216,8 +216,6 @@ int readlink_and_make_absolute(const char *p, char **r) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
         char fd_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
         _cleanup_close_ int fd = -1;

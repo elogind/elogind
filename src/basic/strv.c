@@ -384,8 +384,6 @@ char *strv_join_prefix(char **l, const char *separator, const char *prefix) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int strv_push(char ***l, char *value) {
         char **c;
         size_t n, m;

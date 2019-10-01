@@ -131,7 +131,6 @@ int null_or_empty_fd(int fd) {
 
         return null_or_empty(&st);
 }
-#endif // 0
 
 int path_is_read_only_fs(const char *path) {
         struct statvfs st;
@@ -152,6 +151,7 @@ int path_is_read_only_fs(const char *path) {
 
         return false;
 }
+#endif // 0
 
 int files_same(const char *filea, const char *fileb, int flags) {
         struct stat a, b;

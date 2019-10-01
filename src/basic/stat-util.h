@@ -38,8 +38,8 @@ int null_or_empty_path(const char *fn);
 int null_or_empty_fd(int fd);
 #endif // 0
 
-int path_is_read_only_fs(const char *path);
 #if 0 /// UNNEEDED by elogind
+int path_is_read_only_fs(const char *path);
 #endif // 0
 
 int files_same(const char *filea, const char *fileb, int flags);
@@ -49,8 +49,6 @@ int files_same(const char *filea, const char *fileb, int flags);
 typedef typeof(((struct statfs*)NULL)->f_type) statfs_f_type_t;
 
 bool is_fs_type(const struct statfs *s, statfs_f_type_t magic_value) _pure_;
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int fd_is_fs_type(int fd, statfs_f_type_t magic_value);
 int path_is_fs_type(const char *path, statfs_f_type_t magic_value);
 

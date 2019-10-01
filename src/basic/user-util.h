@@ -31,8 +31,6 @@ char* getlogname_malloc(void);
 char* getusername_malloc(void);
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 typedef enum UserCredsFlags {
         USER_CREDS_PREFER_NSS    = 1 << 0,  /* if set, only synthesize user records if database lacks them. Normally we bypass the userdb entirely for the records we can synthesize */
         USER_CREDS_ALLOW_MISSING = 1 << 1,  /* if a numeric UID string is resolved, be OK if there's no record for it */

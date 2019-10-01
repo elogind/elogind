@@ -119,9 +119,6 @@ char *format_timestamp_relative(char *buf, size_t l, usec_t t);
 char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec);
 #endif // 0
 
