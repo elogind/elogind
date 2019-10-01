@@ -189,8 +189,8 @@ int manager_process_seat_device(Manager *m, sd_device *d);
 int manager_process_button_device(Manager *m, sd_device *d);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int manager_spawn_autovt(Manager *m, unsigned vtnr);
+#endif // 0
 
 bool manager_shall_kill(Manager *m, const char *user);
 
