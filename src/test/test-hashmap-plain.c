@@ -978,13 +978,9 @@ static void test_hashmap_reserve(void) {
 }
 
 void test_hashmap_funcs(void) {
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         log_parse_environment();
         log_open();
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         test_hashmap_copy();
         test_hashmap_get_strv();
         test_hashmap_move_one();
