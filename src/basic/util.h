@@ -32,6 +32,9 @@ static inline void save_argc_argv(int argc, char **argv) {
 }
 
 #if 0 /// UNNEEDED by elogind
+extern char **saved_env;
+void save_env(void);
+
 bool kexec_loaded(void);
 
 int prot_from_flags(int flags) _const_;

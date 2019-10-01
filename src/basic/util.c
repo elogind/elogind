@@ -39,6 +39,7 @@
 #include "set.h"
 #include "signal-util.h"
 #include "stat-util.h"
+#include "static-destruct.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
@@ -50,10 +51,13 @@
 int saved_argc = 0;
 char **saved_argv = NULL;
 #if 0 /// UNNEEDED by elogind
+char **saved_env = NULL;
 static int saved_in_initrd = -1;
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
+STATIC_DESTRUCTOR_REGISTER(saved_env, strv_freep);
+
 bool kexec_loaded(void) {
        _cleanup_free_ char *s = NULL;
 
@@ -304,3 +308,7 @@ void disable_coredumps(void) {
                 log_debug_errno(r, "Failed to turn off coredumps, ignoring: %m");
 }
 #endif // 0
+
+void save_env(void) {
+        saved_env = strv_copy(environ);
+}
