@@ -20,9 +20,6 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, endmntent);
 #define _cleanup_endmntent_ _cleanup_(endmntentp)
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 int mount_verbose(
                 int error_log_level,
                 const char *what,

@@ -1241,8 +1241,6 @@ int bus_message_map_all_properties(
         return sd_bus_message_exit_container(m);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int bus_map_all_properties(
                 sd_bus *bus,
                 const char *destination,
