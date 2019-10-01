@@ -28,6 +28,7 @@
 /// Additional includes needed by elogind
 #include "exec-elogind.h"
 #include "sleep.h"
+#include "static-destruct.h"
 #include "utmp-wtmp.h"
 
 static char* arg_verb = NULL;

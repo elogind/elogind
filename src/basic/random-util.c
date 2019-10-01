@@ -23,7 +23,7 @@
 #  include <linux/random.h>
 #endif
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "fd-util.h"
 #include "io-util.h"
 #include "missing.h"
