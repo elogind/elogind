@@ -30,8 +30,6 @@ bool bus_type_is_valid(char c) {
         return !!memchr(valid, c, sizeof(valid));
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 bool bus_type_is_basic(char c) {
         static const char valid[] = {
                 SD_BUS_TYPE_BYTE,

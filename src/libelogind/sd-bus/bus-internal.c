@@ -151,8 +151,6 @@ bool service_name_is_valid(const char *p) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 bool member_name_is_valid(const char *p) {
         const char *q;
 
