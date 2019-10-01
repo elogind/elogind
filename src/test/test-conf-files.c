@@ -94,6 +94,7 @@ static void test_conf_files_list(bool use_root) {
         assert_se(rm_rf(tmp_dir, REMOVE_ROOT|REMOVE_PHYSICAL) == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_conf_files_insert(const char *root) {
         _cleanup_strv_free_ char **s = NULL;
 
@@ -147,15 +148,18 @@ static void test_conf_files_insert(const char *root) {
         assert_se(conf_files_insert(&s, root, dirs, "/whatever.conf") == 0);
         assert_se(strv_equal(s, STRV_MAKE(bar2, foo1, whatever, zzz3)));
 }
+#endif // 0
 
 int main(int argc, char **argv) {
         test_setup_logging(LOG_DEBUG);
 
         test_conf_files_list(false);
         test_conf_files_list(true);
+#if 0 /// UNNEEDED by elogind
         test_conf_files_insert(NULL);
         test_conf_files_insert("/root");
         test_conf_files_insert("/root/");
+#endif // 0
 
         return 0;
 }

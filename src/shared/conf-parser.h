@@ -91,6 +91,7 @@ int config_parse(
                 ConfigParseFlags flags,
                 void *userdata);
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_many_nulstr(
                 const char *conf_file,      /* possibly NULL */
                 const char *conf_file_dirs, /* nulstr */
@@ -100,7 +101,6 @@ int config_parse_many_nulstr(
                 ConfigParseFlags flags,
                 void *userdata);
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_many(
                 const char *conf_file,      /* possibly NULL */
                 const char* const* conf_file_dirs,
