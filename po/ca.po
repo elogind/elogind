@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
+# 
 # Catalan translation for elogind.
 # This file is distributed under the same license as the elogind package.
-#
 # Walter Garcia-Fontes <walter.garcia@upf.edu>, 2016.
 # Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2018. #zanata
 # Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>, 2018. #zanata
@@ -68,12 +68,12 @@ msgstr ""
 # "del gestor de serveis o del sistema."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
-# msgid "Reload the systemd state"
-# msgstr "Torna a carregar l'estat de systemd"
+# msgid "Reload the elogind state"
+# msgstr "Torna a carregar l'estat de elogind"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Es requereix autenticació per tornar a carregar l'estat de systemd."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Es requereix autenticació per tornar a carregar l'estat de elogind."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22
 # msgid "Set host name"

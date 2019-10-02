@@ -6,8 +6,8 @@
 # Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>, 2015, 2017.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2017-08-13 15:26+0000\n"
 "PO-Revision-Date: 2017-08-13 19:48+0200\n"
 "Last-Translator: Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>\n"
@@ -67,12 +67,12 @@ msgstr ""
 # "mediu și managerul de servicii ale sistemului."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Reîncarcă starea systemd"
+# msgid "Reload the elogind state"
+# msgstr "Reîncarcă starea elogind"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Autentificarea este necesară pentru a reîncărca starea systemd."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Autentificarea este necesară pentru a reîncărca starea elogind."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

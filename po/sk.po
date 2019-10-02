@@ -6,8 +6,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2017-06-24 03:26+0000\n"
 "PO-Revision-Date: 2017-06-25 11:03+0200\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
@@ -65,13 +65,13 @@ msgstr ""
 # "premenných prostredia systému a správcu služieb."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Znovu načítanie stavu systému systemd"
+# msgid "Reload the elogind state"
+# msgstr "Znovu načítanie stavu systému elogind"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
+# msgid "Authentication is required to reload the elogind state."
 # msgstr ""
-# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
+# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

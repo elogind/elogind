@@ -8,8 +8,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2015-09-19 12:09+0000\n"
 "PO-Revision-Date: 2015-09-19 20:02+0200\n"
 "Last-Translator: Bernd Homuth <dev@hmt.im>\n"
@@ -65,12 +65,12 @@ msgstr ""
 # msgstr "Legitimierung ist notwendig für die System- und Dienstverwaltung."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Den systemd-Zustand neu laden"
+# msgid "Reload the elogind state"
+# msgstr "Den elogind-Zustand neu laden"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Legitimierung ist zum erneuten Laden des systemd-Zustands notwendig."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Legitimierung ist zum erneuten Laden des elogind-Zustands notwendig."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"
@@ -270,24 +270,24 @@ msgstr ""
 "Legitimierung ist erforderlich, damit nicht angemeldete Benutzer Programme "
 "ausführen dürfen."
 
-# www.freedesktop.org/wiki/Software/systemd/multiseat/
+# www.freedesktop.org/wiki/Software/elogind/multiseat/
 #: ../src/login/org.freedesktop.login1.policy:21
 msgid "Allow attaching devices to seats"
 msgstr "Das Anschließen von Geräten an Arbeitsstationen erlauben"
 
-# www.freedesktop.org/wiki/Software/systemd/multiseat/
+# www.freedesktop.org/wiki/Software/elogind/multiseat/
 #: ../src/login/org.freedesktop.login1.policy:22
 msgid "Authentication is required for attaching a device to a seat."
 msgstr ""
 "Legitimierung ist zum Anschließen eines Geräts an eine Arbeitsstation "
 "notwendig."
 
-# www.freedesktop.org/wiki/Software/systemd/multiseat/
+# www.freedesktop.org/wiki/Software/elogind/multiseat/
 #: ../src/login/org.freedesktop.login1.policy:23
 msgid "Flush device to seat attachments"
 msgstr "Zurücksetzen der an eine Arbeitsstation angeschlossenen Geräte"
 
-# www.freedesktop.org/wiki/Software/systemd/multiseat/
+# www.freedesktop.org/wiki/Software/elogind/multiseat/
 #: ../src/login/org.freedesktop.login1.policy:24
 msgid ""
 "Authentication is required for resetting how devices are attached to seats."
@@ -438,7 +438,7 @@ msgstr ""
 msgid "Manage active sessions, users and seats"
 msgstr "Aktive Sitzungen, Benutzer und Arbeitsstationen verwalten"
 
-# www.freedesktop.org/wiki/Software/systemd/multiseat/
+# www.freedesktop.org/wiki/Software/elogind/multiseat/
 #: ../src/login/org.freedesktop.login1.policy:50
 msgid ""
 "Authentication is required for managing active sessions, users and seats."

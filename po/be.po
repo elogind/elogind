@@ -7,7 +7,7 @@
 # Viktar Vaŭčkievič <victorenator@gmail.com>, 2015, 2016.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
+"Project-Id-Version: elogind master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-06-09 19:54+0300\n"
 "PO-Revision-Date: 2016-06-09 19:47+0300\n"
@@ -64,12 +64,12 @@ msgstr ""
 # "сістэмнага мэнэджэра."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Перачытаць стан systemd"
+# msgid "Reload the elogind state"
+# msgstr "Перачытаць стан elogind"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Неабходна аўтэнтыфікацыя для перачытання стану systemd."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Неабходна аўтэнтыфікацыя для перачытання стану elogind."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

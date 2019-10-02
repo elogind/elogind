@@ -7,7 +7,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
+"Project-Id-Version: elogind master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-14 13:28+0300\n"
 "PO-Revision-Date: 2016-05-14 13:28+0300\n"
@@ -63,12 +63,12 @@ msgstr ""
 # "управлението на услугите е необходима идентификация."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Презареждане на състоянието на systemd"
+# msgid "Reload the elogind state"
+# msgstr "Презареждане на състоянието на elogind"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "За презареждане на състоянието на systemd е необходима идентификация."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "За презареждане на състоянието на elogind е необходима идентификация."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

@@ -1,4 +1,4 @@
-src/core/org.freedesktop.elogind1.policy.in
+src/core/org.freedesktop.systemd1.policy.in
 src/hostname/org.freedesktop.hostname1.policy
 src/import/org.freedesktop.import1.policy
 src/locale/org.freedesktop.locale1.policy

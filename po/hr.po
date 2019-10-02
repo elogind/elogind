@@ -6,8 +6,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2016-04-27 11:57+0100\n"
 "PO-Revision-Date: 2016-04-27 12:11+0200\n"
 "Language-Team: \n"
@@ -60,12 +60,12 @@ msgstr ""
 # "sustava i usluga."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Ponovno učitaj systemd stanje"
+# msgid "Reload the elogind state"
+# msgstr "Ponovno učitaj elogind stanje"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Potrebna je ovjera za ponovno učitavanje systemd stanja."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Potrebna je ovjera za ponovno učitavanje elogind stanja."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

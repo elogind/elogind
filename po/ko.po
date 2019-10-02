@@ -7,8 +7,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2015-09-25 22:52+0900\n"
 "PO-Revision-Date: 2015-11-03 13:19+0100\n"
 "Last-Translator: Dongsu Park <dongsu@endocode.com>\n"
@@ -60,12 +60,12 @@ msgstr ""
 # "니다."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "systemd 상태 다시 불러오기"
+# msgid "Reload the elogind state"
+# msgstr "elogind 상태 다시 불러오기"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "systemd 상태를 다시 불러오려면 인증이 필요합니다."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "elogind 상태를 다시 불러오려면 인증이 필요합니다."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

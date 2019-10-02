@@ -6,8 +6,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2018-02-27 16:46+0900\n"
 "PO-Revision-Date: 2018-05-28 10:30+0900\n"
 "Last-Translator: Yu Watanabe <watanabe.yu+github@gmail.com>\n"
@@ -54,12 +54,12 @@ msgstr ""
 # msgstr "システムマネージャ環境変数を設定もしくは解除するには認証が必要です。"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Reload the systemd state"
-# msgstr "systemdの状態の再読込"
+# msgid "Reload the elogind state"
+# msgstr "elogindの状態の再読込"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "systemdの状態を再読込するには認証が必要です。"
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "elogindの状態を再読込するには認証が必要です。"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:20
 # msgid "Set host name"

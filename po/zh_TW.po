@@ -55,12 +55,12 @@ msgstr ""
 # msgstr "設定或取消設定系統及服務管理員環境變量時需要驗證"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "重新載入 systemd 狀態"
+# msgid "Reload the elogind state"
+# msgstr "重新載入 elogind 狀態"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "重新載入 systemd 狀態需要驗證。"
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "重新載入 elogind 狀態需要驗證。"
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

@@ -6,8 +6,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2018-03-04 11:09+0700\n"
 "PO-Revision-Date: 2018-03-04 11:12+0700\n"
 "Last-Translator: Andika Triwidada <atriwidada@gnome.org>\n"
@@ -60,12 +60,12 @@ msgstr ""
 # "manajer layanan dan sistem."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
-# msgid "Reload the systemd state"
-# msgstr "Muat ulang keadaan systemd"
+# msgid "Reload the elogind state"
+# msgstr "Muat ulang keadaan elogind"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Otentikasi diperlukan untuk memuat ulang keadaan systemd."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Otentikasi diperlukan untuk memuat ulang keadaan elogind."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22
 # msgid "Set host name"

@@ -6,7 +6,7 @@
 # Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
+"Project-Id-Version: elogind master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-22 16:37+0100\n"
 "PO-Revision-Date: 2014-04-29 09:17+0300\n"
@@ -69,12 +69,12 @@ msgstr ""
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
 # #, fuzzy
-# msgid "Reload the systemd state"
+# msgid "Reload the elogind state"
 # msgstr "Επανεκκίνηση του συστήματος"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
 # #, fuzzy
-# msgid "Authentication is required to reload the systemd state."
+# msgid "Authentication is required to reload the elogind state."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1

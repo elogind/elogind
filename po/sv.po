@@ -7,8 +7,8 @@
 # Josef Andersson <l10nl18nsweja@gmail.com>, 2015, 2017.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2017-03-01 15:50+0000\n"
 "PO-Revision-Date: 2017-03-19 21:18+0100\n"
 "Last-Translator: Josef Andersson <l10nl18nsweja@gmail.com>\n"
@@ -62,12 +62,12 @@ msgstr ""
 # "system- och servicehanterare."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Läs om tillståndet för systemd"
+# msgid "Reload the elogind state"
+# msgstr "Läs om tillståndet för elogind"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Autentisering krävs för att läsa om tillståndet för systemd."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Autentisering krävs för att läsa om tillståndet för elogind."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

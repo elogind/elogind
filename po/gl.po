@@ -4,7 +4,7 @@
 # Fran Dieguez <frandieguez@gnome.org>, 2015.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
+"Project-Id-Version: elogind\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-14 23:55+0200\n"
 "PO-Revision-Date: 2015-09-15 00:20+0200\n"
@@ -64,12 +64,12 @@ msgstr ""
 # "ambiente do sistema ou do xestor de servizos"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Recargar o estado de systemd"
+# msgid "Reload the elogind state"
+# msgstr "Recargar o estado de elogind"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Requírese autenticación para recargar o estado de systemd."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Requírese autenticación para recargar o estado de elogind."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

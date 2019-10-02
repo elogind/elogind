@@ -7,8 +7,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2016-04-23 14:24+0200\n"
 "PO-Revision-Date: 2017-10-10 19:54+0200\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
@@ -56,12 +56,12 @@ msgstr ""
 # msgstr "Pro nastavení nebo rušení proměnných správce systému a služeb je vyžadováno ověření."
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:9
-# msgid "Reload the systemd state"
-# msgstr "Znovu načíst stav systemd"
+# msgid "Reload the elogind state"
+# msgstr "Znovu načíst stav elogind"
 #
 # #: ../src/core/org.freedesktop.systemd1.policy.in.in.h:10
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Pro znovu načtení stavu systemd je vyžadováno ověření."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Pro znovu načtení stavu elogind je vyžadováno ověření."
 #
 # #: ../src/hostname/org.freedesktop.hostname1.policy.in.h:1
 # msgid "Set host name"

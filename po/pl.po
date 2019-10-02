@@ -7,8 +7,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2018-06-19 15:00+0000\n"
 "PO-Revision-Date: 2018-06-19 17:05+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
@@ -66,12 +66,12 @@ msgstr ""
 # "menedżera systemu i usług."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Reload the systemd state"
-# msgstr "Ponowne wczytanie stanu systemd"
+# msgid "Reload the elogind state"
+# msgstr "Ponowne wczytanie stanu elogind"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
-# msgid "Authentication is required to reload the systemd state."
-# msgstr "Wymagane jest uwierzytelnienie, aby ponownie wczytać stan systemd."
+# msgid "Authentication is required to reload the elogind state."
+# msgstr "Wymagane jest uwierzytelnienie, aby ponownie wczytać stan elogind."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:20
 # msgid "Set host name"

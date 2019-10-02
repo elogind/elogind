@@ -5,8 +5,8 @@
 # Daniel Korostil <ted.korostiled@gmail.com>, 2014, 2016, 2018.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2018-03-27 03:26+0000\n"
 "PO-Revision-Date: 2018-05-11 23:16+0300\n"
 "Last-Translator: Daniel Korostil <ted.korostiled@gmail.com>\n"
@@ -31,21 +31,21 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
 # msgid "Manage system services or other units"
-# msgstr "Керувати системними службами й іншими одиницями systemd"
+# msgstr "Керувати системними службами й іншими одиницями elogind"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:34
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
-# "Потрібна автентифікація, щоб керувати системними службами й іншими одиницями systemd."
+# "Потрібна автентифікація, щоб керувати системними службами й іншими одиницями elogind."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:43
 # msgid "Manage system service or unit files"
-# msgstr "Керувати системними службами й одиницями systemd"
+# msgstr "Керувати системними службами й одиницями elogind"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:44
 # msgid "Authentication is required to manage system service or unit files."
 # msgstr ""
-# "Потрібна автентифікація, щоб керувати системними службами й одиницями systemd."
+# "Потрібна автентифікація, щоб керувати системними службами й одиницями elogind."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:53
 # msgid "Set or unset system and service manager environment variables"
@@ -61,11 +61,11 @@ msgstr ""
 # "керування службами і системою."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
-# msgid "Reload the systemd state"
+# msgid "Reload the elogind state"
 # msgstr "Перезапустити стан системи"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Authentication is required to reload the systemd state."
+# msgid "Authentication is required to reload the elogind state."
 # msgstr "Потрібна автентифікація, щоб перезапустити стан системи."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22
