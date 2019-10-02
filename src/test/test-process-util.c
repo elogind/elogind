@@ -198,6 +198,11 @@ static void test_get_process_cmdline_harder(void) {
         if (geteuid() != 0)
                 return;
 
+#if 1 /// The simplified Travis-CI used by elogind crashes here after the fork
+        if (detect_container() > 0)
+                return;
+#endif // 1
+
 #if HAVE_VALGRIND_VALGRIND_H
         /* valgrind patches open(/proc//cmdline)
          * so, test_get_process_cmdline_harder fails always
