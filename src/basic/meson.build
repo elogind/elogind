@@ -512,8 +512,6 @@ libbasic = static_library(
         dependencies : [versiondep,
                         threads,
                         libcap,
-#if 0 /// Neither blkid nor libmount in elogind
-#endif // 0
                         libselinux,
                         libm],
         c_args : ['-fvisibility=default'],

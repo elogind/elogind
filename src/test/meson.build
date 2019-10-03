@@ -250,12 +250,12 @@ tests += [
          [],
          []],
 
-        [['src/test/test-libmount.c'],
-         [],
-         [threads,
-          libmount]],
-
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-libmount.c'],
+#          [],
+#          [threads,
+#           libmount]],
+# 
 #         [['src/test/test-mount-util.c'],
 #          [],
 #          []],
@@ -633,18 +633,18 @@ tests += [
          [],
          '', 'manual'],
 
-        [['src/test/test-cgroup-cpu.c'],
-         [libcore,
-          libshared],
-         []],
-
-        [['src/test/test-cgroup-unit-default.c',
-          'src/test/test-helper.c'],
-         [libcore,
-          libshared],
-         []],
-
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-cgroup-cpu.c'],
+#          [libcore,
+#           libshared],
+#          []],
+#
+#         [['src/test/test-cgroup-unit-default.c',
+#           'src/test/test-helper.c'],
+#          [libcore,
+#           libshared],
+#          []],
+#
 #         [['src/test/test-cgroup-mask.c',
 #           'src/test/test-helper.c'],
 #          [libcore,

@@ -12,8 +12,8 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
+libsystemd_version = '0.27.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libsystemd_version = '0.27.0'
 # libudev_version = '1.6.15'
 #endif // 0
 
@@ -50,6 +50,8 @@ conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 #
 # skip_deps = want_ossfuzz or want_libfuzzer
 # fuzzer_build = want_ossfuzz or want_libfuzzer or want_fuzzbuzz
+#else
+skip_deps = false
 #endif // 0
 
 #####################################################################
@@ -1597,6 +1599,7 @@ conf.set_quoted('SYSTEM_GENERATOR_PATH',            '/dev/null')
 conf.set_quoted('UMOUNT_PATH',                      '/dev/null')
 conf.set_quoted('USER_ENV_GENERATOR_PATH',          '/dev/null')
 conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
+conf.set_quoted('DEBUGTTY',                         '/dev/null')
 #####################################################################
 
 #endif // 1
@@ -1607,7 +1610,9 @@ config_h = configure_file(
 meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
-                               'src/boot',
+#if 0 /// UNNEEDED by elogind
+#                                'src/boot',
+#endif // 0
                                'src/shared',
                                'src/systemd',
                                'src/journal',
@@ -1624,8 +1629,8 @@ includes = include_directories('src/basic',
 #                                'src/libudev',
 #endif // 0
                                'src/core',
-                               'src/shutdown',
 #if 0 /// elogind has a different list
+#                                'src/shutdown',
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
 #                                'src/libsystemd/sd-event',
@@ -1678,9 +1683,9 @@ subdir('src/login')
 #         install : false)
 #endif // 0
 
+libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
 libelogind = shared_library(
         'elogind',
-libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
         disable_mempool_c,
         version : libsystemd_version,
         include_directories : includes,
@@ -3375,17 +3380,17 @@ endforeach
 
 ############################################################
 
-check_directives_sh = find_program('tools/check-directives.sh')
-
-if want_tests != 'false'
-        test('check-directives',
-             check_directives_sh,
-             args : project_source_root)
-endif
-
-############################################################
-
 #if 0 /// fuzz regression tests are not supported by elogind
+# check_directives_sh = find_program('tools/check-directives.sh')
+#
+# if want_tests != 'false'
+#         test('check-directives',
+#              check_directives_sh,
+#              args : project_source_root)
+# endif
+#
+# ############################################################
+#
 # # Enable tests for all supported sanitizers
 # foreach tuple : sanitizers
 #         sanitizer = tuple[0]
