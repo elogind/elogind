@@ -33,7 +33,6 @@
 
 #else
 #if 0 /// elogind should support both /run/dbus & /var/run/dbus (per Linux FHS)
-#define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/run/dbus/system_bus_socket"
 #else
 /* Not all systems have dbus hierarchy in /run (as preferred by systemd) */
 #if VARRUN_IS_SYMLINK

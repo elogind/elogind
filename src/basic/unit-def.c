@@ -138,8 +138,7 @@ static const char* const mount_state_table[_MOUNT_STATE_MAX] = {
         [MOUNT_REMOUNTING_SIGKILL] = "remounting-sigkill",
         [MOUNT_UNMOUNTING_SIGTERM] = "unmounting-sigterm",
         [MOUNT_UNMOUNTING_SIGKILL] = "unmounting-sigkill",
-        [MOUNT_FAILED] = "failed",
-        [MOUNT_CLEANING] = "cleaning",
+        [MOUNT_FAILED] = "failed"
 };
 
 DEFINE_STRING_TABLE_LOOKUP(mount_state, MountState);
@@ -207,8 +206,7 @@ static const char* const socket_state_table[_SOCKET_STATE_MAX] = {
         [SOCKET_STOP_POST] = "stop-post",
         [SOCKET_FINAL_SIGTERM] = "final-sigterm",
         [SOCKET_FINAL_SIGKILL] = "final-sigkill",
-        [SOCKET_FAILED] = "failed",
-        [SOCKET_CLEANING] = "cleaning",
+        [SOCKET_FAILED] = "failed"
 };
 
 DEFINE_STRING_TABLE_LOOKUP(socket_state, SocketState);
@@ -221,8 +219,7 @@ static const char* const swap_state_table[_SWAP_STATE_MAX] = {
         [SWAP_DEACTIVATING] = "deactivating",
         [SWAP_DEACTIVATING_SIGTERM] = "deactivating-sigterm",
         [SWAP_DEACTIVATING_SIGKILL] = "deactivating-sigkill",
-        [SWAP_FAILED] = "failed",
-        [SWAP_CLEANING] = "cleaning",
+        [SWAP_FAILED] = "failed"
 };
 
 DEFINE_STRING_TABLE_LOOKUP(swap_state, SwapState);

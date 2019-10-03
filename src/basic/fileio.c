@@ -207,15 +207,11 @@ int write_string_file_ts(
                         goto fail;
                 }
 
-                f = fdopen(fd, "w");
-                if (!f) {
-                        r = -errno;
                 r = fdopen_unlocked(fd, "w", &f);
                 if (r < 0) {
                         safe_close(fd);
                         goto fail;
                 }
-
 #ifndef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems when going this route
                 if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                         flags ^= WRITE_STRING_FILE_DISABLE_BUFFER;
@@ -275,17 +271,10 @@ int read_one_line_file(const char *fn, char **line) {
         assert(fn);
         assert(line);
 
-        f = fopen(fn, "re");
-        if (!f)
-                return -errno;
-
-        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
         r = fopen_unlocked(fn, "re", &f);
         if (r < 0)
                 return r;
 
-        r = read_line(f, LONG_LINE_MAX, line);
-        return r < 0 ? r : 0;
         return read_line(f, LONG_LINE_MAX, line);
 }
 
@@ -307,11 +296,6 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
         if (!buf)
                 return -ENOMEM;
 
-        f = fopen(fn, "re");
-        if (!f)
-                return -errno;
-
-        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
         r = fopen_unlocked(fn, "re", &f);
         if (r < 0)
                 return r;
@@ -320,7 +304,6 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
         errno = 0;
         k = fread(buf, 1, l + accept_extra_nl + 1, f);
         if (ferror(f))
-                return errno > 0 ? -errno : -EIO;
                 return errno_or_else(EIO);
 
         if (k != l && k != l + accept_extra_nl)
@@ -333,7 +316,6 @@ int verify_file(const char *fn, const char *blob, bool accept_extra_nl) {
         return 1;
 }
 
-int read_full_stream(
 int read_full_stream_full(
                 FILE *f,
                 const char *filename,
@@ -343,25 +325,20 @@ int read_full_stream_full(
 
         _cleanup_free_ char *buf = NULL;
         struct stat st;
-        size_t n, l;
-        int fd;
         size_t n, n_next, l;
         int fd, r;
 
         assert(f);
         assert(ret_contents);
-        assert(!(flags & READ_FULL_FILE_UNBASE64) || ret_size);
         assert(!FLAGS_SET(flags, READ_FULL_FILE_UNBASE64 | READ_FULL_FILE_UNHEX));
         assert(!(flags & (READ_FULL_FILE_UNBASE64 | READ_FULL_FILE_UNHEX)) || ret_size);
 
-        n = LINE_MAX; /* Start size */
         n_next = LINE_MAX; /* Start size */
 
         fd = fileno(f);
         if (fd >= 0) { /* If the FILE* object is backed by an fd (as opposed to memory or such, see fmemopen(), let's
                         * optimize our buffering) */
 
-                if (fstat(fileno(f), &st) < 0)
                 if (fstat(fd, &st) < 0)
                         return -errno;
 
@@ -375,7 +352,6 @@ int read_full_stream_full(
                          * size of 0. Note that we increase the size to read here by one, so that the first read attempt
                          * already makes us notice the EOF. */
                         if (st.st_size > 0)
-                                n = st.st_size + 1;
                                 n_next = st.st_size + 1;
 
                         if (flags & READ_FULL_FILE_SECURE)
@@ -383,15 +359,11 @@ int read_full_stream_full(
                 }
         }
 
-        l = 0;
         n = l = 0;
         for (;;) {
                 char *t;
                 size_t k;
 
-                t = realloc(buf, n + 1);
-                if (!t)
-                        return -ENOMEM;
                 if (flags & READ_FULL_FILE_SECURE) {
                         t = malloc(n_next + 1);
                         if (!t) {
@@ -415,10 +387,7 @@ int read_full_stream_full(
                 if (k > 0)
                         l += k;
 
-                if (ferror(f))
-                        return errno > 0 ? -errno : -EIO;
                 if (ferror(f)) {
-                        r = errno > 0 ? -errno : -EIO;
                         r = errno_or_else(EIO);
                         goto finalize;
                 }
@@ -432,21 +401,16 @@ int read_full_stream_full(
                 assert(l == n);
 
                 /* Safety check */
-                if (n >= READ_FULL_BYTES_MAX)
-                        return -E2BIG;
                 if (n >= READ_FULL_BYTES_MAX) {
                         r = -E2BIG;
                         goto finalize;
                 }
 
-                n = MIN(n * 2, READ_FULL_BYTES_MAX);
                 n_next = MIN(n * 2, READ_FULL_BYTES_MAX);
         }
 
-        if (flags & READ_FULL_FILE_UNBASE64) {
         if (flags & (READ_FULL_FILE_UNBASE64 | READ_FULL_FILE_UNHEX)) {
                 buf[l++] = 0;
-                r = unbase64mem_full(buf, l, flags & READ_FULL_FILE_SECURE, (void **) ret_contents, ret_size);
                 if (flags & READ_FULL_FILE_UNBASE64)
                         r = unbase64mem_full(buf, l, flags & READ_FULL_FILE_SECURE, (void **) ret_contents, ret_size);
                 else
@@ -459,8 +423,6 @@ int read_full_stream_full(
                  * trailing NUL byte. But if there's an embedded NUL byte, then we should refuse operation as otherwise
                  * there'd be ambiguity about what we just read. */
 
-                if (memchr(buf, 0, l))
-                        return -EBADMSG;
                 if (memchr(buf, 0, l)) {
                         r = -EBADMSG;
                         goto finalize;
@@ -482,30 +444,19 @@ finalize:
         return r;
 }
 
-int read_full_file(const char *fn, char **contents, size_t *size) {
 int read_full_file_full(const char *filename, ReadFullFileFlags flags, char **contents, size_t *size) {
         _cleanup_fclose_ FILE *f = NULL;
         int r;
 
-        assert(fn);
         assert(filename);
         assert(contents);
 
-        f = fopen(fn, "re");
-        f = fopen(filename, "re");
-        if (!f)
-                return -errno;
-
-        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
         r = fopen_unlocked(filename, "re", &f);
         if (r < 0)
                 return r;
 
-        return read_full_stream(f, contents, size);
-        return read_full_stream_full(f, flags, contents, size);
         return read_full_stream_full(f, filename, flags, contents, size);
 }
-
 
 int executable_is_script(const char *path, char **interpreter) {
         _cleanup_free_ char *line = NULL;
@@ -644,10 +595,6 @@ static int search_and_fopen_internal(const char *path, const char *mode, const c
                 _cleanup_free_ char *p = NULL;
                 FILE *f;
 
-                if (root)
-                        p = strjoin(root, *i, "/", path);
-                else
-                        p = strjoin(*i, "/", path);
                 p = path_join(root, *i, path);
                 if (!p)
                         return -ENOMEM;
@@ -720,7 +667,6 @@ int fflush_and_check(FILE *f) {
         fflush(f);
 
         if (ferror(f))
-                return errno > 0 ? -errno : -EIO;
                 return errno_or_else(EIO);
 
         return 0;
@@ -744,7 +690,6 @@ int fflush_sync_and_check(FILE *f) {
 
         return 0;
 }
-
 
 int write_timestamp_file_atomic(const char *fn, usec_t n) {
         char ln[DECIMAL_STR_MAX(n)+2];
@@ -837,7 +782,6 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, funlockfile);
 int read_line_full(FILE *f, size_t limit, ReadLineFlags flags, char **ret) {
         size_t n = 0, allocated = 0, count = 0;
         _cleanup_free_ char *buffer = NULL;
-        int r;
         int r, tty = -1;
 
         assert(f);
@@ -961,7 +905,6 @@ int safe_fgetc(FILE *f, char *ret) {
         k = fgetc(f);
         if (k == EOF) {
                 if (ferror(f))
-                        return errno > 0 ? -errno : -EIO;
                         return errno_or_else(EIO);
 
                 if (ret)
@@ -993,11 +936,9 @@ int warn_file_is_world_accessible(const char *filename, struct stat *st, const c
 
         if (unit)
                 log_syntax(unit, LOG_WARNING, filename, line, 0,
-                           "%s has %04o mode that is too permissive, please adjust the access mode.",
                            "%s has %04o mode that is too permissive, please adjust the ownership and access mode.",
                            filename, st->st_mode & 07777);
         else
-                log_warning("%s has %04o mode that is too permissive, please adjust the access mode.",
                 log_warning("%s has %04o mode that is too permissive, please adjust the ownership and access mode.",
                             filename, st->st_mode & 07777);
         return 0;
