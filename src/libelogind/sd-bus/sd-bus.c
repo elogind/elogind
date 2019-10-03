@@ -37,12 +37,9 @@
 #include "missing.h"
 #include "parse-util.h"
 //#include "path-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "string-util.h"
 #include "strv.h"
-
-/// Additional includes needed by elogind
-#include "process-util.h"
 
 #define log_debug_bus_message(m)                                         \
         do {                                                             \
