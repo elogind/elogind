@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <stdio.h>
+#include <stdio.h>
 
-//#include "cgroup.h"
-//#include "manager.h"
-//#include "rm-rf.h"
-//#include "test-helper.h"
-//#include "tests.h"
-//#include "unit.h"
+#include "cgroup.h"
+#include "manager.h"
+#include "rm-rf.h"
+#include "test-helper.h"
+#include "tests.h"
+#include "unit.h"
 
 static int test_default_memory_low(void) {
         _cleanup_(rm_rf_physical_and_freep) char *runtime_dir = NULL;
