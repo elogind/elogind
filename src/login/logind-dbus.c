@@ -52,11 +52,6 @@
 
 /// Additional includes needed by elogind
 #include "elogind-dbus.h"
-//#include "virt.h"
-//#include "virt.h"
-//#include "virt.h"
-//#include "virt.h"
-//#include "virt.h"
 
 static int get_sender_session(Manager *m, sd_bus_message *message, sd_bus_error *error, Session **ret) {
 static int get_sender_session(

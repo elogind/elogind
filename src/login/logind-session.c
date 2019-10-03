@@ -30,7 +30,7 @@
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "serialize.h"
 #include "string-table.h"
 //#include "strv.h"
@@ -41,7 +41,6 @@
 
 /// Additional includes needed by elogind
 #include "extract-word.h"
-#include "process-util.h"
 
 #define RELEASE_USEC (20*USEC_PER_SEC)
 
