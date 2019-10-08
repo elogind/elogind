@@ -333,11 +333,11 @@ tests += [
          [],
          []],
 
-        [['src/test/test-exit-status.c'],
-         [],
-         []],
-
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-exit-status.c'],
+#          [],
+#          []],
+#
 #         [['src/test/test-specifier.c'],
 #          [],
 #          []],
@@ -497,9 +497,11 @@ tests += [
          [],
          []],
 
-        [['src/test/test-ordered-set.c'],
-         [],
-         []],
+#if 0 /// UNNEEDED by elogind
+#         [['src/test/test-ordered-set.c'],
+#          [],
+#          []],
+#endif // 0
 
         [['src/test/test-set-disable-mempool.c'],
          [],

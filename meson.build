@@ -22,14 +22,12 @@ libsystemd_version = '0.27.0'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
-conf.set('PROJECT_VERSION',        meson.project_version())
-
 substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
+# substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
 #else
 substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 #endif // 0
-substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/elogind')
 substs.set('PROJECT_VERSION',      meson.project_version())
 
 # This is to be used instead of meson.source_root(), as the latter will return
@@ -673,10 +671,11 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #          ['nologin',    '/usr/sbin/nologin',   ],
 #         ]
 #else
-progs = [['halt',       '/sbin/halt',          'HALT'],
-         ['kexec',      '/usr/sbin/kexec',     'KEXEC'],
-         ['poweroff',   '/sbin/poweroff',      'POWEROFF'],
-         ['reboot',     '/sbin/reboot',        'REBOOT'],
+progs = [['halt',       '/sbin/halt'         ],
+         ['kexec',      '/usr/sbin/kexec'    ],
+         ['poweroff',   '/sbin/poweroff'     ],
+         ['reboot',     '/sbin/reboot'       ],
+         ['nologin',    '/usr/sbin/nologin'  ],
         ]
 #endif // 0
 foreach prog : progs
@@ -1118,7 +1117,9 @@ conf.set10('HAVE_AUDIT', have)
 # conf.set10('HAVE_KMOD', have)
 #else
 libblkid = []
+conf.set10('HAVE_BLKID', false)
 libkmod = []
+conf.set10('HAVE_KMOD', false)
 #endif // 0
 
 want_pam = get_option('pam')
@@ -1557,35 +1558,35 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 #####################################################################
 
+if get_option('efi')
+        efi_arch = host_machine.cpu_family()
+
+        if efi_arch == 'x86'
+                EFI_MACHINE_TYPE_NAME = 'ia32'
+                gnu_efi_arch = 'ia32'
+        elif efi_arch == 'x86_64'
+                EFI_MACHINE_TYPE_NAME = 'x64'
+                gnu_efi_arch = 'x86_64'
+        elif efi_arch == 'arm'
+                EFI_MACHINE_TYPE_NAME = 'arm'
+                gnu_efi_arch = 'arm'
+        elif efi_arch == 'aarch64'
+                EFI_MACHINE_TYPE_NAME = 'aa64'
+                gnu_efi_arch = 'aarch64'
+        else
+                EFI_MACHINE_TYPE_NAME = ''
+                gnu_efi_arch = ''
+        endif
+
+        have = true
+        conf.set_quoted('EFI_MACHINE_TYPE_NAME', EFI_MACHINE_TYPE_NAME)
+
 #if 0 /// UNNEEDED by elogind
-# if get_option('efi')
-#         efi_arch = host_machine.cpu_family()
-#
-#         if efi_arch == 'x86'
-#                 EFI_MACHINE_TYPE_NAME = 'ia32'
-#                 gnu_efi_arch = 'ia32'
-#         elif efi_arch == 'x86_64'
-#                 EFI_MACHINE_TYPE_NAME = 'x64'
-#                 gnu_efi_arch = 'x86_64'
-#         elif efi_arch == 'arm'
-#                 EFI_MACHINE_TYPE_NAME = 'arm'
-#                 gnu_efi_arch = 'arm'
-#         elif efi_arch == 'aarch64'
-#                 EFI_MACHINE_TYPE_NAME = 'aa64'
-#                 gnu_efi_arch = 'aarch64'
-#         else
-#                 EFI_MACHINE_TYPE_NAME = ''
-#                 gnu_efi_arch = ''
-#         endif
-#
-#         have = true
-#         conf.set_quoted('EFI_MACHINE_TYPE_NAME', EFI_MACHINE_TYPE_NAME)
-#
 #         conf.set('SD_TPM_PCR', get_option('tpm-pcrindex'))
-# else
-#         have = false
-# endif
 #endif // 0
+else
+        have = false
+endif
 conf.set10('ENABLE_EFI', have)
 
 #####################################################################
@@ -1610,9 +1611,7 @@ config_h = configure_file(
 meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
-#if 0 /// UNNEEDED by elogind
-#                                'src/boot',
-#endif // 0
+                               'src/boot',
                                'src/shared',
                                'src/systemd',
                                'src/journal',
@@ -3586,10 +3585,10 @@ status = [
 # CPPFLAGS: ${OUR_CPPFLAGS} ${CPPFLAGS}
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
+if conf.get('ENABLE_EFI') == 1
+        status += 'efi arch:                          @0@'.format(efi_arch)
+
 #if 0 /// UNNEEDED by elogind
-# if conf.get('ENABLE_EFI') == 1
-#         status += 'efi arch:                          @0@'.format(efi_arch)
-#
 #         if have_gnu_efi
 #                 status += [
 #                         'EFI machine type:                  @0@'.format(EFI_MACHINE_TYPE_NAME),
@@ -3598,8 +3597,8 @@ status = [
 #                         'EFI lds directory:                 @0@'.format(efi_ldsdir),
 #                         'EFI include directory:             @0@'.format(efi_incdir)]
 #         endif
-# endif
 #endif // 0
+endif
 
 found = []
 missing = []
@@ -3665,8 +3664,8 @@ foreach tuple : [
 #endif // 0
         ['polkit'],
         ['legacy pkla',      install_polkit_pkla],
+        ['efi'],
 #if 0 /// UNNEEDED by elogind
-#         ['efi'],
 #         ['gnu-efi',          have_gnu_efi],
 #         ['kmod'],
 #         ['xkbcommon'],

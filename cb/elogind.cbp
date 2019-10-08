@@ -54,7 +54,6 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../README" />
 		<Unit filename="../man/busctl.xml" />
 		<Unit filename="../man/custom-entities.ent.in" />
 		<Unit filename="../man/custom-html.xsl" />
@@ -222,6 +221,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/cgroup-util.h" />
+		<Unit filename="../src/basic/chattr-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/chattr-util.h" />
 		<Unit filename="../src/basic/conf-files.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -248,6 +251,7 @@
 		</Unit>
 		<Unit filename="../src/basic/errno-list.h" />
 		<Unit filename="../src/basic/errno-to-name.awk" />
+		<Unit filename="../src/basic/errno-util.h" />
 		<Unit filename="../src/basic/escape.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -264,6 +268,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/fileio.h" />
+		<Unit filename="../src/basic/format-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/basic/format-util.h" />
 		<Unit filename="../src/basic/fs-util.c">
 			<Option compilerVar="CC" />
@@ -295,6 +302,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/io-util.h" />
+		<Unit filename="../src/basic/kbd-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/kbd-util.h" />
 		<Unit filename="../src/basic/khash.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -303,6 +314,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/label.h" />
+		<Unit filename="../src/basic/limits-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/limits-util.h" />
 		<Unit filename="../src/basic/list.h" />
 		<Unit filename="../src/basic/locale-util.c">
 			<Option compilerVar="CC" />
@@ -321,6 +336,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/memfd-util.h" />
+		<Unit filename="../src/basic/memory-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/memory-util.h" />
 		<Unit filename="../src/basic/mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -364,6 +383,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/mountpoint-util.h" />
+		<Unit filename="../src/basic/namespace-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/namespace-util.h" />
+		<Unit filename="../src/basic/nulstr-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/nulstr-util.h" />
 		<Unit filename="../src/basic/parse-printf-format.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -376,6 +403,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/path-util.h" />
+		<Unit filename="../src/basic/plymouth-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/plymouth-util.h" />
 		<Unit filename="../src/basic/prioq.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -397,6 +428,7 @@
 		</Unit>
 		<Unit filename="../src/basic/random-util.h" />
 		<Unit filename="../src/basic/raw-clone.h" />
+		<Unit filename="../src/basic/raw-reboot.h" />
 		<Unit filename="../src/basic/refcnt.h" />
 		<Unit filename="../src/basic/rlimit-util.c">
 			<Option compilerVar="CC" />
@@ -431,6 +463,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/socket-util.h" />
+		<Unit filename="../src/basic/sort-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/sort-util.h" />
 		<Unit filename="../src/basic/sparse-endian.h" />
 		<Unit filename="../src/basic/special.h" />
 		<Unit filename="../src/basic/stat-util.c">
@@ -501,6 +537,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/xattr-util.h" />
+		<Unit filename="../src/boot/efi/loader-features.h" />
 		<Unit filename="../src/busctl/busctl-introspect.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -515,6 +552,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/core/cgroup.h" />
+		<Unit filename="../src/core/efi-random.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/core/meson.build" />
 		<Unit filename="../src/core/mount-setup.c">
 			<Option compilerVar="CC" />
@@ -632,6 +672,9 @@
 		<Unit filename="../src/libelogind/sd-bus/test-bus-match.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-bus-queue-ref-cycle.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/libelogind/sd-bus/test-bus-server.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -641,6 +684,7 @@
 		<Unit filename="../src/libelogind/sd-bus/test-bus-vtable.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/libelogind/sd-bus/test-vtable-data.h" />
 		<Unit filename="../src/libelogind/sd-daemon/sd-daemon.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -671,6 +715,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-event/event-source.h" />
+		<Unit filename="../src/libelogind/sd-event/event-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/libelogind/sd-event/event-util.h" />
 		<Unit filename="../src/libelogind/sd-event/sd-event.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -725,6 +773,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/login/logind-action.h" />
+		<Unit filename="../src/login/logind-brightness.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/login/logind-brightness.h" />
 		<Unit filename="../src/login/logind-button.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -735,6 +787,7 @@
 		<Unit filename="../src/login/logind-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/logind-dbus.h" />
 		<Unit filename="../src/login/logind-device.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -747,6 +800,7 @@
 		<Unit filename="../src/login/logind-seat-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/logind-seat-dbus.h" />
 		<Unit filename="../src/login/logind-seat.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -754,6 +808,7 @@
 		<Unit filename="../src/login/logind-session-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/logind-session-dbus.h" />
 		<Unit filename="../src/login/logind-session-device.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -765,6 +820,7 @@
 		<Unit filename="../src/login/logind-user-dbus.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/login/logind-user-dbus.h" />
 		<Unit filename="../src/login/logind-user.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -806,10 +862,26 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/acl-util.h" />
+		<Unit filename="../src/shared/bootspec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/bootspec.h" />
+		<Unit filename="../src/shared/bus-unit-procs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/bus-unit-procs.h" />
 		<Unit filename="../src/shared/bus-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/bus-util.h" />
+		<Unit filename="../src/shared/bus-wait-for-jobs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/bus-wait-for-jobs.h" />
+		<Unit filename="../src/shared/bus-wait-for-units.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/bus-wait-for-units.h" />
 		<Unit filename="../src/shared/clean-ipc.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -823,6 +895,13 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/dev-setup.h" />
+		<Unit filename="../src/shared/dm-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/efivars.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/efivars.h" />
 		<Unit filename="../src/shared/enable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -842,12 +921,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/format-table.h" />
+		<Unit filename="../src/shared/fsck-util.h" />
 		<Unit filename="../src/shared/json-internal.h" />
 		<Unit filename="../src/shared/json.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/json.h" />
 		<Unit filename="../src/shared/libshared.sym" />
+		<Unit filename="../src/shared/log-link.h" />
 		<Unit filename="../src/shared/main-func.h" />
 		<Unit filename="../src/shared/meson.build" />
 		<Unit filename="../src/shared/module-util.c">
@@ -873,6 +954,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/pager.h" />
+		<Unit filename="../src/shared/pe-header.h" />
 		<Unit filename="../src/shared/pretty-print.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -881,6 +963,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/qsort_r_missing.h" />
+		<Unit filename="../src/shared/reboot-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/reboot-util.h" />
 		<Unit filename="../src/shared/serialize.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -898,6 +984,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/tests.h" />
+		<Unit filename="../src/shared/udev-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/udev-util.h" />
+		<Unit filename="../src/shared/unit-file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/unit-file.h" />
 		<Unit filename="../src/shared/utmp-wtmp.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -937,7 +1031,16 @@
 		<Unit filename="../src/test/test-bus-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/test/test-cgroup-cpu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-cgroup-unit-default.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/test/test-cgroup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-chase-symlinks.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-conf-files.c">
@@ -958,10 +1061,16 @@
 		<Unit filename="../src/test/test-ellipsize.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/test/test-env-file.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/test/test-escape.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-exec-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-exit-status.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-extract-word.c">
@@ -971,6 +1080,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-format-table.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-format-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-fs-util.c">
@@ -1012,6 +1124,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-mountpoint-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-ordered-set.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-parse-util.c">
@@ -1071,7 +1186,13 @@
 		<Unit filename="../src/test/test-strxcpyx.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/test/test-umask-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/test/test-unaligned.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-unit-file.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-user-util.c">
@@ -1081,6 +1202,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/test/test-varlink.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-verbs.c">
@@ -1110,11 +1234,8 @@
 		<Unit filename="../tools/meson-symlink_headers.sh" />
 		<Unit filename="../tools/xml_helper.py" />
 		<Extensions>
-			<envvars />
-			<code_completion />
-			<debugger />
-			<lib_finder disable_auto="1" />
 			<editor_config active="1" use_tabs="0" tab_indents="0" tab_width="8" indent="8" eol_mode="2" />
+			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

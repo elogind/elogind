@@ -194,6 +194,8 @@
 #else
 shared_sources = '''
         acl-util.h
+        bootspec.c
+        bootspec.h
         bus-util.c
         bus-util.h
         clean-ipc.c
@@ -203,6 +205,8 @@ shared_sources = '''
         daemon-util.h
         dev-setup.c
         dev-setup.h
+        efivars.c
+        efivars.h
         enable-mempool.c
         exec-elogind.c
         exec-elogind.h
@@ -230,12 +234,16 @@ shared_sources = '''
         pretty-print.h
         qsort_r_missing.c
         qsort_r_missing.h
+        reboot-util.c
+        reboot-util.h
         serialize.c
         serialize.h
         sleep-config.c
         sleep-config.h
         spawn-polkit-agent.c
         spawn-polkit-agent.h
+        udev-util.c
+        udev-util.h
         utmp-wtmp.h
         verbs.c
         verbs.h

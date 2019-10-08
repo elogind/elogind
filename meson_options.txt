@@ -67,8 +67,10 @@ option('kexec-path', type : 'string', description : 'path to kexec')
 # option('umount-path', type : 'string', description : 'path to umount')
 # option('loadkeys-path', type : 'string', description : 'path to loadkeys')
 # option('setfont-path', type : 'string', description : 'path to setfont')
-# option('nologin-path', type : 'string', description : 'path to nologin')
-#
+#endif // 0
+option('nologin-path', type : 'string', description : 'path to nologin')
+
+#if 0 /// UNNEEDED by elogind
 # option('debug-shell', type : 'string', value : '/bin/sh',
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
@@ -159,6 +161,9 @@ option('utmp', type : 'boolean',
 #        description : 'support for the hardware database')
 # option('rfkill', type : 'boolean',
 #        description : 'support for the rfkill tools')
+#else
+option('efi', type : 'boolean',
+       description : 'enable EFI support')
 #endif // 0
 option('man', type : 'combo', choices : ['auto', 'true', 'false'],
        value : 'false',

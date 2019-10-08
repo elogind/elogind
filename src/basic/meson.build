@@ -257,6 +257,8 @@ basic_sources = files('''
         cgroup-util.c
         cap-list.c
         cap-list.h
+        chattr-util.c
+        chattr-util.h
         cgroup-util.h
         conf-files.c
         conf-files.h
@@ -271,6 +273,7 @@ basic_sources = files('''
         env-util.h
         errno-list.c
         errno-list.h
+        errno-util.h
         escape.c
         escape.h
         extract-word.c
@@ -308,9 +311,13 @@ basic_sources = files('''
         macro.h
         memfd-util.c
         memfd-util.h
+        memory-util.c
+        memory-util.h
         mempool.c
         mempool.h
         missing.h
+        missing_audit.h
+        missing_capability.h
         missing_drm.h
         missing_ethtool.h
         missing_fcntl.h
@@ -323,6 +330,7 @@ basic_sources = files('''
         missing_keyctl.h
         missing_magic.h
         missing_mman.h
+        missing_network.h
         missing_prctl.h
         missing_random.h
         missing_resource.h
@@ -339,6 +347,10 @@ basic_sources = files('''
         mkdir-label.c
         mountpoint-util.c
         mountpoint-util.h
+        namespace-util.c
+        namespace-util.h
+        nulstr-util.c
+        nulstr-util.h
         parse-printf-format.c
         parse-printf-format.h
         parse-util.c
@@ -356,6 +368,7 @@ basic_sources = files('''
         random-util.c
         random-util.h
         raw-clone.h
+        raw-reboot.h
         refcnt.h
         rlimit-util.c
         rlimit-util.h
