@@ -1335,18 +1335,17 @@ static int help(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return log_oom();
 
-        printf("%s [OPTIONS...] {COMMAND} ...\n\n"
 #if 1 /// elogind supports --no-wall and --dry-run
                "     --no-wall             Do not print any wall message\n"
                "     --dry-run             Only print what would be done\n"
                "  -q --quiet               Suppress output\n"
 #endif // 1
-#if 0 /// UNNEEDED by elogind
-#else
+/// elogind empty mask else converted
+#if 1 /// 
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
-#endif // 0
+#endif // 1
 #if 1 /// As elogind can reboot, it allows to control the reboot process
 #if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
@@ -1359,7 +1358,8 @@ static int help(int argc, char *argv[], void *userdata) {
 #endif
 #endif // 1
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
-               "Send control commands to or query the login manager.\n"
+        printf("%s%s [OPTIONS...] {COMMAND} ...\n\n"
+               "Send control commands to or query the login manager.%s\n"
                "\nSession Commands:\n"
                "  list-sessions            List sessions\n"
 #else
@@ -1423,7 +1423,9 @@ static int help(int argc, char *argv[], void *userdata) {
                "                            time and put it into hibernate\n"
 #endif // 0
                "\nSee the %s for details.\n"
+               , ansi_highlight()
                , program_invocation_short_name
+               , ansi_normal()
                , link
         );
 
@@ -1567,14 +1569,13 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
 
-                case 'q':
                         arg_quiet = true;
                         break;
 #endif // 1
                 case ARG_NO_PAGER:
                         arg_pager_flags |= PAGER_DISABLE;
-
                         break;
+
 
                 case ARG_NO_LEGEND:
                         arg_legend = false;
@@ -1623,7 +1624,6 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_firmware_setup = true;
                         break;
 
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 case ARG_BOOT_LOADER_MENU:
 
                         r = parse_sec(optarg, &arg_boot_loader_menu);
@@ -1641,9 +1641,9 @@ static int parse_argv(int argc, char *argv[]) {
                 case '?':
                         return -EINVAL;
 
-
                 default:
                         assert_not_reached("Unhandled option");
+
                 }
 
         return 1;
