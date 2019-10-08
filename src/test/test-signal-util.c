@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-//#include "log.h"
+#include "log.h"
 #include "macro.h"
 #include "signal-util.h"
 #include "stdio-util.h"

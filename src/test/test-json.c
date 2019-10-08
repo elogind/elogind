@@ -4,12 +4,12 @@
 
 #include "alloc-util.h"
 #include "fd-util.h"
-//#include "fileio.h"
+#include "fileio.h"
 #include "json-internal.h"
 #include "json.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tests.h"
+#include "tests.h"
 #include "util.h"
 
 #ifndef __GLIBC__ /// M_PIl might be missing if elogind is built against a non-glibc libc

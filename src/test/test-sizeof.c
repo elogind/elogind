@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <sched.h>
+#include <sched.h>
 #include <stdio.h>
 #include <string.h>
 
 #define __STDC_WANT_IEC_60559_TYPES_EXT__
-//#include <float.h>
+#include <float.h>
 
 #include "time-util.h"
 

@@ -16,7 +16,7 @@
 #include "fs-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "rm-rf.h"
 #include "string-util.h"
 #include "strv.h"

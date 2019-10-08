@@ -5,9 +5,9 @@
 
 #include "alloc-util.h"
 #include "macro.h"
-//#include "memory-util.h"
-//#include "random-util.h"
-//#include "tests.h"
+#include "memory-util.h"
+#include "random-util.h"
+#include "tests.h"
 
 static void test_alloca(void) {
         static const uint8_t zero[997] = { };

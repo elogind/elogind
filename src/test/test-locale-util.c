@@ -4,8 +4,9 @@
 #include "locale-util.h"
 #include "macro.h"
 #include "strv.h"
-//#include "util.h"
+#include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 static void test_get_locales(void) {
         _cleanup_strv_free_ char **locales = NULL;
         char **p;
@@ -64,6 +65,7 @@ static void test_keymaps(void) {
         assert_se(keymap_is_valid("ANSI-dvorak"));
         assert_se(keymap_is_valid("unicode"));
 }
+#endif // 0
 
 #define dump_glyph(x) log_info(STRINGIFY(x) ": %s", special_glyph(x))
 static void dump_special_glyphs(void) {
@@ -96,9 +98,11 @@ static void dump_special_glyphs(void) {
 }
 
 int main(int argc, char *argv[]) {
+#if 0 /// UNNEEDED by elogind
         test_get_locales();
         test_locale_is_valid();
         test_keymaps();
+#endif // 0
 
         dump_special_glyphs();
 

@@ -7,7 +7,7 @@
 #include "strv.h"
 #include "tests.h"
 #include "utf8.h"
-//#include "util.h"
+#include "util.h"
 
 static void test_free_and_strndup_one(char **t, const char *src, size_t l, const char *expected, bool change) {
         int r;

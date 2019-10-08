@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <getopt.h>
+#include <getopt.h>
 
 #include "macro.h"
 #include "strv.h"

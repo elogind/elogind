@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "format-util.h"
-//#include "macro.h"
-//#include "string-util.h"
+#include "format-util.h"
+#include "macro.h"
+#include "string-util.h"
 
 static void test_format_bytes_one(uint64_t val, bool trailing_B, const char *iec_with_p, const char *iec_without_p,
                                   const char *si_with_p, const char *si_without_p) {

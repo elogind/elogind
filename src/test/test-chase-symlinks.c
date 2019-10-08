@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-//#include <getopt.h>
+#include <getopt.h>
 
-//#include "fd-util.h"
-//#include "fs-util.h"
-//#include "log.h"
-//#include "main-func.h"
+#include "fd-util.h"
+#include "fs-util.h"
+#include "log.h"
+#include "main-func.h"
 
 static char *arg_root = NULL;
 static int arg_flags = 0;

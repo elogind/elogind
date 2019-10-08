@@ -2,7 +2,7 @@
 
 #include <errno.h>
 
-//#include "format-util.h"
+#include "format-util.h"
 #include "log.h"
 #include "procfs-util.h"
 

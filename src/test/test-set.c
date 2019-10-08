@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include "set.h"
-//#include "strv.h"
+#include "strv.h"
 
 static void test_set_steal_first(void) {
         _cleanup_set_free_ Set *m = NULL;

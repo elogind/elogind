@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "siphash24.h"
 
 #define ITERATIONS 10000000ULL

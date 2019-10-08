@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include "alloc-util.h"
-//#include "env-util.h"
+#include "env-util.h"
 #include "log.h"
 #include "macro.h"
 #include "proc-cmdline.h"
-//#include "special.h"
+#include "special.h"
 #include "string-util.h"
 #include "util.h"
 

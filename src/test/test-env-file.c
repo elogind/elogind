@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "env-file.h"
-//#include "fd-util.h"
-//#include "fs-util.h"
-//#include "macro.h"
-//#include "strv.h"
-//#include "tests.h"
-//#include "tmpfile-util.h"
+#include "env-file.h"
+#include "fd-util.h"
+#include "fs-util.h"
+#include "macro.h"
+#include "strv.h"
+#include "tests.h"
+#include "tmpfile-util.h"
 
 #define env_file_1                              \
         "a=a\n"                                 \

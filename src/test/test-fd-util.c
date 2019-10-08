@@ -7,7 +7,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "random-util.h"

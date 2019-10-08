@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "tests.h"
-//#include "umask-util.h"
+#include "tests.h"
+#include "umask-util.h"
 
 int main(int argc, char *argv[]) {
         size_t n;

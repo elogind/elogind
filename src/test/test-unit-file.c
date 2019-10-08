@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "path-lookup.h"
-//#include "set.h"
-//#include "strv.h"
-//#include "tests.h"
-//#include "unit-file.h"
+#include "path-lookup.h"
+#include "set.h"
+#include "strv.h"
+#include "tests.h"
+#include "unit-file.h"
 
 static void test_unit_validate_alias_symlink_and_warn(void) {
         log_info("/* %s */", __func__);
