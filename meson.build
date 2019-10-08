@@ -3314,12 +3314,12 @@ xml_helper_py = find_program('tools/xml_helper.py')
 #if 0 /// UNNEEDED by elogind
 # hwdb_update_sh = find_program('tools/meson-hwdb-update.sh')
 #
-# subdir('units')
 # subdir('sysctl.d')
 # subdir('sysusers.d')
 # subdir('tmpfiles.d')
+# subdir('hwdb.d')
+# subdir('units')
 # subdir('presets')
-# subdir('hwdb')
 # subdir('network')
 #endif // 0
 subdir('man')
