@@ -1336,37 +1336,17 @@ static int help(int argc, char *argv[], void *userdata) {
                 return log_oom();
 
         printf("%s [OPTIONS...] {COMMAND} ...\n\n"
-               "Send control commands to or query the login manager.\n\n"
-               "  -h --help                Show this help\n"
-               "     --version             Show package version\n"
-               "     --no-pager            Do not pipe output into a pager\n"
 #if 1 /// elogind supports --no-wall and --dry-run
                "     --no-wall             Do not print any wall message\n"
                "     --dry-run             Only print what would be done\n"
                "  -q --quiet               Suppress output\n"
 #endif // 1
-               "     --no-legend           Do not show the headers and footers\n"
-               "     --no-ask-password     Don't prompt for password\n"
-               "  -H --host=[USER@]HOST    Operate on remote host\n"
-               "  -M --machine=CONTAINER   Operate on local container\n"
-               "  -p --property=NAME       Show only properties by this name\n"
-               "  -a --all                 Show all properties, including empty ones\n"
-               "     --value               When showing properties, only print the value\n"
-               "  -l --full                Do not ellipsize output\n"
-               "     --kill-who=WHO        Who to send signal to\n"
-               "  -s --signal=SIGNAL       Which signal to send\n"
 #if 0 /// UNNEEDED by elogind
-               "  -n --lines=INTEGER       Number of journal entries to show\n"
 #else
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
 #endif // 0
-               "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
-               "                             short-iso, short-iso-precise, short-full,\n"
-               "                             short-monotonic, short-unix, verbose, export,\n"
-               "                             json, json-pretty, json-sse, json-seq, cat,\n"
-               "                             with-unit)\n"
 #if 1 /// As elogind can reboot, it allows to control the reboot process
 #if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
@@ -1378,8 +1358,9 @@ static int help(int argc, char *argv[], void *userdata) {
                "                           Boot into a specific boot loader entry on next boot\n"
 #endif
 #endif // 1
-               "Session Commands:\n"
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
+               "Send control commands to or query the login manager.\n"
+               "\nSession Commands:\n"
                "  list-sessions            List sessions\n"
 #else
                "  list[-sessions]          List sessions (default command)\n"
@@ -1409,6 +1390,26 @@ static int help(int argc, char *argv[], void *userdata) {
                "  flush-devices            Flush all device associations\n"
 #if 0 /// elogind adds some system commands to loginctl
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+               "\nOptions\n"
+               "  -h --help                Show this help\n"
+               "     --version             Show package version\n"
+               "     --no-pager            Do not pipe output into a pager\n"
+               "     --no-legend           Do not show the headers and footers\n"
+               "     --no-ask-password     Don't prompt for password\n"
+               "  -H --host=[USER@]HOST    Operate on remote host\n"
+               "  -M --machine=CONTAINER   Operate on local container\n"
+               "  -p --property=NAME       Show only properties by this name\n"
+               "  -a --all                 Show all properties, including empty ones\n"
+               "     --value               When showing properties, only print the value\n"
+               "  -l --full                Do not ellipsize output\n"
+               "     --kill-who=WHO        Who to send signal to\n"
+               "  -s --signal=SIGNAL       Which signal to send\n"
+               "  -n --lines=INTEGER       Number of journal entries to show\n"
+               "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
+               "                             short-iso, short-iso-precise, short-full,\n"
+               "                             short-monotonic, short-unix, verbose, export,\n"
+               "                             json, json-pretty, json-sse, json-seq, cat,\n"
+               "                             with-unit)\n"
 #else
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
                "System Commands:\n"
@@ -1562,7 +1563,6 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_no_wall = true;
                         break;
 
-                case ARG_DRY_RUN:
                         arg_dry_run = true;
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
@@ -1573,6 +1573,7 @@ static int parse_argv(int argc, char *argv[]) {
 #endif // 1
                 case ARG_NO_PAGER:
                         arg_pager_flags |= PAGER_DISABLE;
+
                         break;
 
                 case ARG_NO_LEGEND:
@@ -1622,7 +1623,6 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_firmware_setup = true;
                         break;
 
-#endif
 #ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 case ARG_BOOT_LOADER_MENU:
 
@@ -1640,6 +1640,7 @@ static int parse_argv(int argc, char *argv[]) {
 #endif // 1
                 case '?':
                         return -EINVAL;
+
 
                 default:
                         assert_not_reached("Unhandled option");

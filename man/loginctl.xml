@@ -52,116 +52,10 @@ else -->
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     login manager</para>
     <!-- // 0 -->
-  </refsect1>
-
-  <refsect1>
-    <title>Options</title>
-
-    <para>The following options are understood:</para>
-
-    <variablelist>
-      <varlistentry>
-        <term><option>--no-ask-password</option></term>
-
-        <listitem><para>Do not query the user for authentication for
-        privileged operations.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>-p</option></term>
-        <term><option>--property=</option></term>
-
-        <listitem><para>When showing session/user/seat properties,
-        limit display to certain properties as specified as argument.
-        If not specified, all set properties are shown. The argument
-        should be a property name, such as
-        <literal>Sessions</literal>. If specified more than once, all
-        properties with the specified names are
-        shown.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>--value</option></term>
-
-        <listitem><para>When showing session/user/seat properties,
-        only print the value, and skip the property name and
-        <literal>=</literal>.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>-a</option></term>
-        <term><option>--all</option></term>
-
-        <listitem><para>When showing session/user/seat properties,
-        show all properties regardless of whether they are set or
-        not.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>-l</option></term>
-        <term><option>--full</option></term>
-
-        <listitem><para>Do not ellipsize process tree entries.</para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>--kill-who=</option></term>
-
-        <listitem><para>When used with
-        <command>kill-session</command>, choose which processes to
-        kill. Must be one of <option>leader</option>, or
-        <option>all</option> to select whether to kill only the leader
-        process of the session or all processes of the session. If
-        omitted, defaults to <option>all</option>.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>-s</option></term>
-        <term><option>--signal=</option></term>
-
-        <listitem><para>When used with <command>kill-session</command>
-        or <command>kill-user</command>, choose which signal to send
-        to selected processes. Must be one of the well known signal
-        specifiers, such as <constant>SIGTERM</constant>,
-        <constant>SIGINT</constant> or <constant>SIGSTOP</constant>.
-        If omitted, defaults to
-        <constant>SIGTERM</constant>.</para></listitem>
-      </varlistentry>
 
       <!-- 0 /// elogind does not support systemd-journal
-      <varlistentry>
-        <term><option>-n</option></term>
-        <term><option>&#x2D;&#x2D;lines=</option></term>
-
-        <listitem><para>When used with <command>user-status</command>
-        and <command>session-status</command>, controls the number of
-        journal lines to show, counting from the most recent ones.
-        Takes a positive integer argument. Defaults to 10.</para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>-o</option></term>
-        <term><option>&#x2D;&#x2D;output=</option></term>
-
-        <listitem><para>When used with <command>user-status</command>
-        and <command>session-status</command>, controls the formatting
-        of the journal entries that are shown. For the available
-        choices, see
-        <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
-        Defaults to <literal>short</literal>.</para></listitem>
-      </varlistentry>
       // 0 -->
 
-      <xi:include href="user-system-options.xml" xpointer="host" />
-      <xi:include href="user-system-options.xml" xpointer="machine" />
-
-      <xi:include href="standard-options.xml" xpointer="no-pager" />
-      <xi:include href="standard-options.xml" xpointer="no-legend" />
-      <xi:include href="standard-options.xml" xpointer="help" />
-      <xi:include href="standard-options.xml" xpointer="version" />
-    </variablelist>
   </refsect1>
 
   <refsect1>
@@ -389,25 +283,99 @@ else -->
         <listitem><para>Terminates all sessions on a seat. This kills
         all processes of all sessions on the seat and deallocates all
         runtime resources attached to them.</para></listitem>
+        <term><option>--output=</option></term>
+
+        <listitem><para>When used with <command>user-status</command>
+        and <command>session-status</command>, controls the formatting
+        of the journal entries that are shown. For the available
+        choices, see
+        <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+        Defaults to <literal>short</literal>.</para></listitem>
+      </varlistentry>
+
+      <xi:include href="user-system-options.xml" xpointer="host" />
+      <xi:include href="user-system-options.xml" xpointer="machine" />
+
+        <term><option>--lines=</option></term>
+
+        <listitem><para>When used with <command>user-status</command>
+        and <command>session-status</command>, controls the number of
+        journal lines to show, counting from the most recent ones.
+        Takes a positive integer argument. Defaults to 10.</para>
+        </listitem>
+      </varlistentry>
+
+        <listitem><para>When used with <command>kill-session</command>
+        or <command>kill-user</command>, choose which signal to send
+        to selected processes. Must be one of the well known signal
+        specifiers, such as <constant>SIGTERM</constant>,
+        <constant>SIGINT</constant> or <constant>SIGSTOP</constant>.
+        If omitted, defaults to
+        <constant>SIGTERM</constant>.</para></listitem>
+      </varlistentry>
+
+        kill. Must be one of <option>leader</option>, or
+        <option>all</option> to select whether to kill only the leader
+        process of the session or all processes of the session. If
+        omitted, defaults to <option>all</option>.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+      </varlistentry>
+
+      <varlistentry>
+
+        not.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+
+        <literal>=</literal>.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        If not specified, all set properties are shown. The argument
+        should be a property name, such as
+        <literal>Sessions</literal>. If specified more than once, all
+        properties with the specified names are
+        shown.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+
+      </varlistentry>
+
+      <varlistentry>
+  <refsect1>
+    <title>Options</title>
+
+    <para>The following options are understood:</para>
+
+    <variablelist>
+      <varlistentry>
       </varlistentry>
     </variablelist></refsect2>
 
     <!-- 1 /// elogind additionally supports a few systemctl commands. -->
     <refsect2><title>System Commands</title><variablelist>
+
       <varlistentry>
         <term><command>reload</command></term>
 
         <listitem>
           <para>Reload the elogind configuration.</para>
         </listitem>
+        privileged operations.</para></listitem>
       </varlistentry>
       <varlistentry>
         <term><command>poweroff</command></term>
+        <term><option>--property=</option></term>
 
         <listitem>
           <para>Print a wall message to all users, shut down and
             power-off the system.</para>
         </listitem>
+        limit display to certain properties as specified as argument.
       </varlistentry>
       <varlistentry>
         <term><command>reboot <optional><replaceable>arg</replaceable></optional></command></term>
@@ -426,19 +394,23 @@ else -->
           <literal>fota</literal> might be used to trigger a
           <quote>firmware over the air</quote> update.</para>
         </listitem>
+        only print the value, and skip the property name and
       </varlistentry>
 
       <varlistentry>
         <term><command>suspend</command></term>
+        <term><option>--all</option></term>
 
         <listitem>
           <para>Suspend the system.
           </para>
         </listitem>
+        show all properties regardless of whether they are set or
       </varlistentry>
 
       <varlistentry>
         <term><command>hibernate</command></term>
+        <term><option>--full</option></term>
 
         <listitem>
           <para>Hibernate the system.
@@ -452,21 +424,24 @@ else -->
         <listitem>
           <para>Hibernate and suspend the system.</para>
         </listitem>
+        <command>kill-session</command>, choose which processes to
       </varlistentry>
 
       <varlistentry>
         <term><command>suspend-then-hibernate</command></term>
+        <term><option>--signal=</option></term>
 
         <listitem>
           <para>Suspend the system, wake after a period of
           time and put it into hibernate</para>
+        <term><option>-n</option></term>
         </listitem>
       </varlistentry>
     </variablelist></refsect2>
   </refsect1>
 
-  <refsect1>
     <title>Hook directories</title>
+        <term><option>-o</option></term>
 
     <para>Immediately before entering system suspend and/or
     hibernation elogind will run all executables in
@@ -513,8 +488,30 @@ else -->
     re-arrange the sentence in question so that the keyword is not the first
     word.</para>
     <!-- // 1 -->
+      <xi:include href="standard-options.xml" xpointer="no-pager" />
+      <xi:include href="standard-options.xml" xpointer="no-legend" />
+      <xi:include href="standard-options.xml" xpointer="help" />
+      <xi:include href="standard-options.xml" xpointer="version" />
+    </variablelist>
   </refsect1>
 
+  </refsect1>
+        <term><option>--no-ask-password</option></term>
+        <listitem><para>Do not query the user for authentication for
+        <term><option>-p</option></term>
+        <listitem><para>When showing session/user/seat properties,
+        <term><option>--value</option></term>
+        <listitem><para>When showing session/user/seat properties,
+        <term><option>-a</option></term>
+        <listitem><para>When showing session/user/seat properties,
+        <term><option>-l</option></term>
+        <listitem><para>Do not ellipsize process tree entries.</para>
+        <term><option>--kill-who=</option></term>
+        <listitem><para>When used with
+        <term><option>-s</option></term>
+      <varlistentry>
+
+      <varlistentry>
   <refsect1>
     <title>Exit status</title>
 
