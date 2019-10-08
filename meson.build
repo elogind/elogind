@@ -1788,7 +1788,7 @@ subdir('src/shared')
 subdir('src/test')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/fuzz')
-# subdir('rules')
+# subdir('rules.d')
 # subdir('test')
 #endif // 0
 
