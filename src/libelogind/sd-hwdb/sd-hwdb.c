@@ -7,21 +7,21 @@
 //#include <fnmatch.h>
 //#include <inttypes.h>
 //#include <stdio.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 //#include <string.h>
 //#include <sys/mman.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 
 #include "sd-hwdb.h"
 
-//#include "alloc-util.h"
-//#include "fd-util.h"
+#include "alloc-util.h"
+#include "fd-util.h"
 #include "hashmap.h"
 #include "hwdb-internal.h"
 //#include "hwdb-util.h"
-//#include "nulstr-util.h"
-//#include "string-util.h"
-//#include "time-util.h"
+#include "nulstr-util.h"
+#include "string-util.h"
+#include "time-util.h"
 
 struct sd_hwdb {
         unsigned n_ref;
