@@ -8,26 +8,26 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "bus-util.h"
+#include "bus-util.h"
 #include "cgroup-util.h"
 #include "dev-setup.h"
-//#include "dirent-util.h"
-//#include "efivars.h"
-//#include "fd-util.h"
-//#include "fileio.h"
+#include "dirent-util.h"
+#include "efivars.h"
+#include "fd-util.h"
+#include "fileio.h"
 #include "fs-util.h"
 #include "label.h"
-//#include "log.h"
+#include "log.h"
 #include "macro.h"
-//#include "missing.h"
+#include "missing.h"
 #include "mkdir.h"
 #include "mount-setup.h"
 #include "mountpoint-util.h"
-//#include "nulstr-util.h"
+#include "nulstr-util.h"
 #include "path-util.h"
-//#include "set.h"
-//#include "smack-util.h"
-//#include "strv.h"
+#include "set.h"
+#include "smack-util.h"
+#include "strv.h"
 #include "user-util.h"
 #include "virt.h"
 
@@ -105,10 +105,12 @@ static const MountPoint mount_table[] = {
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
         { "pstore",      "/sys/fs/pstore",            "pstore",     NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE                   },
+#endif // 0
 #if ENABLE_EFI
         { "efivarfs",    "/sys/firmware/efi/efivars", "efivarfs",   NULL,                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
           is_efi_boot,   MNT_NONE                   },
 #endif
+#if 0 /// UNNEEDED by elogind
         { "bpf",         "/sys/fs/bpf",               "bpf",        "mode=700",                MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE,                  },
 #else

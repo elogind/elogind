@@ -5,13 +5,13 @@
 //#include <sys/ioctl.h>
 //#include <unistd.h>
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 //#include "chattr-util.h"
-//#include "efi-random.h"
-//#include "efivars.h"
-//#include "fd-util.h"
-//#include "fs-util.h"
-//#include "strv.h"
+#include "efi-random.h"
+#include "efivars.h"
+#include "fd-util.h"
+#include "fs-util.h"
+#include "strv.h"
 
 /* If a random seed was passed by the boot loader in the LoaderRandomSeed EFI variable, let's credit it to
  * the kernel's random pool, but only once per boot. If this is run very early during initialization we can
