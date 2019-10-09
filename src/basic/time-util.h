@@ -112,18 +112,11 @@ usec_t timeval_load(const struct timeval *tv) _pure_;
 struct timeval *timeval_store(struct timeval *tv, usec_t u);
 
 char *format_timestamp(char *buf, size_t l, usec_t t);
-#if 0 /// UNNEEDED by elogind
 char *format_timestamp_utc(char *buf, size_t l, usec_t t);
-#endif // 0
 char *format_timestamp_us(char *buf, size_t l, usec_t t);
-#if 0 /// UNNEEDED by elogind
 char *format_timestamp_us_utc(char *buf, size_t l, usec_t t);
-#endif // 0
 char *format_timestamp_relative(char *buf, size_t l, usec_t t);
 char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec);

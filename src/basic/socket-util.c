@@ -15,14 +15,14 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "errno-util.h"
-//#include "escape.h"
+#include "errno-util.h"
+#include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "missing.h"
 #include "parse-util.h"
 #include "path-util.h"
@@ -32,7 +32,7 @@
 #include "string-util.h"
 #include "strv.h"
 #include "user-util.h"
-//#include "utf8.h"
+#include "utf8.h"
 
 #if 0 /// UNNEEDED by elogind
 #if ENABLE_IDN
@@ -1439,6 +1439,7 @@ int sockaddr_un_set_path(struct sockaddr_un *ret, const char *path) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int socket_bind_to_ifname(int fd, const char *ifname) {
         assert(fd >= 0);
 
@@ -1474,3 +1475,4 @@ int socket_bind_to_ifindex(int fd, int ifindex) {
 
         return socket_bind_to_ifname(fd, ifname);
 }
+#endif // 0

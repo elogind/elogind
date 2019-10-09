@@ -1,17 +1,17 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <dirent.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/inotify.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-//#include "errno-util.h"
+#include "errno-util.h"
 #include "time-util.h"
 
 #define MODE_INVALID ((mode_t) -1)

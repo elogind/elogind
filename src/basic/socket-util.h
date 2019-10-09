@@ -16,7 +16,7 @@
 
 #include "macro.h"
 #include "missing_socket.h"
-//#include "sparse-endian.h"
+#include "sparse-endian.h"
 
 union sockaddr_union {
         /* The minimal, abstract version */
@@ -214,5 +214,7 @@ static inline int setsockopt_int(int fd, int level, int optname, int value) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int socket_bind_to_ifname(int fd, const char *ifname);
 int socket_bind_to_ifindex(int fd, int ifindex);
+#endif // 0

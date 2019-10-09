@@ -23,14 +23,14 @@
 #  include <linux/random.h>
 #endif
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "fd-util.h"
-//#include "fileio.h"
+#include "fileio.h"
 #include "io-util.h"
 #include "missing.h"
-//#include "parse-util.h"
+#include "parse-util.h"
 #include "random-util.h"
-//#include "siphash24.h"
+#include "siphash24.h"
 #include "time-util.h"
 
 int rdrand(unsigned long *ret) {

@@ -2,8 +2,8 @@
 
 //#include <stdio.h>
 
-//#include "format-util.h"
-//#include "memory-util.h"
+#include "format-util.h"
+#include "memory-util.h"
 
 char *format_ifname(int ifindex, char buf[static IF_NAMESIZE + 1]) {
         /* Buffer is always cleared */

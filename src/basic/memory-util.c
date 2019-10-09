@@ -1,6 +1,6 @@
-//#include <unistd.h>
+#include <unistd.h>
 
-//#include "memory-util.h"
+#include "memory-util.h"
 
 size_t page_size(void) {
         static thread_local size_t pgsz = 0;

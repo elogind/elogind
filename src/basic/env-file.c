@@ -3,13 +3,13 @@
 #include "alloc-util.h"
 #include "env-file.h"
 #include "env-util.h"
-//#include "escape.h"
-//#include "fd-util.h"
+#include "escape.h"
+#include "fd-util.h"
 #include "fileio.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tmpfile-util.h"
+#include "tmpfile-util.h"
 #include "utf8.h"
 
 static int parse_env_file_internal(

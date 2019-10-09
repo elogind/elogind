@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <fcntl.h>
-//#include <linux/magic.h>
+#include <fcntl.h>
+#include <linux/magic.h>
 
-//#include "fd-util.h"
-//#include "missing.h"
-//#include "namespace-util.h"
-//#include "process-util.h"
-//#include "stat-util.h"
-//#include "user-util.h"
+#include "fd-util.h"
+#include "missing.h"
+#include "namespace-util.h"
+#include "process-util.h"
+#include "stat-util.h"
+#include "user-util.h"
 
 int namespace_open(pid_t pid, int *pidns_fd, int *mntns_fd, int *netns_fd, int *userns_fd, int *root_fd) {
         _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, netnsfd = -1, usernsfd = -1;
@@ -123,6 +123,7 @@ int namespace_enter(int pidns_fd, int mntns_fd, int netns_fd, int userns_fd, int
         return reset_uid_gid();
 }
 
+#if 0 /// UNNEEDED by elogind
 int fd_is_network_ns(int fd) {
         struct statfs s;
         int r;
@@ -168,3 +169,4 @@ int fd_is_network_ns(int fd) {
 
         return r == CLONE_NEWNET;
 }
+#endif // 0

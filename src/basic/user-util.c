@@ -15,7 +15,7 @@
 #include <utmp.h>
 
 #include "alloc-util.h"
-//#include "errno-util.h"
+#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
@@ -23,7 +23,7 @@
 #include "missing.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "random-util.h"
+#include "random-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "user-util.h"

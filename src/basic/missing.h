@@ -11,16 +11,16 @@
 #endif
 
 /* If RLIMIT_RTTIME is not defined, then we cannot use RLIMIT_NLIMITS as is */
-//#include "missing_audit.h"
+#include "missing_audit.h"
 #include "missing_capability.h"
 #include "missing_drm.h"
 #include "missing_fcntl.h"
 #include "missing_fs.h"
-//#include "missing_input.h"
+#include "missing_input.h"
 #include "missing_magic.h"
-//#include "missing_mman.h"
-//#include "missing_network.h"
-//#include "missing_prctl.h"
+#include "missing_mman.h"
+#include "missing_network.h"
+#include "missing_prctl.h"
 #include "missing_random.h"
 #include "missing_resource.h"
 #include "missing_sched.h"

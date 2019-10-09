@@ -259,14 +259,13 @@ int log_emergency_level(void);
 #endif
 
 #if ENABLE_DEBUG_ELOGIND
-#  define log_debug_elogind(...) log_debug(__VA_ARGS__);usleep(25*USEC_PER_MSEC)
+#  define log_debug_elogind(...) log_full(LOG_DEBUG, __VA_ARGS__)
 #else
 #  define log_debug_elogind(...) do {} while (0)
 #endif // ENABLE_DEBUG_ELOGIND
 /* Structured logging */
 #define log_struct_errno(level, error, ...) \
         log_struct_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, level), \
-                            error, __FILE__, __LINE__, __func__, __VA_ARGS__, NULL)
                             error, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__, NULL)
 #define log_struct(level, ...) log_struct_errno(level, 0, __VA_ARGS__)
 
@@ -281,10 +280,8 @@ int log_emergency_level(void);
 /* This modifies the buffer passed! */
 #define log_dump(level, buffer) \
         log_dump_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, level), \
-                          0, __FILE__, __LINE__, __func__, buffer)
                           0, PROJECT_FILE, __LINE__, __func__, buffer)
 
-#define log_oom() log_oom_internal(LOG_REALM, __FILE__, __LINE__, __func__)
 #define log_oom() log_oom_internal(LOG_REALM, PROJECT_FILE, __LINE__, __func__)
 
 bool log_on_console(void) _pure_;

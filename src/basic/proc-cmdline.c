@@ -11,7 +11,7 @@
 #include "parse-util.h"
 #include "proc-cmdline.h"
 #include "process-util.h"
-//#include "special.h"
+#include "special.h"
 #include "string-util.h"
 #include "util.h"
 #include "virt.h"

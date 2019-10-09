@@ -13,25 +13,25 @@
 //#include <time.h>
 //#include <unistd.h>
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 //#include "btrfs-util.h"
 //#include "chattr-util.h"
 #include "copy.h"
-//#include "dirent-util.h"
-//#include "fd-util.h"
-//#include "fs-util.h"
+#include "dirent-util.h"
+#include "fd-util.h"
+#include "fs-util.h"
 #include "io-util.h"
-//#include "macro.h"
+#include "macro.h"
 #include "missing.h"
-//#include "mountpoint-util.h"
-//#include "stat-util.h"
-//#include "string-util.h"
+#include "mountpoint-util.h"
+#include "stat-util.h"
+#include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
-//#include "tmpfile-util.h"
-//#include "umask-util.h"
+#include "tmpfile-util.h"
+#include "umask-util.h"
 #include "user-util.h"
-//#include "xattr-util.h"
+#include "xattr-util.h"
 
 #define COPY_BUFFER_SIZE (16U*1024U)
 

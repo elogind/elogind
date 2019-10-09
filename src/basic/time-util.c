@@ -17,14 +17,14 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
-//#include "io-util.h"
+#include "io-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "missing_timerfd.h"
+#include "missing_timerfd.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "process-util.h"
-//#include "stat-util.h"
+#include "process-util.h"
+#include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
@@ -350,21 +350,17 @@ char *format_timestamp(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal(buf, l, t, false, false);
 }
 
-#if 0 /// UNNEEDED by elogind
 char *format_timestamp_utc(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal(buf, l, t, true, false);
 }
-#endif // 0
 
 char *format_timestamp_us(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal(buf, l, t, false, true);
 }
 
-#if 0 /// UNNEEDED by elogind
 char *format_timestamp_us_utc(char *buf, size_t l, usec_t t) {
         return format_timestamp_internal(buf, l, t, true, true);
 }
-#endif // 0
 
 char *format_timestamp_relative(char *buf, size_t l, usec_t t) {
         const char *s;

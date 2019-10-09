@@ -5,11 +5,11 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
-//#include <stdio.h>
+#include <stdio.h>
 
 #include "alloc-util.h"
 #include "extract-word.h"
-//#include "hashmap.h"
+#include "hashmap.h"
 #include "macro.h"
 #include "string-util.h"
 
@@ -87,8 +87,6 @@ char **strv_split_newlines(const char *s);
 
 int strv_split_extract(char ***t, const char *s, const char *separators, ExtractFlags flags);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 char *strv_join_prefix(char **l, const char *separator, const char *prefix);
 static inline char *strv_join(char **l, const char *separator) {
         return strv_join_prefix(l, separator, NULL);

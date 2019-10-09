@@ -12,7 +12,7 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "format-util.h"
 //#include "ioprio.h"
 #include "macro.h"
@@ -77,8 +77,8 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value);
 
 bool pid_is_alive(pid_t pid);
 bool pid_is_unwaited(pid_t pid);
-int pid_is_my_child(pid_t pid);
 #if 0 /// UNNEEDED by elogind
+int pid_is_my_child(pid_t pid);
 int pid_from_same_root_fs(pid_t pid);
 #endif // 0
 

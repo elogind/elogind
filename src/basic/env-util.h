@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
-//#include <unistd.h>
+#include <unistd.h>
 
 #include "macro.h"
-//#include "string.h"
+#include "string.h"
 
 static inline size_t sc_arg_max(void) {
         long l = sysconf(_SC_ARG_MAX);

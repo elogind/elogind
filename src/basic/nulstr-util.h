@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <stdbool.h>
-//#include <string.h>
+#include <stdbool.h>
+#include <string.h>
 
 #define NULSTR_FOREACH(i, l)                                    \
         for ((i) = (l); (i) && *(i); (i) = strchr((i), 0)+1)

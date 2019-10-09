@@ -44,7 +44,6 @@ size_t strpcpy(char **dest, size_t size, const char *src) {
         return strnpcpy(dest, size, src, strlen(src));
 }
 
-#if 0 /// UNNEEDED by elogind
 size_t strpcpyf(char **dest, size_t size, const char *src, ...) {
         va_list va;
         int i;
@@ -66,6 +65,7 @@ size_t strpcpyf(char **dest, size_t size, const char *src, ...) {
         return size;
 }
 
+#if 0 /// UNNEEDED by elogind
 size_t strpcpyl(char **dest, size_t size, const char *src, ...) {
         va_list va;
 

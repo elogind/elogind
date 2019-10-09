@@ -9,13 +9,13 @@
 
 #include "alloc-util.h"
 #include "escape.h"
-//#include "fileio.h"
+#include "fileio.h"
 #include "gunicode.h"
 #include "locale-util.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "string-util.h"
-//#include "terminal-util.h"
+#include "terminal-util.h"
 #include "utf8.h"
 #include "util.h"
 

@@ -11,10 +11,10 @@
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "macro.h"
-//#include "missing.h"
+#include "missing.h"
 #include "sparse-endian.h"
 #include "stdio-util.h"
-//#include "string-util.h"
+#include "string-util.h"
 #include "time-util.h"
 #include "xattr-util.h"
 

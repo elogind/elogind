@@ -27,6 +27,7 @@
 #include "strv.h"
 #include "utf8.h"
 
+#if 0 /// UNNEEDED by elogind
 static char *normalize_locale(const char *name) {
         const char *e;
 
@@ -261,6 +262,7 @@ void init_gettext(void) {
         setlocale(LC_ALL, "");
         textdomain(GETTEXT_PACKAGE);
 }
+#endif // 0
 
 bool is_locale_utf8(void) {
         const char *set;
@@ -390,6 +392,7 @@ const char *special_glyph(SpecialGlyph code) {
         return draw_table[code >= _SPECIAL_GLYPH_FIRST_SMILEY ? emoji_enabled() : is_locale_utf8()][code];
 }
 
+#if 0 /// UNNEEDED by elogind
 void locale_variables_free(char *l[_VARIABLE_LC_MAX]) {
         LocaleVariable i;
 
@@ -399,6 +402,7 @@ void locale_variables_free(char *l[_VARIABLE_LC_MAX]) {
         for (i = 0; i < _VARIABLE_LC_MAX; i++)
                 l[i] = mfree(l[i]);
 }
+#endif // 0
 
 static const char * const locale_variable_table[_VARIABLE_LC_MAX] = {
         [VARIABLE_LANG] = "LANG",

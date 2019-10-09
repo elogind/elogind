@@ -7,11 +7,11 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
-//#include "alloc-util.h"
-//#include "fd-util.h"
+#include "alloc-util.h"
+#include "fd-util.h"
 #include "fileio.h"
 #include "hostname-util.h"
-//#include "macro.h"
+#include "macro.h"
 #include "string-util.h"
 
 #if 0 /// UNNEEDED by elogind

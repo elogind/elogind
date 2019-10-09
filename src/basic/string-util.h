@@ -198,7 +198,6 @@ static inline int free_and_strdup_warn(char **p, const char *s) {
 }
 int free_and_strndup(char **p, const char *s, size_t l);
 
-#else
 bool string_is_safe(const char *p) _pure_;
 
 static inline size_t strlen_ptr(const char *s) {
@@ -254,6 +253,7 @@ static inline void *memory_startswith_no_case(const void *p, size_t sz, const ch
 
         return (uint8_t*) p + n;
 }
+#endif // 0
 
 static inline char* str_realloc(char **p) {
         /* Reallocate *p to actual size */
@@ -267,4 +267,3 @@ static inline char* str_realloc(char **p) {
 
         return (*p = t);
 }
-#endif // 0

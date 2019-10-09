@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <linux/types.h>
-//#include <sys/stat.h>
+#include <linux/types.h>
+#include <sys/stat.h>
 
 #if WANT_LINUX_STAT_H
-//#include <linux/stat.h>
+#include <linux/stat.h>
 #endif
 
 /* a528d35e8bfcc521d7cb70aaf03e1bd296c8493f (4.11) */

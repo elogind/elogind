@@ -21,14 +21,14 @@
 #include "log.h"
 #include "macro.h"
 #include "missing.h"
-//#include "nulstr-util.h"
+#include "nulstr-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
-//#include "utf8.h"
+#include "utf8.h"
 
 bool path_is_absolute(const char *p) {
         return p[0] == '/';

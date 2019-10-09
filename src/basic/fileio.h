@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include "macro.h"

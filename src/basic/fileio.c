@@ -17,11 +17,11 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
-//#include "hexdecoct.h"
-//#include "log.h"
-//#include "macro.h"
+#include "hexdecoct.h"
+#include "log.h"
+#include "macro.h"
 #include "missing.h"
-//#include "mkdir.h"
+#include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "stdio-util.h"
@@ -215,6 +215,7 @@ int write_string_file_ts(
 #ifndef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems when going this route
                 if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                         flags ^= WRITE_STRING_FILE_DISABLE_BUFFER;
+#endif // __GLIBC__
                 (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
         }
 
@@ -458,6 +459,7 @@ int read_full_file_full(const char *filename, ReadFullFileFlags flags, char **co
         return read_full_stream_full(f, filename, flags, contents, size);
 }
 
+#if 0 /// UNNEEDED by elogind
 int executable_is_script(const char *path, char **interpreter) {
         _cleanup_free_ char *line = NULL;
         size_t len;
@@ -488,6 +490,7 @@ int executable_is_script(const char *path, char **interpreter) {
         *interpreter = ans;
         return 1;
 }
+#endif // 0
 
 /**
  * Retrieve one field from a file like /proc/self/status.  pattern
@@ -581,6 +584,7 @@ DIR *xopendirat(int fd, const char *name, int flags) {
         return d;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int search_and_fopen_internal(const char *path, const char *mode, const char *root, char **search, FILE **_f) {
         char **i;
 
@@ -659,6 +663,7 @@ int search_and_fopen_nulstr(const char *path, const char *mode, const char *root
 
         return search_and_fopen_internal(path, mode, root, s, _f);
 }
+#endif // 0
 
 int fflush_and_check(FILE *f) {
         assert(f);
@@ -691,6 +696,7 @@ int fflush_sync_and_check(FILE *f) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int write_timestamp_file_atomic(const char *fn, usec_t n) {
         char ln[DECIMAL_STR_MAX(n)+2];
 
@@ -753,6 +759,7 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 
         return fputs(s, f);
 }
+#endif // 0
 
 /* A bitmask of the EOL markers we know */
 typedef enum EndOfLineMarker {

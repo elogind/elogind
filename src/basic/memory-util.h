@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <inttypes.h>
-//#include <malloc.h>
-//#include <stdbool.h>
-//#include <string.h>
-//#include <sys/types.h>
+#include <inttypes.h>
+#include <malloc.h>
+#include <stdbool.h>
+#include <string.h>
+#include <sys/types.h>
 
-//#include "macro.h"
+#include "macro.h"
 
 size_t page_size(void) _pure_;
 #define PAGE_ALIGN(l) ALIGN_TO((l), page_size())

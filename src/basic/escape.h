@@ -8,7 +8,7 @@
 #include <uchar.h>
 
 #include "string-util.h"
-//#include "missing_type.h"
+#include "missing_type.h"
 
 /* What characters are special in the shell? */
 /* must be escaped outside and inside double-quotes */
@@ -52,8 +52,10 @@ static inline char *xescape(const char *s, const char *bad) {
 }
 #if 0 /// UNNEEDED by elogind
 char *octescape(const char *s, size_t len);
+#endif // 0
 char *escape_non_printable_full(const char *str, size_t console_width, bool eight_bit);
 
+#if 0 /// UNNEEDED by elogind
 char *shell_escape(const char *s, const char *bad);
 #endif // 0
 char* shell_maybe_quote(const char *s, EscapeStyle style);

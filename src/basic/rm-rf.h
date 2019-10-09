@@ -3,7 +3,7 @@
 
 #include <sys/stat.h>
 
-//#include "errno-util.h"
+#include "errno-util.h"
 
 typedef enum RemoveFlags {
         REMOVE_ONLY_DIRECTORIES = 1 << 0, /* Only remove empty directories, no files */

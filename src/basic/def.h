@@ -16,8 +16,7 @@
 /* The default value for the net.unix.max_dgram_qlen sysctl */
 #define DEFAULT_UNIX_MAX_DGRAM_QLEN 512UL
 
-#if 0 /// elogind allows foreign cgroup controllers. (Well, needs them, actually)
-#else
+#if 1 /// elogind allows foreign cgroup controllers. (Well, needs them, actually)
 #ifndef SYSTEMD_CGROUP_CONTROLLER_LEGACY
 #  define SYSTEMD_CGROUP_CONTROLLER_LEGACY "name=elogind"
 #endif // SYSTEMD_CGROUP_CONTROLLER_LEGACY
@@ -27,20 +26,18 @@
 #ifndef SYSTEMD_CGROUP_CONTROLLER
 #  define SYSTEMD_CGROUP_CONTROLLER "_elogind"
 #endif // SYSTEMD_CGROUP_CONTROLLER
-#endif // 0
+#endif // 1
 #define SIGNALS_CRASH_HANDLER SIGSEGV,SIGILL,SIGFPE,SIGBUS,SIGQUIT,SIGABRT
 #define SIGNALS_IGNORE SIGPIPE
 
-#else
-#if 0 /// elogind should support both /run/dbus & /var/run/dbus (per Linux FHS)
-#else
+#if 1 /// elogind should support both /run/dbus & /var/run/dbus (per Linux FHS)
 /* Not all systems have dbus hierarchy in /run (as preferred by systemd) */
 #if VARRUN_IS_SYMLINK
   #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/run/dbus/system_bus_socket"
 #else
   #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/var/run/dbus/system_bus_socket"
 #endif // VARRUN_IS_SYMLINK
-#endif // 0
+#endif // 1
 #define NOTIFY_FD_MAX 768
 #define NOTIFY_BUFFER_MAX PIPE_BUF
 

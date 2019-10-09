@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <stdlib.h>
-//#include <string.h>
+#include <stdlib.h>
+#include <string.h>
 
-//#include "macro.h"
+#include "macro.h"
 
 static inline void _reset_errno_(int *saved_errno) {
         if (*saved_errno < 0) /* Invalidated by UNPROTECT_ERRNO? */

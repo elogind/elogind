@@ -24,27 +24,29 @@
 #include "alloc-util.h"
 //#include "architecture.h"
 #include "escape.h"
-//#include "env-util.h"
+#include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
 //#include "ioprio.h"
-//#include "locale-util.h"
+#include "locale-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "missing.h"
-//#include "namespace-util.h"
+#include "namespace-util.h"
 #include "process-util.h"
 #include "raw-clone.h"
 #include "rlimit-util.h"
 #include "signal-util.h"
-//#include "stat-util.h"
+#include "stat-util.h"
 #include "string-table.h"
 #include "string-util.h"
-//#include "terminal-util.h"
+#include "terminal-util.h"
 #include "user-util.h"
-//#include "utf8.h"
+#include "utf8.h"
+/// Additional includes needed by elogind
+#include "util.h"
 
 /* The kernel limits userspace processes to TASK_COMM_LEN (16 bytes), but allows higher values for its own
  * workers, e.g. "kworker/u9:3-kcryptd/253:0". Let's pick a fixed smallish limit that will work for the kernel.
@@ -869,6 +871,7 @@ int getenv_for_pid(pid_t pid, const char *field, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pid_is_my_child(pid_t pid) {
         pid_t ppid;
         int r;
@@ -882,6 +885,7 @@ int pid_is_my_child(pid_t pid) {
 
         return ppid == getpid_cached();
 }
+#endif // 0
 
 bool pid_is_unwaited(pid_t pid) {
         /* Checks whether a PID is still valid at all, including a zombie */

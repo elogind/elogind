@@ -1,39 +1,39 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include <alloca.h>
-//#include <errno.h>
-//#include <fcntl.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <sched.h>
-//#include <signal.h>
-//#include <stdarg.h>
-//#include <stdio.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
-//#include <string.h>
-//#include <sys/mman.h>
+#include <string.h>
+#include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/statfs.h>
 #include <sys/sysmacros.h>
-//#include <sys/types.h>
-//#include <unistd.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "alloc-util.h"
 //#include "btrfs-util.h"
 #include "build.h"
-//#include "def.h"
+#include "def.h"
 //#include "device-nodes.h"
 #include "dirent-util.h"
 #include "env-file.h"
-//#include "env-util.h"
+#include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-//#include "format-util.h"
+#include "format-util.h"
 #include "hashmap.h"
 #include "hostname-util.h"
-//#include "log.h"
+#include "log.h"
 #include "macro.h"
-//#include "missing.h"
+#include "missing.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "process-util.h"
 #include "procfs-util.h"
 #include "set.h"
@@ -45,15 +45,12 @@
 #include "umask-util.h"
 #include "user-util.h"
 #include "util.h"
-//#include "virt.h"
+#include "virt.h"
 
 int saved_argc = 0;
 char **saved_argv = NULL;
 #if 0 /// UNNEEDED by elogind
 static int saved_in_initrd = -1;
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
@@ -118,8 +115,8 @@ bool in_initrd(void) {
 void in_initrd_force(bool value) {
         saved_in_initrd = value;
 }
-
 #endif // 0
+
 int on_ac_power(void) {
         bool found_offline = false, found_online = false;
         _cleanup_closedir_ DIR *d = NULL;
@@ -227,12 +224,11 @@ int container_get_leader(const char *machine, pid_t *pid) {
 }
 
 int version(void) {
-        puts("elogind " STRINGIFY(PROJECT_VERSION) " (" GIT_VERSION ")\n"
-             SYSTEMD_FEATURES);
+//        puts("elogind " STRINGIFY(PROJECT_VERSION) " (" GIT_VERSION ")\n"
+//             SYSTEMD_FEATURES);
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 /* This is a direct translation of str_verscmp from boot.c */
 static bool is_digit(int c) {
         return c >= '0' && c <= '9';
@@ -295,6 +291,7 @@ int str_verscmp(const char *s1, const char *s2) {
         return strcmp(os1, os2);
 }
 
+#if 0 /// UNNEEDED by elogind
 /* Turn off core dumps but only if we're running outside of a container. */
 void disable_coredumps(void) {
         int r;

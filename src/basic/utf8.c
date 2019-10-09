@@ -32,7 +32,7 @@
 #include "gunicode.h"
 #include "hexdecoct.h"
 #include "macro.h"
-//#include "string-util.h"
+#include "string-util.h"
 #include "utf8.h"
 
 bool unichar_is_valid(char32_t ch) {

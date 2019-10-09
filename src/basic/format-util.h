@@ -2,8 +2,8 @@
 #pragma once
 
 #include <inttypes.h>
-//#include <net/if.h>
-//#include <stdbool.h>
+#include <net/if.h>
+#include <stdbool.h>
 
 #if SIZEOF_PID_T == 4
 #  define PID_PRI PRIi32

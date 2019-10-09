@@ -19,7 +19,7 @@
 #include "sd-messages.h"
 
 #include "alloc-util.h"
-//#include "errno-util.h"
+#include "errno-util.h"
 #include "fd-util.h"
 #include "format-util.h"
 #include "io-util.h"

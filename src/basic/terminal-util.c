@@ -23,8 +23,8 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "copy.h"
-//#include "def.h"
+#include "copy.h"
+#include "def.h"
 #include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -32,10 +32,10 @@
 #include "io-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "namespace-util.h"
+#include "namespace-util.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "proc-cmdline.h"
+#include "proc-cmdline.h"
 #include "process-util.h"
 #include "socket-util.h"
 #include "stat-util.h"

@@ -17,14 +17,14 @@
 
 #include "alloc-util.h"
 #include "cgroup-util.h"
-//#include "def.h"
+#include "def.h"
 #include "dirent-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
 #include "fs-util.h"
-//#include "log.h"
+#include "log.h"
 #include "login-util.h"
 #include "macro.h"
 #include "missing.h"
@@ -34,7 +34,7 @@
 #include "proc-cmdline.h"
 #include "process-util.h"
 #include "set.h"
-//#include "special.h"
+#include "special.h"
 #include "stat-util.h"
 #include "stdio-util.h"
 #include "string-table.h"
@@ -1853,7 +1853,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         if (parse_uid(start, uid) < 0)
                 return -ENXIO;
 #else
-        p = strappend("/run/systemd/sessions/", slice);
+        p = strjoin("/run/systemd/sessions/", slice);
 
         r = read_one_line_file(p, &s);
         if (r == -ENOENT)

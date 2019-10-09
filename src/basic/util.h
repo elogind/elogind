@@ -7,9 +7,6 @@
 /// Additional includes needed by elogind
 #include "musl_missing.h"
 
-size_t page_size(void) _pure_;
-#define PAGE_ALIGN(l) ALIGN_TO((l), page_size())
-
 static inline const char* yes_no(bool b) {
         return b ? "yes" : "no";
 }
@@ -26,11 +23,6 @@ static inline const char* enable_disable(bool b) {
         return b ? "enable" : "disable";
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 extern int saved_argc;
 extern char **saved_argv;
 
@@ -91,8 +83,8 @@ int container_get_leader(const char *machine, pid_t *pid);
 
 int version(void);
 
-#if 0 /// UNNEEDED by elogind
 int str_verscmp(const char *s1, const char *s2);
 
+#if 0 /// UNNEEDED by elogind
 void disable_coredumps(void);
 #endif // 0

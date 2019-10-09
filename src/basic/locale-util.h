@@ -29,12 +29,16 @@ typedef enum LocaleVariable {
         _VARIABLE_LC_INVALID = -1
 } LocaleVariable;
 
+#if 0 /// UNNEEDED by elogind
 int get_locales(char ***l);
 bool locale_is_valid(const char *name);
+#endif // 0
 
 #define _(String) gettext(String)
 #define N_(String) String
+#if 0 /// UNNEEDED by elogind
 void init_gettext(void);
+#endif // 0
 
 bool is_locale_utf8(void);
 
@@ -75,7 +79,9 @@ static inline void freelocalep(locale_t *p) {
         freelocale(*p);
 }
 
+#if 0 /// UNNEEDED by elogind
 void locale_variables_free(char* l[_VARIABLE_LC_MAX]);
 static inline void locale_variables_freep(char*(*l)[_VARIABLE_LC_MAX]) {
         locale_variables_free(*l);
 }
+#endif // 0

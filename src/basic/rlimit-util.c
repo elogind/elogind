@@ -3,15 +3,15 @@
 #include <errno.h>
 #include <sys/resource.h>
 
-//#include "alloc-util.h"
-//#include "extract-word.h"
+#include "alloc-util.h"
+#include "extract-word.h"
 #include "fd-util.h"
 #include "format-util.h"
-//#include "macro.h"
-//#include "missing.h"
+#include "macro.h"
+#include "missing.h"
 #include "rlimit-util.h"
-//#include "string-table.h"
-//#include "time-util.h"
+#include "string-table.h"
+#include "time-util.h"
 
 int setrlimit_closest(int resource, const struct rlimit *rlim) {
         struct rlimit highest, fixed;
