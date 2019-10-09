@@ -741,11 +741,11 @@ static int parse_unix_address(sd_bus *b, const char **p, char **guid) {
 
         if (path) {
                 l = strlen(path);
-                if (l > sizeof(b->sockaddr.un.sun_path))
+                if (l >= sizeof(b->sockaddr.un.sun_path))
                         return -E2BIG;
 
                 b->sockaddr.un.sun_family = AF_UNIX;
-                strncpy(b->sockaddr.un.sun_path, path, sizeof(b->sockaddr.un.sun_path));
+                strncpy(b->sockaddr.un.sun_path, path, sizeof(b->sockaddr.un.sun_path) - 1);
                 b->sockaddr_size = offsetof(struct sockaddr_un, sun_path) + l;
         } else if (abstract) {
                 l = strlen(abstract);
