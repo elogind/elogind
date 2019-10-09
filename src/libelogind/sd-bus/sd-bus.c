@@ -4,10 +4,10 @@
 #include <netdb.h>
 #include <poll.h>
 #include <pthread.h>
-//#include <signal.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <sys/mman.h>
-//#include <sys/wait.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include "sd-bus.h"
@@ -28,15 +28,15 @@
 #include "bus-util.h"
 #include "cgroup-util.h"
 #include "def.h"
-//#include "errno-util.h"
+#include "errno-util.h"
 #include "fd-util.h"
 #include "hexdecoct.h"
 #include "hostname-util.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "missing.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "process-util.h"
 #include "string-util.h"
 #include "strv.h"

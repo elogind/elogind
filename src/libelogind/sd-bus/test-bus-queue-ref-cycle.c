@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
-//#include "sd-bus.h"
+#include "sd-bus.h"
 
-//#include "main-func.h"
-//#include "tests.h"
+#include "main-func.h"
+#include "tests.h"
 
 static int test_ref_unref(void) {
         sd_bus_message *m = NULL;

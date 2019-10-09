@@ -4,7 +4,7 @@
 #include "log.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "tests.h"
+#include "tests.h"
 
 static void test_one_address(sd_bus *b,
                              const char *host,

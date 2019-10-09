@@ -16,7 +16,7 @@
 #include "fd-util.h"
 #include "io-util.h"
 #include "memfd-util.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"

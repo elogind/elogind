@@ -23,7 +23,7 @@
 #  include "bus-objects.h"
 #endif
 
-//#include "test-vtable-data.h"
+#include "test-vtable-data.h"
 
 #define DEFAULT_BUS_PATH "unix:path=/run/dbus/system_bus_socket"
 

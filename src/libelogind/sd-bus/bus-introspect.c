@@ -2,12 +2,12 @@
 
 #include "bus-internal.h"
 #include "bus-introspect.h"
-//#include "bus-objects.h"
+#include "bus-objects.h"
 #include "bus-protocol.h"
 #include "bus-signature.h"
 #include "fd-util.h"
 #include "fileio.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "string-util.h"
 
 int introspect_begin(struct introspect *i, bool trusted) {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "bus-internal.h"
-//#include "bus-introspect.h"
+#include "bus-introspect.h"
 
 const sd_bus_vtable* bus_vtable_next(const sd_bus_vtable *vtable, const sd_bus_vtable *v);
 bool bus_vtable_has_names(const sd_bus_vtable *vtable);
