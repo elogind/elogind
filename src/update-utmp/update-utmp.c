@@ -12,17 +12,17 @@
 
 #include "sd-bus.h"
 
-//#include "alloc-util.h"
+#include "alloc-util.h"
 #include "bus-error.h"
-//#include "bus-util.h"
-//#include "format-util.h"
-//#include "log.h"
-//#include "macro.h"
+#include "bus-util.h"
+#include "format-util.h"
+#include "log.h"
+#include "macro.h"
 #include "process-util.h"
-//#include "special.h"
+#include "special.h"
 #include "strv.h"
-//#include "unit-name.h"
-//#include "util.h"
+#include "unit-name.h"
+#include "util.h"
 #include "utmp-wtmp.h"
 
 /// Additional includes needed by elogind
