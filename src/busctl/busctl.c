@@ -15,7 +15,7 @@
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
-//#include "format-table.h"
+#include "format-table.h"
 #include "json.h"
 #include "locale-util.h"
 #include "log.h"
@@ -25,7 +25,7 @@
 #include "path-util.h"
 #include "pretty-print.h"
 #include "set.h"
-//#include "sort-util.h"
+#include "sort-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "user-util.h"
@@ -258,15 +258,15 @@ static int list_bus_names(int argc, char **argv, void *userdata) {
                                 SD_BUS_CREDS_EUID|SD_BUS_CREDS_PID|SD_BUS_CREDS_COMM|
                                 SD_BUS_CREDS_UNIQUE_NAME|SD_BUS_CREDS_UNIT|SD_BUS_CREDS_SESSION|
                                 SD_BUS_CREDS_DESCRIPTION, &creds);
-#if 0 /// elogind does not support systemd units
                 if (r < 0) {
                         log_debug_errno(r, "Failed to acquire credentials of service %s, ignoring: %m", k);
 
                         r = table_fill_empty(table, COLUMN_MACHINE);
                 } else {
+#if 0 /// elogind does not support systemd units
                         const char *unique = NULL, *session = NULL, *unit = NULL, *cn = NULL;
 #else
-                        const char *unique, *session, *cn;
+                        const char *unique = NULL, *session = NULL, *cn = NULL;
 #endif // 0
                         pid_t pid;
                         uid_t uid;
@@ -300,14 +300,18 @@ static int list_bus_names(int argc, char **argv, void *userdata) {
                                 return log_error_errno(r, "Failed to add field to table: %m");
 
                         (void) sd_bus_creds_get_unique_name(creds, &unique);
+#if 0 /// elogind does not support systemd units
                         (void) sd_bus_creds_get_unit(creds, &unit);
+#endif // 0
                         (void) sd_bus_creds_get_session(creds, &session);
                         (void) sd_bus_creds_get_description(creds, &cn);
 
                         r = table_add_many(
                                         table,
                                         TABLE_STRING, unique,
+#if 0 /// elogind does not support systemd units
                                         TABLE_STRING, unit,
+#endif // 0
                                         TABLE_STRING, session,
                                         TABLE_STRING, cn);
                 }
@@ -317,7 +321,6 @@ static int list_bus_names(int argc, char **argv, void *userdata) {
                 if (arg_show_machine) {
                         sd_id128_t mid;
 
-#if 0 /// elogind does not support systemd units
                         r = sd_bus_get_name_machine_id(bus, k, &mid);
                         if (r < 0)
                                 log_debug_errno(r, "Failed to acquire credentials of service %s, ignoring: %m", k);
@@ -331,7 +334,6 @@ static int list_bus_names(int argc, char **argv, void *userdata) {
                                 continue; /* line fully filled, no need to fill the remainder below */
                         }
                 }
-#endif // 0
 
                 r = table_fill_empty(table, 0);
                 if (r < 0)

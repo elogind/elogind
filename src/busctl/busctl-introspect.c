@@ -4,7 +4,7 @@
 
 #include "alloc-util.h"
 #include "busctl-introspect.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "string-util.h"
 #include "util.h"
 #include "xml.h"
