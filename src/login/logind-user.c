@@ -104,6 +104,12 @@ int user_new(User **ret,
                 return r;
 #endif // 0
 
+#if 1 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
+        r = user_runtime_dir("start", u);
+        if (r < 0)
+                return r;
+#endif // 1
+
         *ret = TAKE_PTR(u);
         return 0;
 }
@@ -412,12 +418,6 @@ int user_start(User *u) {
         if (!u->started)
                 log_debug("Starting services for new user %s.", u->name);
 
-#if 1 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
-        int r;
-        r = user_runtime_dir("start", u);
-        if (r < 0)
-                return r;
-#endif // 1
         /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
          * systemd --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
