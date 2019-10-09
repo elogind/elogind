@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <fcntl.h>
-//#include <unistd.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "sd-device.h"
 
@@ -11,7 +11,7 @@
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "set.h"
-//#include "sort-util.h"
+#include "sort-util.h"
 #include "string-util.h"
 #include "strv.h"
 

@@ -8,7 +8,7 @@
 
 #include "sd-device.h"
 
-//#include "macro.h"
+#include "macro.h"
 
 typedef enum DeviceAction {
         DEVICE_ACTION_ADD,

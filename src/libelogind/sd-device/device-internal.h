@@ -3,7 +3,7 @@
 
 #include "sd-device.h"
 
-//#include "device-private.h"
+#include "device-private.h"
 #include "hashmap.h"
 #include "set.h"
 #include "time-util.h"
