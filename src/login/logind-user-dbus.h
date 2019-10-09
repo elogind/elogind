@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "sd-bus.h"
+#include "sd-bus.h"
 
-//#include "logind-user.h"
+#include "logind-user.h"
 
 extern const sd_bus_vtable user_vtable[];
 int user_node_enumerator(sd_bus *bus, const char *path, void *userdata, char ***nodes, sd_bus_error *error);

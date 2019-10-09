@@ -3,7 +3,7 @@
 
 typedef struct User User;
 
-//#include "conf-parser.h"
+#include "conf-parser.h"
 #include "list.h"
 #include "logind.h"
 

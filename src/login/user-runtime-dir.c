@@ -3,18 +3,18 @@
 #include <stdint.h>
 #include <sys/mount.h>
 
-//#include "sd-bus.h"
+#include "sd-bus.h"
 
-//#include "bus-error.h"
+#include "bus-error.h"
 #include "fs-util.h"
-//#include "format-util.h"
+#include "format-util.h"
 #include "label.h"
-//#include "main-func.h"
+#include "main-func.h"
 #include "mkdir.h"
 #include "mountpoint-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
-//#include "selinux-util.h"
+#include "selinux-util.h"
 #include "smack-util.h"
 #include "stdio-util.h"
 #include "string-util.h"

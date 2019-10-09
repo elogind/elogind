@@ -6,54 +6,53 @@
 //#include <sys/stat.h>
 #include <unistd.h>
 
-//#include "sd-device.h"
+#include "sd-device.h"
 #include "sd-messages.h"
 
 #include "alloc-util.h"
 #include "audit-util.h"
-//#include "bootspec.h"
+#include "bootspec.h"
 #include "bus-common-errors.h"
 #include "bus-error.h"
 //#include "bus-unit-util.h"
 #include "bus-util.h"
-//#include "cgroup-util.h"
+#include "cgroup-util.h"
 #include "device-util.h"
 #include "dirent-util.h"
-//#include "efivars.h"
-//#include "env-util.h"
+#include "efivars.h"
+#include "env-util.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio-label.h"
 #include "fileio.h"
 #include "format-util.h"
 #include "fs-util.h"
-//#include "logind-dbus.h"
-//#include "logind-seat-dbus.h"
-//#include "logind-session-dbus.h"
-//#include "logind-user-dbus.h"
+#include "logind-dbus.h"
+#include "logind-seat-dbus.h"
+#include "logind-session-dbus.h"
+#include "logind-user-dbus.h"
 #include "logind.h"
 #include "missing_capability.h"
 #include "mkdir.h"
-//#include "parse-util.h"
+#include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
-//#include "reboot-util.h"
+#include "reboot-util.h"
 #include "selinux-util.h"
 #include "sleep-config.h"
-//#include "special.h"
-//#include "stdio-util.h"
+#include "special.h"
+#include "stdio-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "tmpfile-util.h"
 #include "unit-name.h"
 #include "user-util.h"
 #include "utmp-wtmp.h"
-//#include "virt.h"
+#include "virt.h"
 
 /// Additional includes needed by elogind
 #include "elogind-dbus.h"
 
-static int get_sender_session(Manager *m, sd_bus_message *message, sd_bus_error *error, Session **ret) {
 static int get_sender_session(
                 Manager *m,
                 sd_bus_message *message,
@@ -2779,7 +2778,6 @@ static int property_get_reboot_to_firmware_setup(
                 sd_bus_message *reply,
                 void *userdata,
                 sd_bus_error *error) {
-#if 0 /// elogind does not support EFI
         int r;
 
         assert(bus);
@@ -2795,7 +2793,7 @@ static int property_get_reboot_to_firmware_setup(
         } else if (r < 0)
                 log_warning_errno(r, "Failed to parse $SYSTEMD_REBOOT_TO_FIRMWARE_SETUP: %m");
         else if (r > 0) {
-                /* Non-EFI case: let's see whether /run/systemd/reboot-to-firmware-setup exists. */
+               /* Non-EFI case: let's see whether /run/systemd/reboot-to-firmware-setup exists. */
                 if (access("/run/systemd/reboot-to-firmware-setup", F_OK) < 0) {
                         if (errno != ENOENT)
                                 log_warning_errno(errno, "Failed to check whether /run/systemd/reboot-to-firmware-setup exists: %m");
@@ -2806,9 +2804,6 @@ static int property_get_reboot_to_firmware_setup(
         }
 
         return sd_bus_message_append(reply, "b", r > 0);
-#else
-        return sd_bus_message_append(reply, "b", false);
-#endif // 0
 }
 
 static int method_set_reboot_to_firmware_setup(
@@ -2863,7 +2858,6 @@ static int method_set_reboot_to_firmware_setup(
         if (r == 0)
                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
 
-#if 0 /// elogind does not support EFI
         if (use_efi) {
                 r = efi_set_reboot_to_firmware(b);
                 if (r < 0)
@@ -2878,7 +2872,6 @@ static int method_set_reboot_to_firmware_setup(
                                 return -errno;
                 }
         }
-#endif // 0
 
         return sd_bus_reply_method_return(message, NULL);
 }
@@ -2888,7 +2881,6 @@ static int method_can_reboot_to_firmware_setup(
                 void *userdata,
                 sd_bus_error *error) {
 
-#if 0 /// elogind does not support EFI
         Manager *m = userdata;
         int r;
 
@@ -3101,7 +3093,6 @@ static int method_can_reboot_to_boot_loader_menu(
 
                 if (r < 0)
                         log_warning_errno(r, "Failed to parse $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU: %m");
-
                 return sd_bus_reply_method_return(message, "s", "na");
         }
 
@@ -3341,9 +3332,6 @@ static int property_get_boot_loader_entries(
         }
 
         return sd_bus_message_close_container(reply);
-#else
-        return sd_bus_reply_method_return(message, "s", "no");
-#endif // 0
 }
 
 static int method_set_wall_message(

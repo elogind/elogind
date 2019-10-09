@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "sd-bus.h"
+#include "sd-bus.h"
 
-//#include "logind-seat.h"
+#include "logind-seat.h"
 
 extern const sd_bus_vtable seat_vtable[];
 

@@ -11,7 +11,7 @@
 #include "hashmap.h"
 #include "list.h"
 #include "set.h"
-//#include "time-util.h"
+#include "time-util.h"
 
 typedef struct Manager Manager;
 
@@ -190,8 +190,6 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **_inhibitor);
 int manager_process_seat_device(Manager *m, sd_device *d);
 int manager_process_button_device(Manager *m, sd_device *d);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int manager_spawn_autovt(Manager *m, unsigned vtnr);
 
 bool manager_shall_kill(Manager *m, const char *user);
@@ -212,14 +210,6 @@ void manager_reconnect_utmp(Manager *m);
 
 extern const sd_bus_vtable manager_vtable[];
 
-#if 0 /// UNNEEDED by elogind
-#else
-/// eloginds own version does the action itself
-int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 /* gperf lookup function */
 const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
 

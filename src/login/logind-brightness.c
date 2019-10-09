@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include "bus-util.h"
-//#include "device-util.h"
-//#include "hash-funcs.h"
-//#include "logind-brightness.h"
-//#include "logind.h"
-//#include "process-util.h"
-//#include "stdio-util.h"
+#include "bus-util.h"
+#include "device-util.h"
+#include "hash-funcs.h"
+#include "logind-brightness.h"
+#include "logind.h"
+#include "process-util.h"
+#include "stdio-util.h"
 
 /* Brightness and LED devices tend to be very slow to write to (often being I2C and such). Writes to the
  * sysfs attributes are synchronous, and hence will freeze our process on access. We can't really have that,

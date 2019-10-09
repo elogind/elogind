@@ -10,7 +10,7 @@
 
 #include "alloc-util.h"
 #include "bus-error.h"
-//#include "bus-unit-procs.h"
+#include "bus-unit-procs.h"
 #include "bus-util.h"
 //#include "cgroup-show.h"
 #include "cgroup-util.h"
@@ -19,7 +19,7 @@
 //#include "logs-show.h"
 #include "macro.h"
 #include "main-func.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "pager.h"
 #include "parse-util.h"
 #include "pretty-print.h"

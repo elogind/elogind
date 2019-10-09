@@ -19,7 +19,7 @@
 
 
 #include "elogind-dbus.h"
-//#include "exec-util.h"
+#include "exec-util.h"
 #include "process-util.h"
 #include "sd-messages.h"
 #include "sleep.h"
@@ -96,7 +96,7 @@ static int run_helper(Manager* m, const char *helper, const char *arg_verb) {
         m->callback_failed = false;
         m->callback_must_succeed = m->allow_poweroff_interrupts;
 
-        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL);
+        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL, EXEC_DIR_NONE);
 
         if ( m->callback_must_succeed && ((r < 0) || m->callback_failed) ) {
                 e = asprintf(&l, "A shutdown script in %s failed! [%d]\n"

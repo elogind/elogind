@@ -3,8 +3,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
-//#include <sys/stat.h>
-//#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
@@ -13,12 +13,12 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
-//#include "io-util.h"
-//#include "logind-dbus.h"
+#include "io-util.h"
+#include "logind-dbus.h"
 #include "logind-inhibit.h"
 #include "mkdir.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "string-table.h"
 #include "string-util.h"
 #include "tmpfile-util.h"
@@ -371,11 +371,12 @@ int inhibitor_create_fifo(Inhibitor *i) {
         return r;
 }
 
+static void inhibitor_remove_fifo(Inhibitor *i) {
+        assert(i);
+
 #if 1 /// Don't keep invalid FIFOs on elogind restart
         int current_fifo_fd = i->fifo_fd;
 #endif // 1
-static void inhibitor_remove_fifo(Inhibitor *i) {
-        assert(i);
 
         i->event_source = sd_event_source_unref(i->event_source);
         i->fifo_fd = safe_close(i->fifo_fd);
@@ -389,11 +390,11 @@ static void inhibitor_remove_fifo(Inhibitor *i) {
                         log_debug_elogind("Removing FIFO %d at %s for inhibitor %s",
                                           current_fifo_fd, i->fifo_path, i->id);
 #endif // 1
+                (void) unlink(i->fifo_path);
+                i->fifo_path = mfree(i->fifo_path);
 #if 1 /// Close elogind extra if
                 }
 #endif // 1
-                (void) unlink(i->fifo_path);
-                i->fifo_path = mfree(i->fifo_path);
         }
 }
 

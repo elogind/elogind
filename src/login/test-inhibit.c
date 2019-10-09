@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include <unistd.h>
-//#include <fcntl.h>
+#include <fcntl.h>
 
 #include "sd-bus.h"
 

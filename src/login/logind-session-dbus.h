@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "sd-bus.h"
+#include "sd-bus.h"
 
-//#include "logind-session.h"
+#include "logind-session.h"
 
 extern const sd_bus_vtable session_vtable[];
 int session_node_enumerator(sd_bus *bus, const char *path,void *userdata, char ***nodes, sd_bus_error *error);

@@ -7,7 +7,7 @@ typedef enum KillWho KillWho;
 #include "list.h"
 #include "login-util.h"
 #include "logind-user.h"
-//#include "string-util.h"
+#include "string-util.h"
 
 typedef enum SessionState {
         SESSION_OPENING,  /* Session scope is being created */
