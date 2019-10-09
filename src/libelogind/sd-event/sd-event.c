@@ -15,7 +15,7 @@
 #include "hashmap.h"
 #include "list.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "missing.h"
 #include "prioq.h"
 #include "process-util.h"
@@ -23,7 +23,7 @@
 #include "signal-util.h"
 #include "string-table.h"
 #include "string-util.h"
-//#include "strxcpyx.h"
+#include "strxcpyx.h"
 #include "time-util.h"
 
 #define DEFAULT_ACCURACY_USEC (250 * USEC_PER_MSEC)

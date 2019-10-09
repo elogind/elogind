@@ -4,8 +4,8 @@
 
 #include "event-source.h"
 #include "event-util.h"
-//#include "log.h"
-//#include "string-util.h"
+#include "log.h"
+#include "string-util.h"
 
 #if 0 /// UNNEEDED by elogind
 int event_reset_time(

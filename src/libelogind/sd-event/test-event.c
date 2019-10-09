@@ -10,7 +10,7 @@
 #include "log.h"
 #include "macro.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "process-util.h"
 #include "rm-rf.h"
 #include "signal-util.h"
