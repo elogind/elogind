@@ -18,12 +18,12 @@
 #include "fs-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "missing.h"
-//#include "nulstr-util.h"
+#include "missing.h"
+#include "nulstr-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
-//#include "rlimit-util.h"
+#include "rlimit-util.h"
 #include "signal-util.h"
 #include "socket-util.h"
 #include "string-util.h"
@@ -520,8 +520,8 @@ DEFINE_PARSER(double, double, safe_atod);
 DEFINE_PARSER(nsec, nsec_t, parse_nsec);
 #endif // 0
 DEFINE_PARSER(sec, usec_t, parse_sec);
-DEFINE_PARSER(sec_def_infinity, usec_t, parse_sec_def_infinity);
 #if 0 /// UNNEEDED by elogind
+DEFINE_PARSER(sec_def_infinity, usec_t, parse_sec_def_infinity);
 DEFINE_PARSER(mode, mode_t, parse_mode);
 
 int config_parse_iec_size(const char* unit,

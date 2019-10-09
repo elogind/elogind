@@ -3,9 +3,9 @@
 
 //#include <stdbool.h>
 
-//#include "hashmap.h"
-//#include "time-util.h"
-//#include "unit-name.h"
+#include "hashmap.h"
+#include "time-util.h"
+#include "unit-name.h"
 
 typedef enum UnitFileState UnitFileState;
 typedef enum UnitFileScope UnitFileScope;

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "macro.h"
-//#include "sd-bus.h"
+#include "macro.h"
+#include "sd-bus.h"
 
 typedef struct BusWaitForUnits BusWaitForUnits;
 

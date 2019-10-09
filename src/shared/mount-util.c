@@ -9,14 +9,14 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "extract-word.h"
+#include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
 #include "hashmap.h"
 //#include "libmount-util.h"
 #include "mount-util.h"
-//#include "mountpoint-util.h"
+#include "mountpoint-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "set.h"

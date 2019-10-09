@@ -5,7 +5,7 @@
 
 //#include "fdset.h"
 #include "macro.h"
-//#include "time-util.h"
+#include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
 int serialize_item(FILE *f, const char *key, const char *value);

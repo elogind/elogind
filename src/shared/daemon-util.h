@@ -3,7 +3,7 @@
 
 //#include <stdbool.h>
 
-//#include "sd-daemon.h"
+#include "sd-daemon.h"
 
 #define NOTIFY_READY "READY=1\n" "STATUS=Processing requests..."
 #define NOTIFY_STOPPING "STOPPING=1\n" "STATUS=Shutting down..."

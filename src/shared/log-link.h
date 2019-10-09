@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include "log.h"
+#include "log.h"
 
 /*
  * The following macros append INTERFACE= to the message.

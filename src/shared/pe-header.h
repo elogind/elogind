@@ -2,8 +2,8 @@
 
 //#include <inttypes.h>
 
-//#include "macro.h"
-//#include "sparse-endian.h"
+#include "macro.h"
+#include "sparse-endian.h"
 
 struct DosFileHeader {
         uint8_t Magic[2];

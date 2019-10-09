@@ -133,9 +133,9 @@ CONFIG_PARSER_PROTOTYPE(config_parse_path);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_strv);
 CONFIG_PARSER_PROTOTYPE(config_parse_sec);
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_def_infinity);
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_def_unset);
-#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_nsec);
 CONFIG_PARSER_PROTOTYPE(config_parse_mode);
 CONFIG_PARSER_PROTOTYPE(config_parse_warn_compat);

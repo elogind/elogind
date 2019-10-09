@@ -2,7 +2,7 @@
 
 //#include <errno.h>
 
-//#include "module-util.h"
+#include "module-util.h"
 
 int module_load_and_warn(struct kmod_ctx *ctx, const char *module, bool verbose) {
         const int probe_flags = KMOD_PROBE_APPLY_BLACKLIST;

@@ -17,20 +17,20 @@
 //#include <unistd.h>
 
 #include "alloc-util.h"
-//#include "conf-parser.h"
-//#include "def.h"
-//#include "env-util.h"
-//#include "errno-util.h"
+#include "conf-parser.h"
+#include "def.h"
+#include "env-util.h"
+#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-//#include "log.h"
-//#include "macro.h"
+#include "log.h"
+#include "macro.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "sleep-config.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "time-util.h"
+#include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
 int parse_sleep_config(SleepConfig **ret_sleep_config) {
@@ -508,7 +508,13 @@ int can_sleep(const char *verb) {
 
         return can_sleep_internal(verb, true, sleep_config);
 }
+#else
+int can_sleep(Manager *m, const char *verb) {
+        return can_sleep_internal(m, verb, true);
+}
+#endif // 0
 
+#if 0 /// UNNEEDED by elogind
 int sleep_settings(const char *verb, const SleepConfig *sleep_config, bool *ret_allow, char ***ret_modes, char ***ret_states) {
 
         assert(verb);
@@ -538,9 +544,6 @@ int sleep_settings(const char *verb, const SleepConfig *sleep_config, bool *ret_
 
         return 0;
 }
-#else
-int can_sleep(Manager *m, const char *verb) {
-        return can_sleep_internal(m, verb, true);
 
 void free_sleep_config(SleepConfig *sc) {
         if (!sc)

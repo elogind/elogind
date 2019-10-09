@@ -8,7 +8,7 @@
 //#include "spawn-ask-password-agent.h"
 #include "spawn-polkit-agent.h"
 #include "static-destruct.h"
-//#include "util.h"
+#include "util.h"
 
 #if 1 /// elogind has no onw password agent, so do nothing.
 #define ask_password_agent_close() while(0){}

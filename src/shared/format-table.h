@@ -31,8 +31,10 @@ typedef enum TableDataType {
         TABLE_UINT64,
         TABLE_PERCENT,
         TABLE_IFINDEX,
+#if 0 /// UNNEEDED by elogind
         TABLE_IN_ADDR,  /* Takes a union in_addr_union (or a struct in_addr) */
         TABLE_IN6_ADDR, /* Takes a union in_addr_union (or a struct in6_addr) */
+#endif // 0
         _TABLE_DATA_TYPE_MAX,
 
         /* The following are not really data types, but commands for table_add_cell_many() to make changes to
@@ -73,16 +75,14 @@ int table_fill_empty(Table *t, size_t until_column);
 
 #if 0 /// UNNEEDED by elogind
 int table_dup_cell(Table *t, TableCell *cell);
+#endif // 0
 
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width);
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width);
-#endif // 0
 int table_set_weight(Table *t, TableCell *cell, unsigned weight);
 int table_set_align_percent(Table *t, TableCell *cell, unsigned percent);
-#if 0 /// UNNEEDED by elogind
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent);
 int table_set_color(Table *t, TableCell *cell, const char *color);
-#endif // 0
 int table_set_url(Table *t, TableCell *cell, const char *url);
 int table_set_uppercase(Table *t, TableCell *cell, bool b);
 

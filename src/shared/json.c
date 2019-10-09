@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include <errno.h>
-//#include <locale.h>
+#include <locale.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -11,7 +11,7 @@
 #include "sd-messages.h"
 
 #include "alloc-util.h"
-//#include "errno-util.h"
+#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "float.h"
@@ -19,7 +19,7 @@
 #include "json-internal.h"
 #include "json.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "string-table.h"
 #include "string-util.h"
 #include "strv.h"

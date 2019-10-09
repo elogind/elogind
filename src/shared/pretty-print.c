@@ -4,19 +4,19 @@
 #include <errno.h>
 #include <stdio.h>
 
-//#include "alloc-util.h"
-//#include "conf-files.h"
-//#include "def.h"
+#include "alloc-util.h"
+#include "conf-files.h"
+#include "def.h"
 #include "env-util.h"
-//#include "fd-util.h"
-//#include "fileio.h"
+#include "fd-util.h"
+#include "fileio.h"
 #include "pager.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "pretty-print.h"
 #include "string-util.h"
-//#include "strv.h"
+#include "strv.h"
 #include "terminal-util.h"
-//#include "util.h"
+#include "util.h"
 
 static bool urlify_enabled(void) {
         static int cached_urlify_enabled = -1;

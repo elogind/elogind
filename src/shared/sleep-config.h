@@ -2,7 +2,7 @@
 #pragma once
 
 #include <linux/fiemap.h>
-//#include "time-util.h"
+#include "time-util.h"
 
 typedef struct SleepConfig {
         bool allow_suspend;         /* AllowSuspend */
@@ -20,10 +20,12 @@ typedef struct SleepConfig {
         usec_t hibernate_delay_sec; /* HibernateDelaySec */
 } SleepConfig;
 
+#if 0 /// UNNEEDED by elogind
 void free_sleep_config(SleepConfig *sc);
 DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, free_sleep_config);
 
 int sleep_settings(const char *verb, const SleepConfig *sleep_config, bool *ret_allow, char ***ret_modes, char ***ret_states);
+#endif // 0
 
 int read_fiemap(int fd, struct fiemap **ret);
 #if 0 /// UNNEEDED by elogind

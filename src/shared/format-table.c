@@ -7,20 +7,20 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-table.h"
-//#include "format-util.h"
+#include "format-util.h"
 #include "gunicode.h"
 //#include "in-addr-util.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "pager.h"
 #include "parse-util.h"
 #include "pretty-print.h"
-//#include "sort-util.h"
+#include "sort-util.h"
 #include "string-util.h"
-//#include "strxcpyx.h"
+#include "strxcpyx.h"
 #include "terminal-util.h"
 #include "time-util.h"
 #include "utf8.h"
-//#include "util.h"
+#include "util.h"
 
 #define DEFAULT_WEIGHT 100
 
@@ -89,7 +89,9 @@ typedef struct TableData {
                 uint64_t uint64;
                 int percent;        /* we use 'int' as datatype for percent values in order to match the result of parse_percent() */
                 int ifindex;
+#if 0 /// UNNEEDED by elogind
                 union in_addr_union address;
+#endif // 0
                 /* … add more here as we start supporting more cell data types … */
         };
 } TableData;
@@ -269,11 +271,13 @@ static size_t table_data_size(TableDataType type, const void *data) {
         case TABLE_IFINDEX:
                 return sizeof(int);
 
+#if 0 /// UNNEEDED by elogind
         case TABLE_IN_ADDR:
                 return sizeof(struct in_addr);
 
         case TABLE_IN6_ADDR:
                 return sizeof(struct in6_addr);
+#endif // 0
 
         default:
                 assert_not_reached("Uh? Unexpected cell type");
@@ -546,7 +550,6 @@ static TableData *table_get_data(Table *t, TableCell *cell) {
         return t->data[i];
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         int r;
 
@@ -577,7 +580,6 @@ int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         table_get_data(t, cell)->maximum_width = maximum_width;
         return 0;
 }
-#endif // 0
 
 int table_set_weight(Table *t, TableCell *cell, unsigned weight) {
         int r;
@@ -615,7 +617,6 @@ int table_set_align_percent(Table *t, TableCell *cell, unsigned percent) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent) {
         int r;
 
@@ -648,7 +649,6 @@ int table_set_color(Table *t, TableCell *cell, const char *color) {
         table_get_data(t, cell)->color = empty_to_null(color);
         return 0;
 }
-#endif // 0
 
 int table_set_url(Table *t, TableCell *cell, const char *url) {
         _cleanup_free_ char *copy = NULL;
@@ -763,7 +763,9 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         int percent;
                         int ifindex;
                         bool b;
+#if 0 /// UNNEEDED by elogind
                         union in_addr_union address;
+#endif // 0
                 } buffer;
 
                 switch (type) {
@@ -872,6 +874,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         data = &buffer.ifindex;
                         break;
 
+#if 0 /// UNNEEDED by elogind
                 case TABLE_IN_ADDR:
                         buffer.address = *va_arg(ap, union in_addr_union *);
                         data = &buffer.address.in;
@@ -894,6 +897,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         r = table_set_maximum_width(t, last_cell, w);
                         break;
                 }
+#endif // 0
 
                 case TABLE_SET_WEIGHT: {
                         unsigned w = va_arg(ap, unsigned);
@@ -1099,11 +1103,13 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
                 case TABLE_IFINDEX:
                         return CMP(a->ifindex, b->ifindex);
 
+#if 0 /// UNNEEDED by elogind
                 case TABLE_IN_ADDR:
                         return CMP(a->address.in.s_addr, b->address.in.s_addr);
 
                 case TABLE_IN6_ADDR:
                         return memcmp(&a->address.in6, &b->address.in6, FAMILY_ADDRESS_SIZE(AF_INET6));
+#endif // 0
 
                 default:
                         ;
@@ -1395,6 +1401,7 @@ static const char *table_data_format(Table *t, TableData *d) {
                 break;
         }
 
+#if 0 /// UNNEEDED by elogind
         case TABLE_IN_ADDR:
         case TABLE_IN6_ADDR: {
                 _cleanup_free_ char *p = NULL;
@@ -1406,6 +1413,7 @@ static const char *table_data_format(Table *t, TableData *d) {
                 d->formatted = TAKE_PTR(p);
                 break;
         }
+#endif // 0
 
         default:
                 assert_not_reached("Unexpected type?");
@@ -1965,11 +1973,13 @@ static int table_data_to_json(TableData *d, JsonVariant **ret) {
         case TABLE_IFINDEX:
                 return json_variant_new_integer(ret, d->ifindex);
 
+#if 0 /// UNNEEDED by elogind
         case TABLE_IN_ADDR:
                 return json_variant_new_array_bytes(ret, &d->address, FAMILY_ADDRESS_SIZE(AF_INET));
 
         case TABLE_IN6_ADDR:
                 return json_variant_new_array_bytes(ret, &d->address, FAMILY_ADDRESS_SIZE(AF_INET6));
+#endif // 0
 
         default:
                 return -EINVAL;

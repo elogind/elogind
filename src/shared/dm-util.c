@@ -3,9 +3,9 @@
 //#include <string.h>
 //#include <sys/ioctl.h>
 
-//#include "dm-util.h"
-//#include "fd-util.h"
-//#include "string-util.h"
+#include "dm-util.h"
+#include "fd-util.h"
+#include "string-util.h"
 
 int dm_deferred_remove(const char *name) {
 

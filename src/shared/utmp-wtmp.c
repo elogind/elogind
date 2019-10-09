@@ -16,7 +16,7 @@
 #include "fd-util.h"
 #include "hostname-util.h"
 #include "macro.h"
-//#include "memory-util.h"
+#include "memory-util.h"
 #include "path-util.h"
 #include "string-util.h"
 #include "terminal-util.h"
