@@ -29,6 +29,7 @@
 #include "logind-acl.h"
 #include "util.h"
 /// Additional includes needed by elogind
+#include <string.h>
 #include "musl_missing.h"
 
 /*
