@@ -5,33 +5,33 @@
 ***/
 
 #include <errno.h>
-//#include <fcntl.h>
+#include <fcntl.h>
 #include <getopt.h>
 #include <linux/fiemap.h>
-//#include <poll.h>
+#include <poll.h>
 #include <stdio.h>
-//#include <sys/stat.h>
-//#include <sys/types.h>
-//#include <sys/timerfd.h>
-//#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/timerfd.h>
+#include <unistd.h>
 
 #include "sd-messages.h"
 
 //#include "btrfs-util.h"
 #include "def.h"
-//#include "exec-util.h"
+#include "exec-util.h"
 #include "fd-util.h"
-//#include "format-util.h"
+#include "format-util.h"
 #include "fileio.h"
-//#include "log.h"
-//#include "main-func.h"
+#include "log.h"
+#include "main-func.h"
 #include "parse-util.h"
-//#include "pretty-print.h"
+#include "pretty-print.h"
 #include "sleep-config.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "time-util.h"
+#include "time-util.h"
 #include "util.h"
 
 /// Additional includes needed by elogind
@@ -102,9 +102,11 @@ static int write_hibernate_location_info(void) {
         if (r < 0)
                 return log_debug_errno(errno, "Unable to stat %s: %m", device);
 
+#if 0 /// UNNEEDED by elogind
         r = btrfs_is_filesystem(fd);
         if (r < 0)
                 return log_error_errno(r, "Error checking %s for Btrfs filesystem: %m", device);
+#endif // 0
 
         if (r)
                 return log_debug_errno(SYNTHETIC_ERRNO(EOPNOTSUPP),
@@ -190,7 +192,6 @@ static int configure_hibernation(void) {
         if (r < 0)
                 return log_debug_errno(r, "Error reading from /sys/power/resume_offset: %m");
 
-#if 0 /// elogind uses the values stored in its manager instance
         if (!streq(resume_offset, "0") && !streq(resume, "0:0")) {
                 log_debug("Hibernating using device id and offset read from /sys/power/resume: %s and /sys/power/resume_offset: %s", resume, resume_offset);
                 return 0;
@@ -204,9 +205,11 @@ static int configure_hibernation(void) {
         return write_hibernate_location_info();
 }
 
+#if 0 /// elogind uses the values stored in its manager instance
 static int execute(char **modes, char **states) {
 #else
 static int execute(Manager *m, const char *verb) {
+#endif // 0
         assert(m);
 
         int e;
@@ -216,20 +219,9 @@ static int execute(Manager *m, const char *verb) {
                 [STDOUT_COLLECT] = m,
                 [STDOUT_CONSUME] = m,
         };
-static int configure_hibernation(void) {
-        _cleanup_free_ char *resume = NULL, *resume_offset = NULL;
-        int r;
 
         if (verb)
                 arg_verb = (char*)verb;
-        /* check for proper hibernation configuration */
-        r = read_one_line_file("/sys/power/resume", &resume);
-        if (r < 0)
-                return log_debug_errno(r, "Error reading from /sys/power/resume: %m");
-
-        r = read_one_line_file("/sys/power/resume_offset", &resume_offset);
-        if (r < 0)
-                return log_debug_errno(r, "Error reading from /sys/power/resume_offset: %m");
 
         char **modes  = streq(arg_verb, "suspend")   ? m->suspend_mode     :
                         streq(arg_verb, "hibernate") ? m->hibernate_mode   :
@@ -237,7 +229,7 @@ static int configure_hibernation(void) {
         char **states = streq(arg_verb, "suspend")   ? m->suspend_state     :
                         streq(arg_verb, "hibernate") ? m->hibernate_state   :
                                                        m->hybrid_sleep_state;
-#endif // 0
+
         char *arguments[] = {
                 NULL,
                 (char*) "pre",
@@ -277,7 +269,7 @@ static int configure_hibernation(void) {
         m->callback_failed = false;
         m->callback_must_succeed = m->allow_suspend_interrupts;
 
-        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments, NULL);
+        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments, NULL, EXEC_DIR_NONE);
 
         if ( m->callback_must_succeed && ((r < 0) || m->callback_failed) ) {
                 e = asprintf(&l, "A sleep script in %s failed! [%d]\n"
@@ -347,20 +339,27 @@ static int execute_s2h(Manager *m) {
         if (tfd < 0)
                 return log_error_errno(errno, "Error creating timerfd: %m");
 
+#if 0 /// elogind uses the values from its manager
         log_debug("Set timerfd wake alarm for %s",
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
         timespec_store(&ts.it_value, sleep_config->hibernate_delay_sec);
-
-#if 0 /// elogind uses its manager instance values
-        r = timerfd_settime(tfd, 0, &ts, NULL);
 #else
-        r = execute(m, "suspend");
+        log_debug("Set timerfd wake alarm for %s",
+                  format_timespan(buf, sizeof(buf), hibernate_delay_sec, USEC_PER_SEC));
+
+        timespec_store(&ts.it_value, hibernate_delay_sec);
 #endif // 0
+
+        r = timerfd_settime(tfd, 0, &ts, NULL);
         if (r < 0)
                 return log_error_errno(errno, "Error setting hibernate timer: %m");
 
+#if 0 /// elogind uses its manager instance values
         r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
+#else
+        r = execute(m, "suspend");
+#endif // 0
         if (r < 0)
                 return r;
 
@@ -384,6 +383,8 @@ static int execute_s2h(Manager *m) {
 
         r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #else
+                  format_timespan(buf, sizeof(buf), hibernate_delay_sec, USEC_PER_SEC));
+
         r = execute(m, "hibernate");
 #endif // 0
         if (r < 0) {
