@@ -6,7 +6,7 @@
 #include <sys/types.h>
 
 #include "sd-id128.h"
-//#include "sd-journal.h"
+#include "sd-journal.h"
 
 #include "hashmap.h"
 #include "journal-def.h"

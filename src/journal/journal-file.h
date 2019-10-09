@@ -15,7 +15,7 @@
 #include "journal-def.h"
 #include "mmap-cache.h"
 #include "sparse-endian.h"
-//#include "time-util.h"
+#include "time-util.h"
 
 typedef struct JournalMetrics {
         /* For all these: -1 means "pick automatically", and 0 means "no limit enforced" */
