@@ -23,13 +23,10 @@
 #include "fs-util.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "socket-util.h"
 #include "strv.h"
 #include "util.h"
-
-/// Additional includes needed by elogind
-#include "process-util.h"
 
 #define SNDBUF_SIZE (8*1024*1024)
 

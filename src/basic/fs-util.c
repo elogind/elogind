@@ -21,7 +21,7 @@
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
@@ -29,9 +29,6 @@
 //#include "time-util.h"
 #include "user-util.h"
 #include "util.h"
-
-/// Additional includes needed by elogind
-#include "process-util.h"
 
 int unlink_noerrno(const char *path) {
         PROTECT_ERRNO;

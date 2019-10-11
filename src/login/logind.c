@@ -23,7 +23,7 @@
 #include "fs-util.h"
 #include "logind.h"
 #include "parse-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "selinux-util.h"
 #include "signal-util.h"
 #include "strv.h"
@@ -32,8 +32,6 @@
 #include "cgroup.h"       // From src/core/
 #include "label.h"
 #include "musl_missing.h"
-#include "process-util.h"
-#include "cgroup-util.h"
 
 static Manager* manager_unref(Manager *m);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Manager*, manager_unref);

@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 
 #include <stdlib.h>
-//#include <elogind/sd-event.h>
-//#include <glib.h>
 #include <glib.h>
 #include <systemd/sd-event.h>
 
