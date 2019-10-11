@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '239',
+        version : '239.5',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -1983,6 +1983,7 @@ test_dlopen = executable(
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
+# endif
 #else
 
 if conf.get('HAVE_PAM') == 1
