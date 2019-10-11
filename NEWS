@@ -74,7 +74,6 @@ CHANGES WITH 239:
           screen resolution for HiDPI systems, and now provides loader
           configuration settings to change the resolution explicitly.
 
-        * The elogind-resolve tool has been renamed to resolvectl (it also
         * elogind-resolved now supports DNS-over-TLS. It's still
           turned off by default, use DNSOverTLS=opportunistic to turn it on in
           resolved.conf. We intend to make this the default as soon as couple
@@ -85,6 +84,7 @@ CHANGES WITH 239:
           DynamicUser=yes. The users elogind-resolve and elogind-network are
           not created by elogind-sysusers.
 
+        * The systemd-resolve tool has been renamed to resolvectl (it also
           remains available under the old name, for compatibility), and its
           interface is now verb-based, similar in style to the other <xyz>ctl
           tools, such as systemctl or loginctl.
@@ -228,12 +228,12 @@ CHANGES WITH 239:
         * elogind-timesyncd gained a bus interface on which it exposes details
           about its state.
 
-        * elogind-nspawn gained a new --rlimit= switch for setting initial
         * A new environment variable $SYSTEMD_TIMEDATED_NTP_SERVICES is now
           understood by elogind-timedated. It takes a colon-separated list of
           unit names of NTP client services. The list is used by
           "timedatectl set-ntp".
 
+        * systemd-nspawn gained a new --rlimit= switch for setting initial
           resource limits for the container payload. There's a new switch
           --hostname= to explicitly override the container's hostname. A new
           --no-new-privileges= switch may be used to control the
