@@ -68,12 +68,12 @@ msgstr ""
 # "del gestor de serveis o del sistema."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
-# msgid "Reload the elogind state"
-# msgstr "Torna a carregar l'estat de elogind"
+# msgid "Reload the systemd state"
+# msgstr "Torna a carregar l'estat de systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Authentication is required to reload the elogind state."
-# msgstr "Es requereix autenticació per tornar a carregar l'estat de elogind."
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "Es requereix autenticació per tornar a carregar l'estat de systemd."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22
 # msgid "Set host name"

@@ -31,21 +31,21 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
 # msgid "Manage system services or other units"
-# msgstr "Керувати системними службами й іншими одиницями elogind"
+# msgstr "Керувати системними службами й іншими одиницями systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:34
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
-# "Потрібна автентифікація, щоб керувати системними службами й іншими одиницями elogind."
+# "Потрібна автентифікація, щоб керувати системними службами й іншими одиницями systemd."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:43
 # msgid "Manage system service or unit files"
-# msgstr "Керувати системними службами й одиницями elogind"
+# msgstr "Керувати системними службами й одиницями systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:44
 # msgid "Authentication is required to manage system service or unit files."
 # msgstr ""
-# "Потрібна автентифікація, щоб керувати системними службами й одиницями elogind."
+# "Потрібна автентифікація, щоб керувати системними службами й одиницями systemd."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:53
 # msgid "Set or unset system and service manager environment variables"
@@ -61,11 +61,11 @@ msgstr ""
 # "керування службами і системою."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
-# msgid "Reload the elogind state"
+# msgid "Reload the systemd state"
 # msgstr "Перезапустити стан системи"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Authentication is required to reload the elogind state."
+# msgid "Authentication is required to reload the systemd state."
 # msgstr "Потрібна автентифікація, щоб перезапустити стан системи."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22

@@ -61,13 +61,13 @@ msgstr ""
 # "пройти аутентификацию."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Reload the elogind state"
-# msgstr "Перечитать конфигурацию elogind"
+# msgid "Reload the systemd state"
+# msgstr "Перечитать конфигурацию systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
-# msgid "Authentication is required to reload the elogind state."
+# msgid "Authentication is required to reload the systemd state."
 # msgstr ""
-# "Чтобы заставить elogind перечитать конфигурацию, необходимо пройти "
+# "Чтобы заставить systemd перечитать конфигурацию, необходимо пройти "
 # "аутентификацию."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22

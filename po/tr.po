@@ -64,12 +64,12 @@ msgstr ""
 # "kimlik doğrulaması gerektiriyor."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
-# msgid "Reload the elogind state"
-# msgstr "elogind durumunu yeniden yükle"
+# msgid "Reload the systemd state"
+# msgstr "systemd durumunu yeniden yükle"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Authentication is required to reload the elogind state."
-# msgstr "elogind durumunu yeniden yüklemek kimlik doğrulaması gerektiriyor."
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "systemd durumunu yeniden yüklemek kimlik doğrulaması gerektiriyor."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22
 # msgid "Set host name"

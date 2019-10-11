@@ -65,11 +65,11 @@ msgstr ""
 # "gestione dei servizi e del sistema"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:63
-# msgid "Reload the elogind state"
-# msgstr "Ricarica lo stato di elogind"
+# msgid "Reload the systemd state"
+# msgstr "Ricarica lo stato di systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Authentication is required to reload the elogind state."
+# msgid "Authentication is required to reload the systemd state."
 # msgstr "Autenticazione richiesta per riavviare lo stato di sistemd."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:22

@@ -63,12 +63,12 @@ msgstr ""
 # "d'environnement du système ou du gestionnaire de services."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Reload the elogind state"
-# msgstr "Recharger l'état de elogind"
+# msgid "Reload the systemd state"
+# msgstr "Recharger l'état de systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
-# msgid "Authentication is required to reload the elogind state."
-# msgstr "Authentification requise pour recharger l'état de elogind"
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "Authentification requise pour recharger l'état de systemd"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:20
 # msgid "Set host name"

@@ -66,12 +66,12 @@ msgstr ""
 # "menedżera systemu i usług."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# msgid "Reload the elogind state"
-# msgstr "Ponowne wczytanie stanu elogind"
+# msgid "Reload the systemd state"
+# msgstr "Ponowne wczytanie stanu systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
-# msgid "Authentication is required to reload the elogind state."
-# msgstr "Wymagane jest uwierzytelnienie, aby ponownie wczytać stan elogind."
+# msgid "Authentication is required to reload the systemd state."
+# msgstr "Wymagane jest uwierzytelnienie, aby ponownie wczytać stan systemd."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:20
 # msgid "Set host name"
