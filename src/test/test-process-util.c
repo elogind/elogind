@@ -76,9 +76,11 @@ static void test_get_process_comm(pid_t pid) {
 #if 0 /// UNNEEDED by elogind
         assert_se(get_process_uid(pid, &u) == 0);
         log_info("PID"PID_FMT" UID: "UID_FMT, pid, u);
+        assert_se(u == 0 || pid != 1);
 
         assert_se(get_process_gid(pid, &g) == 0);
         log_info("PID"PID_FMT" GID: "GID_FMT, pid, g);
+        assert_se(g == 0 || pid != 1);
 
         r = get_process_environ(pid, &env);
         assert_se(r >= 0 || r == -EACCES);
@@ -415,17 +417,12 @@ static void test_rename_process_now(const char *p, int ret) {
         log_info("comm = <%s>", comm);
         assert_se(strneq(comm, p, TASK_COMM_LEN-1));
 
-        r = get_process_cmdline(0, 0, false, &cmdline);
-        assert_se(r >= 0);
+        assert_se(get_process_cmdline(0, 0, false, &cmdline) >= 0);
         /* we cannot expect cmdline to be renamed properly without privileges */
         if (geteuid() == 0) {
-                if (r == 0 && detect_container() > 0)
-                        log_info("cmdline = <%s> (not verified, Running in unprivileged container?)", cmdline);
-                else {
-                        log_info("cmdline = <%s>", cmdline);
-                        assert_se(strneq(p, cmdline, STRLEN("test-process-util")));
-                        assert_se(startswith(p, cmdline));
-                }
+                log_info("cmdline = <%s>", cmdline);
+                assert_se(strneq(p, cmdline, STRLEN("test-process-util")));
+                assert_se(startswith(p, cmdline));
         } else
                 log_info("cmdline = <%s> (not verified)", cmdline);
 }
