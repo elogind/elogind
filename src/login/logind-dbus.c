@@ -20,6 +20,7 @@
 #include "device-util.h"
 #include "dirent-util.h"
 #include "efivars.h"
+#include "efi-loader.h"
 #include "env-util.h"
 #include "escape.h"
 #include "fd-util.h"
@@ -191,7 +192,6 @@ int manager_get_seat_from_creds(
         int r;
 
         assert(m);
-        assert(message);
         assert(ret);
 
         if (SEAT_IS_SELF(name) || SEAT_IS_AUTO(name)) {
