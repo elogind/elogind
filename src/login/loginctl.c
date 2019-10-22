@@ -56,7 +56,7 @@ static unsigned arg_lines = 10;
 #else
 /// Instead we need this:
 extern BusTransport arg_transport;
-static char *arg_host = NULL;
+static char *arg_host;
 extern bool arg_ask_password;
 extern bool arg_dry_run;
 extern bool arg_quiet;
@@ -64,6 +64,9 @@ extern bool arg_no_wall;
 extern usec_t arg_when;
 extern bool arg_ignore_inhibitors;
 extern elogind_action arg_action;
+extern bool arg_firmware_setup;
+extern usec_t arg_boot_loader_menu;
+extern const char* arg_boot_loader_entry;
 #endif // 0
 static OutputMode arg_output = OUTPUT_SHORT;
 
@@ -1360,6 +1363,13 @@ static int help(int argc, char *argv[], void *userdata) {
                "                             short-monotonic, short-unix, verbose, export,\n"
                "                             json, json-pretty, json-sse, json-seq, cat,\n"
                "                             with-unit)\n"
+#if 1 /// As elogind can reboot, it allows to control the reboot process
+               "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
+               "     --boot-loader-menu=TIME\n"
+               "                           Boot into boot loader menu on next boot\n"
+               "     --boot-loader-entry=NAME\n"
+               "                           Boot into a specific boot loader entry on next boot\n"
+#endif // 1
                "Session Commands:\n"
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
                "  list-sessions            List sessions\n"
@@ -1424,6 +1434,11 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_NO_LEGEND,
                 ARG_KILL_WHO,
                 ARG_NO_ASK_PASSWORD,
+#if 1 /// elogind supports controlling the reboot process
+                ARG_FIRMWARE_SETUP,
+                ARG_BOOT_LOADER_MENU,
+                ARG_BOOT_LOADER_ENTRY,
+#endif // 1
         };
 
         static const struct option options[] = {
@@ -1452,6 +1467,11 @@ static int parse_argv(int argc, char *argv[]) {
                 /// elogind allows to ignore inhibitors for system commands.
                 { "ignore-inhibitors", no_argument,     NULL, 'i'                 },
 #endif // 0
+#if 1 /// elogind supports controlling the reboot process
+                { "firmware-setup",    no_argument,       NULL, ARG_FIRMWARE_SETUP      },
+                { "boot-loader-menu",  required_argument, NULL, ARG_BOOT_LOADER_MENU    },
+                { "boot-loader-entry", required_argument, NULL, ARG_BOOT_LOADER_ENTRY   },
+#endif // 1
                 {}
         };
 
@@ -1572,13 +1592,30 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_transport = BUS_TRANSPORT_MACHINE;
                         arg_host = optarg;
                         break;
-#if 1 /// elogind can cancel shutdowns and allows to ignore inhibitors
+#if 1 /// elogind can cancel shutdowns, allows to ignore inhibitors and can controll the reboot process
                 case 'c':
                         arg_action = ACTION_CANCEL_SHUTDOWN;
                         break;
 
                 case 'i':
                         arg_ignore_inhibitors = true;
+                        break;
+
+                case ARG_FIRMWARE_SETUP:
+                        arg_firmware_setup = true;
+                        break;
+
+                case ARG_BOOT_LOADER_MENU:
+
+                        r = parse_sec(optarg, &arg_boot_loader_menu);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to parse --boot-loader-menu= argument '%s': %m", optarg);
+
+                        break;
+
+                case ARG_BOOT_LOADER_ENTRY:
+
+                        arg_boot_loader_entry = empty_to_null(optarg);
                         break;
 #endif // 1
                 case '?':

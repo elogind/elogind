@@ -24,6 +24,7 @@
 #include "logind-action.h"
 #include "parse-util.h"
 #include "process-util.h"
+#include "reboot-util.h"
 #include "sd-login.h"
 #include "sd-messages.h"
 #include "spawn-polkit-agent.h"
@@ -43,6 +44,9 @@ bool           arg_no_wall           = false;
 BusTransport   arg_transport         = BUS_TRANSPORT_LOCAL;
 char**         arg_wall              = NULL;
 usec_t         arg_when              = 0;
+bool           arg_firmware_setup    = false;
+usec_t         arg_boot_loader_menu  = USEC_INFINITY;
+const char*    arg_boot_loader_entry = NULL;
 
 static const struct {
         HandleAction action;
@@ -463,6 +467,35 @@ static int elogind_set_wall_message(sd_bus* bus, const char* msg) {
 }
 
 /* Original:
+ * systemctl/systemctl.c:7956:help_boot_loader_entry()
+ */
+static int help_boot_loader_entry(sd_bus *bus) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_free_ char **l = NULL;
+        char **i;
+        int r;
+
+        r = sd_bus_get_property_strv(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "BootLoaderEntries",
+                        &error,
+                        &l);
+        if (r < 0)
+                return log_error_errno(r, "Failed to enumerate boot loader entries: %s", bus_error_message(&error, r));
+
+        if (strv_isempty(l))
+                return log_error_errno(SYNTHETIC_ERRNO(ENODATA), "No boot loader entries discovered.");
+
+        STRV_FOREACH(i, l)
+                puts(*i);
+
+        return 0;
+}
+
+/* Original:
  * systemctl/systemctl.c:7743:parse_shutdown_time_spec()
  */
 static int parse_shutdown_time_spec(const char *t, usec_t *_u) {
@@ -510,6 +543,92 @@ static int parse_shutdown_time_spec(const char *t, usec_t *_u) {
                 while (*_u <= n)
                         *_u += USEC_PER_DAY;
         }
+
+        return 0;
+}
+
+/* Original:
+ * systemctl/systemctl.c:3383:prepare_firmware_setup()
+**/
+static int prepare_firmware_setup(sd_bus* bus) {
+
+        if (!arg_firmware_setup)
+                return 0;
+
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r;
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "SetRebootToFirmwareSetup",
+                        &error,
+                        NULL,
+                        "b", true);
+        if (r < 0)
+                return log_error_errno(r, "Cannot indicate to EFI to boot into setup mode: %s", bus_error_message(&error, r));
+
+        return 0;
+}
+
+/* Original:
+ * systemctl/systemctl.c:3416:prepare_boot_loader_menu()
+**/
+static int prepare_boot_loader_menu(sd_bus* bus) {
+
+        if (arg_boot_loader_menu == USEC_INFINITY)
+                return 0;
+
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r;
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "SetRebootToBootLoaderMenu",
+                        &error,
+                        NULL,
+                        "t", arg_boot_loader_menu);
+        if (r < 0)
+                return log_error_errno(r, "Cannot indicate to boot loader to enter boot loader entry menu: %s", bus_error_message(&error, r));
+
+        return 0;
+}
+
+/* Original:
+ * systemctl/systemctl.c:3449:prepare_boot_loader_entry()
+**/
+static int prepare_boot_loader_entry(sd_bus* bus) {
+
+        if (!arg_boot_loader_entry)
+                return 0;
+
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r;
+
+        if (streq(optarg, "help")) { /* Yes, this means, "help" is not a valid boot loader entry name we can deal with */
+                r = help_boot_loader_entry(bus);
+                if (r < 0)
+                        return r;
+
+                return 1; // no execution after asking for help
+        }
+
+        r = sd_bus_call_method(
+                        bus,
+                        "org.freedesktop.login1",
+                        "/org/freedesktop/login1",
+                        "org.freedesktop.login1.Manager",
+                        "SetRebootToBootLoaderEntry",
+                        &error,
+                        NULL,
+                        "s", arg_boot_loader_entry);
+        if (r < 0)
+                return log_error_errno(r, "Cannot set boot into loader entry '%s': %s", arg_boot_loader_entry, bus_error_message(&error, r));
 
         return 0;
 }
@@ -575,6 +694,26 @@ int start_special(int argc, char *argv[], void *userdata) {
         r = check_inhibitors(bus, a);
         if (r < 0)
                 return r;
+
+        r = prepare_firmware_setup(bus);
+        if (r < 0)
+                return r;
+
+        r = prepare_boot_loader_menu(bus);
+        if (r < 0)
+                return r;
+
+        r = prepare_boot_loader_entry(bus);
+        if (r < 0)
+                return r;
+        if (r > 0)
+                return 0; // Asked for help, no execution, then
+
+        if (a == ACTION_REBOOT && argc > 1) {
+                r = update_reboot_parameter_and_warn(argv[1], false);
+                if (r < 0)
+                        return r;
+        }
 
         /* Perform requested action */
         if (IN_SET(a,
