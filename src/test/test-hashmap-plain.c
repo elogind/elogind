@@ -1033,6 +1033,7 @@ static void test_path_hashmap(void) {
         assert_se(!hashmap_get(h, "/foo////bar////quux/////"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_string_strv_hashmap(void) {
         _cleanup_hashmap_free_ Hashmap *m = NULL;
         char **s;
@@ -1059,14 +1060,11 @@ static void test_string_strv_hashmap(void) {
         s = hashmap_get(m, "xxx");
         assert_se(strv_equal(s, STRV_MAKE("bar", "BAR")));
 }
+#endif // 0
 
 void test_hashmap_funcs(void) {
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         log_info("/************ %s ************/", __func__);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         test_hashmap_copy();
         test_hashmap_get_strv();
         test_hashmap_move_one();
@@ -1099,5 +1097,7 @@ void test_hashmap_funcs(void) {
         test_hashmap_clear_free_with_destructor();
         test_hashmap_reserve();
         test_path_hashmap();
+#if 0 /// UNNEEDED by elogind
         test_string_strv_hashmap();
+#endif // 0
 }

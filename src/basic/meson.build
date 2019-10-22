@@ -282,6 +282,7 @@ basic_sources = files('''
         fd-util.h
         fileio.c
         fileio.h
+        format-util.c
         format-util.h
         fs-util.c
         fs-util.h
@@ -301,6 +302,8 @@ basic_sources = files('''
         khash.h
         label.c
         label.h
+        limits-util.c
+        limits-util.h
         list.h
         locale-util.c
         locale-util.h
