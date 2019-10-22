@@ -209,6 +209,7 @@ int path_make_relative(const char *from_dir, const char *to_path, char **_r) {
         *_r = r;
         return 0;
 }
+#endif // 0
 
 char* path_startswith_strv(const char *p, char **set) {
         char **s, *t;
@@ -222,6 +223,7 @@ char* path_startswith_strv(const char *p, char **set) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 int path_strv_make_absolute_cwd(char **l) {
         char **s;
         int r;
