@@ -371,7 +371,6 @@ basic_sources = files('''
         random-util.c
         random-util.h
         raw-clone.h
-        raw-reboot.h
         refcnt.h
         rlimit-util.c
         rlimit-util.h

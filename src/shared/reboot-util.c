@@ -51,6 +51,7 @@ int read_reboot_parameter(char **parameter) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int reboot_with_parameter(RebootFlags flags) {
         int r;
 
@@ -96,3 +97,4 @@ int reboot_with_parameter(RebootFlags flags) {
 
         return log_full_errno(flags & REBOOT_LOG ? LOG_ERR : LOG_DEBUG, errno, "Failed to reboot: %m");
 }
+#endif // 0

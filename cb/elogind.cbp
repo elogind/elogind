@@ -424,7 +424,6 @@
 		</Unit>
 		<Unit filename="../src/basic/random-util.h" />
 		<Unit filename="../src/basic/raw-clone.h" />
-		<Unit filename="../src/basic/raw-reboot.h" />
 		<Unit filename="../src/basic/refcnt.h" />
 		<Unit filename="../src/basic/rlimit-util.c">
 			<Option compilerVar="CC" />
