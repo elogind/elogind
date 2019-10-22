@@ -403,10 +403,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/path-util.h" />
-		<Unit filename="../src/basic/plymouth-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/basic/plymouth-util.h" />
 		<Unit filename="../src/basic/prioq.c">
 			<Option compilerVar="CC" />
 		</Unit>
