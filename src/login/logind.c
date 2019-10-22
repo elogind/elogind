@@ -21,7 +21,7 @@
 #include "logind.h"
 #include "main-func.h"
 #include "parse-util.h"
-//#include "process-util.h"
+#include "process-util.h"
 #include "selinux-util.h"
 #include "signal-util.h"
 #include "strv.h"
