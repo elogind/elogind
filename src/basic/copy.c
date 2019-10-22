@@ -13,6 +13,10 @@
 //#include <time.h>
 //#include <unistd.h>
 
+#ifndef __GLIBC__ /// elogind has to include <signal.h> for musl-based systems
+#include <signal.h>
+#endif // __GLIBC__
+
 #include "alloc-util.h"
 //#include "btrfs-util.h"
 //#include "chattr-util.h"
