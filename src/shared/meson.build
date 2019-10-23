@@ -190,6 +190,8 @@
 #         watchdog.h
 #         web-util.c
 #         web-util.h
+#         wifi-util.c
+#         wifi-util.h
 #         xml.c
 #         xml.h
 # '''.split())
