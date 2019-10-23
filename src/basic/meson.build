@@ -162,7 +162,6 @@
 #         parse-util.h
 #         path-util.c
 #         path-util.h
-#         plymouth-util.c
 #         plymouth-util.h
 #         prioq.c
 #         prioq.h
