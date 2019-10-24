@@ -6,6 +6,7 @@
 #include "macro.h"
 #include "path-lookup.h"
 #include "set.h"
+#include "special.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -302,7 +303,7 @@ int unit_file_build_name_map(
                                 }
 
                                 /* Get rid of "." and ".." components in target path */
-                                r = chase_symlinks(target, lp->root_dir, CHASE_NOFOLLOW | CHASE_NONEXISTENT, &simplified);
+                                r = chase_symlinks(target, lp->root_dir, CHASE_NOFOLLOW | CHASE_NONEXISTENT, &simplified, NULL);
                                 if (r < 0) {
                                         log_warning_errno(r, "Failed to resolve symlink %s pointing to %s, ignoring: %m",
                                                           filename, target);
@@ -511,4 +512,48 @@ int unit_file_find_fragment(
 
         // FIXME: if instance, consider any unit names with different template name
         return 0;
+}
+
+static const char * const rlmap[] = {
+        "emergency", SPECIAL_EMERGENCY_TARGET,
+        "-b",        SPECIAL_EMERGENCY_TARGET,
+        "rescue",    SPECIAL_RESCUE_TARGET,
+        "single",    SPECIAL_RESCUE_TARGET,
+        "-s",        SPECIAL_RESCUE_TARGET,
+        "s",         SPECIAL_RESCUE_TARGET,
+        "S",         SPECIAL_RESCUE_TARGET,
+        "1",         SPECIAL_RESCUE_TARGET,
+        "2",         SPECIAL_MULTI_USER_TARGET,
+        "3",         SPECIAL_MULTI_USER_TARGET,
+        "4",         SPECIAL_MULTI_USER_TARGET,
+        "5",         SPECIAL_GRAPHICAL_TARGET,
+        NULL
+};
+
+static const char * const rlmap_initrd[] = {
+        "emergency", SPECIAL_EMERGENCY_TARGET,
+        "rescue",    SPECIAL_RESCUE_TARGET,
+        NULL
+};
+
+const char* runlevel_to_target(const char *word) {
+        const char * const *rlmap_ptr;
+        size_t i;
+
+        if (!word)
+                return NULL;
+
+        if (in_initrd()) {
+                word = startswith(word, "rd.");
+                if (!word)
+                        return NULL;
+        }
+
+        rlmap_ptr = in_initrd() ? rlmap_initrd : rlmap;
+
+        for (i = 0; rlmap_ptr[i]; i += 2)
+                if (streq(word, rlmap_ptr[i]))
+                        return rlmap_ptr[i+1];
+
+        return NULL;
 }
