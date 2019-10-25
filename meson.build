@@ -962,8 +962,8 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 
 #if 0 /// UNNEEDED by elogind
 # service_watchdog = get_option('service-watchdog')
-# substs.set('SERVICE_WATCHDOG',
-#            service_watchdog == '' ? '' : 'WatchdogSec=' + service_watchdog)
+# watchdog_value = service_watchdog == '' ? '' : 'WatchdogSec=' + service_watchdog
+# substs.set('SERVICE_WATCHDOG', watchdog_value)
 #
 # substs.set('SUSHELL', get_option('debug-shell'))
 # substs.set('DEBUGTTY', get_option('debug-tty'))
@@ -3499,6 +3499,7 @@ run_target(
         command : [meson_check_api_docs_sh, libelogind.full_path()])
 #endif // 0
 ############################################################
+watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
 
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
@@ -3562,7 +3563,7 @@ status = [
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
 #         'default locale:                    @0@'.format(default_locale),
-#         'systemd service watchdog:          @0@'.format(service_watchdog == '' ? 'disabled' : service_watchdog)]
+#         'systemd service watchdog:          @0@'.format(watchdog_opt)]
 #else
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
 #endif // 0
