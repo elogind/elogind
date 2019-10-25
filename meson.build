@@ -961,6 +961,10 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 
 #if 0 /// UNNEEDED by elogind
+# service_watchdog = get_option('service-watchdog')
+# substs.set('SERVICE_WATCHDOG',
+#            service_watchdog == '' ? '' : 'WatchdogSec=' + service_watchdog)
+#
 # substs.set('SUSHELL', get_option('debug-shell'))
 # substs.set('DEBUGTTY', get_option('debug-tty'))
 # conf.set_quoted('DEBUGTTY', get_option('debug-tty'))
@@ -3557,7 +3561,8 @@ status = [
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
-#         'default locale:                    @0@'.format(default_locale)]
+#         'default locale:                    @0@'.format(default_locale),
+#         'systemd service watchdog:          @0@'.format(service_watchdog == '' ? 'disabled' : service_watchdog)]
 #else
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
 #endif // 0

@@ -20,8 +20,8 @@ option('rootprefix', type : 'string',
 #endif // 0
 option('static-libelogind', type : 'combo',
        choices : ['false', 'true', 'pic', 'no-pic'],
-       description : '''install a static library for libelogind''')
 #if 0 /// UNNEEDED by elogind
+#        description : '''install a static library for libsystemd''')
 # option('static-libudev', type : 'combo',
 #        choices : ['false', 'true', 'pic', 'no-pic'],
 #        description : '''install a static library for libudev''')
@@ -75,6 +75,8 @@ option('nologin-path', type : 'string', description : 'path to nologin')
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
 #        description : 'specify the tty device for debug shell')
+# option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache', 'siphash'], value : [],
+#        description : 'enable extra debugging')
 #else
 option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache', 'siphash'], value : [],
        description : 'enable extra debugging')
@@ -269,6 +271,8 @@ option('gshadow', type : 'boolean',
        description : 'support for shadow group')
 option('default-locale', type : 'string', value : '',
        description : 'default locale used when /etc/locale.conf does not exist')
+option('service-watchdog', type : 'string', value : '3min',
+       description : 'default watchdog setting for elogind services')
 
 #if 0 /// UNNEEDED by elogind
 # option('default-dnssec', type : 'combo',
