@@ -30,8 +30,7 @@
 #include "journal-file.h"
 #include "journal-internal.h"
 #include "list.h"
-//#include "lookup3.h"
-#include "missing.h"
+#include "lookup3.h"
 #include "nulstr-util.h"
 #include "path-util.h"
 #include "process-util.h"
@@ -2344,6 +2343,11 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
 
                                 return 0;
                         }
+                        return -EPROTONOSUPPORT;
+#endif
+                } else if (l >= field_length+1 &&
+                           memcmp(o->data.payload, field, field_length) == 0 &&
+                           o->data.payload[field_length] == '=') {
 #else
                         return -EPROTONOSUPPORT;
 #endif
@@ -2366,6 +2370,7 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
                 }
 
                 r = journal_file_move_to_object(f, OBJECT_ENTRY, f->current_offset, &o);
+        }
                 if (r < 0)
                         return r;
         }
@@ -2377,6 +2382,7 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
 #if 0 /// UNNEEDED by elogind
 static int return_data(sd_journal *j, JournalFile *f, Object *o, const void **data, size_t *size) {
         size_t t;
+                if (r < 0)
         uint64_t l;
         int compression;
 
