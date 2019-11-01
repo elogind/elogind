@@ -204,9 +204,6 @@ int execute_shutdown_or_sleep(
         /* no more pending actions, whether this failed or not */
         m->pending_action = HANDLE_IGNORE;
 
-        if (r < 0)
-                return r;
-
         /* As elogind can not rely on a systemd manager to call all
          * sleeping processes to wake up, we have to tell them all
          * by ourselves. */
@@ -217,9 +214,10 @@ int execute_shutdown_or_sleep(
                 m->action_what = w;
 
         /* Make sure the lid switch is ignored for a while */
-        manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
+        if (0 == r)
+                manager_set_lid_switch_ignore(m, now(CLOCK_MONOTONIC) + m->holdoff_timeout_usec);
 
-        return 0;
+        return r;
 }
 
 int manager_scheduled_shutdown_handler(
