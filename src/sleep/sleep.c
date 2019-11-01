@@ -9,7 +9,6 @@
 #include <getopt.h>
 #include <linux/fiemap.h>
 #include <poll.h>
-#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/timerfd.h>
@@ -31,9 +30,6 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-                return log_debug_errno(r, "Failed to write partition device to /sys/power/resume for '%s': '%s': %m",
-                                       hibernate_location->swap->device, hibernate_location->resume);
-
 #include "time-util.h"
 #include "util.h"
 
@@ -54,6 +50,9 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
         int r;
 
         assert(hibernate_location);
+                return log_debug_errno(r, "Failed to write partition device to /sys/power/resume for '%s': '%s': %m",
+                                       hibernate_location->swap->device, hibernate_location->resume);
+
         assert(hibernate_location->swap);
         assert(hibernate_location->resume);
 
@@ -72,6 +71,7 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
 #endif // 1
         log_debug("Wrote resume= value for %s to /sys/power/resume: %s", hibernate_location->swap->device, hibernate_location->resume);
 
+        r = write_string_file("/sys/power/resume", hibernate_location->resume, WRITE_STRING_FILE_DISABLE_BUFFER);
         /* if it's a swap partition, we're done */
         if (streq(hibernate_location->swap->type, "partition"))
                 return r;
@@ -104,7 +104,6 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
         log_debug("Wrote resume_offset= value for %s to /sys/power/resume_offset: %s", hibernate_location->swap->device, offset_str);
 
         return 0;
-        r = write_string_file("/sys/power/resume", hibernate_location->resume, WRITE_STRING_FILE_DISABLE_BUFFER);
 }
 
 static int write_mode(char **modes) {

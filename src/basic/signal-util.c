@@ -2,7 +2,6 @@
 
 #include <errno.h>
 #include <stdarg.h>
-#include <stdio.h>
 
 #include "macro.h"
 #include "parse-util.h"
@@ -26,7 +25,7 @@ int reset_all_signal_handlers(void) {
 
                 /* On Linux the first two RT signals are reserved by
                  * glibc, and sigaction() will return EINVAL for them. */
-                if (sigaction(sig, &sa, NULL) < 0)
+                if ((sigaction(sig, &sa, NULL) < 0))
                         if (errno != EINVAL && r >= 0)
                                 r = -errno;
         }
