@@ -35,6 +35,7 @@ bool cg_is_unified_wanted(void) {
                 return (wanted = r >= CGROUP_UNIFIED_ALL);
 
         /* If we were explicitly passed elogind.unified_cgroup_hierarchy, respect that. */
+        /* If we were explicitly passed elogind.unified_cgroup_hierarchy, respect that. */
         r = proc_cmdline_get_bool("elogind.unified_cgroup_hierarchy", &b);
         if (r > 0)
                 return (wanted = b);
@@ -148,7 +149,6 @@ int cg_blkio_weight_parse(const char *s, uint64_t *ret) {
         *ret = u;
         return 0;
 }
-
 
 static int trim_cb(const char *path, const struct stat *sb, int typeflag, struct FTW *ftwbuf) {
         assert(path);
