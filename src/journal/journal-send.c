@@ -1,14 +1,13 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include <errno.h>
-//#include <fcntl.h>
 #if 0 /// elogind is musl-libc compatible and does not directly include printf.h
+#include <fcntl.h>
 #include <printf.h>
 #else
 #include "parse-printf-format.h"
 #endif // 0
 #include <stddef.h>
-//#include <sys/socket.h>
 //#include <sys/un.h>
 #include <unistd.h>
 
