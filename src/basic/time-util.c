@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -1272,7 +1271,6 @@ int get_timezones(char ***ret) {
                 }
 
                 strv_sort(zones);
-                strv_uniq(zones);
 
         } else if (errno != ENOENT)
                 return -errno;
@@ -1291,10 +1289,6 @@ bool timezone_is_valid(const char *name, int log_level) {
 
         if (isempty(name))
                 return false;
-
-        /* Always accept "UTC" as valid timezone, since it's the fallback, even if user has no timezones installed. */
-        if (streq(name, "UTC"))
-                return true;
 
         if (name[0] == '/')
                 return false;
@@ -1403,22 +1397,13 @@ bool clock_supported(clockid_t clock) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int get_timezone(char **ret) {
+int get_timezone(char **tz) {
         _cleanup_free_ char *t = NULL;
         const char *e;
         char *z;
         int r;
 
         r = readlink_malloc("/etc/localtime", &t);
-        if (r == -ENOENT) {
-                /* If the symlink does not exist, assume "UTC", like glibc does*/
-                z = strdup("UTC");
-                if (!z)
-                        return -ENOMEM;
-
-                *ret = z;
-                return 0;
-        }
         if (r < 0)
                 return r; /* returns EINVAL if not a symlink */
 
@@ -1433,7 +1418,7 @@ int get_timezone(char **ret) {
         if (!z)
                 return -ENOMEM;
 
-        *ret = z;
+        *tz = z;
         return 0;
 }
 

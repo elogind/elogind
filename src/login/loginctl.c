@@ -3,7 +3,6 @@
 #include <errno.h>
 #include <getopt.h>
 #include <locale.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "sd-bus.h"
@@ -1340,31 +1339,10 @@ static int help(int argc, char *argv[], void *userdata) {
                "     --dry-run             Only print what would be done\n"
                "  -q --quiet               Suppress output\n"
 #endif // 1
-/// elogind empty mask else converted
-#if 1 /// 
-                /// elogind can cancel shutdowns and allows to ignore inhibitors
-               "  -c                       Cancel a pending shutdown or reboot\n"
-               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
-#endif // 1
-#if 1 /// As elogind can reboot, it allows to control the reboot process
-#if ENABLE_EFI
-               "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
-#endif
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
-               "     --boot-loader-menu=TIME\n"
-               "                           Boot into boot loader menu on next boot\n"
-               "     --boot-loader-entry=NAME\n"
-               "                           Boot into a specific boot loader entry on next boot\n"
-#endif
-#endif // 1
-#if 0 /// elogind has "list" as a shorthand for "list-sessions"
         printf("%s%s [OPTIONS...] {COMMAND} ...\n\n"
                "Send control commands to or query the login manager.%s\n"
                "\nSession Commands:\n"
                "  list-sessions            List sessions\n"
-#else
-               "  list[-sessions]          List sessions (default command)\n"
-#endif // 0
                "  session-status [ID...]   Show session status\n"
                "  show-session [ID...]     Show properties of sessions or the manager\n"
                "  activate [ID]            Activate a session\n"
@@ -1569,16 +1547,15 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
 
-                        arg_quiet = true;
                         break;
 #endif // 1
                 case ARG_NO_PAGER:
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
 
-
                 case ARG_NO_LEGEND:
                         arg_legend = false;
+
                         break;
 
                 case ARG_NO_ASK_PASSWORD:
@@ -1624,7 +1601,6 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_firmware_setup = true;
                         break;
 
-                case ARG_BOOT_LOADER_MENU:
 
                         r = parse_sec(optarg, &arg_boot_loader_menu);
                         if (r < 0)
@@ -1643,8 +1619,8 @@ static int parse_argv(int argc, char *argv[]) {
 
                 default:
                         assert_not_reached("Unhandled option");
-
                 }
+
 
         return 1;
 }

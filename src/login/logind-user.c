@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <errno.h>
-//#include <string.h>
-//#include <unistd.h>
+#include <errno.h>
+#include <unistd.h>
 
 #include "alloc-util.h"
 #include "bus-common-errors.h"
@@ -404,6 +403,8 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 #endif // 1
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
