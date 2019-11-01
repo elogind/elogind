@@ -162,7 +162,6 @@ int write_string_file_ts(
                         safe_close(fd);
                         goto fail;
                 }
-
 #ifndef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems when going this route
                 if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                         flags ^= WRITE_STRING_FILE_DISABLE_BUFFER;

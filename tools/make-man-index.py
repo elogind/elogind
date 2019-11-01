@@ -14,14 +14,14 @@ TEMPLATE = '''\
   <refentryinfo>
     <title>elogind.index</title>
     <productname>elogind</productname>
-      <!-- 1 /// Must add elogind authors for the additions and changes -->
-      <author>
-        <contrib>Developer</contrib>
-        <firstname>Sven</firstname>
-        <surname>Eden</surname>
-        <email>sven.eden@gmx.de</email>
-      </author>
-      <!-- // 1 -->
+    <!-- 1 /// Must add elogind authors for the additions and changes -->
+    <author>
+      <contrib>Developer</contrib>
+      <firstname>Sven</firstname>
+      <surname>Eden</surname>
+      <email>sven.eden@gmx.de</email>
+    </author>
+    <!-- // 1 -->
   </refentryinfo>
 
   <refmeta>

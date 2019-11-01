@@ -33,7 +33,7 @@
 #include "log.h"
 #include "macro.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 //#include "proc-cmdline.h"
 #include "process-util.h"
 #include "socket-util.h"
@@ -43,9 +43,6 @@
 #include "terminal-util.h"
 #include "time-util.h"
 #include "util.h"
-
-/// Additional includes needed by elogind
-#include "path-util.h"
 
 static volatile unsigned cached_columns = 0;
 static volatile unsigned cached_lines = 0;
