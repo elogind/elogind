@@ -10,9 +10,8 @@
 #include <sys/signalfd.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-//#include <sys/uio.h>
-//#include <sys/un.h>
-#include <time.h>
+#include <sys/uio.h>
+#include <sys/un.h>
 #include <unistd.h>
 
 #include "sd-messages.h"
