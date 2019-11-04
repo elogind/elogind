@@ -483,6 +483,8 @@ Features:
 
 * cache sd_event_now() result from before the first iteration...
 
+* add systemctl stop --job-mode=triggering that follows TRIGGERED_BY deps and adds them to the same transaction
+
 * PID1: find a way how we can reload unit file configuration for
   specific units only, without reloading the whole of systemd
 
@@ -1105,7 +1107,6 @@ External:
   - <command> <verb> -<TAB> should complete options, but currently does not
   - systemctl add-wants,add-requires
 
-* systemctl status foo.service should say that it is trigger by foo.timer
 * systemctl status should know about 'elogind-analyze calendar ... --iterations='
 * If timer has just OnInactiveSec=..., it should fire after a specified time
   after being started.
