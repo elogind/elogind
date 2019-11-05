@@ -1297,6 +1297,18 @@ conf.set10('HAVE_PAM', have)
 # endif
 # conf.set10('HAVE_OPENSSL', have)
 #
+# want_p11kit = get_option('p11kit')
+# if want_p11kit != 'false' and not skip_deps
+#         libp11kit = dependency('p11-kit-1',
+#                                 version : '>= 0.23.3',
+#                                 required : want_p11kit == 'true')
+#         have = libp11kit.found()
+# else
+#         have = false
+#         libp11kit = []
+# endif
+# conf.set10('HAVE_P11KIT', have)
+#
 # want_elfutils = get_option('elfutils')
 # if want_elfutils != 'false' and not skip_deps
 #         libdw = dependency('libdw',
@@ -3649,6 +3661,7 @@ foreach tuple : [
 #         ['libcryptsetup'],
 #endif // 0
         ['PAM'],
+        ['p11kit'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
 #         ['IMA'],

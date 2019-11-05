@@ -143,6 +143,8 @@
 #         path-lookup.c
 #         path-lookup.h
 #         pe-header.h
+#         pkcs11-util.c
+#         pkcs11-util.h
 #         pretty-print.c
 #         pretty-print.h
 #         ptyfwd.c
@@ -343,6 +345,8 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libkmod,
 #                   liblz4,
 #                   libmount,
+#                   libopenssl,
+#                   libp11kit,
 #                   librt,
 #                   libseccomp,
 #                   libselinux,
