@@ -407,6 +407,8 @@ int user_start(User *u) {
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
+         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
 
 #if 0 /// elogind does not spawn user instances of systemd
@@ -933,7 +935,6 @@ int config_parse_compat_user_tasks_max(
         assert(filename);
         assert(lvalue);
         assert(rvalue);
-        assert(data);
 
         log_syntax(unit, LOG_NOTICE, filename, line, 0,
                    "Support for option %s= has been removed.",

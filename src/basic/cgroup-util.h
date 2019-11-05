@@ -139,8 +139,6 @@ static inline bool CGROUP_BLKIO_WEIGHT_IS_OK(uint64_t x) {
 }
 #endif // 0
 
-/* Default resource limits */
-#define DEFAULT_USER_TASKS_MAX_PERCENTAGE       33U /* 33% of PIDs, 10813 on default settings */
 
 typedef enum CGroupUnified {
         CGROUP_UNIFIED_UNKNOWN = -1,
