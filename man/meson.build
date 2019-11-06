@@ -70,7 +70,6 @@ foreach tuple : xsltproc.found() ? manpages : []
                 foreach htmlalias : htmlaliases
                         link = custom_target(
                                 htmlalias,
-                                input : p2,
                                 output : htmlalias,
                                 command : ['ln', '-fs', html, '@OUTPUT@'])
                         if want_html
@@ -127,7 +126,7 @@ elogind_index_xml = custom_target(
         command : [make_man_index_py, '@OUTPUT@'] + nonindex_xml_files)
 
 foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directives_xml],
-                                         ['elogind.index',      '7', elogind_index_xml]] : []
+                                    ['elogind.index',      '7', elogind_index_xml]] : []
         stem = tuple[0]
         section = tuple[1]
         xml = tuple[2]
