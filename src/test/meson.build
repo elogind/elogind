@@ -11,14 +11,13 @@ test_hashmap_ordered_c = custom_target(
 
 test_include_dir = include_directories('.')
 
-path = run_command('sh', ['-c', 'echo "$PATH"']).stdout()
+path = run_command('sh', ['-c', 'echo "$PATH"']).stdout().strip()
 test_env = environment()
 #if 0 /// UNNEEDED in elogind
 # test_env.set('SYSTEMD_KBD_MODEL_MAP', kbd_model_map)
 # test_env.set('SYSTEMD_LANGUAGE_FALLBACK_MAP', language_fallback_map)
 #endif // 0
-test_env.set('PATH', path)
-test_env.prepend('PATH', meson.build_root())
+test_env.set('PATH', '@0@:@1@'.format(meson.build_root(), path))
 
 ############################################################
 
@@ -58,7 +57,8 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-engine.c'],
+#         [['src/test/test-engine.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libudev,
 #           libshared],
@@ -147,7 +147,8 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-unit-name.c'],
+#         [['src/test/test-unit-name.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -157,7 +158,8 @@ tests += [
 #           libmount,
 #           libblkid]],
 #
-#         [['src/test/test-load-fragment.c'],
+#         [['src/test/test-load-fragment.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -460,7 +462,8 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-bpf-devices.c'],
+#         [['src/test/test-bpf.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [libmount,
@@ -470,7 +473,8 @@ tests += [
 #           libselinux,
 #           libblkid]],
 #
-#         [['src/test/test-bpf-firewall.c'],
+#         [['src/test/test-watch-pid.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [libmount,
@@ -480,15 +484,6 @@ tests += [
 #           libselinux,
 #           libblkid]],
 #
-#         [['src/test/test-watch-pid.c'],
-#          [libcore,
-#           libshared],
-#          [libmount,
-#           threads,
-#           librt,
-#           libseccomp,
-#           libselinux,
-#           libblkid]],
 #endif // 0
 
         [['src/test/test-hashmap.c',
@@ -646,12 +641,14 @@ tests += [
 #           libshared],
 #          []],
 #
-#         [['src/test/test-cgroup-unit-default.c'],
+#         [['src/test/test-cgroup-unit-default.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          []],
 #
-#         [['src/test/test-cgroup-mask.c'],
+#         [['src/test/test-cgroup-mask.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -700,7 +697,8 @@ tests += [
          '', 'manual'],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-path.c'],
+#         [['src/test/test-path.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -710,7 +708,8 @@ tests += [
 #           libmount,
 #           libblkid]],
 #
-#         [['src/test/test-execute.c'],
+#         [['src/test/test-execute.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -741,7 +740,8 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-sched-prio.c'],
+#         [['src/test/test-sched-prio.c',
+#           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
