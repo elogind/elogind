@@ -463,7 +463,7 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-bpf.c',
+#         [['src/test/test-bpf-firewall.c',
 #           'src/test/test-helper.c'],
 #          [libcore,
 #           libshared],
