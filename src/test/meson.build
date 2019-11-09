@@ -460,6 +460,16 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-bpf-devices.c'],
+#          [libcore,
+#           libshared],
+#          [libmount,
+#           threads,
+#           librt,
+#           libseccomp,
+#           libselinux,
+#           libblkid]],
+#
 #         [['src/test/test-bpf-firewall.c'],
 #          [libcore,
 #           libshared],
