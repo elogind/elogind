@@ -8,6 +8,7 @@ project('elogind', 'c',
                 'prefix=/usr',
                 'sysconfdir=/etc',
                 'localstatedir=/var',
+                'warning_level=2',
         ],
         meson_version : '>= 0.46',
        )
@@ -400,7 +401,6 @@ cxx_cmd = ''
 #endif // 0
 
 possible_cc_flags = [
-        '-Wextra',
         '-Werror=undef',
         '-Wlogical-op',
         '-Wmissing-include-dirs',
