@@ -330,20 +330,20 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 
 #if 0 /// elogind doesn't need all this
 # libshared_deps = [threads,
-#                   librt,
-#                   libcap,
 #                   libacl,
+#                   libblkid,
+#                   libcap,
 #                   libcryptsetup,
 #                   libgcrypt,
+#                   libidn,
 #                   libiptc,
 #                   libkmod,
+#                   liblz4,
 #                   libmount,
+#                   librt,
 #                   libseccomp,
 #                   libselinux,
-#                   libidn,
-#                   libxz,
-#                   liblz4,
-#                   libblkid]
+#                   libxz]
 #else
 libshared_deps = [threads,
                   libacl,
