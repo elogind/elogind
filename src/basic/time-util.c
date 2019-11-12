@@ -842,8 +842,12 @@ int parse_timestamp(const char *t, usec_t *usec) {
         }
         if (r == 0) {
                 bool with_tz = true;
+                char *colon_tz;
 
-                if (setenv("TZ", tz, 1) != 0) {
+                /* tzset(3) says $TZ should be prefixed with ":" if we reference timezone files */
+                colon_tz = strjoina(":", tz);
+
+                if (setenv("TZ", colon_tz, 1) != 0) {
                         shared->return_value = negative_errno();
                         _exit(EXIT_FAILURE);
                 }
@@ -1401,22 +1405,13 @@ bool clock_supported(clockid_t clock) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int get_timezone(char **ret) {
+int get_timezone(char **tz) {
         _cleanup_free_ char *t = NULL;
         const char *e;
         char *z;
         int r;
 
         r = readlink_malloc("/etc/localtime", &t);
-        if (r == -ENOENT) {
-                /* If the symlink does not exist, assume "UTC", like glibc does*/
-                z = strdup("UTC");
-                if (!z)
-                        return -ENOMEM;
-
-                *ret = z;
-                return 0;
-        }
         if (r < 0)
                 return r; /* returns EINVAL if not a symlink */
 
@@ -1431,7 +1426,7 @@ int get_timezone(char **ret) {
         if (!z)
                 return -ENOMEM;
 
-        *ret = z;
+        *tz = z;
         return 0;
 }
 
