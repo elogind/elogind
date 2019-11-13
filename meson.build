@@ -1005,7 +1005,12 @@ conf.set10('LOG_TRACE', get_option('log-trace'))
 default_user_path = get_option('user-path')
 if default_user_path != ''
         conf.set_quoted('DEFAULT_USER_PATH', default_user_path)
+        default_user_path_display = default_user_path
+else
+        # meson 0.49 fails when ?: is used in .format()
+        default_user_path_display = '(same as system services)'
 endif
+
 
 #####################################################################
 
@@ -3569,8 +3574,7 @@ status = [
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
 #         'default locale:                    @0@'.format(default_locale),
-#         'default user $PATH:                @0@'.format(
-#                 default_user_path != '' ? default_user_path : '(same as system services)'),
+#         'default user $PATH:                @0@'.format(default_user_path_display),
 #         'systemd service watchdog:          @0@'.format(watchdog_opt)]
 #else
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
