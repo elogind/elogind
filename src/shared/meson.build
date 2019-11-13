@@ -107,6 +107,8 @@
 #         json-internal.h
 #         json.c
 #         json.h
+#         libcrypt-util.c
+#         libcrypt-util.h
 #         libmount-util.h
 #         linux/auto_dev-ioctl.h
 #         linux/bpf.h
@@ -344,6 +346,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libacl,
 #                   libblkid,
 #                   libcap,
+#                   libcrypt,
 #                   libcryptsetup,
 #                   libgcrypt,
 #                   libidn,
