@@ -25,3 +25,5 @@ int fd_getcrtime(int fd, usec_t *usec);
 int path_getcrtime(const char *p, usec_t *usec);
 int fd_getcrtime_at(int dirfd, const char *name, usec_t *usec, int flags);
 #endif // 0
+
+int flistxattr_malloc(int fd, char **ret);
