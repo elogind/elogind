@@ -118,6 +118,8 @@ static int detect_vm_device_tree(void) {
                 return VIRTUALIZATION_KVM;
         else if (strstr(hvtype, "xen"))
                 return VIRTUALIZATION_XEN;
+        else if (strstr(hvtype, "vmware"))
+                return VIRTUALIZATION_VMWARE;
         else
                 return VIRTUALIZATION_VM_OTHER;
 #else
@@ -427,12 +429,14 @@ finish:
                 r = VIRTUALIZATION_VM_OTHER;
 
         cached_found = r;
+}
         log_debug("Found VM virtualization %s", virtualization_to_string(r));
         return r;
 }
 #endif // 0
 
 int detect_container(void) {
+        log_debug("Found VM virtualization %s", virtualization_to_string(r));
         static const struct {
                 const char *value;
                 int id;
