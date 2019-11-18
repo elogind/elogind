@@ -221,6 +221,7 @@ int efi_set_variable_string(sd_id128_t vendor, const char *name, const char *v) 
 }
 
 int efi_elogind_options_variable(char **line) {
+int elogind_efi_options_variable(char **line) {
         const char *e;
         int r;
 

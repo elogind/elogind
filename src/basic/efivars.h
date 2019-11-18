@@ -29,6 +29,7 @@ int efi_set_variable(sd_id128_t vendor, const char *name, const void *value, siz
 int efi_set_variable_string(sd_id128_t vendor, const char *name, const char *p);
 
 int efi_elogind_options_variable(char **line);
+int elogind_efi_options_variable(char **line);
 
 #else
 
@@ -53,6 +54,7 @@ static inline int efi_set_variable_string(sd_id128_t vendor, const char *name, c
 }
 
 static inline int efi_elogind_options_variable(char **line) {
+static inline int elogind_efi_options_variable(char **line) {
         return -ENODATA;
 }
 
