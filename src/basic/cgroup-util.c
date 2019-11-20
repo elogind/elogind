@@ -616,6 +616,23 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 }
 #endif // 0
 
+int cg_remove_xattr(const char *controller, const char *path, const char *name) {
+        _cleanup_free_ char *fs = NULL;
+        int r;
+
+        assert(path);
+        assert(name);
+
+        r = cg_get_path(controller, path, NULL, &fs);
+        if (r < 0)
+                return r;
+
+        if (removexattr(fs, name) < 0)
+                return -errno;
+
+        return 0;
+}
+
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
 #if 0 /// At elogind we do not want that (false alarm) "maybe uninitialized" warning
