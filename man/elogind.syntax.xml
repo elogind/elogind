@@ -43,8 +43,10 @@
       <citerefentry><refentrytitle>systemd.path</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.timer</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry></para></listitem>
       // 0 -->
+      <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.nspawn</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      </para></listitem>
 
       <listitem><para>daemon config files, see
       <!-- 0 /// Completely irrelevant for elogind
