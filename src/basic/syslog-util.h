@@ -16,3 +16,5 @@ bool log_level_is_valid(int level);
 
 int syslog_parse_priority(const char **p, int *priority, bool with_facility);
 #endif // 0
+
+bool log_namespace_name_valid(const char *s);
