@@ -202,7 +202,6 @@ shared_sources = '''
         clean-ipc.h
         conf-parser.c
         conf-parser.h
-        daemon-util.h
         dev-setup.c
         dev-setup.h
         efivars.c
@@ -220,8 +219,6 @@ shared_sources = '''
         json.h
         json-internal.h
         main-func.h
-        mount-util.c
-        mount-util.h
         musl_missing.c
         musl_missing.h
         nsflags.c

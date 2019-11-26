@@ -305,7 +305,6 @@
 		<Unit filename="../src/basic/kbd-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/basic/kbd-util.h" />
 		<Unit filename="../src/basic/khash.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -458,9 +457,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/socket-util.h" />
-		<Unit filename="../src/basic/sort-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/basic/sort-util.h" />
 		<Unit filename="../src/basic/sparse-endian.h" />
 		<Unit filename="../src/basic/special.h" />
@@ -547,9 +543,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/core/cgroup.h" />
-		<Unit filename="../src/core/efi-random.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/core/meson.build" />
 		<Unit filename="../src/core/mount-setup.c">
 			<Option compilerVar="CC" />
@@ -710,10 +703,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/libelogind/sd-event/event-source.h" />
-		<Unit filename="../src/libelogind/sd-event/event-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/libelogind/sd-event/event-util.h" />
 		<Unit filename="../src/libelogind/sd-event/sd-event.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -861,22 +850,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/bootspec.h" />
-		<Unit filename="../src/shared/bus-unit-procs.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/bus-unit-procs.h" />
 		<Unit filename="../src/shared/bus-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/bus-util.h" />
-		<Unit filename="../src/shared/bus-wait-for-jobs.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/bus-wait-for-jobs.h" />
-		<Unit filename="../src/shared/bus-wait-for-units.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/bus-wait-for-units.h" />
 		<Unit filename="../src/shared/clean-ipc.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -885,14 +862,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/conf-parser.h" />
-		<Unit filename="../src/shared/daemon-util.h" />
 		<Unit filename="../src/shared/dev-setup.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/dev-setup.h" />
-		<Unit filename="../src/shared/dm-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/shared/efivars.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -926,13 +899,6 @@
 		<Unit filename="../src/shared/log-link.h" />
 		<Unit filename="../src/shared/main-func.h" />
 		<Unit filename="../src/shared/meson.build" />
-		<Unit filename="../src/shared/module-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/mount-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/mount-util.h" />
 		<Unit filename="../src/shared/musl_missing.c">
 			<Option compilerVar="CC" />
 		</Unit>

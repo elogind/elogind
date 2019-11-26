@@ -389,6 +389,7 @@ basic_sources = files('''
         smack-util.h
         socket-util.c
         socket-util.h
+        sort-util.h
         sparse-endian.h
         special.h
         stat-util.c
