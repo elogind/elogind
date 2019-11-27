@@ -18,6 +18,7 @@ void random_bytes(void *p, size_t n);                           /* returns genui
 
 void initialize_srand(void);
 
+#if 0 /// UNNEEDED by elogind
 static inline uint64_t random_u64(void) {
         uint64_t u;
         random_bytes(&u, sizeof(u));
@@ -29,6 +30,7 @@ static inline uint32_t random_u32(void) {
         random_bytes(&u, sizeof(u));
         return u;
 }
+#endif // 0
 
 int rdrand(unsigned long *ret);
 

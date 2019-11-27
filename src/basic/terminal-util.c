@@ -1293,8 +1293,6 @@ int vt_reset_keyboard(int fd) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int vt_restore(int fd) {
         static const struct vt_mode mode = {
                 .mode = VT_AUTO,

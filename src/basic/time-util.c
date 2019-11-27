@@ -1475,7 +1475,6 @@ usec_t usec_shift_clock(usec_t x, clockid_t from, clockid_t to) {
                 /* x lies in the past */
                 return usec_sub_unsigned(b, usec_sub_unsigned(a, x));
 }
-#endif // 0
 
 bool in_utc_timezone(void) {
         tzset();
@@ -1506,3 +1505,4 @@ int time_change_fd(void) {
 
         return TAKE_FD(fd);
 }
+#endif // 0

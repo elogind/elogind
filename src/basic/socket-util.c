@@ -1110,6 +1110,7 @@ int getpeergroups(int fd, gid_t **ret) {
         return (int) n;
 }
 
+#if 0 /// UNNEEDED by elogind
 ssize_t send_one_fd_iov_sa(
                 int transport_fd,
                 int fd,
@@ -1159,7 +1160,6 @@ ssize_t send_one_fd_iov_sa(
         return k;
 }
 
-#if 0 /// UNNEEDED by elogind
 int send_one_fd_sa(
                 int transport_fd,
                 int fd,

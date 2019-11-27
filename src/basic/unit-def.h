@@ -236,9 +236,9 @@ typedef enum NotifyAccess {
 } NotifyAccess;
 
 char *unit_dbus_path_from_name(const char *name);
+#if 0 /// elogind does not support systemd units
 int unit_name_from_dbus_path(const char *path, char **name);
 
-#if 0 /// elogind does not support systemd units
 const char* unit_dbus_interface_from_type(UnitType t);
 const char *unit_dbus_interface_from_name(const char *name);
 #endif // 0
@@ -246,6 +246,7 @@ const char *unit_dbus_interface_from_name(const char *name);
 const char *unit_type_to_string(UnitType i) _const_;
 UnitType unit_type_from_string(const char *s) _pure_;
 
+#if 0 /// elogind does not support systemd units
 const char *unit_load_state_to_string(UnitLoadState i) _const_;
 UnitLoadState unit_load_state_from_string(const char *s) _pure_;
 
@@ -290,3 +291,4 @@ UnitDependency unit_dependency_from_string(const char *s) _pure_;
 
 const char* notify_access_to_string(NotifyAccess i) _const_;
 NotifyAccess notify_access_from_string(const char *s) _pure_;
+#endif // 0

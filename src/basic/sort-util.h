@@ -5,6 +5,7 @@
 
 #include "macro.h"
 
+#if 0 /// UNNEEDED by elogind
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
                  __compar_d_fn_t compar, void *arg);
 
@@ -34,6 +35,7 @@ static inline void* bsearch_safe(const void *key, const void *base,
                 int (*_func_)(const typeof(b[0])*, const typeof(b[0])*) = func; \
                 bsearch_safe((const void*) _k, (b), (n), sizeof((b)[0]), (__compar_fn_t) _func_); \
         })
+#endif // 0
 
 /**
  * Normal qsort requires base to be nonnull. Here were require

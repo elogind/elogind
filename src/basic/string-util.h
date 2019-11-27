@@ -63,9 +63,11 @@ static inline bool empty_or_dash(const char *str) {
                 (str[0] == '-' && str[1] == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline const char *empty_or_dash_to_null(const char *p) {
         return empty_or_dash(p) ? NULL : p;
 }
+#endif // 0
 
 static inline char *startswith(const char *s, const char *prefix) {
         size_t l;
@@ -191,11 +193,13 @@ char *strrep(const char *s, unsigned n);
 int split_pair(const char *s, const char *sep, char **l, char **r);
 
 int free_and_strdup(char **p, const char *s);
+#if 0 /// UNNEEDED by elogind
 static inline int free_and_strdup_warn(char **p, const char *s) {
         if (free_and_strdup(p, s) < 0)
                 return log_oom();
         return 0;
 }
+#endif // 0
 int free_and_strndup(char **p, const char *s, size_t l);
 
 bool string_is_safe(const char *p) _pure_;

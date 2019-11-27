@@ -81,9 +81,11 @@ static inline bool uid_is_system(uid_t uid) {
         return uid <= SYSTEM_UID_MAX;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline bool gid_is_system(gid_t gid) {
         return gid <= SYSTEM_GID_MAX;
 }
+#endif // 0
 
 /* The following macros add 1 when converting things, since UID 0 is a valid UID, while the pointer
  * NULL is special */
@@ -93,9 +95,11 @@ static inline bool gid_is_system(gid_t gid) {
 #define PTR_TO_GID(p) ((gid_t) (((uintptr_t) (p))-1))
 #define GID_TO_PTR(u) ((void*) (((uintptr_t) (u))+1))
 
+#if 0 /// UNNEEDED by elogind
 static inline bool userns_supported(void) {
         return access("/proc/self/uid_map", F_OK) >= 0;
 }
+#endif // 0
 
 bool valid_user_group_name_full(const char *u, bool strict);
 bool valid_user_group_name_or_id_full(const char *u, bool strict);

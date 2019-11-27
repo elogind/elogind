@@ -65,6 +65,7 @@ int chattr_path(const char *p, unsigned value, unsigned mask, unsigned *previous
         return chattr_fd(fd, value, mask, previous);
 }
 
+#if 0 /// UNNEEDED by elogind
 int read_attr_fd(int fd, unsigned *ret) {
         struct stat st;
 
@@ -94,3 +95,4 @@ int read_attr_path(const char *p, unsigned *ret) {
 
         return read_attr_fd(fd, ret);
 }
+#endif // 0

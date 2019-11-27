@@ -92,6 +92,7 @@ static inline int safe_atoli(const char *s, long int *ret_u) {
 }
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if SIZE_MAX == UINT_MAX
 static inline int safe_atozu(const char *s, size_t *ret_u) {
         assert_cc(sizeof(size_t) == sizeof(unsigned));
@@ -103,6 +104,7 @@ static inline int safe_atozu(const char *s, size_t *ret_u) {
         return safe_atolu(s, ret_u);
 }
 #endif
+#endif // 0
 
 int safe_atod(const char *s, double *ret_d);
 

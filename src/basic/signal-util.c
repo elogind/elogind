@@ -139,6 +139,7 @@ static int sigset_add_many_ap(sigset_t *ss, va_list ap) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int sigset_add_many(sigset_t *ss, ...) {
         va_list ap;
         int r;
@@ -149,6 +150,7 @@ int sigset_add_many(sigset_t *ss, ...) {
 
         return r;
 }
+#endif // 0
 
 int sigprocmask_many(int how, sigset_t *old, ...) {
         va_list ap;

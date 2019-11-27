@@ -35,5 +35,7 @@
 int chattr_fd(int fd, unsigned value, unsigned mask, unsigned *previous);
 int chattr_path(const char *p, unsigned value, unsigned mask, unsigned *previous);
 
+#if 0 /// UNNEEDED by elogind
 int read_attr_fd(int fd, unsigned *ret);
 int read_attr_path(const char *p, unsigned *ret);
+#endif // 0

@@ -18,6 +18,7 @@ char *unit_dbus_path_from_name(const char *name) {
         return strjoin("/org/freedesktop/elogind1/unit/", e);
 }
 
+#if 0 /// elogind does not support systemd units
 int unit_name_from_dbus_path(const char *path, char **name) {
         const char *e;
         char *n;
@@ -34,7 +35,6 @@ int unit_name_from_dbus_path(const char *path, char **name) {
         return 0;
 }
 
-#if 0 /// elogind does not support systemd units
 const char* unit_dbus_interface_from_type(UnitType t) {
 
         static const char *const table[_UNIT_TYPE_MAX] = {
@@ -86,6 +86,7 @@ static const char* const unit_type_table[_UNIT_TYPE_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(unit_type, UnitType);
 
+#if 0 /// UNNEEDED by elogind
 static const char* const unit_load_state_table[_UNIT_LOAD_STATE_MAX] = {
         [UNIT_STUB] = "stub",
         [UNIT_LOADED] = "loaded",
@@ -276,3 +277,4 @@ static const char* const notify_access_table[_NOTIFY_ACCESS_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(notify_access, NotifyAccess);
+#endif // 0

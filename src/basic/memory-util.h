@@ -29,11 +29,13 @@ static inline int memcmp_safe(const void *s1, const void *s2, size_t n) {
         return memcmp(s1, s2, n);
 }
 
+#if 0 /// UNNEEDED by elogind
 /* Compare s1 (length n1) with s2 (length n2) in lexicographic order. */
 static inline int memcmp_nn(const void *s1, size_t n1, const void *s2, size_t n2) {
         return memcmp_safe(s1, s2, MIN(n1, n2))
             ?: CMP(n1, n2);
 }
+#endif // 0
 
 #define memzero(x,l)                                            \
         ({                                                      \
@@ -89,7 +91,9 @@ static inline void erase_and_freep(void *p) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 /* Use with _cleanup_ to erase a single 'char' when leaving scope */
 static inline void erase_char(char *p) {
         explicit_bzero_safe(p, sizeof(char));
 }
+#endif // 0

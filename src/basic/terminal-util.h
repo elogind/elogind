@@ -178,8 +178,6 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode);
 int vt_default_utf8(void);
 int vt_reset_keyboard(int fd);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int vt_restore(int fd);
 int vt_release(int fd, bool restore_vt);
 

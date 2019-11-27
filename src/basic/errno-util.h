@@ -69,6 +69,7 @@ static inline bool ERRNO_IS_DISCONNECT(int r) {
                       ESHUTDOWN);
 }
 
+#if 0 /// UNNEEDED by elogind
 /* Transient errors we might get on accept() that we should ignore. As per error handling comment in
  * the accept(2) man page. */
 static inline bool ERRNO_IS_ACCEPT_AGAIN(int r) {
@@ -86,3 +87,4 @@ static inline bool ERRNO_IS_RESOURCE(int r) {
                       ENFILE,
                       ENOMEM);
 }
+#endif // 0

@@ -50,6 +50,7 @@ static void sigbus_push(void *addr) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int sigbus_pop(void **ret) {
         assert(ret);
 
@@ -80,6 +81,7 @@ int sigbus_pop(void **ret) {
                 }
         }
 }
+#endif // 0
 
 static void sigbus_handler(int sn, siginfo_t *si, void *data) {
         unsigned long ul;
@@ -125,6 +127,7 @@ void sigbus_install(void) {
         return;
 }
 
+#if 0 /// UNNEEDED by elogind
 void sigbus_reset(void) {
 
         if (n_installed <= 0)
@@ -137,3 +140,4 @@ void sigbus_reset(void) {
 
         return;
 }
+#endif // 0

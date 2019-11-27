@@ -28,6 +28,7 @@ int mkdir_label(const char *path, mode_t mode) {
         return mac_smack_fix(path, 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 int mkdirat_label(int dirfd, const char *path, mode_t mode) {
         int r;
 
@@ -44,6 +45,7 @@ int mkdirat_label(int dirfd, const char *path, mode_t mode) {
 
         return mac_smack_fix_at(dirfd, path, 0);
 }
+#endif // 0
 
 int mkdir_safe_label(const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags) {
         return mkdir_safe_internal(path, mode, uid, gid, flags, mkdir_label);

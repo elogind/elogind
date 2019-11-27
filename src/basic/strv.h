@@ -220,4 +220,6 @@ int fputstrv(FILE *f, char **l, const char *separator, bool *space);
 
 extern const struct hash_ops string_strv_hash_ops;
 int string_strv_hashmap_put(Hashmap **h, const char *key, const char *value);
+#if 0 /// UNNEEDED by elogind
 int string_strv_ordered_hashmap_put(OrderedHashmap **h, const char *key, const char *value);
+#endif // 0

@@ -155,9 +155,9 @@ struct tm *localtime_or_gmtime_r(const time_t *t, struct tm *tm, bool utc);
 #if 0 /// UNNEEDED by elogind
 uint32_t usec_to_jiffies(usec_t usec);
 usec_t jiffies_to_usec(uint32_t jiffies);
-#endif // 0
 
 bool in_utc_timezone(void);
+#endif // 0
 
 static inline usec_t usec_add(usec_t a, usec_t b) {
         usec_t c;
@@ -200,4 +200,6 @@ static inline usec_t usec_sub_signed(usec_t timestamp, int64_t delta) {
 #error "Yuck, time_t is neither 4 nor 8 bytes wide?"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 int time_change_fd(void);
+#endif // 0

@@ -597,6 +597,7 @@ ssize_t base64mem(const void *p, size_t l, char **out) {
         return z - r;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int base64_append_width(
                 char **prefix, int plen,
                 const char *sep, int indent,
@@ -655,6 +656,7 @@ int base64_append(
                 /* leave plen on the left, keep last column free */
                 return base64_append_width(prefix, plen, " ", plen, p, l, width - plen - 1);
 }
+#endif // 0
 
 static int unbase64_next(const char **p, size_t *l) {
         int ret;

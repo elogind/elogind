@@ -12,9 +12,9 @@ int ignore_signals(int sig, ...);
 int default_signals(int sig, ...);
 #if 0 /// UNNEEDED by elogind
 int sigaction_many(const struct sigaction *sa, ...);
-#endif // 0
 
 int sigset_add_many(sigset_t *ss, ...);
+#endif // 0
 int sigprocmask_many(int how, sigset_t *old, ...);
 
 const char *signal_to_string(int i) _const_;
@@ -39,9 +39,11 @@ static inline bool SIGNAL_VALID(int signo) {
         return signo > 0 && signo < _NSIG;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline const char* signal_to_string_with_check(int n) {
         if (!SIGNAL_VALID(n))
                 return NULL;
 
         return signal_to_string(n);
 }
+#endif // 0
