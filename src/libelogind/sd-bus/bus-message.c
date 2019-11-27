@@ -5906,8 +5906,6 @@ int bus_message_remarshal(sd_bus *bus, sd_bus_message **m) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 _public_ int sd_bus_message_get_priority(sd_bus_message *m, int64_t *priority) {
         assert_return(m, -EINVAL);
         assert_return(priority, -EINVAL);

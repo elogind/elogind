@@ -306,8 +306,6 @@ finish:
         return -bus_error_name_to_errno(e->name);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 _public_ int sd_bus_error_move(sd_bus_error *dest, sd_bus_error *e) {
         int r;
 
