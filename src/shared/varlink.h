@@ -173,6 +173,8 @@ unsigned varlink_server_connections_per_uid_max(VarlinkServer *s);
 int varlink_server_set_connections_per_uid_max(VarlinkServer *s, unsigned m);
 int varlink_server_set_connections_max(VarlinkServer *s, unsigned m);
 
+unsigned varlink_server_current_connections(VarlinkServer *s);
+
 int varlink_server_set_description(VarlinkServer *s, const char *description);
 #endif // 0
 

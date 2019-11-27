@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-#include <poll.h>
+#include <sys/poll.h>
 
 #include "alloc-util.h"
 #include "errno-util.h"
@@ -2479,6 +2479,12 @@ int varlink_server_set_connections_max(VarlinkServer *s, unsigned m) {
 
         s->connections_max = m;
         return 0;
+}
+
+unsigned varlink_server_current_connections(VarlinkServer *s) {
+        assert_return(s, UINT_MAX);
+
+        return s->n_connections;
 }
 
 int varlink_server_set_description(VarlinkServer *s, const char *description) {
