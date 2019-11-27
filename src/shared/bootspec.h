@@ -61,12 +61,14 @@ static inline bool boot_config_has_entry(BootConfig *config, const char *id) {
         return false;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline BootEntry* boot_config_default_entry(BootConfig *config) {
         if (config->default_entry < 0)
                 return NULL;
 
         return config->entries + config->default_entry;
 }
+#endif // 0
 
 void boot_config_free(BootConfig *config);
 int boot_entries_load_config(const char *esp_path, const char *xbootldr_path, BootConfig *config);

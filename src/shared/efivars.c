@@ -82,6 +82,7 @@ bool is_efi_boot(void) {
         return access("/sys/firmware/efi/", F_OK) >= 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int read_flag(const char *varname) {
         _cleanup_free_ void *v = NULL;
         uint8_t b;
@@ -109,6 +110,7 @@ bool is_efi_secure_boot(void) {
 bool is_efi_secure_boot_setup_mode(void) {
         return read_flag("SetupMode") > 0;
 }
+#endif // 0
 
 int efi_reboot_to_firmware_supported(void) {
         _cleanup_free_ void *v = NULL;
@@ -390,6 +392,7 @@ int efi_set_variable_string(sd_id128_t vendor, const char *name, const char *v) 
         return efi_set_variable(vendor, name, u16, (char16_strlen(u16) + 1) * sizeof(char16_t));
 }
 
+#if 0 /// UNNEEDED by elogind
 static ssize_t utf16_size(const uint16_t *s, size_t buf_len_bytes) {
         size_t l = 0;
 
@@ -816,6 +819,7 @@ int efi_loader_get_device_part_uuid(sd_id128_t *u) {
 
         return 0;
 }
+#endif // 0
 
 int efi_loader_get_entries(char ***ret) {
         _cleanup_free_ char16_t *entries = NULL;

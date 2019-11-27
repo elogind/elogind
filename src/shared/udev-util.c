@@ -19,6 +19,7 @@ static const char* const resolve_name_timing_table[_RESOLVE_NAME_TIMING_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(resolve_name_timing, ResolveNameTiming);
 
+#if 0 /// UNNEEDED by elogind
 int udev_parse_config_full(
                 unsigned *ret_children_max,
                 usec_t *ret_exec_delay_usec,
@@ -205,6 +206,7 @@ int device_is_renaming(sd_device *dev) {
 
         return r >= 0;
 }
+#endif // 0
 
 bool device_for_action(sd_device *dev, DeviceAction action) {
         DeviceAction a;

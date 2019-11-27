@@ -13,6 +13,7 @@
 #include "umask-util.h"
 #include "user-util.h"
 
+#if 0 /// UNNEEDED by elogind
 int dev_setup(const char *prefix, uid_t uid, gid_t gid) {
         static const char symlinks[] =
                 "-/proc/kcore\0"     "/dev/core\0"
@@ -55,6 +56,7 @@ int dev_setup(const char *prefix, uid_t uid, gid_t gid) {
 
         return 0;
 }
+#endif // 0
 
 int make_inaccessible_nodes(const char *root, uid_t uid, gid_t gid) {
         static const struct {

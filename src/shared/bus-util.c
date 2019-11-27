@@ -1077,6 +1077,7 @@ int bus_print_all_properties(
         return bus_message_print_all_properties(reply, func, filter, value, all, found_properties);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata) {
         sd_id128_t *p = userdata;
         const void *v;
@@ -1096,6 +1097,7 @@ int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_err
 
         return 0;
 }
+#endif // 0
 
 static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, unsigned flags, sd_bus_error *error, void *userdata) {
         char type;
@@ -1408,6 +1410,7 @@ int bus_property_get_bool(
         return sd_bus_message_append_basic(reply, 'b', &b);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_property_set_bool(
                 sd_bus *bus,
                 const char *path,
@@ -1427,7 +1430,6 @@ int bus_property_set_bool(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int bus_property_get_id128(
                 sd_bus *bus,
                 const char *path,
@@ -1446,6 +1448,7 @@ int bus_property_get_id128(
 }
 #endif // 0
 
+#if 0 /// UNNEEDED by elogind
 #if __SIZEOF_SIZE_T__ != 8
 int bus_property_get_size(
                 sd_bus *bus,
@@ -1492,8 +1495,6 @@ int bus_property_get_ulong(
 }
 #endif
 
-
-#if 0 /// UNNEEDED by elogind
 /**
  * bus_path_encode_unique() - encode unique object path
  * @b: bus connection or NULL
@@ -1744,6 +1745,7 @@ int bus_open_system_watch_bind_with_description(sd_bus **ret, const char *descri
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_reply_pair_array(sd_bus_message *m, char **l) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         char **k, **v;
@@ -1774,6 +1776,7 @@ int bus_reply_pair_array(sd_bus_message *m, char **l) {
 
         return sd_bus_send(NULL, reply, NULL);
 }
+#endif // 0
 
 static void bus_message_unref_wrapper(void *m) {
         sd_bus_message_unref(m);

@@ -17,11 +17,13 @@ typedef enum ResolveNameTiming {
 ResolveNameTiming resolve_name_timing_from_string(const char *s) _pure_;
 const char *resolve_name_timing_to_string(ResolveNameTiming i) _const_;
 
+#if 0 /// UNNEEDED by elogind
 int udev_parse_config_full(
                 unsigned *ret_children_max,
                 usec_t *ret_exec_delay_usec,
                 usec_t *ret_event_timeout_usec,
                 ResolveNameTiming *ret_resolve_name_timing);
+
 
 static inline int udev_parse_config(void) {
         return udev_parse_config_full(NULL, NULL, NULL, NULL);
@@ -29,4 +31,5 @@ static inline int udev_parse_config(void) {
 
 int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t timeout, sd_device **ret);
 int device_is_renaming(sd_device *dev);
+#endif // 0
 bool device_for_action(sd_device *dev, DeviceAction action);

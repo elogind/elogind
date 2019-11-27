@@ -69,16 +69,18 @@ int table_add_cell_full(Table *t, TableCell **ret_cell, TableDataType type, cons
 static inline int table_add_cell(Table *t, TableCell **ret_cell, TableDataType type, const void *data) {
         return table_add_cell_full(t, ret_cell, type, data, (size_t) -1, (size_t) -1, (unsigned) -1, (unsigned) -1, (unsigned) -1);
 }
+#if 0 /// UNNEEDED by elogind
 int table_add_cell_stringf(Table *t, TableCell **ret_cell, const char *format, ...) _printf_(3, 4);
+#endif // 0
 
 int table_fill_empty(Table *t, size_t until_column);
 
 #if 0 /// UNNEEDED by elogind
 int table_dup_cell(Table *t, TableCell *cell);
-#endif // 0
 
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width);
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width);
+#endif // 0
 int table_set_weight(Table *t, TableCell *cell, unsigned weight);
 int table_set_align_percent(Table *t, TableCell *cell, unsigned percent);
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent);
@@ -86,7 +88,9 @@ int table_set_color(Table *t, TableCell *cell, const char *color);
 int table_set_url(Table *t, TableCell *cell, const char *url);
 int table_set_uppercase(Table *t, TableCell *cell, bool b);
 
+#if 0 /// UNNEEDED by elogind
 int table_update(Table *t, TableCell *cell, TableDataType type, const void *data);
+#endif // 0
 
 int table_add_many_internal(Table *t, TableDataType first_type, ...);
 #define table_add_many(t, ...) table_add_many_internal(t, __VA_ARGS__, _TABLE_DATA_TYPE_MAX)
@@ -96,7 +100,9 @@ void table_set_width(Table *t, size_t width);
 int table_set_empty_string(Table *t, const char *empty);
 int table_set_display(Table *t, size_t first_column, ...);
 int table_set_sort(Table *t, size_t first_column, ...);
+#if 0 /// UNNEEDED by elogind
 int table_set_reverse(Table *t, size_t column, bool b);
+#endif // 0
 
 int table_print(Table *t, FILE *f);
 int table_format(Table *t, char **ret);
@@ -112,8 +118,10 @@ size_t table_get_columns(Table *t);
 
 TableCell *table_get_cell(Table *t, size_t row, size_t column);
 
+#if 0 /// UNNEEDED by elogind
 const void *table_get(Table *t, TableCell *cell);
 const void *table_get_at(Table *t, size_t row, size_t column);
+#endif // 0
 
 int table_to_json(Table *t, JsonVariant **ret);
 int table_print_json(Table *t, FILE *f, JsonFormatFlags json_flags);

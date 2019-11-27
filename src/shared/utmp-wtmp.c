@@ -24,6 +24,7 @@
 #include "user-util.h"
 #include "utmp-wtmp.h"
 
+#if 0 /// UNNEEDED by elogind
 int utmp_get_runlevel(int *runlevel, int *previous) {
         struct utmpx *found, lookup = { .ut_type = RUN_LVL };
         int r;
@@ -80,6 +81,7 @@ int utmp_get_runlevel(int *runlevel, int *previous) {
 
         return r;
 }
+#endif // 0
 
 static void init_timestamp(struct utmpx *store, usec_t t) {
         assert(store);
@@ -183,6 +185,7 @@ int utmp_put_reboot(usec_t t) {
         return write_entry_both(&store);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void copy_suffix(char *buf, size_t buf_size, const char *src) {
         size_t l;
 
@@ -297,6 +300,7 @@ int utmp_put_runlevel(int runlevel, int previous) {
 
         return write_entry_both(&store);
 }
+#endif // 0
 
 #define TIMEOUT_MSEC 50
 

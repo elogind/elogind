@@ -428,6 +428,7 @@ int table_add_cell_full(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_add_cell_stringf(Table *t, TableCell **ret_cell, const char *format, ...) {
         _cleanup_free_ char *buffer = NULL;
         va_list ap;
@@ -441,6 +442,7 @@ int table_add_cell_stringf(Table *t, TableCell **ret_cell, const char *format, .
 
         return table_add_cell(t, ret_cell, TABLE_STRING, buffer);
 }
+#endif // 0
 
 int table_fill_empty(Table *t, size_t until_column) {
         int r;
@@ -550,6 +552,7 @@ static TableData *table_get_data(Table *t, TableCell *cell) {
         return t->data[i];
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         int r;
 
@@ -580,6 +583,7 @@ int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         table_get_data(t, cell)->maximum_width = maximum_width;
         return 0;
 }
+#endif // 0
 
 int table_set_weight(Table *t, TableCell *cell, unsigned weight) {
         int r;
@@ -691,6 +695,7 @@ int table_set_uppercase(Table *t, TableCell *cell, bool b) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_update(Table *t, TableCell *cell, TableDataType type, const void *data) {
         _cleanup_free_ char *curl = NULL;
         TableData *nd, *od;
@@ -731,6 +736,7 @@ int table_update(Table *t, TableCell *cell, TableDataType type, const void *data
 
         return 0;
 }
+#endif // 0
 
 int table_add_many_internal(Table *t, TableDataType first_type, ...) {
         TableDataType type;
@@ -1846,7 +1852,6 @@ size_t table_get_columns(Table *t) {
         assert(t->n_columns > 0);
         return t->n_columns;
 }
-#endif // 0
 
 int table_set_reverse(Table *t, size_t column, bool b) {
         assert(t);
@@ -1864,6 +1869,7 @@ int table_set_reverse(Table *t, size_t column, bool b) {
         t->reverse_map[column] = b;
         return 0;
 }
+#endif // 0
 
 TableCell *table_get_cell(Table *t, size_t row, size_t column) {
         size_t i;
@@ -1880,6 +1886,7 @@ TableCell *table_get_cell(Table *t, size_t row, size_t column) {
         return TABLE_INDEX_TO_CELL(i);
 }
 
+#if 0 /// UNNEEDED by elogind
 const void *table_get(Table *t, TableCell *cell) {
         TableData *d;
 
@@ -1901,6 +1908,7 @@ const void* table_get_at(Table *t, size_t row, size_t column) {
 
         return table_get(t, cell);
 }
+#endif // 0
 
 static int table_data_to_json(TableData *d, JsonVariant **ret) {
 

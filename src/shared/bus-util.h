@@ -36,7 +36,9 @@ enum {
         BUS_MAP_BOOLEAN_AS_BOOL = 1 << 1, /* If set, each "b" message is written to a bool pointer. If not set, "b" is written to a int pointer. */
 };
 
+#if 0 /// UNNEEDED by elogind
 int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata);
+#endif // 0
 
 int bus_message_map_all_properties(sd_bus_message *m, const struct bus_properties_map *map, unsigned flags, sd_bus_error *error, void *userdata);
 #if 0 /// UNNEEDED by elogind
@@ -83,8 +85,8 @@ int bus_message_print_all_properties(sd_bus_message *m, bus_message_print_t func
 int bus_print_all_properties(sd_bus *bus, const char *dest, const char *path, bus_message_print_t func, char **filter, bool value, bool all, Set **found_properties);
 
 int bus_property_get_bool(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
-int bus_property_set_bool(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *value, void *userdata, sd_bus_error *error);
 #if 0 /// UNNEEDED by elogind
+int bus_property_set_bool(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *value, void *userdata, sd_bus_error *error);
 int bus_property_get_id128(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
 #endif // 0
 
@@ -97,6 +99,7 @@ assert_cc(sizeof(int) == sizeof(int32_t));
 assert_cc(sizeof(unsigned) == sizeof(uint32_t));
 #define bus_property_get_unsigned ((sd_bus_property_get_t) NULL)
 
+#if 0 /// UNNEEDED by elogind
 /* On 64bit machines we can use the default serializer for size_t and
  * friends, otherwise we need to cast this manually */
 #if __SIZEOF_SIZE_T__ == 8
@@ -112,6 +115,7 @@ int bus_property_get_size(sd_bus *bus, const char *path, const char *interface, 
 int bus_property_get_long(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
 int bus_property_get_ulong(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
 #endif
+#endif // 0
 
 /* uid_t and friends on Linux 32 bit. This means we can just use the
  * default serializer for 32bit unsigned, for serializing it, and map
@@ -197,10 +201,12 @@ int bus_track_add_name_many(sd_bus_track *t, char **l);
 #endif // 0
 
 int bus_open_system_watch_bind_with_description(sd_bus **ret, const char *description);
+#if 0 /// UNNEEDED by elogind
 static inline int bus_open_system_watch_bind(sd_bus **ret) {
         return bus_open_system_watch_bind_with_description(ret, NULL);
 }
 
 int bus_reply_pair_array(sd_bus_message *m, char **l);
+#endif // 0
 
 extern const struct hash_ops bus_message_hash_ops;

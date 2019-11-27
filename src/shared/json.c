@@ -515,6 +515,7 @@ int json_variant_new_array(JsonVariant **ret, JsonVariant **array, size_t n) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n) {
         JsonVariant *v;
         size_t i;
@@ -551,6 +552,7 @@ int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n) {
         *ret = v;
         return 0;
 }
+#endif // 0
 
 int json_variant_new_array_strv(JsonVariant **ret, char **l) {
         _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;
@@ -2625,9 +2627,11 @@ int json_parse(const char *input, JsonVariant **ret, unsigned *ret_line, unsigne
         return json_parse_internal(&input, NULL, ret, ret_line, ret_column, false);
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_parse_continue(const char **p, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column) {
         return json_parse_internal(p, NULL, ret, ret_line, ret_column, true);
 }
+#endif // 0
 
 int json_parse_file(FILE *f, const char *path, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column) {
         _cleanup_(json_source_unrefp) JsonSource *source = NULL;
@@ -3135,6 +3139,7 @@ int json_build(JsonVariant **ret, ...) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_log_internal(
                 JsonVariant *variant,
                 int level,
@@ -3448,6 +3453,7 @@ int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFl
 
         return 0;
 }
+#endif // 0
 
 static const char* const json_variant_type_table[_JSON_VARIANT_TYPE_MAX] = {
         [JSON_VARIANT_STRING] = "string",
