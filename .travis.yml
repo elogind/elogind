@@ -10,14 +10,10 @@ before_install:
 - docker run -d --name test-img -v $(pwd):/travis voidlinux/$DIST:latest tail -f /dev/null
 - docker ps
 install:
-- docker exec -t test-img sh -c "
-   xbps-remove -R libressl libtls19 &&
-   xbps-install -Suy acl-devel eudev-libudev-devel gettext-devel libglib-devel
-                     libcap-devel libseccomp-devel pam-devel docbook-xsl
-                     gettext-devel   git gperf intltool libxslt m4 pkg-config
-                     shadow glib-devel meson base-devel bash-completion
-                     pcre2-devel polkit-devel kexec-tools valgrind-devel
-                     libaudit-devel util-linux"
+- docker exec -t test-img sh -c "xbps-install -Suy acl-devel eudev-libudev-devel gettext-devel
+  libglib-devel libcap-devel libseccomp-devel pam-devel docbook-xsl gettext-devel
+  git gperf intltool libxslt m4 pkg-config shadow glib-devel meson base-devel bash-completion
+  pcre2-devel polkit-devel kexec-tools valgrind-devel libaudit-devel util-linux"
 script:
 - docker exec -t test-img sh -c "
    echo 'dcb30309cd6c8b7cc20383d85a5c7012' > /etc/machine-id &&
