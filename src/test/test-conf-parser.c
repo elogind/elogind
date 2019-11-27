@@ -237,8 +237,8 @@ static const char* const config_file[] = {
         "[Section]\n"
         "[Section]\n"
         "setting1=1\n"
-        "setting1=2\n"
-        "setting1=1\n",      /* repeated settings */
+        "setting1=    2 \t\n"
+        "setting1=    1\n",  /* repeated settings */
 
         "[Section]\n"
         "[Section]\n"
@@ -309,15 +309,6 @@ static const char* const config_file[] = {
         "[Section]\n"
         "setting1="          /* many continuation lines, together above the limit */
         x1000(x1000("x") x10("abcde") "\\\n") "xxx",
-
-        "[Section]\n"
-        "setting1=2\n"
-        "[NoWarnSection]\n"
-        "setting1=3\n"
-        "[WarnSection]\n"
-        "setting1=3\n"
-        "[X-Section]\n"
-        "setting1=3\n",
 };
 
 static void test_config_parse(unsigned i, const char *s) {
@@ -344,12 +335,14 @@ static void test_config_parse(unsigned i, const char *s) {
                          const char *sections,
                          ConfigItemLookup lookup,
                          const void *table,
-                         ConfigParseFlags flags,
+                         bool relaxed,
+                         bool allow_include,
+                         bool warn,
                          void *userdata)
         */
 
         r = config_parse(NULL, name, f,
-                         "Section\0-NoWarnSection\0",
+                         "Section\0",
                          config_item_table_lookup, items,
                          CONFIG_PARSE_WARN, NULL);
 
@@ -382,11 +375,6 @@ static void test_config_parse(unsigned i, const char *s) {
         case 15 ... 16:
                 assert_se(r == -ENOBUFS);
                 assert_se(setting1 == NULL);
-                break;
-
-        case 17:
-                assert_se(r == 0);
-                assert_se(streq(setting1, "2"));
                 break;
         }
 }
