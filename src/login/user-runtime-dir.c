@@ -201,7 +201,7 @@ static int run(int argc, char *argv[]) {
                 return log_error_errno(r, "Could not initialize labelling: %m\n");
 #else
 int user_runtime_dir(const char *verb, User *u) {
-        int r;
+        int r = 0;
 
         assert_se(verb);
         assert_se(u);
