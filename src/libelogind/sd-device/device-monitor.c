@@ -109,11 +109,13 @@ int device_monitor_disconnect(sd_device_monitor *m) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_monitor_get_fd(sd_device_monitor *m) {
         assert_return(m, -EINVAL);
 
         return m->sock;
 }
+#endif // 0
 
 int device_monitor_new_full(sd_device_monitor **ret, MonitorNetlinkGroup group, int fd) {
         _cleanup_(sd_device_monitor_unrefp) sd_device_monitor *m = NULL;

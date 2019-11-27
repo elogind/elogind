@@ -46,11 +46,13 @@ int device_add_property(sd_device *device, const char *key, const char *value) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 void device_set_devlink_priority(sd_device *device, int priority) {
         assert(device);
 
         device->devlink_priority = priority;
 }
+#endif // 0
 
 void device_set_is_initialized(sd_device *device) {
         assert(device);
@@ -58,6 +60,7 @@ void device_set_is_initialized(sd_device *device) {
         device->is_initialized = true;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_ensure_usec_initialized(sd_device *device, sd_device *device_old) {
         usec_t when;
 
@@ -124,6 +127,7 @@ int device_get_devnode_uid(sd_device *device, uid_t *uid) {
 
         return 0;
 }
+#endif // 0
 
 static int device_set_devuid(sd_device *device, const char *uid) {
         unsigned u;
@@ -145,6 +149,7 @@ static int device_set_devuid(sd_device *device, const char *uid) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_get_devnode_gid(sd_device *device, gid_t *gid) {
         int r;
 
@@ -162,7 +167,7 @@ int device_get_devnode_gid(sd_device *device, gid_t *gid) {
 
         return 0;
 }
-
+#endif // 0
 static int device_set_devgid(sd_device *device, const char *gid) {
         unsigned g;
         int r;
@@ -215,6 +220,7 @@ static int device_set_action(sd_device *device, const char *action) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_get_seqnum(sd_device *device, uint64_t *seqnum) {
         assert(device);
 
@@ -226,6 +232,7 @@ int device_get_seqnum(sd_device *device, uint64_t *seqnum) {
 
         return 0;
 }
+#endif // 0
 
 static int device_set_seqnum(sd_device *device, const char *str) {
         uint64_t seqnum;
@@ -391,11 +398,13 @@ static int device_append(sd_device *device, char *key, const char **_major, cons
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 void device_seal(sd_device *device) {
         assert(device);
 
         device->sealed = true;
 }
+#endif // 0
 
 static int device_verify(sd_device *device) {
         assert(device);
@@ -410,6 +419,7 @@ static int device_verify(sd_device *device) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_new_from_strv(sd_device **ret, char **strv) {
         _cleanup_(sd_device_unrefp) sd_device *device = NULL;
         char **key;
@@ -443,6 +453,7 @@ int device_new_from_strv(sd_device **ret, char **strv) {
 
         return 0;
 }
+#endif // 0
 
 int device_new_from_nulstr(sd_device **ret, uint8_t *nulstr, size_t len) {
         _cleanup_(sd_device_unrefp) sd_device *device = NULL;
@@ -568,6 +579,7 @@ int device_get_properties_strv(sd_device *device, char ***strv) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_get_devlink_priority(sd_device *device, int *priority) {
         int r;
 
@@ -641,6 +653,7 @@ int device_rename(sd_device *device, const char *name) {
 
         return 0;
 }
+#endif // 0
 
 int device_shallow_clone(sd_device *old_device, sd_device **new_device) {
         _cleanup_(sd_device_unrefp) sd_device *ret = NULL;
@@ -668,6 +681,7 @@ int device_shallow_clone(sd_device *old_device, sd_device **new_device) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_clone_with_db(sd_device *old_device, sd_device **new_device) {
         _cleanup_(sd_device_unrefp) sd_device *ret = NULL;
         int r;
@@ -730,6 +744,7 @@ int device_new_from_stat_rdev(sd_device **ret, const struct stat *st) {
 
         return sd_device_new_from_devnum(ret, type, st->st_rdev);
 }
+#endif // 0
 
 int device_copy_properties(sd_device *device_dst, sd_device *device_src) {
         const char *property, *value;
@@ -758,6 +773,7 @@ int device_copy_properties(sd_device *device_dst, sd_device *device_src) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 void device_cleanup_tags(sd_device *device) {
         assert(device);
 
@@ -985,6 +1001,7 @@ int device_delete_db(sd_device *device) {
 
         return 0;
 }
+#endif // 0
 
 static const char* const device_action_table[_DEVICE_ACTION_MAX] = {
         [DEVICE_ACTION_ADD]     = "add",
@@ -999,6 +1016,8 @@ static const char* const device_action_table[_DEVICE_ACTION_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(device_action, DeviceAction);
 
+#if 0 /// UNNEEDED by elogind
 void dump_device_action_table(void) {
         DUMP_STRING_TABLE(device_action, DeviceAction, _DEVICE_ACTION_MAX);
 }
+#endif // 0

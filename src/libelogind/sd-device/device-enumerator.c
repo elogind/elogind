@@ -266,6 +266,7 @@ _public_ int sd_device_enumerator_allow_uninitialized(sd_device_enumerator *enum
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_enumerator_add_match_is_initialized(sd_device_enumerator *enumerator) {
         assert_return(enumerator, -EINVAL);
 
@@ -275,6 +276,7 @@ int device_enumerator_add_match_is_initialized(sd_device_enumerator *enumerator)
 
         return 0;
 }
+#endif // 0
 
 static int device_compare(sd_device * const *_a, sd_device * const *_b) {
         sd_device *a = *(sd_device **)_a, *b = *(sd_device **)_b;
@@ -994,6 +996,7 @@ _public_ sd_device *sd_device_enumerator_get_subsystem_next(sd_device_enumerator
         return enumerator->devices[++enumerator->current_device_index];
 }
 
+#if 0 /// UNNEEDED by elogind
 sd_device *device_enumerator_get_first(sd_device_enumerator *enumerator) {
         assert_return(enumerator, NULL);
 
@@ -1017,6 +1020,7 @@ sd_device *device_enumerator_get_next(sd_device_enumerator *enumerator) {
 
         return enumerator->devices[++enumerator->current_device_index];
 }
+#endif // 0
 
 sd_device **device_enumerator_get_devices(sd_device_enumerator *enumerator, size_t *ret_n_devices) {
         assert(enumerator);
