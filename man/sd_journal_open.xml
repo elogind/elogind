@@ -214,12 +214,12 @@
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd-journald.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       --><!-- else -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_next</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>sd_journal_get_data</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>systemd-machined</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>sd_journal_get_data</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     </para>
   </refsect1>
 
