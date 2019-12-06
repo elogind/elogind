@@ -21,7 +21,7 @@ static inline bool manager_errno_skip_test(int r) {
 
 char* setup_fake_runtime_dir(void);
 int enter_cgroup_subroot(char **ret_cgroup);
-const char* get_testdata_dir(void);
+int get_testdata_dir(const char *suffix, char **ret);
 const char* get_catalog_dir(void);
 #endif // 0
 bool slow_tests_enabled(void);
