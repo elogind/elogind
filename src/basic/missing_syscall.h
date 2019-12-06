@@ -37,7 +37,7 @@ static inline int missing_pivot_root(const char *new_root, const char *put_old) 
 
 #if !HAVE_MEMFD_CREATE
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_memfd_create && __NR_memfd_create > 0)
+#  if ! (defined __NR_memfd_create && __NR_memfd_create >= 0)
 #    if defined __NR_memfd_create
 #      undef __NR_memfd_create
 #    endif
@@ -84,7 +84,7 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 
 #if !HAVE_GETRANDOM
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_getrandom && __NR_getrandom > 0)
+#  if ! (defined __NR_getrandom && __NR_getrandom >= 0)
 #    if defined __NR_getrandom
 #      undef __NR_getrandom
 #    endif
@@ -147,7 +147,7 @@ static inline pid_t missing_gettid(void) {
 
 #if !HAVE_NAME_TO_HANDLE_AT
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_name_to_handle_at && __NR_name_to_handle_at > 0)
+#  if ! (defined __NR_name_to_handle_at && __NR_name_to_handle_at >= 0)
 #    if defined __NR_name_to_handle_at
 #      undef __NR_name_to_handle_at
 #    endif
@@ -188,7 +188,7 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 
 #if !HAVE_SETNS
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_setns && __NR_setns > 0)
+#  if ! (defined __NR_setns && __NR_setns >= 0)
 #    if defined __NR_setns
 #      undef __NR_setns
 #    endif
@@ -229,7 +229,7 @@ static inline pid_t raw_getpid(void) {
 
 #if !HAVE_RENAMEAT2
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_renameat2 && __NR_renameat2 > 0)
+#  if ! (defined __NR_renameat2 && __NR_renameat2 >= 0)
 #    if defined __NR_renameat2
 #      undef __NR_renameat2
 #    endif
@@ -278,7 +278,7 @@ static inline int missing_renameat2(int oldfd, const char *oldname, int newfd, c
 
 #if !HAVE_KCMP
 static inline int missing_kcmp(pid_t pid1, pid_t pid2, int type, unsigned long idx1, unsigned long idx2) {
-#  if defined __NR_kcmp && __NR_kcmp > 0
+#  if defined __NR_kcmp && __NR_kcmp >= 0
         return syscall(__NR_kcmp, pid1, pid2, type, idx1, idx2);
 #  else
         errno = ENOSYS;
@@ -293,7 +293,7 @@ static inline int missing_kcmp(pid_t pid1, pid_t pid2, int type, unsigned long i
 
 #if !HAVE_KEYCTL
 static inline long missing_keyctl(int cmd, unsigned long arg2, unsigned long arg3, unsigned long arg4, unsigned long arg5) {
-#  if defined __NR_keyctl && __NR_keyctl > 0
+#  if defined __NR_keyctl && __NR_keyctl >= 0
         return syscall(__NR_keyctl, cmd, arg2, arg3, arg4, arg5);
 #  else
         errno = ENOSYS;
@@ -304,7 +304,7 @@ static inline long missing_keyctl(int cmd, unsigned long arg2, unsigned long arg
 }
 
 static inline key_serial_t missing_add_key(const char *type, const char *description, const void *payload, size_t plen, key_serial_t ringid) {
-#  if defined __NR_add_key && __NR_add_key > 0
+#  if defined __NR_add_key && __NR_add_key >= 0
         return syscall(__NR_add_key, type, description, payload, plen, ringid);
 #  else
         errno = ENOSYS;
@@ -315,7 +315,7 @@ static inline key_serial_t missing_add_key(const char *type, const char *descrip
 }
 
 static inline key_serial_t missing_request_key(const char *type, const char *description, const char * callout_info, key_serial_t destringid) {
-#  if defined __NR_request_key && __NR_request_key > 0
+#  if defined __NR_request_key && __NR_request_key >= 0
         return syscall(__NR_request_key, type, description, callout_info, destringid);
 #  else
         errno = ENOSYS;
@@ -330,7 +330,7 @@ static inline key_serial_t missing_request_key(const char *type, const char *des
 
 #if !HAVE_COPY_FILE_RANGE
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_copy_file_range && __NR_copy_file_range > 0)
+#  if ! (defined __NR_copy_file_range && __NR_copy_file_range >= 0)
 #    if defined __NR_copy_file_range
 #      undef __NR_copy_file_range
 #    endif
@@ -373,7 +373,7 @@ static inline ssize_t missing_copy_file_range(int fd_in, loff_t *off_in,
 #if 0 /// elogind does not control/manage Berkeley packet filters
 #if !HAVE_BPF
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_bpf && __NR_bpf > 0)
+#  if ! (defined __NR_bpf && __NR_bpf >= 0)
 #    if defined __NR_bpf
 #      undef __NR_bpf
 #    endif
@@ -415,7 +415,7 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 
 #ifndef __IGNORE_pkey_mprotect
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_pkey_mprotect && __NR_pkey_mprotect > 0)
+#  if ! (defined __NR_pkey_mprotect && __NR_pkey_mprotect >= 0)
 #    if defined __NR_pkey_mprotect
 #      undef __NR_pkey_mprotect
 #    endif
@@ -451,7 +451,7 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 
 #if !HAVE_STATX
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_statx && __NR_statx > 0)
+#  if ! (defined __NR_statx && __NR_statx >= 0)
 #    if defined __NR_statx
 #      undef __NR_statx
 #    endif
@@ -502,7 +502,7 @@ enum {
 static inline long missing_set_mempolicy(int mode, const unsigned long *nodemask,
                            unsigned long maxnode) {
         long i;
-#  if defined __NR_set_mempolicy && __NR_set_mempolicy > 0
+#  if defined __NR_set_mempolicy && __NR_set_mempolicy >= 0
         i = syscall(__NR_set_mempolicy, mode, nodemask, maxnode);
 #  else
         errno = ENOSYS;
@@ -533,7 +533,7 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 
 #if !HAVE_PIDFD_OPEN
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_pidfd_open && __NR_pidfd_open > 0)
+#  if ! (defined __NR_pidfd_open && __NR_pidfd_open >= 0)
 #    if defined __NR_pidfd_open
 #      undef __NR_pidfd_open
 #    endif
@@ -551,7 +551,7 @@ static inline int pidfd_open(pid_t pid, unsigned flags) {
 
 #if !HAVE_PIDFD_SEND_SIGNAL
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#  if ! (defined __NR_pidfd_send_signal && __NR_pidfd_send_signal > 0)
+#  if ! (defined __NR_pidfd_send_signal && __NR_pidfd_send_signal >= 0)
 #    if defined __NR_pidfd_send_signal
 #      undef __NR_pidfd_send_signal
 #    endif
