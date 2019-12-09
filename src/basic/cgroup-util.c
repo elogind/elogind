@@ -20,6 +20,7 @@
 #include "cgroup-util.h"
 //#include "def.h"
 #include "dirent-util.h"
+#include "env-file.h"
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -1844,7 +1845,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
 #else
         p = strappend("/run/systemd/sessions/", slice);
 
-        r = read_one_line_file(p, &s);
+        r = parse_env_file(NULL, p, "UID", &s);
         if (r == -ENOENT)
                 return -ENXIO;
         if (r < 0)
