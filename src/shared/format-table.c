@@ -4,13 +4,16 @@
 //#include <net/if.h>
 #include <unistd.h>
 
+#include "sd-id128.h"
+
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-table.h"
 #include "format-util.h"
 #include "gunicode.h"
-//#include "in-addr-util.h"
+#include "id128-util.h"
+#include "in-addr-util.h"
 #include "locale-util.h"
 #include "memory-util.h"
 #include "pager.h"
@@ -96,6 +99,7 @@ typedef struct TableData {
 #if 0 /// UNNEEDED by elogind
                 union in_addr_union address;
 #endif // 0
+                sd_id128_t id128;
                 /* … add more here as we start supporting more cell data types … */
         };
 } TableData;
@@ -293,6 +297,10 @@ static size_t table_data_size(TableDataType type, const void *data) {
                 return sizeof(struct in6_addr);
 #endif // 0
 
+        case TABLE_UUID:
+        case TABLE_ID128:
+                return sizeof(sd_id128_t);
+
         default:
                 assert_not_reached("Uh? Unexpected cell type");
         }
@@ -339,7 +347,6 @@ static bool table_data_matches(
 
         k = table_data_size(type, data);
         l = table_data_size(d->type, d->data);
-
         if (k != l)
                 return false;
 
@@ -792,6 +799,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
 #if 0 /// UNNEEDED by elogind
                         union in_addr_union address;
 #endif // 0
+                        sd_id128_t id128;
                 } buffer;
 
                 switch (type) {
@@ -914,6 +922,12 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                 case TABLE_IN6_ADDR:
                         buffer.address = *va_arg(ap, union in_addr_union *);
                         data = &buffer.address.in6;
+                        break;
+
+                case TABLE_UUID:
+                case TABLE_ID128:
+                        buffer.id128 = va_arg(ap, sd_id128_t);
+                        data = &buffer.id128;
                         break;
 
                 case TABLE_SET_MINIMUM_WIDTH: {
@@ -1154,6 +1168,10 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
                 case TABLE_IN6_ADDR:
                         return memcmp(&a->address.in6, &b->address.in6, FAMILY_ADDRESS_SIZE(AF_INET6));
 #endif // 0
+
+                case TABLE_UUID:
+                case TABLE_ID128:
+                        return memcmp(&a->id128, &b->id128, sizeof(sd_id128_t));
 
                 default:
                         ;
@@ -1470,6 +1488,28 @@ static const char *table_data_format(Table *t, TableData *d) {
                 break;
         }
 #endif // 0
+
+        case TABLE_ID128: {
+                char *p;
+
+                p = new(char, SD_ID128_STRING_MAX);
+                if (!p)
+                        return NULL;
+
+                d->formatted = sd_id128_to_string(d->id128, p);
+                break;
+        }
+
+        case TABLE_UUID: {
+                char *p;
+
+                p = new(char, ID128_UUID_STRING_MAX);
+                if (!p)
+                        return NULL;
+
+                d->formatted = id128_to_uuid_string(d->id128, p);
+                break;
+        }
 
         default:
                 assert_not_reached("Unexpected type?");
@@ -2180,6 +2220,16 @@ static int table_data_to_json(TableData *d, JsonVariant **ret) {
         case TABLE_IN6_ADDR:
                 return json_variant_new_array_bytes(ret, &d->address, FAMILY_ADDRESS_SIZE(AF_INET6));
 #endif // 0
+
+        case TABLE_ID128: {
+                char buf[SD_ID128_STRING_MAX];
+                return json_variant_new_string(ret, sd_id128_to_string(d->id128, buf));
+        }
+
+        case TABLE_UUID: {
+                char buf[ID128_UUID_STRING_MAX];
+                return json_variant_new_string(ret, id128_to_uuid_string(d->id128, buf));
+        }
 
         default:
                 return -EINVAL;
