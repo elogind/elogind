@@ -941,7 +941,7 @@ _public_ int sd_journal_get_cursor(sd_journal *j, char **cursor) {
 #if 0 /// UNSUPPORTED by elogind
         Object *o;
         int r;
-        char bid[33], sid[33];
+        char bid[SD_ID128_STRING_MAX], sid[SD_ID128_STRING_MAX];
 
         assert_return(j, -EINVAL);
         assert_return(!journal_pid_changed(j), -ECHILD);
@@ -2343,17 +2343,9 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
 
                                 return 0;
                         }
-                        return -EPROTONOSUPPORT;
-#endif
-                } else if (l >= field_length+1 &&
-                           memcmp(o->data.payload, field, field_length) == 0 &&
-                           o->data.payload[field_length] == '=') {
 #else
                         return -EPROTONOSUPPORT;
 #endif
-                } else if (l >= field_length + 1 &&
-                                memcmp(o->data.payload, field, field_length) == 0 &&
-                                o->data.payload[field_length] == '=') {
                 } else if (l >= field_length+1 &&
                            memcmp(o->data.payload, field, field_length) == 0 &&
                            o->data.payload[field_length] == '=') {
@@ -2370,7 +2362,6 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
                 }
 
                 r = journal_file_move_to_object(f, OBJECT_ENTRY, f->current_offset, &o);
-        }
                 if (r < 0)
                         return r;
         }
@@ -2382,7 +2373,6 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
 #if 0 /// UNNEEDED by elogind
 static int return_data(sd_journal *j, JournalFile *f, Object *o, const void **data, size_t *size) {
         size_t t;
-                if (r < 0)
         uint64_t l;
         int compression;
 
