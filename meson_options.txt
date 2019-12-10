@@ -117,6 +117,8 @@ option('utmp', type : 'boolean',
 #        description : 'support for environment.d')
 # option('binfmt', type : 'boolean',
 #        description : 'support for custom binary formats')
+# option('repart', type : 'combo', choices : ['auto', 'true', 'false'],
+#        description : 'install the systemd-repart tool')
 # option('coredump', type : 'boolean',
 #        description : 'install the coredump handler')
 # option('pstore', type : 'boolean',
@@ -331,6 +333,8 @@ option('audit', type : 'combo', choices : ['auto', 'true', 'false'],
 #if 0 /// UNNEEDED by elogind
 # option('blkid', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'libblkid support')
+# option('fdisk', type : 'combo', choices : ['auto', 'true', 'false'],
+#        description : 'libfdisk support')
 # option('kmod', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'support for loadable modules')
 #endif // 0

@@ -1052,6 +1052,17 @@ endif
 # libmount = dependency('mount',
 #                       version : fuzzer_build ? '>= 0' : '>= 2.30')
 #
+# want_libfdisk = get_option('fdisk')
+# if want_libfdisk != 'false' and not skip_deps
+#         libfdisk = dependency('fdisk',
+#                               required : want_libfdisk == 'true')
+#         have = libfdisk.found()
+# else
+#         have = false
+#         libfdisk = []
+# endif
+# conf.set10('HAVE_LIBFDISK', have)
+#
 # want_seccomp = get_option('seccomp')
 # if want_seccomp != 'false' and not skip_deps
 #         libseccomp = dependency('libseccomp',
@@ -1494,6 +1505,18 @@ conf.set10('HAVE_DBUS', have)
 #          'DNS_OVER_TLS_' + default_dns_over_tls.underscorify().to_upper())
 # substs.set('DEFAULT_DNS_OVER_TLS_MODE', default_dns_over_tls)
 #
+# want_repart = get_option('repart')
+# if want_repart != 'false'
+#         have = (conf.get('HAVE_OPENSSL') == 1 and
+#                 conf.get('HAVE_LIBFDISK') == 1)
+#         if want_repart == 'true' and not have
+#                 error('repart support was requested, but dependencies are not available')
+#         endif
+# else
+#         have = false
+# endif
+# conf.set10('ENABLE_REPART', have)
+#
 # want_importd = get_option('importd')
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
@@ -1737,8 +1760,8 @@ libelogind = shared_library(
         version : libsystemd_version,
         include_directories : includes,
         link_args : ['-shared',
-                     '-Wl,--version-script=' + libelogind_sym_path],
 #if 0 /// elogind does not need gcrypt, only threads.
+#                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
 #                      libbasic_gcrypt],
 #         link_whole : [libsystemd_static,
@@ -1761,10 +1784,10 @@ libelogind = shared_library(
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
-install_libelogind_static = static_library(
-        'elogind',
-        libelogind_sources,
 #if 0 /// No journald with elogind (And before you ask: NO!)
+# install_libsystemd_static = static_library(
+#         'systemd',
+#         libsystemd_sources,
 #         journal_client_sources,
 #endif // 0
         basic_sources,
@@ -1823,6 +1846,7 @@ subdir('src/shared')
 # subdir('src/pstore')
 # subdir('src/hostname')
 # subdir('src/import')
+# subdir('src/partition')
 # subdir('src/kernel-install')
 # subdir('src/locale')
 # subdir('src/machine')
@@ -2735,6 +2759,21 @@ endif
 #                                  mkdir_p.format(binfmtdir))
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
+# endif
+#
+# if conf.get('ENABLE_REPART') == 1
+#         executable('systemd-repart',
+#                    systemd_repart_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [threads,
+#                                    libcryptsetup,
+#                                    libblkid,
+#                                    libfdisk,
+#                                    libopenssl],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootbindir)
 # endif
 #
 # if conf.get('ENABLE_VCONSOLE') == 1
@@ -3741,6 +3780,7 @@ foreach tuple : [
 #         ['libiptc'],
 #         ['elfutils'],
 #         ['binfmt'],
+#         ['repart'],
 #         ['vconsole'],
 #         ['quotacheck'],
 #         ['tmpfiles'],
