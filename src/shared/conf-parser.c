@@ -523,6 +523,7 @@ DEFINE_PARSER(uint8, uint8_t, safe_atou8);
 DEFINE_PARSER(uint16, uint16_t, safe_atou16);
 DEFINE_PARSER(uint32, uint32_t, safe_atou32);
 #endif // 0
+DEFINE_PARSER(int32, int32_t, safe_atoi32);
 DEFINE_PARSER(uint64, uint64_t, safe_atou64);
 DEFINE_PARSER(unsigned, unsigned, safe_atou);
 DEFINE_PARSER(double, double, safe_atod);
@@ -566,7 +567,7 @@ int config_parse_iec_size(const char* unit,
         return 0;
 }
 
-int config_parse_si_uint64(
+int config_parse_si_size(
                 const char* unit,
                 const char *filename,
                 unsigned line,
@@ -578,7 +579,8 @@ int config_parse_si_uint64(
                 void *data,
                 void *userdata) {
 
-        uint64_t *sz = data;
+        size_t *sz = data;
+        uint64_t v;
         int r;
 
         assert(filename);
@@ -586,12 +588,15 @@ int config_parse_si_uint64(
         assert(rvalue);
         assert(data);
 
-        r = parse_size(rvalue, 1000, sz);
+        r = parse_size(rvalue, 1000, &v);
+        if (r >= 0 && (uint64_t) (size_t) v != v)
+                r = -ERANGE;
         if (r < 0) {
                 log_syntax(unit, LOG_ERR, filename, line, r, "Failed to parse size value '%s', ignoring: %m", rvalue);
                 return 0;
         }
 
+        *sz = (size_t) v;
         return 0;
 }
 

@@ -117,11 +117,12 @@ CONFIG_PARSER_PROTOTYPE(config_parse_long);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint8);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint16);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint32);
+CONFIG_PARSER_PROTOTYPE(config_parse_int32);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint64);
 CONFIG_PARSER_PROTOTYPE(config_parse_double);
 #if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_size);
-CONFIG_PARSER_PROTOTYPE(config_parse_si_uint64);
+CONFIG_PARSER_PROTOTYPE(config_parse_si_size);
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_bool);
