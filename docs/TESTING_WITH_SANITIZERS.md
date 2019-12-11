@@ -1,6 +1,7 @@
 ---
 title: Testing elogind using sanitizers
 category: Contributing
+layout: default
 ---
 
 # Testing elogind using sanitizers
