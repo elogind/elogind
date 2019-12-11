@@ -1,5 +1,6 @@
 ---
 title: Testing elogind using sanitizers
+category: Contributing
 ---
 
 # Testing elogind using sanitizers
