@@ -3963,6 +3963,7 @@ foreach tuple : [
         ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
 #if 0 /// elogind ships neitehr libudev nor systemctl
+#         ['install tests',    install_tests],
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #endif // 0
