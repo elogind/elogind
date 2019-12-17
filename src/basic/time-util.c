@@ -1405,13 +1405,22 @@ bool clock_supported(clockid_t clock) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int get_timezone(char **tz) {
+int get_timezone(char **ret) {
         _cleanup_free_ char *t = NULL;
         const char *e;
         char *z;
         int r;
 
         r = readlink_malloc("/etc/localtime", &t);
+        if (r == -ENOENT) {
+                /* If the symlink does not exist, assume "UTC", like glibc does*/
+                z = strdup("UTC");
+                if (!z)
+                        return -ENOMEM;
+
+                *ret = z;
+                return 0;
+        }
         if (r < 0)
                 return r; /* returns EINVAL if not a symlink */
 
@@ -1426,7 +1435,7 @@ int get_timezone(char **tz) {
         if (!z)
                 return -ENOMEM;
 
-        *tz = z;
+        *ret = z;
         return 0;
 }
 
@@ -1507,9 +1516,30 @@ int time_change_fd(void) {
         if (fd < 0)
                 return -errno;
 
-        if (timerfd_settime(fd, TFD_TIMER_ABSTIME|TFD_TIMER_CANCEL_ON_SET, &its, NULL) < 0)
-                return -errno;
+        if (timerfd_settime(fd, TFD_TIMER_ABSTIME|TFD_TIMER_CANCEL_ON_SET, &its, NULL) >= 0)
+                return TAKE_FD(fd);
 
-        return TAKE_FD(fd);
+        /* So apparently there are systems where time_t is 64bit, but the kernel actually doesn't support
+         * 64bit time_t. In that case configuring a timer to TIME_T_MAX will fail with EOPNOTSUPP or a
+         * similar error. If that's the case let's try with INT32_MAX instead, maybe that works. It's a bit
+         * of a black magic thing though, but what can we do?
+         *
+         * We don't want this code on x86-64, hence let's conditionalize this for systems with 64bit time_t
+         * but where "long" is shorter than 64bit, i.e. 32bit archs.
+         *
+         * See: https://github.com/systemd/systemd/issues/14362 */
+
+#if SIZEOF_TIME_T == 8 && ULONG_MAX < UINT64_MAX
+        if (ERRNO_IS_NOT_SUPPORTED(errno)) {
+                static const struct itimerspec its32 = {
+                        .it_value.tv_sec = INT32_MAX,
+                };
+
+                if (timerfd_settime(fd, TFD_TIMER_ABSTIME|TFD_TIMER_CANCEL_ON_SET, &its32, NULL) >= 0)
+                        return TAKE_FD(fd);
+        }
+#endif
+
+        return -errno;
 }
 #endif // 0
