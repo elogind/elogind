@@ -84,11 +84,10 @@ int parse_mode(const char *s, mode_t *ret) {
 }
 #endif // 0
 
-int parse_ifindex(const char *s, int *ret) {
+int parse_ifindex(const char *s) {
         int ifi, r;
 
         assert(s);
-        assert(ret);
 
         r = safe_atoi(s, &ifi);
         if (r < 0)
@@ -96,26 +95,24 @@ int parse_ifindex(const char *s, int *ret) {
         if (ifi <= 0)
                 return -EINVAL;
 
-        *ret = ifi;
-        return 0;
+        return ifi;
 }
 
-int parse_ifindex_or_ifname(const char *s, int *ret) {
+int parse_ifindex_or_ifname(const char *s) {
         int r;
 
         assert(s);
-        assert(ret);
 
-        r = parse_ifindex(s, ret);
-        if (r >= 0)
+        r = parse_ifindex(s);
+        if (r > 0)
                 return r;
+        assert(r < 0);
 
         r = (int) if_nametoindex(s);
         if (r <= 0)
                 return -errno;
 
-        *ret = r;
-        return 0;
+        return r;
 }
 
 #if 0 /// UNNEEDED by elogind
