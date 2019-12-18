@@ -352,7 +352,6 @@ substs.set('systemshutdowndir',                               systemshutdowndir)
 substs.set('systemsleepdir',                                  systemsleepdir)
 #if 0 /// UNNEEDED by elogind
 # substs.set('CERTIFICATEROOT',                                 get_option('certificate-root'))
-# substs.set('SYSTEMCTL',                                       join_paths(rootbindir, 'systemctl'))
 # substs.set('RANDOM_SEED',                                     join_paths(randomseeddir, 'random-seed'))
 # substs.set('SYSTEM_SYSVINIT_PATH',                            sysvinit_path)
 # substs.set('SYSTEM_SYSVRCND_PATH',                            sysvrcnd_path)
