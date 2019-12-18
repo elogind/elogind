@@ -312,6 +312,13 @@ endif
 #endif // 0
 
 #if 0 /// elogind does not need all this networking stuff
+# if conf.get('HAVE_PAM') == 1
+#         shared_sources += files('''
+#         pam-util.c
+#         pam-util.h
+# '''.split())
+# endif
+#
 # generate_ip_protocol_list = find_program('generate-ip-protocol-list.sh')
 # ip_protocol_list_txt = custom_target(
 #         'ip-protocol-list.txt',
@@ -370,6 +377,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libmount,
 #                   libopenssl,
 #                   libp11kit,
+#                   libpam,
 #                   librt,
 #                   libseccomp,
 #                   libselinux,
