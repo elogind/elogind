@@ -7,7 +7,7 @@ env:
 services:
 - docker
 before_install:
-- docker run -d --name test-img -v $(pwd):/travis voidlinux/$DIST:latest tail -f /dev/null
+- docker run -d --name test-img -v $(pwd):/travis voidlinux/$DIST:20191230 tail -f /dev/null
 - docker ps
 install:
 - docker exec -t test-img sh -c "xbps-install -Suy acl-devel eudev-libudev-devel gettext-devel
@@ -22,7 +22,7 @@ script:
    echo 'docker' > /run/systemd/container"
 - docker exec -it test-img sh -c "
    cd /travis &&
-   meson --werror -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true _build"
+   meson --werror -Ddefault-locale=en_US.UTF-8 -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true _build"
 - docker exec -it test-img sh -c "
    cd /travis &&
    ninja -C _build"
