@@ -1678,9 +1678,10 @@ subdir('src/login')
 #         install : false)
 #endif // 0
 
+libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
+
 libelogind = shared_library(
         'elogind',
-libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
         disable_mempool_c,
         version : libsystemd_version,
         include_directories : includes,
