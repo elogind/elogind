@@ -52,6 +52,8 @@ conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 # fuzzer_build = want_ossfuzz or want_libfuzzer or want_fuzzbuzz
 #endif // 0
 
+skip_deps = false
+
 #####################################################################
 #if 0 /// elogind does not need this
 #
@@ -1607,7 +1609,9 @@ config_h = configure_file(
 meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
-                               'src/boot',
+#if 0 /// UNNEEDED by elogind
+#                               'src/boot',
+#endif // 0
                                'src/shared',
                                'src/systemd',
                                'src/journal',
@@ -1624,7 +1628,9 @@ includes = include_directories('src/basic',
 #                                'src/libudev',
 #endif // 0
                                'src/core',
-                               'src/shutdown',
+#if 0 /// UNNEEDED by elogind
+#                               'src/shutdown',
+#endif // 0
 #if 0 /// elogind has a different list
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
@@ -1683,7 +1689,7 @@ libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
 libelogind = shared_library(
         'elogind',
         disable_mempool_c,
-        version : libsystemd_version,
+        version : meson.project_version(),
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -3376,13 +3382,15 @@ endforeach
 
 ############################################################
 
-check_directives_sh = find_program('tools/check-directives.sh')
-
-if want_tests != 'false'
-        test('check-directives',
-             check_directives_sh,
-             args : project_source_root)
-endif
+#if 0 /// UNNEEDED by elogind
+#check_directives_sh = find_program('tools/check-directives.sh')
+#
+#if want_tests != 'false'
+#        test('check-directives',
+#             check_directives_sh,
+#             args : project_source_root)
+#endif
+#endif // 0
 
 ############################################################
 
