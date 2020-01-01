@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "alloc-util.h"
 #include "macro.h"
 
 size_t page_size(void) _pure_;
@@ -90,9 +91,7 @@ static inline void* erase_and_free(void *p) {
 
         l = malloc_usable_size(p);
         explicit_bzero_safe(p, l);
-        free(p);
-
-        return NULL;
+        return mfree(p);
 }
 
 static inline void erase_and_freep(void *p) {
