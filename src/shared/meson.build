@@ -131,6 +131,8 @@
 #         module-util.h
 #         mount-util.c
 #         mount-util.h
+#         netif-naming-scheme.c
+#         netif-naming-scheme.h
 #         nscd-flush.c
 #         nscd-flush.h
 #         nsflags.c
