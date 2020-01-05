@@ -54,6 +54,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../build/config.h" />
 		<Unit filename="../man/busctl.xml" />
 		<Unit filename="../man/custom-entities.ent.in" />
 		<Unit filename="../man/custom-html.xsl" />
