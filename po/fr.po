@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# French translations for systemd package
-# Traductions françaises du paquet systemd.
+# French translations for elogind package
+# Traductions françaises du paquet elogind.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
+"Project-Id-Version: elogind\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-07 22:43+0100\n"
 "PO-Revision-Date: 2019-03-07 23:09+0100\n"

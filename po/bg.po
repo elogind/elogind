@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Bulgarian translation of systemd po-file.
+# Bulgarian translation of elogind po-file.
 # Copyright © 2016 Alexander Shopov <ash@kambanaria.org>
 # Alexander Shopov <ash@kambanaria.org>, 2016.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
+"Project-Id-Version: elogind master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-14 13:28+0300\n"
 "PO-Revision-Date: 2016-05-14 13:28+0300\n"

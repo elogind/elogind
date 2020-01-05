@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
 # Italian translation for elogind package
-# Traduzione in italiano per il pacchetto systemd
+# Traduzione in italiano per il pacchetto elogind
 # Daniele Medri <dmedri@gmail.com>, 2013-2019.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2019-05-05 17:02+0200\n"
 "PO-Revision-Date: 2019-05-05 17:13+0200\n"
 "Last-Translator: Daniele Medri <dmedri@gmail.com>\n"

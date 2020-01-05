@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Indonesian translation for systemd.
+# Indonesian translation for elogind.
 # Andika Triwidada <andika@gmail.com>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2018-03-04 11:09+0700\n"
 "PO-Revision-Date: 2018-03-04 11:12+0700\n"
 "Last-Translator: Andika Triwidada <atriwidada@gnome.org>\n"

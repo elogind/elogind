@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Swedish translation for systemd.
+# Swedish translation for elogind.
 # Sebastian Rasmussen <sebras@gmail.com>, 2015.
 # Andreas Henriksson <andreas@fatal.se>, 2016.
 # Josef Andersson <l10nl18nsweja@gmail.com>, 2015, 2017.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2017-03-01 15:50+0000\n"
 "PO-Revision-Date: 2017-03-19 21:18+0100\n"
 "Last-Translator: Josef Andersson <l10nl18nsweja@gmail.com>\n"
@@ -338,38 +338,36 @@ msgstr ""
 "Autentisering krävs för att starta om systemet även då ett program hindrar "
 "det."
 
-#if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy.in:224
-# msgid "Halt the system"
-# msgstr "Stoppa systemet"
-#
-# #: src/login/org.freedesktop.login1.policy.in:225
-# msgid "Authentication is required for halting the system."
-# msgstr "Autentisering krävs för att stoppa systemet."
-#
-# #: src/login/org.freedesktop.login1.policy.in:235
-# msgid "Halt the system while other users are logged in"
-# msgstr "Stoppa systemet medan andra användare är inloggade"
-#
-# #: src/login/org.freedesktop.login1.policy.in:236
-# msgid ""
-# "Authentication is required for halting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Autentisering krävs för att stoppa systemet medan andra användare är "
-# "inloggade."
-#
-# #: src/login/org.freedesktop.login1.policy.in:246
-# msgid "Halt the system while an application asked to inhibit it"
-# msgstr "Stoppa systemet även då ett program hindrar det"
-#
-# #: src/login/org.freedesktop.login1.policy.in:247
-# msgid ""
-# "Authentication is required for halting the system while an application asked "
-# "to inhibit it."
-# msgstr ""
-# "Autentisering krävs för att stoppa systemet även då ett program hindrar det."
-#endif // 0
+#: src/login/org.freedesktop.login1.policy:224
+msgid "Halt the system"
+msgstr "Stoppa systemet"
+
+#: src/login/org.freedesktop.login1.policy:225
+msgid "Authentication is required for halting the system."
+msgstr "Autentisering krävs för att stoppa systemet."
+
+#: src/login/org.freedesktop.login1.policy:235
+msgid "Halt the system while other users are logged in"
+msgstr "Stoppa systemet medan andra användare är inloggade"
+
+#: src/login/org.freedesktop.login1.policy:236
+msgid ""
+"Authentication is required for halting the system while other users are "
+"logged in."
+msgstr ""
+"Autentisering krävs för att stoppa systemet medan andra användare är "
+"inloggade."
+
+#: src/login/org.freedesktop.login1.policy:246
+msgid "Halt the system while an application asked to inhibit it"
+msgstr "Stoppa systemet även då ett program hindrar det"
+
+#: src/login/org.freedesktop.login1.policy:247
+msgid ""
+"Authentication is required for halting the system while an application asked "
+"to inhibit it."
+msgstr ""
+"Autentisering krävs för att stoppa systemet även då ett program hindrar det."
 
 #: ../src/login/org.freedesktop.login1.policy:39
 msgid "Suspend the system"

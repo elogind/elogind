@@ -6,8 +6,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2015-11-22 16:37+0100\n"
 "PO-Revision-Date: 2018-09-01 18:46+0300\n"
 "Last-Translator: Sergey Ptashnick <0comffdiz@inbox.ru>\n"

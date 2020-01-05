@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Slovak translation for systemd.
+# Slovak translation for elogind.
 # Dušan Kazik <prescott66@gmail.com>, 2017.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Project-Id-Version: elogind master\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2017-06-24 03:26+0000\n"
 "PO-Revision-Date: 2017-06-25 11:03+0200\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"

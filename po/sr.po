@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2018-02-13 03:26+0000\n"
 "PO-Revision-Date: 2018-02-18 22:03+0100\n"
 "Last-Translator: Марко М. Костић <marko.m.kostic@gmail.com>\n"
@@ -150,350 +150,352 @@ msgstr ""
 # msgstr ""
 # "Потребно је да се идентификујете да бисте поставили подешавања системске "
 # "тастатуре."
-#
-# #: src/login/org.freedesktop.login1.policy.in:22
-# msgid "Allow applications to inhibit system shutdown"
-# msgstr "Дозволи програмима да спрече гашење система"
-#
-# #: src/login/org.freedesktop.login1.policy.in:23
-# msgid ""
-# "Authentication is required for an application to inhibit system shutdown."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да спречи "
-# "гашење система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:33
-# msgid "Allow applications to delay system shutdown"
-# msgstr "Дозволи програмима да одложе гашење система"
-#
-# #: src/login/org.freedesktop.login1.policy.in:34
-# msgid "Authentication is required for an application to delay system shutdown."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да одложи "
-# "гашење система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:44
-# msgid "Allow applications to inhibit system sleep"
-# msgstr "Дозволи програмима да спрече спавање система"
-#
-# #: src/login/org.freedesktop.login1.policy.in:45
-# msgid "Authentication is required for an application to inhibit system sleep."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да спречи "
-# "спавање система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:55
-# msgid "Allow applications to delay system sleep"
-# msgstr "Дозволи програмима да одложе спавање система"
-#
-# #: src/login/org.freedesktop.login1.policy.in:56
-# msgid "Authentication is required for an application to delay system sleep."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да одложи "
-# "спавање система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:65
-# msgid "Allow applications to inhibit automatic system suspend"
-# msgstr "Дозволи програмима да спрече самосталну обуставу система"
-#
-# #: src/login/org.freedesktop.login1.policy.in:66
-# msgid ""
-# "Authentication is required for an application to inhibit automatic system "
-# "suspend."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да спречи "
-# "самосталну обуставу система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:75
-# msgid "Allow applications to inhibit system handling of the power key"
-# msgstr "Дозволи програмима да спрече систему управљање дугметом за напајање"
-#
-# #: src/login/org.freedesktop.login1.policy.in:76
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the power key."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да спречи "
-# "систему управљање дугметом за напајање."
-#
-# #: src/login/org.freedesktop.login1.policy.in:86
-# msgid "Allow applications to inhibit system handling of the suspend key"
-# msgstr "Дозволи програмима да спрече систему управљање дугметом за обуставу"
-#
-# #: src/login/org.freedesktop.login1.policy.in:87
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the suspend key."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да спречи "
-# "систему управљање дугметом за обуставу."
-#
-# #: src/login/org.freedesktop.login1.policy.in:97
-# msgid "Allow applications to inhibit system handling of the hibernate key"
-# msgstr "Дозволи програмима да спрече систему управљање дугметом за спавање"
-#
-# #: src/login/org.freedesktop.login1.policy.in:98
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the hibernate key."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да спречи "
-# "систему управљање дугметом за спавање."
-#
-# #: src/login/org.freedesktop.login1.policy.in:107
-# msgid "Allow applications to inhibit system handling of the lid switch"
-# msgstr ""
-# "Дозволи програмима да спрече систему да уради било шта приликом заклапања "
-# "екрана"
-#
-# #: src/login/org.freedesktop.login1.policy.in:108
-# msgid ""
-# "Authentication is required for an application to inhibit system handling of "
-# "the lid switch."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте дозволили програму да спречи "
-# "систему да уради било шта приликом заклапања екрана."
-#
-# #: src/login/org.freedesktop.login1.policy.in:117
-# msgid "Allow non-logged-in user to run programs"
-# msgstr "Дозволи непријављеним корисницима да покрећу програме"
-#
-# #: src/login/org.freedesktop.login1.policy.in:118
-# msgid "Explicit request is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Експлицитан захтев је потребан да бисте покретали програме као непријављен "
-# "корисник."
-#
-# #: src/login/org.freedesktop.login1.policy.in:127
-# msgid "Allow non-logged-in users to run programs"
-# msgstr "Дозволи непријављеним корисницима да покрећу програме"
-#
-# #: src/login/org.freedesktop.login1.policy.in:128
-# msgid "Authentication is required to run programs as a non-logged-in user."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте покретали програме као непријављен "
-# "корисник."
-#
-# #: src/login/org.freedesktop.login1.policy.in:137
-# msgid "Allow attaching devices to seats"
-# msgstr "Дозволи качење уређаја на седишта"
-#
-# #: src/login/org.freedesktop.login1.policy.in:138
-# msgid "Authentication is required for attaching a device to a seat."
-# msgstr "Потребно је да се идентификујете да бисте  закачили уређај на седиште."
-#
-# #: src/login/org.freedesktop.login1.policy.in:148
-# msgid "Flush device to seat attachments"
-# msgstr "Испери уређај да би уседиштио закачено"
-#
-# #: src/login/org.freedesktop.login1.policy.in:149
-# msgid ""
-# "Authentication is required for resetting how devices are attached to seats."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте поново подесили како се уређаји "
-# "каче на седишта."
-#
-# #: src/login/org.freedesktop.login1.policy.in:158
-# msgid "Power off the system"
-# msgstr "Искључи систем"
-#
-# #: src/login/org.freedesktop.login1.policy.in:159
-# msgid "Authentication is required for powering off the system."
-# msgstr "Потребно је да се идентификујете да бисте искључили систем."
-#
-# #: src/login/org.freedesktop.login1.policy.in:169
-# msgid "Power off the system while other users are logged in"
-# msgstr "Искључи систем док су други корисници пријављени"
-#
-# #: src/login/org.freedesktop.login1.policy.in:170
-# msgid ""
-# "Authentication is required for powering off the system while other users are "
-# "logged in."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте искључили систем док су други "
-# "корисници пријављени."
-#
-# #: src/login/org.freedesktop.login1.policy.in:180
-# msgid "Power off the system while an application asked to inhibit it"
-# msgstr "Искључи систем иако је програм затражио да се спречи гашење"
-#
-# #: src/login/org.freedesktop.login1.policy.in:181
-# msgid ""
-# "Authentication is required for powering off the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте искључили систем иако је програм "
-# "затражио да се спречи гашење система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:191
-# msgid "Reboot the system"
-# msgstr "Поново покрени систем"
-#
-# #: src/login/org.freedesktop.login1.policy.in:192
-# msgid "Authentication is required for rebooting the system."
-# msgstr "Потребно је да се идентификујете да бисте поново покренули систем."
-#
-# #: src/login/org.freedesktop.login1.policy.in:202
-# msgid "Reboot the system while other users are logged in"
-# msgstr "Поново покрени систем док су други корисници пријављени"
-#
-# #: src/login/org.freedesktop.login1.policy.in:203
-# msgid ""
-# "Authentication is required for rebooting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте поново покренули систем док су "
-# "други корисници пријављени."
-#
-# #: src/login/org.freedesktop.login1.policy.in:213
-# msgid "Reboot the system while an application asked to inhibit it"
-# msgstr "Поново покрени систем иако је програм затражио да се спречи гашење"
-#
-# #: src/login/org.freedesktop.login1.policy.in:214
-# msgid ""
-# "Authentication is required for rebooting the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте поново покренули систем иако је "
-# "програм затражио да се спречи гашење система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:224
-# msgid "Halt the system"
-# msgstr "Заустави систем"
-#
-# #: src/login/org.freedesktop.login1.policy.in:225
-# msgid "Authentication is required for halting the system."
-# msgstr "Потребно је да се идентификујете да бисте зауставили систем."
-#
-# #: src/login/org.freedesktop.login1.policy.in:235
-# msgid "Halt the system while other users are logged in"
-# msgstr "Заустави систем док су други корисници пријављени"
-#
-# #: src/login/org.freedesktop.login1.policy.in:236
-# msgid ""
-# "Authentication is required for halting the system while other users are "
-# "logged in."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте зауставили систем док су други "
-# "корисници пријављени."
-#
-# #: src/login/org.freedesktop.login1.policy.in:246
-# msgid "Halt the system while an application asked to inhibit it"
-# msgstr "Заустави систем иако програм тражи да се спречи заустављање"
-#
-# #: src/login/org.freedesktop.login1.policy.in:247
-# msgid ""
-# "Authentication is required for halting the system while an application asked "
-# "to inhibit it."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте зауставили систем иако програм "
-# "тражи да се спречи заустављање система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:257
-# msgid "Suspend the system"
-# msgstr "Обустави систем"
-#
-# #: src/login/org.freedesktop.login1.policy.in:258
-# msgid "Authentication is required for suspending the system."
-# msgstr "Потребно је да се идентификујете да бисте обуставили систем."
-#
-# #: src/login/org.freedesktop.login1.policy.in:267
-# msgid "Suspend the system while other users are logged in"
-# msgstr "Обустави систем док су други корисници пријављени"
-#
-# #: src/login/org.freedesktop.login1.policy.in:268
-# msgid ""
-# "Authentication is required for suspending the system while other users are "
-# "logged in."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте обуставили систем док су други "
-# "корисници пријављени."
-#
-# #: src/login/org.freedesktop.login1.policy.in:278
-# msgid "Suspend the system while an application asked to inhibit it"
-# msgstr "Обуставите систем иако програм тражи да се спречи обустава"
-#
-# #: src/login/org.freedesktop.login1.policy.in:279
-# msgid ""
-# "Authentication is required for suspending the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте обуставили систем иако је програм "
-# "затражио да се спречи обустава система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:289
-# msgid "Hibernate the system"
-# msgstr "Успавај систем"
-#
-# #: src/login/org.freedesktop.login1.policy.in:290
-# msgid "Authentication is required for hibernating the system."
-# msgstr "Потребно је да се идентификујете да бисте успавали систем."
-#
-# #: src/login/org.freedesktop.login1.policy.in:299
-# msgid "Hibernate the system while other users are logged in"
-# msgstr "Успавај систем док су други корисници пријављени"
-#
-# #: src/login/org.freedesktop.login1.policy.in:300
-# msgid ""
-# "Authentication is required for hibernating the system while other users are "
-# "logged in."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте успавали систем док су други "
-# "корисници пријављени."
-#
-# #: src/login/org.freedesktop.login1.policy.in:310
-# msgid "Hibernate the system while an application asked to inhibit it"
-# msgstr "Успавај систем иако је програм затражио да се спречи спавање"
-#
-# #: src/login/org.freedesktop.login1.policy.in:311
-# msgid ""
-# "Authentication is required for hibernating the system while an application "
-# "asked to inhibit it."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте успавали систем иако је програм "
-# "затражио да се спречи успављивање система."
-#
-# #: src/login/org.freedesktop.login1.policy.in:321
-# msgid "Manage active sessions, users and seats"
-# msgstr "Управљај покренутим сесијама, корисницима и седиштима"
-#
-# #: src/login/org.freedesktop.login1.policy.in:322
-# msgid ""
-# "Authentication is required for managing active sessions, users and seats."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте управљали покренутим сесијама, "
-# "корисницима и седиштима."
-#
-# #: src/login/org.freedesktop.login1.policy.in:331
-# msgid "Lock or unlock active sessions"
-# msgstr "Закључај или откључај покренуте сесије"
-#
-# #: src/login/org.freedesktop.login1.policy.in:332
-# msgid "Authentication is required to lock or unlock active sessions."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте закључавали или откључавали "
-# "покренуте сесије."
-#
-# #: src/login/org.freedesktop.login1.policy.in:341
-# msgid "Allow indication to the firmware to boot to setup interface"
-# msgstr "Напомени фирмверу да се подигне у режиму подешавања интерфејса"
-#
-# #: src/login/org.freedesktop.login1.policy.in:342
-# msgid ""
-# "Authentication is required to indicate to the firmware to boot to setup "
-# "interface."
-# msgstr ""
-# "Потребно је да се идентификујете да бисте напоменули фирмверу да се подигне "
-# "у режиму подешавања интерфејса."
-#
-# #: src/login/org.freedesktop.login1.policy.in:351
-# msgid "Set a wall message"
-# msgstr "Постави зидну поруку"
-#
-# #: src/login/org.freedesktop.login1.policy.in:352
-# msgid "Authentication is required to set a wall message"
-# msgstr "Потребно је да се идентификујете да бисте поставили зидну поруку"
-#
+#endif // 0
+
+#: src/login/org.freedesktop.login1.policy:22
+msgid "Allow applications to inhibit system shutdown"
+msgstr "Дозволи програмима да спрече гашење система"
+
+#: src/login/org.freedesktop.login1.policy:23
+msgid ""
+"Authentication is required for an application to inhibit system shutdown."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да спречи "
+"гашење система."
+
+#: src/login/org.freedesktop.login1.policy:33
+msgid "Allow applications to delay system shutdown"
+msgstr "Дозволи програмима да одложе гашење система"
+
+#: src/login/org.freedesktop.login1.policy:34
+msgid "Authentication is required for an application to delay system shutdown."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да одложи "
+"гашење система."
+
+#: src/login/org.freedesktop.login1.policy:44
+msgid "Allow applications to inhibit system sleep"
+msgstr "Дозволи програмима да спрече спавање система"
+
+#: src/login/org.freedesktop.login1.policy:45
+msgid "Authentication is required for an application to inhibit system sleep."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да спречи "
+"спавање система."
+
+#: src/login/org.freedesktop.login1.policy:55
+msgid "Allow applications to delay system sleep"
+msgstr "Дозволи програмима да одложе спавање система"
+
+#: src/login/org.freedesktop.login1.policy:56
+msgid "Authentication is required for an application to delay system sleep."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да одложи "
+"спавање система."
+
+#: src/login/org.freedesktop.login1.policy:65
+msgid "Allow applications to inhibit automatic system suspend"
+msgstr "Дозволи програмима да спрече самосталну обуставу система"
+
+#: src/login/org.freedesktop.login1.policy:66
+msgid ""
+"Authentication is required for an application to inhibit automatic system "
+"suspend."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да спречи "
+"самосталну обуставу система."
+
+#: src/login/org.freedesktop.login1.policy:75
+msgid "Allow applications to inhibit system handling of the power key"
+msgstr "Дозволи програмима да спрече систему управљање дугметом за напајање"
+
+#: src/login/org.freedesktop.login1.policy:76
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the power key."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да спречи "
+"систему управљање дугметом за напајање."
+
+#: src/login/org.freedesktop.login1.policy:86
+msgid "Allow applications to inhibit system handling of the suspend key"
+msgstr "Дозволи програмима да спрече систему управљање дугметом за обуставу"
+
+#: src/login/org.freedesktop.login1.policy:87
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the suspend key."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да спречи "
+"систему управљање дугметом за обуставу."
+
+#: src/login/org.freedesktop.login1.policy:97
+msgid "Allow applications to inhibit system handling of the hibernate key"
+msgstr "Дозволи програмима да спрече систему управљање дугметом за спавање"
+
+#: src/login/org.freedesktop.login1.policy:98
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the hibernate key."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да спречи "
+"систему управљање дугметом за спавање."
+
+#: src/login/org.freedesktop.login1.policy:107
+msgid "Allow applications to inhibit system handling of the lid switch"
+msgstr ""
+"Дозволи програмима да спрече систему да уради било шта приликом заклапања "
+"екрана"
+
+#: src/login/org.freedesktop.login1.policy:108
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the lid switch."
+msgstr ""
+"Потребно је да се идентификујете да бисте дозволили програму да спречи "
+"систему да уради било шта приликом заклапања екрана."
+
+#: src/login/org.freedesktop.login1.policy:117
+msgid "Allow non-logged-in user to run programs"
+msgstr "Дозволи непријављеним корисницима да покрећу програме"
+
+#: src/login/org.freedesktop.login1.policy:118
+msgid "Explicit request is required to run programs as a non-logged-in user."
+msgstr ""
+"Експлицитан захтев је потребан да бисте покретали програме као непријављен "
+"корисник."
+
+#: src/login/org.freedesktop.login1.policy:127
+msgid "Allow non-logged-in users to run programs"
+msgstr "Дозволи непријављеним корисницима да покрећу програме"
+
+#: src/login/org.freedesktop.login1.policy:128
+msgid "Authentication is required to run programs as a non-logged-in user."
+msgstr ""
+"Потребно је да се идентификујете да бисте покретали програме као непријављен "
+"корисник."
+
+#: src/login/org.freedesktop.login1.policy:137
+msgid "Allow attaching devices to seats"
+msgstr "Дозволи качење уређаја на седишта"
+
+#: src/login/org.freedesktop.login1.policy:138
+msgid "Authentication is required for attaching a device to a seat."
+msgstr "Потребно је да се идентификујете да бисте  закачили уређај на седиште."
+
+#: src/login/org.freedesktop.login1.policy:148
+msgid "Flush device to seat attachments"
+msgstr "Испери уређај да би уседиштио закачено"
+
+#: src/login/org.freedesktop.login1.policy:149
+msgid ""
+"Authentication is required for resetting how devices are attached to seats."
+msgstr ""
+"Потребно је да се идентификујете да бисте поново подесили како се уређаји "
+"каче на седишта."
+
+#: src/login/org.freedesktop.login1.policy:158
+msgid "Power off the system"
+msgstr "Искључи систем"
+
+#: src/login/org.freedesktop.login1.policy:159
+msgid "Authentication is required for powering off the system."
+msgstr "Потребно је да се идентификујете да бисте искључили систем."
+
+#: src/login/org.freedesktop.login1.policy:169
+msgid "Power off the system while other users are logged in"
+msgstr "Искључи систем док су други корисници пријављени"
+
+#: src/login/org.freedesktop.login1.policy:170
+msgid ""
+"Authentication is required for powering off the system while other users are "
+"logged in."
+msgstr ""
+"Потребно је да се идентификујете да бисте искључили систем док су други "
+"корисници пријављени."
+
+#: src/login/org.freedesktop.login1.policy:180
+msgid "Power off the system while an application asked to inhibit it"
+msgstr "Искључи систем иако је програм затражио да се спречи гашење"
+
+#: src/login/org.freedesktop.login1.policy:181
+msgid ""
+"Authentication is required for powering off the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Потребно је да се идентификујете да бисте искључили систем иако је програм "
+"затражио да се спречи гашење система."
+
+#: src/login/org.freedesktop.login1.policy:191
+msgid "Reboot the system"
+msgstr "Поново покрени систем"
+
+#: src/login/org.freedesktop.login1.policy:192
+msgid "Authentication is required for rebooting the system."
+msgstr "Потребно је да се идентификујете да бисте поново покренули систем."
+
+#: src/login/org.freedesktop.login1.policy:202
+msgid "Reboot the system while other users are logged in"
+msgstr "Поново покрени систем док су други корисници пријављени"
+
+#: src/login/org.freedesktop.login1.policy:203
+msgid ""
+"Authentication is required for rebooting the system while other users are "
+"logged in."
+msgstr ""
+"Потребно је да се идентификујете да бисте поново покренули систем док су "
+"други корисници пријављени."
+
+#: src/login/org.freedesktop.login1.policy:213
+msgid "Reboot the system while an application asked to inhibit it"
+msgstr "Поново покрени систем иако је програм затражио да се спречи гашење"
+
+#: src/login/org.freedesktop.login1.policy:214
+msgid ""
+"Authentication is required for rebooting the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Потребно је да се идентификујете да бисте поново покренули систем иако је "
+"програм затражио да се спречи гашење система."
+
+#: src/login/org.freedesktop.login1.policy:224
+msgid "Halt the system"
+msgstr "Заустави систем"
+
+#: src/login/org.freedesktop.login1.policy:225
+msgid "Authentication is required for halting the system."
+msgstr "Потребно је да се идентификујете да бисте зауставили систем."
+
+#: src/login/org.freedesktop.login1.policy:235
+msgid "Halt the system while other users are logged in"
+msgstr "Заустави систем док су други корисници пријављени"
+
+#: src/login/org.freedesktop.login1.policy:236
+msgid ""
+"Authentication is required for halting the system while other users are "
+"logged in."
+msgstr ""
+"Потребно је да се идентификујете да бисте зауставили систем док су други "
+"корисници пријављени."
+
+#: src/login/org.freedesktop.login1.policy:246
+msgid "Halt the system while an application asked to inhibit it"
+msgstr "Заустави систем иако програм тражи да се спречи заустављање"
+
+#: src/login/org.freedesktop.login1.policy:247
+msgid ""
+"Authentication is required for halting the system while an application asked "
+"to inhibit it."
+msgstr ""
+"Потребно је да се идентификујете да бисте зауставили систем иако програм "
+"тражи да се спречи заустављање система."
+
+#: src/login/org.freedesktop.login1.policy:257
+msgid "Suspend the system"
+msgstr "Обустави систем"
+
+#: src/login/org.freedesktop.login1.policy:258
+msgid "Authentication is required for suspending the system."
+msgstr "Потребно је да се идентификујете да бисте обуставили систем."
+
+#: src/login/org.freedesktop.login1.policy:267
+msgid "Suspend the system while other users are logged in"
+msgstr "Обустави систем док су други корисници пријављени"
+
+#: src/login/org.freedesktop.login1.policy:268
+msgid ""
+"Authentication is required for suspending the system while other users are "
+"logged in."
+msgstr ""
+"Потребно је да се идентификујете да бисте обуставили систем док су други "
+"корисници пријављени."
+
+#: src/login/org.freedesktop.login1.policy:278
+msgid "Suspend the system while an application asked to inhibit it"
+msgstr "Обуставите систем иако програм тражи да се спречи обустава"
+
+#: src/login/org.freedesktop.login1.policy:279
+msgid ""
+"Authentication is required for suspending the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Потребно је да се идентификујете да бисте обуставили систем иако је програм "
+"затражио да се спречи обустава система."
+
+#: src/login/org.freedesktop.login1.policy:289
+msgid "Hibernate the system"
+msgstr "Успавај систем"
+
+#: src/login/org.freedesktop.login1.policy:290
+msgid "Authentication is required for hibernating the system."
+msgstr "Потребно је да се идентификујете да бисте успавали систем."
+
+#: src/login/org.freedesktop.login1.policy:299
+msgid "Hibernate the system while other users are logged in"
+msgstr "Успавај систем док су други корисници пријављени"
+
+#: src/login/org.freedesktop.login1.policy:300
+msgid ""
+"Authentication is required for hibernating the system while other users are "
+"logged in."
+msgstr ""
+"Потребно је да се идентификујете да бисте успавали систем док су други "
+"корисници пријављени."
+
+#: src/login/org.freedesktop.login1.policy:310
+msgid "Hibernate the system while an application asked to inhibit it"
+msgstr "Успавај систем иако је програм затражио да се спречи спавање"
+
+#: src/login/org.freedesktop.login1.policy:311
+msgid ""
+"Authentication is required for hibernating the system while an application "
+"asked to inhibit it."
+msgstr ""
+"Потребно је да се идентификујете да бисте успавали систем иако је програм "
+"затражио да се спречи успављивање система."
+
+#: src/login/org.freedesktop.login1.policy:321
+msgid "Manage active sessions, users and seats"
+msgstr "Управљај покренутим сесијама, корисницима и седиштима"
+
+#: src/login/org.freedesktop.login1.policy:322
+msgid ""
+"Authentication is required for managing active sessions, users and seats."
+msgstr ""
+"Потребно је да се идентификујете да бисте управљали покренутим сесијама, "
+"корисницима и седиштима."
+
+#: src/login/org.freedesktop.login1.policy:331
+msgid "Lock or unlock active sessions"
+msgstr "Закључај или откључај покренуте сесије"
+
+#: src/login/org.freedesktop.login1.policy:332
+msgid "Authentication is required to lock or unlock active sessions."
+msgstr ""
+"Потребно је да се идентификујете да бисте закључавали или откључавали "
+"покренуте сесије."
+
+#: src/login/org.freedesktop.login1.policy:341
+msgid "Allow indication to the firmware to boot to setup interface"
+msgstr "Напомени фирмверу да се подигне у режиму подешавања интерфејса"
+
+#: src/login/org.freedesktop.login1.policy:342
+msgid ""
+"Authentication is required to indicate to the firmware to boot to setup "
+"interface."
+msgstr ""
+"Потребно је да се идентификујете да бисте напоменули фирмверу да се подигне "
+"у режиму подешавања интерфејса."
+
+#: src/login/org.freedesktop.login1.policy:351
+msgid "Set a wall message"
+msgstr "Постави зидну поруку"
+
+#: src/login/org.freedesktop.login1.policy:352
+msgid "Authentication is required to set a wall message"
+msgstr "Потребно је да се идентификујете да бисте поставили зидну поруку"
+
+#if 0 /// UNNEEDED by elogind
 # #: src/machine/org.freedesktop.machine1.policy.in:22
 # msgid "Log into a local container"
 # msgstr "Пријави се у локални контејнер"

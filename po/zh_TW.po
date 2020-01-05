@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Traditional Chinese translation for systemd.
+# Traditional Chinese translation for elogind.
 # Jeff Huang <s8321414@gmail.com>, 2015, 2016.
 msgid ""
 msgstr ""

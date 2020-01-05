@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Brazilian Portuguese translation for systemd.
+# Brazilian Portuguese translation for elogind.
 # Enrico Nicoletto <liverig@gmail.com>, 2014.
 # Filipe Brandenburger <filbranden@gmail.com>, 2018.
 # Rafael Fontenelle <rafaelff@gnome.org>, 2015-2019.
@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: elogind\n"
-"Report-Msgid-Bugs-To: https://github.com/systemd/systemd/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/elogind/elogind/issues\n"
 "POT-Creation-Date: 2019-09-08 15:28+0000\n"
 "PO-Revision-Date: 2019-09-08 19:00-0300\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"

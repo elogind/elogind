@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Japanese translation for systemd.
+# Japanese translation for elogind.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd\n"
+"Project-Id-Version: elogind\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-04 09:15+0900\n"
 "PO-Revision-Date: 2018-10-27 07:41+0900\n"

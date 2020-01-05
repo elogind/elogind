@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Greek translation for systemd.
+# Greek translation for elogind.
 # Dimitris Spingos <dmtrs32@gmail.com>, 2014.
 # Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
+"Project-Id-Version: elogind master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-22 16:37+0100\n"
 "PO-Revision-Date: 2014-04-29 09:17+0300\n"

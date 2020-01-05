@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: LGPL-2.1+
 #
-# Spanish translation for systemd.
+# Spanish translation for elogind.
 # Alex Puchades <alex94puchades@gmail.com>, 2015.
 # Daniel Mustieles <daniel.mustieles@gmail.com>, 2015.
 # Álex Puchades <alex94puchades@gmail.com>, 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: systemd master\n"
+"Project-Id-Version: elogind master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-22 16:37+0100\n"
 "PO-Revision-Date: 2016-06-07 15:41-0400\n"
