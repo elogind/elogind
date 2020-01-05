@@ -24,7 +24,6 @@ int udev_parse_config_full(
                 usec_t *ret_event_timeout_usec,
                 ResolveNameTiming *ret_resolve_name_timing);
 
-
 static inline int udev_parse_config(void) {
         return udev_parse_config_full(NULL, NULL, NULL, NULL);
 }

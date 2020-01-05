@@ -255,7 +255,7 @@ tests += [
 #          [],
 #          [threads,
 #           libmount]],
-# 
+#
 #         [['src/test/test-mount-util.c'],
 #          [],
 #          []],

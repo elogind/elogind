@@ -216,10 +216,7 @@ int write_string_file_ts(
                 if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                         flags ^= WRITE_STRING_FILE_DISABLE_BUFFER;
 #endif // __GLIBC__
-                (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
         }
-
-        (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
 
         if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                 setvbuf(f, NULL, _IONBF, 0);

@@ -18,7 +18,7 @@ includedir=@includedir@/elogind
 
 Name: elogind
 Description: elogind Library
-Libs: -L${libdir} -lelogind
 URL: @PROJECT_URL@
 Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lelogind
 Cflags: -I${includedir}

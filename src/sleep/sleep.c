@@ -209,7 +209,6 @@ static int configure_hibernation(void) {
 static int execute(char **modes, char **states) {
 #else
 static int execute(Manager *m, const char *verb) {
-#endif // 0
         assert(m);
 
         int e;
@@ -229,6 +228,7 @@ static int execute(Manager *m, const char *verb) {
         char **states = streq(arg_verb, "suspend")   ? m->suspend_state     :
                         streq(arg_verb, "hibernate") ? m->hibernate_state   :
                                                        m->hybrid_sleep_state;
+#endif // 0
 
         char *arguments[] = {
                 NULL,

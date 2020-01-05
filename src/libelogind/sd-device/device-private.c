@@ -168,6 +168,7 @@ int device_get_devnode_gid(sd_device *device, gid_t *gid) {
         return 0;
 }
 #endif // 0
+
 static int device_set_devgid(sd_device *device, const char *gid) {
         unsigned g;
         int r;
