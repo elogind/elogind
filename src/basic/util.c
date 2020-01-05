@@ -224,8 +224,8 @@ int container_get_leader(const char *machine, pid_t *pid) {
 }
 
 int version(void) {
-//        puts("elogind " STRINGIFY(PROJECT_VERSION) " (" GIT_VERSION ")\n"
-//             SYSTEMD_FEATURES);
+        puts("elogind " STRINGIFY(PROJECT_VERSION) " (" GIT_VERSION ")\n"
+             SYSTEMD_FEATURES);
         return 0;
 }
 

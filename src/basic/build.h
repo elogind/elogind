@@ -171,5 +171,5 @@
         _SMACK_FEATURE_ " "                                             \
         _UTMP_FEATURE_ " "                                              \
         _ACL_FEATURE_ " "                                               \
-        _CGROUP_HIEARCHY_
+        _CGROUP_HIERARCHY_
 #endif // 0
