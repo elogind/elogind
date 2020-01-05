@@ -3344,8 +3344,8 @@ install_subdir('factory/etc',
 #endif // 0
 install_data('LICENSE.GPL2',
              'LICENSE.LGPL2.1',
-             'NEWS',
-#if 0 /// elogind has upgraded to markdown
+#if 0 /// elogind has upgraded to markdown, and the NEWS file is useless
+#              'NEWS',
 #              'README',
 #else
              'README.md',
