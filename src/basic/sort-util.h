@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <stdlib.h>
+#include <stdlib.h>
 
 #include "macro.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 #if 0 /// UNNEEDED by elogind
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
