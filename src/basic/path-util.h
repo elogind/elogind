@@ -196,5 +196,5 @@ static inline const char *empty_to_root(const char *path) {
         return isempty(path) ? "/" : path;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed ()
+bool path_strv_contains(char **l, const char *path);

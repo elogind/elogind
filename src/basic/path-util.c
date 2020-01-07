@@ -1128,5 +1128,13 @@ bool empty_or_root(const char *root) {
         return root[strspn(root, "/")] == 0;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed ()
+bool path_strv_contains(char **l, const char *path) {
+        char **i;
+
+        STRV_FOREACH(i, l)
+                if (path_equal(*i, path))
+                        return true;
+
+        return false;
+}
