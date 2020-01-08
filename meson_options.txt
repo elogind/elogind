@@ -18,6 +18,8 @@ option('rootprefix', type : 'string',
 # option('link-systemctl-shared', type: 'boolean',
 #        description : 'link systemctl against libsystemd-shared.so')
 #endif // 0
+option('link-networkd-shared', type: 'boolean',
+       description : 'link elogind-networkd and its helpers to libelogind-shared.so')
 option('static-libelogind', type : 'combo',
        choices : ['false', 'true', 'pic', 'no-pic'],
 #if 0 /// UNNEEDED by elogind

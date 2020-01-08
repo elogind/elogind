@@ -3129,7 +3129,7 @@ public_programs += exe
 #                    link_with : [libnetworkd_core,
 #                                 libsystemd_network,
 #                                 libudev_static,
-#                                 libshared],
+#                                 networkd_link_with],
 #                    dependencies : [threads],
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
@@ -3139,7 +3139,7 @@ public_programs += exe
 #                    systemd_networkd_wait_online_sources,
 #                    include_directories : includes,
 #                    link_with : [libnetworkd_core,
-#                                 libshared],
+#                                 networkd_link_with],
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
@@ -3148,7 +3148,7 @@ public_programs += exe
 #                    networkctl_sources,
 #                    include_directories : includes,
 #                    link_with : [libsystemd_network,
-#                               libshared],
+#                               networkd_link_with],
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootbindir)
@@ -3157,7 +3157,7 @@ public_programs += exe
 #         executable('systemd-network-generator',
 #                    network_generator_sources,
 #                    include_directories : includes,
-#                    link_with : [libshared],
+#                    link_with : [networkd_link_with],
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
@@ -3774,6 +3774,7 @@ foreach tuple : [
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #endif // 0
+        ['link-networkd-shared',  get_option('link-networkd-shared')],
 ]
 
         if tuple.length() >= 2
