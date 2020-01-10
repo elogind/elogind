@@ -166,6 +166,8 @@
 #         serialize.h
 #         sleep-config.c
 #         sleep-config.h
+#         socket-netlink.c
+#         socket-netlink.h
 #         spawn-ask-password-agent.c
 #         spawn-ask-password-agent.h
 #         spawn-polkit-agent.c

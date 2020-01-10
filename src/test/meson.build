@@ -57,8 +57,7 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-engine.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-engine.c'],
 #          [libcore,
 #           libudev,
 #           libshared],
@@ -147,8 +146,7 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-unit-name.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-unit-name.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -158,8 +156,7 @@ tests += [
 #           libmount,
 #           libblkid]],
 #
-#         [['src/test/test-load-fragment.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-load-fragment.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -396,6 +393,10 @@ tests += [
 #          [],
 #          []],
 #
+#         [['src/test/test-socket-netlink.c'],
+#          [],
+#          []],
+#
 #         [['src/test/test-in-addr-util.c'],
 #          [],
 #          []],
@@ -462,8 +463,7 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-bpf.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-bpf-devices.c'],
 #          [libcore,
 #           libshared],
 #          [libmount,
@@ -473,8 +473,7 @@ tests += [
 #           libselinux,
 #           libblkid]],
 #
-#         [['src/test/test-watch-pid.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-bpf-firewall.c'],
 #          [libcore,
 #           libshared],
 #          [libmount,
@@ -485,6 +484,15 @@ tests += [
 #           libblkid]],
 #
 #endif // 0
+        [['src/test/test-watch-pid.c'],
+         [libcore,
+          libshared],
+         [libmount,
+          threads,
+          librt,
+          libseccomp,
+          libselinux,
+          libblkid]],
 
         [['src/test/test-hashmap.c',
           'src/test/test-hashmap-plain.c',
@@ -641,14 +649,12 @@ tests += [
 #           libshared],
 #          []],
 #
-#         [['src/test/test-cgroup-unit-default.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-cgroup-unit-default.c'],
 #          [libcore,
 #           libshared],
 #          []],
 #
-#         [['src/test/test-cgroup-mask.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-cgroup-mask.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -697,8 +703,7 @@ tests += [
          '', 'manual'],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-path.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-path.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -708,8 +713,7 @@ tests += [
 #           libmount,
 #           libblkid]],
 #
-#         [['src/test/test-execute.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-execute.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -740,8 +744,7 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-sched-prio.c',
-#           'src/test/test-helper.c'],
+#         [['src/test/test-sched-prio.c'],
 #          [libcore,
 #           libshared],
 #          [threads,

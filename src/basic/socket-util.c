@@ -38,6 +38,12 @@
 #if 0 /// UNNEEDED by elogind
 #if ENABLE_IDN
 #  define IDN_FLAGS NI_IDN
+#  define IDN_FLAGS 0
+#endif
+
+static const char* const socket_address_type_table[] = {
+        [SOCK_STREAM] =    "Stream",
+        [SOCK_DGRAM] =     "Datagram",
 #else
 #  define IDN_FLAGS 0
 static const char* const socket_address_type_table[] = {
@@ -46,6 +52,13 @@ static const char* const socket_address_type_table[] = {
         [SOCK_RAW] =       "Raw",
         [SOCK_RDM] =       "ReliableDatagram",
         [SOCK_SEQPACKET] = "SequentialPacket",
+
+DEFINE_STRING_TABLE_LOOKUP(socket_address_type, int);
+
+int socket_address_verify(const SocketAddress *a, bool strict) {
+        assert(a);
+        [SOCK_DCCP] =      "DatagramCongestionControl",
+
         [SOCK_DCCP] =      "DatagramCongestionControl",
 };
 
@@ -947,6 +960,35 @@ int socket_address_verify(const SocketAddress *a, bool strict) {
                 return 0;
 
         case AF_INET6:
+
+                if (a->sockaddr.in6.sin6_port == 0)
+                        return -EINVAL;
+
+                if (!IN_SET(a->type, SOCK_STREAM, SOCK_DGRAM))
+                        return -EINVAL;
+
+                return 0;
+
+        case AF_UNIX:
+                if (a->size < offsetof(struct sockaddr_un, sun_path))
+                        return -EINVAL;
+                if (a->size > sizeof(struct sockaddr_un) + !strict)
+                        /* If !strict, allow one extra byte, since getsockname() on Linux will append
+                         * a NUL byte if we have path sockets that are above sun_path's full size. */
+                        return -EINVAL;
+
+                if (a->size > offsetof(struct sockaddr_un, sun_path) &&
+                    a->sockaddr.un.sun_path[0] != 0 &&
+                    strict) {
+                        /* Only validate file system sockets here, and only in strict mode */
+                        const char *e;
+
+                        e = memchr(a->sockaddr.un.sun_path, 0, sizeof(a->sockaddr.un.sun_path));
+                        if (e) {
+                                /* If there's an embedded NUL byte, make sure the size of the socket address matches it */
+                                if (a->size != offsetof(struct sockaddr_un, sun_path) + (e - a->sockaddr.un.sun_path) + 1)
+                if (a->size != sizeof(struct sockaddr_in6))
+                                        return -EINVAL;
                 if (a->size != sizeof(struct sockaddr_in6))
                         return -EINVAL;
 
@@ -1107,6 +1149,23 @@ int socket_address_verify(const SocketAddress *a, bool strict) {
                         return -EINVAL;
 
                 if (!IN_SET(a->type, SOCK_STREAM, SOCK_DGRAM))
+                return 0;
+
+        default:
+                return -EAFNOSUPPORT;
+        }
+}
+
+int socket_address_print(const SocketAddress *a, char **ret) {
+        int r;
+
+        assert(a);
+        assert(ret);
+
+        r = socket_address_verify(a, false); /* We do non-strict validation, because we want to be
+                                              * able to pretty-print any socket the kernel considers
+                        return -EINVAL;
+                                              * valid. We still need to do validation to know if we
                         return -EINVAL;
 
                 return 0;
@@ -1182,6 +1241,23 @@ int socket_address_print(const SocketAddress *a, char **ret) {
                 return 0;
         }
 
+
+bool socket_address_can_accept(const SocketAddress *a) {
+        assert(a);
+
+        return
+                IN_SET(a->type, SOCK_STREAM, SOCK_SEQPACKET);
+}
+
+bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) {
+        assert(a);
+        assert(b);
+
+        /* Invalid addresses are unequal to all */
+        if (socket_address_verify(a, false) < 0 ||
+            socket_address_verify(b, false) < 0)
+        return sockaddr_pretty(&a->sockaddr.sa, a->size, false, true, ret);
+                return false;
         return sockaddr_pretty(&a->sockaddr.sa, a->size, false, true, ret);
 }
 
@@ -1311,6 +1387,11 @@ bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) {
                 return false;
         }
 
+
+const char* socket_address_get_path(const SocketAddress *a) {
+        assert(a);
+        return true;
+
         return true;
 }
 
@@ -1380,6 +1461,19 @@ bool socket_address_matches_fd(const SocketAddress *a, int fd) {
         solen = sizeof(b.type);
         if (getsockopt(fd, SOL_SOCKET, SO_TYPE, &b.type, &solen) < 0)
                 return false;
+                return false;
+
+        if (a->protocol != 0)  {
+                solen = sizeof(b.protocol);
+                if (getsockopt(fd, SOL_SOCKET, SO_PROTOCOL, &b.protocol, &solen) < 0)
+                        return false;
+
+                if (b.protocol != a->protocol)
+                        return false;
+        }
+
+        return socket_address_equal(a, &b);
+}
 
         if (b.type != a->type)
                 return false;
@@ -1420,12 +1514,12 @@ bool socket_address_matches_fd(const SocketAddress *a, int fd) {
 #endif // 0
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
+
         union sockaddr_union *sa = (union sockaddr_union*) _sa;
 
         /* Note, this returns the port as 'unsigned' rather than 'uint16_t', as AF_VSOCK knows larger ports */
 
         assert(sa);
-
 
         switch (sa->sa.sa_family) {
 
