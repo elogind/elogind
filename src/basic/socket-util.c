@@ -40,6 +40,17 @@
 #  define IDN_FLAGS NI_IDN
 #else
 #  define IDN_FLAGS 0
+static const char* const socket_address_type_table[] = {
+        [SOCK_STREAM] =    "Stream",
+        [SOCK_DGRAM] =     "Datagram",
+        [SOCK_RAW] =       "Raw",
+        [SOCK_RDM] =       "ReliableDatagram",
+        [SOCK_SEQPACKET] = "SequentialPacket",
+        [SOCK_DCCP] =      "DatagramCongestionControl",
+};
+
+#endif
+DEFINE_STRING_TABLE_LOOKUP(socket_address_type, int);
 #endif
 
 static const char* const socket_address_type_table[] = {
@@ -58,6 +69,49 @@ int socket_address_parse(SocketAddress *a, const char *s) {
 
         assert(a);
         assert(s);
+                .type = SOCK_STREAM,
+        };
+
+        if (*s == '[') {
+                uint16_t port;
+
+                /* IPv6 in [x:.....:z]:p notation */
+
+                e = strchr(s+1, ']');
+                if (!e)
+                        return -EINVAL;
+
+                n = strndup(s+1, e-s-1);
+                if (!n)
+                        return -ENOMEM;
+
+                errno = 0;
+                if (inet_pton(AF_INET6, n, &a->sockaddr.in6.sin6_addr) <= 0)
+                        return errno_or_else(EINVAL);
+
+                e++;
+                if (*e != ':')
+                        return -EINVAL;
+
+                e++;
+                r = parse_ip_port(e, &port);
+                if (r < 0)
+                        return r;
+
+                a->sockaddr.in6.sin6_family = AF_INET6;
+                a->sockaddr.in6.sin6_port = htobe16(port);
+                a->size = sizeof(struct sockaddr_in6);
+
+        } else if (*s == '/') {
+                /* AF_UNIX socket */
+
+                size_t l;
+
+                l = strlen(s);
+                if (l >= sizeof(a->sockaddr.un.sun_path)) /* Note that we refuse non-NUL-terminated sockets when
+                                                           * parsing (the kernel itself is less strict here in what it
+
+                                                           * accepts) */
 
         *a = (SocketAddress) {
                 .type = SOCK_STREAM,
@@ -277,6 +331,93 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                         return -EINVAL;
 
                 a->sockaddr.un.sun_family = AF_UNIX;
+
+        } else if (startswith(s, "vsock:")) {
+                /* AF_VSOCK socket in vsock:cid:port notation */
+                const char *cid_start = s + STRLEN("vsock:");
+                unsigned port;
+
+                e = strchr(cid_start, ':');
+                if (!e)
+                        return -EINVAL;
+
+                r = safe_atou(e+1, &port);
+                if (r < 0)
+                        return r;
+
+                n = strndup(cid_start, e - cid_start);
+                if (!n)
+                        return -ENOMEM;
+
+                if (!isempty(n)) {
+                        r = safe_atou(n, &a->sockaddr.vm.svm_cid);
+                        if (r < 0)
+                                return r;
+                } else
+                        a->sockaddr.vm.svm_cid = VMADDR_CID_ANY;
+
+                a->sockaddr.vm.svm_family = AF_VSOCK;
+                a->sockaddr.vm.svm_port = port;
+                a->size = sizeof(struct sockaddr_vm);
+
+        } else {
+                uint16_t port;
+
+                e = strchr(s, ':');
+                if (e) {
+                        r = parse_ip_port(e + 1, &port);
+                        if (r < 0)
+                                return r;
+
+                        n = strndup(s, e-s);
+                        if (!n)
+                                return -ENOMEM;
+
+                        /* IPv4 in w.x.y.z:p notation? */
+                        r = inet_pton(AF_INET, n, &a->sockaddr.in.sin_addr);
+                        if (r < 0)
+                                return -errno;
+
+                        if (r > 0) {
+                                /* Gotcha, it's a traditional IPv4 address */
+                                a->sockaddr.in.sin_family = AF_INET;
+                                a->sockaddr.in.sin_port = htobe16(port);
+                                a->size = sizeof(struct sockaddr_in);
+                        } else {
+                                unsigned idx;
+
+                                if (strlen(n) > IF_NAMESIZE-1)
+                                        return -EINVAL;
+
+                                /* Uh, our last resort, an interface name */
+                                idx = if_nametoindex(n);
+                                if (idx == 0)
+                                        return -EINVAL;
+
+                                a->sockaddr.in6.sin6_family = AF_INET6;
+                                a->sockaddr.in6.sin6_port = htobe16(port);
+                                a->sockaddr.in6.sin6_scope_id = idx;
+                                a->sockaddr.in6.sin6_addr = in6addr_any;
+                                a->size = sizeof(struct sockaddr_in6);
+                        }
+                } else {
+
+                        /* Just a port */
+                        r = parse_ip_port(s, &port);
+                        if (r < 0)
+                                return r;
+
+                        if (socket_ipv6_is_supported()) {
+                                a->sockaddr.in6.sin6_family = AF_INET6;
+                                a->sockaddr.in6.sin6_port = htobe16(port);
+                                a->sockaddr.in6.sin6_addr = in6addr_any;
+                                a->size = sizeof(struct sockaddr_in6);
+                        } else {
+                                a->sockaddr.in.sin_family = AF_INET;
+                                a->sockaddr.in.sin_port = htobe16(port);
+                                a->sockaddr.in.sin_addr.s_addr = INADDR_ANY;
+                memcpy(a->sockaddr.un.sun_path+1, s+1, l);
+                                a->size = sizeof(struct sockaddr_in);
                 memcpy(a->sockaddr.un.sun_path+1, s+1, l);
                 a->size = offsetof(struct sockaddr_un, sun_path) + 1 + l;
 
@@ -593,6 +734,36 @@ int socket_address_parse_and_warn(SocketAddress *a, const char *s) {
 
         r = socket_address_parse(&b, s);
         if (r < 0)
+        if (!socket_ipv6_is_supported() && b.sockaddr.sa.sa_family == AF_INET6) {
+                log_warning("Binding to IPv6 address not available since kernel does not support IPv6.");
+                return -EAFNOSUPPORT;
+        }
+
+        *a = b;
+        return 0;
+}
+
+int socket_address_parse_netlink(SocketAddress *a, const char *s) {
+        _cleanup_free_ char *word = NULL;
+        unsigned group = 0;
+        int family, r;
+
+        assert(a);
+        assert(s);
+
+        zero(*a);
+        a->type = SOCK_RAW;
+
+        r = extract_first_word(&s, &word, NULL, 0);
+        if (r < 0)
+                return r;
+        if (r == 0)
+                return -EINVAL;
+
+        family = netlink_family_from_string(word);
+        if (family < 0)
+                return r;
+                return -EINVAL;
                 return r;
 
         if (!socket_ipv6_is_supported() && b.sockaddr.sa.sa_family == AF_INET6) {
@@ -704,6 +875,20 @@ int socket_address_parse_netlink(SocketAddress *a, const char *s) {
                 r = safe_atou(s, &group);
                 if (r < 0)
                         return r;
+        a->sockaddr.nl.nl_family = AF_NETLINK;
+        a->sockaddr.nl.nl_groups = group;
+
+        a->type = SOCK_RAW;
+        a->size = sizeof(struct sockaddr_nl);
+        a->protocol = family;
+
+        return 0;
+}
+
+int socket_address_verify(const SocketAddress *a, bool strict) {
+        assert(a);
+        }
+
         }
 
         a->sockaddr.nl.nl_family = AF_NETLINK;
@@ -765,6 +950,32 @@ int socket_address_verify(const SocketAddress *a, bool strict) {
                 if (a->size != sizeof(struct sockaddr_in6))
                         return -EINVAL;
 
+
+                if (!IN_SET(a->type, SOCK_STREAM, SOCK_DGRAM))
+                        return -EINVAL;
+
+                return 0;
+
+        case AF_UNIX:
+                if (a->size < offsetof(struct sockaddr_un, sun_path))
+                        return -EINVAL;
+                if (a->size > sizeof(struct sockaddr_un) + !strict)
+                        /* If !strict, allow one extra byte, since getsockname() on Linux will append
+                         * a NUL byte if we have path sockets that are above sun_path's full size. */
+                        return -EINVAL;
+
+                if (a->size > offsetof(struct sockaddr_un, sun_path) &&
+                    a->sockaddr.un.sun_path[0] != 0 &&
+                    strict) {
+                        /* Only validate file system sockets here, and only in strict mode */
+                        const char *e;
+
+                        e = memchr(a->sockaddr.un.sun_path, 0, sizeof(a->sockaddr.un.sun_path));
+                        if (e) {
+                                /* If there's an embedded NUL byte, make sure the size of the socket address matches it */
+                                if (a->size != offsetof(struct sockaddr_un, sun_path) + (e - a->sockaddr.un.sun_path) + 1)
+                if (a->sockaddr.in6.sin6_port == 0)
+                                        return -EINVAL;
                 if (a->sockaddr.in6.sin6_port == 0)
                         return -EINVAL;
 
@@ -899,6 +1110,20 @@ int socket_address_verify(const SocketAddress *a, bool strict) {
                         return -EINVAL;
 
                 return 0;
+                return -EAFNOSUPPORT;
+        }
+}
+
+int socket_address_print(const SocketAddress *a, char **ret) {
+        int r;
+
+        assert(a);
+        assert(ret);
+
+        r = socket_address_verify(a, false); /* We do non-strict validation, because we want to be
+                                              * able to pretty-print any socket the kernel considers
+
+                                              * valid. We still need to do validation to know if we
 
         default:
                 return -EAFNOSUPPORT;
@@ -960,6 +1185,20 @@ int socket_address_print(const SocketAddress *a, char **ret) {
         return sockaddr_pretty(&a->sockaddr.sa, a->size, false, true, ret);
 }
 
+
+        return
+                IN_SET(a->type, SOCK_STREAM, SOCK_SEQPACKET);
+}
+
+bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) {
+        assert(a);
+        assert(b);
+
+        /* Invalid addresses are unequal to all */
+        if (socket_address_verify(a, false) < 0 ||
+            socket_address_verify(b, false) < 0)
+bool socket_address_can_accept(const SocketAddress *a) {
+                return false;
 bool socket_address_can_accept(const SocketAddress *a) {
         assert(a);
 
@@ -1144,6 +1383,16 @@ bool socket_address_matches_fd(const SocketAddress *a, int fd) {
 
         if (b.type != a->type)
                 return false;
+                solen = sizeof(b.protocol);
+                if (getsockopt(fd, SOL_SOCKET, SO_PROTOCOL, &b.protocol, &solen) < 0)
+                        return false;
+
+                if (b.protocol != a->protocol)
+                        return false;
+        }
+
+        return socket_address_equal(a, &b);
+}
 
         if (a->protocol != 0)  {
                 solen = sizeof(b.protocol);
@@ -1175,8 +1424,8 @@ int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
 
         /* Note, this returns the port as 'unsigned' rather than 'uint16_t', as AF_VSOCK knows larger ports */
 
-                if (getsockopt(fd, SOL_SOCKET, SO_PROTOCOL, &b.protocol, &solen) < 0)
         assert(sa);
+
 
         switch (sa->sa.sa_family) {
 
