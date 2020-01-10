@@ -213,7 +213,7 @@ static int list_sessions(int argc, char *argv[], void *userdata) {
                                    TABLE_STRING, seat,
                                    TABLE_STRING, strna(tty));
                 if (r < 0)
-                        return log_error_errno(r, "Failed to add row to table: %m");
+                        return table_log_add_error(r);
         }
 
         r = sd_bus_message_exit_container(reply);
@@ -270,7 +270,7 @@ static int list_users(int argc, char *argv[], void *userdata) {
                                    TABLE_UID, (uid_t) uid,
                                    TABLE_STRING, user);
                 if (r < 0)
-                        return log_error_errno(r, "Failed to add row to table: %m");
+                        return table_log_add_error(r);
         }
 
         r = sd_bus_message_exit_container(reply);
@@ -322,7 +322,7 @@ static int list_seats(int argc, char *argv[], void *userdata) {
 
                 r = table_add_cell(table, NULL, TABLE_STRING, seat);
                 if (r < 0)
-                        return log_error_errno(r, "Failed to add row to table: %m");
+                        return table_log_add_error(r);
         }
 
         r = sd_bus_message_exit_container(reply);
@@ -1535,6 +1535,11 @@ static int parse_argv(int argc, char *argv[]) {
                                                        "Unknown output '%s'.", optarg);
 
                         if (OUTPUT_MODE_IS_JSON(arg_output))
+
+                        break;
+                case ARG_NO_LEGEND:
+                case ARG_NO_PAGER:
+                        arg_pager_flags |= PAGER_DISABLE;
                                 arg_legend = false;
 
                         break;
@@ -1582,57 +1587,31 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case 'M':
+                        break;
                         arg_transport = BUS_TRANSPORT_MACHINE;
                         arg_host = optarg;
                         break;
-#if 1 /// elogind can cancel shutdowns, allows to ignore inhibitors and can controll the reboot process
-                case 'c':
-                        arg_action = ACTION_CANCEL_SHUTDOWN;
-                        break;
 
-                case 'i':
-                        arg_ignore_inhibitors = true;
-                        break;
-
-#if ENABLE_EFI
-                case ARG_FIRMWARE_SETUP:
-                        arg_firmware_setup = true;
-                        break;
-
-                        r = parse_sec(optarg, &arg_boot_loader_menu);
-                        if (r < 0)
-                                return log_error_errno(r, "Failed to parse --boot-loader-menu= argument '%s': %m", optarg);
-
-                        break;
-
-
-                        arg_boot_loader_entry = empty_to_null(optarg);
-                        break;
-#endif
-#endif // 1
                 case '?':
                         return -EINVAL;
 
                 default:
                         assert_not_reached("Unhandled option");
-
                 }
 
+                        arg_transport = BUS_TRANSPORT_MACHINE;
         return 1;
 }
 
 static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
+                { "help",              VERB_ANY, VERB_ANY, 0,            help              },
 
         static const Verb verbs[] = {
                 { "help",              VERB_ANY, VERB_ANY, 0,            help              },
-#if 0 /// elogind has "list" as a shorthand for "list-sessions"
                 { "list-sessions",     VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
-#else
-                { "list",              VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
-                { "list-sessions",     VERB_ANY, 1,        0,            list_sessions     },
-#endif // 0
                 { "session-status",    VERB_ANY, VERB_ANY, 0,            show_session      },
                 { "show-session",      VERB_ANY, VERB_ANY, 0,            show_session      },
+
                 { "activate",          VERB_ANY, 2,        0,            activate          },
                 { "lock-session",      VERB_ANY, VERB_ANY, 0,            activate          },
                 { "unlock-session",    VERB_ANY, VERB_ANY, 0,            activate          },
@@ -1650,31 +1629,23 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "list-seats",        VERB_ANY, 1,        0,            list_seats        },
                 { "seat-status",       VERB_ANY, VERB_ANY, 0,            show_seat         },
                 { "show-seat",         VERB_ANY, VERB_ANY, 0,            show_seat         },
+                { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
                 { "attach",            3,        VERB_ANY, 0,            attach            },
                 { "flush-devices",     VERB_ANY, 1,        0,            flush_devices     },
                 { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
-#if 1 /// elogind adds some system commands to loginctl
-                { "reload",            VERB_ANY, 1,        0,            reload_config     },
-                { "poweroff",          VERB_ANY, VERB_ANY, 0,            start_special     },
-                { "reboot",            VERB_ANY, VERB_ANY, 0,            start_special     },
-                { "suspend",           VERB_ANY, 1,        0,            start_special     },
-                { "hibernate",         VERB_ANY, 1,        0,            start_special     },
-                { "hybrid-sleep",      VERB_ANY, 1,        0,            start_special     },
-                { "suspend-then-hibernate", VERB_ANY, 1,   0,            start_special     },
-                { "cancel-shutdown",   VERB_ANY, 1,        0,            start_special     },
-#endif // 1
                 {}
         };
 
-#if 1 /// elogind can do shutdown and allows its cancellation
-        if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
-                return elogind_cancel_shutdown(bus);
-#endif // 1
         return dispatch_verb(argc, argv, verbs, bus);
 }
+                { "attach",            3,        VERB_ANY, 0,            attach            },
 
 static int run(int argc, char *argv[]) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+        int r;
+        log_show_color(true);
+        log_open();
+        setlocale(LC_ALL, "");
         int r;
 
         setlocale(LC_ALL, "");
@@ -1696,17 +1667,11 @@ static int run(int argc, char *argv[]) {
         if (r < 0)
                 return log_error_errno(r, "Failed to create bus connection: %m");
 
+
         (void) sd_bus_set_allow_interactive_authorization(bus, arg_ask_password);
 
-#if 0 /// elogind has some own cleanups to do
         return loginctl_main(argc, argv, bus);
-#else
-        r = loginctl_main(argc, argv, bus);
-
-        elogind_cleanup();
-
-        return r;
-#endif // 0
 }
+
 
 DEFINE_MAIN_FUNCTION(run);
