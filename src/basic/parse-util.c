@@ -98,22 +98,6 @@ int parse_ifindex(const char *s) {
         return ifi;
 }
 
-int parse_ifindex_or_ifname(const char *s) {
-        int r;
-
-        assert(s);
-
-        r = parse_ifindex(s);
-        if (r > 0)
-                return r;
-        assert(r < 0);
-
-        r = (int) if_nametoindex(s);
-        if (r <= 0)
-                return -errno;
-
-        return r;
-}
 
 #if 0 /// UNNEEDED by elogind
 int parse_mtu(int family, const char *s, uint32_t *ret) {
