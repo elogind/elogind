@@ -156,7 +156,7 @@
     <para><function>sd_is_mq()</function> is meant to be called to check
     whether the specified file descriptor refers to a POSIX message
     queue. As elogind does not need and therefore does not support POSIX
-    message queues, this function is a stub that always returns 0.</para>
+    message queues, this function is a stub that always returns -ENOSYS.</para>
 
     <para>The reason for not supporting this function is, that it would
     pull in a dependency to librt, just for this one function.</para>

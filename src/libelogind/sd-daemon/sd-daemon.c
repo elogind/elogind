@@ -438,7 +438,7 @@ _public_ int sd_is_mq(int fd, const char *path) {
 
         return 1;
 #else
-        return 0;
+        return -ENOSYS;
 #endif // 0
 }
 

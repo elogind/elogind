@@ -161,7 +161,7 @@ They are there to provide ABI compatibility, but will not work.
 One exception is `sd_is_mq()` that is found in sd-daemon.h. This is the
 only place using POSIX message queues, which would add further
 dependencies. As those would be completely unused in the rest of
-elogind, this function is also a stub, always returning 0.
+elogind, this function is also a stub, always returning -ENOSYS.
 
 License
 =======
