@@ -32,7 +32,11 @@ int khash_supported(void) {
         } sa = {
                 .alg.salg_family = AF_ALG,
                 .alg.salg_type = "hash",
+#if 0 /// Needed for cross-compiling elogind for arm* on amd64 and i386 hosts under qemu
                 .alg.salg_name = "sha256", /* a very common algorithm */
+#else
+                .alg.salg_name = "hmac(sha256)", /* a very common algorithm */
+#endif // 0
         };
 
         static int cached = -1;
@@ -62,6 +66,18 @@ int khash_supported(void) {
                         return -errno;
                 }
 
+#if 1 /// Needed for cross-compiling elogind for arm* on amd64 and i386 hosts
+                if (setsockopt(fd1, SOL_ALG, ALG_SET_KEY, "quux", 4) < 0) {
+                        /* When cross-building under qemu SOL_ALG is not supported. Test that here and avoid test
+                           failures. */
+
+                        if (IN_SET(errno, EOPNOTSUPP, ENOPROTOOPT, EPROTONOSUPPORT))
+                                return (cached = false);
+
+                        return -errno;
+                }
+#endif // 1
+
                 fd2 = accept4(fd1, NULL, 0, SOCK_CLOEXEC);
                 if (fd2 < 0) {
                         if (errno == EOPNOTSUPP)
@@ -77,6 +93,10 @@ int khash_supported(void) {
 
                         if (IN_SET(errno, ENOKEY, EOPNOTSUPP))
                                 return (cached = false);
+
+#if 1 /// Do not make other errors look like successes in elogind
+                        return -errno;
+#endif // 1
                 }
 
                 cached = true;
