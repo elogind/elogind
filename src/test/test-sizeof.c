@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
+#if 0 /// UNNEEDED by elogind (only needed for testing __cpu_mask)
 #include <sched.h>
+#endif // 0
 #include <stdio.h>
 #include <string.h>
 
@@ -70,7 +72,9 @@ int main(void) {
         info(uid_t);
         info(gid_t);
 
+#if 0 /// UNNEEDED by elogind (Only needed for *cpu_set* stuff in systemd we don't use)
         info(__cpu_mask);
+#endif // 0
 
         info(enum Enum);
         info(enum BigEnum);
