@@ -161,7 +161,7 @@ They are there to provide ABI compatibility, but will not work.
 One exception is `sd_is_mq()` that is found in sd-daemon.h. This is the
 only place using POSIX message queues, which would add further
 dependencies. As those would be completely unused in the rest of
-elogind, this function is also a stub, always returning -ENOSYS.
+elogind, this function is also a stub, and always returns -ENOSYS.
 
 License
 =======
@@ -200,15 +200,25 @@ During runtime, you need the following additional dependencies:
           policy directory (--with-dbuspolicydir=/etc/dbus-1/system.d).
   * PolicyKit (optional)
 
-  To build in directory build/:  
+To build in directory build/:  
     `meson build/ && ninja -C build`
 
-  Any configuration options can be specified as -Darg=value... arguments
-  to meson. After the build directory is initially configured, the configuration
-  can be changed with:  
+If you plan to use a build directory outside the source tree, make sure that
+it is not too '_far away_'. To detect broken setups, some compiler magic is
+included to check whether the relative path to the sources is shorter than the
+absolute path to each source file.
+So if you get an error like `error: size of array 'x' is negative` when the
+macro `assert_cc(STRLEN(FILE) > STRLEN(RELATIVE_SOURCE_PATH) + 1);` is
+expanded, put your build directory nearer to the source tree.
+
+Any configuration options can be specified as -Darg=value... arguments
+to meson. After the build directory is initially configured, the configuration
+can be changed with:  
     `meson configure -Darg=value... build/`  
-  `meson configure` without any arguments will print out available options and
-  their current values.
+`meson configure` without any arguments will print out available options and
+their current values.
+
+
 
 Useful commands:  
 ----------------
