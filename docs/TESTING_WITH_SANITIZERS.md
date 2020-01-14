@@ -1,10 +1,10 @@
 ---
-title: Testing elogind using sanitizers
+title: Testing elogind Using Sanitizers
 category: Contributing
 layout: default
 ---
 
-# Testing elogind using sanitizers
+# Testing elogind Using Sanitizers
 
 To catch the *nastier* kind of bugs, you can run your code with [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html)
 and [Undefined Behavior Sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html).
