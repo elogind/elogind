@@ -30,6 +30,11 @@ int efi_set_variable_string(sd_id128_t vendor, const char *name, const char *p);
 
 int efi_elogind_options_variable(char **line);
 int elogind_efi_options_variable(char **line);
+bool is_efi_boot(void);
+bool is_efi_secure_boot(void);
+bool is_efi_secure_boot_setup_mode(void);
+
+int elogind_efi_options_variable(char **line);
 
 #else
 
@@ -54,6 +59,19 @@ static inline int efi_set_variable_string(sd_id128_t vendor, const char *name, c
 }
 
 static inline int efi_elogind_options_variable(char **line) {
+static inline int elogind_efi_options_variable(char **line) {
+static inline bool is_efi_boot(void) {
+        return false;
+}
+
+static inline bool is_efi_secure_boot(void) {
+        return false;
+}
+
+static inline bool is_efi_secure_boot_setup_mode(void) {
+        return false;
+}
+
 static inline int elogind_efi_options_variable(char **line) {
         return -ENODATA;
 }

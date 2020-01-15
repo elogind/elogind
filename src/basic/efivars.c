@@ -20,6 +20,7 @@
 #include "strv.h"
 #include "time-util.h"
 #include "utf8.h"
+#include "virt.h"
 
 #if ENABLE_EFI
 
@@ -90,13 +91,14 @@ int efi_get_variable(
                 n = read(fd, buf, (size_t) st.st_size - 4);
                 if (n < 0)
                         return -errno;
-                if (n != st.st_size - 4)
-                        return -EIO;
+                assert(n <= st.st_size - 4);
 
                 /* Always NUL terminate (2 bytes, to protect UTF-16) */
-                ((char*) buf)[st.st_size - 4] = 0;
-                ((char*) buf)[st.st_size - 4 + 1] = 0;
-        }
+                ((char*) buf)[n] = 0;
+                ((char*) buf)[n + 1] = 0;
+        } else
+                /* Assume that the reported size is accurate */
+                n = st.st_size - 4;
 
         /* Note that efivarfs interestingly doesn't require ftruncate() to update an existing EFI variable
          * with a smaller value. */
@@ -108,7 +110,7 @@ int efi_get_variable(
                 *ret_value = TAKE_PTR(buf);
 
         if (ret_size)
-                *ret_size = (size_t) st.st_size - 4;
+                *ret_size = n;
 
         return 0;
 }
@@ -221,6 +223,42 @@ int efi_set_variable_string(sd_id128_t vendor, const char *name, const char *v) 
 }
 
 int efi_elogind_options_variable(char **line) {
+int elogind_efi_options_variable(char **line) {
+bool is_efi_boot(void) {
+        if (detect_container() > 0)
+                return false;
+
+        return access("/sys/firmware/efi/", F_OK) >= 0;
+}
+
+static int read_flag(const char *varname) {
+        _cleanup_free_ void *v = NULL;
+        uint8_t b;
+        size_t s;
+        int r;
+
+        if (!is_efi_boot()) /* If this is not an EFI boot, assume the queried flags are zero */
+                return 0;
+
+        r = efi_get_variable(EFI_VENDOR_GLOBAL, varname, NULL, &v, &s);
+        if (r < 0)
+                return r;
+
+        if (s != 1)
+                return -EINVAL;
+
+        b = *(uint8_t *)v;
+        return !!b;
+}
+
+bool is_efi_secure_boot(void) {
+        return read_flag("SecureBoot") > 0;
+}
+
+bool is_efi_secure_boot_setup_mode(void) {
+        return read_flag("SetupMode") > 0;
+}
+
 int elogind_efi_options_variable(char **line) {
         const char *e;
         int r;
