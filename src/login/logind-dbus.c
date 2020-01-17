@@ -3007,7 +3007,7 @@ static int method_set_reboot_to_boot_loader_menu(
 
                 r = efi_loader_get_features(&features);
 
-                log_debug_elogind("efi_loader_features: 0x%08x [%d]", features, r);
+                log_debug_elogind("efi_loader_features: 0x%08lx [%d]", features, r);
 
                 if (r < 0)
                         log_warning_errno(r, "Failed to determine whether reboot to boot loader menu is supported: %m");
