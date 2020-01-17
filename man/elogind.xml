@@ -712,7 +712,7 @@
         <term><varname>$SYSTEMD_LOG_COLOR</varname></term>
         <listitem><para>Controls whether systemd highlights important
         log messages. This can be overridden with
-        <option>&#x2D;&#x2D;log-color</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-color=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -726,7 +726,7 @@
         <term><varname>$SYSTEMD_LOG_LOCATION</varname></term>
         <listitem><para>Controls whether systemd prints the code
         location along with log messages. This can be overridden with
-        <option>&#x2D;&#x2D;log-location</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-location=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -734,13 +734,6 @@
         <listitem><para>systemd reads the log target from this
         environment variable. This can be overridden with
         <option>&#x2D;&#x2D;log-target=</option>.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><varname>$SYSTEMD_LOG_TIME</varname></term>
-        <listitem><para>Controls whether systemd prefixes log
-        messages with the current time. This can be overridden with
-        <option>&#x2D;&#x2D;log-time=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -935,19 +928,16 @@
       <varlistentry>
         <term><varname>systemd.log_color</varname></term>
         <term><varname>systemd.log_level=</varname></term>
-        <term><varname>systemd.log_location</varname></term>
+        <term><varname>systemd.log_location=</varname></term>
         <term><varname>systemd.log_target=</varname></term>
-        <term><varname>systemd.log_time</varname></term>
 
         <listitem><para>Controls log output, with the same effect as the
         <varname>$SYSTEMD_LOG_COLOR</varname>,
         <varname>$SYSTEMD_LOG_LEVEL</varname>,
         <varname>$SYSTEMD_LOG_LOCATION</varname>,
-        <varname>$SYSTEMD_LOG_TARGET</varname>,
-        <varname>$SYSTEMD_LOG_TIME</varname>, environment variables described above.
-        <varname>systemd.log_color</varname>, <varname>systemd.log_location</varname>, and
-        <varname>systemd.log_time</varname> can be specified without an argument, with the
-        same effect as a positive boolean.</para></listitem>
+        <varname>$SYSTEMD_LOG_TARGET</varname>, environment variables described above.
+        <varname>systemd.log_color</varname> can be specified without an argument,
+        with the same effect as a positive boolean.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -1267,13 +1257,6 @@
           <term><option>&#x2D;&#x2D;log-target=</option></term>
 
           <listitem><para>Set log target. See <varname>systemd.log_target</varname> above.</para></listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>&#x2D;&#x2D;log-time=</option></term>
-
-          <listitem><para>Prefix messages with timestamp. See <varname>systemd.log_time</varname> above.
-          </para></listitem>
         </varlistentry>
 
         <varlistentry>
