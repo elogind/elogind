@@ -135,10 +135,12 @@ static inline int efi_loader_get_boot_usec(usec_t *firmware, usec_t *loader) {
 #endif // 0
 
 static inline int efi_loader_get_entries(char ***ret) {
+        log_debug_elogind("Need EFI entries, unsupported, will return %d", -EOPNOTSUPP);
         return -EOPNOTSUPP;
 }
 
 static inline int efi_loader_get_features(uint64_t *ret) {
+        log_debug_elogind("Need EFI features, unsupported, will return %d", -EOPNOTSUPP);
         return -EOPNOTSUPP;
 }
 
