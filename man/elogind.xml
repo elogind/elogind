@@ -712,7 +712,7 @@
         <term><varname>$SYSTEMD_LOG_COLOR</varname></term>
         <listitem><para>Controls whether systemd highlights important
         log messages. This can be overridden with
-        <option>&#x2D;&#x2D;log-color=</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-color</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -726,7 +726,7 @@
         <term><varname>$SYSTEMD_LOG_LOCATION</varname></term>
         <listitem><para>Controls whether systemd prints the code
         location along with log messages. This can be overridden with
-        <option>&#x2D;&#x2D;log-location=</option>.</para></listitem>
+        <option>&#x2D;&#x2D;log-location</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -928,7 +928,7 @@
       <varlistentry>
         <term><varname>systemd.log_color</varname></term>
         <term><varname>systemd.log_level=</varname></term>
-        <term><varname>systemd.log_location=</varname></term>
+        <term><varname>systemd.log_location</varname></term>
         <term><varname>systemd.log_target=</varname></term>
 
         <listitem><para>Controls log output, with the same effect as the
@@ -936,8 +936,8 @@
         <varname>$SYSTEMD_LOG_LEVEL</varname>,
         <varname>$SYSTEMD_LOG_LOCATION</varname>,
         <varname>$SYSTEMD_LOG_TARGET</varname>, environment variables described above.
-        <varname>systemd.log_color</varname> can be specified without an argument,
-        with the same effect as a positive boolean.</para></listitem>
+        <varname>systemd.log_color</varname> and <varname>systemd.log_location</varname> can be
+        specified without an argument, with the same effect as a positive boolean.</para></listitem>
       </varlistentry>
 
       <varlistentry>
