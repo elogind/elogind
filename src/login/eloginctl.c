@@ -611,7 +611,7 @@ static int prepare_boot_loader_entry(sd_bus* bus) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
-        if (streq(optarg, "help")) { /* Yes, this means, "help" is not a valid boot loader entry name we can deal with */
+        if (streq(arg_boot_loader_entry, "help")) { /* Yes, this means, "help" is not a valid boot loader entry name we can deal with */
                 r = help_boot_loader_entry(bus);
                 if (r < 0)
                         return r;
