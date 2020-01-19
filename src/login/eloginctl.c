@@ -547,6 +547,7 @@ static int parse_shutdown_time_spec(const char *t, usec_t *_u) {
         return 0;
 }
 
+#if ENABLE_EFI
 /* Original:
  * systemctl/systemctl.c:3383:prepare_firmware_setup()
 **/
@@ -632,6 +633,7 @@ static int prepare_boot_loader_entry(sd_bus* bus) {
 
         return 0;
 }
+#endif // ENABLE_EFI
 
 /* Original:
  * systemctl/systemctl.c:3482:start_special()

@@ -64,9 +64,11 @@ extern bool arg_no_wall;
 extern usec_t arg_when;
 extern bool arg_ignore_inhibitors;
 extern elogind_action arg_action;
+#if ENABLE_EFI
 extern bool arg_firmware_setup;
 extern usec_t arg_boot_loader_menu;
 extern const char* arg_boot_loader_entry;
+#endif
 #endif // 0
 static OutputMode arg_output = OUTPUT_SHORT;
 
@@ -1364,11 +1366,13 @@ static int help(int argc, char *argv[], void *userdata) {
                "                             json, json-pretty, json-sse, json-seq, cat,\n"
                "                             with-unit)\n"
 #if 1 /// As elogind can reboot, it allows to control the reboot process
+#if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
                "     --boot-loader-menu=TIME\n"
                "                           Boot into boot loader menu on next boot\n"
                "     --boot-loader-entry=NAME\n"
                "                           Boot into a specific boot loader entry on next boot\n"
+#endif
 #endif // 1
                "Session Commands:\n"
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
@@ -1435,9 +1439,11 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_KILL_WHO,
                 ARG_NO_ASK_PASSWORD,
 #if 1 /// elogind supports controlling the reboot process
+#if ENABLE_EFI
                 ARG_FIRMWARE_SETUP,
                 ARG_BOOT_LOADER_MENU,
                 ARG_BOOT_LOADER_ENTRY,
+#endif
 #endif // 1
         };
 
@@ -1468,9 +1474,11 @@ static int parse_argv(int argc, char *argv[]) {
                 { "ignore-inhibitors", no_argument,     NULL, 'i'                 },
 #endif // 0
 #if 1 /// elogind supports controlling the reboot process
+#if ENABLE_EFI
                 { "firmware-setup",    no_argument,       NULL, ARG_FIRMWARE_SETUP      },
                 { "boot-loader-menu",  required_argument, NULL, ARG_BOOT_LOADER_MENU    },
                 { "boot-loader-entry", required_argument, NULL, ARG_BOOT_LOADER_ENTRY   },
+#endif
 #endif // 1
                 {}
         };
@@ -1601,6 +1609,7 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_ignore_inhibitors = true;
                         break;
 
+#if ENABLE_EFI
                 case ARG_FIRMWARE_SETUP:
                         arg_firmware_setup = true;
                         break;
@@ -1617,6 +1626,7 @@ static int parse_argv(int argc, char *argv[]) {
 
                         arg_boot_loader_entry = empty_to_null(optarg);
                         break;
+#endif
 #endif // 1
                 case '?':
                         return -EINVAL;
