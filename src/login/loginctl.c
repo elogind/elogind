@@ -66,6 +66,8 @@ extern bool arg_ignore_inhibitors;
 extern elogind_action arg_action;
 #if ENABLE_EFI
 extern bool arg_firmware_setup;
+#endif
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
 extern usec_t arg_boot_loader_menu;
 extern const char* arg_boot_loader_entry;
 #endif
@@ -1368,6 +1370,8 @@ static int help(int argc, char *argv[], void *userdata) {
 #if 1 /// As elogind can reboot, it allows to control the reboot process
 #if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
+#endif
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                "     --boot-loader-menu=TIME\n"
                "                           Boot into boot loader menu on next boot\n"
                "     --boot-loader-entry=NAME\n"
@@ -1441,6 +1445,8 @@ static int parse_argv(int argc, char *argv[]) {
 #if 1 /// elogind supports controlling the reboot process
 #if ENABLE_EFI
                 ARG_FIRMWARE_SETUP,
+#endif
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 ARG_BOOT_LOADER_MENU,
                 ARG_BOOT_LOADER_ENTRY,
 #endif
@@ -1476,6 +1482,8 @@ static int parse_argv(int argc, char *argv[]) {
 #if 1 /// elogind supports controlling the reboot process
 #if ENABLE_EFI
                 { "firmware-setup",    no_argument,       NULL, ARG_FIRMWARE_SETUP      },
+#endif
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 { "boot-loader-menu",  required_argument, NULL, ARG_BOOT_LOADER_MENU    },
                 { "boot-loader-entry", required_argument, NULL, ARG_BOOT_LOADER_ENTRY   },
 #endif
@@ -1614,6 +1622,8 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_firmware_setup = true;
                         break;
 
+#endif
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 case ARG_BOOT_LOADER_MENU:
 
                         r = parse_sec(optarg, &arg_boot_loader_menu);

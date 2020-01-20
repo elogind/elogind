@@ -466,6 +466,7 @@ static int elogind_set_wall_message(sd_bus* bus, const char* msg) {
         return 0;
 }
 
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
 /* Original:
  * systemctl/systemctl.c:7956:help_boot_loader_entry()
  */
@@ -494,6 +495,7 @@ static int help_boot_loader_entry(sd_bus *bus) {
 
         return 0;
 }
+#endif // ENABLE_EFI_TODO
 
 /* Original:
  * systemctl/systemctl.c:7743:parse_shutdown_time_spec()
@@ -573,7 +575,9 @@ static int prepare_firmware_setup(sd_bus* bus) {
 
         return 0;
 }
+#endif
 
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
 /* Original:
  * systemctl/systemctl.c:3416:prepare_boot_loader_menu()
 **/
@@ -701,6 +705,8 @@ int start_special(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return r;
 
+#if ENABLE_EFI
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
         r = prepare_boot_loader_menu(bus);
         if (r < 0)
                 return r;
@@ -710,6 +716,8 @@ int start_special(int argc, char *argv[], void *userdata) {
                 return r;
         if (r > 0)
                 return 0; // Asked for help, no execution, then
+#endif // ENABLE_EFI_TODO
+#endif // ENABLE_EFI
 
         if (a == ACTION_REBOOT && argc > 1) {
                 r = update_reboot_parameter_and_warn(argv[1], false);
