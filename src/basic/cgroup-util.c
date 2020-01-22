@@ -42,6 +42,8 @@
 #include "strv.h"
 #include "unit-name.h"
 #include "user-util.h"
+/// Additional includes needed by elogind
+#include "env-file.h"
 
 static int cg_enumerate_items(const char *controller, const char *path, FILE **_f, const char *item) {
         _cleanup_free_ char *fs = NULL;
