@@ -866,12 +866,12 @@ msgstr "Requírese autenticación para estabelecer unha mensaxe de muro"
 # #: src/core/dbus-unit.c:594
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Requírese autenticación para estabelecer as propiedades en '$(unit)'."
+#
+# #: src/core/dbus-unit.c:703
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Requírese autenticación para eliminar ficheiros ou directorios asociados con "
+# "'$(unit)'."
 #endif // 0
-
-#: src/core/dbus-unit.c:703
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Requírese autenticación para eliminar ficheiros ou directorios asociados con "
-"'$(unit)'."

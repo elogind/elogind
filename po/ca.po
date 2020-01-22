@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1+
-#
 # Catalan translation for elogind.
+#
 # Walter Garcia-Fontes <walter.garcia@upf.edu>, 2016.
 # Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2018. #zanata
 msgid ""

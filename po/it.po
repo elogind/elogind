@@ -870,12 +870,12 @@ msgstr "Autenticazione richiesta per configurare un messaggio per gli utenti"
 # #: src/core/dbus-unit.c:594
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Autenticazione richiesta per configurare le proprietà di '$(unit)'."
+#
+# #: src/core/dbus-unit.c:703
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Autenticazione richiesta per eliminare i file e le directory associate a "
+# "'$(unit)'."
 #endif // 0
-
-#: src/core/dbus-unit.c:703
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Autenticazione richiesta per eliminare i file e le directory associate a "
-"'$(unit)'."
