@@ -448,16 +448,21 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
         if (ret)
                 *ret = s;
 
-        return !!s;
+        return 1;
+
+not_found:
+        if (ret)
+                *ret = NULL;
+        return 0;
 }
 
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
 #if 0 /// elogind does not support systemd units, but its own session system
         _cleanup_free_ char *unit = NULL;
-        User *u = NULL;
 #else
         Session *s;
 #endif // 0
+        User *u;
         int r;
 
         assert(m);
@@ -470,19 +475,25 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
         if (r >= 0)
                 u = hashmap_get(m->user_units, unit);
 
-        if (ret)
-                *ret = u;
-
 #else
         // If a session was found, ignore it if it is already closing.
         r = manager_get_session_by_pid (m, pid, &s);
         if (r <= 0 || SESSION_CLOSING == session_get_state(s))
                 goto not_found;
 
-        if (ret)
-                *ret =  s->user;
+        u = s->user;
+
 #endif // 0
-        return !!u;
+
+        if (ret)
+                *ret = u;
+
+        return 1;
+
+not_found:
+        if (ret)
+                *ret = NULL;
+        return 0;
 }
 
 int manager_get_idle_hint(Manager *m, dual_timestamp *t) {
