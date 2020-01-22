@@ -9,8 +9,8 @@
 #include "sd-bus.h"
 #include "sd-event.h"
 
-#include "hashmap.h"
 #include "macro.h"
+#include "set.h"
 #include "string-util.h"
 #include "time-util.h"
 
@@ -62,10 +62,6 @@ int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
 int bus_check_peercred(sd_bus *c);
 #endif // 0
 
-int bus_test_polkit(sd_bus_message *call, int capability, const char *action, const char **details, uid_t good_user, bool *_challenge, sd_bus_error *e);
-
-int bus_verify_polkit_async(sd_bus_message *call, int capability, const char *action, const char **details, bool interactive, uid_t good_user, Hashmap **registry, sd_bus_error *error);
-void bus_verify_polkit_async_registry_free(Hashmap *registry);
 
 #if 0 /// UNNEEDED by elogind
 int bus_connect_system_systemd(sd_bus **_bus);
