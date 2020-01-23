@@ -28,8 +28,6 @@
 #         bus-unit-util.h
 #         bus-util.c
 #         bus-util.h
-#         bus-polkit.c
-#         bus-polkit.h
 #         bus-wait-for-jobs.c
 #         bus-wait-for-jobs.h
 #         bus-wait-for-units.c
@@ -88,6 +86,7 @@
 #         fstab-util.h
 #         generator.c
 #         generator.h
+#         gpt.c
 #         gpt.h
 #         group-record-nss.c
 #         group-record-nss.h
