@@ -41,6 +41,8 @@ option('static-libelogind', type : 'combo',
 # option('quotacheck-path', type : 'string', description : 'path to quotacheck')
 # option('kmod-path', type : 'string', description : 'path to kmod')
 #else
+       description : '''install a static library for libelogind''')
+
 # elogind must have a configurable rootlibexecdir
 option('rootlibexecdir', type : 'string',
        description : '''override the root libexec directory path''')
@@ -273,14 +275,14 @@ option('nobody-group', type : 'string',
 #endif // 0
 option('default-kill-user-processes', type : 'boolean',
        description : 'the default value for KillUserProcesses= setting')
-option('gshadow', type : 'boolean',
-       description : 'support for shadow group')
-option('default-locale', type : 'string', value : '',
-       description : 'default locale used when /etc/locale.conf does not exist')
-option('service-watchdog', type : 'string', value : '3min',
-       description : 'default watchdog setting for elogind services')
-
 #if 0 /// UNNEEDED by elogind
+# option('gshadow', type : 'boolean',
+#        description : 'support for shadow group')
+# option('default-locale', type : 'string', value : '',
+#        description : 'default locale used when /etc/locale.conf does not exist')
+# option('service-watchdog', type : 'string', value : '3min',
+#        description : 'default watchdog setting for systemd services')
+#
 # option('default-dnssec', type : 'combo',
 #        description : 'default DNSSEC mode',
 #        choices : ['yes', 'allow-downgrade', 'no'],

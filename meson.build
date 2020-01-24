@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
+libsystemd_version = '0.27.1'
 #if 0 /// UNNEEDED by elogind - libudev is external
+# libudev_version = '1.6.16'
 #endif // 0
-libelogind_version = '0.27.1'
-libudev_version = '1.6.16'
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -396,28 +396,28 @@ install_tests = get_option('install-tests')
 # elif want_fuzzbuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library(get_option('fuzzbuzz-engine'), dirs: get_option('fuzzbuzz-engine-dir'))
 # endif
-#
-# # Those generate many false positives, and we do not want to change the code to
-# # avoid them.
-# basic_disabled_warnings = [
-#         '-Wno-unused-parameter',
-#         '-Wno-missing-field-initializers',
-#         '-Wno-unused-result',
-#         '-Wno-format-signedness',
-# ]
-# if get_option('b_ndebug') == 'true'
-#         # With asserts disabled with get a bunch of warnings about variables which
-#         # are used only in the asserts. This is not useful at all, so let's just silence
-#         # those warnings.
-#         basic_disabled_warnings += [
-#                 '-Wno-unused-variable',
-#                 '-Wno-unused-but-set-variable',
-#         ]
-# endif
 #else
 fuzzer_build = false
 cxx_cmd = ''
 #endif // 0
+
+# Those generate many false positives, and we do not want to change the code to
+# avoid them.
+basic_disabled_warnings = [
+        '-Wno-unused-parameter',
+        '-Wno-missing-field-initializers',
+        '-Wno-unused-result',
+        '-Wno-format-signedness',
+]
+if get_option('b_ndebug') == 'true'
+        # With asserts disabled with get a bunch of warnings about variables which
+        # are used only in the asserts. This is not useful at all, so let's just silence
+        # those warnings.
+        basic_disabled_warnings += [
+                '-Wno-unused-variable',
+                '-Wno-unused-but-set-variable',
+        ]
+endif
 
 possible_cc_flags = [
         '-Werror=undef',
@@ -1736,8 +1736,8 @@ libelogind = shared_library(
         version : libsystemd_version,
         include_directories : includes,
         link_args : ['-shared',
+                     '-Wl,--version-script=' + libelogind_sym_path],
 #if 0 /// elogind does not need gcrypt, only threads.
-#                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
 #                      libbasic_gcrypt],
 #         link_whole : [libsystemd_static,
@@ -1760,10 +1760,10 @@ libelogind = shared_library(
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
+install_libelogind_static = static_library(
+        'elogind',
+        libelogind_sources,
 #if 0 /// No journald with elogind (And before you ask: NO!)
-# install_libsystemd_static = static_library(
-#         'systemd',
-#         libsystemd_sources,
 #         journal_client_sources,
 #endif // 0
         basic_sources,
@@ -3590,7 +3590,9 @@ run_target(
         command : [meson_check_api_docs_sh, libelogind.full_path()])
 #endif // 0
 ############################################################
-watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
+#if 0 /// elogind is not PID 1
+# watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
+#endif // 0
 
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
