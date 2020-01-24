@@ -222,8 +222,6 @@ int efi_set_variable_string(sd_id128_t vendor, const char *name, const char *v) 
         return efi_set_variable(vendor, name, u16, (char16_strlen(u16) + 1) * sizeof(char16_t));
 }
 
-int efi_elogind_options_variable(char **line) {
-int elogind_efi_options_variable(char **line) {
 bool is_efi_boot(void) {
         if (detect_container() > 0)
                 return false;
@@ -259,7 +257,7 @@ bool is_efi_secure_boot_setup_mode(void) {
         return read_flag("SetupMode") > 0;
 }
 
-int elogind_efi_options_variable(char **line) {
+int systemd_efi_options_variable(char **line) {
         const char *e;
         int r;
 

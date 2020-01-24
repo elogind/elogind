@@ -269,6 +269,8 @@ basic_sources = files('''
         def.h
         dirent-util.c
         dirent-util.h
+        efivars.c
+        efivars.h
         env-file.c
         env-file.h
         env-util.c

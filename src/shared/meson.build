@@ -235,8 +235,8 @@ shared_sources = '''
         conf-parser.h
         dev-setup.c
         dev-setup.h
-        efivars.c
-        efivars.h
+        efi-loader.c
+        efi-loader.h
         enable-mempool.c
         exec-elogind.c
         exec-elogind.h
