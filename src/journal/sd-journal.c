@@ -30,7 +30,7 @@
 #include "journal-file.h"
 #include "journal-internal.h"
 #include "list.h"
-#include "lookup3.h"
+//#include "lookup3.h"
 #include "nulstr-util.h"
 #include "path-util.h"
 #include "process-util.h"
@@ -3295,7 +3295,7 @@ _public_ int sd_journal_has_runtime_files(sd_journal *j) {
         return j->has_runtime_files;
 #else
         return 0;
-#endif // 0 
+#endif // 0
 }
 
 _public_ int sd_journal_has_persistent_files(sd_journal *j) {
@@ -3305,5 +3305,5 @@ _public_ int sd_journal_has_persistent_files(sd_journal *j) {
         return j->has_persistent_files;
 #else
         return 0;
-#endif // 0 
+#endif // 0
 }

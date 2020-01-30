@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <errno.h>
-//#include <stdlib.h>
-//#include <sys/mman.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <sys/mman.h>
 
 #include "alloc-util.h"
 #include "errno-util.h"
