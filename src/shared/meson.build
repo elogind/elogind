@@ -205,8 +205,6 @@
 #         userdb.c
 #         userdb.h
 #         utmp-wtmp.h
-#         varlink.c
-#         varlink.h
 #         verbs.c
 #         verbs.h
 #         vlan-util.c
@@ -229,12 +227,16 @@ shared_sources = '''
         bootspec.h
         bus-util.c
         bus-util.h
+        cgroup-setup.c
+        cgroup-setup.h
         clean-ipc.c
         clean-ipc.h
         conf-parser.c
         conf-parser.h
         dev-setup.c
         dev-setup.h
+        dns-domain.c
+        dns-domain.h
         efi-loader.c
         efi-loader.h
         enable-mempool.c
@@ -246,10 +248,14 @@ shared_sources = '''
         fileio-label.h
         format-table.c
         format-table.h
+        group-record.c
+        group-record.h
         json.c
         json.h
         json-internal.h
         main-func.h
+        libcrypt-util.c
+        libcrypt-util.h
         musl_missing.c
         musl_missing.h
         nsflags.c
@@ -258,6 +264,8 @@ shared_sources = '''
         output-mode.h
         pager.c
         pager.h
+        pkcs11-util.c
+        pkcs11-util.h
         pretty-print.c
         pretty-print.h
         qsort_r_missing.c
@@ -272,7 +280,15 @@ shared_sources = '''
         spawn-polkit-agent.h
         udev-util.c
         udev-util.h
+        user-record-nss.c
+        user-record-nss.h
+        user-record.c
+        user-record.h
+        userdb.c
+        userdb.h
         utmp-wtmp.h
+        varlink.c
+        varlink.h
         verbs.c
         verbs.h
         xml.c
@@ -311,14 +327,14 @@ endif
 # endif
 #endif // 0
 
+if conf.get('HAVE_PAM') == 1
+        shared_sources += files('''
+        pam-util.c
+        pam-util.h
+'''.split())
+endif
+
 #if 0 /// elogind does not need all this networking stuff
-# if conf.get('HAVE_PAM') == 1
-#         shared_sources += files('''
-#         pam-util.c
-#         pam-util.h
-# '''.split())
-# endif
-#
 # generate_ip_protocol_list = find_program('generate-ip-protocol-list.sh')
 # ip_protocol_list_txt = custom_target(
 #         'ip-protocol-list.txt',
@@ -386,6 +402,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 libshared_deps = [threads,
                   libacl,
                   libcap,
+                  libpam,
                   libselinux]
 #endif // 0
 
