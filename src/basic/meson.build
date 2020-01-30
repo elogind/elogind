@@ -251,6 +251,8 @@ basic_sources = files('''
         alloc-util.h
         audit-util.c
         audit-util.h
+        blockdev-util.c
+        blockdev-util.h
         build.h
         bus-label.c
         bus-label.h
@@ -374,6 +376,8 @@ basic_sources = files('''
         process-util.h
         random-util.c
         random-util.h
+        ratelimit.c
+        ratelimit.h
         raw-clone.h
         refcnt.h
         rlimit-util.c
