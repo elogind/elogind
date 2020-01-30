@@ -270,21 +270,20 @@ void update_utmp(int argc, char* argv[]) {
                 return log_error_errno(r, "Failed to get D-Bus connection: %m");
 
         if (streq(argv[1], "reboot"))
-#else
-        if (streq(argv[1], "reboot"))
-                (void)on_reboot(&c);
-        else if (streq(argv[1], "shutdown"))
-                (void)on_shutdown(&c);
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
                 return on_reboot(&c);
         if (streq(argv[1], "shutdown"))
                 return on_shutdown(&c);
         if (streq(argv[1], "runlevel"))
                 return on_runlevel(&c);
         return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Unknown command %s", argv[1]);
+#else
+        if (streq(argv[1], "reboot"))
+                (void)on_reboot(&c);
+        else if (streq(argv[1], "shutdown"))
+                (void)on_shutdown(&c);
+#endif // 0
 }
 
+#if 0 /// in elogind this is not a standalone program
 DEFINE_MAIN_FUNCTION(run);
+#endif // 0
