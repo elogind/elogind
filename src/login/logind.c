@@ -362,7 +362,7 @@ static int manager_enumerate_users(Manager *m) {
                         continue;
                 }
 
-                log_debug_elogind("Loading user %d \"%s\"", u->uid, u->name ? u->name : "n/a");
+                log_debug_elogind("Loading user %d \"%s\"", u->user_record->uid, strna(u->user_record->user_name) );
                 user_add_to_gc_queue(u);
 
                 k = user_load(u);

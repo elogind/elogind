@@ -209,7 +209,7 @@ int user_runtime_dir(const char *verb, User *u) {
         assert_se(verb);
         assert_se(u);
         assert_se(u->manager);
-        
+
 #endif // 0
 
         umask(0022);
@@ -222,7 +222,8 @@ int user_runtime_dir(const char *verb, User *u) {
         assert_not_reached("Unknown verb!");
 #else
         if (streq(verb, "start"))
-                r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->uid, u->gid);
+                r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->user_record->uid,
+                             u->user_record->gid);
         else if (streq(verb, "stop"))
                 r = do_umount(u->runtime_path);
         else

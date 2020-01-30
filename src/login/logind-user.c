@@ -110,7 +110,7 @@ User *user_free(User *u) {
         if (!u)
                 return NULL;
 
-        log_debug_elogind("Freeing User %s ...", u->name);
+        log_debug_elogind("Freeing User %s ...", u->user_record->user_name);
         if (u->in_gc_queue)
                 LIST_REMOVE(gc_queue, u->manager->user_gc_queue, u);
 
@@ -477,26 +477,15 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 #endif // 1
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+
         /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
          * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
 
-#if 0 /// elogind does not spawn user instances of systemd
         /* Set slice parameters */
         (void) user_update_slice(u);
 
+#if 0 /// elogind does not spawn user instances of systemd
         /* Start user@UID.service */
         user_start_service(u);
 #endif // 0
@@ -551,7 +540,7 @@ int user_stop(User *u, bool force) {
                 return 0;
         }
 
-        log_debug_elogind("Stopping user %s %s ...", u->name, force ? "(forced)" : "");
+        log_debug_elogind("Stopping user %s %s ...", u->user_record->user_name, force ? "(forced)" : "");
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
                 int k;
 
@@ -583,7 +572,7 @@ int user_finalize(User *u) {
          * done. This is called as a result of an earlier user_done() when all jobs are completed. */
 
         if (u->started)
-                log_debug_elogind("User %s not started, finalizing...", u->name);
+                log_debug_elogind("User %s not started, finalizing...", u->user_record->user_name);
                 log_debug("User %s logged out.", u->user_record->user_name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions) {
@@ -718,7 +707,7 @@ bool user_may_gc(User *u, bool drop_not_started) {
 
         assert(u);
 
-        log_debug_elogind("User %s may gc ?", u->name);
+        log_debug_elogind("User %s may gc ?", u->user_record->user_name);
         log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !u->started));
         log_debug_elogind("  is sessionless : %s", yes_no(!u->sessions));
         log_debug_elogind("  not lingering  : %s", yes_no(user_check_linger_file(u) > 0));

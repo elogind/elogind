@@ -37,8 +37,8 @@
 #include "tmpfile-util.h"
 #include "user-util.h"
 #include "util.h"
-
 /// Additional includes needed by elogind
+#include "cgroup-setup.h"
 #include "extract-word.h"
 
 #define RELEASE_USEC (20*USEC_PER_SEC)
@@ -478,7 +478,7 @@ int session_load(Session *s) {
                                                "User of session %s not known.",
                                                s->id);
 
-                log_debug_elogind("Attaching session %s to user %d", s->id, user->uid);
+                log_debug_elogind("Attaching session %s to user %d", s->id, user->user_record->uid);
                 session_set_user(s, user);
         }
 
@@ -842,7 +842,7 @@ static int session_stop_cgroup(Session *s, bool force) {
         assert(s);
 
         // elogind must not kill lingering user processes alive
-        if ( (force || manager_shall_kill(s->manager, s->user->name) )
+        if ( (force || manager_shall_kill(s->manager, s->user->user_record->user_name) )
             && (user_check_linger_file(s->user) < 1) ) {
                 r = session_kill(s, KILL_ALL, SIGTERM);
                 if (r < 0)

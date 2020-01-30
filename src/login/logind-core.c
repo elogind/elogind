@@ -27,9 +27,9 @@
 #include "terminal-util.h"
 #include "udev-util.h"
 #include "user-util.h"
+#include "userdb.h"
 /// Additional includes needed by elogind
 #include "elogind.h"
-#include "userdb.h"
 
 void manager_reset_config(Manager *m) {
         assert(m);
@@ -433,14 +433,12 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
 #else
                 log_debug_elogind("Searching session for PID %u", pid);
                 r = cg_pid_get_session(pid, &session_name);
-                if (r < 0)
-                        goto not_found;
 
-                s = hashmap_get(m->sessions, session_name);
-                if (!s)
-                        goto not_found;
+                if (r >= 0)
+                        s = hashmap_get(m->sessions, session_name);
+
                 log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
-                                  session_name, s && s->id ? s->id : "NULL");
+                                  strnull(session_name), s && s->id ? s->id : "(null)");
 #endif // 0
         }
 
@@ -471,11 +469,8 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
 #else
         // If a session was found, ignore it if it is already closing.
         r = manager_get_session_by_pid (m, pid, &s);
-        if (r <= 0 || SESSION_CLOSING == session_get_state(s))
-                goto not_found;
-
-        u = s->user;
-
+        if ( (r >= 0) && (SESSION_CLOSING != session_get_state(s)) )
+                u = s->user;
 #endif // 0
 
         if (ret)

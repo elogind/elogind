@@ -1334,15 +1334,14 @@ static int help(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return log_oom();
 
-#if 1 /// elogind supports --no-wall and --dry-run
-               "     --no-wall             Do not print any wall message\n"
-               "     --dry-run             Only print what would be done\n"
-               "  -q --quiet               Suppress output\n"
-#endif // 1
         printf("%s [OPTIONS...] COMMAND ...\n\n"
                "%sSend control commands to or query the login manager.%s\n"
                "\nSession Commands:\n"
+#if 0 /// elogind has "list" as a shorthand for "list-sessions"
                "  list-sessions            List sessions\n"
+#else
+               "  list[-sessions]          List sessions (default command)\n"
+#endif // 0
                "  session-status [ID...]   Show session status\n"
                "  show-session [ID...]     Show properties of sessions or the manager\n"
                "  activate [ID]            Activate a session\n"
@@ -1366,12 +1365,27 @@ static int help(int argc, char *argv[], void *userdata) {
                "  show-seat [NAME...]      Show properties of seats or the manager\n"
                "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
                "  flush-devices            Flush all device associations\n"
-#if 0 /// elogind adds some system commands to loginctl
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
+#if 1 /// elogind adds some system commands to loginctl
+               "\nSystem Commands:\n"
+               "  reload                    Reload the elogind config file\n"
+               "  poweroff [TIME] [WALL...] Turn off the machine\n"
+               "  reboot   [TIME] [WALL...] Reboot the machine\n"
+               "  suspend                   Suspend the machine to memory\n"
+               "  hibernate                 Suspend the machine to disk\n"
+               "  hybrid-sleep              Suspend the machine to memory and disk\n"
+               "  suspend-then-hibernate    Suspend the system, wake after a period of\n"
+               "                            time and put it into hibernate\n"
+#endif // 1
                "\nOptions:\n"
                "  -h --help                Show this help\n"
                "     --version             Show package version\n"
                "     --no-pager            Do not pipe output into a pager\n"
+#if 1 /// elogind supports --no-wall and --dry-run
+               "     --no-wall             Do not print any wall message\n"
+               "     --dry-run             Only print what would be done\n"
+               "  -q --quiet               Suppress output\n"
+#endif // 1
                "     --no-legend           Do not show the headers and footers\n"
                "     --no-ask-password     Don't prompt for password\n"
                "  -H --host=[USER@]HOST    Operate on remote host\n"
@@ -1382,24 +1396,29 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -l --full                Do not ellipsize output\n"
                "     --kill-who=WHO        Who to send signal to\n"
                "  -s --signal=SIGNAL       Which signal to send\n"
+#if 0 /// UNNEEDED by elogind
                "  -n --lines=INTEGER       Number of journal entries to show\n"
+#else
+                /// elogind can cancel shutdowns and allows to ignore inhibitors
+               "  -c                       Cancel a pending shutdown or reboot\n"
+               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
+#endif // 0
                "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
                "                             short-iso, short-iso-precise, short-full,\n"
                "                             short-monotonic, short-unix, verbose, export,\n"
                "                             json, json-pretty, json-sse, json-seq, cat,\n"
                "                             with-unit)\n"
-#else
-               "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
-               "System Commands:\n"
-               "  reload                    Reload the elogind config file\n"
-               "  poweroff [TIME] [WALL...] Turn off the machine\n"
-               "  reboot   [TIME] [WALL...] Reboot the machine\n"
-               "  suspend                   Suspend the machine to memory\n"
-               "  hibernate                 Suspend the machine to disk\n"
-               "  hybrid-sleep              Suspend the machine to memory and disk\n"
-               "  suspend-then-hibernate    Suspend the system, wake after a period of\n"
-               "                            time and put it into hibernate\n"
-#endif // 0
+#if 1 /// As elogind can reboot, it allows to control the reboot process
+#if ENABLE_EFI
+               "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
+#endif
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
+               "     --boot-loader-menu=TIME\n"
+               "                           Boot into boot loader menu on next boot\n"
+               "     --boot-loader-entry=NAME\n"
+               "                           Boot into a specific boot loader entry on next boot\n"
+#endif
+#endif // 1
                "\nSee the %s for details.\n"
                , program_invocation_short_name
                , ansi_highlight()
@@ -1535,11 +1554,6 @@ static int parse_argv(int argc, char *argv[]) {
                                                        "Unknown output '%s'.", optarg);
 
                         if (OUTPUT_MODE_IS_JSON(arg_output))
-
-                        break;
-                case ARG_NO_LEGEND:
-                case ARG_NO_PAGER:
-                        arg_pager_flags |= PAGER_DISABLE;
                                 arg_legend = false;
 
                         break;
@@ -1548,13 +1562,17 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_no_wall = true;
                         break;
 
+                case ARG_DRY_RUN:
+                        arg_dry_run = true;
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
 
+                case 'q':
+                        arg_quiet = true;
+                        break;
 #endif // 1
                 case ARG_NO_PAGER:
                         arg_pager_flags |= PAGER_DISABLE;
-
                         break;
 
                 case ARG_NO_LEGEND:
@@ -1587,11 +1605,39 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case 'M':
-                        break;
                         arg_transport = BUS_TRANSPORT_MACHINE;
                         arg_host = optarg;
                         break;
+#if 1 /// elogind can cancel shutdowns, allows to ignore inhibitors and can controll the reboot process
+                case 'c':
+                        arg_action = ACTION_CANCEL_SHUTDOWN;
+                        break;
 
+                case 'i':
+                        arg_ignore_inhibitors = true;
+                        break;
+
+#if ENABLE_EFI
+                case ARG_FIRMWARE_SETUP:
+                        arg_firmware_setup = true;
+                        break;
+
+#endif
+#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
+                case ARG_BOOT_LOADER_MENU:
+
+                        r = parse_sec(optarg, &arg_boot_loader_menu);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to parse --boot-loader-menu= argument '%s': %m", optarg);
+
+                        break;
+
+                case ARG_BOOT_LOADER_ENTRY:
+
+                        arg_boot_loader_entry = empty_to_null(optarg);
+                        break;
+#endif
+#endif // 1
                 case '?':
                         return -EINVAL;
 
@@ -1599,19 +1645,21 @@ static int parse_argv(int argc, char *argv[]) {
                         assert_not_reached("Unhandled option");
                 }
 
-                        arg_transport = BUS_TRANSPORT_MACHINE;
         return 1;
 }
 
 static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
-                { "help",              VERB_ANY, VERB_ANY, 0,            help              },
 
         static const Verb verbs[] = {
                 { "help",              VERB_ANY, VERB_ANY, 0,            help              },
+#if 0 /// elogind has "list" as a shorthand for "list-sessions"
                 { "list-sessions",     VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
+#else
+                { "list",              VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
+                { "list-sessions",     VERB_ANY, 1,        0,            list_sessions     },
+#endif // 0
                 { "session-status",    VERB_ANY, VERB_ANY, 0,            show_session      },
                 { "show-session",      VERB_ANY, VERB_ANY, 0,            show_session      },
-
                 { "activate",          VERB_ANY, 2,        0,            activate          },
                 { "lock-session",      VERB_ANY, VERB_ANY, 0,            activate          },
                 { "unlock-session",    VERB_ANY, VERB_ANY, 0,            activate          },
@@ -1629,23 +1677,31 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "list-seats",        VERB_ANY, 1,        0,            list_seats        },
                 { "seat-status",       VERB_ANY, VERB_ANY, 0,            show_seat         },
                 { "show-seat",         VERB_ANY, VERB_ANY, 0,            show_seat         },
-                { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
                 { "attach",            3,        VERB_ANY, 0,            attach            },
                 { "flush-devices",     VERB_ANY, 1,        0,            flush_devices     },
                 { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
+#if 1 /// elogind adds some system commands to loginctl
+                { "reload",            VERB_ANY, 1,        0,            reload_config     },
+                { "poweroff",          VERB_ANY, VERB_ANY, 0,            start_special     },
+                { "reboot",            VERB_ANY, VERB_ANY, 0,            start_special     },
+                { "suspend",           VERB_ANY, 1,        0,            start_special     },
+                { "hibernate",         VERB_ANY, 1,        0,            start_special     },
+                { "hybrid-sleep",      VERB_ANY, 1,        0,            start_special     },
+                { "suspend-then-hibernate", VERB_ANY, 1,   0,            start_special     },
+                { "cancel-shutdown",   VERB_ANY, 1,        0,            start_special     },
+#endif // 1
                 {}
         };
 
+#if 1 /// elogind can do shutdown and allows its cancellation
+        if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
+                return elogind_cancel_shutdown(bus);
+#endif // 1
         return dispatch_verb(argc, argv, verbs, bus);
 }
-                { "attach",            3,        VERB_ANY, 0,            attach            },
 
 static int run(int argc, char *argv[]) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
-        int r;
-        log_show_color(true);
-        log_open();
-        setlocale(LC_ALL, "");
         int r;
 
         setlocale(LC_ALL, "");
@@ -1667,11 +1723,17 @@ static int run(int argc, char *argv[]) {
         if (r < 0)
                 return log_error_errno(r, "Failed to create bus connection: %m");
 
-
         (void) sd_bus_set_allow_interactive_authorization(bus, arg_ask_password);
 
+#if 0 /// elogind has some own cleanups to do
         return loginctl_main(argc, argv, bus);
-}
+#else
+        r = loginctl_main(argc, argv, bus);
 
+        elogind_cleanup();
+
+        return r;
+#endif // 0
+}
 
 DEFINE_MAIN_FUNCTION(run);
