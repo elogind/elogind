@@ -759,7 +759,7 @@ conf.set('GPERF_LEN_TYPE', gperf_len_type,
 if not cc.has_header('sys/capability.h')
         error('POSIX caps headers not found')
 endif
-#if 0 /// elogind does not need all of these
+#if 0 /// elogind also needs to check printf.h
 # foreach header : ['crypt.h',
 #                   'linux/memfd.h',
 #                   'linux/vm_sockets.h',
@@ -769,7 +769,8 @@ endif
 #                  ]
 #
 #else
-foreach header : ['linux/memfd.h',
+foreach header : ['crypt.h',
+                  'linux/memfd.h',
                   'linux/vm_sockets.h',
                   'printf.h',
                   'sys/auxv.h',
@@ -2218,7 +2219,7 @@ if conf.get('HAVE_PAM') == 1
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 #else
-        version_script_arg = join_paths(meson.source_root(), pam_elogind_sym)
+        version_script_arg = join_paths(project_source_root, pam_elogind_sym)
         pam_elogind = shared_library(
                 'pam_elogind',
                 pam_elogind_c,
@@ -2244,7 +2245,7 @@ if conf.get('HAVE_PAM') == 1
 #endif // 0
 endif
 
-#if 0 /// UNNEEDED by elogind 
+#if 0 /// UNNEEDED by elogind
 # if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_BLKID') == 1
 #         exe = executable('bootctl',
 #                          'src/boot/bootctl.c',
