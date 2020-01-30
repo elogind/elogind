@@ -30,10 +30,6 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-        if (r < 0)
-                return log_debug_errno(r, "Failed to write partition device to /sys/power/resume for '%s': '%s': %m",
-                                       hibernate_location->swap->device, resume_str);
-
 #include "time-util.h"
 #include "util.h"
 
@@ -46,36 +42,43 @@ static char* arg_verb = NULL;
 
 STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
 
-#if 1 /// To support LVM setups, elogind uses device numbers
-        char device_num_str [DECIMAL_STR_MAX(uint32_t) * 2 + 2];
-#endif // 1
 static int write_hibernate_location_info(const HibernateLocation *hibernate_location) {
         char offset_str[DECIMAL_STR_MAX(uint64_t)];
         char resume_str[DECIMAL_STR_MAX(unsigned) * 2 + STRLEN(":")];
         int r;
+#if 1 /// To support LVM setups, elogind uses device numbers
+        char device_num_str [DECIMAL_STR_MAX(uint32_t) * 2 + 2];
+        struct stat stb;
+#endif // 1
 
         assert(hibernate_location);
         assert(hibernate_location->swap);
 
-#if 1 /// To support LVM setups, elogind uses device numbers if the direct approach failed
-                if (r < 0) {
-                        r = stat(device, &stb);
-                        if (r < 0)
-                                return log_debug_errno(errno, "Error while trying to get stats for %s: %m", device);
+        xsprintf(resume_str, "%u:%u", major(hibernate_location->devno), minor(hibernate_location->devno));
         r = write_string_file("/sys/power/resume", resume_str, WRITE_STRING_FILE_DISABLE_BUFFER);
-        if (r < 0)
 
-                        (void) snprintf(device_num_str, DECIMAL_STR_MAX(uint32_t) * 2 + 2,
-                                        "%u:%u",
-                                        major(stb.st_rdev), minor(stb.st_rdev));
-                        r = write_string_file("/sys/power/resume", device_num_str, 0);
-                }
+#if 1 /// To support LVM setups, elogind uses device numbers if the direct approach failed
+        if (r < 0) {
+                r = stat(hibernate_location->swap->device, &stb);
+                if (r < 0)
+                        return log_debug_errno(errno, "Error while trying to get stats for %s: %m",
+                                               hibernate_location->swap->device);
+
+                (void) snprintf(device_num_str, DECIMAL_STR_MAX(uint32_t) * 2 + 2,
+                                "%u:%u",
+                                major(stb.st_rdev), minor(stb.st_rdev));
+                r = write_string_file("/sys/power/resume", device_num_str, 0);
+        }
 #endif // 1
+
+        if (r < 0)
+                return log_debug_errno(r, "Failed to write partition device to /sys/power/resume for '%s': '%s': %m",
+                                       hibernate_location->swap->device, resume_str);
+
         log_debug("Wrote resume= value for %s to /sys/power/resume: %s", hibernate_location->swap->device, resume_str);
 
         /* if it's a swap partition, we're done */
         if (streq(hibernate_location->swap->type, "partition"))
-        xsprintf(resume_str, "%u:%u", major(hibernate_location->devno), minor(hibernate_location->devno));
                 return r;
 
         if (!streq(hibernate_location->swap->type, "file"))
@@ -92,9 +95,6 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
 
                 return log_debug_errno(errno, "/sys/power/resume_offset not writeable: %m");
         }
-
-
-/// elogind empty mask removed ()
 
         xsprintf(offset_str, "%" PRIu64, hibernate_location->offset);
         r = write_string_file("/sys/power/resume_offset", offset_str, WRITE_STRING_FILE_DISABLE_BUFFER);
