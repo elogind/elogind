@@ -398,6 +398,8 @@
         <action id="org.freedesktop.login1.chvt">
                 <description gettext-domain="elogind">Change Session</description>
                 <message gettext-domain="elogind">Authentication is required for changing the virtual terminal.</message>
+                <description gettext-domain="elogind">Change Session</description>
+                <message gettext-domain="elogind">Authentication is required to change the virtual terminal.</message>
                 <defaults>
                         <allow_any>auth_admin_keep</allow_any>
                         <allow_inactive>auth_admin_keep</allow_inactive>
