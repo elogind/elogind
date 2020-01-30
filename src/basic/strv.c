@@ -176,7 +176,6 @@ char **strv_new_internal(const char *x, ...) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_extend_strv(char ***a, char * const *b, bool filter_duplicates) {
         char * const *s, **t;
         size_t p, q, i = 0, j;
@@ -224,6 +223,7 @@ rollback:
         return -ENOMEM;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_extend_strv_concat(char ***a, char * const *b, const char *suffix) {
         char * const *s;
         int r;
@@ -492,7 +492,6 @@ int strv_consume_pair(char ***l, char *a, char *b) {
 
         return r;
 }
-#endif // 0
 
 int strv_consume_prepend(char ***l, char *value) {
         int r;
@@ -503,6 +502,7 @@ int strv_consume_prepend(char ***l, char *value) {
 
         return r;
 }
+#endif // 0
 
 int strv_extend(char ***l, const char *value) {
         char *v;
@@ -517,6 +517,7 @@ int strv_extend(char ***l, const char *value) {
         return strv_consume(l, v);
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_extend_front(char ***l, const char *value) {
         size_t n, m;
         char *v, **c;
@@ -552,6 +553,7 @@ int strv_extend_front(char ***l, const char *value) {
         *l = c;
         return 0;
 }
+#endif // 0
 
 char **strv_uniq(char **l) {
         char **i;

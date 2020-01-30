@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-#if 0 /// No gshadow needed in elogind
 #include <grp.h>
+#if 0 /// No gshadow needed in elogind
 #if ENABLE_GSHADOW
 //#include <gshadow.h>
 #endif
 #endif // 0
-//#include <pwd.h>
+#include <pwd.h>
 //#include <shadow.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -70,11 +70,11 @@ int take_etc_passwd_lock(const char *root);
 
 #define ETC_PASSWD_LOCK_PATH "/etc/.pwd.lock"
 
-#if 0 /// UNNEEDED by elogind
 static inline bool uid_is_system(uid_t uid) {
         return uid <= SYSTEM_UID_MAX;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline bool gid_is_system(gid_t gid) {
         return gid <= SYSTEM_GID_MAX;
 }
@@ -86,13 +86,11 @@ static inline bool uid_is_dynamic(uid_t uid) {
 static inline bool gid_is_dynamic(gid_t gid) {
         return uid_is_dynamic((uid_t) gid);
 }
-#endif // 0
 
 static inline bool uid_is_container(uid_t uid) {
         return CONTAINER_UID_BASE_MIN <= uid && uid <= CONTAINER_UID_BASE_MAX;
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline bool gid_is_container(gid_t gid) {
         return uid_is_container((uid_t) gid);
 }
@@ -126,10 +124,10 @@ static inline bool valid_user_group_name_compat(const char *u) {
 static inline bool valid_user_group_name_or_id_compat(const char *u) {
         return valid_user_group_name_or_id_full(u, false);
 }
-#if 0 /// UNNEEDED by elogind
 bool valid_gecos(const char *d);
 bool valid_home(const char *p);
 
+#if 0 /// UNNEEDED by elogind
 static inline bool valid_shell(const char *p) {
         /* We have the same requirements, so just piggy-back on the home check.
          *

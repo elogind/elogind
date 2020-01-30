@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-//#include <sys/mman.h>
+#include <sys/mman.h>
 
 #include "alloc-util.h"
 #include "fd-util.h"

@@ -407,10 +407,6 @@ int cg_kill_recursive(
         return ret;
 }
 
-        log_debug_elogind("Migrating \"%s\"/\"%s\" to \"%s\"/\"%s\" (%s)",
-                          cfrom, pfrom, cto, pto,
-                          (flags & CGROUP_IGNORE_SELF)
-                          ? "ignoring self" : "watching self");
 static const char *controller_to_dirname(const char *controller) {
         const char *e;
 
@@ -614,7 +610,6 @@ int cg_get_xattr(const char *controller, const char *path, const char *name, voi
 
         return (int) n;
 }
-#endif // 0
 
 int cg_remove_xattr(const char *controller, const char *path, const char *name) {
         _cleanup_free_ char *fs = NULL;
@@ -632,6 +627,7 @@ int cg_remove_xattr(const char *controller, const char *path, const char *name) 
 
         return 0;
 }
+#endif // 0
 
 int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -2051,9 +2047,6 @@ int cg_kernel_controllers(Set **ret) {
 }
 #endif // 0
 
-/* The hybrid mode was initially implemented in v232 and simply mounted cgroup2 on /sys/fs/cgroup/elogind.  This
-static thread_local CGroupUnified unified_cache = CGROUP_UNIFIED_UNKNOWN;
-
 /* The hybrid mode was initially implemented in v232 and simply mounted cgroup2 on
  * /sys/fs/cgroup/elogind. This unfortunately broke other tools (such as docker) which expected the v1
  * "name=elogind" hierarchy on /sys/fs/cgroup/elogind. From v233 and on, the hybrid mode mounts v2 on
@@ -2166,9 +2159,10 @@ int cg_hybrid_unified(void) {
         if (r < 0)
                 return r;
 
-        return r == CGROUP_UNIFIED_SYSTEMD && !unified_elogind_v232;
+        return r == CGROUP_UNIFIED_SYSTEMD && !unified_systemd_v232;
 }
 
+#if 0 /// UNNEEDED by elogind
 const uint64_t cgroup_io_limit_defaults[_CGROUP_IO_LIMIT_TYPE_MAX] = {
         [CGROUP_IO_RBPS_MAX]    = CGROUP_LIMIT_MAX,
         [CGROUP_IO_WBPS_MAX]    = CGROUP_LIMIT_MAX,
@@ -2184,6 +2178,7 @@ static const char* const cgroup_io_limit_type_table[_CGROUP_IO_LIMIT_TYPE_MAX] =
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_io_limit_type, CGroupIOLimitType);
+#endif // 0
 
 bool is_cgroup_fs(const struct statfs *s) {
         return is_fs_type(s, CGROUP_SUPER_MAGIC) ||

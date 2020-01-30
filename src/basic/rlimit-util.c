@@ -321,6 +321,7 @@ int rlimit_format(const struct rlimit *rl, char **ret) {
         *ret = s;
         return 0;
 }
+#endif // 0
 
 static const char* const rlimit_table[_RLIMIT_MAX] = {
         [RLIMIT_AS]         = "AS",
@@ -343,6 +344,7 @@ static const char* const rlimit_table[_RLIMIT_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(rlimit, int);
 
+#if 0 /// UNNEEDED by elogind
 int rlimit_from_string_harder(const char *s) {
         const char *suffix;
 
@@ -358,6 +360,7 @@ int rlimit_from_string_harder(const char *s) {
 
         return rlimit_from_string(s);
 }
+#endif // 0
 
 void rlimit_free_all(struct rlimit **rl) {
         int i;
@@ -368,7 +371,6 @@ void rlimit_free_all(struct rlimit **rl) {
         for (i = 0; i < _RLIMIT_MAX; i++)
                 rl[i] = mfree(rl[i]);
 }
-#endif // 0
 
 int rlimit_nofile_bump(int limit) {
         int r;

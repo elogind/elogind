@@ -83,9 +83,9 @@ int pid_from_same_root_fs(pid_t pid);
 
 bool is_main_thread(void);
 
-#if 0 /// UNNEEDED by elogind
 _noreturn_ void freeze(void);
 
+#if 0 /// UNNEEDED by elogind
 bool oom_score_adjust_is_valid(int oa);
 #endif // 0
 
@@ -127,11 +127,9 @@ void valgrind_summary_hack(void);
 
 int pid_compare_func(const pid_t *a, const pid_t *b);
 
-#if 0 /// UNNEEDED by elogind
 static inline bool nice_is_valid(int n) {
         return n >= PRIO_MIN && n < PRIO_MAX;
 }
-#endif // 0
 
 static inline bool sched_policy_is_valid(int i) {
         return IN_SET(i, SCHED_OTHER, SCHED_BATCH, SCHED_IDLE, SCHED_FIFO, SCHED_RR);

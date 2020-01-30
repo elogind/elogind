@@ -57,6 +57,4 @@ char *strv_env_get(char **x, const char *n) _pure_;
 #endif // 0
 
 int getenv_bool(const char *p);
-#if 0 /// UNNEEDED by elogind
 int getenv_bool_secure(const char *p);
-#endif // 0

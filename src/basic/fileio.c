@@ -687,7 +687,6 @@ DIR *xopendirat(int fd, const char *name, int flags) {
         return d;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int mode_to_flags(const char *mode) {
         const char *p;
         int flags;
@@ -763,6 +762,7 @@ int xfopenat(int dir_fd, const char *path, const char *mode, int flags, FILE **r
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int search_and_fopen_internal(const char *path, const char *mode, const char *root, char **search, FILE **_f) {
         char **i;
 

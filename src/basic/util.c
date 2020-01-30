@@ -278,4 +278,3 @@ void disable_coredumps(void) {
                 log_debug_errno(r, "Failed to turn off coredumps, ignoring: %m");
 }
 #endif // 0
-

@@ -2,7 +2,7 @@
 #pragma once
 
 #include <stdbool.h>
-//#include <stdio.h>
+#include <stdio.h>
 
 #include "macro.h"
 
@@ -11,9 +11,7 @@ bool hostname_is_set(void);
 #endif // 0
 
 char* gethostname_malloc(void);
-#if 0 /// UNNEEDED by elogind
 int gethostname_strict(char **ret);
-#endif // 0
 
 bool valid_ldh_char(char c) _const_;
 bool hostname_is_valid(const char *s, bool allow_trailing_dot) _pure_;

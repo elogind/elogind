@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <sys/resource.h>
+#include <sys/resource.h>
 
 #ifndef RLIMIT_RTTIME
 #define RLIMIT_RTTIME 15

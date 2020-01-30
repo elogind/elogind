@@ -18,7 +18,6 @@
 #  include <sys/auxv.h>
 #endif
 
-#else
 #include "alloc-util.h"
 #include "fd-util.h"
 #include "fileio.h"

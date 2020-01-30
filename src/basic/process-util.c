@@ -20,7 +20,7 @@
 #endif
 
 #include "alloc-util.h"
-#include "architecture.h"
+//#include "architecture.h"
 #include "env-util.h"
 #include "errno-util.h"
 #include "escape.h"
@@ -971,7 +971,6 @@ bool is_main_thread(void) {
         return cached > 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 _noreturn_ void freeze(void) {
 
         log_close();
@@ -996,6 +995,7 @@ _noreturn_ void freeze(void) {
                 pause();
 }
 
+#if 0 /// UNNEEDED by elogind
 bool oom_score_adjust_is_valid(int oa) {
         return oa >= OOM_SCORE_ADJ_MIN && oa <= OOM_SCORE_ADJ_MAX;
 }

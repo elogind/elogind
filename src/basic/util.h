@@ -7,22 +7,6 @@
 /// Additional includes needed by elogind
 #include "musl_missing.h"
 
-static inline const char* yes_no(bool b) {
-        return b ? "yes" : "no";
-}
-
-static inline const char* true_false(bool b) {
-        return b ? "true" : "false";
-}
-
-static inline const char* one_zero(bool b) {
-        return b ? "1" : "0";
-}
-
-static inline const char* enable_disable(bool b) {
-        return b ? "enable" : "disable";
-}
-
 extern int saved_argc;
 extern char **saved_argv;
 

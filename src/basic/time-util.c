@@ -1283,6 +1283,7 @@ int get_timezones(char ***ret) {
 
         return 0;
 }
+#endif // 0
 
 bool timezone_is_valid(const char *name, int log_level) {
         bool slash = false;
@@ -1353,7 +1354,6 @@ bool timezone_is_valid(const char *name, int log_level) {
         return true;
 }
 
-#endif // 0
 bool clock_boottime_supported(void) {
         static int supported = -1;
 

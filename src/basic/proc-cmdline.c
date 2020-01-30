@@ -44,11 +44,11 @@ int proc_cmdline(char **ret) {
  * (https://elogind.io/BOOT_LOADER_SPECIFICATION/) The user's intention is then
  * that the cmdline should not be modified.  You want to make sure that the
  * system starts up as exactly specified in the signed artifact. */
-static int elogind_options_variable(char **line) {
+static int systemd_options_variable(char **line) {
         if (is_efi_secure_boot())
                 return -ENODATA;
 
-        return elogind_efi_options_variable(line);
+        return systemd_efi_options_variable(line);
 }
 
 static int proc_cmdline_extract_first(const char **p, char **ret_word, ProcCmdlineFlags flags) {
@@ -136,9 +136,7 @@ int proc_cmdline_parse(proc_cmdline_parse_t parse_item, void *data, ProcCmdlineF
 
         /* We parse the EFI variable first, because later settings have higher priority. */
 
-        r = efi_elogind_options_variable(&line);
-        r = elogind_efi_options_variable(&line);
-        r = elogind_options_variable(&line);
+        r = systemd_options_variable(&line);
         if (r < 0 && r != -ENODATA)
                 log_debug_errno(r, "Failed to get SystemdOptions EFI variable, ignoring: %m");
 
@@ -160,7 +158,6 @@ static bool relaxed_equal_char(char a, char b) {
                 (a == '-' && b == '_');
 }
 
-#if 0 /// UNNEEDED by elogind
 char *proc_cmdline_key_startswith(const char *s, const char *prefix) {
         assert(s);
         assert(prefix);
@@ -173,7 +170,6 @@ char *proc_cmdline_key_startswith(const char *s, const char *prefix) {
 
         return (char*) s;
 }
-#endif // 0
 
 bool proc_cmdline_key_streq(const char *x, const char *y) {
         assert(x);
@@ -188,7 +184,6 @@ bool proc_cmdline_key_streq(const char *x, const char *y) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int cmdline_get_key(const char *line, const char *key, ProcCmdlineFlags flags, char **ret_value) {
         _cleanup_free_ char *ret = NULL;
         bool found = false;
@@ -306,6 +301,7 @@ int proc_cmdline_get_bool(const char *key, bool *ret) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int proc_cmdline_get_key_many_internal(ProcCmdlineFlags flags, ...) {
         _cleanup_free_ char *line = NULL;
         const char *p;

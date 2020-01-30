@@ -748,7 +748,6 @@ int getenv_bool(const char *p) {
         return parse_boolean(e);
 }
 
-#if 0 /// UNNEEDED by elogind
 int getenv_bool_secure(const char *p) {
         const char *e;
 
@@ -758,4 +757,3 @@ int getenv_bool_secure(const char *p) {
 
         return parse_boolean(e);
 }
-#endif // 0

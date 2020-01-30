@@ -757,7 +757,6 @@ bool valid_user_group_name_or_id_full(const char *u, bool strict) {
         return parse_uid(u, NULL) >= 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool valid_gecos(const char *d) {
 
         if (!d)
@@ -801,7 +800,6 @@ bool valid_home(const char *p) {
 
         return true;
 }
-#endif // 0
 
 int maybe_setgroups(size_t size, const gid_t *list) {
         int r;

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <linux/input.h>
-//#include <linux/types.h>
+#include <linux/input.h>
+#include <linux/types.h>
 
 /* linux@c7dc65737c9a607d3e6f8478659876074ad129b8 (3.12) */
 #ifndef EVIOCREVOKE

@@ -134,9 +134,9 @@ int parse_nsec(const char *t, nsec_t *nsec);
 bool ntp_synced(void);
 
 int get_timezones(char ***l);
+#endif // 0
 bool timezone_is_valid(const char *name, int log_level);
 
-#endif // 0
 bool clock_boottime_supported(void);
 bool clock_supported(clockid_t clock);
 clockid_t clock_boottime_or_monotonic(void);
