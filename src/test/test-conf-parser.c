@@ -130,7 +130,6 @@ static void test_config_parse_iec_size(void) {
         test_config_parse_iec_size_one("garbage", 0);
 }
 
-
 static void test_config_parse_si_uint64(void) {
         test_config_parse_si_uint64_one("1024", 1024);
         test_config_parse_si_uint64_one("2K", 2000);
@@ -138,6 +137,7 @@ static void test_config_parse_si_uint64(void) {
         test_config_parse_si_uint64_one("1G", 1 * 1000 * 1000 * 1000);
         test_config_parse_si_uint64_one("0G", 0);
         test_config_parse_si_uint64_one("0", 0);
+
         test_config_parse_si_uint64_one("-982", 0);
         test_config_parse_si_uint64_one("49874444198739873000000G", 0);
         test_config_parse_si_uint64_one("garbage", 0);
@@ -402,8 +402,8 @@ int main(int argc, char **argv) {
         test_config_parse_log_level();
         test_config_parse_log_facility();
         test_config_parse_iec_size();
-#endif // 0
         test_config_parse_si_uint64();
+#endif // 0
         test_config_parse_int();
         test_config_parse_unsigned();
         test_config_parse_strv();

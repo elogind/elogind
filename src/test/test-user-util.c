@@ -290,7 +290,6 @@ static void test_make_salt(void) {
 
         assert(!streq(s, t));
 }
-#endif // 0
 
 static void test_in_gid(void) {
         assert(in_gid(getgid()) >= 0);
@@ -329,6 +328,7 @@ static void test_gid_lists_ops(void) {
         assert_se(nresult >= 0 || nresult == -EINVAL || nresult == -ENOMEM);
         assert_se(gids);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_uid_to_name_one(0, "root");
@@ -368,10 +368,10 @@ int main(int argc, char *argv[]) {
         test_valid_home();
 
         test_make_salt();
-#endif // 0
 
         test_in_gid();
         test_gid_lists_ops();
+#endif // 0
 
         return 0;
 }

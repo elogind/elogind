@@ -121,10 +121,10 @@ static void test_get_process_comm_escape(void) {
         test_get_process_comm_escape_one("0123456789012345", "012345678901234");
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
         if (is_locale_utf8()) {
-#endif // 1 
+#endif // 1
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
-#endif // 1 
+#endif // 1
         test_get_process_comm_escape_one("äöüß", "\\303\\244\\303\\266\\303\\274\\303\\237");
         test_get_process_comm_escape_one("xäöüß", "x\\303\\244\\303\\266\\303\\274\\303\\237");
         test_get_process_comm_escape_one("xxäöüß", "xx\\303\\244\\303\\266\\303\\274\\303\\237");
@@ -623,7 +623,6 @@ static void test_ioprio_class_from_to_string(void) {
         test_ioprio_class_from_to_string_one("9", -1);
         test_ioprio_class_from_to_string_one("-1", -1);
 }
-#endif // 0
 
 static void test_setpriority_closest(void) {
         int r;
@@ -710,6 +709,7 @@ static void test_setpriority_closest(void) {
                 _exit(EXIT_SUCCESS);
         }
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
@@ -742,8 +742,8 @@ int main(int argc, char *argv[]) {
         test_pid_to_ptr();
 #if 0 /// UNNEEDED by elogind
         test_ioprio_class_from_to_string();
-#endif // 0
         test_setpriority_closest();
+#endif // 0
 
         return 0;
 }
