@@ -23,6 +23,7 @@ typedef struct SleepConfig {
 #if 0 /// UNNEEDED by elogind
 void free_sleep_config(SleepConfig *sc);
 DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, free_sleep_config);
+#endif // 0
 
 /* entry in /proc/swaps */
 typedef struct SwapEntry {
@@ -49,6 +50,7 @@ typedef struct HibernateLocation {
 HibernateLocation* hibernate_location_free(HibernateLocation *hl);
 DEFINE_TRIVIAL_CLEANUP_FUNC(HibernateLocation*, hibernate_location_free);
 
+#if 0 /// UNNEEDED by elogind
 int sleep_settings(const char *verb, const SleepConfig *sleep_config, bool *ret_allow, char ***ret_modes, char ***ret_states);
 #endif // 0
 

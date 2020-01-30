@@ -322,11 +322,14 @@ int user_record_build(UserRecord **ret, ...);
 
 const char *user_record_user_name_and_realm(UserRecord *h);
 UserStorage user_record_storage(UserRecord *h);
+#if 0 /// UNNEEDED by elogind
 const char *user_record_file_system_type(UserRecord *h);
 const char *user_record_skeleton_directory(UserRecord *h);
 mode_t user_record_access_mode(UserRecord *h);
+#endif // 0
 const char *user_record_home_directory(UserRecord *h);
 const char *user_record_image_path(UserRecord *h);
+#if 0 /// UNNEEDED by elogind
 unsigned long user_record_mount_flags(UserRecord *h);
 const char *user_record_cifs_user_name(UserRecord *h);
 const char *user_record_shell(UserRecord *h);
@@ -341,8 +344,10 @@ uint64_t user_record_luks_pbkdf_memory_cost(UserRecord *h);
 uint64_t user_record_luks_pbkdf_parallel_threads(UserRecord *h);
 const char *user_record_luks_pbkdf_hash_algorithm(UserRecord *h);
 gid_t user_record_gid(UserRecord *h);
+#endif // 0
 UserDisposition user_record_disposition(UserRecord *h);
 int user_record_removable(UserRecord *h);
+#if 0 /// UNNEEDED by elogind
 usec_t user_record_ratelimit_interval_usec(UserRecord *h);
 uint64_t user_record_ratelimit_burst(UserRecord *h);
 bool user_record_can_authenticate(UserRecord *h);
@@ -358,6 +363,7 @@ int user_record_masked_equal(UserRecord *a, UserRecord *b, UserRecordMask mask);
 
 int user_record_test_blocked(UserRecord *h);
 int user_record_test_password_change_required(UserRecord *h);
+#endif // 0
 
 /* The following six are user by group-record.c, that's why we export them here */
 int json_dispatch_realm(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);

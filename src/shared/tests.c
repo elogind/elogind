@@ -156,6 +156,7 @@ bool have_namespaces(void) {
         assert_not_reached("unexpected exit code");
 }
 
+#if 0 /// UNNEEDED by elogind
 bool can_memlock(void) {
         /* Let's see if we can mlock() a larger blob of memory. BPF programs are charged against
          * RLIMIT_MEMLOCK, hence let's first make sure we can lock memory at all, and skip the test if we
@@ -202,3 +203,4 @@ int enter_cgroup_subroot(char **ret_cgroup) {
                 *ret_cgroup = TAKE_PTR(cgroup_subroot);
         return 0;
 }
+#endif // 0

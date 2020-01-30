@@ -1400,6 +1400,7 @@ UserStorage user_record_storage(UserRecord *h) {
         return USER_CLASSIC;
 }
 
+#if 0 /// UNNEEDED by elogind
 const char *user_record_file_system_type(UserRecord *h) {
         assert(h);
 
@@ -1417,6 +1418,7 @@ mode_t user_record_access_mode(UserRecord *h) {
 
         return h->access_mode != (mode_t) -1 ? h->access_mode : 0700;
 }
+#endif // 0
 
 const char* user_record_home_directory(UserRecord *h) {
         assert(h);
@@ -1444,6 +1446,7 @@ const char *user_record_image_path(UserRecord *h) {
         return IN_SET(user_record_storage(h), USER_CLASSIC, USER_DIRECTORY, USER_SUBVOLUME, USER_FSCRYPT) ? user_record_home_directory(h) : NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 const char *user_record_cifs_user_name(UserRecord *h) {
         assert(h);
 
@@ -1574,6 +1577,7 @@ gid_t user_record_gid(UserRecord *h) {
 
         return (gid_t) h->uid;
 }
+#endif // 0
 
 UserDisposition user_record_disposition(UserRecord *h) {
         assert(h);
@@ -1592,11 +1596,13 @@ UserDisposition user_record_disposition(UserRecord *h) {
         if (uid_is_system(h->uid))
                 return USER_SYSTEM;
 
+#if 0 /// UNNEEDED by elogind ; no dynamic or contaiiner uids here...
         if (uid_is_dynamic(h->uid))
                 return USER_DYNAMIC;
 
         if (uid_is_container(h->uid))
                 return USER_CONTAINER;
+#endif // 0
 
         if (h->uid > INT32_MAX)
                 return USER_RESERVED;
@@ -1620,6 +1626,7 @@ int user_record_removable(UserRecord *h) {
         return storage == USER_LUKS && path_startswith(user_record_image_path(h), "/dev/");
 }
 
+#if 0 /// UNNEEDED by elogind
 uint64_t user_record_ratelimit_interval_usec(UserRecord *h) {
         assert(h);
 
@@ -1859,6 +1866,7 @@ int user_record_test_password_change_required(UserRecord *h) {
         /* No password changing necessary */
         return change_permitted ? 0 : -EROFS;
 }
+#endif // 0
 
 static const char* const user_storage_table[_USER_STORAGE_MAX] = {
         [USER_CLASSIC]   = "classic",

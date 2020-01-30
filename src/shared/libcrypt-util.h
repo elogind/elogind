@@ -17,4 +17,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#if 0 /// UNNEEDED by elogind
 int make_salt(char **ret);
+#endif // 0
+
+bool hashed_password_valid(const char *s);

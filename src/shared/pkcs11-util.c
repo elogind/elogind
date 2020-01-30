@@ -2,14 +2,16 @@
 
 #include <fcntl.h>
 
-#include "ask-password-api.h"
+//#include "ask-password-api.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "io-util.h"
 #include "memory-util.h"
+#if 0 /// UNNEEDED by elogind
 #if HAVE_OPENSSL
 #include "openssl-util.h"
 #endif
+#endif // 0
 #include "pkcs11-util.h"
 #include "random-util.h"
 #include "string-util.h"
@@ -36,6 +38,7 @@ bool pkcs11_uri_valid(const char *uri) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_P11KIT
 
 int uri_from_string(const char *p, P11KitUri **ret) {
@@ -218,7 +221,7 @@ int pkcs11_token_login(
                         r = asprintf(&text,
                                      "Please enter correct PIN for security token '%s' in order to unlock %s (final try):",
                                      token_label, friendly_name);
-                if (FLAGS_SET(token_info->flags, CKF_USER_PIN_COUNT_LOW))
+                else if (FLAGS_SET(token_info->flags, CKF_USER_PIN_COUNT_LOW))
                         r = asprintf(&text,
                                      "PIN has been entered incorrectly previously, please enter correct PIN for security token '%s' in order to unlock %s:",
                                      token_label, friendly_name);
@@ -910,3 +913,4 @@ int pkcs11_find_token(
 }
 
 #endif
+#endif // 0

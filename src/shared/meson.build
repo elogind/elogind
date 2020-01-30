@@ -205,6 +205,8 @@
 #         userdb.c
 #         userdb.h
 #         utmp-wtmp.h
+#         varlink.c
+#         varlink.h
 #         verbs.c
 #         verbs.h
 #         vlan-util.c

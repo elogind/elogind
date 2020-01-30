@@ -107,7 +107,6 @@ static inline bool json_variant_is_number(JsonVariant *v) {
         return json_variant_has_type(v, JSON_VARIANT_NUMBER);
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline bool json_variant_is_boolean(JsonVariant *v) {
         return json_variant_has_type(v, JSON_VARIANT_BOOLEAN);
 }
@@ -123,7 +122,6 @@ static inline bool json_variant_is_object(JsonVariant *v) {
 static inline bool json_variant_is_null(JsonVariant *v) {
         return json_variant_has_type(v, JSON_VARIANT_NULL);
 }
-#endif // 0
 
 bool json_variant_is_negative(JsonVariant *v);
 bool json_variant_is_blank_object(JsonVariant *v);
@@ -145,7 +143,6 @@ struct json_variant_foreach_state {
         size_t idx;
 };
 
-#if 0 /// UNNEEDED by elogind
 #define JSON_VARIANT_ARRAY_FOREACH(i, v)                                \
         for (struct json_variant_foreach_state _state = { (v), 0 };     \
              json_variant_is_array(_state.variant) &&                   \
@@ -153,7 +150,6 @@ struct json_variant_foreach_state {
                      ({ i = json_variant_by_index(_state.variant, _state.idx); \
                              true; });                                  \
              _state.idx++)
-#endif // 0
 
 #define JSON_VARIANT_OBJECT_FOREACH(k, e, v)                            \
         for (struct json_variant_foreach_state _state = { (v), 0 };     \
@@ -278,7 +274,6 @@ typedef struct JsonDispatch {
         JsonDispatchFlags flags;
 } JsonDispatch;
 
-#if 0 /// UNNEEDED by elogind
 int json_dispatch(JsonVariant *v, const JsonDispatch table[], JsonDispatchCallback bad, JsonDispatchFlags flags, void *userdata);
 
 int json_dispatch_string(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
@@ -291,21 +286,17 @@ int json_dispatch_integer(const char *name, JsonVariant *variant, JsonDispatchFl
 int json_dispatch_unsigned(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_int32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
-#endif // 0
 int json_dispatch_uid_gid(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_user_group_name(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_id128(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_unsupported(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 
 assert_cc(sizeof(uintmax_t) == sizeof(uint64_t));
-#if 0 /// UNNEEDED by elogind
 #define json_dispatch_uint64 json_dispatch_unsigned
-#endif // 0
 
 assert_cc(sizeof(intmax_t) == sizeof(int64_t));
 #define json_dispatch_int64 json_dispatch_integer
 
-#if 0 /// UNNEEDED by elogind
 static inline int json_dispatch_level(JsonDispatchFlags flags) {
 
         /* Did the user request no logging? If so, then never log higher than LOG_DEBUG. Also, if this is marked as
@@ -333,7 +324,6 @@ int json_log_internal(JsonVariant *variant, int level, int error, const char *fi
                         ? json_log_internal(variant, _level, _e, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__) \
                         : -ERRNO_VALUE(_e);                             \
         })
-#endif // 0
 
 #define json_log_oom(variant, flags) \
         json_log(variant, flags, SYNTHETIC_ERRNO(ENOMEM), "Out of memory.")

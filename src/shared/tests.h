@@ -3,9 +3,9 @@
 
 #include <stdbool.h>
 
-#if 0 /// UNNEEDED by elogind
 #include "sd-daemon.h"
 
+#if 0 /// UNNEEDED by elogind
 #include "macro.h"
 
 static inline bool manager_errno_skip_test(int r) {
@@ -31,13 +31,15 @@ int log_tests_skipped_errno(int r, const char *message);
 
 bool have_namespaces(void);
 
+#if 0 /// UNNEEDED by elogind
 /* We use the small but non-trivial limit here */
 #define CAN_MEMLOCK_SIZE (512 * 1024U)
 bool can_memlock(void);
+#endif // 0
 
 #define TEST_REQ_RUNNING_SYSTEMD(x)                                 \
         if (sd_booted() > 0) {                                      \
                 x;                                                  \
         } else {                                                    \
-                printf("elogind not booted skipping '%s'\n", #x);   \
+                printf("systemd not booted skipping '%s'\n", #x);   \
         }

@@ -285,6 +285,7 @@ int group_record_build(GroupRecord **ret, ...) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 const char *group_record_group_name_and_realm(GroupRecord *h) {
         assert(h);
 
@@ -344,3 +345,4 @@ int group_record_clone(GroupRecord *h, UserRecordLoadFlags flags, GroupRecord **
         *ret = TAKE_PTR(c);
         return 0;
 }
+#endif // 0

@@ -3,20 +3,20 @@
 
 #include <stdbool.h>
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_P11KIT
-#include <p11-kit/p11-kit.h>
-#include <p11-kit/uri.h>
-
-#if HAVE_OPENSSL
-#include <openssl/pem.h>
+#  include <p11-kit/p11-kit.h>
+#  include <p11-kit/uri.h>
 #endif
-#endif
+#endif // 0
 
 #include "macro.h"
+//#include "openssl-util.h"
 #include "time-util.h"
 
 bool pkcs11_uri_valid(const char *uri);
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_P11KIT
 int uri_from_string(const char *p, P11KitUri **ret);
 
@@ -46,3 +46,4 @@ int pkcs11_token_acquire_rng(CK_FUNCTION_LIST *m, CK_SESSION_HANDLE session);
 typedef int (*pkcs11_find_token_callback_t)(CK_FUNCTION_LIST *m, CK_SESSION_HANDLE session, CK_SLOT_ID slotid, const CK_SLOT_INFO *slot_info, const CK_TOKEN_INFO *token_info, P11KitUri *uri, void *userdata);
 int pkcs11_find_token(const char *pkcs11_uri, pkcs11_find_token_callback_t callback, void *userdata);
 #endif
+#endif // 0

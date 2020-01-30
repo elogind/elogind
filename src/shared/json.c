@@ -3710,7 +3710,6 @@ int json_build(JsonVariant **ret, ...) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int json_log_internal(
                 JsonVariant *variant,
                 int level,
@@ -4069,7 +4068,6 @@ int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFl
 
         return 0;
 }
-#endif // 0
 
 int json_dispatch_uid_gid(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         uid_t *uid = userdata;

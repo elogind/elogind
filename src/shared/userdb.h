@@ -23,6 +23,7 @@ typedef enum UserDBFlags {
 
 int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret);
 int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret);
+#if 0 /// UNNEEDED by elogind
 int userdb_all(UserDBFlags flags, UserDBIterator **ret);
 int userdb_iterator_get(UserDBIterator *iterator, UserRecord **ret);
 
@@ -38,4 +39,5 @@ int membershipdb_iterator_get(UserDBIterator *iterator, char **user, char **grou
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret);
 
 int userdb_nss_compat_is_enabled(void);
+#endif // 0
 int userdb_nss_compat_disable(void);

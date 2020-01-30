@@ -35,7 +35,6 @@ bool cg_is_unified_wanted(void) {
                 return (wanted = r >= CGROUP_UNIFIED_ALL);
 
         /* If we were explicitly passed elogind.unified_cgroup_hierarchy, respect that. */
-        /* If we were explicitly passed elogind.unified_cgroup_hierarchy, respect that. */
         r = proc_cmdline_get_bool("elogind.unified_cgroup_hierarchy", &b);
         if (r > 0)
                 return (wanted = b);
@@ -110,6 +109,7 @@ int cg_weight_parse(const char *s, uint64_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;
@@ -149,6 +149,7 @@ int cg_blkio_weight_parse(const char *s, uint64_t *ret) {
         *ret = u;
         return 0;
 }
+#endif // 0
 
 static int trim_cb(const char *path, const struct stat *sb, int typeflag, struct FTW *ftwbuf) {
         assert(path);
@@ -285,6 +286,7 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
         int r;
 
@@ -396,6 +398,7 @@ int cg_set_access(
 
         return 0;
 }
+#endif // 0
 
 int cg_migrate(
                 const char *cfrom,
@@ -532,6 +535,7 @@ int cg_migrate_recursive(
         return ret;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_migrate_recursive_fallback(
                 const char *cfrom,
                 const char *pfrom,
@@ -858,3 +862,4 @@ int cg_enable_everywhere(
 
         return 0;
 }
+#endif // 0

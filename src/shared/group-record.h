@@ -38,7 +38,9 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(GroupRecord*, group_record_unref);
 
 int group_record_load(GroupRecord *h, JsonVariant *v, UserRecordLoadFlags flags);
 int group_record_build(GroupRecord **ret, ...);
+#if 0 /// UNNEEDED by elogind
 int group_record_clone(GroupRecord *g, UserRecordLoadFlags flags, GroupRecord **ret);
 
 const char *group_record_group_name_and_realm(GroupRecord *h);
 UserDisposition group_record_disposition(GroupRecord *h);
+#endif // 0

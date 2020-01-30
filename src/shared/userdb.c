@@ -5,7 +5,7 @@
 #include "dirent-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
-#include "group-record-nss.h"
+//#include "group-record-nss.h"
 #include "missing_syscall.h"
 #include "parse-util.h"
 #include "set.h"
@@ -678,6 +678,7 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
         _cleanup_(userdb_iterator_freep) UserDBIterator *iterator = NULL;
         int r;
@@ -690,7 +691,7 @@ int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
 
         iterator->synthesize_root = iterator->synthesize_nobody = !FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE);
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetUserRecord", true, NULL, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", true, NULL, flags);
 
         if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && (r < 0 || !iterator->nss_covered)) {
                 iterator->nss_lock = userdb_nss_compat_disable();
@@ -813,7 +814,7 @@ int groupdb_by_name(const char *name, UserDBFlags flags, GroupRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetGroupRecord", false, query, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetGroupRecord", false, query, flags);
         if (r >= 0) {
                 r = userdb_process(iterator, NULL, ret, NULL, NULL);
                 if (r >= 0)
@@ -859,7 +860,7 @@ int groupdb_by_gid(gid_t gid, UserDBFlags flags, GroupRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetGroupRecord", false, query, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetGroupRecord", false, query, flags);
         if (r >= 0) {
                 r = userdb_process(iterator, NULL, ret, NULL, NULL);
                 if (r >= 0)
@@ -900,7 +901,7 @@ int groupdb_all(UserDBFlags flags, UserDBIterator **ret) {
 
         iterator->synthesize_root = iterator->synthesize_nobody = !FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE);
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetGroupRecord", true, NULL, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetGroupRecord", true, NULL, flags);
 
         if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && (r < 0 || !iterator->nss_covered)) {
                 iterator->nss_lock = userdb_nss_compat_disable();
@@ -1006,7 +1007,7 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
         if (!iterator)
                 return -ENOMEM;
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetMemberships", true, query, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, query, flags);
         if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_AVOID_NSS))
                 goto finish;
 
@@ -1049,7 +1050,7 @@ int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **
         if (!iterator)
                 return -ENOMEM;
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetMemberships", true, query, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, query, flags);
         if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_AVOID_NSS))
                 goto finish;
 
@@ -1090,7 +1091,7 @@ int membershipdb_all(UserDBFlags flags, UserDBIterator **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetMemberships", true, NULL, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, NULL, flags);
         if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_AVOID_NSS))
                 goto finish;
 
@@ -1232,6 +1233,7 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
         *ret = TAKE_PTR(members);
         return 0;
 }
+#endif // 0
 
 static int userdb_thread_sockaddr(struct sockaddr_un *ret_sa, socklen_t *ret_salen) {
         static const uint8_t
@@ -1287,6 +1289,7 @@ static int userdb_thread_sockaddr(struct sockaddr_un *ret_sa, socklen_t *ret_sal
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int userdb_nss_compat_is_enabled(void) {
         _cleanup_close_ int fd = -1;
         union sockaddr_union sa;
@@ -1316,6 +1319,7 @@ int userdb_nss_compat_is_enabled(void) {
 
         return false;
 }
+#endif // 0
 
 int userdb_nss_compat_disable(void) {
         _cleanup_close_ int fd = -1;
