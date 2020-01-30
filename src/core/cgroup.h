@@ -4,8 +4,8 @@
 //#include <stdbool.h>
 
 #include "cgroup-util.h"
-#include "cpu-set-util.h"
-#include "ip-address-access.h"
+//#include "cpu-set-util.h"
+//#include "ip-address-access.h"
 #include "list.h"
 #include "time-util.h"
 
@@ -282,6 +282,6 @@ CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;
 bool unit_cgroup_delegate(Unit *u);
 
 int compare_job_priority(const void *a, const void *b);
-#endif // 0
 
 int unit_get_cpuset(Unit *u, CPUSet *cpus, const char *name);
+#endif // 0
