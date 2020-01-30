@@ -204,6 +204,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/audit-util.h" />
+		<Unit filename="../src/basic/blockdev-util.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/blockdev-util.h" />
 		<Unit filename="../src/basic/build.h" />
 		<Unit filename="../src/basic/bus-label.c">
 			<Option compilerVar="CC" />
@@ -427,6 +431,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/random-util.h" />
+		<Unit filename="../src/basic/ratelimit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/basic/ratelimit.h" />
 		<Unit filename="../src/basic/raw-clone.h" />
 		<Unit filename="../src/basic/refcnt.h" />
 		<Unit filename="../src/basic/rlimit-util.c">
@@ -875,6 +883,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/dev-setup.h" />
+		<Unit filename="../src/shared/dns-domain.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/dns-domain.h" />
 		<Unit filename="../src/shared/efi-loader.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -970,10 +982,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/sleep-config.h" />
-		<Unit filename="../src/shared/socket-netlink.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/socket-netlink.h" />
 		<Unit filename="../src/shared/spawn-polkit-agent.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1007,6 +1015,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/utmp-wtmp.h" />
+		<Unit filename="../src/shared/varlink.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/varlink.h" />
 		<Unit filename="../src/shared/verbs.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1047,9 +1059,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-cgroup-cpu.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/test/test-cgroup-unit-default.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-cgroup.c">
@@ -1113,7 +1122,6 @@
 		<Unit filename="../src/test/test-hashmap.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-helper.h" />
 		<Unit filename="../src/test/test-hexdecoct.c">
 			<Option compilerVar="CC" />
 		</Unit>
