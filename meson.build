@@ -3843,7 +3843,7 @@ foreach tuple : [
 #endif // 0
         ['PAM'],
         ['pwquality'],
-        ['fdisk'],
+        ['libfdisk'],
         ['p11kit'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
