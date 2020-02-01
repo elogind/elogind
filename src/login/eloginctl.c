@@ -575,7 +575,11 @@ static int prepare_firmware_setup(sd_bus* bus) {
 
         return 0;
 }
-#endif
+#else
+static int prepare_firmware_setup(sd_bus* bus) {
+        return 0;
+}
+#endif // ENABLE_EFI
 
 #ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
 /* Original:
@@ -637,7 +641,14 @@ static int prepare_boot_loader_entry(sd_bus* bus) {
 
         return 0;
 }
-#endif // ENABLE_EFI
+#else
+static int prepare_boot_loader_menu(sd_bus* bus) {
+        return 0;
+}
+static int prepare_boot_loader_entry(sd_bus* bus) {
+        return 0;
+}
+#endif // ENABLE_EFI_TODO
 
 /* Original:
  * systemctl/systemctl.c:3482:start_special()
@@ -705,8 +716,6 @@ int start_special(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return r;
 
-#if ENABLE_EFI
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
         r = prepare_boot_loader_menu(bus);
         if (r < 0)
                 return r;
@@ -716,8 +725,6 @@ int start_special(int argc, char *argv[], void *userdata) {
                 return r;
         if (r > 0)
                 return 0; // Asked for help, no execution, then
-#endif // ENABLE_EFI_TODO
-#endif // ENABLE_EFI
 
         if (a == ACTION_REBOOT && argc > 1) {
                 r = update_reboot_parameter_and_warn(argv[1], false);
