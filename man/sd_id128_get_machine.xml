@@ -75,8 +75,12 @@
     <function>sd_id128_get_machine()</function> when passing an ID to untrusted environments, in order to make sure
     that the original machine ID may not be determined externally. This way, the ID used by the application remains
     stable on a given machine, but cannot be easily correlated with IDs used in other applications on the same
-    machine. The application-specific ID should be generated via a tool like <command>elogind-id128 new</command>,
+    <!-- 0 /// elogind does not ship systemd-id128
+    machine. The application-specific ID should be generated via a tool like <command>systemd-id128 new</command>,
     and may be compiled into the application. This function will return the same application-specific ID for each
+    --><!-- else -->
+    machine. This function will return the same application-specific ID for each
+    <!-- // 0 -->
     combination of machine ID and application ID. Internally, this function calculates HMAC-SHA256 of the application
     ID, keyed by the machine ID.</para>
 

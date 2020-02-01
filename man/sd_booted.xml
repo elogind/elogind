@@ -18,7 +18,7 @@
 
   <refnamediv>
     <refname>sd_booted</refname>
-    <refpurpose>Test whether the system is running the systemd init system</refpurpose>
+    <refpurpose>Test whether the system is running the elogind init system</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
@@ -35,19 +35,19 @@
   <refsect1>
     <title>Description</title>
     <para><function>sd_booted()</function> checks whether the system
-    was booted up using the systemd init system.</para>
+    was booted up using the elogind init system.</para>
   </refsect1>
 
   <refsect1>
     <title>Return Value</title>
 
-    <!-- 0 /// Be honest to the users, this always returns 0 with elogind (no systemd to be found!
+    <!-- 0 /// Be honest to the users, this always returns 0 with elogind (no elogind to be found!
     <para>On failure, this call returns a negative errno-style error
     code. If the system was booted up with systemd as init system,
     this call returns a positive return value, zero otherwise.</para>
     --><!-- else -->
     <para>As it makes no sense to use elogind on a system that is
-    using systemd as its init system, this function always returns
+    using elogind as its init system, this function always returns
     0.</para>
     <!-- // 0 -->
   </refsect1>

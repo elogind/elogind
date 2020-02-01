@@ -195,13 +195,13 @@
   <refsect1>
     <title>Notes</title>
 
-    <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
 
     <!-- 1 /// It is important that we tell people that this is a systemd feature not provided by elogind ! -->
     <para>Please note that this is a description of the socket activation technique as
-    used by systemd. If the service manager you use does not set the needed environment
+    used by elogind. If the service manager you use does not set the needed environment
     variables, none of the functions described here do anything but return 0.</para>
     <!-- // 1 -->
+    <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
 
     <para>Internally, <function>sd_listen_fds()</function> checks
     whether the <varname>$LISTEN_PID</varname> environment variable
@@ -249,7 +249,7 @@
       <citerefentry><refentrytitle>sd_is_socket_inet</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_is_socket_unix</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_pid_notify_with_fds</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <!-- 0 /// elogind does not provide systemd.service/socket
+      <!-- 0 /// elogind does not provide elogind.service/socket
       <citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>

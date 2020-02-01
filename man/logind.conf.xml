@@ -35,12 +35,14 @@
   </refnamediv>
 
   <refsynopsisdiv>
-    <para><filename>/etc/elogind/logind.conf</filename></para>
     <!-- 0 /// not supported by elogind
+    <para><filename>/etc/systemd/logind.conf</filename></para>
     <para><filename>/etc/systemd/logind.conf.d/*.conf</filename></para>
     <para><filename>/run/systemd/logind.conf.d/*.conf</filename></para>
     <para><filename>/usr/lib/systemd/logind.conf.d/*.conf</filename></para>
-    // 0 -->
+    --><!-- else -->
+    <para><filename>/etc/elogind/logind.conf</filename></para>
+    <!-- // 0 -->
   </refsynopsisdiv>
 
   <refsect1>
@@ -326,7 +328,7 @@
         <term><varname>HoldoffTimeoutSec=</varname></term>
 
         <listitem><para>Specifies the timeout after system startup or
-        <!-- 0 /// Wow. Unbelievable how often you can write 'systemd' in one tiny paragraph. Lets improve this for elogind a bit.
+        <!-- 0 /// Wow. Unbelievable how often you can write 'elogind' in one tiny paragraph. Lets improve this for elogind a bit.
         system resume in which systemd will hold off on reacting to
         lid events. This is required for the system to properly
         detect any hotplugged devices so systemd can ignore lid events

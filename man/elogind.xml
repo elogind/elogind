@@ -16,6 +16,7 @@
     <refentrytitle>systemd</refentrytitle>
     <manvolnum>1</manvolnum>
     --><!-- else -->
+    <refentrytitle>elogind</refentrytitle>
     <manvolnum>8</manvolnum>
     <!-- // 0 -->
   </refmeta>
@@ -130,28 +131,8 @@
   <!-- // 0 -->
   </refsect1>
 
+  <!-- 0 /// The whole concepts section is unneeded in elogind
   <refsect1>
-    <!-- 0 /// This list is much shorter with elogind of course.
-        // 0 -->
-        <!-- 0 /// elogind check_tree.pl can not mangle closed comments.
-      --><!-- else -->
-      <varlistentry>
-        <term><option>-D</option></term>
-        <term><option>--daemon</option></term>
-
-        <listitem><para>Daemonize elogind by double-forking
-        into background.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><option>-h</option></term>
-        <term><option>--help</option></term>
-
-        <listitem><para>Show the helpt text and exit.</para></listitem>
-      </varlistentry>
-      <!-- // 0 -->
-
-  <!-- 0 /// The whole concpets section is unneeded in elogind
     <title>Concepts</title>
 
     <para>systemd provides a dependency system between various
@@ -335,7 +316,7 @@
     means that before executing a requested operation, systemd will
     verify that it makes sense, fixing it if possible, and only
     failing if it really cannot work.</para>
-    
+
     <para>Note that transactions are generated independently of a unit's
     state at runtime, hence, for example, if a start job is requested on an
     already started unit, it will still generate a transaction and wake up any
@@ -556,7 +537,7 @@
         This is mostly equivalent to <command>systemctl
         daemon-reload</command>.</para></listitem>
         --><!-- else -->
-        </para></listitem>
+        This is mostly equivalent to <command>loginctl reload</command>.</para></listitem>
         <!-- // 0 -->
       </varlistentry>
 
@@ -717,7 +698,7 @@
     </variablelist>
   </refsect1>
 
-  <!-- 0 /// The whole environment section is unneeded in elogind 
+  <!-- 0 /// The whole environment section is unneeded in elogind
   <refsect1>
     <title>Environment</title>
 
@@ -1116,10 +1097,10 @@
   </refsect1>
   // 0 -->
 
-  <!-- 0 /// The whole sockets section is unneeded in elogind
   <refsect1>
     <title>Options</title>
 
+    <!-- 0 /// This list is much shorter with elogind of course.)
     <para><command>systemd</command> is only very rarely invoked directly, since it is started early and is
     already running by the time users may interact with it. Normally, tools like
     <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> are used to
@@ -1297,8 +1278,26 @@
         </varlistentry>
       </variablelist>
     </refsect2>
+    --><!-- else -->
+      <variablelist>
+        <varlistentry>
+          <term><option>-D</option></term>
+          <term><option>--daemon</option></term>
+
+          <listitem><para>Daemonize elogind by double-forking into background.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>-h</option></term>
+          <term><option>--help</option></term>
+
+          <listitem><para>Show the help text and exit.</para></listitem>
+        </varlistentry>
+      </variablelist>
+    <!-- // 0 -->
   </refsect1>
 
+  <!-- 0 /// The whole sockets section is unneeded in elogind
   <refsect1>
     <title>Sockets and FIFOs</title>
 

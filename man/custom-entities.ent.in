@@ -12,4 +12,4 @@
 <!ENTITY KILL_USER_PROCESSES @KILL_USER_PROCESSES_YES_NO@>
 <!-- 0 /// elogind does not have a DEBUGTTY.
 <!ENTITY DEBUGTTY @DEBUGTTY@>
-// 0-->
+// 0 -->

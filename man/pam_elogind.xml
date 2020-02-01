@@ -27,24 +27,18 @@
   <refsect1>
     <title>Description</title>
 
-    <!-- 0 /// elogind has no systemd services
-    <para><command>pam_systemd</command> registers user sessions with
-    the systemd login manager
+    <para><command>pam_elogind</command> registers user sessions with
+    the elogind login manager
+    and hence the elogind control group hierarchy.</para>
+    <!-- 0 /// elogind has no service file
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-    and hence the systemd control group hierarchy.</para>
+    // 0 -->
 
     <para>The module also applies various resource management and runtime parameters to the new session, as
-    configured in the <ulink url="https://systemd.io/USER_RECORD">JSON User Record</ulink> of the user, when
+    configured in the <ulink url="https://elogind.io/USER_RECORD">JSON User Record</ulink> of the user, when
     one is defined.</para>
 
-    <para>On login, this module — in conjunction with <filename>systemd-logind.service</filename> — ensures the
-    --><!-- else -->
-    the elogind login manager
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-    and hence the elogind control group hierarchy.</para>
-
-    <para>On login, this module — in conjunction with <filename>elogind</filename> — ensures the
-    <!-- // 0 -->
+    <para>On login, this module — in conjunction with <filename>elogind-logind.service</filename> — ensures the
     following:</para>
 
     <orderedlist>
@@ -56,12 +50,10 @@
       available and <command>pam_loginuid.so</command> was run before this module (which is highly recommended), the
       variable is initialized from the auditing session id (<filename>/proc/self/sessionid</filename>). Otherwise, an
       independent session counter is used.</para></listitem>
-      <!-- 0 /// elogind does not start service managers
 
-      <listitem><para>A new systemd scope unit is created for the session. If this is the first concurrent session of
+      <listitem><para>A new elogind scope unit is created for the session. If this is the first concurrent session of
       the user, an implicit per-user slice unit below <filename>user.slice</filename> is automatically created and the
       scope placed into it. An instance of the system service <filename>user@.service</filename>, which runs the
-      // 0 -->
       elogind user manager instance, is started.</para></listitem>
 
       <listitem><para>The <literal>$TZ</literal>, <literal>$EMAIL</literal> and <literal>$LANG</literal>
@@ -76,23 +68,17 @@
       <listitem><para>If enabled in
       <citerefentry><refentrytitle>logind.conf</refentrytitle>
       <manvolnum>5</manvolnum></citerefentry> (<varname>KillUserProcesses=</varname>), all processes of the session are
-      <!-- 0 /// elogind does not start service managers
-      terminated. If the last concurrent session of a user ends, the user's systemd instance will be terminated too,
+      terminated. If the last concurrent session of a user ends, the user's elogind instance will be terminated too,
       and so will the user's slice unit.</para></listitem>
 
-      --><!-- else -->
-      terminated.</para></listitem>
-      <!-- // 0 -->
       <listitem><para>If the last concurrent session of a user ends,
       the user runtime directory <filename>/run/user/$UID</filename> and all its
       contents are removed, too.</para></listitem>
     </orderedlist>
 
-    <!-- 0 /// When elogind is used, systemd has never booted the system. ;-)
-    <para>If the system was not booted up with systemd as init system,
+    <para>If the system was not booted up with elogind as init system,
     this module does nothing and immediately returns
     <constant>PAM_SUCCESS</constant>.</para>
-    // 0 -->
 
   </refsect1>
 
@@ -262,13 +248,9 @@
     <para>PAM modules earlier in the stack, that is those that come before <command>pam_elogind.so</command>,
     can set session scope limits using the PAM context objects. The data for these objects is provided as NUL-terminated C strings
     and maps directly to the respective unit resource control directives. Note that these limits apply to individual sessions of the user,
-    <!-- 0 /// elogind does not start any user instances
     they do not apply to all user processes as a combined whole. In particular, the per-user <command>user@.service</command> unit instance,
-    which runs the <command>systemd &#x2D;&#x2D;user</command> manager process and its children, and is tracked outside of any session, being shared
+    which runs the <command>elogind --user</command> manager process and its children, and is tracked outside of any session, being shared
     by all the user's sessions, is not covered by these limits.
-    --><!-- else -->
-    they do not apply to all user processes as a combined whole.
-    <!-- // 0 -->
     </para>
 
     <para> See
@@ -325,7 +307,7 @@ pam_set_data(handle, "elogind.runtime_max_sec", (void *)"3600", cleanup);
     <title>Example</title>
 
     <para>Here's an example PAM configuration fragment that allows users sessions to be managed by
-    <filename>elogind.service</filename>:</para>
+    <filename>elogind-logind.service</filename>:</para>
 
     <programlisting>#%PAM-1.0
 auth     sufficient pam_unix.so
@@ -346,25 +328,25 @@ session  required   pam_unix.so</programlisting>
   <refsect1>
     <title>See Also</title>
     <para>
-      <!-- 0 /// elogind is in section 8 and has no services
+    <!-- 0 /// elogind has no service file
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      --><!-- else -->
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <!-- // 0 -->
+    // 0 -->
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>pam_elogind_home</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <!-- 0 /// not available in elogind ; And strangely also not found in upstream...
+      <citerefentry><refentrytitle>pam_systemd_home</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      // 0 -->
       <citerefentry project='man-pages'><refentrytitle>pam.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam_loginuid</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <!-- 0 /// elogind does not support systemd scopes, slices or services.
-      <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <!-- 0 /// elogind does not provide or support scope, slice or service files
+      <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       // 0 -->
-    </para>
+      </para>
   </refsect1>
 
 </refentry>

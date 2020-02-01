@@ -67,7 +67,7 @@
     <function>sd_watchdog_enabled()</function> will write the timeout
     in µs for the watchdog logic to it.</para>
 
-    <!-- 0 /// elogind does not support systemd servicec files
+    <!-- 0 /// elogind does not support systemd service files
     <para>To enable service supervision with the watchdog logic, use
     <varname>WatchdogSec=</varname> in service files. See
     <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
@@ -139,7 +139,7 @@
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
-      <!-- 0 /// elogind does not suppor systemd services
+      <!-- 0 /// elogind does not suppor elogind services
       <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       // 0 -->
       <citerefentry><refentrytitle>sd_notify</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

@@ -157,7 +157,7 @@
     <para><function>sd_pid_get_session()</function> may be used to
     determine the login session identifier of a process identified by
     the specified process identifier. The session identifier is a
-    <!-- 0 /// No, this works different in elogind as we do not spqwn user service managers
+    <!-- 0 /// No, this works different in elogind as we do not spawn user service managers
     short string, suitable for usage in file system paths. Please
     note the login session may be limited to a stub process or two.
     User processes may instead be started from their systemd user
@@ -320,7 +320,7 @@
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd_session_is_active</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      <!-- 0 /// elogind does not support systemd slices and services
+      <!-- 0 /// elogind does not support elogind slices and services
       <citerefentry><refentrytitle>getsid</refentrytitle><manvolnum>2</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>

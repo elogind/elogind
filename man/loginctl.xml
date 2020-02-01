@@ -3,11 +3,10 @@
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <!-- SPDX-License-Identifier: LGPL-2.1+ -->
 
-
 <!-- 0 /// elogind does not need to activate loginctl in configure
 <refentry id="loginctl" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
-else -->
+--><!-- else -->
 <refentry id="loginctl" xmlns:xi="http://www.w3.org/2001/XInclude">
 <!-- // 0 -->
 
@@ -52,10 +51,6 @@ else -->
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     login manager</para>
     <!-- // 0 -->
-
-      <!-- 0 /// elogind does not support systemd-journal
-      // 0 -->
-
   </refsect1>
 
   <refsect1>
@@ -199,7 +194,7 @@ else -->
         <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
         </para></listitem>
       </varlistentry>
-      // 0 -->
+      -->
 
       <varlistentry>
         <term><command>terminate-user</command> <replaceable>USER</replaceable>…</term>
@@ -283,27 +278,180 @@ else -->
         <listitem><para>Terminates all sessions on a seat. This kills
         all processes of all sessions on the seat and deallocates all
         runtime resources attached to them.</para></listitem>
-        <term><option>--output=</option></term>
+      </varlistentry>
+    </variablelist></refsect2>
 
-        <listitem><para>When used with <command>user-status</command>
-        and <command>session-status</command>, controls the formatting
-        of the journal entries that are shown. For the available
-        choices, see
-        <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
-        Defaults to <literal>short</literal>.</para></listitem>
+    <!-- 1 /// elogind additionally supports a few systemctl commands. -->
+    <refsect2><title>System Commands</title><variablelist>
+
+        <varlistentry>
+          <term><command>reload</command></term>
+
+          <listitem>
+            <para>Reload the elogind configuration. While the daemon is being reloaded, all sockets elogind listens on
+            behalf of user configuration will stay accessible.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>poweroff</command></term>
+
+          <listitem>
+            <para>Shut down and power-off the system. This is mostly equivalent to <command>shutdown -h</command>.
+            This command is asynchronous; it will return after the power-off operation is enqueued, without
+            waiting for it to complete.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>reboot</command> <optional>--firmware-setup</optional></term>
+
+          <listitem>
+            <para>Shut down and reboot the system. This is mostly equivalent to <command>shutdown -r</command>.
+            This command is asynchronous; it will return after the reboot operation is enqueued, without waiting for it
+            to complete.</para>
+
+            <para>If the optional argument <argument>--firmware-setup</argument> is given, indicate to the
+            system's firmware to reboot into the firmware setup interface. Note that this functionality is not available
+            on all systems.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>suspend</command></term>
+
+          <listitem>
+            <para>Suspend the system. This will tell all processes registered via dbus to prepare for suspension. This
+            command is asynchronous, and will return after the suspend operation is successfully enqueued. It will not
+            wait for the suspend/resume cycle to complete.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>hibernate</command></term>
+
+          <listitem>
+            <para>Hibernate the system. This will tell all processes registered via dbus to prepare for hibernation.
+            This command is asynchronous, and will return after the hibernation operation is successfully enqueued. It
+            will not wait for the hibernate/thaw cycle to complete.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>hybrid-sleep</command></term>
+
+          <listitem>
+            <para>Hibernate and suspend the system. This will tell all processes registered via dbus to prepare for
+            hybrid-sleep. This command is asynchronous, and will return after the hybrid sleep operation is successfully
+            enqueued. It will not wait for the sleep/wake-up cycle to complete.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>suspend-then-hibernate</command></term>
+
+          <listitem>
+            <para>Suspend the system and hibernate it after the delay specified in <filename>logind.conf</filename>.
+            This will tell all processes registered via dbus to prepare for suspend-then-hibernate. This command is
+            asynchronous, and will return after the hybrid sleep operation is successfully enqueued. It will not wait
+            for the sleep/wake-up or hibernate/thaw cycle to complete.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+    <refsect2><title>Hook directories</title>
+      <para>Immediately before entering system suspend and/or hibernation elogind will run all executables in
+      <filename>[/usr]/lib/elogind/system-sleep/</filename> and pass two arguments to them. The first argument will be
+      <literal>pre</literal>, the second either <literal>suspend</literal>, <literal>hibernate</literal>,
+      <literal>hybrid-sleep</literal>, or <literal>suspend-then-hibernate</literal>, depending on the chosen action.
+      Immediately after leaving system suspend and/or hibernation the same executables are run, but the first argument
+      is now <literal>post</literal>. All executables in this directory are executed sequentially, and execution of
+      the action is not continued until all executables have finished.</para>
+
+      <para>Whether the executables in these directories run successfully or not is of no concern to elogind.
+      If you want the scripts to cause the action to be cancelled if one fails, you can set
+      <literal>AllowPowerOffInterrupts</literal> and/or <literal>AllowSuspendInterrupts</literal> to
+      <literal>yes</literal> in <filename>/etc/elogind/logind.conf</filename>.
+      For this to work the executables in question must print an error message to <literal>STDOUT</literal> that
+      begins with either of these keywords: <literal>CANCELLED</literal>, <literal>CRITICAL</literal>,
+      <literal>ERROR</literal> or <literal>FAILED</literal>. If you want any of these words in a message without
+      causing the action to be cancelled, just re-arrange the sentence in question so that the keyword is not the first
+      word.</para>
+
+      <para>Note that scripts or binaries dropped in <filename>[/usr]/lib/elogind/system-sleep/</filename> are intended
+      for local use only and should be considered hacks. If applications want to react to system suspend/hibernation
+      and resume, they should rather use the
+      <ulink url="https://www.freedesktop.org/wiki/Software/systemd/inhibit">Inhibitor interface</ulink>.</para>
+
+    </refsect2>
+  </refsect1>
+  <!-- // 1 -->
+
+  <refsect1>
+    <title>Options</title>
+
+    <para>The following options are understood:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term><option>--no-ask-password</option></term>
+
+        <listitem><para>Do not query the user for authentication for
+        privileged operations.</para></listitem>
       </varlistentry>
 
-      <xi:include href="user-system-options.xml" xpointer="host" />
-      <xi:include href="user-system-options.xml" xpointer="machine" />
+      <varlistentry>
+        <term><option>-p</option></term>
+        <term><option>--property=</option></term>
 
-        <term><option>--lines=</option></term>
+        <listitem><para>When showing session/user/seat properties,
+        limit display to certain properties as specified as argument.
+        If not specified, all set properties are shown. The argument
+        should be a property name, such as
+        <literal>Sessions</literal>. If specified more than once, all
+        properties with the specified names are
+        shown.</para></listitem>
+      </varlistentry>
 
-        <listitem><para>When used with <command>user-status</command>
-        and <command>session-status</command>, controls the number of
-        journal lines to show, counting from the most recent ones.
-        Takes a positive integer argument. Defaults to 10.</para>
+      <varlistentry>
+        <term><option>--value</option></term>
+
+        <listitem><para>When showing session/user/seat properties,
+        only print the value, and skip the property name and
+        <literal>=</literal>.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-a</option></term>
+        <term><option>--all</option></term>
+
+        <listitem><para>When showing session/user/seat properties,
+        show all properties regardless of whether they are set or
+        not.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-l</option></term>
+        <term><option>--full</option></term>
+
+        <listitem><para>Do not ellipsize process tree entries.</para>
         </listitem>
       </varlistentry>
+
+      <varlistentry>
+        <term><option>--kill-who=</option></term>
+
+        <listitem><para>When used with
+        <command>kill-session</command>, choose which processes to
+        kill. Must be one of <option>leader</option>, or
+        <option>all</option> to select whether to kill only the leader
+        process of the session or all processes of the session. If
+        omitted, defaults to <option>all</option>.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-s</option></term>
+        <term><option>--signal=</option></term>
 
         <listitem><para>When used with <command>kill-session</command>
         or <command>kill-user</command>, choose which signal to send
@@ -314,180 +462,57 @@ else -->
         <constant>SIGTERM</constant>.</para></listitem>
       </varlistentry>
 
-        kill. Must be one of <option>leader</option>, or
-        <option>all</option> to select whether to kill only the leader
-        process of the session or all processes of the session. If
-        omitted, defaults to <option>all</option>.</para></listitem>
-      </varlistentry>
-
+      <!-- 0 /// nope, elogind does not need this, as there is mno journald around
       <varlistentry>
-      </varlistentry>
-
-      <varlistentry>
-
-        not.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-
-        <literal>=</literal>.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        If not specified, all set properties are shown. The argument
-        should be a property name, such as
-        <literal>Sessions</literal>. If specified more than once, all
-        properties with the specified names are
-        shown.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-
-      </varlistentry>
-
-      <varlistentry>
-  <refsect1>
-    <title>Options</title>
-
-    <para>The following options are understood:</para>
-
-    <variablelist>
-      <varlistentry>
-      </varlistentry>
-    </variablelist></refsect2>
-
-    <!-- 1 /// elogind additionally supports a few systemctl commands. -->
-    <refsect2><title>System Commands</title><variablelist>
-
-      <varlistentry>
-        <term><command>reload</command></term>
-
-        <listitem>
-          <para>Reload the elogind configuration.</para>
-        </listitem>
-        privileged operations.</para></listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><command>poweroff</command></term>
-        <term><option>--property=</option></term>
-
-        <listitem>
-          <para>Print a wall message to all users, shut down and
-            power-off the system.</para>
-        </listitem>
-        limit display to certain properties as specified as argument.
-      </varlistentry>
-      <varlistentry>
-        <term><command>reboot <optional><replaceable>arg</replaceable></optional></command></term>
-
-        <listitem>
-          <para>Print a wall message to all users, shut down and
-            reboot the system.</para>
-
-          <para>If the optional argument
-          <replaceable>arg</replaceable> is given, it will be passed
-          as the optional argument to the
-          <citerefentry><refentrytitle>reboot</refentrytitle><manvolnum>2</manvolnum></citerefentry>
-          system call. The value is architecture and firmware
-          specific. As an example, <literal>recovery</literal> might
-          be used to trigger system recovery, and
-          <literal>fota</literal> might be used to trigger a
-          <quote>firmware over the air</quote> update.</para>
-        </listitem>
-        only print the value, and skip the property name and
-      </varlistentry>
-
-      <varlistentry>
-        <term><command>suspend</command></term>
-        <term><option>--all</option></term>
-
-        <listitem>
-          <para>Suspend the system.
-          </para>
-        </listitem>
-        show all properties regardless of whether they are set or
-      </varlistentry>
-
-      <varlistentry>
-        <term><command>hibernate</command></term>
-        <term><option>--full</option></term>
-
-        <listitem>
-          <para>Hibernate the system.
-          </para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><command>hybrid-sleep</command></term>
-
-        <listitem>
-          <para>Hibernate and suspend the system.</para>
-        </listitem>
-        <command>kill-session</command>, choose which processes to
-      </varlistentry>
-
-      <varlistentry>
-        <term><command>suspend-then-hibernate</command></term>
-        <term><option>--signal=</option></term>
-
-        <listitem>
-          <para>Suspend the system, wake after a period of
-          time and put it into hibernate</para>
         <term><option>-n</option></term>
+        <term><option>&#x2D;&#x2D;lines=</option></term>
+
+        <listitem><para>When used with <command>user-status</command>
+        and <command>session-status</command>, controls the number of
+        journal lines to show, counting from the most recent ones.
+        Takes a positive integer argument. Defaults to 10.</para>
         </listitem>
       </varlistentry>
-    </variablelist></refsect2>
-  </refsect1>
+      // 0 -->
 
-    <title>Hook directories</title>
+      <varlistentry>
         <term><option>-o</option></term>
+        <term><option>--output=</option></term>
 
-    <para>Immediately before entering system suspend and/or
-    hibernation elogind will run all executables in
-    <filename>[/usr]/lib/elogind/system-sleep/</filename> and pass two
-    arguments to them. The first argument will be
-    <literal>pre</literal>, the second either
-    <literal>suspend</literal>, <literal>hibernate</literal>,
-    <literal>hybrid-sleep</literal>, or <literal>suspend-then-hibernate</literal>
-    depending on the chosen action.
-    Immediately after leaving system suspend and/or hibernation the
-    same executables are run, but the first argument is now
-    <literal>post</literal>. All executables in this directory are
-    executed sequentially, and execution of the action is not continued
-    until all executables have finished.</para>
+        <listitem><para>When used with <command>user-status</command>
+        and <command>session-status</command>, controls the formatting
+        of the journal entries that are shown. For the available
+        choices, see
+        <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+        Defaults to <literal>short</literal>.</para></listitem>
+      </varlistentry>
 
-    <para>Note that scripts or binaries dropped in
-    <filename>[/usr]/lib/elogind/system-sleep/</filename> are intended
-    for local use only and should be considered hacks. If applications
-    want to react to system suspend/hibernation and resume,
-    they should rather use the <ulink
-    url="https://www.freedesktop.org/wiki/Software/systemd/inhibit">Inhibitor
-    interface</ulink>.</para>
+      <!-- 1 /// elogind has a few options on its own. -->
+      <varlistentry>
+        <term><option>-</option></term>
 
-    <para>Immediately before executing the actual system
-    poweroff/reboot elogind will run all executables in
-    <filename>[/usr]/lib/elogind/system-shutdown/</filename> and pass
-    one arguments to them, either <literal>poweroff</literal> or
-    <literal>reboot</literal>, depending on the chosen action. All
-    executables in this directory are executed sequentially, and
-    execution of the action is not continued before all executables
-    finished.</para>
+        <listitem><para>Cancel a pending shutdown or reboot.</para></listitem>
+      </varlistentry>
 
-    <para>Whether the executables in these directories run successfully or not
-    is of no concern to elogind.
-    If you want the scripts to cause the action to be cancelled if one fails,
-    you can set <literal>AllowPowerOffInterrupts</literal> and/or
-    <literal>AllowSuspendInterrupts</literal> to <literal>yes</literal> in
-    <filename>/etc/elogind/logind.conf</filename>.
-    For this to work the executables in question must print an error message
-    to <literal>STDOUT</literal> that begins with either of these keywords:
-    <literal>CANCELLED</literal>, <literal>CRITICAL</literal>,
-    <literal>ERROR</literal> or <literal>FAILED</literal>. If you want any of
-    these words in a message without causing the action to be cancelled, just
-    re-arrange the sentence in question so that the keyword is not the first
-    word.</para>
-    <!-- // 1 -->
+      <varlistentry>
+        <term><option>-i</option></term>
+        <term><option>--ignore-inhibitors</option></term>
+
+        <listitem>
+          <para>When system shutdown or a sleep state is requested, ignore inhibitor locks. Applications can establish
+          inhibitor locks to avoid that certain important operations (such as CD burning or suchlike) are interrupted
+          by system shutdown or a sleep state. Any user may take these locks and privileged users may override these
+          locks. If any locks are taken, shutdown and sleep state requests will normally fail (unless privileged) and a
+          list of active locks is printed. However, if <option>--ignore-inhibitors</option> is specified, the
+          established locks are ignored and not shown, and the operation attempted anyway, possibly requiring
+          additional privileges.</para>
+        </listitem>
+      </varlistentry>
+      <!-- // 1 -->
+
+      <xi:include href="user-system-options.xml" xpointer="host" />
+      <xi:include href="user-system-options.xml" xpointer="machine" />
+
       <xi:include href="standard-options.xml" xpointer="no-pager" />
       <xi:include href="standard-options.xml" xpointer="no-legend" />
       <xi:include href="standard-options.xml" xpointer="help" />
@@ -495,23 +520,6 @@ else -->
     </variablelist>
   </refsect1>
 
-  </refsect1>
-        <term><option>--no-ask-password</option></term>
-        <listitem><para>Do not query the user for authentication for
-        <term><option>-p</option></term>
-        <listitem><para>When showing session/user/seat properties,
-        <term><option>--value</option></term>
-        <listitem><para>When showing session/user/seat properties,
-        <term><option>-a</option></term>
-        <listitem><para>When showing session/user/seat properties,
-        <term><option>-l</option></term>
-        <listitem><para>Do not ellipsize process tree entries.</para>
-        <term><option>--kill-who=</option></term>
-        <listitem><para>When used with
-        <term><option>-s</option></term>
-      <varlistentry>
-
-      <varlistentry>
   <refsect1>
     <title>Exit status</title>
 
@@ -525,7 +533,7 @@ else -->
     <example>
       <title>Querying user status</title>
 
-      <!-- 0 /// With elogind no Unit and jurnald output is generated
+<!-- 0 // Looks a bit different with elogind
       <programlisting>$ loginctl user-status
 fatima (1005)
            Since: Sat 2016-04-09 14:23:31 EDT; 54min ago
@@ -544,19 +552,23 @@ Apr 09 14:40:30 laptop login[2325]: pam_unix(login:session):
                        session opened for user fatima by LOGIN(uid=0)
 Apr 09 14:40:30 laptop login[2325]: LOGIN ON tty3 BY fatima
 </programlisting>
-      --><!-- else -->
-      <programlisting>$ loginctl user-status
-fatima (1005)
-           Since: Sat 2016-04-09 14:23:31 EDT; 54min ago
-           State: active
-        Sessions: 5 *3
-            Unit: user-1005.slice
-</programlisting>
-      <!-- // 0 -->
-
       <para>There are two sessions, 3 and 5. Session 3 is a graphical session,
       marked with a star. The tree of processing including the two corresponding
       scope units and the user manager unit are shown.</para>
+--><!-- else -->
+      <programlisting>$ loginctl user-status
+sed (1004)
+           Since: Wed 2020-01-29 20:32:00 CET; 3 days ago
+           State: active
+        Sessions: 3 *2
+          Linger: no
+            Unit: user-1004.slice
+</programlisting>
+      <para>There are two sessions, 2 and 3. The session 2 is a graphical session,
+      marked with a star. Uptime, state, lingering state und the user unit are shown.
+      The user unit is an artificial construct, elogind does not really support
+      systemd units and slices.</para>
+<!-- // 0 -->
     </example>
   </refsect1>
 
@@ -565,7 +577,7 @@ fatima (1005)
   <refsect1>
     <title>See Also</title>
     <para>
-      <!-- 0 /// elogind is in section 8
+      <!-- elogind is in sectin 8 and has neither systemctl nor service files
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
