@@ -1558,6 +1558,9 @@ conf.set10('HAVE_DBUS', have)
 # endif
 # conf.set10('ENABLE_HOMED', have)
 #
+# have = have and conf.get('HAVE_PAM') == 1
+# conf.set10('ENABLE_PAM_HOME', have)
+#
 # want_remote = get_option('remote')
 # if want_remote != 'false'
 #         have_deps = [conf.get('HAVE_MICROHTTPD') == 1,
