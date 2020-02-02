@@ -2,6 +2,7 @@
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/mount.h>
 
 #include "fd-util.h"
 #include "missing_fs.h"
@@ -171,3 +172,16 @@ int fd_is_network_ns(int fd) {
         return r == CLONE_NEWNET;
 }
 #endif // 0
+
+int detach_mount_namespace(void) {
+
+        /* Detaches the mount namespace, disabling propagation from our namespace to the host */
+
+        if (unshare(CLONE_NEWNS) < 0)
+                return -errno;
+
+        if (mount(NULL, "/", NULL, MS_SLAVE | MS_REC, NULL) < 0)
+                return -errno;
+
+        return 0;
+}
