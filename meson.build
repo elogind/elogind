@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '243.4',
+        version : '243',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -3606,8 +3606,8 @@ if conf.get('ENABLE_EFI') == 1
 #                 status += [
 #                         'EFI machine type:                  @0@'.format(EFI_MACHINE_TYPE_NAME),
 #                         'EFI CC                             @0@'.format(' '.join(efi_cc)),
-#                         'EFI lib directory:                 @0@'.format(efi_libdir),
-#                         'EFI lds directory:                 @0@'.format(efi_ldsdir),
+#                         'EFI lds:                           @0@'.format(efi_lds),
+#                         'EFI crt0:                          @0@'.format(efi_crt0),
 #                         'EFI include directory:             @0@'.format(efi_incdir)]
 #         endif
 #endif // 0
