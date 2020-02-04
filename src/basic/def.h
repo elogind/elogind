@@ -30,14 +30,6 @@
 #define SIGNALS_CRASH_HANDLER SIGSEGV,SIGILL,SIGFPE,SIGBUS,SIGQUIT,SIGABRT
 #define SIGNALS_IGNORE SIGPIPE
 
-#if 1 /// elogind should support both /run/dbus & /var/run/dbus (per Linux FHS)
-/* Not all systems have dbus hierarchy in /run (as preferred by systemd) */
-#if VARRUN_IS_SYMLINK
-  #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/run/dbus/system_bus_socket"
-#else
-  #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/var/run/dbus/system_bus_socket"
-#endif // VARRUN_IS_SYMLINK
-#endif // 1
 #define NOTIFY_FD_MAX 768
 #define NOTIFY_BUFFER_MAX PIPE_BUF
 
