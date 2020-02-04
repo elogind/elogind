@@ -105,6 +105,13 @@
       <listitem><para>Device access management for
       users</para></listitem>
 
+      <!-- 1 /// Add information about RemoveIPC -->
+      <listitem><para>Removing of all System V and POSIX IPC objects belonging to the user after the
+      last of the user's sessions terminated. See <varname>RemoveIPC=</varname> in
+      <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      about how to configure this behavior.
+      </para></listitem>
+      <!-- // 1 -->
     </itemizedlist>
 
     <para>User sessions are registered in elogind via the
