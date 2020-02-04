@@ -311,7 +311,7 @@
             This command is asynchronous; it will return after the reboot operation is enqueued, without waiting for it
             to complete.</para>
 
-            <para>If the optional argument <argument>--firmware-setup</argument> is given, indicate to the
+            <para>If the optional argument <option>--firmware-setup</option> is given, indicate to the
             system's firmware to reboot into the firmware setup interface. Note that this functionality is not available
             on all systems.</para>
           </listitem>
