@@ -1992,20 +1992,10 @@ static int method_do_shutdown_or_sleep(
                         return r;
         }
 
-#if 0 /// Within elogind it does not make sense to verify shutdown creds when suspending
         r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
                                   action_ignore_inhibit, error);
         if (r != 0)
                 return r;
-#else
-        if (IN_SET(unit_name, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
-                r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
-                                          action_ignore_inhibit, error);
-                log_debug_elogind("verify_shutdown_creds() returned %d", r);
-                if (r != 0)
-                        return r;
-        }
-#endif // 0
 
         r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
         if (r < 0)
