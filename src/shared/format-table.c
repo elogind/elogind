@@ -13,7 +13,7 @@
 #include "format-util.h"
 #include "gunicode.h"
 #include "id128-util.h"
-#include "in-addr-util.h"
+//#include "in-addr-util.h"
 #include "locale-util.h"
 #include "memory-util.h"
 #include "pager.h"

@@ -28,6 +28,8 @@
 #         bus-unit-util.h
 #         bus-util.c
 #         bus-util.h
+#         bus-polkit.c
+#         bus-polkit.h
 #         bus-wait-for-jobs.c
 #         bus-wait-for-jobs.h
 #         bus-wait-for-units.c
@@ -228,6 +230,8 @@ shared_sources = '''
         acl-util.h
         bootspec.c
         bootspec.h
+        bus-polkit.c
+        bus-polkit.h
         bus-util.c
         bus-util.h
         cgroup-setup.c
