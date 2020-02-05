@@ -198,7 +198,6 @@ int set_oom_score_adjust(int value);
  * these values are documented in proc(5) we feel quite confident that they are stable enough for the near future at
  * least to define them here too. */
 #define TASKS_MAX 4194303U
-#else
 
 assert_cc(TASKS_MAX <= (unsigned long) PID_T_MAX);
 

@@ -4,7 +4,7 @@
 
 #include "sd-id128.h"
 
-#include "glob-util.h"
+//#include "glob-util.h"
 #include "hexdecoct.h"
 #include "macro.h"
 #include "path-util.h"
@@ -106,7 +106,6 @@ DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(log_level, int, LOG_DEBUG);
 bool log_level_is_valid(int level) {
         return level >= 0 && level <= LOG_DEBUG;
 }
-#endif // 0
 
 /* The maximum size for a log namespace length. This is the file name size limit 255 minus the size of a
  * formatted machine ID minus a separator char */
@@ -135,3 +134,4 @@ bool log_namespace_name_valid(const char *s) {
 
         return true;
 }
+#endif // 0

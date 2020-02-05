@@ -62,6 +62,7 @@ int parse_uid(const char *s, uid_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_uid_range(const char *s, uid_t *ret_lower, uid_t *ret_upper) {
         uint32_t u, l;
         int r;
@@ -84,6 +85,7 @@ int parse_uid_range(const char *s, uid_t *ret_lower, uid_t *ret_upper) {
         *ret_upper = u;
         return 0;
 }
+#endif // 0
 
 char* getlogname_malloc(void) {
         uid_t uid;

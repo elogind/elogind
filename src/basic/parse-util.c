@@ -710,7 +710,6 @@ int parse_ip_port_range(const char *s, uint16_t *low, uint16_t *high) {
 
         return 0;
 }
-#endif // 0
 
 int parse_ip_prefix_length(const char *s, int *ret) {
         unsigned l;
@@ -727,6 +726,7 @@ int parse_ip_prefix_length(const char *s, int *ret) {
 
         return 0;
 }
+#endif // 0
 
 int parse_dev(const char *s, dev_t *ret) {
         const char *major;

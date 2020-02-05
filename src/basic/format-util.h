@@ -5,18 +5,15 @@
 #include <net/if.h>
 #include <stdbool.h>
 
-#else
 #include "macro.h"
 
 assert_cc(sizeof(pid_t) == sizeof(int32_t));
 #define PID_PRI PRIi32
 #define PID_FMT "%" PID_PRI
 
-#else
 assert_cc(sizeof(uid_t) == sizeof(uint32_t));
 #define UID_FMT "%" PRIu32
 
-#else
 assert_cc(sizeof(gid_t) == sizeof(uint32_t));
 #define GID_FMT "%" PRIu32
 
