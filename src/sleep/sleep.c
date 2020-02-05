@@ -150,13 +150,13 @@ static int write_state(FILE **f, char **states) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int lock_all_homes(void) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         int r;
 
-#if 0 /// elogind uses the values stored in its manager instance
         /* Let's synchronously lock all home directories managed by homed that have been marked for it. This
          * way the key material required to access these volumes is hopefully removed from memory. */
 
@@ -193,9 +193,24 @@ static int lock_all_homes(void) {
         log_debug("Successfully requested for all home directories to be locked.");
         return 0;
 }
+#endif // 0
+
+#if 0 /// elogind uses the values stored in its manager instance
+static int execute(char **modes, char **states) {
 #else
 static int execute(Manager *m, const char *verb) {
         assert(m);
+#endif // 0
+        char *arguments[] = {
+                NULL,
+                (char*) "pre",
+                arg_verb,
+                NULL
+        };
+        static const char* const dirs[] = {
+                SYSTEM_SLEEP_PATH,
+                NULL
+        };
 
         int e;
         _cleanup_free_ char *l = NULL;
@@ -214,20 +229,6 @@ static int execute(Manager *m, const char *verb) {
         char **states = streq(arg_verb, "suspend")   ? m->suspend_state     :
                         streq(arg_verb, "hibernate") ? m->hibernate_state   :
                                                        m->hybrid_sleep_state;
-#endif // 0
-
-static int execute(char **modes, char **states) {
-        char *arguments[] = {
-                NULL,
-                (char*) "pre",
-                arg_verb,
-                NULL
-        };
-        static const char* const dirs[] = {
-                SYSTEM_SLEEP_PATH,
-                NULL
-        };
-
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_(hibernate_location_freep) HibernateLocation *hibernate_location = NULL;
         int r;
