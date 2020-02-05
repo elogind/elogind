@@ -1975,18 +1975,18 @@ static sd_journal *journal_new(int flags, const char *path, const char *namespac
 
         return TAKE_PTR(j);
 }
+#endif // 0
 
 #define OPEN_ALLOWED_FLAGS                              \
         (SD_JOURNAL_LOCAL_ONLY |                        \
          SD_JOURNAL_RUNTIME_ONLY |                      \
-#endif // 0
          SD_JOURNAL_SYSTEM |                            \
          SD_JOURNAL_CURRENT_USER |                      \
          SD_JOURNAL_ALL_NAMESPACES |                    \
          SD_JOURNAL_INCLUDE_DEFAULT_NAMESPACE)
 
-#if 0 /// UNSUPPORTED by elogind
 _public_ int sd_journal_open_namespace(sd_journal **ret, const char *namespace, int flags) {
+#if 0 /// UNSUPPORTED by elogind
         _cleanup_(sd_journal_closep) sd_journal *j = NULL;
         int r;
 
@@ -2003,13 +2003,13 @@ _public_ int sd_journal_open_namespace(sd_journal **ret, const char *namespace, 
 
         *ret = TAKE_PTR(j);
         return 0;
+#else
+        return -ENOSYS;
+#endif // 0
 }
 
 _public_ int sd_journal_open(sd_journal **ret, int flags) {
         return sd_journal_open_namespace(ret, NULL, flags);
-#else
-        return -ENOSYS;
-#endif // 0
 }
 
 #define OPEN_CONTAINER_ALLOWED_FLAGS                    \
