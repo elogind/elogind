@@ -55,135 +55,12 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="../build/config.h" />
-		<Unit filename="../man/busctl.xml" />
-		<Unit filename="../man/custom-entities.ent.in" />
-		<Unit filename="../man/custom-html.xsl" />
-		<Unit filename="../man/custom-man.xsl" />
-		<Unit filename="../man/elogind-inhibit.xml" />
-		<Unit filename="../man/elogind.journal-fields.xml" />
-		<Unit filename="../man/elogind.syntax.xml" />
-		<Unit filename="../man/elogind.time.xml" />
-		<Unit filename="../man/elogind.xml" />
 		<Unit filename="../man/glib-event-glue.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../man/less-variables.xml" />
-		<Unit filename="../man/libelogind-pkgconfig.xml" />
-		<Unit filename="../man/loginctl.xml" />
-		<Unit filename="../man/logind.conf.xml" />
-		<Unit filename="../man/meson.build" />
-		<Unit filename="../man/pam_elogind.xml" />
-		<Unit filename="../man/sd-bus.xml" />
-		<Unit filename="../man/sd-event.xml" />
-		<Unit filename="../man/sd-login.xml" />
-		<Unit filename="../man/sd_booted.xml" />
-		<Unit filename="../man/sd_bus_add_match.xml" />
-		<Unit filename="../man/sd_bus_attach_event.xml" />
-		<Unit filename="../man/sd_bus_close.xml" />
-		<Unit filename="../man/sd_bus_creds_get_pid.xml" />
-		<Unit filename="../man/sd_bus_creds_get_pid.xml.bak" />
-		<Unit filename="../man/sd_bus_creds_new_from_pid.xml" />
-		<Unit filename="../man/sd_bus_default.xml" />
-		<Unit filename="../man/sd_bus_error.xml" />
-		<Unit filename="../man/sd_bus_error_add_map.xml" />
-		<Unit filename="../man/sd_bus_get_fd.xml" />
-		<Unit filename="../man/sd_bus_get_n_queued_read.xml" />
-		<Unit filename="../man/sd_bus_is_open.xml" />
-		<Unit filename="../man/sd_bus_message_append.xml" />
-		<Unit filename="../man/sd_bus_message_append_array.xml" />
-		<Unit filename="../man/sd_bus_message_append_basic.xml" />
-		<Unit filename="../man/sd_bus_message_append_string_memfd.xml" />
-		<Unit filename="../man/sd_bus_message_append_strv.xml" />
-		<Unit filename="../man/sd_bus_message_copy.xml" />
-		<Unit filename="../man/sd_bus_message_get_cookie.xml" />
-		<Unit filename="../man/sd_bus_message_get_monotonic_usec.xml" />
-		<Unit filename="../man/sd_bus_message_get_signature.xml" />
-		<Unit filename="../man/sd_bus_message_get_type.xml" />
-		<Unit filename="../man/sd_bus_message_new.xml" />
-		<Unit filename="../man/sd_bus_message_new_method_call.xml" />
-		<Unit filename="../man/sd_bus_message_new_method_error.xml" />
-		<Unit filename="../man/sd_bus_message_new_signal.xml" />
-		<Unit filename="../man/sd_bus_message_read.xml" />
-		<Unit filename="../man/sd_bus_message_read_array.xml" />
-		<Unit filename="../man/sd_bus_message_read_basic.xml" />
-		<Unit filename="../man/sd_bus_message_rewind.xml" />
-		<Unit filename="../man/sd_bus_message_set_destination.xml" />
-		<Unit filename="../man/sd_bus_message_set_expect_reply.xml" />
-		<Unit filename="../man/sd_bus_message_skip.xml" />
-		<Unit filename="../man/sd_bus_message_verify_type.xml" />
-		<Unit filename="../man/sd_bus_negotiate_fds.xml" />
-		<Unit filename="../man/sd_bus_new.xml" />
-		<Unit filename="../man/sd_bus_path_encode.xml" />
-		<Unit filename="../man/sd_bus_process.xml" />
-		<Unit filename="../man/sd_bus_reply_method_error.xml" />
-		<Unit filename="../man/sd_bus_request_name.xml" />
-		<Unit filename="../man/sd_bus_set_close_on_exit.xml" />
-		<Unit filename="../man/sd_bus_set_connected_signal.xml" />
-		<Unit filename="../man/sd_bus_set_description.xml" />
-		<Unit filename="../man/sd_bus_set_sender.xml" />
-		<Unit filename="../man/sd_bus_set_watch_bind.xml" />
-		<Unit filename="../man/sd_bus_slot_ref.xml" />
-		<Unit filename="../man/sd_bus_slot_set_description.xml" />
-		<Unit filename="../man/sd_bus_slot_set_destroy_callback.xml" />
-		<Unit filename="../man/sd_bus_slot_set_floating.xml" />
-		<Unit filename="../man/sd_bus_slot_set_userdata.xml" />
-		<Unit filename="../man/sd_bus_track_add_name.xml" />
-		<Unit filename="../man/sd_bus_track_new.xml" />
-		<Unit filename="../man/sd_bus_wait.xml" />
-		<Unit filename="../man/sd_event_add_child.xml" />
-		<Unit filename="../man/sd_event_add_defer.xml" />
-		<Unit filename="../man/sd_event_add_inotify.xml" />
-		<Unit filename="../man/sd_event_add_io.xml" />
-		<Unit filename="../man/sd_event_add_signal.xml" />
-		<Unit filename="../man/sd_event_add_time.xml" />
-		<Unit filename="../man/sd_event_exit.xml" />
-		<Unit filename="../man/sd_event_get_fd.xml" />
-		<Unit filename="../man/sd_event_new.xml" />
-		<Unit filename="../man/sd_event_now.xml" />
-		<Unit filename="../man/sd_event_run.xml" />
-		<Unit filename="../man/sd_event_set_watchdog.xml" />
-		<Unit filename="../man/sd_event_source_get_event.xml" />
-		<Unit filename="../man/sd_event_source_get_pending.xml" />
-		<Unit filename="../man/sd_event_source_set_description.xml" />
-		<Unit filename="../man/sd_event_source_set_destroy_callback.xml" />
-		<Unit filename="../man/sd_event_source_set_enabled.xml" />
-		<Unit filename="../man/sd_event_source_set_prepare.xml" />
-		<Unit filename="../man/sd_event_source_set_priority.xml" />
-		<Unit filename="../man/sd_event_source_set_userdata.xml" />
-		<Unit filename="../man/sd_event_source_unref.xml" />
-		<Unit filename="../man/sd_event_wait.xml" />
-		<Unit filename="../man/sd_get_seats.xml" />
-		<Unit filename="../man/sd_id128_get_machine.xml" />
-		<Unit filename="../man/sd_id128_randomize.xml" />
-		<Unit filename="../man/sd_id128_to_string.xml" />
-		<Unit filename="../man/sd_is_fifo.xml" />
-		<Unit filename="../man/sd_journal_add_match.xml" />
-		<Unit filename="../man/sd_journal_enumerate_fields.xml" />
-		<Unit filename="../man/sd_journal_get_catalog.xml" />
-		<Unit filename="../man/sd_journal_get_cursor.xml" />
-		<Unit filename="../man/sd_journal_get_cutoff_realtime_usec.xml" />
-		<Unit filename="../man/sd_journal_get_data.xml" />
-		<Unit filename="../man/sd_journal_get_fd.xml" />
-		<Unit filename="../man/sd_journal_get_realtime_usec.xml" />
-		<Unit filename="../man/sd_journal_get_usage.xml" />
-		<Unit filename="../man/sd_journal_has_runtime_files.xml" />
-		<Unit filename="../man/sd_journal_next.xml" />
-		<Unit filename="../man/sd_journal_open.xml" />
-		<Unit filename="../man/sd_journal_print.xml" />
-		<Unit filename="../man/sd_journal_query_unique.xml" />
-		<Unit filename="../man/sd_journal_seek_head.xml" />
-		<Unit filename="../man/sd_journal_stream_fd.xml" />
-		<Unit filename="../man/sd_listen_fds.xml" />
-		<Unit filename="../man/sd_login_monitor_new.xml" />
-		<Unit filename="../man/sd_machine_get_class.xml" />
-		<Unit filename="../man/sd_notify.xml" />
-		<Unit filename="../man/sd_pid_get_owner_uid.xml" />
-		<Unit filename="../man/sd_seat_get_active.xml" />
-		<Unit filename="../man/sd_session_is_active.xml" />
-		<Unit filename="../man/sd_uid_get_state.xml" />
-		<Unit filename="../man/sd_watchdog_enabled.xml" />
-		<Unit filename="../man/standard-options.xml" />
-		<Unit filename="../man/user-system-options.xml" />
+		<Unit filename="../man/vtable-example.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../meson.build">
 			<Option target="all" />
 			<Option target="clean" />
@@ -311,9 +188,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/basic/io-util.h" />
-		<Unit filename="../src/basic/kbd-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/basic/khash.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -380,6 +254,7 @@
 		<Unit filename="../src/basic/missing_syscall.h" />
 		<Unit filename="../src/basic/missing_timerfd.h" />
 		<Unit filename="../src/basic/missing_type.h" />
+		<Unit filename="../src/basic/missing_xfs.h" />
 		<Unit filename="../src/basic/mkdir-label.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -863,6 +738,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/bootspec.h" />
+		<Unit filename="../src/shared/bus-polkit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/bus-polkit.h" />
 		<Unit filename="../src/shared/bus-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -891,10 +770,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/efi-loader.h" />
-		<Unit filename="../src/shared/efivars.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/efivars.h" />
 		<Unit filename="../src/shared/enable-mempool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -970,10 +845,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/reboot-util.h" />
-		<Unit filename="../src/shared/resize-fs.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/resize-fs.h" />
 		<Unit filename="../src/shared/serialize.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -995,10 +866,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/udev-util.h" />
-		<Unit filename="../src/shared/unit-file.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/unit-file.h" />
 		<Unit filename="../src/shared/user-record-nss.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1023,10 +890,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/verbs.h" />
-		<Unit filename="../src/shared/wifi-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/shared/wifi-util.h" />
 		<Unit filename="../src/shared/wireguard-netlink.h" />
 		<Unit filename="../src/shared/xml.c">
 			<Option compilerVar="CC" />
@@ -1058,9 +921,6 @@
 		<Unit filename="../src/test/test-bus-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-cgroup-cpu.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/test/test-cgroup.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1085,16 +945,10 @@
 		<Unit filename="../src/test/test-ellipsize.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-env-file.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/test/test-escape.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-exec-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/test/test-exit-status.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-extract-word.c">
@@ -1147,9 +1001,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-mountpoint-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/test/test-ordered-set.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-parse-util.c">
@@ -1215,9 +1066,6 @@
 		<Unit filename="../src/test/test-unaligned.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/test/test-unit-file.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/test/test-user-util.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1225,9 +1073,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-util.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/test/test-varlink.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/test/test-verbs.c">
@@ -1241,9 +1086,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/update-utmp/update-utmp.h" />
+		<Unit filename="../src/version/version.h.in" />
 		<Unit filename="../tools/check-includes.pl" />
 		<Unit filename="../tools/find-double-newline.sh" />
 		<Unit filename="../tools/gdb-sd_dump_hashmaps.py" />
+		<Unit filename="../tools/generate-gperfs.py" />
 		<Unit filename="../tools/make-directive-index.py" />
 		<Unit filename="../tools/make-index-md.sh" />
 		<Unit filename="../tools/make-man-index.py" />

@@ -1799,6 +1799,7 @@ libelogind = shared_library(
 #                         liblz4],
 #         link_depends : libsystemd_sym,
 #else
+                     '-Wl,--version-script=' + libelogind_sym_path],
         link_with : [libbasic],
         link_whole : [libelogind_static,
                       libjournal_client],
@@ -1811,10 +1812,16 @@ libelogind = shared_library(
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
-#if 0 /// No journald with elogind (And before you ask: NO!)
+#if 0 /// Do a real elogind masking else, diff always goes haywire here
 # install_libsystemd_static = static_library(
 #         'systemd',
 #         libsystemd_sources,
+#else
+install_libelogind_static = static_library(
+        'elogind',
+        libelogind_sources,
+#endif // 0
+#if 0 /// No journald with elogind (And before you ask: NO!)
 #         journal_client_sources,
 #endif // 0
         basic_sources,
@@ -3839,8 +3846,10 @@ foreach tuple : [
 #         ['libcryptsetup'],
 #endif // 0
         ['PAM'],
-        ['pwquality'],
-        ['libfdisk'],
+#if 0 /// UNNEEDED by elogind
+#         ['pwquality'],
+#         ['libfdisk'],
+#endif // 0
         ['p11kit'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
