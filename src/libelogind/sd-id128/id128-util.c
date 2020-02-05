@@ -190,6 +190,7 @@ void id128_hash_func(const sd_id128_t *p, struct siphash *state) {
 int id128_compare_func(const sd_id128_t *a, const sd_id128_t *b) {
         return memcmp(a, b, 16);
 }
+#endif // 0
 
 sd_id128_t id128_make_v4_uuid(sd_id128_t id) {
         /* Stolen from generate_random_uuid() of drivers/char/random.c
@@ -204,5 +205,6 @@ sd_id128_t id128_make_v4_uuid(sd_id128_t id) {
         return id;
 }
 
+#if 0 /// UNNEEDED by elogind
 DEFINE_HASH_OPS(id128_hash_ops, sd_id128_t, id128_hash_func, id128_compare_func);
 #endif // 0
