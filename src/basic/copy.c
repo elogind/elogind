@@ -10,12 +10,11 @@
 #include <sys/sendfile.h>
 //#include <sys/stat.h>
 #include <sys/xattr.h>
-//#include <time.h>
-//#include <unistd.h>
-
 #ifndef __GLIBC__ /// elogind has to include <signal.h> for musl-based systems
 #include <signal.h>
 #endif // __GLIBC__
+#include <time.h>
+#include <unistd.h>
 
 #include "alloc-util.h"
 //#include "btrfs-util.h"

@@ -65,7 +65,7 @@
     please refer to the <ulink
     url="https://www.freedesktop.org/wiki/Software/systemd/catalog">Journal
     Message Catalogs</ulink> documentation page.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_get_catalog()</function> and
     <function>sd_journal_get_catalog_for_message_id()</function>
@@ -86,7 +86,7 @@
     <para>On successful return, <parameter>ret</parameter> points to a
     new string, which must be freed with
     <citerefentry project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
-    else -->
+    else // 0 -->
     always return -ENOENT.
     <!-- // 0 -->
     </para>
@@ -117,7 +117,7 @@
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <!-- // 0 -->

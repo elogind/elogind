@@ -22,7 +22,7 @@
 #
 # 	close(FILE);
 # }
-#else
+#else // 0
 use strict;
 use warnings;
 

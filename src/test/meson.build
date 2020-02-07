@@ -1103,7 +1103,7 @@ tests += [
 #                  []]
 #         ]
 # endif
-#else
+#else // 0
 ]
 #endif // 0
 
@@ -1208,7 +1208,7 @@ tests += [
           libshared],
 #if 0 /// elogind does not include udev implicitly
 #          [threads]],
-#else
+#else // 0
          [threads,libudev]],
 #endif // 0
 ]

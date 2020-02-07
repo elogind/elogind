@@ -166,7 +166,7 @@ else {
     latency. Note that there is usually no need to invoke this function
     directly as <function>sd_journal_get_timeout()</function> on these
     file systems will ask for timeouts explicitly anyway.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_get_fd</function>,
     <function>sd_journal_get_events</function>,
@@ -217,7 +217,7 @@ else {
       treat <constant>SD_JOURNAL_INVALIDATE</constant> the same way as <constant>SD_JOURNAL_APPEND</constant>, thus
       ignoring any changes to the log view earlier than the old end of the log stream.</para></listitem>
     </itemizedlist>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>All of the functions
     <function>sd_journal_get_fd</function>,
     <function>sd_journal_get_events</function>,
@@ -274,7 +274,7 @@ else {
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

@@ -139,7 +139,7 @@ static int on_reboot(Context *c) {
         /* If this call fails it will return 0, which
          * utmp_put_reboot() will then fix to the current time */
         t = get_startup_time(c);
-#else
+#else // 0
         t = now(CLOCK_REALTIME);
 #endif // 0
 
@@ -234,7 +234,7 @@ static int on_runlevel(Context *c) {
 
 #if 0 /// elogind needs this to be a callable function
 int main(int argc, char *argv[]) {
-#else
+#else // 0
 void update_utmp(int argc, char* argv[]) {
 #endif // 0
         _cleanup_(context_clear) Context c = {
@@ -258,7 +258,7 @@ void update_utmp(int argc, char* argv[]) {
         log_setup_service();
 
         umask(0022);
-#else
+#else // 0
         assert(2 == argc);
         assert(argv[1]);
 #endif // 0
@@ -292,7 +292,7 @@ void update_utmp(int argc, char* argv[]) {
 
         log_debug("systemd-update-utmp stopped as pid "PID_FMT, getpid_cached());
 
-#else
+#else // 0
         if (streq(argv[1], "reboot"))
                 (void)on_reboot(&c);
         else if (streq(argv[1], "shutdown"))

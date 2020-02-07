@@ -265,7 +265,7 @@ static int list_bus_names(int argc, char **argv, void *userdata) {
                 } else {
 #if 0 /// elogind does not support systemd units
                         const char *unique = NULL, *session = NULL, *unit = NULL, *cn = NULL;
-#else
+#else // 0
                         const char *unique = NULL, *session = NULL, *cn = NULL;
 #endif // 0
                         pid_t pid;

@@ -351,7 +351,7 @@
     process is a part of. See
     <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>. For
     processes that are not part of a unit, returns -ENXIO.
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_bus_creds_get_unit()</function> will always return -ENODATA,
     as elogind can not support systemd units.
     <!-- // 0 -->
@@ -363,7 +363,7 @@
     that the process is a part of. See
     <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>. For
     processes that are not part of a user unit, returns -ENXIO.
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_bus_creds_get_user_unit()</function> will always return -ENODATA,
     as elogind can not support systemd units.
     <!-- // 0 -->
@@ -374,14 +374,14 @@
     the systemd slice (a unit in the system instance of systemd) that
     the process is a part of. See
     <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>. Similarly,
-    --><!-- else -->
+    --><!-- else // 0 -->
     the current session, as this is the same as slices in elogind.
     See <function>sd_bus_creds_get_session()</function>.
     <!-- // 0 -->
     <function>sd_bus_creds_get_user_slice()</function> retrieves the
     <!-- 0 /// The "Use Slice" is the session in elogind, too
     systemd slice of the process, in the user instance of systemd.
-    --><!-- else -->
+    --><!-- else // 0 -->
     the user session, as this is the same as the user slice in elogind.
     See <function>sd_bus_creds_get_user_session()</function>.
     <!-- // 0 -->
@@ -399,17 +399,26 @@
     <para><function>sd_bus_creds_get_owner_uid()</function> will
     retrieve the numeric UID (user identifier) of the user who owns
     the user unit or login session that the process is a part of. See
+    <!-- 0 /// Let's look at elogind instead...
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    --><!-- else // 0 -->
+    <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <!-- // 0 -->
     For processes that are not part of a user unit or session, returns
     -ENXIO.
     </para>
 
     <para><function>sd_bus_creds_has_effective_cap()</function> will check whether the capability specified by
     <parameter>capability</parameter> was set in the effective capabilities mask. A positive return value means that it
+    <!-- 0 /// capabilities aren't that largely needed in elogind
     was set, zero means that it was not set, and a negative return value indicates an error. See <citerefentry
     project='man-pages'><refentrytitle>capabilities</refentrytitle><manvolnum>7</manvolnum></citerefentry> and the
     <varname>AmbientCapabilities=</varname> and <varname>CapabilityBoundingSet=</varname> settings in
     <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
+    --><!-- else // 0 -->
+    was set, zero means that it was not set, and a negative return value indicates an error. See <citerefentry
+    project='man-pages'><refentrytitle>capabilities</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
+    <!-- // 0 -->
     </para>
 
     <para><function>sd_bus_creds_has_permitted_cap()</function> is
@@ -528,7 +537,7 @@
 
   <!-- 0 /// rename for elogind
   <xi:include href="libsystemd-pkgconfig.xml" />
-  --><!-- else -->
+  --><!-- else // 0 -->
   <xi:include href="libelogind-pkgconfig.xml" />
   <!-- // 0 -->
 
@@ -538,7 +547,7 @@
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-bus</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
@@ -550,7 +559,7 @@
       <citerefentry project='man-pages'><refentrytitle>proc</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <!-- 0 /// To be consistent, it is renamed for elogind
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
       <!-- // 0 -->
     </para>

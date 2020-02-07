@@ -15,7 +15,7 @@ sd_daemon_sources = files('sd-daemon/sd-daemon.c')
 #         sd-event/event-util.h
 #         sd-event/sd-event.c
 # '''.split())
-#else
+#else // 0
 sd_event_sources = files('''
         sd-event/event-source.h
         sd-event/sd-event.c
@@ -98,7 +98,7 @@ sd_login_sources = files('sd-login/sd-login.c')
 #         sd-resolve/sd-resolve.c
 #         sd-utf8/sd-utf8.c
 # '''.split()) + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
-#else
+#else // 0
 libelogind_sources = files('''
         sd-bus/bus-common-errors.c
         sd-bus/bus-common-errors.h
@@ -175,7 +175,7 @@ libsystemd_c_args = ['-fvisibility=default']
 #         output : 'libsystemd.pc',
 #         configuration : substs,
 #         install_dir : pkgconfiglibdir == 'no' ? '' : pkgconfiglibdir)
-#else
+#else // 0
 libelogind_static = static_library(
         'elogind_static',
         libelogind_sources,

@@ -6,11 +6,6 @@
 /// Additional includes needed by elogind
 #include "musl_missing.h"
 
-#ifndef RLIMIT_RTTIME
-#define RLIMIT_RTTIME 15
-#endif
-
-/* If RLIMIT_RTTIME is not defined, then we cannot use RLIMIT_NLIMITS as is */
 #include "missing_audit.h"
 #include "missing_capability.h"
 #include "missing_drm.h"

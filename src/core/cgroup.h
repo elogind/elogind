@@ -204,7 +204,7 @@ void unit_add_to_cgroup_empty_queue(Unit *u);
 int unit_check_oom(Unit *u);
 
 int unit_attach_pids_to_cgroup(Unit *u, Set *pids, const char *suffix_path);
-#else
+#else // 0
 # include "logind.h"
 #endif // 0
 

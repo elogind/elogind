@@ -57,7 +57,7 @@ void elogind_set_program_name(const char* pcall) {
                 program_invocation_short_name = strdup(basename(program_arg_name));
         atexit(elogind_free_program_name);
 }
-#else
+#else // 0
 void elogind_set_program_name(const char* pcall) {
         assert(pcall && pcall[0]);
 }

@@ -17,11 +17,9 @@ option('rootprefix', type : 'string',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
 # option('link-systemctl-shared', type: 'boolean',
 #        description : 'link systemctl against libsystemd-shared.so')
-#endif // 0
-option('static-libelogind', type : 'combo',
-       choices : ['false', 'true', 'pic', 'no-pic'],
-       description : '''install a static library for libelogind''')
-#if 0 /// UNNEEDED by elogind
+# option('static-libsystemd', type : 'combo',
+#        choices : ['false', 'true', 'pic', 'no-pic'],
+#        description : '''install a static library for libsystemd''')
 # option('static-libudev', type : 'combo',
 #        choices : ['false', 'true', 'pic', 'no-pic'],
 #        description : '''install a static library for libudev''')
@@ -38,7 +36,10 @@ option('static-libelogind', type : 'combo',
 # option('quotaon-path', type : 'string', description : 'path to quotaon')
 # option('quotacheck-path', type : 'string', description : 'path to quotacheck')
 # option('kmod-path', type : 'string', description : 'path to kmod')
-#else
+#else // 0
+option('static-libelogind', type : 'combo',
+       choices : ['false', 'true', 'pic', 'no-pic'],
+       description : '''install a static library for libelogind''')
 # elogind must have a configurable rootlibexecdir
 option('rootlibexecdir', type : 'string',
        description : '''override the root libexec directory path''')
@@ -75,7 +76,9 @@ option('nologin-path', type : 'string', description : 'path to nologin')
 #        description : 'path to debug shell binary')
 # option('debug-tty', type : 'string', value : '/dev/tty9',
 #        description : 'specify the tty device for debug shell')
-#else
+# option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache', 'siphash'], value : [],
+#        description : 'enable extra debugging')
+#else // 0
 option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache', 'siphash'], value : [],
        description : 'enable extra debugging')
 #endif // 0
@@ -161,7 +164,7 @@ option('utmp', type : 'boolean',
 #        description : 'support for the hardware database')
 # option('rfkill', type : 'boolean',
 #        description : 'support for the rfkill tools')
-#else
+#else // 0
 option('efi', type : 'boolean',
        description : 'enable EFI support')
 #endif // 0
@@ -207,7 +210,7 @@ option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'unified',
 #if 0 /// elogind interprets this a bit different
 #        description : 'default cgroup hierarchy')
-#else
+#else // 0
        description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
                 "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its
                                   subfolders.

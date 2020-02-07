@@ -362,7 +362,7 @@ _public_ int sd_hwdb_new(sd_hwdb **ret) {
         *ret = TAKE_PTR(hwdb);
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -376,7 +376,7 @@ static sd_hwdb *hwdb_free(sd_hwdb *hwdb) {
         safe_fclose(hwdb->f);
         ordered_hashmap_free(hwdb->properties);
         return mfree(hwdb);
-#else
+#else // 0
         if (hwdb)
                 mfree(hwdb);
         return NULL;
@@ -442,7 +442,7 @@ _public_ int sd_hwdb_get(sd_hwdb *hwdb, const char *modalias, const char *key, c
         *_value = trie_string(hwdb, entry->value_off);
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -463,7 +463,7 @@ _public_ int sd_hwdb_seek(sd_hwdb *hwdb, const char *modalias) {
         hwdb->properties_iterator = ITERATOR_FIRST;
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -487,7 +487,7 @@ _public_ int sd_hwdb_enumerate(sd_hwdb *hwdb, const char **key, const char **val
         *value = trie_string(hwdb, entry->value_off);
 
         return 1;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }

@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
         const char* name = argv[1] ?: NOBODY_USER_NAME;
 
         test_setup_logging(LOG_INFO);
-#else
+#else // 0
         const char* name = argv[1] ?: "nobody";
 #endif // 0
 

@@ -61,7 +61,7 @@ struct Manager {
 
         unsigned reserve_vt;
         int reserve_vt_fd;
-#else
+#else // 0
         /* Make sure the user cannot accidentally unmount our cgroup
          * file system */
         int pin_cgroupfs_fd;
@@ -109,7 +109,7 @@ struct Manager {
         /* If a shutdown/suspend is currently executed, then this is
          * the job of it */
         char *action_job;
-#else
+#else // 0
         /* Suspension and hibernation can be disabled in logind.conf. */
         bool allow_suspend, allow_hibernation, allow_suspend_then_hibernate, allow_hybrid_sleep;
 

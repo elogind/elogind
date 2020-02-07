@@ -106,7 +106,7 @@
     timezone, or the timezone name in the IANA timezone database format. The complete list of timezones
     supported on your system can be obtained using the <literal>timedatectl list-timezones</literal>
     (see <citerefentry><refentrytitle>timedatectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>).
-    --><!-- else -->
+    --><!-- else // 0 -->
     timezone, or the timezone name in the IANA timezone database format.
     <!-- // 0 -->
     Using IANA format is recommended over local timezone names, as less prone to errors (eg: with local timezone it's possible to
@@ -305,7 +305,7 @@ Wed..Sat,Tue 12-10-15 1:2:3 → Tue..Sat 2012-10-15 01:02:03
         <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
         <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
         <citerefentry><refentrytitle>systemd-analyze</refentrytitle><manvolnum>1</manvolnum></citerefentry>
-        --><!-- else -->
+        --><!-- else // 0 -->
         <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
         <!-- // 0 -->
       </para>

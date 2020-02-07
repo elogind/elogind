@@ -106,7 +106,7 @@
     iterating through the journal easier. See below for an example.
     Similarly, <function>SD_JOURNAL_FOREACH_BACKWARDS()</function> may
     be used for iterating the journal in reverse order.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_next</function>,
     <function>sd_journal_previous</function>,
@@ -127,7 +127,7 @@
     <function>sd_journal_previous()</function> reach the end/beginning
     of the journal they will return 0, instead of 1 when they are
     successful. This should be considered an EOF marker.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>The four calls return -ENOSYS.</para>
     <!-- // 0 -->
   </refsect1>
@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

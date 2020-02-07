@@ -12,10 +12,11 @@
   </refentryinfo>
 
   <refmeta>
-    <refentrytitle>elogind</refentrytitle>
     <!-- 0 /// elogind is in section 8
+    <refentrytitle>systemd</refentrytitle>
     <manvolnum>1</manvolnum>
-    --><!-- else -->
+    --><!-- else // 0 -->
+    <refentrytitle>elogind</refentrytitle>
     <manvolnum>8</manvolnum>
     <!-- // 0 -->
   </refmeta>
@@ -25,7 +26,7 @@
     <refname>systemd</refname>
     <refname>init</refname>
     <refpurpose>systemd system and service manager</refpurpose>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <refname>elogind</refname>
     <refpurpose>Login manager</refpurpose>
     <!-- // 0 -->
@@ -42,7 +43,7 @@
       <arg choice="opt" rep="repeat">OPTIONS</arg>
       <arg choice="req">COMMAND</arg>
     </cmdsynopsis>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <cmdsynopsis>
       <command>elogind</command>
       <arg choice="opt" rep="repeat">OPTIONS</arg>
@@ -77,7 +78,7 @@
     <filename>user.conf.d</filename> directories. See
     <citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for more information.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><command>elogind</command> is a system service that
     manages user logins. It is responsible for:</para>
 
@@ -101,13 +102,11 @@
       <listitem><para>Device access management for
       users</para></listitem>
 
-      <!-- 1 /// Add information about RemoveIPC -->
       <listitem><para>Removing of all System V and POSIX IPC objects belonging to the user after the
       last of the user's sessions terminated. See <varname>RemoveIPC=</varname> in
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       about how to configure this behavior.
       </para></listitem>
-      <!-- // 1 -->
     </itemizedlist>
 
     <para>User sessions are registered in elogind via the
@@ -338,10 +337,10 @@
 
       <xi:include href="standard-options.xml" xpointer="help" />
       <xi:include href="standard-options.xml" xpointer="version" />
-      --><!-- else -->
+      --><!-- else // 0 -->
       <varlistentry>
         <term><option>-D</option></term>
-        <term><option>--daemon</option></term>
+        <term><option>&#x2D;&#x2D;daemon</option></term>
 
         <listitem><para>Daemonize elogind by double-forking
         into background.</para></listitem>
@@ -349,7 +348,7 @@
 
       <varlistentry>
         <term><option>-h</option></term>
-        <term><option>--help</option></term>
+        <term><option>&#x2D;&#x2D;help</option></term>
 
         <listitem><para>Show the helpt text and exit.</para></listitem>
       </varlistentry>
@@ -680,7 +679,7 @@
         received. This is mostly equivalent to <command>systemctl
         &#x2D;&#x2D;user start exit.target
         &#x2D;&#x2D;job-mode=replace-irreversibly</command>.</para></listitem>
-        --><!-- else -->
+        --><!-- else // 0 -->
         <listitem><para>Upon receiving this signal elogind exits, cleaning up
         all sessions and seats.</para></listitem>
         <!-- // 0 -->
@@ -709,7 +708,7 @@
 
         <para>systemd user managers treat this signal the same way as
         <constant>SIGTERM</constant>.</para></listitem>
-        --><!-- else -->
+        --><!-- else // 0 -->
         <listitem><para>Upon receiving this signal elogind exits, leaving all
         sessions and seats in place.</para></listitem>
         <!-- // 0 -->
@@ -763,7 +762,7 @@
         <!-- 0 /// elogind is not systemd.
         This is mostly equivalent to <command>systemctl
         daemon-reload</command>.</para></listitem>
-        --><!-- else -->
+        --><!-- else // 0 -->
         </para></listitem>
         <!-- // 0 -->
       </varlistentry>
@@ -1380,7 +1379,7 @@
       <citerefentry><refentrytitle>kernel-command-line</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>bootup</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
-      --><!-- else -->
+      --><!-- else // 0 -->
       The <ulink url="https://github.com/elogind/elogind/">elogind Homepage</ulink>,
       <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,

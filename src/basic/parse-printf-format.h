@@ -26,7 +26,7 @@
 
 #if HAVE_PRINTF_H == 1
 #include <printf.h>
-#else
+#else // 0
 
 #include <stddef.h>
 

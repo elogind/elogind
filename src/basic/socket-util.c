@@ -53,8 +53,6 @@ static const char* const socket_address_type_table[] = {
 DEFINE_STRING_TABLE_LOOKUP(socket_address_type, int);
 
 int socket_address_parse(SocketAddress *a, const char *s) {
-        char *e, *n;
-        unsigned u;
         _cleanup_free_ char *n = NULL;
         char *e;
         int r;
@@ -62,8 +60,6 @@ int socket_address_parse(SocketAddress *a, const char *s) {
         assert(a);
         assert(s);
 
-        zero(*a);
-        a->type = SOCK_STREAM;
         *a = (SocketAddress) {
                 .type = SOCK_STREAM,
         };
@@ -77,14 +73,12 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                 if (!e)
                         return -EINVAL;
 
-                n = strndupa(s+1, e-s-1);
                 n = strndup(s+1, e-s-1);
                 if (!n)
                         return -ENOMEM;
 
                 errno = 0;
                 if (inet_pton(AF_INET6, n, &a->sockaddr.in6.sin6_addr) <= 0)
-                        return errno > 0 ? -errno : -EINVAL;
                         return errno_or_else(EINVAL);
 
                 e++;
@@ -92,16 +86,11 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                         return -EINVAL;
 
                 e++;
-                r = safe_atou(e, &u);
                 r = parse_ip_port(e, &port);
                 if (r < 0)
                         return r;
 
-                if (u <= 0 || u > 0xFFFF)
-                        return -EINVAL;
-
                 a->sockaddr.in6.sin6_family = AF_INET6;
-                a->sockaddr.in6.sin6_port = htobe16((uint16_t)u);
                 a->sockaddr.in6.sin6_port = htobe16(port);
                 a->size = sizeof(struct sockaddr_in6);
 
@@ -111,7 +100,6 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                 size_t l;
 
                 l = strlen(s);
-                if (l >= sizeof(a->sockaddr.un.sun_path))
                 if (l >= sizeof(a->sockaddr.un.sun_path)) /* Note that we refuse non-NUL-terminated sockets when
                                                            * parsing (the kernel itself is less strict here in what it
                                                            * accepts) */
@@ -146,12 +134,10 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                 if (!e)
                         return -EINVAL;
 
-                r = safe_atou(e+1, &u);
                 r = safe_atou(e+1, &port);
                 if (r < 0)
                         return r;
 
-                n = strndupa(cid_start, e - cid_start);
                 n = strndup(cid_start, e - cid_start);
                 if (!n)
                         return -ENOMEM;
@@ -164,7 +150,6 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                         a->sockaddr.vm.svm_cid = VMADDR_CID_ANY;
 
                 a->sockaddr.vm.svm_family = AF_VSOCK;
-                a->sockaddr.vm.svm_port = u;
                 a->sockaddr.vm.svm_port = port;
                 a->size = sizeof(struct sockaddr_vm);
 
@@ -173,15 +158,10 @@ int socket_address_parse(SocketAddress *a, const char *s) {
 
                 e = strchr(s, ':');
                 if (e) {
-                        r = safe_atou(e+1, &u);
                         r = parse_ip_port(e + 1, &port);
                         if (r < 0)
                                 return r;
 
-                        if (u <= 0 || u > 0xFFFF)
-                                return -EINVAL;
-
-                        n = strndupa(s, e-s);
                         n = strndup(s, e-s);
                         if (!n)
                                 return -ENOMEM;
@@ -194,7 +174,6 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                         if (r > 0) {
                                 /* Gotcha, it's a traditional IPv4 address */
                                 a->sockaddr.in.sin_family = AF_INET;
-                                a->sockaddr.in.sin_port = htobe16((uint16_t)u);
                                 a->sockaddr.in.sin_port = htobe16(port);
                                 a->size = sizeof(struct sockaddr_in);
                         } else {
@@ -209,7 +188,6 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                                         return -EINVAL;
 
                                 a->sockaddr.in6.sin6_family = AF_INET6;
-                                a->sockaddr.in6.sin6_port = htobe16((uint16_t)u);
                                 a->sockaddr.in6.sin6_port = htobe16(port);
                                 a->sockaddr.in6.sin6_scope_id = idx;
                                 a->sockaddr.in6.sin6_addr = in6addr_any;
@@ -218,23 +196,17 @@ int socket_address_parse(SocketAddress *a, const char *s) {
                 } else {
 
                         /* Just a port */
-                        r = safe_atou(s, &u);
                         r = parse_ip_port(s, &port);
                         if (r < 0)
                                 return r;
 
-                        if (u <= 0 || u > 0xFFFF)
-                                return -EINVAL;
-
                         if (socket_ipv6_is_supported()) {
                                 a->sockaddr.in6.sin6_family = AF_INET6;
-                                a->sockaddr.in6.sin6_port = htobe16((uint16_t)u);
                                 a->sockaddr.in6.sin6_port = htobe16(port);
                                 a->sockaddr.in6.sin6_addr = in6addr_any;
                                 a->size = sizeof(struct sockaddr_in6);
                         } else {
                                 a->sockaddr.in.sin_family = AF_INET;
-                                a->sockaddr.in.sin_port = htobe16((uint16_t)u);
                                 a->sockaddr.in.sin_port = htobe16(port);
                                 a->sockaddr.in.sin_addr.s_addr = INADDR_ANY;
                                 a->size = sizeof(struct sockaddr_in);
@@ -265,10 +237,8 @@ int socket_address_parse_and_warn(SocketAddress *a, const char *s) {
 }
 
 int socket_address_parse_netlink(SocketAddress *a, const char *s) {
-        int family;
         _cleanup_free_ char *word = NULL;
         unsigned group = 0;
-        _cleanup_free_ char *sfamily = NULL;
         int family, r;
 
         assert(a);
@@ -277,16 +247,12 @@ int socket_address_parse_netlink(SocketAddress *a, const char *s) {
         zero(*a);
         a->type = SOCK_RAW;
 
-        errno = 0;
-        if (sscanf(s, "%ms %u", &sfamily, &group) < 1)
-                return errno > 0 ? -errno : -EINVAL;
         r = extract_first_word(&s, &word, NULL, 0);
         if (r < 0)
                 return r;
         if (r == 0)
                 return -EINVAL;
 
-        family = netlink_family_from_string(sfamily);
         family = netlink_family_from_string(word);
         if (family < 0)
                 return -EINVAL;
@@ -307,7 +273,6 @@ int socket_address_parse_netlink(SocketAddress *a, const char *s) {
         return 0;
 }
 
-int socket_address_verify(const SocketAddress *a) {
 int socket_address_verify(const SocketAddress *a, bool strict) {
         assert(a);
 
@@ -343,25 +308,12 @@ int socket_address_verify(const SocketAddress *a, bool strict) {
         case AF_UNIX:
                 if (a->size < offsetof(struct sockaddr_un, sun_path))
                         return -EINVAL;
-                if (a->size > sizeof(struct sockaddr_un)+1) /* Allow one extra byte, since getsockname() on Linux will
-                                                             * append a NUL byte if we have path sockets that are above
-                                                             * sun_path' full size */
                 if (a->size > sizeof(struct sockaddr_un) + !strict)
                         /* If !strict, allow one extra byte, since getsockname() on Linux will append
                          * a NUL byte if we have path sockets that are above sun_path's full size. */
                         return -EINVAL;
 
-                if (a->size > offsetof(struct sockaddr_un, sun_path)) {
-
-                        if (a->sockaddr.un.sun_path[0] != 0) {
-                                char *e;
                 if (a->size > offsetof(struct sockaddr_un, sun_path) &&
-                    a->sockaddr.un.sun_path[0] != 0) { /* Only validate file system sockets here */
-
-                                /* path */
-                                e = memchr(a->sockaddr.un.sun_path, 0, sizeof(a->sockaddr.un.sun_path));
-                                if (!e)
-                                        return -EINVAL;
                     a->sockaddr.un.sun_path[0] != 0 &&
                     strict) {
                         /* Only validate file system sockets here, and only in strict mode */
@@ -369,7 +321,6 @@ int socket_address_verify(const SocketAddress *a, bool strict) {
 
                         e = memchr(a->sockaddr.un.sun_path, 0, sizeof(a->sockaddr.un.sun_path));
                         if (e) {
-                                /* If there's an embedded NUL byte, make sure the size of the socket addresses matches it */
                                 /* If there's an embedded NUL byte, make sure the size of the socket address matches it */
                                 if (a->size != offsetof(struct sockaddr_un, sun_path) + (e - a->sockaddr.un.sun_path) + 1)
                                         return -EINVAL;
@@ -418,7 +369,6 @@ int socket_address_print(const SocketAddress *a, char **ret) {
         assert(a);
         assert(ret);
 
-        r = socket_address_verify(a);
         r = socket_address_verify(a, false); /* We do non-strict validation, because we want to be
                                               * able to pretty-print any socket the kernel considers
                                               * valid. We still need to do validation to know if we
@@ -455,8 +405,6 @@ bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) {
         assert(b);
 
         /* Invalid addresses are unequal to all */
-        if (socket_address_verify(a) < 0 ||
-            socket_address_verify(b) < 0)
         if (socket_address_verify(a, false) < 0 ||
             socket_address_verify(b, false) < 0)
                 return false;

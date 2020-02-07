@@ -391,6 +391,7 @@
                 </defaults>
         </action>
 
+
         <!-- 1 /// Aditional action for elogind to reload its configuration -->
         <action id="org.freedesktop.login1.reload-config">
                 <description gettext-domain="elogind">Reload the elogind configuration</description>

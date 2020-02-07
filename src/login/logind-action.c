@@ -118,7 +118,7 @@ int manager_handle_action(
                 supported = can_sleep("hybrid-sleep") > 0;
         else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
                 supported = can_sleep("suspend-then-hibernate") > 0;
-#else
+#else // 0
         if (handle == HANDLE_SUSPEND)
                 supported = can_sleep(m, "suspend") > 0;
         else if (handle == HANDLE_HIBERNATE)
@@ -136,7 +136,7 @@ int manager_handle_action(
         if (!supported && IN_SET(handle, HANDLE_HIBERNATE, HANDLE_HYBRID_SLEEP, HANDLE_SUSPEND_THEN_HIBERNATE)) {
 #if 0 /// elogind needs the manager
                 supported = can_sleep("suspend") > 0;
-#else
+#else // 0
                 supported = can_sleep(m, "suspend") > 0;
 #endif // 0
                 if (supported) {
@@ -188,7 +188,7 @@ int manager_handle_action(
 
 #if 0 /// elogind uses its own variant, which can use the handle directly.
         r = bus_manager_shutdown_or_sleep_now_or_later(m, target, inhibit_operation, &error);
-#else
+#else // 0
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
 #endif // 0
         if (r < 0)

@@ -27,14 +27,15 @@
   <refsect1>
     <title>Description</title>
 
-    <para><command>pam_elogind</command> registers user sessions with
-    <!-- 0 /// elogind has no systemd services
+    <!-- 0 /// elogind has no service file
+    <para><command>pam_systemd</command> registers user sessions with
     the systemd login manager
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
     and hence the systemd control group hierarchy.</para>
 
     <para>On login, this module — in conjunction with <filename>systemd-logind.service</filename> — ensures the
-    --><!-- else -->
+    --><!-- else // 0 -->
+    <para><command>pam_elogind</command> registers user sessions with
     the elogind login manager
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
     and hence the elogind control group hierarchy.</para>
@@ -71,7 +72,7 @@
       terminated. If the last concurrent session of a user ends, the user's systemd instance will be terminated too,
       and so will the user's slice unit.</para></listitem>
 
-      --><!-- else -->
+      --><!-- else // 0 -->
       terminated.</para></listitem>
       <!-- // 0 -->
       <listitem><para>If the last concurrent session of a user ends,
@@ -248,7 +249,7 @@
     they do not apply to all user processes as a combined whole. In particular, the per-user <command>user@.service</command> unit instance,
     which runs the <command>systemd &#x2D;&#x2D;user</command> manager process and its children, and is tracked outside of any session, being shared
     by all the user's sessions, is not covered by these limits.
-    --><!-- else -->
+    --><!-- else // 0 -->
     they do not apply to all user processes as a combined whole.
     <!-- // 0 -->
     </para>
@@ -315,7 +316,7 @@ session    required     pam_elogind.so</programlisting>
       <!-- 0 /// elogind is in section 8 and has no services
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,

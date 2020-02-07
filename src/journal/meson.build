@@ -22,7 +22,7 @@
 #         mmap-cache.h
 #         sd-journal.c
 # '''.split())
-#else
+#else // 0
 journal_client_sources = files('''
         journal-def.h
         journal-file.h

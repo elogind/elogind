@@ -34,7 +34,7 @@ int khash_supported(void) {
                 .alg.salg_type = "hash",
 #if 0 /// Needed for cross-compiling elogind for arm* on amd64 and i386 hosts under qemu
                 .alg.salg_name = "sha256", /* a very common algorithm */
-#else
+#else // 0
                 .alg.salg_name = "hmac(sha256)", /* a very common algorithm */
 #endif // 0
         };

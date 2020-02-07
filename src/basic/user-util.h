@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
-//#include <grp.h>
-#if 0 /// No gshadow needed in elogind
+#if 0 /// No grp.h or gshadow needed in elogind
+#include <grp.h>
 #if ENABLE_GSHADOW
-//#include <gshadow.h>
+#include <gshadow.h>
 #endif
 #endif // 0
 //#include <pwd.h>

@@ -966,7 +966,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
 #if 0 /// UNNEEDED by elogind
         /* Now, let's wait until the slice unit and stuff got created. We send the reply back from
          * session_send_create_reply(). */
-#else
+#else // 0
         /* We reply directly. */
 
         r = session_send_create_reply(session, NULL);
@@ -1633,7 +1633,7 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
 
 #if 0 /// elogind-dbus.c needs to access this
 static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
-#else
+#else // 0
 int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 #endif // 0
         int active = _active;
@@ -1714,7 +1714,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
 #if 0 /// elogind has no action_job, but a pending_action
         if (manager->action_what == 0 || manager->action_job)
-#else
+#else // 0
         if ( (0 == manager->action_what) || (HANDLE_IGNORE == manager->pending_action) )
 #endif // 0
                 return 0;
@@ -1736,7 +1736,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
         /* Actually do the operation */
 #if 0 /// elogind has no action_unit but a pending_action
         r = execute_shutdown_or_sleep(manager, manager->action_what, manager->action_unit, &error);
-#else
+#else // 0
         r = execute_shutdown_or_sleep(manager, manager->action_what, manager->pending_action, &error);
 #endif // 0
         if (r < 0) {
@@ -1748,7 +1748,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
                 manager->action_unit = NULL;
                 manager->action_what = 0;
                 return r;
-#else
+#else // 0
                 manager->pending_action = HANDLE_IGNORE;
                 manager->action_what    = 0;
                 /* It is not a critical error for elogind if suspending fails */
@@ -1779,7 +1779,7 @@ static int delay_shutdown_or_sleep(
                 InhibitWhat w,
                 const char *unit_name) {
 
-#else
+#else // 0
 int delay_shutdown_or_sleep(
                 Manager *m,
                 InhibitWhat w,
@@ -1814,7 +1814,7 @@ int delay_shutdown_or_sleep(
 
 #if 0 /// elogind does not have unit_name but pendig_action
         m->action_unit = unit_name;
-#else
+#else // 0
         m->pending_action = action;
 #endif // 0
         m->action_what = w;
@@ -1826,7 +1826,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
-#else
+#else // 0
                 HandleAction unit_name,
 #endif // 0
                 InhibitWhat w,
@@ -1851,7 +1851,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 return log_notice_errno(SYNTHETIC_ERRNO(EACCES),
                                         "Unit %s is %s, refusing operation.",
                                         unit_name, load_state);
-#else
+#else // 0
         assert(w > 0);
         assert(w <= _INHIBIT_WHAT_MAX);
 #endif // 0
@@ -1945,7 +1945,7 @@ static int method_do_shutdown_or_sleep(
                 sd_bus_message *message,
 #if 0 /// elogind has HandleAction instead of const char* unit_name
                 const char *unit_name,
-#else
+#else // 0
                 HandleAction unit_name,
 #endif // 0
                 InhibitWhat w,
@@ -1980,7 +1980,7 @@ static int method_do_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// Within elogind the manager m must be provided, too
                 r = can_sleep(sleep_verb);
-#else
+#else // 0
                 r = can_sleep(m, sleep_verb);
 #endif // 0
                 if (r == -ENOSPC)
@@ -2013,7 +2013,7 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_POWEROFF_TARGET,
-#else
+#else // 0
                         HANDLE_POWEROFF,
 #endif // 0
                         INHIBIT_SHUTDOWN,
@@ -2032,7 +2032,7 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_REBOOT_TARGET,
-#else
+#else // 0
                         HANDLE_REBOOT,
 #endif // 0
                         INHIBIT_SHUTDOWN,
@@ -2051,7 +2051,7 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_HALT_TARGET,
-#else
+#else // 0
                         HANDLE_HALT,
 #endif // 0
                         INHIBIT_SHUTDOWN,
@@ -2070,7 +2070,7 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_SUSPEND_TARGET,
-#else
+#else // 0
                         HANDLE_SUSPEND,
 #endif // 0
                         INHIBIT_SLEEP,
@@ -2089,7 +2089,7 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_HIBERNATE_TARGET,
-#else
+#else // 0
                         HANDLE_HIBERNATE,
 #endif // 0
                         INHIBIT_SLEEP,
@@ -2108,7 +2108,7 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_HYBRID_SLEEP_TARGET,
-#else
+#else // 0
                         HANDLE_HYBRID_SLEEP,
 #endif // 0
                         INHIBIT_SLEEP,
@@ -2126,7 +2126,7 @@ static int method_suspend_then_hibernate(sd_bus_message *message, void *userdata
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
                         SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
-#else
+#else // 0
                         HANDLE_SUSPEND_THEN_HIBERNATE,
 #endif // 0
                         INHIBIT_SLEEP,
@@ -2209,7 +2209,7 @@ fail:
 
 #if 0 /// elogind must access this from elogind-dbus.c
 static void reset_scheduled_shutdown(Manager *m) {
-#else
+#else // 0
 void reset_scheduled_shutdown(Manager *m) {
 #endif // 0
         assert(m);
@@ -2429,7 +2429,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
 #if 0 /// elogind wants to allow extra cancellation messages
                 utmp_wall("The system shutdown has been cancelled",
                           username, tty, logind_wall_tty_filter, m);
-#else
+#else // 0
                 r = asprintf(&l, "%s%sThe system shutdown has been cancelled!",
                              strempty(m->wall_message),
                              isempty(m->wall_message) ? "" : "\n");
@@ -2473,7 +2473,7 @@ static int method_can_shutdown_or_sleep(
         if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_verb);
-#else
+#else // 0
                 r = can_sleep(m, sleep_verb);
 #endif // 0
                 if (IN_SET(r,  0, -ENOSPC))
@@ -2515,7 +2515,7 @@ static int method_can_shutdown_or_sleep(
                                 goto finish;
                         }
                 }
-#else
+#else // 0
                 log_debug_elogind("CanShutDownOrSleep: %s [%d] %s blocked",
                                   sleep_verb, handle, blocked ? "is" : "not");
 #endif // 0
@@ -2988,7 +2988,6 @@ static int method_set_reboot_to_boot_loader_menu(
                 return r;
 
         log_debug_elogind("Reboot to menu with %zu s", x);
-
         r = getenv_bool("SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU");
         if (r == -ENXIO) {
                 uint64_t features;
@@ -2996,9 +2995,7 @@ static int method_set_reboot_to_boot_loader_menu(
                 /* EFI case: let's see if booting into boot loader menu is supported. */
 
                 r = efi_loader_get_features(&features);
-
                 log_debug_elogind("efi_loader_features: 0x%08lx [%d]", features, r);
-
                 if (r < 0)
                         log_warning_errno(r, "Failed to determine whether reboot to boot loader menu is supported: %m");
                 if (r < 0 || !FLAGS_SET(features, EFI_LOADER_FEATURE_CONFIG_TIMEOUT_ONE_SHOT))
@@ -3006,6 +3003,7 @@ static int method_set_reboot_to_boot_loader_menu(
 
                 use_efi = true;
                 log_debug_elogind("EFI enabled");
+
         } else if (r <= 0) {
                 /* non-EFI case: $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU is set to off */
 
@@ -3013,14 +3011,12 @@ static int method_set_reboot_to_boot_loader_menu(
                         log_warning_errno(r, "Failed to parse $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU: %m");
 
                 log_debug_elogind("Non-EFI case: %d", r);
-
                 return sd_bus_error_setf(error, SD_BUS_ERROR_NOT_SUPPORTED, "Boot loader does not support boot into boot loader menu.");
         } else
                 /* non-EFI case: $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU is set to on */
                 use_efi = false;
 
         log_debug_elogind("Non-EFI case: %d", r);
-
         r = bus_verify_polkit_async(message,
                                     CAP_SYS_ADMIN,
                                     "org.freedesktop.login1.set-reboot-to-boot-loader-menu",

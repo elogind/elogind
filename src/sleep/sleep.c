@@ -207,7 +207,7 @@ static int configure_hibernation(void) {
 
 #if 0 /// elogind uses the values stored in its manager instance
 static int execute(char **modes, char **states) {
-#else
+#else // 0
 static int execute(Manager *m, const char *verb) {
         assert(m);
 
@@ -265,7 +265,7 @@ static int execute(Manager *m, const char *verb) {
 
 #if 0 /// elogind needs its own callbacks to enable cancellation by erroneous scripts
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
-#else
+#else // 0
         m->callback_failed = false;
         m->callback_must_succeed = m->allow_suspend_interrupts;
 
@@ -319,7 +319,7 @@ static int execute(Manager *m, const char *verb) {
 
 #if 0 /// elogind uses the values stored in its manager instance
 static int execute_s2h(const SleepConfig *sleep_config) {
-#else
+#else // 0
 static int execute_s2h(Manager *m) {
         assert(m);
 
@@ -344,7 +344,7 @@ static int execute_s2h(Manager *m) {
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
         timespec_store(&ts.it_value, sleep_config->hibernate_delay_sec);
-#else
+#else // 0
         log_debug("Set timerfd wake alarm for %s",
                   format_timespan(buf, sizeof(buf), hibernate_delay_sec, USEC_PER_SEC));
 
@@ -357,7 +357,7 @@ static int execute_s2h(Manager *m) {
 
 #if 0 /// elogind uses its manager instance values
         r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
-#else
+#else // 0
         r = execute(m, "suspend");
 #endif // 0
         if (r < 0)
@@ -382,7 +382,7 @@ static int execute_s2h(Manager *m) {
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
         r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states);
-#else
+#else // 0
                   format_timespan(buf, sizeof(buf), hibernate_delay_sec, USEC_PER_SEC));
 
         r = execute(m, "hibernate");
@@ -391,7 +391,7 @@ static int execute_s2h(Manager *m) {
                 log_notice("Couldn't hibernate, will try to suspend again.");
 #if 0 /// elogind uses its manager instance values
                 r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
-#else
+#else // 0
                 r = execute(m, "suspend");
 #endif // 0
                 if (r < 0) {
@@ -507,8 +507,9 @@ static int run(int argc, char *argv[]) {
         else
                 return execute(modes, states);
 }
+
 DEFINE_MAIN_FUNCTION(run);
-#else
+#else // 0
 int do_sleep(Manager *m, const char *verb) {
         assert(verb);
         assert(m);

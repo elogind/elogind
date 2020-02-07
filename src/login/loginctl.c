@@ -53,7 +53,7 @@ static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
 static bool arg_ask_password = true;
 static unsigned arg_lines = 10;
-#else
+#else // 0
 /// Instead we need this:
 extern BusTransport arg_transport;
 static char *arg_host;
@@ -1357,7 +1357,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -s --signal=SIGNAL       Which signal to send\n"
 #if 0 /// UNNEEDED by elogind
                "  -n --lines=INTEGER       Number of journal entries to show\n"
-#else
+#else // 0
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
@@ -1381,7 +1381,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "Session Commands:\n"
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
                "  list-sessions            List sessions\n"
-#else
+#else // 0
                "  list[-sessions]          List sessions (default command)\n"
 #endif // 0
                "  session-status [ID...]   Show session status\n"
@@ -1409,7 +1409,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  flush-devices            Flush all device associations\n"
 #if 0 /// elogind adds some system commands to loginctl
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
-#else
+#else // 0
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n\n"
                "System Commands:\n"
                "  reload                    Reload the elogind config file\n"
@@ -1475,7 +1475,7 @@ static int parse_argv(int argc, char *argv[]) {
 #if 0 /// UNNEEDED by elogind
                 { "lines",           required_argument, NULL, 'n'                 },
                 { "output",          required_argument, NULL, 'o'                 },
-#else
+#else // 0
                 /// elogind allows to ignore inhibitors for system commands.
                 { "ignore-inhibitors", no_argument,     NULL, 'i'                 },
 #endif // 0
@@ -1498,7 +1498,7 @@ static int parse_argv(int argc, char *argv[]) {
 
 #if 0 /// elogind adds some system commands to loginctl
         while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:", options, NULL)) >= 0)
-#else
+#else // 0
         while ((c = getopt_long(argc, argv, "hp:als:H:M:n:o:ci", options, NULL)) >= 0)
 #endif // 0
 
@@ -1654,7 +1654,7 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "help",              VERB_ANY, VERB_ANY, 0,            help              },
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
                 { "list-sessions",     VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
-#else
+#else // 0
                 { "list",              VERB_ANY, 1,        VERB_DEFAULT, list_sessions     },
                 { "list-sessions",     VERB_ANY, 1,        0,            list_sessions     },
 #endif // 0
@@ -1727,7 +1727,7 @@ static int run(int argc, char *argv[]) {
 
 #if 0 /// elogind has some own cleanups to do
         return loginctl_main(argc, argv, bus);
-#else
+#else // 0
         r = loginctl_main(argc, argv, bus);
 
         elogind_cleanup();

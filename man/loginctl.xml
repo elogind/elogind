@@ -7,7 +7,7 @@
 <!-- 0 /// elogind does not need to activate loginctl in configure
 <refentry id="loginctl" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
-else -->
+--><!-- else // 0 -->
 <refentry id="loginctl" xmlns:xi="http://www.w3.org/2001/XInclude">
 <!-- // 0 -->
 
@@ -48,7 +48,7 @@ else -->
     <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     login manager
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     login manager</para>
     <!-- // 0 -->
@@ -547,7 +547,8 @@ Apr 09 14:40:30 laptop login[2325]: pam_unix(login:session):
                        session opened for user fatima by LOGIN(uid=0)
 Apr 09 14:40:30 laptop login[2325]: LOGIN ON tty3 BY fatima
 </programlisting>
-      --><!-- else -->
+
+--><!-- else // 0 -->
       <programlisting>$ loginctl user-status
 fatima (1005)
            Since: Sat 2016-04-09 14:23:31 EDT; 54min ago
@@ -572,7 +573,7 @@ fatima (1005)
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>

@@ -96,7 +96,7 @@ enum ethtool_link_mode_bit_indices {
         __ETHTOOL_LINK_MODE_LAST
           = ETHTOOL_LINK_MODE_FEC_BASER_BIT,
 };
-#else
+#else // 0
 #if !HAVE_ETHTOOL_LINK_MODE_25000baseCR_Full_BIT /* linux@3851112e4737cd52aaeda0ce8d084be9ee128106 (4.7) */
 #define ETHTOOL_LINK_MODE_25000baseCR_Full_BIT       31
 #define ETHTOOL_LINK_MODE_25000baseKR_Full_BIT       32

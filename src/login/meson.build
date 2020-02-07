@@ -5,7 +5,7 @@
 #         logind.c
 #         logind.h
 # '''.split())
-#else
+#else // 0
 elogind_sources = files('''
         elogind.c
         elogind.h
@@ -76,7 +76,7 @@ liblogind_core = static_library(
         include_directories : includes,
 #if 0 /// elogind needs audit support for utmp inclusion
 #         dependencies : [libacl])
-#else
+#else // 0
         dependencies : [libacl,
                         libaudit])
 #endif // 0
@@ -117,7 +117,7 @@ pam_elogind_c = files('pam_elogind.c')
 #if 0 /// Works a bit differently here, as elogind allows dbus activation.
 #         install_data('org.freedesktop.login1.service',
 #                      install_dir : dbussystemservicedir)
-#else
+#else // 0
         logind_service = configure_file(
                 input : 'org.freedesktop.login1.service.in',
                 output : 'org.freedesktop.login1.service',
@@ -156,7 +156,7 @@ pam_elogind_c = files('pam_elogind.c')
                 '73-seat-late.rules',
 #if 0 /// elogind must configure the source
 #                 input : '73-seat-late.rules.m4',
-#else
+#else // 0
                 input : seat_late_rules,
 #endif // 0
                 output: '73-seat-late.rules',

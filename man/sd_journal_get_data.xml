@@ -135,7 +135,7 @@
 
     <para><function>sd_journal_get_data_threshold()</function> returns
     the currently configured data field size threshold.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_get_data</function>,
     <function>sd_journal_enumerate_data</function>,
@@ -162,7 +162,7 @@
     <function>sd_journal_set_data_threshold()</function> and
     <function>sd_journal_get_threshold()</function> return 0 on
     success or a negative errno-style error code.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_get_data()</function> returns -ENOENT.
     <function>sd_journal_restart_data()</function> returns nothing.
     <function>sd_journal_enumerate_data()</function>,
@@ -212,7 +212,7 @@ int print_fields(sd_journal *j) {
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <!-- // 0 -->

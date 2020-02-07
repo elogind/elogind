@@ -44,7 +44,7 @@ int fd_warn_permissions(const char *path, int fd);
 
 #ifdef __GLIBC__ /// elogind supports musl-libc, where AT_SYMLINK_FOLLOW isn't available
 #define laccess(path, mode) faccessat(AT_FDCWD, (path), (mode), AT_SYMLINK_NOFOLLOW)
-#else
+#else // __GLIBC__
 #define laccess(path, mode) faccessat(AT_FDCWD, (path), (mode), 0)
 #endif // __GLIBC__
 

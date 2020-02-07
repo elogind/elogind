@@ -575,7 +575,7 @@ static int prepare_firmware_setup(sd_bus* bus) {
 
         return 0;
 }
-#else
+#else // 0
 static int prepare_firmware_setup(sd_bus* bus) {
         return 0;
 }
@@ -641,7 +641,7 @@ static int prepare_boot_loader_entry(sd_bus* bus) {
 
         return 0;
 }
-#else
+#else // 0
 static int prepare_boot_loader_menu(sd_bus* bus) {
         return 0;
 }

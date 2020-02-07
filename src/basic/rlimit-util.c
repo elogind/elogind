@@ -408,7 +408,7 @@ int rlimit_nofile_safe(void) {
         if (setrlimit(RLIMIT_NOFILE, &rl) < 0)
 #ifdef __GLIBC__ /// To be compatible with musl-libc, elogind uses an (uintmax_t) cast.
                 return log_debug_errno(errno, "Failed to lower RLIMIT_NOFILE's soft limit to " RLIM_FMT ": %m", rl.rlim_cur);
-#else
+#else // __GLIBC__
                 return log_debug_errno(errno, "Failed to lower RLIMIT_NOFILE's soft limit to " RLIM_FMT ": %m", (uintmax_t)rl.rlim_cur);
 #endif // __GLIBC__
 

@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 #if 0 /// urlified and z are UNNEEDED by elogind
         _cleanup_free_ char *urlified = NULL, *q = NULL, *qq = NULL;
         char *p, *z;
-#else
+#else // 0
         _cleanup_free_ char *q = NULL, *qq = NULL;
         char *p;
 #endif // 0

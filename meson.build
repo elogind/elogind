@@ -27,7 +27,7 @@ conf.set('PROJECT_VERSION',        meson.project_version())
 substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
 # substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
-#else
+#else // 0
 substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 #endif // 0
 substs.set('PROJECT_VERSION',      meson.project_version())
@@ -50,7 +50,7 @@ conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 #
 # skip_deps = want_ossfuzz or want_libfuzzer
 # fuzzer_build = want_ossfuzz or want_libfuzzer or want_fuzzbuzz
-#else
+#else // 0
 skip_deps = false
 #endif // 0
 
@@ -62,7 +62,7 @@ skip_deps = false
 # if git_hook.returncode() == 0
 #         message(git_hook.stdout().strip())
 # endif
-#else
+#else // 0
 # elogind Note: We use precompiler masks for two reasons:
 #               1) The masking is consistent with the sources
 #               2) The git patch creator we use for preparing upstream patches
@@ -126,7 +126,7 @@ rootbindir = join_paths(rootprefixdir, 'bin')
 rootsbindir = join_paths(rootprefixdir, split_bin ? 'sbin' : 'bin')
 #if 0 /// elogind has a different default
 # rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
-#else
+#else // 0
 rootlibexecdir = get_option('rootlibexecdir')
 rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : join_paths(rootprefixdir, 'lib/elogind')
 #endif // 0
@@ -191,7 +191,7 @@ modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 # if docdir == ''
 #         docdir = join_paths(datadir, 'doc/systemd')
 # endif
-#else
+#else // 0
 pkgdatadir = join_paths(datadir, 'elogind')
 pkgsysconfdir = join_paths(sysconfdir, 'elogind')
 pkgincludedir = join_paths(includedir, 'elogind/systemd')
@@ -270,7 +270,7 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      join_paths(rootbindir, 'systemctl'))
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
 # conf.set_quoted('SYSTEMD_STDIO_BRIDGE_BINARY_PATH',           join_paths(bindir, 'systemd-stdio-bridge'))
-#else
+#else // 0
 conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'elogind-cgroups-agent'))
 conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               join_paths(rootlibexecdir, 'elogind-uaccess-command'))
 conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'elogind'))
@@ -394,7 +394,7 @@ install_tests = get_option('install-tests')
 # elif want_fuzzbuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library(get_option('fuzzbuzz-engine'), dirs: get_option('fuzzbuzz-engine-dir'))
 # endif
-#else
+#else // 0
 fuzzer_build = false
 cxx_cmd = ''
 #endif // 0
@@ -611,6 +611,7 @@ else
         conf.set10('HAVE_GETRANDOM', have)
 endif
 
+#####################################################################
 #if 1 /// elogind shall be usable with non-glibc libc variations
 #####################################################################
 # Find out whether program_invocation[_short]_name is supported
@@ -650,7 +651,7 @@ perl = find_program('perl', required : false)
 
 #if 0 /// elogind does not use this but needs a tool to symlink its installed headers.
 # meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
-#else /// Needed by elogind
+#else // 0
 meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 0
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
@@ -673,7 +674,7 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #          ['setfont',    '/usr/bin/setfont',    'KBD_SETFONT'],
 #          ['nologin',    '/usr/sbin/nologin',   ],
 #         ]
-#else
+#else // 0
 progs = [['halt',       '/sbin/halt'         ],
          ['kexec',      '/usr/sbin/kexec'    ],
          ['poweroff',   '/sbin/poweroff'     ],
@@ -745,7 +746,7 @@ endif
 #                   'valgrind/valgrind.h',
 #                  ]
 #
-#else
+#else // 0
 foreach header : ['linux/memfd.h',
                   'linux/vm_sockets.h',
                   'printf.h',
@@ -787,7 +788,7 @@ conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 #         time_epoch = run_command(stat, '-c', '%Y', NEWS).stdout().to_int()
 # endif
 # conf.set('TIME_EPOCH', time_epoch)
-#else
+#else // 0
 ############################################################
 # elogind needs to know which cgroups controller to follow.
 get_cg_ctrl_sh = find_program('tools/meson-get-cg-controller.sh')
@@ -1024,7 +1025,7 @@ endif
 #         have = false
 #         libseccomp = []
 # endif
-#else
+#else // 0
 libseccomp = []
 #endif // 0
 conf.set10('HAVE_SECCOMP', have)
@@ -1051,7 +1052,7 @@ conf.set10('HAVE_SELINUX', have)
 #         have = false
 #         libapparmor = []
 # endif
-#else
+#else // 0
 libapparmor = []
 #endif // 0
 conf.set10('HAVE_APPARMOR', have)
@@ -1118,7 +1119,7 @@ conf.set10('HAVE_AUDIT', have)
 #         libkmod = []
 # endif
 # conf.set10('HAVE_KMOD', have)
-#else
+#else // 0
 libblkid = []
 conf.set10('HAVE_BLKID', false)
 libkmod = []
@@ -1332,7 +1333,7 @@ conf.set10('HAVE_PAM', have)
 #         have = false
 #         libxkbcommon = []
 # endif
-#else
+#else // 0
 libmicrohttpd = []
 libcryptsetup = []
 libcurl = []
@@ -1516,7 +1517,7 @@ foreach term : ['utmp',
 #                 'idn',
 #                 'nss-myhostname',
 #                 'nss-systemd']
-#else
+#else // 0
                 'smack']
 #endif // 0
         have = get_option(term)
@@ -1642,7 +1643,7 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-network',
 #                                'src/libsystemd/sd-resolve',
 #                                'src/libsystemd-network',
-#else
+#else // 0
                                'src/libelogind/sd-bus',
                                'src/libelogind/sd-device',
                                'src/libelogind/sd-event',
@@ -1667,7 +1668,7 @@ subdir('src/basic')
 # subdir('src/libsystemd')
 # subdir('src/libsystemd-network')
 # subdir('src/journal')
-#else
+#else // 0
 subdir('src/core')
 subdir('src/journal')
 subdir('src/libelogind')
@@ -1691,9 +1692,9 @@ libelogind = shared_library(
         disable_mempool_c,
         version : libsystemd_version,
         include_directories : includes,
-        link_args : ['-shared',
-                     '-Wl,--version-script=' + libelogind_sym_path],
 #if 0 /// elogind does not need gcrypt, only threads.
+#         link_args : ['-shared',
+#                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
 #                      libbasic_gcrypt],
 #         link_whole : [libsystemd_static,
@@ -1703,7 +1704,9 @@ libelogind = shared_library(
 #                         libxz,
 #                         liblz4],
 #         link_depends : libsystemd_sym,
-#else
+#else // 0
+        link_args : ['-shared',
+                     '-Wl,--version-script=' + libelogind_sym_path],
         link_with : [libbasic],
         link_whole : [libelogind_static,
                       libjournal_client],
@@ -1716,9 +1719,15 @@ libelogind = shared_library(
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
+#if 0 /// Do a real elogind masking else, diff always goes haywire here
+# install_libsystemd_static = static_library(
+#         'systemd',
+#         libsystemd_sources,
+#else // 0
 install_libelogind_static = static_library(
         'elogind',
         libelogind_sources,
+#endif // 0
 #if 0 /// No journald with elogind (And before you ask: NO!)
 #         journal_client_sources,
 #endif // 0
@@ -1731,8 +1740,8 @@ install_libelogind_static = static_library(
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
         install_dir : rootlibdir,
-        pic : static_libelogind == 'true' or static_libelogind == 'pic',
 #if 0 /// elogind only needs libcap, threads and selinux.
+#         pic : static_libsystemd == 'true' or static_libsystemd == 'pic',
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
@@ -1743,7 +1752,8 @@ install_libelogind_static = static_library(
 #                         libselinux,
 #                         libgcrypt],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
-#else
+#else // 0
+        pic : static_libelogind == 'true' or static_libelogind == 'pic',
         dependencies : [threads,
                         libcap,
                         libselinux],
@@ -1758,7 +1768,7 @@ public_programs = []
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/libudev')
-#else
+#else // 0
 # elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 0
@@ -2119,7 +2129,7 @@ test_dlopen = executable(
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 # endif
-#else
+#else // 0
 
 executable('elogind',
                 elogind_sources,
@@ -2164,7 +2174,7 @@ if conf.get('HAVE_PAM') == 1
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#else
+#else // 0
         version_script_arg = join_paths(meson.source_root(), pam_elogind_sym)
         pam_elogind = shared_library(
                 'pam_elogind',
@@ -2191,7 +2201,7 @@ if conf.get('HAVE_PAM') == 1
 #endif // 0
 endif
 
-#if 0 /// UNNEEDED by elogind 
+#if 0 /// UNNEEDED by elogind
 # if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_BLKID') == 1
 #         exe = executable('bootctl',
 #                          'src/boot/bootctl.c',
@@ -2795,7 +2805,7 @@ endif
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#else
+#else // 0
 executable('elogind-cgroups-agent',
            'src/cgroups-agent/cgroups-agent.c',
            include_directories : includes,
@@ -3114,7 +3124,7 @@ public_programs += exe
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
-#else
+#else // 0
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
            include_directories : includes,
@@ -3284,7 +3294,7 @@ endforeach
 #
 # ############################################################
 #
-#else
+#else // 0
 exe = executable(
         'test-libelogind-sym',
         test_libelogind_sym_c,
@@ -3347,7 +3357,7 @@ install_data('LICENSE.GPL2',
 #if 0 /// elogind has upgraded to markdown, and the NEWS file is useless
 #              'NEWS',
 #              'README',
-#else
+#else // 0
              'README.md',
 #endif // 0
              'docs/CODING_STYLE.md',
@@ -3492,7 +3502,7 @@ run_target(
 #         depends : [man, libsystemd, libudev],
 #         command : [meson_check_api_docs_sh, libsystemd.full_path(), libudev.full_path()])
 #
-#else
+#else // 0
         depends : [man, libelogind],
         command : [meson_check_api_docs_sh, libelogind.full_path()])
 #endif // 0
@@ -3560,7 +3570,7 @@ status = [
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
 #         'default locale:                    @0@'.format(default_locale)]
-#else
+#else // 0
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
 #endif // 0
 

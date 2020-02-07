@@ -4,7 +4,7 @@
 
 #if 0 /// elogind is musl-libc compatible and does not directly include printf.h
 #include <printf.h>
-#else
+#else // 0
 #include "parse-printf-format.h"
 #endif // 0
 #include <stdarg.h>

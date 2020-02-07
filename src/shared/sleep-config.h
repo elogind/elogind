@@ -37,7 +37,7 @@ int find_hibernate_location(char **device, char **type, uint64_t *size, uint64_t
 int can_sleep(const char *verb);
 int can_sleep_disk(char **types);
 int can_sleep_state(char **types);
-#else
+#else // 0
 #include <logind.h>
 int can_sleep(Manager *m, const char *verb);
 #endif // 0

@@ -474,7 +474,7 @@ int user_stop(User *u, bool force) {
 
 #if 0 /// elogind does not support service or slice jobs...
         user_stop_service(u);
-#else
+#else // 0
         user_add_to_gc_queue(u);
 #endif // 0
 
@@ -644,7 +644,7 @@ bool user_may_gc(User *u, bool drop_not_started) {
          * there's no need to keep this user around even if lingering is enabled. */
 #if 0 /// elogind does not support systemd units
         if (user_check_linger_file(u) > 0 && user_unit_active(u))
-#else
+#else // 0
         if (user_check_linger_file(u) > 0)
 #endif // 0
                 return false;
@@ -665,7 +665,7 @@ bool user_may_gc(User *u, bool drop_not_started) {
          * their state rather than tracking it. */
 
         return true;
-#else
+#else // 0
         // elogind has to rely on drop_not_started and that the state is correctly loaded
         return (drop_not_started || u->stopping);
 #endif // 0
@@ -691,7 +691,7 @@ UserState user_get_state(User *u) {
 
 #if 0 /// elogind neither supports service nor slice jobs.
         if (!u->started || u->service_job)
-#else
+#else // 0
         if (!u->started)
 #endif // 0
                 return USER_OPENING;
@@ -714,7 +714,7 @@ UserState user_get_state(User *u) {
 
 #if 0 /// elogind does not support systemd units
         if (user_check_linger_file(u) > 0 && user_unit_active(u))
-#else
+#else // 0
         if (user_check_linger_file(u) > 0)
 #endif // 0
                 return USER_LINGERING;
@@ -727,7 +727,7 @@ int user_kill(User *u, int signo) {
         assert(u);
 
         return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);
-#else
+#else // 0
         Session *s;
         int res = 0;
 

@@ -73,7 +73,7 @@
     <citerefentry><refentrytitle>sd_journal_next</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     (or related call) has been called at least
     once, in order to position the read pointer at a valid entry.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_get_realtime_usec()</function> and
     <function>sd_journal_get_monotonic_usec()</function> do
@@ -92,7 +92,7 @@
     timestamp of the current journal entry is not of the current
     system boot, <constant>-ESTALE</constant> is returned by
     <function>sd_journal_get_monotonic_usec()</function>.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_get_cutoff_realtime_usec()</function>
     and <function>sd_journal_get_cutoff_monotonic_usec()</function>
     return -ENOSYS.</para>
@@ -116,7 +116,7 @@
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

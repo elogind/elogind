@@ -146,7 +146,7 @@ void bus_close_inotify_fd(sd_bus *b) {
 
 #if 0 /// needed as non-static by elogind
 static void bus_reset_queues(sd_bus *b) {
-#else
+#else // 0
 void bus_reset_queues(sd_bus *b);
 void bus_reset_queues(sd_bus *b) {
 #endif // 0

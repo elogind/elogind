@@ -99,7 +99,7 @@
         <!-- 0 /// Do not imply systemd mechanics, elogind is only providing the sd_bus functions.
         configuration. This is only used by systemd if the service definition file has <varname>Type=notify</varname>
         set. Since there is little value in signaling non-readiness, the only value services should send is
-        --><!-- else -->
+        --><!-- else // 0 -->
         configuration. Since there is little value in signaling non-readiness, the only value services should send is
         <!-- // 0 -->
         <literal>READY=1</literal> (i.e.  <literal>READY=0</literal> is not defined).</para></listitem>
@@ -173,7 +173,7 @@
         <varname>WatchdogSec=</varname> is enabled for it. See
         <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for information how to enable this functionality and
-        --><!-- else -->
+        --><!-- else // 0 -->
         watchdog timestamp. This is the keep-alive ping that services
         need to issue in regular intervals if a watchdog is enabled for them. See
         <!-- // 0 -->
@@ -214,7 +214,7 @@
         and <varname>TimeoutStopSec=</varname>.
         See <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for effects on the service timeouts.</para></listitem>
-        --><!-- else -->
+        --><!-- else // 0 -->
         send a new message.</para></listitem>
         <!-- // 0 -->
       </varlistentry>
@@ -237,7 +237,7 @@
         descriptors sent are pollable (see
         <citerefentry><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>), then any
         <constant>EPOLLHUP</constant> or <constant>EPOLLERR</constant> event seen on them will result in their
-        --><!-- else -->
+        --><!-- else // 0 -->
         file descriptor. Note that it depends on the service manager if it will accept messages for a service.
         If file descriptors sent are pollable (see
         <citerefentry><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>), then any
@@ -246,7 +246,7 @@
         automatic removal from the store. Multiple arrays of file descriptors may be sent in separate messages, in
         <!-- 0 /// Another wish for the service manager in use not provided by elogind
         which case the arrays are combined. Note that the service manager removes duplicate (pointing to the same
-        --><!-- else -->
+        --><!-- else // 0 -->
         which case the arrays are combined. Note that the service manager should remove duplicate (pointing to the same
         <!-- // 0 -->
         object) file descriptors before passing them to the service. Use <function>sd_pid_notify_with_fds()</function>
@@ -346,13 +346,13 @@
   <refsect1>
     <title>Notes</title>
 
-    <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
 
     <!-- 1 /// It is important that we tell people that this is a systemd feature not provided by elogind ! -->
     <para>Please note that this is a description of the notification technique as
     used by systemd. If the service manager you use does not set the needed environment
     variables, none of the functions described here do anything but return 0.</para>
     <!-- // 1 -->
+    <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
 
     <para>These functions send a single datagram with the
     state string as payload to the <constant>AF_UNIX</constant> socket
@@ -431,7 +431,7 @@
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

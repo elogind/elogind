@@ -13,7 +13,7 @@
   <refentryinfo>
     <title>logind.conf</title>
     <productname>systemd</productname>
---><!-- else -->
+--><!-- else // 0 -->
 <refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
     <title>logind.conf</title>
@@ -35,12 +35,14 @@
   </refnamediv>
 
   <refsynopsisdiv>
-    <para><filename>/etc/elogind/logind.conf</filename></para>
     <!-- 0 /// not supported by elogind
+    <para><filename>/etc/systemd/logind.conf</filename></para>
     <para><filename>/etc/systemd/logind.conf.d/*.conf</filename></para>
     <para><filename>/run/systemd/logind.conf.d/*.conf</filename></para>
     <para><filename>/usr/lib/systemd/logind.conf.d/*.conf</filename></para>
-    // 0 -->
+    --><!-- else // 0 -->
+    <para><filename>/etc/elogind/logind.conf</filename></para>
+    <!-- // 0 -->
   </refsynopsisdiv>
 
   <refsect1>
@@ -51,7 +53,7 @@
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>. See
     <citerefentry><refentrytitle>systemd.syntax</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for a general description of the syntax.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>This file configures various parameters of elogind.</para>
     <!-- // 0 -->
   </refsect1>
@@ -66,7 +68,7 @@
     <!-- 0 /// elogind also supports a few system commands
     <para>All options are configured in the
     <literal>[Login]</literal> section:</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>All login options are configured in the
     <literal>[Login]</literal> section, system sleep options are
     configured in the <literal>[Sleep]</literal> section.</para>
@@ -132,7 +134,7 @@
         terminated. If false, the scope is "abandoned", see
         <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
         and processes are not killed. Defaults to <literal>&KILL_USER_PROCESSES;</literal>,
-        --><!-- else -->
+        --><!-- else // 0 -->
         user should be killed when the user logs out. If true, the processes
         listed in their session cgroup will be terminated. If false, the session cgroup
         is ignored
@@ -157,7 +159,7 @@
         <!-- 0 /// elogind does not provide systemd-run or any equivalent, yet.
         unless they are moved out of the session scope. See example in
         <citerefentry><refentrytitle>systemd-run</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
-        --><!-- else -->
+        --><!-- else // 0 -->
         unless they are moved out of the session scope.
         <!-- // 0 -->
         </para></listitem>
@@ -236,7 +238,7 @@
       </varlistentry>
 
       <varlistentry>
-        --><!-- else -->
+        --><!-- else // 0 -->
         <listitem><para>Specifies how long to keep the user record around for a user after they logged out fully. If
         set to zero, the user is terminated immediately when the last session of the user has ended. Defaults to 10s.
         </para></listitem>
@@ -334,7 +336,7 @@
         systemd will always react immediately, possibly before the
         kernel fully probed all hotplugged devices. This is safe, as
         long as you do not care for systemd to account for devices
-        --><!-- else -->
+        --><!-- else // 0 -->
         system resume in which elogind will hold off on reacting to
         lid events. This is required for the system to properly
         detect any hotplugged devices so lid events can be ignored
@@ -375,13 +377,13 @@
         <listitem><para>Controls the maximum number of concurrent user sessions to manage. Defaults to 8192
         <!-- 0 /// rename me to elogind
         (8K). Depending on how the <filename>pam_systemd.so</filename> module is included in the PAM stack
-        --><!-- else -->
+        --><!-- else // 0 -->
         (8K). Depending on how the <filename>pam_elogind.so</filename> module is included in the PAM stack
         <!-- // 0 -->
         configuration, further login sessions will either be refused, or permitted but not tracked by
         <!-- 0 /// rename me to elogind
         <filename>systemd-logind</filename>.</para></listitem>
-        --><!-- else -->
+        --><!-- else // 0 -->
         <filename>elogind</filename>.</para></listitem>
         <!-- // 0 -->
       </varlistentry>
@@ -494,7 +496,7 @@
         <!-- 0 /// elogind is in section 8
         <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
         <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-        --><!-- else -->
+        --><!-- else // 0 -->
         <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
         <!-- // 0 -->
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,

@@ -121,7 +121,7 @@ static int do_execute(
                 _cleanup_close_ int fd = -1;
 #if 0 /// No "maybe uninitialized" warning in elogind
                 pid_t pid;
-#else
+#else // 0
                 pid_t pid = 0;
 #endif // 0
 
