@@ -158,7 +158,7 @@ int manager_setup_wall_message_timer(Manager *m) {
         elapse = when_wall(n, elapse);
         if (elapse == 0)
                 return 0;
-#else
+#else // 0
         left = elapse - n;
         elapse = when_wall(n, elapse);
 

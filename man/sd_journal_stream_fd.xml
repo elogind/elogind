@@ -70,7 +70,7 @@
     <para>Each invocation of <function>sd_journal_stream_fd()</function> allocates a new log stream file descriptor,
     that is not shared with prior or later invocations. The file descriptor is write-only (its reading direction is
     shut down), and <constant>O_NONBLOCK</constant> is turned off initially.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_stream_fd()</function> has no purpose in elogind
     and always returns -ENOSYS.</para>
     <!-- // 0 -->
@@ -82,7 +82,7 @@
     <!-- 0 /// Different in elogind
     <para>The call returns a valid write-only file descriptor on
     success or a negative errno-style error code.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>The call always returns -ENOSYS.</para>
     <!-- // 0 -->
   </refsect1>
@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
       <citerefentry project='man-pages'><refentrytitle>fprintf</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <!-- 0 /// To be consistent, it is renamed for elogind
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
       <!-- // 0 -->
     </para>

@@ -42,7 +42,7 @@ if bashcompletiondir != 'no'
 #                  ['resolvectl',          'ENABLE_RESOLVE'],
 #                  ['systemd-resolve',     'ENABLE_RESOLVE'],
 #                  ['timedatectl',         'ENABLE_TIMEDATED'],
-#else
+#else // 0
         items = [['loginctl',            ''],
 #endif // 0
                 ]

@@ -43,7 +43,7 @@ void manager_reset_config(Manager *m) {
 #if 0 /// elogind does not start a user service manager, the delay is unneeded.
         m->user_stop_delay = 10 * USEC_PER_SEC;
 
-#else
+#else // 0
         m->user_stop_delay = 0;
 #endif // 0
         m->handle_power_key = HANDLE_POWEROFF;
@@ -132,7 +132,7 @@ int manager_parse_config_file(Manager *m) {
                                         CONF_PATHS_NULSTR("systemd/logind.conf.d"),
                                         "Login\0",
                                         config_item_perf_lookup, logind_gperf_lookup,
-#else
+#else // 0
         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
         if (!logind_conf)
@@ -413,7 +413,7 @@ int manager_process_button_device(Manager *m, sd_device *d) {
 int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
 #if 0 /// elogind does not support systemd units, but its own session system
         _cleanup_free_ char *unit = NULL;
-#else
+#else // 0
         _cleanup_free_ char *session_name = NULL;
 #endif // 0
         Session *s;
@@ -430,7 +430,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
                 r = cg_pid_get_unit(pid, &unit);
                 if (r >= 0)
                         s = hashmap_get(m->session_units, unit);
-#else
+#else // 0
                 log_debug_elogind("Searching session for PID %u", pid);
                 r = cg_pid_get_session(pid, &session_name);
 
@@ -451,7 +451,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
 #if 0 /// elogind does not support systemd units, but its own session system
         _cleanup_free_ char *unit = NULL;
-#else
+#else // 0
         Session *s;
 #endif // 0
         User *u = NULL;
@@ -466,7 +466,7 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
         r = cg_pid_get_slice(pid, &unit);
         if (r >= 0)
                 u = hashmap_get(m->user_units, unit);
-#else
+#else // 0
         // If a session was found, ignore it if it is already closing.
         r = manager_get_session_by_pid (m, pid, &s);
         if ( (r >= 0) && (SESSION_CLOSING != session_get_state(s)) )

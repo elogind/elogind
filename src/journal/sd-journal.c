@@ -339,7 +339,7 @@ fail:
         match_free_if_empty(j->level0);
 
         return -ENOMEM;
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -875,7 +875,7 @@ static int real_journal_next(sd_journal *j, direction_t direction) {
 _public_ int sd_journal_next(sd_journal *j) {
 #if 0 /// UNSUPPORTED by elogind
         return real_journal_next(j, DIRECTION_DOWN);
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -883,7 +883,7 @@ _public_ int sd_journal_next(sd_journal *j) {
 _public_ int sd_journal_previous(sd_journal *j) {
 #if 0 /// UNSUPPORTED by elogind
         return real_journal_next(j, DIRECTION_UP);
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -926,7 +926,7 @@ static int real_journal_next_skip(sd_journal *j, direction_t direction, uint64_t
 _public_ int sd_journal_next_skip(sd_journal *j, uint64_t skip) {
 #if 0 /// UNSUPPORTED by elogind
         return real_journal_next_skip(j, DIRECTION_DOWN, skip);
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -934,7 +934,7 @@ _public_ int sd_journal_next_skip(sd_journal *j, uint64_t skip) {
 _public_ int sd_journal_previous_skip(sd_journal *j, uint64_t skip) {
 #if 0 /// UNSUPPORTED by elogind
         return real_journal_next_skip(j, DIRECTION_UP, skip);
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -968,7 +968,7 @@ _public_ int sd_journal_get_cursor(sd_journal *j, char **cursor) {
                 return -ENOMEM;
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -1077,7 +1077,7 @@ _public_ int sd_journal_seek_cursor(sd_journal *j, const char *cursor) {
         }
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -1163,7 +1163,7 @@ _public_ int sd_journal_test_cursor(sd_journal *j, const char *cursor) {
         }
 
         return 1;
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -1180,7 +1180,7 @@ _public_ int sd_journal_seek_monotonic_usec(sd_journal *j, sd_id128_t boot_id, u
         j->current_location.monotonic_set = true;
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -1196,7 +1196,7 @@ _public_ int sd_journal_seek_realtime_usec(sd_journal *j, uint64_t usec) {
         j->current_location.realtime_set = true;
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -1210,7 +1210,7 @@ _public_ int sd_journal_seek_head(sd_journal *j) {
         j->current_location.type = LOCATION_HEAD;
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -1224,7 +1224,7 @@ _public_ int sd_journal_seek_tail(sd_journal *j) {
         j->current_location.type = LOCATION_TAIL;
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2003,7 +2003,7 @@ _public_ int sd_journal_open_namespace(sd_journal **ret, const char *namespace, 
 
         *ret = TAKE_PTR(j);
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2054,7 +2054,7 @@ _public_ int sd_journal_open_container(sd_journal **ret, const char *machine, in
 
         *ret = TAKE_PTR(j);
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2085,7 +2085,7 @@ _public_ int sd_journal_open_directory(sd_journal **ret, const char *path, int f
 
         *ret = TAKE_PTR(j);
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2113,7 +2113,7 @@ _public_ int sd_journal_open_files(sd_journal **ret, const char **paths, int fla
 
         *ret = TAKE_PTR(j);
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2153,7 +2153,7 @@ _public_ int sd_journal_open_directory_fd(sd_journal **ret, int fd, int flags) {
 
         *ret = TAKE_PTR(j);
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2209,7 +2209,7 @@ fail:
                 f->close_fd = false;
 
         return r;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2276,7 +2276,7 @@ _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
 
         *ret = le64toh(o->entry.realtime);
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2317,7 +2317,7 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
                 *ret = le64toh(o->entry.monotonic);
 
         return 0;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2534,7 +2534,7 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
         j->current_field++;
 
         return 1;
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -2591,7 +2591,7 @@ _public_ int sd_journal_get_fd(sd_journal *j) {
                 return r;
 
         return j->inotify_fd;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2608,7 +2608,7 @@ _public_ int sd_journal_get_events(sd_journal *j) {
                 return fd;
 
         return POLLIN;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2635,7 +2635,7 @@ _public_ int sd_journal_get_timeout(sd_journal *j, uint64_t *timeout_usec) {
 
         *timeout_usec = j->last_process_usec + JOURNAL_FILES_RECHECK_USEC;
         return 1;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2774,7 +2774,7 @@ _public_ int sd_journal_process(sd_journal *j) {
                 FOREACH_INOTIFY_EVENT(e, buffer, l)
                         process_inotify_event(j, e);
         }
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2824,7 +2824,7 @@ _public_ int sd_journal_wait(sd_journal *j, uint64_t timeout_usec) {
                 return r;
 
         return sd_journal_process(j);
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -2869,7 +2869,7 @@ _public_ int sd_journal_get_cutoff_realtime_usec(sd_journal *j, uint64_t *from, 
                 *to = tmax;
 
         return first ? 0 : 1;
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -2912,7 +2912,7 @@ _public_ int sd_journal_get_cutoff_monotonic_usec(sd_journal *j, sd_id128_t boot
         }
 
         return found;
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -2957,7 +2957,7 @@ _public_ int sd_journal_get_usage(sd_journal *j, uint64_t *bytes) {
 
         *bytes = sum;
         return 0;
-#else
+#else // 0
         *bytes = 0;
         return 0;
 #endif // 0
@@ -2983,7 +2983,7 @@ _public_ int sd_journal_query_unique(sd_journal *j, const char *field) {
         j->unique_file_lost = false;
 
         return 0;
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -3107,7 +3107,7 @@ _public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_
 
                 return 1;
         }
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -3259,7 +3259,7 @@ _public_ int sd_journal_enumerate_fields(sd_journal *j, const char **field) {
                 *field = j->fields_buffer;
                 return 1;
         }
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -3337,7 +3337,7 @@ _public_ int sd_journal_get_catalog(sd_journal *j, char **ret) {
 
         *ret = t;
         return 0;
-#else
+#else // 0
         return -ENOENT;
 #endif // 0
 }
@@ -3347,7 +3347,7 @@ _public_ int sd_journal_get_catalog_for_message_id(sd_id128_t id, char **ret) {
         assert_return(ret, -EINVAL);
 
         return catalog_get(CATALOG_DATABASE, id, ret);
-#else
+#else // 0
         return -ENOENT;
 #endif // 0
 }
@@ -3374,7 +3374,7 @@ _public_ int sd_journal_has_runtime_files(sd_journal *j) {
 
 #if 0 /// this value is nowhere set in elogind
         return j->has_runtime_files;
-#else
+#else // 0
         return 0;
 #endif // 0
 }
@@ -3384,7 +3384,7 @@ _public_ int sd_journal_has_persistent_files(sd_journal *j) {
 
 #if 0 /// this value is nowhere set in elogind
         return j->has_persistent_files;
-#else
+#else // 0
         return 0;
 #endif // 0
 }

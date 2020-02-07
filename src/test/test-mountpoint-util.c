@@ -97,7 +97,7 @@ static void test_mnt_id(void) {
                 log_debug("the other path for mnt id %i is %s\n", mnt_id2, t);
 #if 0 /// Unfortunately this doesn't work in all cases where elogind is running in a chroot. (#127)
                 assert_se(path_equal(p, t));
-#else
+#else // 0
                 assert_se(path_equal(p, t) || (
                           running_in_chroot() && startswith(p, t)
                 ) );

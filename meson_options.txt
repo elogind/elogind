@@ -40,7 +40,7 @@ option('static-libelogind', type : 'combo',
 # option('quotaon-path', type : 'string', description : 'path to quotaon')
 # option('quotacheck-path', type : 'string', description : 'path to quotacheck')
 # option('kmod-path', type : 'string', description : 'path to kmod')
-#else
+#else // 0
        description : '''install a static library for libelogind''')
 
 # elogind must have a configurable rootlibexecdir
@@ -81,7 +81,7 @@ option('nologin-path', type : 'string', description : 'path to nologin')
 #        description : 'specify the tty device for debug shell')
 # option('debug-extra', type : 'array', choices : ['hashmap', 'mmap-cache', 'siphash'], value : [],
 #        description : 'enable extra debugging')
-#else
+#else // 0
 option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cache', 'siphash'], value : [],
        description : 'enable extra debugging')
 #endif // 0
@@ -175,7 +175,7 @@ option('utmp', type : 'boolean',
 #        description : 'support for the hardware database')
 # option('rfkill', type : 'boolean',
 #        description : 'support for the rfkill tools')
-#else
+#else // 0
 option('efi', type : 'boolean',
        description : 'enable EFI support')
 #endif // 0
@@ -221,7 +221,7 @@ option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'unified',
 #if 0 /// elogind interprets this a bit different
 #        description : 'default cgroup hierarchy')
-#else
+#else // 0
        description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
                 "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its
                                   subfolders.

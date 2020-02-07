@@ -78,7 +78,7 @@
     <!-- 0 /// elogind does not ship systemd-id128
     machine. The application-specific ID should be generated via a tool like <command>systemd-id128 new</command>,
     and may be compiled into the application. This function will return the same application-specific ID for each
-    --><!-- else -->
+    --><!-- else // 0 -->
     machine. This function will return the same application-specific ID for each
     <!-- // 0 -->
     combination of machine ID and application ID. Internally, this function calculates HMAC-SHA256 of the application
@@ -102,7 +102,7 @@
     <!-- 0 /// as elogind does not run under systemd, be a bit more generic
     variable that the service manager sets when activating a service, see
     <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry> for details. The
-    --><!-- else -->
+    --><!-- else // 0 -->
     variable that the service manager has to set when activating a service. If <varname>$INVOCATION_ID</varname> was
     not set by the service manager, the function returns -ENXIO. The
     <!-- // 0 -->
@@ -209,7 +209,7 @@ As man:sd-id128(3) macro:
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-id128</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-id128</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

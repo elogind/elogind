@@ -13,7 +13,7 @@ enum in6_addr_gen_mode {
         IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
         IN6_ADDR_GEN_MODE_RANDOM,
 };
-#else
+#else // 0
 #if !HAVE_IN6_ADDR_GEN_MODE_STABLE_PRIVACY /* linux@622c81d57b392cc9be836670eb464a4dfaa9adfe (4.1) */
 #define IN6_ADDR_GEN_MODE_STABLE_PRIVACY 2
 #endif
@@ -36,7 +36,7 @@ enum ipvlan_mode {
         IPVLAN_MODE_L3S,
         IPVLAN_MODE_MAX
 };
-#else
+#else // 0
 #if !HAVE_IPVLAN_MODE_L3S /* linux@4fbae7d83c98c30efcf0a2a2ac55fbb75ef5a1a5 (4.9) */
 #define IPVLAN_MODE_L3S   2
 #define IPVLAN_MODE_MAX   3
@@ -196,7 +196,7 @@ enum {
         __IFLA_GENEVE_MAX
 };
 #define IFLA_GENEVE_MAX        (__IFLA_GENEVE_MAX - 1)
-#else
+#else // 0
 #if !HAVE_IFLA_GENEVE_COLLECT_METADATA /* linux@e305ac6cf5a1e1386aedce7ef9cb773635d5845c (4.3) */
 #define IFLA_GENEVE_PORT              5
 #define IFLA_GENEVE_COLLECT_METADATA  6
@@ -272,7 +272,7 @@ enum {
 };
 
 #define IFLA_BR_MAX        (__IFLA_BR_MAX - 1)
-#else
+#else // 0
 #if !HAVE_IFLA_BR_PRIORITY /* linux@af615762e972be0c66cf1d156ca4fac13b93c0b0 (4.1) */
 #define IFLA_BR_AGEING_TIME                4
 #define IFLA_BR_STP_STATE                  5

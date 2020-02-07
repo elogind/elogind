@@ -128,7 +128,7 @@ libcore_shared_sources = '''
 #         unit.c
 #         unit.h
 # '''.split()
-#else
+#else // 0
 libcore_la_sources = files('''
         cgroup.c
         cgroup.h

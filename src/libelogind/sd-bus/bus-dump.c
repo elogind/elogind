@@ -330,7 +330,7 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
 #if 0 /// elogind does not support systemd units and slices. v and w are only used with them
         int r, q, v, w, z;
 
-#else
+#else // 0
         int r, q, z;
 #endif // 0
         assert(c);
@@ -463,7 +463,7 @@ int bus_creds_dump(sd_bus_creds *c, FILE *f, bool terse) {
 
 #if 0 /// elogind does not support systemd units and slices. q, v and w are only used with them
         if (terse && ((c->mask & SD_BUS_CREDS_CGROUP) || r != -ENODATA || q != -ENODATA || v != -ENODATA || w != -ENODATA || z != -ENODATA))
-#else
+#else // 0
         if (terse && ((c->mask & SD_BUS_CREDS_CGROUP) || r != -ENODATA || z != -ENODATA))
 #endif // 0
                 fputs("\n", f);

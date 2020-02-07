@@ -15,7 +15,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout);
 
 #if 0 /// elogind has a version that does the action itself
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, const char *unit_name, InhibitWhat w, sd_bus_error *error);
-#else
+#else // 0
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
 #endif // 0
 

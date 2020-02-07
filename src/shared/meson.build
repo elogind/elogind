@@ -225,7 +225,7 @@
 #         xml.c
 #         xml.h
 # '''.split())
-#else
+#else // 0
 shared_sources = '''
         acl-util.h
         bootspec.c
@@ -405,7 +405,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libseccomp,
 #                   libselinux,
 #                   libxz]
-#else
+#else // 0
 libshared_deps = [threads,
                   libacl,
                   libcap,
@@ -436,7 +436,7 @@ libshared = shared_library(
 #                       libbasic_gcrypt,
 #                       libsystemd_static,
 #                       libjournal_client],
-#else
+#else // 0
                       libelogind_static],
 #endif // 0
         c_args : ['-fvisibility=default'],

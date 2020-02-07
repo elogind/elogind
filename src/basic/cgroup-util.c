@@ -633,7 +633,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **path) {
         _cleanup_fclose_ FILE *f = NULL;
 #if 0 /// At elogind we do not want that (false alarm) "maybe uninitialized" warning
         const char *fs, *controller_str;
-#else
+#else // 0
         const char *fs, *controller_str = NULL;
 #endif // 0
         int unified, r;
@@ -1020,7 +1020,7 @@ int cg_get_root_path(char **path) {
                 e = endswith(p, "/" SPECIAL_SYSTEM_SLICE); /* legacy */
         if (!e)
                 e = endswith(p, "/system"); /* even more legacy */
-#else
+#else // 0
         e = endswith(p, "/elogind");
 #endif // 0
         if (e)
@@ -1053,7 +1053,7 @@ int cg_shift_path(const char *cgroup, const char *root, const char **shifted) {
         p = path_startswith(cgroup, root);
 #if 0 /// With other controllers, elogind might end up in /elogind, and *p is 0
         if (p && p > cgroup)
-#else
+#else // 0
         if (p && p[0] && (p > cgroup))
 #endif // 0
                 *shifted = p - 1;
@@ -1108,7 +1108,7 @@ int cg_path_decode_unit(const char *cgroup, char **unit) {
         n = strcspn(cgroup, "/");
         if (n < 3)
                 return -ENXIO;
-#else
+#else // 0
         n = strspn(cgroup, "/") + 1;
 #endif // 0
 
@@ -1375,7 +1375,7 @@ int cg_path_get_session(const char *path, char **session) {
         *end = 0;
         if (!session_id_valid(start))
                 return -ENXIO;
-#else
+#else // 0
         /* Elogind uses a flat hierarchy, just "/SESSION".  The only
            wrinkle is that SESSION might be escaped.  */
         const char *e, *n, *start;
@@ -1425,7 +1425,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
 #if 0 /// elogind needs one more value
         _cleanup_free_ char *slice = NULL;
         char *start, *end;
-#else
+#else // 0
         _cleanup_free_ char *slice = NULL, *p = NULL, *s = NULL;
 #endif // 0
         int r;
@@ -1447,7 +1447,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         *end = 0;
         if (parse_uid(start, uid) < 0)
                 return -ENXIO;
-#else
+#else // 0
         p = strjoin("/run/systemd/sessions/", slice);
 
         r = parse_env_file(NULL, p, "UID", &s);
@@ -1511,7 +1511,7 @@ int cg_path_get_slice(const char *p, char **slice) {
                 e = p;
                 p += n;
         }
-#else
+#else // 0
         /* In elogind, what is reported here, is the location of
          * the session. This is derived from /proc/<self|PID>/cgroup.
          * In there we look at the controller, which will look something
@@ -1562,7 +1562,7 @@ int cg_path_get_user_slice(const char *p, char **slice) {
         /* And now it looks pretty much the same as for a system
          * slice, so let's just use the same parser from here on. */
         return cg_path_get_slice(t, slice);
-#else
+#else // 0
         /* In elogind there is nothing to skip, we can use the path
          * directly. Generally speaking this is always a session id
          * to user mapping. */
@@ -2082,7 +2082,7 @@ int cg_unified_cached(bool flush) {
                 unified_cache = CGROUP_UNIFIED_ALL;
 #if 0 /// The handling of cgroups is a bit different with elogind
         } else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
-#else
+#else // 0
         } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)
               || F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
 #endif // 0
@@ -2113,7 +2113,7 @@ int cg_unified_cached(bool flush) {
                 return log_debug_errno(SYNTHETIC_ERRNO(ENOMEDIUM),
                                        "Unknown filesystem type %llx mounted on /sys/fs/cgroup.",
                                        (unsigned long long)fs.f_type);
-#else
+#else // 0
                         unified_cache = CGROUP_UNIFIED_NONE;
                 }
         }
@@ -2137,7 +2137,7 @@ int cg_unified_controller(const char *controller) {
 
 #if 0 /// only if elogind is the controller we can use cgroups2 in hybrid mode
         return streq_ptr(controller, SYSTEMD_CGROUP_CONTROLLER);
-#else
+#else // 0
         return streq_ptr(controller, SYSTEMD_CGROUP_CONTROLLER_HYBRID);
 #endif // 0
 }

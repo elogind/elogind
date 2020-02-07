@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
         nsec_t nsec;
         uint64_t v;
         int r;
-#else
+#else // 0
         uint64_t v;
 #endif // 0
 

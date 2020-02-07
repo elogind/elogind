@@ -4,7 +4,7 @@
 #
 # install:
 # 	DESTDIR=$(DESTDIR) ninja -C build install
-#else
+#else // 0
 .PHONY: all install loginctl test test-login
 
 all:

@@ -39,7 +39,7 @@ assert_cc(sizeof(gid_t) == sizeof(uint32_t));
 #else
 #  error Unknown rlim_t size
 #endif
-#else
+#else // __GLIBC__
 #define RLIM_FMT "%ju"
 #endif // __GLIBC__
 

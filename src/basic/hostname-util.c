@@ -42,7 +42,7 @@ char* gethostname_malloc(void) {
         if (isempty(u.nodename) || streq(u.nodename, "(none)"))
 #if 0 /// elogind has no hostnamed and such nonsense
                 return strdup(FALLBACK_HOSTNAME);
-#else
+#else // 0
                 return strdup("localhost");
 #endif // 0
 

@@ -705,7 +705,7 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
 
         return 0;
 }
-#else
+#else // 0
 static int session_start_cgroup(Session *s) {
         int r;
 
@@ -746,7 +746,7 @@ int session_start(Session *s, sd_bus_message *properties, sd_bus_error *error) {
 
 #if 0 /// elogind does its own session management
         r = session_start_scope(s, properties, error);
-#else
+#else // 0
         r = session_start_cgroup(s);
 #endif // 0
         if (r < 0)
@@ -834,7 +834,7 @@ static int session_stop_scope(Session *s, bool force) {
 
         return 0;
 }
-#else
+#else // 0
 static int session_stop_cgroup(Session *s, bool force) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
@@ -882,7 +882,7 @@ int session_stop(Session *s, bool force) {
         /* Kill cgroup */
 #if 0 /// elogind does not start scopes, but sessions
         r = session_stop_scope(s, force);
-#else
+#else // 0
         r = session_stop_cgroup(s, force);
         session_add_to_gc_queue(s);
 #endif // 0
@@ -1247,7 +1247,7 @@ bool session_may_gc(Session *s, bool drop_not_started) {
         }
 
         return true;
-#else
+#else // 0
         // elogind has to rely on drop_not_started, and that the state is correctly loaded
         return (drop_not_started || s->stopping);
 #endif // 0
@@ -1272,7 +1272,7 @@ SessionState session_get_state(Session *s) {
 
 #if 0 /// elogind does not support systemd scope_jobs
         if (s->scope_job || s->fifo_fd < 0)
-#else
+#else // 0
         if (s->fifo_fd < 0)
 #endif // 0
                 return SESSION_OPENING;
@@ -1291,7 +1291,7 @@ int session_kill(Session *s, KillWho who, int signo) {
                 return -ESRCH;
 
         return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
-#else
+#else // 0
         if (who == KILL_LEADER) {
                 if (s->leader <= 0)
                         return -ESRCH;

@@ -435,7 +435,7 @@ _public_ int sd_is_mq(int fd, const char *path) {
         }
 
         return 1;
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -614,7 +614,7 @@ _public_ int sd_booted(void) {
                 return false;
 
         return -errno;
-#else
+#else // 0
         return 0;
 #endif // 0
 }

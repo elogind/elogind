@@ -6,7 +6,7 @@
 <!-- 0 /// elogind does not need to activate loginctl in configure
 <refentry id="loginctl" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
---><!-- else -->
+--><!-- else // 0 -->
 <refentry id="loginctl" xmlns:xi="http://www.w3.org/2001/XInclude">
 <!-- // 0 -->
 
@@ -47,7 +47,7 @@
     <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     login manager
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     login manager</para>
     <!-- // 0 -->
@@ -194,7 +194,7 @@
         <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
         </para></listitem>
       </varlistentry>
-      -->
+      // 0 -->
 
       <varlistentry>
         <term><command>terminate-user</command> <replaceable>USER</replaceable>…</term>
@@ -533,7 +533,7 @@
     <example>
       <title>Querying user status</title>
 
-<!-- 0 // Looks a bit different with elogind
+<!-- 0 /// Looks a bit different with elogind
       <programlisting>$ loginctl user-status
 fatima (1005)
            Since: Sat 2016-04-09 14:23:31 EDT; 54min ago
@@ -552,10 +552,11 @@ Apr 09 14:40:30 laptop login[2325]: pam_unix(login:session):
                        session opened for user fatima by LOGIN(uid=0)
 Apr 09 14:40:30 laptop login[2325]: LOGIN ON tty3 BY fatima
 </programlisting>
+
       <para>There are two sessions, 3 and 5. Session 3 is a graphical session,
       marked with a star. The tree of processing including the two corresponding
       scope units and the user manager unit are shown.</para>
---><!-- else -->
+--><!-- else // 0 -->
       <programlisting>$ loginctl user-status
 sed (1004)
            Since: Wed 2020-01-29 20:32:00 CET; 3 days ago
@@ -577,11 +578,11 @@ sed (1004)
   <refsect1>
     <title>See Also</title>
     <para>
-      <!-- elogind is in sectin 8 and has neither systemctl nor service files
+      <!-- 0 /// elogind is in sectin 8 and has neither systemctl nor service files
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>

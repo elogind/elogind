@@ -54,6 +54,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../Makefile" />
 		<Unit filename="../build/config.h" />
 		<Unit filename="../man/glib-event-glue.c">
 			<Option compilerVar="CC" />

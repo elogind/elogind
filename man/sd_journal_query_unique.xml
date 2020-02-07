@@ -107,7 +107,7 @@
     <function>sd_journal_query_unique()</function>), use the
     <citerefentry><refentrytitle>sd_journal_enumerate_fields</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     call.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_query_unique()</function> is not needed in elogind
     and does nothing.</para>
 
@@ -133,7 +133,7 @@
     <function>sd_journal_enumerate_unique()</function> returns a
     positive integer if the next field data has been read, 0 when no
     more fields are known, or a negative errno-style error code.
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_query_unique()</function> and
     <function>sd_journal_enumerate_unique()</function> always return 0.
     <!-- // 0 -->
@@ -148,7 +148,7 @@
     <xi:include href="threads-aware.xml" xpointer="strict"/>
 
     <xi:include href="libsystemd-pkgconfig.xml" xpointer="pkgconfig-text"/>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
     <!-- // 0 -->
   </refsect1>
@@ -174,7 +174,7 @@
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <!-- // 0 -->

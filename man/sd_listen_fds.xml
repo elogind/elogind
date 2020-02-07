@@ -60,7 +60,7 @@
     socket unit file (see
     <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for details). Nonetheless, it is recommended to verify the correct
-    --><!-- else -->
+    --><!-- else // 0 -->
     will be passed in the same order as configured in the service manager.
     It is thereforce recommended to verify the correct
     <!-- // 0 -->
@@ -84,7 +84,7 @@
 
     <!-- 0 /// Do not use the systemd unit term with elogind
     <para>If multiple socket units activate the same service, the order
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>If socket activation is used multiple times at once, the order
     <!-- // 0 -->
     of the file descriptors passed to its main process is undefined.
@@ -117,7 +117,7 @@
     files, see
     <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for details. For file descriptors pushed into the file descriptor
-    --><!-- else -->
+    --><!-- else // 0 -->
     variable, which may contain a colon-separated list of names.
     For file descriptors pushed into the file descriptor
     <!-- // 0 -->
@@ -169,7 +169,7 @@
             <entry><literal>connection</literal></entry>
             <!-- 0 /// elogind does not have or support unit files
             <entry>The service was activated in per-connection style using <varname>Accept=yes</varname> in the socket unit file, and the file descriptor is the connection socket.</entry>
-            --><!-- else -->
+            --><!-- else // 0 -->
             <entry>The service was activated in per-connection style and the file descriptor is the connection socket.</entry>
             <!-- // 0 -->
           </row>
@@ -240,7 +240,7 @@
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

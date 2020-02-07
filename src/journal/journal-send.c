@@ -4,7 +4,7 @@
 #if 0 /// elogind is musl-libc compatible and does not directly include printf.h
 #include <fcntl.h>
 #include <printf.h>
-#else
+#else // 0
 #include "parse-printf-format.h"
 #endif // 0
 #include <stddef.h>
@@ -88,7 +88,7 @@ _public_ int sd_journal_printv(int priority, const char *format, va_list ap) {
 #if 0 /// elogind only needs a LINE_MAX buffer
         char buffer[8 + LINE_MAX], p[STRLEN("PRIORITY=") + DECIMAL_STR_MAX(int) + 1];
         struct iovec iov[2];
-#else
+#else // 0
         char buffer[8 + LINE_MAX]; // We keep the +8 to not make a too big mess below.
 #endif // 0
 
@@ -115,7 +115,7 @@ _public_ int sd_journal_printv(int priority, const char *format, va_list ap) {
         iov[1] = IOVEC_MAKE_STRING(p);
 
         return sd_journal_sendv(iov, 2);
-#else
+#else // 0
         syslog(LOG_DAEMON | priority, "%s", buffer + 8);
         return 0;
 #endif // 0
@@ -229,7 +229,7 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
         ssize_t k;
         bool have_syslog_identifier = false;
         bool seal = true;
-#else
+#else // 0
         _cleanup_free_ char *file    = NULL;
         _cleanup_free_ char *func    = NULL;
         _cleanup_free_ char *line    = NULL;
@@ -249,7 +249,7 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
 #if 0 /// nl is not needed by elogind
                 char *c, *nl;
 
-#else
+#else // 0
                 char *c;
 #endif // 0
                 if (_unlikely_(!iov[i].iov_base || iov[i].iov_len <= 1))
@@ -287,7 +287,7 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
                         w[j++] = iov[i];
 
                 w[j++] = IOVEC_MAKE_STRING("\n");
-#else
+#else // 0
                 if ( startswith(iov[i].iov_base, "PRIORITY=") ) {
                         if (1 != sscanf(iov[i].iov_base, "PRIORITY=%i", &priority))
                                 priority = LOG_NOTICE;
@@ -372,7 +372,7 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
                 /* Fail silently if the journal is not available */
                 return 0;
         return r;
-#else
+#else // 0
         if (message) {
                 if (file || func || line)
                         return sd_journal_print_with_location(priority, file,
@@ -435,7 +435,7 @@ _public_ int sd_journal_perror(const char *message) {
         struct iovec iovec[3];
 
         return fill_iovec_perror_and_send(message, 0, iovec);
-#else
+#else // 0
         if(message && *message)
                 return sd_journal_print(LOG_ERR, "%s: %s", message, strerror(errno));
         else
@@ -496,7 +496,7 @@ _public_ int sd_journal_stream_fd(const char *identifier, int priority, int leve
                 return r;
 
         return TAKE_FD(fd);
-#else
+#else // 0
         return -ENOSYS;
 #endif // 0
 }
@@ -548,7 +548,7 @@ _public_ int sd_journal_printv_with_location(int priority, const char *file, con
         iov[4] = IOVEC_MAKE_STRING(f);
 
         return sd_journal_sendv(iov, ELEMENTSOF(iov));
-#else
+#else // 0
         char buffer[8 + LINE_MAX];
         vsnprintf(buffer, sizeof(buffer), format, ap);
 
@@ -590,7 +590,7 @@ _public_ int sd_journal_send_with_location(const char *file, const char *line, c
 
         r = sd_journal_sendv(iov, i);
 
-#else
+#else // 0
         r = sd_journal_sendv_with_location(file, line, func, &iov[3], i - 3);
 #endif // 0
 finish:
@@ -624,7 +624,7 @@ _public_ int sd_journal_sendv_with_location(
         niov[n++] = IOVEC_MAKE_STRING(f);
 
         return sd_journal_sendv(niov, n);
-#else
+#else // 0
         int   i;
         int   priority = LOG_INFO;
         char *message = NULL;
@@ -660,7 +660,7 @@ _public_ int sd_journal_perror_with_location(
         iov[2] = IOVEC_MAKE_STRING(f);
 
         return fill_iovec_perror_and_send(message, 3, iov);
-#else
+#else // 0
         if(message && *message)
                 return sd_journal_print(LOG_ERR, "%s:%s:%s:%s: %s",
                                         strna(file), strna(line), strna(func),

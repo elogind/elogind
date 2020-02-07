@@ -80,7 +80,7 @@
     whether the entry being sought to was actually found
     in the journal or the next closest entry was used
     instead.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_get_cursor()</function> and
     <function>sd_journal_test_cursor()</function> do nothing.</para>
@@ -97,7 +97,7 @@
     the current entry matches the specified cursor, 0 if it does not
     match the specified cursor or a negative errno-style error code on
     failure.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_get_cursor()</function> returns -ENOSYS and
     <function>sd_journal_test_cursor()</function> returns 0.</para>
     <!-- // 0 -->
@@ -120,7 +120,7 @@
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

@@ -98,7 +98,7 @@
     used, the closest following entry will be sought to, if
     <citerefentry><refentrytitle>sd_journal_previous</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     is used the closest preceding entry is sought to.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_seek_head</function>,
     <function>sd_journal_seek_tail</function>,
@@ -114,7 +114,7 @@
     <!-- 0 /// Make clear what elogind uses for return values
     <para>The functions return 0 on success or a negative errno-style
     error code.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>The functions return -ENOSYS.</para>
     <!-- // 0 -->
   </refsect1>
@@ -136,7 +136,7 @@
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,

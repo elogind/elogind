@@ -37,7 +37,7 @@ if zshcompletiondir != 'no'
 #                  ['_resolvectl',               'ENABLE_RESOLVE'],
 #                  ['_systemd-tmpfiles',         'ENABLE_TMPFILES'],
 #                  ['_timedatectl',              'ENABLE_TIMEDATED'],
-#else
+#else // 0
         items = [['_loginctl',            ''],
 #endif // 0
                 ]

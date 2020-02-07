@@ -147,7 +147,7 @@
     determine the Unix UID (user identifier) which owns the login
     <!-- 0 /// No systemd units in elogind ...
     session or systemd user unit of a process identified by the
-    --><!-- else -->
+    --><!-- else // 0 -->
     session of a process identified by the
     <!-- // 0 -->
     specified PID. For processes which are not part of a login session
@@ -164,7 +164,7 @@
     manager, e.g. GUI applications started using DBus activation, as
     well as service processes which are shared between multiple logins
     of the same user. For processes which are not part of a login
-    --><!-- else -->
+    --><!-- else // 0 -->
     short string, suitable for usage in file system paths. For
     processes which are not part of a login
     <!-- // 0 -->
@@ -315,7 +315,7 @@
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
@@ -324,7 +324,7 @@
       <citerefentry><refentrytitle>getsid</refentrytitle><manvolnum>2</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>getsid</refentrytitle><manvolnum>2</manvolnum></citerefentry>
       <!-- // 0 -->
     </para>

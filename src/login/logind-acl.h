@@ -5,7 +5,7 @@
 #include <sys/types.h>
 
 #if 0 /// elogind needs the systems udev header
-#else
+#else // 0
 #include <libudev.h>
 #endif // 0
 #if HAVE_ACL

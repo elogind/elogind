@@ -163,7 +163,7 @@
         _IDN_FEATURE_ " "                                               \
         _PCRE2_FEATURE_ " "                                             \
         _CGROUP_HIERARCHY_
-#else
+#else // 0
 #define SYSTEMD_FEATURES                                                \
         _PAM_FEATURE_ " "                                               \
         _AUDIT_FEATURE_ " "                                             \

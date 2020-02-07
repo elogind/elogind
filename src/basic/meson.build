@@ -243,7 +243,7 @@
 #         xattr-util.h
 # '''.split())
 #
-#else
+#else // 0
 basic_sources = files('''
         MurmurHash2.c
         MurmurHash2.h
@@ -467,7 +467,7 @@ cap_list_txt = custom_target(
         output : 'cap-list.txt',
 #if 0 /// elogind needs musl_missing.h, so generate_cap_list must know the source root
 #         command : [generate_cap_list, cpp, config_h, missing_capability_h],
-#else
+#else // 0
         command : [generate_cap_list, cpp, meson.source_root(), config_h, missing_h],
 #endif // 0
         capture : true)
@@ -485,7 +485,7 @@ generated_gperf_headers = []
 #                 ['arphrd', arphrd_list_txt, 'arphrd',     'ARPHRD_'],
 #                 ['cap',    cap_list_txt,    'capability', ''],
 #                 ['errno',  errno_list_txt,  'errno',      '']]
-#else
+#else // 0
 foreach item : [['cap',    cap_list_txt,    'capability', ''],
                 ['errno',  errno_list_txt,  'errno',      '']]
 #endif // 0

@@ -43,7 +43,7 @@ install_headers(
         '_sd-common.h',
 #if 0 /// elogind needs them somewhere else
 #         subdir : 'systemd')
-#else
+#else // 0
         subdir : 'elogind/systemd')
 
 meson.add_install_script(meson_symlink_headers,
@@ -78,7 +78,7 @@ endif
 
 #if 0 /// neither not installed nor libudev headers get shipped with elogind
 # foreach header : _systemd_headers + _not_installed_headers + ['../libudev/libudev.h']
-#else
+#else // 0
 foreach header : _systemd_headers
 #endif // 0
         foreach opt : opts

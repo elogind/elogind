@@ -2861,7 +2861,7 @@ int manager_setup_cgroup(Manager *m) {
         m->cgroup_root = mfree(m->cgroup_root);
 #if 0 /// elogind is not init and must therefore search for PID 1 instead of self.
         r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 0, &m->cgroup_root);
-#else
+#else // 0
         r = cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, 1, &m->cgroup_root);
 #endif // 0
         if (r < 0)
@@ -2981,7 +2981,7 @@ int manager_setup_cgroup(Manager *m) {
                 r = cg_migrate(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
                 if (r < 0)
                         log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
-#else
+#else // 0
         /* Note:
                 * This method is in core, and normally called by systemd
                 * being init. As elogind is never init, we can not install
@@ -3152,7 +3152,7 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         return 1;
 }
 
-#else
+#else // 0
 int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         _cleanup_free_ char *path = NULL;
 	int r = 0;

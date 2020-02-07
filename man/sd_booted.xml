@@ -45,7 +45,7 @@
     <para>On failure, this call returns a negative errno-style error
     code. If the system was booted up with systemd as init system,
     this call returns a positive return value, zero otherwise.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As it makes no sense to use elogind on a system that is
     using elogind as its init system, this function always returns
     0.</para>
@@ -70,7 +70,7 @@
     <para>
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry>

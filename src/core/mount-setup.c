@@ -114,7 +114,7 @@ static const MountPoint mount_table[] = {
 #if 0 /// UNNEEDED by elogind
         { "bpf",         "/sys/fs/bpf",               "bpf",        "mode=700",                MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE,                  },
-#else
+#else // 0
         { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH",xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER  },
         { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH,         MS_NOSUID|MS_NOEXEC|MS_NODEV,

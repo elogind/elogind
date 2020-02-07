@@ -69,7 +69,7 @@
 
     <para>To retrieve the possible values a specific field can take use
     <citerefentry><refentrytitle>sd_journal_query_unique</refentrytitle><manvolnum>3</manvolnum></citerefentry>.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_enumerate_fields()</function>,
     <function>sd_journal_restart_fields()</function> and the macro
@@ -84,7 +84,7 @@
     <para><function>sd_journal_enumerate_fields()</function> returns a
     positive integer if the next field name has been read, 0 when no
     more field names are known, or a negative errno-style error code.
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_enumerate_fields()</function>
     always returns 0.
     <!-- // 0 -->
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <!-- // 0 -->

@@ -68,7 +68,7 @@ static void test_login(void) {
 
 #if 0 /// elogind might just be getting installed, and /run/systemd be nonexistant
                 assert_se(sd_pid_get_owner_uid(0, &u2) == 0);
-#else
+#else // 0
                 r = sd_pid_get_owner_uid(0, &u2);
                 if (-ENODATA == r) {
                         log_info("No session data found, skipping session tests...");

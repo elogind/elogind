@@ -126,7 +126,7 @@
 
     <para>Note that filtering via matches only applies to the way the
     journal is read, it has no effect on storage on disk.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not support systemd-journal, the functions
     <function>sd_journal_add_match()</function>,
     <function>sd_journal_add_disjunction()</function>,
@@ -144,7 +144,7 @@
     <!-- 0 /// always 0 in elogind
     return 0 on success or a negative errno-style error
     code. <function>sd_journal_flush_matches()</function>
-    --><!-- else -->
+    --><!-- else // 0 -->
     always return 0. <function>sd_journal_flush_matches()</function>
     <!-- // 0 -->
     returns nothing.</para>
@@ -152,7 +152,7 @@
 
   <!-- 0 /// rename for elogind
   <xi:include href="libsystemd-pkgconfig.xml" />
-  --><!-- else -->
+  --><!-- else // 0 -->
   <xi:include href="libelogind-pkgconfig.xml" />
   <!-- // 0 -->
 
@@ -186,7 +186,7 @@ int add_matches(sd_journal *j) {
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
@@ -194,7 +194,7 @@ int add_matches(sd_journal *j) {
       <citerefentry><refentrytitle>sd_journal_get_data</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
       <!-- 0 /// To be consistent, it is renamed for elogind
       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>
       <!-- // 0 -->
     </para>

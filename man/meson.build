@@ -75,7 +75,7 @@ foreach tuple : xsltproc.found() ? manpages : []
                         if want_html
 #if 0 /// This must be configurable in elogind
 #                                 dst = join_paths(docdir, 'html', htmlalias)
-#else
+#else // 0
                                   dst = get_option('htmldir')
                                   dst = dst != '' ? dst: join_paths(docdir, 'html', htmlalias)
 #endif // 0
@@ -216,7 +216,7 @@ if git.found()
                            'mv t @0@/rules/meson.build'.format(meson.current_source_dir())],
 #if 0 /// UNNEEDED by elogind
 #                 depend_files : custom_entities_ent)
-#else
+#else // 0
                 )
 #endif // 0
 endif

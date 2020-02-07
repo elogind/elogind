@@ -27,12 +27,16 @@
   <refsect1>
     <title>Description</title>
 
+    <!-- 0 /// elogind has no service file
+    <para><command>pam_systemd</command> registers user sessions with
+    the systemd login manager
+    <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+    and hence the systemd control group hierarchy.</para>
+    --><!-- else // 0 -->
     <para><command>pam_elogind</command> registers user sessions with
     the elogind login manager
     and hence the elogind control group hierarchy.</para>
-    <!-- 0 /// elogind has no service file
-    <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-    // 0 -->
+    <!-- // 0 -->
 
     <para>The module also applies various resource management and runtime parameters to the new session, as
     configured in the <ulink url="https://elogind.io/USER_RECORD">JSON User Record</ulink> of the user, when
@@ -342,11 +346,11 @@ session  required   pam_unix.so</programlisting>
       <citerefentry project='man-pages'><refentrytitle>pam</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam_loginuid</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- 0 /// elogind does not provide or support scope, slice or service files
-      <citerefentry><refentrytitle>elogind.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       // 0 -->
-      </para>
+    </para>
   </refsect1>
 
 </refentry>

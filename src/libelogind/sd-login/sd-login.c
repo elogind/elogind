@@ -58,7 +58,7 @@ _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
 #if 0 /// elogind does not support systemd units
         r = cg_pid_get_unit(pid, unit);
         return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
-#else
+#else // 0
         return -ESRCH;
 #endif // 0
 }
@@ -74,7 +74,7 @@ _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
 #if 0 /// elogind does not support systemd units
         r = cg_pid_get_user_unit(pid, unit);
         return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
-#else
+#else // 0
         return -ESRCH;
 #endif // 0
 }
@@ -90,7 +90,7 @@ _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
 #if 0 /// elogind does not support systemd units
         r = cg_pid_get_machine_name(pid, name);
         return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
-#else
+#else // 0
         return -ESRCH;
 #endif // 0
 }
@@ -192,7 +192,7 @@ _public_ int sd_peer_get_unit(int fd, char **unit) {
 
 #if 0 /// elogind does not support systemd units
         return cg_pid_get_unit(ucred.pid, unit);
-#else
+#else // 0
         return -ESRCH;
 #endif // 0
 }
@@ -210,7 +210,7 @@ _public_ int sd_peer_get_user_unit(int fd, char **unit) {
 
 #if 0 /// elogind does not support systemd units
         return cg_pid_get_user_unit(ucred.pid, unit);
-#else
+#else // 0
         return -ESRCH;
 #endif // 0
 }
@@ -228,7 +228,7 @@ _public_ int sd_peer_get_machine_name(int fd, char **machine) {
 
 #if 0 /// elogind does not support systemd units
         return cg_pid_get_machine_name(ucred.pid, machine);
-#else
+#else // 0
         return -ESRCH;
 #endif // 0
 }

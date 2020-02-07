@@ -392,7 +392,7 @@ int cg_set_access(
                         /* Always propagate access mode from unified to legacy controller */
                         r = cg_set_access(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, uid, gid);
                         if (r < 0)
-                                log_debug_errno(r, "Failed to set access on compatibility elogind cgroup %s, ignoring: %m", path);
+                                log_debug_errno(r, "Failed to set access on compatibility systemd cgroup %s, ignoring: %m", path);
                 }
         }
 
@@ -578,7 +578,7 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
          * duplicate it in the trees specified in mask, and remove it
          * in all others.
          *
-         * Returns 0 if the group already existed in the elogind hierarchy,
+         * Returns 0 if the group already existed in the systemd hierarchy,
          * 1 on success, negative otherwise.
          */
 

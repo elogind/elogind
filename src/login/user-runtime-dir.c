@@ -150,7 +150,7 @@ static int do_mount(const char *user) {
                 return r;
 
         xsprintf(runtime_path, "/run/user/" UID_FMT, uid);
-#else
+#else // 0
 static int do_mount(const char *runtime_path, size_t runtime_dir_size, uid_t uid, gid_t gid) {
 #endif // 0
 
@@ -177,7 +177,7 @@ static int do_umount(const char *user) {
         }
 
         xsprintf(runtime_path, "/run/user/" UID_FMT, uid);
-#else
+#else // 0
 static int do_umount(const char *runtime_path) {
 #endif // 0
 
@@ -202,7 +202,7 @@ static int run(int argc, char *argv[]) {
         r = mac_selinux_init();
         if (r < 0)
                 return log_error_errno(r, "Could not initialize labelling: %m\n");
-#else
+#else // 0
 int user_runtime_dir(const char *verb, User *u) {
         int r = 0;
 
@@ -220,7 +220,7 @@ int user_runtime_dir(const char *verb, User *u) {
         if (streq(argv[1], "stop"))
                 return do_umount(argv[2]);
         assert_not_reached("Unknown verb!");
-#else
+#else // 0
         if (streq(verb, "start"))
                 r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->user_record->uid,
                              u->user_record->gid);

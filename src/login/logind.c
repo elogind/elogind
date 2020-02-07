@@ -69,7 +69,7 @@ static int manager_new(Manager **ret) {
         m->session_units = hashmap_new(&string_hash_ops);
 
         if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
-#else
+#else // 0
         if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons)
 #endif // 0
                 return -ENOMEM;
@@ -755,7 +755,7 @@ static int manager_connect_bus(Manager *m) {
 
 #if 0 /// elogind has to setup its release agent
         return 0;
-#else
+#else // 0
         r = elogind_setup_cgroups_agent(m);
 
         return r;
@@ -1283,7 +1283,7 @@ static int run(int argc, char *argv[]) {
         (void) mkdir_label("/run/systemd/seats", 0755);
         (void) mkdir_label("/run/systemd/users", 0755);
         (void) mkdir_label("/run/systemd/sessions", 0755);
-#else
+#else // 0
         r = mkdir_label("/run/systemd", 0755);
         if ( (r < 0) && (-EEXIST != r) )
                 return log_error_errno(r, "Failed to create /run/systemd : %m");
@@ -1304,7 +1304,7 @@ static int run(int argc, char *argv[]) {
 #if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
 
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, -1) >= 0);
-#else
+#else // 0
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGQUIT, -1) >= 0);
 #endif // 0
 

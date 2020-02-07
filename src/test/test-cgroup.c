@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
         assert_se(cg_get_path(SYSTEMD_CGROUP_CONTROLLER, "/test-b/test-d", NULL, &path) == 0);
 #if 0 /// elogind uses its own name
         assert_se(path_equal(path, "/sys/fs/cgroup/systemd/test-b/test-d"));
-#else
+#else // 0
         assert_se(path_equal(path, "/sys/fs/cgroup/elogind/test-b/test-d"));
 #endif // 0
         free(path);

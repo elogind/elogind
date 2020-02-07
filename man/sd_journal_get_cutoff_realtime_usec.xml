@@ -75,7 +75,7 @@
     the boot identified by the passed boot ID. Either one of the two
     timestamp arguments may be passed as <constant>NULL</constant> in
     case the timestamp is not needed, but not both.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para>As elogind can not open any systemd journals, the functions
     <function>sd_journal_get_cutoff_realtime_usec()</function> and
     <function>sd_journal_get_cutoff_monotonic_usec()</function> do
@@ -96,7 +96,7 @@
     <parameter>from</parameter> and <parameter>to</parameter> will be
     set only if the return value is positive, and obviously, the
     parameters are non-null.</para>
-    --><!-- else -->
+    --><!-- else // 0 -->
     <para><function>sd_journal_get_cutoff_realtime_usec()</function>
     and <function>sd_journal_get_cutoff_monotonic_usec()</function>
     return 0.</para>
@@ -120,7 +120,7 @@
       <!-- 0 /// elogind is in section 8
       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-      --><!-- else -->
+      --><!-- else // 0 -->
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- // 0 -->
       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
