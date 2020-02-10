@@ -852,6 +852,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/shared/bootspec.h" />
+		<Unit filename="../src/shared/bus-polkit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/shared/bus-polkit.h" />
 		<Unit filename="../src/shared/bus-util.c">
 			<Option compilerVar="CC" />
 		</Unit>

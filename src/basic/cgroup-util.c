@@ -42,6 +42,9 @@
 #include "strv.h"
 #include "unit-name.h"
 #include "user-util.h"
+/// Additional includes needed by elogind
+#include "env-file.h"
+
 
 static int cg_enumerate_items(const char *controller, const char *path, FILE **_f, const char *item) {
         _cleanup_free_ char *fs = NULL;
@@ -1853,9 +1856,17 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         if (parse_uid(start, uid) < 0)
                 return -ENXIO;
 #else // 0
-        p = strjoin("/run/systemd/sessions/", slice);
+        FILE* f = NULL;
 
-        r = parse_env_file(NULL, p, "UID", &s);
+        p = strjoin("/run/systemd/sessions/", slice);
+        f = fopen(p, "r");
+
+        if ( NULL == f )
+                return log_error_errno(errno, "Failed to open %s: %m", p);
+
+        r = parse_env_file(f, "UID", &s);
+        fclose( f );
+
         if (r == -ENOENT)
                 return -ENXIO;
         if (r < 0)

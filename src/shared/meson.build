@@ -198,6 +198,8 @@ shared_sources = '''
         acl-util.h
         bootspec.c
         bootspec.h
+        bus-polkit.c
+        bus-polkit.h
         bus-util.c
         bus-util.h
         clean-ipc.c
