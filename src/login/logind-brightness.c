@@ -8,6 +8,7 @@
 #include "process-util.h"
 #include "stdio-util.h"
 /// Additional includes needed for elogind
+#include <sys/wait.h>
 
 /* Brightness and LED devices tend to be very slow to write to (often being I2C and such). Writes to the
  * sysfs attributes are synchronous, and hence will freeze our process on access. We can't really have that,
