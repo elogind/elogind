@@ -1856,16 +1856,9 @@ int cg_path_get_owner_uid(const char *path, uid_t *uid) {
         if (parse_uid(start, uid) < 0)
                 return -ENXIO;
 #else // 0
-        FILE* f = NULL;
-
         p = strjoin("/run/systemd/sessions/", slice);
-        f = fopen(p, "r");
 
-        if ( NULL == f )
-                return log_error_errno(errno, "Failed to open %s: %m", p);
-
-        r = parse_env_file(f, "UID", &s);
-        fclose( f );
+        r = parse_env_file(NULL, p, "UID", &s);
 
         if (r == -ENOENT)
                 return -ENXIO;
