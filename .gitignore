@@ -68,4 +68,5 @@ __pycache__/
 
 # Development files that remain to be local
 cb/elogind.layout
+compile_commands.json
 #endif // 1
