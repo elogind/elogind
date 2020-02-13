@@ -222,6 +222,8 @@ static int execute(Manager *m, const char *verb) {
         if (verb)
                 arg_verb = (char*)verb;
 
+        log_debug_elogind("%s called for %s", __FUNCTION__, strnull(arg_verb));
+
         char **modes  = streq(arg_verb, "suspend")   ? m->suspend_mode     :
                         streq(arg_verb, "hibernate") ? m->hibernate_mode   :
                                                        m->hybrid_sleep_mode;
@@ -269,9 +271,14 @@ static int execute(Manager *m, const char *verb) {
         m->callback_failed = false;
         m->callback_must_succeed = m->allow_suspend_interrupts;
 
+        log_debug_elogind("Executing suspend hook scripts... (Must succeed: %s)",
+                          m->callback_must_succeed ? "YES" : "no" );
+
         r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments, NULL, EXEC_DIR_NONE);
 
-        if ( m->callback_must_succeed && ((r < 0) || m->callback_failed) ) {
+        log_debug_elogind("Result is %d (callback_failed: %s)", r, m->callback_failed ? "true" : "false");
+
+        if ( m->callback_must_succeed && (r || m->callback_failed) ) {
                 e = asprintf(&l, "A sleep script in %s failed! [%d]\n"
                                  "The system %s has been cancelled!",
                              SYSTEM_SLEEP_PATH, r, arg_verb);
@@ -515,6 +522,8 @@ int do_sleep(Manager *m, const char *verb) {
         assert(m);
 
         arg_verb = (char*)verb;
+
+        log_debug_elogind("%s called for %s", __FUNCTION__, strnull(verb));
 
         if (streq(arg_verb, "suspend-then-hibernate"))
                 return execute_s2h(m);

@@ -3003,7 +3003,7 @@ static int method_set_reboot_to_boot_loader_menu(
                         return sd_bus_error_setf(error, SD_BUS_ERROR_NOT_SUPPORTED, "Boot loader does not support boot into boot loader menu.");
 
                 use_efi = true;
-                log_debug_elogind("EFI enabled");
+                log_debug_elogind("%s", "EFI enabled");
 
         } else if (r <= 0) {
                 /* non-EFI case: $SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU is set to off */

@@ -1735,6 +1735,10 @@ static int run(int argc, char *argv[]) {
 #if 0 /// elogind has some own cleanups to do
         return loginctl_main(argc, argv, bus);
 #else // 0
+#if ENABLE_DEBUG_ELOGIND
+        log_set_max_level(LOG_DEBUG);
+        log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
+#endif // ENABLE_DEBUG_ELOGIND
         r = loginctl_main(argc, argv, bus);
 
         elogind_cleanup();

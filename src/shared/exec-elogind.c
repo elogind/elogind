@@ -32,9 +32,9 @@
 
 static int gather_output_generate(int fd, void *arg) {
         _cleanup_fclose_ FILE *f = NULL;
-        Manager* m = arg;
+        Manager* m = (Manager*)arg;
         unsigned line = 0;
-        int r;
+        int r = 0;
 
         /* Read and log lines from fd. Check if any line begins with a keyword
          * representing failure. Set callback_failed to true if such a keyword
@@ -71,6 +71,9 @@ static int gather_output_generate(int fd, void *arg) {
                                 m->callback_failed = true;
                         return r;
                 }
+
+                log_debug_elogind(" =>[%s]", buf);
+
                 if ( startswith_no_case(buf, "cancelled")
                   || startswith_no_case(buf, "critical" )
                   || startswith_no_case(buf, "error"    )
