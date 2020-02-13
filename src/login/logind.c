@@ -112,7 +112,7 @@ static Manager* manager_unref(Manager *m) {
         if (!m)
                 return NULL;
 
-        log_debug_elogind("Tearing down all references (manager_unref) ...");
+        log_debug_elogind("%s", "Tearing down all references (manager_unref) ...");
         while ((session = hashmap_first(m->sessions)))
                 session_free(session);
 
