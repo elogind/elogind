@@ -31,7 +31,11 @@ typedef enum SmackAttr {
 
 bool mac_smack_use(void);
 
-int mac_smack_fix(const char *path, LabelFixFlags flags);
+int mac_smack_fix_container(const char *path, const char *inside_path, LabelFixFlags flags);
+static inline int mac_smack_fix(const char *path, LabelFixFlags flags) {
+        return mac_smack_fix_container(path, path, flags);
+}
+
 int mac_smack_fix_at(int dirfd, const char *path, LabelFixFlags flags);
 
 #if 0 /// UNNEEDED by elogind
