@@ -73,7 +73,7 @@ msgstr ""
 # msgstr "Créer un espace personnel"
 #
 # #: src/home/org.freedesktop.home1.policy:14
-# msgid "Authentication is required for creating a user's home area."
+# msgid "Authentication is required to creat a user's home area."
 # msgstr ""
 # "Authentification requise pour créer l'espace personnel d'un utilisateur."
 #
@@ -82,7 +82,7 @@ msgstr ""
 # msgstr "Retirer un espace personnel"
 #
 # #: src/home/org.freedesktop.home1.policy:24
-# msgid "Authentication is required for removing a user's home area."
+# msgid "Authentication is required to remov a user's home area."
 # msgstr ""
 # "Authentification requise pour retirer l'espace personnel d'un utilisateur."
 #
@@ -92,7 +92,7 @@ msgstr ""
 #
 # #: src/home/org.freedesktop.home1.policy:34
 # msgid ""
-# "Authentication is required for checking credentials against a user's home area."
+# "Authentication is required to check credentials against a user's home area."
 # msgstr ""
 # "Authentification requise pour vérifier les identifiants de l'espace "
 # "personnel d'un utilisateur."
@@ -102,7 +102,7 @@ msgstr ""
 # msgstr "Mettre à jour un espace personnel"
 #
 # #: src/home/org.freedesktop.home1.policy:44
-# msgid "Authentication is required for updating a user's home area."
+# msgid "Authentication is required to updat a user's home area."
 # msgstr ""
 # "Authentification requise pour mettre à jour l'espace personnel d'un "
 # "utilisateur."
@@ -112,7 +112,7 @@ msgstr ""
 # msgstr "Retailler un espace personnel"
 #
 # #: src/home/org.freedesktop.home1.policy:54
-# msgid "Authentication is required for resizing a user's home area."
+# msgid "Authentication is required to resiz a user's home area."
 # msgstr "Authentification requise pour retailler un espace personnel."
 #
 # #: src/home/org.freedesktop.home1.policy:63
@@ -120,7 +120,7 @@ msgstr ""
 # msgstr "Changer le mot de passe d'un espace personnel"
 #
 # #: src/home/org.freedesktop.home1.policy:64
-# msgid "Authentication is required for changing the password of a user's home area."
+# msgid "Authentication is required to chang the password of a user's home area."
 # msgstr ""
 # "Authentification requise pour changer le mot de passe de l'espace personnel "
 # "d'un utilisateur."
@@ -345,7 +345,7 @@ msgid "Allow attaching devices to seats"
 msgstr "Permet d'associer des périphériques à des postes (seats)"
 
 #: src/login/org.freedesktop.login1.policy:138
-msgid "Authentication is required for attaching a device to a seat."
+msgid "Authentication is required to attach a device to a seat."
 msgstr ""
 "Authentification requise pour associer un périphérique à un poste (seat)."
 
@@ -355,7 +355,7 @@ msgstr "Révoquer les associations de périphériques aux postes (seats)"
 
 #: src/login/org.freedesktop.login1.policy:149
 msgid ""
-"Authentication is required for resetting how devices are attached to seats."
+"Authentication is required to reset how devices are attached to seats."
 msgstr ""
 "Authentification requise pour révoquer les associations de périphériques aux "
 "postes (seats)."
@@ -365,7 +365,7 @@ msgid "Power off the system"
 msgstr "Éteindre le système"
 
 #: src/login/org.freedesktop.login1.policy:159
-msgid "Authentication is required for powering off the system."
+msgid "Authentication is required to power off the system."
 msgstr "Authentification requise pour éteindre le système."
 
 #: src/login/org.freedesktop.login1.policy:169
@@ -374,7 +374,7 @@ msgstr "Éteindre le système alors que d'autres utilisateurs sont connectés"
 
 #: src/login/org.freedesktop.login1.policy:170
 msgid ""
-"Authentication is required for powering off the system while other users are "
+"Authentication is required to power off the system while other users are "
 "logged in."
 msgstr ""
 "Authentification requise pour éteindre le système alors que d'autres "
@@ -386,7 +386,7 @@ msgstr "Éteindre le système alors qu'une application a demandé de l'empêcher
 
 #: src/login/org.freedesktop.login1.policy:181
 msgid ""
-"Authentication is required for powering off the system while an application "
+"Authentication is required to power off the system while an application "
 "asked to inhibit it."
 msgstr ""
 "Authentification requise pour éteindre le système alors qu'une application a "
@@ -397,7 +397,7 @@ msgid "Reboot the system"
 msgstr "Redémarrer le système"
 
 #: src/login/org.freedesktop.login1.policy:192
-msgid "Authentication is required for rebooting the system."
+msgid "Authentication is required to reboot the system."
 msgstr "Authentification requise pour redémarrer le système."
 
 #: src/login/org.freedesktop.login1.policy:202
@@ -406,7 +406,7 @@ msgstr "Redémarrer le système alors que d'autres utilisateurs sont connectés"
 
 #: src/login/org.freedesktop.login1.policy:203
 msgid ""
-"Authentication is required for rebooting the system while other users are "
+"Authentication is required to reboot the system while other users are "
 "logged in."
 msgstr ""
 "Authentification requise pour redémarrer le système alors que d'autres "
@@ -418,7 +418,7 @@ msgstr "Redémarrer le système alors qu'une application a demandé de l'empêch
 
 #: src/login/org.freedesktop.login1.policy:214
 msgid ""
-"Authentication is required for rebooting the system while an application "
+"Authentication is required to reboot the system while an application "
 "asked to inhibit it."
 msgstr ""
 "Authentification requise pour redémarrer le système alors qu'une application "
@@ -429,7 +429,7 @@ msgid "Halt the system"
 msgstr "Arrêter le système"
 
 #: src/login/org.freedesktop.login1.policy:225
-msgid "Authentication is required for halting the system."
+msgid "Authentication is required to halt the system."
 msgstr "Authentification requise pour arrêter le système."
 
 #: src/login/org.freedesktop.login1.policy:235
@@ -438,7 +438,7 @@ msgstr "Arrêter le système alors que d'autres utilisateurs sont connectés"
 
 #: src/login/org.freedesktop.login1.policy:236
 msgid ""
-"Authentication is required for halting the system while other users are "
+"Authentication is required to halt the system while other users are "
 "logged in."
 msgstr ""
 "Authentification requise pour arrêter le système alors que d'autres "
@@ -450,7 +450,7 @@ msgstr "Arrêter le système alors qu'une application a demandé de l'empêcher"
 
 #: src/login/org.freedesktop.login1.policy:247
 msgid ""
-"Authentication is required for halting the system while an application asked "
+"Authentication is required to halt the system while an application asked "
 "to inhibit it."
 msgstr ""
 "Authentification requise pour arrêter le système alors qu'une application a "
@@ -461,7 +461,7 @@ msgid "Suspend the system"
 msgstr "Mettre le système en veille"
 
 #: src/login/org.freedesktop.login1.policy:258
-msgid "Authentication is required for suspending the system."
+msgid "Authentication is required to suspend the system."
 msgstr "Authentification requise pour mettre le système en veille."
 
 #: src/login/org.freedesktop.login1.policy:267
@@ -471,7 +471,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:268
 msgid ""
-"Authentication is required for suspending the system while other users are "
+"Authentication is required to suspend the system while other users are "
 "logged in."
 msgstr ""
 "Authentification requise pour mettre le système en veille alors que d'autres "
@@ -484,7 +484,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:279
 msgid ""
-"Authentication is required for suspending the system while an application "
+"Authentication is required to suspend the system while an application "
 "asked to inhibit it."
 msgstr ""
 "Authentification requise pour mettre le système en veille alors qu'une "
@@ -495,7 +495,7 @@ msgid "Hibernate the system"
 msgstr "Mettre le système en hibernation"
 
 #: src/login/org.freedesktop.login1.policy:290
-msgid "Authentication is required for hibernating the system."
+msgid "Authentication is required to hibernate the system."
 msgstr "Authentification requise pour mettre le système en hibernation."
 
 #: src/login/org.freedesktop.login1.policy:299
@@ -506,7 +506,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:300
 msgid ""
-"Authentication is required for hibernating the system while other users are "
+"Authentication is required to hibernate the system while other users are "
 "logged in."
 msgstr ""
 "Authentification requise pour mettre le système en hibernation alors que "
@@ -520,7 +520,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:311
 msgid ""
-"Authentication is required for hibernating the system while an application "
+"Authentication is required to hibernate the system while an application "
 "asked to inhibit it."
 msgstr ""
 "Authentification requise pour mettre le système en hibernation alors qu'une "
@@ -532,7 +532,7 @@ msgstr "Gérer les sessions actives, les utilisateurs et les postes (seats)"
 
 #: src/login/org.freedesktop.login1.policy:322
 msgid ""
-"Authentication is required for managing active sessions, users and seats."
+"Authentication is required to manage active sessions, users and seats."
 msgstr ""
 "Authentification requise pour gérer les sessions actives, les utilisateurs "
 "et les postes (seats)."
