@@ -369,15 +369,14 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:180
 msgid "Power off the system while an application is inhibiting this"
-msgstr "Wyłączenie systemu, kiedy program zażądał jego wstrzymania"
+msgstr "Wyłączenie systemu, kiedy program je wstrzymuje"
 
 #: src/login/org.freedesktop.login1.policy:181
 msgid ""
 "Authentication is required to power off the system while an application "
 "is inhibiting this."
 msgstr ""
-"Wymagane jest uwierzytelnienie, aby wyłączyć system, kiedy program zażądał "
-"jego wstrzymania."
+"Wymagane jest uwierzytelnienie, aby wyłączyć system, kiedy program to wstrzymuje."
 
 #: src/login/org.freedesktop.login1.policy:191
 msgid "Reboot the system"
@@ -401,7 +400,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:213
 msgid "Reboot the system while an application is inhibiting this"
-msgstr "Ponowne uruchomienie systemu, kiedy program zażądał jego wstrzymania"
+msgstr "Ponowne uruchomienie systemu, kiedy program je wstrzymuje"
 
 #: src/login/org.freedesktop.login1.policy:214
 msgid ""
@@ -409,7 +408,7 @@ msgid ""
 "is inhibiting this."
 msgstr ""
 "Wymagane jest uwierzytelnienie, aby ponownie uruchomić system, kiedy program "
-"zażądał jego wstrzymania."
+"to wstrzymuje."
 
 #: src/login/org.freedesktop.login1.policy:224
 msgid "Halt the system"
@@ -433,7 +432,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:246
 msgid "Halt the system while an application is inhibiting this"
-msgstr "Zatrzymanie systemu, kiedy program zażądał jego wstrzymania"
+msgstr "Zatrzymanie systemu, kiedy program je wstrzymuje"
 
 #: src/login/org.freedesktop.login1.policy:247
 msgid ""
@@ -465,15 +464,14 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:278
 msgid "Suspend the system while an application is inhibiting this"
-msgstr "Uśpienie systemu, kiedy program zażądał jego wstrzymania"
+msgstr "Uśpienie systemu, kiedy program je wstrzymuje"
 
 #: src/login/org.freedesktop.login1.policy:279
 msgid ""
 "Authentication is required to suspend the system while an application "
 "is inhibiting this."
 msgstr ""
-"Wymagane jest uwierzytelnienie, aby uśpić system, kiedy program zażądał jego "
-"wstrzymania."
+"Wymagane jest uwierzytelnienie, aby uśpić system, kiedy program to wstrzymuje."
 
 #: src/login/org.freedesktop.login1.policy:289
 msgid "Hibernate the system"
@@ -497,7 +495,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:310
 msgid "Hibernate the system while an application is inhibiting this"
-msgstr "Hibernacja systemu, kiedy program zażądał jej wstrzymania"
+msgstr "Hibernacja systemu, kiedy program ją wstrzymuje"
 
 #: src/login/org.freedesktop.login1.policy:311
 msgid ""
@@ -505,7 +503,7 @@ msgid ""
 "is inhibiting this."
 msgstr ""
 "Wymagane jest uwierzytelnienie, aby zahibernować system, kiedy program "
-"zażądał jej wstrzymania."
+"to wstrzymuje."
 
 #: src/login/org.freedesktop.login1.policy:321
 msgid "Manage active sessions, users and seats"
