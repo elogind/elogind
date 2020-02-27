@@ -587,7 +587,7 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         _cleanup_(json_variant_unrefp) JsonVariant *query = NULL;
         int r;
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
@@ -700,11 +700,9 @@ int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
 
                 setpwent();
                 iterator->nss_iterating = true;
-                goto finish;
         } else if (r < 0)
                 return r;
 
-finish:
         *ret = TAKE_PTR(iterator);
         return 0;
 }
@@ -798,7 +796,7 @@ int groupdb_by_name(const char *name, UserDBFlags flags, GroupRecord **ret) {
         _cleanup_(json_variant_unrefp) JsonVariant *query = NULL;
         int r;
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
@@ -991,7 +989,7 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
 
         assert(ret);
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
@@ -1034,7 +1032,7 @@ int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **
 
         assert(ret);
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
