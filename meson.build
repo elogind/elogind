@@ -23,7 +23,8 @@ libudev_version = '1.6.17'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
-conf.set('PROJECT_VERSION',        meson.project_version())
+conf.set('PROJECT_VERSION',        meson.project_version(),
+         description : 'Numerical project version (used where a simple number is expected)')
 
 substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -31,7 +32,8 @@ substs = configuration_data()
 #else // 0
 substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 #endif // 0
-substs.set('PROJECT_VERSION',      meson.project_version())
+substs.set('PROJECT_VERSION',      meson.project_version(),
+           description : 'Numerical project version (used where a simple number is expected)')
 
 # This is to be used instead of meson.source_root(), as the latter will return
 # the wrong result when elogind is being built as a meson subproject
