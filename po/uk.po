@@ -76,7 +76,7 @@ msgstr ""
 # msgstr "Створення домашньої теки"
 #
 # #: src/home/org.freedesktop.home1.policy:14
-# msgid "Authentication is required to creat a user's home area."
+# msgid "Authentication is required to create a user's home area."
 # msgstr "Для створення домашньої теки користувача слід пройти розпізнавання."
 #
 # #: src/home/org.freedesktop.home1.policy:23
@@ -84,7 +84,7 @@ msgstr ""
 # msgstr "Вилучення домашньої теки"
 #
 # #: src/home/org.freedesktop.home1.policy:24
-# msgid "Authentication is required to remov a user's home area."
+# msgid "Authentication is required to remove a user's home area."
 # msgstr "Для вилучення домашньої теки користувача слід пройти розпізнавання."
 #
 # #: src/home/org.freedesktop.home1.policy:33
@@ -103,7 +103,7 @@ msgstr ""
 # msgstr "Оновлення домашньої теки"
 #
 # #: src/home/org.freedesktop.home1.policy:44
-# msgid "Authentication is required to updat a user's home area."
+# msgid "Authentication is required to update a user's home area."
 # msgstr "Для оновлення домашньої теки користувача слід пройти розпізнавання."
 #
 # #: src/home/org.freedesktop.home1.policy:53
@@ -111,7 +111,7 @@ msgstr ""
 # msgstr "Зміна розмірів домашньої теки"
 #
 # #: src/home/org.freedesktop.home1.policy:54
-# msgid "Authentication is required to resiz a user's home area."
+# msgid "Authentication is required to resize a user's home area."
 # msgstr ""
 # "Для зміни розмірів домашньої теки користувача слід пройти розпізнавання."
 #
@@ -120,7 +120,7 @@ msgstr ""
 # msgstr "Зміна пароля до домашньої теки"
 #
 # #: src/home/org.freedesktop.home1.policy:64
-# msgid "Authentication is required to chang the password of a user's home area."
+# msgid "Authentication is required to change the password of a user's home area."
 # msgstr ""
 # "Для зміни пароля для доступу до домашньої теки користувача слід пройти"
 # " розпізнавання."
