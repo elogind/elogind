@@ -939,9 +939,3 @@ msgstr "Autenticazione richiesta per configurare un messaggio per gli utenti"
 # "'$(unit)'."
 #endif // 0
 
-#~ msgid ""
-#~ "Authentication is required to halt the system while an application asked "
-#~ "to inhibit it."
-#~ msgstr ""
-#~ "Autenticazione richiesta per fermare il sistema mentre un'applicazione "
-#~ "chiede di inibirne l'azione."
