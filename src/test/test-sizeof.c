@@ -5,6 +5,8 @@
 #endif // 0
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #define __STDC_WANT_IEC_60559_TYPES_EXT__
 #include <float.h>
@@ -71,6 +73,7 @@ int main(void) {
         info(pid_t);
         info(uid_t);
         info(gid_t);
+        info(socklen_t);
 
 #if 0 /// UNNEEDED by elogind (Only needed for *cpu_set* stuff in systemd we don't use)
         info(__cpu_mask);
