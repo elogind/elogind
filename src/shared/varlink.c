@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-#include <poll.h>
+#include <sys/poll.h>
 
 #include "alloc-util.h"
 #include "errno-util.h"
@@ -271,6 +271,7 @@ static int varlink_new(Varlink **ret) {
 int varlink_connect_address(Varlink **ret, const char *address) {
         _cleanup_(varlink_unrefp) Varlink *v = NULL;
         union sockaddr_union sockaddr;
+        socklen_t sockaddr_len;
         int r;
 
         assert_return(ret, -EINVAL);
@@ -279,6 +280,7 @@ int varlink_connect_address(Varlink **ret, const char *address) {
         r = sockaddr_un_set_path(&sockaddr.un, address);
         if (r < 0)
                 return r;
+        sockaddr_len = r;
 
         r = varlink_new(&v);
         if (r < 0)
@@ -290,7 +292,7 @@ int varlink_connect_address(Varlink **ret, const char *address) {
 
         v->fd = fd_move_above_stdio(v->fd);
 
-        if (connect(v->fd, &sockaddr.sa, SOCKADDR_UN_LEN(sockaddr.un)) < 0) {
+        if (connect(v->fd, &sockaddr.sa, sockaddr_len) < 0) {
                 if (!IN_SET(errno, EAGAIN, EINPROGRESS))
                         return -errno;
 
@@ -2243,6 +2245,7 @@ int varlink_server_listen_fd(VarlinkServer *s, int fd) {
 
 int varlink_server_listen_address(VarlinkServer *s, const char *address, mode_t m) {
         union sockaddr_union sockaddr;
+        socklen_t sockaddr_len;
         _cleanup_close_ int fd = -1;
         int r;
 
@@ -2253,6 +2256,7 @@ int varlink_server_listen_address(VarlinkServer *s, const char *address, mode_t 
         r = sockaddr_un_set_path(&sockaddr.un, address);
         if (r < 0)
                 return r;
+        sockaddr_len = r;
 
         fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0);
         if (fd < 0)
@@ -2263,7 +2267,7 @@ int varlink_server_listen_address(VarlinkServer *s, const char *address, mode_t 
         (void) sockaddr_un_unlink(&sockaddr.un);
 
         RUN_WITH_UMASK(~m & 0777)
-                if (bind(fd, &sockaddr.sa, SOCKADDR_UN_LEN(sockaddr.un)) < 0)
+                if (bind(fd, &sockaddr.sa, sockaddr_len) < 0)
                         return -errno;
 
         if (listen(fd, SOMAXCONN) < 0)

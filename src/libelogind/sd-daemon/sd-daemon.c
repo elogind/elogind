@@ -447,7 +447,7 @@ _public_ int sd_pid_notify_with_fds(
                 const int *fds,
                 unsigned n_fds) {
 
-        union sockaddr_union sockaddr = {};
+        union sockaddr_union sockaddr;
         struct iovec iovec;
         struct msghdr msghdr = {
                 .msg_iov = &iovec,
@@ -458,7 +458,7 @@ _public_ int sd_pid_notify_with_fds(
         struct cmsghdr *cmsg = NULL;
         const char *e;
         bool send_ucred;
-        int r, salen;
+        int r;
 
         if (!state) {
                 r = -EINVAL;
@@ -474,11 +474,10 @@ _public_ int sd_pid_notify_with_fds(
         if (!e)
                 return 0;
 
-        salen = sockaddr_un_set_path(&sockaddr.un, e);
-        if (salen < 0) {
-                r = salen;
+        r = sockaddr_un_set_path(&sockaddr.un, e);
+        if (r < 0)
                 goto finish;
-        }
+        msghdr.msg_namelen = r;
 
         fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0);
         if (fd < 0) {
@@ -489,7 +488,6 @@ _public_ int sd_pid_notify_with_fds(
         (void) fd_inc_sndbuf(fd, SNDBUF_SIZE);
 
         iovec = IOVEC_MAKE_STRING(state);
-        msghdr.msg_namelen = salen;
 
         send_ucred =
                 (pid != 0 && pid != getpid_cached()) ||
