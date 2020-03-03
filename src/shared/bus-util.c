@@ -411,7 +411,7 @@ static int bus_print_property(const char *name, const char *expected_value, sd_b
                                 if (r < 0)
                                         return r;
 
-                                result = s;
+                                result = strempty(s);
                         }
 
                         bus_print_property_value(name, expected_value, value, result);
