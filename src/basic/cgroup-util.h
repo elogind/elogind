@@ -195,6 +195,8 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
 #if 0 /// UNNEEDED by elogind
 int cg_get_keyed_attribute(const char *controller, const char *path, const char *attribute, char **keys, char **values);
 
+int cg_get_attribute_as_uint64(const char *controller, const char *path, const char *attribute, uint64_t *ret);
+
 int cg_set_access(const char *controller, const char *path, uid_t uid, gid_t gid);
 
 int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags);
