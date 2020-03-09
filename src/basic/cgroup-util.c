@@ -2319,3 +2319,10 @@ bool cpu_accounting_is_cheap(void) {
         return get_cpu_accounting_mask() == 0;
 }
 #endif // 0
+
+static const char* const managed_oom_mode_table[_MANAGED_OOM_MODE_MAX] = {
+        [MANAGED_OOM_AUTO] = "auto",
+        [MANAGED_OOM_KILL] = "kill",
+};
+
+DEFINE_STRING_TABLE_LOOKUP(managed_oom_mode, ManagedOOMMode);

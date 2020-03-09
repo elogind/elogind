@@ -160,6 +160,11 @@ struct CGroupContext {
 
         /* Common */
         TasksMax tasks_max;
+
+        /* Settings for systemd-oomd */
+        ManagedOOMMode moom_swap;
+        ManagedOOMMode moom_mem_pressure;
+        int moom_mem_pressure_limit;
 };
 
 /* Used when querying IP accounting data */
