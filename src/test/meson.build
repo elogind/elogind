@@ -352,9 +352,6 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-sysctl-util.c'],
-#          [],
-#          []],
 #endif // 0
 
         [['src/test/test-user-util.c'],
