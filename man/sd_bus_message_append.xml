@@ -47,7 +47,6 @@
   <refsect1>
     <title>Description</title>
 
-
     <para>The <function>sd_bus_message_append()</function> function appends a sequence of fields to
     the D-Bus message object <parameter>m</parameter>. The type string <parameter>types</parameter>
     describes the types of the field arguments that follow. For each type specified in the type
@@ -66,6 +65,7 @@
     <literal>)</literal>. This sequence cannot be empty — it must contain at least one type.
     Arguments corresponding to this nested sequence follow the same rules as if they were not
     nested.</para>
+
     <para>A variant is denoted by <literal>v</literal>. Corresponding arguments must begin with a
     type string denoting a complete type, and following that, arguments corresponding to the
     specified type.</para>
@@ -81,12 +81,12 @@
     dictionary entries.</para>
 
     <para>The <function>sd_bus_message_appendv()</function> is equivalent to the
-
     <function>sd_bus_message_append()</function>, except that it is called with a
     <literal>va_list</literal> instead of a variable number of arguments. This function does not
     call the <function>va_end()</function> macro. Because it invokes the
     <function>va_arg()</function> macro, the value of <parameter>ap</parameter> is undefined after
     the call.</para>
+
     <para>For further details on the D-Bus type system, please consult the
     <ulink url="http://dbus.freedesktop.org/doc/dbus-specification.html#type-system">D-Bus Specification</ulink>.
     </para>
