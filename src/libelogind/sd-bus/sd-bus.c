@@ -1904,9 +1904,10 @@ _public_ int sd_bus_send(sd_bus *bus, sd_bus_message *_m, uint64_t *cookie) {
 
         assert_return(m, -EINVAL);
 
-        if (!bus)
-                bus = m->bus;
-
+        if (bus)
+                assert_return(bus = bus_resolve(bus), -ENOPKG);
+        else
+                assert_return(bus = m->bus, -ENOTCONN);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         if (!BUS_IS_OPEN(bus->state))
@@ -1988,9 +1989,10 @@ _public_ int sd_bus_send_to(sd_bus *bus, sd_bus_message *m, const char *destinat
 
         assert_return(m, -EINVAL);
 
-        if (!bus)
-                bus = m->bus;
-
+        if (bus)
+                assert_return(bus = bus_resolve(bus), -ENOPKG);
+        else
+                assert_return(bus = m->bus, -ENOTCONN);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         if (!BUS_IS_OPEN(bus->state))
@@ -2053,9 +2055,10 @@ _public_ int sd_bus_call_async(
         assert_return(m->header->type == SD_BUS_MESSAGE_METHOD_CALL, -EINVAL);
         assert_return(!m->sealed || (!!callback == !(m->header->flags & BUS_MESSAGE_NO_REPLY_EXPECTED)), -EINVAL);
 
-        if (!bus)
-                bus = m->bus;
-
+        if (bus)
+                assert_return(bus = bus_resolve(bus), -ENOPKG);
+        else
+                assert_return(bus = m->bus, -ENOTCONN);
         assert_return(!bus_pid_changed(bus), -ECHILD);
 
         if (!BUS_IS_OPEN(bus->state))
@@ -2159,9 +2162,10 @@ _public_ int sd_bus_call(
         bus_assert_return(!(m->header->flags & BUS_MESSAGE_NO_REPLY_EXPECTED), -EINVAL, error);
         bus_assert_return(!bus_error_is_dirty(error), -EINVAL, error);
 
-        if (!bus)
-                bus = m->bus;
-
+        if (bus)
+                assert_return(bus = bus_resolve(bus), -ENOPKG);
+        else
+                assert_return(bus = m->bus, -ENOTCONN);
         bus_assert_return(!bus_pid_changed(bus), -ECHILD, error);
 
         if (!BUS_IS_OPEN(bus->state)) {
