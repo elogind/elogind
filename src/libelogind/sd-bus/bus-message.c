@@ -585,13 +585,15 @@ _public_ int sd_bus_message_new(
                 sd_bus_message **m,
                 uint8_t type) {
 
+        sd_bus_message *t;
+
         assert_return(bus, -ENOTCONN);
         assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state != BUS_UNSET, -ENOTCONN);
         assert_return(m, -EINVAL);
         assert_return(type < _SD_BUS_MESSAGE_TYPE_MAX, -EINVAL);
 
-        sd_bus_message *t = malloc0(ALIGN(sizeof(sd_bus_message)) + sizeof(struct bus_header));
+        t = malloc0(ALIGN(sizeof(sd_bus_message)) + sizeof(struct bus_header));
         if (!t)
                 return -ENOMEM;
 
