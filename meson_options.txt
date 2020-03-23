@@ -29,6 +29,8 @@ option('rootprefix', type : 'string',
 #endif // 0
 option('link-boot-shared', type: 'boolean',
        description : 'link bootctl and elogind-bless-boot against libelogind-shared.so')
+option('first-boot-full-preset', type: 'boolean', value: false,
+       description : 'during first boot, do full preset-all (default will be changed to true later)')
 
 option('static-libelogind', type : 'combo',
        choices : ['false', 'true', 'pic', 'no-pic'],
@@ -271,7 +273,7 @@ option('cgroup-controller', type : 'string',
 option('default-net-naming-scheme', type : 'string', value : 'latest',
        description : 'default net.naming-scheme= value')
 option('status-unit-format-default', type : 'combo',
-       choices : ['auto', 'description', 'name', 'combined'],
+       choices : ['description', 'name', 'combined'],
        description : 'use unit name or description in messages by default')
 #if 0 /// UNNEEDED by elogind
 # option('time-epoch', type : 'integer', value : '-1',
@@ -364,10 +366,8 @@ option('default-kill-user-processes', type : 'boolean',
 #if 0 /// UNNEEDED by elogind
 # option('gshadow', type : 'boolean',
 #        description : 'support for shadow group')
-# option('default-locale', type : 'string', value : 'C.UTF-8',
+# option('default-locale', type : 'string', value : '',
 #        description : 'default locale used when /etc/locale.conf does not exist')
-# option('nspawn-locale', type : 'string', value : 'C.UTF-8',
-#        description : 'default locale used by systemd-nspawn when executing commands in a container')
 # option('localegen-path', type : 'string', value : '',
 #        description : 'absolute path to the locale-gen binary in case the system is using locale-gen')
 # option('service-watchdog', type : 'string', value : '3min',
@@ -547,8 +547,6 @@ option('fuzz-tests', type : 'boolean', value : 'false',
        description : 'run the fuzzer regression tests by default (with sanitizers)')
 option('install-tests', type : 'boolean', value : 'false',
        description : 'install test executables')
-option('log-message-verification', type : 'combo', choices : ['auto', 'true', 'false'],
-       description : 'do fake printf() calls to verify format strings')
 
 option('ok-color', type : 'combo',
        choices : ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan',
