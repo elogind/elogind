@@ -12,6 +12,7 @@ _systemd_headers = '''
         sd-journal.h
         sd-login.h
         sd-messages.h
+        sd-path.h
 '''.split()
 
 # https://github.com/mesonbuild/meson/issues/1633
@@ -31,7 +32,6 @@ systemd_headers = files(_systemd_headers)
 #         sd-ndisc.h
 #         sd-netlink.h
 #         sd-network.h
-#         sd-path.h
 #         sd-radv.h
 #         sd-resolve.h
 #         sd-utf8.h
