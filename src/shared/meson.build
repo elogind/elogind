@@ -22,6 +22,8 @@
 #         bootspec.h
 #         bpf-program.c
 #         bpf-program.h
+#         bridge-util.c
+#         bridge-util.h
 #         bus-unit-procs.c
 #         bus-unit-procs.h
 #         bus-unit-util.c
