@@ -1259,3 +1259,5 @@ int config_parse_vlanprotocol(const char* unit,
         return 0;
 }
 #endif // 0
+
+DEFINE_CONFIG_PARSE(config_parse_percent, parse_percent, "Failed to parse percent value");

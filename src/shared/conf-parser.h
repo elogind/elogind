@@ -155,6 +155,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_mtu);
 CONFIG_PARSER_PROTOTYPE(config_parse_rlimit);
 CONFIG_PARSER_PROTOTYPE(config_parse_vlanprotocol);
 #endif // 0
+CONFIG_PARSER_PROTOTYPE(config_parse_percent);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
