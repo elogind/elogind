@@ -250,8 +250,8 @@ endif
 #endif // 0
 
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
-conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysconfdir, 'system'))
 #if 0 /// UNNEEDED by elogind
+# conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     join_paths(pkgsysconfdir, 'system'))
 # conf.set_quoted('SYSTEM_DATA_UNIT_PATH',                      systemunitdir)
 # conf.set_quoted('SYSTEM_SYSVINIT_PATH',                       sysvinit_path)
 # conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
@@ -259,8 +259,8 @@ conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysc
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
 #
-# conf.set_quoted('USER_CONFIG_UNIT_PATH',                      join_paths(pkgsysconfdir, 'user'))
-# conf.set_quoted('USER_DATA_UNIT_PATH',                        userunitdir)
+# conf.set_quoted('USER_CONFIG_UNIT_DIR',                       join_paths(pkgsysconfdir, 'user'))
+# conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 # conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
 # conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
@@ -282,11 +282,11 @@ conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
-# conf.set_quoted('SYSTEM_GENERATOR_PATH',                      systemgeneratordir)
-# conf.set_quoted('USER_GENERATOR_PATH',                        usergeneratordir)
-# conf.set_quoted('SYSTEM_ENV_GENERATOR_PATH',                  systemenvgeneratordir)
-# conf.set_quoted('USER_ENV_GENERATOR_PATH',                    userenvgeneratordir)
 #endif // 0
+conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
+conf.set_quoted('USER_GENERATOR_DIR',                         usergeneratordir)
+conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
+conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
 conf.set_quoted('SYSTEM_SHUTDOWN_PATH',                       systemshutdowndir)
 conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 #if 0 /// UNNEEDED by elogind
@@ -3963,7 +3963,6 @@ foreach tuple : [
         ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
 #if 0 /// elogind ships neitehr libudev nor systemctl
-#         ['install tests',    install_tests],
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #endif // 0
