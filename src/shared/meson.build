@@ -22,6 +22,8 @@
 #         bootspec.h
 #         bpf-program.c
 #         bpf-program.h
+#         bridge-util.c
+#         bridge-util.h
 #         bus-unit-procs.c
 #         bus-unit-procs.h
 #         bus-unit-util.c
@@ -159,8 +161,6 @@
 #         output-mode.h
 #         pager.c
 #         pager.h
-#         path-lookup.c
-#         path-lookup.h
 #         pe-header.h
 #         pkcs11-util.c
 #         pkcs11-util.h

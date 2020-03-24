@@ -161,6 +161,8 @@
 #         ordered-set.h
 #         parse-util.c
 #         parse-util.h
+#         path-lookup.c
+#         path-lookup.h
 #         path-util.c
 #         path-util.h
 #         prioq.c
