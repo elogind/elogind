@@ -61,9 +61,12 @@ skip_deps = false
 #if 0 /// elogind does not need this
 #
 # # Try to install the git pre-commit hook
-# git_hook = run_command(join_paths(project_source_root, 'tools/add-git-hook.sh'))
-# if git_hook.returncode() == 0
-#         message(git_hook.stdout().strip())
+# add_git_hook_sh = find_program('tools/add-git-hook.sh', required : false)
+# if add_git_hook_sh.found()
+#         git_hook = run_command(add_git_hook_sh)
+#         if git_hook.returncode() == 0
+#                 message(git_hook.stdout().strip())
+#         endif
 # endif
 #else // 0
 # elogind Note: We use precompiler masks for two reasons:
