@@ -46,13 +46,12 @@ conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
-# want_fuzzbuzz = get_option('fuzzbuzz')
-# if want_ossfuzz + want_libfuzzer + want_fuzzbuzz > 1
-#         error('only one of oss-fuzz, llvm-fuzz or fuzzbuzz can be specified')
+# if want_ossfuzz + want_libfuzzer > 1
+#         error('only one of oss-fuzz or llvm-fuzz can be specified')
 # endif
 #
 # skip_deps = want_ossfuzz or want_libfuzzer
-# fuzzer_build = want_ossfuzz or want_libfuzzer or want_fuzzbuzz
+# fuzzer_build = want_ossfuzz or want_libfuzzer
 #else // 0
 skip_deps = false
 #endif // 0
@@ -61,12 +60,9 @@ skip_deps = false
 #if 0 /// elogind does not need this
 #
 # # Try to install the git pre-commit hook
-# add_git_hook_sh = find_program('tools/add-git-hook.sh', required : false)
-# if add_git_hook_sh.found()
-#         git_hook = run_command(add_git_hook_sh)
-#         if git_hook.returncode() == 0
-#                 message(git_hook.stdout().strip())
-#         endif
+# git_hook = run_command(join_paths(project_source_root, 'tools/add-git-hook.sh'))
+# if git_hook.returncode() == 0
+#         message(git_hook.stdout().strip())
 # endif
 #else // 0
 # elogind Note: We use precompiler masks for two reasons:
@@ -254,7 +250,7 @@ endif
 
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('SYSTEM_CONFIG_UNIT_PATH',                    join_paths(pkgsysconfdir, 'system'))
+# conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     join_paths(pkgsysconfdir, 'system'))
 # conf.set_quoted('SYSTEM_DATA_UNIT_PATH',                      systemunitdir)
 # conf.set_quoted('SYSTEM_SYSVINIT_PATH',                       sysvinit_path)
 # conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
@@ -262,8 +258,8 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
 #
-# conf.set_quoted('USER_CONFIG_UNIT_PATH',                      join_paths(pkgsysconfdir, 'user'))
-# conf.set_quoted('USER_DATA_UNIT_PATH',                        userunitdir)
+# conf.set_quoted('USER_CONFIG_UNIT_DIR',                       join_paths(pkgsysconfdir, 'user'))
+# conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 # conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
 # conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
@@ -286,10 +282,10 @@ conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
 #endif // 0
-conf.set_quoted('SYSTEM_GENERATOR_PATH',                      systemgeneratordir)
-conf.set_quoted('USER_GENERATOR_PATH',                        usergeneratordir)
-conf.set_quoted('SYSTEM_ENV_GENERATOR_PATH',                  systemenvgeneratordir)
-conf.set_quoted('USER_ENV_GENERATOR_PATH',                    userenvgeneratordir)
+conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
+conf.set_quoted('USER_GENERATOR_DIR',                         usergeneratordir)
+conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
+conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
 conf.set_quoted('SYSTEM_SHUTDOWN_PATH',                       systemshutdowndir)
 conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 #if 0 /// UNNEEDED by elogind
@@ -398,8 +394,6 @@ install_tests = get_option('install-tests')
 #         endif
 # elif want_ossfuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
-# elif want_fuzzbuzz
-#         fuzzing_engine = meson.get_compiler('cpp').find_library(get_option('fuzzbuzz-engine'), dirs: get_option('fuzzbuzz-engine-dir'))
 # endif
 #else // 0
 fuzzer_build = false
@@ -2872,7 +2866,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_REPART') == 1
-#         exe = executable('systemd-repart',
+#         executable('systemd-repart',
 #                    systemd_repart_sources,
 #                    include_directories : includes,
 #                    link_with : [libshared],
@@ -2884,12 +2878,6 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootbindir)
-#
-#         if want_tests != 'false'
-#                 test('test-repart',
-#                      test_repart_sh,
-#                      args : exe.full_path())
-#         endif
 # endif
 #
 # if conf.get('ENABLE_VCONSOLE') == 1
@@ -3346,20 +3334,13 @@ public_programs += exe
 #                    install_dir : rootbindir)
 #         public_programs += exe
 #
-#         exe = executable('systemd-network-generator',
+#         executable('systemd-network-generator',
 #                    network_generator_sources,
 #                    include_directories : includes,
 #                    link_with : [networkd_link_with],
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
-#
-#         if want_tests != 'false'
-#                 test('test-network-generator-conversion',
-#                      test_network_generator_conversion_sh,
-#                      # https://github.com/mesonbuild/meson/issues/2681
-#                      args : exe.full_path())
-#         endif
 # endif
 #
 # executable('systemd-sulogin-shell',
@@ -3503,7 +3484,7 @@ endforeach
 #         incs = tuple.length() >= 5 ? tuple[4] : includes
 #         link_args = []
 #
-#         if want_ossfuzz or want_fuzzbuzz
+#         if want_ossfuzz
 #                 dependencies += fuzzing_engine
 #         elif want_libfuzzer
 #                 if fuzzing_engine.found()
@@ -3513,10 +3494,6 @@ endforeach
 #                 endif
 #         else
 #                 sources += 'src/fuzz/fuzz-main.c'
-#         endif
-#
-#         if want_fuzzbuzz
-#                 sources += 'src/fuzz/fuzzer-entry-point.c'
 #         endif
 #
 #         name = sources[0].split('/')[-1].split('.')[0]
@@ -3979,7 +3956,6 @@ foreach tuple : [
         ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
 #if 0 /// elogind ships neitehr libudev nor systemctl
-#         ['install tests',    install_tests],
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #endif // 0
