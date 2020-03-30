@@ -1231,6 +1231,16 @@ tests += [
           libshared],
 #if 0 /// elogind does not include udev implicitly
 #          [threads]],
+# ]
+#
+# ############################################################
+#
+# tests += [
+#         [['src/test/test-xdg-autostart.c',
+#           'src/xdg-autostart-generator/xdg-autostart-service.c',
+#           'src/xdg-autostart-generator/xdg-autostart-service.h',],
+#          [],
+#          []],
 #else // 0
          [threads,libudev]],
 #endif // 0
