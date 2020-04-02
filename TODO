@@ -19,6 +19,10 @@ Janitorial Clean-ups:
 
 Features:
 
+* drop sd_bus_message_set_priority() from sd-bus API and documentation as much
+  as we can, it's a kdbus left-over and unlikely to come back on AF_UNIX, since
+  it's not really implementable there.
+
 * cryptsetup/homed: also support FIDO2 HMAC password logic for unlocking
   devices. (see: https://github.com/mjec/fido2-hmac-secret)
 
@@ -113,8 +117,7 @@ Features:
 
 * elogind-repart: allow config of partition uuid
 
-* userdb: allow username prefix searches in varlink API, allow realname and
-  realname substr searches in varlink API
+* userdb: allow username prefix searches in varlink API
 
 * userdb: allow existence checks
 
@@ -861,7 +864,6 @@ Features:
     make assumptions about their slice anymore.
   - follow PropertiesChanged state more closely, to deal with quick logouts and
     relogins
-  - (optionally?) spawn seat-manager@$SEAT.service whenever a seat shows up that as CanGraphical set
 
 * journal:
   - consider introducing implicit _TTY= + _PPID= + _EUID= + _EGID= + _FSUID= + _FSGID= fields
