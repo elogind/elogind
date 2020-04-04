@@ -22,6 +22,12 @@ typedef enum BusTransport {
         _BUS_TRANSPORT_INVALID = -1
 } BusTransport;
 
+typedef struct BusAddress {
+        const char    *destination;
+        const char    *path;
+        const char    *interface;
+} BusAddress;
+
 typedef int (*bus_property_set_t) (sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata);
 
 struct bus_properties_map {
@@ -61,7 +67,6 @@ int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
 #if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c);
 #endif // 0
-
 
 #if 0 /// UNNEEDED by elogind
 int bus_connect_system_systemd(sd_bus **_bus);
@@ -206,3 +211,16 @@ int bus_reply_pair_array(sd_bus_message *m, char **l);
 #endif // 0
 
 extern const struct hash_ops bus_message_hash_ops;
+
+/* Shorthand flavors of the sd-bus convenience helpers with destination,path,interface
+ * strings encapsulated within a single struct.
+ */
+int bus_call_method_async(sd_bus *bus, sd_bus_slot **slot, const BusAddress *address, const char *member, sd_bus_message_handler_t callback, void *userdata, const char *types, ...);
+int bus_call_method(sd_bus *bus, const BusAddress *address, const char *member, sd_bus_error *error, sd_bus_message **reply, const char *types, ...);
+int bus_get_property(sd_bus *bus, const BusAddress *address, const char *member, sd_bus_error *error, sd_bus_message **reply, const char *type);
+int bus_get_property_trivial(sd_bus *bus, const BusAddress *address, const char *member, sd_bus_error *error, char type, void *ptr);
+int bus_get_property_string(sd_bus *bus, const BusAddress *address, const char *member, sd_bus_error *error, char **ret);
+int bus_get_property_strv(sd_bus *bus, const BusAddress *address, const char *member, sd_bus_error *error, char ***ret);
+int bus_set_property(sd_bus *bus, const BusAddress *address, const char *member, sd_bus_error *error, const char *type, ...);
+int bus_match_signal(sd_bus *bus, sd_bus_slot **ret, const BusAddress *address, const char *member, sd_bus_message_handler_t callback, void *userdata);
+int bus_match_signal_async(sd_bus *bus, sd_bus_slot **ret, const BusAddress *address, const char *member, sd_bus_message_handler_t callback, sd_bus_message_handler_t install_callback, void *userdata);
