@@ -52,6 +52,8 @@
 #         condition.h
 #         conf-parser.c
 #         conf-parser.h
+#         coredump-util.c
+#         coredump-util.h
 #         cpu-set-util.c
 #         cpu-set-util.h
 #         crypt-util.c

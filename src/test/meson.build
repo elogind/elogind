@@ -639,6 +639,10 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-coredump-util.c'],
+#          [],
+#          []],
+#
 #         [['src/test/test-daemon.c'],
 #          [],
 #          []],
