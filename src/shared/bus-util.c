@@ -21,6 +21,7 @@
 #include "bus-util.h"
 #include "cap-list.h"
 #include "cgroup-util.h"
+#include "escape.h"
 #include "mountpoint-util.h"
 #include "nsflags.h"
 #include "parse-util.h"
@@ -511,18 +512,20 @@ static int bus_print_property(const char *name, const char *expected_value, sd_b
                                 return r;
 
                         while ((r = sd_bus_message_read_basic(m, SD_BUS_TYPE_STRING, &str)) > 0) {
-                                bool good;
+                                _cleanup_free_ char *e = NULL;
 
-                                if (first && !value)
-                                        printf("%s=", name);
+                                e = shell_maybe_quote(str, ESCAPE_BACKSLASH_ONELINE);
+                                if (!e)
+                                        return -ENOMEM;
 
-                                /* This property has multiple space-separated values, so
-                                 * neither spaces nor newlines can be allowed in a value. */
-                                good = str[strcspn(str, " \n")] == '\0';
+                                if (first) {
+                                        if (!value)
+                                                printf("%s=", name);
+                                        first = false;
+                                } else
+                                        fputs(" ", stdout);
 
-                                printf("%s%s", first ? "" : " ", good ? str : "[unprintable]");
-
-                                first = false;
+                                fputs(e, stdout);
                         }
                         if (r < 0)
                                 return r;
@@ -1417,3 +1420,142 @@ const struct hash_ops bus_message_hash_ops = {
         .compare = trivial_compare_func,
         .free_value = bus_message_unref_wrapper,
 };
+
+/* Shorthand flavors of the sd-bus convenience helpers with destination,path,interface
+ * strings encapsulated within a single struct.
+ */
+int bus_call_method_async(
+                sd_bus *bus,
+                sd_bus_slot **slot,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_message_handler_t callback,
+                void *userdata,
+                const char *types, ...) {
+
+        va_list ap;
+        int r;
+
+        assert(locator);
+
+        va_start(ap, types);
+        r = sd_bus_call_method_asyncv(bus, slot, locator->destination, locator->path, locator->interface, member, callback, userdata, types, ap);
+        va_end(ap);
+
+        return r;
+}
+
+int bus_call_method(
+                sd_bus *bus,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_error *error,
+                sd_bus_message **reply,
+                const char *types, ...) {
+
+        va_list ap;
+        int r;
+
+        assert(locator);
+
+        va_start(ap, types);
+        r = sd_bus_call_methodv(bus, locator->destination, locator->path, locator->interface, member, error, reply, types, ap);
+        va_end(ap);
+
+        return r;
+}
+
+int bus_get_property(
+                sd_bus *bus,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_error *error,
+                sd_bus_message **reply,
+                const char *type) {
+
+        assert(locator);
+
+        return sd_bus_get_property(bus, locator->destination, locator->path, locator->interface, member, error, reply, type);
+}
+
+int bus_get_property_trivial(
+                sd_bus *bus,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_error *error,
+                char type, void *ptr) {
+
+        assert(locator);
+
+        return sd_bus_get_property_trivial(bus, locator->destination, locator->path, locator->interface, member, error, type, ptr);
+}
+
+int bus_get_property_string(
+                sd_bus *bus,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_error *error,
+                char **ret) {
+
+        assert(locator);
+
+        return sd_bus_get_property_string(bus, locator->destination, locator->path, locator->interface, member, error, ret);
+}
+
+int bus_get_property_strv(
+                sd_bus *bus,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_error *error,
+                char ***ret) {
+
+        assert(locator);
+
+        return sd_bus_get_property_strv(bus, locator->destination, locator->path, locator->interface, member, error, ret);
+}
+
+int bus_set_property(
+                sd_bus *bus,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_error *error,
+                const char *type, ...) {
+
+        va_list ap;
+        int r;
+
+        assert(locator);
+
+        va_start(ap, type);
+        r = sd_bus_set_propertyv(bus, locator->destination, locator->path, locator->interface, member, error, type, ap);
+        va_end(ap);
+
+        return r;
+}
+
+int bus_match_signal(
+                sd_bus *bus,
+                sd_bus_slot **ret,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_message_handler_t callback,
+                void *userdata) {
+
+        assert(locator);
+
+        return sd_bus_match_signal(bus, ret, locator->destination, locator->path, locator->interface, member, callback, userdata);
+}
+
+int bus_match_signal_async(
+                sd_bus *bus,
+                sd_bus_slot **ret,
+                const BusLocator *locator,
+                const char *member,
+                sd_bus_message_handler_t callback,
+                sd_bus_message_handler_t install_callback,
+                void *userdata) {
+
+        assert(locator);
+
+        return sd_bus_match_signal_async(bus, ret, locator->destination, locator->path, locator->interface, member, callback, install_callback, userdata);
+}
