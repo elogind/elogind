@@ -146,11 +146,7 @@ int fd_nonblock(int fd, bool nonblock) {
         if (flags < 0)
                 return -errno;
 
-        if (nonblock)
-                nflags = flags | O_NONBLOCK;
-        else
-                nflags = flags & ~O_NONBLOCK;
-
+        nflags = UPDATE_FLAG(flags, O_NONBLOCK, nonblock);
         if (nflags == flags)
                 return 0;
 
@@ -169,11 +165,7 @@ int fd_cloexec(int fd, bool cloexec) {
         if (flags < 0)
                 return -errno;
 
-        if (cloexec)
-                nflags = flags | FD_CLOEXEC;
-        else
-                nflags = flags & ~FD_CLOEXEC;
-
+        nflags = UPDATE_FLAG(flags, FD_CLOEXEC, cloexec);
         if (nflags == flags)
                 return 0;
 
