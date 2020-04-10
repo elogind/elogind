@@ -4,6 +4,9 @@ Bugfixes:
   manager or system manager can be always set. It would be better to reject
   them when parsing config.
 
+* busctl prints errors to stdout:
+  busctl tree org.freedesktop.elogind1  /org/freedesktop/elogind1
+
 External:
 
 * Fedora: add an rpmlint check that verifies that all unit files in the RPM are listed in %systemd_post macros.
@@ -18,14 +21,6 @@ Janitorial Clean-ups:
   semantics, like we do for device.c now
 
 Features:
-
-* journalctl --image= which is like --root= but operates on disk images
-
-* when elogind-nspawn and suchlike dissect an OS image, and there are multiple
-  root partitions, do an strverscmp() on the partition label and boot
-  first. That is inspired how sd-boot figures out which kernel to boot, and
-  thus allows defining OS images which can be A/B updated and we default to the
-  newest version automatically, both in nspawn and in sd-boot
 
 * drop sd_bus_message_set_priority() from sd-bus API and documentation as much
   as we can, it's a kdbus left-over and unlikely to come back on AF_UNIX, since
