@@ -432,3 +432,5 @@ option('ok-color', type: 'combo',
 # option('llvm-fuzz', type : 'boolean', value : 'false',
 #        description : 'build against LLVM libFuzzer')
 #endif // 0
+option('kernel-install', type: 'boolean', value: 'true',
+       description : 'include kernel-install feature')
