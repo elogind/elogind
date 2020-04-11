@@ -185,8 +185,6 @@
 #         securebits-util.h
 #         serialize.c
 #         serialize.h
-#         service-util.c
-#         service-util.h
 #         sleep-config.c
 #         sleep-config.h
 #         socket-netlink.c
@@ -416,6 +414,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   librt,
 #                   libseccomp,
 #                   libselinux,
+#                   libzstd,
 #                   libxz]
 #else // 0
 libshared_deps = [threads,

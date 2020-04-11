@@ -1389,6 +1389,18 @@ conf.set10('HAVE_PAM', have)
 # endif
 # conf.set10('HAVE_LZ4', have)
 #
+# want_zstd = get_option('zstd')
+# if want_zstd != 'false' and not skip_deps
+#         libzstd = dependency('libzstd',
+#                              required : want_zstd == 'true',
+#                              version : '>= 1.4.0')
+#         have = libzstd.found()
+# else
+#         have = false
+#         libzstd = []
+# endif
+# conf.set10('HAVE_ZSTD', have)
+#
 # want_xkbcommon = get_option('xkbcommon')
 # if want_xkbcommon != 'false' and not skip_deps
 #         libxkbcommon = dependency('xkbcommon',
@@ -1807,6 +1819,7 @@ libelogind = shared_library(
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
+#                         libzstd,
 #                         liblz4],
 #         link_depends : libsystemd_sym,
 #else // 0
@@ -1849,6 +1862,7 @@ install_libelogind_static = static_library(
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
+#                         libzstd,
 #                         liblz4,
 #                         libcap,
 #                         libblkid,
@@ -2028,7 +2042,8 @@ test_dlopen = executable(
 #         dependencies : [threads,
 #                         libxz,
 #                         liblz4,
-#                         libselinux],
+#                         libselinux,
+#                         libzstd],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
@@ -2052,7 +2067,8 @@ test_dlopen = executable(
 #                         libqrencode,
 #                         libxz,
 #                         liblz4,
-#                         libpcre2],
+#                         libpcre2,
+#                         libzstd],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
@@ -2207,7 +2223,8 @@ test_dlopen = executable(
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 liblz4,
-#                                 libxz],
+#                                 libxz,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
@@ -2399,7 +2416,8 @@ endif
 #                         libcap,
 #                         libselinux,
 #                         libxz,
-#                         liblz4],
+#                         liblz4,
+#                         libzstd],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
@@ -2749,7 +2767,8 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libxz,
-#                                 liblz4],
+#                                 liblz4,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
@@ -2830,7 +2849,8 @@ endif
 #                                 libcurl,
 #                                 libgnutls,
 #                                 libxz,
-#                                 liblz4],
+#                                 liblz4,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2847,7 +2867,8 @@ endif
 #                                 libmicrohttpd,
 #                                 libgnutls,
 #                                 libxz,
-#                                 liblz4],
+#                                 liblz4,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2861,7 +2882,8 @@ endif
 #                                 libmicrohttpd,
 #                                 libgnutls,
 #                                 libxz,
-#                                 liblz4],
+#                                 liblz4,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2877,7 +2899,8 @@ endif
 #                                 libacl,
 #                                 libdw,
 #                                 libxz,
-#                                 liblz4],
+#                                 liblz4,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2889,7 +2912,8 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libxz,
-#                                 liblz4],
+#                                 liblz4,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true)
 # endif
@@ -2904,7 +2928,8 @@ endif
 #                                 libacl,
 #                                 libdw,
 #                                 libxz,
-#                                 liblz4],
+#                                 liblz4,
+#                                 libzstd],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3968,6 +3993,7 @@ foreach tuple : [
 #if 0 /// UNNEEDED by elogind
 #         ['zlib'],
 #         ['xz'],
+#         ['zstd'],
 #         ['lz4'],
 #         ['bzip2'],
 #endif // 0

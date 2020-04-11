@@ -958,12 +958,14 @@ tests += [
 #          [libjournal_core,
 #           libshared],
 #          [liblz4,
+#           libzstd,
 #           libxz]],
 #
 #         [['src/journal/test-compress-benchmark.c'],
 #          [libjournal_core,
 #           libshared],
 #          [liblz4,
+#           libzstd,
 #           libxz],
 #          '', 'timeout=90'],
 #
