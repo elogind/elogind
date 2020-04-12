@@ -131,9 +131,8 @@ static int on_reboot(Context *c) {
 #if HAVE_AUDIT
         if (c->audit_fd >= 0)
                 if (audit_log_user_comm_message(c->audit_fd, AUDIT_SYSTEM_BOOT, "", "systemd-update-utmp", NULL, NULL, NULL, 1) < 0 &&
-                    errno != EPERM) {
+                    errno != EPERM)
                         r = log_error_errno(errno, "Failed to send audit message: %m");
-                }
 #endif
 
 #if 0 /// systemd hasn't started the system, so elogind always uses NOW()
@@ -164,9 +163,8 @@ static int on_shutdown(Context *c) {
 #if HAVE_AUDIT
         if (c->audit_fd >= 0)
                 if (audit_log_user_comm_message(c->audit_fd, AUDIT_SYSTEM_SHUTDOWN, "", "systemd-update-utmp", NULL, NULL, NULL, 1) < 0 &&
-                    errno != EPERM) {
+                    errno != EPERM)
                         r = log_error_errno(errno, "Failed to send audit message: %m");
-                }
 #endif
 
         q = utmp_put_shutdown();
