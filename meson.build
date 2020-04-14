@@ -60,9 +60,12 @@ skip_deps = false
 #if 0 /// elogind does not need this
 #
 # # Try to install the git pre-commit hook
-# git_hook = run_command(join_paths(project_source_root, 'tools/add-git-hook.sh'))
-# if git_hook.returncode() == 0
-#         message(git_hook.stdout().strip())
+# add_git_hook_sh = find_program('tools/add-git-hook.sh', required : false)
+# if add_git_hook_sh.found()
+#         git_hook = run_command(add_git_hook_sh)
+#         if git_hook.returncode() == 0
+#                 message(git_hook.stdout().strip())
+#         endif
 # endif
 #else // 0
 # elogind Note: We use precompiler masks for two reasons:
@@ -1514,6 +1517,16 @@ conf.set10('HAVE_DBUS', have)
 #          'DNS_OVER_TLS_' + default_dns_over_tls.underscorify().to_upper())
 # substs.set('DEFAULT_DNS_OVER_TLS_MODE', default_dns_over_tls)
 #
+# default_mdns = get_option('default-mdns')
+# conf.set('DEFAULT_MDNS_MODE',
+#          'RESOLVE_SUPPORT_' + default_mdns.to_upper())
+# substs.set('DEFAULT_MDNS_MODE', default_mdns)
+#
+# default_llmnr = get_option('default-llmnr')
+# conf.set('DEFAULT_LLMNR_MODE',
+#          'RESOLVE_SUPPORT_' + default_llmnr.to_upper())
+# substs.set('DEFAULT_LLMNR_MODE', default_llmnr)
+#
 # want_repart = get_option('repart')
 # if want_repart != 'false'
 #         have = (conf.get('HAVE_OPENSSL') == 1 and
@@ -2866,7 +2879,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_REPART') == 1
-#         executable('systemd-repart',
+#         exe = executable('systemd-repart',
 #                    systemd_repart_sources,
 #                    include_directories : includes,
 #                    link_with : [libshared],
@@ -2878,6 +2891,12 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootbindir)
+#
+#         if want_tests != 'false'
+#                 test('test-repart',
+#                      test_repart_sh,
+#                      args : exe.full_path())
+#         endif
 # endif
 #
 # if conf.get('ENABLE_VCONSOLE') == 1
@@ -3334,13 +3353,20 @@ public_programs += exe
 #                    install_dir : rootbindir)
 #         public_programs += exe
 #
-#         executable('systemd-network-generator',
+#         exe = executable('systemd-network-generator',
 #                    network_generator_sources,
 #                    include_directories : includes,
 #                    link_with : [networkd_link_with],
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
+#
+#         if want_tests != 'false'
+#                 test('test-network-generator-conversion',
+#                      test_network_generator_conversion_sh,
+#                      # https://github.com/mesonbuild/meson/issues/2681
+#                      args : exe.full_path())
+#         endif
 # endif
 #
 # executable('systemd-sulogin-shell',
@@ -3792,6 +3818,8 @@ status = [
 #
 #         'default DNSSEC mode:               @0@'.format(default_dnssec),
 #         'default DNS-over-TLS mode:         @0@'.format(default_dns_over_tls),
+#         'default mDNS mode:                 @0@'.format(default_mdns),
+#         'default LLMNR mode:                @0@'.format(default_llmnr),
 #         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
@@ -3956,6 +3984,7 @@ foreach tuple : [
         ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
 #if 0 /// elogind ships neitehr libudev nor systemctl
+#         ['install tests',    install_tests],
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #endif // 0
