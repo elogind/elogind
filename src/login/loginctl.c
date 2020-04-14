@@ -855,7 +855,15 @@ static int show_properties(sd_bus *bus, const char *path, bool *new_line) {
 
         *new_line = true;
 
-        r = bus_print_all_properties(bus, "org.freedesktop.login1", path, print_property, arg_property, arg_value, arg_all, NULL);
+        r = bus_print_all_properties(
+                        bus,
+                        "org.freedesktop.login1",
+                        path,
+                        print_property,
+                        arg_property,
+                        arg_value,
+                        arg_all,
+                        NULL);
         if (r < 0)
                 return bus_log_parse_error(r);
 
@@ -1439,7 +1447,6 @@ static int help(int argc, char *argv[], void *userdata) {
 }
 
 static int parse_argv(int argc, char *argv[]) {
-
         enum {
                 ARG_VERSION = 0x100,
                 ARG_VALUE,
@@ -1658,7 +1665,6 @@ static int parse_argv(int argc, char *argv[]) {
 }
 
 static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
-
         static const Verb verbs[] = {
                 { "help",              VERB_ANY, VERB_ANY, 0,            help              },
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
