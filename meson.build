@@ -2015,7 +2015,7 @@ test_dlopen = executable(
 #                                  libmount,
 #                                  libblkid],
 #                  install_rpath : rootlibexecdir,
-#                  install : true)
+#                  install : get_option('analyze'))
 # public_programs += exe
 #
 # executable('systemd-journald',

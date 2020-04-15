@@ -442,3 +442,5 @@ option('ok-color', type: 'combo',
 #endif // 0
 option('kernel-install', type: 'boolean', value: 'true',
        description : 'include kernel-install feature')
+option('analyze', type: 'boolean', value: 'true',
+       description : 'include elogind-analyze')
