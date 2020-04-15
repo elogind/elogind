@@ -3990,6 +3990,8 @@ foreach tuple : [
 #endif // 0
         ['link-networkd-shared',  get_option('link-networkd-shared')],
         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
+        ['kernel-install',        get_option('kernel-install')],
+        ['elogind-analyze',       get_option('analyze')],
 ]
 
         if tuple.length() >= 2

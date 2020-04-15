@@ -441,6 +441,6 @@ option('ok-color', type: 'combo',
 #        description : 'build against LLVM libFuzzer')
 #endif // 0
 option('kernel-install', type: 'boolean', value: 'true',
-       description : 'include kernel-install feature')
+       description : 'install kernel-install and associated files')
 option('analyze', type: 'boolean', value: 'true',
-       description : 'include elogind-analyze')
+       description : 'install elogind-analyze')
