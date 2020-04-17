@@ -215,3 +215,5 @@ static inline int setsockopt_int(int fd, int level, int optname, int value) {
 int socket_bind_to_ifname(int fd, const char *ifname);
 int socket_bind_to_ifindex(int fd, int ifindex);
 #endif // 0
+
+ssize_t recvmsg_safe(int sockfd, struct msghdr *msg, int flags);
