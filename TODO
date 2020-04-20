@@ -22,6 +22,14 @@ Janitorial Clean-ups:
 
 Features:
 
+* journalctl --image= which is like --root= but operates on disk images
+
+* when elogind-nspawn and suchlike dissect an OS image, and there are multiple
+  root partitions, do an strverscmp() on the partition label and boot
+  first. That is inspired how sd-boot figures out which kernel to boot, and
+  thus allows defining OS images which can be A/B updated and we default to the
+  newest version automatically, both in nspawn and in sd-boot
+
 * drop sd_bus_message_set_priority() from sd-bus API and documentation as much
   as we can, it's a kdbus left-over and unlikely to come back on AF_UNIX, since
   it's not really implementable there.
@@ -812,6 +820,10 @@ Features:
   all units we stop before the isolating unit...
 
 * teach ConditionKernelCommandLine= globs or regexes (in order to match foobar={no,0,off})
+
+* Add ConditionDirectoryNotEmpty= handle non-absoute paths as a search path or add
+  ConditionConfigSearchPathNotEmpty= or different syntax? See the discussion starting at
+  https://github.com/systemd/systemd/pull/15109#issuecomment-607740136.
 
 * BootLoaderSpec: Clarify that the kernel has to be in $BOOT. Clarify
   that the boot loader should be installed to the ESP. Define a way
