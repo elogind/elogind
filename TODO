@@ -22,9 +22,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* homed: maybe pre-create ~/.cache as subvol so that it can have separate quota
-  easily?
-
 * journalctl --image= which is like --root= but operates on disk images
 
 * when elogind-nspawn and suchlike dissect an OS image, and there are multiple
@@ -43,7 +40,7 @@ Features:
 * elogind-gpt-auto should probably set x-elogind.growfs on the mounts it
   creates
 
-* homed/userdb: distuingish passwords and recovery keys in the records, since
+* homed/userdb: distinguish passwords and recovery keys in the records, since
   we probably want to use different PBKDF algorithms/settings for them:
   passwords have low entropy but recovery keys should have good entropy key
   hence we can make them quicker to work.
@@ -66,7 +63,7 @@ Features:
   elogind-makefs.service instead.
 
 * socket units: allow creating a udev monitor socket with ListenDevices= or so,
-  with matches, then actviate app thorugh that passing socket oveer
+  with matches, then activate app through that passing socket over
 
 * unify on openssl:
   - port sd_id128_get_machine_app_specific() over from khash
@@ -90,11 +87,11 @@ Features:
   that the device paths stay the same, regardless if crypto is used or not.
 
 * elogind-repart: by default generate minimized partition tables (i.e. tables
-  that only covere the space actually used, excluding any free space at the
+  that only cover the space actually used, excluding any free space at the
   end), in order to maximize dd'ability. Requires libfdisk work, see
   https://github.com/karelzak/util-linux/issues/907
 
-* elogind-repart: optionally, allow specifiying a path to initialize new
+* elogind-repart: optionally, allow specifying a path to initialize new
   partitions from, i.e. an fs image file or a source device node. This would
   then turn elogind-repart into a simple installer: with a few .repart files
   you could replicate the host system on another device. a full installer would
@@ -230,8 +227,8 @@ Features:
     elogind --user is shut down.
   - logind: maybe keep a "busy fd" as long as there's a non-released session around or the user@.service
   - maybe make automatic, read-only, time-based reflink-copies of LUKS disk images (think: time machine)
-  - distuingish destroy / remove (i.e. currently we can unregister a user, unregister+remove their home directory, but not just remove their home directory)
   - in elogind's PAMName= logic: query passwords with ssh-askpassword, so that we can make "loginctl set-linger" mode work
+  - distinguish destroy / remove (i.e. currently we can unregister a user, unregister+remove their home directory, but not just remove their home directory)
   - fingerprint authentication, pattern authentication, …
   - make sure "classic" user records can also be managed by homed
   - description field for groups
