@@ -27,6 +27,7 @@
 #include "parse-util.h"
 #include "process-util.h"
 #include "selinux-util.h"
+#include "service-util.h"
 #include "signal-util.h"
 #include "strv.h"
 #include "terminal-util.h"
@@ -1268,14 +1269,15 @@ static int run(int argc, char *argv[]) {
 #endif // ENABLE_DEBUG_ELOGIND
         log_setup_service();
 
-        umask(0022);
+        r = service_parse_argv("elogind.service",
+                               "Manager for user logins and devices and privileged operations.",
+                               argc, argv);
+        if (r <= 0)
+                return r;
 
 #if 0 /// elogind has some extra functionality at startup, argc can be != 1
-        if (argc != 1) {
-                log_error("This program takes no arguments.");
-                return -EINVAL;
-        }
 #endif // 0
+        umask(0022);
 
         r = mac_selinux_init();
         if (r < 0)
