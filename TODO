@@ -22,6 +22,11 @@ Janitorial Clean-ups:
 
 Features:
 
+* homed: add homed.conf setting DefaultStorage= or so
+
+* homed: maybe pre-create ~/.cache as subvol so that it can have separate quota
+  easily?
+
 * journalctl --image= which is like --root= but operates on disk images
 
 * when elogind-nspawn and suchlike dissect an OS image, and there are multiple
@@ -227,8 +232,8 @@ Features:
     elogind --user is shut down.
   - logind: maybe keep a "busy fd" as long as there's a non-released session around or the user@.service
   - maybe make automatic, read-only, time-based reflink-copies of LUKS disk images (think: time machine)
-  - in elogind's PAMName= logic: query passwords with ssh-askpassword, so that we can make "loginctl set-linger" mode work
   - distinguish destroy / remove (i.e. currently we can unregister a user, unregister+remove their home directory, but not just remove their home directory)
+  - in elogind's PAMName= logic: query passwords with ssh-askpassword, so that we can make "loginctl set-linger" mode work
   - fingerprint authentication, pattern authentication, …
   - make sure "classic" user records can also be managed by homed
   - description field for groups
