@@ -13,6 +13,8 @@
 #         barrier.h
 #         base-filesystem.c
 #         base-filesystem.h
+#         binfmt-util.c
+#         binfmt-util.h
 #         bitmap.c
 #         bitmap.h
 #         blkid-util.h
