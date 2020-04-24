@@ -34,6 +34,7 @@ custom_entities_ent = configure_file(
 man_pages = []
 html_pages = []
 source_xml_files = []
+dbus_docs = []
 foreach tuple : xsltproc.found() ? manpages : []
         stem = tuple[0]
         section = tuple[1]
@@ -99,7 +100,11 @@ foreach tuple : xsltproc.found() ? manpages : []
                         install_dir : join_paths(docdir, 'html'))
                 html_pages += p3
 
-                source_xml_files += files(tuple[0] + '.xml')
+                file = files(tuple[0] + '.xml')
+                source_xml_files += file
+                if tuple[0].startswith('org.freedesktop.')
+                        dbus_docs += file
+                endif
         else
                 message('Skipping @0@.@1@ because @2@ is false'.format(stem, section, condition))
         endif
@@ -203,6 +208,19 @@ html = custom_target(
 #                    meson.current_build_dir(),
 #                    get_option('www-target')])
 #endif // 0
+
+############################################################
+
+if dbus_docs.length() > 0
+        custom_target(
+                'update-dbus-docs',
+                output : 'update-dbus-docs',
+                command : ['python3',
+                           '@0@/tools/update-dbus-docs.py'.format(project_source_root),
+                           '--build-dir=@0@'.format(project_build_root),
+                           '@INPUT@'],
+                input : dbus_docs)
+endif
 
 ############################################################
 

@@ -38,8 +38,9 @@ substs.set('PROJECT_VERSION',      meson.project_version(),
 # This is to be used instead of meson.source_root(), as the latter will return
 # the wrong result when elogind is being built as a meson subproject
 project_source_root = meson.current_source_dir()
+project_build_root = meson.current_build_dir()
 relative_source_path = run_command('realpath',
-                                   '--relative-to=@0@'.format(meson.current_build_dir()),
+                                   '--relative-to=@0@'.format(project_build_root),
                                    project_source_root).stdout().strip()
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
@@ -364,7 +365,7 @@ substs.set('systemsleepdir',                                  systemsleepdir)
 # substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
 substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
-substs.set('BUILD_ROOT',                                      meson.current_build_dir())
+substs.set('BUILD_ROOT',                                      project_build_root)
 
 #####################################################################
 
@@ -1389,18 +1390,6 @@ conf.set10('HAVE_PAM', have)
 # endif
 # conf.set10('HAVE_LZ4', have)
 #
-# want_zstd = get_option('zstd')
-# if want_zstd != 'false' and not skip_deps
-#         libzstd = dependency('libzstd',
-#                              required : want_zstd == 'true',
-#                              version : '>= 1.4.0')
-#         have = libzstd.found()
-# else
-#         have = false
-#         libzstd = []
-# endif
-# conf.set10('HAVE_ZSTD', have)
-#
 # want_xkbcommon = get_option('xkbcommon')
 # if want_xkbcommon != 'false' and not skip_deps
 #         libxkbcommon = dependency('xkbcommon',
@@ -1819,7 +1808,6 @@ libelogind = shared_library(
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
-#                         libzstd,
 #                         liblz4],
 #         link_depends : libsystemd_sym,
 #else // 0
@@ -1862,7 +1850,6 @@ install_libelogind_static = static_library(
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
-#                         libzstd,
 #                         liblz4,
 #                         libcap,
 #                         libblkid,
@@ -2042,8 +2029,7 @@ test_dlopen = executable(
 #         dependencies : [threads,
 #                         libxz,
 #                         liblz4,
-#                         libselinux,
-#                         libzstd],
+#                         libselinux],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
@@ -2067,8 +2053,7 @@ test_dlopen = executable(
 #                         libqrencode,
 #                         libxz,
 #                         liblz4,
-#                         libpcre2,
-#                         libzstd],
+#                         libpcre2],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
@@ -2223,8 +2208,7 @@ test_dlopen = executable(
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 liblz4,
-#                                 libxz,
-#                                 libzstd],
+#                                 libxz],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
@@ -2416,8 +2400,7 @@ endif
 #                         libcap,
 #                         libselinux,
 #                         libxz,
-#                         liblz4,
-#                         libzstd],
+#                         liblz4],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
@@ -2767,8 +2750,7 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libxz,
-#                                 liblz4,
-#                                 libzstd],
+#                                 liblz4],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
@@ -2849,8 +2831,7 @@ endif
 #                                 libcurl,
 #                                 libgnutls,
 #                                 libxz,
-#                                 liblz4,
-#                                 libzstd],
+#                                 liblz4],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2867,8 +2848,7 @@ endif
 #                                 libmicrohttpd,
 #                                 libgnutls,
 #                                 libxz,
-#                                 liblz4,
-#                                 libzstd],
+#                                 liblz4],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2882,8 +2862,7 @@ endif
 #                                 libmicrohttpd,
 #                                 libgnutls,
 #                                 libxz,
-#                                 liblz4,
-#                                 libzstd],
+#                                 liblz4],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2899,8 +2878,7 @@ endif
 #                                 libacl,
 #                                 libdw,
 #                                 libxz,
-#                                 liblz4,
-#                                 libzstd],
+#                                 liblz4],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2912,8 +2890,7 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libxz,
-#                                 liblz4,
-#                                 libzstd],
+#                                 liblz4],
 #                 install_rpath : rootlibexecdir,
 #                 install : true)
 # endif
@@ -2928,8 +2905,7 @@ endif
 #                                 libacl,
 #                                 libdw,
 #                                 libxz,
-#                                 liblz4,
-#                                 libzstd],
+#                                 liblz4],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3493,7 +3469,7 @@ custom_target(
         output : 'elogind-runtest.env',
         command : ['sh', '-c', '{ ' +
                    'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(project_source_root, 'test')) +
-                   'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(meson.current_build_dir(), 'catalog')) +
+                   'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(project_build_root, 'catalog')) +
                    '} >@OUTPUT@'],
         build_by_default : true)
 
@@ -3993,7 +3969,6 @@ foreach tuple : [
 #if 0 /// UNNEEDED by elogind
 #         ['zlib'],
 #         ['xz'],
-#         ['zstd'],
 #         ['lz4'],
 #         ['bzip2'],
 #endif // 0
