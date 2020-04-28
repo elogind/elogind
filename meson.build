@@ -2447,7 +2447,7 @@ endif
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         executable(
+#         public_programs += executable(
 #                 'userdbctl',
 #                 userdbctl_sources,
 #                 include_directories : includes,
@@ -2488,7 +2488,7 @@ endif
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         executable(
+#         public_programs += executable(
 #                 'homectl',
 #                 homectl_sources,
 #                 include_directories : includes,
@@ -3059,8 +3059,6 @@ endif
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-#
-#
 # public_programs += executable(
 #         'systemd-detect-virt',
 #         'src/detect-virt/detect-virt.c',
@@ -3068,6 +3066,7 @@ endif
 #         link_with : [libshared],
 #         install_rpath : rootlibexecdir,
 #         install : true)
+#
 # public_programs += executable(
 #         'systemd-delta',
 #         'src/delta/delta.c',
@@ -3075,6 +3074,7 @@ endif
 #         link_with : [libshared],
 #         install_rpath : rootlibexecdir,
 #         install : true)
+#
 # public_programs += executable(
 #         'systemd-escape',
 #         'src/escape/escape.c',
@@ -3574,7 +3574,6 @@ endforeach
 # fuzzer_exes = []
 #
 # if get_option('tests') != 'false'
-#
 #         foreach tuple : fuzzers
 #                 sources = tuple[0]
 #                 link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
@@ -3582,6 +3581,7 @@ endforeach
 #                 defs = tuple.length() >= 4 ? tuple[3] : []
 #                 incs = tuple.length() >= 5 ? tuple[4] : includes
 #                 link_args = []
+#
 #                 if want_ossfuzz
 #                         dependencies += fuzzing_engine
 #                 elif want_libfuzzer
