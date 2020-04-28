@@ -727,7 +727,6 @@ static int manager_connect_bus(Manager *m) {
                 return log_error_errno(r, "Failed to enable subscription: %m");
 #endif // 0
 
-
         r = sd_bus_request_name_async(m->bus, NULL, "org.freedesktop.login1", 0, NULL, NULL);
         if (r < 0)
                 return log_error_errno(r, "Failed to request name: %m");
@@ -1248,6 +1247,8 @@ static int run(int argc, char *argv[]) {
 
         r = service_parse_argv("elogind.service",
                                "Manager for user logins and devices and privileged operations.",
+                               BUS_IMPLEMENTATIONS(&manager_object,
+                                                   &log_control_object),
                                argc, argv);
         if (r <= 0)
                 return r;
