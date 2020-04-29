@@ -31,6 +31,7 @@
 #define BUS_ERROR_DISK_FULL "org.freedesktop.elogind1.DiskFull"
 #define BUS_ERROR_NOTHING_TO_CLEAN "org.freedesktop.elogind1.NothingToClean"
 #define BUS_ERROR_UNIT_BUSY "org.freedesktop.elogind1.UnitBusy"
+#define BUS_ERROR_UNIT_INACTIVE "org.freedesktop.elogind1.UnitInactive"
 
 #if 0 /// no machined in elogind
 #define BUS_ERROR_NO_SUCH_MACHINE "org.freedesktop.machine1.NoSuchMachine"

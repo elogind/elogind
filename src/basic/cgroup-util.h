@@ -280,6 +280,7 @@ int cg_kernel_controllers(Set **controllers);
 
 bool cg_ns_supported(void);
 #endif // 0
+bool cg_freezer_supported(void);
 
 int cg_all_unified(void);
 int cg_hybrid_unified(void);
