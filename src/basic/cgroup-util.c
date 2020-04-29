@@ -1795,12 +1795,13 @@ int cg_get_attribute_as_uint64(const char *controller, const char *path, const c
         return 0;
 }
 
-int cg_get_keyed_attribute(
+int cg_get_keyed_attribute_full(
                 const char *controller,
                 const char *path,
                 const char *attribute,
                 char **keys,
-                char **ret_values) {
+                char **ret_values,
+                CGroupKeyMode mode) {
 
         _cleanup_free_ char *filename = NULL, *contents = NULL;
         const char *p;
@@ -1860,7 +1861,10 @@ int cg_get_keyed_attribute(
                 p += strspn(p, NEWLINE);
         }
 
-        r = -ENXIO;
+        if (mode & CG_KEY_MODE_GRACEFUL)
+                goto done;
+        else
+                r = -ENXIO;
 
 fail:
         for (i = 0; i < n; i++)
@@ -1870,6 +1874,9 @@ fail:
 
 done:
         memcpy(ret_values, v, sizeof(char*) * n);
+        if (mode & CG_KEY_MODE_GRACEFUL)
+                return n_done;
+
         return 0;
 }
 #endif // 0
