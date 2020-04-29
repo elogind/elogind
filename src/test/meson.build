@@ -508,7 +508,7 @@ tests += [
          '', 'timeout=90'],
 
         [['src/test/test-set.c'],
-         [],
+         [libbasic],
          []],
 
 #if 0 /// UNNEEDED by elogind
