@@ -1795,24 +1795,29 @@ int hashmap_put_strdup(Hashmap **h, const char *k, const char *v) {
         return 0;
 }
 
-int set_put_strdup(Set *s, const char *p) {
+int set_put_strdup(Set **s, const char *p) {
         char *c;
+        int r;
 
         assert(s);
         assert(p);
 
-        if (set_contains(s, (char*) p))
+        r = set_ensure_allocated(s, &string_hash_ops_free);
+        if (r < 0)
+                return r;
+
+        if (set_contains(*s, (char*) p))
                 return 0;
 
         c = strdup(p);
         if (!c)
                 return -ENOMEM;
 
-        return set_consume(s, c);
+        return set_consume(*s, c);
 }
 
 #if 0 /// UNNEEDED by elogind
-int set_put_strdupv(Set *s, char **l) {
+int set_put_strdupv(Set **s, char **l) {
         int n = 0, r;
         char **i;
 
