@@ -12,6 +12,7 @@
 #include "hostname-util.h"
 #include "macro.h"
 #include "string-util.h"
+#include "strv.h"
 
 #if 0 /// UNNEEDED by elogind
 bool hostname_is_set(void) {
@@ -188,14 +189,16 @@ bool is_localhost(const char *hostname) {
         /* This tries to identify local host and domain names
          * described in RFC6761 plus the redhatism of localdomain */
 
-        return strcaseeq(hostname, "localhost") ||
-               strcaseeq(hostname, "localhost.") ||
-               strcaseeq(hostname, "localhost.localdomain") ||
-               strcaseeq(hostname, "localhost.localdomain.") ||
-               endswith_no_case(hostname, ".localhost") ||
-               endswith_no_case(hostname, ".localhost.") ||
-               endswith_no_case(hostname, ".localhost.localdomain") ||
-               endswith_no_case(hostname, ".localhost.localdomain.");
+        return STRCASE_IN_SET(
+                        hostname,
+                        "localhost",
+                        "localhost.",
+                        "localhost.localdomain",
+                        "localhost.localdomain.") ||
+                endswith_no_case(hostname, ".localhost") ||
+                endswith_no_case(hostname, ".localhost.") ||
+                endswith_no_case(hostname, ".localhost.localdomain") ||
+                endswith_no_case(hostname, ".localhost.localdomain.");
 }
 
 #if 0 /// UNNEEDED by elogind

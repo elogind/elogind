@@ -21,14 +21,28 @@
 
 /// Additional includes needed by elogind
 #include "musl_missing.h"
+#include "strv.h"
 
 int parse_boolean(const char *v) {
         if (!v)
                 return -EINVAL;
 
-        if (streq(v, "1") || strcaseeq(v, "yes") || strcaseeq(v, "y") || strcaseeq(v, "true") || strcaseeq(v, "t") || strcaseeq(v, "on"))
+        if (STRCASE_IN_SET(v,
+                           "1",
+                           "yes",
+                           "y",
+                           "true",
+                           "t",
+                           "on"))
                 return 1;
-        else if (streq(v, "0") || strcaseeq(v, "no") || strcaseeq(v, "n") || strcaseeq(v, "false") || strcaseeq(v, "f") || strcaseeq(v, "off"))
+
+        if (STRCASE_IN_SET(v,
+                           "0",
+                           "no",
+                           "n",
+                           "false",
+                           "f",
+                           "off"))
                 return 0;
 
         return -EINVAL;
