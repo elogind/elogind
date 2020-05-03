@@ -580,9 +580,9 @@ static int apply_user_record_settings(pam_handle_t *handle, UserRecord *ur, bool
                 if (pam_getenv(handle, "LANG")) {
                         if (debug)
                                 pam_syslog(handle, LOG_DEBUG, "PAM environment variable $LANG already set, not changing based on user record.");
-                } else if (locale_is_installed(ur->preferred_language) <= 0) {
+                } else if (!locale_is_valid(ur->preferred_language)) {
                         if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "Preferred language specified in user record is not valid or not installed, not setting $LANG.");
+                                pam_syslog(handle, LOG_DEBUG, "Preferred language specified in user record is not valid locally, not setting $LANG.");
                 } else {
                         _cleanup_free_ char *joined = NULL;
 
@@ -793,13 +793,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                            strna(memory_max), strna(tasks_max), strna(cpu_weight), strna(io_weight), strna(runtime_max_sec));
         }
 
-        r = sd_bus_message_new_method_call(
-                        bus,
-                        &m,
-                        "org.freedesktop.login1",
-                        "/org/freedesktop/login1",
-                        "org.freedesktop.login1.Manager",
-                        "CreateSession");
+        r = bus_message_new_method_call(bus, &m, bus_login_mgr, "CreateSession");
         if (r < 0)
                 return pam_bus_log_create_error(handle, r);
 
@@ -988,15 +982,7 @@ _public_ PAM_EXTERN int pam_sm_close_session(
                 if (r != PAM_SUCCESS)
                         return r;
 
-                r = sd_bus_call_method(bus,
-                                       "org.freedesktop.login1",
-                                       "/org/freedesktop/login1",
-                                       "org.freedesktop.login1.Manager",
-                                       "ReleaseSession",
-                                       &error,
-                                       NULL,
-                                       "s",
-                                       id);
+                r = bus_call_method(bus, bus_login_mgr, "ReleaseSession", &error, NULL, "s", id);
                 if (r < 0) {
                         pam_syslog(handle, LOG_ERR, "Failed to release session: %s", bus_error_message(&error, r));
                         return PAM_SESSION_ERR;
