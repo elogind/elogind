@@ -22,12 +22,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* homed: permit multiple private keys to be used locally, and pick the right
-  one for signing records automatically depending on a pre-existing signature
-
-* homed: add a way to "adopt" a home directory, i.e. strip foreign signatures
-  and insert a local signature instead.
-
 * busctl: maybe expose a verb "ping" for pinging a dbus service to see if it
   exists and responds.
 
@@ -226,7 +220,6 @@ Features:
   - rollback when resize fails mid-operation
   - GNOME's side for forget key on suspend (requires rework so that lock screen runs outside of uid)
   - resize on login?
-  - fstrim on logout?
   - shrink fs on logout?
   - update LUKS password on login if we find there's a password that unlocks the JSON record but not the LUKS device.
   - create on activate?
