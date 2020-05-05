@@ -371,7 +371,7 @@ substs.set('BUILD_ROOT',                                      project_build_root
 
 cc = meson.get_compiler('c')
 pkgconfig = import('pkgconfig')
-check_compilation_sh = find_program('tools/check-compilation.sh')
+check_compilation_sh = find_program('tools/meson-check-compilation.sh')
 meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
@@ -3259,6 +3259,8 @@ public_programs += executable(
 #         exe = executable(
 #                 'systemd-tmpfiles',
 #                 'src/tmpfiles/tmpfiles.c',
+#                 'src/tmpfiles/offline-passwd.c',
+#                 'src/tmpfiles/offline-passwd.h',
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libacl],
@@ -3659,8 +3661,8 @@ make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 xml_helper_py = find_program('tools/xml_helper.py')
 #if 0 /// UNNEEDED by elogind
-# hwdb_update_sh = find_program('tools/hwdb-update.sh')
-# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
+# hwdb_update_sh = find_program('tools/meson-hwdb-update.sh')
+# autosuspend_update_sh = find_program('tools/meson-autosuspend-update.sh')
 #
 # subdir('sysctl.d')
 # subdir('sysusers.d')
@@ -3715,13 +3717,13 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
 
 ############################################################
 
-check_help = find_program('tools/check-help.sh')
+meson_check_help = find_program('tools/meson-check-help.sh')
 
 foreach exec : public_programs
         name = exec.full_path().split('/')[-1]
         if want_tests != 'false'
                 test('check-help-' + name,
-                     check_help,
+                     meson_check_help,
                      args : exec.full_path())
         endif
 endforeach
@@ -3803,10 +3805,10 @@ endif
 
 #if 0 /// UNNEEDED by elogind
 # if git.found()
-#         git_contrib_sh = find_program('tools/git-contrib.sh')
+#         meson_git_contrib_sh = find_program('tools/meson-git-contrib.sh')
 #         run_target(
 #                 'git-contrib',
-#                 command : [git_contrib_sh])
+#                 command : [meson_git_contrib_sh])
 # endif
 #endif // 0
 
@@ -3831,12 +3833,12 @@ endif
 
 ############################################################
 
-check_api_docs_sh = find_program('tools/check-api-docs.sh')
+meson_check_api_docs_sh = find_program('tools/meson-check-api-docs.sh')
 run_target(
         'check-api-docs',
 #if 0 /// libudev is external, elogind does not need to document it.
 #         depends : [man, libsystemd, libudev],
-#         command : [check_api_docs_sh, libsystemd.full_path(), libudev.full_path()])
+#         command : [meson_check_api_docs_sh, libsystemd.full_path(), libudev.full_path()])
 #
 #else // 0
         depends : [man, libelogind],
