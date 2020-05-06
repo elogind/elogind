@@ -38,8 +38,9 @@ substs.set('PROJECT_VERSION',      meson.project_version(),
 # This is to be used instead of meson.source_root(), as the latter will return
 # the wrong result when elogind is being built as a meson subproject
 project_source_root = meson.current_source_dir()
+project_build_root = meson.current_build_dir()
 relative_source_path = run_command('realpath',
-                                   '--relative-to=@0@'.format(meson.current_build_dir()),
+                                   '--relative-to=@0@'.format(project_build_root),
                                    project_source_root).stdout().strip()
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
@@ -364,7 +365,7 @@ substs.set('systemsleepdir',                                  systemsleepdir)
 # substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
 substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
-substs.set('BUILD_ROOT',                                      meson.current_build_dir())
+substs.set('BUILD_ROOT',                                      project_build_root)
 
 #####################################################################
 
@@ -411,15 +412,6 @@ basic_disabled_warnings = [
         '-Wno-unused-result',
         '-Wno-format-signedness',
 ]
-if get_option('b_ndebug') == 'true'
-        # With asserts disabled with get a bunch of warnings about variables which
-        # are used only in the asserts. This is not useful at all, so let's just silence
-        # those warnings.
-        basic_disabled_warnings += [
-                '-Wno-unused-variable',
-                '-Wno-unused-but-set-variable',
-        ]
-endif
 
 possible_cc_flags = [
         '-Werror=undef',
@@ -3490,7 +3482,7 @@ custom_target(
         output : 'elogind-runtest.env',
         command : ['sh', '-c', '{ ' +
                    'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(project_source_root, 'test')) +
-                   'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(meson.current_build_dir(), 'catalog')) +
+                   'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(project_build_root, 'catalog')) +
                    '} >@OUTPUT@'],
         build_by_default : true)
 
