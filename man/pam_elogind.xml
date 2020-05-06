@@ -314,19 +314,24 @@ pam_set_data(handle, "elogind.runtime_max_sec", (void *)"3600", cleanup);
     <filename>elogind-logind.service</filename>:</para>
 
     <programlisting>#%PAM-1.0
-auth     sufficient pam_unix.so
-auth     required   pam_deny.so
+auth      sufficient pam_unix.so
+-auth     sufficient pam_elogind_home.so
+auth      required   pam_deny.so
 
-account  required   pam_nologin.so
-account  sufficient pam_unix.so
-account  required   pam_permit.so
+account   required   pam_nologin.so
+-account  sufficient pam_elogind_home.so
+account   sufficient pam_unix.so
+account   required   pam_permit.so
 
-password sufficient pam_unix.so sha512 shadow try_first_pass try_authtok
-password required   pam_deny.so
+-password sufficient pam_elogind_home.so
+password  sufficient pam_unix.so sha512 shadow try_first_pass try_authtok
+password  required   pam_deny.so
 
--session optional   pam_loginuid.so
--session optional   pam_elogind.so
-session  required   pam_unix.so</programlisting>
+-session  optional   pam_keyinit.so revoke
+-session  optional   pam_loginuid.so
+-session  optional   pam_elogind_home.so
+<command>-session  optional   pam_elogind.so</command>
+session   required   pam_unix.so</programlisting>
   </refsect1>
 
   <refsect1>
