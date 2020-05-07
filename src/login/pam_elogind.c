@@ -280,7 +280,6 @@ static int get_seat_from_display(const char *display, const char **seat, uint32_
 
 static int export_legacy_dbus_address(
                 pam_handle_t *handle,
-                uid_t uid,
                 const char *runtime) {
 
         const char *s;
@@ -580,9 +579,9 @@ static int apply_user_record_settings(pam_handle_t *handle, UserRecord *ur, bool
                 if (pam_getenv(handle, "LANG")) {
                         if (debug)
                                 pam_syslog(handle, LOG_DEBUG, "PAM environment variable $LANG already set, not changing based on user record.");
-                } else if (!locale_is_valid(ur->preferred_language)) {
+                } else if (locale_is_installed(ur->preferred_language) <= 0) {
                         if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "Preferred language specified in user record is not valid locally, not setting $LANG.");
+                                pam_syslog(handle, LOG_DEBUG, "Preferred language specified in user record is not valid or not installed, not setting $LANG.");
                 } else {
                         _cleanup_free_ char *joined = NULL;
 
@@ -684,7 +683,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                         }
                 }
 
-                r = export_legacy_dbus_address(handle, ur->uid, rt);
+                r = export_legacy_dbus_address(handle, rt);
                 if (r != PAM_SUCCESS)
                         return r;
 
@@ -889,7 +888,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                                 return r;
                 }
 
-                r = export_legacy_dbus_address(handle, ur->uid, runtime_path);
+                r = export_legacy_dbus_address(handle, runtime_path);
                 if (r != PAM_SUCCESS)
                         return r;
         }
