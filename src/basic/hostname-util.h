@@ -11,6 +11,7 @@ bool hostname_is_set(void);
 #endif // 0
 
 char* gethostname_malloc(void);
+char* gethostname_short_malloc(void);
 int gethostname_strict(char **ret);
 
 bool valid_ldh_char(char c) _const_;

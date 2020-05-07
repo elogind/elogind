@@ -33,6 +33,7 @@ bool hostname_is_set(void) {
 
 char* gethostname_malloc(void) {
         struct utsname u;
+        const char *s;
 
         /* This call tries to return something useful, either the actual hostname
          * or it makes something up. The only reason it might fail is OOM.
@@ -40,14 +41,32 @@ char* gethostname_malloc(void) {
 
         assert_se(uname(&u) >= 0);
 
-        if (isempty(u.nodename) || streq(u.nodename, "(none)"))
 #if 0 /// elogind has no hostnamed and such nonsense
-                return strdup(FALLBACK_HOSTNAME);
+        s = u.nodename;
+        if (isempty(s) || streq(s, "(none)"))
+                s = FALLBACK_HOSTNAME;
 #else // 0
                 return strdup("localhost");
 #endif // 0
 
-        return strdup(u.nodename);
+        return strdup(s);
+}
+
+char* gethostname_short_malloc(void) {
+        struct utsname u;
+        const char *s;
+
+        /* Like above, but kills the FQDN part if present. */
+
+        assert_se(uname(&u) >= 0);
+
+        s = u.nodename;
+        if (isempty(s) || streq(s, "(none)") || s[0] == '.') {
+                s = FALLBACK_HOSTNAME;
+                assert(s[0] != '.');
+        }
+
+        return strndup(s, strcspn(s, "."));
 }
 
 int gethostname_strict(char **ret) {
