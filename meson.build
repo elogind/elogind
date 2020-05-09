@@ -488,6 +488,9 @@ add_project_arguments(cc.get_supported_arguments(basic_disabled_warnings), langu
 add_project_arguments(cc.get_supported_arguments(possible_cc_flags), language : 'c')
 add_project_link_arguments(cc.get_supported_link_arguments(possible_link_flags), language : 'c')
 
+have = cc.has_argument('-Wzero-length-bounds')
+conf.set10('HAVE_ZERO_LENGTH_BOUNDS', have)
+
 if cc.compiles('''
    #include <time.h>
    #include <inttypes.h>
@@ -3267,6 +3270,8 @@ public_programs += executable(
 #         exe = executable(
 #                 'systemd-tmpfiles',
 #                 'src/tmpfiles/tmpfiles.c',
+#                 'src/tmpfiles/offline-passwd.c',
+#                 'src/tmpfiles/offline-passwd.h',
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libacl],
