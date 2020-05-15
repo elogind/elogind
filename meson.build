@@ -805,8 +805,13 @@ conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 #if 0 /// UNNEEDED by elogind
 # time_epoch = get_option('time-epoch')
 # if time_epoch == -1
-#         NEWS = files('NEWS')
-#         time_epoch = run_command(stat, '-c', '%Y', NEWS).stdout().to_int()
+#         source_date_epoch = run_command('sh', ['-c', 'echo "$SOURCE_DATE_EPOCH"']).stdout().strip()
+#         if source_date_epoch != ''
+#                 time_epoch = source_date_epoch.to_int()
+#         else
+#                 NEWS = files('NEWS')
+#                 time_epoch = run_command(stat, '-c', '%Y', NEWS).stdout().to_int()
+#         endif
 # endif
 # conf.set('TIME_EPOCH', time_epoch)
 #else // 0
