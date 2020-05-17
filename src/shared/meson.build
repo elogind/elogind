@@ -18,6 +18,8 @@
 #         bitmap.c
 #         bitmap.h
 #         blkid-util.h
+#         bond-util.c
+#         bond-util.h
 #         boot-timestamps.c
 #         boot-timestamps.h
 #         bootspec.c
@@ -119,8 +121,6 @@
 #         install-printf.h
 #         install.c
 #         install.h
-#         ipvlan-util.c
-#         ipvlan-util.h
 #         ip-protocol-list.c
 #         ip-protocol-list.h
 #         journal-importer.c
