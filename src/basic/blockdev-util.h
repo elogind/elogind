@@ -22,3 +22,5 @@ int get_block_device(const char *path, dev_t *dev);
 #if 0 /// UNNEEDED by elogind
 int get_block_device_harder(const char *path, dev_t *dev);
 #endif // 0
+
+int lock_whole_block_device(dev_t devt, int operation);
