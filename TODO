@@ -22,6 +22,12 @@ Janitorial Clean-ups:
 
 Features:
 
+* machined: add API to acquire UID range. add API to mount/dissect loopback
+  file. Both protected by PK. Then make nspawn use these APIs to run
+  unprivileged containers. i.e. push the truly privileged bits into machined,
+  so that the client side can remain entirely unprivileged, with SUID or
+  anything like that.
+
 * add "throttling" to sd-event event sources: optionally, when we wake up too
   often for one, let's turn it off entirely for a while. Use that for the
   /proc/self/mountinfo logic.
@@ -252,8 +258,7 @@ Features:
   that are linked to these places instead of copied. After all they are
   constant vendor data.
 
-* maybe add kernel cmdline params: 1) to force first-boot mode + 2) to force
-  random seed crediting
+* maybe add kernel cmdline params: to force random seed crediting
 
 * nspawn: on cgroupsv1 issue cgroup empty handler process based on host events,
   so that we make cgroup agent logic safe
