@@ -878,8 +878,10 @@ static int on_interface(const char *interface, uint64_t flags, void *userdata) {
                 return log_oom();
 
         r = set_put(members, m);
-        if (r <= 0)
-                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Duplicate interface");
+        if (r == -EEXIST)
+                return log_error_errno(r,  "Invalid introspection data: duplicate interface '%s'.", interface);
+        if (r < 0)
+                return log_oom();
 
         m = NULL;
         return 0;
@@ -919,8 +921,10 @@ static int on_method(const char *interface, const char *name, const char *signat
                 return log_oom();
 
         r = set_put(members, m);
-        if (r <= 0)
-                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Duplicate method");
+        if (r == -EEXIST)
+                return log_error_errno(r, "Invalid introspection data: duplicate method '%s' on interface '%s'.", name, interface);
+        if (r < 0)
+                return log_oom();
 
         m = NULL;
         return 0;
@@ -956,8 +960,10 @@ static int on_signal(const char *interface, const char *name, const char *signat
                 return log_oom();
 
         r = set_put(members, m);
-        if (r <= 0)
-                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Duplicate signal");
+        if (r == -EEXIST)
+                return log_error_errno(r, "Invalid introspection data: duplicate signal '%s' on interface '%s'.", name, interface);
+        if (r < 0)
+                return log_oom();
 
         m = NULL;
         return 0;
@@ -994,8 +1000,10 @@ static int on_property(const char *interface, const char *name, const char *sign
                 return log_oom();
 
         r = set_put(members, m);
-        if (r <= 0)
-                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Duplicate property");
+        if (r == -EEXIST)
+                return log_error_errno(r, "Invalid introspection data: duplicate property '%s' on interface '%s'.", name, interface);
+        if (r < 0)
+                return log_oom();
 
         m = NULL;
         return 0;
