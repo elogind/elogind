@@ -3798,6 +3798,8 @@ endforeach
 #                         if want_tests != 'false' and slow_tests
 #                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
+#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
+#                                      timeout : 60,
 #                                      args : [exe.full_path(),
 #                                              join_paths(project_source_root, p)])
 #                         endif
