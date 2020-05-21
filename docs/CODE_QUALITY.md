@@ -71,5 +71,8 @@ available functionality:
     See [Testing elogind using sanitizers](https://elogind.io/TESTING_WITH_SANITIZERS)
     for more information.
 
+16. Fossies provides [source code misspelling reports](https://fossies.org/features.html#codespell).
+    The elogind report can be found [here](https://fossies.org/linux/test/elogind-master.tar.gz/codespell.html).
+
 Access to Coverity and oss-fuzz reports is limited. Please reach out to the
 maintainers if you need access.
