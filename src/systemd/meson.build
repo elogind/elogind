@@ -25,6 +25,7 @@ systemd_headers = files(_systemd_headers)
 #         sd-dhcp-client.h
 #         sd-dhcp-lease.h
 #         sd-dhcp-option.h
+#         sd-dhcp6-option.h
 #         sd-dhcp-server.h
 #         sd-ipv4acd.h
 #         sd-ipv4ll.h
