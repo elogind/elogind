@@ -25,7 +25,7 @@
 #include "user-runtime-dir.h"
 
 #if 0 /// UNNEEDED by elogind
-static int acquire_runtime_dir_size(uint64_t *ret) {
+static int acquire_runtime_dir_properties(uint64_t *size, uint64_t *inodes) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         int r;
@@ -34,9 +34,13 @@ static int acquire_runtime_dir_size(uint64_t *ret) {
         if (r < 0)
                 return log_error_errno(r, "Failed to connect to system bus: %m");
 
-        r = sd_bus_get_property_trivial(bus, "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "RuntimeDirectorySize", &error, 't', ret);
+        r = sd_bus_get_property_trivial(bus, "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "RuntimeDirectorySize", &error, 't', size);
         if (r < 0)
                 return log_error_errno(r, "Failed to acquire runtime directory size: %s", bus_error_message(&error, r));
+
+        r = sd_bus_get_property_trivial(bus, "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "RuntimeDirectoryInodesMax", &error, 't', inodes);
+        if (r < 0)
+                return log_error_errno(r, "Failed to acquire number of inodes for runtime directory: %s", bus_error_message(&error, r));
 
         return 0;
 }
@@ -46,7 +50,8 @@ static int user_mkdir_runtime_path(
                 const char *runtime_path,
                 uid_t uid,
                 gid_t gid,
-                uint64_t runtime_dir_size) {
+                uint64_t runtime_dir_size,
+                uint64_t runtime_dir_inodes) {
 
         int r;
 
@@ -62,14 +67,15 @@ static int user_mkdir_runtime_path(
         if (path_is_mount_point(runtime_path, NULL, 0) >= 0)
                 log_debug("%s is already a mount point", runtime_path);
         else {
-                char options[sizeof("mode=0700,uid=,gid=,size=,smackfsroot=*")
+                char options[sizeof("mode=0700,uid=,gid=,size=,nr_inodes=,smackfsroot=*")
                              + DECIMAL_STR_MAX(uid_t)
                              + DECIMAL_STR_MAX(gid_t)
+                             + DECIMAL_STR_MAX(uint64_t)
                              + DECIMAL_STR_MAX(uint64_t)];
 
                 xsprintf(options,
-                         "mode=0700,uid=" UID_FMT ",gid=" GID_FMT ",size=%" PRIu64 "%s",
-                         uid, gid, runtime_dir_size,
+                         "mode=0700,uid=" UID_FMT ",gid=" GID_FMT ",size=%" PRIu64 ",nr_inodes=%" PRIu64 "%s",
+                         uid, gid, runtime_dir_size, runtime_dir_inodes,
                          mac_smack_use() ? ",smackfsroot=*" : "");
 
                 (void) mkdir_label(runtime_path, 0700);
@@ -132,7 +138,7 @@ static int user_remove_runtime_path(const char *runtime_path) {
 #if 0 /// having a User instance, elogind can ask its manager directly.
 static int do_mount(const char *user) {
         char runtime_path[sizeof("/run/user") + DECIMAL_STR_MAX(uid_t)];
-        uint64_t runtime_dir_size;
+        uint64_t runtime_dir_size, runtime_dir_inodes;
         uid_t uid;
         gid_t gid;
         int r;
@@ -145,7 +151,7 @@ static int do_mount(const char *user) {
                                                     : "Failed to look up user \"%s\": %m",
                                        user);
 
-        r = acquire_runtime_dir_size(&runtime_dir_size);
+        r = acquire_runtime_dir_properties(&runtime_dir_size, &runtime_dir_inodes);
         if (r < 0)
                 return r;
 
@@ -155,7 +161,7 @@ static int do_mount(const char *runtime_path, size_t runtime_dir_size, uid_t uid
 #endif // 0
 
         log_debug("Will mount %s owned by "UID_FMT":"GID_FMT, runtime_path, uid, gid);
-        return user_mkdir_runtime_path(runtime_path, uid, gid, runtime_dir_size);
+        return user_mkdir_runtime_path(runtime_path, uid, gid, runtime_dir_size, runtime_dir_inodes);
 }
 
 #if 0 /// elogind already has the runtime path
