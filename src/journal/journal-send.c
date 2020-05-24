@@ -109,7 +109,7 @@ _public_ int sd_journal_printv(int priority, const char *format, va_list ap) {
         if (len >= (int)LONG_LINE_MAX - 8)
                 return -ENOBUFS;
 
-        /* Allocate large buffer to accomodate big message */
+        /* Allocate large buffer to accommodate big message */
         if (len >= LINE_MAX) {
                 int rlen;
                 buffer = alloca(len + 9);
@@ -552,7 +552,7 @@ _public_ int sd_journal_printv_with_location(int priority, const char *file, con
         if (len >= (int)LONG_LINE_MAX - 8)
                 return -ENOBUFS;
 
-        /* Allocate large buffer to accomodate big message */
+        /* Allocate large buffer to accommodate big message */
         if (len >= LINE_MAX) {
                 int rlen;
                 buffer = alloca(len + 9);
