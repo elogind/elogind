@@ -22,9 +22,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* build short web pages out of each catalog entry, build them along with man
-  pages, and include hyperlinks to them in the journal output
-
 * machined: add API to acquire UID range. add API to mount/dissect loopback
   file. Both protected by PK. Then make nspawn use these APIs to run
   unprivileged containers. i.e. push the truly privileged bits into machined,
@@ -1229,6 +1226,8 @@ Features:
      support Name=foo*|bar*|baz ?
    - duplicate address check for static IPs (like ARPCHECK in network-scripts)
    - whenever uplink info changes, make DHCP server send out FORCERENEW
+
+* Figure out how to do unittests of networkd's state serialization
 
 * dhcp:
    - figure out how much we can increase Maximum Message Size
