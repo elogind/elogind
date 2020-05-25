@@ -46,7 +46,9 @@
 
 #define JOURNAL_FILES_RECHECK_USEC (2 * USEC_PER_SEC)
 
-#define REPLACE_VAR_MAX 256
+/* The maximum size of variable values we'll expand in catalog entries. We bind this to PATH_MAX for now, as
+ * we want to be able to show all officially valid paths at least */
+#define REPLACE_VAR_MAX PATH_MAX
 
 #define DEFAULT_DATA_THRESHOLD (64*1024)
 
@@ -1696,9 +1698,10 @@ static int add_directory(
             !((dirname && dirname_is_machine_id(dirname) > 0) || path_has_prefix(j, path, "/run")))
                 return 0;
 
-        if (!(FLAGS_SET(j->flags, SD_JOURNAL_ALL_NAMESPACES) ||
-              dirname_has_namespace(dirname, j->namespace) > 0 ||
-              (FLAGS_SET(j->flags, SD_JOURNAL_INCLUDE_DEFAULT_NAMESPACE) && dirname_has_namespace(dirname, NULL) > 0)))
+        if (dirname &&
+            (!(FLAGS_SET(j->flags, SD_JOURNAL_ALL_NAMESPACES) ||
+               dirname_has_namespace(dirname, j->namespace) > 0 ||
+               (FLAGS_SET(j->flags, SD_JOURNAL_INCLUDE_DEFAULT_NAMESPACE) && dirname_has_namespace(dirname, NULL) > 0))))
                 return 0;
 
         r = directory_open(j, path, &d);
