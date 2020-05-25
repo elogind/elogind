@@ -13,6 +13,8 @@ libcore_shared_sources = '''
 
 #if 0 /// elogind has only two of the parts here in it...
 # libcore_sources = '''
+#         apparmor-setup.c
+#         apparmor-setup.h
 #         audit-fd.c
 #         audit-fd.h
 #         automount.c
