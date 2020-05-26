@@ -4,9 +4,6 @@ Bugfixes:
   manager or system manager can be always set. It would be better to reject
   them when parsing config.
 
-* busctl prints errors to stdout:
-  busctl tree org.freedesktop.elogind1  /org/freedesktop/elogind1
-
 External:
 
 * Fedora: add an rpmlint check that verifies that all unit files in the RPM are listed in %systemd_post macros.
@@ -22,6 +19,9 @@ Janitorial Clean-ups:
 
 Features:
 
+* build short web pages out of each catalog entry, build them along with man
+  pages, and include hyperlinks to them in the journal output
+
 * machined: add API to acquire UID range. add API to mount/dissect loopback
   file. Both protected by PK. Then make nspawn use these APIs to run
   unprivileged containers. i.e. push the truly privileged bits into machined,
@@ -36,6 +36,8 @@ Features:
   these days
 
 * nspawn: support time namespaces
+
+* add ConditionSecurity=tpm2
 
 * pid1: Move to tracking of main pid/control pid of units per pidfd
 
