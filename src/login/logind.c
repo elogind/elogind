@@ -193,6 +193,8 @@ static Manager* manager_unref(Manager *m) {
         free(m->action_job);
 #endif // 0
 
+        strv_free(m->efi_boot_loader_entries);
+
         return mfree(m);
 }
 
