@@ -12,6 +12,8 @@
 .config.args
 .gdb_history
 .deps/
+.mypy_cache/
+__pycache__/
 /*.gcda
 /*.gcno
 /*.tar.bz2
@@ -34,7 +36,6 @@
 /mkosi.builddir/
 /mkosi.output/
 /tags
-__pycache__/
 
 #if 1 /// elogind specific stuff
 /elogind
