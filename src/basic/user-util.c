@@ -49,7 +49,7 @@ int parse_uid(const char *s, uid_t *ret) {
         assert(s);
 
         assert_cc(sizeof(uid_t) == sizeof(uint32_t));
-        r = safe_atou32(s, &uid);
+        r = safe_atou32_full(s, 10, &uid);
         if (r < 0)
                 return r;
 
@@ -724,12 +724,12 @@ bool valid_user_group_name(const char *u, ValidUserFlags flags) {
         if (isempty(u)) /* An empty user name is never valid */
                 return false;
 
-
         if (parse_uid(u, NULL) >= 0) /* Something that parses as numeric UID string is valid exactly when the
                                       * flag for it is set */
                 return FLAGS_SET(flags, VALID_USER_ALLOW_NUMERIC);
 
         if (FLAGS_SET(flags, VALID_USER_RELAX)) {
+
                 /* In relaxed mode we just check very superficially. Apparently SSSD and other stuff is
                  * extremely liberal (way too liberal if you ask me, even inserting "@" in user names, which
                  * is bound to cause problems for example when used with an MTA), hence only filter the most
