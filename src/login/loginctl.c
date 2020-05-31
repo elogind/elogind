@@ -845,7 +845,7 @@ static int show_properties(sd_bus *bus, const char *path, bool *new_line) {
 static int show_session(int argc, char *argv[], void *userdata) {
         bool properties, new_line = false;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_free_ char *path = NULL;
 
@@ -864,7 +864,7 @@ static int show_session(int argc, char *argv[], void *userdata) {
                 return print_session_status_info(bus, "/org/freedesktop/login1/session/auto", &new_line);
         }
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
                 r = get_session_path(bus, argv[i], &error, &path);
                 if (r < 0)
                         return log_error_errno(r, "Failed to get session path: %s", bus_error_message(&error, r));
@@ -884,7 +884,7 @@ static int show_session(int argc, char *argv[], void *userdata) {
 static int show_user(int argc, char *argv[], void *userdata) {
         bool properties, new_line = false;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
@@ -901,7 +901,7 @@ static int show_user(int argc, char *argv[], void *userdata) {
                 return print_user_status_info(bus, "/org/freedesktop/login1/user/self", &new_line);
         }
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
                 _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
                 _cleanup_(sd_bus_message_unrefp) sd_bus_message * reply = NULL;
                 const char *path = NULL;
@@ -941,7 +941,7 @@ static int show_user(int argc, char *argv[], void *userdata) {
 static int show_seat(int argc, char *argv[], void *userdata) {
         bool properties, new_line = false;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
@@ -958,7 +958,7 @@ static int show_seat(int argc, char *argv[], void *userdata) {
                 return print_seat_status_info(bus, "/org/freedesktop/login1/seat/auto", &new_line);
         }
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
                 _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
                 _cleanup_(sd_bus_message_unrefp) sd_bus_message * reply = NULL;
                 const char *path = NULL;
@@ -986,7 +986,7 @@ static int show_seat(int argc, char *argv[], void *userdata) {
 static int activate(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
@@ -1010,7 +1010,7 @@ static int activate(int argc, char *argv[], void *userdata) {
                 return 0;
         }
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
 
                 r = bus_call_method(
                                 bus,
@@ -1031,7 +1031,7 @@ static int activate(int argc, char *argv[], void *userdata) {
 static int kill_session(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
@@ -1041,7 +1041,7 @@ static int kill_session(int argc, char *argv[], void *userdata) {
         if (!arg_kill_who)
                 arg_kill_who = "all";
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
 
                 r = bus_call_method(
                                 bus,
@@ -1061,7 +1061,7 @@ static int enable_linger(int argc, char *argv[], void *userdata) {
         sd_bus *bus = userdata;
         char* short_argv[3];
         bool b;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
@@ -1081,7 +1081,7 @@ static int enable_linger(int argc, char *argv[], void *userdata) {
                 argc = 2;
         }
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
                 uid_t uid;
 
                 if (isempty(argv[i]))
@@ -1108,14 +1108,14 @@ static int enable_linger(int argc, char *argv[], void *userdata) {
 static int terminate_user(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
                 uid_t uid;
 
                 r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
@@ -1133,7 +1133,7 @@ static int terminate_user(int argc, char *argv[], void *userdata) {
 static int kill_user(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
@@ -1143,7 +1143,7 @@ static int kill_user(int argc, char *argv[], void *userdata) {
         if (!arg_kill_who)
                 arg_kill_who = "all";
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
                 uid_t uid;
 
                 r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
@@ -1166,14 +1166,14 @@ static int kill_user(int argc, char *argv[], void *userdata) {
 static int attach(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
-        for (i = 2; i < argc; i++) {
+        for (int i = 2; i < argc; i++) {
 
                 r = bus_call_method(
                         bus,
@@ -1230,14 +1230,14 @@ static int lock_sessions(int argc, char *argv[], void *userdata) {
 static int terminate_seat(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         sd_bus *bus = userdata;
-        int r, i;
+        int r;
 
         assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
 
-        for (i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
 
                 r = bus_call_method(bus, bus_login_mgr, "TerminateSeat", &error, NULL, "s", argv[i]);
                 if (r < 0)
