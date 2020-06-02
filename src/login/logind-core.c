@@ -130,10 +130,6 @@ int manager_parse_config_file(Manager *m) {
         assert(m);
 
 #if 0 /// elogind parses its own config file
-        return config_parse_many_nulstr(PKGSYSCONFDIR "/logind.conf",
-                                        CONF_PATHS_NULSTR("systemd/logind.conf.d"),
-                                        "Login\0",
-                                        config_item_perf_lookup, logind_gperf_lookup,
 #else // 0
         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
@@ -143,7 +139,13 @@ int manager_parse_config_file(Manager *m) {
         return config_parse(NULL, logind_conf, NULL, "Login\0Sleep\0",
                             config_item_perf_lookup, logind_gperf_lookup,
 #endif // 0
-                                        CONFIG_PARSE_WARN, m);
+        return config_parse_many_nulstr(
+                        PKGSYSCONFDIR "/logind.conf",
+                        CONF_PATHS_NULSTR("elogind/logind.conf.d"),
+                        "Login\0",
+                        config_item_perf_lookup, logind_gperf_lookup,
+                        CONFIG_PARSE_WARN, m,
+                        NULL);
 }
 
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **ret_device) {
