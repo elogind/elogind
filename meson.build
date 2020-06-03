@@ -104,6 +104,8 @@ endif
 rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 
 #if 0 /// UNNEEDED by elogind
+# have_standalone_binaries = get_option('standalone-binaries')
+#
 # sysvinit_path = get_option('sysvinit-path')
 # sysvrcnd_path = get_option('sysvrcnd-path')
 # conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
@@ -3306,6 +3308,20 @@ public_programs += executable(
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
+#
+#         if have_standalone_binaries
+#                 public_programs += executable(
+#                         'systemd-sysusers.standalone',
+#                         'src/sysusers/sysusers.c',
+#                         include_directories : includes,
+#                         link_with : [libshared_static,
+#                                      libbasic,
+#                                      libbasic_gcrypt,
+#                                      libsystemd_static,
+#                                      libjournal_client],
+#                         install : true,
+#                         install_dir : rootbindir)
+#         endif
 # endif
 #
 # if conf.get('ENABLE_TMPFILES') == 1
