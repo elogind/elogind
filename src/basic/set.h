@@ -122,6 +122,9 @@ static inline char **set_get_strv(Set *s) {
         return _hashmap_get_strv(HASHMAP_BASE(s));
 }
 
+int _set_ensure_put(Set **s, const struct hash_ops *hash_ops, const void *key  HASHMAP_DEBUG_PARAMS);
+#define set_ensure_put(s, hash_ops, key) _set_ensure_put(s, hash_ops, key  HASHMAP_DEBUG_SRC_ARGS)
+
 int set_consume(Set *s, void *value);
 #if 0 /// UNNEEDED by elogind
 int set_put_strdup(Set **s, const char *p);
