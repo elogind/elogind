@@ -41,6 +41,7 @@
 #         device-nodes.h
 #         dirent-util.c
 #         dirent-util.h
+#         dlfcn-util.h
 #         efivars.c
 #         efivars.h
 #         env-file.c
@@ -161,6 +162,8 @@
 #         ordered-set.h
 #         parse-util.c
 #         parse-util.h
+#         path-lookup.c
+#         path-lookup.h
 #         path-util.c
 #         path-util.h
 #         prioq.c
@@ -532,7 +535,8 @@ libbasic = static_library(
                         threads,
                         libcap,
                         libselinux,
-                        libm],
+                        libm,
+                        libdl],
         c_args : ['-fvisibility=default'],
         install : false)
 
