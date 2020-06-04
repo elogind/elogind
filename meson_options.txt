@@ -93,7 +93,7 @@ option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cac
 # option('memory-accounting-default', type : 'boolean',
 #        description : 'enable MemoryAccounting= by default')
 # option('bump-proc-sys-fs-file-max', type : 'boolean',
-#        description : 'bump /proc/sys/fs/file-max to ULONG_MAX')
+#        description : 'bump /proc/sys/fs/file-max to LONG_MAX')
 # option('bump-proc-sys-fs-nr-open', type : 'boolean',
 #        description : 'bump /proc/sys/fs/nr_open to INT_MAX')
 #endif // 0
