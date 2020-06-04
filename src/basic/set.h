@@ -130,8 +130,12 @@ int _set_ensure_consume(Set **s, const struct hash_ops *hash_ops, void *key  HAS
 
 int set_consume(Set *s, void *value);
 #if 0 /// UNNEEDED by elogind
-int set_put_strdup(Set **s, const char *p);
-int set_put_strdupv(Set **s, char **l);
+
+int _set_put_strdup(Set **s, const char *p  HASHMAP_DEBUG_PARAMS);
+#define set_put_strdup(s, p) _set_put_strdup(s, p  HASHMAP_DEBUG_SRC_ARGS)
+int _set_put_strdupv(Set **s, char **l  HASHMAP_DEBUG_PARAMS);
+#define set_put_strdupv(s, l) _set_put_strdupv(s, l  HASHMAP_DEBUG_SRC_ARGS)
+
 int set_put_strsplit(Set *s, const char *v, const char *separators, ExtractFlags flags);
 #endif // 0
 
