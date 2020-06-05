@@ -359,11 +359,7 @@ static int userdb_connect(
         if (r < 0)
                 return log_debug_errno(r, "Failed to invoke varlink method: %m");
 
-        r = set_ensure_allocated(&iterator->links, &link_hash_ops);
-        if (r < 0)
-                return log_debug_errno(r, "Failed to allocate set: %m");
-
-        r = set_put(iterator->links, vl);
+        r = set_ensure_put(&iterator->links, &link_hash_ops, vl);
         if (r < 0)
                 return log_debug_errno(r, "Failed to add varlink connection to set: %m");
 
@@ -587,7 +583,7 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         _cleanup_(json_variant_unrefp) JsonVariant *query = NULL;
         int r;
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name, VALID_USER_RELAX))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
@@ -796,7 +792,7 @@ int groupdb_by_name(const char *name, UserDBFlags flags, GroupRecord **ret) {
         _cleanup_(json_variant_unrefp) JsonVariant *query = NULL;
         int r;
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name, VALID_USER_RELAX))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
@@ -983,7 +979,7 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
 
         assert(ret);
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name, VALID_USER_RELAX))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
@@ -1026,7 +1022,7 @@ int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **
 
         assert(ret);
 
-        if (!valid_user_group_name_compat(name))
+        if (!valid_user_group_name(name, VALID_USER_RELAX))
                 return -EINVAL;
 
         r = json_build(&query, JSON_BUILD_OBJECT(
