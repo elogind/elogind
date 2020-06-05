@@ -266,7 +266,7 @@ int log_open(void) {
 #endif // 0
 
                 if (!prohibit_ipc &&
-#if 0 /// Add syslog to LOG_TARGET_AUTO set
+#if 0 /// Add syslog to elogind LOG_TARGET_AUTO set
                     IN_SET(log_target, LOG_TARGET_SYSLOG_OR_KMSG,
                                        LOG_TARGET_SYSLOG)) {
 #else
