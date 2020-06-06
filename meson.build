@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '243.7',
+        version : '243.8',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
