@@ -32,7 +32,7 @@ typedef enum LogTarget{
         LOG_TARGET_SYSLOG_OR_KMSG,
 #if 0 /// Re-writing comment to indicate elogind LOG_TARGET_AUTO semantics change
         LOG_TARGET_AUTO, /* console if stderr is tty, JOURNAL_OR_KMSG otherwise */
-#else
+#else // 0
         LOG_TARGET_AUTO, /* console if stderr is tty, SYSLOG_OR_KMSG otherwise */
 #endif // 0
         LOG_TARGET_NULL,

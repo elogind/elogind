@@ -269,7 +269,7 @@ int log_open(void) {
 #if 0 /// Add syslog to elogind LOG_TARGET_AUTO set
                     IN_SET(log_target, LOG_TARGET_SYSLOG_OR_KMSG,
                                        LOG_TARGET_SYSLOG)) {
-#else
+#else // 0
                     IN_SET(log_target, LOG_TARGET_AUTO,
                                        LOG_TARGET_SYSLOG_OR_KMSG,
                                        LOG_TARGET_SYSLOG)) {
