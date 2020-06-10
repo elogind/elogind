@@ -132,6 +132,9 @@ static int write_state(FILE **f, char **states) {
         char **state;
         int r = 0;
 
+        assert(f);
+        assert(*f);
+
         STRV_FOREACH(state, states) {
                 int k;
 
@@ -391,14 +394,14 @@ static int execute_s2h(Manager *m) {
 #endif // 0
         if (r < 0) {
 #if 0 /// elogind uses its manager instance values
-                log_notice_errno(r, "Couldn't hibernate, will try to suspend again.");
+                log_notice_errno(r, "Couldn't hibernate, will try to suspend again: %m");
 
                 r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
 #else // 0
                 r = execute(m, "suspend");
 #endif // 0
                 if (r < 0)
-                        return log_notice_errno(r, "Could neither hibernate nor suspend again, giving up.");
+                        return log_error_errno(r, "Could neither hibernate nor suspend, giving up: %m");
         }
 
         return 0;
