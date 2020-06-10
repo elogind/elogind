@@ -21,7 +21,7 @@ typedef struct SleepConfig {
 } SleepConfig;
 
 #if 0 /// UNNEEDED by elogind
-void free_sleep_config(SleepConfig *sc);
+SleepConfig* free_sleep_config(SleepConfig *sc);
 DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, free_sleep_config);
 #endif // 0
 
