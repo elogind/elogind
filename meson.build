@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '246',
+        version : '245',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
-libsystemd_version = '0.29.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libudev_version = '1.6.18'
 #endif // 0
+libelogind_version = '0.28.0'
+libudev_version = '1.6.17'
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -817,17 +817,13 @@ conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 #if 0 /// UNNEEDED by elogind
 # time_epoch = get_option('time-epoch')
 # if time_epoch == -1
-#         time_epoch = run_command('sh', ['-c', 'echo "$SOURCE_DATE_EPOCH"']).stdout().strip()
-#         if time_epoch == '' and git.found() and run_command('test', '-e', '.git').returncode() == 0
-#                 # If we're in a git repository, use the creation time of the latest git tag.
-#                 latest_tag = run_command('git', 'describe', '--abbrev=0', '--tags').stdout().strip()
-#                 time_epoch = run_command('git', 'log', '-1', '--format=%at', latest_tag).stdout()
-#         endif
-#         if time_epoch == ''
+#         source_date_epoch = run_command('sh', ['-c', 'echo "$SOURCE_DATE_EPOCH"']).stdout().strip()
+#         if source_date_epoch != ''
+#                 time_epoch = source_date_epoch.to_int()
+#         else
 #                 NEWS = files('NEWS')
-#                 time_epoch = run_command(stat, '-c', '%Y', NEWS).stdout()
+#                 time_epoch = run_command(stat, '-c', '%Y', NEWS).stdout().to_int()
 #         endif
-#         time_epoch = time_epoch.to_int()
 # endif
 # conf.set('TIME_EPOCH', time_epoch)
 #else // 0
@@ -1241,8 +1237,6 @@ conf.set10('HAVE_PAM', have)
 #
 #         conf.set10('HAVE_CRYPT_SET_METADATA_SIZE',
 #                    have and cc.has_function('crypt_set_metadata_size', dependencies : libcryptsetup))
-#         conf.set10('HAVE_CRYPT_ACTIVATE_BY_SIGNED_KEY',
-#                    have and cc.has_function('crypt_activate_by_signed_key', dependencies : libcryptsetup))
 # else
 #         have = false
 #         libcryptsetup = []
@@ -1359,17 +1353,6 @@ conf.set10('HAVE_PAM', have)
 # endif
 # conf.set10('HAVE_P11KIT', have)
 #
-# want_libfido2 = get_option('libfido2')
-# if want_libfido2 != 'false' and not skip_deps
-#         libfido2 = dependency('libfido2',
-#                               required : want_libfido2 == 'true')
-#         have = libfido2.found()
-# else
-#         have = false
-#         libfido2 = []
-# endif
-# conf.set10('HAVE_LIBFIDO2', have)
-#
 # want_elfutils = get_option('elfutils')
 # if want_elfutils != 'false' and not skip_deps
 #         libdw = dependency('libdw',
@@ -1407,38 +1390,36 @@ conf.set10('HAVE_PAM', have)
 # if want_xz != 'false' and not skip_deps
 #         libxz = dependency('liblzma',
 #                            required : want_xz == 'true')
-#         have_xz = libxz.found()
+#         have = libxz.found()
 # else
-#         have_xz = false
+#         have = false
 #         libxz = []
 # endif
-# conf.set10('HAVE_XZ', have_xz)
+# conf.set10('HAVE_XZ', have)
 #
 # want_lz4 = get_option('lz4')
 # if want_lz4 != 'false' and not skip_deps
 #         liblz4 = dependency('liblz4',
 #                             version : '>= 1.3.0',
 #                             required : want_lz4 == 'true')
-#         have_lz4 = liblz4.found()
+#         have = liblz4.found()
 # else
-#         have_lz4 = false
+#         have = false
 #         liblz4 = []
 # endif
-# conf.set10('HAVE_LZ4', have_lz4)
+# conf.set10('HAVE_LZ4', have)
 #
 # want_zstd = get_option('zstd')
 # if want_zstd != 'false' and not skip_deps
 #         libzstd = dependency('libzstd',
 #                              required : want_zstd == 'true',
 #                              version : '>= 1.4.0')
-#         have_zstd = libzstd.found()
+#         have = libzstd.found()
 # else
-#         have_zstd = false
+#         have = false
 #         libzstd = []
 # endif
-# conf.set10('HAVE_ZSTD', have_zstd)
-#
-# conf.set10('HAVE_COMPRESSION', have_xz or have_lz4 or have_zstd)
+# conf.set10('HAVE_ZSTD', have)
 #
 # want_xkbcommon = get_option('xkbcommon')
 # if want_xkbcommon != 'false' and not skip_deps
@@ -2122,7 +2103,7 @@ test_dlopen = executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [threads,
-#                         libqrencode,
+#                         libdl,
 #                         libxz,
 #                         liblz4,
 #                         libpcre2,
@@ -2546,8 +2527,7 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libfdisk,
-#                                 libp11kit,
-#                                 libfido2],
+#                                 libp11kit],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2574,7 +2554,6 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libp11kit,
-#                                 libfido2,
 #                                 libpwquality],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
@@ -3315,7 +3294,7 @@ executable('elogind-cgroups-agent',
 #                          'systemd-mount', join_paths(bindir, 'systemd-umount'))
 #
 # public_programs += executable(
-#         'elogind-run',
+#         'systemd-run',
 #         'src/run/run.c',
 #         include_directories : includes,
 #         link_with : [libshared],
@@ -3323,7 +3302,7 @@ executable('elogind-cgroups-agent',
 #         install : true)
 #
 # public_programs += executable(
-#         'elogind-stdio-bridge',
+#         'systemd-stdio-bridge',
 #         'src/stdio-bridge/stdio-bridge.c',
 #         include_directories : includes,
 #         link_with : [libshared],
@@ -3481,7 +3460,7 @@ public_programs += executable(
 #         link_with : [libshared],
 #         dependencies : [libaudit],
 #         install_rpath : rootlibexecdir,
-#         install : (conf.get('ENABLE_UTMP') == 1),
+#         install : true,
 #         install_dir : rootlibexecdir)
 #
 # if conf.get('HAVE_KMOD') == 1
@@ -4081,7 +4060,6 @@ foreach tuple : [
 #         ['libfdisk'],
 #endif // 0
         ['p11kit'],
-        ['libfido2'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
 #         ['IMA'],
@@ -4193,8 +4171,8 @@ foreach tuple : [
 #         ['link-networkd-shared',  get_option('link-networkd-shared')],
 #         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
 #         ['kernel-install',        get_option('kernel-install')],
-#         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 #endif // 0
+        ['elogind-analyze',       get_option('analyze')],
 ]
 
         if tuple.length() >= 2
