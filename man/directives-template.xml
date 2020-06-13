@@ -1,6 +1,6 @@
 <!-- SPDX-License-Identifier: LGPL-2.1+ -->
 
-<refentry id="elogind.directives" conditional="HAVE_PYTHON">
+<refentry id="elogind.directives">
   <refentryinfo>
     <title>elogind.directives</title>
     <productname>elogind</productname>
@@ -49,6 +49,15 @@
     and other programs.</para>
 
     <variablelist id='efi-variables' />
+  </refsect1>
+
+  <refsect1>
+    <title>Home Area/User Account directives</title>
+
+    <para>Directives for configuring home areas and user accounts via
+    <citerefentry><refentrytitle>elogind-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+
+    <variablelist id='home-directives' />
   </refsect1>
 
   <refsect1>

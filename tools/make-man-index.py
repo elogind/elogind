@@ -9,7 +9,7 @@ from xml_helper import xml_parse, xml_print, tree
 MDASH = ' — ' if sys.version_info.major >= 3 else ' -- '
 
 TEMPLATE = '''\
-<refentry id="elogind.index" conditional="HAVE_PYTHON">
+<refentry id="elogind.index">
 
   <refentryinfo>
       <!-- 1 /// Must add elogind authors for the additions and changes -->
