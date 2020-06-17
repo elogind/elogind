@@ -1652,9 +1652,7 @@ static int run(int argc, char *argv[]) {
 
         setlocale(LC_ALL, "");
         elogind_set_program_name(argv[0]);
-        log_show_color(true);
-        log_parse_environment();
-        log_open();
+        log_setup_cli();
 
         /* The journal merging logic potentially needs a lot of fds. */
         (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);

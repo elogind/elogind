@@ -81,7 +81,7 @@ int log_get_max_level_realm(LogRealm realm) _pure_;
  */
 
 assert_cc(STRLEN(__FILE__) > STRLEN(RELATIVE_SOURCE_PATH) + 1);
-#define PROJECT_FILE (__FILE__ + STRLEN(RELATIVE_SOURCE_PATH) + 1)
+#define PROJECT_FILE (&__FILE__[STRLEN(RELATIVE_SOURCE_PATH) + 1])
 
 int log_open(void);
 void log_close(void);
@@ -90,8 +90,11 @@ void log_forget_fds(void);
 #endif // 0
 
 void log_parse_environment_realm(LogRealm realm);
+void log_parse_environment_cli_realm(LogRealm realm);
 #define log_parse_environment() \
         log_parse_environment_realm(LOG_REALM)
+#define log_parse_environment_cli() \
+        log_parse_environment_cli_realm(LOG_REALM)
 
 int log_dispatch_internal(
                 int level,
@@ -363,3 +366,4 @@ int log_syntax_invalid_utf8_internal(
 #define DEBUG_LOGGING _unlikely_(log_get_max_level() >= LOG_DEBUG)
 
 void log_setup_service(void);
+void log_setup_cli(void);
