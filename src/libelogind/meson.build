@@ -89,6 +89,7 @@ sd_login_sources = files('sd-login/sd-login.c')
 #         sd-netlink/netlink-types.h
 #         sd-netlink/netlink-util.c
 #         sd-netlink/netlink-util.h
+#         sd-netlink/nfnl-message.c
 #         sd-netlink/rtnl-message.c
 #         sd-netlink/sd-netlink.c
 #         sd-network/network-util.c
