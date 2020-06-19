@@ -205,9 +205,10 @@ static int run(int argc, char *argv[]) {
                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                        "First argument must be either \"start\" or \"stop\".");
 
+        umask(0022);
+
         r = mac_selinux_init();
         if (r < 0)
-                return log_error_errno(r, "Could not initialize labelling: %m\n");
 #else // 0
 int user_runtime_dir(const char *verb, User *u) {
         int r = 0;
@@ -218,7 +219,7 @@ int user_runtime_dir(const char *verb, User *u) {
 
 #endif // 0
 
-        umask(0022);
+                return r;
 
 #if 0 /// elogind has more information and can do this more conveniently
         if (streq(argv[1], "start"))

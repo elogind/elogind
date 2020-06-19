@@ -1242,7 +1242,7 @@ static int run(int argc, char *argv[]) {
 
         r = mac_selinux_init();
         if (r < 0)
-                return log_error_errno(r, "Could not initialize labelling: %m");
+                return r;
 
 #if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         /* Always create the directories people can create inotify watches in. Note that some applications might check
