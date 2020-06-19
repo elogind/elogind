@@ -59,6 +59,7 @@ tests += [
 #
 #         [['src/test/test-engine.c'],
 #          [libcore,
+#           libudev,
 #           libshared],
 #          [threads,
 #           librt,
@@ -571,7 +572,8 @@ tests += [
 #           'src/journal/journald-server.h'],
 #          [libcore,
 #           libjournal_core,
-#           libudevd_core,
+#           libudev_core,
+#           libudev_static,
 #           libshared],
 #          [threads,
 #           libseccomp,
@@ -580,7 +582,7 @@ tests += [
 #           liblz4,
 #           libblkid],
 #endif // 0
-         '', '', [], libudevd_core_includes],
+         '', '', [], libudev_core_includes],
 
         [['src/test/test-prioq.c'],
          [],
@@ -622,8 +624,7 @@ tests += [
 #
 #         [['src/test/test-firewall-util.c'],
 #          [libshared],
-#          [],
-#          'HAVE_LIBIPTC'],
+#          []],
 #
 #         [['src/test/test-netlink-manual.c'],
 #          [],
@@ -817,13 +818,12 @@ tests += [
 #          []],
 #
 #         [['src/test/test-libudev.c'],
-#          [libshared,
-#           libudev_static],
-#          [],
-#          '', '', [], libudev_includes],
+#          [libshared],
+#          []],
 #
 #         [['src/test/test-udev.c'],
-#          [libudevd_core,
+#          [libudev_core,
+#           libudev_static,
 #           libshared],
 #          [threads,
 #           librt,
@@ -1159,8 +1159,7 @@ tests += [
 #           libshared_static,
 #           libudev],
 #endif // 0
-         [threads],
-         '', '', [], libudev_includes],
+         [threads]],
 
         [['src/libelogind/sd-device/test-sd-device-monitor.c'],
          [],
