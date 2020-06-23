@@ -122,7 +122,7 @@ int mac_selinux_init(void) {
 
         label_hnd = selabel_open(SELABEL_CTX_FILE, NULL, 0);
         if (!label_hnd)
-                return log_enforcing_errno(errno, "Failed to initialize SELinux labeling handle: %m");
+                return log_enforcing_errno(errno, "Failed to initialize SELinux context: %m");
 
         after_timestamp = now(CLOCK_MONOTONIC);
         after_mallinfo = mallinfo();
@@ -377,13 +377,9 @@ int mac_selinux_get_child_mls_label(int socket_fd, const char *exe, const char *
 char* mac_selinux_free(char *label) {
 
 #if HAVE_SELINUX
-        if (!label)
-                return NULL;
-
-        if (!mac_selinux_use())
-                return NULL;
-
         freecon(label);
+#else
+        assert(!label);
 #endif
 
         return NULL;
