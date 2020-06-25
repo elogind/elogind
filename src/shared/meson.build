@@ -102,7 +102,9 @@
 #         fdset.h
 #         fileio-label.c
 #         fileio-label.h
+#         firewall-util.c
 #         firewall-util.h
+#         firewall-util-private.h
 #         format-table.c
 #         format-table.h
 #         fsck-util.h
@@ -392,7 +394,7 @@ endif
 # endif
 #
 # if conf.get('HAVE_LIBIPTC') == 1
-#         shared_sources += files('firewall-util.c')
+#         shared_sources += files('firewall-util-iptables.c')
 # endif
 #endif // 0
 
@@ -496,8 +498,8 @@ libshared_static = static_library(
 
 libshared = shared_library(
         libshared_name,
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+        libudev_sources,
         include_directories : includes,
         link_args : ['-shared',
                      '-Wl,--version-script=' + libshared_sym_path],
