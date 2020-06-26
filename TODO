@@ -8,8 +8,6 @@ External:
 
 * Fedora: add an rpmlint check that verifies that all unit files in the RPM are listed in %systemd_post macros.
 
-* wiki: update journal format documentation for lz4 additions
-
 Janitorial Clean-ups:
 
 * Rearrange tests so that the various test-xyz.c match a specific src/basic/xyz.c again
@@ -32,6 +30,10 @@ Features:
 
 * if /usr/bin/swapoff fails due to OOM, log a friendly explanatory message about it
 
+* warn if User=nobody is used in a unit file. It's the overflow UID after all,
+  and the service might thus get access to files it really should not get
+  access to on NFS and userns environments.
+
 * build short web pages out of each catalog entry, build them along with man
   pages, and include hyperlinks to them in the journal output
 
@@ -40,6 +42,10 @@ Features:
   unprivileged containers. i.e. push the truly privileged bits into machined,
   so that the client side can remain entirely unprivileged, with SUID or
   anything like that.
+
+* journald: do journal file writing out-of-process, with one writer process per
+  client UID, so tht synthetic hash table collisions can slow down a specific
+  user's journal stream down but not the others.
 
 * add "throttling" to sd-event event sources: optionally, when we wake up too
   often for one, let's turn it off entirely for a while. Use that for the
@@ -206,6 +212,13 @@ Features:
   end), in order to maximize dd'ability. Requires libfdisk work, see
   https://github.com/karelzak/util-linux/issues/907
 
+* elogind-repart: optionally, allow specifying a path to initialize new
+  partitions from, i.e. an fs image file or a source device node. This would
+  then turn elogind-repart into a simple installer: with a few .repart files
+  you could replicate the host system on another device. a full installer would
+  then be: "elogind-repart /dev/sda && bootctl install /dev/sda &&
+  elogind-firstboot --image= …"
+
 * elogind-repart: MBR partition table support. Care needs to be taken regarding
   Type=, so that partition definitions can sanely apply to both the GPT and the
   MBR case. Idea: accept syntax "Type=gpt:home mbr:0x83" for setting the types
@@ -224,8 +237,14 @@ Features:
 * elogind-repart: allow disabling growing of specific partitions, or making
   them (think ESP: we don't ever want to grow it, since we cannot resize vfat)
 
+* elogind-repart: add specifier expansion, add especifier that refers to root
+  device node of current system, /usr device node, and matching verity, so that
+  an installer can be made a "copy" installer of the booted OS
+
 * elogind-repart: make it a static checker during early boot for existence and
   absence of other partitions for trusted boot environments
+
+* elogind-repart: allow config of partition uuid
 
 * userdb: allow username prefix searches in varlink API, allow realname and
   realname substr searches in varlink API
