@@ -32,6 +32,8 @@
 #         bus-locator.h
 #         bus-log-control-api.c
 #         bus-log-control-api.h
+#         bus-object.c
+#         bus-object.h
 #         bus-polkit.c
 #         bus-polkit.h
 #         bus-unit-procs.c
@@ -121,6 +123,8 @@
 #         install-printf.h
 #         install.c
 #         install.h
+#         ipvlan-util.c
+#         ipvlan-util.h
 #         ip-protocol-list.c
 #         ip-protocol-list.h
 #         journal-importer.c
