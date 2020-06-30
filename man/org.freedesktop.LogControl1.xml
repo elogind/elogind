@@ -43,7 +43,6 @@ node /org/freedesktop/LogControl1 {
   interface org.freedesktop.LogControl1 {
     properties:
       @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
-      @org.freedesktop.elogind1.Privileged("true")
       @org.freedesktop.systemd1.Privileged("true")
       readwrite s LogLevel = '...';
       @org.freedesktop.DBus.Property.EmitsChangedSignal("false")
@@ -84,8 +83,8 @@ node /org/freedesktop/LogControl1 {
       <para><varname>LogTarget</varname> describes the log target (mechanism). It should be one of
       <literal>console</literal> (log to the console or standard output),
       <literal>kmsg</literal> (log to the kernel ring buffer),
-      <literal>journal</literal> (log the the journal natively, see
       <citerefentry><refentrytitle>elogind-journald.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>),
+      <literal>journal</literal> (log to the journal natively, see
       <literal>syslog</literal> (log using the
       <citerefentry project='man-pages'><refentrytitle>syslog</refentrytitle><manvolnum>3</manvolnum></citerefentry> call).
       </para>
