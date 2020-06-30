@@ -20,15 +20,12 @@ Features:
 * add --copy-from and --copy-to command to elogind-dissect which copies stuff
   in and out of a disk image
 
-* add elogind.random_seed= on the kernel cmdline, taking some hex or base64
-  encoded data. During earliest boot, credit it to entropy. This is not useful
-  for general purpose systems, but certainly for testing environments in VMs
-  and such, as it allows us to boot up instantly with fully initialized entropy
-  pool even if RNG pass-thru is not available.
-
 * Support ProtectProc= or so, using: https://patchwork.kernel.org/cover/11310197/
 
 * if /usr/bin/swapoff fails due to OOM, log a friendly explanatory message about it
+
+* add loud warning to the logs (with catalog entry) if elogind-udev-settle is
+  pulled into the boot process
 
 * build short web pages out of each catalog entry, build them along with man
   pages, and include hyperlinks to them in the journal output
@@ -212,13 +209,6 @@ Features:
   end), in order to maximize dd'ability. Requires libfdisk work, see
   https://github.com/karelzak/util-linux/issues/907
 
-* elogind-repart: optionally, allow specifying a path to initialize new
-  partitions from, i.e. an fs image file or a source device node. This would
-  then turn elogind-repart into a simple installer: with a few .repart files
-  you could replicate the host system on another device. a full installer would
-  then be: "elogind-repart /dev/sda && bootctl install /dev/sda &&
-  elogind-firstboot --image= …"
-
 * elogind-repart: MBR partition table support. Care needs to be taken regarding
   Type=, so that partition definitions can sanely apply to both the GPT and the
   MBR case. Idea: accept syntax "Type=gpt:home mbr:0x83" for setting the types
@@ -254,14 +244,8 @@ Features:
 * elogind-repart: allow disabling growing of specific partitions, or making
   them (think ESP: we don't ever want to grow it, since we cannot resize vfat)
 
-* elogind-repart: add specifier expansion, add especifier that refers to root
-  device node of current system, /usr device node, and matching verity, so that
-  an installer can be made a "copy" installer of the booted OS
-
 * elogind-repart: make it a static checker during early boot for existence and
   absence of other partitions for trusted boot environments
-
-* elogind-repart: allow config of partition uuid
 
 * userdb: allow username prefix searches in varlink API, allow realname and
   realname substr searches in varlink API
