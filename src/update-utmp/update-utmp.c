@@ -240,9 +240,6 @@ void update_utmp(int argc, char* argv[]) {
 #if 0 /// UNNEEDED by elogind
         int r;
 
-        if (getppid() != 1)
-                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
-                                       "This program should be invoked by init only.");
         if (argc != 2)
                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                        "This program requires one argument.");
