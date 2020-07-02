@@ -26,8 +26,8 @@
 
 #if 0 /// UNNEEDED by elogind
 int utmp_get_runlevel(int *runlevel, int *previous) {
+        _cleanup_(utxent_cleanup) bool utmpx = false;
         struct utmpx *found, lookup = { .ut_type = RUN_LVL };
-        int r;
         const char *e;
 
         assert(runlevel);
@@ -59,27 +59,17 @@ int utmp_get_runlevel(int *runlevel, int *previous) {
         if (utmpxname(_PATH_UTMPX) < 0)
                 return -errno;
 
-        setutxent();
+        utmpx = utxent_start();
 
         found = getutxid(&lookup);
         if (!found)
-                r = -errno;
-        else {
-                int a, b;
+                return -errno;
 
-                a = found->ut_pid & 0xFF;
-                b = (found->ut_pid >> 8) & 0xFF;
+        *runlevel = found->ut_pid & 0xFF;
+        if (previous)
+                *previous = (found->ut_pid >> 8) & 0xFF;
 
-                *runlevel = a;
-                if (previous)
-                        *previous = b;
-
-                r = 0;
-        }
-
-        endutxent();
-
-        return r;
+        return 0;
 }
 #endif // 0
 
@@ -108,7 +98,7 @@ static void init_entry(struct utmpx *store, usec_t t) {
 }
 
 static int write_entry_utmp(const struct utmpx *store) {
-        int r;
+        _cleanup_(utxent_cleanup) bool utmpx = false;
 
         assert(store);
 
@@ -119,16 +109,11 @@ static int write_entry_utmp(const struct utmpx *store) {
         if (utmpxname(_PATH_UTMPX) < 0)
                 return -errno;
 
-        setutxent();
+        utmpx = utxent_start();
 
         if (!pututxline(store))
-                r = -errno;
-        else
-                r = 0;
-
-        endutxent();
-
-        return r;
+                return -errno;
+        return 0;
 }
 
 static int write_entry_wtmp(const struct utmpx *store) {

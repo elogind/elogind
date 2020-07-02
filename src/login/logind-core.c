@@ -4,9 +4,6 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <linux/vt.h>
-#if ENABLE_UTMP
-#include <utmpx.h>
-#endif
 
 #include "sd-device.h"
 
@@ -31,6 +28,7 @@
 #include "userdb.h"
 /// Additional includes needed by elogind
 #include "elogind.h"
+#include "utmp-wtmp.h"
 
 void manager_reset_config(Manager *m) {
         assert(m);
@@ -783,13 +781,14 @@ bool manager_all_buttons_ignored(Manager *m) {
 int manager_read_utmp(Manager *m) {
 #if ENABLE_UTMP
         int r;
+        _cleanup_(utxent_cleanup) bool utmpx = false;
 
         assert(m);
 
         if (utmpxname(_PATH_UTMPX) < 0)
                 return log_error_errno(errno, "Failed to set utmp path to " _PATH_UTMPX ": %m");
 
-        setutxent();
+        utmpx = utxent_start();
 
         for (;;) {
                 _cleanup_free_ char *t = NULL;
@@ -802,8 +801,7 @@ int manager_read_utmp(Manager *m) {
                 if (!u) {
                         if (errno != 0)
                                 log_warning_errno(errno, "Failed to read " _PATH_UTMPX ", ignoring: %m");
-                        r = 0;
-                        break;
+                        return 0;
                 }
 
                 if (u->ut_type != USER_PROCESS)
@@ -813,18 +811,14 @@ int manager_read_utmp(Manager *m) {
                         continue;
 
                 t = strndup(u->ut_line, sizeof(u->ut_line));
-                if (!t) {
-                        r = log_oom();
-                        break;
-                }
+                if (!t)
+                        return log_oom();
 
                 c = path_startswith(t, "/dev/");
                 if (c) {
                         r = free_and_strdup(&t, c);
-                        if (r < 0) {
-                                log_oom();
-                                break;
-                        }
+                        if (r < 0)
+                                return log_oom();
                 }
 
                 if (isempty(t))
@@ -854,8 +848,6 @@ int manager_read_utmp(Manager *m) {
                 log_debug("Acquired TTY information '%s' from utmp for session '%s'.", s->tty, s->id);
         }
 
-        endutxent();
-        return r;
 #else
         return 0;
 #endif

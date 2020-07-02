@@ -9,6 +9,8 @@
 
 #if ENABLE_UTMP
 #if 0 /// UNNEEDED by elogind
+#include <utmpx.h>
+
 int utmp_get_runlevel(int *runlevel, int *previous);
 #endif // 0
 
@@ -27,6 +29,15 @@ int utmp_wall(
         const char *origin_tty,
         bool (*match_tty)(const char *tty, void *userdata),
         void *userdata);
+
+static inline bool utxent_start(void) {
+        setutxent();
+        return true;
+}
+static inline void utxent_cleanup(bool *initialized) {
+        if (initialized)
+                endutxent();
+}
 
 #else /* ENABLE_UTMP */
 
