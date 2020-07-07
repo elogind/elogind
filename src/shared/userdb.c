@@ -156,6 +156,8 @@ static int userdb_on_query_reply(
                         r = -ESRCH;
                 else if (streq(error_id, "io.elogind.UserDatabase.ServiceNotAvailable"))
                         r = -EHOSTDOWN;
+                else if (streq(error_id, "io.elogind.UserDatabase.EnumerationNotSupported"))
+                        r = -EOPNOTSUPP;
                 else if (streq(error_id, VARLINK_ERROR_TIMEOUT))
                         r = -ETIMEDOUT;
                 else
@@ -1227,16 +1229,16 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
 }
 #endif // 0
 
-
 /// elogind empty mask removed (UNNEEDED by elogind)
 
         /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
-
 int userdb_block_nss_elogind(int b) {
         _cleanup_(dlclosep) void *dl = NULL;
         int (*call)(bool b);
 
         /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
+        /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
+
         dl = dlopen(ROOTLIBDIR "/libnss_elogind.so.2", RTLD_LAZY|RTLD_NODELETE);
         if (!dl) {
                 /* If the file isn't installed, don't complain loudly */
