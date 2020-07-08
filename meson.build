@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '245',
+        version : '246',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
-libsystemd_version = '0.28.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
-# libudev_version = '1.6.17'
 #endif // 0
+libelogind_version = '0.29.0'
+libudev_version = '1.6.18'
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
