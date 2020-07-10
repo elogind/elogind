@@ -19,6 +19,7 @@ int mkdir_label(const char *path, mode_t mode);
 int mkdirat_label(int dirfd, const char *path, mode_t mode);
 #endif // 0
 int symlink_label(const char *old_path, const char *new_path);
+int mknod_label(const char *pathname, mode_t mode, dev_t dev);
 
 #if 0 /// UNNEEDED by elogind
 int btrfs_subvol_make_label(const char *path);
