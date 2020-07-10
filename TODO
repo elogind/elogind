@@ -24,9 +24,6 @@ Features:
 
 * if /usr/bin/swapoff fails due to OOM, log a friendly explanatory message about it
 
-* add loud warning to the logs (with catalog entry) if elogind-udev-settle is
-  pulled into the boot process
-
 * build short web pages out of each catalog entry, build them along with man
   pages, and include hyperlinks to them in the journal output
 
@@ -48,6 +45,9 @@ Features:
   these days
 
 * nspawn: support time namespaces
+
+* elogind-firstboot: make sure to always use chase_symlinks() before
+  reading/writing files
 
 * add ConditionSecurity=tpm2
 
@@ -94,8 +94,9 @@ Features:
   this, it's useful to have one that can dump contents of them, too.
 
 * All tools that support --root= should also learn --image= so that they can
-  operate on disk images directly. Specifically: bootctl, firstboot, tmpfiles,
-  sysusers, systemctl, repart, journalctl, coredumpctl.
+  operate on disk images directly. Specifically: bootctl, tmpfiles, sysusers,
+  systemctl, repart, journalctl, coredumpctl. (Already done: elogind-nspawn,
+  elogind-firstboot)
 
 * seccomp: by default mask x32 ABI system wide on x86-64. it's on its way out
 
