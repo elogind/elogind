@@ -3455,7 +3455,7 @@ public_programs += executable(
 #         link_with : [libshared],
 #         dependencies : [libaudit],
 #         install_rpath : rootlibexecdir,
-#         install : true,
+#         install : (conf.get('ENABLE_UTMP') == 1),
 #         install_dir : rootlibexecdir)
 #
 # if conf.get('HAVE_KMOD') == 1
