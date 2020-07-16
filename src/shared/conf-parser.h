@@ -173,7 +173,7 @@ typedef enum Disabled {
                                                                         \
                 r = parser(rvalue);                                     \
                 if (r < 0) {                                            \
-                        log_syntax(unit, LOG_ERR, filename, line, r,    \
+                        log_syntax(unit, LOG_WARNING, filename, line, r, \
                                    msg ", ignoring: %s", rvalue);       \
                         return 0;                                       \
                 }                                                       \
@@ -194,7 +194,7 @@ typedef enum Disabled {
                                                                         \
                 r = parser(rvalue, i);                                  \
                 if (r < 0)                                              \
-                        log_syntax(unit, LOG_ERR, filename, line, r,    \
+                        log_syntax(unit, LOG_WARNING, filename, line, r, \
                                    msg ", ignoring: %s", rvalue);       \
                                                                         \
                 return 0;                                               \
@@ -211,7 +211,7 @@ typedef enum Disabled {
                                                                         \
                 x = name##_from_string(rvalue);                         \
                 if (x < 0) {                                            \
-                        log_syntax(unit, LOG_ERR, filename, line, 0,    \
+                        log_syntax(unit, LOG_WARNING, filename, line, 0, \
                                    msg ", ignoring: %s", rvalue);       \
                         return 0;                                       \
                 }                                                       \
@@ -236,7 +236,7 @@ typedef enum Disabled {
                                                                         \
                 x = name##_from_string(rvalue);                         \
                 if (x < 0) {                                            \
-                        log_syntax(unit, LOG_ERR, filename, line, 0,    \
+                        log_syntax(unit, LOG_WARNING, filename, line, 0, \
                                    msg ", ignoring: %s", rvalue);       \
                         return 0;                                       \
                 }                                                       \
@@ -269,10 +269,10 @@ typedef enum Disabled {
                                                                                \
                         en = strndup(word, l);                                 \
                         if (!en)                                               \
-                                return -ENOMEM;                                \
+                                return log_oom();                              \
                                                                                \
                         if ((x = name##_from_string(en)) < 0) {                \
-                                log_syntax(unit, LOG_ERR, filename, line, 0,   \
+                                log_syntax(unit, LOG_WARNING, filename, line, 0, \
                                            msg ", ignoring: %s", en);          \
                                 continue;                                      \
                         }                                                      \
@@ -295,7 +295,7 @@ typedef enum Disabled {
                         if (new_xs)                                            \
                                 xs = new_xs;                                   \
                         else                                                   \
-                                return -ENOMEM;                                \
+                                return log_oom();                              \
                                                                                \
                         *(xs + i) = invalid;                                   \
                 }                                                              \
