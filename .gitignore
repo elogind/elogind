@@ -35,6 +35,7 @@ __pycache__/
 /.mkosi-*
 /mkosi.builddir/
 /mkosi.output/
+/mkosi.default
 /tags
 
 #if 1 /// elogind specific stuff
