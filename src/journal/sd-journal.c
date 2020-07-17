@@ -2563,6 +2563,19 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
         j->current_field++;
 
         return 1;
+}
+
+_public_ int sd_journal_enumerate_available_data(sd_journal *j, const void **data, size_t *size) {
+        for (;;) {
+                int r;
+
+                r = sd_journal_enumerate_data(j, data, size);
+                if (r >= 0)
+                        return r;
+                if (!JOURNAL_ERRNO_IS_UNAVAILABLE_FIELD(r))
+                        return r;
+                j->current_field++; /* Try with the next field */
+        }
 #else // 0
         return 0;
 #endif // 0
@@ -3149,6 +3162,20 @@ _public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_
                         return r;
 
                 return 1;
+        }
+}
+
+_public_ int sd_journal_enumerate_available_unique(sd_journal *j, const void **data, size_t *size) {
+        for (;;) {
+                int r;
+
+                r = sd_journal_enumerate_unique(j, data, size);
+                if (r >= 0)
+                        return r;
+                if (!JOURNAL_ERRNO_IS_UNAVAILABLE_FIELD(r))
+                        return r;
+                /* Try with the next field. sd_journal_enumerate_unique() modifies state, so on the next try
+                 * we will access the next field. */
         }
 #else // 0
         return 0;
