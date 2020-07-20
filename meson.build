@@ -815,6 +815,10 @@ conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 #         source_date_epoch = run_command('sh', ['-c', 'echo "$SOURCE_DATE_EPOCH"']).stdout().strip()
 #         if source_date_epoch != ''
 #                 time_epoch = source_date_epoch.to_int()
+#         elif git.found() and run_command('test', '-e', '.git').returncode() == 0
+#                 # If we're in a git repository, use the creation time of the latest git tag.
+#                 latest_tag = run_command('git', 'describe', '--abbrev=0', '--tags').stdout().strip()
+#                 time_epoch = run_command('git', 'log', '-1', '--format=%at', latest_tag).stdout().to_int()
 #         else
 #                 NEWS = files('NEWS')
 #                 time_epoch = run_command(stat, '-c', '%Y', NEWS).stdout().to_int()
