@@ -52,13 +52,12 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
 #if 0 /// UNNEEDED by elogind
 int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
+/// elogind empty mask removed (UNNEEDED by elogind)
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
+#define bus_log_connect_error(r) \
+        log_error_errno(r, "Failed to create bus connection: %m")
 
 #define bus_log_parse_error(r) \
         log_error_errno(r, "Failed to parse bus message: %m")
