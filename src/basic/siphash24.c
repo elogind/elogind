@@ -163,11 +163,6 @@ void siphash24_compress(const void *_in, size_t inlen, struct siphash *state) {
 #endif // 1
 
 #if 0 /// UNNEEDED by elogind
-void siphash24_compress_boolean(bool in, struct siphash *state) {
-        int i = in;
-
-        siphash24_compress(&i, sizeof i, state);
-}
 #endif // 0
 
 uint64_t siphash24_finalize(struct siphash *state) {

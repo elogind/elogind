@@ -18,9 +18,14 @@ struct siphash {
 void siphash24_init(struct siphash *state, const uint8_t k[static 16]);
 void siphash24_compress(const void *in, size_t inlen, struct siphash *state);
 #if 0 /// UNNEEDED by elogind
-void siphash24_compress_boolean(bool in, struct siphash *state);
 #define siphash24_compress_byte(byte, state) siphash24_compress((const uint8_t[]) { (byte) }, 1, (state))
 #endif // 0
+
+static inline void siphash24_compress_boolean(bool in, struct siphash *state) {
+        uint8_t i = in;
+
+        siphash24_compress(&i, sizeof i, state);
+}
 
 uint64_t siphash24_finalize(struct siphash *state);
 
