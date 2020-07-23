@@ -188,7 +188,8 @@ libcore_la_sources = files('''
 #                         libkmod,
 #                         libapparmor,
 #                         libselinux,
-#                         libmount])
+#                         libmount,
+#                         libacl])
 #
 # systemd_sources = files('main.c')
 #
