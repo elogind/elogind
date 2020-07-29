@@ -2121,11 +2121,11 @@ test_dlopen = executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [threads,
-#                         libqrencode,
+#                         libdl,
 #                         libxz,
 #                         liblz4,
-#                         libpcre2,
-#                         libzstd],
+#                         libzstd,
+#                         libdl],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
@@ -2220,8 +2220,7 @@ test_dlopen = executable(
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootlibexecdir)
+#                 install : true)
 # endif
 #
 # if conf.get('ENABLE_RESOLVE') == 1
