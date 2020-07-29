@@ -94,7 +94,6 @@ int find_binary(const char *name, char **filename);
 bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
 int fsck_exists(const char *fstype);
-int mkfs_exists(const char *fstype);
 #endif // 0
 
 /* Iterates through the path prefixes of the specified path, going up
