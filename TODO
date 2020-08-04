@@ -17,6 +17,9 @@ Janitorial Clean-ups:
 
 Features:
 
+* make use of the new statx mountid and rootmount fields in path_get_mnt_id()
+  and fd_is_mount_point()
+
 * nspawn: move "incoming mount" directory to /run/host, move "inaccessible"
   nodes to /run/host, move notify socket (for sd_notify() between payload and
   container manager)
@@ -933,10 +936,6 @@ Features:
   - allow multiple signal handlers per signal?
   - document chaining of signal handler for SIGCHLD and child handlers
   - define more intervals where we will shift wakeup intervals around in, 1h, 6h, 24h, ...
-  - maybe support iouring as backend, so that we allow hooking read and write
-    operations instead of IO ready events into event loops. See considerations
-    here:
-    http://blog.vmsplice.net/2020/07/rethinking-event-loop-integration-for.html
 
 * investigate endianness issues of UUID vs. GUID
 
