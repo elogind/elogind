@@ -19,9 +19,6 @@ Features:
 
 * nss-elogind: also synthesize shadow records for users/groups
 
-* make use of the new statx mountid and rootmount fields in path_get_mnt_id()
-  and fd_is_mount_point()
-
 * nspawn: move "incoming mount" directory to /run/host, move "inaccessible"
   nodes to /run/host, move notify socket (for sd_notify() between payload and
   container manager)
@@ -87,7 +84,8 @@ Features:
 
 * make us use dynamically fewer deps for containers in general purpose distros:
   o turn into dlopen() deps:
-    - libidn2 (always)
+    - libpwquality (always)        - only relevant for homed, and maybe soon
+                                     firstboot
     - elfutils (always)
     - p11-kit-trust (always)
     - kmod-libs (only when called from PID 1)
@@ -364,6 +362,7 @@ Features:
   - fingerprint authentication, pattern authentication, …
   - make sure "classic" user records can also be managed by homed
   - make size of $XDG_RUNTIME_DIR configurable in user record
+  - reuse pwquality magic in firstboot
   - query password from kernel keyring first
   - update even if record is "absent"
   - add a "access mode" + "fstype" field to the "status" section of json identity records reflecting the actually used access mode and fstype, even on non-luks backends
