@@ -10,6 +10,9 @@
 #include "log.h"
 #include "parse-util.h"
 #include "string-util.h"
+#if HAVE_SECCOMP
+#include "seccomp-util.h"
+#endif
 
 static void test_parse_boolean(void) {
         assert_se(parse_boolean("1") == 1);
@@ -863,6 +866,7 @@ static void test_parse_errno(void) {
 }
 
 static void test_parse_syscall_and_errno(void) {
+#if HAVE_SECCOMP
         _cleanup_free_ char *n = NULL;
         int e;
 
@@ -893,11 +897,16 @@ static void test_parse_syscall_and_errno(void) {
         assert_se(e == 255);
         n = mfree(n);
 
+        assert_se(parse_syscall_and_errno("hoge:kill", &n, &e) >= 0);
+        assert_se(streq(n, "hoge"));
+        assert_se(e == SECCOMP_ERROR_NUMBER_KILL);
+        n = mfree(n);
+
         /* The function checks the syscall name is empty or not. */
         assert_se(parse_syscall_and_errno("", &n, &e) == -EINVAL);
         assert_se(parse_syscall_and_errno(":255", &n, &e) == -EINVAL);
 
-        /* errno must be a valid errno name or number between 0 and ERRNO_MAX == 4095 */
+        /* errno must be a valid errno name or number between 0 and ERRNO_MAX == 4095, or "kill" */
         assert_se(parse_syscall_and_errno("hoge:4096", &n, &e) == -ERANGE);
         assert_se(parse_syscall_and_errno("hoge:-3", &n, &e) == -ERANGE);
         assert_se(parse_syscall_and_errno("hoge:12.3", &n, &e) == -EINVAL);
@@ -907,6 +916,7 @@ static void test_parse_syscall_and_errno(void) {
         assert_se(parse_syscall_and_errno("hoge:-EINVAL", &n, &e) == -EINVAL);
         assert_se(parse_syscall_and_errno("hoge:EINVALaaa", &n, &e) == -EINVAL);
         assert_se(parse_syscall_and_errno("hoge:", &n, &e) == -EINVAL);
+#endif
 }
 
 static void test_parse_mtu(void) {
