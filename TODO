@@ -27,6 +27,8 @@ Features:
   nodes to /run/host, move notify socket (for sd_notify() between payload and
   container manager)
 
+* make use of new glibc 2.32 APIs sigabbrev_np() and strerrorname_np().
+
 * cryptsetup: if keyfile specified in crypttab is AF_UNIX socket, connect to it
   and read from it (like we do elsewhere with READ_FULL_FILE_CONNECT_SOCKET)
 
@@ -115,9 +117,9 @@ Features:
   this, it's useful to have one that can dump contents of them, too.
 
 * All tools that support --root= should also learn --image= so that they can
-  operate on disk images directly. Specifically: bootctl, systemctl,
-  coredumpctl. (Already done: elogind-nspawn, elogind-firstboot,
-  elogind-repart, elogind-tmpfiles, elogind-sysusers, journalctl)
+  operate on disk images directly. Specifically: bootctl, tmpfiles, sysusers,
+  systemctl, repart, journalctl, coredumpctl. (Already done: elogind-nspawn,
+  elogind-firstboot)
 
 * seccomp: by default mask x32 ABI system wide on x86-64. it's on its way out
 
@@ -331,6 +333,9 @@ Features:
   status"-like outputs (i.e. with a series of field names left and values
   right) become genuine first class citizens, and we gain automatic, sane JSON
   output for them.
+
+* elogind-firstboot: teach it dissector magic, so that you can point it to some
+  disk image and it will just set everything in it all behind the scenes.
 
 * We should probably replace /var/log/README, /etc/rc.d/README with symlinks
   that are linked to these places instead of copied. After all they are
