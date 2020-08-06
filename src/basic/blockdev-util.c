@@ -199,6 +199,7 @@ int lock_whole_block_device(dev_t devt, int operation) {
         int r;
 
         /* Let's get a BSD file lock on the whole block device, as per: https://elogind.io/BLOCK_DEVICE_LOCKING */
+        /* Let's get a BSD file lock on the whole block device, as per: https://systemd.io/BLOCK_DEVICE_LOCKING */
 
         r = block_get_whole_disk(devt, &whole_devt);
         if (r < 0)
@@ -218,3 +219,40 @@ int lock_whole_block_device(dev_t devt, int operation) {
         return TAKE_FD(lock_fd);
 }
 #endif // 0
+
+int blockdev_partscan_enabled(int fd) {
+        _cleanup_free_ char *p = NULL, *buf = NULL;
+        unsigned long long ull;
+        struct stat st;
+        int r;
+
+        /* Checks if partition scanning is correctly enabled on the block device */
+
+        if (fstat(fd, &st) < 0)
+                return -errno;
+
+        if (!S_ISBLK(st.st_mode))
+                return -ENOTBLK;
+
+        if (asprintf(&p, "/sys/dev/block/%u:%u/capability", major(st.st_rdev), minor(st.st_rdev)) < 0)
+                return -ENOMEM;
+
+        r = read_one_line_file(p, &buf);
+        if (r == -ENOENT) /* If the capability file doesn't exist then we are most likely looking at a
+                           * partition block device, not the whole block device. And that means we have no
+                           * partition scanning on for it (we do for its parent, but not for the partition
+                           * itself). */
+                return false;
+        if (r < 0)
+                return r;
+
+        r = safe_atollu_full(buf, 16, &ull);
+        if (r < 0)
+                return r;
+
+#ifndef GENHD_FL_NO_PART_SCAN
+#define GENHD_FL_NO_PART_SCAN (0x0200)
+#endif
+
+        return !FLAGS_SET(ull, GENHD_FL_NO_PART_SCAN);
+}
