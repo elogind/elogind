@@ -90,6 +90,8 @@ static const MountPoint mount_table[] = {
         { "tmpfs",       "/run",                      "tmpfs",      "mode=755" TMPFS_LIMITS_RUN,               MS_NOSUID|MS_NODEV|MS_STRICTATIME,
           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
+        { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    "nsdelegate,memory_recursiveprot",         MS_NOSUID|MS_NOEXEC|MS_NODEV,
+          cg_is_unified_wanted, MNT_IN_CONTAINER|MNT_CHECK_WRITABLE },
         { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    "nsdelegate",                              MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_unified_wanted, MNT_IN_CONTAINER|MNT_CHECK_WRITABLE },
         { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    NULL,                                      MS_NOSUID|MS_NOEXEC|MS_NODEV,
@@ -556,6 +558,9 @@ int mount_setup(bool loaded_policy, bool leave_propagation) {
 #if 0 /// Yeah, but elogind is not used with systemd, so this directory would be toxic.
         (void) mkdir_label("/run/systemd/system", 0755);
 #endif // 0
+
+        /* Make sure we have a mount point to hide in sandboxes */
+        (void) mkdir_label("/run/credentials", 0755);
 
         /* Also create /run/systemd/inaccessible nodes, so that we always have something to mount
          * inaccessible nodes from. If we run in a container the host might have created these for us already
