@@ -113,6 +113,7 @@ int varlink_error(Varlink *v, const char *error_id, JsonVariant *parameters);
 int varlink_errorb(Varlink *v, const char *error_id, ...);
 #if 0 /// UNNEEDED by elogind
 int varlink_error_invalid_parameter(Varlink *v, JsonVariant *parameters);
+int varlink_error_errno(Varlink *v, int error);
 
 /* Enqueue a "more" reply */
 int varlink_notify(Varlink *v, JsonVariant *parameters);
