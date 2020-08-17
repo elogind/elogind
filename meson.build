@@ -1929,8 +1929,15 @@ install_libelogind_static = static_library(
 #                         libgcrypt],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
-# # Generate autosuspend rules
+# ############################################################
+#
+# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
+# hwdb_update_sh = find_program('tools/hwdb-update.sh')
 # make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+# make_directive_index_py = find_program('tools/make-directive-index.py')
+# make_man_index_py = find_program('tools/make-man-index.py')
+# syscall_names_update_sh = find_program('tools/syscall-names-update.sh')
+# xml_helper_py = find_program('tools/xml_helper.py')
 #else // 0
         dependencies : [threads,
                         libcap,
@@ -2573,7 +2580,8 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libp11kit,
-#                                 libfido2],
+#                                 libfido2,
+#                                 libdl],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
@@ -3737,12 +3745,6 @@ endforeach
 #         command : ['true'])
 #
 # ############################################################
-#
-# make_directive_index_py = find_program('tools/make-directive-index.py')
-# make_man_index_py = find_program('tools/make-man-index.py')
-# xml_helper_py = find_program('tools/xml_helper.py')
-# hwdb_update_sh = find_program('tools/hwdb-update.sh')
-# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
 #
 #else // 0
 exe = executable(

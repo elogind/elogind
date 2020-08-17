@@ -361,6 +361,16 @@ endif
 test_tables_h = files('test-tables.h')
 shared_sources += test_tables_h
 
+generate_syscall_list = find_program('generate-syscall-list.py')
+fname = 'syscall-list.h'
+syscall_list_h = custom_target(
+        fname,
+        input : 'syscall-names.text',
+        output : fname,
+        command : [generate_syscall_list,
+                   '@INPUT@'],
+        capture : true)
+
 if conf.get('HAVE_ACL') == 1
         shared_sources += files('acl-util.c')
 endif
@@ -372,6 +382,7 @@ endif
 #if 0 /// UNNEEDED by elogind
 # if conf.get('HAVE_SECCOMP') == 1
 #         shared_sources += files('seccomp-util.c')
+#         shared_sources += syscall_list_h
 # endif
 #
 # if conf.get('HAVE_LIBIPTC') == 1
@@ -393,6 +404,13 @@ if conf.get('HAVE_PAM') == 1
 endif
 
 #if 0 /// elogind does not need all this networking stuff
+# if conf.get('HAVE_QRENCODE') == 1
+#         shared_sources += files('''
+#         qrcode-util.c
+#         qrcode-util.h
+# '''.split())
+# endif
+#
 # generate_ip_protocol_list = find_program('generate-ip-protocol-list.sh')
 # ip_protocol_list_txt = custom_target(
 #         'ip-protocol-list.txt',
@@ -495,3 +513,9 @@ libshared = shared_library(
         dependencies : libshared_deps,
         install : true,
         install_dir : rootlibexecdir)
+
+############################################################
+
+run_target(
+        'syscall-names-update',
+        command : [syscall_names_update_sh, meson.current_source_dir()])
