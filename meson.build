@@ -1078,7 +1078,6 @@ endif
 # want_libfdisk = get_option('fdisk')
 # if want_libfdisk != 'false' and not skip_deps
 #         libfdisk = dependency('fdisk',
-#                               version : '>= 2.33',
 #                               required : want_libfdisk == 'true')
 #         have = libfdisk.found()
 # else
@@ -1928,8 +1927,15 @@ install_libelogind_static = static_library(
 #                         libgcrypt],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
-# # Generate autosuspend rules
+# ############################################################
+#
+# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
+# hwdb_update_sh = find_program('tools/hwdb-update.sh')
 # make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+# make_directive_index_py = find_program('tools/make-directive-index.py')
+# make_man_index_py = find_program('tools/make-man-index.py')
+# syscall_names_update_sh = find_program('tools/syscall-names-update.sh')
+# xml_helper_py = find_program('tools/xml_helper.py')
 #else // 0
         dependencies : [threads,
                         libcap,
@@ -3765,13 +3771,7 @@ if want_tests != 'false' and static_libelogind_pic
         test('test-libelogind-static-sym', exe)
 endif
 #endif // 0
-make_directive_index_py = find_program('tools/make-directive-index.py')
-make_man_index_py = find_program('tools/make-man-index.py')
-xml_helper_py = find_program('tools/xml_helper.py')
 #if 0 /// UNNEEDED by elogind
-# hwdb_update_sh = find_program('tools/hwdb-update.sh')
-# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
-#
 # subdir('sysctl.d')
 # subdir('sysusers.d')
 # subdir('tmpfiles.d')

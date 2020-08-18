@@ -192,8 +192,6 @@
 #         pretty-print.h
 #         ptyfwd.c
 #         ptyfwd.h
-#         pwquality-util.c
-#         pwquality-util.h
 #         reboot-util.c
 #         reboot-util.h
 #         resize-fs.c
@@ -493,3 +491,9 @@ libshared = shared_library(
         dependencies : libshared_deps,
         install : true,
         install_dir : rootlibexecdir)
+
+############################################################
+
+run_target(
+        'syscall-names-update',
+        command : [syscall_names_update_sh, meson.current_source_dir()])
