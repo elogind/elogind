@@ -1069,6 +1069,7 @@ endif
 # want_libfdisk = get_option('fdisk')
 # if want_libfdisk != 'false' and not skip_deps
 #         libfdisk = dependency('fdisk',
+#                               version : '>= 2.33',
 #                               required : want_libfdisk == 'true')
 #         have = libfdisk.found()
 # else
@@ -3299,7 +3300,7 @@ executable('elogind-cgroups-agent',
 #                          'systemd-mount', join_paths(bindir, 'systemd-umount'))
 #
 # public_programs += executable(
-#         'elogind-run',
+#         'systemd-run',
 #         'src/run/run.c',
 #         include_directories : includes,
 #         link_with : [libshared],
@@ -3307,7 +3308,7 @@ executable('elogind-cgroups-agent',
 #         install : true)
 #
 # public_programs += executable(
-#         'elogind-stdio-bridge',
+#         'systemd-stdio-bridge',
 #         'src/stdio-bridge/stdio-bridge.c',
 #         include_directories : includes,
 #         link_with : [libshared],
