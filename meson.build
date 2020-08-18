@@ -2557,8 +2557,7 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libcrypt,
-#                                 libopenssl,
-#                                 libpwquality],
+#                                 libopenssl],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2572,8 +2571,7 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libp11kit,
-#                                 libfido2,
-#                                 libpwquality],
+#                                 libfido2],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
