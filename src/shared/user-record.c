@@ -203,7 +203,7 @@ int json_dispatch_realm(const char *name, JsonVariant *variant, JsonDispatchFlag
         return 0;
 }
 
-static int json_dispatch_gecos(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
+int json_dispatch_gecos(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         char **s = userdata;
         const char *n;
 
@@ -1582,7 +1582,7 @@ UserStorage user_record_storage(UserRecord *h) {
 const char *user_record_file_system_type(UserRecord *h) {
         assert(h);
 
-        return h->file_system_type ?: "ext4";
+        return h->file_system_type ?: "btrfs";
 }
 
 const char *user_record_skeleton_directory(UserRecord *h) {
