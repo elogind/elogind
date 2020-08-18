@@ -1078,6 +1078,7 @@ endif
 # want_libfdisk = get_option('fdisk')
 # if want_libfdisk != 'false' and not skip_deps
 #         libfdisk = dependency('fdisk',
+#                               version : '>= 2.33',
 #                               required : want_libfdisk == 'true')
 #         have = libfdisk.found()
 # else
@@ -2557,7 +2558,8 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libcrypt,
-#                                 libopenssl],
+#                                 libopenssl,
+#                                 libpwquality],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2571,7 +2573,8 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libp11kit,
-#                                 libfido2],
+#                                 libfido2,
+#                                 libpwquality],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
