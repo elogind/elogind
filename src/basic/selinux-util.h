@@ -22,8 +22,8 @@ int mac_selinux_init(void);
 void mac_selinux_finish(void);
 void mac_selinux_reload(void);
 
-#if 0 /// UNNEEDED by elogind
 int mac_selinux_fix(const char *path, LabelFixFlags flags);
+#if 0 /// UNNEEDED by elogind
 int mac_selinux_apply(const char *path, const char *label);
 
 int mac_selinux_get_create_label_from_exe(const char *exe, char **label);
