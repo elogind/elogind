@@ -5,39 +5,106 @@
 # install:
 # 	DESTDIR=$(DESTDIR) ninja -C build install
 #else // 0
-.PHONY: all clean install loginctl rebuild test test-login
+.PHONY: all build clean install loginctl test test-login
 
-VERSION ?= 999
-VARIANT ?= debug
+HERE := $(shell pwd -P)
 
-HERE   := $(shell pwd -P)
+BUILDDIR  ?= $(HERE)/build
+CGCONTROL ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
+CGDEFAULT ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
+CONFIG    := $(BUILDDIR)/compile_commands.json
+DEBUG     ?= NO
+DESTDIR   ?=
+MESON_LST := $(shell find $(HERE)/ -type f -name 'meson.build') $(HERE)/meson_options.txt
+PREFIX    ?= /tmp/elogind_test
+VERSION   ?= 9999
 
-BUILD  := $(HERE)/build
-COMPDB := compile_commands.json
-LN     := $(shell which ln) -s
-RM     := $(shell which rm) -f
+CC    ?= $(shell which cc)
+LD    ?= $(shell which ld)
+LN    := $(shell which ln) -s
+MESON ?= $(shell which meson)
+MKDIR := $(shell which mkdir) -p
+RM    := $(shell which rm) -f
 
+# Save users/systems choice
+envCFLAGS   := ${CFLAGS}
+envCXXFLAGS := ${CXXFLAGS}
+envLDFLAGS  := ${LDFLAGS}
 
-all:
-	ninja -C build
+BASIC_OPT := --buildtype release
+NINJA_OPT := -C $(BUILDDIR) --verbose
 
-clean:
-	$(RM) -f $(COMPDB)
-	$(HERE)/pwx/rebuild_all.sh $(VERSION) $(VARIANT)
+# Combine with "sane defaults"
+ifeq (YES,$(DEBUG))
+    BASIC_OPT := -Ddebug-extra=elogind -Dtests=unsafe --buildtype debug
+    CFLAGS    := -O0 -g3 -ggdb -ftrapv ${envCFLAGS} -fPIE
+    CXXFLAGS  := -O0 -g3 -ggdb -ftrapv ${envCXXFLAGS} -fPIE
+    LDFLAGS   := ${envLDFLAGS} -fPIE
+else
+    CFLAGS   := -O2 -fwrapv ${envCFLAGS}
+    CXXFLAGS := -O2 -fwrapv ${envCXXFLAGS}
+endif
 
-install:
-	DESTDIR=$(DESTDIR) ninja -C $(BUILD) install
+# Finalize CFLAGS
+CFLAGS := -march=native -pipe ${CFLAGS} -Wall -Wextra -Wunused -Wno-unused-parameter -Wno-unused-result -ftree-vectorize
 
-loginctl:
+all: build
+
+build: $(CONFIG)
+	ninja $(NINJA_OPT)
+
+clean: $(CONFIG)
+	ninja $(NINJA_OPT) -t cleandead
+	ninja $(NINJA_OPT) -t clean
+
+install: build
+	DESTDIR=$(DESTDIR) ninja $(NINJA_OPT) install
+
+loginctl: $(CONFIG)
+	ninja $(NINJA_OPT) $@
+
+test: $(CONFIG)
 	ninja -C $(BUILD) $@
 
-rebuild: clean
-	$(LN) $(BUILD)/$(COMPDB) $(COMPDB)
-
-test:
+test-login: $(CONFIG)
 	ninja -C $(BUILD) $@
 
-test-login:
-	ninja -C $(BUILD) $@
+$(BUILDDIR):
+	$(MKDIR) $@
+
+$(CONFIG): $(BUILDDIR) $(MESON_LST)
+	@test -f $@ && ( \
+		CC=$(CC) \
+		LD=$(LD) \
+		meson configure $(BUILDDIR) $(BASIC_OPT) \
+	) || ( \
+		CC=$(CC) \
+		LD=$(LD) \
+		meson setup $(BUILDDIR) $(BASIC_OPT) \
+			--libdir lib64 \
+			--libdir=$(PREFIX)/usr/lib64 \
+			--localstatedir $(PREFIX)/var/lib \
+			--prefix $(PREFIX) \
+			--sysconfdir $(PREFIX)/etc \
+			--wrap-mode nodownload  \
+			-Dacl=true \
+			-Dbashcompletiondir=$(PREFIX)/usr/share/bash-completion/completions \
+			-Dcgroup-controller=$(CGCONTROL) \
+			-Ddefault-hierarchy=$(CGDEFAULT) \
+			-Ddocdir=$(PREFIX)/usr/share/doc/elogind-$(VERSION) \
+			-Defi=true \
+			-Dhtml=auto \
+			-Dhtmldir=$(PREFIX)/usr/share/doc/elogind-$(VERSION)/html \
+			-Dman=auto \
+			-Dpam=true \
+			-Dpamlibdir=$(PREFIX)/lib64/security \
+			-Drootlibdir=$(PREFIX)/lib64 \
+			-Drootlibexecdir=$(PREFIX)/lib64/elogind \
+			-Drootprefix=$(PREFIX) \
+			-Dselinux=false \
+			-Dsmack=true \
+			-Dudevrulesdir=$(PREFIX)/lib/udev/rules.d \
+			-Dzshcompletiondir=$(PREFIX)/usr/share/zsh/site-functions \
+	)
 
 #endif // 0
