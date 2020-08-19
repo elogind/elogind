@@ -14,9 +14,6 @@
 #include "stdio-util.h"
 #include "user-util.h"
 
-/// Additional includes needed by elogind
-//#include "musl_missing.h"
-
 int mkdir_safe_internal(const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags, mkdir_func_t _mkdir) {
         struct stat st;
         int r;
