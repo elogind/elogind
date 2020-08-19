@@ -28,7 +28,6 @@
 #include "mount-setup.h"
 #include "parse-util.h"
 #include "process-util.h"
-#include "refcnt.h"
 #include "signal-util.h"
 #include "socket-util.h"
 #include "stdio-util.h"

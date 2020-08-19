@@ -324,17 +324,11 @@ basic_sources = files('''
         memory-util.h
         mempool.c
         mempool.h
-        missing.h
         missing_audit.h
         missing_capability.h
         missing_drm.h
-        missing_ethtool.h
         missing_fcntl.h
-        missing_fib_rules.h
         missing_fs.h
-        missing_if_bridge.h
-        missing_if_link.h
-        missing_if_tunnel.h
         missing_input.h
         missing_keyctl.h
         missing_magic.h
@@ -379,7 +373,6 @@ basic_sources = files('''
         ratelimit.c
         ratelimit.h
         raw-clone.h
-        refcnt.h
         rlimit-util.c
         rlimit-util.h
         rm-rf.c
@@ -437,13 +430,13 @@ basic_sources = files('''
         xattr-util.c
         xattr-util.h
 '''.split())
-
-missing_h = files('missing.h')
 #endif // 0
 
 #if 0 /// elogind has only the cap and errno list.
 # missing_audit_h = files('missing_audit.h')
-# missing_capability_h = files('missing_capability.h')
+#endif // 0
+missing_capability_h = files('missing_capability.h')
+#if 0 /// elogind has only the cap and errno list.
 # missing_socket_h = files('missing_socket.h')
 #
 # generate_af_list = find_program('generate-af-list.sh')
@@ -468,7 +461,7 @@ cap_list_txt = custom_target(
 #if 0 /// elogind needs musl_missing.h, so generate_cap_list must know the source root
 #         command : [generate_cap_list, cpp, config_h, missing_capability_h],
 #else // 0
-        command : [generate_cap_list, cpp, meson.source_root(), config_h, missing_h],
+        command : [generate_cap_list, cpp, meson.source_root(), config_h, missing_capability_h],
 #endif // 0
         capture : true)
 
