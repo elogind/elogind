@@ -357,6 +357,16 @@ endif
 test_tables_h = files('test-tables.h')
 shared_sources += test_tables_h
 
+generate_syscall_list = find_program('generate-syscall-list.py')
+fname = 'syscall-list.h'
+syscall_list_h = custom_target(
+        fname,
+        input : 'syscall-names.text',
+        output : fname,
+        command : [generate_syscall_list,
+                   '@INPUT@'],
+        capture : true)
+
 if conf.get('HAVE_ACL') == 1
         shared_sources += files('acl-util.c')
 endif
@@ -368,6 +378,7 @@ endif
 #if 0 /// UNNEEDED by elogind
 # if conf.get('HAVE_SECCOMP') == 1
 #         shared_sources += files('seccomp-util.c')
+#         shared_sources += syscall_list_h
 # endif
 #
 # if conf.get('HAVE_LIBIPTC') == 1
