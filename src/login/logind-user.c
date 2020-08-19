@@ -476,11 +476,13 @@ int user_start(User *u) {
         r = user_runtime_dir("start", u);
         if (r < 0)
                 return r;
-#endif // 1
-
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * elogind --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+        /* Save the user data so far */
         user_save_internal(u);
+#else // 1
+        /* Save the user data so far, because pam_systemd will read the XDG_RUNTIME_DIR out of it while starting up
+         * systemd --user.  We need to do user_save_internal() because we have not "officially" started yet. */
+        user_save_internal(u);
+#endif // 1
 
         /* Set slice parameters */
         (void) user_update_slice(u);
