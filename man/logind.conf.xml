@@ -67,6 +67,7 @@
 
     <!-- 0 /// elogind also supports a few system commands
     <para>All options are configured in the
+    [Login] section:</para>
     --><!-- else // 0 -->
     <para>All login options are configured in the
     <literal>[Login]</literal> section, system sleep options are
@@ -76,7 +77,6 @@
     <!-- 1 /// elogind needs a second level, as we use two sections. -->
     <refsect2><title>[Login] section:</title>
     <!-- // 1 -->
-    [Login] section:</para>
 
     <variablelist class='config-directives'>
       <!-- 0 /// elogind has no support for AutoVT
@@ -327,8 +327,8 @@
       <varlistentry>
         <term><varname>HoldoffTimeoutSec=</varname></term>
 
-        <!-- 0 /// Wow. Unbelievable how often you can write 'elogind' in one tiny paragraph. Lets improve this for elogind a bit.
         <listitem><para>Specifies a period of time after system startup or
+        <!-- 0 /// Wow. Unbelievable how often you can write 'systemd' in one tiny paragraph. Lets improve this for elogind a bit.
         system resume in which systemd will hold off on reacting to
         lid events. This is required for the system to properly
         detect any hotplugged devices so systemd can ignore lid events

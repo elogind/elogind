@@ -131,17 +131,17 @@
   <refsect1>
     <title>Return Value</title>
 
-    <!-- 0 /// Be clear that they always return 0 in elogind
-    --><!-- else // 0 -->
-    <para><function>sd_journal_query_unique()</function> and
-    <function>sd_journal_enumerate_unique()</function> always return 0.
-    <!-- // 0 -->
     <para><function>sd_journal_query_unique()</function> returns 0 on success or a negative errno-style error
     code. <function>sd_journal_enumerate_unique()</function> and and
+    <!-- 0 /// Be clear that they always return 0 in elogind
     <function>sd_journal_query_available_unique()</function> return a positive integer if the next field data
     has been read, 0 when no more fields remain, or a negative errno-style error code.
+    --><!-- else // 0 -->
+    <function>sd_journal_query_available_unique()</function> always return 0.
+    <!-- // 0 -->
     <function>sd_journal_restart_unique()</function> doesn't return anything.</para>
 
+    <!-- 0 /// In elogind none of these get returned
     <refsect2>
       <title>Errors</title>
 
@@ -159,6 +159,7 @@
         <xi:include href="sd_journal_get_data.xml" xpointer="EIO"/>
       </variablelist>
     </refsect2>
+    // 0 -->
   </refsect1>
 
   <refsect1>
