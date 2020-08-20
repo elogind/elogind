@@ -291,11 +291,11 @@ conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
+# conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
+# conf.set_quoted('USER_GENERATOR_DIR',                         usergeneratordir)
+# conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
+# conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
 #endif // 0
-conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
-conf.set_quoted('USER_GENERATOR_DIR',                         usergeneratordir)
-conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
-conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
 conf.set_quoted('SYSTEM_SHUTDOWN_PATH',                       systemshutdowndir)
 conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 #if 0 /// UNNEEDED by elogind
@@ -1766,7 +1766,9 @@ meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
                                'src/boot',
-                               'src/home',
+#if 0 /// UNNEEDED by elogind
+#                                'src/home',
+#endif // 0
                                'src/shared',
                                'src/systemd',
                                'src/journal',
@@ -3292,23 +3294,23 @@ executable('elogind-cgroups-agent',
 # meson.add_install_script(meson_make_symlink,
 #                          'systemd-mount', join_paths(bindir, 'systemd-umount'))
 #
+# public_programs += executable(
+#         'elogind-run',
+#         'src/run/run.c',
+#         include_directories : includes,
+#         link_with : [libshared],
+#         install_rpath : rootlibexecdir,
+#         install : true)
+#
+# public_programs += executable(
+#         'elogind-stdio-bridge',
+#         'src/stdio-bridge/stdio-bridge.c',
+#         include_directories : includes,
+#         link_with : [libshared],
+#         dependencies : [versiondep],
+#         install_rpath : rootlibexecdir,
+#         install : true)
 #endif // 0
-public_programs += executable(
-        'elogind-run',
-        'src/run/run.c',
-        include_directories : includes,
-        link_with : [libshared],
-        install_rpath : rootlibexecdir,
-        install : true)
-
-public_programs += executable(
-        'elogind-stdio-bridge',
-        'src/stdio-bridge/stdio-bridge.c',
-        include_directories : includes,
-        link_with : [libshared],
-        dependencies : [versiondep],
-        install_rpath : rootlibexecdir,
-        install : true)
 
 public_programs += executable(
         'busctl',
@@ -3930,7 +3932,7 @@ run_target(
 #
 #else // 0
         depends : [man, libelogind],
-        command : [meson_check_api_docs_sh, libelogind.full_path()])
+        command : [check_api_docs_sh, libelogind.full_path()])
 #endif // 0
 ############################################################
 #if 0 /// elogind is not PID 1
