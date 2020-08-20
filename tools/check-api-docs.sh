@@ -6,7 +6,16 @@ sd_total=0
 udev_good=0
 udev_total=0
 
-for symbol in `nm -g --defined-only "$@" | grep " T " | cut -d" " -f3 | sort -u` ; do
+deprecated="
+    -e sd_bus_try_close
+    -e sd_bus_process_priority
+    -e sd_bus_message_get_priority
+    -e sd_bus_message_set_priority
+    -e sd_seat_can_multi_session
+    -e sd_journal_open_container
+"
+
+for symbol in `nm -g --defined-only "$@" | grep " T " | cut -d" " -f3 | grep -wv $deprecated | sort -u` ; do
     if test -f ${MESON_BUILD_ROOT}/man/$symbol.3 ; then
         echo "✓ Symbol $symbol() is documented."
         good=1
@@ -30,4 +39,4 @@ for symbol in `nm -g --defined-only "$@" | grep " T " | cut -d" " -f3 | sort -u`
     esac
 done
 
-echo "libelogind: $sd_good/$sd_total libudev: $udev_good/$udev_total"
+echo "libsystemd: $sd_good/$sd_total libudev: $udev_good/$udev_total"
