@@ -93,7 +93,8 @@ static int user_mkdir_runtime_path(
                                 goto fail;
                         }
 
-                        log_debug_errno(errno, "Failed to mount per-user tmpfs directory %s.\n"
+                        log_debug_errno(errno,
+                                        "Failed to mount per-user tmpfs directory %s.\n"
                                         "Assuming containerized execution, ignoring: %m", runtime_path);
 
                         r = chmod_and_chown(runtime_path, 0700, uid, gid);
@@ -108,8 +109,6 @@ static int user_mkdir_runtime_path(
                         log_warning_errno(r, "Failed to fix label of \"%s\", ignoring: %m", runtime_path);
         }
 
-        /* Set up inaccessible nodes now so they're available if we decide to use them with user namespaces. */
-        (void) make_inaccessible_nodes(runtime_path, uid, gid);
         return 0;
 
 fail:
@@ -177,7 +176,7 @@ static int do_umount(const char *user) {
         int r;
 
         /* The user may be already removed. So, first try to parse the string by parse_uid(),
-         * and if it fails, fallback to get_user_creds().*/
+         * and if it fails, fall back to get_user_creds().*/
         if (parse_uid(user, &uid) < 0) {
                 r = get_user_creds(&user, &uid, NULL, NULL, NULL, 0);
                 if (r < 0)

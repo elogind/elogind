@@ -959,7 +959,7 @@ conf.set('TTY_GID', tty_gid)
 substs.set('TTY_GID', tty_gid)
 
 #if 0 /// UNNEEDED by elogind
-# # Ensure provided GID argument is numeric, otherwise fallback to default assignment
+# # Ensure provided GID argument is numeric, otherwise fall back to default assignment
 # users_gid = get_option('users-gid')
 # substs.set('USERS_GID', users_gid < 0 ? '-' : users_gid)
 #
