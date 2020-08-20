@@ -344,12 +344,7 @@ int bus_connect_transport_systemd(BusTransport transport, const char *host, bool
 }
 #endif // 0
 
-
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-
 /**
  * bus_path_encode_unique() - encode unique object path
  * @b: bus connection or NULL

@@ -119,13 +119,13 @@ endif
 
 elogind_directives_xml = custom_target(
         'elogind.directives.xml',
+        input : ['directives-template.xml', source_xml_files],
         output : 'elogind.directives.xml',
+        command : [make_directive_index_py, '@OUTPUT@', '@INPUT@'])
 
 nonindex_xml_files = source_xml_files + [elogind_directives_xml]
 elogind_index_xml = custom_target(
         'elogind.index.xml',
-        input : ['directives-template.xml', source_xml_files],
-        command : [make_directive_index_py, '@OUTPUT@', '@INPUT@'])
         input : nonindex_xml_files,
         output : 'elogind.index.xml',
         command : [make_man_index_py, '@OUTPUT@'] + nonindex_xml_files)

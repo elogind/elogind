@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
+libsystemd_version = '0.29.0'
 #if 0 /// UNNEEDED by elogind - libudev is external
+# libudev_version = '1.6.18'
 #endif // 0
-libelogind_version = '0.29.0'
-libudev_version = '1.6.18'
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
