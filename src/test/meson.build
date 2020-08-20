@@ -323,13 +323,13 @@ tests += [
 #         [['src/test/test-os-util.c'],
 #          [],
 #          []],
+#
+#         [['src/test/test-offline-passwd.c',
+#           'src/shared/offline-passwd.c',
+#           'src/shared/offline-passwd.h'],
+#          [],
+#          []],
 #endif // 0
-
-        [['src/test/test-offline-passwd.c',
-          'src/shared/offline-passwd.c',
-          'src/shared/offline-passwd.h'],
-         [],
-         []],
 
         [['src/test/test-escape.c'],
          [],
@@ -1226,9 +1226,11 @@ tests += [
          [],
          []],
 
-        [['src/analyze/test-verify.c', 'src/analyze/analyze-verify.c', 'src/analyze/analyze-verify.h'],
-         [libcore, libshared],
-         []],
+#if 0 /// elogind does not have src/analyze/*
+#         [['src/analyze/test-verify.c', 'src/analyze/analyze-verify.c', 'src/analyze/analyze-verify.h'],
+#          [libcore, libshared],
+#          []],
+#endif // 0
 
         [['src/login/test-inhibit.c'],
          [],
