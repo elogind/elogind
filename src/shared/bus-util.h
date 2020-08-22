@@ -38,6 +38,7 @@ int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t 
 #endif // 0
 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
+bool bus_error_is_unknown_service(const sd_bus_error *error);
 
 #if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c);
