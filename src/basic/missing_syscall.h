@@ -40,7 +40,6 @@ static inline int missing_pivot_root(const char *new_root, const char *put_old) 
 #elif defined __arm__
 #  define elogind_NR_memfd_create 385
 #elif defined __aarch64__
-#  define elogind_NR_memfd_create 279
 #  define systemd_NR_memfd_create 279
 #elif defined(__powerpc__)
 #  define elogind_NR_memfd_create 360
@@ -100,7 +99,6 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 #elif defined(__arm__)
 #  define elogind_NR_getrandom 384
 #elif defined(__aarch64__)
-#  define elogind_NR_getrandom 278
 #  define systemd_NR_getrandom 278
 #elif defined(__ia64__)
 #  define elogind_NR_getrandom 1339
@@ -178,6 +176,7 @@ static inline pid_t missing_gettid(void) {
 #  define elogind_NR_name_to_handle_at 370
 #elif defined __aarch64__
 #  define elogind_NR_name_to_handle_at 264
+#  define systemd_NR_name_to_handle_at 264
 #elif defined(__powerpc__)
 #  define elogind_NR_name_to_handle_at 345
 #elif defined __s390__ || defined __s390x__
@@ -225,6 +224,7 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 
 #if defined __aarch64__
 #  define elogind_NR_setns 268
+#  define systemd_NR_setns 268
 #elif defined __arm__
 #  define elogind_NR_setns 375
 #elif defined(__x86_64__)
@@ -285,7 +285,6 @@ static inline pid_t raw_getpid(void) {
 #elif defined __arm__
 #  define elogind_NR_renameat2 382
 #elif defined __aarch64__
-#  define elogind_NR_renameat2 276
 #  define systemd_NR_renameat2 276
 #elif defined _MIPS_SIM
 #  if _MIPS_SIM == _MIPS_SIM_ABI32
@@ -399,7 +398,6 @@ static inline key_serial_t missing_request_key(const char *type, const char *des
 #elif defined __arm__
 #  define elogind_NR_copy_file_range 391
 #elif defined __aarch64__
-#  define elogind_NR_copy_file_range 285
 #  define systemd_NR_copy_file_range 285
 #elif defined __powerpc__
 #  define elogind_NR_copy_file_range 379
@@ -499,11 +497,10 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 #    define elogind_NR_pkey_mprotect 380
 #  elif defined __x86_64__
 #    define elogind_NR_pkey_mprotect 329
-#  elif defined __arm__
-#    define elogind_NR_pkey_mprotect 394
-#    define systemd_NR_pkey_mprotect 394
 #  elif defined __aarch64__
-#    define elogind_NR_pkey_mprotect 394
+#    define elogind_NR_pkey_mprotect 288
+#  elif defined __arm__
+#    define systemd_NR_pkey_mprotect 394
 #  elif defined __powerpc__
 #    define elogind_NR_pkey_mprotect 386
 #  elif defined __s390__
@@ -539,7 +536,9 @@ assert_cc(__NR_pkey_mprotect == elogind_NR_pkey_mprotect);
 
 /* ======================================================================= */
 
-#if defined __aarch64__ || defined __arm__
+#if defined __aarch64__
+#  define elogind_NR_statx 291
+#elif defined __arm__
 #  define elogind_NR_statx 397
 #elif defined __alpha__
 #  define elogind_NR_statx 522
