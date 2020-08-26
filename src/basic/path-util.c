@@ -14,6 +14,7 @@
 
 #include "alloc-util.h"
 #include "extract-word.h"
+#include "fd-util.h"
 #include "fs-util.h"
 //#include "glob-util.h"
 #include "log.h"
@@ -643,16 +644,27 @@ int find_binary(const char *name, char **ret) {
                 if (!j)
                         return -ENOMEM;
 
-                if (is_dir(j, true))
-                        continue;
-
                 if (access(j, X_OK) >= 0) {
-                        /* Found it! */
+                        _cleanup_free_ char *with_dash;
 
-                        if (ret)
-                                *ret = path_simplify(TAKE_PTR(j), false);
+                        with_dash = strjoin(j, "/");
+                        if (!with_dash)
+                                return -ENOMEM;
 
-                        return 0;
+                        /* If this passes, it must be a directory, and so should be skipped. */
+                        if (access(with_dash, X_OK) >= 0)
+                                continue;
+
+                        /**
+                         * We can't just `continue` inverting this case, since we need to update last_error.
+                         */
+                        if (errno == ENOTDIR) {
+                                /* Found it! */
+                                if (ret)
+                                        *ret = path_simplify(TAKE_PTR(j), false);
+
+                                return 0;
+                        }
                 }
 
                 /* PATH entries which we don't have access to are ignored, as per tradition. */
@@ -1143,4 +1155,10 @@ bool prefixed_path_strv_contains(char **l, const char *path) {
         }
 
         return false;
+}
+
+bool credential_name_valid(const char *s) {
+        /* We want that credential names are both valid in filenames (since that's our primary way to pass
+         * them around) and as fdnames (which is how we might want to pass them around eventually) */
+        return filename_is_valid(s) && fdname_is_valid(s);
 }
