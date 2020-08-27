@@ -118,6 +118,7 @@ usec_t timespec_load(const struct timespec *ts) _pure_;
 nsec_t timespec_load_nsec(const struct timespec *ts) _pure_;
 #endif // 0
 struct timespec *timespec_store(struct timespec *ts, usec_t u);
+struct timespec *timespec_store_nsec(struct timespec *ts, nsec_t n);
 
 usec_t timeval_load(const struct timeval *tv) _pure_;
 struct timeval *timeval_store(struct timeval *tv, usec_t u);
