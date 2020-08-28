@@ -107,7 +107,7 @@ int mac_smack_apply_fd(int fd, SmackAttr attr, const char *label) {
 
 int mac_smack_apply_pid(pid_t pid, const char *label) {
         const char *p;
-        int r = 0;
+        int r;
 
         assert(label);
 
@@ -235,7 +235,7 @@ int mac_smack_fix_container(const char *path, const char *inside_path, LabelFixF
 
 #if 0 /// UNNEEDED by elogind
 int mac_smack_copy(const char *dest, const char *src) {
-        int r = 0;
+        int r;
         _cleanup_free_ char *label = NULL;
 
         assert(dest);

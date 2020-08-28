@@ -168,7 +168,7 @@ static int trim_cb(const char *path, const struct stat *sb, int typeflag, struct
 
 int cg_trim(const char *controller, const char *path, bool delete_root) {
         _cleanup_free_ char *fs = NULL;
-        int r = 0, q;
+        int r, q;
 
         assert(path);
 
@@ -621,8 +621,6 @@ int cg_create_everywhere(CGroupMask supported, CGroupMask mask, const char *path
 }
 
 int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_migrate_callback_t path_callback, void *userdata) {
-        CGroupController c;
-        CGroupMask done;
         int r;
 
         r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, path, pid);
@@ -636,9 +634,9 @@ int cg_attach_everywhere(CGroupMask supported, const char *path, pid_t pid, cg_m
                 return 0;
 
         supported &= CGROUP_MASK_V1;
-        done = 0;
+        CGroupMask done = 0;
 
-        for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
+        for (CGroupController c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                 CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                 const char *p = NULL;
 
