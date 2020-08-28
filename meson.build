@@ -2681,7 +2681,6 @@ endif
 #                 'src/cryptsetup/cryptsetup-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 dependencies : [libcryptsetup],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
@@ -2701,7 +2700,6 @@ endif
 #                 'src/veritysetup/veritysetup-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 dependencies : [libcryptsetup],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
@@ -3056,7 +3054,6 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads,
-#                                 libcryptsetup,
 #                                 libblkid,
 #                                 libfdisk,
 #                                 libopenssl],
@@ -3139,7 +3136,6 @@ endif
 #            'src/partition/growfs.c',
 #            include_directories : includes,
 #            link_with : [libshared],
-#            dependencies : [libcryptsetup],
 #            install_rpath : rootlibexecdir,
 #            install : true,
 #            install_dir : rootlibexecdir)

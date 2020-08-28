@@ -456,7 +456,6 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 #                   libblkid,
 #                   libcap,
 #                   libcrypt,
-#                   libcryptsetup,
 #                   libgcrypt,
 #                   libidn,
 #                   libiptc,
