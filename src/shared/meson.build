@@ -116,8 +116,6 @@
 #         gpt.h
 #         group-record-nss.c
 #         group-record-nss.h
-#         group-record-show.c
-#         group-record-show.h
 #         group-record.c
 #         group-record.h
 #         id128-print.c
