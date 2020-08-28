@@ -2,6 +2,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <sys/stat.h>
 
 #include "sd-bus.h"
 #include "sd-device.h"
@@ -22,7 +23,6 @@ typedef struct Manager Manager;
 #include "logind-inhibit.h"
 
 /// Additional includes needed by elogind
-#include <sys/stat.h>
 #include "cgroup-util.h"
 #include "elogind.h"
 #include "musl_missing.h"
