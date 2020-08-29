@@ -210,7 +210,7 @@ static void session_save_devices(Session *s, FILE *f) {
 int session_save(Session *s) {
         _cleanup_free_ char *temp_path = NULL;
         _cleanup_fclose_ FILE *f = NULL;
-        int r = 0;
+        int r;
 
         assert(s);
 

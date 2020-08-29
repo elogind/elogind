@@ -120,7 +120,7 @@ int manager_parse_config_file(Manager *m) {
 #if 0 /// elogind parses its own config file
         return config_parse_many_nulstr(
                         PKGSYSCONFDIR "/logind.conf",
-                        CONF_PATHS_NULSTR("elogind/logind.conf.d"),
+                        CONF_PATHS_NULSTR("systemd/logind.conf.d"),
                         "Login\0",
                         config_item_perf_lookup, logind_gperf_lookup,
                         CONFIG_PARSE_WARN, m,
@@ -570,7 +570,7 @@ int config_parse_n_autovts(
 
 static int vt_is_busy(unsigned vtnr) {
         struct vt_stat vt_stat;
-        int r = 0;
+        int r;
         _cleanup_close_ int fd;
 
         assert(vtnr >= 1);
