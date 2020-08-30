@@ -114,8 +114,6 @@
 #         geneve-util.h
 #         gpt.c
 #         gpt.h
-#         group-record-nss.c
-#         group-record-nss.h
 #         group-record.c
 #         group-record.h
 #         id128-print.c
