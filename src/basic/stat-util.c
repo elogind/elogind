@@ -187,7 +187,6 @@ int fd_is_fs_type(int fd, statfs_f_type_t magic_value) {
         return is_fs_type(&s, magic_value);
 }
 
-#if 0 /// UNNEEDED by elogind
 int path_is_fs_type(const char *path, statfs_f_type_t magic_value) {
         struct statfs s;
 
@@ -196,7 +195,6 @@ int path_is_fs_type(const char *path, statfs_f_type_t magic_value) {
 
         return is_fs_type(&s, magic_value);
 }
-#endif // 0
 
 bool is_temporary_fs(const struct statfs *s) {
         return is_fs_type(s, TMPFS_MAGIC) ||

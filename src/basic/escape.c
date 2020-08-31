@@ -462,6 +462,7 @@ char *octescape(const char *s, size_t len) {
         return r;
 
 }
+#endif // 0
 
 static char *strcpy_backslash_escaped(char *t, const char *s, const char *bad, bool escape_tab_nl) {
         assert(bad);
@@ -482,6 +483,7 @@ static char *strcpy_backslash_escaped(char *t, const char *s, const char *bad, b
         return t;
 }
 
+#if 0 /// UNNEEDED by elogind
 char *shell_escape(const char *s, const char *bad) {
         char *r, *t;
 
@@ -494,6 +496,7 @@ char *shell_escape(const char *s, const char *bad) {
 
         return r;
 }
+#endif // 0
 
 char* shell_maybe_quote(const char *s, EscapeStyle style) {
         const char *p;
@@ -548,4 +551,3 @@ char* shell_maybe_quote(const char *s, EscapeStyle style) {
 
         return r;
 }
-#endif // 0

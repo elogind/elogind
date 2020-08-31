@@ -216,9 +216,11 @@ static inline int cg_get_keyed_attribute_graceful(
                 char **ret_values) {
         return cg_get_keyed_attribute_full(controller, path, attribute, keys, ret_values, CG_KEY_MODE_GRACEFUL);
 }
+#endif // 0
 
 int cg_get_attribute_as_uint64(const char *controller, const char *path, const char *attribute, uint64_t *ret);
 
+#if 0 /// UNNEEDED by elogind
 int cg_set_access(const char *controller, const char *path, uid_t uid, gid_t gid);
 
 int cg_set_xattr(const char *controller, const char *path, const char *name, const void *value, size_t size, int flags);

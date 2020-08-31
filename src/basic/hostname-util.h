@@ -11,7 +11,9 @@ bool hostname_is_set(void);
 #endif // 0
 
 char* gethostname_malloc(void);
+#if 0 /// UNNEEDED by elogind
 char* gethostname_short_malloc(void);
+#endif // 0
 int gethostname_strict(char **ret);
 
 bool valid_ldh_char(char c) _const_;

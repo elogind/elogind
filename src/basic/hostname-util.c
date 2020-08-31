@@ -52,6 +52,7 @@ char* gethostname_malloc(void) {
         return strdup(s);
 }
 
+#if 0 /// UNNEEDED by elogind
 char* gethostname_short_malloc(void) {
         struct utsname u;
         const char *s;
@@ -68,6 +69,7 @@ char* gethostname_short_malloc(void) {
 
         return strndup(s, strcspn(s, "."));
 }
+#endif // 0
 
 int gethostname_strict(char **ret) {
         struct utsname u;

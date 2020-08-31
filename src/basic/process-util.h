@@ -48,8 +48,8 @@ int get_process_cwd(pid_t pid, char **cwd);
 int get_process_root(pid_t pid, char **root);
 int get_process_environ(pid_t pid, char **environ);
 int get_process_ppid(pid_t pid, pid_t *ppid);
-#endif // 0
 int get_process_umask(pid_t pid, mode_t *umask);
+#endif // 0
 
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 

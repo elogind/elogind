@@ -689,7 +689,6 @@ static int tmp_dir_internal(const char *def, const char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int var_tmp_dir(const char **ret) {
 
         /* Returns the location for "larger" temporary files, that is backed by physical storage if available, and thus
@@ -699,7 +698,6 @@ int var_tmp_dir(const char **ret) {
 
         return tmp_dir_internal("/var/tmp", ret);
 }
-#endif // 0
 
 int tmp_dir(const char **ret) {
 
@@ -1554,6 +1552,7 @@ int open_parent(const char *path, int flags, mode_t mode) {
         return fd;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int blockdev_is_encrypted(const char *sysfs_path, unsigned depth_left) {
         _cleanup_free_ char *p = NULL, *uuids = NULL;
         _cleanup_closedir_ DIR *d = NULL;
@@ -1638,3 +1637,4 @@ int path_is_encrypted(const char *path) {
 
         return blockdev_is_encrypted(p, 10 /* safety net: maximum recursion depth */);
 }
+#endif // 0

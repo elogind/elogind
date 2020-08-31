@@ -1779,7 +1779,6 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
         return read_one_line_file(p, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_get_attribute_as_uint64(const char *controller, const char *path, const char *attribute, uint64_t *ret) {
         _cleanup_free_ char *value = NULL;
         uint64_t v;
@@ -1806,6 +1805,7 @@ int cg_get_attribute_as_uint64(const char *controller, const char *path, const c
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_get_keyed_attribute_full(
                 const char *controller,
                 const char *path,

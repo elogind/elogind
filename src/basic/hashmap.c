@@ -1844,7 +1844,6 @@ int _set_put_strdup(Set **s, const char *p  HASHMAP_DEBUG_PARAMS) {
         return set_consume(*s, c);
 }
 
-#if 0 /// UNNEEDED by elogind
 int _set_put_strdupv(Set **s, char **l  HASHMAP_DEBUG_PARAMS) {
         int n = 0, r;
         char **i;
@@ -1862,6 +1861,7 @@ int _set_put_strdupv(Set **s, char **l  HASHMAP_DEBUG_PARAMS) {
         return n;
 }
 
+#if 0 /// UNNEEDED by elogind
 int set_put_strsplit(Set *s, const char *v, const char *separators, ExtractFlags flags) {
         const char *p = v;
         int r;

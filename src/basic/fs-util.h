@@ -65,9 +65,7 @@ int mkfifoat_atomic(int dir_fd, const char *path, mode_t mode);
 int get_files_in_directory(const char *path, char ***list);
 
 int tmp_dir(const char **ret);
-#if 0 /// UNNEEDED by elogind
 int var_tmp_dir(const char **ret);
-#endif // 0
 
 int unlink_or_warn(const char *filename);
 
@@ -144,4 +142,6 @@ int syncfs_path(int atfd, const char *path);
 
 int open_parent(const char *path, int flags, mode_t mode);
 
+#if 0 /// No need for encrypted devices in elogind
 int path_is_encrypted(const char *path);
+#endif // 0

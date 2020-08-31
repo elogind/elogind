@@ -504,6 +504,7 @@ int strv_consume_pair(char ***l, char *a, char *b) {
 
         return r;
 }
+#endif // 0
 
 int strv_consume_prepend(char ***l, char *value) {
         int r;
@@ -514,7 +515,6 @@ int strv_consume_prepend(char ***l, char *value) {
 
         return r;
 }
-#endif // 0
 
 int strv_extend(char ***l, const char *value) {
         char *v;
@@ -851,6 +851,7 @@ char ***strv_free_free(char ***l) {
 
         return mfree(l);
 }
+#endif // 0
 
 char **strv_skip(char **l, size_t n) {
 
@@ -863,7 +864,6 @@ char **strv_skip(char **l, size_t n) {
 
         return l;
 }
-#endif // 0
 
 int strv_extend_n(char ***l, const char *value, size_t n) {
         size_t i, j, k;

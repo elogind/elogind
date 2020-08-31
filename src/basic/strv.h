@@ -52,8 +52,8 @@ static inline int strv_push_prepend(char ***l, char *value) {
 int strv_consume(char ***l, char *value);
 #if 0 /// UNNEEDED by elogind
 int strv_consume_pair(char ***l, char *a, char *b);
-int strv_consume_prepend(char ***l, char *value);
 #endif // 0
+int strv_consume_prepend(char ***l, char *value);
 
 char **strv_remove(char **l, const char *s);
 char **strv_uniq(char **l);
@@ -223,9 +223,9 @@ static inline bool strv_fnmatch_or_empty(char* const* patterns, const char *s, i
 
 char ***strv_free_free(char ***l);
 DEFINE_TRIVIAL_CLEANUP_FUNC(char***, strv_free_free);
+#endif // 0
 
 char **strv_skip(char **l, size_t n);
-#endif // 0
 
 int strv_extend_n(char ***l, const char *value, size_t n);
 

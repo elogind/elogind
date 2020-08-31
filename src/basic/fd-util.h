@@ -59,9 +59,11 @@ int close_all_fds(const int except[], size_t n_except);
 
 #if 0 /// UNNEEDED by elogind
 int same_fd(int a, int b);
+#endif // 0
 
 void cmsg_close_all(struct msghdr *mh);
 
+#if 0 /// UNNEEDED by elogind
 bool fdname_is_valid(const char *s);
 #endif // 0
 

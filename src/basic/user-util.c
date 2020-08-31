@@ -562,6 +562,7 @@ int getgroups_alloc(gid_t** gids) {
         *gids = TAKE_PTR(p);
         return ngroups;
 }
+#endif // 0
 
 int get_home_dir(char **_h) {
         struct passwd *p;
@@ -620,6 +621,7 @@ int get_home_dir(char **_h) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int get_shell(char **_s) {
         struct passwd *p;
         const char *e;

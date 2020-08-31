@@ -209,11 +209,6 @@ int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags
 }
 
 
-#if 1 /// elogind takes care of situations where the short name points into the long.
-                if ( (program_invocation_short_name >= program_invocation_name)
-                  && (program_invocation_short_name <  program_invocation_name + k) )
-                        program_invocation_short_name = program_invocation_name;
-#endif // 1
 static int update_argv(const char name[], size_t l) {
         static int can_do = -1;
 
@@ -329,6 +324,12 @@ int rename_process(const char name[]) {
                 strncpy(program_invocation_name, name, k);
                 if (l > k)
                         truncated = true;
+
+#if 1 /// elogind takes care of situations where the short name points into the long.
+                if ( (program_invocation_short_name >= program_invocation_name)
+                     && (program_invocation_short_name <  program_invocation_name + k) )
+                        program_invocation_short_name = program_invocation_name;
+#endif // 1
         }
 
         /* Third step, completely replace the argv[] array the kernel maintains for us. This requires privileges, but
@@ -650,7 +651,6 @@ int get_process_ppid(pid_t pid, pid_t *_ppid) {
 
         return 0;
 }
-#endif // 0
 
 int get_process_umask(pid_t pid, mode_t *umask) {
         _cleanup_free_ char *m = NULL;
@@ -668,6 +668,7 @@ int get_process_umask(pid_t pid, mode_t *umask) {
 
         return parse_mode(m, umask);
 }
+#endif // 0
 
 int wait_for_terminate(pid_t pid, siginfo_t *status) {
         siginfo_t dummy;

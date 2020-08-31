@@ -340,6 +340,7 @@ int same_fd(int a, int b) {
 
         return fa == fb;
 }
+#endif // 0
 
 void cmsg_close_all(struct msghdr *mh) {
         struct cmsghdr *cmsg;
@@ -351,6 +352,7 @@ void cmsg_close_all(struct msghdr *mh) {
                         close_many((int*) CMSG_DATA(cmsg), (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(int));
 }
 
+#if 0 /// UNNEEDED by elogind
 bool fdname_is_valid(const char *s) {
         const char *p;
 

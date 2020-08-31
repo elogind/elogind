@@ -33,7 +33,7 @@ bool is_efi_secure_boot(void);
 bool is_efi_secure_boot_setup_mode(void);
 
 int cache_efi_options_variable(void);
-int systemd_efi_options_variable(char **line);
+int elogind_efi_options_variable(char **line);
 
 #else
 
@@ -73,7 +73,7 @@ static inline int cache_efi_options_variable(void) {
         return -EOPNOTSUPP;
 }
 
-static inline int systemd_efi_options_variable(char **line) {
+static inline int elogind_efi_options_variable(char **line) {
         return -ENODATA;
 }
 

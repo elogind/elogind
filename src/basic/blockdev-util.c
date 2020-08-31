@@ -195,7 +195,6 @@ int get_block_device_harder(const char *path, dev_t *ret) {
 
         return 1;
 }
-#endif // 0
 
 int lock_whole_block_device(dev_t devt, int operation) {
         _cleanup_free_ char *whole_node = NULL;
@@ -222,3 +221,4 @@ int lock_whole_block_device(dev_t devt, int operation) {
 
         return TAKE_FD(lock_fd);
 }
+#endif // 0

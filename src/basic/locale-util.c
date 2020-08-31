@@ -256,7 +256,6 @@ bool locale_is_valid(const char *name) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
 int locale_is_installed(const char *name) {
         if (!locale_is_valid(name))
                 return false;
@@ -272,6 +271,7 @@ int locale_is_installed(const char *name) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 void init_gettext(void) {
         setlocale(LC_ALL, "");
         textdomain(GETTEXT_PACKAGE);

@@ -1250,6 +1250,7 @@ int warn_file_is_world_accessible(const char *filename, struct stat *st, const c
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int sync_rights(int from, int to) {
         struct stat st;
 
@@ -1271,3 +1272,4 @@ int rename_and_apply_smack_floor_label(const char *from, const char *to) {
 #endif
         return r;
 }
+#endif // 0
