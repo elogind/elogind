@@ -87,21 +87,21 @@ _public_ int sd_journal_printv(int priority, const char *format, va_list ap) {
         char p[STRLEN("PRIORITY=") + DECIMAL_STR_MAX(int) + 1];
         char sbuf[LINE_MAX + 8] = "MESSAGE=";
         struct iovec iov[2];
+#else // 0
+        char sbuf[LINE_MAX + 8] = "MESSAGE="; // We keep the +8 to not make a too big mess below.
+#endif // 0
         int len;
         va_list aq;
         char *buffer = sbuf;
-#else // 0
-        char buffer[8 + LINE_MAX]; // We keep the +8 to not make a too big mess below.
-#endif // 0
 
         assert_return(priority >= 0, -EINVAL);
         assert_return(priority <= 7, -EINVAL);
         assert_return(format, -EINVAL);
 
-#if 0 /// No bells and whistles needed in elogind
+#if 0 /// priority is not needed in elogind
         xsprintf(p, "PRIORITY=%i", priority & LOG_PRIMASK);
-
 #endif // 0
+
         va_copy(aq, ap);
         len = vsnprintf(buffer + 8, LINE_MAX, format, aq);
         va_end(aq);
@@ -531,10 +531,10 @@ _public_ int sd_journal_printv_with_location(int priority, const char *file, con
         char sbuf[LINE_MAX + 8] = "MESSAGE=";
         struct iovec iov[5];
         char *f;
-#endif // 0
         int len;
         char *buffer = sbuf;
         va_list aq;
+#endif // 0
 
         assert_return(priority >= 0, -EINVAL);
         assert_return(priority <= 7, -EINVAL);

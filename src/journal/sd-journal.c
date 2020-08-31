@@ -2563,9 +2563,13 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
         j->current_field++;
 
         return 1;
+#else // 0
+        return 0;
+#endif // 0
 }
 
 _public_ int sd_journal_enumerate_available_data(sd_journal *j, const void **data, size_t *size) {
+#if 0 /// UNSUPPORTED by elogind
         for (;;) {
                 int r;
 
@@ -3163,9 +3167,13 @@ _public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_
 
                 return 1;
         }
+#else // 0
+        return 0;
+#endif // 0
 }
 
 _public_ int sd_journal_enumerate_available_unique(sd_journal *j, const void **data, size_t *size) {
+#if 0 /// UNSUPPORTED by elogind
         for (;;) {
                 int r;
 
