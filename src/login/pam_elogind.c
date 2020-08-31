@@ -115,7 +115,6 @@ static int acquire_user_record(
                 return PAM_SERVICE_ERR;
         }
 
-        /* If pam_elogind_homed (or some other module) already acqired the user record we can reuse it
         /* If pam_elogind_homed (or some other module) already acquired the user record we can reuse it
          * here. */
         r = pam_get_data(handle, "elogind-user-record", (const void**) &json);

@@ -1237,8 +1237,6 @@ static int run(int argc, char *argv[]) {
         if (r <= 0)
                 return r;
 
-#if 0 /// elogind has some extra functionality at startup, argc can be != 1
-#endif // 0
         umask(0022);
 
         r = mac_selinux_init();
@@ -1271,10 +1269,9 @@ static int run(int argc, char *argv[]) {
 #endif // 0
 
 #if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
-
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, -1) >= 0);
 #else // 0
-        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGQUIT, -1) >= 0);
+        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGQUIT, -1) >= 0);
 #endif // 0
 
         r = manager_new(&m);

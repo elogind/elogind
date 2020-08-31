@@ -425,7 +425,7 @@ int elogind_manager_new(Manager* m) {
         /* If elogind should be its own controller, mount its cgroup */
         if (streq(SYSTEMD_CGROUP_CONTROLLER, "_elogind")) {
                 m->is_system = true;
-                r = mount_setup(true);
+                r = mount_setup(true, true);
         } else
                 m->is_system = false;
 

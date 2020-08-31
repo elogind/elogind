@@ -3384,7 +3384,10 @@ static int method_set_wall_message(
 
         m->enable_wall_messages = enable_wall_messages;
 
+#if 0 /// UNNEEDED by elogind
  done:
+#endif // 0
+
         return sd_bus_reply_method_return(message, NULL);
 }
 
@@ -3949,7 +3952,6 @@ static const sd_bus_vtable manager_vtable[] = {
         SD_BUS_VTABLE_END
 };
 
-#if 0 /// UNNEEDED by elogind
 const BusObjectImplementation manager_object = {
         "/org/freedesktop/login1",
         "org.freedesktop.login1.Manager",
@@ -3959,6 +3961,7 @@ const BusObjectImplementation manager_object = {
                                         &user_object),
 };
 
+#if 0 /// UNNEEDED by elogind
 static int session_jobs_reply(Session *s, uint32_t jid, const char *unit, const char *result) {
         assert(s);
         assert(unit);

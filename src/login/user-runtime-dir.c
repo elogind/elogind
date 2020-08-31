@@ -22,6 +22,7 @@
 #include "strv.h"
 #include "user-util.h"
 /// Additional includes needed by elogind
+#include "log.h"
 #include "user-runtime-dir.h"
 
 #if 0 /// UNNEEDED by elogind
@@ -157,7 +158,7 @@ static int do_mount(const char *user) {
 
         xsprintf(runtime_path, "/run/user/" UID_FMT, uid);
 #else // 0
-static int do_mount(const char *runtime_path, size_t runtime_dir_size, uid_t uid, gid_t gid) {
+static int do_mount(const char *runtime_path, size_t runtime_dir_size, size_t runtime_dir_inodes, uid_t uid, gid_t gid) {
 #endif // 0
 
         log_debug("Will mount %s owned by "UID_FMT":"GID_FMT, runtime_path, uid, gid);
@@ -229,8 +230,8 @@ int user_runtime_dir(const char *verb, User *u) {
         assert_not_reached("Unknown verb!");
 #else // 0
         if (streq(verb, "start"))
-                r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->user_record->uid,
-                             u->user_record->gid);
+                r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->manager->runtime_dir_inodes,
+                             u->user_record->uid, u->user_record->gid);
         else if (streq(verb, "stop"))
                 r = do_umount(u->runtime_path);
         else
