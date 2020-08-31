@@ -1442,6 +1442,7 @@ conf.set10('HAVE_PAM', have)
 #         have = false
 #         libxkbcommon = []
 # endif
+# conf.set10('HAVE_XKBCOMMON', have)
 #else // 0
 libmicrohttpd = []
 libcryptsetup = []
@@ -1457,12 +1458,15 @@ libz = []
 libbzip2 = []
 libxz = []
 liblz4 = []
+libzstd = []
 libxkbcommon = []
 conf.set10('HAVE_GCRYPT', false)
 conf.set10('HAVE_LZ4', false)
 conf.set10('HAVE_XZ', false)
+conf.set10('HAVE_ZSTD', false)
+conf.set10('HAVE_COMPRESSION', false)
+conf.set10('HAVE_XKBCOMMON', false)
 #endif // 0
-conf.set10('HAVE_XKBCOMMON', have)
 
 want_pcre2 = get_option('pcre2')
 if want_pcre2 != 'false'
