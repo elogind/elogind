@@ -3742,7 +3742,6 @@ int unit_get_cpuset(Unit *u, CPUSet *cpus, const char *name) {
 }
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_device_policy, CGroupDevicePolicy);
-#endif // 0
 
 static const char* const freezer_action_table[_FREEZER_ACTION_MAX] = {
         [FREEZER_FREEZE] = "freeze",
@@ -3750,3 +3749,4 @@ static const char* const freezer_action_table[_FREEZER_ACTION_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(freezer_action, FreezerAction);
+#endif // 0
