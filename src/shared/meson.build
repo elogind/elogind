@@ -260,8 +260,20 @@ shared_sources = '''
         acl-util.h
         bootspec.c
         bootspec.h
+        bus-get-properties.c
+        bus-get-properties.h
+        bus-locator.c
+        bus-locator.h
+        bus-log-control-api.c
+        bus-log-control-api.h
+        bus-map-properties.c
+        bus-map-properties.h
+        bus-object.c
+        bus-object.h
         bus-polkit.c
         bus-polkit.h
+        bus-print-properties.c
+        bus-print-properties.h
         bus-util.c
         bus-util.h
         cgroup-setup.c
@@ -291,6 +303,7 @@ shared_sources = '''
         json.h
         json-internal.h
         main-func.h
+        mount-util.h
         libcrypt-util.c
         libcrypt-util.h
         musl_missing.c
@@ -311,6 +324,8 @@ shared_sources = '''
         reboot-util.h
         serialize.c
         serialize.h
+        service-util.c
+        service-util.h
         sleep-config.c
         sleep-config.h
         spawn-polkit-agent.c

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include "bus-get-properties.h"
-#include "rlimit-util.h"
-#include "string-util.h"
+//#include "rlimit-util.h"
+//#include "string-util.h"
 
 int bus_property_get_bool(
                 sd_bus *bus,
@@ -18,6 +18,7 @@ int bus_property_get_bool(
         return sd_bus_message_append_basic(reply, 'b', &b);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_property_set_bool(
                 sd_bus *bus,
                 const char *path,
@@ -147,3 +148,4 @@ int bus_property_get_rlimit(
 
         return sd_bus_message_append(reply, "t", u);
 }
+#endif // 0

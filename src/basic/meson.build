@@ -253,6 +253,7 @@ basic_sources = files('''
         MurmurHash2.h
         alloc-util.c
         alloc-util.h
+        architecture.h
         audit-util.c
         audit-util.h
         blockdev-util.c
