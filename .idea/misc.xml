@@ -4,16 +4,13 @@
     <sourceRoots>
       <file path="$PROJECT_DIR$/src" />
     </sourceRoots>
-    <excludeRoots>
-      <file path="$PROJECT_DIR$/build" />
-    </excludeRoots>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MakefileSettings">
     <option name="linkedExternalProjectsSettings">
       <MakefileProjectSettings>
         <option name="analyzerType" value="OUTPUT_PARSING" />
-        <option name="buildOptions" value="" />
+        <option name="buildOptions" value="-j 1" />
         <option name="buildTarget" value="all" />
         <option name="cleanTarget" value="clean" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -22,9 +19,11 @@
             <option value="$PROJECT_DIR$" />
           </set>
         </option>
-        <option name="switches" value="--just-print --print-directory --keep-going" />
+        <option name="switches" value="JUST_PRINT=YES" />
       </MakefileProjectSettings>
     </option>
   </component>
-  <component name="MakefileWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="MakefileWorkspace" PROJECT_DIR="$PROJECT_DIR$">
+    <contentRoot DIR="$PROJECT_DIR$/build" />
+  </component>
 </project>
