@@ -858,6 +858,7 @@ static void test_chmod_and_chown_unsafe(void) {
         assert_se(S_ISLNK(st.st_mode));
 }
 
+#if 0 /// No need for encrypted devices in elogind
 static void test_path_is_encrypted_one(const char *p, int expect) {
         int r;
 
@@ -888,6 +889,7 @@ static void test_path_is_encrypted(void) {
         test_path_is_encrypted_one("/sys", false);
         test_path_is_encrypted_one("/dev", booted > 0 ? false : -1);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_INFO);
@@ -913,7 +915,9 @@ int main(int argc, char *argv[]) {
         test_chmod_and_chown();
 #endif // 0
         test_chmod_and_chown_unsafe();
+#if 0 /// UNNEEDED by elogind
         test_path_is_encrypted();
+#endif // 0
 
         return 0;
 }

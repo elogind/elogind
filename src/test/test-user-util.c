@@ -421,7 +421,6 @@ static void test_gid_lists_ops(void) {
         assert_se(nresult >= 0 || nresult == -EINVAL || nresult == -ENOMEM);
         assert_se(gids);
 }
-#endif // 0
 
 static void test_parse_uid_range(void) {
         uid_t a = 4711, b = 4711;
@@ -455,6 +454,7 @@ static void test_parse_uid_range(void) {
         assert_se(parse_uid_range("1-002", &a, &b) == -EINVAL && a == 4 && b == 5);
         assert_se(parse_uid_range(" 01", &a, &b) == -EINVAL && a == 4 && b == 5);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_uid_to_name_one(0, "root");
@@ -497,9 +497,9 @@ int main(int argc, char *argv[]) {
 
         test_in_gid();
         test_gid_lists_ops();
-#endif // 0
 
         test_parse_uid_range();
+#endif // 0
 
         return 0;
 }

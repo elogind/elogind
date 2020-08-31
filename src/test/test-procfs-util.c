@@ -12,11 +12,9 @@ int main(int argc, char *argv[]) {
 #if 0 /// elogind only needs v
         char buf[CONST_MAX(FORMAT_TIMESPAN_MAX, FORMAT_BYTES_MAX)];
         nsec_t nsec;
+#endif // 0
         uint64_t v;
         int r;
-#else // 0
-        uint64_t v;
-#endif // 0
 
         log_parse_environment();
         log_open();

@@ -371,6 +371,7 @@ static void test_physical_memory_scale(void) {
         assert_se(physical_memory_scale(UINT64_MAX/4, UINT64_MAX) == UINT64_MAX);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_system_tasks_max(void) {
         uint64_t t;
 
@@ -411,6 +412,7 @@ static void test_system_tasks_max_scale(void) {
 
         assert_se(system_tasks_max_scale(UINT64_MAX/4, UINT64_MAX) == UINT64_MAX);
 }
+#endif // 0
 
 static void test_foreach_pointer(void) {
         int a, b, c, *i;
@@ -509,8 +511,10 @@ int main(int argc, char *argv[]) {
 #endif // 0
         test_physical_memory();
         test_physical_memory_scale();
+#if 0 /// UNNEEDED by elogind
         test_system_tasks_max();
         test_system_tasks_max_scale();
+#endif // 0
         test_foreach_pointer();
 
         return 0;
