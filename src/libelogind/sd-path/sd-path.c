@@ -7,7 +7,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
-#include "path-lookup.h"
+//#include "path-lookup.h"
 #include "path-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -323,23 +323,26 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
         case SD_PATH_SYSTEMD_UTIL:
                 *ret = ROOTPREFIX "/lib/systemd";
                 return 0;
-
+#if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_SYSTEM_UNIT:
                 *ret = SYSTEM_DATA_UNIT_PATH;
                 return 0;
-
+#endif // 0
         case SD_PATH_SYSTEMD_SYSTEM_PRESET:
                 *ret = ROOTPREFIX "/lib/systemd/system-preset";
                 return 0;
 
+#if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_USER_UNIT:
                 *ret = USER_DATA_UNIT_DIR;
                 return 0;
+#endif // 0
 
         case SD_PATH_SYSTEMD_USER_PRESET:
                 *ret = ROOTPREFIX "/lib/systemd/user-preset";
                 return 0;
 
+#if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_SYSTEM_CONF:
                 *ret = SYSTEM_CONFIG_UNIT_DIR;
                 return 0;
@@ -355,6 +358,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
         case SD_PATH_SYSTEMD_USER_GENERATOR:
                 *ret = USER_GENERATOR_DIR;
                 return 0;
+#endif // 0
 
         case SD_PATH_SYSTEMD_SLEEP:
                 *ret = ROOTPREFIX "/lib/systemd/system-sleep";
@@ -521,7 +525,9 @@ static int search_from_environment(
 #endif
 
 static int get_search(uint64_t type, char ***list) {
+#if 0 /// UNNEEDED by elogind
         int r;
+#endif // 0
 
         assert(list);
 
@@ -607,6 +613,7 @@ static int get_search(uint64_t type, char ***list) {
         case SD_PATH_SEARCH_BINARIES_DEFAULT:
                 return strv_from_nulstr(list, DEFAULT_PATH_NULSTR);
 
+#if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_SEARCH_SYSTEM_UNIT:
         case SD_PATH_SYSTEMD_SEARCH_USER_UNIT: {
                 _cleanup_(lookup_paths_free) LookupPaths lp = {};
@@ -637,6 +644,7 @@ static int get_search(uint64_t type, char ***list) {
 
         case SD_PATH_SYSTEMD_SEARCH_NETWORK:
                 return strv_from_nulstr(list, NETWORK_DIRS_NULSTR);
+#endif // 0
 
         }
 
