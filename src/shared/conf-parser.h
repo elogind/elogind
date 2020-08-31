@@ -110,9 +110,9 @@ int config_parse_many(
                 ConfigItemLookup lookup,
                 const void *table,
                 ConfigParseFlags flags,
-#endif // 0
                 void *userdata,
                 usec_t *ret_mtime);         /* possibly NULL */
+#endif // 0
 
 CONFIG_PARSER_PROTOTYPE(config_parse_int);
 CONFIG_PARSER_PROTOTYPE(config_parse_unsigned);
@@ -153,8 +153,8 @@ CONFIG_PARSER_PROTOTYPE(config_parse_ifnames);
 CONFIG_PARSER_PROTOTYPE(config_parse_ip_port);
 CONFIG_PARSER_PROTOTYPE(config_parse_mtu);
 CONFIG_PARSER_PROTOTYPE(config_parse_rlimit);
-#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_vlanprotocol);
+#endif // 0
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,

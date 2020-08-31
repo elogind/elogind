@@ -1228,7 +1228,6 @@ int config_parse_permille(const char* unit,
 
         return 0;
 }
-#endif // 0
 
 int config_parse_vlanprotocol(const char* unit,
                               const char *filename,
@@ -1261,3 +1260,4 @@ int config_parse_vlanprotocol(const char* unit,
 
         return 0;
 }
+#endif // 0

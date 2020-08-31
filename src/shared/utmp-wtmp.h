@@ -8,9 +8,9 @@
 #include "util.h"
 
 #if ENABLE_UTMP
-#if 0 /// UNNEEDED by elogind
 #include <utmpx.h>
 
+#if 0 /// UNNEEDED by elogind
 int utmp_get_runlevel(int *runlevel, int *previous);
 #endif // 0
 
