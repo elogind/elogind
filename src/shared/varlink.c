@@ -9,6 +9,7 @@
 #include "io-util.h"
 #include "list.h"
 #include "process-util.h"
+#include "selinux-util.h"
 #include "set.h"
 #include "socket-util.h"
 #include "string-table.h"
@@ -584,17 +585,11 @@ static int varlink_parse_message(Varlink *v) {
 
         sz = e - begin + 1;
 
-        varlink_log(v, "New incoming message: %s", begin); /* FIXME: should we output the whole message here before validation?
-                                                            * This may produce a non-printable journal entry if the message
-                                                            * is invalid. We may also expose privileged information. */
+        varlink_log(v, "New incoming message: %s", begin);
 
         r = json_parse(begin, 0, &v->current, NULL, NULL);
-        if (r < 0) {
-                /* If we encounter a parse failure flush all data. We cannot possibly recover from this,
-                 * hence drop all buffered data now. */
-                v->input_buffer_index = v->input_buffer_size = v->input_buffer_unscanned = 0;
-                return varlink_log_errno(v, r, "Failed to parse JSON: %m");
-        }
+        if (r < 0)
+                return r;
 
         v->input_buffer_size -= sz;
 
@@ -2271,9 +2266,11 @@ int varlink_server_listen_address(VarlinkServer *s, const char *address, mode_t 
 
         (void) sockaddr_un_unlink(&sockaddr.un);
 
-        RUN_WITH_UMASK(~m & 0777)
-                if (bind(fd, &sockaddr.sa, sockaddr_len) < 0)
-                        return -errno;
+        RUN_WITH_UMASK(~m & 0777) {
+                r = mac_selinux_bind(fd, &sockaddr.sa, sockaddr_len);
+                if (r < 0)
+                        return r;
+        }
 
         if (listen(fd, SOMAXCONN) < 0)
                 return -errno;
