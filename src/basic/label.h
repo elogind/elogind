@@ -19,6 +19,7 @@ int mkdir_label(const char *path, mode_t mode);
 int mkdirat_label(int dirfd, const char *path, mode_t mode);
 #endif // 0
 int symlink_label(const char *old_path, const char *new_path);
+int symlink_atomic_label(const char *from, const char *to);
 int mknod_label(const char *pathname, mode_t mode, dev_t dev);
 
 #if 0 /// UNNEEDED by elogind
