@@ -585,11 +585,17 @@ static int varlink_parse_message(Varlink *v) {
 
         sz = e - begin + 1;
 
-        varlink_log(v, "New incoming message: %s", begin);
+        varlink_log(v, "New incoming message: %s", begin); /* FIXME: should we output the whole message here before validation?
+                                                            * This may produce a non-printable journal entry if the message
+                                                            * is invalid. We may also expose privileged information. */
 
         r = json_parse(begin, 0, &v->current, NULL, NULL);
-        if (r < 0)
-                return r;
+        if (r < 0) {
+                /* If we encounter a parse failure flush all data. We cannot possibly recover from this,
+                 * hence drop all buffered data now. */
+                v->input_buffer_index = v->input_buffer_size = v->input_buffer_unscanned = 0;
+                return varlink_log_errno(v, r, "Failed to parse JSON: %m");
+        }
 
         v->input_buffer_size -= sz;
 
@@ -2228,9 +2234,7 @@ int varlink_server_listen_fd(VarlinkServer *s, int fd) {
         };
 
         if (s->event) {
-                _cleanup_(sd_event_source_unrefp) sd_event_source *es = NULL;
-
-                r = sd_event_add_io(s->event, &es, fd, EPOLLIN, connect_callback, ss);
+                r = sd_event_add_io(s->event, &ss->event_source, fd, EPOLLIN, connect_callback, ss);
                 if (r < 0)
                         return r;
 
