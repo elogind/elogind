@@ -136,8 +136,9 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
 static
 #endif // 1
 int can_sleep_state(char **types) {
-        _cleanup_free_ char *text = NULL;
+        char **type;
         int r;
+        _cleanup_free_ char *p = NULL;
 
         if (strv_isempty(types))
                 return true;
@@ -148,30 +149,37 @@ int can_sleep_state(char **types) {
                 return false;
         }
 
-        r = read_one_line_file("/sys/power/state", &text);
+        r = read_one_line_file("/sys/power/state", &p);
         if (r < 0) {
                 log_debug_errno(r, "Failed to read /sys/power/state, cannot sleep: %m");
                 return false;
         }
 
-        const char *found;
-        r = string_contains_word_strv(text, NULL, types, &found);
-        if (r < 0)
-                return log_debug_errno(r, "Failed to parse /sys/power/state: %m");
-        if (r > 0)
-                log_debug("Sleep mode \"%s\" is supported by the kernel.", found);
-        else if (DEBUG_LOGGING) {
+        STRV_FOREACH(type, types) {
+                const char *word, *state;
+                size_t l, k;
+
+                k = strlen(*type);
+                FOREACH_WORD_SEPARATOR(word, l, p, WHITESPACE, state)
+                        if (l == k && memcmp(word, *type, l) == 0) {
+                                log_debug("Sleep mode \"%s\" is supported by the kernel.", *type);
+                                return true;
+                        }
+        }
+
+        if (DEBUG_LOGGING) {
                 _cleanup_free_ char *t = strv_join(types, "/");
                 log_debug("Sleep mode %s not supported by the kernel, sorry.", strnull(t));
         }
-        return r;
+        return false;
 }
 
 #if 1 /// Only available in this file for elogind
 static
 #endif // 1
 int can_sleep_disk(char **types) {
-        _cleanup_free_ char *text = NULL;
+        _cleanup_free_ char *p = NULL;
+        char **type;
         int r;
 
         if (strv_isempty(types))
@@ -183,14 +191,12 @@ int can_sleep_disk(char **types) {
                 return false;
         }
 
-        r = read_one_line_file("/sys/power/disk", &text);
+        r = read_one_line_file("/sys/power/disk", &p);
         if (r < 0) {
                 log_debug_errno(r, "Couldn't read /sys/power/disk: %m");
                 return false;
         }
 
-        for (const char *p = text;;) {
-                _cleanup_free_ char *word = NULL;
 
 #if 1 /// Let's check the mem_sleep so elogind supports suspend modes
 static int can_sleep_mem(char **types) {
@@ -477,6 +483,8 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
                 r = swap_device_to_device_id(swap, &swap_device);
                 if (r < 0)
                         return log_debug_errno(r, "%s: failed to query device number: %m", swap->device);
+                if (swap_device == 0)
+                        return log_debug_errno(SYNTHETIC_ERRNO(ENODEV), "%s: not backed by block device.", swap->device);
 
                 hibernate_location = hibernate_location_free(hibernate_location);
                 hibernate_location = new(HibernateLocation, 1);
