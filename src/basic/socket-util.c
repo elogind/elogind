@@ -625,7 +625,7 @@ bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b
 }
 #endif // 0
 
-int fd_inc_sndbuf(int fd, size_t n) {
+int fd_set_sndbuf(int fd, size_t n, bool increase) {
         int r, value;
         socklen_t l = sizeof(value);
 
@@ -633,7 +633,7 @@ int fd_inc_sndbuf(int fd, size_t n) {
                 return -ERANGE;
 
         r = getsockopt(fd, SOL_SOCKET, SO_SNDBUF, &value, &l);
-        if (r >= 0 && l == sizeof(value) && (size_t) value >= n*2)
+        if (r >= 0 && l == sizeof(value) && increase ? (size_t) value >= n*2 : (size_t) value == n*2)
                 return 0;
 
         /* First, try to set the buffer size with SO_SNDBUF. */
@@ -644,7 +644,7 @@ int fd_inc_sndbuf(int fd, size_t n) {
         /* SO_SNDBUF above may set to the kernel limit, instead of the requested size.
          * So, we need to check the actual buffer size here. */
         r = getsockopt(fd, SOL_SOCKET, SO_SNDBUF, &value, &l);
-        if (r >= 0 && l == sizeof(value) && (size_t) value >= n*2)
+        if (r >= 0 && l == sizeof(value) && increase ? (size_t) value >= n*2 : (size_t) value == n*2)
                 return 1;
 
         /* If we have the privileges we will ignore the kernel limit. */
@@ -655,7 +655,7 @@ int fd_inc_sndbuf(int fd, size_t n) {
         return 1;
 }
 
-int fd_inc_rcvbuf(int fd, size_t n) {
+int fd_set_rcvbuf(int fd, size_t n, bool increase) {
         int r, value;
         socklen_t l = sizeof(value);
 
@@ -663,7 +663,7 @@ int fd_inc_rcvbuf(int fd, size_t n) {
                 return -ERANGE;
 
         r = getsockopt(fd, SOL_SOCKET, SO_RCVBUF, &value, &l);
-        if (r >= 0 && l == sizeof(value) && (size_t) value >= n*2)
+        if (r >= 0 && l == sizeof(value) && increase ? (size_t) value >= n*2 : (size_t) value == n*2)
                 return 0;
 
         /* First, try to set the buffer size with SO_RCVBUF. */
@@ -674,7 +674,7 @@ int fd_inc_rcvbuf(int fd, size_t n) {
         /* SO_RCVBUF above may set to the kernel limit, instead of the requested size.
          * So, we need to check the actual buffer size here. */
         r = getsockopt(fd, SOL_SOCKET, SO_RCVBUF, &value, &l);
-        if (r >= 0 && l == sizeof(value) && (size_t) value >= n*2)
+        if (r >= 0 && l == sizeof(value) && increase ? (size_t) value >= n*2 : (size_t) value == n*2)
                 return 1;
 
         /* If we have the privileges we will ignore the kernel limit. */
