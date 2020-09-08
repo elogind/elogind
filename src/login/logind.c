@@ -1082,7 +1082,6 @@ static int manager_startup(Manager *m) {
         User *user;
         Button *button;
         Inhibitor *inhibitor;
-        Iterator i;
 
         assert(m);
 
@@ -1159,16 +1158,16 @@ static int manager_startup(Manager *m) {
         manager_read_utmp(m);
 
         /* And start everything */
-        HASHMAP_FOREACH(seat, m->seats, i)
+        HASHMAP_FOREACH(seat, m->seats)
                 (void) seat_start(seat);
 
-        HASHMAP_FOREACH(user, m->users, i)
+        HASHMAP_FOREACH(user, m->users)
                 (void) user_start(user);
 
-        HASHMAP_FOREACH(session, m->sessions, i)
+        HASHMAP_FOREACH(session, m->sessions)
                 (void) session_start(session, NULL, NULL);
 
-        HASHMAP_FOREACH(inhibitor, m->inhibitors, i) {
+        HASHMAP_FOREACH(inhibitor, m->inhibitors) {
                 (void) inhibitor_start(inhibitor);
 
                 /* Let's see if the inhibitor is dead now, then remove it */
@@ -1178,7 +1177,7 @@ static int manager_startup(Manager *m) {
                 }
         }
 
-        HASHMAP_FOREACH(button, m->buttons, i)
+        HASHMAP_FOREACH(button, m->buttons)
                 button_check_switches(button);
 
         manager_dispatch_idle_action(NULL, 0, m);

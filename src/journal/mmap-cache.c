@@ -553,7 +553,6 @@ unsigned mmap_cache_get_missed(MMapCache *m) {
 static void mmap_cache_process_sigbus(MMapCache *m) {
         bool found = false;
         MMapFileDescriptor *f;
-        Iterator i;
         int r;
 
         assert(m);
@@ -573,7 +572,7 @@ static void mmap_cache_process_sigbus(MMapCache *m) {
                 }
 
                 ours = false;
-                HASHMAP_FOREACH(f, m->fds, i) {
+                HASHMAP_FOREACH(f, m->fds) {
                         Window *w;
 
                         LIST_FOREACH(by_fd, w, f->windows) {
@@ -602,7 +601,7 @@ static void mmap_cache_process_sigbus(MMapCache *m) {
         if (_likely_(!found))
                 return;
 
-        HASHMAP_FOREACH(f, m->fds, i) {
+        HASHMAP_FOREACH(f, m->fds) {
                 Window *w;
 
                 if (!f->sigbus)

@@ -602,7 +602,6 @@ static int bus_send_hello(sd_bus *bus) {
 
 int bus_start_running(sd_bus *bus) {
         struct reply_callback *c;
-        Iterator i;
         usec_t n;
         int r;
 
@@ -614,7 +613,7 @@ int bus_start_running(sd_bus *bus) {
          * adding a fixed value to all entries should not alter the internal order. */
 
         n = now(CLOCK_MONOTONIC);
-        ORDERED_HASHMAP_FOREACH(c, bus->reply_callbacks, i) {
+        ORDERED_HASHMAP_FOREACH(c, bus->reply_callbacks) {
                 if (c->timeout_usec == 0)
                         continue;
 
