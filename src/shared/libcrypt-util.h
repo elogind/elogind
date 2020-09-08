@@ -21,4 +21,5 @@
 int make_salt(char **ret);
 #endif // 0
 
+int hash_password(const char *password, char **ret);
 bool looks_like_hashed_password(const char *s);
