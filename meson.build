@@ -252,7 +252,7 @@ endif
 
 pamconfdir = get_option('pamconfdir')
 if pamconfdir == ''
-        pamconfdir = join_paths(prefixdir, 'lib/pam.d')
+        pamconfdir = join_paths(sysconfdir, 'pam.d')
 endif
 
 #if 0 /// UNNEEDED by elogind
@@ -290,7 +290,6 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlib
 #endif // 0
 conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
@@ -1068,6 +1067,16 @@ libdl = cc.find_library('dl')
 #if 0 /// UNNEEDED by elogind
 # libcrypt = cc.find_library('crypt')
 #endif // 0
+
+crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? \
+               '''#include <crypt.h>''' : '''#include <unistd.h>'''
+foreach ident : [
+        ['crypt_ra',          crypt_header]]
+
+        have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE',
+                               dependencies : libcrypt)
+        conf.set10('HAVE_' + ident[0].to_upper(), have)
+endforeach
 
 libcap = dependency('libcap', required : false)
 if not libcap.found()
