@@ -3055,6 +3055,16 @@ endif
 #                    install_rpath : rootlibexecdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
+#
+#         public_programs += executable(
+#                    'oomctl',
+#                    oomctl_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootbindir)
 # endif
 #
 # if conf.get('ENABLE_BINFMT') == 1
