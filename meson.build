@@ -252,7 +252,7 @@ endif
 
 pamconfdir = get_option('pamconfdir')
 if pamconfdir == ''
-        pamconfdir = join_paths(sysconfdir, 'pam.d')
+        pamconfdir = join_paths(prefixdir, 'lib/pam.d')
 endif
 
 #if 0 /// UNNEEDED by elogind
