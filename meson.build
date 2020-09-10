@@ -288,6 +288,7 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlib
 #endif // 0
 conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 #if 0 /// UNNEEDED by elogind
+# conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
