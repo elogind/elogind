@@ -327,10 +327,12 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
                 *ret = ROOTLIBEXECDIR;
 #endif // 0
                 return 0;
+
 #if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_SYSTEM_UNIT:
                 *ret = SYSTEM_DATA_UNIT_PATH;
                 return 0;
+
         case SD_PATH_SYSTEMD_SYSTEM_PRESET:
                 *ret = ROOTPREFIX_NOSLASH "/lib/systemd/system-preset";
                 return 0;
@@ -383,19 +385,19 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
                 return 0;
 
         case SD_PATH_SYSUSERS:
-                *ret = ROOTPREFIX "/lib/sysusers.d";
+                *ret = ROOTPREFIX_NOSLASH "/lib/sysusers.d";
                 return 0;
 
         case SD_PATH_SYSCTL:
-                *ret = ROOTPREFIX "/lib/sysctl.d";
+                *ret = ROOTPREFIX_NOSLASH "/lib/sysctl.d";
                 return 0;
 
         case SD_PATH_BINFMT:
-                *ret = ROOTPREFIX "/lib/binfmt.d";
+                *ret = ROOTPREFIX_NOSLASH "/lib/binfmt.d";
                 return 0;
 
         case SD_PATH_MODULES_LOAD:
-                *ret = ROOTPREFIX "/lib/modules-load.d";
+                *ret = ROOTPREFIX_NOSLASH "/lib/modules-load.d";
                 return 0;
 
         case SD_PATH_CATALOG:
