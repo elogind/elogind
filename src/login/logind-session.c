@@ -965,7 +965,7 @@ static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *us
         assert(s);
 
         log_debug_elogind("Session release timeout reached, stopping session %s", s->id);
-        session_stop(s, false);
+        session_stop(s, /* force = */ false);
         return 0;
 }
 
@@ -1143,7 +1143,7 @@ static int session_dispatch_fifo(sd_event_source *es, int fd, uint32_t revents, 
 
         log_debug_elogind("EOF on Session %s FIFO: Session died abnormally, stopping...", s->id);
         session_remove_fifo(s);
-        session_stop(s, false);
+        session_stop(s, /* force = */ false);
 
         return 1;
 }

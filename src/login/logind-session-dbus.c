@@ -180,7 +180,7 @@ int bus_session_method_terminate(sd_bus_message *message, void *userdata, sd_bus
 
         log_debug_elogind("UID %u called dbus method 'terminate' on session %s",
                           s->user->user_record->uid, s->id);
-        r = session_stop(s, true);
+        r = session_stop(s, /* force = */ true);
         if (r < 0)
                 return r;
 
