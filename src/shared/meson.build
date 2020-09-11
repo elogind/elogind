@@ -310,10 +310,12 @@ shared_sources = '''
         musl_missing.h
         nsflags.c
         nsflags.h
+        openssl-util.h
         output-mode.c
         output-mode.h
         pager.c
         pager.h
+        pe-header.h
         pkcs11-util.c
         pkcs11-util.h
         pretty-print.c

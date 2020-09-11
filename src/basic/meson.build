@@ -276,6 +276,7 @@ basic_sources = files('''
         def.h
         dirent-util.c
         dirent-util.h
+        dlfcn-util.h
         efivars.c
         efivars.h
         env-file.c
@@ -329,7 +330,6 @@ basic_sources = files('''
         memory-util.h
         mempool.c
         mempool.h
-        missing_audit.h
         missing_capability.h
         missing_drm.h
         missing_fcntl.h
@@ -343,7 +343,6 @@ basic_sources = files('''
         missing_random.h
         missing_resource.h
         missing_sched.h
-        missing_securebits.h
         missing_socket.h
         missing_stat.h
         missing_stdlib.h
