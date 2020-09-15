@@ -252,7 +252,7 @@ endif
 
 pamconfdir = get_option('pamconfdir')
 if pamconfdir == ''
-        pamconfdir = join_paths(sysconfdir, 'pam.d')
+        pamconfdir = join_paths(prefixdir, 'lib/pam.d')
 endif
 
 #if 0 /// UNNEEDED by elogind
@@ -266,7 +266,7 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('SYSTEM_DATA_UNIT_PATH',                      systemunitdir)
 # conf.set_quoted('SYSTEM_SYSVINIT_PATH',                       sysvinit_path)
 # conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
-# conf.set_quoted('RC_LOCAL_SCRIPT_PATH_START',                 get_option('rc-local'))
+# conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
 #
@@ -290,6 +290,7 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlib
 #endif // 0
 conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 #if 0 /// UNNEEDED by elogind
+# conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
@@ -368,7 +369,7 @@ substs.set('systemsleepdir',                                  systemsleepdir)
 # substs.set('RANDOM_SEED',                                     join_paths(randomseeddir, 'random-seed'))
 # substs.set('SYSTEM_SYSVINIT_PATH',                            sysvinit_path)
 # substs.set('SYSTEM_SYSVRCND_PATH',                            sysvrcnd_path)
-# substs.set('RC_LOCAL_SCRIPT_PATH_START',                      get_option('rc-local'))
+# substs.set('RC_LOCAL_PATH',                                   get_option('rc-local'))
 # substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
 # substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
@@ -1068,16 +1069,6 @@ libdl = cc.find_library('dl')
 # libcrypt = cc.find_library('crypt')
 #endif // 0
 
-crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? \
-               '''#include <crypt.h>''' : '''#include <unistd.h>'''
-foreach ident : [
-        ['crypt_ra',          crypt_header],
-        ['crypt_gensalt_ra',  crypt_header]]
-
-        have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE',
-                               dependencies : libcrypt)
-        conf.set10('HAVE_' + ident[0].to_upper(), have)
-endforeach
 
 libcap = dependency('libcap', required : false)
 if not libcap.found()
