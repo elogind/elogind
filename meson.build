@@ -264,7 +264,7 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('SYSTEM_DATA_UNIT_PATH',                      systemunitdir)
 # conf.set_quoted('SYSTEM_SYSVINIT_PATH',                       sysvinit_path)
 # conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
-# conf.set_quoted('RC_LOCAL_SCRIPT_PATH_START',                 get_option('rc-local'))
+# conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
 #
@@ -367,7 +367,7 @@ substs.set('systemsleepdir',                                  systemsleepdir)
 # substs.set('RANDOM_SEED',                                     join_paths(randomseeddir, 'random-seed'))
 # substs.set('SYSTEM_SYSVINIT_PATH',                            sysvinit_path)
 # substs.set('SYSTEM_SYSVRCND_PATH',                            sysvrcnd_path)
-# substs.set('RC_LOCAL_SCRIPT_PATH_START',                      get_option('rc-local'))
+# substs.set('RC_LOCAL_PATH',                                   get_option('rc-local'))
 # substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
 # substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
