@@ -324,10 +324,6 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-libcrypt-util.c'],
-#          [],
-#          []],
-#
 #         [['src/test/test-offline-passwd.c',
 #           'src/shared/offline-passwd.c',
 #           'src/shared/offline-passwd.h'],
@@ -460,10 +456,6 @@ tests += [
 #          [],
 #          '', 'manual'],
 #
-#         [['src/test/test-dissect-image.c'],
-#          [],
-#          [libblkid],
-#          '', 'manual'],
 #endif // 0
 
         [['src/test/test-signal-util.c'],
