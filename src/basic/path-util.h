@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1-or-later */
+/* SPDX-License-Identifier: LGPL-2.1+ */
 #pragma once
 
 #include <alloca.h>
@@ -66,7 +66,7 @@ int path_compare(const char *a, const char *b) _pure_;
 bool path_equal(const char *a, const char *b) _pure_;
 bool path_equal_or_files_same(const char *a, const char *b, int flags);
 char* path_join_internal(const char *first, ...);
-#define path_join(x, ...) path_join_internal(x, __VA_ARGS__, POINTER_MAX)
+#define path_join(x, ...) path_join_internal(x, __VA_ARGS__, (const char*) -1)
 
 char* path_simplify(char *path, bool kill_dots);
 
@@ -95,9 +95,9 @@ char** path_strv_resolve(char **l, const char *root);
 char** path_strv_resolve_uniq(char **l, const char *root);
 
 #if 0 /// UNNEEDED by elogind
-int find_executable_full(const char *name, bool use_path_envvar, char **ret);
-static inline int find_executable(const char *name, char **ret) {
-        return find_executable_full(name, true, ret);
+int find_executable_full(const char *name, bool use_path_envvar, char **ret_filename, int *ret_fd);
+static inline int find_executable(const char *name, char **ret_filename) {
+        return find_executable_full(name, true, ret_filename, NULL);
 }
 
 bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
