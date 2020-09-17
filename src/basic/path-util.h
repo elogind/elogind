@@ -42,11 +42,19 @@
 #  define DEFAULT_USER_PATH DEFAULT_PATH
 #endif
 
-bool is_path(const char *p) _pure_;
 #if 0 /// UNNEEDED by elogind
+static inline bool is_path(const char *p) {
+        assert(p);
+        return strchr(p, '/');
+}
+
+static inline bool path_is_absolute(const char *p) {
+        assert(p);
+        return p[0] == '/';
+}
+
 int path_split_and_make_absolute(const char *p, char ***ret);
 #endif // 0
-bool path_is_absolute(const char *p) _pure_;
 #if 0 /// UNNEEDED by elogind
 char* path_make_absolute(const char *p, const char *prefix);
 #endif // 0
