@@ -1069,7 +1069,6 @@ libdl = cc.find_library('dl')
 # libcrypt = cc.find_library('crypt')
 #endif // 0
 
-
 libcap = dependency('libcap', required : false)
 if not libcap.found()
         # Compat with Ubuntu 14.04 which ships libcap w/o .pc file
@@ -3965,6 +3964,7 @@ run_target(
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
+        'build mode:                        @0@'.format(get_option('mode')),
         'split /usr:                        @0@'.format(split_usr),
         'split bin-sbin:                    @0@'.format(split_bin),
         'prefix directory:                  @0@'.format(prefixdir),
