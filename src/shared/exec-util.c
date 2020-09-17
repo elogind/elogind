@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1-or-later */
+/* SPDX-License-Identifier: LGPL-2.1+ */
 
 #include <dirent.h>
 #include <errno.h>
@@ -33,7 +33,6 @@
 assert_cc(EAGAIN == EWOULDBLOCK);
 
 static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid) {
-
         pid_t _pid;
         int r;
 
