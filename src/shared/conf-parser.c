@@ -715,7 +715,7 @@ int config_parse_tristate(
                 return 0;
         }
 
-        *t = !!k;
+        *t = k;
         return 0;
 }
 
