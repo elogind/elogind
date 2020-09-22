@@ -11,6 +11,7 @@
 #include "bus-util.h"
 #include "capability-util.h"
 #include "cgroup-util.h"
+#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
@@ -822,7 +823,7 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
                 if (!f) {
                         if (errno == ENOENT)
                                 return -ESRCH;
-                        else if (!IN_SET(errno, EPERM, EACCES))
+                        else if (!ERRNO_IS_PRIVILEGE(errno))
                                 return -errno;
                 } else {
 
@@ -994,7 +995,7 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
         if (missing & SD_BUS_CREDS_COMM) {
                 r = get_process_comm(pid, &c->comm);
                 if (r < 0) {
-                        if (!IN_SET(r, -EPERM, -EACCES))
+                        if (!ERRNO_IS_PRIVILEGE(r))
                                 return r;
                 } else
                         c->mask |= SD_BUS_CREDS_COMM;
@@ -1013,7 +1014,7 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
                         c->exe = NULL;
                         c->mask |= SD_BUS_CREDS_EXE;
                 } else if (r < 0) {
-                        if (!IN_SET(r, -EPERM, -EACCES))
+                        if (!ERRNO_IS_PRIVILEGE(r))
                                 return r;
                 } else
                         c->mask |= SD_BUS_CREDS_EXE;
@@ -1027,7 +1028,7 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
                 if (r == -ENOENT)
                         return -ESRCH;
                 if (r < 0) {
-                        if (!IN_SET(r, -EPERM, -EACCES))
+                        if (!ERRNO_IS_PRIVILEGE(r))
                                 return r;
                 } else {
                         if (c->cmdline_size == 0)
@@ -1047,7 +1048,7 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
                 if (r == -ENOENT)
                         return -ESRCH;
                 if (r < 0) {
-                        if (!IN_SET(r, -EPERM, -EACCES))
+                        if (!ERRNO_IS_PRIVILEGE(r))
                                 return r;
                 } else
                         c->mask |= SD_BUS_CREDS_TID_COMM;
@@ -1058,7 +1059,7 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
                 if (!c->cgroup) {
                         r = cg_pid_get_path(NULL, pid, &c->cgroup);
                         if (r < 0) {
-                                if (!IN_SET(r, -EPERM, -EACCES))
+                                if (!ERRNO_IS_PRIVILEGE(r))
                                         return r;
                         }
                 }

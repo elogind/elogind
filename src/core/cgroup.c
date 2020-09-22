@@ -79,8 +79,8 @@ static int set_attribute_and_warn(Unit *u, const char *controller, const char *a
 
         r = cg_set_attribute(controller, u->cgroup_path, attribute, value);
         if (r < 0)
-                log_unit_full(u, LOG_LEVEL_CGROUP_WRITE(r), r, "Failed to set '%s' attribute on '%s' to '%.*s': %m",
-                              strna(attribute), isempty(u->cgroup_path) ? "/" : u->cgroup_path, (int) strcspn(value, NEWLINE), value);
+                log_unit_full_errno(u, LOG_LEVEL_CGROUP_WRITE(r), r, "Failed to set '%s' attribute on '%s' to '%.*s': %m",
+                                    strna(attribute), isempty(u->cgroup_path) ? "/" : u->cgroup_path, (int) strcspn(value, NEWLINE), value);
 
         return r;
 }
@@ -725,7 +725,7 @@ static usec_t cgroup_cpu_adjust_period_and_log(Unit *u, usec_t period, usec_t qu
 
         if (new_period != period) {
                 char v[FORMAT_TIMESPAN_MAX];
-                log_unit_full(u, u->warned_clamping_cpu_quota_period ? LOG_DEBUG : LOG_WARNING, 0,
+                log_unit_full(u, u->warned_clamping_cpu_quota_period ? LOG_DEBUG : LOG_WARNING,
                               "Clamping CPU interval for cpu.max: period is now %s",
                               format_timespan(v, sizeof(v), new_period, 1));
                 u->warned_clamping_cpu_quota_period = true;
@@ -987,8 +987,8 @@ static int cgroup_apply_devices(Unit *u) {
                 else
                         r = cg_set_attribute("devices", path, "devices.allow", "a");
                 if (r < 0)
-                        log_unit_full(u, IN_SET(r, -ENOENT, -EROFS, -EINVAL, -EACCES, -EPERM) ? LOG_DEBUG : LOG_WARNING, r,
-                                      "Failed to reset devices.allow/devices.deny: %m");
+                        log_unit_full_errno(u, IN_SET(r, -ENOENT, -EROFS, -EINVAL, -EACCES, -EPERM) ? LOG_DEBUG : LOG_WARNING, r,
+                                            "Failed to reset devices.allow/devices.deny: %m");
         }
 
         bool allow_list_static = policy == CGROUP_DEVICE_POLICY_CLOSED ||
@@ -1352,8 +1352,8 @@ static void cgroup_context_apply(
                         else
                                 r = 0;
                         if (r < 0)
-                                log_unit_full(u, LOG_LEVEL_CGROUP_WRITE(r), r,
-                                              "Failed to write to tasks limit sysctls: %m");
+                                log_unit_full_errno(u, LOG_LEVEL_CGROUP_WRITE(r), r,
+                                                    "Failed to write to tasks limit sysctls: %m");
                 }
 
                 /* The attribute itself is not available on the host root cgroup, and in the container case we want to
@@ -1978,7 +1978,7 @@ int unit_attach_pids_to_cgroup(Unit *u, Set *pids, const char *suffix_path) {
                 if (q < 0) {
                         log_unit_debug_errno(u, q, "Couldn't move process " PID_FMT " to requested cgroup '%s': %m", pid, p);
 
-                        if (MANAGER_IS_USER(u->manager) && IN_SET(q, -EPERM, -EACCES)) {
+                        if (MANAGER_IS_USER(u->manager) && ERRNO_IS_PRIVILEGE(q)) {
                                 int z;
 
                                 /* If we are in a user instance, and we can't move the process ourselves due to
@@ -2436,7 +2436,7 @@ void unit_prune_cgroup(Unit *u) {
                  * the containing slice is stopped. So even if we failed now, this unit shouldn't assume
                  * that the cgroup is still realized the next time it is started. Do not return early
                  * on error, continue cleanup. */
-                log_unit_full(u, r == -EBUSY ? LOG_DEBUG : LOG_WARNING, r, "Failed to destroy cgroup %s, ignoring: %m", u->cgroup_path);
+                log_unit_full_errno(u, r == -EBUSY ? LOG_DEBUG : LOG_WARNING, r, "Failed to destroy cgroup %s, ignoring: %m", u->cgroup_path);
 
         if (is_root_slice)
                 return;
