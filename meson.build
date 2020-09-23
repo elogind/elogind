@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '247',
+        version : '246',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -13,8 +13,8 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
-libsystemd_version = '0.30.0'
 #if 0 /// elogind does not ship libudev
+# libsystemd_version = '0.29.0'
 # libudev_version = '1.7.0'
 #endif // 0
 
@@ -45,8 +45,8 @@ relative_source_path = run_command('realpath',
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 #if 0 /// fuzz regression tests are not supported by elogind
-# conf.set('BUILD_MODE', 'BUILD_MODE_' + get_option('mode').to_upper(),
-#          description : 'tailor build to development or release builds')
+# conf.set10('DEVELOPER_MODE', get_option('mode') == 'developer',
+#            description : 'enable additional checks only suitable in development')
 #
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
@@ -627,6 +627,7 @@ foreach ident : [
                                  #include <signal.h>
                                  #include <sys/wait.h>'''],
         ['mallinfo',          '''#include <malloc.h>'''],
+        ['execveat',          '''#include <unistd.h>'''],
         ['close_range',       '''#include <unistd.h>'''],
 ]
 
@@ -1645,18 +1646,6 @@ conf.set10('HAVE_DBUS', have)
 # have = have and conf.get('HAVE_PAM') == 1
 # conf.set10('ENABLE_PAM_HOME', have)
 #
-# have = get_option('oomd')
-# if have == 'auto'
-#         have = get_option('mode') == 'developer'
-# else
-#         have = have == 'true'
-#         if have and get_option('mode') != 'developer'
-#                 error('oomd is not available in release mode (yet)')
-#         endif
-# endif
-# conf.set10('ENABLE_OOMD', have)
-# substs.set10('ENABLE_OOMD', have)
-#
 # want_remote = get_option('remote')
 # if want_remote != 'false'
 #         have_deps = [conf.get('HAVE_MICROHTTPD') == 1,
@@ -1822,14 +1811,24 @@ meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
                                'src/boot',
-                               'src/core',
 #if 0 /// UNNEEDED by elogind
 #                                'src/home',
 #endif // 0
+                               'src/shared',
+                               'src/elogind',
                                'src/journal',
 #if 0 /// elogind has a different list
 #                                'src/journal-remote',
-#                                'src/libsystemd-network',
+#                                'src/nspawn',
+#                                'src/resolve',
+#                                'src/timesync',
+#                                'src/time-wait-sync',
+#                                'src/login',
+#                                'src/udev',
+#                                'src/libudev',
+#                                'src/core',
+#                                'src/shutdown',
+#                                'src/xdg-autostart-generator',
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
 #                                'src/libsystemd/sd-event',
@@ -1838,17 +1837,7 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-netlink',
 #                                'src/libsystemd/sd-network',
 #                                'src/libsystemd/sd-resolve',
-#                                'src/libudev',
-#                                'src/login',
-#                                'src/nspawn',
-#                                'src/resolve',
-#                                'src/shared',
-#                                'src/shutdown',
-#                                'src/systemd',
-#                                'src/time-wait-sync',
-#                                'src/timesync',
-#                                'src/udev',
-#                                'src/xdg-autostart-generator',
+#                                'src/libsystemd-network',
 #else // 0
                                'src/libelogind/sd-bus',
                                'src/libelogind/sd-device',
@@ -2005,7 +1994,6 @@ subdir('src/shared')
 # subdir('src/journal-remote')
 # subdir('src/coredump')
 # subdir('src/pstore')
-# subdir('src/oom')
 # subdir('src/hostname')
 # subdir('src/import')
 # subdir('src/partition')
@@ -3133,27 +3121,6 @@ endif
 #                 install_dir : rootlibexecdir)
 # endif
 #
-# if conf.get('ENABLE_OOMD') == 1
-#         executable('systemd-oomd',
-#                    systemd_oomd_sources,
-#                    include_directories : includes,
-#                    link_with : [libshared],
-#                    dependencies : [],
-#                    install_rpath : rootlibexecdir,
-#                    install : true,
-#                    install_dir : rootlibexecdir)
-#
-#         public_programs += executable(
-#                    'oomctl',
-#                    oomctl_sources,
-#                    include_directories : includes,
-#                    link_with : [libshared],
-#                    dependencies : [],
-#                    install_rpath : rootlibexecdir,
-#                    install : true,
-#                    install_dir : rootbindir)
-# endif
-#
 # if conf.get('ENABLE_BINFMT') == 1
 #         public_programs += executable(
 #                 'systemd-binfmt',
@@ -3496,7 +3463,6 @@ public_programs += executable(
 #                         'systemd-sysusers.standalone',
 #                         'src/sysusers/sysusers.c',
 #                         include_directories : includes,
-#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -3539,7 +3505,6 @@ public_programs += executable(
 #                         'systemd-tmpfiles.standalone',
 #                         systemd_tmpfiles_sources,
 #                         include_directories : includes,
-#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -3590,6 +3555,7 @@ public_programs += executable(
 #         c_args : '-DLOG_REALM=LOG_REALM_UDEV',
 #         include_directories : includes,
 #         link_with : [libudev_core,
+#                      libsystemd_network,
 #                      libudev_static],
 #         dependencies : [versiondep,
 #                         threads,
@@ -3751,7 +3717,6 @@ foreach tuple : tests
         type = tuple.length() >= 5 ? tuple[4] : ''
         defs = tuple.length() >= 6 ? tuple[5] : []
         incs = tuple.length() >= 7 ? tuple[6] : includes
-        parallel = tuple.length() >= 8 ? tuple[7] : true
         timeout = 30
 
         name = sources[0].split('/')[-1].split('.')[0]
@@ -4286,7 +4251,6 @@ foreach tuple : [
 #         ['coredump'],
 #         ['pstore'],
 #endif // 0
-        ['oomd'],
         ['polkit'],
         ['legacy pkla',      install_polkit_pkla],
         ['efi'],
