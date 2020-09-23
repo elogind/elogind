@@ -391,11 +391,9 @@ int fd_get_path(int fd, char **ret) {
                 /* ENOENT can mean two things: that the fd does not exist or that /proc is not mounted. Let's make
                  * things debuggable and distinguish the two. */
 
-                if (access("/proc/self/fd/", F_OK) < 0)
-                        /* /proc is not available or not set up properly, we're most likely in some chroot
-                         * environment. */
-                        return errno == ENOENT ? -EOPNOTSUPP : -errno;
-
+                if (proc_mounted() == 0)
+                        return -ENOSYS;  /* /proc is not available or not set up properly, we're most likely in some chroot
+                                          * environment. */
                 return -EBADF; /* The directory exists, hence it's the fd that doesn't. */
         }
 
@@ -738,7 +736,8 @@ int fd_duplicate_data_fd(int fd) {
                 if (f != 0)
                         return -errno;
 
-                CLOSE_AND_REPLACE(copy_fd, tmp_fd);
+                safe_close(copy_fd);
+                copy_fd = TAKE_FD(tmp_fd);
 
                 remains = mfree(remains);
                 remains_size = 0;
@@ -872,7 +871,8 @@ int rearrange_stdio(int original_input_fd, int original_output_fd, int original_
                                 goto finish;
                         }
 
-                        CLOSE_AND_REPLACE(null_fd, copy);
+                        safe_close(null_fd);
+                        null_fd = copy;
                 }
         }
 
