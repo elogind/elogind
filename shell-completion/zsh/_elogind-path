@@ -1,0 +1,8 @@
+#compdef elogind-path
+
+typeset -A sdpath=( ${$(elogind-path)/:/} )
+_arguments -S \
+	'(-h --help)'{-h,--help}'[Print help text and exit]' \
+	'(-v --version)'{-v,--version}'[Print a version string and exit]' \
+	'--suffix=[Append a suffix to the paths]' \
+	'*:pathname:compadd -k sdpath'
