@@ -1071,8 +1071,9 @@ libdl = cc.find_library('dl')
 
 crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
 foreach ident : [
-        ['crypt_ra',          crypt_header],
-        ['crypt_gensalt_ra',  crypt_header]]
+        ['crypt_ra',               crypt_header],
+        ['crypt_preferred_method', crypt_header],
+        ['crypt_gensalt_ra',       crypt_header]]
 
         have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE',
                                dependencies : libcrypt)
@@ -3974,6 +3975,7 @@ run_target(
 status = [
         '@0@ @1@'.format(meson.project_name(), meson.project_version()),
 
+        'build mode:                        @0@'.format(get_option('mode')),
         'split /usr:                        @0@'.format(split_usr),
         'split bin-sbin:                    @0@'.format(split_bin),
         'prefix directory:                  @0@'.format(prefixdir),
