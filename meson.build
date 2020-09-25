@@ -1071,9 +1071,8 @@ libdl = cc.find_library('dl')
 
 crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
 foreach ident : [
-        ['crypt_ra',               crypt_header],
-        ['crypt_preferred_method', crypt_header],
-        ['crypt_gensalt_ra',       crypt_header]]
+        ['crypt_ra',          crypt_header],
+        ['crypt_gensalt_ra',  crypt_header]]
 
         have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE',
                                dependencies : libcrypt)
@@ -1680,6 +1679,7 @@ conf.set10('ENABLE_REMOTE', have)
 #                 'idn',
 #                 'ima',
 #                 'initrd',
+#                 'compat-mutable-uid-boundaries',
 #                 'ldconfig',
 #                 'localed',
 #                 'logind',
@@ -4123,6 +4123,7 @@ foreach tuple : [
 #         ['libcurl'],
 #         ['idn'],
 #         ['initrd'],
+#         ['compat-mutable-uid-boundaries'],
 #         ['libidn2'],
 #         ['libidn'],
 #         ['libiptc'],

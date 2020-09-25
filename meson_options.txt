@@ -4,8 +4,8 @@
 option('version-tag', type : 'string',
        description : 'override the git version string')
 
-       description : 'enable additional checks suitable for elogind development')
 option('mode', type : 'combo', choices : ['developer', 'release'],
+       description : 'enable additional checks suitable for elogind development')
 
 option('split-usr', type : 'combo', choices : ['auto', 'true', 'false'],
        description : '''/bin, /sbin aren't symlinks into /usr''')
@@ -31,9 +31,9 @@ option('static-libelogind', type : 'combo',
 #        description : '''install a static library for libsystemd''')
 # option('static-libudev', type : 'combo',
 #        choices : ['false', 'true', 'pic', 'no-pic'],
-#        description : '''install a static library for libudev''')
+#        description : 'install a static library for libudev')
 # option('standalone-binaries', type : 'boolean', value : 'false',
-#        description : '''also build standalone versions of supported binaries''')
+#        description : 'also build standalone versions of supported binaries')
 #
 # option('sysvinit-path', type : 'string', value : '/etc/init.d',
 #        description : 'the directory where the SysV init scripts are located')
@@ -43,8 +43,10 @@ option('static-libelogind', type : 'combo',
 #        description : 'path to telinit')
 # option('rc-local', type : 'string',
 #        value : '/etc/rc.local')
-# option('initrd', type: 'boolean',
+# option('initrd', type : 'boolean',
 #        description : 'install services for use when running systemd in initrd')
+# option('compat-mutable-uid-boundaries', type : 'boolean', value : 'false',
+#        description : 'look at uid boundaries in /etc/login.defs for compatibility')
 #
 # option('quotaon-path', type : 'string', description : 'path to quotaon')
 # option('quotacheck-path', type : 'string', description : 'path to quotacheck')

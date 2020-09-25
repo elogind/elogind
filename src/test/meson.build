@@ -324,6 +324,10 @@ tests += [
 #          [],
 #          []],
 #
+#         [['src/test/test-libcrypt-util.c'],
+#          [],
+#          []],
+#
 #         [['src/test/test-offline-passwd.c',
 #           'src/shared/offline-passwd.c',
 #           'src/shared/offline-passwd.h'],
@@ -362,6 +366,10 @@ tests += [
 #          [],
 #          []],
 #endif // 0
+
+        [['src/test/test-user-record.c'],
+         [],
+         []],
 
         [['src/test/test-user-util.c'],
          [],
