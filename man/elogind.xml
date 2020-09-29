@@ -345,8 +345,7 @@
 
     <para>Note that some but not all interfaces provided
     by systemd are covered by the
-    <ulink url="https://www.freedesktop.org/wiki/Software/systemd/InterfaceStabilityPromise">Interface
-    Stability Promise</ulink>.</para>
+    <ulink url="Portability and">Interface Portability and Stability Promise</ulink>.</para>
 
     <para>Units may be generated dynamically at boot and system
     manager reload time, for example based on other configuration
@@ -360,8 +359,8 @@
     </para>
 
     <para>Systems which invoke systemd in a container or initrd environment should implement the <ulink
-    url="https://systemd.io/CONTAINER_INTERFACE">Container Interface</ulink> or <ulink
-    url="https://www.freedesktop.org/wiki/Software/systemd/InitrdInterface">initrd Interface</ulink>
+    url="https://systemd.io/CONTAINER_INTERFACE">Container Interface</ulink> or
+    <ulink url="https://systemd.io/INITRD_INTERFACE/">initrd Interface</ulink>
     specifications, respectively.</para>
   </refsect1>
   // 0 -->
@@ -716,38 +715,37 @@
     <variablelist class='environment-variables'>
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_COLOR</varname></term>
-        <listitem><para>Controls whether systemd highlights important log messages. This can be overridden
-        with <option>&#x2D;&#x2D;log-color=</option>.</para></listitem>
+        <listitem><para>Controls whether systemd highlights important
+        log messages. This can be overridden with
+        <option>&#x2D;&#x2D;log-color</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_LEVEL</varname></term>
-        <listitem><para>systemd reads the log level from this environment variable. This can be overridden
-        with <option>&#x2D;&#x2D;log-level=</option>.</para></listitem>
+        <listitem><para>systemd reads the log level from this
+        environment variable. This can be overridden with
+        <option>&#x2D;&#x2D;log-level=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_LOCATION</varname></term>
-        <listitem><para>Controls whether systemd prints the code location along with log messages. This can
-        be overridden with <option>&#x2D;&#x2D;log-location=</option>.</para></listitem>
+        <listitem><para>Controls whether systemd prints the code
+        location along with log messages. This can be overridden with
+        <option>&#x2D;&#x2D;log-location</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_TARGET</varname></term>
-        <listitem><para>systemd reads the log target from this environment variable. This can be overridden
-        with <option>&#x2D;&#x2D;log-target=</option>.</para></listitem>
+        <listitem><para>systemd reads the log target from this
+        environment variable. This can be overridden with
+        <option>&#x2D;&#x2D;log-target=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>$SYSTEMD_LOG_TIME</varname></term>
-        <listitem><para>Controls whether systemd prefixes log messages with the current time. This can be
-        overridden with <option>&#x2D;&#x2D;log-time=</option>.</para></listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term><varname>$SYSTEMD_LOG_TID</varname></term>
-        <listitem><para>Controls whether systemd prefixes log messages with the current thread ID
-        (TID).</para></listitem>
+        <listitem><para>Controls whether systemd prefixes log
+        messages with the current time. This can be overridden with
+        <option>&#x2D;&#x2D;log-time=</option>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -950,15 +948,16 @@
         <term><varname>systemd.log_location</varname></term>
         <term><varname>systemd.log_target=</varname></term>
         <term><varname>systemd.log_time</varname></term>
-        <term><varname>systemd.log_tid</varname></term>
 
         <listitem><para>Controls log output, with the same effect as the
-        <varname>$SYSTEMD_LOG_COLOR</varname>, <varname>$SYSTEMD_LOG_LEVEL</varname>,
-        <varname>$SYSTEMD_LOG_LOCATION</varname>, <varname>$SYSTEMD_LOG_TARGET</varname>,
-        <varname>$SYSTEMD_LOG_TIME</varname>, <varname>$SYSTEMD_LOG_TID</varname> environment variables
-        described above.  <varname>systemd.log_color</varname>, <varname>systemd.log_location</varname>,
-        <varname>systemd.log_time</varname> and <varname>systemd.log_tid=</varname> can be specified without
-        an argument, with the same effect as a positive boolean.</para></listitem>
+        <varname>$SYSTEMD_LOG_COLOR</varname>,
+        <varname>$SYSTEMD_LOG_LEVEL</varname>,
+        <varname>$SYSTEMD_LOG_LOCATION</varname>,
+        <varname>$SYSTEMD_LOG_TARGET</varname>,
+        <varname>$SYSTEMD_LOG_TIME</varname>, environment variables described above.
+        <varname>systemd.log_color</varname>, <varname>systemd.log_location</varname>, and
+        <varname>systemd.log_time</varname> can be specified without an argument, with the
+        same effect as a positive boolean.</para></listitem>
       </varlistentry>
 
       <varlistentry>
