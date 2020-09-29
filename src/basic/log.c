@@ -573,6 +573,7 @@ static int log_do_header(
         r = snprintf(header, size,
                      "PRIORITY=%i\n"
                      "SYSLOG_FACILITY=%i\n"
+                     "TID=" PID_FMT "\n"
                      "%s%.256s%s"        /* CODE_FILE */
                      "%s%.*i%s"          /* CODE_LINE */
                      "%s%.256s%s"        /* CODE_FUNC */
@@ -582,6 +583,7 @@ static int log_do_header(
                      "SYSLOG_IDENTIFIER=%.256s\n",
                      LOG_PRI(level),
                      LOG_FAC(level),
+                     gettid(),
                      isempty(file) ? "" : "CODE_FILE=",
                      isempty(file) ? "" : file,
                      isempty(file) ? "" : "\n",
