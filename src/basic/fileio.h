@@ -88,6 +88,14 @@ int search_and_fopen(const char *path, const char *mode, const char *root, const
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **_f);
 #endif // 0
 
+int chase_symlinks_and_fopen_unlocked(
+                const char *path,
+                const char *root,
+                unsigned chase_flags,
+                const char *open_flags,
+                FILE **ret_file,
+                char **ret_path);
+
 int fflush_and_check(FILE *f);
 int fflush_sync_and_check(FILE *f);
 
