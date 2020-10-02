@@ -119,12 +119,13 @@ static int device_new_from_dev_path(const char *devlink, sd_device **ret_device)
 
         assert(devlink);
 
-        r = stat(devlink, &st);
-        if (r < 0)
-                return log_full_errno(errno == ENOENT ? LOG_DEBUG : LOG_ERR, errno, "Failed to stat() %s: %m", devlink);
+        if (stat(devlink, &st) < 0)
+                return log_full_errno(errno == ENOENT ? LOG_DEBUG : LOG_ERR, errno,
+                                      "Failed to stat() %s: %m", devlink);
 
         if (!S_ISBLK(st.st_mode))
-                return log_error_errno(SYNTHETIC_ERRNO(ENOTBLK), "%s does not point to a block device: %m", devlink);
+                return log_error_errno(SYNTHETIC_ERRNO(ENOTBLK),
+                                       "%s does not point to a block device: %m", devlink);
 
         r = sd_device_new_from_devnum(ret_device, 'b', st.st_rdev);
         if (r < 0)
@@ -173,10 +174,6 @@ static int device_monitor_handler(sd_device_monitor *monitor, sd_device *device,
 found:
         data->device = sd_device_ref(device);
         return sd_event_exit(sd_device_monitor_get_event(monitor), 0);
-}
-
-static int device_timeout_handler(sd_event_source *s, uint64_t usec, void *userdata) {
-        return sd_event_exit(sd_event_source_get_event(s), -ETIMEDOUT);
 }
 
 static int device_wait_for_initialization_internal(
@@ -248,7 +245,7 @@ static int device_wait_for_initialization_internal(
                 r = sd_event_add_time_relative(
                                 event, &timeout_source,
                                 CLOCK_MONOTONIC, timeout, 0,
-                                device_timeout_handler, NULL);
+                                NULL, INT_TO_PTR(-ETIMEDOUT));
                 if (r < 0)
                         return log_error_errno(r, "Failed to add timeout event source: %m");
         }
