@@ -175,7 +175,6 @@ static inline pid_t missing_gettid(void) {
 #elif defined(__arm__)
 #  define elogind_NR_name_to_handle_at 370
 #elif defined __aarch64__
-#  define elogind_NR_name_to_handle_at 264
 #  define systemd_NR_name_to_handle_at 264
 #elif defined(__powerpc__)
 #  define elogind_NR_name_to_handle_at 345
@@ -223,7 +222,6 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 /* ======================================================================= */
 
 #if defined __aarch64__
-#  define elogind_NR_setns 268
 #  define systemd_NR_setns 268
 #elif defined __arm__
 #  define elogind_NR_setns 375
@@ -634,8 +632,20 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 /* ======================================================================= */
 
 /* should be always defined, see kernel 39036cd2727395c3369b1051005da74059a85317 */
-#if defined(__alpha__)
 #  define elogind_NR_pidfd_send_signal 534
+#if defined __alpha__
+#elif defined _MIPS_SIM
+#  if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
+#    define elogind_NR_pidfd_send_signal (424 + 4000)
+#  endif
+#  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
+#    define elogind_NR_pidfd_send_signal (424 + 6000)
+#  endif
+#  if _MIPS_SIM == _MIPS_SIM_ABI64	/* n64 */
+#    define elogind_NR_pidfd_send_signal (424 + 5000)
+#  endif
+#elif defined __ia64__
+#  define elogind_NR_pidfd_send_signal (424 + 1024)
 #else
 #  define elogind_NR_pidfd_send_signal 424
 #endif
@@ -666,8 +676,20 @@ static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, un
 #endif
 
 /* should be always defined, see kernel 7615d9e1780e26e0178c93c55b73309a5dc093d7 */
-#if defined(__alpha__)
 #  define elogind_NR_pidfd_open 544
+#if defined __alpha__
+#elif defined _MIPS_SIM
+#  if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
+#    define elogind_NR_pidfd_open (434 + 4000)
+#  endif
+#  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
+#    define elogind_NR_pidfd_open (434 + 6000)
+#  endif
+#  if _MIPS_SIM == _MIPS_SIM_ABI64	/* n64 */
+#    define elogind_NR_pidfd_open (434 + 5000)
+#  endif
+#elif defined __ia64__
+#  define elogind_NR_pidfd_open (434 + 1024)
 #else
 #  define elogind_NR_pidfd_open 434
 #endif
