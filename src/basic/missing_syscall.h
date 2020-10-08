@@ -632,8 +632,8 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 /* ======================================================================= */
 
 /* should be always defined, see kernel 39036cd2727395c3369b1051005da74059a85317 */
-#  define elogind_NR_pidfd_send_signal 534
 #if defined __alpha__
+#  define elogind_NR_pidfd_send_signal 534
 #elif defined _MIPS_SIM
 #  if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
 #    define elogind_NR_pidfd_send_signal (424 + 4000)
@@ -664,7 +664,7 @@ assert_cc(__NR_pidfd_send_signal == elogind_NR_pidfd_send_signal);
 
 #if !HAVE_PIDFD_SEND_SIGNAL
 static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, unsigned flags) {
-#  ifdef __NR_pidfd_open
+#  ifdef __NR_pidfd_send_signal
         return syscall(__NR_pidfd_send_signal, fd, sig, info, flags);
 #  else
         errno = ENOSYS;
@@ -676,8 +676,8 @@ static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, un
 #endif
 
 /* should be always defined, see kernel 7615d9e1780e26e0178c93c55b73309a5dc093d7 */
-#  define elogind_NR_pidfd_open 544
 #if defined __alpha__
+#  define elogind_NR_pidfd_open 544
 #elif defined _MIPS_SIM
 #  if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
 #    define elogind_NR_pidfd_open (434 + 4000)
