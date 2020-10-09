@@ -15,6 +15,12 @@
 #include <asm/sgidefs.h>
 #endif
 
+#if defined(__x86_64__) && defined(__ILP32__)
+#define elogind_SC_arch_bias(x) ((x) | /* __X32_SYSCALL_BIT */ 0x40000000)
+#else
+#define elogind_SC_arch_bias(x) (x)
+#endif
+
 #include "missing_keyctl.h"
 #include "missing_stat.h"
 
@@ -36,7 +42,7 @@ static inline int missing_pivot_root(const char *new_root, const char *put_old) 
 /* ======================================================================= */
 
 #if defined __x86_64__
-#  define elogind_NR_memfd_create 319
+#  define elogind_NR_memfd_create elogind_SC_arch_bias(319)
 #elif defined __arm__
 #  define elogind_NR_memfd_create 385
 #elif defined __aarch64__
@@ -93,7 +99,7 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 /* ======================================================================= */
 
 #if defined __x86_64__
-#  define elogind_NR_getrandom 318
+#  define elogind_NR_getrandom elogind_SC_arch_bias(318)
 #elif defined(__i386__)
 #  define elogind_NR_getrandom 355
 #elif defined(__arm__)
@@ -169,7 +175,7 @@ static inline pid_t missing_gettid(void) {
 /* ======================================================================= */
 
 #if defined(__x86_64__)
-#  define elogind_NR_name_to_handle_at 303
+#  define elogind_NR_name_to_handle_at elogind_SC_arch_bias(303)
 #elif defined(__i386__)
 #  define elogind_NR_name_to_handle_at 341
 #elif defined(__arm__)
@@ -226,7 +232,7 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 #elif defined __arm__
 #  define elogind_NR_setns 375
 #elif defined(__x86_64__)
-#  define elogind_NR_setns 308
+#  define elogind_NR_setns elogind_SC_arch_bias(308)
 #elif defined(__i386__)
 #  define elogind_NR_setns 346
 #elif defined(__powerpc__)
@@ -279,7 +285,7 @@ static inline pid_t raw_getpid(void) {
 /* ======================================================================= */
 
 #if defined __x86_64__
-#  define elogind_NR_renameat2 316
+#  define elogind_NR_renameat2 elogind_SC_arch_bias(316)
 #elif defined __arm__
 #  define elogind_NR_renameat2 382
 #elif defined __aarch64__
@@ -388,7 +394,7 @@ static inline key_serial_t missing_request_key(const char *type, const char *des
 /* ======================================================================= */
 
 #if defined(__x86_64__)
-#  define elogind_NR_copy_file_range 326
+#  define elogind_NR_copy_file_range elogind_SC_arch_bias(326)
 #elif defined(__i386__)
 #  define elogind_NR_copy_file_range 377
 #elif defined __s390__
@@ -441,7 +447,7 @@ static inline ssize_t missing_copy_file_range(int fd_in, loff_t *off_in,
 #if defined __i386__
 #  define systemd_NR_bpf 357
 #elif defined __x86_64__
-#  define systemd_NR_bpf 321
+#  define systemd_NR_bpf systemd_SC_arch_bias(321)
 #elif defined __aarch64__
 #  define systemd_NR_bpf 280
 #elif defined __arm__
@@ -494,7 +500,7 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 #  if defined __i386__
 #    define elogind_NR_pkey_mprotect 380
 #  elif defined __x86_64__
-#    define elogind_NR_pkey_mprotect 329
+#    define elogind_NR_pkey_mprotect elogind_SC_arch_bias(329)
 #  elif defined __aarch64__
 #    define elogind_NR_pkey_mprotect 288
 #  elif defined __arm__
@@ -547,7 +553,7 @@ assert_cc(__NR_pkey_mprotect == elogind_NR_pkey_mprotect);
 #elif defined __sparc__
 #  define elogind_NR_statx 360
 #elif defined __x86_64__
-#  define elogind_NR_statx 332
+#  define elogind_NR_statx elogind_SC_arch_bias(332)
 #else
 #  warning "statx() syscall number unknown for your architecture"
 #endif
@@ -647,7 +653,7 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 #elif defined __ia64__
 #  define elogind_NR_pidfd_send_signal (424 + 1024)
 #else
-#  define elogind_NR_pidfd_send_signal 424
+#  define elogind_NR_pidfd_send_signal elogind_SC_arch_bias(424)
 #endif
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
@@ -691,7 +697,7 @@ static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, un
 #elif defined __ia64__
 #  define elogind_NR_pidfd_open (434 + 1024)
 #else
-#  define elogind_NR_pidfd_open 434
+#  define elogind_NR_pidfd_open elogind_SC_arch_bias(434)
 #endif
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
