@@ -274,13 +274,11 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
                         r = sd_bus_default_user(&bus);
                 else {
 #if 0 /// elogind is never used with systemd. Avoid useless check.
-                        if (sd_booted() <= 0) {
+                        if (sd_booted() <= 0)
                                 /* Print a friendly message when the local system is actually not running systemd as PID 1. */
-                                log_error("System has not been booted with systemd as init system (PID 1). Can't operate.");
-
-                                return -EHOSTDOWN;
-                        }
 #endif // 0
+                                return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
+                                                       "System has not been booted with elogind as init system (PID 1). Can't operate.");
                         r = sd_bus_default_system(&bus);
                 }
                 break;

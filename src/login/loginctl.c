@@ -572,8 +572,7 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
 #if 0 /// UNNEEDED by elogind
                 show_unit_cgroup(bus, "org.freedesktop.systemd1.Scope", i.scope, i.leader);
 
-                if (arg_transport == BUS_TRANSPORT_LOCAL) {
-
+                if (arg_transport == BUS_TRANSPORT_LOCAL)
                         show_journal_by_unit(
                                         stdout,
                                         i.scope,
@@ -587,7 +586,6 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
                                         SD_JOURNAL_LOCAL_ONLY,
                                         true,
                                         NULL);
-                }
 #endif // 0
         }
 
