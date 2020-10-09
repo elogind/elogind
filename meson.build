@@ -625,6 +625,7 @@ foreach ident : [
                                  #include <unistd.h>
                                  #include <signal.h>
                                  #include <sys/wait.h>'''],
+        ['mallinfo',          '''#include <malloc.h>'''],
 ]
 
         have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE')
@@ -3454,7 +3455,6 @@ public_programs += executable(
 #                         'systemd-sysusers.standalone',
 #                         'src/sysusers/sysusers.c',
 #                         include_directories : includes,
-#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -3497,7 +3497,6 @@ public_programs += executable(
 #                         'systemd-tmpfiles.standalone',
 #                         systemd_tmpfiles_sources,
 #                         include_directories : includes,
-#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
