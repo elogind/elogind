@@ -1685,7 +1685,6 @@ conf.set10('ENABLE_REMOTE', have)
 #                 'networkd',
 #                 'nss-myhostname',
 #                 'nss-systemd',
-#                 'oomd',
 #                 'portabled',
 #                 'pstore',
 #                 'quotacheck',
@@ -1986,7 +1985,6 @@ subdir('src/shared')
 # subdir('src/journal-remote')
 # subdir('src/coredump')
 # subdir('src/pstore')
-# subdir('src/oom')
 # subdir('src/hostname')
 # subdir('src/import')
 # subdir('src/partition')
@@ -2491,9 +2489,77 @@ endif
 #
 # public_programs += executable(
 #         'systemctl',
+#         'src/systemctl/systemctl-add-dependency.c',
+#         'src/systemctl/systemctl-add-dependency.h',
+#         'src/systemctl/systemctl-cancel-job.c',
+#         'src/systemctl/systemctl-cancel-job.h',
+#         'src/systemctl/systemctl-clean-or-freeze.c',
+#         'src/systemctl/systemctl-clean-or-freeze.h',
+#         'src/systemctl/systemctl-compat-halt.c',
+#         'src/systemctl/systemctl-compat-halt.h',
+#         'src/systemctl/systemctl-compat-runlevel.c',
+#         'src/systemctl/systemctl-compat-runlevel.h',
+#         'src/systemctl/systemctl-compat-shutdown.c',
+#         'src/systemctl/systemctl-compat-shutdown.h',
+#         'src/systemctl/systemctl-compat-telinit.c',
+#         'src/systemctl/systemctl-compat-telinit.h',
+#         'src/systemctl/systemctl-daemon-reload.c',
+#         'src/systemctl/systemctl-daemon-reload.h',
+#         'src/systemctl/systemctl-edit.c',
+#         'src/systemctl/systemctl-edit.h',
+#         'src/systemctl/systemctl-enable.c',
+#         'src/systemctl/systemctl-enable.h',
+#         'src/systemctl/systemctl-is-active.c',
+#         'src/systemctl/systemctl-is-active.h',
+#         'src/systemctl/systemctl-is-enabled.c',
+#         'src/systemctl/systemctl-is-enabled.h',
+#         'src/systemctl/systemctl-is-system-running.c',
+#         'src/systemctl/systemctl-is-system-running.h',
+#         'src/systemctl/systemctl-kill.c',
+#         'src/systemctl/systemctl-kill.h',
+#         'src/systemctl/systemctl-list-dependencies.c',
+#         'src/systemctl/systemctl-list-dependencies.h',
+#         'src/systemctl/systemctl-list-jobs.c',
+#         'src/systemctl/systemctl-list-jobs.h',
+#         'src/systemctl/systemctl-list-machines.c',
+#         'src/systemctl/systemctl-list-machines.h',
+#         'src/systemctl/systemctl-list-unit-files.c',
+#         'src/systemctl/systemctl-list-unit-files.h',
+#         'src/systemctl/systemctl-list-units.c',
+#         'src/systemctl/systemctl-list-units.h',
+#         'src/systemctl/systemctl-log-setting.c',
+#         'src/systemctl/systemctl-log-setting.h',
+#         'src/systemctl/systemctl-logind.c',
+#         'src/systemctl/systemctl-logind.h',
+#         'src/systemctl/systemctl-preset-all.c',
+#         'src/systemctl/systemctl-preset-all.h',
+#         'src/systemctl/systemctl-reset-failed.c',
+#         'src/systemctl/systemctl-reset-failed.h',
+#         'src/systemctl/systemctl-service-watchdogs.c',
+#         'src/systemctl/systemctl-service-watchdogs.h',
+#         'src/systemctl/systemctl-set-default.c',
+#         'src/systemctl/systemctl-set-default.h',
+#         'src/systemctl/systemctl-set-environment.c',
+#         'src/systemctl/systemctl-set-environment.h',
+#         'src/systemctl/systemctl-set-property.c',
+#         'src/systemctl/systemctl-set-property.h',
+#         'src/systemctl/systemctl-show.c',
+#         'src/systemctl/systemctl-show.h',
+#         'src/systemctl/systemctl-start-special.c',
+#         'src/systemctl/systemctl-start-special.h',
+#         'src/systemctl/systemctl-start-unit.c',
+#         'src/systemctl/systemctl-start-unit.h',
+#         'src/systemctl/systemctl-switch-root.c',
+#         'src/systemctl/systemctl-switch-root.h',
+#         'src/systemctl/systemctl-sysv-compat.c',
+#         'src/systemctl/systemctl-sysv-compat.h',
+#         'src/systemctl/systemctl-trivial-method.c',
+#         'src/systemctl/systemctl-trivial-method.h',
+#         'src/systemctl/systemctl-util.c',
+#         'src/systemctl/systemctl-util.c',
+#         'src/systemctl/systemctl-util.h',
 #         'src/systemctl/systemctl.c',
-#         'src/systemctl/sysv-compat.h',
-#         'src/systemctl/sysv-compat.c',
+#         'src/systemctl/systemctl.h',
 #         include_directories : includes,
 #         link_with : systemctl_link_with,
 #         dependencies : [threads,
@@ -3046,27 +3112,6 @@ endif
 #                 install_dir : rootlibexecdir)
 # endif
 #
-# if conf.get('ENABLE_OOMD') == 1
-#         executable('systemd-oomd',
-#                    systemd_oomd_sources,
-#                    include_directories : includes,
-#                    link_with : [libshared],
-#                    dependencies : [],
-#                    install_rpath : rootlibexecdir,
-#                    install : true,
-#                    install_dir : rootlibexecdir)
-#
-#         public_programs += executable(
-#                    'oomctl',
-#                    oomctl_sources,
-#                    include_directories : includes,
-#                    link_with : [libshared],
-#                    dependencies : [],
-#                    install_rpath : rootlibexecdir,
-#                    install : true,
-#                    install_dir : rootbindir)
-# endif
-#
 # if conf.get('ENABLE_BINFMT') == 1
 #         public_programs += executable(
 #                 'systemd-binfmt',
@@ -3409,6 +3454,7 @@ public_programs += executable(
 #                         'systemd-sysusers.standalone',
 #                         'src/sysusers/sysusers.c',
 #                         include_directories : includes,
+#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -3451,6 +3497,7 @@ public_programs += executable(
 #                         'systemd-tmpfiles.standalone',
 #                         systemd_tmpfiles_sources,
 #                         include_directories : includes,
+#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -4197,7 +4244,6 @@ foreach tuple : [
 #         ['coredump'],
 #         ['pstore'],
 #endif // 0
-        ['oomd'],
         ['polkit'],
         ['legacy pkla',      install_polkit_pkla],
         ['efi'],
