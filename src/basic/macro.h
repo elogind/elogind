@@ -93,10 +93,6 @@
 #endif
 
 /* Temporarily disable some warnings */
-#define DISABLE_WARNING_DEPRECATED_DECLARATIONS                         \
-        _Pragma("GCC diagnostic push");                                 \
-        _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-
 #define DISABLE_WARNING_FORMAT_NONLITERAL                               \
         _Pragma("GCC diagnostic push");                                 \
         _Pragma("GCC diagnostic ignored \"-Wformat-nonliteral\"")
@@ -444,9 +440,6 @@ static inline int __coverity_check_and_return__(int condition) {
 #define PTR_TO_ULONG(p) ((unsigned long) ((uintptr_t) (p)))
 #define ULONG_TO_PTR(u) ((void *) ((uintptr_t) (u)))
 
-#define PTR_TO_UINT8(p) ((uint8_t) ((uintptr_t) (p)))
-#define UINT8_TO_PTR(u) ((void *) ((uintptr_t) (u)))
-
 #define PTR_TO_INT32(p) ((int32_t) ((intptr_t) (p)))
 #define INT32_TO_PTR(u) ((void *) ((intptr_t) (u)))
 #define PTR_TO_UINT32(p) ((uint32_t) ((uintptr_t) (p)))
@@ -640,5 +633,7 @@ static inline int __coverity_check_and_return__(int condition) {
                 asm volatile ("" : : : "memory");                       \
                 _copy;                                                  \
         })
+
+#define SIZE_ADD(x, y) ((x) >= SIZE_MAX - (y) ? SIZE_MAX : (x) + (y))
 
 #include "log.h"
