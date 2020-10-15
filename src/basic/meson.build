@@ -534,6 +534,7 @@ libbasic = static_library(
         dependencies : [versiondep,
                         threads,
                         libcap,
+                        libseccomp,
                         libselinux,
                         libm,
                         libdl],
