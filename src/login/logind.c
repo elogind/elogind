@@ -14,6 +14,7 @@
 #include "bus-log-control-api.h"
 #include "bus-polkit.h"
 #include "cgroup-util.h"
+#include "daemon-util.h"
 #include "def.h"
 #include "device-util.h"
 #include "dirent-util.h"
@@ -1214,6 +1215,7 @@ static int manager_run(Manager *m) {
 
 static int run(int argc, char *argv[]) {
         _cleanup_(manager_unrefp) Manager *m = NULL;
+        _cleanup_(notify_on_cleanup) const char *notify_message = NULL;
         int r;
 
         elogind_set_program_name(argv[0]);
@@ -1301,27 +1303,18 @@ static int run(int argc, char *argv[]) {
         if (r < 0)
                 return log_error_errno(r, "Failed to fully start up daemon: %m");
 
-        log_debug("elogind running as pid "PID_FMT, getpid_cached());
-        (void) sd_notify(false,
-                         "READY=1\n"
-                         "STATUS=Processing requests...");
-
-        r = manager_run(m);
 
 #if 1 /// Do not tell anybody if elogind is restarted through an INTerrupt
         if (m->do_interrupt) {
                 log_debug_elogind("elogind interrupted (PID "PID_FMT"), going down silently...", getpid_cached());
         } else {
 #endif /// 1
-        log_debug("elogind stopped as pid "PID_FMT, getpid_cached());
-        (void) sd_notify(false,
-                         "STOPPING=1\n"
-                         "STATUS=Shutting down...");
 #if 1 /// extra bracket for elogind here
         }
 #endif // 1
 
-        return r;
+        notify_message = notify_start(NOTIFY_READY, NOTIFY_STOPPING);
+        return manager_run(m);
 }
 
 DEFINE_MAIN_FUNCTION(run);
