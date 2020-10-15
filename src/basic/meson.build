@@ -93,9 +93,11 @@
 #         limits-util.h
 #         linux/btrfs.h
 #         linux/btrfs_tree.h
+#         linux/can/netlink.h
 #         linux/can/vxcan.h
 #         linux/fib_rules.h
 #         linux/fou.h
+#         linux/hdlc/ioctl.h
 #         linux/if.h
 #         linux/if_addr.h
 #         linux/if_arp.h
@@ -108,6 +110,7 @@
 #         linux/if_tunnel.h
 #         linux/in.h
 #         linux/in6.h
+#         linux/ipv6_route.h
 #         linux/l2tp.h
 #         linux/libc-compat.h
 #         linux/loadavg.h
@@ -542,6 +545,7 @@ libbasic = static_library(
         dependencies : [versiondep,
                         threads,
                         libcap,
+                        libseccomp,
                         libselinux,
                         libm,
                         libdl],

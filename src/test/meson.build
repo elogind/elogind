@@ -359,7 +359,7 @@ tests += [
 
         [['src/test/test-parse-util.c'],
          [],
-         []],
+         [libseccomp]],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-sysctl-util.c'],
