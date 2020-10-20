@@ -825,6 +825,10 @@ tests += [
 #          '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
 #endif // 0
 
+        [['src/test/test-udev-util.c'],
+         [],
+         []],
+
         [['src/test/test-id128.c'],
          [],
          []],
@@ -875,10 +879,6 @@ tests += [
         [['src/test/test-psi-util.c'],
          [],
          []],
-
-        [['src/test/test-qrcode-util.c'],
-         [libshared],
-         [libdl]],
 ]
 
 ############################################################
