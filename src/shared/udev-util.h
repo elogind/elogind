@@ -29,8 +29,10 @@ static inline int udev_parse_config(void) {
         return udev_parse_config_full(NULL, NULL, NULL, NULL, NULL);
 }
 
-int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t deadline, sd_device **ret);
-int device_wait_for_devlink(const char *path, const char *subsystem, usec_t deadline, sd_device **ret);
+int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t timeout, sd_device **ret);
+int device_wait_for_devlink(const char *path, const char *subsystem, usec_t timeout, sd_device **ret);
 int device_is_renaming(sd_device *dev);
 #endif // 0
 bool device_for_action(sd_device *dev, DeviceAction action);
+
+int udev_rule_parse_value(char *str, char **ret_value, char **ret_endpos);
