@@ -36,7 +36,6 @@ int strv_extend_strv(char ***a, char * const *b, bool filter_duplicates);
 #if 0 /// UNNEEDED by elogind
 int strv_extend_strv_concat(char ***a, char * const *b, const char *suffix);
 #endif // 0
-int strv_prepend(char ***l, const char *value);
 int strv_extend(char ***l, const char *value);
 #if 0 /// UNNEEDED by elogind
 int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
@@ -71,7 +70,7 @@ char **strv_new_internal(const char *x, ...) _sentinel_;
 char **strv_new_ap(const char *x, va_list ap);
 #define strv_new(...) strv_new_internal(__VA_ARGS__, NULL)
 
-#define STRV_IGNORE ((const char *) -1)
+#define STRV_IGNORE ((const char *) POINTER_MAX)
 
 static inline const char* STRV_IFNOTNULL(const char *x) {
         return x ? x : STRV_IGNORE;
