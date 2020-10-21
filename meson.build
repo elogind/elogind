@@ -44,8 +44,8 @@ relative_source_path = run_command('realpath',
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 #if 0 /// fuzz regression tests are not supported by elogind
-# conf.set10('DEVELOPER_MODE', get_option('mode') == 'developer',
-#            description : 'enable additional checks only suitable in development')
+# conf.set('BUILD_MODE', 'BUILD_MODE_' + get_option('mode').to_upper(),
+#          description : 'tailor build to development or release builds')
 #
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
@@ -3490,6 +3490,7 @@ public_programs += executable(
 #                         'systemd-sysusers.standalone',
 #                         'src/sysusers/sysusers.c',
 #                         include_directories : includes,
+#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -3532,6 +3533,7 @@ public_programs += executable(
 #                         'systemd-tmpfiles.standalone',
 #                         systemd_tmpfiles_sources,
 #                         include_directories : includes,
+#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
