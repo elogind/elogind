@@ -20,9 +20,9 @@ Janitorial Clean-ups:
 
 Features:
 
-* elogind-analyze netif that explains predictable interface (or networkctl)
-
 * port selinux code from mallinfo() to mallinfo2() once added to glibc
+
+* in fd_get_path() if we see (deleted) then do stat and check for st_nlink
 
 * Add service setting to run a service within the specified VRF. i.e. do the
   equivalent of "ip vrf exec".
@@ -812,9 +812,6 @@ Features:
 * what to do about udev db binary stability for apps? (raw access is not an option)
 
 * systemctl: if some operation fails, show log output?
-
-* systemctl edit: use equivalent of cat() to insert existing config as a comment, prepended with #.
-  Upon editor exit, lines with one # are removed, lines with two # are left with one #, etc.
 
 * exponential backoff in timesyncd when we cannot reach a server
 
