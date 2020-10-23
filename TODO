@@ -20,9 +20,12 @@ Janitorial Clean-ups:
 
 Features:
 
-* port selinux code from mallinfo() to mallinfo2() once added to glibc
+* teach LoadCredential= the ability to load all files from a specfied dir as
+  individual creds
 
-* in fd_get_path() if we see (deleted) then do stat and check for st_nlink
+* elogind-analyze netif that explains predictable interface (or networkctl)
+
+* port selinux code from mallinfo() to mallinfo2() once added to glibc
 
 * Add service setting to run a service within the specified VRF. i.e. do the
   equivalent of "ip vrf exec".
