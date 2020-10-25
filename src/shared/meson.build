@@ -190,10 +190,14 @@
 #         pkcs11-util.h
 #         pretty-print.c
 #         pretty-print.h
+#         psi-util.c
+#         psi-util.h
 #         ptyfwd.c
 #         ptyfwd.h
 #         pwquality-util.c
 #         pwquality-util.h
+#         qrcode-util.c
+#         qrcode-util.h
 #         reboot-util.c
 #         reboot-util.h
 #         resize-fs.c
@@ -402,13 +406,6 @@ if conf.get('HAVE_PAM') == 1
 endif
 
 #if 0 /// elogind does not need all this networking stuff
-# if conf.get('HAVE_QRENCODE') == 1
-#         shared_sources += files('''
-#         qrcode-util.c
-#         qrcode-util.h
-# '''.split())
-# endif
-#
 # generate_ip_protocol_list = find_program('generate-ip-protocol-list.sh')
 # ip_protocol_list_txt = custom_target(
 #         'ip-protocol-list.txt',
