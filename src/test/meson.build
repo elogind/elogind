@@ -470,17 +470,6 @@ tests += [
          [],
          []],
 
-        [['src/test/test-loop-block.c'],
-         [libcore,
-          libshared],
-         [threads,
-          libblkid],
-         '',
-         '',
-         [],
-         includes,
-         false],
-
         [['src/test/test-selinux.c'],
          [],
          []],
@@ -886,6 +875,10 @@ tests += [
         [['src/test/test-psi-util.c'],
          [],
          []],
+
+        [['src/test/test-qrcode-util.c'],
+         [libshared],
+         [libdl]],
 ]
 
 ############################################################
