@@ -15,3 +15,5 @@
 <!ENTITY DEBUGTTY @DEBUGTTY@>
 <!ENTITY RC_LOCAL_PATH @RC_LOCAL_PATH@>
 // 0 -->
+<!ENTITY fedora_latest_version "32">
+<!ENTITY fedora_cloud_release "1.6">
