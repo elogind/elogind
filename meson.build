@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
-        version : '246',
+        version : '247',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -14,7 +14,7 @@ project('elogind', 'c',
        )
 
 /// elogind empty mask removed (UNNEEDED by elogind - libudev is external)
-libelogind_version = '0.29.0'
+libelogind_version = '0.30.0'
 libudev_version = '1.7.0'
 
 # We need the same data in two different formats, ugh!
@@ -44,8 +44,8 @@ relative_source_path = run_command('realpath',
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 #if 0 /// fuzz regression tests are not supported by elogind
-# conf.set10('DEVELOPER_MODE', get_option('mode') == 'developer',
-#            description : 'enable additional checks only suitable in development')
+# conf.set('BUILD_MODE', 'BUILD_MODE_' + get_option('mode').to_upper(),
+#          description : 'tailor build to development or release builds')
 #
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
@@ -1656,6 +1656,7 @@ conf.set10('HAVE_DBUS', have)
 #         endif
 # endif
 # conf.set10('ENABLE_OOMD', have)
+# substs.set10('ENABLE_OOMD', have)
 #
 # want_remote = get_option('remote')
 # if want_remote != 'false'
@@ -1698,7 +1699,6 @@ conf.set10('ENABLE_REMOTE', have)
 #                 'networkd',
 #                 'nss-myhostname',
 #                 'nss-systemd',
-#                 'oomd',
 #                 'portabled',
 #                 'pstore',
 #                 'quotacheck',
@@ -1818,17 +1818,26 @@ meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 includes = include_directories('src/basic',
                                'src/boot',
 #if 0 /// UNNEEDED by elogind
-#                                'src/core',
 #                                'src/home',
 #endif // 0
+                               'src/shared',
+                               'src/elogind',
                                'src/journal',
 #if 0 /// UNNEEDED by elogind
 #                                'src/journal-remote',
 #endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 #if 0 /// elogind has a different list
-#                                'src/libsystemd-network',
+#                                'src/nspawn',
+#                                'src/resolve',
+#                                'src/timesync',
+#                                'src/time-wait-sync',
+#                                'src/login',
+#                                'src/udev',
+#                                'src/libudev',
+#                                'src/core',
+#                                'src/shutdown',
+#                                'src/xdg-autostart-generator',
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
 #                                'src/libsystemd/sd-event',
@@ -1837,17 +1846,7 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-netlink',
 #                                'src/libsystemd/sd-network',
 #                                'src/libsystemd/sd-resolve',
-#                                'src/libudev',
-#                                'src/login',
-#                                'src/nspawn',
-#                                'src/resolve',
-#                                'src/shared',
-#                                'src/shutdown',
-#                                'src/systemd',
-#                                'src/time-wait-sync',
-#                                'src/timesync',
-#                                'src/udev',
-#                                'src/xdg-autostart-generator',
+#                                'src/libsystemd-network',
 #else // 0
                                'src/libelogind/sd-bus',
                                'src/libelogind/sd-device',
@@ -3746,6 +3745,7 @@ foreach tuple : tests
         type = tuple.length() >= 5 ? tuple[4] : ''
         defs = tuple.length() >= 6 ? tuple[5] : []
         incs = tuple.length() >= 7 ? tuple[6] : includes
+        parallel = tuple.length() >= 8 ? tuple[7] : true
         timeout = 30
 
         name = sources[0].split('/')[-1].split('.')[0]
