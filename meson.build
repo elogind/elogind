@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+# SPDX-License-Identifier: LGPL-2.1+
 
 project('elogind', 'c',
         version : '247',
@@ -17,7 +17,6 @@ libsystemd_version = '0.30.0'
 #if 0 /// elogind does not ship libudev
 # libudev_version = '1.7.0'
 #endif // 0
-
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -152,7 +151,6 @@ if rootlibdir == ''
         rootlibdir = join_paths(rootprefixdir, libdir.split('/')[-1])
 endif
 
-install_sysconfdir = get_option('install-sysconfdir')
 # Dirs of external packages
 pkgconfigdatadir = get_option('pkgconfigdatadir') == '' ? join_paths(datadir, 'pkgconfig') : get_option('pkgconfigdatadir')
 pkgconfiglibdir = get_option('pkgconfiglibdir') == '' ? join_paths(libdir, 'pkgconfig') : get_option('pkgconfiglibdir')
@@ -1275,7 +1273,6 @@ conf.set10('HAVE_PAM', have)
 #         libcurl = []
 # endif
 # conf.set10('HAVE_LIBCURL', have)
-# conf.set10('CURL_NO_OLDIES', get_option('mode') == 'developer')
 #
 # want_libidn = get_option('libidn')
 # want_libidn2 = get_option('libidn2')
@@ -1654,7 +1651,7 @@ conf.set10('HAVE_DBUS', have)
 # else
 #         have = have == 'true'
 #         if have and get_option('mode') != 'developer'
-#                 warning('oomd is not ready for release mode (yet)')
+#                 error('oomd is not available in release mode (yet)')
 #         endif
 # endif
 # conf.set10('ENABLE_OOMD', have)
@@ -1873,7 +1870,6 @@ generate_gperfs = find_program('tools/generate-gperfs.py')
 subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
-# subdir('src/libudev')
 #endif // 0
 subdir('src/systemd')
 subdir('src/basic')
@@ -1971,9 +1967,9 @@ install_libelogind_static = static_library(
                         libmount,
                         libselinux],
 #endif // 0
-        c_args : libsystemd_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
+        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 
-# ############################################################
+############################################################
 
 #if 0 /// UNNEEDED by elogind
 # autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
@@ -1997,6 +1993,7 @@ public_programs = []
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
+subdir('src/libudev')
 subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/core')
@@ -3169,10 +3166,8 @@ endif
 #
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(binfmtdir))
-#         if install_sysconfdir
-#                 meson.add_install_script('sh', '-c',
-#                                          mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
-#         endif
+#         meson.add_install_script('sh', '-c',
+#                                  mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
 # endif
 #
 # if conf.get('ENABLE_REPART') == 1
@@ -3286,10 +3281,8 @@ endif
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# if install_sysconfdir
-#         install_data('src/sleep/sleep.conf',
-#                      install_dir : pkgsysconfdir)
-# endif
+# install_data('src/sleep/sleep.conf',
+#              install_dir : pkgsysconfdir)
 #
 # public_programs += executable(
 #         'systemd-sysctl',
@@ -3597,7 +3590,6 @@ public_programs += executable(
 #         c_args : '-DLOG_REALM=LOG_REALM_UDEV',
 #         include_directories : includes,
 #         link_with : [libudev_core,
-#                      libsystemd_network,
 #                      libudev_static],
 #         dependencies : [versiondep,
 #                         threads,
@@ -3652,10 +3644,8 @@ public_programs += executable(
 #
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(modulesloaddir))
-#         if install_sysconfdir
-#                 meson.add_install_script('sh', '-c',
-#                                          mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
-#         endif
+#         meson.add_install_script('sh', '-c',
+#                                  mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
 # endif
 #
 # public_programs += executable(
@@ -3855,7 +3845,7 @@ endforeach
 #
 # fuzzer_exes = []
 #
-# if fuzz_tests or fuzzer_build
+# if get_option('tests') != 'false'
 #         foreach tuple : fuzzers
 #                 sources = tuple[0]
 #                 link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
@@ -3945,10 +3935,8 @@ install_subdir('factory/etc',
 
 
 #if 0 /// UNNEEDED by elogind
-# if install_sysconfdir
-#         install_data('xorg/50-systemd-user.sh',
-#                      install_dir : xinitrcdir)
-# endif
+# install_data('xorg/50-systemd-user.sh',
+#              install_dir : xinitrcdir)
 # install_data('modprobe.d/systemd.conf',
 #              install_dir : modprobedir)
 #endif // 0
@@ -4019,7 +4007,7 @@ endforeach
 #                         if name != prev
 #                                 if want_tests == 'false'
 #                                         message('Not compiling @0@ because tests is set to false'.format(name))
-#                                 elif fuzz_tests
+#                                 elif slow_tests or fuzz_tests
 #                                         exe = custom_target(
 #                                                 name,
 #                                                 output : name,
@@ -4029,12 +4017,12 @@ endforeach
 #                                                            '@OUTPUT@'],
 #                                                 build_by_default : true)
 #                                 else
-#                                         message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
+#                                         message('Not compiling @0@ because slow-tests/fuzz-tests is set to false'.format(name))
 #                                 endif
 #                         endif
 #                         prev = name
 #
-#                         if fuzz_tests
+#                         if want_tests != 'false' and (slow_tests or fuzz_tests)
 #                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],

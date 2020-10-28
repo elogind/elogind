@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+# SPDX-License-Identifier: LGPL-2.1+
 
 awkscript = 'test-hashmap-ordered.awk'
 test_hashmap_ordered_c = custom_target(
@@ -133,8 +133,7 @@ tests += [
 #
 #         [['src/test/test-dns-domain.c'],
 #          [libcore,
-#           libshared,
-#           libsystemd_network],
+#           libshared],
 #          []],
 #
 #         [['src/test/test-boot-timestamps.c'],
@@ -326,8 +325,7 @@ tests += [
 #
 #         [['src/test/test-libcrypt-util.c'],
 #          [],
-#          [],
-#          '', 'timeout=120'],
+#          []],
 #
 #         [['src/test/test-offline-passwd.c',
 #           'src/shared/offline-passwd.c',
@@ -582,7 +580,6 @@ tests += [
 #           libjournal_core,
 #           libudev_core,
 #           libudev_static,
-#           libsystemd_network,
 #           libshared],
 #          [threads,
 #           libseccomp,
@@ -834,7 +831,6 @@ tests += [
 #         [['src/test/test-udev.c'],
 #          [libudev_core,
 #           libudev_static,
-#           libsystemd_network,
 #           libshared],
 #          [threads,
 #           librt,
@@ -845,9 +841,6 @@ tests += [
 #          '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
 #endif // 0
 
-        [['src/test/test-udev-util.c'],
-         [],
-         []],
 
         [['src/test/test-id128.c'],
          [],
