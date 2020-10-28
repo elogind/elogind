@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+# SPDX-License-Identifier: LGPL-2.1+
 
 #if 0 /// elogind has a much shorter list
 # shared_sources = files('''
@@ -170,6 +170,8 @@
 #         module-util.h
 #         mount-util.c
 #         mount-util.h
+#         net-condition.c
+#         net-condition.h
 #         netif-naming-scheme.c
 #         netif-naming-scheme.h
 #         nscd-flush.c
