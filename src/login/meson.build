@@ -34,6 +34,8 @@ liblogind_core_sources = files('''
         logind-device.h
         logind-inhibit.c
         logind-inhibit.h
+        logind-polkit.c
+        logind-polkit.h
         logind-seat-dbus.c
         logind-seat-dbus.h
         logind-seat.c
