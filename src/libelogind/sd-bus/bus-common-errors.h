@@ -3,8 +3,8 @@
 
 #include "bus-error.h"
 
-#if 0 /// only system command elogind knows are needed
 #define BUS_ERROR_NO_SUCH_UNIT "org.freedesktop.systemd1.NoSuchUnit"
+#if 0 /// only system command elogind knows are needed
 #define BUS_ERROR_NO_UNIT_FOR_PID "org.freedesktop.systemd1.NoUnitForPID"
 #define BUS_ERROR_NO_UNIT_FOR_INVOCATION_ID "org.freedesktop.systemd1.NoUnitForInvocationID"
 #define BUS_ERROR_UNIT_EXISTS "org.freedesktop.systemd1.UnitExists"

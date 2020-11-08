@@ -199,9 +199,7 @@ static void test_errno_mapping_custom(void) {
         assert_se(sd_bus_error_set(NULL, "org.freedesktop.custom-dbus-error-2", NULL) == -52);
         assert_se(sd_bus_error_set(NULL, "org.freedesktop.custom-dbus-error-y", NULL) == -EIO);
 
-#if 0 /// UNNEEDED by elogind
         assert_se(sd_bus_error_set(NULL, BUS_ERROR_NO_SUCH_UNIT, NULL) == -ENOENT);
-#endif // 0
 
         assert_se(sd_bus_error_add_map(test_errors_bad1) == -EINVAL);
         assert_se(sd_bus_error_add_map(test_errors_bad2) == -EINVAL);
