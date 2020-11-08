@@ -208,7 +208,6 @@ int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags
         return 0;
 }
 
-
 static int update_argv(const char name[], size_t l) {
         static int can_do = -1;
 

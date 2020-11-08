@@ -203,6 +203,7 @@ int lock_whole_block_device(dev_t devt, int operation) {
         int r;
 
         /* Let's get a BSD file lock on the whole block device, as per: https://elogind.io/BLOCK_DEVICE_LOCKING */
+        /* Let's get a BSD file lock on the whole block device, as per: https://systemd.io/BLOCK_DEVICE_LOCKING */
 
         r = block_get_whole_disk(devt, &whole_devt);
         if (r < 0)
