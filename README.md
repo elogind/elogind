@@ -24,7 +24,7 @@ Build Status
 ------------
 Listed are the master branch and the last stable branch
  * master     : [![Build Status](https://travis-ci.org/elogind/elogind.svg?branch=master)](https://travis-ci.org/elogind/elogind)
- * v243-stable: [![Build Status](https://travis-ci.org/elogind/elogind.svg?branch=v243-stable)](https://travis-ci.org/elogind/elogind)
+ * v246-stable: [![Build Status](https://travis-ci.org/elogind/elogind.svg?branch=v246-stable)](https://travis-ci.org/elogind/elogind)
 
 Contributing
 ============
