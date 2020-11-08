@@ -27,6 +27,7 @@ int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error
 
 int manager_send_changed(Manager *manager, const char *property, ...) _sentinel_;
 
+#if 0 /// elogind does not start/stop systemd units, scopes and jobs
 int manager_start_scope(Manager *manager, const char *scope, pid_t pid, const char *slice, const char *description, char **wants, char **after, const char *requires_mounts_for, sd_bus_message *more_properties, sd_bus_error *error, char **job);
 int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
 int manager_stop_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job);
@@ -34,5 +35,6 @@ int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *err
 int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error);
 int manager_unit_is_active(Manager *manager, const char *unit, sd_bus_error *error);
 int manager_job_is_active(Manager *manager, const char *path, sd_bus_error *error);
+#endif // 0
 
 extern const BusObjectImplementation manager_object;

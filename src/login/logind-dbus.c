@@ -4142,7 +4142,7 @@ int manager_send_changed(Manager *manager, const char *property, ...) {
                         l);
 }
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not start/stop systemd unuits
 static int strdup_job(sd_bus_message *reply, char **job) {
         const char *j;
         char *copy;
