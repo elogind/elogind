@@ -80,6 +80,8 @@ void elogind_manager_reset_config(Manager* m) {
 #endif // ENABLE_DEBUG_ELOGIND
 
         /* Set default Sleep config if not already set by logind.conf */
+        if (!m->suspend_mode)
+                m->suspend_mode = strv_new("s2idle", NULL);
         if (!m->suspend_state)
                 m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
         if (!m->hibernate_mode)
