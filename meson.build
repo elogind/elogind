@@ -287,8 +287,8 @@ conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               join_paths(rootlib
 conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'elogind'))
 #endif // 0
 conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
+conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
@@ -1675,7 +1675,8 @@ conf.set10('ENABLE_REMOTE', have)
 #                 'vconsole',
 #                 'xdg-autostart']
 #else // 0
-                'smack']
+foreach term : ['smack',
+                'utmp']
 #endif // 0
         have = get_option(term)
         name = 'ENABLE_' + term.underscorify().to_upper()
@@ -4181,7 +4182,9 @@ foreach tuple : [
         ['link-networkd-shared',  get_option('link-networkd-shared')],
         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
         ['kernel-install',        get_option('kernel-install')],
-        ['elogind-analyze',  conf.get('ENABLE_ANALYZE') == 1],
+#if 0 /// there is no elogind analyze
+#         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
+#endif // 0
 ]
 
         if tuple.length() >= 2
