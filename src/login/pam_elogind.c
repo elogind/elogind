@@ -115,10 +115,10 @@ static int acquire_user_record(
                 return PAM_SERVICE_ERR;
         }
 
-        /* If pam_elogind_homed (or some other module) already acquired the user record we can reuse it
+#if 0 /// There is no homed module, or any other module, in elogind, that sets up "elogind-user-record"
+        /* If pam_systemd_homed (or some other module) already acquired the user record we can reuse it
          * here. */
-        r = pam_get_data(handle, "elogind-user-record", (const void**) &json);
-        field = strjoin("elogind-user-record-", username);
+        field = strjoin("systemd-user-record-", username);
         if (!field)
                 return pam_log_oom(handle);
 
@@ -128,6 +128,9 @@ static int acquire_user_record(
                 return r;
         }
         if (r == PAM_SUCCESS && json) {
+#else
+        if ( 0 ) {
+#endif // 0
                 _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;
 
                 /* Parse cached record */
