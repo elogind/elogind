@@ -122,12 +122,16 @@ static int acquire_user_record(
         if (!field)
                 return pam_log_oom(handle);
 
+#if 0 /// There is no homed module, or any other module, in elogind, that sets up "elogind-user-record"
         r = pam_get_data(handle, field, (const void**) &json);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA)) {
                 pam_syslog(handle, LOG_ERR, "Failed to get PAM user record data: %s", pam_strerror(handle, r));
                 return r;
         }
         if (r == PAM_SUCCESS && json) {
+#else // 0
+        if ( 0 ) {
+#endif // 0
                 _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;
 
                 /* Parse cached record */
