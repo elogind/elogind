@@ -586,15 +586,15 @@ msgstr "Definir uma mensagem de parede"
 msgid "Authentication is required to set a wall message"
 msgstr "É necessária autenticação para definir uma mensagem de parede"
 
+#: src/login/org.freedesktop.login1.policy:395
+msgid "Change Session"
+msgstr "Alterar sessão"
+
+#: src/login/org.freedesktop.login1.policy:396
+msgid "Authentication is required to change the virtual terminal."
+msgstr "É necessária autenticação para alterar o terminal virtual."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:395
-# msgid "Change Session"
-# msgstr "Alterar sessão"
-#
-# #: src/login/org.freedesktop.login1.policy:396
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "É necessária autenticação para alterar o terminal virtual."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Conectar a um contêiner local"
@@ -945,10 +945,10 @@ msgstr "É necessária autenticação para definir uma mensagem de parede"
 # "É necessária autenticação para excluir arquivos e diretórios associados com "
 # "“$(unit)”."
 #
+# #: src/core/dbus-unit.c:756
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "É necessária autenticação para congelar ou descongelar os processos da "
+# "unidade “$(unit)”."
 #endif // 0
-#: src/core/dbus-unit.c:756
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"É necessária autenticação para congelar ou descongelar os processos da "
-"unidade “$(unit)”."

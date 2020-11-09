@@ -567,15 +567,15 @@ msgstr "Postavljanje zaslonske pruke"
 msgid "Authentication is required to set a wall message"
 msgstr "Potrebna je ovjera za postavljanje zaslonske pruke."
 
+#: src/login/org.freedesktop.login1.policy:395
+msgid "Change Session"
+msgstr "Promijeni sesiju"
+
+#: src/login/org.freedesktop.login1.policy:396
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Potrebna je ovjera za promjenu virtualnog terminala."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:395
-# msgid "Change Session"
-# msgstr "Promijeni sesiju"
-#
-# #: src/login/org.freedesktop.login1.policy:396
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Potrebna je ovjera za promjenu virtualnog terminala."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Prijavi se u lokalni spremnik"
@@ -905,12 +905,12 @@ msgstr "Potrebna je ovjera za postavljanje zaslonske pruke."
 # #: src/core/dbus-unit.c:596
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Potrebna je ovjera za postavljanje svojstava na '$(unit)'."
+#
+# #: src/core/dbus-unit.c:705
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Potrebna je ovjera za za brisanje datoteka i direktorija pridruženih sa "
+# "'$(unit)'."
 #endif // 0
-
-#: src/core/dbus-unit.c:705
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Potrebna je ovjera za za brisanje datoteka i direktorija pridruženih sa "
-"'$(unit)'."

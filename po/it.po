@@ -585,15 +585,15 @@ msgstr "Configura un messaggio per gli utenti"
 msgid "Authentication is required to set a wall message"
 msgstr "Autenticazione richiesta per configurare un messaggio per gli utenti"
 
+#: src/login/org.freedesktop.login1.policy:395
+msgid "Change Session"
+msgstr "Cambia sessione"
+
+#: src/login/org.freedesktop.login1.policy:396
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Autenticazione richiesta per cambiare il terminale virtuale."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:395
-# msgid "Change Session"
-# msgstr "Cambia sessione"
-#
-# #: src/login/org.freedesktop.login1.policy:396
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Autenticazione richiesta per cambiare il terminale virtuale."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Accedi ad un container locale"

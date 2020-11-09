@@ -601,15 +601,15 @@ msgstr "Définir un message wall"
 msgid "Authentication is required to set a wall message"
 msgstr "Authentification requise pour définir un message wall."
 
+#: src/login/org.freedesktop.login1.policy:395
+msgid "Change Session"
+msgstr "Changer de Session"
+
+#: src/login/org.freedesktop.login1.policy:396
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Authentification requise pour changer de terminal virtuel."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:395
-# msgid "Change Session"
-# msgstr "Changer de Session"
-#
-# #: src/login/org.freedesktop.login1.policy:396
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Authentification requise pour changer de terminal virtuel."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Connexion dans un conteneur local"
