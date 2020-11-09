@@ -202,8 +202,7 @@ static int lock_all_homes(void) {
 #if 0 /// elogind uses the values stored in its manager instance
 static int execute(char **modes, char **states) {
 #else // 0
-static int execute(Manager *m, const char *verb) {
-        assert(m);
+static int execute(Manager* m, char **modes, char **states) {
 #endif // 0
         char *arguments[] = {
                 NULL,
@@ -225,17 +224,7 @@ static int execute(Manager *m, const char *verb) {
                 [STDOUT_CONSUME] = m,
         };
 
-        if (verb)
-                arg_verb = (char*)verb;
-
-        log_debug_elogind("%s called for %s", __FUNCTION__, strnull(arg_verb));
-
-        char **modes  = streq(arg_verb, "suspend")   ? m->suspend_mode     :
-                        streq(arg_verb, "hibernate") ? m->hibernate_mode   :
-                                                       m->hybrid_sleep_mode;
-        char **states = streq(arg_verb, "suspend")   ? m->suspend_state     :
-                        streq(arg_verb, "hibernate") ? m->hibernate_state   :
-                                                       m->hybrid_sleep_state;
+        assert(m);
 #endif // 1
 
         _cleanup_fclose_ FILE *f = NULL;
@@ -331,44 +320,32 @@ static int execute(Manager *m, const char *verb) {
 #if 0 /// elogind uses the values stored in its manager instance
 static int execute_s2h(const SleepConfig *sleep_config) {
 #else // 0
-static int execute_s2h(Manager *m) {
-        assert(m);
-
-        usec_t hibernate_delay_sec = m->hibernate_delay_sec;
+static int execute_s2h(Manager *sleep_config) {
 #endif // 0
         _cleanup_close_ int tfd = -1;
         char buf[FORMAT_TIMESPAN_MAX];
         struct itimerspec ts = {};
         int r;
 
-#if 0 /// Already parsed by elogind config
         assert(sleep_config);
-#endif // 0
 
         tfd = timerfd_create(CLOCK_BOOTTIME_ALARM, TFD_NONBLOCK|TFD_CLOEXEC);
         if (tfd < 0)
                 return log_error_errno(errno, "Error creating timerfd: %m");
 
-#if 0 /// elogind uses the values from its manager
         log_debug("Set timerfd wake alarm for %s",
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
         timespec_store(&ts.it_value, sleep_config->hibernate_delay_sec);
-#else // 0
-        log_debug("Set timerfd wake alarm for %s",
-                  format_timespan(buf, sizeof(buf), hibernate_delay_sec, USEC_PER_SEC));
-
-        timespec_store(&ts.it_value, hibernate_delay_sec);
-#endif // 0
 
         r = timerfd_settime(tfd, 0, &ts, NULL);
         if (r < 0)
                 return log_error_errno(errno, "Error setting hibernate timer: %m");
 
-#if 0 /// elogind uses its manager instance values
+#if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
 #else // 0
-        r = execute(m, "suspend");
+        r = execute(sleep_config, sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
         if (r < 0)
                 return r;
@@ -383,22 +360,20 @@ static int execute_s2h(Manager *m) {
 
         /* If woken up after alarm time, hibernate */
         log_debug("Attempting to hibernate after waking from %s timer",
-#if 0 /// elogind uses its manager instance values
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
+#if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #else // 0
-                  format_timespan(buf, sizeof(buf), hibernate_delay_sec, USEC_PER_SEC));
-
-        r = execute(m, "hibernate");
+        r = execute(sleep_config, sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #endif // 0
         if (r < 0) {
-#if 0 /// elogind uses its manager instance values
                 log_notice_errno(r, "Couldn't hibernate, will try to suspend again: %m");
 
+#if 0 /// For the elogind extra stuff, we have to submit the manager instance
                 r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
 #else // 0
-                r = execute(m, "suspend");
+                r = execute(sleep_config, sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
                 if (r < 0)
                         return log_error_errno(r, "Could neither hibernate nor suspend, giving up: %m");
@@ -515,6 +490,10 @@ static int run(int argc, char *argv[]) {
 DEFINE_MAIN_FUNCTION(run);
 #else // 0
 int do_sleep(Manager *m, const char *verb) {
+        bool allow;
+        char **modes = NULL, **states = NULL;
+        int r;
+
         assert(verb);
         assert(m);
 
@@ -522,9 +501,27 @@ int do_sleep(Manager *m, const char *verb) {
 
         log_debug_elogind("%s called for %s", __FUNCTION__, strnull(verb));
 
+        /* Re-load the sleep configuration, so users can change their options
+         * on-the-fly without having to reload elogind
+         */
+        r = parse_sleep_config(&m);
+        if (r < 0)
+                return r;
+
+        /* Prepare the sleep configuration to execute */
+        r = sleep_settings(arg_verb, m, &allow, &modes, &states);
+        if (r < 0)
+                return r;
+
+        if (!allow)
+                return log_error_errno(SYNTHETIC_ERRNO(EACCES),
+                                       "Sleep mode \"%s\" is disabled by configuration, refusing.",
+                                       arg_verb);
+
+        /* Now execute either s2h or the regular sleep */
         if (streq(arg_verb, "suspend-then-hibernate"))
                 return execute_s2h(m);
 
-        return execute(m, NULL);
+        return execute(m, modes, states);
 }
 #endif // 0

@@ -113,7 +113,19 @@ struct Manager {
         char *action_job;
 #else // 0
         /* Suspension and hibernation can be disabled in logind.conf. */
-        bool allow_suspend, allow_hibernation, allow_suspend_then_hibernate, allow_hybrid_sleep;
+        bool allow_suspend;         /* AllowSuspend */
+        bool allow_hibernate;       /* AllowHibernation */
+        bool allow_s2h;             /* AllowSuspendThenHibernate */
+        bool allow_hybrid_sleep;    /* AllowHybridSleep */
+
+        char **suspend_modes;       /* SuspendMode */
+        char **suspend_states;      /* SuspendState */
+        char **hibernate_modes;     /* HibernateMode */
+        char **hibernate_states;    /* HibernateState */
+        char **hybrid_modes;        /* HybridSleepMode */
+        char **hybrid_states;       /* HybridSleepState */
+
+        usec_t hibernate_delay_sec; /* HibernateDelaySec */
 
         /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or
            SYSTEM_POWEROFF_PATH that fail, the ongoing suspend/poweroff
@@ -125,11 +137,6 @@ struct Manager {
            contains the action we are supposed to perform after the
            delay is over */
         HandleAction pending_action;
-
-        char **suspend_state,      **suspend_mode;
-        char **hibernate_state,    **hibernate_mode;
-        char **hybrid_sleep_state, **hybrid_sleep_mode;
-        usec_t hibernate_delay_sec;
 #endif // 0
         sd_event_source *inhibit_timeout_source;
 
