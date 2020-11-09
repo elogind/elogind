@@ -606,13 +606,12 @@ int read_fiemap(int fd, struct fiemap **ret) {
 }
 
 #if 0 /// elogind has to ask the manager for some stuff
+static int can_sleep_internal(const char *verb, bool check_allowed, const SleepConfig *sleep_config);
 #else // 0
 static int can_sleep_internal(Manager *m, const char *verb, bool check_allowed);
 #endif // 0
 
 #if 0 /// elogind has to ask the manager for some stuff
-static int can_sleep_internal(const char *verb, bool check_allowed, const SleepConfig *sleep_config);
-
 static bool can_s2h(const SleepConfig *sleep_config) {
 #else // 0
 static bool can_s2h(Manager *m) {
