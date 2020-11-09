@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LGPL-2.1+
 #if 0 /// rename to elogind
+# # SPDX-License-Identifier: LGPL-2.1-or-later
 #
 # systemd_logind_sources = files('''
 #         logind.c

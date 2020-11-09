@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <unistd.h>
 
@@ -813,7 +813,6 @@ static void test_chmod_and_chown(void) {
         assert_se(S_ISLNK(st.st_mode));
 }
 #endif // 0
-
 
 #if 0 /// No need for encrypted devices in elogind
 static void test_path_is_encrypted_one(const char *p, int expect) {

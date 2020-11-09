@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #if 0 /// UNNEEDED by elogind (only needed for testing __cpu_mask)
 #include <sched.h>

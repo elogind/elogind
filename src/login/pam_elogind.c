@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <endian.h>
 #include <errno.h>
@@ -117,7 +117,6 @@ static int acquire_user_record(
 
         /* If pam_elogind_homed (or some other module) already acquired the user record we can reuse it
          * here. */
-        r = pam_get_data(handle, "elogind-user-record", (const void**) &json);
         field = strjoin("elogind-user-record-", username);
         if (!field)
                 return pam_log_oom(handle);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <ctype.h>
 #include <errno.h>
@@ -207,7 +207,6 @@ int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags
         *line = TAKE_PTR(ans);
         return 0;
 }
-
 
 static int update_argv(const char name[], size_t l) {
         static int can_do = -1;

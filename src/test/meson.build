@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 
 awkscript = 'test-hashmap-ordered.awk'
 test_hashmap_ordered_c = custom_target(
@@ -470,6 +470,17 @@ tests += [
          [],
          []],
 
+        [['src/test/test-loop-block.c'],
+         [libcore,
+          libshared],
+         [threads,
+          libblkid],
+         '',
+         '',
+         [],
+         includes,
+         false],
+
         [['src/test/test-selinux.c'],
          [],
          []],
@@ -879,6 +890,10 @@ tests += [
         [['src/test/test-psi-util.c'],
          [],
          []],
+
+        [['src/test/test-qrcode-util.c'],
+         [libshared],
+         [libdl]],
 ]
 
 ############################################################

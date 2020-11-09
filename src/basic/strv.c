@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
 #include <fnmatch.h>
@@ -527,6 +527,19 @@ int strv_consume_prepend(char ***l, char *value) {
                 free(value);
 
         return r;
+}
+
+int strv_prepend(char ***l, const char *value) {
+        char *v;
+
+        if (!value)
+                return 0;
+
+        v = strdup(value);
+        if (!v)
+                return -ENOMEM;
+
+        return strv_consume_prepend(l, v);
 }
 
 int strv_extend(char ***l, const char *value) {

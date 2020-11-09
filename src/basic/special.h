@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
 #define SPECIAL_DEFAULT_TARGET "default.target"
@@ -107,8 +107,3 @@
 
 /* The root directory. */
 #define SPECIAL_ROOT_MOUNT "-.mount"
-
-/* Special slices valid for the user instance */
-#define SPECIAL_SESSION_SLICE "session.slice"
-#define SPECIAL_APP_SLICE "app.slice"
-#define SPECIAL_BACKGROUND_SLICE "background.slice"

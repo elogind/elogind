@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
 #include <stdbool.h>
@@ -57,6 +57,10 @@ static inline const char* yes_no(bool b) {
 
 static inline const char* true_false(bool b) {
         return b ? "true" : "false";
+}
+
+static inline const char* plus_minus(bool b) {
+        return b ? "+" : "-";
 }
 
 static inline const char* one_zero(bool b) {

@@ -1,7 +1,7 @@
 <?xml version='1.0'?> <!--*-nxml-*-->
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-<!-- SPDX-License-Identifier: LGPL-2.1+ -->
+<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
 <refentry id="sd_machine_get_class" xmlns:xi="http://www.w3.org/2001/XInclude">
 
@@ -46,7 +46,6 @@
     <para><function>sd_machine_get_class()</function> may be used to
     determine the class of a locally running virtual machine or
     container that is registered with
-    <citerefentry><refentrytitle>elogind-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     The string returned is either <literal>vm</literal> or
     <literal>container</literal>. The returned string needs to be

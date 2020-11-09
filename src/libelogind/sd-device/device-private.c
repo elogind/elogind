@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <ctype.h>
 #include <net/if.h>
@@ -747,7 +747,6 @@ int device_new_from_stat_rdev(sd_device **ret, const struct stat *st) {
 
 int device_copy_properties(sd_device *device_dst, sd_device *device_src) {
         const char *property, *value;
-        Iterator i;
         int r;
 
         assert(device_dst);
@@ -757,13 +756,13 @@ int device_copy_properties(sd_device *device_dst, sd_device *device_src) {
         if (r < 0)
                 return r;
 
-        ORDERED_HASHMAP_FOREACH_KEY(value, property, device_src->properties_db, i) {
+        ORDERED_HASHMAP_FOREACH_KEY(value, property, device_src->properties_db) {
                 r = device_add_property_aux(device_dst, property, value, true);
                 if (r < 0)
                         return r;
         }
 
-        ORDERED_HASHMAP_FOREACH_KEY(value, property, device_src->properties, i) {
+        ORDERED_HASHMAP_FOREACH_KEY(value, property, device_src->properties) {
                 r = device_add_property_aux(device_dst, property, value, false);
                 if (r < 0)
                         return r;
@@ -937,7 +936,6 @@ int device_update_db(sd_device *device) {
 
         if (has_info) {
                 const char *property, *value, *tag;
-                Iterator i;
 
                 if (major(device->devnum) > 0) {
                         const char *devlink;
@@ -955,13 +953,13 @@ int device_update_db(sd_device *device) {
                 if (device->usec_initialized > 0)
                         fprintf(f, "I:"USEC_FMT"\n", device->usec_initialized);
 
-                ORDERED_HASHMAP_FOREACH_KEY(value, property, device->properties_db, i)
+                ORDERED_HASHMAP_FOREACH_KEY(value, property, device->properties_db)
                         fprintf(f, "E:%s=%s\n", property, value);
 
                 FOREACH_DEVICE_TAG(device, tag)
                         fprintf(f, "G:%s\n", tag); /* Any tag */
 
-                SET_FOREACH(tag, device->current_tags, i)
+                SET_FOREACH(tag, device->current_tags)
                         fprintf(f, "Q:%s\n", tag); /* Current tag */
         }
 

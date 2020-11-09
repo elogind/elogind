@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
         version : '247',
@@ -1818,26 +1818,16 @@ meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 includes = include_directories('src/basic',
                                'src/boot',
 #if 0 /// UNNEEDED by elogind
+#                                'src/core',
 #                                'src/home',
 #endif // 0
-                               'src/shared',
-                               'src/elogind',
                                'src/journal',
 #if 0 /// UNNEEDED by elogind
 #                                'src/journal-remote',
 #endif // 0
 /// elogind empty mask removed (UNNEEDED by elogind)
 #if 0 /// elogind has a different list
-#                                'src/nspawn',
-#                                'src/resolve',
-#                                'src/timesync',
-#                                'src/time-wait-sync',
-#                                'src/login',
-#                                'src/udev',
-#                                'src/libudev',
-#                                'src/core',
-#                                'src/shutdown',
-#                                'src/xdg-autostart-generator',
+#                                'src/libsystemd-network',
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
 #                                'src/libsystemd/sd-event',
@@ -1846,7 +1836,17 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-netlink',
 #                                'src/libsystemd/sd-network',
 #                                'src/libsystemd/sd-resolve',
-#                                'src/libsystemd-network',
+#                                'src/libudev',
+#                                'src/login',
+#                                'src/nspawn',
+#                                'src/resolve',
+#                                'src/shared',
+#                                'src/shutdown',
+#                                'src/systemd',
+#                                'src/time-wait-sync',
+#                                'src/timesync',
+#                                'src/udev',
+#                                'src/xdg-autostart-generator',
 #else // 0
                                'src/libelogind/sd-bus',
                                'src/libelogind/sd-device',

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 #
 # German translation for elogind.
 # Christian Kirbach <Christian.Kirbach@gmail.com>, 2014, 2015.
@@ -367,11 +367,13 @@ msgstr ""
 "ausführen dürfen."
 
 # https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:137
 msgid "Allow attaching devices to seats"
 msgstr "Das Anschließen von Geräten an Arbeitsstationen erlauben"
 
 # https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:138
 msgid "Authentication is required to attach a device to a seat."
 msgstr ""
@@ -379,6 +381,7 @@ msgstr ""
 "notwendig."
 
 # https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Flush device to seat attachments"
 msgstr "Zurücksetzen der an eine Arbeitsstation angeschlossenen Geräte"

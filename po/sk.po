@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 #
 # Slovak translation for elogind.
 # Dušan Kazik <prescott66@gmail.com>, 2017.
@@ -971,11 +971,13 @@ msgstr ""
 #: src/core/dbus-unit.c:711
 #, fuzzy
 #| msgid "Authentication is required to reload the elogind state."
+#| msgid "Authentication is required to reload the systemd state."
 msgid ""
 "Authentication is required to delete files and directories associated with "
 "'$(unit)'."
 msgstr ""
 "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+"Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
 
 #: src/core/dbus-unit.c:760
 #, fuzzy
