@@ -85,10 +85,10 @@ loginctl: $(CONFIG)
 	ninja $(NINJA_OPT) $@
 
 test: $(CONFIG)
-	ninja -C $(BUILD) $@
+	ninja $(NINJA_OPT) $@
 
 test-login: $(CONFIG)
-	ninja -C $(BUILD) $@
+	ninja $(NINJA_OPT) $@
 
 $(BUILDDIR):
 	+$(MKDIR) $@
