@@ -321,30 +321,30 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
                 return from_user_dir("XDG_DESKTOP_DIR", buffer, ret);
 
         case SD_PATH_SYSTEMD_UTIL:
+#if 0 /// elogind is most probably somewhere else
                 *ret = ROOTPREFIX_NOSLASH "/lib/elogind";
+#else // 0
+                *ret = ROOTLIBEXECDIR;
+#endif // 0
                 return 0;
 
 #if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_SYSTEM_UNIT:
                 *ret = SYSTEM_DATA_UNIT_PATH;
                 return 0;
-#endif // 0
 
         case SD_PATH_SYSTEMD_SYSTEM_PRESET:
                 *ret = ROOTPREFIX_NOSLASH "/lib/elogind/system-preset";
                 return 0;
 
-#if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_USER_UNIT:
                 *ret = USER_DATA_UNIT_DIR;
                 return 0;
-#endif // 0
 
         case SD_PATH_SYSTEMD_USER_PRESET:
                 *ret = ROOTPREFIX_NOSLASH "/lib/elogind/user-preset";
                 return 0;
 
-#if 0 /// UNNEEDED by elogind
         case SD_PATH_SYSTEMD_SYSTEM_CONF:
                 *ret = SYSTEM_CONFIG_UNIT_DIR;
                 return 0;
@@ -363,11 +363,19 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
 #endif // 0
 
         case SD_PATH_SYSTEMD_SLEEP:
+#if 0 /// elogind has it most probably somewhere else
                 *ret = ROOTPREFIX_NOSLASH "/lib/elogind/system-sleep";
+#else // 0
+                *ret = SYSTEM_SLEEP_PATH;
+#endif // 0
                 return 0;
 
         case SD_PATH_SYSTEMD_SHUTDOWN:
+#if 0 /// elogind has it most probably somewhere else
                 *ret = ROOTPREFIX_NOSLASH "/lib/elogind/system-shutdown";
+#else // 0
+                *ret = SYSTEM_SHUTDOWN_PATH;
+#endif // 0
                 return 0;
 
         /* FIXME: systemd.pc uses ${prefix}, but CONF_PATHS_NULSTR doesn't.
