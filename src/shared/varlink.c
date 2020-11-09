@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1+ */
 
-#include <sys/poll.h>
+//#include <sys/poll.h>
 
 #include "alloc-util.h"
 #include "errno-util.h"
@@ -18,6 +18,9 @@
 #include "umask-util.h"
 #include "user-util.h"
 #include "varlink.h"
+
+/// Additional includes needed by elogind
+#include <poll.h>
 
 #define VARLINK_DEFAULT_CONNECTIONS_MAX 4096U
 #define VARLINK_DEFAULT_CONNECTIONS_PER_UID_MAX 1024U
