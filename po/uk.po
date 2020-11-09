@@ -581,15 +581,15 @@ msgstr "Вказати повідомлення на стіні"
 msgid "Authentication is required to set a wall message"
 msgstr "Потрібна автентифікація, щоб вказати повідомлення на стіні"
 
+#: src/login/org.freedesktop.login1.policy:395
+msgid "Change Session"
+msgstr "Зміна сеансу"
+
+#: src/login/org.freedesktop.login1.policy:396
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Для зміни віртуального термінала слід пройти розпізнавання."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:395
-# msgid "Change Session"
-# msgstr "Зміна сеансу"
-#
-# #: src/login/org.freedesktop.login1.policy:396
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Для зміни віртуального термінала слід пройти розпізнавання."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Увійти в локальний контейнер"

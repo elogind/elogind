@@ -626,15 +626,15 @@ msgid "Authentication is required to set a wall message"
 msgstr ""
 "Чтобы отправить сообщение на все терминалы, необходимо пройти аутентификацию."
 
+#: src/login/org.freedesktop.login1.policy:395
+msgid "Change Session"
+msgstr "Сменить сессию"
+
+#: src/login/org.freedesktop.login1.policy:396
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Чтобы сменить виртуальный терминал, необходимо пройти аутентификацию."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:395
-# msgid "Change Session"
-# msgstr "Сменить сессию"
-#
-# #: src/login/org.freedesktop.login1.policy:396
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Чтобы сменить виртуальный терминал, необходимо пройти аутентификацию."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Зайти в локальный контейнер"
