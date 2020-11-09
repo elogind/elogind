@@ -6,11 +6,14 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#include <sys/fcntl.h>
+//#include <sys/fcntl.h>
 #include <sys/types.h>
 
 #include "macro.h"
 #include "time-util.h"
+
+/// Additional includes needed by elogind
+#include <fcntl.h>
 
 #define LONG_LINE_MAX (1U*1024U*1024U)
 
