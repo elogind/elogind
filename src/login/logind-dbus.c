@@ -1986,7 +1986,7 @@ static int method_do_shutdown_or_sleep(
                 return r;
 
         log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
-                          __FUNCTION__, action, sleep_verb,
+                          __FUNCTION__, action, strnull(sleep_verb),
                           interactive ? "" : "NOT ");
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what > 0)
