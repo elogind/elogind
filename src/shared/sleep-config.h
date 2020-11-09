@@ -4,6 +4,7 @@
 #include <linux/fiemap.h>
 #include "time-util.h"
 
+#if 0 /// elogind needs to hand over its manager
 typedef struct SleepConfig {
         bool allow_suspend;         /* AllowSuspend */
         bool allow_hibernate;       /* AllowHibernation */
@@ -19,6 +20,10 @@ typedef struct SleepConfig {
 
         usec_t hibernate_delay_sec; /* HibernateDelaySec */
 } SleepConfig;
+#else // 0
+#include <logind.h>
+typedef struct Manager SleepConfig;
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 SleepConfig* free_sleep_config(SleepConfig *sc);
@@ -50,14 +55,10 @@ typedef struct HibernateLocation {
 HibernateLocation* hibernate_location_free(HibernateLocation *hl);
 DEFINE_TRIVIAL_CLEANUP_FUNC(HibernateLocation*, hibernate_location_free);
 
-#if 0 /// UNNEEDED by elogind
 int sleep_settings(const char *verb, const SleepConfig *sleep_config, bool *ret_allow, char ***ret_modes, char ***ret_states);
-#endif // 0
 
 int read_fiemap(int fd, struct fiemap **ret);
-#if 0 /// UNNEEDED by elogind
 int parse_sleep_config(SleepConfig **sleep_config);
-#endif // 0
 int find_hibernate_location(HibernateLocation **ret_hibernate_location);
 
 #if 0 /// elogind has to transport its manager instance
@@ -65,6 +66,5 @@ int can_sleep(const char *verb);
 int can_sleep_disk(char **types);
 int can_sleep_state(char **types);
 #else // 0
-#include <logind.h>
 int can_sleep(Manager *m, const char *verb);
 #endif // 0

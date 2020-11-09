@@ -385,12 +385,12 @@ void elogind_manager_free(Manager* m) {
 
         safe_close(m->cgroups_agent_fd);
 
-        strv_free(m->suspend_mode);
-        strv_free(m->suspend_state);
-        strv_free(m->hibernate_mode);
-        strv_free(m->hibernate_state);
-        strv_free(m->hybrid_sleep_mode);
-        strv_free(m->hybrid_sleep_state);
+        strv_free(m->suspend_modes);
+        strv_free(m->suspend_states);
+        strv_free(m->hibernate_modes);
+        strv_free(m->hibernate_states);
+        strv_free(m->hybrid_modes);
+        strv_free(m->hybrid_states);
 }
 
 
@@ -410,17 +410,17 @@ int elogind_manager_new(Manager* m) {
         m->callback_must_succeed     = false;
 
         /* Init sleep modes and states */
-        m->suspend_mode        = NULL;
-        m->suspend_state       = NULL;
-        m->hibernate_mode      = NULL;
-        m->hibernate_state     = NULL;
-        m->hybrid_sleep_mode   = NULL;
-        m->hybrid_sleep_state  = NULL;
+        m->suspend_modes       = NULL;
+        m->suspend_states      = NULL;
+        m->hibernate_modes     = NULL;
+        m->hibernate_states    = NULL;
+        m->hybrid_modes  = NULL;
+        m->hybrid_states = NULL;
         m->hibernate_delay_sec = 0;
-        m->allow_suspend       = -1;
-        m->allow_hibernation   = -1;
-        m->allow_hybrid_sleep  = -1;
-        m->allow_suspend_then_hibernate = -1;
+        m->allow_suspend       = true;
+        m->allow_hibernate     = true;
+        m->allow_hybrid_sleep  = true;
+        m->allow_s2h           = true;
 
         /* If elogind should be its own controller, mount its cgroup */
         if (streq(SYSTEMD_CGROUP_CONTROLLER, "_elogind")) {
