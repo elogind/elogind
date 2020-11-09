@@ -81,17 +81,17 @@ void elogind_manager_reset_config(Manager* m) {
 
         /* Set default Sleep config if not already set by logind.conf */
         if (!m->suspend_state)
-                m->suspend_state = strv_new("mem", "standby", "freeze", NULL);
+                m->suspend_state = strv_new("mem", "standby", "freeze");
         if (!m->hibernate_mode)
-                m->hibernate_mode = strv_new("platform", "shutdown", NULL);
+                m->hibernate_mode = strv_new("platform", "shutdown");
         if (!m->hibernate_state)
-                m->hibernate_state = strv_new("disk", NULL);
+                m->hibernate_state = strv_new("disk");
         if (!m->hybrid_sleep_mode)
-                m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown", NULL);
+                m->hybrid_sleep_mode = strv_new("suspend", "platform", "shutdown");
         if (!m->hybrid_sleep_state)
-                m->hybrid_sleep_state = strv_new("disk", NULL);
-        if (!m->hibernate_delay_sec)
-                m->hibernate_delay_sec = 180 * USEC_PER_MINUTE;
+                m->hybrid_sleep_state = strv_new("disk");
+        if (!m->hibernate_delay_sec == 0)
+                m->hibernate_delay_sec = 2 * USEC_PER_HOUR;
 
 #if ENABLE_DEBUG_ELOGIND
         dbg_cnt = -1;
