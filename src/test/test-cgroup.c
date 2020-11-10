@@ -69,10 +69,17 @@ static void test_cg_create(void) {
                 return;
         }
 
+#if 0 /// Continued tests might also result in 0 (already exists), so elogind shall be aware of that
         assert_se(r == 1);
         assert_se(cg_create(SYSTEMD_CGROUP_CONTROLLER, test_a) == 0);
         assert_se(cg_create(SYSTEMD_CGROUP_CONTROLLER, test_b) == 1);
         assert_se(cg_create(SYSTEMD_CGROUP_CONTROLLER, test_c) == 1);
+#else // 0
+        assert_se(r >= 0);
+        assert_se(cg_create(SYSTEMD_CGROUP_CONTROLLER, test_a) >= 0);
+        assert_se(cg_create(SYSTEMD_CGROUP_CONTROLLER, test_b) >= 0);
+        assert_se(cg_create(SYSTEMD_CGROUP_CONTROLLER, test_c) >= 0);
+#endif // 0
         assert_se(cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, test_b, 0) == 0);
 
         assert_se(cg_pid_get_path(SYSTEMD_CGROUP_CONTROLLER, getpid_cached(), &path) == 0);
@@ -99,11 +106,12 @@ static void test_cg_create(void) {
         else if (cg_hybrid_unified())
                 full_d = strjoina("/sys/fs/cgroup/unified", test_d);
         else
-#if 0 /// elogind uses its own name
+#if 0 /// elogind uses the configured controller name, which can be different
                 full_d = strjoina("/sys/fs/cgroup/systemd", test_d);
 #else // 0
-                full_d = strjoina("/sys/fs/cgroup/elogind", test_d);
+                full_d = strjoina("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME, test_d);
 #endif // 0
+        log_debug("full_d: %s", full_d);
         assert_se(path_equal(path, full_d));
         free(path);
 

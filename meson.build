@@ -843,6 +843,7 @@ endif
 
 conf.set_quoted('SYSTEMD_CGROUP_CONTROLLER', '_'.join(['',with_cgroupctrl]),
                 description : 'name of the cgroup controller to use')
+conf.set_quoted('CGROUP_CONTROLLER_NAME', with_cgroupctrl)
 conf.set_quoted('SYSTEMD_CGROUP_CONTROLLER_LEGACY',
                 '='.join(['name', with_cgroupctrl]))
 conf.set_quoted('SYSTEMD_CGROUP_CONTROLLER_HYBRID',
