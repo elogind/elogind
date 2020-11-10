@@ -37,7 +37,7 @@ envCXXFLAGS := ${CXXFLAGS}
 envLDFLAGS  := ${LDFLAGS}
 
 BASIC_OPT := --buildtype release
-NINJA_OPT := -C $(BUILDDIR) --verbose
+NINJA_OPT := --verbose
 
 # Make sure "--just-print" gets translated over to ninja
 ifneq (,$(findstring n,$(MAKEFLAGS)))
@@ -56,17 +56,22 @@ endif
 # Combine with "sane defaults"
 ifeq (YES,$(DEBUG))
     BASIC_OPT := -Ddebug-extra=elogind -Dtests=unsafe --buildtype debug
+    BUILDDIR  := ${BUILDDIR}_debug
     CFLAGS    := -O0 -g3 -ggdb -ftrapv ${envCFLAGS} -fPIE
     CXXFLAGS  := -O0 -g3 -ggdb -ftrapv ${envCXXFLAGS} -fPIE
     LDFLAGS   := ${envLDFLAGS} -fPIE
     NINJA_OPT := ${NINJA_OPT} -j 1 -k 1
 else
+    BUILDDIR  := ${BUILDDIR}_release
     CFLAGS   := -O2 -fwrapv ${envCFLAGS}
     CXXFLAGS := -O2 -fwrapv ${envCXXFLAGS}
 endif
 
 # Finalize CFLAGS
 CFLAGS := -march=native -pipe ${CFLAGS} -Wall -Wextra -Wunused -Wno-unused-parameter -Wno-unused-result -ftree-vectorize
+
+# Finalize ninja options
+NINJA_OPT := ${NINJA_OPT} -C ${BUILDDIR}
 
 all: build
 
@@ -102,8 +107,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 		CC=$(CC) \
 		LD=$(LD) \
 		meson setup $(BUILDDIR) $(BASIC_OPT) \
-			--libdir lib64 \
-			--libdir=$(PREFIX)/usr/lib64 \
+			--libdir $(PREFIX)/usr/lib64 \
 			--localstatedir $(PREFIX)/var/lib \
 			--prefix $(PREFIX) \
 			--sysconfdir $(PREFIX)/etc \
