@@ -2120,32 +2120,59 @@ int cg_unified_cached(bool flush) {
         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
                 log_debug("Found cgroup2 on /sys/fs/cgroup/, full unified hierarchy");
                 unified_cache = CGROUP_UNIFIED_ALL;
-#if 0 /// The handling of cgroups is a bit different with elogind
         } else if (F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
-#else // 0
-        } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)
-              || F_TYPE_EQUAL(fs.f_type, TMPFS_MAGIC)) {
-#endif // 0
                 if (statfs("/sys/fs/cgroup/unified/", &fs) == 0 &&
                     F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
-                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for elogind controller");
+#if 0 /// elogind supports other controllers
+                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for systemd controller");
+#endif // 0
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
+#if 0 /// If this is a hybrid setup with any other controller, elogind behaves like systemd did prior v232
                         unified_systemd_v232 = false;
+#else // 0
+                        if (statfs("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME "/", &fs) == 0 &&
+                            F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)) {
+                                log_debug( "Found cgroup on /sys/fs/cgroup/%s, unified hierarchy for %s controller",
+                                           CGROUP_CONTROLLER_NAME, CGROUP_CONTROLLER_NAME);
+                                unified_systemd_v232 = true;
+                        } else {
+                                log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for %s controller", CGROUP_CONTROLLER_NAME);
+                                unified_systemd_v232 = false;
+                        }
+#endif // 0
                 } else {
-#if 0 /// There is no sub-grouping within elogind
+#if 0 /// elogind supports other controllers than systemd and itself
                         if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
                                 return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/systemd\" failed: %m");
-
+#else // 0
+                        if (statfs("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME "/", &fs) < 0)
+                                return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/%s\" failed: %m", CGROUP_CONTROLLER_NAME);
+#endif // 0
                         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
+#if 0 /// elogind supports other controllers than systemd and itself
                                 log_debug("Found cgroup2 on /sys/fs/cgroup/systemd, unified hierarchy for systemd controller (v232 variant)");
+#else // 0
+                                log_debug("Found cgroup2 on /sys/fs/cgroup/%s, unified hierarchy for %s controller (v232 variant)",
+                                          CGROUP_CONTROLLER_NAME, CGROUP_CONTROLLER_NAME);
+#endif // 0
+
                                 unified_cache = CGROUP_UNIFIED_SYSTEMD;
                                 unified_systemd_v232 = true;
                         } else if (F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)) {
+#if 0 /// elogind supports other controllers than systemd and itself
                                 log_debug("Found cgroup on /sys/fs/cgroup/systemd, legacy hierarchy");
+#else // 0
+                                log_debug("Found cgroup on /sys/fs/cgroup/%s, legacy hierarchy", CGROUP_CONTROLLER_NAME);
+#endif // 0
                                 unified_cache = CGROUP_UNIFIED_NONE;
                         } else {
+#if 0 /// elogind supports other controllers than systemd and itself
                                 log_debug("Unexpected filesystem type %llx mounted on /sys/fs/cgroup/systemd, assuming legacy hierarchy",
                                           (unsigned long long) fs.f_type);
+#else // 0
+                                log_debug("Unexpected filesystem type %llx mounted on /sys/fs/cgroup/%s, assuming legacy hierarchy",
+                                          (unsigned long long) fs.f_type, CGROUP_CONTROLLER_NAME);
+#endif // 0
                                 unified_cache = CGROUP_UNIFIED_NONE;
                         }
                 }
@@ -2156,11 +2183,6 @@ int cg_unified_cached(bool flush) {
                 return log_debug_errno(SYNTHETIC_ERRNO(ENOMEDIUM),
                                        "Unknown filesystem type %llx mounted on /sys/fs/cgroup.",
                                        (unsigned long long)fs.f_type);
-#else // 0
-                        unified_cache = CGROUP_UNIFIED_NONE;
-                }
-        }
-#endif // 0
 
         return unified_cache;
 }
