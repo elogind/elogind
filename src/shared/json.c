@@ -31,10 +31,10 @@
  * remains under 2^16.
  *
  * The value first was 16k, but it was discovered to be too high on llvm/x86-64. See also:
- * https://github.com/elogind/elogind/issues/10738
+ * https://github.com/systemd/systemd/issues/10738
  *
  * The value then was 4k, but it was discovered to be too high on s390x/aarch64. See also:
- * https://github.com/elogind/elogind/issues/14396 */
+ * https://github.com/systemd/systemd/issues/14396 */
 
 #define DEPTH_MAX (2U*1024U)
 assert_cc(DEPTH_MAX <= UINT16_MAX);

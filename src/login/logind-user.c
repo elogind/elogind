@@ -1033,9 +1033,11 @@ int config_parse_compat_user_tasks_max(
         log_syntax(unit, LOG_NOTICE, filename, line, 0,
                    "Support for option %s= has been removed.",
                    lvalue);
+#if 0 /// elogind does not use slices
         log_info("Hint: try creating /etc/elogind/system/user-.slice.d/50-limits.conf with:\n"
                  "        [Slice]\n"
                  "        TasksMax=%s",
                  rvalue);
+#endif // 0
         return 0;
 }

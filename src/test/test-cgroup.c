@@ -91,7 +91,6 @@ static void test_cg_create(void) {
         assert_se(path_equal(path, test_d));
         free(path);
 
-#if 0 /// elogind uses its own name
         assert_se(cg_get_path(SYSTEMD_CGROUP_CONTROLLER, test_d, NULL, &path) == 0);
         log_debug("test_d: %s", path);
         const char *full_d;
@@ -100,11 +99,12 @@ static void test_cg_create(void) {
         else if (cg_hybrid_unified())
                 full_d = strjoina("/sys/fs/cgroup/unified", test_d);
         else
+#if 0 /// elogind uses its own name
                 full_d = strjoina("/sys/fs/cgroup/systemd", test_d);
-        assert_se(path_equal(path, full_d));
 #else // 0
-        assert_se(path_equal(path, "/sys/fs/cgroup/elogind/test-b/test-d"));
+                full_d = strjoina("/sys/fs/cgroup/elogind", test_d);
 #endif // 0
+        assert_se(path_equal(path, full_d));
         free(path);
 
         assert_se(cg_is_empty(SYSTEMD_CGROUP_CONTROLLER, test_a) > 0);
