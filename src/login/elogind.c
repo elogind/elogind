@@ -118,7 +118,7 @@ static int elogind_daemonize(void) {
         log_notice("Parent SID     : %5d", getsid(getpid_cached()));
 #endif // ENABLE_DEBUG_ELOGIND
 
-        r = safe_fork_full("elogind-forker", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT, &child);
+        r = safe_fork_full("elogind-forker", NULL, 0, FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT|FORK_REOPEN_LOG, &child);
 
         if (r < 0)
                 return log_error_errno(errno, "Failed to fork daemon leader: %m");
