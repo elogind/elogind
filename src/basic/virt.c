@@ -504,6 +504,7 @@ static int running_in_cgroupns(void) {
 
                 /* If elogind controller is not mounted, do not even bother. */
                 /* If elogind controller is not mounted, do not even bother. */
+                /* If elogind controller is not mounted, do not even bother. */
                 r = access("/sys/fs/cgroup/elogind", F_OK);
                 if (r < 0) {
                         if (errno != ENOENT)
