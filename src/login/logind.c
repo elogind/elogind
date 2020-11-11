@@ -1216,11 +1216,6 @@ static int run(int argc, char *argv[]) {
         _cleanup_(manager_unrefp) Manager *m = NULL;
         int r;
 
-#if 1 /// perform extra checks for elogind startup
-        r = elogind_startup(argc, argv);
-        if (r)
-                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
-#endif // 1
         elogind_set_program_name(argv[0]);
         log_set_facility(LOG_AUTH);
 #if ENABLE_DEBUG_ELOGIND
@@ -1228,6 +1223,12 @@ static int run(int argc, char *argv[]) {
         log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
         log_setup_service();
+
+#if 1 /// perform extra checks for elogind startup
+        r = elogind_startup(argc, argv);
+        if (r)
+                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+#endif // 1
 
         r = service_parse_argv("elogind.service",
                                "Manager for user logins and devices and privileged operations.",
