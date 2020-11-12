@@ -211,13 +211,13 @@ static void test_chase_symlinks(void) {
         assert_se(streq(result, "/test-chase.fsldajfl"));
         result = mfree(result);
 
+        r = chase_symlinks("/etc/machine-id/foo", NULL, 0, &result, NULL);
 #if 1 /// elogind supports setups, where the machine-id is in the dbus default path
         if (r != -ENOTDIR) {
                 result = mfree(result);
                 r = chase_symlinks("/var/lib/dbus/machine-id/foo", NULL, 0, &result, NULL);
         }
 #endif // 1
-        r = chase_symlinks("/etc/machine-id/foo", NULL, 0, &result, NULL);
         assert_se(r == -ENOTDIR);
         result = mfree(result);
 
