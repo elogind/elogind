@@ -1653,7 +1653,7 @@ conf.set10('HAVE_DBUS', have)
 # else
 #         have = have == 'true'
 #         if have and get_option('mode') != 'developer'
-#                 error('oomd is not available in release mode (yet)')
+#                 warning('oomd is not ready for release mode (yet)')
 #         endif
 # endif
 # conf.set10('ENABLE_OOMD', have)
