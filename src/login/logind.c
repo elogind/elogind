@@ -1218,19 +1218,17 @@ static int run(int argc, char *argv[]) {
 
         elogind_set_program_name(argv[0]);
         log_set_facility(LOG_AUTH);
+        log_setup_service();
 #if ENABLE_DEBUG_ELOGIND
         log_set_max_level(LOG_DEBUG);
         log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
-        log_setup_service();
 
-#if 1 /// perform extra checks for elogind startup
-        r = elogind_startup(argc, argv);
-        if (r)
-                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
-#endif // 1
-
-        r = service_parse_argv("elogind.service",
+#if 0 /// This is elogind
+        r = service_parse_argv("systemd-logind.service",
+#else // 0
+        r = service_parse_argv("elogind",
+#endif // 0
                                "Manager for user logins and devices and privileged operations.",
                                BUS_IMPLEMENTATIONS(&manager_object,
                                                    &log_control_object),
@@ -1238,16 +1236,41 @@ static int run(int argc, char *argv[]) {
         if (r <= 0)
                 return r;
 
+#if 1 /// perform extra checks for elogind startup
+        r = elogind_startup();
+        if (r)
+                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+
+        /* elogind allows to daemonize itself via -D/--daemon argument */
+        if ( daemonize ) {
+                r = elogind_daemonize();
+                if ( r < 0 )
+                        return log_error_errno( r, "Failed to daemonoze: %m" );
+                if ( r > 0 )
+                        return EXIT_SUCCESS;
+                // Re-setup logging
+                log_set_facility(LOG_AUTH);
+                log_setup_service();
+#if ENABLE_DEBUG_ELOGIND
+                log_set_max_level(LOG_DEBUG);
+                log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
+#endif // ENABLE_DEBUG_ELOGIND
+        }
+
+        // Now the PID file can be written, whether we daemonized or not
+        write_pid_file();
+#endif // 1
+
         umask(0022);
 
         r = mac_selinux_init();
         if (r < 0)
                 return r;
 
-#if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         /* Always create the directories people can create inotify watches in. Note that some applications might check
          * for the existence of /run/systemd/seats/ to determine whether logind is available, so please always make
          * sure these directories are created early on and unconditionally. */
+#if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         (void) mkdir_label("/run/systemd/seats", 0755);
         (void) mkdir_label("/run/systemd/users", 0755);
         (void) mkdir_label("/run/systemd/sessions", 0755);

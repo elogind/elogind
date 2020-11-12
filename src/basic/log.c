@@ -335,6 +335,11 @@ void log_set_target(LogTarget target) {
                 else if (target == LOG_TARGET_SYSLOG_OR_KMSG)
                         target = LOG_TARGET_JOURNAL_OR_KMSG;
         }
+#else // 0
+        if (target == LOG_TARGET_JOURNAL)
+                target = LOG_TARGET_SYSLOG;
+        else if (target == LOG_TARGET_JOURNAL_OR_KMSG)
+                target = LOG_TARGET_SYSLOG_OR_KMSG;
 #endif // 0
 
         log_target = target;

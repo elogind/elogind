@@ -9,6 +9,10 @@
 #include "terminal-util.h"
 #include "util.h"
 
+#if 1 /// NEEDED by elogogind
+bool daemonize = false;
+#endif // 1
+
 static int help(const char *program_path, const char *service, const char *description, bool bus_introspect) {
         _cleanup_free_ char *link = NULL;
         int r;
@@ -21,6 +25,9 @@ static int help(const char *program_path, const char *service, const char *descr
                "%s%s%s\n\n"
                "This program takes no positional arguments.\n\n"
                "%sOptions%s:\n"
+#if 1 /// elogind allows to be daemonized
+               "  -D --daemon               Daemonize as a background service\n"
+#endif // 1
                "  -h --help                 Show this help\n"
                "     --version              Show package version\n"
                "     --bus-introspect=PATH  Write D-Bus XML introspection data\n"
@@ -46,6 +53,9 @@ int service_parse_argv(
         };
 
         static const struct option options[] = {
+#if 1 /// elogind allows to be daemonized
+                { "daemon",         no_argument,       NULL, 'D'                },
+#endif // 1
                 { "help",           no_argument,       NULL, 'h'                },
                 { "version",        no_argument,       NULL, ARG_VERSION        },
                 { "bus-introspect", required_argument, NULL, ARG_BUS_INTROSPECT },
@@ -57,8 +67,18 @@ int service_parse_argv(
         assert(argc >= 0);
         assert(argv);
 
+#if 0 /// Add options for elogind
         while ((c = getopt_long(argc, argv, "h", options, NULL)) >= 0)
+#else // 0
+        while ((c = getopt_long(argc, argv, "Dh", options, NULL)) >= 0)
+#endif // 0
                 switch(c) {
+
+#if 1 /// elogind allows to be daemonized
+                case 'D':
+                        daemonize = true;
+                        break;
+#endif // 1
 
                 case 'h':
                         return help(argv[0], service, description, bus_objects);
