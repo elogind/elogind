@@ -124,8 +124,10 @@ libjournal_client = static_library(
 #         pcre2-dlopen.h
 # '''.split())
 #
-# install_data('journald.conf',
-#              install_dir : pkgsysconfdir)
+# if install_sysconfdir
+#         install_data('journald.conf',
+#                      install_dir : pkgsysconfdir)
+# endif
 #
 # if get_option('create-log-dirs')
 #         meson.add_install_script(
