@@ -5,7 +5,7 @@
 # install:
 # 	DESTDIR=$(DESTDIR) ninja -C build install
 #else // 0
-.PHONY: all build clean install loginctl test test-login
+.PHONY: all build clean install justprint loginctl test test-login
 
 # Set this to YES on the command line for a debug build
 DEBUG      ?= NO
@@ -27,6 +27,7 @@ VERSION   ?= 9999
 CC    ?= $(shell which cc)
 LD    ?= $(shell which ld)
 LN    := $(shell which ln) -s
+MAKE  := $(shell which make)
 MESON ?= $(shell which meson)
 MKDIR := $(shell which mkdir) -p
 RM    := $(shell which rm) -f
@@ -67,33 +68,35 @@ else
     CXXFLAGS := -O2 -fwrapv ${envCXXFLAGS}
 endif
 
+
 # Finalize CFLAGS
 CFLAGS := -march=native -pipe ${CFLAGS} -Wall -Wextra -Wunused -Wno-unused-parameter -Wno-unused-result -ftree-vectorize
 
-# Finalize ninja options
-NINJA_OPT := ${NINJA_OPT} -C ${BUILDDIR}
 
 all: build
 
 build: $(CONFIG)
-	+ninja $(NINJA_OPT)
+	+(cd $(BUILDDIR) && ninja $(NINJA_OPT))
 
 clean: $(CONFIG)
-	ninja $(NINJA_OPT) -t cleandead
-	ninja $(NINJA_OPT) -t clean
+	(cd $(BUILDDIR) && ninja $(NINJA_OPT) -t cleandead)
+	(cd $(BUILDDIR) && ninja $(NINJA_OPT) -t clean)
 
 
 install: build
-	DESTDIR=$(DESTDIR) ninja $(NINJA_OPT) install
+	(cd $(BUILDDIR) && DESTDIR=$(DESTDIR) ninja $(NINJA_OPT) install)
+
+justprint: $(CONFIG)
+	$(MAKE) all JUST_PRINT=YES
 
 loginctl: $(CONFIG)
-	ninja $(NINJA_OPT) $@
+	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
 
 test: $(CONFIG)
-	ninja $(NINJA_OPT) $@
+	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
 
 test-login: $(CONFIG)
-	ninja $(NINJA_OPT) $@
+	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
 
 $(BUILDDIR):
 	+$(MKDIR) $@
