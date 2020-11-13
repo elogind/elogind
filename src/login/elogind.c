@@ -107,19 +107,21 @@ static void write_pid_file( void ) {
   * The parent and child return their forks PID.
   * On error, a value < 0 is returned.
 **/
-static int elogind_daemonize( void ) {
+int elogind_daemonize( void ) {
         pid_t child;
         pid_t grandchild;
         pid_t SID;
         int   r;
 
-        log_debug_elogind("Double forking elogind");
+        log_set_target(LOG_TARGET_CONSOLE);
+        log_set_open_when_needed(true);
+
+        log_debug_elogind("%s", "Double forking elogind");
         log_debug_elogind("Parent PID     : %5d", getpid_cached());
         log_debug_elogind("Parent SID     : %5d", getsid(getpid_cached()));
 
         r = safe_fork( "elogind-forker", FORK_LOG | FORK_WAIT | FORK_REOPEN_LOG | FORK_CLOSE_ALL_FDS | FORK_NULL_STDIO, &child );
 
-#if ENABLE_DEBUG_ELOGIND
         if ( r ) {
                 log_debug_elogind("Fork 1 returned: %5d", r);
                 log_debug_elogind("Fork child PID : %5d", child);
@@ -127,7 +129,6 @@ static int elogind_daemonize( void ) {
                 log_debug_elogind("Child PID      : %5d", getpid_cached());
                 log_debug_elogind("Child SID      : %5d", getsid(getpid_cached()));
         }
-#endif // ENABLE_DEBUG_ELOGIND
 
         if ( r < 0 )
                 return log_error_errno( r, "Failed to fork daemon leader: %m" );
@@ -150,7 +151,6 @@ static int elogind_daemonize( void ) {
         /* Now the grandchild, the true daemon, can be created. */
         r = safe_fork( "elogind-daemon", FORK_LOG | FORK_REOPEN_LOG | FORK_CLOSE_ALL_FDS | FORK_RESET_SIGNALS, &grandchild );
 
-#if ENABLE_DEBUG_ELOGIND
         if ( r ) {
                 log_debug_elogind("Fork 2 returned: %5d", r);
                 log_debug_elogind("Grandchild PID : %5d", grandchild);
@@ -158,7 +158,6 @@ static int elogind_daemonize( void ) {
                 log_debug_elogind("Grand child PID: %5d", getpid_cached());
                 log_debug_elogind("Grand child SID: %5d", getsid(getpid_cached()));
         }
-#endif // ENABLE_DEBUG_ELOGIND
 
         if ( r < 0 )
                 return log_error_errno( r, "Failed to fork daemon: %m" );
@@ -172,12 +171,14 @@ static int elogind_daemonize( void ) {
         /* Take care of our PID-file now */
         write_pid_file();
 
+        log_set_target(LOG_TARGET_AUTO);
+
         return 0;
 }
 
 
 /// Simple tool to see, if elogind is already running
-static pid_t elogind_is_already_running( bool need_pid_file ) {
+static pid_t elogind_is_already_running( void ) {
         _cleanup_free_ char* s = NULL, * comm = NULL;
         pid_t                          pid;
         int                            r;
@@ -209,8 +210,7 @@ static pid_t elogind_is_already_running( bool need_pid_file ) {
         /* Take care of our PID-file now.
            If the user is going to fork elogind, the PID file
            will be overwritten. */
-        if ( need_pid_file )
-                write_pid_file();
+        write_pid_file();
 
         return 0;
 }
@@ -327,64 +327,20 @@ int elogind_setup_cgroups_agent( Manager* m ) {
 /** Extra functionality at startup, exclusive to elogind
   * return < 0 on error, exit with failure.
   * return = 0 on success, continue normal operation.
-  * return > 0 if elogind is already running or forked, exit with success.
+  * return > 0 if elogind is already running, exit with success.
 **/
-int elogind_startup( int argc, char* argv[] ) {
-        bool  daemonize = false;
+int elogind_startup(void) {
         pid_t pid;
-        int   r         = 0;
-        bool  show_help = false;
-        bool  wrong_arg = false;
-
-        /* add a -h/--help and a -d/--daemon argument. */
-        if ( ( argc == 2 ) && argv[1] && strlen( argv[1] ) ) {
-                if ( streq( argv[1], "-D" ) || streq( argv[1], "--daemon" ) )
-                        daemonize = true;
-                else if ( streq( argv[1], "-h" ) || streq( argv[1], "--help" ) ) {
-                        show_help = true;
-                        r         = 1;
-                } else
-                        wrong_arg = true;
-        } else if ( argc > 2 )
-                wrong_arg = true;
-
-        log_set_target(LOG_TARGET_CONSOLE);
-        log_set_open_when_needed(true);
-
-        log_debug_elogind("elogind startup: Daemonize: %s, Show Help: %s, Wrong arg: %s",
-                daemonize ? "True" : "False",
-                show_help ? "True" : "False",
-                wrong_arg ? "True" : "False");
-
-        /* try to get some meaningful output in case of an error */
-        if ( wrong_arg ) {
-                log_error( "Unknown arguments" );
-                show_help = true;
-                r         = -EINVAL;
-        }
-        if ( show_help ) {
-                log_info( "%s [<-D|--daemon>|<-h|--help>]", basename( argv[0] ) );
-                return r;
-        }
 
         /* Do not continue if elogind is already running */
-        pid = elogind_is_already_running( !daemonize );
+        pid = elogind_is_already_running( );
         if ( pid ) {
                 log_error( "elogind is already running as PID "
                 PID_FMT, pid);
                 return pid;
         }
 
-        /* elogind allows to be daemonized using one argument "-D" / "--daemon" */
-        if ( daemonize ) {
-                r = elogind_daemonize();
-                if ( r < 0 )
-                        return log_error_errno( r, "Failed to daemonozie: %m" );
-        }
-
-        log_set_target(LOG_TARGET_AUTO);
-
-        return r;
+        return 0;
 }
 
 

@@ -30,8 +30,11 @@
 /// Add-On for manager_connect_bus()
 int elogind_setup_cgroups_agent(Manager *m);
 
+/// daemonize elogind by double forking
+int elogind_daemonize( void );
+
 /// elogind has some extra functionality at startup, as it is not hooked into systemd.
-int elogind_startup(int argc, char *argv[]);
+int elogind_startup(void);
 
 /// Add-On for manager_free()
 void elogind_manager_free(Manager* m);
