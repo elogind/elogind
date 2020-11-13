@@ -113,26 +113,24 @@ static int elogind_daemonize( void ) {
         pid_t SID;
         int   r;
 
-#if ENABLE_DEBUG_ELOGIND
-        log_notice("Double forking elogind");
-        log_notice("Parent PID     : %5d", getpid_cached());
-        log_notice("Parent SID     : %5d", getsid(getpid_cached()));
-#endif // ENABLE_DEBUG_ELOGIND
+        log_debug_elogind("Double forking elogind");
+        log_debug_elogind("Parent PID     : %5d", getpid_cached());
+        log_debug_elogind("Parent SID     : %5d", getsid(getpid_cached()));
 
         r = safe_fork( "elogind-forker", FORK_LOG | FORK_WAIT | FORK_REOPEN_LOG | FORK_CLOSE_ALL_FDS | FORK_NULL_STDIO, &child );
 
 #if ENABLE_DEBUG_ELOGIND
         if ( r ) {
-                log_notice("Fork 1 returned: %5d", r);
-                log_notice("Fork child PID : %5d", child);
+                log_debug_elogind("Fork 1 returned: %5d", r);
+                log_debug_elogind("Fork child PID : %5d", child);
         } else {
-                log_notice("Child PID      : %5d", getpid_cached());
-                log_notice("Child SID      : %5d", getsid(getpid_cached()));
+                log_debug_elogind("Child PID      : %5d", getpid_cached());
+                log_debug_elogind("Child SID      : %5d", getsid(getpid_cached()));
         }
 #endif // ENABLE_DEBUG_ELOGIND
 
         if ( r < 0 )
-                return log_error_errno( errno, "Failed to fork daemon leader: %m" );
+                return log_error_errno( r, "Failed to fork daemon leader: %m" );
 
         /* safe_fork_full() Has waited for the child to terminate, so we
          * are safe to return here. The child already has forked off the
@@ -145,9 +143,7 @@ static int elogind_daemonize( void ) {
         if ( ( pid_t ) - 1 == SID )
                 return log_error_errno( errno, "Failed to create new SID: %m" );
 
-#if ENABLE_DEBUG_ELOGIND
-        log_notice("Child new SID  : %5d", getsid(getpid_cached()));
-#endif // ENABLE_DEBUG_ELOGIND
+        log_debug_elogind("Child new SID  : %5d", getsid(getpid_cached()));
 
         umask( 0022 );
 
@@ -156,16 +152,16 @@ static int elogind_daemonize( void ) {
 
 #if ENABLE_DEBUG_ELOGIND
         if ( r ) {
-                log_notice("Fork 2 returned: %5d", r);
-                log_notice("Grandchild PID : %5d", grandchild);
+                log_debug_elogind("Fork 2 returned: %5d", r);
+                log_debug_elogind("Grandchild PID : %5d", grandchild);
         } else {
-                log_notice("Grand child PID: %5d", getpid_cached());
-                log_notice("Grand child SID: %5d", getsid(getpid_cached()));
+                log_debug_elogind("Grand child PID: %5d", getpid_cached());
+                log_debug_elogind("Grand child SID: %5d", getsid(getpid_cached()));
         }
 #endif // ENABLE_DEBUG_ELOGIND
 
         if ( r < 0 )
-                return log_error_errno( errno, "Failed to fork daemon: %m" );
+                return log_error_errno( r, "Failed to fork daemon: %m" );
 
         if ( r )
                 /* Exit immediately! */
@@ -352,14 +348,13 @@ int elogind_startup( int argc, char* argv[] ) {
         } else if ( argc > 2 )
                 wrong_arg = true;
 
-        /* Note: At this point, the logging is not initialized, so we can not
-                 use log_debug_elogind(). */
-#if ENABLE_DEBUG_ELOGIND
-        log_notice("elogind startup: Daemonize: %s, Show Help: %s, Wrong arg: %s",
+        log_set_target(LOG_TARGET_CONSOLE);
+        log_set_open_when_needed(true);
+
+        log_debug_elogind("elogind startup: Daemonize: %s, Show Help: %s, Wrong arg: %s",
                 daemonize ? "True" : "False",
                 show_help ? "True" : "False",
                 wrong_arg ? "True" : "False");
-#endif // ENABLE_DEBUG_ELOGIND
 
         /* try to get some meaningful output in case of an error */
         if ( wrong_arg ) {
@@ -381,8 +376,13 @@ int elogind_startup( int argc, char* argv[] ) {
         }
 
         /* elogind allows to be daemonized using one argument "-D" / "--daemon" */
-        if ( daemonize )
+        if ( daemonize ) {
                 r = elogind_daemonize();
+                if ( r < 0 )
+                        return log_error_errno( r, "Failed to daemonozie: %m" );
+        }
+
+        log_set_target(LOG_TARGET_AUTO);
 
         return r;
 }
