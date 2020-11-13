@@ -3846,7 +3846,7 @@ endforeach
 #
 # fuzzer_exes = []
 #
-# if get_option('tests') != 'false'
+# if fuzz_tests or fuzzer_build
 #         foreach tuple : fuzzers
 #                 sources = tuple[0]
 #                 link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
@@ -4010,7 +4010,7 @@ endforeach
 #                         if name != prev
 #                                 if want_tests == 'false'
 #                                         message('Not compiling @0@ because tests is set to false'.format(name))
-#                                 elif slow_tests or fuzz_tests
+#                                 elif fuzz_tests
 #                                         exe = custom_target(
 #                                                 name,
 #                                                 output : name,
@@ -4020,12 +4020,12 @@ endforeach
 #                                                            '@OUTPUT@'],
 #                                                 build_by_default : true)
 #                                 else
-#                                         message('Not compiling @0@ because slow-tests/fuzz-tests is set to false'.format(name))
+#                                         message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
 #                                 endif
 #                         endif
 #                         prev = name
 #
-#                         if want_tests != 'false' and (slow_tests or fuzz_tests)
+#                         if fuzz_tests
 #                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
