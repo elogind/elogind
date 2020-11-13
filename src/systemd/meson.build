@@ -83,7 +83,8 @@ endif
 foreach header : _systemd_headers
 #endif // 0
         foreach opt : opts
-                name = ''.join(['cc-', header.split('/')[-1], '_'] + opt)
+                std_name = opt.length() == 2 ? '_'.join(opt[1].split(':')) : ''
+                name = ''.join(['cc-', header.split('/')[-1], '_', opt[0], std_name])
                 if want_tests != 'false'
                         test(name,
                              check_compilation_sh,
