@@ -48,7 +48,7 @@ void elogind_manager_reset_config(Manager* m);
 /// Add-On for manager_startup()
 int elogind_manager_startup(Manager* m);
 
-/// Write a POD-file and add an atexit() hook to remove it on exit.
+/// Write a PID file and add an atexit() hook to remove it on exit.
 void write_pid_file( void );
 
 
