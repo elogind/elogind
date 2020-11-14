@@ -481,3 +481,6 @@ option('fexecve', type : 'boolean', value : 'false',
 # option('analyze', type: 'boolean', value: 'true',
 #        description : 'install systemd-analyze')
 #endif // 0
+
+option('bpf-framework', type : 'combo', choices : ['auto', 'true', 'false'],
+    description: 'build BPF programs from source code in restricted C')
