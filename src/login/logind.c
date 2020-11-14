@@ -1245,7 +1245,7 @@ static int run(int argc, char *argv[]) {
         if ( daemonize ) {
                 r = elogind_daemonize();
                 if ( r < 0 )
-                        return log_error_errno( r, "Failed to daemonozie: %m" );
+                        return log_error_errno( r, "Failed to daemonoze: %m" );
                 if ( r > 0 )
                         return EXIT_SUCCESS;
                 // Re-setup logging
@@ -1256,6 +1256,9 @@ static int run(int argc, char *argv[]) {
                 log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
         }
+
+        // Now the PID file can be written, whether we daemonized or not
+        write_pid_file();
 #endif // 1
 
         umask(0022);

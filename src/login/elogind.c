@@ -83,7 +83,7 @@ static void remove_pid_file( void ) {
 }
 
 
-static void write_pid_file( void ) {
+void write_pid_file( void ) {
         char  c[DECIMAL_STR_MAX( pid_t ) + 2];
         pid_t pid;
         int   r;
@@ -168,9 +168,6 @@ int elogind_daemonize( void ) {
 
         umask( 0022 );
 
-        /* Take care of our PID-file now */
-        write_pid_file();
-
         log_set_target(LOG_TARGET_AUTO);
 
         return 0;
@@ -206,11 +203,6 @@ static pid_t elogind_is_already_running( void ) {
         }
 
         we_are_alone:
-
-        /* Take care of our PID-file now.
-           If the user is going to fork elogind, the PID file
-           will be overwritten. */
-        write_pid_file();
 
         return 0;
 }
