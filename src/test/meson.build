@@ -683,3 +683,12 @@ tests += [
 #          [threads]],
 #endif // 0
 ]
+
+tests += [
+         [['src/test/test-socket-bind.c'],
+          [libcore,
+          libshared],
+         [libbpf],
+         core_includes,
+         'BPF_FRAMEWORK'],
+]
