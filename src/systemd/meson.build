@@ -75,6 +75,9 @@ if add_languages('cpp', required : false)
         if cxx.has_argument('-std=c++17')
                 opts += [['c++', '-std=c++17']]
         endif
+        if cxx.has_argument('-std=c++20')
+                opts += [['c++', '-std=c++20']]
+        endif
 endif
 
 #if 0 /// neither not installed nor libudev headers get shipped with elogind
