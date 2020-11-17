@@ -1867,6 +1867,7 @@ subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
 #endif // 0
+subdir('src/libudev')
 subdir('src/systemd')
 subdir('src/basic')
 #if 0 /// UNNEEDED by elogind
@@ -1983,7 +1984,6 @@ install_libelogind_static = static_library(
 public_programs = []
 
 #if 0 /// UNNEEDED by elogind
-# subdir('src/libudev')
 #else // 0
 # elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
@@ -3846,7 +3846,7 @@ endforeach
 #
 # fuzzer_exes = []
 #
-# if fuzz_tests or fuzzer_build
+# if get_option('tests') != 'false'
 #         foreach tuple : fuzzers
 #                 sources = tuple[0]
 #                 link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
@@ -4010,7 +4010,7 @@ endforeach
 #                         if name != prev
 #                                 if want_tests == 'false'
 #                                         message('Not compiling @0@ because tests is set to false'.format(name))
-#                                 elif fuzz_tests
+#                                 elif slow_tests or fuzz_tests
 #                                         exe = custom_target(
 #                                                 name,
 #                                                 output : name,
@@ -4020,12 +4020,12 @@ endforeach
 #                                                            '@OUTPUT@'],
 #                                                 build_by_default : true)
 #                                 else
-#                                         message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
+#                                         message('Not compiling @0@ because slow-tests/fuzz-tests is set to false'.format(name))
 #                                 endif
 #                         endif
 #                         prev = name
 #
-#                         if fuzz_tests
+#                         if want_tests != 'false' and (slow_tests or fuzz_tests)
 #                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],

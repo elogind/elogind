@@ -78,7 +78,7 @@ if add_languages('cpp', required : false)
 endif
 
 #if 0 /// neither not installed nor libudev headers get shipped with elogind
-# foreach header : _systemd_headers + _not_installed_headers + ['../libudev/libudev.h']
+# foreach header : _systemd_headers + _not_installed_headers + [libudev_h_path]
 #else // 0
 foreach header : _systemd_headers
 #endif // 0
