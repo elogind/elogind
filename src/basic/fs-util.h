@@ -146,3 +146,5 @@ int open_parent(const char *path, int flags, mode_t mode);
 #if 0 /// No need for encrypted devices in elogind
 int path_is_encrypted(const char *path);
 #endif // 0
+
+int conservative_rename(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);

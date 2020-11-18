@@ -3,7 +3,9 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
+#include "copy.h"
 #include "fd-util.h"
+#include "fileio.h"
 #include "fs-util.h"
 #include "id128-util.h"
 #include "macro.h"
@@ -848,6 +850,51 @@ static void test_path_is_encrypted(void) {
 }
 #endif // 0
 
+static void test_conservative_rename(void) {
+        _cleanup_(unlink_and_freep) char *p = NULL;
+        _cleanup_free_ char *q = NULL;
+
+        assert_se(tempfn_random_child(NULL, NULL, &p) >= 0);
+        assert_se(write_string_file(p, "this is a test", WRITE_STRING_FILE_CREATE) >= 0);
+
+        assert_se(tempfn_random_child(NULL, NULL, &q) >= 0);
+
+        /* Check that the hardlinked "copy" is detected */
+        assert_se(link(p, q) >= 0);
+        assert_se(conservative_rename(AT_FDCWD, q, AT_FDCWD, p) == 0);
+        assert_se(access(q, F_OK) < 0 && errno == ENOENT);
+
+        /* Check that a manual copy is detected */
+        assert_se(copy_file(p, q, 0, (mode_t) -1, 0, 0, COPY_REFLINK) >= 0);
+        assert_se(conservative_rename(AT_FDCWD, q, AT_FDCWD, p) == 0);
+        assert_se(access(q, F_OK) < 0 && errno == ENOENT);
+
+        /* Check that a manual new writeout is also detected */
+        assert_se(write_string_file(q, "this is a test", WRITE_STRING_FILE_CREATE) >= 0);
+        assert_se(conservative_rename(AT_FDCWD, q, AT_FDCWD, p) == 0);
+        assert_se(access(q, F_OK) < 0 && errno == ENOENT);
+
+        /* Check that a minimally changed version is detected */
+        assert_se(write_string_file(q, "this is a_test", WRITE_STRING_FILE_CREATE) >= 0);
+        assert_se(conservative_rename(AT_FDCWD, q, AT_FDCWD, p) > 0);
+        assert_se(access(q, F_OK) < 0 && errno == ENOENT);
+
+        /* Check that this really is new updated version */
+        assert_se(write_string_file(q, "this is a_test", WRITE_STRING_FILE_CREATE) >= 0);
+        assert_se(conservative_rename(AT_FDCWD, q, AT_FDCWD, p) == 0);
+        assert_se(access(q, F_OK) < 0 && errno == ENOENT);
+
+        /* Make sure we detect extended files */
+        assert_se(write_string_file(q, "this is a_testx", WRITE_STRING_FILE_CREATE) >= 0);
+        assert_se(conservative_rename(AT_FDCWD, q, AT_FDCWD, p) > 0);
+        assert_se(access(q, F_OK) < 0 && errno == ENOENT);
+
+        /* Make sure we detect truncated files */
+        assert_se(write_string_file(q, "this is a_test", WRITE_STRING_FILE_CREATE) >= 0);
+        assert_se(conservative_rename(AT_FDCWD, q, AT_FDCWD, p) > 0);
+        assert_se(access(q, F_OK) < 0 && errno == ENOENT);
+}
+
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_INFO);
 
@@ -874,6 +921,7 @@ int main(int argc, char *argv[]) {
 #if 0 /// UNNEEDED by elogind
         test_path_is_encrypted();
 #endif // 0
+        test_conservative_rename();
 
         return 0;
 }
