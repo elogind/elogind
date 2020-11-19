@@ -143,10 +143,8 @@ static int on_reboot(Context *c) {
 #endif // 0
 
         q = utmp_put_reboot(t);
-        if (q < 0) {
-                log_error_errno(q, "Failed to write utmp record: %m");
-                r = q;
-        }
+        if (q < 0)
+                r = log_error_errno(q, "Failed to write utmp record: %m");
 
         return r;
 }
@@ -167,10 +165,8 @@ static int on_shutdown(Context *c) {
 #endif
 
         q = utmp_put_shutdown();
-        if (q < 0) {
-                log_error_errno(q, "Failed to write utmp record: %m");
-                r = q;
-        }
+        if (q < 0)
+                r = log_error_errno(q, "Failed to write utmp record: %m");
 
         return r;
 }
