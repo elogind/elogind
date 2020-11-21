@@ -34,7 +34,7 @@
 #include "time-util.h"
 
 int parse_sleep_config(SleepConfig **ret_sleep_config) {
-#if 0 // elogind uses its own manager
+#if 0 /// elogind uses its own manager
         _cleanup_(free_sleep_configp) SleepConfig *sc;
 #else // 0
         Manager* sc = *ret_sleep_config;

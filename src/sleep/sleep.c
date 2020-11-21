@@ -210,10 +210,18 @@ static int execute(Manager* m, char **modes, char **states) {
                 arg_verb,
                 NULL
         };
+#if 0 /// elogind also supports hook scripts in /etc/elogind/system-sleep
         static const char* const dirs[] = {
                 SYSTEM_SLEEP_PATH,
                 NULL
         };
+#else // 0
+        static const char* const dirs[] = {
+                SYSTEM_SLEEP_PATH,
+                PKGSYSCONFDIR "/system-sleep",
+                NULL
+        };
+#endif // 0
 
 #if 1 /// Extra stuff needed by elogind
         int e;
@@ -272,9 +280,10 @@ static int execute(Manager* m, char **modes, char **states) {
         log_debug_elogind("Result is %d (callback_failed: %s)", r, m->callback_failed ? "true" : "false");
 
         if ( m->callback_must_succeed && (r || m->callback_failed) ) {
-                e = asprintf(&l, "A sleep script in %s failed! [%d]\n"
+                e = asprintf(&l, "A sleep script in %s or %s failed! [%d]\n"
                                  "The system %s has been cancelled!",
-                             SYSTEM_SLEEP_PATH, r, arg_verb);
+                             SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
+                             r, arg_verb);
                 if (e < 0) {
                         log_oom();
                         return -ENOMEM;
@@ -284,9 +293,10 @@ static int execute(Manager* m, char **modes, char **states) {
 
                 log_struct_errno(LOG_ERR, r,
                                  "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                                 LOG_MESSAGE("A sleep script in %s failed [%d]: %m\n"
+                                 LOG_MESSAGE("A sleep script in %s or %s failed [%d]: %m\n"
                                              "The system %s has been cancelled!",
-                                             SYSTEM_SLEEP_PATH, r, arg_verb),
+                                             SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
+                                             r, arg_verb),
                                  "SLEEP=%s", arg_verb);
 
                 return -ECANCELED;
