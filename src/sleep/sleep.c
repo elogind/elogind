@@ -38,19 +38,81 @@
 
 /// Additional includes needed by elogind
 #include "exec-elogind.h"
+#include "sd-login.h"
 #include "sleep.h"
+#include "terminal-util.h"
 #include "utmp-wtmp.h"
 
 static char* arg_verb = NULL;
 
 STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
 
-static int write_hibernate_location_info(const HibernateLocation *hibernate_location) {
+#if 1 /// If an nvidia card is present, elogind informs its driver about suspend/resume actions
+static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
+        static char const* drv_suspend = "/proc/driver/nvidia/suspend";
+        struct stat std;
+        int r;
+        char** session;
+        char** sessions;
+
+        assert(verb);
+        assert(vtnr);
+
+        // See whether an nvidia suspension is possible
+        r = stat(drv_suspend, &std);
+        if (r)
+                return 0;
+
+        if (STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
+                *vtnr = 0;
+
+                // Find the (active) sessions of the sleep sender
+                r = sd_uid_get_sessions(m->scheduled_sleep_uid, true, &sessions);
+                if (r < 0)
+                        return 0;
+
+                // Find one with a VT (Really, sessions should hold only one active session anyway!)
+                STRV_FOREACH(session, sessions)
+                {
+                        int k;
+                        k = sd_session_get_vt(*session, vtnr);
+                        if (k >= 0)
+                                break;
+                }
+
+                strv_free(sessions);
+
+                // Get to a safe non-gui VT
+                r = chvt(63);
+                if (r)
+                        return 0;
+
+                // Okay, go to sleep.
+                if (STR_IN_SET(verb, "suspend", "suspend-then-hibernate"))
+                        r = write_string_file(drv_suspend, "suspend", WRITE_STRING_FILE_DISABLE_BUFFER);
+                else
+                        r = write_string_file(drv_suspend, "hibernate", WRITE_STRING_FILE_DISABLE_BUFFER);
+
+                if (r)
+                        return 0;
+        } else if (streq(verb, "resume")) {
+                // Try to change back
+                if (*vtnr > 0)
+                        (void) chvt(*vtnr);
+                // Then wakeup the device
+                (void) write_string_file(drv_suspend, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
+        }
+
+        return 1;
+}
+#endif // 1
+
+static int write_hibernate_location_info(const HibernateLocation* hibernate_location) {
         char offset_str[DECIMAL_STR_MAX(uint64_t)];
         char resume_str[DECIMAL_STR_MAX(unsigned) * 2 + STRLEN(":")];
         int r;
 #if 1 /// To support LVM setups, elogind uses device numbers
-        char device_num_str [DECIMAL_STR_MAX(uint32_t) * 2 + 2];
+        char device_num_str[DECIMAL_STR_MAX(uint32_t) * 2 + 2];
         struct stat stb;
 #endif // 1
 
@@ -202,9 +264,10 @@ static int lock_all_homes(void) {
 #if 0 /// elogind uses the values stored in its manager instance
 static int execute(char **modes, char **states) {
 #else // 0
+
 static int execute(Manager* m, char **modes, char **states) {
 #endif // 0
-        char *arguments[] = {
+        char* arguments[] = {
                 NULL,
                 (char*) "pre",
                 arg_verb,
@@ -273,13 +336,13 @@ static int execute(Manager* m, char **modes, char **states) {
         m->callback_must_succeed = m->allow_suspend_interrupts;
 
         log_debug_elogind("Executing suspend hook scripts... (Must succeed: %s)",
-                          m->callback_must_succeed ? "YES" : "no" );
+                          m->callback_must_succeed ? "YES" : "no");
 
         r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments, NULL, EXEC_DIR_NONE);
 
         log_debug_elogind("Result is %d (callback_failed: %s)", r, m->callback_failed ? "true" : "false");
 
-        if ( m->callback_must_succeed && (r || m->callback_failed) ) {
+        if (m->callback_must_succeed && (r || m->callback_failed)) {
                 e = asprintf(&l, "A sleep script in %s or %s failed! [%d]\n"
                                  "The system %s has been cancelled!",
                              SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
@@ -330,10 +393,10 @@ static int execute(Manager* m, char **modes, char **states) {
         return r;
 }
 
-
 #if 0 /// elogind uses the values stored in its manager instance
 static int execute_s2h(const SleepConfig *sleep_config) {
 #else // 0
+
 static int execute_s2h(Manager *sleep_config) {
 #endif // 0
         _cleanup_close_ int tfd = -1;
@@ -503,15 +566,19 @@ static int run(int argc, char *argv[]) {
 
 DEFINE_MAIN_FUNCTION(run);
 #else // 0
+
 int do_sleep(Manager *m, const char *verb) {
         bool allow;
-        char **modes = NULL, **states = NULL;
+        int have_nvidia;
+        char** modes = NULL;
+        char** states = NULL;
         int r;
+        unsigned vtnr = 0;
 
         assert(verb);
         assert(m);
 
-        arg_verb = (char*)verb;
+        arg_verb = (char*) verb;
 
         log_debug_elogind("%s called for %s", __FUNCTION__, strnull(verb));
 
@@ -532,10 +599,20 @@ int do_sleep(Manager *m, const char *verb) {
                                        "Sleep mode \"%s\" is disabled by configuration, refusing.",
                                        arg_verb);
 
+        /* See whether we have an nvidia card to put to sleep */
+        have_nvidia = nvidia_sleep(m, arg_verb, &vtnr);
+
         /* Now execute either s2h or the regular sleep */
         if (streq(arg_verb, "suspend-then-hibernate"))
-                return execute_s2h(m);
+                r = execute_s2h(m);
+        else
+                r = execute(m, modes, states);
 
-        return execute(m, modes, states);
+        /* Wakeup a possibly put to sleep nvidia card */
+        if (have_nvidia)
+                nvidia_sleep(m, "resume", &vtnr);
+
+        return r;
 }
+
 #endif // 0
