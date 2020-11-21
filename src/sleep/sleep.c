@@ -321,7 +321,11 @@ static int execute(Manager* m, char **modes, char **states) {
                            "SLEEP=%s", arg_verb);
 
         arguments[1] = (char*) "post";
+#if 0 /// On wakeup the order might matter, so do not have elogind executing the post scripts in parallel!
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
+#else // 0
+        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
+#endif // 0
 
         return r;
 }
