@@ -1973,6 +1973,10 @@ static int method_do_shutdown_or_sleep(
 
         int interactive, r;
 
+#if 1 /// elogind needs these to get the caller uid
+        _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
+#endif // 1
+
         assert(m);
         assert(message);
 #if 0 /// elogind does not need this to be checked
@@ -2013,6 +2017,13 @@ static int method_do_shutdown_or_sleep(
                                   action_ignore_inhibit, error);
         if (r != 0)
                 return r;
+
+#if 1 /// elogind will use the senders uid to send nvidia cards to sleep on suspend/hibernate
+        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_AUGMENT|SD_BUS_CREDS_UID, &creds);
+        if (r >= 0) {
+                (void) sd_bus_creds_get_uid(creds, &m->scheduled_sleep_uid);
+        }
+#endif // 1
 
         r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
         if (r < 0)

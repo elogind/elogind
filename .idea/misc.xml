@@ -4,6 +4,11 @@
     <sourceRoots>
       <file path="$PROJECT_DIR$/src" />
     </sourceRoots>
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/build_debug" />
+      <file path="$PROJECT_DIR$/build_release" />
+      <file path="$PROJECT_DIR$/cb" />
+    </excludeRoots>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MakefileSettings">

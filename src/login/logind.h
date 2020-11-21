@@ -138,6 +138,10 @@ struct Manager {
            contains the action we are supposed to perform after the
            delay is over */
         HandleAction pending_action;
+
+        /* To allow elogind to put nvidia cards to sleep on suspend/hibernate,
+           we store the users uid to get the right VT information */
+        uid_t scheduled_sleep_uid;
 #endif // 0
         sd_event_source *inhibit_timeout_source;
 
