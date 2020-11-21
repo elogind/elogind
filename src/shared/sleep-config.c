@@ -84,10 +84,14 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         if (!logind_conf)
                 logind_conf = PKGSYSCONFDIR "/logind.conf";
 
-        (void) config_parse(NULL, logind_conf, NULL, "0Sleep\0",
-                            config_item_table_lookup, items,
-                            CONFIG_PARSE_WARN, sc,
-                            NULL);
+        (void) config_parse_many_nulstr(
+                        logind_conf,
+                        CONF_PATHS_NULSTR("elogind/sleep.conf.d"),
+                        "Login\0Sleep\0",
+                        config_item_table_lookup, items,
+                        CONFIG_PARSE_WARN | CONFIG_PARSE_RELAXED,
+                        NULL,
+                        NULL);
 #endif // 0
         /* use default values unless set */
         sc->allow_suspend = allow_suspend != 0;
