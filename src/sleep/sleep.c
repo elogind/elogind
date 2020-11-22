@@ -66,10 +66,16 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                 return 0;
 
         if (STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
+                char* t = NULL;
                 *vtnr = 0;
 
                 // Find the (active) sessions of the sleep sender
                 r = sd_uid_get_sessions(m->scheduled_sleep_uid, 1, &sessions);
+#if ENABLE_DEBUG_ELOGIND
+                t = strv_join(sessions, " ");
+                log_debug("sd_uid_get_sessions() returned %d, result is: %s", r, strnull(t));
+                free(t);
+#endif // elogind debug
                 if (r < 0)
                         return 0;
 
@@ -77,40 +83,51 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                 STRV_FOREACH(session, sessions) {
                         int k;
                         k = sd_session_get_vt(*session, &vt);
-                        if (k >= 0)
+                        if (k >= 0) {
+                                log_debug("Active session %s with VT %u found", *session, vt);
                                 break;
+                        }
                 }
 
                 // See whether the type of any active session is not "tty"
                 STRV_FOREACH(session, sessions) {
                         int k;
                         k = sd_session_get_type(*session, &type);
-                        if ((k >= 0) && strcmp("tty", strnull(type)))
+                        if ((k >= 0) && strcmp("tty", strnull(type))) {
+                                log_debug("Session %s with Type %s counted as non-tty", *session, type);
                                 ++x11;
+                        }
                 }
 
                 strv_free(sessions);
 
                 // Get to a safe non-gui VT if we are on any GUI
                 if ( x11 > 0 ) {
+                        log_debug("Storing VT %u and switching to VT 0", vt);
                         *vtnr = vt;
                         (void) chvt(0);
                 }
 
                 // Okay, go to sleep.
-                if (STR_IN_SET(verb, "suspend", "suspend-then-hibernate"))
+                if (streq(verb, "suspend")) {
+                        log_debug("Writing 'suspend' into %s", drv_suspend);
                         r = write_string_file(drv_suspend, "suspend", WRITE_STRING_FILE_DISABLE_BUFFER);
-                else
+                } else {
+                        log_debug("Writing 'hibernate' into %s", drv_suspend);
                         r = write_string_file(drv_suspend, "hibernate", WRITE_STRING_FILE_DISABLE_BUFFER);
+                }
 
                 if (r)
                         return 0;
         } else if (streq(verb, "resume")) {
                 // Wakeup the device
+                log_debug("Writing '%s' into %s", verb, drv_suspend);
                 (void) write_string_file(drv_suspend, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
                 // Then try to change back
-                if (*vtnr > 0)
+                if (*vtnr > 0) {
+                        log_debug("Switching back to VT %u", *vtnr);
                         (void) chvt(*vtnr);
+                }
         }
 
         return 1;
@@ -195,6 +212,7 @@ static int write_mode(char **modes) {
 #if 0 /// elogind uses an adapting target
                 k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
 #else // 0
+                log_debug("Writing '%s' to '%s'...", *mode, mode_location);
                 k = write_string_file(mode_location, *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
 #endif // 0
                 if (k >= 0)
@@ -221,6 +239,8 @@ static int write_state(FILE **f, char **states) {
 
         STRV_FOREACH(state, states) {
                 int k;
+
+                log_debug_elogind("Writing '%s' into /sys/power/state", *state);
 
                 k = write_string_stream(*f, *state, WRITE_STRING_FILE_DISABLE_BUFFER);
                 if (k >= 0)
@@ -390,6 +410,7 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         /* Configure hibernation settings if we are supposed to hibernate */
         if (!strv_isempty(modes)) {
                 if (strcmp( verb, "suspend")) {
+                        log_debug("Trying to find a hibernation location...");
                         r = find_hibernate_location(&hibernate_location);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to find location to hibernate to: %m");
@@ -397,6 +418,7 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                                 /* 0 means: no hibernation location was configured in the kernel so far, let's
                                 * do it ourselves then. > 0 means: kernel already had a configured hibernation
                                 * location which we shouldn't touch. */
+                                log_debug("Writing new hibernation location...");
                                 r = write_hibernate_location_info(hibernate_location);
                                 if (r < 0)
                                         return log_error_errno(r, "Failed to prepare for hibernation: %m");
@@ -439,13 +461,13 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                 return -ECANCELED;
         }
 
+        /* See whether we have an nvidia card to put to sleep */
+        have_nvidia = nvidia_sleep(m, verb, &vtnr);
+
         log_struct(LOG_INFO,
                    "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                    LOG_MESSAGE("Suspending system..."),
                    "SLEEP=%s", verb);
-
-        /* See whether we have an nvidia card to put to sleep */
-        have_nvidia = nvidia_sleep(m, verb, &vtnr);
 
         r = write_state(&f, states);
         if (r < 0)
