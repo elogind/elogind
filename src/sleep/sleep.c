@@ -367,6 +367,8 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                 [STDOUT_COLLECT] = m,
                 [STDOUT_CONSUME] = m,
         };
+        int have_nvidia;
+        unsigned vtnr = 0;
         int e;
         _cleanup_free_ char *l = NULL;
         char const* mode_location = strcmp( verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
@@ -442,6 +444,9 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                    LOG_MESSAGE("Suspending system..."),
                    "SLEEP=%s", verb);
 
+        /* See whether we have an nvidia card to put to sleep */
+        have_nvidia = nvidia_sleep(m, verb, &vtnr);
+
         r = write_state(&f, states);
         if (r < 0)
                 log_struct_errno(LOG_ERR, r,
@@ -453,6 +458,10 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                         "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
                         LOG_MESSAGE("System resumed."),
                         "SLEEP=%s", verb);
+
+        /* Wakeup a possibly put to sleep nvidia card */
+        if (have_nvidia)
+                nvidia_sleep(m, "resume", &vtnr);
 
         arguments[1] = (char*) "post";
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
@@ -636,11 +645,9 @@ DEFINE_MAIN_FUNCTION(run);
 
 int do_sleep(Manager *m, const char *verb) {
         bool allow;
-        int have_nvidia;
         char** modes = NULL;
         char** states = NULL;
         int r;
-        unsigned vtnr = 0;
 
         assert(verb);
         assert(m);
@@ -666,18 +673,11 @@ int do_sleep(Manager *m, const char *verb) {
                                        "Sleep mode \"%s\" is disabled by configuration, refusing.",
                                        arg_verb);
 
-        /* See whether we have an nvidia card to put to sleep */
-        have_nvidia = nvidia_sleep(m, arg_verb, &vtnr);
-
         /* Now execute either s2h or the regular sleep */
         if (streq(arg_verb, "suspend-then-hibernate"))
                 r = execute_s2h(m);
         else
                 r = execute(m, arg_verb, modes, states);
-
-        /* Wakeup a possibly put to sleep nvidia card */
-        if (have_nvidia)
-                nvidia_sleep(m, "resume", &vtnr);
 
         return r;
 }
