@@ -51,9 +51,10 @@ STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
 static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";
         struct stat std;
-        int r;
+        int r, vt = 0, x11 = 0;
         char** session;
         char** sessions;
+        char* type;
 
         assert(verb);
         assert(vtnr);
@@ -67,25 +68,35 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                 *vtnr = 0;
 
                 // Find the (active) sessions of the sleep sender
-                r = sd_uid_get_sessions(m->scheduled_sleep_uid, true, &sessions);
+                r = sd_uid_get_sessions(m->scheduled_sleep_uid, 1, &sessions);
                 if (r < 0)
                         return 0;
 
                 // Find one with a VT (Really, sessions should hold only one active session anyway!)
-                STRV_FOREACH(session, sessions)
-                {
+                STRV_FOREACH(session, sessions) {
                         int k;
-                        k = sd_session_get_vt(*session, vtnr);
+                        k = sd_session_get_vt(*session, &vt);
                         if (k >= 0)
                                 break;
                 }
 
+                // See whether the type of any active session is not "tty"
+                STRV_FOREACH(session, sessions) {
+                        int k;
+                        k = sd_session_get_type(*session, &type);
+                        if ((k >= 0) && strcmp("tty", strnull(type)))
+                                ++x11;
+                }
+
                 strv_free(sessions);
 
-                // Get to a safe non-gui VT
-                r = chvt(63);
-                if (r)
-                        return 0;
+                // Get to a safe non-gui VT if we are on any GUI
+                if ( x11 > 0 ) {
+                        *vtnr = vt;
+                        r = chvt(63);
+                        if (r)
+                                return 0;
+                }
 
                 // Okay, go to sleep.
                 if (STR_IN_SET(verb, "suspend", "suspend-then-hibernate"))
