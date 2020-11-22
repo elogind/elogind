@@ -166,8 +166,7 @@ int ask_char(char *ret, const char *replies, const char *fmt, ...) {
                 char c;
                 bool need_nl = true;
 
-                if (colors_enabled())
-                        fputs(ANSI_HIGHLIGHT, stdout);
+                fputs(ansi_highlight(), stdout);
 
                 putchar('\r');
 
@@ -175,8 +174,7 @@ int ask_char(char *ret, const char *replies, const char *fmt, ...) {
                 vprintf(fmt, ap);
                 va_end(ap);
 
-                if (colors_enabled())
-                        fputs(ANSI_NORMAL, stdout);
+                fputs(ansi_normal(), stdout);
 
                 fflush(stdout);
 
@@ -215,15 +213,13 @@ int ask_string(char **ret, const char *text, ...) {
         assert(ret);
         assert(text);
 
-        if (colors_enabled())
-                fputs(ANSI_HIGHLIGHT, stdout);
+        fputs(ansi_highlight(), stdout);
 
         va_start(ap, text);
         vprintf(text, ap);
         va_end(ap);
 
-        if (colors_enabled())
-                fputs(ANSI_NORMAL, stdout);
+        fputs(ansi_normal(), stdout);
 
         fflush(stdout);
 
@@ -1398,7 +1394,7 @@ void get_log_colors(int priority, const char **on, const char **off, const char 
 
         if (priority <= LOG_ERR) {
                 if (on)
-                        *on = ANSI_HIGHLIGHT_RED;
+                        *on = ansi_highlight_red();
                 if (off)
                         *off = ANSI_NORMAL;
                 if (highlight)
@@ -1406,7 +1402,7 @@ void get_log_colors(int priority, const char **on, const char **off, const char 
 
         } else if (priority <= LOG_WARNING) {
                 if (on)
-                        *on = ANSI_HIGHLIGHT_YELLOW;
+                        *on = ansi_highlight_yellow();
                 if (off)
                         *off = ANSI_NORMAL;
                 if (highlight)
@@ -1418,14 +1414,14 @@ void get_log_colors(int priority, const char **on, const char **off, const char 
                 if (off)
                         *off = ANSI_NORMAL;
                 if (highlight)
-                        *highlight = ANSI_HIGHLIGHT_RED;
+                        *highlight = ansi_highlight_red();
 
         } else if (priority >= LOG_DEBUG) {
                 if (on)
-                        *on = ANSI_GREY;
+                        *on = ansi_grey();
                 if (off)
                         *off = ANSI_NORMAL;
                 if (highlight)
-                        *highlight = ANSI_HIGHLIGHT_RED;
+                        *highlight = ansi_highlight_red();
         }
 }

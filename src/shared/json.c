@@ -1495,7 +1495,7 @@ static void json_format_string(FILE *f, const char *q, JsonFormatFlags flags) {
         fputc('"', f);
 
         if (flags & JSON_FORMAT_COLOR)
-                fputs(ANSI_GREEN, f);
+                fputs(ansi_green(), f);
 
         for (; *q; q++)
                 switch (*q) {
@@ -1557,7 +1557,7 @@ static int json_format(FILE *f, JsonVariant *v, JsonFormatFlags flags, const cha
                         return -errno;
 
                 if (flags & JSON_FORMAT_COLOR)
-                        fputs(ANSI_HIGHLIGHT_BLUE, f);
+                        fputs(ansi_highlight_blue(), f);
 
                 fprintf(f, "%.*Le", DECIMAL_DIG, json_variant_real(v));
 
@@ -1570,7 +1570,7 @@ static int json_format(FILE *f, JsonVariant *v, JsonFormatFlags flags, const cha
 
         case JSON_VARIANT_INTEGER:
                 if (flags & JSON_FORMAT_COLOR)
-                        fputs(ANSI_HIGHLIGHT_BLUE, f);
+                        fputs(ansi_highlight_blue(), f);
 
                 fprintf(f, "%" PRIdMAX, json_variant_integer(v));
 
@@ -1580,7 +1580,7 @@ static int json_format(FILE *f, JsonVariant *v, JsonFormatFlags flags, const cha
 
         case JSON_VARIANT_UNSIGNED:
                 if (flags & JSON_FORMAT_COLOR)
-                        fputs(ANSI_HIGHLIGHT_BLUE, f);
+                        fputs(ansi_highlight_blue(), f);
 
                 fprintf(f, "%" PRIuMAX, json_variant_unsigned(v));
 
@@ -3855,16 +3855,6 @@ int json_log_internal(
                                 "CONFIG_LINE=%u", source_line,
                                 "CONFIG_COLUMN=%u", source_column,
                                 LOG_MESSAGE("%s:%u:%u: %s", source, source_line, source_column, buffer),
-                                NULL);
-        else if (source_line > 0 && source_column > 0)
-                return log_struct_internal(
-                                LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
-                                error,
-                                file, line, func,
-                                "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
-                                "CONFIG_LINE=%u", source_line,
-                                "CONFIG_COLUMN=%u", source_column,
-                                LOG_MESSAGE("(string):%u:%u: %s", source_line, source_column, buffer),
                                 NULL);
         else
                 return log_struct_internal(
