@@ -1218,11 +1218,10 @@ static int run(int argc, char *argv[]) {
 
         elogind_set_program_name(argv[0]);
         log_set_facility(LOG_AUTH);
-        log_setup_service();
 #if ENABLE_DEBUG_ELOGIND
         log_set_max_level(LOG_DEBUG);
-        log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
+        log_setup_service();
 
 #if 0 /// This is elogind
         r = service_parse_argv("systemd-logind.service",
@@ -1255,8 +1254,8 @@ static int run(int argc, char *argv[]) {
                 log_set_facility(LOG_AUTH);
 #if ENABLE_DEBUG_ELOGIND
                 log_set_max_level(LOG_DEBUG);
-                log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
+                log_setup_service();
         }
 
         // Now the PID file can be written, whether we daemonized or not
