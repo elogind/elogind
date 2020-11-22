@@ -51,7 +51,8 @@ STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
 static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";
         struct stat std;
-        int r, vt = 0, x11 = 0;
+        int r, x11 = 0;
+        unsigned vt = 0;
         char** session;
         char** sessions;
         char* type;
@@ -351,11 +352,11 @@ static int execute(char **modes, char **states) {
         return r;
 }
 #else // 0
-static int execute(Manager* m, char **modes, char **states) {
+static int execute(Manager* m, char const* verb, char **modes, char **states) {
         char* arguments[] = {
                 NULL,
                 (char*) "pre",
-                arg_verb,
+                (char*) verb,
                 NULL
         };
         static const char* const dirs[] = {
@@ -370,7 +371,7 @@ static int execute(Manager* m, char **modes, char **states) {
         };
         int e;
         _cleanup_free_ char *l = NULL;
-        char const* mode_location = strcmp( arg_verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
+        char const* mode_location = strcmp( verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
 
         assert(m);
 
@@ -388,7 +389,7 @@ static int execute(Manager* m, char **modes, char **states) {
 
         /* Configure hibernation settings if we are supposed to hibernate */
         if (!strv_isempty(modes)) {
-                if (strcmp( arg_verb, "suspend")) {
+                if (strcmp( verb, "suspend")) {
                         r = find_hibernate_location(&hibernate_location);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to find location to hibernate to: %m");
@@ -420,7 +421,7 @@ static int execute(Manager* m, char **modes, char **states) {
                 e = asprintf(&l, "A sleep script in %s or %s failed! [%d]\n"
                                  "The system %s has been cancelled!",
                              SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
-                             r, arg_verb);
+                             r, verb);
                 if (e < 0) {
                         log_oom();
                         return -ENOMEM;
@@ -432,8 +433,8 @@ static int execute(Manager* m, char **modes, char **states) {
                                  LOG_MESSAGE("A sleep script in %s or %s failed [%d]: %m\n"
                                              "The system %s has been cancelled!",
                                              SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
-                                             r, arg_verb),
-                                 "SLEEP=%s", arg_verb);
+                                             r, verb),
+                                 "SLEEP=%s", verb);
 
                 return -ECANCELED;
         }
@@ -441,19 +442,19 @@ static int execute(Manager* m, char **modes, char **states) {
         log_struct(LOG_INFO,
                    "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                    LOG_MESSAGE("Suspending system..."),
-                   "SLEEP=%s", arg_verb);
+                   "SLEEP=%s", verb);
 
         r = write_state(&f, states);
         if (r < 0)
                 log_struct_errno(LOG_ERR, r,
                                  "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
                                  LOG_MESSAGE("Failed to suspend system. System resumed again: %m"),
-                                 "SLEEP=%s", arg_verb);
+                                 "SLEEP=%s", verb);
         else
                 log_struct(LOG_INFO,
                         "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
                         LOG_MESSAGE("System resumed."),
-                        "SLEEP=%s", arg_verb);
+                        "SLEEP=%s", verb);
 
         arguments[1] = (char*) "post";
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
@@ -490,8 +491,7 @@ static int execute_s2h(Manager *sleep_config) {
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
 #else // 0
-        arg_verb = "suspend";
-        r = execute(sleep_config, sleep_config->suspend_modes, sleep_config->suspend_states);
+        r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
         if (r < 0)
                 return r;
@@ -511,8 +511,7 @@ static int execute_s2h(Manager *sleep_config) {
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #else // 0
-        arg_verb = "hibernate";
-        r = execute(sleep_config, sleep_config->hibernate_modes, sleep_config->hibernate_states);
+        r = execute(sleep_config, "hibernate", sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #endif // 0
         if (r < 0) {
                 log_notice_errno(r, "Couldn't hibernate, will try to suspend again: %m");
@@ -520,7 +519,7 @@ static int execute_s2h(Manager *sleep_config) {
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
                 r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
 #else // 0
-                r = execute(sleep_config, sleep_config->suspend_modes, sleep_config->suspend_states);
+                r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
                 if (r < 0)
                         return log_error_errno(r, "Could neither hibernate nor suspend, giving up: %m");
@@ -676,7 +675,7 @@ int do_sleep(Manager *m, const char *verb) {
         if (streq(arg_verb, "suspend-then-hibernate"))
                 r = execute_s2h(m);
         else
-                r = execute(m, modes, states);
+                r = execute(m, arg_verb, modes, states);
 
         /* Wakeup a possibly put to sleep nvidia card */
         if (have_nvidia)
