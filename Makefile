@@ -68,6 +68,8 @@ else
     CXXFLAGS := -O2 -fwrapv ${envCXXFLAGS}
 endif
 
+# Set search paths including the actual build directory
+VPATH  := $(BUILDDIR):$(HERE):$(HERE)/src
 
 # Finalize CFLAGS
 CFLAGS := -march=native -pipe ${CFLAGS} -Wall -Wextra -Wunused -Wno-unused-parameter -Wno-unused-result -ftree-vectorize
@@ -76,27 +78,38 @@ CFLAGS := -march=native -pipe ${CFLAGS} -Wall -Wextra -Wunused -Wno-unused-param
 all: build
 
 build: $(CONFIG)
+	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
 	+(cd $(BUILDDIR) && ninja $(NINJA_OPT))
+	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 clean: $(CONFIG)
+	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
 	(cd $(BUILDDIR) && ninja $(NINJA_OPT) -t cleandead)
 	(cd $(BUILDDIR) && ninja $(NINJA_OPT) -t clean)
-
+	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 install: build
+	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
 	(cd $(BUILDDIR) && DESTDIR=$(DESTDIR) ninja $(NINJA_OPT) install)
+	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 justprint: $(CONFIG)
-	$(MAKE) all JUST_PRINT=YES
+	+($(MAKE) all JUST_PRINT=YES)
 
 loginctl: $(CONFIG)
+	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
 	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
+	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 test: $(CONFIG)
+	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
 	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
+	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 test-login: $(CONFIG)
+	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
 	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
+	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 $(BUILDDIR):
 	+$(MKDIR) $@
