@@ -50,7 +50,8 @@ STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
 static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";
         struct stat std;
-        int r, vt = 0, x11 = 0;
+        int r, x11 = 0;
+        unsigned vt = 0;
         char** session;
         char** sessions;
         char* type;
@@ -183,15 +184,26 @@ static int write_hibernate_location_info(const HibernateLocation* hibernate_loca
 static int write_mode(char **modes) {
         int r = 0;
         char **mode;
+#if 1 /// Heeding elogind configuration for SuspendMode, we need to know where to write what
+        char const* mode_location = strcmp( arg_verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
+#endif // 1
 
         STRV_FOREACH(mode, modes) {
                 int k;
 
+#if 0 /// elogind uses an adapting target
                 k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
+#else // 0
+                k = write_string_file(mode_location, *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
+#endif // 0
                 if (k >= 0)
                         return 0;
 
+#if 0 /// elogind uses an adapting target
                 log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m", *mode);
+#else // 0
+                log_debug_errno(k, "Failed to write '%s' to %s: %m", *mode, mode_location);
+#endif // 0
                 if (r >= 0)
                         r = k;
         }
@@ -270,47 +282,18 @@ static int lock_all_homes(void) {
 }
 #endif // 0
 
-#if 0 /// elogind uses the values stored in its manager instance
+#if 0 /// Changes needed by elogind are too vast to do this inline
 static int execute(char **modes, char **states) {
-#else // 0
-
-static int execute(Manager* m, char **modes, char **states) {
-#endif // 0
         char* arguments[] = {
                 NULL,
                 (char*) "pre",
                 arg_verb,
                 NULL
         };
-#if 0 /// elogind also supports hook scripts in /etc/elogind/system-sleep
         static const char* const dirs[] = {
                 SYSTEM_SLEEP_PATH,
                 NULL
         };
-#else // 0
-        static const char* const dirs[] = {
-                SYSTEM_SLEEP_PATH,
-                PKGSYSCONFDIR "/system-sleep",
-                NULL
-        };
-#endif // 0
-
-#if 1 /// Extra stuff needed by elogind
-        int e;
-        _cleanup_free_ char *l = NULL;
-        void* gather_args[] = {
-                [STDOUT_GENERATE] = m,
-                [STDOUT_COLLECT] = m,
-                [STDOUT_CONSUME] = m,
-        };
-        int have_nvidia;
-        unsigned vtnr = 0;
-        int e;
-        _cleanup_free_ char *l = NULL;
-        char const* mode_location = strcmp( verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
-
-        assert(m);
-#endif // 1
 
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_(hibernate_location_freep) HibernateLocation *hibernate_location = NULL;
@@ -330,22 +313,100 @@ static int execute(Manager* m, char **modes, char **states) {
                 if (r < 0)
                         return log_error_errno(r, "Failed to find location to hibernate to: %m");
                 if (r == 0) { /* 0 means: no hibernation location was configured in the kernel so far, let's
-                               * do it ourselves then. > 0 means: kernel already had a configured hibernation
-                               * location which we shouldn't touch. */
+               * do it ourselves then. > 0 means: kernel already had a configured hibernation
+               * location which we shouldn't touch. */
                         r = write_hibernate_location_info(hibernate_location);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to prepare for hibernation: %m");
                 }
-
                 r = write_mode(modes);
                 if (r < 0)
                         return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");;
         }
 
-#if 0 /// elogind needs its own callbacks to enable cancellation by erroneous scripts
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
         (void) lock_all_homes();
+
+        log_struct(LOG_INFO,
+                   "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
+                LOG_MESSAGE("Suspending system..."),
+                "SLEEP=%s", arg_verb);
+
+        r = write_state(&f, states);
+        if (r < 0)
+                log_struct_errno(LOG_ERR, r,
+                                 "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                LOG_MESSAGE("Failed to suspend system. System resumed again: %m"),
+                "SLEEP=%s", arg_verb);
+        else
+        log_struct(LOG_INFO,
+                   "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                LOG_MESSAGE("System resumed."),
+                "SLEEP=%s", arg_verb);
+
+        arguments[1] = (char*) "post";
+        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
+
+        return r;
+}
 #else // 0
+static int execute(Manager* m, char const* verb, char **modes, char **states) {
+        char* arguments[] = {
+                NULL,
+                (char*) "pre",
+                (char*) verb,
+                NULL
+        };
+        static const char* const dirs[] = {
+                SYSTEM_SLEEP_PATH,
+                PKGSYSCONFDIR "/system-sleep",
+                NULL
+        };
+        void* gather_args[] = {
+                [STDOUT_GENERATE] = m,
+                [STDOUT_COLLECT] = m,
+                [STDOUT_CONSUME] = m,
+        };
+        int have_nvidia;
+        unsigned vtnr = 0;
+        int e;
+        _cleanup_free_ char *l = NULL;
+        char const* mode_location = strcmp( verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
+
+        assert(m);
+
+        _cleanup_fclose_ FILE *f = NULL;
+        _cleanup_(hibernate_location_freep) HibernateLocation *hibernate_location = NULL;
+        int r;
+
+        /* This file is opened first, so that if we hit an error,
+         * we can abort before modifying any state. */
+        f = fopen("/sys/power/state", "we");
+        if (!f)
+                return log_error_errno(errno, "Failed to open /sys/power/state: %m");
+
+        setvbuf(f, NULL, _IONBF, 0);
+
+        /* Configure hibernation settings if we are supposed to hibernate */
+        if (!strv_isempty(modes)) {
+                if (strcmp( verb, "suspend")) {
+                        r = find_hibernate_location(&hibernate_location);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to find location to hibernate to: %m");
+                        if (r == 0) {
+                                /* 0 means: no hibernation location was configured in the kernel so far, let's
+                                * do it ourselves then. > 0 means: kernel already had a configured hibernation
+                                * location which we shouldn't touch. */
+                                r = write_hibernate_location_info(hibernate_location);
+                                if (r < 0)
+                                        return log_error_errno(r, "Failed to prepare for hibernation: %m");
+                        }
+                }
+                r = write_mode(modes);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to write mode to %s: %m", mode_location);
+        }
+
         m->callback_failed = false;
         m->callback_must_succeed = m->allow_suspend_interrupts;
 
@@ -360,7 +421,7 @@ static int execute(Manager* m, char **modes, char **states) {
                 e = asprintf(&l, "A sleep script in %s or %s failed! [%d]\n"
                                  "The system %s has been cancelled!",
                              SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
-                             r, arg_verb);
+                             r, verb);
                 if (e < 0) {
                         log_oom();
                         return -ENOMEM;
@@ -368,22 +429,20 @@ static int execute(Manager* m, char **modes, char **states) {
 
                 utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
 
-                log_struct_errno(LOG_ERR, r,
-                                 "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
                                  LOG_MESSAGE("A sleep script in %s or %s failed [%d]: %m\n"
                                              "The system %s has been cancelled!",
                                              SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
-                                             r, arg_verb),
-                                 "SLEEP=%s", arg_verb);
+                                             r, verb),
+                                 "SLEEP=%s", verb);
 
                 return -ECANCELED;
         }
-#endif // 0
 
         log_struct(LOG_INFO,
                    "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                    LOG_MESSAGE("Suspending system..."),
-                   "SLEEP=%s", arg_verb);
+                   "SLEEP=%s", verb);
 
         /* See whether we have an nvidia card to put to sleep */
         have_nvidia = nvidia_sleep(m, verb, &vtnr);
@@ -393,31 +452,27 @@ static int execute(Manager* m, char **modes, char **states) {
                 log_struct_errno(LOG_ERR, r,
                                  "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
                                  LOG_MESSAGE("Failed to suspend system. System resumed again: %m"),
-                                 "SLEEP=%s", arg_verb);
+                                 "SLEEP=%s", verb);
         else
                 log_struct(LOG_INFO,
-                           "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                           LOG_MESSAGE("System resumed."),
-                           "SLEEP=%s", arg_verb);
+                        "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                        LOG_MESSAGE("System resumed."),
+                        "SLEEP=%s", verb);
 
         /* Wakeup a possibly put to sleep nvidia card */
         if (have_nvidia)
                 nvidia_sleep(m, "resume", &vtnr);
 
         arguments[1] = (char*) "post";
-#if 0 /// On wakeup the order might matter, so do not have elogind executing the post scripts in parallel!
-        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
-#else // 0
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
-#endif // 0
 
         return r;
 }
+#endif // 0
 
 #if 0 /// elogind uses the values stored in its manager instance
 static int execute_s2h(const SleepConfig *sleep_config) {
 #else // 0
-
 static int execute_s2h(Manager *sleep_config) {
 #endif // 0
         _cleanup_close_ int tfd = -1;
@@ -443,7 +498,7 @@ static int execute_s2h(Manager *sleep_config) {
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
 #else // 0
-        r = execute(sleep_config, sleep_config->suspend_modes, sleep_config->suspend_states);
+        r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
         if (r < 0)
                 return r;
@@ -463,7 +518,7 @@ static int execute_s2h(Manager *sleep_config) {
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #else // 0
-        r = execute(sleep_config, sleep_config->hibernate_modes, sleep_config->hibernate_states);
+        r = execute(sleep_config, "hibernate", sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #endif // 0
         if (r < 0) {
                 log_notice_errno(r, "Couldn't hibernate, will try to suspend again: %m");
@@ -471,7 +526,7 @@ static int execute_s2h(Manager *sleep_config) {
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
                 r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
 #else // 0
-                r = execute(sleep_config, sleep_config->suspend_modes, sleep_config->suspend_states);
+                r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
                 if (r < 0)
                         return log_error_errno(r, "Could neither hibernate nor suspend, giving up: %m");
@@ -622,7 +677,7 @@ int do_sleep(Manager *m, const char *verb) {
         if (streq(arg_verb, "suspend-then-hibernate"))
                 r = execute_s2h(m);
         else
-                r = execute(m, modes, states);
+                r = execute(m, arg_verb, modes, states);
 
         return r;
 }

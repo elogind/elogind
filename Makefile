@@ -31,7 +31,6 @@ MAKE  := $(shell which make)
 MESON ?= $(shell which meson)
 MKDIR := $(shell which mkdir) -p
 RM    := $(shell which rm) -f
-SED   := $(shell which sed)
 
 # Save users/systems choice
 envCFLAGS   := ${CFLAGS}
@@ -88,7 +87,7 @@ install: build
 	(cd $(BUILDDIR) && DESTDIR=$(DESTDIR) ninja $(NINJA_OPT) install)
 
 justprint: $(CONFIG)
-	($(MAKE) all JUST_PRINT=YES | $(SED) -e 's, \.\./, ./,g')
+	$(MAKE) all JUST_PRINT=YES
 
 loginctl: $(CONFIG)
 	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)

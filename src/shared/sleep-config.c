@@ -211,6 +211,48 @@ int can_sleep_disk(char **types) {
         return false;
 }
 
+#if 1 /// Let's check the mem_sleep so elogind supports suspend modes
+static int can_sleep_mem(char **types) {
+        _cleanup_free_ char *p = NULL;
+        char **type;
+        int r;
+
+        if (strv_isempty(types))
+                return true;
+
+        /* If /sys is read-only we cannot sleep */
+        if (access("/sys/power/mem_sleep", W_OK) < 0) {
+                log_debug_errno(errno, "/sys/power/mem_sleep is not writable: %m");
+                return false;
+        }
+
+        r = read_one_line_file("/sys/power/mem_sleep", &p);
+        if (r < 0) {
+                log_debug_errno(r, "Couldn't read /sys/power/mem_sleep: %m");
+                return false;
+        }
+
+        STRV_FOREACH(type, types) {
+                const char *word, *state;
+                size_t l, k;
+
+                k = strlen(*type);
+                FOREACH_WORD_SEPARATOR(word, l, p, WHITESPACE, state) {
+                        if (l == k && memcmp(word, *type, l) == 0)
+                                return true;
+
+                        if (l == k + 2 &&
+                            word[0] == '[' &&
+                            memcmp(word + 1, *type, l - 2) == 0 &&
+                            word[l-1] == ']')
+                                return true;
+                }
+        }
+
+        return false;
+}
+#endif // 1
+
 #define HIBERNATION_SWAP_THRESHOLD 0.98
 
 SwapEntry* swap_entry_free(SwapEntry *se) {
@@ -680,8 +722,15 @@ static int can_sleep_internal(const char *verb, bool check_allowed, const SleepC
         if (streq(verb, "suspend-then-hibernate"))
                 return can_s2h(sleep_config);
 
+#if 0 /// elogind supports setting a suspend mode
         if (!can_sleep_state(states) || !can_sleep_disk(modes))
                 return false;
+#else // 0
+        if (!can_sleep_state(states) ||
+            !((strcmp("suspend", verb) && can_sleep_disk(modes)) ||
+              (streq("suspend", verb) && can_sleep_mem(modes))))
+                return false;
+#endif // 0
 
         if (streq(verb, "suspend"))
                 return true;
