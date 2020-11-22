@@ -269,10 +269,10 @@ int log_emergency_level(void);
 #endif
 
 #if ENABLE_DEBUG_ELOGIND
-#  define log_debug_elogind_full(...) {   \
-        log_set_max_level(LOG_DEBUG);     \
-        log_full(LOG_DEBUG, __VA_ARGS__); \
-}
+#  define log_debug_elogind_full(...) do { \
+        log_set_max_level_realm(LOG_REALM, LOG_DEBUG);              \
+        log_full_errno_realm(LOG_REALM, LOG_DEBUG, 0, __VA_ARGS__); \
+} while(0)
 #  define log_debug_elogind(fmt, ...) log_debug_elogind_full("(DEBUG) " fmt, __VA_ARGS__)
 #else
 #  define log_debug_elogind(...) do {} while (0)
