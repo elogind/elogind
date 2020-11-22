@@ -83,7 +83,7 @@ static void remove_pid_file( void ) {
 }
 
 
-void write_pid_file( void ) {
+static void write_pid_file( void ) {
         char  c[DECIMAL_STR_MAX( pid_t ) + 2];
         pid_t pid;
         int   r;
@@ -107,20 +107,18 @@ void write_pid_file( void ) {
   * The parent and child return their forks PID.
   * On error, a value < 0 is returned.
 **/
-int elogind_daemonize( void ) {
+static int elogind_daemonize( void ) {
         pid_t child;
         pid_t grandchild;
         pid_t SID;
         int   r;
-
-        log_set_open_when_needed(true);
 
         log_debug_elogind("%s", "Double forking elogind");
         log_debug_elogind("Parent PID     : %5d", getpid_cached());
         log_debug_elogind("Parent SID     : %5d", getsid(getpid_cached()));
 
         r = safe_fork( "elogind-forker",
-                       FORK_LOG|FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT,
+                       FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT,
                        &child );
 
         if ( r ) {
@@ -150,7 +148,7 @@ int elogind_daemonize( void ) {
         umask( 0022 );
 
         /* Now the grandchild, the true daemon, can be created. */
-        r = safe_fork( "elogind-daemon", FORK_LOG|FORK_REOPEN_LOG, &grandchild );
+        r = safe_fork( "elogind-daemon", FORK_REOPEN_LOG, &grandchild );
 
         if ( r ) {
                 log_debug_elogind("Fork 2 returned: %5d", r);
@@ -320,16 +318,36 @@ int elogind_setup_cgroups_agent( Manager* m ) {
   * return = 0 on success, continue normal operation.
   * return > 0 if elogind is already running, exit with success.
 **/
-int elogind_startup(void) {
+int elogind_startup(int argc, char *argv[]) {
+        bool daemonize = false;
+        int i, r;
         pid_t pid;
 
         /* Do not continue if elogind is already running */
         pid = elogind_is_already_running( );
         if ( pid ) {
-                log_error( "elogind is already running as PID "
-                PID_FMT, pid);
+                log_error( "elogind is already running as PID " PID_FMT, pid);
                 return pid;
         }
+
+        /* elogind can be put into background using -D/--daemon option */
+        for (i = 0; !daemonize && (i <= argc) && argv[i]; ++i ) {
+                if (streq("-D", argv[i]) || streq("--daemon", argv[i]))
+                        daemonize = true;
+        }
+
+        if ( daemonize ) {
+                log_debug_elogind("%s", "Daemonizing elogind...");
+                r = elogind_daemonize();
+                if ( r < 0 )
+                        return log_error_errno( r, "Failed to daemonize: %m" );
+                if ( r > 0 )
+                        return EXIT_SUCCESS;
+        }
+
+        // Now the PID file can be written, whether we daemonized or not
+        log_debug_elogind("%s", "Writing PID file...");
+        write_pid_file();
 
         return 0;
 }

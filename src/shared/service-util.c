@@ -9,10 +9,6 @@
 #include "terminal-util.h"
 #include "util.h"
 
-#if 1 /// NEEDED by elogogind
-bool daemonize = false;
-#endif // 1
-
 static int help(const char *program_path, const char *service, const char *description, bool bus_introspect) {
         _cleanup_free_ char *link = NULL;
         int r;
@@ -76,7 +72,7 @@ int service_parse_argv(
 
 #if 1 /// elogind allows to be daemonized
                 case 'D':
-                        daemonize = true;
+                        /* The option is already handled by elogind_startup() */
                         break;
 #endif // 1
 

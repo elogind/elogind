@@ -1216,6 +1216,12 @@ static int run(int argc, char *argv[]) {
         _cleanup_(manager_unrefp) Manager *m = NULL;
         int r;
 
+#if 1 /// perform extra checks for elogind startup
+        r = elogind_startup(argc, argv);
+        if (r)
+                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+#endif // 1
+
         elogind_set_program_name(argv[0]);
         log_set_facility(LOG_AUTH);
 #if ENABLE_DEBUG_ELOGIND
@@ -1234,34 +1240,6 @@ static int run(int argc, char *argv[]) {
                                argc, argv);
         if (r <= 0)
                 return r;
-
-#if 1 /// perform extra checks for elogind startup
-        log_debug_elogind("%s", "Calling elogind startup");
-        r = elogind_startup();
-        if (r)
-                return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
-
-        /* elogind allows to daemonize itself via -D/--daemon argument */
-        if ( daemonize ) {
-                log_debug_elogind("%s", "Daemonizing elogind...");
-                r = elogind_daemonize();
-                if ( r < 0 )
-                        return log_error_errno( r, "Failed to daemonize: %m" );
-                if ( r > 0 )
-                        return EXIT_SUCCESS;
-                // Re-setup logging
-                log_debug_elogind("%s", "Setup logging again...");
-                log_set_facility(LOG_AUTH);
-#if ENABLE_DEBUG_ELOGIND
-                log_set_max_level(LOG_DEBUG);
-#endif // ENABLE_DEBUG_ELOGIND
-                log_setup_service();
-        }
-
-        // Now the PID file can be written, whether we daemonized or not
-        log_debug_elogind("%s", "Writing PID file...");
-        write_pid_file();
-#endif // 1
 
         umask(0022);
 

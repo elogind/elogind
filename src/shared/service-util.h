@@ -3,10 +3,6 @@
 
 #include "bus-object.h"
 
-#if 1 /// NEEDED by elogogind
-extern bool daemonize;
-#endif // 1
-
 int service_parse_argv(
                 const char *service,
                 const char *description,
