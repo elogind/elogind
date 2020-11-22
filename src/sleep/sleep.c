@@ -94,9 +94,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                 // Get to a safe non-gui VT if we are on any GUI
                 if ( x11 > 0 ) {
                         *vtnr = vt;
-                        r = chvt(63);
-                        if (r)
-                                return 0;
+                        (void) chvt(0);
                 }
 
                 // Okay, go to sleep.
@@ -108,11 +106,11 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                 if (r)
                         return 0;
         } else if (streq(verb, "resume")) {
-                // Try to change back
+                // Wakeup the device
+                (void) write_string_file(drv_suspend, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
+                // Then try to change back
                 if (*vtnr > 0)
                         (void) chvt(*vtnr);
-                // Then wakeup the device
-                (void) write_string_file(drv_suspend, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
         }
 
         return 1;
