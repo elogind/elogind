@@ -71,7 +71,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                 r = sd_uid_get_sessions(m->scheduled_sleep_uid, 1, &sessions);
 #if ENABLE_DEBUG_ELOGIND
                 char *t = strv_join(sessions, " ");
-                log_debug("sd_uid_get_sessions() returned %d, result is: %s", r, strnull(t));
+                log_debug_elogind("sd_uid_get_sessions() returned %d, result is: %s", r, strnull(t));
                 free(t);
 #endif // elogind debug
                 if (r < 0)
@@ -82,7 +82,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                         int k;
                         k = sd_session_get_vt(*session, &vt);
                         if (k >= 0) {
-                                log_debug("Active session %s with VT %u found", *session, vt);
+                                log_debug_elogind("Active session %s with VT %u found", *session, vt);
                                 break;
                         }
                 }
@@ -92,7 +92,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                         int k;
                         k = sd_session_get_type(*session, &type);
                         if ((k >= 0) && strcmp("tty", strnull(type))) {
-                                log_debug("Session %s with Type %s counted as non-tty", *session, type);
+                                log_debug_elogind("Session %s with Type %s counted as non-tty", *session, type);
                                 ++x11;
                         }
                 }
@@ -101,17 +101,17 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
 
                 // Get to a safe non-gui VT if we are on any GUI
                 if ( x11 > 0 ) {
-                        log_debug("Storing VT %u and switching to VT 0", vt);
+                        log_debug_elogind("Storing VT %u and switching to VT 0", vt);
                         *vtnr = vt;
                         (void) chvt(0);
                 }
 
                 // Okay, go to sleep.
                 if (streq(verb, "suspend")) {
-                        log_debug("Writing 'suspend' into %s", drv_suspend);
+                        log_debug_elogind("Writing 'suspend' into %s", drv_suspend);
                         r = write_string_file(drv_suspend, "suspend", WRITE_STRING_FILE_DISABLE_BUFFER);
                 } else {
-                        log_debug("Writing 'hibernate' into %s", drv_suspend);
+                        log_debug_elogind("Writing 'hibernate' into %s", drv_suspend);
                         r = write_string_file(drv_suspend, "hibernate", WRITE_STRING_FILE_DISABLE_BUFFER);
                 }
 
@@ -119,11 +119,11 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                         return 0;
         } else if (streq(verb, "resume")) {
                 // Wakeup the device
-                log_debug("Writing '%s' into %s", verb, drv_suspend);
+                log_debug_elogind("Writing '%s' into %s", verb, drv_suspend);
                 (void) write_string_file(drv_suspend, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
                 // Then try to change back
                 if (*vtnr > 0) {
-                        log_debug("Switching back to VT %u", *vtnr);
+                        log_debug_elogind("Switching back to VT %u", *vtnr);
                         (void) chvt(*vtnr);
                 }
         }
@@ -202,6 +202,7 @@ static int write_mode(char **modes) {
         char **mode;
 #if 1 /// Heeding elogind configuration for SuspendMode, we need to know where to write what
         char const* mode_location = strcmp( arg_verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
+        log_debug_elogind("mode_location is: '%s'", mode_location);
 #endif // 1
 
         STRV_FOREACH(mode, modes) {
@@ -210,7 +211,7 @@ static int write_mode(char **modes) {
 #if 0 /// elogind uses an adapting target
                 k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
 #else // 0
-                log_debug("Writing '%s' to '%s'...", *mode, mode_location);
+                log_debug_elogind("Writing '%s' to '%s'...", *mode, mode_location);
                 k = write_string_file(mode_location, *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
 #endif // 0
                 if (k >= 0)
@@ -409,7 +410,7 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         /* Configure hibernation settings if we are supposed to hibernate */
         if (!strv_isempty(modes)) {
                 if (strcmp( verb, "suspend")) {
-                        log_debug("Trying to find a hibernation location...");
+                        log_debug_elogind("%s", "Trying to find a hibernation location...");
                         r = find_hibernate_location(&hibernate_location);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to find location to hibernate to: %m");
@@ -417,7 +418,7 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                                 /* 0 means: no hibernation location was configured in the kernel so far, let's
                                 * do it ourselves then. > 0 means: kernel already had a configured hibernation
                                 * location which we shouldn't touch. */
-                                log_debug("Writing new hibernation location...");
+                                log_debug_elogind("%s", "Writing new hibernation location...");
                                 r = write_hibernate_location_info(hibernate_location);
                                 if (r < 0)
                                         return log_error_errno(r, "Failed to prepare for hibernation: %m");
@@ -675,7 +676,7 @@ int do_sleep(Manager *m, const char *verb) {
 
         arg_verb = (char*) verb;
 
-        log_debug_elogind("%s called for %s", __FUNCTION__, strnull(verb));
+        log_debug_elogind("%s called for %s", __func__, strnull(verb));
 
         /* Re-load the sleep configuration, so users can change their options
          * on-the-fly without having to reload elogind

@@ -1237,20 +1237,22 @@ static int run(int argc, char *argv[]) {
                 return r;
 
 #if 1 /// perform extra checks for elogind startup
+        log_debug_elogind("%s", "Calling elogind startup");
         r = elogind_startup();
         if (r)
                 return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 
         /* elogind allows to daemonize itself via -D/--daemon argument */
         if ( daemonize ) {
+                log_debug_elogind("%s", "Daemonizing elogind...");
                 r = elogind_daemonize();
                 if ( r < 0 )
-                        return log_error_errno( r, "Failed to daemonoze: %m" );
+                        return log_error_errno( r, "Failed to daemonize: %m" );
                 if ( r > 0 )
                         return EXIT_SUCCESS;
                 // Re-setup logging
+                log_debug_elogind("%s", "Setup logging again...");
                 log_set_facility(LOG_AUTH);
-                log_setup_service();
 #if ENABLE_DEBUG_ELOGIND
                 log_set_max_level(LOG_DEBUG);
                 log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
@@ -1258,6 +1260,7 @@ static int run(int argc, char *argv[]) {
         }
 
         // Now the PID file can be written, whether we daemonized or not
+        log_debug_elogind("%s", "Writing PID file...");
         write_pid_file();
 #endif // 1
 
@@ -1298,6 +1301,7 @@ static int run(int argc, char *argv[]) {
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGQUIT, -1) >= 0);
 #endif // 0
 
+        log_debug_elogind("%s", "Creating manager...");
         r = manager_new(&m);
         if (r < 0)
                 return log_error_errno(r, "Failed to allocate manager object: %m");
@@ -1307,6 +1311,7 @@ static int run(int argc, char *argv[]) {
 #if 1 /// elogind needs an Add-On for sleep configuration
         elogind_manager_reset_config(m);
 #endif // 1
+        log_debug_elogind("%s", "Starting manager...");
         r = manager_startup(m);
         if (r < 0)
                 return log_error_errno(r, "Failed to fully start up daemon: %m");
