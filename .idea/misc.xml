@@ -16,15 +16,15 @@
       <MakefileProjectSettings>
         <option name="analyzerType" value="OUTPUT_PARSING" />
         <option name="buildOptions" value="-j 1" />
-        <option name="buildTarget" value="all" />
-        <option name="cleanTarget" value="justprint" />
+        <option name="buildTarget" value="justprint" />
+        <option name="cleanTarget" value="clean" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
           </set>
         </option>
-        <option name="switches" value="JUST_PRINT=YES" />
+        <option name="switches" value="" />
       </MakefileProjectSettings>
     </option>
   </component>
