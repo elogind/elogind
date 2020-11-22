@@ -668,7 +668,7 @@ int log_dispatch_internal(
                 if ((e = strpbrk(buffer, NEWLINE)))
                         *(e++) = 0;
 
-#if 0 /// elogind does not support logging to systemd-journald
+#if 0 /// elogind does not support logging to systemd-journald and prefers syslog over kmsg
                 if (IN_SET(log_target, LOG_TARGET_AUTO,
                                        LOG_TARGET_JOURNAL_OR_KMSG,
                                        LOG_TARGET_JOURNAL)) {
@@ -677,10 +677,14 @@ int log_dispatch_internal(
                         if (k < 0 && k != -EAGAIN)
                                 log_close_journal();
                 }
-#endif // 0
 
                 if (IN_SET(log_target, LOG_TARGET_SYSLOG_OR_KMSG,
                                        LOG_TARGET_SYSLOG)) {
+#else // 0
+                if (IN_SET(log_target, LOG_TARGET_AUTO,
+                                       LOG_TARGET_SYSLOG_OR_KMSG,
+                                       LOG_TARGET_SYSLOG)) {
+#endif // 0
 
                         k = write_to_syslog(level, error, file, line, func, buffer);
                         if (k < 0 && k != -EAGAIN)
