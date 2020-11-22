@@ -684,9 +684,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         assert(handle);
 
-#if 0 /// with elogind, it is always a "logind system".
-#endif // 0
-
         if (parse_argv(handle,
                        argc, argv,
                        &class_pam,
@@ -712,8 +709,8 @@ _public_ PAM_EXTERN int pam_sm_open_session(
          * "systemd-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
 
-#if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
         (void) pam_get_item(handle, PAM_SERVICE, (const void**) &service);
+#if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
         if (streq_ptr(service, "systemd-user")) {
                 char rt[STRLEN("/run/user/") + DECIMAL_STR_MAX(uid_t)];
 

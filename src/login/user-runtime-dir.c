@@ -210,6 +210,7 @@ static int run(int argc, char *argv[]) {
 
         r = mac_selinux_init();
         if (r < 0)
+                return r;
 #else // 0
 int user_runtime_dir(const char *verb, User *u) {
         int r = 0;
@@ -220,7 +221,6 @@ int user_runtime_dir(const char *verb, User *u) {
 
 #endif // 0
 
-                return r;
 
 #if 0 /// elogind has more information and can do this more conveniently
         if (streq(argv[1], "start"))
