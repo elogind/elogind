@@ -66,13 +66,12 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                 return 0;
 
         if (STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
-                char* t = NULL;
                 *vtnr = 0;
 
                 // Find the (active) sessions of the sleep sender
                 r = sd_uid_get_sessions(m->scheduled_sleep_uid, 1, &sessions);
 #if ENABLE_DEBUG_ELOGIND
-                t = strv_join(sessions, " ");
+                char *t = strv_join(sessions, " ");
                 log_debug("sd_uid_get_sessions() returned %d, result is: %s", r, strnull(t));
                 free(t);
 #endif // elogind debug
