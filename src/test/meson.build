@@ -227,6 +227,10 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-modhex.c'],
+#          [],
+#          []],
+#
 #         [['src/test/test-libmount.c'],
 #          [],
 #          [threads,
@@ -615,8 +619,7 @@ tests += [
 #
 #         [['src/test/test-firewall-util.c'],
 #          [libshared],
-#          [],
-#          'HAVE_LIBIPTC'],
+#          []],
 #
 #         [['src/test/test-netlink-manual.c'],
 #          [],
