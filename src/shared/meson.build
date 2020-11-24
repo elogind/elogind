@@ -102,7 +102,10 @@
 #         fdset.h
 #         fileio-label.c
 #         fileio-label.h
+#         firewall-util.c
+#         firewall-util-nft.c
 #         firewall-util.h
+#         firewall-util-private.h
 #         format-table.c
 #         format-table.h
 #         fsck-util.h
@@ -181,6 +184,7 @@
 #         nsflags.h
 #         numa-util.c
 #         numa-util.h
+#         openssl-util.c
 #         openssl-util.h
 #         os-util.c
 #         os-util.h
@@ -394,7 +398,7 @@ endif
 # endif
 #
 # if conf.get('HAVE_LIBIPTC') == 1
-#         shared_sources += files('firewall-util.c')
+#         shared_sources += files('firewall-util-iptables.c')
 # endif
 #endif // 0
 
