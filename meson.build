@@ -2662,8 +2662,7 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libfdisk,
-#                                 libp11kit,
-#                                 libfido2],
+#                                 libp11kit],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -2689,7 +2688,6 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libp11kit,
-#                                 libfido2,
 #                                 libdl],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
