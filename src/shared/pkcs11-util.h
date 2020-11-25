@@ -54,3 +54,6 @@ int pkcs11_acquire_certificate(const char *uri, const char *askpw_friendly_name,
 
 #endif
 #endif // 0
+
+int pkcs11_list_tokens(void);
+int pkcs11_find_token_auto(char **ret);
