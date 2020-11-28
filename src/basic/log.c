@@ -59,7 +59,9 @@ static bool upgrade_syslog_to_journal = false;
 #endif // 0
 static bool always_reopen_console = false;
 static bool open_when_needed = false;
+#if 0 /// UNNEEDED by elogind
 static bool prohibit_ipc = false;
+#endif // 0
 
 /* Akin to glibc's __abort_msg; which is private and we hence cannot
  * use here. */
@@ -224,7 +226,6 @@ fail:
         log_close_journal();
         return r;
 }
-#endif // 0
 
 static bool stderr_is_journal(void) {
         _cleanup_free_ char *w = NULL;
@@ -251,6 +252,7 @@ static bool stderr_is_journal(void) {
 
         return st.st_dev == dev && st.st_ino == ino;
 }
+#endif // 0
 
 int log_open(void) {
         int r;
@@ -271,9 +273,9 @@ int log_open(void) {
                 return 0;
         }
 
+#if 0 /// elogind does not support logging to systemd-journald and is not PID 1
         if (log_target != LOG_TARGET_AUTO || getpid_cached() == 1 || stderr_is_journal()) {
 
-#if 0 /// elogind does not support logging to systemd-journald
                 if (!prohibit_ipc &&
                     IN_SET(log_target, LOG_TARGET_AUTO,
                                        LOG_TARGET_JOURNAL_OR_KMSG,
@@ -285,16 +287,16 @@ int log_open(void) {
                                 return r;
                         }
                 }
+#else // 0
+        if (log_target != LOG_TARGET_CONSOLE) {
 #endif // 0
 
-                if (!prohibit_ipc &&
 #if 0 /// Add syslog to elogind LOG_TARGET_AUTO set
+                if (!prohibit_ipc &&
                     IN_SET(log_target, LOG_TARGET_SYSLOG_OR_KMSG,
                                        LOG_TARGET_SYSLOG)) {
 #else // 0
-                    IN_SET(log_target, LOG_TARGET_AUTO,
-                                       LOG_TARGET_SYSLOG_OR_KMSG,
-                                       LOG_TARGET_SYSLOG)) {
+                if ( IN_SET(log_target, LOG_TARGET_AUTO, LOG_TARGET_SYSLOG_OR_KMSG, LOG_TARGET_SYSLOG)) {
 #endif // 0
                         r = log_open_syslog();
                         if (r >= 0) {
@@ -1438,9 +1440,11 @@ void log_set_open_when_needed(bool b) {
         open_when_needed = b;
 }
 
+#if 0 /// UNNEEDED by elogind
 void log_set_prohibit_ipc(bool b) {
         prohibit_ipc = b;
 }
+#endif // 0
 
 int log_emergency_level(void) {
         /* Returns the log level to use for log_emergency() logging. We use LOG_EMERG only when we are PID 1, as only
@@ -1449,6 +1453,7 @@ int log_emergency_level(void) {
         return getpid_cached() == 1 ? LOG_EMERG : LOG_ERR;
 }
 
+#if 0 /// UNNEEDED by elogind
 int log_dup_console(void) {
         int copy;
 
@@ -1465,6 +1470,7 @@ int log_dup_console(void) {
         console_fd = copy;
         return 0;
 }
+#endif // 0
 
 void log_setup_service(void) {
         /* Sets up logging the way it is most appropriate for running a program as a service. Note that using this

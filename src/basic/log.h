@@ -273,7 +273,7 @@ int log_emergency_level(void);
         log_set_max_level_realm(LOG_REALM, LOG_DEBUG);              \
         log_full_errno_realm(LOG_REALM, LOG_DEBUG, 0, __VA_ARGS__); \
 } while(0)
-#  define log_debug_elogind(fmt, ...) log_debug_elogind_full("(DEBUG) " fmt, __VA_ARGS__)
+#  define log_debug_elogind(fmt, ...) log_debug_elogind_full("%s (DEBUG) " fmt, program_invocation_short_name, __VA_ARGS__)
 #else
 #  define log_debug_elogind(...) do {} while (0)
 #endif // ENABLE_DEBUG_ELOGIND
@@ -320,11 +320,13 @@ void log_set_always_reopen_console(bool b);
  * desired as we want to reuse our logging streams. It is useful however  */
 void log_set_open_when_needed(bool b);
 
+#if 0 /// UNNEEDED by elogind
 /* If turned on, then we'll never use IPC-based logging, i.e. never log to syslog or the journal. We'll only log to
  * stderr, the console or kmsg */
 void log_set_prohibit_ipc(bool b);
 
 int log_dup_console(void);
+#endif // 0
 
 int log_syntax_internal(
                 const char *unit,
