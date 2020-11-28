@@ -67,18 +67,8 @@ int service_parse_argv(
         assert(argc >= 0);
         assert(argv);
 
-#if 0 /// Add options for elogind
         while ((c = getopt_long(argc, argv, "h", options, NULL)) >= 0)
-#else // 0
-        while ((c = getopt_long(argc, argv, "Dh", options, NULL)) >= 0)
-#endif // 0
                 switch(c) {
-
-#if 1 /// elogind allows to be daemonized
-                case 'D':
-                        daemonize = true;
-                        break;
-#endif // 1
 
                 case 'h':
                         return help(argv[0], service, description, bus_objects);
