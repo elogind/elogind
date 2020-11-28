@@ -319,6 +319,8 @@ int rename_process(const char name[]) {
         if (program_invocation_name) {
                 size_t k;
 
+                log_debug_elogind("Setting program_invocation_name to '%s'", name);
+
                 k = strlen(program_invocation_name);
                 strncpy(program_invocation_name, name, k);
                 if (l > k)
@@ -328,6 +330,11 @@ int rename_process(const char name[]) {
                 if ( (program_invocation_short_name >= program_invocation_name)
                      && (program_invocation_short_name <  program_invocation_name + k) )
                         program_invocation_short_name = program_invocation_name;
+                else {
+                        k = sizeof(program_invocation_short_name);
+                        memset(program_invocation_short_name, 0, k);
+                        strncpy(program_invocation_short_name, name, k - 1);
+                }
 #endif // 1
         }
 
