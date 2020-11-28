@@ -1216,30 +1216,39 @@ static int run(int argc, char *argv[]) {
         _cleanup_(manager_unrefp) Manager *m = NULL;
         int r;
 
-#if 1 /// perform extra checks for elogind startup
-        r = elogind_startup(argc, argv);
+        elogind_set_program_name(argv[0]);
+
+        log_set_facility(LOG_AUTH);
+        log_setup_service();
+
+#if 1 /// perform extra checks for elogind startup, and fork if wanted
+        bool has_forked = false;
+        r = elogind_startup(argc, argv, &has_forked);
+        log_debug_elogind("elogind_startup() exited with %d", r);
         if (r)
                 return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+        // If we forked, we are in the grandchild, the daemon, now.
 #endif // 1
-
-        elogind_set_program_name(argv[0]);
-        log_set_facility(LOG_AUTH);
-#if ENABLE_DEBUG_ELOGIND
-        log_set_max_level(LOG_DEBUG);
-#endif // ENABLE_DEBUG_ELOGIND
-        log_setup_service();
 
 #if 0 /// This is elogind
         r = service_parse_argv("systemd-logind.service",
-#else // 0
-        r = service_parse_argv("elogind",
-#endif // 0
                                "Manager for user logins and devices and privileged operations.",
                                BUS_IMPLEMENTATIONS(&manager_object,
                                                    &log_control_object),
                                argc, argv);
         if (r <= 0)
                 return r;
+#else // 0
+        if (!has_forked) {
+                r = service_parse_argv("elogind",
+                                       "Manager for user logins and devices and privileged operations.",
+                                       BUS_IMPLEMENTATIONS(&manager_object, &log_control_object),
+                                       argc, argv);
+                log_debug_elogind("service_parse_argv() returned %d", r);
+                if (r <= 0)
+                        return r;
+        }
+#endif // 0
 
         umask(0022);
 

@@ -26,6 +26,7 @@
 #include "fileio.h"
 #include "fs-util.h"
 #include "mount-setup.h"
+#include "musl_missing.h"
 #include "parse-util.h"
 #include "process-util.h"
 #include "signal-util.h"
@@ -34,6 +35,8 @@
 #include "string-util.h"
 #include "strv.h"
 #include "umask-util.h"
+
+#include <errno.h>
 
 /// defined in sd-bus.c
 void bus_reset_queues( sd_bus* b );
@@ -108,8 +111,8 @@ static void write_pid_file( void ) {
   * On error, a value < 0 is returned.
 **/
 static int elogind_daemonize( void ) {
-        pid_t child;
-        pid_t grandchild;
+        pid_t child      = 0;
+        pid_t grandchild = 0;
         pid_t SID;
         int   r;
 
@@ -118,52 +121,56 @@ static int elogind_daemonize( void ) {
         log_debug_elogind("Parent SID     : %5d", getsid(getpid_cached()));
 
         r = safe_fork( "elogind-forker",
-                       FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT,
+                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT,
                        &child );
 
         if ( r ) {
+                // This is the main process
                 log_debug_elogind("Fork 1 returned: %5d", r);
                 log_debug_elogind("Fork child PID : %5d", child);
         } else {
+                // This is the child, which has no stdout/stderr any more
                 log_debug_elogind("Child PID      : %5d", getpid_cached());
                 log_debug_elogind("Child SID      : %5d", getsid(getpid_cached()));
         }
 
         if ( r < 0 )
-                return log_error_errno( r, "Failed to fork daemon leader: %m" );
+                return log_error_errno( r, "%s: Failed to fork daemon leader: %m", program_invocation_short_name );
 
         /* safe_fork() Has waited for the child to terminate, so we
          * are safe to return here. The child already has forked off the
          * daemon itself.
          */
         if ( r )
-                return child;
+                return r;
 
         SID = setsid();
         if ( ( pid_t ) - 1 == SID )
-                return log_error_errno( errno, "Failed to create new SID: %m" );
+                return log_error_errno( errno, "%s: Failed to create new SID: %m", program_invocation_short_name );
 
         log_debug_elogind("Child new SID  : %5d", getsid(getpid_cached()));
 
         umask( 0022 );
 
         /* Now the grandchild, the true daemon, can be created. */
-        r = safe_fork( "elogind-daemon", FORK_REOPEN_LOG, &grandchild );
+        r = safe_fork( "elogind-daemon", FORK_LOG|FORK_REOPEN_LOG, &grandchild );
 
         if ( r ) {
+                // This is the child, aka "daemon leader"
                 log_debug_elogind("Fork 2 returned: %5d", r);
                 log_debug_elogind("Grandchild PID : %5d", grandchild);
         } else {
+                // This is the grandchild, aka "elogind-daemon"
                 log_debug_elogind("Grand child PID: %5d", getpid_cached());
                 log_debug_elogind("Grand child SID: %5d", getsid(getpid_cached()));
         }
 
         if ( r < 0 )
-                return log_error_errno( r, "Failed to fork daemon: %m" );
+                return log_error_errno( r, "%s: Failed to fork daemon: %m", program_invocation_short_name );
 
         if ( r )
                 /* Exit immediately! */
-                return grandchild;
+                return r;
 
         umask( 0022 );
 
@@ -318,31 +325,36 @@ int elogind_setup_cgroups_agent( Manager* m ) {
   * return = 0 on success, continue normal operation.
   * return > 0 if elogind is already running, exit with success.
 **/
-int elogind_startup(int argc, char *argv[]) {
+int elogind_startup(int argc, char *argv[], bool *has_forked) {
         bool daemonize = false;
         int i, r;
         pid_t pid;
+
+        /* if elogind was called with -h/--help, skip all checks */
+        for (i = 1; !daemonize && (i <= argc) && argv[i]; ++i ) {
+                if (streq("-h", argv[i]) || streq("--help", argv[i]))
+                        return 0;
+        }
 
         /* Do not continue if elogind is already running */
         pid = elogind_is_already_running( );
         if ( pid ) {
                 log_error( "elogind is already running as PID " PID_FMT, pid);
-                return pid;
+                return -pid;
         }
 
         /* elogind can be put into background using -D/--daemon option */
-        for (i = 0; !daemonize && (i <= argc) && argv[i]; ++i ) {
+        for (i = 1; !daemonize && (i <= argc) && argv[i]; ++i ) {
                 if (streq("-D", argv[i]) || streq("--daemon", argv[i]))
                         daemonize = true;
         }
 
         if ( daemonize ) {
                 log_debug_elogind("%s", "Daemonizing elogind...");
+                *has_forked = true;
                 r = elogind_daemonize();
-                if ( r < 0 )
-                        return log_error_errno( r, "Failed to daemonize: %m" );
-                if ( r > 0 )
-                        return EXIT_SUCCESS;
+                if ( r )
+                        return (r > 0) ? r : log_error_errno( r, "Failed to daemonize: %m" );
         }
 
         // Now the PID file can be written, whether we daemonized or not
