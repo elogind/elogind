@@ -6,34 +6,34 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <getopt.h>
-#include <linux/fiemap.h>
+//#include <getopt.h>
+//#include <linux/fiemap.h>
 #include <poll.h>
 #include <sys/stat.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
 
 #include "sd-messages.h"
 
 //#include "btrfs-util.h"
-#include "bus-error.h"
+//#include "bus-error.h"
 #include "def.h"
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "format-util.h"
+//#include "format-util.h"
 #include "io-util.h"
 #include "log.h"
 #include "main-func.h"
-#include "parse-util.h"
-#include "pretty-print.h"
+//#include "parse-util.h"
+//#include "pretty-print.h"
 #include "sleep-config.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
-#include "util.h"
+//#include "util.h"
 
 /// Additional includes needed by elogind
 #include "exec-elogind.h"
@@ -44,17 +44,18 @@
 
 static char* arg_verb = NULL;
 
+#if 0 /// UNNEEDED by elogind (arg_verb is pointing elsewhere and is not strdup'd!)
 STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
+#endif // 0
 
 #if 1 /// If an nvidia card is present, elogind informs its driver about suspend/resume actions
 static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";
-        struct stat std;
-        int r, x11 = 0;
-        unsigned vt = 0;
+        int r;
         char** session;
         char** sessions;
-        char* type;
+        struct stat std;
+        unsigned vt = 0;
 
         assert(verb);
         assert(vtnr);
@@ -64,7 +65,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
         if (r)
                 return 0;
 
-        if (STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate")) {
+        if (strcmp(verb, "resume")) {
                 *vtnr = 0;
 
                 // Find the (active) sessions of the sleep sender
@@ -87,23 +88,13 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
                         }
                 }
 
-                // See whether the type of any active session is not "tty"
-                STRV_FOREACH(session, sessions) {
-                        int k;
-                        k = sd_session_get_type(*session, &type);
-                        if ((k >= 0) && strcmp("tty", strnull(type))) {
-                                log_debug_elogind("Session %s with Type %s counted as non-tty", *session, type);
-                                ++x11;
-                        }
-                }
-
                 strv_free(sessions);
 
-                // Get to a safe non-gui VT if we are on any GUI
-                if ( x11 > 0 ) {
-                        log_debug_elogind("Storing VT %u and switching to VT 0", vt);
+                // Get to a safe non-gui VT
+                if ( (vt > 0) && (vt < 63) ) {
+                        log_debug_elogind("Storing VT %u and switching to VT %d", vt, 63);
                         *vtnr = vt;
-                        (void) chvt(0);
+                        (void) chvt(63);
                 }
 
                 // Okay, go to sleep.
@@ -117,7 +108,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
 
                 if (r)
                         return 0;
-        } else if (streq(verb, "resume")) {
+        } else {
                 // Wakeup the device
                 log_debug_elogind("Writing '%s' into %s", verb, drv_suspend);
                 (void) write_string_file(drv_suspend, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
@@ -197,37 +188,56 @@ static int write_hibernate_location_info(const HibernateLocation* hibernate_loca
         return 0;
 }
 
+#if 0 /// elogind uses a special variant to heed suspension modes
 static int write_mode(char **modes) {
         int r = 0;
         char **mode;
-#if 1 /// Heeding elogind configuration for SuspendMode, we need to know where to write what
-        char const* mode_location = strcmp( arg_verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
-        log_debug_elogind("mode_location is: '%s'", mode_location);
-#endif // 1
 
         STRV_FOREACH(mode, modes) {
                 int k;
 
-#if 0 /// elogind uses an adapting target
                 k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
-#else // 0
-                log_debug_elogind("Writing '%s' to '%s'...", *mode, mode_location);
-                k = write_string_file(mode_location, *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
-#endif // 0
                 if (k >= 0)
                         return 0;
 
-#if 0 /// elogind uses an adapting target
                 log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m", *mode);
-#else // 0
-                log_debug_errno(k, "Failed to write '%s' to %s: %m", *mode, mode_location);
-#endif // 0
                 if (r >= 0)
                         r = k;
         }
 
         return r;
 }
+#else // 0
+static int write_mode(char const* verb, char **modes) {
+        int r = 0;
+        char **mode;
+        static char const mode_disk[] = "/sys/power/disk";
+        static char const mode_mem[] = "/sys/power/mem_sleep";
+        char const* mode_location = streq("suspend", verb) ? mode_mem : mode_disk;
+
+        // If this is a supend, write that it is to mode_disk.
+        if (streq("suspend", verb)) {
+                log_debug_elogind("Writing '%s' to '%s' ...", verb, mode_disk);
+                (void) write_string_file(mode_disk, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
+        }
+
+        // Now get the real action mode right:
+        STRV_FOREACH(mode, modes) {
+                int k;
+
+                log_debug_elogind("Writing '%s' to '%s' ...", *mode, mode_location);
+                k = write_string_file(mode_location, *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
+                if (k >= 0)
+                        return 0;
+
+                log_debug_errno(k, "Failed to write '%s' to %s: %m", *mode, mode_location);
+                if (r >= 0)
+                        r = k;
+        }
+
+        return r;
+}
+#endif // 0
 
 static int write_state(FILE **f, char **states) {
         char **state;
@@ -391,7 +401,8 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         unsigned vtnr = 0;
         int e;
         _cleanup_free_ char *l = NULL;
-        char const* mode_location = strcmp( verb, "suspend") ? "/sys/power/disk" : "/sys/power/mem_sleep";
+
+        log_debug_elogind("Called for '%s' (Manager is %s)", verb, m ? "Set" : "NULL");
 
         assert(m);
 
@@ -405,7 +416,9 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         if (!f)
                 return log_error_errno(errno, "Failed to open /sys/power/state: %m");
 
+#ifdef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems
         setvbuf(f, NULL, _IONBF, 0);
+#endif // __GLIBC__
 
         /* Configure hibernation settings if we are supposed to hibernate */
         if (!strv_isempty(modes)) {
@@ -424,9 +437,9 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                                         return log_error_errno(r, "Failed to prepare for hibernation: %m");
                         }
                 }
-                r = write_mode(modes);
+                r = write_mode(verb, modes);
                 if (r < 0)
-                        return log_error_errno(r, "Failed to write mode to %s: %m", mode_location);
+                        return log_error_errno(r, "Failed to write mode: %m");
         }
 
         m->callback_failed = false;
@@ -452,22 +465,18 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                 utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
 
                 log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                                 LOG_MESSAGE("A sleep script in %s or %s failed [%d]: %m\n"
-                                             "The system %s has been cancelled!",
-                                             SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
-                                             r, verb),
-                                 "SLEEP=%s", verb);
+                                 LOG_MESSAGE("%s", l), "SLEEP=%s", verb);
 
                 return -ECANCELED;
         }
-
-        /* See whether we have an nvidia card to put to sleep */
-        have_nvidia = nvidia_sleep(m, verb, &vtnr);
 
         log_struct(LOG_INFO,
                    "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
                    LOG_MESSAGE("Suspending system..."),
                    "SLEEP=%s", verb);
+
+        /* See whether we have an nvidia card to put to sleep */
+        have_nvidia = nvidia_sleep(m, verb, &vtnr);
 
         r = write_state(&f, states);
         if (r < 0)
@@ -676,7 +685,7 @@ int do_sleep(Manager *m, const char *verb) {
 
         arg_verb = (char*) verb;
 
-        log_debug_elogind("%s called for %s", __func__, strnull(verb));
+        log_debug_elogind("Called for '%s'", strnull(verb));
 
         /* Re-load the sleep configuration, so users can change their options
          * on-the-fly without having to reload elogind
@@ -701,6 +710,9 @@ int do_sleep(Manager *m, const char *verb) {
         else
                 r = execute(m, arg_verb, modes, states);
 
+        // NULLify arg_verb, as it currently points outside
+        arg_verb = NULL;
+        
         return r;
 }
 
