@@ -84,6 +84,8 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         if (!logind_conf)
                 logind_conf = PKGSYSCONFDIR "/logind.conf";
 
+        log_debug_elogind("Parsing %s ...", logind_conf);
+
         (void) config_parse_many_nulstr(
                         logind_conf,
                         CONF_PATHS_NULSTR("elogind/sleep.conf.d"),
@@ -763,6 +765,8 @@ int sleep_settings(const char *verb, const SleepConfig *sleep_config, bool *ret_
         assert(verb);
         assert(sleep_config);
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
+
+        log_debug_elogind("Called for '%s'", verb);
 
         if (streq(verb, "suspend")) {
                 *ret_allow = sleep_config->allow_suspend;
