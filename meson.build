@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
-        version : '246',
+        version : '247',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -14,7 +14,7 @@ project('elogind', 'c',
        )
 
 #if 0 /// elogind does not ship libudev
-# libsystemd_version = '0.29.0'
+# libsystemd_version = '0.30.0'
 # libudev_version = '1.7.0'
 #endif // 0
 
@@ -45,8 +45,8 @@ relative_source_path = run_command('realpath',
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 #if 0 /// fuzz regression tests are not supported by elogind
-# conf.set10('DEVELOPER_MODE', get_option('mode') == 'developer',
-#            description : 'enable additional checks only suitable in development')
+# conf.set('BUILD_MODE', 'BUILD_MODE_' + get_option('mode').to_upper(),
+#          description : 'tailor build to development or release builds')
 #
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
@@ -151,6 +151,7 @@ if rootlibdir == ''
         rootlibdir = join_paths(rootprefixdir, libdir.split('/')[-1])
 endif
 
+install_sysconfdir = get_option('install-sysconfdir')
 # Dirs of external packages
 pkgconfigdatadir = get_option('pkgconfigdatadir') == '' ? join_paths(datadir, 'pkgconfig') : get_option('pkgconfigdatadir')
 pkgconfiglibdir = get_option('pkgconfiglibdir') == '' ? join_paths(libdir, 'pkgconfig') : get_option('pkgconfiglibdir')
@@ -270,17 +271,16 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
-# conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 #
 # conf.set_quoted('USER_CONFIG_UNIT_DIR',                       join_paths(pkgsysconfdir, 'user'))
 # conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 # conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
-# conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'systemd'))
+# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          join_paths(rootlibexecdir, 'systemd-fsck'))
-# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'systemd-makefs'))
 # conf.set_quoted('SYSTEMD_GROWFS_PATH',                        join_paths(rootlibexecdir, 'systemd-growfs'))
+# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'systemd-makefs'))
 # conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               join_paths(rootlibexecdir, 'systemd-shutdown'))
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      join_paths(rootbindir, 'systemctl'))
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
@@ -628,7 +628,6 @@ foreach ident : [
                                  #include <signal.h>
                                  #include <sys/wait.h>'''],
         ['mallinfo',          '''#include <malloc.h>'''],
-        ['execveat',          '''#include <unistd.h>'''],
         ['close_range',       '''#include <unistd.h>'''],
 ]
 
@@ -1275,6 +1274,7 @@ conf.set10('HAVE_PAM', have)
 #         libcurl = []
 # endif
 # conf.set10('HAVE_LIBCURL', have)
+# conf.set10('CURL_NO_OLDIES', get_option('mode') == 'developer')
 #
 # want_libidn = get_option('libidn')
 # want_libidn2 = get_option('libidn2')
@@ -1647,6 +1647,18 @@ conf.set10('HAVE_DBUS', have)
 # have = have and conf.get('HAVE_PAM') == 1
 # conf.set10('ENABLE_PAM_HOME', have)
 #
+# have = get_option('oomd')
+# if have == 'auto'
+#         have = get_option('mode') == 'developer'
+# else
+#         have = have == 'true'
+#         if have and get_option('mode') != 'developer'
+#                 warning('oomd is not ready for release mode (yet)')
+#         endif
+# endif
+# conf.set10('ENABLE_OOMD', have)
+# substs.set10('ENABLE_OOMD', have)
+#
 # want_remote = get_option('remote')
 # if want_remote != 'false'
 #         have_deps = [conf.get('HAVE_MICROHTTPD') == 1,
@@ -1813,23 +1825,13 @@ meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 includes = include_directories('src/basic',
                                'src/boot',
 #if 0 /// UNNEEDED by elogind
+#                                'src/core',
 #                                'src/home',
 #endif // 0
-                               'src/shared',
-                               'src/elogind',
                                'src/journal',
 #if 0 /// elogind has a different list
 #                                'src/journal-remote',
-#                                'src/nspawn',
-#                                'src/resolve',
-#                                'src/timesync',
-#                                'src/time-wait-sync',
-#                                'src/login',
-#                                'src/udev',
-#                                'src/libudev',
-#                                'src/core',
-#                                'src/shutdown',
-#                                'src/xdg-autostart-generator',
+#                                'src/libsystemd-network',
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
 #                                'src/libsystemd/sd-event',
@@ -1838,7 +1840,17 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-netlink',
 #                                'src/libsystemd/sd-network',
 #                                'src/libsystemd/sd-resolve',
-#                                'src/libsystemd-network',
+#                                'src/libudev',
+#                                'src/login',
+#                                'src/nspawn',
+#                                'src/resolve',
+#                                'src/shared',
+#                                'src/shutdown',
+#                                'src/systemd',
+#                                'src/time-wait-sync',
+#                                'src/timesync',
+#                                'src/udev',
+#                                'src/xdg-autostart-generator',
 #else // 0
                                'src/libelogind/sd-bus',
                                'src/libelogind/sd-device',
@@ -1861,6 +1873,7 @@ subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
 #endif // 0
+subdir('src/libudev')
 subdir('src/systemd')
 subdir('src/basic')
 #if 0 /// UNNEEDED by elogind
@@ -1983,7 +1996,6 @@ public_programs = []
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
-subdir('src/libudev')
 subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/core')
@@ -1995,6 +2007,7 @@ subdir('src/shared')
 # subdir('src/journal-remote')
 # subdir('src/coredump')
 # subdir('src/pstore')
+# subdir('src/oom')
 # subdir('src/hostname')
 # subdir('src/import')
 # subdir('src/partition')
@@ -3122,6 +3135,27 @@ endif
 #                 install_dir : rootlibexecdir)
 # endif
 #
+# if conf.get('ENABLE_OOMD') == 1
+#         executable('systemd-oomd',
+#                    systemd_oomd_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootlibexecdir)
+#
+#         public_programs += executable(
+#                    'oomctl',
+#                    oomctl_sources,
+#                    include_directories : includes,
+#                    link_with : [libshared],
+#                    dependencies : [],
+#                    install_rpath : rootlibexecdir,
+#                    install : true,
+#                    install_dir : rootbindir)
+# endif
+#
 # if conf.get('ENABLE_BINFMT') == 1
 #         public_programs += executable(
 #                 'systemd-binfmt',
@@ -3134,8 +3168,10 @@ endif
 #
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(binfmtdir))
-#         meson.add_install_script('sh', '-c',
-#                                  mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
+#         if install_sysconfdir
+#                 meson.add_install_script('sh', '-c',
+#                                          mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
+#         endif
 # endif
 #
 # if conf.get('ENABLE_REPART') == 1
@@ -3249,8 +3285,10 @@ endif
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# install_data('src/sleep/sleep.conf',
-#              install_dir : pkgsysconfdir)
+# if install_sysconfdir
+#         install_data('src/sleep/sleep.conf',
+#                      install_dir : pkgsysconfdir)
+# endif
 #
 # public_programs += executable(
 #         'systemd-sysctl',
@@ -3464,6 +3502,7 @@ public_programs += executable(
 #                         'systemd-sysusers.standalone',
 #                         'src/sysusers/sysusers.c',
 #                         include_directories : includes,
+#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -3506,6 +3545,7 @@ public_programs += executable(
 #                         'systemd-tmpfiles.standalone',
 #                         systemd_tmpfiles_sources,
 #                         include_directories : includes,
+#                         c_args : '-DSTANDALONE',
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
@@ -3556,7 +3596,6 @@ public_programs += executable(
 #         c_args : '-DLOG_REALM=LOG_REALM_UDEV',
 #         include_directories : includes,
 #         link_with : [libudev_core,
-#                      libsystemd_network,
 #                      libudev_static],
 #         dependencies : [versiondep,
 #                         threads,
@@ -3611,8 +3650,10 @@ public_programs += executable(
 #
 #         meson.add_install_script('sh', '-c',
 #                                  mkdir_p.format(modulesloaddir))
-#         meson.add_install_script('sh', '-c',
-#                                  mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
+#         if install_sysconfdir
+#                 meson.add_install_script('sh', '-c',
+#                                          mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
+#         endif
 # endif
 #
 # public_programs += executable(
@@ -3718,6 +3759,7 @@ foreach tuple : tests
         type = tuple.length() >= 5 ? tuple[4] : ''
         defs = tuple.length() >= 6 ? tuple[5] : []
         incs = tuple.length() >= 7 ? tuple[6] : includes
+        parallel = tuple.length() >= 8 ? tuple[7] : true
         timeout = 30
 
         name = sources[0].split('/')[-1].split('.')[0]
@@ -3811,7 +3853,7 @@ endforeach
 #
 # fuzzer_exes = []
 #
-# if get_option('tests') != 'false'
+# if fuzz_tests or fuzzer_build
 #         foreach tuple : fuzzers
 #                 sources = tuple[0]
 #                 link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
@@ -3901,8 +3943,10 @@ install_subdir('factory/etc',
 
 
 #if 0 /// UNNEEDED by elogind
-# install_data('xorg/50-systemd-user.sh',
-#              install_dir : xinitrcdir)
+# if install_sysconfdir
+#         install_data('xorg/50-systemd-user.sh',
+#                      install_dir : xinitrcdir)
+# endif
 # install_data('modprobe.d/systemd.conf',
 #              install_dir : modprobedir)
 #endif // 0
@@ -3973,7 +4017,7 @@ endforeach
 #                         if name != prev
 #                                 if want_tests == 'false'
 #                                         message('Not compiling @0@ because tests is set to false'.format(name))
-#                                 elif slow_tests or fuzz_tests
+#                                 elif fuzz_tests
 #                                         exe = custom_target(
 #                                                 name,
 #                                                 output : name,
@@ -3983,12 +4027,12 @@ endforeach
 #                                                            '@OUTPUT@'],
 #                                                 build_by_default : true)
 #                                 else
-#                                         message('Not compiling @0@ because slow-tests/fuzz-tests is set to false'.format(name))
+#                                         message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
 #                                 endif
 #                         endif
 #                         prev = name
 #
-#                         if want_tests != 'false' and (slow_tests or fuzz_tests)
+#                         if fuzz_tests
 #                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
@@ -4252,6 +4296,7 @@ foreach tuple : [
 #         ['coredump'],
 #         ['pstore'],
 #endif // 0
+        ['oomd'],
         ['polkit'],
         ['legacy pkla',      install_polkit_pkla],
         ['efi'],
@@ -4305,7 +4350,6 @@ foreach tuple : [
 #         ['kernel-install',        get_option('kernel-install')],
 #         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 #endif // 0
-        ['fexecve'],
 ]
 
         if tuple.length() >= 2
