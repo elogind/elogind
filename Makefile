@@ -6,6 +6,7 @@
 # 	DESTDIR=$(DESTDIR) ninja -C build install
 #else // 0
 .PHONY: all build clean install justprint loginctl test test-login
+export
 
 # Set this to YES on the command line for a debug build
 DEBUG      ?= NO
@@ -15,6 +16,7 @@ JUST_PRINT ?= NO
 
 HERE := $(shell pwd -P)
 
+BASIC_OPT := --buildtype release
 BUILDDIR  ?= $(HERE)/build
 CGCONTROL ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
 CGDEFAULT ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
@@ -33,7 +35,6 @@ RM    := $(shell which rm) -f
 
 # Save users/systems choice
 envCFLAGS   := ${CFLAGS}
-envCXXFLAGS := ${CXXFLAGS}
 envLDFLAGS  := ${LDFLAGS}
 
 BASIC_OPT := --buildtype release
@@ -55,16 +56,14 @@ endif
 
 # Combine with "sane defaults"
 ifeq (YES,$(DEBUG))
-    BASIC_OPT := -Ddebug-extra=elogind -Dtests=unsafe --buildtype debug
+    BASIC_OPT := --werror -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true -Ddebug-extra=elogind --buildtype debug
     BUILDDIR  := ${BUILDDIR}_debug
     CFLAGS    := -O0 -g3 -ggdb -ftrapv ${envCFLAGS} -fPIE
-    CXXFLAGS  := -O0 -g3 -ggdb -ftrapv ${envCXXFLAGS} -fPIE
     LDFLAGS   := ${envLDFLAGS} -fPIE
     NINJA_OPT := ${NINJA_OPT} -j 1 -k 1
 else
     BUILDDIR  := ${BUILDDIR}_release
-    CFLAGS   := -O2 -fwrapv ${envCFLAGS}
-    CXXFLAGS := -O2 -fwrapv ${envCXXFLAGS}
+    CFLAGS   := -fwrapv ${envCFLAGS}
 endif
 
 # Set search paths including the actual build directory
@@ -74,7 +73,7 @@ VPATH  := $(BUILDDIR):$(HERE):$(HERE)/src
 CONFIG := $(BUILDDIR)/compile_commands.json
 
 # Finalize CFLAGS
-CFLAGS := -march=native -pipe ${CFLAGS} -Wall -Wextra -Wunused -Wno-unused-parameter -Wno-unused-result -ftree-vectorize
+CFLAGS := -march=native -pipe ${CFLAGS} -Wunused -ftree-vectorize
 
 
 all: build
@@ -119,12 +118,8 @@ $(BUILDDIR):
 $(CONFIG): $(BUILDDIR) $(MESON_LST)
 	@echo " Generating $@"
 	+test -f $@ && ( \
-		CC=$(CC) \
-		LD=$(LD) \
 		meson configure $(BUILDDIR) $(BASIC_OPT) \
 	) || ( \
-		CC=$(CC) \
-		LD=$(LD) \
 		meson setup $(BUILDDIR) $(BASIC_OPT) \
 			--libdir $(PREFIX)/usr/lib64 \
 			--localstatedir $(PREFIX)/var/lib \
