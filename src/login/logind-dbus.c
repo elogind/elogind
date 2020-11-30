@@ -1005,7 +1005,7 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
         if (r < 0)
                 return r;
 
-        log_debug_elogind("ReleaseSession called for session %s (%s)", session->id, name ? name : "NULL");
+        log_debug_elogind("Called for session %s (%s)", session->id, strnull(name));
         r = session_release(session);
         if (r < 0)
                 return r;
@@ -1879,9 +1879,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 m->inhibit_delay_max > 0 &&
                 manager_is_inhibited(m, w, INHIBIT_DELAY, NULL, false, false, 0, NULL);
 
-        log_debug_elogind("%s called for %s (%sdelayed)", __FUNCTION__,
-                          handle_action_to_string(unit_name),
-                          delayed ? "" : "NOT ");
+        log_debug_elogind("Called for '%s' (%sdelayed)", handle_action_to_string(unit_name), delayed ? "" : "NOT ");
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
@@ -2035,7 +2033,8 @@ static int method_do_shutdown_or_sleep(
 static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
+        log_debug_elogind("Called for '%s'", SPECIAL_POWEROFF_TARGET);
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2054,7 +2053,8 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
 static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
+        log_debug_elogind("Called for '%s'", SPECIAL_REBOOT_TARGET);
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2073,7 +2073,8 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
 static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
+        log_debug_elogind("Called for '%s'", SPECIAL_HALT_TARGET);
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2092,7 +2093,8 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
 static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
+        log_debug_elogind("Called for '%s'", SPECIAL_SUSPEND_TARGET);
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2111,7 +2113,8 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
 static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
+        log_debug_elogind("Called for '%s'", SPECIAL_HIBERNATE_TARGET);
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2130,7 +2133,8 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
 static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
 
-        log_debug_elogind("%s called", __FUNCTION__);
+        log_debug_elogind("Called for '%s'", SPECIAL_HYBRID_SLEEP_TARGET);
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2330,10 +2334,11 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
         assert(m);
         assert(message);
 
-        log_debug_elogind("%s called", __FUNCTION__);
         r = sd_bus_message_read(message, "st", &type, &elapse);
         if (r < 0)
                 return r;
+
+        log_debug_elogind("Called with type '%s'", strempty(type));
 
         if (startswith(type, "dry-")) {
                 type += 4;
@@ -2435,7 +2440,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         assert(m);
         assert(message);
 
-        log_debug_elogind("%s called", __FUNCTION__);
+        log_debug_elogind("Called with wall message '%s'", strempty(m->wall_message));
         cancelled = m->scheduled_shutdown_type != NULL;
         reset_scheduled_shutdown(m);
 

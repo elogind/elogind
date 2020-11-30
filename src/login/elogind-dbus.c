@@ -150,7 +150,7 @@ static int shutdown_or_sleep( Manager* m, HandleAction action ) {
 
         assert( m );
 
-        log_debug_elogind( "%s called for %s", __FUNCTION__, handle_action_to_string( action ) );
+        log_debug_elogind( "Called for '%s'", handle_action_to_string( action ) );
 
         switch ( action ) {
                 case HANDLE_POWEROFF:
@@ -188,7 +188,7 @@ int execute_shutdown_or_sleep(
         assert( w >= 0 );
         assert( w < _INHIBIT_WHAT_MAX );
 
-        log_debug_elogind( "%s called for %s", __FUNCTION__, handle_action_to_string( action ) );
+        log_debug_elogind( "Called for '%s'", handle_action_to_string( action ) );
 
         bus_manager_log_shutdown( m, w, action );
 
