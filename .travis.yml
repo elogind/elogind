@@ -22,7 +22,7 @@ script:
    echo 'docker' > /run/systemd/container"
 - docker exec -it test-img sh -c "
    cd /travis &&
-   meson --werror -Ddefault-locale=en_US.UTF-8 -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true _build"
+   meson --werror -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true _build"
 - docker exec -it test-img sh -c "
    cd /travis &&
    ninja -C _build"
