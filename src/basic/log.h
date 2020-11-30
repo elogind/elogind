@@ -273,7 +273,8 @@ int log_emergency_level(void);
         log_set_max_level_realm(LOG_REALM, LOG_DEBUG);              \
         log_full_errno_realm(LOG_REALM, LOG_DEBUG, 0, __VA_ARGS__); \
 } while(0)
-#  define log_debug_elogind(fmt, ...) log_debug_elogind_full("%s (DEBUG) " fmt, program_invocation_short_name, __VA_ARGS__)
+#  define log_debug_elogind(fmt, ...) \
+          log_debug_elogind_full("(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
 #else
 #  define log_debug_elogind(...) do {} while (0)
 #endif // ENABLE_DEBUG_ELOGIND
