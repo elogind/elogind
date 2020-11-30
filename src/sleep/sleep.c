@@ -45,7 +45,9 @@
 
 static char* arg_verb = NULL;
 
+#if 0 /// UNNEEDED by elogind (arg_verb is pointing elsewhere and is not strdup'd!)
 STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
+#endif // 0
 
 #if 1 /// If an nvidia card is present, elogind informs its driver about suspend/resume actions
 static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
@@ -708,6 +710,9 @@ int do_sleep(Manager *m, const char *verb) {
         else
                 r = execute(m, arg_verb, modes, states);
 
+        // NULLify arg_verb, as it currently points outside
+        arg_verb = NULL;
+        
         return r;
 }
 
