@@ -215,8 +215,10 @@ static int write_mode(char const* verb, char **modes) {
         char const* mode_location = streq("suspend", verb) ? mode_mem : mode_disk;
 
         // If this is a supend, write that it is to mode_disk.
-        if (streq("suspend", verb))
-                (void) write_string_file(mode_disk, *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
+        if (streq("suspend", verb)) {
+                log_debug_elogind("Writing '%s' to '%s' ...", verb, mode_disk);
+                (void) write_string_file(mode_disk, verb, WRITE_STRING_FILE_DISABLE_BUFFER);
+        }
 
         // Now get the real action mode right:
         STRV_FOREACH(mode, modes) {
@@ -398,6 +400,8 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         int e;
         _cleanup_free_ char *l = NULL;
 
+        log_debug_elogind("Called for '%s' (Manager is %s)", verb, m ? "Set" : "NULL");
+
         assert(m);
 
         _cleanup_fclose_ FILE *f = NULL;
@@ -410,7 +414,9 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         if (!f)
                 return log_error_errno(errno, "Failed to open /sys/power/state: %m");
 
+#ifdef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems
         setvbuf(f, NULL, _IONBF, 0);
+#endif // __GLIBC__
 
         /* Configure hibernation settings if we are supposed to hibernate */
         if (!strv_isempty(modes)) {
@@ -677,7 +683,7 @@ int do_sleep(Manager *m, const char *verb) {
 
         arg_verb = (char*) verb;
 
-        log_debug_elogind("%s called for %s", __func__, strnull(verb));
+        log_debug_elogind("Called for '%s'", strnull(verb));
 
         /* Re-load the sleep configuration, so users can change their options
          * on-the-fly without having to reload elogind
