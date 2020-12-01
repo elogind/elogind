@@ -393,10 +393,12 @@ int elogind_manager_new( Manager* m ) {
         m->do_interrupt     = false;
 
         /* Init poweroff/suspend interruption */
-        m->allow_poweroff_interrupts = false;
-        m->allow_suspend_interrupts  = false;
-        m->callback_failed           = false;
-        m->callback_must_succeed     = false;
+        m->allow_poweroff_interrupts     = false;
+        m->broadcast_poweroff_interrupts = true;
+        m->allow_suspend_interrupts      = false;
+        m->broadcast_suspend_interrupts  = true;
+        m->callback_failed               = false;
+        m->callback_must_succeed         = false;
 
         /* Init sleep modes and states */
         m->suspend_modes       = NULL;

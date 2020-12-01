@@ -416,70 +416,85 @@
     </refsect2>
 
     <refsect2><title>[Sleep] section:</title>
-      <para><command>elogind</command> supports three general
-      power-saving modes:</para>
+      <para><command>elogind</command> supports four general power-saving modes:</para>
 
       <variablelist>
         <varlistentry>
           <term>suspend</term>
 
-          <listitem><para>a low-power state
-          where execution of the OS is paused,
-          and complete power loss might result
-          in lost data, and which is fast to
-          enter and exit. This corresponds to
-          suspend, standby, or freeze states as
-          understood by the kernel.
-          </para></listitem>
+          <listitem><para>a low-power state where execution of the OS is paused, and complete power loss might result in
+              lost data, and which is fast to enter and exit. This corresponds to suspend, standby, or freeze states as
+              understood by the kernel. </para></listitem>
         </varlistentry>
 
         <varlistentry>
           <term>hibernate</term>
 
-          <listitem><para>a low-power state
-          where execution of the OS is paused,
-          and complete power loss does not
-          result in lost data, and which might
-          be slow to enter and exit. This
-          corresponds to the hibernation as
-          understood by the kernel.
-          </para></listitem>
+          <listitem><para>a low-power state where execution of the OS is paused, and complete power loss does not
+              result in lost data, and which might be slow to enter and exit. This corresponds to the hibernation as
+              understood by the kernel.</para></listitem>
         </varlistentry>
 
         <varlistentry>
           <term>hybrid-sleep</term>
 
-          <listitem><para>a low-power state
-          where execution of the OS is paused,
-          which might be slow to enter, and on
-          complete power loss does not result in
-          lost data but might be slower to exit
-          in that case. This mode is called
-          suspend-to-both by the kernel.
-          </para></listitem>
+          <listitem><para>a low-power state where execution of the OS is paused, which might be slow to enter, and on
+              complete power loss does not result in lost data but might be slower to exit in that case. This mode is
+              called suspend-to-both by the kernel.</para></listitem>
         </varlistentry>
 
         <varlistentry>
           <term>suspend-then-hibernate</term>
 
-          <listitem><para>enter suspend state
-          with a timeout that will activate
-          hibernate later.
-          </para></listitem>
+          <listitem><para>enter suspend state with a timeout that will activate hibernate later. </para></listitem>
         </varlistentry>
+      </variablelist>
+
+      <variablelist>
+        <para>Enabling/disabling power-saving modes:</para>
+
+        <varlistentry>
+          <term><varname>AllowSuspend=</varname></term>
+
+          <listitem><para>If this option is set to <literal>no</literal>, <command>elogind</command> will refuse to
+              suspend the machine.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><varname>AllowHibernation=</varname></term>
+
+          <listitem><para>If this option is set to <literal>no</literal>, <command>elogind</command> will refuse to
+            hibernate the machine.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><varname>AllowSuspendThenHibernate=</varname></term>
+
+          <listitem><para>If this option is set to <literal>no</literal>, <command>elogind</command> will refuse to
+            suspend and then hibernate the machine. For this power-saving mode to work, both
+            <varname>AllowSuspend=</varname> and <varname>AllowHibernation=</varname> must be set to
+            <literal>yes</literal>.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><varname>AllowHybridSleep=</varname></term>
+
+          <listitem><para>If this option is set to <literal>no</literal>, <command>elogind</command> will refuse to
+            put the machine into hybrid sleep.</para></listitem>
+        </varlistentry>
+      </variablelist>
+
+      <variablelist>
+        <para>The power-saving modes and states can be controlled as follows:</para>
 
         <varlistentry>
           <term><varname>SuspendMode=</varname></term>
           <term><varname>HibernateMode=</varname></term>
           <term><varname>HybridSleepMode=</varname></term>
 
-          <listitem><para>The string to be written to
-          <filename>/sys/power/disk</filename> by elogind.
-          More than one value can be specified by separating
-          multiple values with whitespace. They will be tried
-          in turn, until one is written without error. If
-          neither succeeds, the operation will be aborted.
-          </para></listitem>
+          <listitem><para>The string to be written to <filename>/sys/power/disk</filename> by elogind.
+              More than one value can be specified by separating multiple values with whitespace. They will be tried in
+              turn, until one is written without error. If neither succeeds, the operation will be aborted.</para></listitem>
         </varlistentry>
 
         <varlistentry>
@@ -487,18 +502,53 @@
           <term><varname>HibernateState=</varname></term>
           <term><varname>HybridSleepState=</varname></term>
 
-          <listitem><para>The string to be written to
-          <filename>/sys/power/state</filename> by elogind.
-          More than one value can be specified by separating
-          multiple values with whitespace. They will be tried
-          in turn, until one is written without error. If
-          neither succeeds, the operation will be aborted.
+          <listitem><para>The string to be written to <filename>/sys/power/state</filename> by elogind.
+              More than one value can be specified by separating multiple values with whitespace. They will be tried in
+              turn, until one is written without error. If neither succeeds, the operation will be aborted.
           </para></listitem>
         </varlistentry>
 
+        <varlistentry>
+          <term><varname>HibernateDelaySec=</varname></term>
+
+          <listitem><para>The amount of seconds the machine will remain suspended before waking up and going into
+              hibernation, after the <command>suspend-then-hibernate</command> mode has been entered.</para></listitem>
+
+        </varlistentry>
       </variablelist>
 
-      <para></para>
+      <variablelist>
+        <para>Executing optional executables when executing power/sleep commands:</para>
+
+        <varlistentry>
+          <term><varname>AllowPowerOffInterrupts=</varname></term>
+          <term><varname>BroadcastPowerOffInterrupts=</varname></term>
+
+          <listitem><para>When power actions are allowed to be interrupted by setting
+              <varname>AllowPowerOffInterrupts</varname> to <literal>yes</literal>, <command>elogind</command> will, if
+              any of the execute in <option>[/usr]/lib[64]/elogind/system-shutdown/</option> or
+              <option>/etc/elogind/system-shutdown/</option> fails, interrupt and cancel the power action.
+              When this happens, <command>elogind</command> will broadcast the cancellation, unless
+              <varname>BroadcastPowerOffInterrupts</varname> is set to <literal>no</literal>.
+              See <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more
+            information about hook directories.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><varname>AllowSuspendInterrupts=</varname></term>
+          <term><varname>BroadcastSuspendInterrupts=</varname></term>
+
+          <listitem><para>When suspend/hibernate actions are allowed to be interrupted by setting
+          <varname>AllowSuspendInterrupts</varname> to <literal>yes</literal>, <command>elogind</command> will, if
+          any of the execute in <option>[/usr]/lib[64]/elogind/system-sleep/</option> or
+          <option>/etc/elogind/system-sleep/</option> fails, interrupt and cancel the suspend action.
+          When this happens, <command>elogind</command> will broadcast the cancellation, unless
+          <varname>BroadcastSuspendInterrupts</varname> is set to <literal>no</literal>.
+          See <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more
+          information about hook directories.</para></listitem>
+        </varlistentry>
+        
+      </variablelist>
     </refsect2>
     <!-- // 1 -->
   </refsect1>

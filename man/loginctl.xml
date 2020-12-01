@@ -360,29 +360,65 @@
       </variablelist>
     </refsect2>
     <refsect2><title>Hook directories</title>
-      <para>Immediately before entering system suspend and/or hibernation elogind will run all executables in
-      <filename>[/usr]/lib/elogind/system-sleep/</filename> and pass two arguments to them. The first argument will be
-      <literal>pre</literal>, the second either <literal>suspend</literal>, <literal>hibernate</literal>,
-      <literal>hybrid-sleep</literal>, or <literal>suspend-then-hibernate</literal>, depending on the chosen action.
-      Immediately after leaving system suspend and/or hibernation the same executables are run, but the first argument
-      is now <literal>post</literal>. All executables in this directory are executed sequentially, and execution of
-      the action is not continued until all executables have finished.</para>
+      <variablelist>
+        <varlistentry>
+          <term><option>[/usr]/lib[64]/elogind/system-sleep/</option>, <option>/etc/elogind/system-sleep/</option></term>
 
-      <para>Whether the executables in these directories run successfully or not is of no concern to elogind.
-      If you want the scripts to cause the action to be cancelled if one fails, you can set
-      <literal>AllowPowerOffInterrupts</literal> and/or <literal>AllowSuspendInterrupts</literal> to
-      <literal>yes</literal> in <filename>/etc/elogind/logind.conf</filename>.
-      For this to work the executables in question must print an error message to <literal>STDOUT</literal> that
-      begins with either of these keywords: <literal>CANCELLED</literal>, <literal>CRITICAL</literal>,
-      <literal>ERROR</literal> or <literal>FAILED</literal>. If you want any of these words in a message without
-      causing the action to be cancelled, just re-arrange the sentence in question so that the keyword is not the first
-      word.</para>
+          <listitem>
+            <para>Immediately before entering system suspend and/or hibernation elogind will run all executables in
+            <option>[/usr]/lib[64]/elogind/system-sleep/</option> and <option>/etc/elogind/system-sleep/</option> and
+            pass two arguments to them. The first argument will be <literal>pre</literal>, the second either
+            <literal>suspend</literal>, <literal>hibernate</literal>, <literal>hybrid-sleep</literal>, or
+            <literal>suspend-then-hibernate</literal>, depending on the chosen action.
+            Immediately after leaving system suspend and/or hibernation the same executables are run, but the first argument
+            is now <literal>post</literal>. All executables in this directory are executed sequentially, and execution of
+            the action is not continued until all executables have finished.</para>
+          </listitem>
+        </varlistentry>
 
-      <para>Note that scripts or binaries dropped in <filename>[/usr]/lib/elogind/system-sleep/</filename> are intended
-      for local use only and should be considered hacks. If applications want to react to system suspend/hibernation
-      and resume, they should rather use the
-      <ulink url="https://www.freedesktop.org/wiki/Software/systemd/inhibit">Inhibitor interface</ulink>.</para>
+        <varlistentry>
+          <term><option>[/usr]/lib[64]/elogind/system-shutdown/</option>, <option>/etc/elogind/system-shutdown/</option></term>
 
+          <listitem>
+            <para>Immediately before rebooting or powering the system off, elogind will run all executables in
+            <option>[/usr]/lib[64]/elogind/system-shutdown/</option> and <option>/etc/elogind/system-shutdown/</option>
+              and pass one argument to them. The argument will either be <literal>poweroff</literal> or
+            <literal>reboot</literal>, depending on the chosen action.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>AllowPowerOffInterrupts</option>, <option>AllowSuspendInterrupts</option></term>
+
+          <listitem>
+            <para>Whether the executables in these directories run successfully or not is of no concern to elogind.
+            If you want the scripts to cause the action to be cancelled if one fails, you can set
+            <literal>AllowPowerOffInterrupts</literal> and/or <literal>AllowSuspendInterrupts</literal> to
+            <literal>yes</literal> in <filename>/etc/elogind/logind.conf</filename>.
+            For this to work the executables in question must print an error message to <literal>STDOUT</literal> that
+            begins with either of these keywords: <literal>CANCELLED</literal>, <literal>CRITICAL</literal>,
+            <literal>ERROR</literal> or <literal>FAILED</literal>. If you want any of these words in a message without
+            causing the action to be cancelled, just re-arrange the sentence in question so that the keyword is not the
+            first word.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>BroadcastPowerOffInterrupts</option>, <option>BroadcastSuspendInterrupts</option></term>
+
+          <listitem>
+            <para>By default an interrupt of a power off or a suspend is broadcasted. If you do not whish these
+              broadcasts to happen, change <literal>BroadcastPowerOffInterrupts</literal> and/or
+              <literal>BroadcastSuspendInterrupts</literal> to <literal>no</literal> in
+              <filename>/etc/elogind/logind.conf</filename>.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>Note that scripts or binaries dropped in any of the hook directories are intended for local use only and
+        should be considered hacks.
+        If applications want to react to these system commands, they should rather use the
+        <ulink url="https://www.freedesktop.org/wiki/Software/systemd/inhibit">Inhibitor interface</ulink>.</para>
     </refsect2>
   </refsect1>
   <!-- // 1 -->
