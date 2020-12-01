@@ -549,6 +549,8 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
         if (r < 0)
                 return r;
 
+        log_debug_elogind("Called for subsystem '%s', device '%s', brightness %u", subsystem, name, brightness);
+
         if (!STR_IN_SET(subsystem, "backlight", "leds"))
                 return sd_bus_error_setf(error, SD_BUS_ERROR_NOT_SUPPORTED, "Subsystem type %s not supported, must be one of 'backlight' or 'leds'.", subsystem);
         if (!filename_is_valid(name))
@@ -560,6 +562,7 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
                 return sd_bus_error_setf(error, BUS_ERROR_NOT_YOUR_DEVICE, "Session is not in foreground, refusing.");
 
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
+        log_debug_elogind("Sender is%s allowed to change brightness", r < 0 ? " NOT" : "");
         if (r < 0)
                 return r;
 
@@ -571,6 +574,7 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
                 return sd_bus_error_setf(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may change brightness.");
 
         r = sd_device_new_from_subsystem_sysname(&d, subsystem, name);
+        log_debug_elogind("Device %s:%s%s opened", subsystem, name, r < 0 ? " could NOT be" : "");
         if (r < 0)
                 return sd_bus_error_set_errnof(error, r, "Failed to open device %s:%s: %m", subsystem, name);
 

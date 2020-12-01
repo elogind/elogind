@@ -206,6 +206,8 @@ int manager_write_brightness(
                 /* There's already a writer for this device. Let's update it with the new brightness, and add
                  * our message to the set of message to reply when done. */
 
+                log_debug_elogind("Appending message to brightness writer %s", existing->path);
+
                 r = set_add_message(&existing->pending_messages, message);
                 if (r < 0)
                         return log_error_errno(r, "Failed to add message to set: %m");
@@ -218,6 +220,7 @@ int manager_write_brightness(
                 return 0;
         }
 
+        log_debug_elogind("Creating new brightness writer for %s", path);
         r = hashmap_ensure_allocated(&m->brightness_writers, &brightness_writer_hash_ops);
         if (r < 0)
                 return log_oom();
@@ -241,10 +244,12 @@ int manager_write_brightness(
         w->manager = m;
 
         r = set_add_message(&w->current_messages, message);
+        log_debug_elogind("Appending message to NEW writer %s", existing->path);
         if (r < 0)
                 return log_error_errno(r, "Failed to add message to set: %m");
 
         r = brightness_writer_fork(w);
+        log_debug_elogind("Forking NEW brightness writer for %s %s", path, r < 0 ? "FAILED" : "succeeded");
         if (r < 0)
                 return r;
 
