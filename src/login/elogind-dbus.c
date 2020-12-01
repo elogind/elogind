@@ -104,27 +104,17 @@ static int run_helper( Manager* m, const char* helper, const char* arg_verb ) {
         r = execute_directories( dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL, EXEC_DIR_NONE );
 
         if ( m->callback_must_succeed && ( ( r < 0 ) || m->callback_failed ) ) {
-                e = asprintf( &l, "A shutdown script in %s or %s failed! [%d]\n"
-                                  "The system %s has been cancelled!",
-                              SYSTEM_SHUTDOWN_PATH, PKGSYSCONFDIR "/system-shutdown",
-                              r, arg_verb
-                            );
+                e = asprintf( &l, "A shutdown script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
+                              SYSTEM_SHUTDOWN_PATH, PKGSYSCONFDIR "/system-shutdown", r, arg_verb );
                 if ( e < 0 ) {
                         log_oom();
                         return -ENOMEM;
                 }
 
-                utmp_wall( l, "root", "n/a", logind_wall_tty_filter, m );
+                if ( m->broadcast_poweroff_interrupts )
+                        utmp_wall( l, "root", "n/a", logind_wall_tty_filter, m );
 
-                log_struct_errno( LOG_ERR, r,
-                                  "MESSAGE_ID="
-                SD_MESSAGE_SLEEP_STOP_STR,
-                                LOG_MESSAGE( "A shutdown script in %s or %s failed [%d]: %m\n"
-                                             "The system %s has been cancelled!",
-                                             SYSTEM_SHUTDOWN_PATH, PKGSYSCONFDIR "/system-shutdown",
-                                             r, arg_verb
-                                           ),
-                                "SHUTDOWN=%s", arg_verb);
+                log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR, LOG_MESSAGE("%s", l), "SHUTDOWN=%s", arg_verb);
 
                 return -ECANCELED;
         }

@@ -453,19 +453,17 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         log_debug_elogind("Result is %d (callback_failed: %s)", r, m->callback_failed ? "true" : "false");
 
         if (m->callback_must_succeed && (r || m->callback_failed)) {
-                e = asprintf(&l, "A sleep script in %s or %s failed! [%d]\n"
-                                 "The system %s has been cancelled!",
-                             SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep",
-                             r, verb);
+                e = asprintf(&l, "A sleep script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
+                             SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep", r, verb);
                 if (e < 0) {
                         log_oom();
                         return -ENOMEM;
                 }
 
-                utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
+                if ( m->broadcast_suspend_interrupts )
+                        utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
 
-                log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                                 LOG_MESSAGE("%s", l), "SLEEP=%s", verb);
+                log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR, LOG_MESSAGE("%s", l), "SLEEP=%s", verb);
 
                 return -ECANCELED;
         }

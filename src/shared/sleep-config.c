@@ -63,8 +63,10 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
 
                 { "Sleep", "HibernateDelaySec",         config_parse_sec,  0, &sc->hibernate_delay_sec},
 #if 1 /// Additional options for elogind
-                { "Sleep", "AllowPowerOffInterrupts",   config_parse_bool, 0, &sc->allow_poweroff_interrupts },
-                { "Sleep", "AllowSuspendInterrupts",    config_parse_bool, 0, &sc->allow_suspend_interrupts },
+                { "Sleep", "AllowPowerOffInterrupts",     config_parse_bool, 0, &sc->allow_poweroff_interrupts },
+                { "Sleep", "BroadcastPowerOffInterrupts", config_parse_bool, 0, &sc->broadcast_poweroff_interrupts },
+                { "Sleep", "AllowSuspendInterrupts",      config_parse_bool, 0, &sc->allow_suspend_interrupts },
+                { "Sleep", "BroadcastSuspendInterrupts",  config_parse_bool, 0, &sc->broadcast_suspend_interrupts },
 #endif // 1
                 {}
         };

@@ -132,6 +132,7 @@ struct Manager {
            SYSTEM_POWEROFF_PATH that fail, the ongoing suspend/poweroff
            action will be cancelled if any of these are set to true. */
         bool allow_poweroff_interrupts, allow_suspend_interrupts;
+        bool broadcast_poweroff_interrupts, broadcast_suspend_interrupts;
         bool callback_failed, callback_must_succeed;
 
         /* If a shutdown/suspend was delayed due to a inhibitor this

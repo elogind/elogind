@@ -41,7 +41,9 @@
 #AllowSuspendThenHibernate=yes
 #AllowHybridSleep=yes
 #AllowPowerOffInterrupts=no
+#BroadcastPowerOffInterrupts=yes
 #AllowSuspendInterrupts=no
+#BroadcastSuspendInterrupts=yes
 #SuspendState=mem standby freeze
 #SuspendMode=
 #HibernateState=disk
