@@ -67,6 +67,7 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 { "Sleep", "BroadcastPowerOffInterrupts", config_parse_bool, 0, &sc->broadcast_poweroff_interrupts },
                 { "Sleep", "AllowSuspendInterrupts",      config_parse_bool, 0, &sc->allow_suspend_interrupts },
                 { "Sleep", "BroadcastSuspendInterrupts",  config_parse_bool, 0, &sc->broadcast_suspend_interrupts },
+                { "Sleep", "HandleNvidiaSleep",           config_parse_bool, 0, &sc->handle_nvidia_sleep },
 #endif // 1
                 {}
         };

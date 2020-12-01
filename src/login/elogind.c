@@ -400,6 +400,9 @@ int elogind_manager_new( Manager* m ) {
         m->callback_failed               = false;
         m->callback_must_succeed         = false;
 
+        /* allow manipulating Nvidia cards */
+        m->handle_nvidia_sleep = false;
+
         /* Init sleep modes and states */
         m->suspend_modes       = NULL;
         m->suspend_states      = NULL;

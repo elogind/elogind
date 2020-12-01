@@ -531,7 +531,7 @@
               When this happens, <command>elogind</command> will broadcast the cancellation, unless
               <varname>BroadcastPowerOffInterrupts</varname> is set to <literal>no</literal>.
               See <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more
-            information about hook directories.</para></listitem>
+              information about hook directories.</para></listitem>
         </varlistentry>
 
         <varlistentry>
@@ -539,15 +539,37 @@
           <term><varname>BroadcastSuspendInterrupts=</varname></term>
 
           <listitem><para>When suspend/hibernate actions are allowed to be interrupted by setting
-          <varname>AllowSuspendInterrupts</varname> to <literal>yes</literal>, <command>elogind</command> will, if
-          any of the execute in <option>[/usr]/lib[64]/elogind/system-sleep/</option> or
-          <option>/etc/elogind/system-sleep/</option> fails, interrupt and cancel the suspend action.
-          When this happens, <command>elogind</command> will broadcast the cancellation, unless
-          <varname>BroadcastSuspendInterrupts</varname> is set to <literal>no</literal>.
-          See <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more
-          information about hook directories.</para></listitem>
+              <varname>AllowSuspendInterrupts</varname> to <literal>yes</literal>, <command>elogind</command> will, if
+              any of the execute in <option>[/usr]/lib[64]/elogind/system-sleep/</option> or
+              <option>/etc/elogind/system-sleep/</option> fails, interrupt and cancel the suspend action.
+              When this happens, <command>elogind</command> will broadcast the cancellation, unless
+              <varname>BroadcastSuspendInterrupts</varname> is set to <literal>no</literal>.
+              See <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more
+              information about hook directories.</para></listitem>
         </varlistentry>
         
+      </variablelist>
+
+      <variablelist>
+        <para>Optional hardware control:</para>
+
+        <varlistentry>
+          <term><varname>HandleNvidiaSleep=</varname></term>
+
+          <listitem><para>If the file <filename>/proc/driver/nvidia/suspend</filename> exists, elogind will write either
+              <literal>suspend</literal> when suspending, or <literal>hibernate</literal> when one of the other
+              power-saving modes is entered, to it. Additionally elogind will try to switch the current VT to 63 before
+              putting the Nvidia card to sleep.
+              After resuming from suspend/hibernate, elogind will write <literal>resume</literal> to the Nvidia
+              <filename>suspend</filename> file, and switches the VT back to where it was before suspending the card.
+            </para>
+            <para>Using the <filename>/proc/driver/nvidia/suspend</filename> is considered experimental by Nvidia, and
+              should only be used if it is neccessary, and the official <filename>/usr/bin/nvidia-sleep.sh</filename>
+              can not be used from a system-sleep hook script for some reason.
+              Please read the
+              <ulink url="https://download.nvidia.com/XFree86/Linux-x86_64/455.38/README/powermanagement.html">Nvidia
+              power management guide</ulink> for more information</para></listitem>
+        </varlistentry>
       </variablelist>
     </refsect2>
     <!-- // 1 -->
