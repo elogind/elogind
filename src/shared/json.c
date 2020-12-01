@@ -433,6 +433,19 @@ int json_variant_new_base64(JsonVariant **ret, const void *p, size_t n) {
         return json_variant_new_stringn(ret, s, k);
 }
 
+int json_variant_new_hex(JsonVariant **ret, const void *p, size_t n) {
+        _cleanup_free_ char *s = NULL;
+
+        assert_return(ret, -EINVAL);
+        assert_return(n == 0 || p, -EINVAL);
+
+        s = hexmem(p, n);
+        if (!s)
+                return -ENOMEM;
+
+        return json_variant_new_stringn(ret, s, n*2);
+}
+
 int json_variant_new_id128(JsonVariant **ret, sd_id128_t id) {
         char s[SD_ID128_STRING_MAX];
 
@@ -3605,6 +3618,36 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
+                case _JSON_BUILD_HEX: {
+                        const void *p;
+                        size_t n;
+
+                        if (!IN_SET(current->expect, EXPECT_TOPLEVEL, EXPECT_OBJECT_VALUE, EXPECT_ARRAY_ELEMENT)) {
+                                r = -EINVAL;
+                                goto finish;
+                        }
+
+                        p = va_arg(ap, const void *);
+                        n = va_arg(ap, size_t);
+
+                        if (current->n_suppress == 0) {
+                                r = json_variant_new_hex(&add, p, n);
+                                if (r < 0)
+                                        goto finish;
+                        }
+
+                        n_subtract = 1;
+
+                        if (current->expect == EXPECT_TOPLEVEL)
+                                current->expect = EXPECT_END;
+                        else if (current->expect == EXPECT_OBJECT_VALUE)
+                                current->expect = EXPECT_OBJECT_KEY;
+                        else
+                                assert(current->expect == EXPECT_ARRAY_ELEMENT);
+
+                        break;
+                }
+
                 case _JSON_BUILD_ID128: {
                         sd_id128_t id;
 
@@ -3855,6 +3898,16 @@ int json_log_internal(
                                 "CONFIG_LINE=%u", source_line,
                                 "CONFIG_COLUMN=%u", source_column,
                                 LOG_MESSAGE("%s:%u:%u: %s", source, source_line, source_column, buffer),
+                                NULL);
+        else if (source_line > 0 && source_column > 0)
+                return log_struct_internal(
+                                LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
+                                error,
+                                file, line, func,
+                                "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
+                                "CONFIG_LINE=%u", source_line,
+                                "CONFIG_COLUMN=%u", source_column,
+                                LOG_MESSAGE("(string):%u:%u: %s", source_line, source_column, buffer),
                                 NULL);
         else
                 return log_struct_internal(
@@ -4395,6 +4448,14 @@ int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size) {
                 return -EINVAL;
 
         return unbase64mem(json_variant_string(v), (size_t) -1, ret, ret_size);
+}
+
+int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size) {
+
+        if (!json_variant_is_string(v))
+                return -EINVAL;
+
+        return unhexmem(json_variant_string(v), (size_t) -1, ret, ret_size);
 }
 
 static const char* const json_variant_type_table[_JSON_VARIANT_TYPE_MAX] = {
