@@ -397,7 +397,7 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                 [STDOUT_COLLECT] = m,
                 [STDOUT_CONSUME] = m,
         };
-        int have_nvidia;
+        int have_nvidia = 0;
         unsigned vtnr = 0;
         int e;
         _cleanup_free_ char *l = NULL;
@@ -468,25 +468,18 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
                 return -ECANCELED;
         }
 
-        log_struct(LOG_INFO,
-                   "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
-                   LOG_MESSAGE("Suspending system..."),
-                   "SLEEP=%s", verb);
+        log_struct(LOG_INFO, "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR, LOG_MESSAGE("Suspending system..."), "SLEEP=%s", verb);
 
         /* See whether we have an nvidia card to put to sleep */
-        have_nvidia = nvidia_sleep(m, verb, &vtnr);
+        if ( m->handle_nvidia_sleep )
+                have_nvidia = nvidia_sleep(m, verb, &vtnr);
 
         r = write_state(&f, states);
         if (r < 0)
-                log_struct_errno(LOG_ERR, r,
-                                 "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                                 LOG_MESSAGE("Failed to suspend system. System resumed again: %m"),
-                                 "SLEEP=%s", verb);
+                log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                                 LOG_MESSAGE("Failed to suspend system. System resumed again: %m"), "SLEEP=%s", verb);
         else
-                log_struct(LOG_INFO,
-                        "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                        LOG_MESSAGE("System resumed."),
-                        "SLEEP=%s", verb);
+                log_struct(LOG_INFO, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR, LOG_MESSAGE("System resumed."), "SLEEP=%s", verb);
 
         /* Wakeup a possibly put to sleep nvidia card */
         if (have_nvidia)

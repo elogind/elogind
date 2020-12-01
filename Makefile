@@ -95,7 +95,7 @@ install: build
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 justprint: $(CONFIG)
-	+($(MAKE) all JUST_PRINT=YES)
+	+(BUILDDIR=$(HERE)/build $(MAKE) all JUST_PRINT=YES)
 
 loginctl: $(CONFIG)
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")

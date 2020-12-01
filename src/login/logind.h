@@ -135,6 +135,9 @@ struct Manager {
         bool broadcast_poweroff_interrupts, broadcast_suspend_interrupts;
         bool callback_failed, callback_must_succeed;
 
+        /* Allow elogind to put Nvidia cards to sleep */
+        bool handle_nvidia_sleep;
+
         /* If a shutdown/suspend was delayed due to a inhibitor this
            contains the action we are supposed to perform after the
            delay is over */
