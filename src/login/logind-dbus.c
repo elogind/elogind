@@ -2011,10 +2011,18 @@ static int method_do_shutdown_or_sleep(
                         return r;
         }
 
+#if 1 && !ENABLE_POLKIT /// elogind checks whether polkit is actually used, so regular users can suspend/hibernate without it (#167)
+        // System shutdown and reboot stay being privileged operations
+        if (IN_SET(unit_name, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
+#endif // 1
         r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
                                   action_ignore_inhibit, error);
+
         if (r != 0)
                 return r;
+#if 1 && !ENABLE_POLKIT /// If the polkit check what reduced to shutdown/reboot, elogind needs another bracket here
+        }
+#endif // 1
 
 #if 1 /// elogind will use the senders uid to send nvidia cards to sleep on suspend/hibernate
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_AUGMENT|SD_BUS_CREDS_UID, &creds);
