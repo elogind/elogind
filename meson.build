@@ -276,11 +276,11 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 # conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
-# conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'systemd'))
+# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          join_paths(rootlibexecdir, 'systemd-fsck'))
-# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'systemd-makefs'))
 # conf.set_quoted('SYSTEMD_GROWFS_PATH',                        join_paths(rootlibexecdir, 'systemd-growfs'))
+# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'systemd-makefs'))
 # conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               join_paths(rootlibexecdir, 'systemd-shutdown'))
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      join_paths(rootbindir, 'systemctl'))
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
@@ -3853,40 +3853,39 @@ endforeach
 #
 # fuzzer_exes = []
 #
-# if fuzz_tests or fuzzer_build
-#         foreach tuple : fuzzers
-#                 sources = tuple[0]
-#                 link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
-#                 dependencies = tuple[2]
-#                 defs = tuple.length() >= 4 ? tuple[3] : []
-#                 incs = tuple.length() >= 5 ? tuple[4] : includes
-#                 link_args = []
+# foreach tuple : fuzzers
+#         sources = tuple[0]
+#         link_with = tuple[1].length() > 0 ? tuple[1] : [libshared]
+#         dependencies = tuple[2]
+#         defs = tuple.length() >= 4 ? tuple[3] : []
+#         incs = tuple.length() >= 5 ? tuple[4] : includes
+#         link_args = []
 #
-#                 if want_ossfuzz
+#         if want_ossfuzz
+#                 dependencies += fuzzing_engine
+#         elif want_libfuzzer
+#                 if fuzzing_engine.found()
 #                         dependencies += fuzzing_engine
-#                 elif want_libfuzzer
-#                         if fuzzing_engine.found()
-#                                 dependencies += fuzzing_engine
-#                         else
-#                                 link_args += ['-fsanitize=fuzzer']
-#                         endif
 #                 else
-#                         sources += 'src/fuzz/fuzz-main.c'
+#                         link_args += ['-fsanitize=fuzzer']
 #                 endif
+#         else
+#                 sources += 'src/fuzz/fuzz-main.c'
+#         endif
 #
-#                 name = sources[0].split('/')[-1].split('.')[0]
+#         name = sources[0].split('/')[-1].split('.')[0]
 #
-#                 fuzzer_exes += executable(
-#                         name,
-#                         sources,
-#                         include_directories : [incs, include_directories('src/fuzz')],
-#                         link_with : link_with,
-#                         dependencies : dependencies,
-#                         c_args : defs,
-#                         link_args: link_args,
-#                         install : false)
-#         endforeach
-# endif
+#         fuzzer_exes += executable(
+#                 name,
+#                 sources,
+#                 include_directories : [incs, include_directories('src/fuzz')],
+#                 link_with : link_with,
+#                 dependencies : dependencies,
+#                 c_args : defs,
+#                 link_args: link_args,
+#                 install : false,
+#                 build_by_default : fuzz_tests or fuzzer_build)
+# endforeach
 #
 # run_target(
 #         'fuzzers',
@@ -4033,7 +4032,7 @@ endforeach
 #                         prev = name
 #
 #                         if fuzz_tests
-#                                 test('@0@_@1@_@2@'.format(b, c, sanitizer),
+#                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
 #                                      timeout : 60,
