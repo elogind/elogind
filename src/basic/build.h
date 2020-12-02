@@ -75,6 +75,12 @@
 #endif
 #endif // 0
 
+#if HAVE_OPENSSL
+#define _OPENSSL_FEATURE_ "+OPENSSL"
+#else
+#define _OPENSSL_FEATURE_ "-OPENSSL"
+#endif
+
 #if HAVE_ACL
 #define _ACL_FEATURE_ "+ACL"
 #else
@@ -82,6 +88,12 @@
 #endif
 
 #if 0 /// UNSUPPORTED by elogind
+#if HAVE_ZLIB
+#define _ZLIB_FEATURE_ "+ZLIB"
+#else
+#define _ZLIB_FEATURE_ "-ZLIB"
+#endif
+
 #if HAVE_XZ
 #define _XZ_FEATURE_ "+XZ"
 #else
@@ -98,6 +110,12 @@
 #define _ZSTD_FEATURE_ "+ZSTD"
 #else
 #define _ZSTD_FEATURE_ "-ZSTD"
+#endif
+
+#if HAVE_BZIP2
+#define _BZIP2_FEATURE_ "+BZIP2"
+#else
+#define _BZIP2_FEATURE_ "-BZIP2"
 #endif
 
 #if HAVE_SECCOMP
@@ -143,6 +161,66 @@
 #endif
 #endif // 0
 
+#if HAVE_PWQUALITY
+#define _PWQUALITY_FEATURE_ "+PWQUALITY"
+#else
+#define _PWQUALITY_FEATURE_ "-PWQUALITY"
+#endif
+
+#if HAVE_LIBFDISK
+#define _FDISK_FEATURE_ "+FDISK"
+#else
+#define _FDISK_FEATURE_ "-FDISK"
+#endif
+
+#if HAVE_P11KIT
+#define _P11KIT_FEATURE_ "+P11KIT"
+#else
+#define _P11KIT_FEATURE_ "-P11KIT"
+#endif
+
+#if HAVE_LIBFIDO2
+#define _FIDO2_FEATURE_ "+FIDO2"
+#else
+#define _FIDO2_FEATURE_ "-FIDO2"
+#endif
+
+#if HAVE_QRENCODE
+#define _QRENCODE_FEATURE_ "+QRENCODE"
+#else
+#define _QRENCODE_FEATURE_ "-QRENCODE"
+#endif
+
+#if HAVE_LIBCURL
+#define _CURL_FEATURE_ "+CURL"
+#else
+#define _CURL_FEATURE_ "-CURL"
+#endif
+
+#if HAVE_LIBIPTC
+#define _IPTC_FEATURE_ "+IPTC"
+#else
+#define _IPTC_FEATURE_ "-IPTC"
+#endif
+
+#if HAVE_ELFUTILS
+#define _ELFUTILS_FEATURE_ "+ELFUTILS"
+#else
+#define _ELFUTILS_FEATURE_ "-ELFUTILS"
+#endif
+
+#if HAVE_XKBCOMMON
+#define _XKBCOMMON_FEATURE_ "+XKBCOMMON"
+#else
+#define _XKBCOMMON_FEATURE_ "-XKBCOMMON"
+#endif
+
+#if HAVE_BLKID
+#define _BLKID_FEATURE_ "+BLKID"
+#else
+#define _BLKID_FEATURE_ "-BLKID"
+#endif
+
 #define _CGROUP_HIERARCHY_ "default-hierarchy=" DEFAULT_HIERARCHY_NAME
 
 #if 0 /// elogind has a much shorter list
@@ -158,10 +236,13 @@
         _LIBCRYPTSETUP_FEATURE_ " "                                     \
         _GCRYPT_FEATURE_ " "                                            \
         _GNUTLS_FEATURE_ " "                                            \
+        _OPENSSL_FEATURE_ " "                                           \
         _ACL_FEATURE_ " "                                               \
+        _ZLIB_FEATURE_ " "                                              \
         _XZ_FEATURE_ " "                                                \
         _LZ4_FEATURE_ " "                                               \
         _ZSTD_FEATURE_ " "                                              \
+        _BZIP2_FEATURE_ " "                                             \
         _SECCOMP_FEATURE_ " "                                           \
         _BLKID_FEATURE_ " "                                             \
         _ELFUTILS_FEATURE_ " "                                          \
@@ -169,6 +250,16 @@
         _IDN2_FEATURE_ " "                                              \
         _IDN_FEATURE_ " "                                               \
         _PCRE2_FEATURE_ " "                                             \
+        _PWQUALITY_FEATURE_ " "                                         \
+        _FDISK_FEATURE_ " "                                             \
+        _P11KIT_FEATURE_ " "                                            \
+        _FIDO2_FEATURE_ " "                                             \
+        _QRENCODE_FEATURE_ " "                                          \
+        _CURL_FEATURE_ " "                                              \
+        _IPTC_FEATURE_ " "                                              \
+        _ELFUTILS_FEATURE_ " "                                          \
+        _XKBCOMMON_FEATURE_ " "                                         \
+        _BLKID_FEATURE_ " "                                             \
         _CGROUP_HIERARCHY_
 
 enum {
