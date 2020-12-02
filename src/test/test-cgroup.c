@@ -111,7 +111,7 @@ static void test_cg_create(void) {
 #else // 0
                 full_d = strjoina("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME, test_d);
 #endif // 0
-        log_debug("full_d: %s", full_d);
+        log_debug_elogind("full_d: %s", full_d);
         assert_se(path_equal(path, full_d));
         free(path);
 

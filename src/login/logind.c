@@ -1217,7 +1217,6 @@ static int run(int argc, char *argv[]) {
         int r;
 
         elogind_set_program_name(argv[0]);
-
         log_set_facility(LOG_AUTH);
         log_setup_service();
 

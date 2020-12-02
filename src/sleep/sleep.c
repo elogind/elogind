@@ -124,7 +124,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
 }
 #endif // 1
 
-static int write_hibernate_location_info(const HibernateLocation* hibernate_location) {
+static int write_hibernate_location_info(const HibernateLocation *hibernate_location) {
         char offset_str[DECIMAL_STR_MAX(uint64_t)];
         char resume_str[DECIMAL_STR_MAX(unsigned) * 2 + STRLEN(":")];
         int r;
@@ -251,7 +251,6 @@ static int write_state(FILE **f, char **states) {
                 int k;
 
                 log_debug_elogind("Writing '%s' into /sys/power/state", *state);
-
                 k = write_string_stream(*f, *state, WRITE_STRING_FILE_DISABLE_BUFFER);
                 if (k >= 0)
                         return 0;
@@ -314,7 +313,7 @@ static int lock_all_homes(void) {
 
 #if 0 /// Changes needed by elogind are too vast to do this inline
 static int execute(char **modes, char **states) {
-        char* arguments[] = {
+        char *arguments[] = {
                 NULL,
                 (char*) "pre",
                 arg_verb,
@@ -343,12 +342,13 @@ static int execute(char **modes, char **states) {
                 if (r < 0)
                         return log_error_errno(r, "Failed to find location to hibernate to: %m");
                 if (r == 0) { /* 0 means: no hibernation location was configured in the kernel so far, let's
-               * do it ourselves then. > 0 means: kernel already had a configured hibernation
-               * location which we shouldn't touch. */
+                               * do it ourselves then. > 0 means: kernel already had a configured hibernation
+                               * location which we shouldn't touch. */
                         r = write_hibernate_location_info(hibernate_location);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to prepare for hibernation: %m");
                 }
+
                 r = write_mode(modes);
                 if (r < 0)
                         return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");;
@@ -359,23 +359,23 @@ static int execute(char **modes, char **states) {
 
         log_struct(LOG_INFO,
                    "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
-                LOG_MESSAGE("Suspending system..."),
-                "SLEEP=%s", arg_verb);
+                   LOG_MESSAGE("Suspending system..."),
+                   "SLEEP=%s", arg_verb);
 
         r = write_state(&f, states);
         if (r < 0)
                 log_struct_errno(LOG_ERR, r,
                                  "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                LOG_MESSAGE("Failed to suspend system. System resumed again: %m"),
-                "SLEEP=%s", arg_verb);
+                                 LOG_MESSAGE("Failed to suspend system. System resumed again: %m"),
+                                 "SLEEP=%s", arg_verb);
         else
-        log_struct(LOG_INFO,
-                   "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                LOG_MESSAGE("System resumed."),
-                "SLEEP=%s", arg_verb);
+                log_struct(LOG_INFO,
+                           "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
+                           LOG_MESSAGE("System resumed."),
+                           "SLEEP=%s", arg_verb);
 
         arguments[1] = (char*) "post";
-        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
+        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
 
         return r;
 }

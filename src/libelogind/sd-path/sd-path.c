@@ -322,7 +322,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
 
         case SD_PATH_SYSTEMD_UTIL:
 #if 0 /// elogind is most probably somewhere else
-                *ret = ROOTPREFIX_NOSLASH "/lib/elogind";
+                *ret = ROOTPREFIX_NOSLASH "/lib/systemd";
 #else // 0
                 *ret = ROOTLIBEXECDIR;
 #endif // 0
@@ -334,7 +334,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
                 return 0;
 
         case SD_PATH_SYSTEMD_SYSTEM_PRESET:
-                *ret = ROOTPREFIX_NOSLASH "/lib/elogind/system-preset";
+                *ret = ROOTPREFIX_NOSLASH "/lib/systemd/system-preset";
                 return 0;
 
         case SD_PATH_SYSTEMD_USER_UNIT:
@@ -342,7 +342,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
                 return 0;
 
         case SD_PATH_SYSTEMD_USER_PRESET:
-                *ret = ROOTPREFIX_NOSLASH "/lib/elogind/user-preset";
+                *ret = ROOTPREFIX_NOSLASH "/lib/systemd/user-preset";
                 return 0;
 
         case SD_PATH_SYSTEMD_SYSTEM_CONF:
@@ -364,7 +364,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
 
         case SD_PATH_SYSTEMD_SLEEP:
 #if 0 /// elogind has it most probably somewhere else
-                *ret = ROOTPREFIX_NOSLASH "/lib/elogind/system-sleep";
+                *ret = ROOTPREFIX_NOSLASH "/lib/systemd/system-sleep";
 #else // 0
                 *ret = SYSTEM_SLEEP_PATH;
 #endif // 0
@@ -372,7 +372,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
 
         case SD_PATH_SYSTEMD_SHUTDOWN:
 #if 0 /// elogind has it most probably somewhere else
-                *ret = ROOTPREFIX_NOSLASH "/lib/elogind/system-shutdown";
+                *ret = ROOTPREFIX_NOSLASH "/lib/systemd/system-shutdown";
 #else // 0
                 *ret = SYSTEM_SHUTDOWN_PATH;
 #endif // 0

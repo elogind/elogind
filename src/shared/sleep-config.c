@@ -81,6 +81,7 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                         CONFIG_PARSE_WARN,
                         NULL,
                         NULL);
+
 #else // 0
         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
@@ -701,7 +702,6 @@ static bool can_s2h(const SleepConfig *sleep_config) {
         return true;
 }
 
-
 static int can_sleep_internal(const char *verb, bool check_allowed, const SleepConfig *sleep_config) {
         bool allow;
         char **modes = NULL, **states = NULL;
@@ -770,7 +770,6 @@ int sleep_settings(const char *verb, const SleepConfig *sleep_config, bool *ret_
         assert(STR_IN_SET(verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"));
 
         log_debug_elogind("Called for '%s'", verb);
-
         if (streq(verb, "suspend")) {
                 *ret_allow = sleep_config->allow_suspend;
                 *ret_modes = sleep_config->suspend_modes;

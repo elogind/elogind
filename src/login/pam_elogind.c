@@ -128,7 +128,7 @@ static int acquire_user_record(
                 return r;
         }
         if (r == PAM_SUCCESS && json) {
-#else
+#else // 0
         if ( 0 ) {
 #endif // 0
                 _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;

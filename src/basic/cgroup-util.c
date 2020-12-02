@@ -2144,6 +2144,7 @@ int cg_unified_cached(bool flush) {
 #if 0 /// elogind supports other controllers than systemd and itself
                         if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
                                 return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/systemd\" failed: %m");
+
 #else // 0
                         if (statfs("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME "/", &fs) < 0)
                                 return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/%s\" failed: %m", CGROUP_CONTROLLER_NAME);
