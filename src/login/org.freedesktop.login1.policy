@@ -396,6 +396,10 @@
                 <message gettext-domain="elogind">Authentication is required to change the virtual terminal.</message>
                 <defaults>
                         <allow_any>auth_admin_keep</allow_any>
+                        <allow_inactive>yes</allow_inactive>
+                        <allow_active>yes</allow_active>
+                </defaults>
+        </action>
 
         <!-- 1 /// Aditional action for elogind to reload its configuration -->
         <action id="org.freedesktop.login1.reload-config">
@@ -405,8 +409,6 @@
                         <allow_any>auth_admin_keep</allow_any>
                         <allow_inactive>auth_admin_keep</allow_inactive>
                         <allow_active>auth_admin_keep</allow_active>
-                        <allow_inactive>yes</allow_inactive>
-                        <allow_active>yes</allow_active>
                 </defaults>
         </action>
         <!-- // 1 -->
