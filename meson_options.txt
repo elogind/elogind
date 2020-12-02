@@ -17,11 +17,11 @@ option('rootprefix', type : 'string',
 #        description : 'link systemd-udev and its helpers to libsystemd-shared.so')
 # option('link-systemctl-shared', type: 'boolean',
 #        description : 'link systemctl against libsystemd-shared.so')
+# option('link-networkd-shared', type: 'boolean',
+#        description : 'link systemd-networkd and its helpers to libsystemd-shared.so')
+# option('link-timesyncd-shared', type: 'boolean',
+#        description : 'link systemd-timesyncd and its helpers to libsystemd-shared.so')
 #endif // 0
-option('link-networkd-shared', type: 'boolean',
-       description : 'link elogind-networkd and its helpers to libelogind-shared.so')
-option('link-timesyncd-shared', type: 'boolean',
-       description : 'link elogind-timesyncd and its helpers to libelogind-shared.so')
 option('static-libelogind', type : 'combo',
        choices : ['false', 'true', 'pic', 'no-pic'],
 #if 0 /// UNNEEDED by elogind
@@ -446,15 +446,13 @@ option('ok-color', type: 'combo',
        value : 'green',
        description: 'color of the "OK" status message')
 
-#if 0 /// fuzz regression tests are not supported by elogind
+#if 0 /// fuzz regression tests are not supported by elogind, as is kernel-install or systemd-analyze
 # option('oss-fuzz', type : 'boolean', value : 'false',
 #        description : 'build against oss-fuzz')
 # option('llvm-fuzz', type : 'boolean', value : 'false',
 #        description : 'build against LLVM libFuzzer')
-#endif // 0
-option('kernel-install', type: 'boolean', value: 'true',
-       description : 'install kernel-install and associated files')
-#if 0 /// there is no elogind analyze
+# option('kernel-install', type: 'boolean', value: 'true',
+#        description : 'install kernel-install and associated files')
 # option('analyze', type: 'boolean', value: 'true',
-#        description : 'install elogind-analyze')
+#        description : 'install systemd-analyze')
 #endif // 0
