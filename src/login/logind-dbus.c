@@ -2017,7 +2017,6 @@ static int method_do_shutdown_or_sleep(
 #endif // 1
         r = verify_shutdown_creds(m, message, w, interactive, action, action_multiple_sessions,
                                   action_ignore_inhibit, error);
-
         if (r != 0)
                 return r;
 #if 1 && !ENABLE_POLKIT /// If the polkit check what reduced to shutdown/reboot, elogind needs another bracket here
@@ -2042,7 +2041,6 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_POWEROFF_TARGET);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2062,7 +2060,6 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_REBOOT_TARGET);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2082,7 +2079,6 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_HALT_TARGET);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2102,7 +2098,6 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_SUSPEND_TARGET);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2122,7 +2117,6 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_HIBERNATE_TARGET);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2142,7 +2136,6 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_HYBRID_SLEEP_TARGET);
-
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2347,7 +2340,6 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
                 return r;
 
         log_debug_elogind("Called with type '%s'", strempty(type));
-
         if (startswith(type, "dry-")) {
                 type += 4;
                 dry_run = true;

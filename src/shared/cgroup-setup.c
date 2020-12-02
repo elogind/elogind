@@ -34,8 +34,8 @@ bool cg_is_unified_wanted(void) {
         if (r >= 0)
                 return (wanted = r >= CGROUP_UNIFIED_ALL);
 
-        /* If we were explicitly passed elogind.unified_cgroup_hierarchy, respect that. */
-        r = proc_cmdline_get_bool("elogind.unified_cgroup_hierarchy", &b);
+        /* If we were explicitly passed systemd.unified_cgroup_hierarchy, respect that. */
+        r = proc_cmdline_get_bool("systemd.unified_cgroup_hierarchy", &b);
         if (r > 0)
                 return (wanted = b);
 

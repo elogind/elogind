@@ -550,7 +550,6 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
                 return r;
 
         log_debug_elogind("Called for subsystem '%s', device '%s', brightness %u", subsystem, name, brightness);
-
         if (!STR_IN_SET(subsystem, "backlight", "leds"))
                 return sd_bus_error_setf(error, SD_BUS_ERROR_NOT_SUPPORTED, "Subsystem type %s not supported, must be one of 'backlight' or 'leds'.", subsystem);
         if (!filename_is_valid(name))

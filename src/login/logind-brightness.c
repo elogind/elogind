@@ -207,7 +207,6 @@ int manager_write_brightness(
                  * our message to the set of message to reply when done. */
 
                 log_debug_elogind("Appending message to brightness writer %s", existing->path);
-
                 r = set_add_message(&existing->pending_messages, message);
                 if (r < 0)
                         return log_error_errno(r, "Failed to add message to set: %m");

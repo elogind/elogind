@@ -16,7 +16,7 @@ static void test_terminal_urlify(void) {
 
 #if 0 /// Aww... lets use an elogind URL, okay?
         assert_se(terminal_urlify("https://www.freedesktop.org/wiki/Software/systemd/", "systemd homepage", &formatted) >= 0);
-  #else // 0
+#else // 0
         assert_se(terminal_urlify("https://github.com/elogind/elogind/", "elogind homepage", &formatted) >= 0);
 #endif // 0
         printf("Hey, consider visiting the %s right now! It is very good!\n", formatted);

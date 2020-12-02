@@ -321,7 +321,6 @@ int rename_process(const char name[]) {
                 size_t k;
 
                 log_debug_elogind("Setting program_invocation_name to '%s'", name);
-
                 k = strlen(program_invocation_name);
                 strncpy(program_invocation_name, name, k);
                 if (l > k)
