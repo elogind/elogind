@@ -4176,15 +4176,15 @@ foreach tuple : [
 #endif // 0
         ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
-#if 0 /// elogind ships neitehr libudev nor systemctl
+#if 0 /// elogind ships neitehr libudev nor systemctl or any other of those
 #         ['install tests',    install_tests],
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
+#         ['link-networkd-shared',  get_option('link-networkd-shared')],
+#         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
+#         ['kernel-install',        get_option('kernel-install')],
+#         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 #endif // 0
-        ['link-networkd-shared',  get_option('link-networkd-shared')],
-        ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
-        ['kernel-install',        get_option('kernel-install')],
-        ['elogind-analyze',       get_option('analyze')],
 ]
 
         if tuple.length() >= 2
