@@ -4,21 +4,13 @@
 #include "version.h"
 
 
-#if 0 /// UNSUPPORTED by elogind
-#endif // 0
+/// elogind empty mask removed (UNSUPPORTED by elogind)
 
+/// elogind empty mask removed (UNSUPPORTED by elogind)
 
-#if 0 /// UNSUPPORTED by elogind
-#endif // 0
+/// elogind empty mask removed (UNSUPPORTED by elogind)
 
-
-#if 0 /// UNSUPPORTED by elogind
-#endif // 0
-
-
-#if 0 /// UNSUPPORTED by elogind
-#endif // 0
-
+/// elogind empty mask removed (UNSUPPORTED by elogind)
 
 #if 0 /// elogind has a much shorter list
 extern const char* const systemd_features;
