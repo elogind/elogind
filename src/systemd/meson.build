@@ -66,7 +66,7 @@ if cc.has_argument('-std=iso9899:2017')
 endif
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
-# if add_languages('cpp', required : false)
+# if cxx_cmd != ''
 #         opts += [['c++'],
 #                  ['c++', '-std=c++98'],
 #                  ['c++', '-std=c++11']]
@@ -76,11 +76,14 @@ endif
 #         if cxx.has_argument('-std=c++17')
 #                 opts += [['c++', '-std=c++17']]
 #         endif
+#         if cxx.has_argument('-std=c++20')
+#                 opts += [['c++', '-std=c++20']]
+#         endif
 # endif
 #endif // 0
 
 #if 0 /// neither not_installed nor libudev headers get shipped with elogind
-# foreach header : _systemd_headers + _not_installed_headers + ['../libudev/libudev.h']
+# foreach header : _systemd_headers + _not_installed_headers + [libudev_h_path]
 #else // 0
 foreach header : _systemd_headers
 #endif // 0
