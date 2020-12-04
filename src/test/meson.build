@@ -59,7 +59,6 @@ tests += [
 #
 #         [['src/test/test-engine.c'],
 #          [libcore,
-#           libudev,
 #           libshared],
 #          [threads,
 #           librt,
@@ -112,17 +111,6 @@ tests += [
 #           libselinux,
 #           libmount,
 #           libblkid]],
-#
-#         [['src/test/test-hostname.c'],
-#          [libcore,
-#           libshared],
-#          [threads,
-#           librt,
-#           libseccomp,
-#           libselinux,
-#           libmount,
-#           libblkid],
-#          '', 'unsafe'],
 #
 #         [['src/test/test-dns-domain.c'],
 #          [libcore,
@@ -375,6 +363,11 @@ tests += [
          []],
 
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-hostname-setup.c'],
+#          [],
+#          [],
+#          '', 'unsafe'],
+#
 #         [['src/test/test-hostname-util.c'],
 #          [],
 #          []],
@@ -572,8 +565,7 @@ tests += [
 #           'src/journal/journald-server.h'],
 #          [libcore,
 #           libjournal_core,
-#           libudev_core,
-#           libudev_static,
+#           libudevd_core,
 #           libshared],
 #          [threads,
 #           libseccomp,
@@ -582,7 +574,7 @@ tests += [
 #           liblz4,
 #           libblkid],
 #endif // 0
-         '', '', [], libudev_core_includes],
+         '', '', [], libudevd_core_includes],
 
         [['src/test/test-prioq.c'],
          [],
@@ -624,7 +616,8 @@ tests += [
 #
 #         [['src/test/test-firewall-util.c'],
 #          [libshared],
-#          []],
+#          [],
+#          'HAVE_LIBIPTC'],
 #
 #         [['src/test/test-netlink-manual.c'],
 #          [],
@@ -818,12 +811,13 @@ tests += [
 #          []],
 #
 #         [['src/test/test-libudev.c'],
-#          [libshared],
-#          []],
+#          [libshared,
+#           libudev_static],
+#          [],
+#          '', '', [], libudev_includes],
 #
 #         [['src/test/test-udev.c'],
-#          [libudev_core,
-#           libudev_static,
+#          [libudevd_core,
 #           libshared],
 #          [threads,
 #           librt,
@@ -1159,7 +1153,8 @@ tests += [
 #           libshared_static,
 #           libudev],
 #endif // 0
-         [threads]],
+         [threads],
+         '', '', [], libudev_includes],
 
         [['src/libelogind/sd-device/test-sd-device-monitor.c'],
          [],

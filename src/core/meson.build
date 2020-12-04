@@ -77,8 +77,6 @@ libcore_shared_sources = '''
 #         execute.h
 #         generator-setup.c
 #         generator-setup.h
-#         hostname-setup.c
-#         hostname-setup.h
 #         ima-setup.c
 #         ima-setup.h
 #         ip-address-access.c

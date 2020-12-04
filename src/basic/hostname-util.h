@@ -8,7 +8,6 @@
 #include "strv.h"
 
 #if 0 /// UNNEEDED by elogind
-bool hostname_is_set(void);
 #endif // 0
 
 char* gethostname_malloc(void);
@@ -36,11 +35,4 @@ static inline bool is_gateway_hostname(const char *hostname) {
         /* This tries to identify the valid syntaxes for the our synthetic "gateway" host. */
         return STRCASE_IN_SET(hostname, "_gateway", "_gateway.");
 }
-
-int sethostname_idempotent(const char *s);
-
 #endif // 0
-int shorten_overlong(const char *s, char **ret);
-
-int read_etc_hostname_stream(FILE *f, char **ret);
-int read_etc_hostname(const char *path, char **ret);
