@@ -365,8 +365,7 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-hostname-setup.c'],
 #          [],
-#          [],
-#          '', 'unsafe'],
+#          []],
 #
 #         [['src/test/test-hostname-util.c'],
 #          [],
