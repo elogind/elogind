@@ -599,7 +599,8 @@ foreach ident : [
                                  #include <sys/stat.h>
                                  #include <unistd.h>'''],
         ['explicit_bzero' ,   '''#include <string.h>'''],
-        ['reallocarray',      '''#include <malloc.h>'''],
+        ['reallocarray',      '''#include <malloc.h>
+                                 #include <stdlib.h>'''],
         ['set_mempolicy',     '''#include <stdlib.h>
                                  #include <unistd.h>'''],
         ['get_mempolicy',     '''#include <stdlib.h>
