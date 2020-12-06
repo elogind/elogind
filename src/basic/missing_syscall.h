@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
 /* Missing glibc definitions to access certain kernel APIs */
@@ -17,6 +17,7 @@
 
 #if defined(__x86_64__) && defined(__ILP32__)
 #define elogind_SC_arch_bias(x) ((x) | /* __X32_SYSCALL_BIT */ 0x40000000)
+#  define systemd_SC_arch_bias(x) ((x) | /* __X32_SYSCALL_BIT */ 0x40000000)
 #elif defined(__ia64__)
 #  define elogind_SC_arch_bias(x) (1024 + (x))
 #elif defined __alpha__
@@ -61,8 +62,9 @@ static inline int missing_pivot_root(const char *new_root, const char *put_old) 
 #elif defined __arm__
 #  define elogind_NR_memfd_create 385
 #elif defined __aarch64__
-#  define elogind_NR_memfd_create 279
 #  define systemd_NR_memfd_create 279
+#elif defined __alpha__
+#  define elogind_NR_memfd_create 512
 #elif defined(__powerpc__)
 #  define elogind_NR_memfd_create 360
 #elif defined __s390__
@@ -81,6 +83,7 @@ static inline int missing_pivot_root(const char *new_root, const char *put_old) 
 #  endif
 #  if _MIPS_SIM == _MIPS_SIM_ABI64
 #    define elogind_NR_memfd_create 5314
+#    define elogind_NR_memfd_create elogind_SC_arch_bias(314)
 #  endif
 #elif defined __i386__
 #  define elogind_NR_memfd_create 356
@@ -101,8 +104,6 @@ assert_cc(__NR_memfd_create == elogind_NR_memfd_create);
 #  if defined __NR_memfd_create
 #    undef __NR_memfd_create
 #  endif
-#  if defined elogind_NR_memfd_create
-#    define __NR_memfd_create elogind_NR_memfd_create
 #  if defined elogind_NR_memfd_create
 #    define __NR_memfd_create elogind_NR_memfd_create
 #  endif
@@ -133,9 +134,12 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 #elif defined(__aarch64__)
 #  define elogind_NR_getrandom 278
 #  define systemd_NR_getrandom 278
+#elif defined(__alpha__)
+#  define elogind_NR_getrandom 511
 #elif defined(__ia64__)
 #  define elogind_NR_getrandom elogind_SC_arch_bias(318)
 #  define elogind_NR_getrandom 1339
+#  define elogind_NR_getrandom elogind_SC_arch_bias(318)
 #elif defined(__m68k__)
 #  define elogind_NR_getrandom 352
 #elif defined(__s390x__)
@@ -156,6 +160,7 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 #  endif
 #  if _MIPS_SIM == _MIPS_SIM_ABI64
 #    define elogind_NR_getrandom 5313
+#    define elogind_NR_getrandom elogind_SC_arch_bias(313)
 #  endif
 #elif defined(__arc__)
 #  define elogind_NR_getrandom 278
@@ -169,13 +174,13 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 assert_cc(__NR_getrandom == elogind_NR_getrandom);
 #  if defined elogind_NR_getrandom
 assert_cc(__NR_getrandom == elogind_NR_getrandom);
+#  if defined elogind_NR_getrandom
+assert_cc(__NR_getrandom == elogind_NR_getrandom);
 #  endif
 #else
 #  if defined __NR_getrandom
 #    undef __NR_getrandom
 #  endif
-#  if defined elogind_NR_getrandom
-#    define __NR_getrandom elogind_NR_getrandom
 #  if defined elogind_NR_getrandom
 #    define __NR_getrandom elogind_NR_getrandom
 #  endif
@@ -221,11 +226,17 @@ static inline pid_t missing_gettid(void) {
 #elif defined __aarch64__
 #  define elogind_NR_name_to_handle_at 264
 #  define systemd_NR_name_to_handle_at 264
+#elif defined(__alpha__)
+#  define elogind_NR_name_to_handle_at 497
 #elif defined(__powerpc__)
 #  define elogind_NR_name_to_handle_at 345
 #elif defined __s390__ || defined __s390x__
 #  define elogind_NR_name_to_handle_at 335
 #elif defined(__arc__)
+#    define elogind_NR_name_to_handle_at elogind_SC_arch_bias(339)
+#  define elogind_NR_name_to_handle_at 264
+#elif defined _MIPS_SIM
+#  if _MIPS_SIM == _MIPS_SIM_ABI32
 #    define elogind_NR_name_to_handle_at elogind_SC_arch_bias(339)
 #  elif _MIPS_SIM == _MIPS_SIM_NABI32
 #    define elogind_NR_name_to_handle_at elogind_SC_arch_bias(303)
@@ -243,13 +254,13 @@ static inline pid_t missing_gettid(void) {
 assert_cc(__NR_name_to_handle_at == elogind_NR_name_to_handle_at);
 #  if defined elogind_NR_name_to_handle_at
 assert_cc(__NR_name_to_handle_at == elogind_NR_name_to_handle_at);
+#  if defined elogind_NR_name_to_handle_at
+assert_cc(__NR_name_to_handle_at == elogind_NR_name_to_handle_at);
 #  endif
 #else
 #  if defined __NR_name_to_handle_at
 #    undef __NR_name_to_handle_at
 #  endif
-#  if defined elogind_NR_name_to_handle_at
-#    define __NR_name_to_handle_at elogind_NR_name_to_handle_at
 #  if defined elogind_NR_name_to_handle_at
 #    define __NR_name_to_handle_at elogind_NR_name_to_handle_at
 #  endif
@@ -277,10 +288,11 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 /* ======================================================================= */
 
 #if defined __aarch64__
-#  define elogind_NR_setns 268
 #  define systemd_NR_setns 268
 #elif defined __arm__
 #  define elogind_NR_setns 375
+#elif defined __alpha__
+#  define elogind_NR_setns 501
 #elif defined(__x86_64__)
 #  define elogind_NR_setns elogind_SC_arch_bias(308)
 #  define systemd_NR_setns systemd_SC_arch_bias(308)
@@ -291,6 +303,10 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 #elif defined __s390__ || defined __s390x__
 #  define elogind_NR_setns 339
 #elif defined(__arc__)
+#    define elogind_NR_setns elogind_SC_arch_bias(344)
+#  define elogind_NR_setns 268
+#elif defined _MIPS_SIM
+#  if _MIPS_SIM == _MIPS_SIM_ABI32
 #    define elogind_NR_setns elogind_SC_arch_bias(344)
 #  elif _MIPS_SIM == _MIPS_SIM_NABI32
 #    define elogind_NR_setns elogind_SC_arch_bias(308)
@@ -308,13 +324,13 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 assert_cc(__NR_setns == elogind_NR_setns);
 #  if defined elogind_NR_setns
 assert_cc(__NR_setns == elogind_NR_setns);
+#  if defined elogind_NR_setns
+assert_cc(__NR_setns == elogind_NR_setns);
 #  endif
 #else
 #  if defined __NR_setns
 #    undef __NR_setns
 #  endif
-#  if defined elogind_NR_setns
-#    define __NR_setns elogind_NR_setns
 #  if defined elogind_NR_setns
 #    define __NR_setns elogind_NR_setns
 #  endif
@@ -350,8 +366,9 @@ static inline pid_t raw_getpid(void) {
 #elif defined __arm__
 #  define elogind_NR_renameat2 382
 #elif defined __aarch64__
-#  define elogind_NR_renameat2 276
 #  define systemd_NR_renameat2 276
+#elif defined __alpha__
+#  define elogind_NR_renameat2 510
 #elif defined _MIPS_SIM
 #  if _MIPS_SIM == _MIPS_SIM_ABI32
 #    define elogind_NR_renameat2 elogind_SC_arch_bias(351)
@@ -366,6 +383,7 @@ static inline pid_t raw_getpid(void) {
 #  endif
 #  if _MIPS_SIM == _MIPS_SIM_ABI64
 #    define elogind_NR_renameat2 5311
+#    define elogind_NR_renameat2 elogind_SC_arch_bias(311)
 #  endif
 #elif defined __i386__
 #  define elogind_NR_renameat2 353
@@ -390,8 +408,6 @@ assert_cc(__NR_renameat2 == elogind_NR_renameat2);
 #  if defined __NR_renameat2
 #    undef __NR_renameat2
 #  endif
-#  if defined elogind_NR_renameat2
-#    define __NR_renameat2 elogind_NR_renameat2
 #  if defined elogind_NR_renameat2
 #    define __NR_renameat2 elogind_NR_renameat2
 #  endif
@@ -473,11 +489,16 @@ static inline key_serial_t missing_request_key(const char *type, const char *des
 #elif defined __arm__
 #  define elogind_NR_copy_file_range 391
 #elif defined __aarch64__
-#  define elogind_NR_copy_file_range 285
 #  define systemd_NR_copy_file_range 285
+#elif defined __alpha__
+#  define elogind_NR_copy_file_range 519
 #elif defined __powerpc__
 #  define elogind_NR_copy_file_range 379
 #elif defined __arc__
+#    define elogind_NR_copy_file_range elogind_SC_arch_bias(360)
+#  define elogind_NR_copy_file_range 285
+#elif defined _MIPS_SIM
+#  if _MIPS_SIM == _MIPS_SIM_ABI32
 #    define elogind_NR_copy_file_range elogind_SC_arch_bias(360)
 #  elif _MIPS_SIM == _MIPS_SIM_NABI32
 #    define elogind_NR_copy_file_range elogind_SC_arch_bias(324)
@@ -500,8 +521,6 @@ assert_cc(__NR_copy_file_range == elogind_NR_copy_file_range);
 #  if defined __NR_copy_file_range
 #    undef __NR_copy_file_range
 #  endif
-#  if defined elogind_NR_copy_file_range
-#    define __NR_copy_file_range elogind_NR_copy_file_range
 #  if defined elogind_NR_copy_file_range
 #    define __NR_copy_file_range elogind_NR_copy_file_range
 #  endif
@@ -534,6 +553,8 @@ static inline ssize_t missing_copy_file_range(int fd_in, loff_t *off_in,
 #  define systemd_NR_bpf 280
 #elif defined __arm__
 #  define systemd_NR_bpf 386
+#elif defined __alpha__
+#  define systemd_NR_bpf 515
 #elif defined(__powerpc__)
 #  define systemd_NR_bpf 361
 #elif defined __sparc__
@@ -542,6 +563,14 @@ static inline ssize_t missing_copy_file_range(int fd_in, loff_t *off_in,
 #  define systemd_NR_bpf 351
 #elif defined __tilegx__
 #  define systemd_NR_bpf 280
+#elif defined _MIPS_SIM
+#  if _MIPS_SIM == _MIPS_SIM_ABI32
+#    define systemd_NR_bpf systemd_SC_arch_bias(355)
+#  elif _MIPS_SIM == _MIPS_SIM_NABI32
+#    define systemd_NR_bpf systemd_SC_arch_bias(319)
+#  elif _MIPS_SIM == _MIPS_SIM_ABI64
+#    define systemd_NR_bpf systemd_SC_arch_bias(315)
+#  endif
 #else
 #  warning "bpf() syscall number unknown for your architecture"
 #endif
@@ -587,6 +616,8 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 #    define elogind_NR_pkey_mprotect 288
 #  elif defined __arm__
 #    define elogind_NR_pkey_mprotect 394
+#  elif defined __alpha__
+#    define elogind_NR_pkey_mprotect 524
 #  elif defined __powerpc__
 #    define elogind_NR_pkey_mprotect 386
 #  elif defined __s390__
@@ -605,6 +636,7 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 #    endif
 #    if _MIPS_SIM == _MIPS_SIM_ABI64
 #      define elogind_NR_pkey_mprotect 5323
+#      define elogind_NR_pkey_mprotect elogind_SC_arch_bias(323)
 #    endif
 #  else
 #    warning "pkey_mprotect() syscall number unknown for your architecture"
@@ -641,6 +673,7 @@ assert_cc(__NR_pkey_mprotect == elogind_NR_pkey_mprotect);
 #  define elogind_NR_statx 360
 #elif defined __x86_64__
 #  define elogind_NR_statx elogind_SC_arch_bias(332)
+#  define systemd_NR_statx systemd_SC_arch_bias(332)
 #elif defined _MIPS_SIM
 #  if _MIPS_SIM == _MIPS_SIM_ABI32
 #    define elogind_NR_statx elogind_SC_arch_bias(366)
@@ -665,8 +698,6 @@ assert_cc(__NR_statx == elogind_NR_statx);
 #  if defined __NR_statx
 #    undef __NR_statx
 #  endif
-#  if defined elogind_NR_statx
-#    define __NR_statx elogind_NR_statx
 #  if defined elogind_NR_statx
 #    define __NR_statx elogind_NR_statx
 #  endif
@@ -738,10 +769,6 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 /* ======================================================================= */
 
 /* should be always defined, see kernel 39036cd2727395c3369b1051005da74059a85317 */
-#if defined __alpha__
-#  define elogind_NR_pidfd_send_signal 534
-#elif defined _MIPS_SIM
-#  if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
 #    define elogind_NR_pidfd_send_signal (424 + 4000)
 #  endif
 #  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
@@ -755,6 +782,7 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 #else
 #  define elogind_NR_pidfd_send_signal elogind_SC_arch_bias(424)
 #endif
+#define elogind_NR_pidfd_send_signal elogind_SC_arch_bias(424)
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_pidfd_send_signal && __NR_pidfd_send_signal >= 0
@@ -782,10 +810,6 @@ static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, un
 #endif
 
 /* should be always defined, see kernel 7615d9e1780e26e0178c93c55b73309a5dc093d7 */
-#if defined __alpha__
-#  define elogind_NR_pidfd_open 544
-#elif defined _MIPS_SIM
-#  if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
 #    define elogind_NR_pidfd_open (434 + 4000)
 #  endif
 #  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
@@ -799,6 +823,7 @@ static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, un
 #else
 #  define elogind_NR_pidfd_open elogind_SC_arch_bias(434)
 #endif
+#define elogind_NR_pidfd_open elogind_SC_arch_bias(434)
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_pidfd_open && __NR_pidfd_open >= 0
