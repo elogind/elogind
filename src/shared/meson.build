@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 
 #if 0 /// elogind has a much shorter list
 # shared_sources = files('''
@@ -174,7 +174,6 @@
 #         net-condition.h
 #         netif-naming-scheme.c
 #         netif-naming-scheme.h
-#         nscd-flush.c
 #         nscd-flush.h
 #         nsflags.c
 #         nsflags.h
@@ -411,6 +410,10 @@ if conf.get('HAVE_PAM') == 1
 endif
 
 #if 0 /// elogind does not need all this networking stuff
+# if conf.get('ENABLE_NSCD') == 1
+#         shared_sources += files('nscd-flush.c')
+# endif
+#
 # generate_ip_protocol_list = find_program('generate-ip-protocol-list.sh')
 # ip_protocol_list_txt = custom_target(
 #         'ip-protocol-list.txt',

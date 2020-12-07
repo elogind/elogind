@@ -271,6 +271,7 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
+# conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 #
 # conf.set_quoted('USER_CONFIG_UNIT_DIR',                       join_paths(pkgsysconfdir, 'user'))
 # conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
@@ -628,6 +629,7 @@ foreach ident : [
                                  #include <signal.h>
                                  #include <sys/wait.h>'''],
         ['mallinfo',          '''#include <malloc.h>'''],
+        ['execveat',          '''#include <unistd.h>'''],
         ['close_range',       '''#include <unistd.h>'''],
 ]
 
@@ -1693,6 +1695,7 @@ conf.set10('ENABLE_REMOTE', have)
 #                 'ima',
 #                 'initrd',
 #                 'compat-mutable-uid-boundaries',
+#                 'nscd',
 #                 'ldconfig',
 #                 'localed',
 #                 'logind',
@@ -4032,7 +4035,7 @@ endforeach
 #                         prev = name
 #
 #                         if fuzz_tests
-#                                 test('@0@:@1@:@2@'.format(b, c, sanitizer),
+#                                 test('@0@_@1@_@2@'.format(b, c, sanitizer),
 #                                      env,
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
 #                                      timeout : 60,
@@ -4262,6 +4265,7 @@ foreach tuple : [
 #         ['idn'],
 #         ['initrd'],
 #         ['compat-mutable-uid-boundaries'],
+#         ['nscd'],
 #         ['libidn2'],
 #         ['libidn'],
 #         ['libiptc'],
@@ -4349,6 +4353,7 @@ foreach tuple : [
 #         ['kernel-install',        get_option('kernel-install')],
 #         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 #endif // 0
+        ['fexecve'],
 ]
 
         if tuple.length() >= 2

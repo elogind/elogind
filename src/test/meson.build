@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1+
+# SPDX-License-Identifier: LGPL-2.1-or-later
 
 awkscript = 'test-hashmap-ordered.awk'
 test_hashmap_ordered_c = custom_target(
@@ -89,17 +89,6 @@ tests += [
 #           libblkid]],
 #
 #         [['src/test/test-ns.c'],
-#          [libcore,
-#           libshared],
-#          [threads,
-#           librt,
-#           libseccomp,
-#           libselinux,
-#           libmount,
-#           libblkid],
-#          '', 'manual'],
-#
-#         [['src/test/test-nscd-flush.c'],
 #          [libcore,
 #           libshared],
 #          [threads,
@@ -325,7 +314,8 @@ tests += [
 #
 #         [['src/test/test-libcrypt-util.c'],
 #          [],
-#          []],
+#          [],
+#          '', 'timeout=120'],
 #
 #         [['src/test/test-offline-passwd.c',
 #           'src/shared/offline-passwd.c',
@@ -841,6 +831,9 @@ tests += [
 #          '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
 #endif // 0
 
+        [['src/test/test-udev-util.c'],
+         [],
+         []],
 
         [['src/test/test-id128.c'],
          [],
@@ -897,6 +890,20 @@ tests += [
 #          [libdl]],
 #endif // 0
 ]
+
+if conf.get('ENABLE_NSCD') == 1
+        tests += [
+                [['src/test/test-nscd-flush.c'],
+                 [libcore,
+                  libshared],
+                 [threads,
+                  librt,
+                  libseccomp,
+                  libselinux,
+                  libmount,
+                  libblkid],
+                 '', 'manual']]
+endif
 
 ############################################################
 
