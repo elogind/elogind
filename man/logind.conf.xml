@@ -28,20 +28,21 @@
 
   <refnamediv>
     <refname>logind.conf</refname>
-    <!-- 0 /// not supported by elogind
     <refname>logind.conf.d</refname>
-    // 0 -->
     <refpurpose>Login manager configuration files</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
-    <!-- 0 /// not supported by elogind
+    <!-- 0 /// not supported by elogind, this is a little different here
     <para><filename>/etc/systemd/logind.conf</filename></para>
     <para><filename>/etc/systemd/logind.conf.d/*.conf</filename></para>
     <para><filename>/run/systemd/logind.conf.d/*.conf</filename></para>
     <para><filename>/usr/lib/systemd/logind.conf.d/*.conf</filename></para>
     --><!-- else // 0 -->
     <para><filename>/etc/elogind/logind.conf</filename></para>
+    <para><filename>/etc/elogind/logind.conf.d/*.conf</filename></para>
+    <para><filename>/etc/elogind/sleep.conf</filename></para>
+    <para><filename>/etc/elogind/sleep.conf.d/*.conf</filename></para>
     <!-- // 0 -->
   </refsynopsisdiv>
 
@@ -54,7 +55,7 @@
     <citerefentry><refentrytitle>systemd.syntax</refentrytitle><manvolnum>7</manvolnum></citerefentry>
     for a general description of the syntax.</para>
     --><!-- else // 0 -->
-    <para>This file configures various parameters of elogind.</para>
+    <para>These files configures various parameters of elogind.</para>
     <!-- // 0 -->
   </refsect1>
 
@@ -69,9 +70,11 @@
     <para>All options are configured in the
     [Login] section:</para>
     --><!-- else // 0 -->
-    <para>All login options are configured in the
-    <literal>[Login]</literal> section, system sleep options are
+    <para>All login options are configured in the <literal>[Login]</literal> section, system sleep options are
     configured in the <literal>[Sleep]</literal> section.</para>
+
+    <para>The file <filename>/etc/elogind/sleep.conf</filename> and the files in
+    <filename>/etc/elogind/sleep.conf.d/*.conf</filename> only have a <literal>[Sleep]</literal> section.</para>
     <!-- // 0 -->
 
     <!-- 1 /// elogind needs a second level, as we use two sections. -->
@@ -416,13 +419,13 @@
     </refsect2>
 
     <refsect2><title>[Sleep] section:</title>
-      <para><command>elogind</command> supports four general power-saving modes:</para>
+      <para><command>loginctl</command> supports four general power-saving modes:</para>
 
       <variablelist>
         <varlistentry>
           <term>suspend</term>
 
-          <listitem><para>a low-power state where execution of the OS is paused, and complete power loss might result in
+          <listitem><para>A low-power state where execution of the OS is paused, and complete power loss might result in
               lost data, and which is fast to enter and exit. This corresponds to suspend, standby, or freeze states as
               understood by the kernel. </para></listitem>
         </varlistentry>
@@ -430,7 +433,7 @@
         <varlistentry>
           <term>hibernate</term>
 
-          <listitem><para>a low-power state where execution of the OS is paused, and complete power loss does not
+          <listitem><para>A low-power state where execution of the OS is paused, and complete power loss does not
               result in lost data, and which might be slow to enter and exit. This corresponds to the hibernation as
               understood by the kernel.</para></listitem>
         </varlistentry>
@@ -438,7 +441,7 @@
         <varlistentry>
           <term>hybrid-sleep</term>
 
-          <listitem><para>a low-power state where execution of the OS is paused, which might be slow to enter, and on
+          <listitem><para>A low-power state where execution of the OS is paused, which might be slow to enter, and on
               complete power loss does not result in lost data but might be slower to exit in that case. This mode is
               called suspend-to-both by the kernel.</para></listitem>
         </varlistentry>
@@ -446,7 +449,7 @@
         <varlistentry>
           <term>suspend-then-hibernate</term>
 
-          <listitem><para>enter suspend state with a timeout that will activate hibernate later. </para></listitem>
+          <listitem><para>Enter suspend state with a timeout that will activate hibernate later. </para></listitem>
         </varlistentry>
       </variablelist>
 
@@ -489,12 +492,128 @@
 
         <varlistentry>
           <term><varname>SuspendMode=</varname></term>
+
+          <listitem><para>The string, if set, to be written to <filename>/sys/power/mem_sleep</filename> by elogind.
+              More than one value can be specified by separating multiple values with whitespace. They will be tried in
+              turn, until one is written without error. If neither succeeds, the operation will be aborted.</para></listitem>
+        
+          <variablelist>
+            <para>The folowing modes might be written to <filename>/sys/power/mem_sleep</filename>:</para>
+
+            <varlistentry>
+              <term><varname>s2idle</varname></term>
+
+              <listitem><para>This is a generic, pure software, light-weight variant of system suspend (also referred to
+                  as S2I or suspend-to-idle). It allows more energy to be saved relative to runtime idle by freezing
+                  user space, suspending the timekeeping and putting all I/O devices into low-power states (possibly
+                  lower-power than available in the working state), such that the processors can spend time in their
+                  deepest idle states while the system is suspended.</para>
+
+                <para>The system is woken up from this state by in-band interrupts, so theoretically any devices that
+                  can cause interrupts to be generated in the working state can also be set up as wakeup devices for
+                  s2idle.</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><varname>shallow</varname></term>
+
+              <listitem><para>This state, if supported, offers moderate, but real, energy savings, while providing a
+                  relatively straightforward transition back to the working state.  No operating state is lost (the
+                  system core logic retains power), so the system can go back to where it left off easily enough.</para>
+
+                <para>In addition to freezing user space, suspending the timekeeping and putting all I/O devices into
+                  low-power states, which is done for <varname>s2idle</varname> too, nonboot CPUs are taken offline and
+                  all low-level system functions are suspended during transitions into this state. For this reason, it
+                  should allow more energy to be saved relative to <varname>s2idle</varname>, but the resume latency
+                  will generally be greater than for that state.</para>
+
+                <para>The set of devices that can wake up the system from this state usually is reduced relative to
+                  <varname>s2idle</varname> and it may be necessary to rely on the platform for setting up the wakeup
+                  functionality as appropriate.</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><varname>deep</varname></term>
+
+              <listitem><para>This state (also referred to as STR or S2RAM), if supported, offers significant energy
+                  savings as everything in the system is put into a low-power state, except for memory, which should be
+                  placed into the self-refresh mode to retain its contents. All of the steps carried out when entering
+                  <varname>shallow</varname> are also carried out during transitions to S2RAM. Additional operations may
+                  take place depending on the platform capabilities. In particular, on ACPI-based systems the kernel
+                  passes control to the platform firmware (BIOS) as the last step during S2RAM transitions and that
+                  usually results in powering down some more low-level components that are not directly controlled by
+                  the kernel.</para>
+
+                <para>The state of devices and CPUs is saved and held in memory. All devices are suspended and put into
+                  low-power states.  In many cases, all peripheral buses lose power when entering S2RAM, so devices must
+                  be able to handle the transition back to the "on" state.</para>
+                
+                <para>On ACPI-based systems S2RAM requires some minimal boot-strapping code in the platform firmware to
+                  resume the system from it. This may be the case on other platforms too.</para>
+
+                <para>The set of devices that can wake up the system from S2RAM usually is reduced relative to
+                  <varname>s2idle</varname> and <varname>shallow</varname> and it may be necessary to rely on the
+                  platform for setting up the wakeup functionality as appropriate.</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </varlistentry>
+
+        <varlistentry>
           <term><varname>HibernateMode=</varname></term>
           <term><varname>HybridSleepMode=</varname></term>
 
-          <listitem><para>The string to be written to <filename>/sys/power/disk</filename> by elogind.
+          <listitem><para>The string, if set, to be written to <filename>/sys/power/disk</filename> by elogind.
               More than one value can be specified by separating multiple values with whitespace. They will be tried in
-              turn, until one is written without error. If neither succeeds, the operation will be aborted.</para></listitem>
+              turn, until one is written without error. If neither succeeds, the operation will be aborted.</para>
+            
+            <para>The chosen value controls the operating mode of hibernation (Suspend-to-Disk). Specifically, it tells
+              the kernel what to do <literal>after</literal> creating a hibernation image.</para></listitem>
+
+          <variablelist>
+            <para>The folowing modes might be written to <filename>/sys/power/disk</filename>:</para>
+
+            <varlistentry>
+              <term><varname>platform</varname></term>
+
+              <listitem><para>Put the system into a special low-power state (e.g. ACPI S4) to make additional wakeup
+                  options available and possibly allow the platform firmware to take a simplified initialization path
+                  after wakeup.</para>
+
+                <para>It is only available if the platform provides a special mechanism to put the system to sleep after
+                  creating a hibernation image (platforms with ACPI do that as a rule, for example).</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><varname>shutdown</varname></term>
+
+              <listitem><para>Power off the system.</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><varname>reboot</varname></term>
+
+              <listitem><para>Reboot the system (useful for diagnostics mostly).</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><varname>suspend</varname></term>
+
+              <listitem><para>Hybrid system suspend. Put the system into the suspend sleep state selected through the
+                  <varname>SuspendMode=</varname> value described above. If the system is successfully woken up from
+                  that state, discard the hibernation image and continue. Otherwise, use the image to restore the
+                  previous state of the system.</para>
+
+                <para>It is available if system suspend is supported.</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><varname>test_resume</varname></term>
+
+              <listitem><para>Diagnostic operation. Load the image as though the system had just woken up from
+                  hibernation and the currently running kernel instance was a restore kernel and follow up with full
+                  system resume.</para></listitem>
+            </varlistentry>
+          </variablelist>
         </varlistentry>
 
         <varlistentry>
@@ -504,8 +623,19 @@
 
           <listitem><para>The string to be written to <filename>/sys/power/state</filename> by elogind.
               More than one value can be specified by separating multiple values with whitespace. They will be tried in
-              turn, until one is written without error. If neither succeeds, the operation will be aborted.
-          </para></listitem>
+              turn, until one is written without error. If neither succeeds, the operation will be aborted.</para>
+            
+            <para><filename>/sys/power/state</filename> contains a list of strings representing sleep states supported
+              by the kernel. Writing one of these strings into it causes the kernel to start a transition of the system
+              into the sleep state represented by that string.</para>
+            
+            <para>In particular, the <literal>disk</literal>, <literal>freeze</literal> and <literal>standby</literal>
+              strings represent the <literal>hibernation</literal>, <literal>suspend-to-idle (s2idle)</literal> and
+              <literal>standby (shallow)</literal> sleep states, respectively.</para>
+            
+            <para>The <literal>mem</literal> string is interpreted in accordance with the value written by
+              <varname>SuspendMode</varname> into the <filename>/sys/power/mem_sleep</filename> file described
+              above.</para></listitem>
         </varlistentry>
 
         <varlistentry>
@@ -526,7 +656,7 @@
 
           <listitem><para>When power actions are allowed to be interrupted by setting
               <varname>AllowPowerOffInterrupts</varname> to <literal>yes</literal>, <command>elogind</command> will, if
-              any of the execute in <option>[/usr]/lib[64]/elogind/system-shutdown/</option> or
+              any of the hook scripts in <option>[/usr]/lib[64]/elogind/system-shutdown/</option> or
               <option>/etc/elogind/system-shutdown/</option> fails, interrupt and cancel the power action.
               When this happens, <command>elogind</command> will broadcast the cancellation, unless
               <varname>BroadcastPowerOffInterrupts</varname> is set to <literal>no</literal>.
@@ -540,7 +670,7 @@
 
           <listitem><para>When suspend/hibernate actions are allowed to be interrupted by setting
               <varname>AllowSuspendInterrupts</varname> to <literal>yes</literal>, <command>elogind</command> will, if
-              any of the execute in <option>[/usr]/lib[64]/elogind/system-sleep/</option> or
+              any of the hook script in <option>[/usr]/lib[64]/elogind/system-sleep/</option> or
               <option>/etc/elogind/system-sleep/</option> fails, interrupt and cancel the suspend action.
               When this happens, <command>elogind</command> will broadcast the cancellation, unless
               <varname>BroadcastSuspendInterrupts</varname> is set to <literal>no</literal>.
@@ -558,9 +688,9 @@
 
           <listitem><para>If the file <filename>/proc/driver/nvidia/suspend</filename> exists, elogind will write either
               <literal>suspend</literal> when suspending, or <literal>hibernate</literal> when one of the other
-              power-saving modes is entered, to it. Additionally elogind will try to switch the current VT to 63 before
-              putting the Nvidia card to sleep.
-              After resuming from suspend/hibernate, elogind will write <literal>resume</literal> to the Nvidia
+              power-saving modes is entered, into it. Additionally elogind will try to switch the current VT to 63
+	      before putting the Nvidia card to sleep.
+              After resuming from suspend/hibernate, elogind will write <literal>resume</literal> into the Nvidia
               <filename>suspend</filename> file, and switches the VT back to where it was before suspending the card.
             </para>
             <para>Using the <filename>/proc/driver/nvidia/suspend</filename> is considered experimental by Nvidia, and
