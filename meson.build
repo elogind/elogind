@@ -600,8 +600,12 @@ foreach ident : [
                                  #include <sys/stat.h>
                                  #include <unistd.h>'''],
         ['explicit_bzero' ,   '''#include <string.h>'''],
+#if 0 /// elogind supports mus, which has reallocarray prototype in stdlib.h
+#         ['reallocarray',      '''#include <malloc.h>'''],
+#else // 0
         ['reallocarray',      '''#include <malloc.h>
                                  #include <stdlib.h>'''],
+#endif // 0
         ['set_mempolicy',     '''#include <stdlib.h>
                                  #include <unistd.h>'''],
         ['get_mempolicy',     '''#include <stdlib.h>
