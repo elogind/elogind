@@ -129,6 +129,8 @@ assert_cc(__NR_memfd_create == elogind_NR_memfd_create);
 assert_cc(__NR_memfd_create == elogind_NR_memfd_create);
 #  if defined elogind_NR_memfd_create
 assert_cc(__NR_memfd_create == elogind_NR_memfd_create);
+#  if defined elogind_NR_memfd_create
+assert_cc(__NR_memfd_create == elogind_NR_memfd_create);
 #  endif
 #else
 #  if defined __NR_memfd_create
@@ -209,6 +211,9 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 #  define elogind_NR_getrandom 359
 #elif defined(__s390x__)
 #  define elogind_NR_getrandom 349
+#  define elogind_NR_getrandom 359
+#elif defined(__s390__)
+#  define elogind_NR_getrandom 349
 #elif defined(__x86_64__)
 #  define elogind_NR_getrandom elogind_SC_arch_bias(318)
 #else
@@ -217,6 +222,8 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_getrandom && __NR_getrandom >= 0
+#  if defined elogind_NR_getrandom
+assert_cc(__NR_getrandom == elogind_NR_getrandom);
 #  if defined elogind_NR_getrandom
 assert_cc(__NR_getrandom == elogind_NR_getrandom);
 #  if defined elogind_NR_getrandom
@@ -308,6 +315,9 @@ static inline pid_t missing_gettid(void) {
 #  define elogind_NR_name_to_handle_at 345
 #elif defined(__s390__) || defined(__s390x__)
 #  define elogind_NR_name_to_handle_at 335
+#  define elogind_NR_name_to_handle_at 345
+#elif defined(__s390__)
+#  define elogind_NR_name_to_handle_at 335
 #elif defined(__x86_64__)
 #  define elogind_NR_name_to_handle_at elogind_SC_arch_bias(303)
 #else
@@ -316,6 +326,8 @@ static inline pid_t missing_gettid(void) {
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_name_to_handle_at && __NR_name_to_handle_at >= 0
+#  if defined elogind_NR_name_to_handle_at
+assert_cc(__NR_name_to_handle_at == elogind_NR_name_to_handle_at);
 #  if defined elogind_NR_name_to_handle_at
 assert_cc(__NR_name_to_handle_at == elogind_NR_name_to_handle_at);
 #  if defined elogind_NR_name_to_handle_at
@@ -389,6 +401,9 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 #  define elogind_NR_setns 350
 #elif defined(__s390__) || defined(__s390x__)
 #  define elogind_NR_setns 339
+#  define elogind_NR_setns 350
+#elif defined(__s390__)
+#  define elogind_NR_setns 339
 #elif defined(__x86_64__)
 #  define elogind_NR_setns elogind_SC_arch_bias(308)
 #else
@@ -397,6 +412,8 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_setns && __NR_setns >= 0
+#  if defined elogind_NR_setns
+assert_cc(__NR_setns == elogind_NR_setns);
 #  if defined elogind_NR_setns
 assert_cc(__NR_setns == elogind_NR_setns);
 #  if defined elogind_NR_setns
@@ -491,6 +508,9 @@ static inline pid_t raw_getpid(void) {
 #  define elogind_NR_renameat2 357
 #elif defined(__s390__) || defined(__s390x__)
 #  define elogind_NR_renameat2 347
+#  define elogind_NR_renameat2 357
+#elif defined(__s390__)
+#  define elogind_NR_renameat2 347
 #elif defined(__x86_64__)
 #  define elogind_NR_renameat2 elogind_SC_arch_bias(316)
 #else
@@ -499,6 +519,8 @@ static inline pid_t raw_getpid(void) {
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_renameat2 && __NR_renameat2 >= 0
+#  if defined elogind_NR_renameat2
+assert_cc(__NR_renameat2 == elogind_NR_renameat2);
 #  if defined elogind_NR_renameat2
 assert_cc(__NR_renameat2 == elogind_NR_renameat2);
 #  if defined elogind_NR_renameat2
@@ -823,6 +845,9 @@ assert_cc(__NR_pkey_mprotect == elogind_NR_pkey_mprotect);
 #elif defined(__powerpc__)
 #  define elogind_NR_statx 383
 #elif defined(__s390__) || defined(__s390x__)
+#  define elogind_NR_statx 379
+#  define elogind_NR_statx 383
+#elif defined(__s390__)
 #  define elogind_NR_statx 379
 #elif defined(__sparc__)
 #  define elogind_NR_statx 360
