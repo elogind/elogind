@@ -35,4 +35,6 @@ int device_is_renaming(sd_device *dev);
 #endif // 0
 bool device_for_action(sd_device *dev, DeviceAction action);
 
+void log_device_uevent(sd_device *device, const char *str);
+
 int udev_rule_parse_value(char *str, char **ret_value, char **ret_endpos);
