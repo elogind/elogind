@@ -1317,6 +1317,7 @@ conf.set10('HAVE_PAM', have)
 # want_qrencode = get_option('qrencode')
 # if want_qrencode != 'false' and not skip_deps
 #         libqrencode = dependency('libqrencode',
+#                                  version : '>= 4',
 #                                  required : want_qrencode == 'true')
 #         have = libqrencode.found()
 # else
