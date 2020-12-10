@@ -233,8 +233,6 @@ option('install-sysconfdir', type : 'boolean', value : true,
 option('fallback-hostname', type : 'string', value : 'localhost',
        description : 'the hostname used if none configured')
 #if 0 /// UNNEEDED by elogind
-# option('compat-gateway-hostname', type : 'boolean', value : 'false',
-#        description : 'allow "gateway" as the symbolic name for default gateway')
 #endif // 0
 option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'unified',

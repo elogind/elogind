@@ -806,8 +806,6 @@ endforeach
 # endif
 # conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
 #
-# conf.set10('ENABLE_COMPAT_GATEWAY_HOSTNAME', get_option('compat-gateway-hostname'))
-# gateway_hostnames = ['_gateway'] + (conf.get('ENABLE_COMPAT_GATEWAY_HOSTNAME') == 1 ? ['gateway'] : [])
 #endif // 0
 
 default_hierarchy = get_option('default-hierarchy')
@@ -4169,7 +4167,6 @@ status = [
         'nobody group name:                 @0@'.format(nobody_group),
 #if 0 /// UNSUPPORTED by elogind
 #         'fallback hostname:                 @0@'.format(get_option('fallback-hostname')),
-#         'symbolic gateway hostnames:        @0@'.format(', '.join(gateway_hostnames)),
 #
 #         'default DNSSEC mode:               @0@'.format(default_dnssec),
 #         'default DNS-over-TLS mode:         @0@'.format(default_dns_over_tls),
