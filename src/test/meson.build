@@ -398,6 +398,17 @@ tests += [
 #          [],
 #          core_includes],
 #
+#         [['src/test/test-bpf-lsm.c'],
+#          [libcore,
+#           libshared],
+#          [libmount,
+#           threads,
+#           librt,
+#           libseccomp,
+#           libselinux,
+#           libblkid],
+#          core_includes],
+#
 #         [['src/test/test-watch-pid.c'],
 #          [libcore,
 #           libshared],
@@ -413,7 +424,7 @@ tests += [
         [['src/test/test-hashmap.c',
           'src/test/test-hashmap-plain.c',
           test_hashmap_ordered_c],
-         [], [], [], '', 'timeout=90'],
+         [], [], [], '', 'timeout=180'],
 
         [['src/test/test-set.c'],
          [libbasic]],
