@@ -601,7 +601,7 @@ foreach ident : [
                                  #include <unistd.h>'''],
         ['explicit_bzero' ,   '''#include <string.h>'''],
 #if 0 /// elogind supports mus, which has reallocarray prototype in stdlib.h
-#         ['reallocarray',      '''#include <malloc.h>'''],
+#         ['reallocarray',      '''#include <stdlib.h>'''],
 #else // 0
         ['reallocarray',      '''#include <malloc.h>
                                  #include <stdlib.h>'''],
