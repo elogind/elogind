@@ -1623,7 +1623,7 @@ TimestampStyle timestamp_style_from_string(const char *s) {
                 return t;
         if (streq_ptr(s, "µs"))
                 return TIMESTAMP_US;
-        if (streq_ptr(s, "µs+uts"))
+        if (streq_ptr(s, "µs+utc"))
                 return TIMESTAMP_US_UTC;
         return t;
 }
