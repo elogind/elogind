@@ -603,8 +603,9 @@ _public_ int sd_bus_set_property(
         return r;
 }
 
-_public_ int sd_bus_query_sender_creds(sd_bus_message *call, uint64_t mask, sd_bus_creds **creds) {
+_public_ int sd_bus_query_sender_creds(sd_bus_message *call, uint64_t mask, sd_bus_creds **ret) {
         sd_bus_creds *c;
+        int r;
 
         assert_return(call, -EINVAL);
         assert_return(call->sealed, -EPERM);
@@ -619,7 +620,7 @@ _public_ int sd_bus_query_sender_creds(sd_bus_message *call, uint64_t mask, sd_b
 
         /* All data we need? */
         if (c && (mask & ~c->mask) == 0) {
-                *creds = sd_bus_creds_ref(c);
+                *ret = sd_bus_creds_ref(c);
                 return 0;
         }
 
@@ -630,19 +631,26 @@ _public_ int sd_bus_query_sender_creds(sd_bus_message *call, uint64_t mask, sd_b
 
                 if (call->sender)
                         /* There's a sender, but the creds are missing. */
-                        return sd_bus_get_name_creds(call->bus, call->sender, mask, creds);
+                        return sd_bus_get_name_creds(call->bus, call->sender, mask, ret);
                 else
                         /* There's no sender. For direct connections
                          * the credentials of the AF_UNIX peer matter,
                          * which may be queried via sd_bus_get_owner_creds(). */
-                        return sd_bus_get_owner_creds(call->bus, mask, creds);
+                        return sd_bus_get_owner_creds(call->bus, mask, ret);
         }
 
         log_debug_elogind("Called by UID %u ; %s [%s] (%s)", c->uid,
                           c->unique_name ? c->unique_name : "no name",
                           c->label       ? c->label       : "no label",
                           c->description ? c->description : "no desc");
-        return bus_creds_extend_by_pid(c, mask, creds);
+        r = bus_creds_extend_by_pid(c, mask, ret);
+        if (r == -ESRCH) {
+                /* Process doesn't exist anymore? propagate the few things we have */
+                *ret = sd_bus_creds_ref(c);
+                return 0;
+        }
+
+        return r;
 }
 
 _public_ int sd_bus_query_sender_privilege(sd_bus_message *call, int capability) {
