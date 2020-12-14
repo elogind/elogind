@@ -497,7 +497,6 @@ libshared_static = static_library(
 libshared = shared_library(
         libshared_name,
 #if 0 /// UNNEEDED by elogind
-#         libudev_sources,
 #endif // 0
         include_directories : includes,
         link_args : ['-shared',

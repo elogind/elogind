@@ -59,7 +59,6 @@ tests += [
 #
 #         [['src/test/test-engine.c'],
 #          [libcore,
-#           libudev,
 #           libshared],
 #          [threads,
 #           librt,
@@ -572,8 +571,7 @@ tests += [
 #           'src/journal/journald-server.h'],
 #          [libcore,
 #           libjournal_core,
-#           libudev_core,
-#           libudev_static,
+#           libudevd_core,
 #           libshared],
 #          [threads,
 #           libseccomp,
@@ -581,8 +579,8 @@ tests += [
 #           libxz,
 #           liblz4,
 #           libblkid],
-#          '', '', [], libudev_core_includes],
 #endif // 0
+         '', '', [], libudevd_core_includes],
 
         [['src/test/test-prioq.c'],
          [],
@@ -819,12 +817,13 @@ tests += [
 #          []],
 #
 #         [['src/test/test-libudev.c'],
-#          [libshared],
-#          []],
+#          [libshared,
+#           libudev_static],
+#          [],
+#          '', '', [], libudev_includes],
 #
 #         [['src/test/test-udev.c'],
-#          [libudev_core,
-#           libudev_static,
+#          [libudevd_core,
 #           libshared],
 #          [threads,
 #           librt,
@@ -1159,8 +1158,9 @@ tests += [
 #          [libbasic,
 #           libshared_static,
 #           libudev],
-#          [threads]],
 #endif // 0
+         [threads],
+         '', '', [], libudev_includes],
 
         [['src/libelogind/sd-device/test-sd-device-monitor.c'],
          [],
