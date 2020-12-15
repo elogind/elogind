@@ -274,3 +274,5 @@ static inline bool JOURNAL_FILE_COMPRESS(JournalFile *f) {
 #endif // 0
 
 uint64_t journal_file_hash_data(JournalFile *f, const void *data, size_t sz);
+
+bool journal_field_valid(const char *p, size_t l, bool allow_protected);
