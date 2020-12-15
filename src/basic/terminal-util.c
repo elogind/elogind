@@ -47,7 +47,6 @@ static volatile unsigned cached_columns = 0;
 static volatile unsigned cached_lines = 0;
 
 static volatile int cached_on_tty = -1;
-static volatile int cached_colors_enabled = -1;
 static volatile int cached_color_mode = _COLOR_INVALID;
 static volatile int cached_underline_enabled = -1;
 
@@ -872,7 +871,6 @@ void reset_terminal_feature_caches(void) {
         cached_columns = 0;
         cached_lines = 0;
 
-        cached_colors_enabled = -1;
         cached_color_mode = _COLOR_INVALID;
         cached_underline_enabled = -1;
         cached_on_tty = -1;
@@ -1264,15 +1262,6 @@ ColorMode get_color_mode(void) {
         return cached_color_mode;
 }
 
-bool colors_enabled(void) {
-
-        /* Returns true if colors are considered supported on our stdout. */
-
-        if (cached_colors_enabled < 0)
-                cached_colors_enabled = get_color_mode() != COLOR_OFF;
-
-        return cached_colors_enabled;
-}
 
 #if 0 /// UNNEEDED by elogind
 bool dev_console_colors_enabled(void) {

@@ -162,12 +162,17 @@ void reset_terminal_feature_caches(void);
 
 bool on_tty(void);
 bool terminal_is_dumb(void);
-bool colors_enabled(void);
 ColorMode get_color_mode(void);
 bool underline_enabled(void);
 #if 0 /// UNNEEDED by elogind
 bool dev_console_colors_enabled(void);
 #endif // 0
+
+static inline bool colors_enabled(void) {
+
+        /* Returns true if colors are considered supported on our stdout. */
+        return get_color_mode() != COLOR_OFF;
+}
 
 #define DEFINE_ANSI_FUNC(name, NAME)                            \
         static inline const char *ansi_##name(void) {           \
