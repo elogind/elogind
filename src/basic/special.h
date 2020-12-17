@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
 #define SPECIAL_DEFAULT_TARGET "default.target"
@@ -42,6 +42,7 @@
 #define SPECIAL_SWAP_TARGET "swap.target"
 #define SPECIAL_NETWORK_ONLINE_TARGET "network-online.target"
 #define SPECIAL_TIME_SYNC_TARGET "time-sync.target"       /* LSB's $time */
+#define SPECIAL_TIME_SET_TARGET "time-set.target"
 #define SPECIAL_BASIC_TARGET "basic.target"
 
 /* LSB compatibility */
