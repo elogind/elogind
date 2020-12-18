@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "btrfs-util.h"
+#include "btrfs-util.h"
 //#include "chattr-util.h"
 #include "copy.h"
 #include "dirent-util.h"
@@ -133,7 +133,6 @@ int copy_bytes_full(
         if (ret_remains_size)
                 *ret_remains_size = 0;
 
-#if 0 /// UNNEEDED by elogind
         /* Try btrfs reflinks first. This only works on regular, seekable files, hence let's check the file offsets of
          * source and destination first. */
         if ((copy_flags & COPY_REFLINK)) {
@@ -186,7 +185,6 @@ int copy_bytes_full(
                         }
                 }
         }
-#endif // 0
 
         for (;;) {
                 ssize_t n;

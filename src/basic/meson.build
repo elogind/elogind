@@ -258,6 +258,8 @@ basic_sources = files('''
         audit-util.h
         blockdev-util.c
         blockdev-util.h
+        btrfs-util.c
+        btrfs-util.h
         build.h
         bus-label.c
         bus-label.h
