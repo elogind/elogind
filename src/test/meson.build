@@ -606,7 +606,6 @@ tests += [
 #          [],
 #          '', 'manual'],
 #
-#
 #         [['src/test/test-firewall-util.c'],
 #          [libshared],
 #          [],

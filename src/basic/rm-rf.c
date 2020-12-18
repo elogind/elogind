@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "btrfs-util.h"
+#include "btrfs-util.h"
 #include "cgroup-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
@@ -107,7 +107,6 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                         if (r > 0)
                                 continue;
 
-#if 0 /// elogind does not support BTRFS this directly
                         if ((flags & REMOVE_SUBVOLUME) && st.st_ino == 256) {
 
                                 /* This could be a subvolume, try to remove it */
@@ -126,7 +125,6 @@ int rm_rf_children(int fd, RemoveFlags flags, struct stat *root_dev) {
                                         /* It was a subvolume, continue. */
                                         continue;
                         }
-#endif // 0
 
                         /* We pass REMOVE_PHYSICAL here, to avoid doing the fstatfs() to check the file
                          * system type again for each directory */
@@ -168,7 +166,6 @@ int rm_rf(const char *path, RemoveFlags flags) {
                                        "Attempted to remove entire root file system (\"%s\"), and we can't allow that.",
                                        path);
 
-#if 0 /// elogind does not support BTRFS this directly
         if (FLAGS_SET(flags, REMOVE_SUBVOLUME | REMOVE_ROOT | REMOVE_PHYSICAL)) {
                 /* Try to remove as subvolume first */
                 r = btrfs_subvol_remove(path, BTRFS_REMOVE_RECURSIVE|BTRFS_REMOVE_QUOTA);
@@ -183,7 +180,6 @@ int rm_rf(const char *path, RemoveFlags flags) {
 
                 /* Not btrfs or not a subvolume */
         }
-#endif // 0
 
         fd = open(path, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW|O_NOATIME);
         if (fd < 0) {

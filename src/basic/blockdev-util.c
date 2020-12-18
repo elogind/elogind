@@ -5,7 +5,7 @@
 
 //#include "alloc-util.h"
 #include "blockdev-util.h"
-//#include "btrfs-util.h"
+#include "btrfs-util.h"
 //#include "dirent-util.h"
 #include "fd-util.h"
 //#include "fileio.h"
@@ -62,9 +62,7 @@ int block_get_whole_disk(dev_t d, dev_t *ret) {
 int get_block_device(const char *path, dev_t *ret) {
         _cleanup_close_ int fd = -1;
         struct stat st;
-#if 0 /// elogind does not support speaking to BTRFS directly
         int r;
-#endif // 0
 
         assert(path);
         assert(ret);
@@ -84,13 +82,11 @@ int get_block_device(const char *path, dev_t *ret) {
                 return 1;
         }
 
-#if 0 /// elogind does not support speaking to BTRFS directly
         r = btrfs_get_block_device_fd(fd, ret);
         if (r > 0)
                 return 1;
         if (r != -ENOTTY) /* not btrfs */
                 return r;
-#endif // 0
 
         *ret = 0;
         return 0;

@@ -16,7 +16,7 @@
 
 #include "alloc-util.h"
 #include "blockdev-util.h"
-//#include "btrfs-util.h"
+#include "btrfs-util.h"
 #include "conf-parser.h"
 #include "def.h"
 #include "env-util.h"
@@ -311,11 +311,7 @@ static int calculate_swap_file_offset(const SwapEntry *swap, uint64_t *ret_offse
         _cleanup_close_ int fd = -1;
         _cleanup_free_ struct fiemap *fiemap = NULL;
         struct stat sb;
-#if 0 /// elogind does not directly support BTRFS
         int r, btrfs;
-#else // 0
-        int r;
-#endif // 0
 
         assert(swap);
         assert(swap->device);
@@ -328,7 +324,6 @@ static int calculate_swap_file_offset(const SwapEntry *swap, uint64_t *ret_offse
         if (fstat(fd, &sb) < 0)
                 return log_debug_errno(errno, "Failed to stat %s: %m", swap->device);
 
-#if 0 /// elogind does not directly support BTRFS
         btrfs = btrfs_is_filesystem(fd);
         if (btrfs < 0)
                 return log_debug_errno(btrfs, "Error checking %s for Btrfs filesystem: %m", swap->device);
@@ -337,7 +332,6 @@ static int calculate_swap_file_offset(const SwapEntry *swap, uint64_t *ret_offse
                 *ret_offset = UINT64_MAX;
                 return 0;
         }
-#endif // 0
 
         r = read_fiemap(fd, &fiemap);
         if (r < 0)
