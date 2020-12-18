@@ -108,9 +108,9 @@ bool socket_ipv6_is_supported(void);
 #endif // 0
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
+#if 0 /// UNNEEDED by elogind
 const union in_addr_union *sockaddr_in_addr(const struct sockaddr *sa);
 
-#if 0 /// UNNEEDED by elogind
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
 int getpeername_pretty(int fd, bool include_port, char **ret);
 int getsockname_pretty(int fd, char **ret);

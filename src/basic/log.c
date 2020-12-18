@@ -298,11 +298,7 @@ int log_open(void) {
                         }
 #else // 0
         if (log_target != LOG_TARGET_CONSOLE) {
-#endif // 0
-
-#if 0 /// Add syslog to elogind LOG_TARGET_AUTO set
-#else // 0
-                if ( IN_SET(log_target, LOG_TARGET_AUTO, LOG_TARGET_SYSLOG_OR_KMSG, LOG_TARGET_SYSLOG)) {
+                {
 #endif // 0
 
                         if (IN_SET(log_target,

@@ -1933,6 +1933,7 @@ int json_variant_set_field_string(JsonVariant **v, const char *field, const char
         return json_variant_set_field(v, field, m);
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_set_field_integer(JsonVariant **v, const char *field, intmax_t i) {
         _cleanup_(json_variant_unrefp) JsonVariant *m = NULL;
         int r;
@@ -2135,6 +2136,7 @@ fail:
 
         return r;
 }
+#endif // 0
 
 static int json_variant_copy(JsonVariant **nv, JsonVariant *v) {
         JsonVariantType t;

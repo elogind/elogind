@@ -23,11 +23,6 @@ typedef enum BusTransport {
 
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-/// elogind empty mask removed (UNNEEDED by elogind)
-
-#if 0 /// UNNEEDED by elogind
 int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name);
 #endif // 0
 
@@ -52,9 +47,7 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
 #if 0 /// UNNEEDED by elogind
 int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #endif // 0
-/// elogind empty mask removed (UNNEEDED by elogind)
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 #define bus_log_address_error(r)                                        \
         log_error_errno(r,                                              \
                 r == -ENOMEDIUM ? "Failed to set bus address: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined" : \
@@ -70,19 +63,17 @@ int bus_connect_transport_systemd(BusTransport transport, const char *host, bool
 #define bus_log_create_error(r)                                 \
         log_error_errno(r, "Failed to create bus message: %m")
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
 #if 0 /// UNNEEDED by elogind
 int bus_path_encode_unique(sd_bus *b, const char *prefix, const char *sender_id, const char *external_id, char **ret_path);
 int bus_path_decode_unique(const char *path, const char *prefix, char **ret_sender, char **ret_external);
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-
 int bus_track_add_name_many(sd_bus_track *t, char **l);
 #endif // 0
 
 int bus_open_system_watch_bind_with_description(sd_bus **ret, const char *description);
+
 #if 0 /// UNNEEDED by elogind
 static inline int bus_open_system_watch_bind(sd_bus **ret) {
         return bus_open_system_watch_bind_with_description(ret, NULL);

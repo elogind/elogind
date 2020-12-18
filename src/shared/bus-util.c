@@ -248,9 +248,6 @@ int bus_connect_user_systemd(sd_bus **_bus) {
 }
 #endif // 0
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
-/// elogind empty mask removed (UNNEEDED by elogind)
 int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **ret) {
         _cleanup_(sd_bus_close_unrefp) sd_bus *bus = NULL;
         int r;

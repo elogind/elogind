@@ -1140,7 +1140,6 @@ bool empty_or_root(const char *root) {
         return root[strspn(root, "/")] == 0;
 }
 
-/// elogind empty mask removed ()
 bool path_strv_contains(char **l, const char *path) {
         char **i;
 
@@ -1151,6 +1150,7 @@ bool path_strv_contains(char **l, const char *path) {
         return false;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char **l, const char *path) {
         char **i, *j;
 
@@ -1166,3 +1166,4 @@ bool prefixed_path_strv_contains(char **l, const char *path) {
 
         return false;
 }
+#endif // 0

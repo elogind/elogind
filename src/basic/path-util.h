@@ -186,6 +186,7 @@ static inline const char *empty_to_root(const char *path) {
         return isempty(path) ? "/" : path;
 }
 
-/// elogind empty mask removed ()
 bool path_strv_contains(char **l, const char *path);
+#if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char **l, const char *path);
+#endif // 0

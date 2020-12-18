@@ -1229,14 +1229,10 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
 }
 #endif // 0
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
-        /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
 int userdb_block_nss_elogind(int b) {
         _cleanup_(dlclosep) void *dl = NULL;
         int (*call)(bool b);
 
-        /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
         /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
 
         dl = dlopen(ROOTLIBDIR "/libnss_elogind.so.2", RTLD_LAZY|RTLD_NODELETE);
