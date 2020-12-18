@@ -282,6 +282,7 @@ shared_sources = '''
         clean-ipc.h
         conf-parser.c
         conf-parser.h
+        daemon-util.h
         dev-setup.c
         dev-setup.h
         dns-domain.c

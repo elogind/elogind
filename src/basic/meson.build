@@ -254,6 +254,8 @@ basic_sources = files('''
         alloc-util.c
         alloc-util.h
         architecture.h
+        async.c
+        async.h
         audit-util.c
         audit-util.h
         blockdev-util.c
