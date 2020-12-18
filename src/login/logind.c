@@ -9,22 +9,22 @@
 #include "sd-device.h"
 
 #include "alloc-util.h"
-#include "bus-error.h"
+//#include "bus-error.h"
 #include "bus-locator.h"
 #include "bus-log-control-api.h"
 #include "bus-polkit.h"
-#include "cgroup-util.h"
+//#include "cgroup-util.h"
 #include "daemon-util.h"
-#include "def.h"
+//#include "def.h"
 #include "device-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "format-util.h"
 #include "fs-util.h"
 #include "logind-dbus.h"
-#include "logind-seat-dbus.h"
-#include "logind-session-dbus.h"
-#include "logind-user-dbus.h"
+//#include "logind-seat-dbus.h"
+//#include "logind-session-dbus.h"
+//#include "logind-user-dbus.h"
 #include "logind.h"
 #include "main-func.h"
 #include "parse-util.h"
@@ -35,7 +35,6 @@
 #include "strv.h"
 #include "terminal-util.h"
 /// Additional includes needed by elogind
-#include "cgroup.h"       // From src/core/
 #include "label.h"
 #include "musl_missing.h"
 #include "udev-util.h"
@@ -1309,11 +1308,11 @@ static int run(int argc, char *argv[]) {
                 log_debug_elogind("elogind interrupted (PID "PID_FMT"), going down silently...", getpid_cached());
         } else {
 #endif /// 1
+        notify_message = notify_start(NOTIFY_READY, NOTIFY_STOPPING);
 #if 1 /// extra bracket for elogind here
         }
 #endif // 1
 
-        notify_message = notify_start(NOTIFY_READY, NOTIFY_STOPPING);
         return manager_run(m);
 }
 

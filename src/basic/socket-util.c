@@ -369,6 +369,7 @@ const union in_addr_union *sockaddr_in_addr(const struct sockaddr *_sa) {
                 return NULL;
         }
 }
+#endif // 0
 
 int sockaddr_pretty(
                 const struct sockaddr *_sa,
@@ -504,6 +505,7 @@ int sockaddr_pretty(
         *ret = p;
         return 0;
 }
+#if 0 /// UNNEEDED by elogind
 
 int getpeername_pretty(int fd, bool include_port, char **ret) {
         union sockaddr_union sa;

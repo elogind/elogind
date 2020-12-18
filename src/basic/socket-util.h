@@ -38,11 +38,11 @@ union sockaddr_union {
 #if 0 /// UNNEEDED by elogind
         /* Ensure there is enough space to store Infiniband addresses */
         uint8_t ll_buffer[offsetof(struct sockaddr_ll, sll_addr) + CONST_MAX(ETH_ALEN, INFINIBAND_ALEN)];
+#endif // 0
 
         /* Ensure there is enough space after the AF_UNIX sun_path for one more NUL byte, just to be sure that the path
          * component is always followed by at least one NUL byte. */
         uint8_t un_buffer[sizeof(struct sockaddr_un) + 1];
-#endif // 0
 };
 
 #if 0 /// UNNEEDED by elogind
@@ -110,8 +110,10 @@ bool socket_ipv6_is_supported(void);
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
 #if 0 /// UNNEEDED by elogind
 const union in_addr_union *sockaddr_in_addr(const struct sockaddr *sa);
+#endif // 0
 
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
+#if 0 /// UNNEEDED by elogind
 int getpeername_pretty(int fd, bool include_port, char **ret);
 int getsockname_pretty(int fd, char **ret);
 
