@@ -302,6 +302,9 @@ int log_open(void) {
 #endif // 0
 
                         if (IN_SET(log_target,
+#if 1 /// elogind prefers syslog when target is set to AUTO
+                                   LOG_TARGET_AUTO,
+#endif // 1
                                    LOG_TARGET_SYSLOG_OR_KMSG,
                                    LOG_TARGET_SYSLOG)) {
 
