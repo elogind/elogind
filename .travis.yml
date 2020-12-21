@@ -4,6 +4,8 @@ env:
   matrix:
   - DIST: voidlinux
   - DIST: voidlinux-musl
+git:
+    submodules: false
 services:
 - docker
 before_install:
