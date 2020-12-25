@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 //#include <string.h>
+/// Additional includes needed by elogind
+#include "string-util.h"
 
 typedef const char* (*lookup_t)(int);
 typedef int (*reverse_t)(const char*);
@@ -27,7 +29,11 @@ static inline void _test_table(const char *name,
                 }
 
                 if (boring < 1 || i == size)
+#if 0 /// To pacify gcc-10 ftrace, call strnull() on `val` in elogind (#189)
                         printf("%s: %d → %s → %d\n", name, i, val, rev);
+#else // 0
+                        printf("%s: %d → %s → %d\n", name, i, strnull(val), rev);
+#endif // 0
                 else if (boring == 1)
                         printf("%*s  ...\n", (int) strlen(name), "");
 
