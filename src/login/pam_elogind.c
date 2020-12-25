@@ -698,9 +698,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         if (r != PAM_SUCCESS)
                 return r;
 
+#if 0 /// If elogind is not running, yet, dbus will start it when it is needed. (#188)
         /* Make most of this a NOP on non-logind systems */
         if (!logind_running())
                 goto success;
+#endif // 0
 
         /* Make sure we don't enter a loop by talking to
          * elogind when it is actually waiting for the
