@@ -109,7 +109,7 @@ pam_elogind_c = files('pam_elogind.c')
                 input : 'logind.conf.in',
                 output : 'logind.conf',
                 configuration : substs)
-        if install_sysconfdir
+        if install_sysconfdir_samples
                 install_data(logind_conf,
                              install_dir : pkgsysconfdir)
         endif

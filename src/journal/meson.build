@@ -124,7 +124,7 @@ libjournal_client = static_library(
 #         pcre2-dlopen.h
 # '''.split())
 #
-# if install_sysconfdir
+# if install_sysconfdir_samples
 #         install_data('journald.conf',
 #                      install_dir : pkgsysconfdir)
 # endif

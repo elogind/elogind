@@ -200,7 +200,7 @@ libcore_la_sources = files('''
 # foreach item : in_files
 #         file = item[0]
 #         dir = item[1]
-#         if install_sysconfdir or dir != pkgsysconfdir
+#         if install_sysconfdir_samples or dir != pkgsysconfdir
 #                 configure_file(
 #                         input : file + '.in',
 #                         output : file,
