@@ -44,6 +44,7 @@
 #         dirent-util.h
 #         dlfcn-util.c
 #         dlfcn-util.h
+#         dns-def.h
 #         efivars.c
 #         efivars.h
 #         env-file.c
