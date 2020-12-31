@@ -514,8 +514,7 @@ libshared = shared_library(
                       libbasic,
 #if 0 /// UNNEEDED by elogind
 #                       libbasic_gcrypt,
-#                       libsystemd_static,
-#                       libjournal_client],
+#                       libsystemd_static],
 #else // 0
                       libelogind_static],
 #endif // 0

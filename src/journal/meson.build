@@ -1,27 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 #if 0 /// elogind has a stub file only
-# journal_client_sources = files('''
-#         audit-type.c
-#         audit-type.h
-#         catalog.c
-#         catalog.h
-#         compress.c
-#         compress.h
-#         journal-def.h
-#         journal-file.c
-#         journal-file.h
-#         journal-send.c
-#         journal-vacuum.c
-#         journal-vacuum.h
-#         journal-verify.c
-#         journal-verify.h
-#         lookup3.c
-#         lookup3.h
-#         mmap-cache.c
-#         mmap-cache.h
-#         sd-journal.c
-# '''.split())
 #else // 0
 journal_client_sources = files('''
         journal-def.h
@@ -35,50 +14,12 @@ journal_client_sources = files('''
 #endif // 0
 
 #if 0 /// No gcrypt in elogind needed
-# if conf.get('HAVE_GCRYPT') == 1
-#         journal_client_sources += files('''
-#                 journal-authenticate.c
-#                 journal-authenticate.h
-#                 fsprg.c
-#                 fsprg.h
-#         '''.split())
-# endif
 #endif // 0
 
-############################################################
 
 #if 0 /// No audit in elogind journald stubs
-# audit_type_includes = [config_h,
-#                        missing_audit_h,
-#                        'linux/audit.h']
-# if conf.get('HAVE_AUDIT') == 1
-#         audit_type_includes += 'libaudit.h'
-# endif
-#
-# generate_audit_type_list = find_program('generate-audit_type-list.sh')
-# audit_type_list_txt = custom_target(
-#         'audit_type-list.txt',
-#         output : 'audit_type-list.txt',
-#         command : [generate_audit_type_list, cpp] + audit_type_includes,
-#         capture : true)
-#
-# audit_type_to_name = custom_target(
-#         'audit_type-to-name.h',
-#         input : ['audit_type-to-name.awk', audit_type_list_txt],
-#         output : 'audit_type-to-name.h',
-#         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
-#         capture : true)
-#
-# journal_client_sources += [audit_type_to_name]
 #endif // 0
 
-libjournal_client = static_library(
-        'journal-client',
-        journal_client_sources,
-        include_directories : includes,
-        c_args : ['-fvisibility=default'])
-
-############################################################
 
 #if 0 /// After the stubs lib above, elogind needs nothing else.
 # libjournal_core_sources = files('''
@@ -102,7 +43,6 @@ libjournal_client = static_library(
 #         journald-syslog.h
 #         journald-wall.c
 #         journald-wall.h
-#         journal-internal.h
 # '''.split())
 #
 # systemd_journald_sources = files('''

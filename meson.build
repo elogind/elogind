@@ -1874,6 +1874,7 @@ includes = include_directories('src/basic',
 #                                'src/libsystemd/sd-event',
 #                                'src/libsystemd/sd-hwdb',
 #                                'src/libsystemd/sd-id128',
+#                                'src/libsystemd/sd-journal',
 #                                'src/libsystemd/sd-netlink',
 #                                'src/libsystemd/sd-network',
 #                                'src/libsystemd/sd-resolve',
@@ -1955,8 +1956,7 @@ libelogind = shared_library(
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
 #                      libbasic_gcrypt],
-#         link_whole : [libsystemd_static,
-#                       libjournal_client],
+#         link_whole : [libsystemd_static],
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
@@ -1987,7 +1987,6 @@ install_libelogind_static = static_library(
         libelogind_sources,
 #endif // 0
 #if 0 /// No journald with elogind (And before you ask: NO!)
-#         journal_client_sources,
 #endif // 0
         basic_sources,
 #if 0 /// No gcrypt with elogind
@@ -2540,7 +2539,6 @@ endif
 # else
 #         systemctl_link_with = [libsystemd_static,
 #                                libshared_static,
-#                                libjournal_client,
 #                                libbasic_gcrypt]
 # endif
 #
@@ -3009,7 +3007,6 @@ endif
 #         else
 #                 timesyncd_link_with = [libsystemd_static,
 #                                        libshared_static,
-#                                        libjournal_client,
 #                                        libbasic_gcrypt]
 #         endif
 #
@@ -3591,8 +3588,7 @@ public_programs += executable(
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
-#                                      libsystemd_static,
-#                                      libjournal_client],
+#                                      libsystemd_static],
 #                         install : true,
 #                         install_dir : rootbindir)
 #                 public_programs += exe
@@ -3634,8 +3630,7 @@ public_programs += executable(
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
-#                                      libsystemd_static,
-#                                      libjournal_client],
+#                                      libsystemd_static],
 #                         dependencies : [libacl],
 #                         install : true,
 #                         install_dir : rootbindir)
