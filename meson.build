@@ -1884,7 +1884,6 @@ includes = include_directories('src/basic',
 #                                'src/shared',
 #                                'src/shutdown',
 #                                'src/systemd',
-#                                'src/time-wait-sync',
 #                                'src/timesync',
 #                                'src/udev',
 #                                'src/xdg-autostart-generator',
@@ -3023,7 +3022,7 @@ endif
 #
 #         executable(
 #                 'systemd-time-wait-sync',
-#                 'src/time-wait-sync/time-wait-sync.c',
+#                 'src/timesync/wait-sync.c',
 #                 include_directories : includes,
 #                 link_with : [timesyncd_link_with],
 #                 install_rpath : rootlibexecdir,
