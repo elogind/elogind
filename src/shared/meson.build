@@ -79,6 +79,7 @@
 #         daemon-util.h
 #         dev-setup.c
 #         dev-setup.h
+#         devnode-acl.h
 #         dissect-image.c
 #         dissect-image.h
 #         dm-util.c
@@ -388,7 +389,10 @@ syscall_list_h = custom_target(
         capture : true)
 
 if conf.get('HAVE_ACL') == 1
-        shared_sources += files('acl-util.c')
+        shared_sources += files('''
+                acl-util.c
+                devnode-acl.c
+        '''.split())
 endif
 
 if conf.get('ENABLE_UTMP') == 1

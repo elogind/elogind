@@ -21,7 +21,6 @@ logind_gperf_c = custom_target(
         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
 
 liblogind_core_sources = files('''
-        logind-acl.h
         logind-action.c
         logind-action.h
         logind-brightness.c
@@ -64,11 +63,6 @@ liblogind_core_sources += [files('''
         update_utmp_files]
 #endif // 1
 liblogind_core_sources += [logind_gperf_c]
-
-logind_acl_c = files('logind-acl.c')
-if conf.get('HAVE_ACL') == 1
-        liblogind_core_sources += logind_acl_c
-endif
 
 liblogind_core = static_library(
         'logind-core',
