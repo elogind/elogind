@@ -53,7 +53,6 @@ meson.add_install_script(meson_symlink_headers,
                          '_sd-common.h')
 #endif // 0
 
-
 ############################################################
 
 opts = [['c'],

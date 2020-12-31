@@ -425,10 +425,9 @@ endif
 #endif // 0
 
 if conf.get('HAVE_PAM') == 1
-        shared_sources += files('''
-        pam-util.c
-        pam-util.h
-'''.split())
+        shared_sources += files(
+                'pam-util.c',
+                'pam-util.h')
 endif
 
 #if 0 /// elogind does not need all this networking stuff
