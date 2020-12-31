@@ -146,6 +146,8 @@
 #         json-internal.h
 #         json.c
 #         json.h
+#         killall.c
+#         killall.h
 #         libcrypt-util.c
 #         libcrypt-util.h
 #         libfido2-util.c
@@ -166,6 +168,10 @@
 #         logs-show.h
 #         loop-util.c
 #         loop-util.h
+#         loopback-setup.c
+#         loopback-setup.h
+#         machine-id-setup.c
+#         machine-id-setup.h
 #         machine-image.c
 #         machine-image.h
 #         machine-pool.c
@@ -176,6 +182,8 @@
 #         mkfs-util.c
 #         mkfs-util.h
 #         module-util.h
+#         mount-setup.c
+#         mount-setup.h
 #         mount-util.c
 #         mount-util.h
 #         net-condition.c
