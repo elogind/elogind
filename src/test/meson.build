@@ -1135,17 +1135,13 @@ tests += [
          []],
 
         [['src/libelogind/sd-device/test-sd-device-thread.c'],
-         [libbasic,
-          libshared_static,
-          libelogind],
+         [libelogind],
          [threads]],
 
 #if 0 /// elogind does not ship libudev itself
 #         [['src/libudev/test-udev-device-thread.c'],
-#          [libbasic,
-#           libshared_static,
-#           libudev],
 #endif // 0
+         [libudev],
          [threads]],
 
         [['src/libelogind/sd-device/test-sd-device-monitor.c'],
