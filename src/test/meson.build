@@ -46,10 +46,7 @@ test_dlopen_c = files('test-dlopen.c')
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# test_systemd_tmpfiles_py = find_program('test-systemd-tmpfiles.py')
 #endif // 0
-
-############################################################
 
 tests += [
 #if 0 /// UNNEEDED in elogind
