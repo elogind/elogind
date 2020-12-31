@@ -804,11 +804,10 @@ tests += [
 #          [],
 #          []],
 #
-#         [['src/test/test-libudev.c'],
+#         [['src/libudev/test-libudev.c'],
 #          [libshared,
 #           libudev_static],
-#          [],
-#          '', '', [], libudev_includes],
+#          []],
 #
 #         [['src/test/test-udev.c'],
 #          [libudevd_core,
@@ -1142,13 +1141,12 @@ tests += [
          [threads]],
 
 #if 0 /// elogind does not ship libudev itself
-#         [['src/libsystemd/sd-device/test-udev-device-thread.c'],
+#         [['src/libudev/test-udev-device-thread.c'],
 #          [libbasic,
 #           libshared_static,
 #           libudev],
 #endif // 0
-         [threads],
-         '', '', [], libudev_includes],
+         [threads]],
 
         [['src/libelogind/sd-device/test-sd-device-monitor.c'],
          [],
