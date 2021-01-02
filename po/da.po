@@ -317,19 +317,16 @@ msgstr ""
 "Der kræves godkendelse for at brugere, som ikke er logget ind, kan køre "
 "programmer."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 # https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:137
 msgid "Allow attaching devices to seats"
 msgstr "Tillad at montere af enheder til arbejdsstationer"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 # https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:138
 msgid "Authentication is required to attach a device to a seat."
 msgstr "Der kræves godkendelse for at montere en enhed til en arbejdsstation."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 # https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Flush device to seat attachments"
@@ -533,7 +530,8 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:352
 msgid "Indicate to the firmware to boot to setup interface"
-msgstr "Tillad meddelelse til firmwaren om at starte op i opsætningsgrænseflade"
+msgstr ""
+"Tillad meddelelse til firmwaren om at starte op i opsætningsgrænseflade"
 
 #: src/login/org.freedesktop.login1.policy:353
 msgid ""
