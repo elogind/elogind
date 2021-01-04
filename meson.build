@@ -3000,19 +3000,11 @@ endif
 # endif
 #
 # if conf.get('ENABLE_TIMESYNCD') == 1
-#         if get_option('link-timesyncd-shared')
-#                 timesyncd_link_with = [libshared]
-#         else
-#                 timesyncd_link_with = [libsystemd_static,
-#                                        libshared_static,
-#                                        libbasic_gcrypt]
-#         endif
-#
 #         executable(
 #                 'systemd-timesyncd',
 #                 systemd_timesyncd_sources,
 #                 include_directories : includes,
-#                 link_with : [timesyncd_link_with],
+#                 link_with : [libtimesyncd_core],
 #                 dependencies : [threads,
 #                                 libm],
 #                 install_rpath : rootlibexecdir,
@@ -3023,7 +3015,7 @@ endif
 #                 'systemd-time-wait-sync',
 #                 'src/timesync/wait-sync.c',
 #                 include_directories : includes,
-#                 link_with : [timesyncd_link_with],
+#                 link_with : [libtimesyncd_core],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
