@@ -92,3 +92,60 @@ journal_client_sources = files('''
 #         endif
 # endif
 #endif // 0
+
+############################################################
+
+tests += [
+        [['src/journal/test-journal-syslog.c'],
+         [libjournal_core,
+          libshared],
+         [threads,
+          libxz,
+          liblz4,
+          libselinux]],
+
+        [['src/journal/test-journal-config.c'],
+         [libjournal_core,
+          libshared],
+         [libxz,
+          liblz4,
+          libselinux]],
+]
+
+fuzzers += [
+        [['src/journal/fuzz-journald-audit.c',
+          'src/journal/fuzz-journald.c'],
+         [libjournal_core,
+          libshared],
+         [libselinux]],
+
+        [['src/journal/fuzz-journald-kmsg.c',
+          'src/journal/fuzz-journald.c'],
+         [libjournal_core,
+          libshared],
+         [libselinux]],
+
+        [['src/journal/fuzz-journald-native.c',
+          'src/journal/fuzz-journald.c'],
+         [libjournal_core,
+          libshared],
+         [libselinux]],
+
+        [['src/journal/fuzz-journald-native-fd.c',
+          'src/journal/fuzz-journald.c'],
+         [libjournal_core,
+          libshared],
+         [libselinux]],
+
+        [['src/journal/fuzz-journald-stream.c',
+          'src/journal/fuzz-journald.c'],
+         [libjournal_core,
+          libshared],
+         [libselinux]],
+
+        [['src/journal/fuzz-journald-syslog.c',
+          'src/journal/fuzz-journald.c'],
+         [libjournal_core,
+          libshared],
+         [libselinux]],
+]

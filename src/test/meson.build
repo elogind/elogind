@@ -587,10 +587,6 @@ tests += [
 #
 #         [['src/test/test-journal-importer.c']],
 #
-#         [['src/libudev/test-libudev.c'],
-#          [libshared,
-#           libudev_static]],
-#
 #         [['src/test/test-udev.c'],
 #          [libudevd_core,
 #           libshared],
@@ -648,162 +644,36 @@ tests += [
 
 #if 0 /// No systemd-journal in elogind, of course
 # tests += [
-#         [['src/libsystemd/sd-journal/test-journal.c']],
-#
-#         [['src/libsystemd/sd-journal/test-journal-send.c']],
-#
-#         [['src/journal/test-journal-syslog.c'],
-#          [libjournal_core,
-#           libshared],
-#          [threads,
-#           libxz,
-#           liblz4,
-#           libselinux]],
-#
-#         [['src/libsystemd/sd-journal/test-journal-match.c']],
-#
-#         [['src/libsystemd/sd-journal/test-journal-enum.c'],
-#          [], [], [], '', 'timeout=360'],
-#
-#         [['src/libsystemd/sd-journal/test-journal-stream.c']],
-#
-#         [['src/libsystemd/sd-journal/test-journal-flush.c']],
-#
-#         [['src/libsystemd/sd-journal/test-journal-init.c']],
-#
-#         [['src/journal/test-journal-config.c'],
-#          [libjournal_core,
-#           libshared],
-#          [libxz,
-#           liblz4,
-#           libselinux]],
-#
-#         [['src/libsystemd/sd-journal/test-journal-verify.c']],
-#
-#         [['src/libsystemd/sd-journal/test-journal-interleaving.c']],
-#
-#         [['src/libsystemd/sd-journal/test-mmap-cache.c']],
-#
-#         [['src/libsystemd/sd-journal/test-catalog.c']],
-#
-#         [['src/libsystemd/sd-journal/test-compress.c'],
-#          [],
-#          [liblz4,
-#           libzstd,
-#           libxz]],
-#
-#         [['src/libsystemd/sd-journal/test-compress-benchmark.c'],
-#          [],
-#          [liblz4,
-#           libzstd,
-#           libxz],
-#          [], '', 'timeout=90'],
-#
-#         [['src/libsystemd/sd-journal/test-audit-type.c']],
-# ]
 #endif // 0
 
-############################################################
-
-tests += [
-        [['src/libelogind/sd-bus/test-bus-address.c'],
-         [],
-         [threads]],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-bus/test-bus-marshal.c'],
-#          [],
-#          [threads,
-#           libglib,
-#           libgobject,
-#           libgio,
-#           libdbus]],
 #endif // 0
 
-        [['src/libelogind/sd-bus/test-bus-signature.c'],
-         [],
-         [threads]],
-
-        [['src/libelogind/sd-bus/test-bus-queue-ref-cycle.c'],
-         [],
-         [threads]],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-bus/test-bus-watch-bind.c'],
-#          [],
-#          [threads],
-#          [], '', 'timeout=120'],
-#
-#         [['src/libsystemd/sd-bus/test-bus-chat.c'],
-#          [],
-#          [threads]],
-#
-#         [['src/libsystemd/sd-bus/test-bus-cleanup.c'],
-#          [],
-#          [threads,
-#           libseccomp]],
 #endif // 0
 
         [['src/libelogind/sd-bus/test-bus-error.c'],
          [libshared_static,
-          libelogind_static],
-         []],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-bus/test-bus-track.c'],
-#          [],
-#          [libseccomp]],
 #endif // 0
 
-        [['src/libelogind/sd-bus/test-bus-server.c'],
-         [],
-         [threads]],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-bus/test-bus-objects.c'],
-#          [],
-#          [threads]],
 #endif // 0
 
-        [['src/libelogind/sd-bus/test-bus-vtable.c',
-          'src/libelogind/sd-bus/test-vtable-data.h']],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-bus/test-bus-gvariant.c'],
-#          [],
-#          [libglib,
-#           libgobject,
-#           libgio]],
-#
 #endif // 0
-        [['src/libelogind/sd-bus/test-bus-creds.c']],
-
-        [['src/libelogind/sd-bus/test-bus-match.c']],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-bus/test-bus-benchmark.c'],
-#          [],
-#          [threads],
 #endif // 0
-         [], '', 'manual'],
-
-        [['src/libelogind/sd-bus/test-bus-introspect.c',
-          'src/libelogind/sd-bus/test-vtable-data.h']],
-
-        [['src/libelogind/sd-event/test-event.c']],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-netlink/test-netlink.c']],
-#
-#         [['src/libsystemd/sd-resolve/test-resolve.c'],
-#          [],
-#          [threads],
 #endif // 0
-         [], '', 'timeout=120'],
-
-        [['src/libelogind/sd-login/test-login.c']],
-
-        [['src/libelogind/sd-device/test-sd-device.c']],
+          libelogind_static]],
 
         [['src/libelogind/sd-device/test-sd-device-thread.c'],
          [libelogind],
@@ -815,93 +685,19 @@ tests += [
          [libudev],
          [threads]],
 
-
 #if 0 /// UNNEEDED in elogind
-#         [['src/libsystemd/sd-device/test-sd-device-monitor.c']],
-# ]
-#
-# if cxx_cmd != ''
-#         tests += [
-#                 [['src/libsystemd/sd-bus/test-bus-vtable-cc.cc']],
-#         ]
-# endif
 #else // 0
 ]
 #endif // 0
 
-############################################################
 
 #if 0 /// UNNEEDED in elogind
-# tests += [
-#         [['src/libsystemd-network/test-dhcp-option.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-sd-dhcp-lease.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-dhcp-client.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-dhcp-server.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-ipv4ll.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-ipv4ll-manual.c'],
-#          [libshared,
-#           libsystemd_network],
-#          [], [], '', 'manual'],
-#
-#         [['src/libsystemd-network/test-acd.c'],
-#          [libshared,
-#           libsystemd_network],
-#          [], [], '', 'manual'],
-#
-#         [['src/libsystemd-network/test-ndisc-rs.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-ndisc-ra.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-dhcp6-client.c'],
-#          [libshared,
-#           libsystemd_network]],
-#
-#         [['src/libsystemd-network/test-lldp.c'],
-#          [libshared,
-#           libsystemd_network]],
-# ]
 #endif // 0
 
-############################################################
-
-tests += [
-        [['src/login/test-login-shared.c']],
 
 #if 0 /// elogind does not have src/analyze/*
-#         [['src/analyze/test-verify.c', 'src/analyze/analyze-verify.c', 'src/analyze/analyze-verify.h'],
 #endif // 0
-         [libcore,
-          libshared],
-         [],
-         core_includes],
-
-        [['src/login/test-inhibit.c'],
-         [], [], [], '', 'manual'],
-
-        [['src/login/test-login-tables.c'],
-         [liblogind_core,
-          libshared],
 #if 0 /// elogind does not include udev implicitly
-#          [threads]],
 # ]
 #else // 0
          [threads,libudev]],

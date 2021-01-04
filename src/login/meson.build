@@ -172,3 +172,17 @@ pam_elogind_c = files('pam_elogind.c')
 #if 0 /// elogind builds itself unconditionally
 # endif
 #endif //0
+
+############################################################
+
+tests += [
+        [['src/login/test-login-shared.c']],
+
+        [['src/login/test-inhibit.c'],
+         [], [], [], '', 'manual'],
+
+        [['src/login/test-login-tables.c'],
+         [liblogind_core,
+          libshared],
+         [threads]],
+]
