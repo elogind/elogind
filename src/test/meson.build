@@ -622,21 +622,18 @@ tests += [
 #          [],
 #          [libdl]],
 #endif // 0
-]
 
-if conf.get('ENABLE_NSCD') == 1
-        tests += [
-                [['src/test/test-nscd-flush.c'],
-                 [libcore,
-                  libshared],
-                 [threads,
-                  librt,
-                  libseccomp,
-                  libselinux,
-                  libmount,
-                  libblkid],
-                 [], '', 'manual']]
-endif
+        [['src/test/test-nscd-flush.c'],
+         [libcore,
+          libshared],
+         [threads,
+          librt,
+          libseccomp,
+          libselinux,
+          libmount,
+          libblkid],
+         [], 'ENABLE_NSCD', 'manual'],
+]
 
 ############################################################
 
