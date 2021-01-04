@@ -2061,6 +2061,7 @@ subdir('src/shared')
 # subdir('src/vconsole')
 # subdir('src/boot/efi')
 #endif // 0
+subdir('src/xdg-autostart-generator')
 
 subdir('src/test')
 #if 0 /// UNNEEDED by elogind
@@ -2790,8 +2791,7 @@ endif
 # if conf.get('ENABLE_XDG_AUTOSTART') == 1
 #         executable(
 #                 'systemd-xdg-autostart-generator',
-#                 'src/xdg-autostart-generator/xdg-autostart-generator.c',
-#                 'src/xdg-autostart-generator/xdg-autostart-service.c',
+#                 systemd_xdg_autostart_generator_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 install_rpath : rootlibexecdir,
