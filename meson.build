@@ -2293,7 +2293,6 @@ test_dlopen = executable(
 #         executable(
 #                 'systemd-gpt-auto-generator',
 #                 'src/gpt-auto-generator/gpt-auto-generator.c',
-#                 'src/shared/blkid-util.h',
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : libblkid,
@@ -3504,7 +3503,6 @@ public_programs += executable(
 #         public_programs += executable(
 #                 'systemd-hwdb',
 #                 'src/hwdb/hwdb.c',
-#                 'src/libsystemd/sd-hwdb/hwdb-internal.h',
 #                 include_directories : includes,
 #                 link_with : udev_link_with,
 #                 install_rpath : udev_rpath,
@@ -3660,7 +3658,7 @@ public_programs += executable(
 #
 # executable(
 #         'systemd-sulogin-shell',
-#         ['src/sulogin-shell/sulogin-shell.c'],
+#         'src/sulogin-shell/sulogin-shell.c',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         install_rpath : rootlibexecdir,
