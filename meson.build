@@ -2036,6 +2036,7 @@ subdir('src/shared')
 # subdir('src/network')
 #
 # subdir('src/analyze')
+# subdir('src/busctl')
 # subdir('src/cryptenroll')
 # subdir('src/cryptsetup')
 # subdir('src/journal-remote')
@@ -3416,9 +3417,7 @@ executable('elogind-cgroups-agent',
 
 public_programs += executable(
         'busctl',
-        'src/busctl/busctl.c',
-        'src/busctl/busctl-introspect.c',
-        'src/busctl/busctl-introspect.h',
+        busctl_sources,
         include_directories : includes,
         link_with : [libshared],
         install_rpath : rootlibexecdir,
