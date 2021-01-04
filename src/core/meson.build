@@ -169,6 +169,8 @@ libcore_la_sources = files('''
 #                         libmount,
 #                         libacl])
 #
+# core_includes = [includes, include_directories('.')]
+#
 # systemd_sources = files('main.c')
 #
 # in_files = [['macros.systemd',   rpmmacrosdir],

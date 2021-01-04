@@ -1800,7 +1800,6 @@ substs.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
 # conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
 #endif // 0
 
-
 conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 #####################################################################
@@ -1877,34 +1876,9 @@ public_programs = []
 tests = []
 fuzzers = []
 
-includes = include_directories('src/basic',
-                               'src/boot',
 #if 0 /// UNNEEDED by elogind
-#                                'src/core',
-#                                'src/home',
 #endif // 0
-                               'src/journal',
 #if 0 /// elogind has a different list
-#                                'src/journal-remote',
-#                                'src/libsystemd-network',
-#                                'src/libsystemd/sd-bus',
-#                                'src/libsystemd/sd-device',
-#                                'src/libsystemd/sd-event',
-#                                'src/libsystemd/sd-hwdb',
-#                                'src/libsystemd/sd-id128',
-#                                'src/libsystemd/sd-journal',
-#                                'src/libsystemd/sd-netlink',
-#                                'src/libsystemd/sd-network',
-#                                'src/libsystemd/sd-resolve',
-#                                'src/login',
-#                                'src/nspawn',
-#                                'src/resolve',
-#                                'src/shared',
-#                                'src/shutdown',
-#                                'src/systemd',
-#                                'src/timesync',
-#                                'src/udev',
-#                                'src/xdg-autostart-generator',
 #else // 0
                                'src/libelogind/sd-bus',
                                'src/libelogind/sd-device',
@@ -1917,7 +1891,23 @@ includes = include_directories('src/basic',
                                'src/systemd',
                                'src/update-utmp',
 #endif // 0
-                               '.')
+basic_includes = include_directories(
+        'src/basic',
+        'src/elogind',
+        '.')
+
+libelogind_includes = [basic_includes, include_directories(
+        'src/libelogind/sd-bus',
+        'src/libelogind/sd-device',
+        'src/libelogind/sd-event',
+        'src/libelogind/sd-hwdb',
+        'src/libelogind/sd-id128',
+        'src/libelogind/sd-journal',
+        'src/libelogind/sd-netlink',
+        'src/libelogind/sd-network',
+        'src/libelogind/sd-resolve')]
+
+includes = [libelogind_includes, include_directories('src/shared')]
 
 subdir('po')
 #if 0 /// UNNEEDED by elogind
@@ -1937,15 +1927,14 @@ subdir('src/shared')
 subdir('src/udev')
 subdir('src/libudev')
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
 libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
 libelogind = shared_library(
         'elogind',
         disable_mempool_c,
         version : libsystemd_version,
-        include_directories : includes,
+        include_directories : libelogind_includes,
         link_args : ['-shared',
 #if 0 /// elogind does not need gcrypt, only threads.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
@@ -1988,9 +1977,9 @@ install_libelogind_static = static_library(
 #         basic_gcrypt_sources,
 #endif // 0
         disable_mempool_c,
-        include_directories : includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
+        include_directories : libelogind_includes,
         install_dir : rootlibdir,
 #if 0 /// elogind only needs libcap, libmount threads and selinux.
 #         pic : static_libsystemd == 'true' or static_libsystemd == 'pic',
@@ -2115,7 +2104,7 @@ test_dlopen = executable(
 # foreach tuple : [['myhostname', 'ENABLE_NSS_MYHOSTNAME'],
 #                  ['systemd',    'ENABLE_NSS_SYSTEMD', ['nss-systemd.h', 'userdb-glue.c', 'userdb-glue.h']],
 #                  ['mymachines', 'ENABLE_NSS_MYMACHINES'],
-#                  ['resolve',    'ENABLE_NSS_RESOLVE']]
+#                  ['resolve',    'ENABLE_NSS_RESOLVE', [], resolve_includes]]
 #
 #         condition = tuple[1] == '' or conf.get(tuple[1]) == 1
 #         if condition
@@ -2131,12 +2120,14 @@ test_dlopen = executable(
 #                         endforeach
 #                 endif
 #
+#                 incs = tuple.length() > 3 ? tuple[3] : includes
+#
 #                 nss = shared_library(
 #                         'nss_' + module,
 #                         sources,
 #                         disable_mempool_c,
 #                         version : '2',
-#                         include_directories : includes,
+#                         include_directories : incs,
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
 #                         link_args : ['-Wl,-z,nodelete',
 #                                      '-shared',
@@ -2193,7 +2184,7 @@ test_dlopen = executable(
 # public_programs += executable(
 #         'systemd-analyze',
 #         systemd_analyze_sources,
-#         include_directories : includes,
+#         include_directories : core_includes,
 #         link_with : [libcore,
 #                      libshared],
 #         dependencies : [versiondep,
@@ -2341,7 +2332,7 @@ test_dlopen = executable(
 #         executable(
 #                 'systemd-resolved',
 #                 systemd_resolved_sources,
-#                 include_directories : includes,
+#                 include_directories : resolve_includes,
 #                 link_with : [libshared,
 #                              libbasic_gcrypt,
 #                              libsystemd_resolve_core],
@@ -2655,7 +2646,7 @@ endif
 #         executable(
 #                 'systemd-homed',
 #                 systemd_homed_sources,
-#                 include_directories : includes,
+#                 include_directories : home_includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libcrypt,
@@ -3638,7 +3629,7 @@ public_programs += executable(
 #         executable(
 #                 'systemd-networkd',
 #                 systemd_networkd_sources,
-#                 include_directories : network_include_dir,
+#                 include_directories : network_includes,
 #                 link_with : [libnetworkd_core,
 #                              libsystemd_network,
 #                              networkd_link_with],
@@ -3651,8 +3642,7 @@ public_programs += executable(
 #                 'systemd-networkd-wait-online',
 #                 systemd_networkd_wait_online_sources,
 #                 include_directories : includes,
-#                 link_with : [libnetworkd_core,
-#                              networkd_link_with],
+#                 link_with : [networkd_link_with],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3660,7 +3650,7 @@ public_programs += executable(
 #         public_programs += executable(
 #                 'networkctl',
 #                 networkctl_sources,
-#                 include_directories : includes,
+#                 include_directories : libsystemd_network_includes,
 #                 link_with : [libsystemd_network,
 #                              networkd_link_with],
 #                 install_rpath : rootlibexecdir,

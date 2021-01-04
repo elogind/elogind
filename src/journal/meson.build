@@ -14,7 +14,6 @@ journal_client_sources = files('''
 #endif // 0
 
 /// elogind empty mask removed (No gcrypt in elogind needed)
-
 /// elogind empty mask removed (No audit in elogind journald stubs)
 
 #if 0 /// After the stubs lib above, elogind needs nothing else.
@@ -52,6 +51,8 @@ journal_client_sources = files('''
 #         sources,
 #         include_directories : includes,
 #         install : false)
+#
+# journal_includes = [includes, include_directories('.')]
 #
 # systemd_journald_sources = files('''
 #         journald.c

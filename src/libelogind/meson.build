@@ -228,7 +228,7 @@ libsystemd_c_args = ['-fvisibility=default']
 #         'systemd_static',
 #         libsystemd_sources,
 #         install : false,
-#         include_directories : includes,
+#         include_directories : libsystemd_includes,
 #         link_with : libbasic,
 #         dependencies : [threads,
 #                         librt],
