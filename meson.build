@@ -1936,12 +1936,6 @@ subdir('src/udev')
 subdir('src/libudev')
 
 #if 0 /// UNNEEDED by elogind
-# libjournal_core = static_library(
-#         'journal-core',
-#         libjournal_core_sources,
-#         journald_gperf_c,
-#         include_directories : includes,
-#         install : false)
 #endif // 0
 
 libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)

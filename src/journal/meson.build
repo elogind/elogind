@@ -13,16 +13,12 @@ journal_client_sources = files('''
 '''.split())
 #endif // 0
 
-#if 0 /// No gcrypt in elogind needed
-#endif // 0
+/// elogind empty mask removed (No gcrypt in elogind needed)
 
-
-#if 0 /// No audit in elogind journald stubs
-#endif // 0
-
+/// elogind empty mask removed (No audit in elogind journald stubs)
 
 #if 0 /// After the stubs lib above, elogind needs nothing else.
-# libjournal_core_sources = files('''
+# sources = files('''
 #         journald-audit.c
 #         journald-audit.h
 #         journald-console.c
@@ -45,16 +41,22 @@ journal_client_sources = files('''
 #         journald-wall.h
 # '''.split())
 #
-# systemd_journald_sources = files('''
-#         journald.c
-#         journald-server.h
-# '''.split())
-#
-# journald_gperf_c = custom_target(
+# sources += custom_target(
 #         'journald-gperf.c',
 #         input : 'journald-gperf.gperf',
 #         output : 'journald-gperf.c',
 #         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
+#
+# libjournal_core = static_library(
+#         'journal-core',
+#         sources,
+#         include_directories : includes,
+#         install : false)
+#
+# systemd_journald_sources = files('''
+#         journald.c
+#         journald-server.h
+# '''.split())
 #
 # systemd_cat_sources = files('cat.c')
 #
