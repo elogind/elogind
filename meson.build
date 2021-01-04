@@ -1918,8 +1918,6 @@ subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
 #endif // 0
-subdir('src/libudev')
-subdir('src/systemd')
 subdir('src/basic')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/libsystemd')
@@ -1933,6 +1931,9 @@ subdir('src/sleep')
 subdir('src/update-utmp')
 #endif // 0
 subdir('src/login')
+subdir('src/shared')
+subdir('src/udev')
+subdir('src/libudev')
 
 #if 0 /// UNNEEDED by elogind
 # libjournal_core = static_library(
@@ -2009,7 +2010,35 @@ install_libelogind_static = static_library(
 #                         libgcrypt],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
-# ############################################################
+# libudev = shared_library(
+#         'udev',
+#         disable_mempool_c,
+#         version : libudev_version,
+#         include_directories : includes,
+#         link_args : ['-shared',
+#                      '-Wl,--version-script=' + libudev_sym_path],
+#         link_with : [libsystemd_static, libshared_static],
+#         link_whole : libudev_basic,
+#         dependencies : [threads],
+#         link_depends : libudev_sym,
+#         install : true,
+#         install_dir : rootlibdir)
+#
+# install_libudev_static = static_library(
+#         'udev',
+#         basic_sources,
+#         shared_sources,
+#         libsystemd_sources,
+#         libudev_sources,
+#         disable_mempool_c,
+#         include_directories : includes,
+#         build_by_default : static_libudev != 'false',
+#         install : static_libudev != 'false',
+#         install_dir : rootlibdir,
+#         link_depends : libudev_sym,
+#         dependencies : libshared_deps + [libmount],
+#         c_args : static_libudev_pic ? [] : ['-fno-PIC'],
+#         pic : static_libudev_pic)
 #else // 0
         dependencies : [threads,
                         libcap,
@@ -2019,6 +2048,7 @@ install_libelogind_static = static_library(
 
 /// elogind empty mask removed (UNNEEDED by elogind)
 /// elogind empty mask removed (UNNEEDED by elogind)
+############################################################
 
 # binaries that have --help and are intended for use by humans,
 # usually, but not always, installed in /bin.
@@ -2027,11 +2057,9 @@ public_programs = []
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
-subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/core')
 # subdir('src/shutdown')
-# subdir('src/udev')
 # subdir('src/network')
 #
 # subdir('src/analyze')
@@ -2061,6 +2089,8 @@ subdir('src/shared')
 # subdir('src/boot/efi')
 #endif // 0
 subdir('src/xdg-autostart-generator')
+
+subdir('src/elogind')
 
 subdir('src/test')
 #if 0 /// UNNEEDED by elogind
