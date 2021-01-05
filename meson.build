@@ -1929,7 +1929,6 @@ subdir('src/libudev')
 
 /// elogind empty mask removed (UNNEEDED by elogind)
 
-libelogind_sym_path = '@0@/@1@'.format(project_source_root, libelogind_sym)
 libelogind = shared_library(
         'elogind',
         disable_mempool_c,
@@ -1958,8 +1957,6 @@ libelogind = shared_library(
         install : true,
         install_dir : rootlibdir)
 
-static_libelogind = get_option('static-libelogind')
-static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
 #if 0 /// Do a real elogind masking else, diff always goes haywire here
 # install_libsystemd_static = static_library(
