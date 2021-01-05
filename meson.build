@@ -1977,12 +1977,12 @@ install_libelogind_static = static_library(
 #         basic_gcrypt_sources,
 #endif // 0
         disable_mempool_c,
+        include_directories : libelogind_includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
-        include_directories : libelogind_includes,
         install_dir : rootlibdir,
 #if 0 /// elogind only needs libcap, libmount threads and selinux.
-#         pic : static_libsystemd == 'true' or static_libsystemd == 'pic',
+#         pic : static_libsystemd_pic,
 #         dependencies : [threads,
 #                         librt,
 #                         libxz,
