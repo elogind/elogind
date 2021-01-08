@@ -56,7 +56,6 @@ int prot_from_flags(int flags) {
 }
 
 bool in_initrd(void) {
-        struct statfs s;
         int r;
 
         if (saved_in_initrd >= 0)
@@ -80,8 +79,7 @@ bool in_initrd(void) {
                 saved_in_initrd = r > 0;
         else
                 saved_in_initrd = access("/etc/initrd-release", F_OK) >= 0 &&
-                                  statfs("/", &s) >= 0 &&
-                                  is_temporary_fs(&s);
+                                  path_is_temporary_fs("/") > 0;
 
         return saved_in_initrd;
 }
