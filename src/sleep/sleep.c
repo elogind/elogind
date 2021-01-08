@@ -308,7 +308,7 @@ static int lock_all_homes(void) {
 #endif // 0
 
 #if 0 /// Changes needed by elogind are too vast to do this inline
-static int execute(char **modes, char **states) {
+static int execute(char **modes, char **states, const char *action) {
         char *arguments[] = {
                 NULL,
                 (char*) "pre",
@@ -349,6 +349,10 @@ static int execute(char **modes, char **states) {
                 if (r < 0)
                         return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");;
         }
+
+        r = setenv("SYSTEMD_SLEEP_ACTION", action, 1);
+        if (r != 0)
+                log_warning_errno(errno, "Error setting SYSTEMD_SLEEP_ACTION=%s: %m", action);
 
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
         (void) lock_all_homes();
@@ -515,7 +519,7 @@ static int execute_s2h(Manager *sleep_config) {
                 return log_error_errno(errno, "Error setting hibernate timer: %m");
 
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
-        r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
+        r = execute(sleep_config->suspend_modes, sleep_config->suspend_states, "suspend");
 #else // 0
         r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
@@ -535,7 +539,7 @@ static int execute_s2h(Manager *sleep_config) {
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
-        r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states);
+        r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states, "hibernate");
 #else // 0
         r = execute(sleep_config, "hibernate", sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #endif // 0
@@ -543,7 +547,7 @@ static int execute_s2h(Manager *sleep_config) {
                 log_notice_errno(r, "Couldn't hibernate, will try to suspend again: %m");
 
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
-                r = execute(sleep_config->suspend_modes, sleep_config->suspend_states);
+                r = execute(sleep_config->suspend_modes, sleep_config->suspend_states, "suspend-after-failed-hibernate");
 #else // 0
                 r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
@@ -656,7 +660,7 @@ static int run(int argc, char *argv[]) {
         if (streq(arg_verb, "suspend-then-hibernate"))
                 return execute_s2h(sleep_config);
         else
-                return execute(modes, states);
+                return execute(modes, states, arg_verb);
 }
 
 DEFINE_MAIN_FUNCTION(run);
