@@ -1005,6 +1005,14 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 # conf.set_quoted('SYSTEMD_DEFAULT_LOCALE', default_locale)
 #
 #endif // 0
+localegen_path = get_option('localegen-path')
+have = false
+if localegen_path != ''
+        conf.set_quoted('LOCALEGEN_PATH', localegen_path)
+        have = true
+endif
+conf.set10('HAVE_LOCALEGEN', have)
+
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 
 #if 0 /// UNNEEDED by elogind
