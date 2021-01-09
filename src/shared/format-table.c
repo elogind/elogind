@@ -2562,6 +2562,9 @@ int table_print_json(Table *t, FILE *f, JsonFormatFlags flags) {
 
         assert(t);
 
+        if (flags & JSON_FORMAT_OFF) /* If JSON output is turned off, use regular output */
+                return table_print(t, f);
+
         if (!f)
                 f = stdout;
 
