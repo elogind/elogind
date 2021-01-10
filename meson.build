@@ -665,15 +665,25 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
 
 #endif // 1
 
-vcs_tagger = [project_source_root + '/tools/meson-vcs-tag.sh',
-              project_source_root,
-              get_option('version-tag'),
-              meson.project_version()]
 
-version_h = vcs_tag(
-        input : 'src/version/version.h.in',
-        output : 'version.h',
-        command: vcs_tagger)
+version_tag = get_option('version-tag')
+if version_tag != ''
+        vcs_data = configuration_data()
+        vcs_data.set('VCS_TAG', version_tag)
+        version_h = configure_file(configuration : vcs_data,
+                                   input : 'src/version/version.h.in',
+                                   output : 'version.h')
+else
+        vcs_tagger = [
+                project_source_root + '/tools/meson-vcs-tag.sh',
+                project_source_root,
+                meson.project_version()]
+
+        version_h = vcs_tag(
+                input : 'src/version/version.h.in',
+                output : 'version.h',
+                command: vcs_tagger)
+endif
 
 versiondep = declare_dependency(sources: version_h)
 
@@ -1894,16 +1904,6 @@ includes = include_directories('src/basic',
 add_project_arguments('-include', 'config.h', language : 'c')
 
 generate_gperfs = find_program('tools/generate-gperfs.py')
-autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
-hwdb_update_sh = find_program('tools/hwdb-update.sh')
-make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
-make_directive_index_py = find_program('tools/make-directive-index.py')
-make_man_index_py = find_program('tools/make-man-index.py')
-syscall_table_update_sh = find_program('tools/syscall-table-update.sh')
-xml_helper_py = find_program('tools/xml_helper.py')
-update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
-
-############################################################
 
 subdir('po')
 #if 0 /// UNNEEDED by elogind
@@ -2000,6 +2000,9 @@ install_libelogind_static = static_library(
 #                         libmount,
 #                         libselinux,
 #                         libgcrypt],
+#         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
+#
+# ############################################################
 #else // 0
         dependencies : [threads,
                         libcap,
@@ -2007,11 +2010,16 @@ install_libelogind_static = static_library(
                         libselinux],
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
+/// elogind empty mask removed (UNNEEDED by elogind)
+/// elogind empty mask removed (UNNEEDED by elogind)
+autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
+hwdb_update_sh = find_program('tools/hwdb-update.sh')
+make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+make_directive_index_py = find_program('tools/make-directive-index.py')
+make_man_index_py = find_program('tools/make-man-index.py')
+syscall_names_update_sh = find_program('tools/syscall-names-update.sh')
+xml_helper_py = find_program('tools/xml_helper.py')
+update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 
 ############################################################
 
