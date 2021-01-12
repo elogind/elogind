@@ -1521,8 +1521,8 @@ _public_ int sd_bus_open_system_remote(sd_bus **ret, const char *host) {
 }
 
 int bus_set_address_machine(sd_bus *b, bool user, const char *machine) {
+        _cleanup_free_ char *a = NULL;
         const char *rhs;
-        char *a;
 
         assert(b);
         assert(machine);
@@ -1587,6 +1587,8 @@ int bus_set_address_machine(sd_bus *b, bool user, const char *machine) {
                 if (user) {
                         char *k;
 
+                        /* Ideally we'd use the "--user" switch to elogind-stdio-bridge here, but it's only
+                         * available in recent elogind versions. Using the "-p" switch with the explicit path
                         /* Ideally we'd use the "--user" switch to elogind-stdio-bridge here, but it's only
                          * available in recent elogind versions. Using the "-p" switch with the explicit path
                          * is a working alternative, and is compatible with older versions, hence that's what
