@@ -45,6 +45,7 @@
 
 #include "missing_keyctl.h"
 #include "missing_stat.h"
+#include "missing_syscall_def.h"
 
 /* linux/kcmp.h */
 #ifndef KCMP_FILE /* 3f4994cfc15f38a3159c6e3a4b3ab2e1481a6b02 (3.19) */
@@ -52,6 +53,8 @@
 #endif
 
 #if 0 /// UNNEEDED by elogind
+/* ======================================================================= */
+
 #if !HAVE_PIVOT_ROOT
 static inline int missing_pivot_root(const char *new_root, const char *put_old) {
         return syscall(__NR_pivot_root, new_root, put_old);
@@ -391,8 +394,6 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 
 /* ======================================================================= */
 
-#if defined(__aarch64__)
-#  define systemd_NR_setns 268
 #  define elogind_NR_setns elogind_SC_arch_bias(308)
 #  define systemd_NR_setns systemd_SC_arch_bias(308)
 #elif defined(__i386__)
@@ -741,54 +742,6 @@ static inline ssize_t missing_copy_file_range(int fd_in, loff_t *off_in,
 /* ======================================================================= */
 
 #if 0 /// elogind does not control/manage Berkeley packet filters
-#if defined(__aarch64__)
-#  define systemd_NR_bpf 280
-#elif defined(__alpha__)
-#  define systemd_NR_bpf 515
-#elif defined(__arc__) || defined(__tilegx__)
-#  define systemd_NR_bpf 280
-#elif defined(__arm__)
-#  define systemd_NR_bpf 386
-#elif defined(__i386__)
-#  define systemd_NR_bpf 357
-#elif defined(__ia64__)
-#  define systemd_NR_bpf systemd_SC_arch_bias(317)
-#elif defined(__m68k__)
-#  define systemd_NR_bpf 354
-#elif defined(_MIPS_SIM)
-#  if _MIPS_SIM == _MIPS_SIM_ABI32
-#    define systemd_NR_bpf systemd_SC_arch_bias(355)
-#  elif _MIPS_SIM == _MIPS_SIM_NABI32
-#    define systemd_NR_bpf systemd_SC_arch_bias(319)
-#  elif _MIPS_SIM == _MIPS_SIM_ABI64
-#    define systemd_NR_bpf systemd_SC_arch_bias(315)
-#  endif
-#elif defined(__powerpc__)
-#  define systemd_NR_bpf 361
-#elif defined(__s390__)
-#  define systemd_NR_bpf 351
-#elif defined(__sparc__)
-#  define systemd_NR_bpf 349
-#elif defined(__x86_64__)
-#  define systemd_NR_bpf systemd_SC_arch_bias(321)
-#else
-#  warning "bpf() syscall number is unknown for your architecture"
-#endif
-
-/* may be (invalid) negative number due to libseccomp, see PR 13319 */
-#if defined __NR_bpf && __NR_bpf >= 0
-#  if defined systemd_NR_bpf
-assert_cc(__NR_bpf == systemd_NR_bpf);
-#  endif
-#else
-#  if defined __NR_bpf
-#    undef __NR_bpf
-#  endif
-#  if defined systemd_NR_bpf
-#    define __NR_bpf systemd_NR_bpf
-#  endif
-#endif
-
 #if !HAVE_BPF
 union bpf_attr;
 
@@ -807,7 +760,6 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 
 /* ======================================================================= */
 
-#ifndef __IGNORE_pkey_mprotect
 #    define elogind_NR_pkey_mprotect elogind_SC_arch_bias(329)
 #  elif defined __aarch64__
 #    define elogind_NR_pkey_mprotect 288
@@ -1015,7 +967,6 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 
 /* ======================================================================= */
 
-/* should be always defined, see kernel 39036cd2727395c3369b1051005da74059a85317 */
 #    define elogind_NR_pidfd_send_signal (424 + 4000)
 #  endif
 #  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
@@ -1056,7 +1007,6 @@ static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, un
 #  define pidfd_send_signal missing_pidfd_send_signal
 #endif
 
-/* should be always defined, see kernel 7615d9e1780e26e0178c93c55b73309a5dc093d7 */
 #    define elogind_NR_pidfd_open (434 + 4000)
 #  endif
 #  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
@@ -1138,16 +1088,6 @@ static inline int missing_execveat(int dirfd, const char *pathname,
 #if defined __NR_close_range && __NR_close_range >= 0
 #  if defined systemd_NR_close_range
 assert_cc(__NR_close_range == systemd_NR_close_range);
-#  endif
-#else
-#  if defined __NR_close_range
-#    undef __NR_close_range
-#  endif
-#  if defined systemd_NR_close_range
-#    define __NR_close_range systemd_NR_close_range
-#  endif
-#endif
-
 #if !HAVE_CLOSE_RANGE
 static inline int missing_close_range(int first_fd, int end_fd, unsigned flags) {
 #  ifdef __NR_close_range
