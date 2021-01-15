@@ -298,7 +298,6 @@ conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
-# conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   join_paths(rootlibexecdir, 'systemd-veritysetup'))
 # conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
 # conf.set_quoted('USER_GENERATOR_DIR',                         usergeneratordir)
 # conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
@@ -1895,6 +1894,16 @@ includes = include_directories('src/basic',
 add_project_arguments('-include', 'config.h', language : 'c')
 
 generate_gperfs = find_program('tools/generate-gperfs.py')
+autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
+hwdb_update_sh = find_program('tools/hwdb-update.sh')
+make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+make_directive_index_py = find_program('tools/make-directive-index.py')
+make_man_index_py = find_program('tools/make-man-index.py')
+syscall_table_update_sh = find_program('tools/syscall-table-update.sh')
+xml_helper_py = find_program('tools/xml_helper.py')
+update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
+
+############################################################
 
 subdir('po')
 #if 0 /// UNNEEDED by elogind
@@ -1997,22 +2006,12 @@ install_libelogind_static = static_library(
                         libmount,
                         libselinux],
 #endif // 0
+
+#if 0 /// UNNEEDED by elogind
+#endif // 0
+#if 0 /// UNNEEDED by elogind
+#endif // 0
         c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
-
-############################################################
-
-#if 0 /// UNNEEDED by elogind
-# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
-# hwdb_update_sh = find_program('tools/hwdb-update.sh')
-# make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
-#endif // 0
-make_directive_index_py = find_program('tools/make-directive-index.py')
-make_man_index_py = find_program('tools/make-man-index.py')
-syscall_names_update_sh = find_program('tools/syscall-names-update.sh')
-xml_helper_py = find_program('tools/xml_helper.py')
-#if 0 /// UNNEEDED by elogind
-# update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
-#endif // 0
 
 ############################################################
 
