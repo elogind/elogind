@@ -75,7 +75,6 @@ void log_forget_fds(void);
 #endif // 0
 
 void log_parse_environment(void);
-void log_parse_environment_cli(void);
 
 int log_dispatch_internal(
                 int level,
