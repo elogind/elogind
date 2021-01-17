@@ -3893,7 +3893,7 @@ int json_log_internal(
 
         if (source && source_line > 0 && source_column > 0)
                 return log_struct_internal(
-                                LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
+                                level,
                                 error,
                                 file, line, func,
                                 "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
@@ -3904,7 +3904,7 @@ int json_log_internal(
                                 NULL);
         else if (source_line > 0 && source_column > 0)
                 return log_struct_internal(
-                                LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
+                                level,
                                 error,
                                 file, line, func,
                                 "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
@@ -3914,7 +3914,7 @@ int json_log_internal(
                                 NULL);
         else
                 return log_struct_internal(
-                                LOG_REALM_PLUS_LEVEL(LOG_REALM_SYSTEMD, level),
+                                level,
                                 error,
                                 file, line, func,
                                 "MESSAGE_ID=" SD_MESSAGE_INVALID_CONFIGURATION_STR,
