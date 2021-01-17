@@ -586,7 +586,7 @@ tests += [
 #           libacl,
 #           libselinux],
 #endif // 0
-         udev_includes, '', 'manual', '-DLOG_REALM=LOG_REALM_UDEV'],
+         udev_includes, '', 'manual'],
 
         [['src/test/test-udev-util.c']],
 
