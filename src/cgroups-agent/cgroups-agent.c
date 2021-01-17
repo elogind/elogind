@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         }
 
         elogind_set_program_name(argv[0]);
-        log_setup_service();
+        log_setup();
 
         fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0);
         if (fd < 0) {
