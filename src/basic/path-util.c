@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
 #include <limits.h>
@@ -557,7 +557,7 @@ char* path_join_internal(const char *first, ...) {
 
         sz = strlen_ptr(first);
         va_start(ap, first);
-        while ((p = va_arg(ap, char*)) != (const char*) -1)
+        while ((p = va_arg(ap, char*)) != POINTER_MAX)
                 if (!isempty(p))
                         sz += 1 + strlen(p);
         va_end(ap);
@@ -577,7 +577,7 @@ char* path_join_internal(const char *first, ...) {
         }
 
         va_start(ap, first);
-        while ((p = va_arg(ap, char*)) != (const char*) -1) {
+        while ((p = va_arg(ap, char*)) != POINTER_MAX) {
                 if (isempty(p))
                         continue;
 
@@ -594,10 +594,11 @@ char* path_join_internal(const char *first, ...) {
 
 #if 0 /// UNNEEDED by elogind
 static int check_x_access(const char *path, int *ret_fd) {
-        if (ret_fd) {
-                _cleanup_close_ int fd = -1;
-                int r;
+        _cleanup_close_ int fd = -1;
+        const char *with_dash;
+        int r;
 
+        if (ret_fd) {
                 /* We need to use O_PATH because there may be executables for which we have only exec
                  * permissions, but not read (usually suid executables). */
                 fd = open(path, O_PATH|O_CLOEXEC);
@@ -607,13 +608,23 @@ static int check_x_access(const char *path, int *ret_fd) {
                 r = access_fd(fd, X_OK);
                 if (r < 0)
                         return r;
-
-                *ret_fd = TAKE_FD(fd);
         } else {
                 /* Let's optimize things a bit by not opening the file if we don't need the fd. */
                 if (access(path, X_OK) < 0)
                         return -errno;
         }
+
+        with_dash = strjoina(path, "/");
+
+        /* If this passes, it must be a directory. */
+        if (access(with_dash, X_OK) >= 0)
+                return -EISDIR;
+
+        if (errno != ENOTDIR)
+                return -errno;
+
+        if (ret_fd)
+                *ret_fd = TAKE_FD(fd);
 
         return 0;
 }
@@ -671,32 +682,20 @@ int find_executable_full(const char *name, bool use_path_envvar, char **ret_file
                         return -ENOMEM;
 
                 r = check_x_access(j, ret_fd ? &fd : NULL);
-                if (r >= 0) {
-                        _cleanup_free_ char *with_dash;
-
-                        with_dash = strjoin(j, "/");
-                        if (!with_dash)
-                                return -ENOMEM;
-
-                        /* If this passes, it must be a directory, and so should be skipped. */
-                        if (access(with_dash, X_OK) >= 0)
-                                continue;
-
-                        /* We can't just `continue` inverting this case, since we need to update last_error. */
-                        if (errno == ENOTDIR) {
-                                /* Found it! */
-                                if (ret_filename)
-                                        *ret_filename = path_simplify(TAKE_PTR(j), false);
-                                if (ret_fd)
-                                        *ret_fd = TAKE_FD(fd);
-
-                                return 0;
-                        }
+                if (r < 0) {
+                        /* PATH entries which we don't have access to are ignored, as per tradition. */
+                        if (r != -EACCES)
+                                last_error = r;
+                        continue;
                 }
 
-                /* PATH entries which we don't have access to are ignored, as per tradition. */
-                if (errno != EACCES)
-                        last_error = -errno;
+                /* Found it! */
+                if (ret_filename)
+                        *ret_filename = path_simplify(TAKE_PTR(j), false);
+                if (ret_fd)
+                        *ret_fd = TAKE_FD(fd);
+
+                return 0;
         }
 
         return last_error;
