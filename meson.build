@@ -2601,7 +2601,7 @@ endif
 #                 link_with : [libshared],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
-#                 install_dir : rootlibexecdir)
+#                 install_dir : rootbindir)
 # endif
 #
 # if conf.get('ENABLE_USERDB') == 1
