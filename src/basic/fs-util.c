@@ -1626,7 +1626,7 @@ int path_is_encrypted(const char *path) {
 }
 #endif // 0
 
-int conservative_rename(
+int conservative_renameat(
                 int olddirfd, const char *oldpath,
                 int newdirfd, const char *newpath) {
 
