@@ -682,7 +682,7 @@ int btrfs_qgroup_get_quota(const char *path, uint64_t qgroupid, BtrfsQuotaInfo *
 int btrfs_subvol_find_subtree_qgroup(int fd, uint64_t subvol_id, uint64_t *ret) {
         uint64_t level, lowest = (uint64_t) -1, lowest_qgroupid = 0;
         _cleanup_free_ uint64_t *qgroups = NULL;
-        int r, n, i;
+        int r, n;
 
         assert(fd >= 0);
         assert(ret);
@@ -712,7 +712,7 @@ int btrfs_subvol_find_subtree_qgroup(int fd, uint64_t subvol_id, uint64_t *ret) 
         if (n < 0)
                 return n;
 
-        for (i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
                 uint64_t id;
 
                 r = btrfs_qgroupid_split(qgroups[i], &level, &id);
@@ -833,7 +833,6 @@ int btrfs_qgroup_set_limit_fd(int fd, uint64_t qgroupid, uint64_t referenced_max
                 .lim.max_rfer = referenced_max,
                 .lim.flags = BTRFS_QGROUP_LIMIT_MAX_RFER,
         };
-        unsigned c;
         int r;
 
         assert(fd >= 0);
@@ -852,7 +851,7 @@ int btrfs_qgroup_set_limit_fd(int fd, uint64_t qgroupid, uint64_t referenced_max
 
         args.qgroupid = qgroupid;
 
-        for (c = 0;; c++) {
+        for (unsigned c = 0;; c++) {
                 if (ioctl(fd, BTRFS_IOC_QGROUP_LIMIT, &args) < 0) {
 
                         if (errno == EBUSY && c < 10) {
@@ -934,7 +933,6 @@ static int qgroup_create_or_destroy(int fd, bool b, uint64_t qgroupid) {
                 .create = b,
                 .qgroupid = qgroupid,
         };
-        unsigned c;
         int r;
 
         r = btrfs_is_filesystem(fd);
@@ -943,7 +941,7 @@ static int qgroup_create_or_destroy(int fd, bool b, uint64_t qgroupid) {
         if (r == 0)
                 return -ENOTTY;
 
-        for (c = 0;; c++) {
+        for (unsigned c = 0;; c++) {
                 if (ioctl(fd, BTRFS_IOC_QGROUP_CREATE, &args) < 0) {
 
                         /* On old kernels if quota is not enabled, we get EINVAL. On newer kernels we get
@@ -980,7 +978,7 @@ int btrfs_qgroup_destroy(int fd, uint64_t qgroupid) {
 int btrfs_qgroup_destroy_recursive(int fd, uint64_t qgroupid) {
         _cleanup_free_ uint64_t *qgroups = NULL;
         uint64_t subvol_id;
-        int i, n, r;
+        int n, r;
 
         /* Destroys the specified qgroup, but unassigns it from all
          * its parents first. Also, it recursively destroys all
@@ -995,7 +993,7 @@ int btrfs_qgroup_destroy_recursive(int fd, uint64_t qgroupid) {
         if (n < 0)
                 return n;
 
-        for (i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
                 uint64_t id;
 
                 r = btrfs_qgroupid_split(qgroups[i], NULL, &id);
@@ -1057,7 +1055,6 @@ static int qgroup_assign_or_unassign(int fd, bool b, uint64_t child, uint64_t pa
                 .src = child,
                 .dst = parent,
         };
-        unsigned c;
         int r;
 
         r = btrfs_is_filesystem(fd);
@@ -1066,7 +1063,7 @@ static int qgroup_assign_or_unassign(int fd, bool b, uint64_t child, uint64_t pa
         if (r == 0)
                 return -ENOTTY;
 
-        for (c = 0;; c++) {
+        for (unsigned c = 0;; c++) {
                 r = ioctl(fd, BTRFS_IOC_QGROUP_ASSIGN, &args);
                 if (r < 0) {
                         if (errno == EBUSY && c < 10) {
@@ -1368,7 +1365,7 @@ int btrfs_qgroup_copy_limits(int fd, uint64_t old_qgroupid, uint64_t new_qgroupi
 static int copy_quota_hierarchy(int fd, uint64_t old_subvol_id, uint64_t new_subvol_id) {
         _cleanup_free_ uint64_t *old_qgroups = NULL, *old_parent_qgroups = NULL;
         bool copy_from_parent = false, insert_intermediary_qgroup = false;
-        int n_old_qgroups, n_old_parent_qgroups, r, i;
+        int n_old_qgroups, n_old_parent_qgroups, r;
         uint64_t old_parent_id;
 
         assert(fd >= 0);
@@ -1392,9 +1389,8 @@ static int copy_quota_hierarchy(int fd, uint64_t old_subvol_id, uint64_t new_sub
                         return n_old_parent_qgroups;
         }
 
-        for (i = 0; i < n_old_qgroups; i++) {
+        for (int i = 0; i < n_old_qgroups; i++) {
                 uint64_t id;
-                int j;
 
                 r = btrfs_qgroupid_split(old_qgroups[i], NULL, &id);
                 if (r < 0)
@@ -1409,7 +1405,7 @@ static int copy_quota_hierarchy(int fd, uint64_t old_subvol_id, uint64_t new_sub
                         break;
                 }
 
-                for (j = 0; j < n_old_parent_qgroups; j++)
+                for (int j = 0; j < n_old_parent_qgroups; j++)
                         if (old_parent_qgroups[j] == old_qgroups[i])
                                 /* The old subvolume shared a common
                                  * parent qgroup with its parent
@@ -1899,12 +1895,11 @@ int btrfs_subvol_auto_qgroup_fd(int fd, uint64_t subvol_id, bool insert_intermed
         if (insert_intermediary_qgroup) {
                 uint64_t lowest = 256, new_qgroupid;
                 bool created = false;
-                int i;
 
                 /* Determine the lowest qgroup that the parent
                  * subvolume is assigned to. */
 
-                for (i = 0; i < n; i++) {
+                for (int i = 0; i < n; i++) {
                         uint64_t level;
 
                         r = btrfs_qgroupid_split(qgroups[i], &level, NULL);
@@ -1929,7 +1924,7 @@ int btrfs_subvol_auto_qgroup_fd(int fd, uint64_t subvol_id, bool insert_intermed
                 if (r >= 0)
                         changed = created = true;
 
-                for (i = 0; i < n; i++) {
+                for (int i = 0; i < n; i++) {
                         r = btrfs_qgroup_assign(fd, new_qgroupid, qgroups[i]);
                         if (r < 0 && r != -EEXIST) {
                                 if (created)
