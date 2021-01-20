@@ -220,10 +220,6 @@ int manager_write_brightness(
         }
 
         log_debug_elogind("Creating new brightness writer for %s", path);
-        r = hashmap_ensure_allocated(&m->brightness_writers, &brightness_writer_hash_ops);
-        if (r < 0)
-                return log_oom();
-
         w = new(BrightnessWriter, 1);
         if (!w)
                 return log_oom();
@@ -237,9 +233,12 @@ int manager_write_brightness(
         if (!w->path)
                 return log_oom();
 
-        r = hashmap_put(m->brightness_writers, w->path, w);
+        r = hashmap_ensure_put(&m->brightness_writers, &brightness_writer_hash_ops, w->path, w);
+        if (r == -ENOMEM)
+                return log_oom();
         if (r < 0)
                 return log_error_errno(r, "Failed to add brightness writer to hashmap: %m");
+
         w->manager = m;
 
         r = set_add_message(&w->current_messages, message);
