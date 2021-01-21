@@ -2363,6 +2363,7 @@ static const char *const cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
 #endif // 0
         [CGROUP_CONTROLLER_BPF_FOREIGN] = "bpf-foreign",
         [CGROUP_CONTROLLER_BPF_SOCKET_BIND] = "bpf-socket-bind",
+        [CGROUP_CONTROLLER_BPF_RESTRICT_NETWORK_INTERFACES] = "bpf-restrict-network-interfaces",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_controller, CGroupController);

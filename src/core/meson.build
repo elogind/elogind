@@ -99,6 +99,8 @@
 #         namespace.h
 #         path.c
 #         path.h
+#         restrict-ifaces.c
+#         restrict-ifaces.h
 #         scope.c
 #         scope.h
 #         selinux-access.c
