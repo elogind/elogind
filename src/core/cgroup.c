@@ -2747,7 +2747,7 @@ int unit_check_oomd_kill(Unit *u) {
         else if (r == 0)
                 return 0;
 
-        r = cg_get_xattr_malloc(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, "user.oomd_kill", &value);
+        r = cg_get_xattr_malloc(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, "user.systemd_oomd_kill", &value);
         if (r < 0 && r != -ENODATA)
                 return r;
 
@@ -3144,7 +3144,7 @@ int manager_setup_cgroup(Manager *m) {
                 (void) cg_set_attribute("memory", "/", "memory.use_hierarchy", "1");
 
         /* 8. Figure out which controllers are supported */
-        r = cg_mask_supported(&m->cgroup_supported);
+        r = cg_mask_supported_subtree(m->cgroup_root, &m->cgroup_supported);
         if (r < 0)
                 return log_error_errno(r, "Failed to determine supported controllers: %m");
 

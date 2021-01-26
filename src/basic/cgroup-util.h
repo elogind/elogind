@@ -277,6 +277,7 @@ typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
 #endif // 0
 int cg_mask_supported(CGroupMask *ret);
+int cg_mask_supported_subtree(const char *root, CGroupMask *ret);
 int cg_mask_from_string(const char *s, CGroupMask *ret);
 int cg_mask_to_string(CGroupMask mask, char **ret);
 
