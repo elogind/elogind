@@ -370,7 +370,6 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 # conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
 # conf.set_quoted('UDEV_HWDB_DIR',                              udevhwdbdir)
 # conf.set_quoted('UDEV_RULES_DIR',                             udevrulesdir)
-# conf.set_quoted('UPDATE_HELPER_USER_TIMEOUT',                 get_option('update-helper-user-timeout'))
 # conf.set_quoted('USER_CONFIG_UNIT_DIR',                       pkgsysconfdir / 'user')
 # conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
 # conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
@@ -387,6 +386,10 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 # conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
+#
+# conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('default-timeout-sec'))
+# conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
+# conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
 #
 # conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 #endif // 0
@@ -440,6 +443,7 @@ possible_common_cc_flags = [
         '-Werror=format=2',
         '-Werror=format-signedness',
         '-Werror=implicit-function-declaration',
+        '-Werror=implicit-int',
         '-Werror=incompatible-pointer-types',
         '-Werror=int-conversion',
         '-Werror=overflow',
@@ -2202,8 +2206,22 @@ conf.set10('HAVE_GNU_EFI', false)
 
 ############################################################
 
+pymod = import('python')
+python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
+python_39 = python.language_version().version_compare('>=3.9')
+
+if get_option('ukify') == 'auto'
+    want_ukify = python_39  and conf.get('HAVE_GNU_EFI') == 1
+elif get_option('ukify') == 'true' and (not python_39 or conf.get('HAVE_GNU_EFI') != 1)
+    error('ukify requires Python >= 3.9 and GNU EFI')
+else
+    want_ukify = get_option('ukify') == 'true'
+endif
+conf.set10('ENABLE_UKIFY', want_ukify)
 
 /// elogind empty mask removed (UNNEEDED by elogind)
+############################################################
+#
 generate_gperfs = find_program('tools/generate-gperfs.py')
 make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
 make_directive_index_py = find_program('tools/make-directive-index.py')
@@ -2246,20 +2264,6 @@ config_h = configure_file(
 add_project_arguments('-include', 'config.h', language : 'c')
 
 jinja2_cmdline = [meson_render_jinja2, config_h, version_h]
-
-############################################################
-
-pymod = import('python')
-python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
-python_39 = python.language_version().version_compare('>=3.9')
-
-if get_option('ukify') == 'auto'
-    want_ukify = python_39  and conf.get('HAVE_GNU_EFI') == 1
-elif get_option('ukify') == 'true' and (not python_39 or conf.get('HAVE_GNU_EFI') != 1)
-    error('ukify requires Python >= 3.9 and GNU EFI')
-else
-    want_ukify = get_option('ukify') == 'true'
-endif
 
 ############################################################
 
@@ -2430,9 +2434,9 @@ install_libelogind_static = static_library(
 
 if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         if conf.get('HAVE_TPM2') == 1
+                shared_library(
                         'cryptsetup-token-elogind-tpm2',
                         cryptsetup_token_elogind_tpm2_sources,
-                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
@@ -2448,9 +2452,9 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         endif
 
         if conf.get('HAVE_LIBFIDO2') == 1
+                shared_library(
                         'cryptsetup-token-elogind-fido2',
                         cryptsetup_token_elogind_fido2_sources,
-                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
@@ -2466,9 +2470,9 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         endif
 
         if conf.get('HAVE_P11KIT') == 1
+                shared_library(
                         'cryptsetup-token-elogind-pkcs11',
                         cryptsetup_token_elogind_pkcs11_sources,
-                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],

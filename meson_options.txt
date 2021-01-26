@@ -230,6 +230,10 @@ option('dbussystemservicedir', type : 'string',
 option('dbus-interfaces-dir', type : 'string',
        description : 'export D-Bus introspection XML as standalone files')
 #if 0 /// UNNEEDED by elogind
+# option('default-timeout-sec', type : 'integer', value : 90,
+#        description : 'default timeout for system unit start/stop')
+# option('default-user-timeout-sec', type : 'integer', value : 90,
+#        description : 'default timeout for user unit start/stop')
 # option('pkgconfigdatadir', type : 'string', value : '',
 #        description : 'directory for arch-independent pkg-config files')
 #endif // 0
@@ -241,8 +245,8 @@ option('pkgconfiglibdir', type : 'string', value : '',
 # option('rpmmacrosdir', type : 'string', value : 'lib/rpm/macros.d',
 #        description : 'directory for rpm macros ["no" disables]')
 #endif // 0
-option('update-helper-user-timeout', type : 'string', value : '15s',
-       description : 'how long to wait for user manager operations')
+option('update-helper-user-timeout-sec', type : 'integer', value : 15,
+       description : 'timeout for user manager package operations')
 option('pamlibdir', type : 'string',
        description : 'directory for PAM modules')
 option('pamconfdir', type : 'string',
