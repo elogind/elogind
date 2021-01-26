@@ -531,41 +531,16 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
         return 0;
 }
 
-static int controller_is_accessible(const char *controller) {
-        int r;
+static int controller_is_v1_accessible(const char *controller) {
+        const char *cc, *dn;
 
         assert(controller);
 
-        /* Checks whether a specific controller is accessible,
-         * i.e. its hierarchy mounted. In the unified hierarchy all
-         * controllers are considered accessible, except for the named
-         * hierarchies */
+        dn = controller_to_dirname(controller);
+        cc = strjoina("/sys/fs/cgroup/", dn);
 
-        if (!cg_controller_is_valid(controller))
-                return -EINVAL;
-
-        r = cg_all_unified();
-        if (r < 0)
-                return r;
-        if (r > 0) {
-                /* We don't support named hierarchies if we are using
-                 * the unified hierarchy. */
-
-                if (streq(controller, SYSTEMD_CGROUP_CONTROLLER))
-                        return 0;
-
-                if (startswith(controller, "name="))
-                        return -EOPNOTSUPP;
-
-        } else {
-                const char *cc, *dn;
-
-                dn = controller_to_dirname(controller);
-                cc = strjoina("/sys/fs/cgroup/", dn);
-
-                if (laccess(cc, F_OK) < 0)
-                        return -errno;
-        }
+        if (laccess(cc, F_OK) < 0)
+                return -errno;
 
         return 0;
 }
@@ -576,10 +551,23 @@ int cg_get_path_and_check(const char *controller, const char *path, const char *
         assert(controller);
         assert(fs);
 
-        /* Check if the specified controller is actually accessible */
-        r = controller_is_accessible(controller);
+        if (!cg_controller_is_valid(controller))
+                return -EINVAL;
+
+        r = cg_all_unified();
         if (r < 0)
                 return r;
+        if (r > 0) {
+                /* In the unified hierarchy all controllers are considered accessible,
+                 * except for the named hierarchies */
+                if (startswith(controller, "name="))
+                        return -EOPNOTSUPP;
+        } else {
+                /* Check if the specified controller is actually accessible */
+                r = controller_is_v1_accessible(controller);
+                if (r < 0)
+                        return r;
+        }
 
         return cg_get_path(controller, path, suffix, fs);
 }
@@ -639,20 +627,6 @@ int cg_get_xattr_malloc(const char *controller, const char *path, const char *na
                 return r;
 
         return r;
-}
-
-int cg_get_xattr_bool(const char *controller, const char *path, const char *name) {
-        _cleanup_free_ char *val = NULL;
-        int r;
-
-        assert(path);
-        assert(name);
-
-        r = cg_get_xattr_malloc(controller, path, name, &val);
-        if (r < 0)
-                return r;
-
-        return parse_boolean(val);
 }
 
 int cg_remove_xattr(const char *controller, const char *path, const char *name) {
@@ -1828,25 +1802,6 @@ int cg_get_attribute_as_bool(const char *controller, const char *path, const cha
         return 0;
 }
 
-int cg_get_owner(const char *controller, const char *path, uid_t *ret_uid) {
-        _cleanup_free_ char *f = NULL;
-        struct stat stats;
-        int r;
-
-        assert(ret_uid);
-
-        r = cg_get_path(controller, path, NULL, &f);
-        if (r < 0)
-                return r;
-
-        r = stat(f, &stats);
-        if (r < 0)
-                return -errno;
-
-        *ret_uid = stats.st_uid;
-        return 0;
-}
-
 int cg_get_keyed_attribute_full(
                 const char *controller,
                 const char *path,
@@ -2054,7 +2009,7 @@ int cg_mask_supported(CGroupMask *ret) {
                                 continue;
 
                         n = cgroup_controller_to_string(c);
-                        if (controller_is_accessible(n) >= 0)
+                        if (controller_is_v1_accessible(n) >= 0)
                                 mask |= bit;
                 }
         }
@@ -2354,7 +2309,7 @@ CGroupMask get_cpu_accounting_mask(void) {
                         struct utsname u;
                         assert_se(uname(&u) >= 0);
 
-                        if (str_verscmp(u.release, "4.15") < 0)
+                        if (strverscmp_improved(u.release, "4.15") < 0)
                                 needed_mask = CGROUP_MASK_CPU;
                         else
                                 needed_mask = 0;
@@ -2376,11 +2331,3 @@ static const char* const managed_oom_mode_table[_MANAGED_OOM_MODE_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(managed_oom_mode, ManagedOOMMode);
-
-static const char* const managed_oom_preference_table[_MANAGED_OOM_PREFERENCE_MAX] = {
-        [MANAGED_OOM_PREFERENCE_NONE] = "none",
-        [MANAGED_OOM_PREFERENCE_AVOID] = "avoid",
-        [MANAGED_OOM_PREFERENCE_OMIT] = "omit",
-};
-
-DEFINE_STRING_TABLE_LOOKUP(managed_oom_preference, ManagedOOMPreference);
