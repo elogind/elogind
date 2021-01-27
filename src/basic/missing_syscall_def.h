@@ -1,8 +1,10 @@
-/* This file is generated. Do not edit! */
+/* SPDX-License-Identifier: LGPL-2.1-or-later
+ * This file is generated. Do not edit! */
 
 #ifndef __IGNORE_bpf
 #  if defined(__aarch64__)
 #    define elogind_NR_bpf 280
+#    define systemd_NR_bpf 280
 #  elif defined(__alpha__)
 #    define elogind_NR_bpf 515
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -59,18 +61,23 @@ assert_cc(__NR_bpf == elogind_NR_bpf);
 #ifndef __IGNORE_close_range
 #  if defined(__aarch64__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(__alpha__)
 #    define elogind_NR_close_range 546
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(__arm__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(__i386__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(__ia64__)
 #    define elogind_NR_close_range 1460
 #  elif defined(__m68k__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
 #      define elogind_NR_close_range 4436
@@ -83,10 +90,13 @@ assert_cc(__NR_bpf == elogind_NR_bpf);
 #    endif
 #  elif defined(__powerpc__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(__s390__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(__sparc__)
 #    define elogind_NR_close_range 436
+#    define systemd_NR_close_range 436
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
 #      define elogind_NR_close_range (436 | /* __X32_SYSCALL_BIT */ 0x40000000)
@@ -115,6 +125,7 @@ assert_cc(__NR_close_range == elogind_NR_close_range);
 #ifndef __IGNORE_copy_file_range
 #  if defined(__aarch64__)
 #    define elogind_NR_copy_file_range 285
+#    define systemd_NR_copy_file_range 285
 #  elif defined(__alpha__)
 #    define elogind_NR_copy_file_range 519
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -171,6 +182,7 @@ assert_cc(__NR_copy_file_range == elogind_NR_copy_file_range);
 #ifndef __IGNORE_getrandom
 #  if defined(__aarch64__)
 #    define elogind_NR_getrandom 278
+#    define systemd_NR_getrandom 278
 #  elif defined(__alpha__)
 #    define elogind_NR_getrandom 511
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -227,6 +239,7 @@ assert_cc(__NR_getrandom == elogind_NR_getrandom);
 #ifndef __IGNORE_memfd_create
 #  if defined(__aarch64__)
 #    define elogind_NR_memfd_create 279
+#    define systemd_NR_memfd_create 279
 #  elif defined(__alpha__)
 #    define elogind_NR_memfd_create 512
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -283,6 +296,7 @@ assert_cc(__NR_memfd_create == elogind_NR_memfd_create);
 #ifndef __IGNORE_name_to_handle_at
 #  if defined(__aarch64__)
 #    define elogind_NR_name_to_handle_at 264
+#    define systemd_NR_name_to_handle_at 264
 #  elif defined(__alpha__)
 #    define elogind_NR_name_to_handle_at 497
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -339,18 +353,23 @@ assert_cc(__NR_name_to_handle_at == elogind_NR_name_to_handle_at);
 #ifndef __IGNORE_pidfd_open
 #  if defined(__aarch64__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(__alpha__)
 #    define elogind_NR_pidfd_open 544
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(__arm__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(__i386__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(__ia64__)
 #    define elogind_NR_pidfd_open 1458
 #  elif defined(__m68k__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
 #      define elogind_NR_pidfd_open 4434
@@ -363,10 +382,13 @@ assert_cc(__NR_name_to_handle_at == elogind_NR_name_to_handle_at);
 #    endif
 #  elif defined(__powerpc__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(__s390__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(__sparc__)
 #    define elogind_NR_pidfd_open 434
+#    define systemd_NR_pidfd_open 434
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
 #      define elogind_NR_pidfd_open (434 | /* __X32_SYSCALL_BIT */ 0x40000000)
@@ -395,18 +417,23 @@ assert_cc(__NR_pidfd_open == elogind_NR_pidfd_open);
 #ifndef __IGNORE_pidfd_send_signal
 #  if defined(__aarch64__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__alpha__)
 #    define elogind_NR_pidfd_send_signal 534
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__arm__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__i386__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__ia64__)
 #    define elogind_NR_pidfd_send_signal 1448
 #  elif defined(__m68k__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
 #      define elogind_NR_pidfd_send_signal 4424
@@ -419,10 +446,13 @@ assert_cc(__NR_pidfd_open == elogind_NR_pidfd_open);
 #    endif
 #  elif defined(__powerpc__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__s390__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__sparc__)
 #    define elogind_NR_pidfd_send_signal 424
+#    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
 #      define elogind_NR_pidfd_send_signal (424 | /* __X32_SYSCALL_BIT */ 0x40000000)
@@ -451,6 +481,7 @@ assert_cc(__NR_pidfd_send_signal == elogind_NR_pidfd_send_signal);
 #ifndef __IGNORE_pkey_mprotect
 #  if defined(__aarch64__)
 #    define elogind_NR_pkey_mprotect 288
+#    define systemd_NR_pkey_mprotect 288
 #  elif defined(__alpha__)
 #    define elogind_NR_pkey_mprotect 524
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -507,6 +538,7 @@ assert_cc(__NR_pkey_mprotect == elogind_NR_pkey_mprotect);
 #ifndef __IGNORE_renameat2
 #  if defined(__aarch64__)
 #    define elogind_NR_renameat2 276
+#    define systemd_NR_renameat2 276
 #  elif defined(__alpha__)
 #    define elogind_NR_renameat2 510
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -563,6 +595,7 @@ assert_cc(__NR_renameat2 == elogind_NR_renameat2);
 #ifndef __IGNORE_setns
 #  if defined(__aarch64__)
 #    define elogind_NR_setns 268
+#    define systemd_NR_setns 268
 #  elif defined(__alpha__)
 #    define elogind_NR_setns 501
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -619,6 +652,7 @@ assert_cc(__NR_setns == elogind_NR_setns);
 #ifndef __IGNORE_statx
 #  if defined(__aarch64__)
 #    define elogind_NR_statx 291
+#    define systemd_NR_statx 291
 #  elif defined(__alpha__)
 #    define elogind_NR_statx 522
 #  elif defined(__arc__) || defined(__tilegx__)
@@ -627,10 +661,12 @@ assert_cc(__NR_setns == elogind_NR_setns);
 #    define elogind_NR_statx 397
 #  elif defined(__i386__)
 #    define elogind_NR_statx 383
+#    define systemd_NR_statx 383
 #  elif defined(__ia64__)
 #    define elogind_NR_statx 1350
 #  elif defined(__m68k__)
 #    define elogind_NR_statx 379
+#    define systemd_NR_statx 379
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
 #      define elogind_NR_statx 4366
