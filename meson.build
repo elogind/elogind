@@ -4070,7 +4070,26 @@ run_target(
         command : [check_api_docs_sh, libelogind.full_path()])
 #endif // 0
 ############################################################
+
 #if 0 /// elogind is not PID 1
+# if dbus_docs.length() > 0
+#         custom_target(
+#                 'update-dbus-docs',
+#                 output : 'update-dbus-docs',
+#                 command : [update_dbus_docs_py,
+#                            '--build-dir=@0@'.format(project_build_root),
+#                            '@INPUT@'],
+#                 input : dbus_docs)
+#
+#         if conf.get('BUILD_MODE') == 'BUILD_MODE_DEVELOPER'
+#                 test('dbus-docs-fresh',
+#                      update_dbus_docs_py,
+#                      args : ['--build-dir=@0@'.format(project_build_root),
+#                              '--test'] + dbus_docs)
+#         endif
+# endif
+#
+# ############################################################
 # watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
 #endif // 0
 

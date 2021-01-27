@@ -209,24 +209,6 @@ html = custom_target(
 #                    get_option('www-target')])
 #endif // 0
 
-############################################################
-
-if dbus_docs.length() > 0
-        custom_target(
-                'update-dbus-docs',
-                output : 'update-dbus-docs',
-                command : [update_dbus_docs_py,
-                           '--build-dir=@0@'.format(project_build_root),
-                           '@INPUT@'],
-                input : dbus_docs)
-
-        if conf.get('BUILD_MODE') == 'BUILD_MODE_DEVELOPER'
-                test('dbus-docs-fresh',
-                     update_dbus_docs_py,
-                     args : ['--build-dir=@0@'.format(project_build_root),
-                             '--test'] + dbus_docs)
-        endif
-endif
 
 ############################################################
 
