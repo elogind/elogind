@@ -3929,7 +3929,7 @@ install_data('LICENSE.GPL2',
 #              'docs/TRANSLATORS.md',
 #              'docs/UIDS-GIDS.md',
 #endif // 0
-             'src/libelogind/sd-bus/GVARIANT-SERIALIZATION',
+             'docs/GVARIANT-SERIALIZATION.md',
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind
