@@ -499,7 +499,6 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
                 { "us",    1               },
         };
 
-        size_t i;
         char *p = buf;
         bool something = false;
 
@@ -520,7 +519,7 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
 
         /* The result of this function can be parsed with parse_sec */
 
-        for (i = 0; i < ELEMENTSOF(table); i++) {
+        for (size_t i = 0; i < ELEMENTSOF(table); i++) {
                 int k = 0;
                 size_t n;
                 bool done = false;
@@ -973,9 +972,8 @@ static const char* extract_multiplier(const char *p, usec_t *multiplier) {
                 { "us",      1ULL            },
                 { "µs",      1ULL            },
         };
-        size_t i;
 
-        for (i = 0; i < ELEMENTSOF(table); i++) {
+        for (size_t i = 0; i < ELEMENTSOF(table); i++) {
                 char *e;
 
                 e = startswith(p, table[i].suffix);

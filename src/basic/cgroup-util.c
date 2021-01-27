@@ -1165,8 +1165,8 @@ static const char *skip_slices(const char *p) {
 }
 
 int cg_path_get_unit(const char *path, char **ret) {
+        _cleanup_free_ char *unit = NULL;
         const char *e;
-        char *unit;
         int r;
 
         assert(path);
@@ -1179,12 +1179,10 @@ int cg_path_get_unit(const char *path, char **ret) {
                 return r;
 
         /* We skipped over the slices, don't accept any now */
-        if (endswith(unit, ".slice")) {
-                free(unit);
+        if (endswith(unit, ".slice"))
                 return -ENXIO;
-        }
 
-        *ret = unit;
+        *ret = TAKE_PTR(unit);
         return 0;
 }
 
