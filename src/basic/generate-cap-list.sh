@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: LGPL-2.1-or-later
 set -eu
 
 #if 0 /// elogind needs musl_missing.sh, which is in shared.

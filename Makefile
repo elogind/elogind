@@ -1,4 +1,6 @@
 #if 0 /// The original Makefile follows, which isn't enough for elogind.
+# # SPDX-License-Identifier: LGPL-2.1-or-later
+#
 # all:
 # 	ninja -C build
 #
