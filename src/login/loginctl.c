@@ -1368,12 +1368,11 @@ static int help(int argc, char *argv[], void *userdata) {
                "                           Boot into a specific boot loader entry on next boot\n"
 #endif
 #endif // 1
-               "\nSee the %s for details.\n"
-               , program_invocation_short_name
-               , ansi_highlight()
-               , ansi_normal()
-               , link
-        );
+               "\nSee the %s for details.\n",
+               program_invocation_short_name,
+               ansi_highlight(),
+               ansi_normal(),
+               link);
 
         return 0;
 }
