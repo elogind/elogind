@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
 #include <stdbool.h>
@@ -15,9 +15,10 @@ enum {
 };
 
 typedef enum {
-        EXEC_DIR_NONE          = 0,      /* No execdir flags */
-        EXEC_DIR_PARALLEL      = 1 << 0, /* Execute scripts in parallel, if possible */
-        EXEC_DIR_IGNORE_ERRORS = 1 << 1, /* Ignore non-zero exit status of scripts */
+        EXEC_DIR_NONE                 = 0,      /* No execdir flags */
+        EXEC_DIR_PARALLEL             = 1 << 0, /* Execute scripts in parallel, if possible */
+        EXEC_DIR_IGNORE_ERRORS        = 1 << 1, /* Ignore non-zero exit status of scripts */
+        EXEC_DIR_SET_SYSTEMD_EXEC_PID = 1 << 2, /* Set $SYSTEMD_EXEC_PID environment variable */
 } ExecDirFlags;
 
 typedef enum ExecCommandFlags {
