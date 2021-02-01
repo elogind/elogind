@@ -35,7 +35,7 @@ static void test_issue_9549(void) {
 
         printf("%s\n", formatted);
         assert_se(streq(formatted,
-                        "NAME  TYPE RO  USAGE CREATED                    MODIFIED                   \n"
+                        "NAME  TYPE RO  USAGE CREATED                    MODIFIED\n"
                         "foooo raw  no 673.6M Wed 2018-07-11 00:10:33 J… Wed 2018-07-11 00:16:00 JST\n"
                         ));
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
@@ -81,7 +81,7 @@ static void test_multiline(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"));
+                        "lines     \n"));
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, (size_t) -1);
@@ -91,7 +91,7 @@ static void test_multiline(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"));
+                        "lines     \n"));
         formatted = mfree(formatted);
 
         assert_se(table_add_many(table,
@@ -132,7 +132,7 @@ static void test_multiline(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"
+                        "lines     \n"
                         "short         a\n"
                         "           pair\n"
                         "short2        a\n"
@@ -147,7 +147,7 @@ static void test_multiline(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"
+                        "lines     \n"
                         "short         a\n"
                         "           pair\n"
                         "short2        a\n"
@@ -195,7 +195,7 @@ static void test_strv(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"));
+                        "lines     \n"));
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, (size_t) -1);
@@ -205,7 +205,7 @@ static void test_strv(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"));
+                        "lines     \n"));
         formatted = mfree(formatted);
 
         assert_se(table_add_many(table,
@@ -246,7 +246,7 @@ static void test_strv(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"
+                        "lines     \n"
                         "short         a\n"
                         "           pair\n"
                         "short2        a\n"
@@ -261,7 +261,7 @@ static void test_strv(void) {
                         "FOO         BAR\n"
                         "three       two\n"
                         "different lines\n"
-                        "lines          \n"
+                        "lines     \n"
                         "short         a\n"
                         "           pair\n"
                         "short2        a\n"
@@ -342,7 +342,7 @@ static void test_strv_wrapped(void) {
         assert_se(streq(formatted,
                         "FOO                           BAR\n"
                         "three different         two lines\n"
-                        "lines                            \n"
+                        "lines           \n"
                         "short                      a pair\n"
                         "short2          a eight line ćęłł\n"
                         "                 ___5___ ___6___…\n"));
@@ -354,7 +354,7 @@ static void test_strv_wrapped(void) {
         assert_se(streq(formatted,
                         "FOO                           BAR\n"
                         "three different         two lines\n"
-                        "lines                            \n"
+                        "lines           \n"
                         "short                      a pair\n"
                         "short2          a eight line ćęłł\n"
                         "                  ___5___ ___6___\n"
@@ -367,7 +367,7 @@ static void test_strv_wrapped(void) {
         assert_se(streq(formatted,
                         "FOO                           BAR\n"
                         "three different         two lines\n"
-                        "lines                            \n"
+                        "lines           \n"
                         "short                      a pair\n"
                         "short2          a eight line ćęłł\n"
                         "                  ___5___ ___6___\n"
@@ -515,17 +515,17 @@ int main(int argc, char *argv[]) {
         if (isatty(STDOUT_FILENO))
                 assert_se(streq(formatted,
                                 "  no a long f…   no a long f… a long fi…\n"
-                                "  no fäää        no fäää      fäää      \n"
-                                " yes fäää       yes fäää      fäää      \n"
-                                " yes xxx        yes xxx       xxx       \n"
-                                "5min           5min                     \n"));
+                                "  no fäää        no fäää      fäää\n"
+                                " yes fäää       yes fäää      fäää\n"
+                                " yes xxx        yes xxx       xxx\n"
+                                "5min           5min           \n"));
         else
                 assert_se(streq(formatted,
                                 "  no a long field   no a long field a long field\n"
-                                "  no fäää           no fäää         fäää        \n"
-                                " yes fäää          yes fäää         fäää        \n"
-                                " yes xxx           yes xxx          xxx         \n"
-                                "5min              5min                          \n"));
+                                "  no fäää           no fäää         fäää\n"
+                                " yes fäää          yes fäää         fäää\n"
+                                " yes xxx           yes xxx          xxx\n"
+                                "5min              5min              \n"));
 
         test_issue_9549();
         test_multiline();
