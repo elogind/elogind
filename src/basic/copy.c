@@ -364,7 +364,7 @@ int copy_bytes_full(
                                 return r;
                 }
 
-                if (max_bytes != UINT64_MAX) {
+                if (max_bytes != (uint64_t) -1) {
                         assert(max_bytes >= (uint64_t) n);
                         max_bytes -= n;
                 }
@@ -646,7 +646,7 @@ static int fd_copy_regular(
         if (fdt < 0)
                 return -errno;
 
-        r = copy_bytes_full(fdf, fdt, UINT64_MAX, copy_flags, NULL, NULL, progress, userdata);
+        r = copy_bytes_full(fdf, fdt, (uint64_t) -1, copy_flags, NULL, NULL, progress, userdata);
         if (r < 0) {
                 (void) unlinkat(dt, to, 0);
                 return r;
@@ -1055,7 +1055,7 @@ int copy_file_fd_full(
         if (fdf < 0)
                 return -errno;
 
-        r = copy_bytes_full(fdf, fdt, UINT64_MAX, copy_flags, NULL, NULL, progress_bytes, userdata);
+        r = copy_bytes_full(fdf, fdt, (uint64_t) -1, copy_flags, NULL, NULL, progress_bytes, userdata);
 
         (void) copy_times(fdf, fdt, copy_flags);
         (void) copy_xattr(fdf, fdt);
@@ -1085,7 +1085,7 @@ int copy_file_full(
         if (fdf < 0)
                 return -errno;
 
-        if (mode == MODE_INVALID)
+        if (mode == (mode_t) -1)
                 if (fstat(fdf, &st) < 0)
                         return -errno;
 
@@ -1096,7 +1096,7 @@ int copy_file_full(
                                 return r;
                 }
                 fdt = open(to, flags|O_WRONLY|O_CREAT|O_CLOEXEC|O_NOCTTY,
-                           mode != MODE_INVALID ? mode : st.st_mode);
+                           mode != (mode_t) -1 ? mode : st.st_mode);
                 if (copy_flags & COPY_MAC_CREATE)
                         mac_selinux_create_file_clear();
                 if (fdt < 0)
@@ -1106,7 +1106,7 @@ int copy_file_full(
         if (chattr_mask != 0)
                 (void) chattr_fd(fdt, chattr_flags, chattr_mask & CHATTR_EARLY_FL, NULL);
 
-        r = copy_bytes_full(fdf, fdt, UINT64_MAX, copy_flags, NULL, NULL, progress_bytes, userdata);
+        r = copy_bytes_full(fdf, fdt, (uint64_t) -1, copy_flags, NULL, NULL, progress_bytes, userdata);
         if (r < 0) {
                 close(fdt);
                 (void) unlink(to);
@@ -1151,24 +1151,24 @@ int copy_file_atomic_full(
          * writing it. */
 
         if (copy_flags & COPY_REPLACE) {
-                r = tempfn_random(to, NULL, &t);
+                _cleanup_free_ char *f = NULL;
+
+                r = tempfn_random(to, NULL, &f);
                 if (r < 0)
                         return r;
 
                 if (copy_flags & COPY_MAC_CREATE) {
                         r = mac_selinux_create_file_prepare(to, S_IFREG);
-                        if (r < 0) {
-                                t = mfree(t);
+                        if (r < 0)
                                 return r;
-                        }
                 }
-                fdt = open(t, O_CREAT|O_EXCL|O_NOFOLLOW|O_NOCTTY|O_WRONLY|O_CLOEXEC, 0600);
+                fdt = open(f, O_CREAT|O_EXCL|O_NOFOLLOW|O_NOCTTY|O_WRONLY|O_CLOEXEC, 0600);
                 if (copy_flags & COPY_MAC_CREATE)
                         mac_selinux_create_file_clear();
-                if (fdt < 0) {
-                        t = mfree(t);
+                if (fdt < 0)
                         return -errno;
-                }
+
+                t = TAKE_PTR(f);
         } else {
                 if (copy_flags & COPY_MAC_CREATE) {
                         r = mac_selinux_create_file_prepare(to, S_IFREG);
