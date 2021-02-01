@@ -16,14 +16,15 @@ JUST_PRINT ?= NO
 
 HERE := $(shell pwd -P)
 
-BASIC_OPT := --buildtype release
-BUILDDIR  ?= $(HERE)/build
-CGCONTROL ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
-CGDEFAULT ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
-DESTDIR   ?=
-MESON_LST := $(shell find $(HERE)/ -type f -name 'meson.build') $(HERE)/meson_options.txt
-PREFIX    ?= /tmp/elogind_test
-VERSION   ?= 9999
+BASIC_OPT  := --buildtype release
+BUILDDIR   ?= $(HERE)/build
+CGCONTROL  ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
+CGDEFAULT  ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
+DESTDIR    ?=
+MESON_LST  := $(shell find $(HERE)/ -type f -name 'meson.build') $(HERE)/meson_options.txt
+PREFIX     ?= /tmp/elogind_test
+ROOTPREFIX ?= $(PREFIX)
+VERSION    ?= 9999
 
 CC    ?= $(shell which cc)
 LD    ?= $(shell which ld)
@@ -121,29 +122,18 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 		meson configure $(BUILDDIR) $(BASIC_OPT) \
 	) || ( \
 		meson setup $(BUILDDIR) $(BASIC_OPT) \
-			--libdir $(PREFIX)/usr/lib64 \
-			--localstatedir $(PREFIX)/var/lib \
 			--prefix $(PREFIX) \
-			--sysconfdir $(PREFIX)/etc \
 			--wrap-mode nodownload  \
+			-Drootprefix=$(ROOTPREFIX) \
 			-Dacl=true \
-			-Dbashcompletiondir=$(PREFIX)/usr/share/bash-completion/completions \
 			-Dcgroup-controller=$(CGCONTROL) \
 			-Ddefault-hierarchy=$(CGDEFAULT) \
-			-Ddocdir=$(PREFIX)/usr/share/doc/elogind-$(VERSION) \
 			-Defi=true \
 			-Dhtml=auto \
-			-Dhtmldir=$(PREFIX)/usr/share/doc/elogind-$(VERSION)/html \
 			-Dman=auto \
 			-Dpam=true \
-			-Dpamlibdir=$(PREFIX)/lib64/security \
-			-Drootlibdir=$(PREFIX)/lib64 \
-			-Drootlibexecdir=$(PREFIX)/lib64/elogind \
-			-Drootprefix=$(PREFIX) \
 			-Dselinux=false \
 			-Dsmack=true \
-			-Dudevrulesdir=$(PREFIX)/lib/udev/rules.d \
-			-Dzshcompletiondir=$(PREFIX)/usr/share/zsh/site-functions \
 	)
 
 #endif // 0
