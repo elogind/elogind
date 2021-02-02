@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
 #include <errno.h>
@@ -35,7 +35,7 @@ typedef enum ConfigParseFlags {
 /* Prototype for a parser for a specific configuration setting */
 typedef int (*ConfigParserCallback)(CONFIG_PARSER_ARGUMENTS);
 
-/* A macro declaring the a function prototype, following the typedef above, simply because it's so cumbersomely long
+/* A macro declaring a function prototype, following the typedef above, simply because it's so cumbersomely long
  * otherwise. (And current emacs gets irritatingly slow when editing files that contain lots of very long function
  * prototypes on the same screen…) */
 #define CONFIG_PARSER_PROTOTYPE(name) int name(CONFIG_PARSER_ARGUMENTS)
@@ -158,6 +158,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_vlanprotocol);
 CONFIG_PARSER_PROTOTYPE(config_parse_hwaddr);
 CONFIG_PARSER_PROTOTYPE(config_parse_hwaddrs);
 CONFIG_PARSER_PROTOTYPE(config_parse_percent);
+CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,

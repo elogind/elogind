@@ -1372,3 +1372,4 @@ int config_parse_hwaddrs(
 
 DEFINE_CONFIG_PARSE(config_parse_percent, parse_percent, "Failed to parse percent value");
 #endif // 0
+DEFINE_CONFIG_PARSE(config_parse_permyriad, parse_permyriad, "Failed to parse permyriad value");
