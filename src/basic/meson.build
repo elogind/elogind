@@ -599,6 +599,7 @@ run_target(
 libbasic = static_library(
         'basic',
         basic_sources,
+        fundamental_sources,
         include_directories : basic_includes,
         dependencies : [versiondep,
                         threads,

@@ -1891,6 +1891,7 @@ fuzzers = []
 #endif // 0
 basic_includes = include_directories(
         'src/basic',
+        'src/fundamental',
         'src/elogind',
         '.')
 
@@ -1911,6 +1912,7 @@ subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
 #endif // 0
+subdir('src/fundamental')
 subdir('src/basic')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/libsystemd')
@@ -1971,6 +1973,7 @@ install_libelogind_static = static_library(
 #if 0 /// No gcrypt with elogind
 #         basic_gcrypt_sources,
 #endif // 0
+        fundamental_sources,
         disable_mempool_c,
         include_directories : libelogind_includes,
         build_by_default : static_libelogind != 'false',
@@ -2007,6 +2010,7 @@ install_libelogind_static = static_library(
 # install_libudev_static = static_library(
 #         'udev',
 #         basic_sources,
+#         fundamental_sources,
 #         shared_sources,
 #         libsystemd_sources,
 #         libudev_sources,
