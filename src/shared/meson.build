@@ -80,6 +80,8 @@
 #         dev-setup.c
 #         dev-setup.h
 #         devnode-acl.h
+#         discover-image.c
+#         discover-image.h
 #         dissect-image.c
 #         dissect-image.h
 #         dm-util.c
@@ -173,8 +175,6 @@
 #         loopback-setup.h
 #         machine-id-setup.c
 #         machine-id-setup.h
-#         machine-image.c
-#         machine-image.h
 #         machine-pool.c
 #         machine-pool.h
 #         macvlan-util.c
