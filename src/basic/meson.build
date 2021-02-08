@@ -56,6 +56,8 @@
 #         fd-util.h
 #         fileio.c
 #         fileio.h
+#         filesystems.c
+#         filesystems.h
 #         format-util.c
 #         format-util.h
 #         fs-util.c
@@ -237,6 +239,9 @@
 #         tmpfile-util.h
 #         umask-util.h
 #         unaligned.h
+#         unit-def.c
+#         unit-def.h
+#         unit-file.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
