@@ -242,6 +242,9 @@
 #         unit-def.c
 #         unit-def.h
 #         unit-file.c
+#         unit-file.h
+#         unit-name.c
+#         unit-name.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
@@ -598,6 +601,34 @@ run_target(
                    syscall_lists])
 
 ############################################################
+
+filesystem_includes = ['linux/magic.h',
+                       'linux/gfs2_ondisk.h']
+
+check_filesystems = find_program('check-filesystems.sh')
+r = run_command([check_filesystems, cpp, 'filesystems-gperf.gperf'] + filesystem_includes)
+if r.returncode() != 0
+    error('found unknown filesystem(s) defined in kernel headers:\n\n' + r.stdout())
+    r.stdout()
+endif
+
+filesystems_gperf_h = custom_target(
+        'filesystems-gperf.h',
+        input : 'filesystems-gperf.gperf',
+        output : 'filesystems-gperf.h',
+        command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
+
+generate_filesystem_list = find_program('generate-filesystem-list.py')
+fname = 'filesystem-list.h'
+filesystem_list_h = custom_target(
+        fname,
+        input : 'filesystems-gperf.gperf',
+        output : fname,
+        command : [generate_filesystem_list,
+                   '@INPUT@'],
+        capture : true)
+
+basic_sources += [filesystem_list_h, filesystems_gperf_h]
 
 libbasic = static_library(
         'basic',
