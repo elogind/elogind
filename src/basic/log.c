@@ -1123,7 +1123,7 @@ int log_set_target_from_string(const char *e) {
 
         t = log_target_from_string(e);
         if (t < 0)
-                return -EINVAL;
+                return t;
 
         log_set_target(t);
         return 0;
@@ -1134,7 +1134,7 @@ int log_set_max_level_from_string(const char *e) {
 
         t = log_level_from_string(e);
         if (t < 0)
-                return -EINVAL;
+                return t;
 
         log_set_max_level(t);
         return 0;
@@ -1203,6 +1203,8 @@ static bool should_parse_proc_cmdline(void) {
         if (getpid_cached() == 1)
                 return true;
 
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
+         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
          * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
