@@ -25,7 +25,7 @@ typedef enum SmackAttr {
         SMACK_ATTR_IPIN,
         SMACK_ATTR_IPOUT,
         _SMACK_ATTR_MAX,
-        _SMACK_ATTR_INVALID = -1,
+        _SMACK_ATTR_INVALID = -EINVAL,
 } SmackAttr;
 #endif // 0
 

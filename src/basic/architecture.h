@@ -45,7 +45,7 @@ enum {
         ARCHITECTURE_ARC,
         ARCHITECTURE_ARC_BE,
         _ARCHITECTURE_MAX,
-        _ARCHITECTURE_INVALID = -1
+        _ARCHITECTURE_INVALID = -EINVAL,
 };
 
 #if 0 /// UNNEEDED by elogind

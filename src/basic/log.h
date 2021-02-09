@@ -27,7 +27,7 @@ typedef enum LogTarget{
 #endif // 0
         LOG_TARGET_NULL,
         _LOG_TARGET_MAX,
-        _LOG_TARGET_INVALID = -1
+        _LOG_TARGET_INVALID = -EINVAL,
 } LogTarget;
 
 /* Note to readers: << and >> have lower precedence than & and | */
