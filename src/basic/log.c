@@ -1205,6 +1205,8 @@ static bool should_parse_proc_cmdline(void) {
 
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
          * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
+         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         e = getenv("SYSTEMD_EXEC_PID");
         if (!e)
                 return false;
@@ -1213,9 +1215,12 @@ static bool should_parse_proc_cmdline(void) {
                 /* For testing. */
                 return true;
 
-        if (parse_pid(e, &p) < 0)
+                /* We know that elogind sets the variable correctly. Something else must have set it. */
+        if (parse_pid(e, &p) < 0) {
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
                 log_debug("Failed to parse \"$SYSTEMD_EXEC_PID=%s\". Ignoring.", e);
+                return false;
+        }
 
         return getpid_cached() == p;
 }
