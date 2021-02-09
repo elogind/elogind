@@ -2321,7 +2321,7 @@ CGroupMask get_cpu_accounting_mask(void) {
                         struct utsname u;
                         assert_se(uname(&u) >= 0);
 
-                        if (strverscmp_improved(u.release, "4.15") < 0)
+                        if (str_verscmp(u.release, "4.15") < 0)
                                 needed_mask = CGROUP_MASK_CPU;
                         else
                                 needed_mask = 0;
@@ -2343,3 +2343,11 @@ static const char* const managed_oom_mode_table[_MANAGED_OOM_MODE_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(managed_oom_mode, ManagedOOMMode);
+
+static const char* const managed_oom_preference_table[_MANAGED_OOM_PREFERENCE_MAX] = {
+        [MANAGED_OOM_PREFERENCE_NONE] = "none",
+        [MANAGED_OOM_PREFERENCE_AVOID] = "avoid",
+        [MANAGED_OOM_PREFERENCE_OMIT] = "omit",
+};
+
+DEFINE_STRING_TABLE_LOOKUP(managed_oom_preference, ManagedOOMPreference);
