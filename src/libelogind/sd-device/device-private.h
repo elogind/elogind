@@ -10,23 +10,9 @@
 
 #include "macro.h"
 
-typedef enum DeviceAction {
-        DEVICE_ACTION_ADD,
-        DEVICE_ACTION_REMOVE,
-        DEVICE_ACTION_CHANGE,
-        DEVICE_ACTION_MOVE,
-        DEVICE_ACTION_ONLINE,
-        DEVICE_ACTION_OFFLINE,
-        DEVICE_ACTION_BIND,
-        DEVICE_ACTION_UNBIND,
-        _DEVICE_ACTION_MAX,
-        _DEVICE_ACTION_INVALID = -EINVAL,
-} DeviceAction;
-
 int device_new_from_nulstr(sd_device **ret, uint8_t *nulstr, size_t len);
 #if 0 /// UNNEEDED by elogind
 int device_new_from_strv(sd_device **ret, char **strv);
-int device_new_from_stat_rdev(sd_device **ret, const struct stat *st);
 #endif // 0
 
 int device_get_id_filename(sd_device *device, const char **ret);
@@ -38,9 +24,7 @@ int device_get_devnode_mode(sd_device *device, mode_t *mode);
 int device_get_devnode_uid(sd_device *device, uid_t *uid);
 int device_get_devnode_gid(sd_device *device, gid_t *gid);
 #endif // 0
-int device_get_action(sd_device *device, DeviceAction *action);
 #if 0 /// UNNEEDED by elogind
-int device_get_seqnum(sd_device *device, uint64_t *seqnum);
 #endif // 0
 
 void device_seal(sd_device *device);
@@ -91,8 +75,8 @@ static inline int device_read_db(sd_device *device) {
         return device_read_db_internal(device, false);
 }
 
-DeviceAction device_action_from_string(const char *s) _pure_;
-const char *device_action_to_string(DeviceAction a) _const_;
 #if 0 /// UNNEEDED by elogind
+sd_device_action_t device_action_from_string(const char *s) _pure_;
+const char *device_action_to_string(sd_device_action_t a) _const_;
 void dump_device_action_table(void);
 #endif // 0
