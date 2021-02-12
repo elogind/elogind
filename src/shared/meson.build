@@ -421,6 +421,13 @@ endif
 #endif // 0
 
 #if 0 /// elogind does not play around with kernel modules. Not its job.
+# if conf.get('HAVE_LIBBPF') == 1
+#         shared_sources += files('''
+#                 bpf-link.c
+#                 bpf-link.h
+#         '''.split())
+# endif
+#
 # if conf.get('HAVE_KMOD') == 1
 #         shared_sources += files('module-util.c')
 # endif
@@ -484,6 +491,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 # libshared_deps = [threads,
 #                   libacl,
 #                   libblkid,
+#                   libbpf,
 #                   libcap,
 #                   libcrypt,
 #                   libgcrypt,
