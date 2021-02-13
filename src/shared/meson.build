@@ -203,6 +203,8 @@
 #         output-mode.h
 #         pager.c
 #         pager.h
+#         parse-argument.c
+#         parse-argument.h
 #         pe-header.h
 #         pkcs11-util.c
 #         pkcs11-util.h
