@@ -21,6 +21,7 @@
 #include "log.h"
 #include "main-func.h"
 #include "pager.h"
+#include "parse-argument.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "pretty-print.h"
@@ -450,7 +451,7 @@ static int find_nodes(sd_bus *bus, const char *service, const char *path, Set *p
 
         r = sd_bus_call_method(bus, service, path,
                                "org.freedesktop.DBus.Introspectable", "Introspect",
-                               &error, &reply, NULL);
+                               &error, &reply, "");
         if (r < 0) {
                 printf("%sFailed to introspect object %s of service %s: %s%s\n",
                        ansi_highlight_red(),
@@ -989,7 +990,7 @@ static int introspect(int argc, char **argv, void *userdata) {
 
         r = sd_bus_call_method(bus, argv[1], argv[2],
                                "org.freedesktop.DBus.Introspectable", "Introspect",
-                               &error, &reply_xml, NULL);
+                               &error, &reply_xml, "");
         if (r < 0)
                 return log_error_errno(r, "Failed to introspect object %s of service %s: %s",
                                        argv[2], argv[1], bus_error_message(&error, r));
@@ -2531,7 +2532,7 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case ARG_JSON:
-                        r = json_parse_cmdline_parameter_and_warn(optarg, &arg_json_format_flags);
+                        r = parse_json_argument(optarg, &arg_json_format_flags);
                         if (r <= 0)
                                 return r;
 
