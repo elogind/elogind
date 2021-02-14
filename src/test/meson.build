@@ -244,6 +244,8 @@ tests += [
         [['src/test/test-extract-word.c']],
 
 #if 0 /// elogind has nothing to test that needs libseccomp
+#         [['src/test/test-parse-argument.c']],
+#
 #         [['src/test/test-parse-util.c'],
 #          [],
 #          [libseccomp]],
