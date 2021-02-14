@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
 #include <alloca.h>
@@ -66,7 +66,7 @@ int path_compare(const char *a, const char *b) _pure_;
 bool path_equal(const char *a, const char *b) _pure_;
 bool path_equal_or_files_same(const char *a, const char *b, int flags);
 char* path_join_internal(const char *first, ...);
-#define path_join(x, ...) path_join_internal(x, __VA_ARGS__, (const char*) -1)
+#define path_join(x, ...) path_join_internal(x, __VA_ARGS__, POINTER_MAX)
 
 char* path_simplify(char *path, bool kill_dots);
 
@@ -153,7 +153,6 @@ int fsck_exists(const char *fstype);
         })
 
 #if 0 /// UNNEEDED by elogind
-int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg);
 #endif // 0
 
 char* dirname_malloc(const char *path);
