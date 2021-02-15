@@ -7,9 +7,9 @@
 #include "macro.h"
 #include "strv.h"
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
+char* get_default_hostname(void);
 char* gethostname_malloc(void);
 #if 0 /// UNNEEDED by elogind
 char* gethostname_short_malloc(void);
