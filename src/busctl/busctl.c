@@ -451,7 +451,7 @@ static int find_nodes(sd_bus *bus, const char *service, const char *path, Set *p
 
         r = sd_bus_call_method(bus, service, path,
                                "org.freedesktop.DBus.Introspectable", "Introspect",
-                               &error, &reply, NULL);
+                               &error, &reply, "");
         if (r < 0) {
                 printf("%sFailed to introspect object %s of service %s: %s%s\n",
                        ansi_highlight_red(),
@@ -788,22 +788,24 @@ static int member_compare_funcp(Member * const *a, Member * const *b) {
         return member_compare_func(*a, *b);
 }
 
-static Member* member_free(Member *m) {
+static void member_free(Member *m) {
         if (!m)
-                return NULL;
+                return;
 
         free(m->interface);
         free(m->name);
         free(m->signature);
         free(m->result);
         free(m->value);
-        return mfree(m);
+        free(m);
 }
+
 DEFINE_TRIVIAL_CLEANUP_FUNC(Member*, member_free);
 
-static Set* member_set_free(Set *s) {
-        return set_free_with_destructor(s, member_free);
+static void member_set_free(Set *s) {
+        set_free_with_destructor(s, member_free);
 }
+
 DEFINE_TRIVIAL_CLEANUP_FUNC(Set*, member_set_free);
 
 static int on_interface(const char *interface, uint64_t flags, void *userdata) {
@@ -988,7 +990,7 @@ static int introspect(int argc, char **argv, void *userdata) {
 
         r = sd_bus_call_method(bus, argv[1], argv[2],
                                "org.freedesktop.DBus.Introspectable", "Introspect",
-                               &error, &reply_xml, NULL);
+                               &error, &reply_xml, "");
         if (r < 0)
                 return log_error_errno(r, "Failed to introspect object %s of service %s: %s",
                                        argv[2], argv[1], bus_error_message(&error, r));
@@ -2479,27 +2481,22 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case ARG_EXPECT_REPLY:
-                        r = parse_boolean(optarg);
+                        r = parse_boolean_argument("--expect-reply=", optarg, &arg_expect_reply);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse --expect-reply= parameter '%s': %m", optarg);
-
-                        arg_expect_reply = r;
+                                return r;
                         break;
 
                 case ARG_AUTO_START:
-                        r = parse_boolean(optarg);
+                        r = parse_boolean_argument("--auto-start=", optarg, &arg_auto_start);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse --auto-start= parameter '%s': %m", optarg);
-
-                        arg_auto_start = r;
+                                return r;
                         break;
 
                 case ARG_ALLOW_INTERACTIVE_AUTHORIZATION:
-                        r = parse_boolean(optarg);
+                        r = parse_boolean_argument("--allow-interactive-authorization=", optarg,
+                                                   &arg_allow_interactive_authorization);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse --allow-interactive-authorization= parameter '%s': %m", optarg);
-
-                        arg_allow_interactive_authorization = r;
+                                return r;
                         break;
 
                 case ARG_TIMEOUT:
@@ -2510,19 +2507,15 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case ARG_AUGMENT_CREDS:
-                        r = parse_boolean(optarg);
+                        r = parse_boolean_argument("--augment-creds=", optarg, &arg_augment_creds);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse --augment-creds= parameter '%s': %m", optarg);
-
-                        arg_augment_creds = r;
+                                return r;
                         break;
 
                 case ARG_WATCH_BIND:
-                        r = parse_boolean(optarg);
+                        r = parse_boolean_argument("--watch-bind=", optarg, &arg_watch_bind);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse --watch-bind= parameter '%s': %m", optarg);
-
-                        arg_watch_bind = r;
+                                return r;
                         break;
 
                 case 'j':
