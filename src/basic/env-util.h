@@ -43,7 +43,6 @@ bool strv_env_name_or_assignment_is_valid(char **l);
 char **strv_env_merge(size_t n_lists, ...);
 char **strv_env_delete(char **x, size_t n_lists, ...); /* New copy */
 
-char **strv_env_set(char **x, const char *p); /* New copy ... */
 #endif // 0
 char **strv_env_unset(char **l, const char *p); /* In place ... */
 #if 0 /// UNNEEDED by elogind
