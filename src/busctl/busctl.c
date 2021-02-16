@@ -451,7 +451,7 @@ static int find_nodes(sd_bus *bus, const char *service, const char *path, Set *p
 
         r = sd_bus_call_method(bus, service, path,
                                "org.freedesktop.DBus.Introspectable", "Introspect",
-                               &error, &reply, "");
+                               &error, &reply, NULL);
         if (r < 0) {
                 printf("%sFailed to introspect object %s of service %s: %s%s\n",
                        ansi_highlight_red(),
@@ -788,24 +788,22 @@ static int member_compare_funcp(Member * const *a, Member * const *b) {
         return member_compare_func(*a, *b);
 }
 
-static void member_free(Member *m) {
+static Member* member_free(Member *m) {
         if (!m)
-                return;
+                return NULL;
 
         free(m->interface);
         free(m->name);
         free(m->signature);
         free(m->result);
         free(m->value);
-        free(m);
+        return mfree(m);
 }
-
 DEFINE_TRIVIAL_CLEANUP_FUNC(Member*, member_free);
 
-static void member_set_free(Set *s) {
-        set_free_with_destructor(s, member_free);
+static Set* member_set_free(Set *s) {
+        return set_free_with_destructor(s, member_free);
 }
-
 DEFINE_TRIVIAL_CLEANUP_FUNC(Set*, member_set_free);
 
 static int on_interface(const char *interface, uint64_t flags, void *userdata) {
@@ -990,7 +988,7 @@ static int introspect(int argc, char **argv, void *userdata) {
 
         r = sd_bus_call_method(bus, argv[1], argv[2],
                                "org.freedesktop.DBus.Introspectable", "Introspect",
-                               &error, &reply_xml, "");
+                               &error, &reply_xml, NULL);
         if (r < 0)
                 return log_error_errno(r, "Failed to introspect object %s of service %s: %s",
                                        argv[2], argv[1], bus_error_message(&error, r));
