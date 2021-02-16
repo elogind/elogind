@@ -48,7 +48,7 @@ char **strv_env_unset(char **l, const char *p); /* In place ... */
 #if 0 /// UNNEEDED by elogind
 char **strv_env_unset_many(char **l, ...) _sentinel_;
 #endif // 0
-int strv_env_replace(char ***l, char *p); /* In place ... */
+int strv_env_replace_consume(char ***l, char *p); /* In place ... */
 int strv_env_replace_strdup(char ***l, const char *assignment);
 int strv_env_assign(char ***l, const char *key, const char *value);
 
