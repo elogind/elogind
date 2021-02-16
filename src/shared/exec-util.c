@@ -58,6 +58,7 @@ static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid, b
                 (void) rlimit_nofile_safe();
 
                         r = setenv_elogind_exec_pid(false);
+                        r = setenv_elogind_exec_pid(false);
                 if (set_elogind_exec_pid) {
                         r = setenv_elogind_exec_pid(false);
                         if (r < 0)
@@ -284,12 +285,18 @@ static int gather_environment_generate(int fd, void *arg) {
                 return r;
 
         STRV_FOREACH_PAIR(x, y, new) {
+                char *p;
+
                 if (!env_name_is_valid(*x)) {
                         log_warning("Invalid variable assignment \"%s=...\", ignoring.", *x);
                         continue;
                 }
 
-                r = strv_env_assign(env, *x, *y);
+                p = strjoin(*x, "=", *y);
+                if (!p)
+                        return -ENOMEM;
+
+                r = strv_env_replace(env, p);
                 if (r < 0)
                         return r;
 
@@ -297,7 +304,7 @@ static int gather_environment_generate(int fd, void *arg) {
                         return -errno;
         }
 
-        return 0;
+        return r;
 }
 
 static int gather_environment_collect(int fd, void *arg) {
@@ -381,10 +388,9 @@ int exec_command_flags_from_strv(char **ex_opts, ExecCommandFlags *flags) {
 
         STRV_FOREACH(opt, ex_opts) {
                 ex_flag = exec_command_flags_from_string(*opt);
-                if (ex_flag >= 0)
-                        ret_flags |= ex_flag;
-                else
-                        return -EINVAL;
+                if (ex_flag < 0)
+                        return ex_flag;
+                ret_flags |= ex_flag;
         }
 
         *flags = ret_flags;
@@ -399,6 +405,9 @@ int exec_command_flags_to_strv(ExecCommandFlags flags, char ***ex_opts) {
         int i, r;
 
         assert(ex_opts);
+
+        if (flags < 0)
+                return flags;
 
         for (i = 0; it != 0; it &= ~(1 << i), i++) {
                 if (FLAGS_SET(flags, (1 << i))) {
