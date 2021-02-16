@@ -57,6 +57,7 @@ static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid, b
 
                 (void) rlimit_nofile_safe();
 
+                        r = setenv_elogind_exec_pid(false);
                 if (set_elogind_exec_pid) {
                         r = setenv_elogind_exec_pid(false);
                         if (r < 0)
@@ -283,18 +284,12 @@ static int gather_environment_generate(int fd, void *arg) {
                 return r;
 
         STRV_FOREACH_PAIR(x, y, new) {
-                char *p;
-
                 if (!env_name_is_valid(*x)) {
                         log_warning("Invalid variable assignment \"%s=...\", ignoring.", *x);
                         continue;
                 }
 
-                p = strjoin(*x, "=", *y);
-                if (!p)
-                        return -ENOMEM;
-
-                r = strv_env_replace(env, p);
+                r = strv_env_assign(env, *x, *y);
                 if (r < 0)
                         return r;
 
@@ -302,7 +297,7 @@ static int gather_environment_generate(int fd, void *arg) {
                         return -errno;
         }
 
-        return r;
+        return 0;
 }
 
 static int gather_environment_collect(int fd, void *arg) {
