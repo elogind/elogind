@@ -136,17 +136,10 @@ int safe_atod(const char *s, double *ret_d);
 #if 0 /// UNNEEDED by elogind
 int parse_fractional_part_u(const char **s, size_t digits, unsigned *res);
 
-int parse_percent_unbounded(const char *p);
-int parse_percent(const char *p);
 #endif // 0
 
-int parse_permille_unbounded(const char *p);
-int parse_permille(const char *p);
 
 #if 0 /// UNNEEDED by elogind
-int parse_permyriad_unbounded(const char *p);
-int parse_permyriad(const char *p);
-
 int parse_nice(const char *p, int *ret);
 
 int parse_ip_port(const char *s, uint16_t *ret);

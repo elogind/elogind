@@ -178,6 +178,8 @@
 #         path-lookup.h
 #         path-util.c
 #         path-util.h
+#         percent-util.c
+#         percent-util.h
 #         prioq.c
 #         prioq.h
 #         proc-cmdline.c
