@@ -199,8 +199,6 @@
 #         numa-util.h
 #         openssl-util.c
 #         openssl-util.h
-#         os-util.c
-#         os-util.h
 #         output-mode.c
 #         output-mode.h
 #         pager.c
