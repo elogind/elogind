@@ -101,6 +101,8 @@
 #         exec-util.h
 #         exit-status.c
 #         exit-status.h
+#         extension-release.c
+#         extension-release.h
 #         fdset.c
 #         fdset.h
 #         fileio-label.c
