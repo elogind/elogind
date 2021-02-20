@@ -65,6 +65,10 @@ int getenv_bool_secure(const char *p);
 int set_unset_env(const char *name, const char *value, bool overwrite);
 
 int setenv_elogind_exec_pid(bool update_only);
+/* Like putenv, but duplicates the memory like setenv. */
+int putenv_dup(const char *assignment, bool override);
+
+int setenv_elogind_exec_pid(bool update_only);
 
 /* Parses and does sanity checks on an environment variable containing
  * PATH-like colon-separated absolute paths */
