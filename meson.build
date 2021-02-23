@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
-        version : '247',
+        version : '248',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu99',
@@ -14,7 +14,7 @@ project('elogind', 'c',
        )
 
 #if 0 /// elogind does not ship libudev
-# libsystemd_version = '0.30.0'
+# libsystemd_version = '0.31.0'
 # libudev_version = '1.7.0'
 #endif // 0
 
