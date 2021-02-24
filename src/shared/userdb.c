@@ -1247,7 +1247,7 @@ int userdb_block_nss_elogind(int b) {
 
         call = (int (*)(bool b)) dlsym(dl, "_nss_elogind_block");
         if (!call)
-                /* If the file is is installed but lacks the symbol we expect, things are weird, let's complain */
+                /* If the file is installed but lacks the symbol we expect, things are weird, let's complain */
                 return log_debug_errno(SYNTHETIC_ERRNO(ELIBBAD),
                                        "Unable to find symbol _nss_elogind_block in libnss_elogind.so.2: %s", dlerror());
 
