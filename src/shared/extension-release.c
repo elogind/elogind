@@ -77,3 +77,20 @@ int extension_release_validate(
         log_debug("Version info of extension '%s' matches host.", name);
         return 1;
 }
+
+int parse_env_extension_hierarchies(char ***ret_hierarchies) {
+        _cleanup_free_ char **l = NULL;
+        int r;
+
+        r = getenv_path_list("SYSTEMD_SYSEXT_HIERARCHIES", &l);
+        if (r == -ENXIO) {
+                /* Default when unset */
+                l = strv_new("/usr", "/opt");
+                if (!l)
+                        return -ENOMEM;
+        } else if (r < 0)
+                return r;
+
+        *ret_hierarchies = TAKE_PTR(l);
+        return 0;
+}
