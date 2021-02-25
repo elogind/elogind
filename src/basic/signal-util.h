@@ -68,3 +68,6 @@ static inline const char* signal_to_string_with_check(int n) {
 #endif // 0
 
 int signal_is_blocked(int sig);
+
+int pop_pending_signal_internal(int sig, ...);
+#define pop_pending_signal(...) pop_pending_signal_internal(__VA_ARGS__, -1)
