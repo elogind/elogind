@@ -643,6 +643,7 @@ foreach ident : [
         ['mallinfo',          '''#include <malloc.h>'''],
         ['execveat',          '''#include <unistd.h>'''],
         ['close_range',       '''#include <unistd.h>'''],
+        ['epoll_pwait2',      '''#include <sys/epoll.h>'''],
 ]
 
         have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE')
@@ -800,6 +801,7 @@ endif
 #                   'sys/auxv.h',
 #                   'valgrind/memcheck.h',
 #                   'valgrind/valgrind.h',
+#                   'linux/time_types.h',
 #                  ]
 #
 #else // 0
