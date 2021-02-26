@@ -153,6 +153,8 @@
 #         import-util.c
 #         import-util.h
 #         initreq.h
+#         install-file.c
+#         install-file.h
 #         install-printf.c
 #         install-printf.h
 #         install.c
