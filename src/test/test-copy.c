@@ -308,6 +308,22 @@ static void test_copy_atomic(void) {
 }
 #endif // 0
 
+static void test_copy_proc(void) {
+        _cleanup_(rm_rf_physical_and_freep) char *p = NULL;
+        _cleanup_free_ char *f = NULL, *a = NULL, *b = NULL;
+
+        /* Check if copying data from /proc/ works correctly, i.e. let's see if https://lwn.net/Articles/846403/ is a problem for us */
+
+        assert_se(mkdtemp_malloc(NULL, &p) >= 0);
+        assert_se(f = path_join(p, "version"));
+        assert_se(copy_file("/proc/version", f, 0, (mode_t) -1, 0, 0, 0) >= 0);
+
+        assert_se(read_one_line_file("/proc/version", &a) >= 0);
+        assert_se(read_one_line_file(f, &b) >= 0);
+        assert_se(streq(a, b));
+        assert_se(strlen(a) > 0);
+}
+
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
 
@@ -326,6 +342,7 @@ int main(int argc, char *argv[]) {
 #if 0 /// UNNEEDED by elogind
         test_copy_atomic();
 #endif // 0
+        test_copy_proc();
 
         return 0;
 }
