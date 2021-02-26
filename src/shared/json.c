@@ -4065,7 +4065,7 @@ int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchF
         return 0;
 }
 
-int json_dispatch_integer(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
+int json_dispatch_intmax(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         intmax_t *i = userdata;
 
         assert(variant);
@@ -4078,7 +4078,7 @@ int json_dispatch_integer(const char *name, JsonVariant *variant, JsonDispatchFl
         return 0;
 }
 
-int json_dispatch_unsigned(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
+int json_dispatch_uintmax(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         uintmax_t *u = userdata;
 
         assert(variant);
