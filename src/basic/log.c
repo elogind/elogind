@@ -1209,6 +1209,8 @@ static bool should_parse_proc_cmdline(void) {
          * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
          * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
+         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         e = getenv("SYSTEMD_EXEC_PID");
         if (!e)
                 return false;
@@ -1353,17 +1355,17 @@ bool log_on_console(void) {
 }
 
 static const char *const log_target_table[_LOG_TARGET_MAX] = {
-        [LOG_TARGET_CONSOLE] = "console",
+        [LOG_TARGET_CONSOLE]          = "console",
         [LOG_TARGET_CONSOLE_PREFIXED] = "console-prefixed",
-        [LOG_TARGET_KMSG] = "kmsg",
 #if 0 /// elogind does not support logging to systemd-journald
-        [LOG_TARGET_JOURNAL] = "journal",
-        [LOG_TARGET_JOURNAL_OR_KMSG] = "journal-or-kmsg",
 #endif // 0
-        [LOG_TARGET_SYSLOG] = "syslog",
-        [LOG_TARGET_SYSLOG_OR_KMSG] = "syslog-or-kmsg",
-        [LOG_TARGET_AUTO] = "auto",
-        [LOG_TARGET_NULL] = "null",
+        [LOG_TARGET_KMSG]             = "kmsg",
+        [LOG_TARGET_JOURNAL]          = "journal",
+        [LOG_TARGET_JOURNAL_OR_KMSG]  = "journal-or-kmsg",
+        [LOG_TARGET_SYSLOG]           = "syslog",
+        [LOG_TARGET_SYSLOG_OR_KMSG]   = "syslog-or-kmsg",
+        [LOG_TARGET_AUTO]             = "auto",
+        [LOG_TARGET_NULL]             = "null",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(log_target, LogTarget);
