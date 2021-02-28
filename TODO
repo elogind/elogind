@@ -20,9 +20,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* whenever we receive fds via SCM_RIGHTS make sure none got dropped due to the
-  reception limit the kernel silently enforces.
-
 * add an Open= setting to service unit files that can open arbitrary file
   system paths at service startup time and pass them to the service process via
   our usual socket activation protocol. If passed path refers to AF_UNIX
@@ -38,6 +35,9 @@ Features:
 * Hook up journald's FSS logic with TPM2: seal the verification disk by
   time-based policy, so that the verification key can remain on host and ve
   validated via TPM.
+
+* sd-event: port to new kernel API epoll_wait2() (new in 5.11), to get more
+  accurate wait timeouts
 
 * sd-boot: define a drop-in dir in the ESP that may contain X.509
   certificates. If the firmware is detected to be in setup mode, automatically
@@ -1272,6 +1272,7 @@ Features:
   - creating new directories/subvolumes/fifos/device nodes
     should not follow symlinks. None of the other adjustment or creation
     calls follow symlinks.
+  - add --test mode
 
 * make sure systemd-ask-password-wall does not shutdown systemd-ask-password-console too early
 
