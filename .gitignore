@@ -62,7 +62,6 @@ __pycache__/
 /units
 /rules
 /test
-/.github
 /sysctl.d
 /coccinelle
 /cccc

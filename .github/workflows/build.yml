@@ -1,0 +1,45 @@
+name: main
+
+on:
+  push:
+    branches:
+      - main
+      - github-actions-test
+  pull_request:
+    branches:
+      - main
+      - github-actions-test
+
+env:
+  CC: gcc-9
+  CXX: g++-9
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout library
+        uses: actions/checkout@v2
+      - name: Add most of systemd build devs
+        run: sudo apt-get install -y acl build-essential debhelper docbook-xml docbook-xsl gettext gnu-efi gperf iproute2 libacl1-dev libapparmor-dev libaudit-dev libblkid-dev libbz2-dev libcap-dev libcap2-bin libcurl4-gnutls-dev libdbus-1-dev libdw-dev libgcrypt20-dev libgnutls28-dev libidn2-dev libiptc-dev liblz4-dev liblz4-tool liblzma-dev libmicrohttpd-dev libmount-dev libpam0g-dev libpcre2-dev libpolkit-gobject-1-dev libseccomp-dev libselinux1-dev libudev-dev libzstd-dev linux-base m4 meson pkg-config python3 python3-evdev python3-lxml python3-pip python3-pyparsing tzdata xsltproc zlib1g-dev zstd
+      - name: Update ninja for meson
+        run: |
+             mkdir -p /tmp/build/bin
+             wget -q -O /tmp/build/ninja-linux.zip "https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip"
+             unzip -o -d /tmp/build/bin /tmp/build/ninja-linux.zip
+             chmod 755 /tmp/build/bin/ninja
+             export PATH="/tmp/build/bin:$PATH"
+      - name: Update meson via python3-pip
+        run: |
+             python3 -m pip install --user setuptools
+             python3 -m pip install --user --upgrade pip
+             python3 -m pip install --user "meson==0.46"
+      - name: Build elogind
+        run: make DEBUG=YES CGDEFAULT=hybrid MESON=$HOME/.local/bin/meson NINJA=/tmp/build/bin/ninja
+      - name: Run tests
+        run: make test DEBUG=YES CGDEFAULT=hybrid MESON=$HOME/.local/bin/meson NINJA=/tmp/build/bin/ninja
