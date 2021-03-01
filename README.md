@@ -173,15 +173,11 @@ Dependencies
 
   * glibc >= 2.16 (*or* musl-libc >= 1.1.20)
   * libcap
-  * libmount >= 2.27.1 (from util-linux)
-          (util-linux < 2.29 *must* be built with `--enable-libmount-force-mountinfo`,
-          and later versions without `--enable-libmount-support-mtab`.)
-  * libseccomp >= 2.3.1 (optional)
-  * libblkid >= 2.24 (from util-linux) (optional)
+  * libudev
   * PAM >= 1.1.2 (optional)
   * libacl (optional)
   * libselinux (optional)
-  * libpython (optional)
+  * libaudit (optional)
   * pkg-config
   * gperf >= 3.1
   * docbook-xsl (optional, required for documentation)
@@ -193,8 +189,8 @@ Dependencies
 During runtime, you need the following additional dependencies:
 ---------------------------------------------------------------
   * util-linux >= v2.27.1 required
-  * dbus >= 1.9.14 (strictly speaking optional, but recommended)
-          NOTE: If using dbus < 1.9.18, you should override the default
+  * dbus >= 1.9.14 (strictly speaking optional, but recommended)  
+    NOTE: If using dbus < 1.9.18, you should override the default  
           policy directory (--with-dbuspolicydir=/etc/dbus-1/system.d).
   * PolicyKit (optional)
 
@@ -224,6 +220,10 @@ Useful commands:
   * `ninja test`
   * `sudo ninja install`
   * `DESTDIR=... ninja install`
+  * `make DEBUG=YES`  
+    The Makefile is a full convenience wrapper, that allows to use meson/ninja in  
+    Makefile compatible IDEs like CLion.  
+    Note: For maximum control you should use meson/ninja directly instead.  
 
 A tarball can be created with:  
   `git archive --format=tar --prefix=elogind-241/ v241 | xz > elogind-241.tar.xz`
