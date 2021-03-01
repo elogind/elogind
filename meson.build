@@ -1057,10 +1057,14 @@ endif
 #####################################################################
 
 threads = dependency('threads')
-librt = cc.find_library('rt')
+#if 0 /// UNNEEDED in elogind
+# librt = cc.find_library('rt')
+#endif //  0
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
-libcrypt = cc.find_library('crypt')
+#if 0 /// UNNEEDED by elogind
+# libcrypt = cc.find_library('crypt')
+#endif // 0
 
 libcap = dependency('libcap', required : false)
 if not libcap.found()
@@ -1103,10 +1107,10 @@ endif
 #         have = false
 #         libseccomp = []
 # endif
+# conf.set10('HAVE_SECCOMP', have)
 #else // 0
-libseccomp = []
+conf.set10('HAVE_SECCOMP', false)
 #endif // 0
-conf.set10('HAVE_SECCOMP', have)
 
 want_selinux = get_option('selinux')
 if want_selinux != 'false' and not skip_deps
@@ -1208,9 +1212,7 @@ conf.set10('HAVE_AUDIT', have)
 # endif
 # conf.set10('HAVE_KMOD', have)
 #else // 0
-libblkid = []
 conf.set10('HAVE_BLKID', false)
-libkmod = []
 conf.set10('HAVE_KMOD', false)
 #endif // 0
 
@@ -1483,35 +1485,43 @@ conf.set10('HAVE_COMPRESSION', false)
 conf.set10('HAVE_XKBCOMMON', false)
 #endif // 0
 
-want_pcre2 = get_option('pcre2')
-if want_pcre2 != 'false'
-        libpcre2 = dependency('libpcre2-8',
-                              required : want_pcre2 == 'true')
-        have = libpcre2.found()
-else
-        have = false
-        libpcre2 = []
-endif
-conf.set10('HAVE_PCRE2', have)
+#if 0 /// UNNEEDED by elogind
+# want_pcre2 = get_option('pcre2')
+# if want_pcre2 != 'false'
+#         libpcre2 = dependency('libpcre2-8',
+#                               required : want_pcre2 == 'true')
+#         have = libpcre2.found()
+# else
+#         have = false
+#         libpcre2 = []
+# endif
+# conf.set10('HAVE_PCRE2', have)
+#else // 0
+conf.set10('HAVE_PCRE2', false)
+#endif // 0
 
-want_glib = get_option('glib')
-if want_glib != 'false' and not skip_deps
-        libglib =    dependency('glib-2.0',
-                                version : '>= 2.22.0',
-                                required : want_glib == 'true')
-        libgobject = dependency('gobject-2.0',
-                                version : '>= 2.22.0',
-                                required : want_glib == 'true')
-        libgio =     dependency('gio-2.0',
-                                required : want_glib == 'true')
-        have = libglib.found() and libgobject.found() and libgio.found()
-else
-        have = false
-        libglib = []
-        libgobject = []
-        libgio = []
-endif
-conf.set10('HAVE_GLIB', have)
+#if 0 /// UNNEEDED by elogind
+# want_glib = get_option('glib')
+# if want_glib != 'false' and not skip_deps
+#         libglib =    dependency('glib-2.0',
+#                                 version : '>= 2.22.0',
+#                                 required : want_glib == 'true')
+#         libgobject = dependency('gobject-2.0',
+#                                 version : '>= 2.22.0',
+#                                 required : want_glib == 'true')
+#         libgio =     dependency('gio-2.0',
+#                                 required : want_glib == 'true')
+#         have = libglib.found() and libgobject.found() and libgio.found()
+# else
+#         have = false
+#         libglib = []
+#         libgobject = []
+#         libgio = []
+# endif
+# conf.set10('HAVE_GLIB', have)
+#else // 0
+conf.set10('HAVE_GLIB', false)
+#endif // 0
 
 want_dbus = get_option('dbus')
 if want_dbus != 'false' and not skip_deps
