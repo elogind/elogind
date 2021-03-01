@@ -20,9 +20,9 @@ typedef enum CopyFlags {
 } CopyFlags;
 
 typedef int (*copy_progress_bytes_t)(uint64_t n_bytes, void *userdata);
-#if 0 /// UNNEEDED by elogind
 typedef int (*copy_progress_path_t)(const char *path, const struct stat *st, void *userdata);
 
+#if 0 /// UNNEEDED by elogind
 int copy_file_fd_full(const char *from, int to, CopyFlags copy_flags, copy_progress_bytes_t progress, void *userdata);
 static inline int copy_file_fd(const char *from, int to, CopyFlags copy_flags) {
         return copy_file_fd_full(from, to, copy_flags, NULL, NULL);

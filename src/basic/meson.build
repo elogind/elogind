@@ -316,6 +316,8 @@ basic_sources = files('''
         khash.h
         label.c
         label.h
+        linux/btrfs.h
+        linux/btrfs_tree.h
         limits-util.c
         limits-util.h
         list.h
