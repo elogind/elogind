@@ -32,6 +32,7 @@ LN    := $(shell which ln) -s
 MAKE  := $(shell which make)
 MESON ?= $(shell which meson)
 MKDIR := $(shell which mkdir) -p
+NINJA ?= $(shell which ninja)
 RM    := $(shell which rm) -f
 
 # Save users/systems choice
@@ -60,11 +61,12 @@ ifeq (YES,$(DEBUG))
     BASIC_OPT := --werror -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true -Ddebug-extra=elogind --buildtype debug
     BUILDDIR  := ${BUILDDIR}_debug
     CFLAGS    := -O0 -g3 -ggdb -ftrapv ${envCFLAGS} -fPIE
-    LDFLAGS   := ${envLDFLAGS} -fPIE
+    LDFLAGS   := -fPIE
     NINJA_OPT := ${NINJA_OPT} -j 1 -k 1
 else
     BUILDDIR  := ${BUILDDIR}_release
-    CFLAGS   := -fwrapv ${envCFLAGS}
+    CFLAGS    := -fwrapv ${envCFLAGS}
+    LDFLAGS   :=
 endif
 
 # Set search paths including the actual build directory
@@ -76,23 +78,26 @@ CONFIG := $(BUILDDIR)/compile_commands.json
 # Finalize CFLAGS
 CFLAGS := -march=native -pipe ${CFLAGS} -Wunused -ftree-vectorize
 
+# Finalize LDFLAGS
+LDFLAGS := ${envLDFLAGS} ${LDFLAGS} -lpthread
+
 
 all: build
 
 build: $(CONFIG)
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
-	+(cd $(BUILDDIR) && ninja $(NINJA_OPT))
+	+(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT))
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 clean: $(CONFIG)
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
-	(cd $(BUILDDIR) && ninja $(NINJA_OPT) -t cleandead)
-	(cd $(BUILDDIR) && ninja $(NINJA_OPT) -t clean)
+	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) -t cleandead)
+	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) -t clean)
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 install: build
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
-	(cd $(BUILDDIR) && DESTDIR=$(DESTDIR) ninja $(NINJA_OPT) install)
+	(cd $(BUILDDIR) && DESTDIR=$(DESTDIR) $(NINJA) $(NINJA_OPT) install)
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 justprint: $(CONFIG)
@@ -100,17 +105,17 @@ justprint: $(CONFIG)
 
 loginctl: $(CONFIG)
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
-	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
+	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) $@)
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 test: $(CONFIG)
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
-	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
+	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) $@)
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 test-login: $(CONFIG)
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
-	(cd $(BUILDDIR) && ninja $(NINJA_OPT) $@)
+	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) $@)
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 $(BUILDDIR):
@@ -119,9 +124,9 @@ $(BUILDDIR):
 $(CONFIG): $(BUILDDIR) $(MESON_LST)
 	@echo " Generating $@"
 	+test -f $@ && ( \
-		meson configure $(BUILDDIR) $(BASIC_OPT) \
+		$(MESON) configure $(BUILDDIR) $(BASIC_OPT) \
 	) || ( \
-		meson setup $(BUILDDIR) $(BASIC_OPT) \
+		$(MESON) setup $(BUILDDIR) $(BASIC_OPT) \
 			--prefix $(PREFIX) \
 			--wrap-mode nodownload  \
 			-Drootprefix=$(ROOTPREFIX) \
