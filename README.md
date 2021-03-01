@@ -22,9 +22,7 @@ All complaints should go to Sven Eden, who is maintaining elogind.
 
 Build Status
 ------------
-Listed are the master branch and the last stable branch
- * master     : [![Build Status](https://travis-ci.org/elogind/elogind.svg?branch=master)](https://travis-ci.org/elogind/elogind)
- * v246-stable: [![Build Status](https://travis-ci.org/elogind/elogind.svg?branch=v246-stable)](https://travis-ci.org/elogind/elogind)
+* [![elogind CI Status](https://github.com/elogind/elogind/workflows/main/badge.svg)](https://github.com/elogind/elogind/actions)
 
 Contributing
 ============
