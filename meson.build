@@ -1106,6 +1106,7 @@ endif
 # endif
 # conf.set10('HAVE_SECCOMP', have)
 #else // 0
+libseccomp = []
 conf.set10('HAVE_SECCOMP', false)
 #endif // 0
 
