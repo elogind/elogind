@@ -24,6 +24,7 @@ DESTDIR    ?=
 MESON_LST  := $(shell find $(HERE)/ -type f -name 'meson.build') $(HERE)/meson_options.txt
 PREFIX     ?= /tmp/elogind_test
 ROOTPREFIX ?= $(PREFIX)
+SYSCONFDIR ?= $(PREFIX)/etc
 VERSION    ?= 9999
 
 CC    ?= $(shell which cc)
@@ -130,6 +131,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			--prefix $(PREFIX) \
 			--wrap-mode nodownload  \
 			-Drootprefix=$(ROOTPREFIX) \
+			-Dsysconfdir=$(SYSCONFDIR) \
 			-Dacl=true \
 			-Dcgroup-controller=$(CGCONTROL) \
 			-Ddefault-hierarchy=$(CGDEFAULT) \
