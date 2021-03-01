@@ -22,8 +22,8 @@ All complaints should go to Sven Eden, who is maintaining elogind.
 
 Build Status
 ------------
-* [![elogind CI Status main](https://github.com/elogind/elogind/workflows/main/badge.svg?branch=main)](https://github.com/elogind/elogind/actions)
-* [![elogind CI Status v246-stable](https://github.com/elogind/elogind/workflows/main/badge.svg?branch=v246-stable)](https://github.com/elogind/elogind/actions)
+* CI Status main       : [![elogind CI Status main](https://github.com/elogind/elogind/workflows/Build_on_Ubuntu/badge.svg?branch=main)](https://github.com/elogind/elogind/actions)
+* CI Status v246-stable: [![elogind CI Status v246-stable](https://github.com/elogind/elogind/workflows/Build_on_Ubuntu/badge.svg?branch=v246-stable)](https://github.com/elogind/elogind/actions)
 
 Contributing
 ============

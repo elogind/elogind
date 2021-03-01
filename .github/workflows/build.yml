@@ -1,4 +1,4 @@
-name: main
+name: Build_on_Ubuntu
 
 on:
   push:
