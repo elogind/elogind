@@ -318,6 +318,8 @@ basic_sources = files('''
         label.h
         linux/btrfs.h
         linux/btrfs_tree.h
+        linux/if.h
+        linux/libc-compat.h
         limits-util.c
         limits-util.h
         list.h
