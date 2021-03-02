@@ -2,7 +2,6 @@
 
 #include <endian.h>
 #include <netdb.h>
-#include <poll.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -32,6 +31,7 @@
 #include "fd-util.h"
 #include "hexdecoct.h"
 #include "hostname-util.h"
+#include "io-util.h"
 #include "macro.h"
 #include "memory-util.h"
 #include "missing_syscall.h"
@@ -3262,9 +3262,8 @@ _public_ int sd_bus_process_priority(sd_bus *bus, int64_t priority, sd_bus_messa
 
 static int bus_poll(sd_bus *bus, bool need_more, uint64_t timeout_usec) {
         struct pollfd p[2] = {};
-        int r, n;
-        struct timespec ts;
         usec_t m = USEC_INFINITY;
+        int r, n;
 
         assert(bus);
 
@@ -3319,16 +3318,9 @@ static int bus_poll(sd_bus *bus, bool need_more, uint64_t timeout_usec) {
         if (timeout_usec != (uint64_t) -1 && (m == USEC_INFINITY || timeout_usec < m))
                 m = timeout_usec;
 
-        r = ppoll(p, n, m == USEC_INFINITY ? NULL : timespec_store(&ts, m), NULL);
-        if (r < 0)
-                return -errno;
-        if (r == 0)
-                return 0;
-
-        if (p[0].revents & POLLNVAL)
-                return -EBADF;
-        if (n >= 2 && (p[1].revents & POLLNVAL))
-                return -EBADF;
+        r = ppoll_usec(p, n, m);
+        if (r <= 0)
+                return r;
 
         return 1;
 }
