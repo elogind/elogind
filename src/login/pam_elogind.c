@@ -314,6 +314,7 @@ static int export_legacy_dbus_address(
 #if 1 /// Avoid -ftracer warning of NULL pointer 'runtime' when building elogind with gcc (See: #189)
         if (!runtime) __builtin_unreachable ();
 #endif // 1
+
         if (asprintf(&t, DEFAULT_USER_BUS_ADDRESS_FMT, runtime) < 0)
                 return pam_log_oom(handle);
 

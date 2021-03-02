@@ -17,7 +17,9 @@ ja
 ko
 lt
 pl
+#if 1 /// elogind also supports pt
 pt
+#endif // 1
 pt_BR
 ro
 ru
