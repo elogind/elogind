@@ -41,6 +41,10 @@ typedef enum TableDataType {
 #endif // 0
         TABLE_ID128,
         TABLE_UUID,
+        TABLE_UID,
+        TABLE_GID,
+        TABLE_PID,
+        TABLE_SIGNAL,
         _TABLE_DATA_TYPE_MAX,
 
         /* The following are not really data types, but commands for table_add_cell_many() to make changes to
@@ -58,16 +62,6 @@ typedef enum TableDataType {
 
         _TABLE_DATA_TYPE_INVALID = -EINVAL,
 } TableDataType;
-
-/* PIDs are just 32bit signed integers on Linux */
-#define TABLE_PID TABLE_INT32
-assert_cc(sizeof(pid_t) == sizeof(int32_t));
-
-/* UIDs/GIDs are just 32bit unsigned integers on Linux */
-#define TABLE_UID TABLE_UINT32
-#define TABLE_GID TABLE_UINT32
-assert_cc(sizeof(uid_t) == sizeof(uint32_t));
-assert_cc(sizeof(gid_t) == sizeof(uint32_t));
 
 typedef struct Table Table;
 typedef struct TableCell TableCell;
@@ -115,9 +109,11 @@ void table_set_width(Table *t, size_t width);
 void table_set_cell_height_max(Table *t, size_t height);
 int table_set_empty_string(Table *t, const char *empty);
 int table_set_display_all(Table *t);
-int table_set_display(Table *t, size_t first_column, ...);
-int table_set_sort(Table *t, size_t first_column, ...);
 #if 0 /// UNNEEDED by elogind
+int table_set_display_internal(Table *t, size_t first_column, ...);
+#define table_set_display(...) table_set_display_internal(__VA_ARGS__, (size_t) SIZE_MAX)
+int table_set_sort_internal(Table *t, size_t first_column, ...);
+#define table_set_sort(...) table_set_sort_internal(__VA_ARGS__, (size_t) SIZE_MAX)
 int table_set_reverse(Table *t, size_t column, bool b);
 #endif // 0
 int table_hide_column_from_display(Table *t, size_t column);
