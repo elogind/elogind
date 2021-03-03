@@ -404,18 +404,18 @@ static bool btrfs_ioctl_search_args_inc(struct btrfs_ioctl_search_args *args) {
          * comparing. This call increases the counter by one, dealing
          * with the overflow between the overflows */
 
-        if (args->key.min_offset < (uint64_t) -1) {
+        if (args->key.min_offset < UINT64_MAX) {
                 args->key.min_offset++;
                 return true;
         }
 
-        if (args->key.min_type < (uint8_t) -1) {
+        if (args->key.min_type < UINT8_MAX) {
                 args->key.min_type++;
                 args->key.min_offset = 0;
                 return true;
         }
 
-        if (args->key.min_objectid < (uint64_t) -1) {
+        if (args->key.min_objectid < UINT64_MAX) {
                 args->key.min_objectid++;
                 args->key.min_offset = 0;
                 args->key.min_type = 0;
@@ -473,11 +473,11 @@ int btrfs_subvol_get_info_fd(int fd, uint64_t subvol_id, BtrfsSubvolInfo *ret) {
                 .key.max_type = BTRFS_ROOT_ITEM_KEY,
 
                 .key.min_offset = 0,
-                .key.max_offset = (uint64_t) -1,
+                .key.max_offset = UINT64_MAX,
 
                 /* No restrictions on the other components */
                 .key.min_transid = 0,
-                .key.max_transid = (uint64_t) -1,
+                .key.max_transid = UINT64_MAX,
         };
 
         bool found = false;
@@ -571,7 +571,7 @@ int btrfs_qgroup_get_quota_fd(int fd, uint64_t qgroupid, BtrfsQuotaInfo *ret) {
 
                 /* No restrictions on the other components */
                 .key.min_transid = 0,
-                .key.max_transid = (uint64_t) -1,
+                .key.max_transid = UINT64_MAX,
         };
 
         bool found_info = false, found_limit = false;
@@ -633,12 +633,12 @@ int btrfs_qgroup_get_quota_fd(int fd, uint64_t qgroupid, BtrfsQuotaInfo *ret) {
                                 if (le64toh(qli->flags) & BTRFS_QGROUP_LIMIT_MAX_RFER)
                                         ret->referenced_max = le64toh(qli->max_rfer);
                                 else
-                                        ret->referenced_max = (uint64_t) -1;
+                                        ret->referenced_max = UINT64_MAX;
 
                                 if (le64toh(qli->flags) & BTRFS_QGROUP_LIMIT_MAX_EXCL)
                                         ret->exclusive_max = le64toh(qli->max_excl);
                                 else
-                                        ret->exclusive_max = (uint64_t) -1;
+                                        ret->exclusive_max = UINT64_MAX;
 
                                 found_limit = true;
                         }
@@ -657,13 +657,13 @@ finish:
                 return -ENODATA;
 
         if (!found_info) {
-                ret->referenced = (uint64_t) -1;
-                ret->exclusive = (uint64_t) -1;
+                ret->referenced = UINT64_MAX;
+                ret->exclusive = UINT64_MAX;
         }
 
         if (!found_limit) {
-                ret->referenced_max = (uint64_t) -1;
-                ret->exclusive_max = (uint64_t) -1;
+                ret->referenced_max = UINT64_MAX;
+                ret->exclusive_max = UINT64_MAX;
         }
 
         return 0;
@@ -680,7 +680,7 @@ int btrfs_qgroup_get_quota(const char *path, uint64_t qgroupid, BtrfsQuotaInfo *
 }
 
 int btrfs_subvol_find_subtree_qgroup(int fd, uint64_t subvol_id, uint64_t *ret) {
-        uint64_t level, lowest = (uint64_t) -1, lowest_qgroupid = 0;
+        uint64_t level, lowest = UINT64_MAX, lowest_qgroupid = 0;
         _cleanup_free_ uint64_t *qgroups = NULL;
         int r, n;
 
@@ -722,13 +722,13 @@ int btrfs_subvol_find_subtree_qgroup(int fd, uint64_t subvol_id, uint64_t *ret) 
                 if (id != subvol_id)
                         continue;
 
-                if (lowest == (uint64_t) -1 || level < lowest) {
+                if (lowest == UINT64_MAX || level < lowest) {
                         lowest_qgroupid = qgroups[i];
                         lowest = level;
                 }
         }
 
-        if (lowest == (uint64_t) -1) {
+        if (lowest == UINT64_MAX) {
                 /* No suitable higher-level qgroup found, let's return
                  * the leaf qgroup instead, and indicate that with the
                  * return value. */
@@ -1105,7 +1105,7 @@ static int subvol_remove_children(int fd, const char *subvolume, uint64_t subvol
                 .key.max_type = BTRFS_ROOT_BACKREF_KEY,
 
                 .key.min_transid = 0,
-                .key.max_transid = (uint64_t) -1,
+                .key.max_transid = UINT64_MAX,
         };
 
         struct btrfs_ioctl_vol_args vol_args = {};
@@ -1282,7 +1282,7 @@ int btrfs_qgroup_copy_limits(int fd, uint64_t old_qgroupid, uint64_t new_qgroupi
 
                 /* No restrictions on the other components */
                 .key.min_transid = 0,
-                .key.max_transid = (uint64_t) -1,
+                .key.max_transid = UINT64_MAX,
         };
 
         int r;
@@ -1468,7 +1468,7 @@ static int subvol_snapshot_children(
                 .key.max_type = BTRFS_ROOT_BACKREF_KEY,
 
                 .key.min_transid = 0,
-                .key.max_transid = (uint64_t) -1,
+                .key.max_transid = UINT64_MAX,
         };
 
         struct btrfs_ioctl_vol_args_v2 vol_args = {
@@ -1739,10 +1739,10 @@ int btrfs_qgroup_find_parents(int fd, uint64_t qgroupid, uint64_t **ret) {
 
                 /* No restrictions on the other components */
                 .key.min_offset = 0,
-                .key.max_offset = (uint64_t) -1,
+                .key.max_offset = UINT64_MAX,
 
                 .key.min_transid = 0,
-                .key.max_transid = (uint64_t) -1,
+                .key.max_transid = UINT64_MAX,
         };
 
         _cleanup_free_ uint64_t *items = NULL;
@@ -1984,10 +1984,10 @@ int btrfs_subvol_get_parent(int fd, uint64_t subvol_id, uint64_t *ret) {
 
                 /* No restrictions on the other components */
                 .key.min_offset = 0,
-                .key.max_offset = (uint64_t) -1,
+                .key.max_offset = UINT64_MAX,
 
                 .key.min_transid = 0,
-                .key.max_transid = (uint64_t) -1,
+                .key.max_transid = UINT64_MAX,
         };
         int r;
 

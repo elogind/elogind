@@ -84,7 +84,7 @@ static void test_multiline(void) {
                         "lines     \n"));
         formatted = mfree(formatted);
 
-        table_set_cell_height_max(table, (size_t) -1);
+        table_set_cell_height_max(table, SIZE_MAX);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
         assert_se(streq(formatted,
@@ -140,7 +140,7 @@ static void test_multiline(void) {
                         "          line…\n"));
         formatted = mfree(formatted);
 
-        table_set_cell_height_max(table, (size_t) -1);
+        table_set_cell_height_max(table, SIZE_MAX);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
         assert_se(streq(formatted,
@@ -198,7 +198,7 @@ static void test_strv(void) {
                         "lines     \n"));
         formatted = mfree(formatted);
 
-        table_set_cell_height_max(table, (size_t) -1);
+        table_set_cell_height_max(table, SIZE_MAX);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
         assert_se(streq(formatted,
@@ -254,7 +254,7 @@ static void test_strv(void) {
                         "          line…\n"));
         formatted = mfree(formatted);
 
-        table_set_cell_height_max(table, (size_t) -1);
+        table_set_cell_height_max(table, SIZE_MAX);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
         assert_se(streq(formatted,
@@ -309,7 +309,7 @@ static void test_strv_wrapped(void) {
                         "three different lines two lines\n"));
         formatted = mfree(formatted);
 
-        table_set_cell_height_max(table, (size_t) -1);
+        table_set_cell_height_max(table, SIZE_MAX);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
         assert_se(streq(formatted,
@@ -361,7 +361,7 @@ static void test_strv_wrapped(void) {
                         "                  ___7___ ___8___\n"));
         formatted = mfree(formatted);
 
-        table_set_cell_height_max(table, (size_t) -1);
+        table_set_cell_height_max(table, SIZE_MAX);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
         assert_se(streq(formatted,
@@ -459,8 +459,8 @@ int main(int argc, char *argv[]) {
         }
 #endif // 1 
 
-        table_set_width(t, (size_t) -1);
-        assert_se(table_set_sort(t, (size_t) 0, (size_t) 2, (size_t) -1) >= 0);
+        table_set_width(t, SIZE_MAX);
+        assert_se(table_set_sort(t, (size_t) 0, (size_t) 2, SIZE_MAX) >= 0);
 
         assert_se(table_format(t, &formatted) >= 0);
         printf("%s\n", formatted);
@@ -504,7 +504,7 @@ int main(int argc, char *argv[]) {
 
         formatted = mfree(formatted);
 
-        assert_se(table_set_display(t, (size_t) 2, (size_t) 0, (size_t) 2, (size_t) 0, (size_t) 0, (size_t) -1) >= 0);
+        assert_se(table_set_display(t, (size_t) 2, (size_t) 0, (size_t) 2, (size_t) 0, (size_t) 0, SIZE_MAX) >= 0);
 
         assert_se(table_format(t, &formatted) >= 0);
         printf("%s\n", formatted);
