@@ -379,6 +379,12 @@ libsystemd_c_args = ['-fvisibility=default']
 #                 [['src/libsystemd/sd-bus/test-bus-vtable-cc.cc']],
 #         ]
 # endif
+#
+# ############################################################
+#
+# fuzzers += [
+#         [['src/libsystemd/sd-bus/fuzz-bus-message.c']],
+# ]
 #else // 0
 libelogind_static = static_library(
         'elogind_static',
