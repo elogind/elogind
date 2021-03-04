@@ -857,8 +857,7 @@ fail:
 
 #if 0 /// UNNEEDED by elogind
 char *bus_match_to_string(struct bus_match_component *components, unsigned n_components) {
-        _cleanup_fclose_ FILE *f = NULL;
-        char *buffer = NULL;
+        _cleanup_free_ char *buffer = NULL;
         size_t size = 0;
         unsigned i;
         int r;
@@ -868,7 +867,7 @@ char *bus_match_to_string(struct bus_match_component *components, unsigned n_com
 
         assert(components);
 
-        f = open_memstream_unlocked(&buffer, &size);
+        FILE *f = open_memstream_unlocked(&buffer, &size);
         if (!f)
                 return NULL;
 
@@ -891,10 +890,10 @@ char *bus_match_to_string(struct bus_match_component *components, unsigned n_com
         }
 
         r = fflush_and_check(f);
+        safe_fclose(f);
         if (r < 0)
                 return NULL;
-
-        return buffer;
+        return TAKE_PTR(buffer);
 }
 #endif // 0
 
