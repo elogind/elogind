@@ -384,6 +384,8 @@ libsystemd_c_args = ['-fvisibility=default']
 #
 # fuzzers += [
 #         [['src/libsystemd/sd-bus/fuzz-bus-message.c']],
+#
+#         [['src/libsystemd/sd-bus/fuzz-bus-match.c']],
 # ]
 #else // 0
 libelogind_static = static_library(
