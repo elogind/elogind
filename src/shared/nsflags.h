@@ -16,7 +16,7 @@
                           CLONE_NEWUSER|                                \
                           CLONE_NEWUTS))
 
-#define NAMESPACE_FLAGS_INITIAL  (ULONG_MAX)
+#define NAMESPACE_FLAGS_INITIAL  ULONG_MAX
 
 #if 0 /// UNNEEDED by elogind
 int namespace_flags_from_string(const char *name, unsigned long *ret);
