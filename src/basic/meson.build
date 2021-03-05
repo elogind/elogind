@@ -85,6 +85,8 @@
 #         io-util.c
 #         io-util.h
 #         ioprio.h
+#         kbd-util.c
+#         kbd-util.h
 #         khash.c
 #         khash.h
 #         label.c
@@ -237,6 +239,8 @@
 #         strv.h
 #         strxcpyx.c
 #         strxcpyx.h
+#         sysctl-util.c
+#         sysctl-util.h
 #         syslog-util.c
 #         syslog-util.h
 #         terminal-util.c

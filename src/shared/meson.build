@@ -150,8 +150,6 @@
 #         json-internal.h
 #         json.c
 #         json.h
-#         kbd-util.c
-#         kbd-util.h
 #         killall.c
 #         killall.h
 #         libcrypt-util.c
@@ -245,8 +243,6 @@
 #         specifier.h
 #         switch-root.c
 #         switch-root.h
-#         sysctl-util.c
-#         sysctl-util.h
 #         tmpfile-util-label.c
 #         tmpfile-util-label.h
 #         tomoyo-util.c
