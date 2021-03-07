@@ -14,23 +14,26 @@ int device_new_from_nulstr(sd_device **ret, uint8_t *nulstr, size_t len);
 #if 0 /// UNNEEDED by elogind
 int device_new_from_strv(sd_device **ret, char **strv);
 #endif // 0
+int device_new_from_watch_handle_at(sd_device **ret, int dirfd, int wd);
+static inline int device_new_from_watch_handle(sd_device **ret, int wd) {
+        return device_new_from_watch_handle_at(ret, -1, wd);
+}
 
 int device_get_device_id(sd_device *device, const char **ret);
 
 #if 0 /// UNNEEDED by elogind
 int device_get_devlink_priority(sd_device *device, int *priority);
-int device_get_watch_handle(sd_device *device, int *handle);
+int device_get_watch_handle(sd_device *device);
 int device_get_devnode_mode(sd_device *device, mode_t *mode);
 int device_get_devnode_uid(sd_device *device, uid_t *uid);
 int device_get_devnode_gid(sd_device *device, gid_t *gid);
 #endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
 void device_seal(sd_device *device);
 void device_set_is_initialized(sd_device *device);
 #if 0 /// UNNEEDED by elogind
-void device_set_watch_handle(sd_device *device, int fd);
+int device_set_watch_handle(sd_device *device, int wd);
 void device_set_db_persist(sd_device *device);
 void device_set_devlink_priority(sd_device *device, int priority);
 int device_ensure_usec_initialized(sd_device *device, sd_device *device_old);
