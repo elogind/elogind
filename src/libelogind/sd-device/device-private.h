@@ -15,7 +15,7 @@ int device_new_from_nulstr(sd_device **ret, uint8_t *nulstr, size_t len);
 int device_new_from_strv(sd_device **ret, char **strv);
 #endif // 0
 
-int device_get_id_filename(sd_device *device, const char **ret);
+int device_get_device_id(sd_device *device, const char **ret);
 
 #if 0 /// UNNEEDED by elogind
 int device_get_devlink_priority(sd_device *device, int *priority);

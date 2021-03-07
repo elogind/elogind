@@ -776,7 +776,7 @@ static int device_tag(sd_device *device, const char *tag, bool add) {
         assert(device);
         assert(tag);
 
-        r = device_get_id_filename(device, &id);
+        r = device_get_device_id(device, &id);
         if (r < 0)
                 return r;
 
@@ -861,7 +861,7 @@ int device_update_db(sd_device *device) {
 
         has_info = device_has_info(device);
 
-        r = device_get_id_filename(device, &id);
+        r = device_get_device_id(device, &id);
         if (r < 0)
                 return r;
 
@@ -965,7 +965,7 @@ int device_delete_db(sd_device *device) {
 
         assert(device);
 
-        r = device_get_id_filename(device, &id);
+        r = device_get_device_id(device, &id);
         if (r < 0)
                 return r;
 
