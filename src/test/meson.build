@@ -246,9 +246,7 @@ tests += [
 #if 0 /// elogind has nothing to test that needs libseccomp
 #         [['src/test/test-parse-argument.c']],
 #
-#         [['src/test/test-parse-util.c'],
-#          [],
-#          [libseccomp]],
+#         [['src/test/test-parse-util.c']],
 #else // 0
         [['src/test/test-parse-util.c'],
          [],
