@@ -1157,15 +1157,6 @@ if want_polkit != 'false' and not skip_deps
                 message('Old polkit detected, will install pkla files')
                 install_polkit_pkla = true
         endif
-#if 1 /// Disable polkit completely if libpolkit is not there. See elogind issue #167
-        if not libpolkit.found()
-                if want_polkit != 'auto'
-                        error('Polkit requested but libpolkit was not found.')
-                endif
-                install_polkit = false
-                want_polkit    = false
-        endif
-#endif // 1
 endif
 conf.set10('ENABLE_POLKIT', install_polkit)
 
