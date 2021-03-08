@@ -1675,7 +1675,7 @@ bool cg_controller_is_valid(const char *p) {
                 if (!strchr(CONTROLLER_VALID, *t))
                         return false;
 
-        if (t - p > FILENAME_MAX)
+        if (t - p > NAME_MAX)
                 return false;
 
         return true;
