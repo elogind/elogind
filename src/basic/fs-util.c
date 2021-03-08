@@ -139,34 +139,34 @@ int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char
 #endif // 0
 
 int readlinkat_malloc(int fd, const char *p, char **ret) {
-        size_t l = FILENAME_MAX+1;
-        int r;
+        size_t l = PATH_MAX;
 
         assert(p);
         assert(ret);
 
         for (;;) {
-                char *c;
+                _cleanup_free_ char *c = NULL;
                 ssize_t n;
 
-                c = new(char, l);
+                c = new(char, l+1);
                 if (!c)
                         return -ENOMEM;
 
-                n = readlinkat(fd, p, c, l-1);
-                if (n < 0) {
-                        r = -errno;
-                        free(c);
-                        return r;
-                }
+                n = readlinkat(fd, p, c, l);
+                if (n < 0)
+                        return -errno;
 
-                if ((size_t) n < l-1) {
+                if ((size_t) n < l) {
                         c[n] = 0;
-                        *ret = c;
+                        *ret = TAKE_PTR(c);
                         return 0;
                 }
 
-                free(c);
+                if (l > (SSIZE_MAX-1)/2) /* readlinkat() returns an ssize_t, and we want an extra byte for a
+                                          * trailing NUL, hence do an overflow check relative to SSIZE_MAX-1
+                                          * here */
+                        return -EFBIG;
+
                 l *= 2;
         }
 }
@@ -1423,33 +1423,45 @@ int unlinkat_deallocate(int fd, const char *name, UnlinkDeallocateFlags flags) {
 int fsync_directory_of_file(int fd) {
         _cleanup_free_ char *path = NULL;
         _cleanup_close_ int dfd = -1;
+        struct stat st;
         int r;
 
-        r = fd_verify_regular(fd);
-        if (r < 0)
-                return r;
+        assert(fd >= 0);
 
-        r = fd_get_path(fd, &path);
-        if (r < 0) {
-                log_debug_errno(r, "Failed to query /proc/self/fd/%d%s: %m",
-                                fd,
-                                r == -ENOSYS ? ", ignoring" : "");
+        /* We only reasonably can do this for regular files and directories, hence check for that */
+        if (fstat(fd, &st) < 0)
+                return -errno;
 
-                if (r == -ENOSYS)
-                        /* If /proc is not available, we're most likely running in some
-                         * chroot environment, and syncing the directory is not very
-                         * important in that case. Let's just silently do nothing. */
-                        return 0;
+        if (S_ISREG(st.st_mode)) {
 
-                return r;
-        }
+                r = fd_get_path(fd, &path);
+                if (r < 0) {
+                        log_debug_errno(r, "Failed to query /proc/self/fd/%d%s: %m",
+                                        fd,
+                                        r == -ENOSYS ? ", ignoring" : "");
 
-        if (!path_is_absolute(path))
-                return -EINVAL;
+                        if (r == -ENOSYS)
+                                /* If /proc is not available, we're most likely running in some
+                                 * chroot environment, and syncing the directory is not very
+                                 * important in that case. Let's just silently do nothing. */
+                                return 0;
 
-        dfd = open_parent(path, O_CLOEXEC, 0);
-        if (dfd < 0)
-                return dfd;
+                        return r;
+                }
+
+                if (!path_is_absolute(path))
+                        return -EINVAL;
+
+                dfd = open_parent(path, O_CLOEXEC|O_NOFOLLOW, 0);
+                if (dfd < 0)
+                        return dfd;
+
+        } else if (S_ISDIR(st.st_mode)) {
+                dfd = openat(fd, "..", O_RDONLY|O_DIRECTORY|O_CLOEXEC, 0);
+                if (dfd < 0)
+                        return -errno;
+        } else
+                return -ENOTTY;
 
         if (fsync(dfd) < 0)
                 return -errno;
@@ -1463,9 +1475,14 @@ int fsync_full(int fd) {
         /* Sync both the file and the directory */
 
         r = fsync(fd) < 0 ? -errno : 0;
-        q = fsync_directory_of_file(fd);
 
-        return r < 0 ? r : q;
+        q = fsync_directory_of_file(fd);
+        if (r < 0) /* Return earlier error */
+                return r;
+        if (q == -ENOTTY) /* Ignore if the 'fd' refers to a block device or so which doesn't really have a
+                           * parent dir */
+                return 0;
+        return q;
 }
 
 int fsync_path_at(int at_fd, const char *path) {
