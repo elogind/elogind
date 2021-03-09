@@ -59,7 +59,7 @@ endif
 
 # Combine with "sane defaults"
 ifeq (YES,$(DEBUG))
-    BASIC_OPT := --werror -Dlog-trace=true -Dtests=unsafe -Dslow-tests=true -Ddebug-extra=elogind --buildtype debug
+    BASIC_OPT := --werror -Dlog-trace=true -Dslow-tests=true -Ddebug-extra=elogind --buildtype debug
     BUILDDIR  := ${BUILDDIR}_debug
     CFLAGS    := -O0 -g3 -ggdb -ftrapv ${envCFLAGS} -fPIE
     LDFLAGS   := -fPIE
