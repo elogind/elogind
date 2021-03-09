@@ -2142,8 +2142,14 @@ int cg_unified_cached(bool flush) {
 #endif // 0
                 } else {
 #if 0 /// elogind supports other controllers than systemd and itself
-                        if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0)
+                        if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0) {
+                                if (errno == ENOENT) {
+                                        /* Some other software may have set up /sys/fs/cgroup in a configuration we do not recognize. */
+                                        log_debug_errno(errno, "Unsupported cgroupsv1 setup detected: name=systemd hierarchy not found.");
+                                        return -ENOMEDIUM;
+                                }
                                 return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/systemd\" failed: %m");
+                        }
 
 #else // 0
                         if (statfs("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME "/", &fs) < 0)
