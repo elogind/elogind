@@ -531,41 +531,20 @@ int cg_get_path(const char *controller, const char *path, const char *suffix, ch
         return 0;
 }
 
-static int controller_is_accessible(const char *controller) {
-        int r;
+static int controller_is_v1_accessible(const char *root, const char *controller) {
+        const char *cpath, *dn;
 
         assert(controller);
 
-        /* Checks whether a specific controller is accessible,
-         * i.e. its hierarchy mounted. In the unified hierarchy all
-         * controllers are considered accessible, except for the named
-         * hierarchies */
+        dn = controller_to_dirname(controller);
 
-        if (!cg_controller_is_valid(controller))
-                return -EINVAL;
+        /* If root if specified, we check that:
+         * - possible subcgroup is created at root,
+         * - we can modify the hierarchy. */
 
-        r = cg_all_unified();
-        if (r < 0)
-                return r;
-        if (r > 0) {
-                /* We don't support named hierarchies if we are using
-                 * the unified hierarchy. */
-
-                if (streq(controller, SYSTEMD_CGROUP_CONTROLLER))
-                        return 0;
-
-                if (startswith(controller, "name="))
-                        return -EOPNOTSUPP;
-
-        } else {
-                const char *cc, *dn;
-
-                dn = controller_to_dirname(controller);
-                cc = strjoina("/sys/fs/cgroup/", dn);
-
-                if (laccess(cc, F_OK) < 0)
-                        return -errno;
-        }
+        cpath = strjoina("/sys/fs/cgroup/", dn, root, root ? "/cgroup.procs" : NULL);
+        if (laccess(cpath, root ? W_OK : F_OK) < 0)
+                return -errno;
 
         return 0;
 }
@@ -576,10 +555,23 @@ int cg_get_path_and_check(const char *controller, const char *path, const char *
         assert(controller);
         assert(fs);
 
-        /* Check if the specified controller is actually accessible */
-        r = controller_is_accessible(controller);
+        if (!cg_controller_is_valid(controller))
+                return -EINVAL;
+
+        r = cg_all_unified();
         if (r < 0)
                 return r;
+        if (r > 0) {
+                /* In the unified hierarchy all controllers are considered accessible,
+                 * except for the named hierarchies */
+                if (startswith(controller, "name="))
+                        return -EOPNOTSUPP;
+        } else {
+                /* Check if the specified controller is actually accessible */
+                r = controller_is_v1_accessible(NULL, controller);
+                if (r < 0)
+                        return r;
+        }
 
         return cg_get_path(controller, path, suffix, fs);
 }
@@ -2004,7 +1996,7 @@ int cg_mask_from_string(const char *value, CGroupMask *ret) {
         return 0;
 }
 
-int cg_mask_supported(CGroupMask *ret) {
+int cg_mask_supported_subtree(const char *root, CGroupMask *ret) {
         CGroupMask mask;
         int r;
 
@@ -2016,14 +2008,10 @@ int cg_mask_supported(CGroupMask *ret) {
         if (r < 0)
                 return r;
         if (r > 0) {
-                _cleanup_free_ char *root = NULL, *controllers = NULL, *path = NULL;
+                _cleanup_free_ char *controllers = NULL, *path = NULL;
 
                 /* In the unified hierarchy we can read the supported and accessible controllers from
                  * the top-level cgroup attribute */
-
-                r = cg_get_root_path(&root);
-                if (r < 0)
-                        return r;
 
                 r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, root, "cgroup.controllers", &path);
                 if (r < 0)
@@ -2043,7 +2031,7 @@ int cg_mask_supported(CGroupMask *ret) {
         } else {
                 CGroupController c;
 
-                /* In the legacy hierarchy, we check which hierarchies are mounted. */
+                /* In the legacy hierarchy, we check which hierarchies are accessible. */
 
                 mask = 0;
                 for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
@@ -2054,7 +2042,7 @@ int cg_mask_supported(CGroupMask *ret) {
                                 continue;
 
                         n = cgroup_controller_to_string(c);
-                        if (controller_is_accessible(n) >= 0)
+                        if (controller_is_v1_accessible(root, n) >= 0)
                                 mask |= bit;
                 }
         }
@@ -2064,6 +2052,17 @@ int cg_mask_supported(CGroupMask *ret) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int cg_mask_supported(CGroupMask *ret) {
+        _cleanup_free_ char *root = NULL;
+        int r;
+
+        r = cg_get_root_path(&root);
+        if (r < 0)
+                return r;
+
+        return cg_mask_supported_subtree(root, ret);
+}
+
 int cg_kernel_controllers(Set **ret) {
         _cleanup_set_free_free_ Set *controllers = NULL;
         _cleanup_fclose_ FILE *f = NULL;
