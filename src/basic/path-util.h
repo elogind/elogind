@@ -197,6 +197,4 @@ static inline const char *empty_to_root(const char *path) {
 bool path_strv_contains(char **l, const char *path);
 #if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char **l, const char *path);
-
-bool credential_name_valid(const char *s);
 #endif // 0
