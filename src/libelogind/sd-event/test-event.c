@@ -203,6 +203,8 @@ static void test_basic(bool with_pidfd) {
         uint64_t event_now;
         int64_t priority;
 
+        log_info("/* %s(pidfd=%s) */", __func__, yes_no(with_pidfd));
+
         assert_se(setenv("SYSTEMD_PIDFD", yes_no(with_pidfd), 1) >= 0);
 
         assert_se(pipe(a) >= 0);
@@ -304,6 +306,8 @@ static void test_sd_event_now(void) {
         _cleanup_(sd_event_unrefp) sd_event *e = NULL;
         uint64_t event_now;
 
+        log_info("/* %s */", __func__);
+
         assert_se(sd_event_new(&e) >= 0);
         assert_se(sd_event_now(e, CLOCK_MONOTONIC, &event_now) > 0);
         assert_se(sd_event_now(e, CLOCK_REALTIME, &event_now) > 0);
@@ -340,6 +344,8 @@ static int rtqueue_handler(sd_event_source *s, const struct signalfd_siginfo *si
 static void test_rtqueue(void) {
         sd_event_source *u = NULL, *v = NULL, *s = NULL;
         sd_event *e = NULL;
+
+        log_info("/* %s */", __func__);
 
         assert_se(sd_event_default(&e) >= 0);
 
@@ -481,6 +487,8 @@ static void test_inotify(unsigned n_create_events) {
         const char *q;
         unsigned i;
 
+        log_info("/* %s(%u) */", __func__, n_create_events);
+
         assert_se(sd_event_default(&e) >= 0);
 
         assert_se(mkdtemp_malloc("/tmp/test-inotify-XXXXXX", &p) >= 0);
@@ -546,6 +554,8 @@ static void test_pidfd(void) {
         sd_event *e = NULL;
         int pidfd;
         pid_t pid, pid2;
+
+        log_info("/* %s */", __func__);
 
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGCHLD, -1) >= 0);
 
@@ -620,6 +630,8 @@ static void test_ratelimit(void) {
         _cleanup_(sd_event_source_unrefp) sd_event_source *s = NULL;
         uint64_t interval;
         unsigned count, burst;
+
+        log_info("/* %s */", __func__);
 
         assert_se(sd_event_default(&e) >= 0);
         assert_se(pipe2(p, O_CLOEXEC|O_NONBLOCK) >= 0);
