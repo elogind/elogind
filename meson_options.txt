@@ -222,6 +222,8 @@ option('pkgconfigdatadir', type : 'string', value : '',
 option('pkgconfiglibdir', type : 'string', value : '',
        description : 'directory for standard pkg-config files')
 #if 0 /// UNNEEDED by elogind
+# option('xinitrcdir', type : 'string', value : '',
+#        description : 'directory for xinitrc files')
 # option('rpmmacrosdir', type : 'string', value : 'lib/rpm/macros.d',
 #        description : 'directory for rpm macros ["no" disables]')
 #endif // 0
