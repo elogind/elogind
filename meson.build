@@ -110,6 +110,7 @@ rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 # sysvrcnd_path = get_option('sysvrcnd-path')
 # conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
 #            description : 'SysV init scripts and rcN.d links are supported')
+# conf.set10('CREATE_LOG_DIRS', get_option('create-log-dirs'))
 #
 # if get_option('hibernate') and not get_option('initrd')
 #         error('hibernate depends on initrd')
@@ -261,6 +262,11 @@ if pamconfdir == ''
 endif
 
 #if 0 /// UNNEEDED by elogind
+# libcryptsetup_plugins_dir = get_option('libcryptsetup-plugins-dir')
+# if libcryptsetup_plugins_dir == ''
+#         libcryptsetup_plugins_dir = join_paths(rootlibdir, 'cryptsetup')
+# endif
+#
 # memory_accounting_default = get_option('memory-accounting-default')
 # status_unit_format_default = get_option('status-unit-format-default')
 #
@@ -269,6 +275,7 @@ endif
 # conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 #endif // 0
+conf.set_quoted('DOC_DIR',                                    docdir)
 conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('ENVIRONMENT_DIR',                            environmentdir)
@@ -1302,10 +1309,16 @@ conf.set10('HAVE_PAM', have)
 # conf.set10('HAVE_MICROHTTPD', have)
 #
 # want_libcryptsetup = get_option('libcryptsetup')
+# want_libcryptsetup_plugins = get_option('libcryptsetup-plugins')
+#
+# if want_libcryptsetup_plugins == 'true' and want_libcryptsetup == 'false'
+#         error('libcryptsetup-plugins can not be requested without libcryptsetup')
+# endif
+#
 # if want_libcryptsetup != 'false' and not skip_deps
 #         libcryptsetup = dependency('libcryptsetup',
-#                                    version : '>= 2.0.1',
-#                                    required : want_libcryptsetup == 'true')
+#                                    version : want_libcryptsetup_plugins == 'true' ? '>= 2.4.0' : '>= 2.0.1',
+#                                    required : want_libcryptsetup == 'true' or want_libcryptsetup_plugins == 'true')
 #         have = libcryptsetup.found()
 #
 #         conf.set10('HAVE_CRYPT_SET_METADATA_SIZE',
@@ -1319,6 +1332,14 @@ conf.set10('HAVE_PAM', have)
 #         libcryptsetup = []
 # endif
 # conf.set10('HAVE_LIBCRYPTSETUP', have)
+#
+# if want_libcryptsetup_plugins != 'false' and not skip_deps
+#         have = (cc.has_function('crypt_activate_by_token_pin', dependencies : libcryptsetup) and
+#                 cc.has_function('crypt_token_external_path', dependencies : libcryptsetup))
+# else
+#         have = false
+# endif
+# conf.set10('HAVE_LIBCRYPTSETUP_PLUGINS', have)
 #
 # want_libcurl = get_option('libcurl')
 # if want_libcurl != 'false' and not skip_deps
@@ -1965,6 +1986,7 @@ subdir('src/shared')
 # subdir('src/udev')
 # subdir('src/libudev')
 #endif // 0
+subdir('src/cryptsetup/cryptsetup-tokens')
 
 libelogind = shared_library(
         'elogind',
@@ -2067,12 +2089,27 @@ install_libelogind_static = static_library(
         c_args : libsystemd_c_args)
 #endif // 0
 
-############################################################
 
+if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
+        if conf.get('HAVE_TPM2') == 1
+                cryptsetup_token_elogind_tpm2 = shared_library(
+                        'cryptsetup-token-elogind-tpm2',
+                        link_args : ['-shared',
+                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
+                        dependencies : libshared_deps + [libcryptsetup],
+                        link_with : [libshared],
+                        link_whole : [cryptsetup_token_elogind_tpm2_static],
+                        link_depends : cryptsetup_token_sym,
+                        install_rpath : rootlibexecdir,
+                        install : true,
+                        install_dir : libcryptsetup_plugins_dir)
+        endif
+endif
 
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
+############################################################
 
 # systemd-analyze requires 'libcore'
 subdir('src/core')
@@ -4235,6 +4272,7 @@ status = [
         'PAM modules directory:             @0@'.format(pamlibdir),
         'PAM configuration directory:       @0@'.format(pamconfdir),
 #if 0 /// UNNEEDED by elogind
+#         'libcryptsetup plugins directory:   @0@'.format(libcryptsetup_plugins_dir),
 #         'RPM macros directory:              @0@'.format(rpmmacrosdir),
 #         'modprobe.d directory:              @0@'.format(modprobedir),
 #endif // 0
@@ -4337,6 +4375,7 @@ foreach tuple : [
 #         ['gnutls'],
 #         ['libbpf'],
 #         ['libcryptsetup'],
+#         ['libcryptsetup-plugins'],
 #         ['libcurl'],
 #         ['libfdisk'],
 #         ['libfido2'],
