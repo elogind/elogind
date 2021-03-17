@@ -372,7 +372,6 @@ int read_full_virtual_file(const char *filename, char **ret_contents, size_t *re
         struct stat st;
         size_t n, size;
         int n_retries;
-        char *p;
 
         assert(ret_contents);
 
@@ -417,10 +416,9 @@ int read_full_virtual_file(const char *filename, char **ret_contents, size_t *re
                 if (size > READ_FULL_BYTES_MAX)
                         return -E2BIG;
 
-                p = realloc(buf, size + 1);
-                if (!p)
+                buf = malloc(size + 1);
+                if (!buf)
                         return -ENOMEM;
-                buf = TAKE_PTR(p);
 
                 for (;;) {
                         ssize_t k;
@@ -449,12 +447,18 @@ int read_full_virtual_file(const char *filename, char **ret_contents, size_t *re
 
                 if (lseek(fd, 0, SEEK_SET) < 0)
                         return -errno;
+
+                buf = mfree(buf);
         }
 
         if (n < size) {
+                char *p;
+
+                /* Return rest of the buffer to libc */
                 p = realloc(buf, n + 1);
                 if (!p)
                         return -ENOMEM;
+
                 buf = TAKE_PTR(p);
         }
 
