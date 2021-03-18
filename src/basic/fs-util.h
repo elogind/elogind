@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "alloc-util.h"
 #include "errno-util.h"
 #include "time-util.h"
 
@@ -117,8 +118,7 @@ static inline char *rmdir_and_free(char *p) {
                 return NULL;
 
         (void) rmdir(p);
-        free(p);
-        return NULL;
+        return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, rmdir_and_free);
 
@@ -128,8 +128,7 @@ static inline char* unlink_and_free(char *p) {
                 return NULL;
 
         (void) unlink_noerrno(p);
-        free(p);
-        return NULL;
+        return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
 #endif // 0
