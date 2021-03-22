@@ -260,6 +260,13 @@ int log_open(void) {
 
         /* Do not call from library code. */
 
+        /* This function is often called in preparation for being able
+         * to log. Let's make sure we don't clobber errno, so that a call
+         * to a logging function immediately following a log_open() call
+         * can still easily reference an error that happened immediately
+         * before the log_open() call. */
+        PROTECT_ERRNO;
+
         /* If we don't use the console we close it here, to not get
          * killed by SAK. If we don't use syslog we close it here so
          * that we are not confused by somebody deleting the socket in
@@ -1203,6 +1210,8 @@ static bool should_parse_proc_cmdline(void) {
         if (getpid_cached() == 1)
                 return true;
 
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
+         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
          * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
