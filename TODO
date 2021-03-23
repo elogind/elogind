@@ -400,8 +400,6 @@ Features:
 * elogind-repart: allow sizing partitions as factor of available RAM, so that
   we can reasonably size swap partitions for hibernation.
 
-* elogind-repart: allow managing the gpt read-only partition flag + auto-mount flag
-
 * elogind-repart: allow boolean option that ensures that if existing partition
   doesn't exist within the configured size bounds the whole command fails. This
   is useful to implement ESP vs. XBOOTLDR schemes in installers: have one set
