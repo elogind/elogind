@@ -85,9 +85,8 @@ int umount_recursive(const char *prefix, int flags) {
         int n = 0, r;
         bool again;
 
-        /* Try to umount everything recursively below a
-         * directory. Also, take care of stacked mounts, and keep
-         * unmounting them until they are gone. */
+        /* Try to umount everything recursively below a directory. Also, take care of stacked mounts, and
+         * keep unmounting them until they are gone. */
 
         do {
                 _cleanup_(mnt_free_tablep) struct libmnt_table *table = NULL;
@@ -794,10 +793,10 @@ static int mount_in_namespace(
 
         r = namespace_open(0, NULL, &self_mntns_fd, NULL, NULL, NULL);
         if (r < 0)
-                return log_debug_errno(r, "Failed to retrieve FDs of elogind's namespace: %m");
+                return log_debug_errno(r, "Failed to retrieve FDs of systemd's namespace: %m");
 
         if (fstat(self_mntns_fd, &self_mntns_st) < 0)
-                return log_debug_errno(errno, "Failed to fstat mount namespace FD of elogind: %m");
+                return log_debug_errno(errno, "Failed to fstat mount namespace FD of systemd: %m");
 
         /* We can't add new mounts at runtime if the process wasn't started in a namespace */
         if (st.st_ino == self_mntns_st.st_ino && st.st_dev == self_mntns_st.st_dev)
