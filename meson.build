@@ -3918,7 +3918,8 @@ install_subdir('factory/etc',
 #         install_data('xorg/50-systemd-user.sh',
 #                      install_dir : xinitrcdir)
 # endif
-# install_data('modprobe.d/systemd.conf',
+# install_data('README',
+#              'modprobe.d/systemd.conf',
 #              install_dir : modprobedir)
 #endif // 0
 install_data('LICENSE.GPL2',
