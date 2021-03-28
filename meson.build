@@ -1030,10 +1030,13 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 #endif // 0
 localegen_path = get_option('localegen-path')
 have = false
+writable = ''
 if localegen_path != ''
         conf.set_quoted('LOCALEGEN_PATH', localegen_path)
         have = true
+        writable = ' /usr/lib/locale'
 endif
+substs.set('SERVICE_LOCALEGEN_WRITABLE', writable)
 conf.set10('HAVE_LOCALEGEN', have)
 
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
