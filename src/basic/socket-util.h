@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <sys/un.h>
 
+#include "errno-util.h"
 #include "macro.h"
 #include "missing_network.h"
 #include "missing_socket.h"
@@ -133,7 +134,6 @@ int fd_set_sndbuf(int fd, size_t n, bool increase);
 static inline int fd_inc_sndbuf(int fd, size_t n) {
         return fd_set_sndbuf(fd, n, true);
 }
-
 int fd_set_rcvbuf(int fd, size_t n, bool increase);
 static inline int fd_inc_rcvbuf(int fd, size_t n) {
         return fd_set_rcvbuf(fd, n, true);
@@ -280,7 +280,7 @@ static inline int getsockopt_int(int fd, int level, int optname, int *ret) {
         socklen_t sl = sizeof(v);
 
         if (getsockopt(fd, level, optname, &v, &sl) < 0)
-                return -errno;
+                return negative_errno();
         if (sl != sizeof(v))
                 return -EIO;
 
