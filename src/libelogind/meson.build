@@ -379,6 +379,8 @@ libsystemd_c_args = ['-fvisibility=default']
 #
 #         [['src/libsystemd/sd-device/test-sd-device.c']],
 #
+#         [['src/libsystemd/sd-device/test-device-util.c']],
+#
 #         [['src/libsystemd/sd-device/test-sd-device-monitor.c']],
 # ]
 #
