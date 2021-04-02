@@ -48,6 +48,8 @@ static void test_get_process_comm(pid_t pid) {
         dev_t h;
         int r;
 
+        log_info("/* %s */", __func__);
+
         xsprintf(path, "/proc/"PID_FMT"/comm", pid);
 
         if (stat(path, &st) == 0) {
@@ -100,18 +102,20 @@ static void test_get_process_comm(pid_t pid) {
 static void test_get_process_comm_escape_one(const char *input, const char *output) {
         _cleanup_free_ char *n = NULL;
 
-        log_info("input: <%s> — output: <%s>", input, output);
+        log_debug("input: <%s> — output: <%s>", input, output);
 
         assert_se(prctl(PR_SET_NAME, input) >= 0);
         assert_se(get_process_comm(0, &n) >= 0);
 
-        log_info("got: <%s>", n);
+        log_debug("got: <%s>", n);
 
         assert_se(streq_ptr(n, output));
 }
 
 static void test_get_process_comm_escape(void) {
         _cleanup_free_ char *saved = NULL;
+
+        log_info("/* %s */", __func__);
 
         assert_se(get_process_comm(0, &saved) >= 0);
 
@@ -155,6 +159,8 @@ static void test_pid_is_unwaited(void) {
 static void test_pid_is_alive(void) {
         pid_t pid;
 
+        log_info("/* %s */", __func__);
+
         pid = fork();
         assert_se(pid >= 0);
         if (pid == 0) {
@@ -171,6 +177,7 @@ static void test_pid_is_alive(void) {
 
 #if 0 /// UNNEEDED by elogind
 static void test_personality(void) {
+        log_info("/* %s */", __func__);
 
         assert_se(personality_to_string(PER_LINUX));
         assert_se(!personality_to_string(PERSONALITY_INVALID));
@@ -199,6 +206,8 @@ static void test_get_process_cmdline_harder(void) {
         _cleanup_close_ int fd = -1;
         _cleanup_free_ char *line = NULL;
         pid_t pid;
+
+        log_info("/* %s */", __func__);
 
         if (geteuid() != 0) {
                 log_info("Skipping %s: not root", __func__);
@@ -265,17 +274,17 @@ static void test_get_process_cmdline_harder(void) {
         assert_se(get_process_cmdline(0, SIZE_MAX, 0, &line) == -ENOENT);
 
         assert_se(get_process_cmdline(0, SIZE_MAX, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
-        log_info("'%s'", line);
+        log_debug("'%s'", line);
         assert_se(streq(line, "[testa]"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, SIZE_MAX, PROCESS_CMDLINE_COMM_FALLBACK | PROCESS_CMDLINE_QUOTE, &line) >= 0);
-        log_info("'%s'", line);
+        log_debug("'%s'", line);
         assert_se(streq(line, "\"[testa]\"")); /* quoting is enabled here */
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 0, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
-        log_info("'%s'", line);
+        log_debug("'%s'", line);
         assert_se(streq(line, ""));
         line = mfree(line);
 
@@ -316,7 +325,7 @@ static void test_get_process_cmdline_harder(void) {
         assert_se(write(fd, "foo\0bar", 8) == 8);
 
         assert_se(get_process_cmdline(0, SIZE_MAX, 0, &line) >= 0);
-        log_info("'%s'", line);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar"));
         line = mfree(line);
 
@@ -326,71 +335,87 @@ static void test_get_process_cmdline_harder(void) {
 
         assert_se(write(fd, "quux", 4) == 4);
         assert_se(get_process_cmdline(0, SIZE_MAX, 0, &line) >= 0);
-        log_info("'%s'", line);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar quux"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, SIZE_MAX, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar quux"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 1, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 2, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "f…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 3, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "fo…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 4, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 5, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo …"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 6, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo b…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 7, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo ba…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 8, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 9, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar …"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 10, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar q…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 11, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar qu…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 12, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar quux"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 13, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar quux"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 14, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar quux"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 1000, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "foo bar quux"));
         line = mfree(line);
 
@@ -400,18 +425,22 @@ static void test_get_process_cmdline_harder(void) {
         assert_se(get_process_cmdline(0, SIZE_MAX, 0, &line) == -ENOENT);
 
         assert_se(get_process_cmdline(0, SIZE_MAX, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "[aaaa bbbb cccc]"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 10, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "[aaaa bbb…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 11, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "[aaaa bbbb…"));
         line = mfree(line);
 
         assert_se(get_process_cmdline(0, 12, PROCESS_CMDLINE_COMM_FALLBACK, &line) >= 0);
+        log_debug("'%s'", line);
         assert_se(streq(line, "[aaaa bbbb …"));
         line = mfree(line);
 
@@ -424,8 +453,8 @@ static void test_get_process_cmdline_harder(void) {
         assert_se(ftruncate(fd, sizeof CMDLINE1) == 0);
 
         assert_se(get_process_cmdline(0, SIZE_MAX, PROCESS_CMDLINE_QUOTE, &line) >= 0);
-        log_info("got: ==%s==", line);
-        log_info("exp: ==%s==", EXPECT1);
+        log_debug("got: ==%s==", line);
+        log_debug("exp: ==%s==", EXPECT1);
         assert_se(streq(line, EXPECT1));
         line = mfree(line);
 
@@ -436,8 +465,8 @@ static void test_get_process_cmdline_harder(void) {
         assert_se(ftruncate(fd, sizeof CMDLINE2) == 0);
 
         assert_se(get_process_cmdline(0, SIZE_MAX, PROCESS_CMDLINE_QUOTE, &line) >= 0);
-        log_info("got: ==%s==", line);
-        log_info("exp: ==%s==", EXPECT2);
+        log_debug("got: ==%s==", line);
+        log_debug("exp: ==%s==", EXPECT2);
         assert_se(streq(line, EXPECT2));
         line = mfree(line);
 
@@ -450,12 +479,14 @@ static void test_rename_process_now(const char *p, int ret) {
         _cleanup_free_ char *comm = NULL, *cmdline = NULL;
         int r;
 
+        log_info("/* %s */", __func__);
+
         r = rename_process(p);
         assert_se(r == ret ||
                   (ret == 0 && r >= 0) ||
                   (ret > 0 && r > 0));
 
-        log_info_errno(r, "rename_process(%s): %m", p);
+        log_debug_errno(r, "rename_process(%s): %m", p);
 
         if (r < 0)
                 return;
@@ -467,7 +498,7 @@ static void test_rename_process_now(const char *p, int ret) {
 #endif
 
         assert_se(get_process_comm(0, &comm) >= 0);
-        log_info("comm = <%s>", comm);
+        log_debug("comm = <%s>", comm);
         assert_se(strneq(comm, p, TASK_COMM_LEN-1));
         /* We expect comm to be at most 16 bytes (TASK_COMM_LEN). The kernel may raise this limit in the
          * future. We'd only check the initial part, at least until we recompile, but this will still pass. */
@@ -493,6 +524,8 @@ static void test_rename_process_now(const char *p, int ret) {
 static void test_rename_process_one(const char *p, int ret) {
         siginfo_t si;
         pid_t pid;
+
+        log_info("/* %s */", __func__);
 
         pid = fork();
         assert_se(pid >= 0);
@@ -549,6 +582,8 @@ static void test_getpid_cached(void) {
         siginfo_t si;
         pid_t a, b, c, d, e, f, child;
 
+        log_info("/* %s */", __func__);
+
         a = raw_getpid();
         b = getpid_cached();
         c = getpid();
@@ -585,6 +620,8 @@ static void test_getpid_measure(void) {
         unsigned long long i;
         usec_t t, q;
 
+        log_info("/* %s */", __func__);
+
         t = now(CLOCK_MONOTONIC);
         for (i = 0; i < MEASURE_ITERATIONS; i++)
                 (void) getpid();
@@ -604,6 +641,8 @@ static void test_safe_fork(void) {
         siginfo_t status;
         pid_t pid;
         int r;
+
+        log_info("/* %s */", __func__);
 
         BLOCK_SIGNALS(SIGCHLD);
 
@@ -654,6 +693,8 @@ static void test_ioprio_class_from_to_string_one(const char *val, int expected) 
 }
 
 static void test_ioprio_class_from_to_string(void) {
+        log_info("/* %s */", __func__);
+
         test_ioprio_class_from_to_string_one("none", IOPRIO_CLASS_NONE);
         test_ioprio_class_from_to_string_one("realtime", IOPRIO_CLASS_RT);
         test_ioprio_class_from_to_string_one("best-effort", IOPRIO_CLASS_BE);
@@ -669,7 +710,10 @@ static void test_ioprio_class_from_to_string(void) {
 static void test_setpriority_closest(void) {
         int r;
 
-        r = safe_fork("(test-setprio)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_WAIT|FORK_LOG, NULL);
+        log_info("/* %s */", __func__);
+
+        r = safe_fork("(test-setprio)",
+                      FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_WAIT|FORK_LOG, NULL);
         assert_se(r >= 0);
 
         if (r == 0) {
@@ -754,7 +798,8 @@ static void test_setpriority_closest(void) {
 #endif // 0
 
 int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_DEBUG);
+        log_show_color(true);
+        test_setup_logging(LOG_INFO);
 
         save_argc_argv(argc, argv);
 
