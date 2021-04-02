@@ -806,6 +806,7 @@ foreach header : ['crypt.h',
                   'valgrind/valgrind.h',
                   'linux/time_types.h',
                  ]
+
         conf.set10('HAVE_' + header.underscorify().to_upper(),
                    cc.has_header(header))
 endforeach
@@ -2044,7 +2045,6 @@ subdir('src/core')
 #if 0 /// UNNEEDED by elogind
 # # systemd-journal-remote requires 'libjournal_core'
 # subdir('src/journal')
-#
 # # systemd-networkd requires 'libsystemd_network'
 # subdir('src/libsystemd-network')
 #endif // 0
@@ -3979,7 +3979,7 @@ endforeach
 # if want_tests != 'false'
 #         test('check-directives',
 #              check_directives_sh,
-#              args : project_source_root)
+#              args : [project_source_root, project_build_root])
 # endif
 #
 # ############################################################
