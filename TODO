@@ -22,6 +22,36 @@ Janitorial Clean-ups:
 
 Features:
 
+* nspawn: support uid mapping bind mounts, as defined available in kernel 5.12,
+  for all our disk image needs
+
+* homed: if kernel 5.12 uid mapping mounts exist, use that instead of recursive
+  chowns.
+
+* cryptsetup: tweak tpm2-device=auto logic, abort quickly if firmware tells us
+  there isn't any TPM2 device anyway. that way, we'll wait for the TPM2 device
+  to show up only if registered in LUKS header + the firmware suggests there is
+  a device worth waiting for.
+
+* elogind-sysext: optionally, run it in initrd already, before transitioning
+  into host, to open up possibility for services shipped like that.
+
+* add a flag to the GPT spec that says "grow my fs to partition size", and make
+  it settable via elogind-repart. Add in growfs jobs in
+  elogind-gpt-auto-generator when it is set, and issue the ioctls while
+  mounting in elogind-npsawn --image=. That way elogind-repart suffices to
+  enlarge an image.
+
+* add a new switch --auto-definitions=yes/no or so to elogind-repart. If
+  specified, synthesize a definition automatically if we can: enlarge last
+  partition on disk, but only if it is marked for growing and not read-only.
+
+* add a switch to homectl (maybe called --first-boot) where it will check if
+  any non-system users exist, and if not prompts interactively for basic user
+  info, mimicing elogind-firstboot. Then, place this in a service that runs
+  after elogind-homed, but before gdm and friends, as a simple, barebones
+  fallback logic to get a regular user created on uninitialized systems.
+
 * maybe add a tool that displays most recent journal logs as QR code to scan
   off screen and run it automatically on boot failures, emergency logs and
   such. Use DRM APIs directly, see
@@ -36,7 +66,9 @@ Features:
 * elogind-repart: read LUKS encryption key from $CREDENTIALS_PATH
 
 * introduce /dev/disk/root/* symlinks that allow referencing partitions on the
-  disk the rootfs is on in a reasonably secure way.
+  disk the rootfs is on in a reasonably secure way. (or maybe: add
+  /dev/gpt-auto-{home,srv,boot,…} similar in style to /dev/gpt-auto-root as we
+  already have it.
 
 * elogind-repart: add a switch to factory reset the partition table without
   immediately applying the new configuration again. i.e. --factory-reset=leave
@@ -179,16 +211,12 @@ Features:
 * Add service setting to run a service within the specified VRF. i.e. do the
   equivalent of "ip vrf exec".
 
-* export action of device object on sd-device, so that monitor becomes useful
-
-* add root=tmpfs that mounts a tmpfs to /sysroot (to be used in combination
-  with usr=…, for a similar effect as elogind.volatile=yes but without the
-  "hide-out" effect). Also, add root=gpt-auto-late support or so, that is like
-  root=gpt-auto but initially mounts a tmpfs to /sysroot, and then revisits
-  later after elogind-repart ran. Usecase: let's ship images with only /usr
-  partition, then on first boot create the root partition. In this case we want
-  to read the repart data from /usr before the root partition exists. Add
-  usr=gpt-auto that automatically finds a /usr partition.
+* Add root=gpt-auto-late support or so, that is like root=gpt-auto but
+  initially mounts a tmpfs to /sysroot, and then revisits later after
+  elogind-repart ran. Usecase: let's ship images with only /usr partition, then
+  on first boot create the root partition. In this case we want to read the
+  repart data from /usr before the root partition exists. Add usr=gpt-auto that
+  automatically finds a /usr partition.
 
 * change SwitchRoot() implementation in PID 1 to use pivot_root(".", "."), as
   documented in the pivot_root(2) man page, so that we can drop the /oldroot
@@ -315,12 +343,6 @@ Features:
 
 * busctl: maybe expose a verb "ping" for pinging a dbus service to see if it
   exists and responds.
-
-* when elogind-nspawn and suchlike dissect an OS image, and there are multiple
-  root partitions, do an strverscmp() on the partition label and boot
-  first. That is inspired how sd-boot figures out which kernel to boot, and
-  thus allows defining OS images which can be A/B updated and we default to the
-  newest version automatically, both in nspawn and in sd-boot
 
 * elogind-gpt-auto should probably set x-elogind.growfs on the mounts it
   creates
@@ -842,9 +864,6 @@ Features:
 * make sure the ratelimit object can deal with USEC_INFINITY as way to turn off things
 
 * journalctl: make sure -f ends when the container indicated by -M terminates
-
-* mount: automatically search for "main" partition of an image has multiple
-  partitions
 
 * in nss-systemd, if we run inside of RootDirectory= with PrivateUsers= set,
   find a way to map the User=/Group= of the service to the right name. This way
