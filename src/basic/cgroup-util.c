@@ -666,7 +666,7 @@ int cg_remove_xattr(const char *controller, const char *path, const char *name) 
 int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
         _cleanup_fclose_ FILE *f = NULL;
 #if 0 /// At elogind we do not want that (false alarm) "maybe uninitialized" warning
-        const char *fs, *controller_str = NULL; /* silence gcc warning about unitialized variable */
+        const char *fs, *controller_str = NULL;  /* avoid false maybe-uninitialized warning */
 #else // 0
         const char *fs, *controller_str = NULL;
 #endif // 0
