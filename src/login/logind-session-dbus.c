@@ -258,11 +258,11 @@ static int method_set_idle_hint(sd_bus_message *message, void *userdata, sd_bus_
                 return r;
 
         if (uid != 0 && uid != s->user->user_record->uid)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may set idle hint");
+                return sd_bus_error_set(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may set idle hint");
 
         r = session_set_idle_hint(s, b);
         if (r == -ENOTTY)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_NOT_SUPPORTED, "Idle hint control is not supported on non-graphical sessions.");
+                return sd_bus_error_set(error, SD_BUS_ERROR_NOT_SUPPORTED, "Idle hint control is not supported on non-graphical sessions.");
         if (r < 0)
                 return r;
 
@@ -291,7 +291,7 @@ static int method_set_locked_hint(sd_bus_message *message, void *userdata, sd_bu
                 return r;
 
         if (uid != 0 && uid != s->user->user_record->uid)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may set locked hint");
+                return sd_bus_error_set(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may set locked hint");
 
         session_set_locked_hint(s, b);
 
@@ -366,7 +366,7 @@ static int method_take_control(sd_bus_message *message, void *userdata, sd_bus_e
                 return r;
 
         if (uid != 0 && (force || uid != s->user->user_record->uid))
-                return sd_bus_error_setf(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may take control");
+                return sd_bus_error_set(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may take control");
 
         r = session_set_controller(s, sd_bus_message_get_sender(message), force, true);
         if (r < 0)
@@ -382,7 +382,7 @@ static int method_release_control(sd_bus_message *message, void *userdata, sd_bu
         assert(s);
 
         if (!session_is_controller(s, sd_bus_message_get_sender(message)))
-                return sd_bus_error_setf(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
+                return sd_bus_error_set(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
 
         session_drop_controller(s);
 
@@ -408,7 +408,7 @@ static int method_set_type(sd_bus_message *message, void *userdata, sd_bus_error
                                          "Invalid session type '%s'", t);
 
         if (!session_is_controller(s, sd_bus_message_get_sender(message)))
-                return sd_bus_error_setf(error, BUS_ERROR_NOT_IN_CONTROL, "You must be in control of this session to set type");
+                return sd_bus_error_set(error, BUS_ERROR_NOT_IN_CONTROL, "You must be in control of this session to set type");
 
         session_set_type(s, type);
 
@@ -430,10 +430,10 @@ static int method_take_device(sd_bus_message *message, void *userdata, sd_bus_er
                 return r;
 
         if (!DEVICE_MAJOR_VALID(major) || !DEVICE_MINOR_VALID(minor))
-                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Device major/minor is not valid.");
+                return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Device major/minor is not valid.");
 
         if (!session_is_controller(s, sd_bus_message_get_sender(message)))
-                return sd_bus_error_setf(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
+                return sd_bus_error_set(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
 
         dev = makedev(major, minor);
         sd = hashmap_get(s->devices, &dev);
@@ -443,7 +443,7 @@ static int method_take_device(sd_bus_message *message, void *userdata, sd_bus_er
                  * The caller should use dup() if it requires more
                  * than one fd (it would be functionally
                  * equivalent). */
-                return sd_bus_error_setf(error, BUS_ERROR_DEVICE_IS_TAKEN, "Device already taken");
+                return sd_bus_error_set(error, BUS_ERROR_DEVICE_IS_TAKEN, "Device already taken");
 
         r = session_device_new(s, dev, true, &sd);
         if (r < 0)
@@ -480,15 +480,15 @@ static int method_release_device(sd_bus_message *message, void *userdata, sd_bus
                 return r;
 
         if (!DEVICE_MAJOR_VALID(major) || !DEVICE_MINOR_VALID(minor))
-                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Device major/minor is not valid.");
+                return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Device major/minor is not valid.");
 
         if (!session_is_controller(s, sd_bus_message_get_sender(message)))
-                return sd_bus_error_setf(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
+                return sd_bus_error_set(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
 
         dev = makedev(major, minor);
         sd = hashmap_get(s->devices, &dev);
         if (!sd)
-                return sd_bus_error_setf(error, BUS_ERROR_DEVICE_NOT_TAKEN, "Device not taken");
+                return sd_bus_error_set(error, BUS_ERROR_DEVICE_NOT_TAKEN, "Device not taken");
 
         session_device_free(sd);
         session_save(s);
@@ -511,15 +511,15 @@ static int method_pause_device_complete(sd_bus_message *message, void *userdata,
                 return r;
 
         if (!DEVICE_MAJOR_VALID(major) || !DEVICE_MINOR_VALID(minor))
-                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Device major/minor is not valid.");
+                return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Device major/minor is not valid.");
 
         if (!session_is_controller(s, sd_bus_message_get_sender(message)))
-                return sd_bus_error_setf(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
+                return sd_bus_error_set(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
 
         dev = makedev(major, minor);
         sd = hashmap_get(s->devices, &dev);
         if (!sd)
-                return sd_bus_error_setf(error, BUS_ERROR_DEVICE_NOT_TAKEN, "Device not taken");
+                return sd_bus_error_set(error, BUS_ERROR_DEVICE_NOT_TAKEN, "Device not taken");
 
         session_device_complete_pause(sd);
 
@@ -549,9 +549,9 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Not a valid device name %s, refusing.", name);
 
         if (!s->seat)
-                return sd_bus_error_setf(error, BUS_ERROR_NOT_YOUR_DEVICE, "Your session has no seat, refusing.");
+                return sd_bus_error_set(error, BUS_ERROR_NOT_YOUR_DEVICE, "Your session has no seat, refusing.");
         if (s->seat->active != s)
-                return sd_bus_error_setf(error, BUS_ERROR_NOT_YOUR_DEVICE, "Session is not in foreground, refusing.");
+                return sd_bus_error_set(error, BUS_ERROR_NOT_YOUR_DEVICE, "Session is not in foreground, refusing.");
 
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
         log_debug_elogind("Sender is%s allowed to change brightness", r < 0 ? " NOT" : "");
@@ -563,7 +563,7 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
                 return r;
 
         if (uid != 0 && uid != s->user->user_record->uid)
-                return sd_bus_error_setf(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may change brightness.");
+                return sd_bus_error_set(error, SD_BUS_ERROR_ACCESS_DENIED, "Only owner of session may change brightness.");
 
         r = sd_device_new_from_subsystem_sysname(&d, subsystem, name);
         log_debug_elogind("Device %s:%s%s opened", subsystem, name, r < 0 ? " could NOT be" : "");
