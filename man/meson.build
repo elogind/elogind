@@ -196,18 +196,21 @@ html = custom_target(
         command : ['echo'])
 
 #if 0 /// UNNEEDED in elogind
-# run_target(
-#         'doc-sync',
-#         depends : man_pages + html_pages,
-#         command : ['rsync', '-rlv',
-#                    '--delete-excluded',
-#                    '--include=man',
-#                    '--include=*.html',
-#                    '--exclude=*',
-#                    '--omit-dir-times',
-#                    meson.current_build_dir(),
-#                    get_option('www-target')])
 #endif // 0
+rsync = find_program('rsync', required : false)
+if rsync.found()
+        run_target(
+                'doc-sync',
+                depends : man_pages + html_pages,
+                command : [rsync, '-rlv',
+                           '--delete-excluded',
+                           '--include=man',
+                           '--include=*.html',
+                           '--exclude=*',
+                           '--omit-dir-times',
+                           meson.current_build_dir(),
+                           get_option('www-target')])
+endif
 
 ############################################################
 
