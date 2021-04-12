@@ -276,7 +276,7 @@ int session_save(Session *s) {
                 fprintf(f, "DISPLAY=%s\n", s->display);
 
         if (s->remote_host) {
-                _cleanup_free_ char *escaped;
+                _cleanup_free_ char *escaped = NULL;
 
                 escaped = cescape(s->remote_host);
                 if (!escaped) {
@@ -288,7 +288,7 @@ int session_save(Session *s) {
         }
 
         if (s->remote_user) {
-                _cleanup_free_ char *escaped;
+                _cleanup_free_ char *escaped = NULL;
 
                 escaped = cescape(s->remote_user);
                 if (!escaped) {
@@ -300,7 +300,7 @@ int session_save(Session *s) {
         }
 
         if (s->service) {
-                _cleanup_free_ char *escaped;
+                _cleanup_free_ char *escaped = NULL;
 
                 escaped = cescape(s->service);
                 if (!escaped) {
@@ -312,7 +312,7 @@ int session_save(Session *s) {
         }
 
         if (s->desktop) {
-                _cleanup_free_ char *escaped;
+                _cleanup_free_ char *escaped = NULL;
 
                 escaped = cescape(s->desktop);
                 if (!escaped) {

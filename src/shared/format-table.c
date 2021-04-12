@@ -1427,7 +1427,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         case TABLE_TIMESTAMP:
         case TABLE_TIMESTAMP_UTC:
         case TABLE_TIMESTAMP_RELATIVE: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
                 char *ret;
 
                 p = new(char, FORMAT_TIMESTAMP_MAX);
@@ -1449,7 +1449,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
 
         case TABLE_TIMESPAN:
         case TABLE_TIMESPAN_MSEC: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, FORMAT_TIMESPAN_MAX);
                 if (!p)
@@ -1464,7 +1464,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_SIZE: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, FORMAT_BYTES_MAX);
                 if (!p)
@@ -1478,7 +1478,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_BPS: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
                 size_t n;
 
                 p = new(char, FORMAT_BYTES_MAX+2);
@@ -1496,7 +1496,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_INT: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->int_val) + 1);
                 if (!p)
@@ -1508,7 +1508,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_INT8: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->int8) + 1);
                 if (!p)
@@ -1520,7 +1520,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_INT16: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->int16) + 1);
                 if (!p)
@@ -1532,7 +1532,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_INT32: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->int32) + 1);
                 if (!p)
@@ -1544,7 +1544,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_INT64: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->int64) + 1);
                 if (!p)
@@ -1556,7 +1556,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_UINT: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->uint_val) + 1);
                 if (!p)
@@ -1568,7 +1568,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_UINT8: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->uint8) + 1);
                 if (!p)
@@ -1580,7 +1580,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_UINT16: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->uint16) + 1);
                 if (!p)
@@ -1592,7 +1592,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_UINT32: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->uint32) + 1);
                 if (!p)
@@ -1604,7 +1604,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_UINT64: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->uint64) + 1);
                 if (!p)
@@ -1616,7 +1616,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_PERCENT: {
-                _cleanup_free_ char *p;
+                _cleanup_free_ char *p = NULL;
 
                 p = new(char, DECIMAL_STR_WIDTH(d->percent) + 2);
                 if (!p)
