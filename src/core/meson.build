@@ -119,6 +119,8 @@
 #         timer.h
 #         transaction.c
 #         transaction.h
+#         unit-dependency-atom.c
+#         unit-dependency-atom.h
 #         unit-printf.c
 #         unit-printf.h
 #         unit-serialize.c
@@ -168,7 +170,7 @@ libcore_la_sources = files('''
 #         include_directories : includes,
 #         dependencies : [versiondep,
 #                         threads,
-#                         libdl,
+#                         libbpf,
 #                         librt,
 #                         libseccomp,
 #                         libpam,

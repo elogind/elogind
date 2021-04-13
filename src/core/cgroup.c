@@ -4,6 +4,7 @@
 
 #include "sd-messages.h"
 
+#include "af-list.h"
 #include "alloc-util.h"
 #include "blockdev-util.h"
 #include "bpf-devices.h"
@@ -203,12 +204,10 @@ void cgroup_context_remove_bpf_foreign_program(CGroupContext *c, CGroupBPFForeig
 }
 
 void cgroup_context_remove_socket_bind(CGroupSocketBindItem **head) {
-        CGroupSocketBindItem *h;
-
         assert(head);
 
         while (*head) {
-                h = *head;
+                CGroupSocketBindItem *h = *head;
                 LIST_REMOVE(socket_bind_items, *head, h);
                 free(h);
         }
@@ -595,16 +594,18 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
 }
 
 void cgroup_context_dump_socket_bind_item(const CGroupSocketBindItem *item, FILE *f) {
-        const char *family = item->address_family == AF_INET ? "IPv4:" :
-                item->address_family == AF_INET6 ? "IPv6:" : "";
+        const char *family, *colon;
+
+        family = strempty(af_to_ipv4_ipv6(item->address_family));
+        colon = isempty(family) ? "" : ":";
 
         if (item->nr_ports == 0)
-                fprintf(f, " %sany", family);
+                fprintf(f, " %s%sany", family, colon);
         else if (item->nr_ports == 1)
-                fprintf(f, " %s%" PRIu16, family, item->port_min);
+                fprintf(f, " %s%s%" PRIu16, family, colon, item->port_min);
         else {
                 uint16_t port_max = item->port_min + item->nr_ports - 1;
-                fprintf(f, " %s%" PRIu16 "-%" PRIu16, family, item->port_min, port_max);
+                fprintf(f, " %s%s%" PRIu16 "-%" PRIu16, family, colon, item->port_min, port_max);
         }
 }
 
@@ -1581,7 +1582,7 @@ static bool unit_get_needs_socket_bind(Unit *u) {
         if (!c)
                 return false;
 
-        return c->socket_bind_allow != NULL || c->socket_bind_deny != NULL;
+        return c->socket_bind_allow || c->socket_bind_deny;
 }
 
 static CGroupMask unit_get_cgroup_mask(Unit *u) {
@@ -1700,12 +1701,14 @@ CGroupMask unit_get_members_mask(Unit *u) {
         u->cgroup_members_mask = 0;
 
         if (u->type == UNIT_SLICE) {
-                void *v;
                 Unit *member;
 
-                HASHMAP_FOREACH_KEY(v, member, u->dependencies[UNIT_BEFORE])
-                        if (UNIT_DEREF(member->slice) == u)
-                                u->cgroup_members_mask |= unit_get_subtree_mask(member); /* note that this calls ourselves again, for the children */
+                UNIT_FOREACH_DEPENDENCY(member, u, UNIT_ATOM_BEFORE) {
+                        if (UNIT_DEREF(member->slice) != u)
+                                continue;
+
+                        u->cgroup_members_mask |= unit_get_subtree_mask(member); /* note that this calls ourselves again, for the children */
+                }
         }
 
         u->cgroup_members_mask_valid = true;
@@ -2343,14 +2346,13 @@ static int unit_realize_cgroup_now_enable(Unit *u, ManagerState state) {
  * hierarchy upwards to the unit in question. */
 static int unit_realize_cgroup_now_disable(Unit *u, ManagerState state) {
         Unit *m;
-        void *v;
 
         assert(u);
 
         if (u->type != UNIT_SLICE)
                 return 0;
 
-        HASHMAP_FOREACH_KEY(v, m, u->dependencies[UNIT_BEFORE]) {
+        UNIT_FOREACH_DEPENDENCY(m, u, UNIT_ATOM_BEFORE) {
                 CGroupMask target_mask, enable_mask, new_target_mask, new_enable_mask;
                 int r;
 
@@ -2515,12 +2517,12 @@ void unit_add_family_to_cgroup_realize_queue(Unit *u) {
 
         do {
                 Unit *m;
-                void *v;
 
                 /* Children of u likely changed when we're called */
                 u->cgroup_members_mask_valid = false;
 
-                HASHMAP_FOREACH_KEY(v, m, u->dependencies[UNIT_BEFORE]) {
+                UNIT_FOREACH_DEPENDENCY(m, u, UNIT_ATOM_BEFORE) {
+
                         /* Skip units that have a dependency on the slice but aren't actually in it. */
                         if (UNIT_DEREF(m->slice) != u)
                                 continue;
@@ -3201,7 +3203,7 @@ int manager_setup_cgroup(Manager *m) {
 
 #if 0 /// elogind is not init, and does not install the agent here.
         /* 3. Allocate cgroup empty defer event source */
-        m->cgroup_empty_event_source = sd_event_source_disable_unref(m->cgroup_empty_event_source);
+        m->cgroup_empty_event_source = sd_event_source_unref(m->cgroup_empty_event_source);
         r = sd_event_add_defer(m->event, &m->cgroup_empty_event_source, on_cgroup_empty_event, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to create cgroup empty event source: %m");
@@ -3224,7 +3226,7 @@ int manager_setup_cgroup(Manager *m) {
 
                 /* In the unified hierarchy we can get cgroup empty notifications via inotify. */
 
-                m->cgroup_inotify_event_source = sd_event_source_disable_unref(m->cgroup_inotify_event_source);
+                m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
                 safe_close(m->cgroup_inotify_fd);
 
                 m->cgroup_inotify_fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
@@ -3330,12 +3332,12 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         if (delete && m->cgroup_root && m->test_run_flags != MANAGER_TEST_RUN_MINIMAL)
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
-        m->cgroup_empty_event_source = sd_event_source_disable_unref(m->cgroup_empty_event_source);
+        m->cgroup_empty_event_source = sd_event_source_unref(m->cgroup_empty_event_source);
 
         m->cgroup_control_inotify_wd_unit = hashmap_free(m->cgroup_control_inotify_wd_unit);
         m->cgroup_memory_inotify_wd_unit = hashmap_free(m->cgroup_memory_inotify_wd_unit);
 
-        m->cgroup_inotify_event_source = sd_event_source_disable_unref(m->cgroup_inotify_event_source);
+        m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
         m->cgroup_inotify_fd = safe_close(m->cgroup_inotify_fd);
 #endif // 0
 
@@ -3851,11 +3853,13 @@ void unit_invalidate_cgroup_bpf(Unit *u) {
          * list of our children includes our own. */
         if (u->type == UNIT_SLICE) {
                 Unit *member;
-                void *v;
 
-                HASHMAP_FOREACH_KEY(v, member, u->dependencies[UNIT_BEFORE])
-                        if (UNIT_DEREF(member->slice) == u)
-                                unit_invalidate_cgroup_bpf(member);
+                UNIT_FOREACH_DEPENDENCY(member, u, UNIT_ATOM_BEFORE) {
+                        if (UNIT_DEREF(member->slice) != u)
+                                continue;
+
+                        unit_invalidate_cgroup_bpf(member);
+                }
         }
 }
 
