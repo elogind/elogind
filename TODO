@@ -48,8 +48,8 @@ Features:
 
 * add a switch to homectl (maybe called --first-boot) where it will check if
   any non-system users exist, and if not prompts interactively for basic user
-  info, mimicing elogind-firstboot. Then, place this in a service that runs
   after elogind-homed, but before gdm and friends, as a simple, barebones
+  info, mimicking elogind-firstboot. Then, place this in a service that runs
   fallback logic to get a regular user created on uninitialized systems.
 
 * maybe add a tool that displays most recent journal logs as QR code to scan
