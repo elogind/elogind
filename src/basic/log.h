@@ -199,9 +199,10 @@ void log_assert_failed_return(
 #define log_full_errno(level, error, ...)                               \
         ({                                                              \
                 int _level = (level), _e = (error);                     \
-                (log_get_max_level() >= LOG_PRI(_level))                \
+                _e = (log_get_max_level() >= LOG_PRI(_level))           \
                         ? log_internal(_level, _e, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__) \
                         : -ERRNO_VALUE(_e);                             \
+                _e < 0 ? _e : -EIO;                                     \
         })
 
 #define log_full(level, ...) (void) log_full_errno((level), 0, __VA_ARGS__)
@@ -259,6 +260,8 @@ int log_emergency_level(void);
         log_dump_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, level), \
                           0, PROJECT_FILE, __LINE__, __func__, buffer)
 #endif // 0
+#define log_dump(level, buffer)                                         \
+        log_dump_internal(level, 0, PROJECT_FILE, __LINE__, __func__, buffer)
 
 #define log_oom() log_oom_internal(LOG_ERR, PROJECT_FILE, __LINE__, __func__)
 #define log_oom_debug() log_oom_internal(LOG_DEBUG, PROJECT_FILE, __LINE__, __func__)
