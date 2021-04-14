@@ -4,8 +4,3 @@
 #include "version.h"
 
 extern const char* const elogind_features;
-
-enum {
-        BUILD_MODE_DEVELOPER,
-        BUILD_MODE_RELEASE,
-};
