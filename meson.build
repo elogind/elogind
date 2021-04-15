@@ -4245,98 +4245,107 @@ missing = []
 
 foreach tuple : [
 #if 0 /// UNNEEDED by elogind
-#         ['libcryptsetup'],
 #endif // 0
-        ['PAM'],
 #if 0 /// UNNEEDED by elogind
-#         ['pwquality'],
-#         ['libfdisk'],
 #endif // 0
-        ['p11kit'],
-        ['libfido2'],
-        ['tpm2'],
+        # dependencies
+        ['ACL'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
-#         ['IMA'],
 #         ['AppArmor'],
 #endif // 0
-        ['SELinux'],
 #if 0 /// UNNEEDED by elogind
+#         ['IMA'],
+#         ['PAM'],
 #         ['SECCOMP'],
 #endif // 0
+        ['SELinux'],
         ['SMACK'],
 #if 0 /// UNNEEDED by elogind
-#         ['zlib'],
-#         ['xz'],
+#endif // 0
+#if 0 /// UNNEEDED by elogind
+#         ['blkid'],
+#         ['elfutils'],
+#         ['gcrypt'],
+#         ['gnutls'],
+#         ['libcryptsetup'],
+#         ['libcurl'],
+#         ['libfdisk'],
+#         ['libfido2'],
+#         ['libidn'],
+#         ['libidn2'],
+#         ['libiptc'],
+#         ['microhttpd'],
+#         ['openssl'],
+#         ['p11kit'],
+#         ['pcre2'],
+#         ['pwquality'],
+#         ['qrencode'],
+#         ['tpm2'],
+#         ['xkbcommon'],
+#
+#         # compression libs
 #         ['zstd'],
 #         ['lz4'],
+#         ['xz'],
+#         ['zlib'],
 #         ['bzip2'],
-#endif // 0
-        ['ACL'],
-#if 0 /// UNNEEDED by elogind
-#         ['gcrypt'],
-#         ['qrencode'],
-#         ['microhttpd'],
-#         ['gnutls'],
-#         ['openssl'],
-#         ['libcurl'],
-#         ['idn'],
-#         ['initrd'],
-#         ['compat-mutable-uid-boundaries'],
-#         ['nscd'],
-#         ['libidn2'],
-#         ['libidn'],
-#         ['libiptc'],
-#         ['elfutils'],
-#         ['binfmt'],
-#         ['repart'],
-#         ['vconsole'],
-#         ['quotacheck'],
-#         ['tmpfiles'],
-#         ['environment.d'],
-#         ['sysusers'],
-#         ['firstboot'],
-#         ['randomseed'],
+#
+#         # components
 #         ['backlight'],
-#         ['rfkill'],
-#         ['xdg-autostart'],
+#         ['binfmt'],
+#         ['coredump'],
+#         ['environment.d'],
+#         ['efi'],
+#         ['gnu-efi',               have_gnu_efi],
+#         ['firstboot'],
+#         ['hibernate'],
+#         ['homed'],
+#         ['hostnamed'],
+#         ['hwdb'],
+#         ['importd'],
+#         ['initrd'],
+#         ['kernel-install',        get_option('kernel-install')],
+#         ['localed'],
 #         ['logind'],
 #         ['machined'],
-#         ['portabled'],
-#         ['sysext'],
-#         ['userdb'],
-#         ['homed'],
-#         ['importd'],
-#         ['hostnamed'],
-#         ['timedated'],
-#         ['timesyncd'],
-#         ['localed'],
 #         ['networkd'],
-#         ['resolve'],
-#         ['DNS-over-TLS(gnutls)',  conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1],
-#         ['DNS-over-TLS(openssl)', conf.get('DNS_OVER_TLS_USE_OPENSSL') == 1],
-#         ['coredump'],
-#         ['pstore'],
-#endif // 0
-        ['oomd'],
-        ['polkit'],
-        ['legacy pkla',           install_polkit_pkla],
-        ['efi'],
-#if 0 /// UNNEEDED by elogind
-#         ['gnu-efi',               have_gnu_efi],
-#         ['kmod'],
-#         ['xkbcommon'],
-#         ['pcre2'],
-#         ['blkid'],
-#endif // 0
-        ['dbus'],
-        ['glib'],
-#if 0 /// UNNEEDED by elogind
 #         ['nss-myhostname'],
 #         ['nss-mymachines'],
 #         ['nss-resolve'],
 #         ['nss-systemd'],
-#         ['hwdb'],
+#         ['oomd'],
+#         ['portabled'],
+#         ['pstore'],
+#         ['quotacheck'],
+#         ['randomseed'],
+#         ['repart'],
+#         ['resolve'],
+#         ['rfkill'],
+#         ['sysext'],
+#         ['systemd-analyze',       conf.get('ENABLE_ANALYZE') == 1],
+#         ['sysusers'],
+#         ['timedated'],
+#         ['timesyncd'],
+#         ['tmpfiles'],
+#         ['userdb'],
+#         ['vconsole'],
+#         ['xdg-autostart'],
+#
+#         # optional features
+#         ['DNS-over-TLS(gnutls)',  conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1],
+#         ['DNS-over-TLS(openssl)', conf.get('DNS_OVER_TLS_USE_OPENSSL') == 1],
+#endif // 0
+        ['idn'],
+        ['polkit'],
+#if 0 /// UNNEEDED by elogind
+#         ['nscd'],
+#         ['legacy-pkla',           install_polkit_pkla],
+#         ['kmod'],
+#endif // 0
+        ['dbus'],
+        ['glib'],
+#if 0 /// UNNEEDED by elogind
 #         ['tpm'],
 #endif // 0
 #if 0 /// UNNEEDED by elogind
@@ -4345,10 +4354,10 @@ foreach tuple : [
 #         ['man page indices',      want_man and have_lxml],
 #         ['SysV compat'],
 #endif // 0
+        ['compat-mutable-uid-boundaries'],
         ['utmp'],
 #if 0 /// UNNEEDED by elogind
 #         ['ldconfig'],
-#         ['hibernate'],
 #         ['adm group',             get_option('adm-group')],
 #         ['wheel group',           get_option('wheel-group')],
 #         ['gshadow'],
@@ -4369,9 +4378,7 @@ foreach tuple : [
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #         ['link-networkd-shared',  get_option('link-networkd-shared')],
 #         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
-#         ['kernel-install',        get_option('kernel-install')],
 #endif // 0
-        ['elogind-analyze',       conf.get('ENABLE_ANALYZE') == 1],
         ['fexecve'],
 #if 0 /// elogind has everything standalone that can be standalone already
 #         ['standalone-binaries',   get_option('standalone-binaries')],
