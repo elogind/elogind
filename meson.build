@@ -964,7 +964,7 @@ if not meson.is_cross_build()
                 id = id_result.stdout().to_int()
                 if id != 65534
                         warning('\n' +
-                                'The local group with the configured group name "@0@" of the nobody group does not have GID 65534 (it has @1@).\n'.format(nobody_group, id) +
+                                'The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
                                 'Your build will result in an group table setup that is incompatible with the local system.')
                 endif
         endif
@@ -1426,7 +1426,7 @@ conf.set10('HAVE_PAM', have)
 # want_tpm2 = get_option('tpm2')
 # if want_tpm2 != 'false' and not skip_deps
 #         tpm2 = dependency('tss2-esys tss2-rc tss2-mu',
-#                               required : want_tpm2 == 'true')
+#                           required : want_tpm2 == 'true')
 #         have = tpm2.found()
 # else
 #         have = false
@@ -2726,7 +2726,7 @@ endif
 # endif
 #
 # foreach alias : (['halt', 'poweroff', 'reboot', 'shutdown'] +
-#                 (conf.get('HAVE_SYSV_COMPAT') == 1 ? ['runlevel', 'telinit'] : []))
+#                  (conf.get('HAVE_SYSV_COMPAT') == 1 ? ['runlevel', 'telinit'] : []))
 #         meson.add_install_script(meson_make_symlink,
 #                                  join_paths(rootbindir, 'systemctl'),
 #                                  join_paths(rootsbindir, alias))
@@ -3147,14 +3147,14 @@ endif
 #                    install_dir : rootlibexecdir)
 #
 #         public_programs += executable(
-#                    'oomctl',
-#                    oomctl_sources,
-#                    include_directories : includes,
-#                    link_with : [libshared],
-#                    dependencies : [],
-#                    install_rpath : rootlibexecdir,
-#                    install : true,
-#                    install_dir : rootbindir)
+#                 'oomctl',
+#                 oomctl_sources,
+#                 include_directories : includes,
+#                 link_with : [libshared],
+#                 dependencies : [],
+#                 install_rpath : rootlibexecdir,
+#                 install : true,
+#                 install_dir : rootbindir)
 # endif
 #
 # if conf.get('ENABLE_BINFMT') == 1
@@ -3734,9 +3734,9 @@ custom_target(
         'elogind-runtest.env',
         output : 'elogind-runtest.env',
         command : ['sh', '-c', '{ ' +
-                   'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(project_source_root, 'test')) +
-                   'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(project_build_root, 'catalog')) +
-                   '} >@OUTPUT@'],
+                               'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(project_source_root, 'test')) +
+                               'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(project_build_root, 'catalog')) +
+                               '} >@OUTPUT@'],
         build_by_default : true)
 
 # We intentionally do not do inline initializations with definitions for
@@ -4324,10 +4324,10 @@ foreach tuple : [
 #endif // 0
         ['oomd'],
         ['polkit'],
-        ['legacy pkla',      install_polkit_pkla],
+        ['legacy pkla',           install_polkit_pkla],
         ['efi'],
 #if 0 /// UNNEEDED by elogind
-#         ['gnu-efi',          have_gnu_efi],
+#         ['gnu-efi',               have_gnu_efi],
 #         ['kmod'],
 #         ['xkbcommon'],
 #         ['pcre2'],
@@ -4343,18 +4343,18 @@ foreach tuple : [
 #         ['hwdb'],
 #         ['tpm'],
 #endif // 0
-        ['man pages',        want_man],
-        ['html pages',       want_html],
-        ['man page indices', want_man and have_lxml],
 #if 0 /// UNNEEDED by elogind
+#         ['man pages',             want_man],
+#         ['html pages',            want_html],
+#         ['man page indices',      want_man and have_lxml],
 #         ['SysV compat'],
 #endif // 0
         ['utmp'],
 #if 0 /// UNNEEDED by elogind
 #         ['ldconfig'],
 #         ['hibernate'],
-#         ['adm group',        get_option('adm-group')],
-#         ['wheel group',      get_option('wheel-group')],
+#         ['adm group',             get_option('adm-group')],
+#         ['wheel group',           get_option('wheel-group')],
 #         ['gshadow'],
 #endif // 0
 #if 1 /// Extra debugging for elogind
@@ -4365,17 +4365,17 @@ foreach tuple : [
 #if 0 /// elogind does not ships libudev.
 #         ['debug siphash'],
 #endif // 0
-        ['valgrind',         conf.get('VALGRIND') == 1],
-        ['trace logging',    conf.get('LOG_TRACE') == 1],
-        ['install tests',    install_tests],
 #if 0 /// elogind ships neither libudev nor systemctl or any other of those
+#         ['valgrind',              conf.get('VALGRIND') == 1],
+#         ['trace logging',         conf.get('LOG_TRACE') == 1],
+#         ['install tests',         install_tests],
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #         ['link-networkd-shared',  get_option('link-networkd-shared')],
 #         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
 #         ['kernel-install',        get_option('kernel-install')],
-#         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 #endif // 0
+        ['elogind-analyze',       conf.get('ENABLE_ANALYZE') == 1],
         ['fexecve'],
 #if 0 /// elogind has everything standalone that can be standalone already
 #         ['standalone-binaries',   get_option('standalone-binaries')],
