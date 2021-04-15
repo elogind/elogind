@@ -4219,10 +4219,6 @@ status = [
 #endif // 0
 #if 0 /// elogind does not ship libudeb. Obviously.
 #
-# status += [
-#         'static libsystemd:                 @0@'.format(static_libsystemd),
-#         'static libudev:                    @0@'.format(static_libudev)]
-#
 #endif // 0
 # TODO:
 # CFLAGS:   ${OUR_CFLAGS} ${CFLAGS}
@@ -4395,6 +4391,18 @@ foreach tuple : [
                 missing += tuple[0]
         endif
 endforeach
+
+if static_libelogind == 'false'
+        missing += 'static-libelogind'
+else
+        found += 'static-libelogind(@0@)'.format(static_libelogind)
+endif
+
+if static_libudev == 'false'
+        missing += 'static-libudev'
+else
+        found += 'static-libudev(@0@)'.format(static_libudev)
+endif
 
 status += [
         '',
