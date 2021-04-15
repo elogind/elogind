@@ -3577,7 +3577,7 @@ public_programs += executable(
 # endif
 #
 # if conf.get('ENABLE_HWDB') == 1
-#         public_programs += executable(
+#         systemd_hwdb = executable(
 #                 'systemd-hwdb',
 #                 'src/hwdb/hwdb.c',
 #                 include_directories : includes,
@@ -3585,6 +3585,14 @@ public_programs += executable(
 #                 install_rpath : udev_rpath,
 #                 install : true,
 #                 install_dir : rootbindir)
+#         public_programs += systemd_hwdb
+#
+#         if want_tests != 'false'
+#                 test('hwdb-test',
+#                      hwdb_test_sh,
+#                      args : [systemd_hwdb.full_path()],
+#                      timeout : 90)
+#         endif
 # endif
 #
 # if conf.get('ENABLE_QUOTACHECK') == 1
