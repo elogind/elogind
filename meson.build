@@ -650,7 +650,6 @@ foreach ident : [
                                  #include <signal.h>
                                  #include <sys/wait.h>'''],
         ['mallinfo',          '''#include <malloc.h>'''],
-        ['mallinfo2',         '''#include <malloc.h>'''],
         ['execveat',          '''#include <unistd.h>'''],
         ['close_range',       '''#include <unistd.h>'''],
         ['epoll_pwait2',      '''#include <sys/epoll.h>'''],
@@ -857,7 +856,7 @@ conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 #         if time_epoch == '' and git.found() and run_command('test', '-e', '.git').returncode() == 0
 #                 # If we're in a git repository, use the creation time of the latest git tag.
 #                 latest_tag = run_command('git', 'describe', '--abbrev=0', '--tags').stdout().strip()
-#                 time_epoch = run_command('git', 'log', '-1', '--format=%at', latest_tag).stdout()
+#                 time_epoch = run_command('git', 'log', '--no-show-signature', '-1', '--format=%at', latest_tag).stdout()
 #         endif
 #         if time_epoch == ''
 #                 NEWS = files('NEWS')
