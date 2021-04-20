@@ -132,6 +132,11 @@ libcore_la_sources = files('''
 #endif // 0
 
 #if 0 /// Almost the rest is not needed by elogind, we use the sources directly in login
+# subdir('bpf/socket_bind')
+# if conf.get('BPF_FRAMEWORK') == 1
+#         libcore_sources += [socket_bind_skel_h]
+# endif
+#
 # load_fragment_gperf_gperf = custom_target(
 #         'load-fragment-gperf.gperf',
 #         input : 'load-fragment-gperf.gperf.m4',
