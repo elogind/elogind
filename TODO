@@ -50,12 +50,6 @@ Features:
 * elogind-sysext: optionally, run it in initrd already, before transitioning
   into host, to open up possibility for services shipped like that.
 
-* add a flag to the GPT spec that says "grow my fs to partition size", and make
-  it settable via elogind-repart. Add in growfs jobs in
-  elogind-gpt-auto-generator when it is set, and issue the ioctls while
-  mounting in elogind-npsawn --image=. That way elogind-repart suffices to
-  enlarge an image.
-
 * add a new switch --auto-definitions=yes/no or so to elogind-repart. If
   specified, synthesize a definition automatically if we can: enlarge last
   partition on disk, but only if it is marked for growing and not read-only.
@@ -88,14 +82,6 @@ Features:
   immediately applying the new configuration again. i.e. --factory-reset=leave
   or so. (this is useful to factory reset an image, then putting it into
   another machine, ensuring that luks key is generated on new machine, not old)
-
-* elogind-repart: support setting up dm-integrity with HMAC
-
-* elogind-repart: maybe remove half-initialized image on failure. It fails
-  if the output file exists, so a repeated invocation will usually fail if
-  something goes wrong on the way.
-
-* elogind-repart: drop pager mode on normal operation?
 
 * move logind udev rules to top-level rule.d/ directory
 
@@ -250,6 +236,8 @@ Features:
 * when main nspawn supervisor process gets suspended due to SIGSTOP/SIGTTOU or
   so, freeze the payload too.
 
+* repart: support setting up dm-integrity with HMAC
+
 * add /etc/integritytab, to support dm-integrity setups. In particular those
   with HMAC as hash function, so that we can have a protected /home without
   encryption (leaving encryption to the individual dirs/homed).
@@ -356,9 +344,6 @@ Features:
 
 * busctl: maybe expose a verb "ping" for pinging a dbus service to see if it
   exists and responds.
-
-* elogind-gpt-auto should probably set x-elogind.growfs on the mounts it
-  creates
 
 * bootctl:
   - teach it to prepare an ESP wholesale, i.e. with mkfs.vfat invocation
