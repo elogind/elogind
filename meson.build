@@ -45,8 +45,8 @@ relative_source_path = run_command('realpath',
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 #if 0 /// fuzz regression tests are not supported by elogind
-# conf.set('BUILD_MODE', 'BUILD_MODE_' + get_option('mode').to_upper(),
-#          description : 'tailor build to development or release builds')
+# conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
+#            description : 'tailor build to development or release builds')
 #
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
@@ -964,7 +964,7 @@ if not meson.is_cross_build()
                 id = id_result.stdout().to_int()
                 if id != 65534
                         warning('\n' +
-                                'The local group with the configured group name "@0@" of the nobody group does not have UID 65534 (it has @1@).\n'.format(nobody_group, id) +
+                                'The local group with the configured group name "@0@" of the nobody group does not have GID 65534 (it has @1@).\n'.format(nobody_group, id) +
                                 'Your build will result in an group table setup that is incompatible with the local system.')
                 endif
         endif
@@ -1311,7 +1311,7 @@ conf.set10('HAVE_PAM', have)
 #         libcurl = []
 # endif
 # conf.set10('HAVE_LIBCURL', have)
-# conf.set10('CURL_NO_OLDIES', get_option('mode') == 'developer')
+# conf.set10('CURL_NO_OLDIES', conf.get('BUILD_MODE_DEVELOPER') == 1)
 #
 # want_libidn = get_option('libidn')
 # want_libidn2 = get_option('libidn2')
@@ -1823,6 +1823,9 @@ if get_option('efi')
         elif efi_arch == 'aarch64'
                 EFI_MACHINE_TYPE_NAME = 'aa64'
                 gnu_efi_arch = 'aarch64'
+        elif efi_arch == 'riscv64'
+                EFI_MACHINE_TYPE_NAME = 'riscv64'
+                gnu_efi_arch = 'riscv64'
         else
                 EFI_MACHINE_TYPE_NAME = ''
                 gnu_efi_arch = ''
@@ -3739,11 +3742,15 @@ custom_target(
                                '} >@OUTPUT@'],
         build_by_default : true)
 
-# We intentionally do not do inline initializations with definitions for
-# a bunch of _cleanup_ variables in tests, to ensure valgrind is triggered.
-# This triggers a lot of maybe-uninitialized false positives when the
-# combination of -O2 and -flto is used. Suppress them.
-no_uninit = '-O2' in get_option('c_args') and '-flto=auto' in get_option('c_args') ? cc.first_supported_argument('-Wno-maybe-uninitialized') : []
+test_cflags = ['-DTEST_CODE=1']
+# We intentionally do not do inline initializations with definitions for a
+# bunch of _cleanup_ variables in tests, to ensure valgrind is triggered if we
+# use the variable unexpectedly. This triggers a lot of maybe-uninitialized
+# false positives when the combination of -O2 and -flto is used. Suppress them.
+if '-O2' in get_option('c_args') and '-flto=auto' in get_option('c_args')
+        test_cflags += cc.first_supported_argument('-Wno-maybe-uninitialized')
+endif
+
 foreach tuple : tests
         sources = tuple[0]
         link_with = tuple.length() > 1 and tuple[1].length() > 0 ? tuple[1] : [libshared]
@@ -3752,7 +3759,7 @@ foreach tuple : tests
         condition = tuple.length() > 4 ? tuple[4] : ''
         type = tuple.length() > 5 ? tuple[5] : ''
         defs = tuple.length() > 6 ? tuple[6] : []
-        defs += no_uninit
+        defs += test_cflags
         parallel = tuple.length() > 7 ? tuple[7] : true
         timeout = 30
 
@@ -3821,7 +3828,7 @@ endforeach
 #         'test-libudev-sym',
 #         test_libudev_sym_c,
 #         include_directories : libudev_includes,
-#         c_args : ['-Wno-deprecated-declarations'] + no_uninit,
+#         c_args : ['-Wno-deprecated-declarations'] + test_cflags,
 #         link_with : [libudev],
 #         build_by_default : want_tests != 'false',
 #         install : install_tests,
@@ -3834,7 +3841,7 @@ endforeach
 #         'test-libudev-static-sym',
 #         test_libudev_sym_c,
 #         include_directories : libudev_includes,
-#         c_args : ['-Wno-deprecated-declarations'] + no_uninit,
+#         c_args : ['-Wno-deprecated-declarations'] + test_cflags,
 #         link_with : [install_libudev_static],
 #         build_by_default : want_tests != 'false' and static_libudev_pic,
 #         install : install_tests and static_libudev_pic,
@@ -3875,7 +3882,7 @@ endforeach
 #                 include_directories : [incs, include_directories('src/fuzz')],
 #                 link_with : link_with,
 #                 dependencies : dependencies,
-#                 c_args : defs,
+#                 c_args : defs + test_cflags,
 #                 link_args: link_args,
 #                 install : false,
 #                 build_by_default : fuzz_tests or fuzzer_build)
@@ -4112,7 +4119,7 @@ if dbus_docs.length() > 0
                            '@INPUT@'],
                 input : dbus_docs)
 
-        if conf.get('BUILD_MODE') == 'BUILD_MODE_DEVELOPER'
+        if conf.get('BUILD_MODE_DEVELOPER') == 1
                 test('dbus-docs-fresh',
                      update_dbus_docs_py,
                      args : ['--build-dir=@0@'.format(project_build_root),
