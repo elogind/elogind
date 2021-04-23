@@ -596,6 +596,7 @@ int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         table_get_data(t, cell)->minimum_width = minimum_width;
         return 0;
 }
+#endif // 0
 
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         int r;
@@ -610,7 +611,6 @@ int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         table_get_data(t, cell)->maximum_width = maximum_width;
         return 0;
 }
-#endif // 0
 
 int table_set_weight(Table *t, TableCell *cell, unsigned weight) {
         int r;

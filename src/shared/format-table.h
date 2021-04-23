@@ -92,8 +92,8 @@ int table_fill_empty(Table *t, size_t until_column);
 int table_dup_cell(Table *t, TableCell *cell);
 
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width);
-int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width);
 #endif // 0
+int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width);
 int table_set_weight(Table *t, TableCell *cell, unsigned weight);
 int table_set_align_percent(Table *t, TableCell *cell, unsigned percent);
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent);
