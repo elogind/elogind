@@ -132,3 +132,5 @@ int putsgent_sane(const struct sgrp *sg, FILE *stream);
 #endif // 0
 
 bool is_nologin_shell(const char *shell);
+
+int is_this_me(const char *username);
