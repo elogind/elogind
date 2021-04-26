@@ -107,6 +107,8 @@
 #         slice.h
 #         smack-setup.c
 #         smack-setup.h
+#         socket-bind.c
+#         socket-bind.h
 #         socket.c
 #         socket.h
 #         swap.c
@@ -166,6 +168,7 @@ libcore_la_sources = files('''
 #         include_directories : includes,
 #         dependencies : [versiondep,
 #                         threads,
+#                         libbpf,
 #                         librt,
 #                         libseccomp,
 #                         libpam,
