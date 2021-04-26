@@ -166,7 +166,8 @@ static int bus_print_property(const char *name, const char *expected_value, sd_b
                         if (!result)
                                 return -EINVAL;
 
-                        bus_print_property_value(name, expected_value, value, result);
+                        if (all || !isempty(result))
+                                bus_print_property_value(name, expected_value, value, result);
 
                 } else if (STR_IN_SET(name, "CapabilityBoundingSet", "AmbientCapabilities")) {
                         _cleanup_free_ char *s = NULL;
@@ -175,7 +176,8 @@ static int bus_print_property(const char *name, const char *expected_value, sd_b
                         if (r < 0)
                                 return r;
 
-                        bus_print_property_value(name, expected_value, value, s);
+                        if (all || !isempty(s))
+                                bus_print_property_value(name, expected_value, value, s);
 
                 } else if ((STR_IN_SET(name, "CPUWeight", "StartupCPUWeight", "IOWeight", "StartupIOWeight") && u == CGROUP_WEIGHT_INVALID) ||
                            (STR_IN_SET(name, "CPUShares", "StartupCPUShares") && u == CGROUP_CPU_SHARES_INVALID) ||
@@ -270,7 +272,7 @@ static int bus_print_property(const char *name, const char *expected_value, sd_b
                         while ((r = sd_bus_message_read_basic(m, SD_BUS_TYPE_STRING, &str)) > 0) {
                                 _cleanup_free_ char *e = NULL;
 
-                                e = shell_maybe_quote(str, 0);
+                                e = shell_maybe_quote(str, ESCAPE_BACKSLASH_ONELINE);
                                 if (!e)
                                         return -ENOMEM;
 
