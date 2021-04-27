@@ -36,11 +36,14 @@ Features:
 * journald: support RFC3164 fully for the incoming syslog transport, see
   https://github.com/elogind/elogind/issues/19251#issuecomment-816601955
 
-* nspawn: support uid mapping bind mounts, as defined available in kernel 5.12,
-  for all our disk image needs
-
 * homed: if kernel 5.12 uid mapping mounts exist, use that instead of recursive
   chowns.
+
+* DynamicUser= + StateDirectory= → use uid mapping mounts, too, in order to
+  make dirs appear under right UID.
+
+* nspawn: make --bind= work sanely with --private-users when uid mapping mounts
+  are used.
 
 * cryptsetup: tweak tpm2-device=auto logic, abort quickly if firmware tells us
   there isn't any TPM2 device anyway. that way, we'll wait for the TPM2 device
@@ -49,12 +52,6 @@ Features:
 
 * elogind-sysext: optionally, run it in initrd already, before transitioning
   into host, to open up possibility for services shipped like that.
-
-* add a flag to the GPT spec that says "grow my fs to partition size", and make
-  it settable via elogind-repart. Add in growfs jobs in
-  elogind-gpt-auto-generator when it is set, and issue the ioctls while
-  mounting in elogind-npsawn --image=. That way elogind-repart suffices to
-  enlarge an image.
 
 * add a new switch --auto-definitions=yes/no or so to elogind-repart. If
   specified, synthesize a definition automatically if we can: enlarge last
@@ -354,9 +351,6 @@ Features:
 
 * busctl: maybe expose a verb "ping" for pinging a dbus service to see if it
   exists and responds.
-
-* elogind-gpt-auto should probably set x-elogind.growfs on the mounts it
-  creates
 
 * bootctl:
   - teach it to prepare an ESP wholesale, i.e. with mkfs.vfat invocation
