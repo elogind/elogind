@@ -114,3 +114,5 @@ int mount_image_in_namespace(pid_t target, const char *propagate_path, const cha
 #endif // 0
 
 int make_mount_point(const char *path);
+
+int remount_idmap(const char *p, uid_t uid_shift, uid_t uid_range);
