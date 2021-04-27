@@ -563,11 +563,14 @@ decl_headers = '''
 # endif // _GNU_SOURCE
 #endif // 1
 #include <uchar.h>
+#include <sys/mount.h>
 #include <sys/stat.h>
+#include <linux/fs.h>
 '''
 
 foreach decl : ['char16_t',
                 'char32_t',
+                'struct mount_attr',
                 'struct statx',
                ]
 
@@ -650,6 +653,9 @@ foreach ident : [
         ['execveat',          '''#include <unistd.h>'''],
         ['close_range',       '''#include <unistd.h>'''],
         ['epoll_pwait2',      '''#include <sys/epoll.h>'''],
+        ['mount_setattr',     '''#include <sys/mount.h>'''],
+        ['move_mount',        '''#include <sys/mount.h>'''],
+        ['open_tree',         '''#include <sys/mount.h>'''],
 ]
 
         have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE')
@@ -3577,7 +3583,7 @@ public_programs += executable(
 # endif
 #
 # if conf.get('ENABLE_HWDB') == 1
-#         systemd_hwdb = executable(
+#         public_programs += executable(
 #                 'systemd-hwdb',
 #                 'src/hwdb/hwdb.c',
 #                 include_directories : includes,
@@ -3585,14 +3591,6 @@ public_programs += executable(
 #                 install_rpath : udev_rpath,
 #                 install : true,
 #                 install_dir : rootbindir)
-#         public_programs += systemd_hwdb
-#
-#         if want_tests != 'false'
-#                 test('hwdb-test',
-#                      hwdb_test_sh,
-#                      args : [systemd_hwdb.full_path()],
-#                      timeout : 90)
-#         endif
 # endif
 #
 # if conf.get('ENABLE_QUOTACHECK') == 1
