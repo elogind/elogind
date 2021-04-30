@@ -160,6 +160,7 @@ int fsck_exists(const char *fstype);
 #endif // 0
 
 char* dirname_malloc(const char *path);
+int path_find_first_component(const char **p, bool accept_dot_dot, const char **ret);
 const char *last_path_component(const char *path);
 int path_extract_filename(const char *p, char **ret);
 int path_extract_directory(const char *p, char **ret);
