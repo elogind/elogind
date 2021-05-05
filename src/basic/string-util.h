@@ -133,9 +133,6 @@ static inline bool _pure_ in_charset(const char *s, const char* charset) {
         return s[strspn(s, charset)] == '\0';
 }
 
-static inline bool char_is_cc(char p) {
-        return (p >= 0 && p < ' ') || p == 127;
-}
 bool string_has_cc(const char *p, const char *ok) _pure_;
 
 char *ellipsize_mem(const char *s, size_t old_length_bytes, size_t new_length_columns, unsigned percent);
@@ -158,6 +155,8 @@ char *strextend_with_separator_internal(char **x, const char *separator, ...) _s
 
 #define strextend_with_separator(x, separator, ...) strextend_with_separator_internal(x, separator, __VA_ARGS__, NULL)
 #define strextend(x, ...) strextend_with_separator_internal(x, NULL, __VA_ARGS__, NULL)
+
+int strextendf(char **x, const char *format, ...) _printf_(2,3);
 
 char *strrep(const char *s, unsigned n);
 
@@ -223,13 +222,17 @@ static inline void *memory_startswith_no_case(const void *p, size_t sz, const ch
 }
 #endif // 0
 
-static inline char* str_realloc(char *p) {
-        /* Reallocate *p to actual size. Ignore failure, and return the original string on error. */
+static inline char* str_realloc(char **p) {
+        /* Reallocate *p to actual size */
 
-        if (!p)
+        if (!*p)
                 return NULL;
 
-        return realloc(p, strlen(p) + 1) ?: p;
+        char *t = realloc(*p, strlen(*p) + 1);
+        if (!t)
+                return NULL;
+
+        return (*p = t);
 }
 
 char* string_erase(char *x);
