@@ -433,9 +433,9 @@ static int userdb_start_query(
         }
 
         /* First, let's talk to the multiplexer, if we can */
+        if ((flags & (USERDB_AVOID_MULTIPLEXER|USERDB_EXCLUDE_DYNAMIC_USER|USERDB_EXCLUDE_NSS|USERDB_EXCLUDE_DROPIN|USERDB_DONT_SYNTHESIZE)) == 0 &&
             !strv_contains(except, "io.elogind.Multiplexer") &&
             (!only || strv_contains(only, "io.elogind.Multiplexer"))) {
-        if ((flags & (USERDB_AVOID_MULTIPLEXER|USERDB_EXCLUDE_DYNAMIC_USER|USERDB_EXCLUDE_NSS|USERDB_EXCLUDE_DROPIN|USERDB_DONT_SYNTHESIZE)) == 0 &&
                 _cleanup_(json_variant_unrefp) JsonVariant *patched_query = json_variant_ref(query);
 
                 r = json_variant_set_field_string(&patched_query, "service", "io.elogind.Multiplexer");
@@ -510,7 +510,7 @@ static int userdb_start_query(
         }
 
         if (set_isempty(iterator->links))
-                return ret; /* propagate last error we saw if we couldn't connect to anything. */
+                return ret < 0 ? ret : -ESRCH; /* propagate last error we saw if we couldn't connect to anything. */
 
         /* We connected to some services, in this case, ignore the ones we failed on */
         return 0;
