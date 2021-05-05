@@ -114,6 +114,8 @@ static UserDBIterator* userdb_iterator_new(LookupWhat what, UserDBFlags flags) {
         *i = (UserDBIterator) {
                 .what = what,
                 .flags = flags,
+                .synthesize_root = !FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE),
+                .synthesize_nobody = !FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE),
         };
 
         return i;
@@ -731,8 +733,6 @@ int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-        iterator->synthesize_root = iterator->synthesize_nobody = !FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE);
-
         qr = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", true, NULL, flags);
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (qr < 0 || !iterator->nss_covered)) {
@@ -1002,8 +1002,6 @@ int groupdb_all(UserDBFlags flags, UserDBIterator **ret) {
         iterator = userdb_iterator_new(LOOKUP_GROUP, flags);
         if (!iterator)
                 return -ENOMEM;
-
-        iterator->synthesize_root = iterator->synthesize_nobody = !FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE);
 
         qr = userdb_start_query(iterator, "io.systemd.UserDatabase.GetGroupRecord", true, NULL, flags);
 
