@@ -422,9 +422,9 @@ static int userdb_start_query(
         }
 
         /* First, let's talk to the multiplexer, if we can */
-        if ((flags & (USERDB_AVOID_MULTIPLEXER|USERDB_AVOID_DYNAMIC_USER|USERDB_AVOID_NSS|USERDB_DONT_SYNTHESIZE)) == 0 &&
             !strv_contains(except, "io.elogind.Multiplexer") &&
             (!only || strv_contains(only, "io.elogind.Multiplexer"))) {
+        if ((flags & (USERDB_AVOID_MULTIPLEXER|USERDB_EXCLUDE_DYNAMIC_USER|USERDB_EXCLUDE_NSS|USERDB_DONT_SYNTHESIZE)) == 0 &&
                 _cleanup_(json_variant_unrefp) JsonVariant *patched_query = json_variant_ref(query);
 
                 r = json_variant_set_field_string(&patched_query, "service", "io.elogind.Multiplexer");
@@ -454,8 +454,8 @@ static int userdb_start_query(
                 if (streq(de->d_name, "io.elogind.Multiplexer")) /* We already tried this above, don't try this again */
                         continue;
 
-                if (FLAGS_SET(flags, USERDB_AVOID_DYNAMIC_USER) &&
                     streq(de->d_name, "io.elogind.DynamicUser"))
+                if (FLAGS_SET(flags, USERDB_EXCLUDE_DYNAMIC_USER) &&
                         continue;
 
                 /* Avoid NSS is this is requested. Note that we also skip NSS when we were asked to skip the
@@ -463,7 +463,7 @@ static int userdb_start_query(
                  * (and when we run as part of elogind-userdbd.service we don't want to talk to ourselves
                  * anyway). */
                 is_nss = streq(de->d_name, "io.elogind.NameServiceSwitch");
-                if ((flags & (USERDB_AVOID_NSS|USERDB_AVOID_MULTIPLEXER)) && is_nss)
+                if ((flags & (USERDB_EXCLUDE_NSS|USERDB_AVOID_MULTIPLEXER)) && is_nss)
                         continue;
 
                 if (strv_contains(except, de->d_name))
@@ -621,13 +621,13 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
                         return r;
         }
 
-        if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && !iterator->nss_covered) {
+        if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 /* Make sure the NSS lookup doesn't recurse back to us. */
 
                 r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         /* Client-side NSS fallback */
-                        r = nss_user_record_by_name(name, !FLAGS_SET(flags, USERDB_AVOID_SHADOW), ret);
+                        r = nss_user_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
                 }
@@ -668,11 +668,11 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
                         return r;
         }
 
-        if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && !iterator->nss_covered) {
                 r = userdb_iterator_block_nss_elogind(iterator);
+        if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 if (r >= 0) {
                         /* Client-side NSS fallback */
-                        r = nss_user_record_by_uid(uid, !FLAGS_SET(flags, USERDB_AVOID_SHADOW), ret);
+                        r = nss_user_record_by_uid(uid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
                 }
@@ -704,7 +704,7 @@ int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
 
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", true, NULL, flags);
 
-        if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && (r < 0 || !iterator->nss_covered)) {
+        if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (r < 0 || !iterator->nss_covered)) {
                 r = userdb_iterator_block_nss_systemd(iterator);
                 if (r < 0)
                         return r;
@@ -741,7 +741,7 @@ int userdb_iterator_get(UserDBIterator *iterator, UserRecord **ret) {
                         if (pw->pw_uid == UID_NOBODY)
                                 iterator->synthesize_nobody = false;
 
-                        if (!FLAGS_SET(iterator->flags, USERDB_AVOID_SHADOW)) {
+                        if (!FLAGS_SET(iterator->flags, USERDB_SUPPRESS_SHADOW)) {
                                 r = nss_spwd_for_passwd(pw, &spwd, &buffer);
                                 if (r < 0) {
                                         log_debug_errno(r, "Failed to acquire shadow entry for user %s, ignoring: %m", pw->pw_name);
@@ -833,10 +833,10 @@ int groupdb_by_name(const char *name, UserDBFlags flags, GroupRecord **ret) {
                         return r;
         }
 
-        if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && !(iterator && iterator->nss_covered)) {
+        if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !(iterator && iterator->nss_covered)) {
                 r = userdb_iterator_block_nss_systemd(iterator);
                 if (r >= 0) {
-                        r = nss_group_record_by_name(name, !FLAGS_SET(flags, USERDB_AVOID_SHADOW), ret);
+                        r = nss_group_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
                 }
@@ -877,10 +877,10 @@ int groupdb_by_gid(gid_t gid, UserDBFlags flags, GroupRecord **ret) {
                         return r;
         }
 
-        if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && !(iterator && iterator->nss_covered)) {
+        if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !(iterator && iterator->nss_covered)) {
                 r = userdb_iterator_block_nss_systemd(iterator);
                 if (r >= 0) {
-                        r = nss_group_record_by_gid(gid, !FLAGS_SET(flags, USERDB_AVOID_SHADOW), ret);
+                        r = nss_group_record_by_gid(gid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
                 }
@@ -911,7 +911,7 @@ int groupdb_all(UserDBFlags flags, UserDBIterator **ret) {
 
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetGroupRecord", true, NULL, flags);
 
-        if (!FLAGS_SET(flags, USERDB_AVOID_NSS) && (r < 0 || !iterator->nss_covered)) {
+        if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (r < 0 || !iterator->nss_covered)) {
                 r = userdb_iterator_block_nss_systemd(iterator);
                 if (r < 0)
                         return r;
@@ -946,7 +946,7 @@ int groupdb_iterator_get(UserDBIterator *iterator, GroupRecord **ret) {
                         if (gr->gr_gid == GID_NOBODY)
                                 iterator->synthesize_nobody = false;
 
-                        if (!FLAGS_SET(iterator->flags, USERDB_AVOID_SHADOW)) {
+                        if (!FLAGS_SET(iterator->flags, USERDB_SUPPRESS_SHADOW)) {
                                 r = nss_sgrp_for_group(gr, &sgrp, &buffer);
                                 if (r < 0) {
                                         log_debug_errno(r, "Failed to acquire shadow entry for group %s, ignoring: %m", gr->gr_name);
@@ -1017,7 +1017,7 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
                 return -ENOMEM;
 
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, query, flags);
-        if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_AVOID_NSS))
+        if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_EXCLUDE_NSS))
                 goto finish;
 
         r = userdb_iterator_block_nss_systemd(iterator);
@@ -1060,7 +1060,7 @@ int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **
                 return -ENOMEM;
 
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, query, flags);
-        if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_AVOID_NSS))
+        if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_EXCLUDE_NSS))
                 goto finish;
 
         r = userdb_iterator_block_nss_systemd(iterator);
@@ -1101,7 +1101,7 @@ int membershipdb_all(UserDBFlags flags, UserDBIterator **ret) {
                 return -ENOMEM;
 
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, NULL, flags);
-        if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_AVOID_NSS))
+        if ((r >= 0 && iterator->nss_covered) || FLAGS_SET(flags, USERDB_EXCLUDE_NSS))
                 goto finish;
 
         r = userdb_iterator_block_nss_systemd(iterator);
