@@ -402,6 +402,9 @@ static int userdb_start_query(
         assert(iterator);
         assert(method);
 
+        if (FLAGS_SET(flags, USERDB_EXCLUDE_VARLINK))
+                return -ENOLINK;
+
         e = getenv("SYSTEMD_BYPASS_USERDB");
         if (e) {
                 r = parse_boolean(e);
@@ -422,9 +425,9 @@ static int userdb_start_query(
         }
 
         /* First, let's talk to the multiplexer, if we can */
+        if ((flags & (USERDB_AVOID_MULTIPLEXER|USERDB_EXCLUDE_DYNAMIC_USER|USERDB_EXCLUDE_NSS|USERDB_DONT_SYNTHESIZE)) == 0 &&
             !strv_contains(except, "io.elogind.Multiplexer") &&
             (!only || strv_contains(only, "io.elogind.Multiplexer"))) {
-        if ((flags & (USERDB_AVOID_MULTIPLEXER|USERDB_EXCLUDE_DYNAMIC_USER|USERDB_EXCLUDE_NSS|USERDB_DONT_SYNTHESIZE)) == 0 &&
                 _cleanup_(json_variant_unrefp) JsonVariant *patched_query = json_variant_ref(query);
 
                 r = json_variant_set_field_string(&patched_query, "service", "io.elogind.Multiplexer");
@@ -454,8 +457,8 @@ static int userdb_start_query(
                 if (streq(de->d_name, "io.elogind.Multiplexer")) /* We already tried this above, don't try this again */
                         continue;
 
-                    streq(de->d_name, "io.elogind.DynamicUser"))
                 if (FLAGS_SET(flags, USERDB_EXCLUDE_DYNAMIC_USER) &&
+                    streq(de->d_name, "io.elogind.DynamicUser"))
                         continue;
 
                 /* Avoid NSS is this is requested. Note that we also skip NSS when we were asked to skip the
@@ -668,8 +671,8 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
                         return r;
         }
 
-                r = userdb_iterator_block_nss_elogind(iterator);
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_uid(uid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
