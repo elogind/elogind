@@ -85,6 +85,11 @@ DEFINE_PRIVATE_STRING_TABLE_LOOKUP_TO_STRING(event_source_type, int);
                SOURCE_DEFER,                    \
                SOURCE_INOTIFY)
 
+/* This is used to assert that we didn't pass an unexpected source type to event_source_time_prioq_put().
+ * Time sources and ratelimited sources can be passed, so effectively this is the same as the
+ * EVENT_SOURCE_CAN_RATE_LIMIT() macro. */
+#define EVENT_SOURCE_USES_TIME_PRIOQ(t) EVENT_SOURCE_CAN_RATE_LIMIT(t)
+
 struct sd_event {
         unsigned n_ref;
 
@@ -1204,6 +1209,7 @@ static int event_source_time_prioq_put(
 
         assert(s);
         assert(d);
+        assert(EVENT_SOURCE_USES_TIME_PRIOQ(s->type));
 
         r = prioq_put(d->earliest, s, &s->earliest_index);
         if (r < 0)
@@ -2991,6 +2997,7 @@ static int event_arm_timer(
                 d->needs_rearm = false;
 
         a = prioq_peek(d->earliest);
+        assert(!a || EVENT_SOURCE_USES_TIME_PRIOQ(a->type));
         if (!a || a->enabled == SD_EVENT_OFF || time_event_source_next(a) == USEC_INFINITY) {
 
                 if (d->fd < 0)
@@ -3008,7 +3015,8 @@ static int event_arm_timer(
         }
 
         b = prioq_peek(d->latest);
-        assert_se(b && b->enabled != SD_EVENT_OFF);
+        assert(!b || EVENT_SOURCE_USES_TIME_PRIOQ(b->type));
+        assert(b && b->enabled != SD_EVENT_OFF);
 
         t = sleep_between(e, time_event_source_next(a), time_event_source_latest(b));
         if (d->next == t)
@@ -3088,6 +3096,8 @@ static int process_timer(
 
         for (;;) {
                 s = prioq_peek(d->earliest);
+                assert(!s || EVENT_SOURCE_USES_TIME_PRIOQ(s->type));
+
                 if (!s || time_event_source_next(s) > n)
                         break;
 
@@ -3462,11 +3472,11 @@ static int source_dispatch(sd_event_source *s) {
          * invalidate the event. */
         saved_type = s->type;
 
-        /* Similarly, store a reference to the event loop object, so that we can still access it after the
+        /* Similar, store a reference to the event loop object, so that we can still access it after the
          * callback might have invalidated/disconnected the event source. */
         saved_event = sd_event_ref(s->event);
 
-        /* Check if we hit the ratelimit for this event source, and if so, let's disable it. */
+        /* Check if we hit the ratelimit for this event source, if so, let's disable it. */
         assert(!s->ratelimited);
         if (!ratelimit_below(&s->rate_limit)) {
                 r = event_source_enter_ratelimited(s);
@@ -3485,7 +3495,8 @@ static int source_dispatch(sd_event_source *s) {
         if (s->type != SOURCE_POST) {
                 sd_event_source *z;
 
-                /* If we execute a non-post source, let's mark all post sources as pending. */
+                /* If we execute a non-post source, let's mark all
+                 * post sources as pending */
 
                 SET_FOREACH(z, s->event->post_sources) {
                         if (event_source_is_offline(z))
@@ -3648,6 +3659,8 @@ static int dispatch_exit(sd_event *e) {
         assert(e);
 
         p = prioq_peek(e->exit);
+        assert(!p || p->type == SOURCE_EXIT);
+
         if (!p || event_source_is_offline(p)) {
                 e->state = SD_EVENT_FINISHED;
                 return 0;
