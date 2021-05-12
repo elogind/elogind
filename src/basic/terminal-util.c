@@ -318,14 +318,13 @@ int reset_terminal(const char *name) {
 #endif // 0
 
 int open_terminal(const char *name, int mode) {
+        _cleanup_close_ int fd = -1;
         unsigned c = 0;
-        int fd;
 
         /*
-         * If a TTY is in the process of being closed opening it might
-         * cause EIO. This is horribly awful, but unlikely to be
-         * changed in the kernel. Hence we work around this problem by
-         * retrying a couple of times.
+         * If a TTY is in the process of being closed opening it might cause EIO. This is horribly awful, but
+         * unlikely to be changed in the kernel. Hence we work around this problem by retrying a couple of
+         * times.
          *
          * https://bugs.launchpad.net/ubuntu/+source/linux/+bug/554172/comments/245
          */
@@ -345,16 +344,14 @@ int open_terminal(const char *name, int mode) {
                 if (c >= 20)
                         return -errno;
 
-                usleep(50 * USEC_PER_MSEC);
+                (void) usleep(50 * USEC_PER_MSEC);
                 c++;
         }
 
-        if (isatty(fd) <= 0) {
-                safe_close(fd);
-                return -ENOTTY;
-        }
+        if (isatty(fd) < 1)
+                return negative_errno();
 
-        return fd;
+        return TAKE_FD(fd);
 }
 
 int acquire_terminal(
