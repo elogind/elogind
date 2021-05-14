@@ -723,7 +723,7 @@ git = find_program('git', required : false)
 env = find_program('env')
 perl = find_program('perl', required : false)
 rsync = find_program('rsync', required : false)
-meson_make_symlink = find_program('tools/meson-make-symlink.sh')
+meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
 
 #if 0 /// elogind does not use this but needs a tool to symlink its installed headers.
@@ -2203,7 +2203,7 @@ test_dlopen = executable(
 #
 #                 # We cannot use shared_module because it does not support version suffix.
 #                 # Unfortunately shared_library insists on creating the symlink…
-#                 meson.add_install_script(sh, '-c',
+#                 meson.add_install_script('sh', '-c',
 #                                          'rm $DESTDIR@0@/libnss_@1@.so'
 #                                          .format(rootlibdir, module))
 #
@@ -3203,9 +3203,11 @@ endif
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         meson.add_install_script(sh, '-c', mkdir_p.format(binfmtdir))
+#         meson.add_install_script('sh', '-c',
+#                                  mkdir_p.format(binfmtdir))
 #         if install_sysconfdir
-#                 meson.add_install_script(sh, '-c', mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
+#                 meson.add_install_script('sh', '-c',
+#                                          mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
 #         endif
 # endif
 #
@@ -3681,9 +3683,11 @@ public_programs += executable(
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         meson.add_install_script(sh, '-c', mkdir_p.format(modulesloaddir))
+#         meson.add_install_script('sh', '-c',
+#                                  mkdir_p.format(modulesloaddir))
 #         if install_sysconfdir
-#                 meson.add_install_script(sh, '-c', mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
+#                 meson.add_install_script('sh', '-c',
+#                                          mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
 #         endif
 # endif
 #
@@ -4008,10 +4012,9 @@ install_data('LICENSE.GPL2',
              'docs/GVARIANT-SERIALIZATION.md',
              install_dir : docdir)
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-meson.add_install_script(sh, '-c', mkdir_p.format(elogindstatedir))
-meson.add_install_script(sh, '-c', 'touch $DESTDIR@0@'.format(prefixdir))
+/// elogind empty mask removed (UNNEEDED by elogind)
+meson.add_install_script('sh', '-c', mkdir_p.format(elogindstatedir))
+meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
 
 ############################################################
 
@@ -4124,8 +4127,8 @@ if git.found()
 
         run_target(
                 'git-snapshot',
-                           '-o', '@0@/elogind-@1@.tar.gz'.format(project_source_root,
                 command : [git, 'archive',
+                           '-o', '@0@/elogind-@1@.tar.gz'.format(project_source_root,
                                                                  git_head_short),
                            '--prefix', 'systemd-@0@/'.format(git_head),
                            'HEAD'])

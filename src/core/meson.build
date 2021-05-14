@@ -218,16 +218,16 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(systemsleepdir))
 #endif // 1
 #if 0 /// UNNEEDED by elogind
-# meson.add_install_script(sh, '-c', mkdir_p.format(systemshutdowndir))
-# meson.add_install_script(sh, '-c', mkdir_p.format(systemsleepdir))
-# meson.add_install_script(sh, '-c', mkdir_p.format(systemgeneratordir))
-# meson.add_install_script(sh, '-c', mkdir_p.format(usergeneratordir))
+# meson.add_install_script('sh', '-c', mkdir_p.format(systemshutdowndir))
+# meson.add_install_script('sh', '-c', mkdir_p.format(systemsleepdir))
+# meson.add_install_script('sh', '-c', mkdir_p.format(systemgeneratordir))
+# meson.add_install_script('sh', '-c', mkdir_p.format(usergeneratordir))
 #
 #endif // 0
 if install_sysconfdir
-        meson.add_install_script(sh, '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'system')))
-        meson.add_install_script(sh, '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
-        meson.add_install_script(sh, '-c', mkdir_p.format(join_paths(sysconfdir, 'xdg/elogind')))
+        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'system')))
+        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
+        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(sysconfdir, 'xdg/elogind')))
 endif
 
 ############################################################
