@@ -650,6 +650,7 @@ foreach ident : [
                                  #include <signal.h>
                                  #include <sys/wait.h>'''],
         ['mallinfo',          '''#include <malloc.h>'''],
+        ['mallinfo2',         '''#include <malloc.h>'''],
         ['execveat',          '''#include <unistd.h>'''],
         ['close_range',       '''#include <unistd.h>'''],
         ['epoll_pwait2',      '''#include <sys/epoll.h>'''],
@@ -710,22 +711,27 @@ endif
 
 versiondep = declare_dependency(sources: version_h)
 
+sh = find_program('sh')
+echo = find_program('echo')
+test = find_program('test')
 sed = find_program('sed')
 awk = find_program('awk')
 m4 = find_program('m4')
 stat = find_program('stat')
+ln = find_program('ln')
 git = find_program('git', required : false)
 env = find_program('env')
 perl = find_program('perl', required : false)
+rsync = find_program('rsync', required : false)
+meson_make_symlink = find_program('tools/meson-make-symlink.sh')
+test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
 
 #if 0 /// elogind does not use this but needs a tool to symlink its installed headers.
-# meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #else // 0
 meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 0
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// unneeded by elogind
-# test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
 # splash_bmp = files('test/splash.bmp')
 #endif // 0
 
@@ -770,7 +776,7 @@ endforeach
 #if 0 /// unneeded by elogind
 # conf.set_quoted('TELINIT', get_option('telinit-path'))
 #
-# if run_command('ln', '--relative', '--help').returncode() != 0
+# if run_command(ln, '--relative', '--help').returncode() != 0
 #         error('ln does not support --relative (added in coreutils 8.16)')
 # endif
 #endif // 0
@@ -785,7 +791,7 @@ const char * in_word_set(const char *, @0@);
 @1@
 '''
 gperf_snippet_format = 'echo foo,bar | @0@ -L ANSI-C'
-gperf_snippet = run_command('sh', '-c', gperf_snippet_format.format(gperf.path()))
+gperf_snippet = run_command(sh, '-c', gperf_snippet_format.format(gperf.path()))
 gperf_test = gperf_test_format.format('size_t', gperf_snippet.stdout())
 if cc.compiles(gperf_test)
         gperf_len_type = 'size_t'
@@ -852,11 +858,11 @@ conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 #if 0 /// UNNEEDED by elogind
 # time_epoch = get_option('time-epoch')
 # if time_epoch == -1
-#         time_epoch = run_command('sh', ['-c', 'echo "$SOURCE_DATE_EPOCH"']).stdout().strip()
+#         time_epoch = run_command(sh, '-c', 'echo "$SOURCE_DATE_EPOCH"').stdout().strip()
 #         if time_epoch == '' and git.found() and run_command('test', '-e', '.git').returncode() == 0
 #                 # If we're in a git repository, use the creation time of the latest git tag.
-#                 latest_tag = run_command('git', 'describe', '--abbrev=0', '--tags').stdout().strip()
-#                 time_epoch = run_command('git', 'log', '--no-show-signature', '-1', '--format=%at', latest_tag).stdout()
+#                 latest_tag = run_command(git, 'describe', '--abbrev=0', '--tags').stdout().strip()
+#                 time_epoch = run_command(git, 'log', '--no-show-signature', '-1', '--format=%at', latest_tag).stdout()
 #         endif
 #         if time_epoch == ''
 #                 NEWS = files('NEWS')
@@ -2197,7 +2203,7 @@ test_dlopen = executable(
 #
 #                 # We cannot use shared_module because it does not support version suffix.
 #                 # Unfortunately shared_library insists on creating the symlink…
-#                 meson.add_install_script('sh', '-c',
+#                 meson.add_install_script(sh, '-c',
 #                                          'rm $DESTDIR@0@/libnss_@1@.so'
 #                                          .format(rootlibdir, module))
 #
@@ -3197,11 +3203,9 @@ endif
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         meson.add_install_script('sh', '-c',
-#                                  mkdir_p.format(binfmtdir))
+#         meson.add_install_script(sh, '-c', mkdir_p.format(binfmtdir))
 #         if install_sysconfdir
-#                 meson.add_install_script('sh', '-c',
-#                                          mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
+#                 meson.add_install_script(sh, '-c', mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
 #         endif
 # endif
 #
@@ -3677,11 +3681,9 @@ public_programs += executable(
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         meson.add_install_script('sh', '-c',
-#                                  mkdir_p.format(modulesloaddir))
+#         meson.add_install_script(sh, '-c', mkdir_p.format(modulesloaddir))
 #         if install_sysconfdir
-#                 meson.add_install_script('sh', '-c',
-#                                          mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
+#                 meson.add_install_script(sh, '-c', mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
 #         endif
 # endif
 #
@@ -3771,10 +3773,10 @@ executable('elogind-uaccess-command',
 custom_target(
         'elogind-runtest.env',
         output : 'elogind-runtest.env',
-        command : ['sh', '-c', '{ ' +
-                               'echo SYSTEMD_TEST_DATA=@0@; '.format(join_paths(project_source_root, 'test')) +
-                               'echo SYSTEMD_CATALOG_DIR=@0@; '.format(join_paths(project_build_root, 'catalog')) +
-                               '} >@OUTPUT@'],
+        command : [sh, '-c',
+                   '{ echo SYSTEMD_TEST_DATA=@0@; echo SYSTEMD_CATALOG_DIR=@1@; } >@OUTPUT@'.format(
+                           join_paths(project_source_root, 'test'),
+                           join_paths(project_build_root, 'catalog'))],
         build_by_default : true)
 
 test_cflags = ['-DTEST_CODE=1']
@@ -4007,9 +4009,9 @@ install_data('LICENSE.GPL2',
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind
-# meson.add_install_script('sh', '-c', mkdir_p.format(systemdstatedir))
 #endif // 0
-meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
+meson.add_install_script(sh, '-c', mkdir_p.format(elogindstatedir))
+meson.add_install_script(sh, '-c', 'touch $DESTDIR@0@'.format(prefixdir))
 
 ############################################################
 
@@ -4058,7 +4060,7 @@ endforeach
 #                                                 name,
 #                                                 output : name,
 #                                                 depends : build,
-#                                                 command : [env, 'ln', '-fs',
+#                                                 command : [ln, '-fs',
 #                                                            join_paths(build.full_path(), b),
 #                                                            '@OUTPUT@'],
 #                                                 build_by_default : true)
@@ -4086,9 +4088,8 @@ endforeach
 
 if git.found()
         all_files = run_command(
-                'env', '-u', 'GIT_WORK_TREE',
-                git,
-                '--git-dir=@0@/.git'.format(project_source_root),
+                env, '-u', 'GIT_WORK_TREE',
+                git, '--git-dir=@0@/.git'.format(project_source_root),
                 'ls-files', ':/*.[ch]')
 
         all_files = files(all_files.stdout().split())
@@ -4114,17 +4115,17 @@ endif
 if git.found()
         git_head = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(project_source_root),
-                 'rev-parse', 'HEAD']).stdout().strip()
+                '--git-dir=@0@/.git'.format(project_source_root),
+                'rev-parse', 'HEAD').stdout().strip()
         git_head_short = run_command(
                 git,
-                ['--git-dir=@0@/.git'.format(project_source_root),
-                 'rev-parse', '--short=7', 'HEAD']).stdout().strip()
+                '--git-dir=@0@/.git'.format(project_source_root),
+                'rev-parse', '--short=7', 'HEAD').stdout().strip()
 
         run_target(
                 'git-snapshot',
-                command : ['git', 'archive',
                            '-o', '@0@/elogind-@1@.tar.gz'.format(project_source_root,
+                command : [git, 'archive',
                                                                  git_head_short),
                            '--prefix', 'systemd-@0@/'.format(git_head),
                            'HEAD'])
@@ -4165,7 +4166,7 @@ endif
 custom_target(
         'update-man-rules',
         output : 'update-man-rules',
-        command : ['sh', '-c',
+        command : [sh, '-c',
                    'cd @0@ && '.format(meson.build_root()) +
                    'python3 @0@/tools/update-man-rules.py $(find @0@ -wholename "*/man/*.xml") >t && '.format(project_source_root) +
                    'mv t @0@/man/rules/meson.build'.format(meson.current_source_dir())],

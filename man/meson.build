@@ -72,7 +72,7 @@ foreach tuple : xsltproc.found() ? manpages : []
                         link = custom_target(
                                 htmlalias,
                                 output : htmlalias,
-                                command : ['ln', '-fs', html, '@OUTPUT@'])
+                                command : [ln, '-fs', html, '@OUTPUT@'])
                         if want_html
 #if 0 /// This must be configurable in elogind
 #                                 dst = join_paths(docdir, 'html', htmlalias)
@@ -157,7 +157,7 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
                         htmlalias,
                         input : p2,
                         output : htmlalias,
-                        command : ['ln', '-fs', html, '@OUTPUT@'])
+                        command : [ln, '-fs', html, '@OUTPUT@'])
                 if want_html
                         dst = join_paths(docdir, 'html', htmlalias)
                         cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
@@ -187,17 +187,15 @@ man = custom_target(
         'man',
         output : 'man',
         depends : man_pages,
-        command : ['echo'])
+        command : [echo])
 
 html = custom_target(
         'html',
         output : 'html',
         depends : html_pages,
-        command : ['echo'])
+        command : [echo])
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-rsync = find_program('rsync', required : false)
+/// elogind empty mask removed (UNNEEDED in elogind)
 if rsync.found()
         run_target(
                 'doc-sync',
