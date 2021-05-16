@@ -392,7 +392,6 @@ substs.set('systemsleepdir',                                  systemsleepdir)
 # substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
 substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
-substs.set('BUILD_ROOT',                                      project_build_root)
 
 #####################################################################
 
