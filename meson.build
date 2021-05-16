@@ -297,6 +297,7 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      join_paths(rootbindir, 'systemctl'))
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
 # conf.set_quoted('SYSTEMD_STDIO_BRIDGE_BINARY_PATH',           join_paths(bindir, 'systemd-stdio-bridge'))
+# conf.set_quoted('ROOTBINDIR',                                 rootbindir)
 #else // 0
 conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'elogind-cgroups-agent'))
@@ -1005,6 +1006,7 @@ substs.set('TTY_GID', tty_gid)
 #if 0 /// UNNEEDED by elogind
 # # Ensure provided GID argument is numeric, otherwise fall back to default assignment
 # users_gid = get_option('users-gid')
+# conf.set('USERS_GID', users_gid < 0 ? '-' : users_gid)
 # substs.set('USERS_GID', users_gid < 0 ? '-' : users_gid)
 #
 # conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
@@ -1052,6 +1054,7 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 #         writable = ' /usr/lib/locale'
 # endif
 # substs.set('SERVICE_LOCALEGEN_WRITABLE', writable)
+# conf.set_quoted('SERVICE_LOCALEGEN_WRITABLE', writable)
 # conf.set10('HAVE_LOCALEGEN', have)
 #endif // 0
 
@@ -1061,7 +1064,9 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 # service_watchdog = get_option('service-watchdog')
 # watchdog_value = service_watchdog == '' ? '' : 'WatchdogSec=' + service_watchdog
 # substs.set('SERVICE_WATCHDOG', watchdog_value)
+# conf.set_quoted('SERVICE_WATCHDOG', watchdog_value)
 #
+# conf.set_quoted('SUSHELL', get_option('debug-shell'))
 # substs.set('SUSHELL', get_option('debug-shell'))
 # substs.set('DEBUGTTY', get_option('debug-tty'))
 # conf.set_quoted('DEBUGTTY', get_option('debug-tty'))
@@ -4225,9 +4230,9 @@ status = [
 #endif // 0
         'TTY GID:                           @0@'.format(tty_gid),
 #if 0 /// UNSUPPORTED by elogind
-#         'users GID:                         @0@'.format(substs.get('USERS_GID')),
 #endif // 0
 #if 0 /// UNSUPPORTED by elogind
+#         'users GID:                         @0@'.format(conf.get('USERS_GID')),
 #         'system UIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_UID_MAX'),
 #                                                                         conf.get('SYSTEM_ALLOC_UID_MIN')),
 #         'system GIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_GID_MAX'),
