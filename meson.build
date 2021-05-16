@@ -18,24 +18,15 @@ libsystemd_version = '0.31.0'
 # libudev_version = '1.7.1'
 #endif // 0
 
-# We need the same data in two different formats, ugh!
-# Also, for hysterical reasons, we use different variable
-# names, sometimes. Not all variables are included in every
-# set. Ugh, ugh, ugh!
 conf = configuration_data()
 conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/elogind')
 conf.set('PROJECT_VERSION',    meson.project_version(),
          description : 'Numerical project version (used where a simple number is expected)')
 
-substs = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
-# substs.set('PROJECT_URL',          'https://www.freedesktop.org/wiki/Software/systemd')
 #else // 0
 substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
 #endif // 0
-substs.set('PROJECT_VERSION',      meson.project_version(),
-           description : 'Numerical project version (used where a simple number is expected)')
-
 # This is to be used instead of meson.source_root(), as the latter will return
 # the wrong result when elogind is being built as a meson subproject
 project_source_root = meson.current_source_dir()
@@ -361,54 +352,12 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 #endif // 0
 conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
 
-substs.set('prefix',                                          prefixdir)
-substs.set('rootprefix',                                      rootprefixdir)
-substs.set('rootprefix_noslash',                              rootprefixdir_noslash)
-substs.set('exec_prefix',                                     prefixdir)
-substs.set('libdir',                                          libdir)
-substs.set('rootlibdir',                                      rootlibdir)
-substs.set('includedir',                                      includedir)
-substs.set('sysconfdir',                                      sysconfdir)
-substs.set('bindir',                                          bindir)
-substs.set('rootbindir',                                      rootbindir)
-substs.set('rootlibexecdir',                                  rootlibexecdir)
 #if 0 /// UNNEEDED by elogind
-# substs.set('systemunitdir',                                   systemunitdir)
-# substs.set('userunitdir',                                     userunitdir)
-# substs.set('systempresetdir',                                 systempresetdir)
-# substs.set('userpresetdir',                                   userpresetdir)
-# substs.set('udevhwdbdir',                                     udevhwdbdir)
 #endif // 0
-substs.set('udevrulesdir',                                    udevrulesdir)
-substs.set('udevlibexecdir',                                  udevlibexecdir)
 #if 0 /// UNNEEDED by elogind
-# substs.set('environmentdir',                                  environmentdir)
-# substs.set('catalogdir',                                      catalogdir)
-# substs.set('tmpfilesdir',                                     tmpfilesdir)
-# substs.set('sysusersdir',                                     sysusersdir)
-# substs.set('sysctldir',                                       sysctldir)
-# substs.set('binfmtdir',                                       binfmtdir)
-# substs.set('modulesloaddir',                                  modulesloaddir)
-# substs.set('modprobedir',                                     modprobedir)
-# substs.set('systemgeneratordir',                              systemgeneratordir)
-# substs.set('usergeneratordir',                                usergeneratordir)
-# substs.set('systemenvgeneratordir',                           systemenvgeneratordir)
-# substs.set('userenvgeneratordir',                             userenvgeneratordir)
 #endif // 0
-substs.set('systemshutdowndir',                               systemshutdowndir)
-substs.set('systemsleepdir',                                  systemsleepdir)
 #if 0 /// UNNEEDED by elogind
-# substs.set('CERTIFICATEROOT',                                 get_option('certificate-root'))
-# substs.set('RANDOM_SEED',                                     join_paths(randomseeddir, 'random-seed'))
-# substs.set('SYSTEM_SYSVINIT_PATH',                            sysvinit_path)
-# substs.set('SYSTEM_SYSVRCND_PATH',                            sysvrcnd_path)
-# substs.set('SYSTEMD_TEST_DATA',                               join_paths(testsdir, 'testdata'))
-# substs.set('RC_LOCAL_PATH',                                   get_option('rc-local'))
-# substs.set('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default ? 'yes' : 'no')
-# substs.set('STATUS_UNIT_FORMAT_DEFAULT',                      status_unit_format_default)
 #endif // 0
-substs.set('HIGH_RLIMIT_NOFILE',                              conf.get('HIGH_RLIMIT_NOFILE'))
-
 #####################################################################
 
 cc = meson.get_compiler('c')
@@ -785,7 +734,6 @@ foreach prog : progs
         endif
         name = prog.length() > 2 ? prog[2] : prog[0].to_upper()
         conf.set_quoted(name, path)
-        substs.set(name, path)
 endforeach
 
 #if 0 /// unneeded by elogind
@@ -935,7 +883,6 @@ foreach tuple : [['system-alloc-uid-min', 'SYS_UID_MIN', 1],  # Also see login.d
                 endif
         endif
         conf.set(tuple[0].underscorify().to_upper(), v)
-        substs.set(tuple[0].underscorify().to_upper(), v)
 endforeach
 if conf.get('SYSTEM_ALLOC_UID_MIN') >= conf.get('SYSTEM_UID_MAX')
         error('Invalid uid allocation range')
@@ -949,15 +896,11 @@ endif
 # dynamic_uid_max = get_option('dynamic-uid-max')
 # conf.set('DYNAMIC_UID_MIN', dynamic_uid_min)
 # conf.set('DYNAMIC_UID_MAX', dynamic_uid_max)
-# substs.set('dynamicuidmin', dynamic_uid_min)
-# substs.set('dynamicuidmax', dynamic_uid_max)
 #
 # container_uid_base_min = get_option('container-uid-base-min')
 # container_uid_base_max = get_option('container-uid-base-max')
 # conf.set('CONTAINER_UID_BASE_MIN', container_uid_base_min)
 # conf.set('CONTAINER_UID_BASE_MAX', container_uid_base_max)
-# substs.set('containeruidbasemin', container_uid_base_min)
-# substs.set('containeruidbasemax', container_uid_base_max)
 #endif // 0
 
 nobody_user = get_option('nobody-user')
@@ -1010,28 +953,22 @@ endif
 
 conf.set_quoted('NOBODY_USER_NAME', nobody_user)
 conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
-substs.set('NOBODY_USER_NAME', nobody_user)
-substs.set('NOBODY_GROUP_NAME', nobody_group)
 
 tty_gid = get_option('tty-gid')
 conf.set('TTY_GID', tty_gid)
-substs.set('TTY_GID', tty_gid)
 
 #if 0 /// UNNEEDED by elogind
 # # Ensure provided GID argument is numeric, otherwise fall back to default assignment
 # users_gid = get_option('users-gid')
 # conf.set('USERS_GID', users_gid < 0 ? '-' : users_gid)
-# substs.set('USERS_GID', users_gid < 0 ? '-' : users_gid)
 #
 # conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
 # conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
 #
 # dev_kvm_mode = get_option('dev-kvm-mode')
 # conf.set_quoted('DEV_KVM_MODE', dev_kvm_mode) # FIXME: convert to 0o… notation
-# substs.set('DEV_KVM_MODE', dev_kvm_mode)
 # conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
 # group_render_mode = get_option('group-render-mode')
-# substs.set('GROUP_RENDER_MODE', group_render_mode)
 # conf.set_quoted('GROUP_RENDER_MODE', group_render_mode)
 # conf.set10('GROUP_RENDER_UACCESS', group_render_mode != '0666')
 #endif // 0
@@ -1039,16 +976,13 @@ substs.set('TTY_GID', tty_gid)
 kill_user_processes = get_option('default-kill-user-processes')
 conf.set10('KILL_USER_PROCESSES', kill_user_processes)
 conf.set_quoted('KILL_USER_PROCESSES_YES_NO', kill_user_processes ? 'yes' : 'no')
-substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 
 #if 0 /// UNNEEDED by elogind
 # dns_servers = get_option('dns-servers')
 # conf.set_quoted('DNS_SERVERS', dns_servers)
-# substs.set('DNS_SERVERS', dns_servers)
 #
 # ntp_servers = get_option('ntp-servers')
 # conf.set_quoted('NTP_SERVERS', ntp_servers)
-# substs.set('NTP_SERVERS', ntp_servers)
 #
 # default_locale = get_option('default-locale')
 # if default_locale == ''
@@ -1069,7 +1003,6 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 #         have = true
 #         writable = ' /usr/lib/locale'
 # endif
-# substs.set('SERVICE_LOCALEGEN_WRITABLE', writable)
 # conf.set_quoted('SERVICE_LOCALEGEN_WRITABLE', writable)
 # conf.set10('HAVE_LOCALEGEN', have)
 #endif // 0
@@ -1079,12 +1012,9 @@ conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 #if 0 /// UNNEEDED by elogind
 # service_watchdog = get_option('service-watchdog')
 # watchdog_value = service_watchdog == '' ? '' : 'WatchdogSec=' + service_watchdog
-# substs.set('SERVICE_WATCHDOG', watchdog_value)
 # conf.set_quoted('SERVICE_WATCHDOG', watchdog_value)
 #
 # conf.set_quoted('SUSHELL', get_option('debug-shell'))
-# substs.set('SUSHELL', get_option('debug-shell'))
-# substs.set('DEBUGTTY', get_option('debug-tty'))
 # conf.set_quoted('DEBUGTTY', get_option('debug-tty'))
 #endif // 0
 
@@ -1656,7 +1586,6 @@ conf.set10('HAVE_DBUS', have)
 # conf.set('DEFAULT_DNSSEC_MODE',
 #          'DNSSEC_' + default_dnssec.underscorify().to_upper())
 # conf.set_quoted('DEFAULT_DNSSEC_MODE_STR', default_dnssec)
-# substs.set('DEFAULT_DNSSEC_MODE', default_dnssec)
 #
 # dns_over_tls = get_option('dns-over-tls')
 # if dns_over_tls != 'false'
@@ -1698,19 +1627,16 @@ conf.set10('HAVE_DBUS', have)
 # conf.set('DEFAULT_DNS_OVER_TLS_MODE',
 #          'DNS_OVER_TLS_' + default_dns_over_tls.underscorify().to_upper())
 # conf.set_quoted('DEFAULT_DNS_OVER_TLS_MODE_STR', default_dns_over_tls)
-# substs.set('DEFAULT_DNS_OVER_TLS_MODE', default_dns_over_tls)
 #
 # default_mdns = get_option('default-mdns')
 # conf.set('DEFAULT_MDNS_MODE',
 #          'RESOLVE_SUPPORT_' + default_mdns.to_upper())
 # conf.set_quoted('DEFAULT_MDNS_MODE_STR', default_mdns)
-# substs.set('DEFAULT_MDNS_MODE', default_mdns)
 #
 # default_llmnr = get_option('default-llmnr')
 # conf.set('DEFAULT_LLMNR_MODE',
 #          'RESOLVE_SUPPORT_' + default_llmnr.to_upper())
 # conf.set_quoted('DEFAULT_LLMNR_MODE_STR', default_llmnr)
-# substs.set('DEFAULT_LLMNR_MODE', default_llmnr)
 #
 # want_repart = get_option('repart')
 # if want_repart != 'false'
@@ -1756,7 +1682,6 @@ conf.set10('HAVE_DBUS', have)
 #
 # have = get_option('oomd')
 # conf.set10('ENABLE_OOMD', have)
-# substs.set10('ENABLE_OOMD', have)
 #
 # want_remote = get_option('remote')
 # if want_remote != 'false'
@@ -1824,7 +1749,6 @@ foreach term : ['smack',
         have = get_option(term)
         name = 'ENABLE_' + term.underscorify().to_upper()
         conf.set10(name, have)
-        substs.set10(name, have)
 endforeach
 
 #if 1 /// elogind always looks at uid boundaries in /etc/login.defs
