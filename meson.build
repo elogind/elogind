@@ -310,6 +310,7 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlib
 #endif // 0
 conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 #if 0 /// UNNEEDED by elogind
+# conf.set_quoted('PREFIX',                                     prefixdir)
 # conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
@@ -342,6 +343,7 @@ conf.set_quoted('ROOTLIBDIR',                                 rootlibdir)
 conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('BOOTLIBDIR',                                 bootlibdir)
+# conf.set_quoted('INCLUDE_DIR',                                includedir)
 # conf.set_quoted('SYSTEMD_PULL_PATH',                          join_paths(rootlibexecdir, 'systemd-pull'))
 # conf.set_quoted('SYSTEMD_IMPORT_PATH',                        join_paths(rootlibexecdir, 'systemd-import'))
 # conf.set_quoted('SYSTEMD_IMPORT_FS_PATH',                     join_paths(rootlibexecdir, 'systemd-import-fs'))
