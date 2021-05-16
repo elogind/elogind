@@ -1013,6 +1013,7 @@ substs.set('TTY_GID', tty_gid)
 # conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
 #
 # dev_kvm_mode = get_option('dev-kvm-mode')
+# conf.set_quoted('DEV_KVM_MODE', dev_kvm_mode) # FIXME: convert to 0o… notation
 # substs.set('DEV_KVM_MODE', dev_kvm_mode)
 # conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
 # group_render_mode = get_option('group-render-mode')
@@ -1228,10 +1229,8 @@ libapparmor = []
 #endif // 0
 conf.set10('HAVE_APPARMOR', have)
 
-smack_run_label = get_option('smack-run-label')
-if smack_run_label != ''
-        conf.set_quoted('SMACK_RUN_LABEL', smack_run_label)
-endif
+conf.set10('HAVE_SMACK_RUN_LABEL', get_option('smack-run-label') != '')
+conf.set_quoted('SMACK_RUN_LABEL', get_option('smack-run-label'))
 
 want_polkit = get_option('polkit')
 install_polkit = false
