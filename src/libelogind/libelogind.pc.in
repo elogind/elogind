@@ -7,18 +7,18 @@
 #  the Free Software Foundation; either version 2.1 of the License, or
 #  (at your option) any later version.
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-libdir=@rootlibdir@
 #if 0 /// To be able to act as a drop-in replacement, elogind has a systemd subdir
-# includedir=@includedir@
+# prefix={{PREFIX}}
+# exec_prefix={{PREFIX}}
+# libdir={{ROOTLIBDIR}}
+# includedir={{INCLUDE_DIR}}
 #else // 0
 includedir=@includedir@/elogind
 #endif // 0
 
 Name: elogind
 Description: elogind Library
-URL: @PROJECT_URL@
-Version: @PROJECT_VERSION@
 Libs: -L${libdir} -lelogind
+URL: {{PROJECT_URL}}
+Version: {{PROJECT_VERSION}}
 Cflags: -I${includedir}
