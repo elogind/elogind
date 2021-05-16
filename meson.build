@@ -1891,6 +1891,7 @@ generate_gperfs = find_program('tools/generate-gperfs.py')
 make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
+meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 
 #if 0 /// UNNEEDED by elogind
