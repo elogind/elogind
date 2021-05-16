@@ -95,21 +95,33 @@ loginctl_sources += files('''
         eloginctl.h
 '''.split())
 #endif // 1
+
+#if 0 /// elogind builds itself unconditionally
+#endif // 0
 pam_elogind_sym = 'src/login/pam_elogind.sym'
 pam_elogind_c = files('pam_elogind.c')
 
-#if 0 /// elogind builds itself unconditionally
-# if conf.get('ENABLE_LOGIND') == 1
-#endif // 0
-        logind_conf = configure_file(
-                input : 'logind.conf.in',
-                output : 'logind.conf',
-                configuration : substs)
-        if install_sysconfdir_samples
-                install_data(logind_conf,
-                             install_dir : pkgsysconfdir)
-        endif
+enable_logind = conf.get('ENABLE_LOGIND') == 1
+in_files = [
+        ['logind.conf',        pkgsysconfdir, enable_logind],
+        ['70-uaccess.rules',   udevrulesdir,  enable_logind and conf.get('HAVE_ACL') == 1],
+        ['71-seat.rules',      udevrulesdir,  enable_logind],
+        ['73-seat-late.rules', udevrulesdir,  enable_logind],
+        ['elogind-user',       pamconfdir,    enable_logind and pamconfdir != 'no']]
 
+foreach tuple : in_files
+        file = tuple[0]
+        custom_target(
+                file,
+                input : file + '.in',
+                output: file,
+                command : [meson_render_jinja2, config_h, '@INPUT@'],
+                capture : true,
+                install : tuple[2],
+                install_dir : tuple[1])
+endforeach
+
+if enable_logind
         install_data('org.freedesktop.login1.conf',
                      install_dir : dbuspolicydir)
 #if 0 /// Works a bit differently here, as elogind allows dbus activation.
@@ -125,14 +137,7 @@ pam_elogind_c = files('pam_elogind.c')
 #endif // 0
         install_data('org.freedesktop.login1.policy',
                      install_dir : polkitpolicydir)
-
-        install_data('70-power-switch.rules', install_dir : udevrulesdir)
-
-        seat_rules = configure_file(
-                input : '71-seat.rules.in',
-                output : '71-seat.rules',
-                configuration : substs)
-        install_data(seat_rules,
+        install_data('70-power-switch.rules',
                      install_dir : udevrulesdir)
 
 #if 1 /// elogind needs two passes of this file
@@ -141,36 +146,10 @@ pam_elogind_c = files('pam_elogind.c')
                 output : '73-seat-late.rules.m4',
                 configuration : substs)
 #endif // 1
-        custom_target(
-                '70-uaccess.rules',
-                input : '70-uaccess.rules.m4',
-                output: '70-uaccess.rules',
-                command : [meson_apply_m4, config_h, '@INPUT@'],
-                capture : true,
-                install : conf.get('HAVE_ACL') == 1,
-                install_dir : udevrulesdir)
-
-        custom_target(
-                '73-seat-late.rules',
 #if 0 /// elogind must configure the source
-#                 input : '73-seat-late.rules.m4',
 #else // 0
                 input : seat_late_rules,
 #endif // 0
-                output: '73-seat-late.rules',
-                command : [meson_apply_m4, config_h, '@INPUT@'],
-                capture : true,
-                install : true,
-                install_dir : udevrulesdir)
-
-        custom_target(
-                'elogind-user',
-                input : 'elogind-user.m4',
-                output: 'elogind-user',
-                command : [meson_apply_m4, config_h, '@INPUT@'],
-                capture : true,
-                install : pamconfdir != 'no',
-                install_dir : pamconfdir)
 #if 0 /// elogind builds itself unconditionally
 # endif
 #endif //0

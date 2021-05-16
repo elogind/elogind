@@ -15,7 +15,7 @@
 # See logind.conf(5) for details.
 
 [Login]
-#KillUserProcesses=@KILL_USER_PROCESSES@
+#KillUserProcesses={{ "yes" if KILL_USER_PROCESSES else "no" }}
 #KillOnlyUsers=
 #KillExcludeUsers=root
 #InhibitDelayMaxSec=5
