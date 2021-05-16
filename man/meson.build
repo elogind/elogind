@@ -26,10 +26,12 @@ custom_man_xsl = files('custom-man.xsl')
 custom_html_xsl = files('custom-html.xsl')
 xslt_cmd = [xsltproc, '-o', '@OUTPUT0@'] + xsltproc_flags
 
-custom_entities_ent = configure_file(
+custom_entities_ent = custom_target(
+        'custom-entities.ent',
         input : 'custom-entities.ent.in',
         output : 'custom-entities.ent',
-        configuration : conf)
+        command : [meson_render_jinja2, config_h, '@INPUT@'],
+        capture : true)
 
 man_pages = []
 html_pages = []
@@ -61,8 +63,8 @@ foreach tuple : xsltproc.found() ? manpages : []
                         output : [man] + manaliases,
                         command : xslt_cmd + [custom_man_xsl, '@INPUT@'],
 #if 0 /// UNNEEDED by elogind
-#                         depend_files : custom_entities_ent,
 #endif // 0
+                        depends : custom_entities_ent,
                         install : want_man,
                         install_dir : mandirn)
                 man_pages += p1
@@ -93,9 +95,8 @@ foreach tuple : xsltproc.found() ? manpages : []
                         output : html,
                         command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
 #if 0 /// UNNEEDED by elogind
-#                         depend_files : custom_entities_ent,
 #endif // 0
-                        depends : p2,
+                        depends : [custom_entities_ent, p2],
                         install : want_html,
                         install_dir : join_paths(docdir, 'html'))
                 html_pages += p3
@@ -173,9 +174,8 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
                 output : html,
                 command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
 #if 0 /// UNNEEDED by elogind
-#                 depend_files : custom_entities_ent,
 #endif // 0
-                depends : p2,
+                depends : [custom_entities_ent, p2],
                 install : want_html and have_lxml,
                 install_dir : join_paths(docdir, 'html'))
         html_pages += p3
