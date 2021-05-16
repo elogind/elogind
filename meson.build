@@ -23,7 +23,8 @@ libsystemd_version = '0.31.0'
 # names, sometimes. Not all variables are included in every
 # set. Ugh, ugh, ugh!
 conf = configuration_data()
-conf.set('PROJECT_VERSION',        meson.project_version(),
+conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/elogind')
+conf.set('PROJECT_VERSION',    meson.project_version(),
          description : 'Numerical project version (used where a simple number is expected)')
 
 substs = configuration_data()
@@ -273,6 +274,7 @@ endif
 # status_unit_format_default = get_option('status-unit-format-default')
 #endif // 0
 
+conf.set_quoted('SYSCONF_DIR',                                sysconfdir)
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     join_paths(pkgsysconfdir, 'system'))
@@ -357,6 +359,7 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 #endif // 0
+conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
 
 substs.set('prefix',                                          prefixdir)
 substs.set('rootprefix',                                      rootprefixdir)

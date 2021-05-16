@@ -183,34 +183,29 @@ libcore_la_sources = files('''
 #
 # systemd_sources = files('main.c')
 #
-# in_files = [['system.conf',      pkgsysconfdir],
-#             ['user.conf',        pkgsysconfdir],
-#             ['systemd.pc',       pkgconfigdatadir]]
+# in_files = [['system.conf',                     pkgsysconfdir],
+#             ['user.conf',                       pkgsysconfdir],
+#             ['systemd.pc',                      pkgconfigdatadir],
+#             ['org.freedesktop.systemd1.policy', polkitpolicydir]]
 #
 # foreach item : in_files
 #         file = item[0]
 #         dir = item[1]
-#         if install_sysconfdir_samples or dir != pkgsysconfdir
-#                 configure_file(
-#                         input : file + '.in',
-#                         output : file,
-#                         configuration : substs,
-#                         install_dir : dir == 'no' ? '' : dir)
-#         endif
 #
+#         custom_target(
+#                 file,
+#                 input : file + '.in',
+#                 output: file,
+#                 command : [meson_render_jinja2, config_h, '@INPUT@'],
+#                 capture : true,
+#                 install : dir != 'no',
+#                 install_dir : dir)
 # endforeach
 #
 # install_data('org.freedesktop.systemd1.conf',
 #              install_dir : dbuspolicydir)
 # install_data('org.freedesktop.systemd1.service',
 #              install_dir : dbussystemservicedir)
-#
-# policy = configure_file(
-#         input : 'org.freedesktop.systemd1.policy.in',
-#         output : 'org.freedesktop.systemd1.policy',
-#         configuration : substs)
-# install_data(policy,
-#              install_dir : polkitpolicydir)
 #
 #endif // 0
 #if 1 /// some package sytems like portage might strip empty directories created for elogind
