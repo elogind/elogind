@@ -347,7 +347,6 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('SYSTEMD_HOMEWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-homework'))
 # conf.set_quoted('SYSTEMD_USERWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-userwork'))
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
-# conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO',           memory_accounting_default ? 'yes' : 'no')
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 #endif // 0
 conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
@@ -975,7 +974,6 @@ conf.set('TTY_GID', tty_gid)
 
 kill_user_processes = get_option('default-kill-user-processes')
 conf.set10('KILL_USER_PROCESSES', kill_user_processes)
-conf.set_quoted('KILL_USER_PROCESSES_YES_NO', kill_user_processes ? 'yes' : 'no')
 
 #if 0 /// UNNEEDED by elogind
 # dns_servers = get_option('dns-servers')
