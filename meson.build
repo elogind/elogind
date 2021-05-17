@@ -2104,6 +2104,20 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
                         install : true,
                         install_dir : libcryptsetup_plugins_dir)
         endif
+
+        if conf.get('HAVE_LIBFIDO2') == 1
+                cryptsetup_token_elogind_fido2 = shared_library(
+                        'cryptsetup-token-elogind-fido2',
+                        link_args : ['-shared',
+                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
+                        dependencies : libshared_deps + [libcryptsetup, versiondep],
+                        link_with : [libshared],
+                        link_whole : [cryptsetup_token_elogind_fido2_static],
+                        link_depends : cryptsetup_token_sym,
+                        install_rpath : rootlibexecdir,
+                        install : true,
+                        install_dir : libcryptsetup_plugins_dir)
+        endif
 endif
 
 #if 1 /// elogind depends on external libudev:
