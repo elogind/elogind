@@ -150,7 +150,7 @@ char *delete_chars(char *s, const char *bad) {
 }
 
 char *delete_trailing_chars(char *s, const char *bad) {
-        char *p, *c = s;
+        char *c = s;
 
         /* Drops all specified bad characters, at the end of the string */
 
@@ -160,7 +160,7 @@ char *delete_trailing_chars(char *s, const char *bad) {
         if (!bad)
                 bad = WHITESPACE;
 
-        for (p = s; *p; p++)
+        for (char *p = s; *p; p++)
                 if (!strchr(bad, *p))
                         c = p + 1;
 
@@ -194,34 +194,28 @@ char ascii_toupper(char x) {
 }
 
 char *ascii_strlower(char *t) {
-        char *p;
-
         assert(t);
 
-        for (p = t; *p; p++)
+        for (char *p = t; *p; p++)
                 *p = ascii_tolower(*p);
 
         return t;
 }
 
 char *ascii_strupper(char *t) {
-        char *p;
-
         assert(t);
 
-        for (p = t; *p; p++)
+        for (char *p = t; *p; p++)
                 *p = ascii_toupper(*p);
 
         return t;
 }
 
 char *ascii_strlower_n(char *t, size_t n) {
-        size_t i;
-
         if (n <= 0)
                 return t;
 
-        for (i = 0; i < n; i++)
+        for (size_t i = 0; i < n; i++)
                 t[i] = ascii_tolower(t[i]);
 
         return t;
@@ -253,10 +247,8 @@ int ascii_strcasecmp_nn(const char *a, size_t n, const char *b, size_t m) {
 }
 
 bool chars_intersect(const char *a, const char *b) {
-        const char *p;
-
         /* Returns true if any of the chars in a are in b. */
-        for (p = a; *p; p++)
+        for (const char *p = a; *p; p++)
                 if (strchr(b, *p))
                         return true;
 
@@ -265,8 +257,6 @@ bool chars_intersect(const char *a, const char *b) {
 #endif // 0
 
 bool string_has_cc(const char *p, const char *ok) {
-        const char *t;
-
         assert(p);
 
         /*
@@ -275,14 +265,11 @@ bool string_has_cc(const char *p, const char *ok) {
          * considered OK.
          */
 
-        for (t = p; *t; t++) {
+        for (const char *t = p; *t; t++) {
                 if (ok && strchr(ok, *t))
                         continue;
 
-                if (*t > 0 && *t < ' ')
-                        return true;
-
-                if (*t == 127)
+                if (char_is_cc(*t))
                         return true;
         }
 
@@ -470,7 +457,7 @@ char *cellescape(char *buf, size_t len, const char *s) {
          * very end.
          */
 
-        size_t i = 0, last_char_width[4] = {}, k = 0, j;
+        size_t i = 0, last_char_width[4] = {}, k = 0;
 
         assert(len > 0); /* at least a terminating NUL */
 
@@ -499,7 +486,7 @@ char *cellescape(char *buf, size_t len, const char *s) {
 
         /* Ellipsation is necessary. This means we might need to truncate the string again to make space for 4
          * characters ideally, but the buffer is shorter than that in the first place take what we can get */
-        for (j = 0; j < ELEMENTSOF(last_char_width); j++) {
+        for (size_t j = 0; j < ELEMENTSOF(last_char_width); j++) {
 
                 if (i + 4 <= len) /* nice, we reached our space goal */
                         break;
@@ -820,7 +807,7 @@ int strextendf(char **x, const char *format, ...) {
         /* Let's try to use the allocated buffer, if there's room at the end still. Otherwise let's extend by 64 chars. */
         if (*x) {
                 m = strlen(*x);
-                a = malloc_usable_size(*x);
+                a = MALLOC_SIZEOF_SAFE(*x);
                 assert(a >= m + 1);
         } else
                 m = a = 0;
@@ -836,7 +823,7 @@ int strextendf(char **x, const char *format, ...) {
                         return -ENOMEM;
 
                 *x = n;
-                a = malloc_usable_size(*x);
+                a = MALLOC_SIZEOF_SAFE(*x);
         }
 
         /* Now, let's try to format the string into it */
@@ -986,14 +973,12 @@ int free_and_strndup(char **p, const char *s, size_t l) {
 }
 
 bool string_is_safe(const char *p) {
-        const char *t;
-
         if (!p)
                 return false;
 
         /* Checks if the specified string contains no quotes or control characters */
 
-        for (t = p; *t; t++) {
+        for (const char *t = p; *t; t++) {
                 if (*t > 0 && *t < ' ') /* no control characters */
                         return false;
 
