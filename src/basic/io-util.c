@@ -289,7 +289,6 @@ void iovw_free_contents(struct iovec_wrapper *iovw, bool free_vectors) {
 
         iovw->iovec = mfree(iovw->iovec);
         iovw->count = 0;
-        iovw->size_bytes = 0;
 }
 
 struct iovec_wrapper *iovw_free_free(struct iovec_wrapper *iovw) {
@@ -308,7 +307,7 @@ int iovw_put(struct iovec_wrapper *iovw, void *data, size_t len) {
         if (iovw->count >= IOV_MAX)
                 return -E2BIG;
 
-        if (!GREEDY_REALLOC(iovw->iovec, iovw->size_bytes, iovw->count + 1))
+        if (!GREEDY_REALLOC(iovw->iovec, iovw->count + 1))
                 return -ENOMEM;
 
         iovw->iovec[iovw->count++] = IOVEC_MAKE(data, len);

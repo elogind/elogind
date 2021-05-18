@@ -85,11 +85,6 @@ DEFINE_PRIVATE_STRING_TABLE_LOOKUP_TO_STRING(event_source_type, int);
                SOURCE_DEFER,                    \
                SOURCE_INOTIFY)
 
-/* This is used to assert that we didn't pass an unexpected source type to event_source_time_prioq_put().
- * Time sources and ratelimited sources can be passed, so effectively this is the same as the
- * EVENT_SOURCE_CAN_RATE_LIMIT() macro. */
-#define EVENT_SOURCE_USES_TIME_PRIOQ(t) EVENT_SOURCE_CAN_RATE_LIMIT(t)
-
 struct sd_event {
         unsigned n_ref;
 
@@ -149,7 +144,6 @@ struct sd_event {
         unsigned n_sources;
 
         struct epoll_event *event_queue;
-        size_t event_queue_allocated;
 
         LIST_HEAD(sd_event_source, sources);
 
@@ -1209,7 +1203,6 @@ static int event_source_time_prioq_put(
 
         assert(s);
         assert(d);
-        assert(EVENT_SOURCE_USES_TIME_PRIOQ(s->type));
 
         r = prioq_put(d->earliest, s, &s->earliest_index);
         if (r < 0)
@@ -2997,7 +2990,6 @@ static int event_arm_timer(
                 d->needs_rearm = false;
 
         a = prioq_peek(d->earliest);
-        assert(!a || EVENT_SOURCE_USES_TIME_PRIOQ(a->type));
         if (!a || a->enabled == SD_EVENT_OFF || time_event_source_next(a) == USEC_INFINITY) {
 
                 if (d->fd < 0)
@@ -3015,8 +3007,7 @@ static int event_arm_timer(
         }
 
         b = prioq_peek(d->latest);
-        assert(!b || EVENT_SOURCE_USES_TIME_PRIOQ(b->type));
-        assert(b && b->enabled != SD_EVENT_OFF);
+        assert_se(b && b->enabled != SD_EVENT_OFF);
 
         t = sleep_between(e, time_event_source_next(a), time_event_source_latest(b));
         if (d->next == t)
@@ -3096,8 +3087,6 @@ static int process_timer(
 
         for (;;) {
                 s = prioq_peek(d->earliest);
-                assert(!s || EVENT_SOURCE_USES_TIME_PRIOQ(s->type));
-
                 if (!s || time_event_source_next(s) > n)
                         break;
 
@@ -3472,11 +3461,11 @@ static int source_dispatch(sd_event_source *s) {
          * invalidate the event. */
         saved_type = s->type;
 
-        /* Similar, store a reference to the event loop object, so that we can still access it after the
+        /* Similarly, store a reference to the event loop object, so that we can still access it after the
          * callback might have invalidated/disconnected the event source. */
         saved_event = sd_event_ref(s->event);
 
-        /* Check if we hit the ratelimit for this event source, if so, let's disable it. */
+        /* Check if we hit the ratelimit for this event source, and if so, let's disable it. */
         assert(!s->ratelimited);
         if (!ratelimit_below(&s->rate_limit)) {
                 r = event_source_enter_ratelimited(s);
@@ -3495,8 +3484,7 @@ static int source_dispatch(sd_event_source *s) {
         if (s->type != SOURCE_POST) {
                 sd_event_source *z;
 
-                /* If we execute a non-post source, let's mark all
-                 * post sources as pending */
+                /* If we execute a non-post source, let's mark all post sources as pending. */
 
                 SET_FOREACH(z, s->event->post_sources) {
                         if (event_source_is_offline(z))
@@ -3659,8 +3647,6 @@ static int dispatch_exit(sd_event *e) {
         assert(e);
 
         p = prioq_peek(e->exit);
-        assert(!p || p->type == SOURCE_EXIT);
-
         if (!p || event_source_is_offline(p)) {
                 e->state = SD_EVENT_FINISHED;
                 return 0;
@@ -3871,38 +3857,45 @@ static int epoll_wait_usec(
 }
 
 static int process_epoll(sd_event *e, usec_t timeout, int64_t threshold, int64_t *ret_min_priority) {
+        size_t n_event_queue, m, n_event_max;
         int64_t min_priority = threshold;
         bool something_new = false;
-        size_t n_event_queue, m;
         int r;
 
         assert(e);
         assert(ret_min_priority);
 
         n_event_queue = MAX(e->n_sources, 1u);
-        if (!GREEDY_REALLOC(e->event_queue, e->event_queue_allocated, n_event_queue))
+        if (!GREEDY_REALLOC(e->event_queue, n_event_queue))
                 return -ENOMEM;
+
+        n_event_max = MALLOC_ELEMENTSOF(e->event_queue);
 
         /* If we still have inotify data buffered, then query the other fds, but don't wait on it */
         if (e->inotify_data_buffered)
                 timeout = 0;
 
         for (;;) {
-                r = epoll_wait_usec(e->epoll_fd, e->event_queue, e->event_queue_allocated, timeout);
+                r = epoll_wait_usec(
+                                e->epoll_fd,
+                                e->event_queue,
+                                n_event_max,
+                                timeout);
                 if (r < 0)
                         return r;
 
                 m = (size_t) r;
 
-                if (m < e->event_queue_allocated)
+                if (m < n_event_max)
                         break;
 
-                if (e->event_queue_allocated >= n_event_queue * 10)
+                if (n_event_max >= n_event_queue * 10)
                         break;
 
-                if (!GREEDY_REALLOC(e->event_queue, e->event_queue_allocated, e->event_queue_allocated + n_event_queue))
+                if (!GREEDY_REALLOC(e->event_queue, n_event_max + n_event_queue))
                         return -ENOMEM;
 
+                n_event_max = MALLOC_ELEMENTSOF(e->event_queue);
                 timeout = 0;
         }
 
