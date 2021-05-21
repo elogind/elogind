@@ -373,7 +373,7 @@ static int execute(
 
         r = setenv("SYSTEMD_SLEEP_ACTION", action, 1);
         if (r != 0)
-                log_warning_errno(errno, "Error setting SYSTEMD_SLEEP_ACTION=%s: %m", action);
+                log_warning_errno(errno, "Error setting SYSTEMD_SLEEP_ACTION=%s, ignoring: %m", action);
 
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
         (void) lock_all_homes();
@@ -667,12 +667,12 @@ static int run(int argc, char *argv[]) {
                                        "Sleep operation \"%s\" is disabled by configuration, refusing.",
                                        sleep_operation_to_string(arg_operation));
 
-
         switch (arg_operation) {
 
         case SLEEP_SUSPEND_THEN_HIBERNATE:
                 r = execute_s2h(sleep_config);
                 break;
+
         case SLEEP_HYBRID_SLEEP:
                 r = execute(sleep_config, SLEEP_HYBRID_SLEEP, NULL);
                 if (r < 0) {
