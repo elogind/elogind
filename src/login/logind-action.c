@@ -113,13 +113,13 @@ int manager_handle_action(
 
 #if 0 /// elogind needs its own can_sleep() variant.
         if (handle == HANDLE_SUSPEND)
-                supported = can_sleep("suspend") > 0;
         else if (handle == HANDLE_HIBERNATE)
-                supported = can_sleep("hibernate") > 0;
         else if (handle == HANDLE_HYBRID_SLEEP)
-                supported = can_sleep("hybrid-sleep") > 0;
         else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
-                supported = can_sleep("suspend-then-hibernate") > 0;
+                supported = can_sleep(SLEEP_SUSPEND) > 0;
+                supported = can_sleep(SLEEP_HIBERNATE) > 0;
+                supported = can_sleep(SLEEP_HYBRID_SLEEP) > 0;
+                supported = can_sleep(SLEEP_SUSPEND_THEN_HIBERNATE) > 0;
 #else // 0
         if (handle == HANDLE_SUSPEND)
                 supported = can_sleep(m, "suspend") > 0;
@@ -137,7 +137,7 @@ int manager_handle_action(
 
         if (!supported && IN_SET(handle, HANDLE_HIBERNATE, HANDLE_HYBRID_SLEEP, HANDLE_SUSPEND_THEN_HIBERNATE)) {
 #if 0 /// elogind needs the manager
-                supported = can_sleep("suspend") > 0;
+                supported = can_sleep(SLEEP_SUSPEND) > 0;
 #else // 0
                 supported = can_sleep(m, "suspend") > 0;
 #endif // 0

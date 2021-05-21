@@ -1953,7 +1953,7 @@ static int method_do_shutdown_or_sleep(
                 const char *action,
                 const char *action_multiple_sessions,
                 const char *action_ignore_inhibit,
-                const char *sleep_verb,
+                SleepOperation sleep_operation,
                 bool with_flags,
                 sd_bus_error *error) {
 
@@ -2005,9 +2005,9 @@ static int method_do_shutdown_or_sleep(
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS,
                                          "There's already a shutdown or sleep operation in progress");
 
-        if (sleep_verb) {
 #if 0 /// Within elogind the manager m must be provided, too
-                r = can_sleep(sleep_verb);
+        if (sleep_operation >= 0) {
+                r = can_sleep(sleep_operation);
 #else // 0
                 r = can_sleep(m, sleep_verb);
 #endif // 0
@@ -2016,7 +2016,7 @@ static int method_do_shutdown_or_sleep(
                                                 "Not enough swap space for hibernation");
                 if (r == 0)
                         return sd_bus_error_setf(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
-                                                 "Sleep verb \"%s\" not supported", sleep_verb);
+                                                 "Sleep verb \"%s\" not supported", sleep_operation_to_string(sleep_operation));
                 if (r < 0)
                         return r;
         }
@@ -2062,7 +2062,7 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
                         "org.freedesktop.login1.power-off",
                         "org.freedesktop.login1.power-off-multiple-sessions",
                         "org.freedesktop.login1.power-off-ignore-inhibit",
-                        NULL,
+                        _SLEEP_OPERATION_INVALID,
                         sd_bus_message_is_method_call(message, NULL, "PowerOffWithFlags"),
                         error);
 }
@@ -2082,7 +2082,7 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
                         "org.freedesktop.login1.reboot",
                         "org.freedesktop.login1.reboot-multiple-sessions",
                         "org.freedesktop.login1.reboot-ignore-inhibit",
-                        NULL,
+                        _SLEEP_OPERATION_INVALID,
                         sd_bus_message_is_method_call(message, NULL, "RebootWithFlags"),
                         error);
 }
@@ -2102,7 +2102,7 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
                         "org.freedesktop.login1.halt",
                         "org.freedesktop.login1.halt-multiple-sessions",
                         "org.freedesktop.login1.halt-ignore-inhibit",
-                        NULL,
+                        _SLEEP_OPERATION_INVALID,
                         sd_bus_message_is_method_call(message, NULL, "HaltWithFlags"),
                         error);
 }
@@ -2122,7 +2122,7 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
                         "org.freedesktop.login1.suspend",
                         "org.freedesktop.login1.suspend-multiple-sessions",
                         "org.freedesktop.login1.suspend-ignore-inhibit",
-                        "suspend",
+                        SLEEP_SUSPEND,
                         sd_bus_message_is_method_call(message, NULL, "SuspendWithFlags"),
                         error);
 }
@@ -2142,7 +2142,7 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "hibernate",
+                        SLEEP_HIBERNATE,
                         sd_bus_message_is_method_call(message, NULL, "HibernateWithFlags"),
                         error);
 }
@@ -2162,7 +2162,7 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "hybrid-sleep",
+                        SLEEP_HYBRID_SLEEP,
                         sd_bus_message_is_method_call(message, NULL, "HybridSleepWithFlags"),
                         error);
 }
@@ -2181,7 +2181,7 @@ static int method_suspend_then_hibernate(sd_bus_message *message, void *userdata
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "hybrid-sleep",
+                        SLEEP_SUSPEND_THEN_HIBERNATE,
                         sd_bus_message_is_method_call(message, NULL, "SuspendThenHibernateWithFlags"),
                         error);
 }
@@ -2503,7 +2503,7 @@ static int method_can_shutdown_or_sleep(
                 const char *action,
                 const char *action_multiple_sessions,
                 const char *action_ignore_inhibit,
-                const char *sleep_verb,
+                SleepOperation sleep_operation,
                 sd_bus_error *error) {
 
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
@@ -2521,9 +2521,9 @@ static int method_can_shutdown_or_sleep(
         assert(action_multiple_sessions);
         assert(action_ignore_inhibit);
 
-        if (sleep_verb) {
 #if 0 /// elogind needs to have the manager being passed
-                r = can_sleep(sleep_verb);
+        if (sleep_operation >= 0) {
+                r = can_sleep(sleep_operation);
 #else // 0
                 r = can_sleep(m, sleep_verb);
 #endif // 0
@@ -2548,7 +2548,7 @@ static int method_can_shutdown_or_sleep(
         multiple_sessions = r > 0;
         blocked = manager_is_inhibited(m, w, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
 
-        handle = handle_action_from_string(sleep_verb);
+        handle = handle_action_from_string(sleep_operation_to_string(sleep_operation));
         if (handle >= 0) {
 #if 0 /// elogind uses its own variant, which can use the handle directly.
                 const char *target;
@@ -2637,7 +2637,7 @@ static int method_can_poweroff(sd_bus_message *message, void *userdata, sd_bus_e
                         "org.freedesktop.login1.power-off",
                         "org.freedesktop.login1.power-off-multiple-sessions",
                         "org.freedesktop.login1.power-off-ignore-inhibit",
-                        NULL,
+                        _SLEEP_OPERATION_INVALID,
                         error);
 }
 
@@ -2650,7 +2650,7 @@ static int method_can_reboot(sd_bus_message *message, void *userdata, sd_bus_err
                         "org.freedesktop.login1.reboot",
                         "org.freedesktop.login1.reboot-multiple-sessions",
                         "org.freedesktop.login1.reboot-ignore-inhibit",
-                        NULL,
+                        _SLEEP_OPERATION_INVALID,
                         error);
 }
 
@@ -2663,7 +2663,7 @@ static int method_can_halt(sd_bus_message *message, void *userdata, sd_bus_error
                         "org.freedesktop.login1.halt",
                         "org.freedesktop.login1.halt-multiple-sessions",
                         "org.freedesktop.login1.halt-ignore-inhibit",
-                        NULL,
+                        _SLEEP_OPERATION_INVALID,
                         error);
 }
 
@@ -2676,7 +2676,7 @@ static int method_can_suspend(sd_bus_message *message, void *userdata, sd_bus_er
                         "org.freedesktop.login1.suspend",
                         "org.freedesktop.login1.suspend-multiple-sessions",
                         "org.freedesktop.login1.suspend-ignore-inhibit",
-                        "suspend",
+                        SLEEP_SUSPEND,
                         error);
 }
 
@@ -2689,7 +2689,7 @@ static int method_can_hibernate(sd_bus_message *message, void *userdata, sd_bus_
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "hibernate",
+                        SLEEP_HIBERNATE,
                         error);
 }
 
@@ -2702,7 +2702,7 @@ static int method_can_hybrid_sleep(sd_bus_message *message, void *userdata, sd_b
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "hybrid-sleep",
+                        SLEEP_HYBRID_SLEEP,
                         error);
 }
 
@@ -2715,7 +2715,7 @@ static int method_can_suspend_then_hibernate(sd_bus_message *message, void *user
                         "org.freedesktop.login1.hibernate",
                         "org.freedesktop.login1.hibernate-multiple-sessions",
                         "org.freedesktop.login1.hibernate-ignore-inhibit",
-                        "suspend-then-hibernate",
+                        SLEEP_SUSPEND_THEN_HIBERNATE,
                         error);
 }
 

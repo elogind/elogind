@@ -42,10 +42,8 @@
 #include "terminal-util.h"
 #include "utmp-wtmp.h"
 
-static char* arg_verb = NULL;
 
 #if 0 /// UNNEEDED by elogind (arg_verb is pointing elsewhere and is not strdup'd!)
-STATIC_DESTRUCTOR_REGISTER(arg_verb, freep);
 #endif // 0
 
 #if 1 /// If an nvidia card is present, elogind informs its driver about suspend/resume actions
@@ -122,6 +120,7 @@ static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
         return 1;
 }
 #endif // 1
+static SleepOperation arg_operation = _SLEEP_OPERATION_INVALID;
 
 static int write_hibernate_location_info(const HibernateLocation *hibernate_location) {
         char offset_str[DECIMAL_STR_MAX(uint64_t)];
@@ -308,11 +307,17 @@ static int lock_all_homes(void) {
 #endif // 0
 
 #if 0 /// Changes needed by elogind are too vast to do this inline
-static int execute(char **modes, char **states, const char *action) {
+static int execute(
+                const SleepConfig *sleep_config,
+                SleepOperation operation,
+                const char *action) {
+
         char *arguments[] = {
                 NULL,
                 (char*) "pre",
-                arg_verb,
+                /* NB: we use 'arg_operation' instead of 'operation' here, as we want to communicate the overall
+                 * operation here, not the specific one, in case of s2h. */
+                (char*) sleep_operation_to_string(arg_operation),
                 NULL
         };
         static const char* const dirs[] = {
@@ -320,9 +325,23 @@ static int execute(char **modes, char **states, const char *action) {
                 NULL
         };
 
-        _cleanup_fclose_ FILE *f = NULL;
         _cleanup_(hibernate_location_freep) HibernateLocation *hibernate_location = NULL;
+        _cleanup_fclose_ FILE *f = NULL;
+        char **modes, **states;
         int r;
+
+        assert(sleep_config);
+        assert(operation >= 0);
+        assert(operation < _SLEEP_OPERATION_MAX);
+        assert(operation != SLEEP_SUSPEND_THEN_HIBERNATE); /* Handled by execute_s2h() instead */
+
+        states = sleep_config->states[operation];
+        modes = sleep_config->modes[operation];
+
+        if (strv_isempty(states))
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                       "No sleep states configured for sleep operation %s, can't sleep.",
+                                       sleep_operation_to_string(operation));
 
         /* This file is opened first, so that if we hit an error,
          * we can abort before modifying any state. */
@@ -350,6 +369,11 @@ static int execute(char **modes, char **states, const char *action) {
                         return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");;
         }
 
+        /* Pass an action string to the call-outs. This is mostly our operation string, except if the
+         * hibernate step of s-t-h fails, in which case we communicate that with a separate action. */
+        if (!action)
+                action = sleep_operation_to_string(operation);
+
         r = setenv("SYSTEMD_SLEEP_ACTION", action, 1);
         if (r != 0)
                 log_warning_errno(errno, "Error setting SYSTEMD_SLEEP_ACTION=%s: %m", action);
@@ -359,20 +383,20 @@ static int execute(char **modes, char **states, const char *action) {
 
         log_struct(LOG_INFO,
                    "MESSAGE_ID=" SD_MESSAGE_SLEEP_START_STR,
-                   LOG_MESSAGE("Suspending system..."),
-                   "SLEEP=%s", arg_verb);
+                   LOG_MESSAGE("Entering sleep state '%s'...", sleep_operation_to_string(operation)),
+                   "SLEEP=%s", sleep_operation_to_string(arg_operation));
 
         r = write_state(&f, states);
         if (r < 0)
                 log_struct_errno(LOG_ERR, r,
                                  "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                                 LOG_MESSAGE("Failed to suspend system. System resumed again: %m"),
-                                 "SLEEP=%s", arg_verb);
+                                 LOG_MESSAGE("Failed to put system to sleep. System resumed again: %m"),
+                                 "SLEEP=%s", sleep_operation_to_string(arg_operation));
         else
                 log_struct(LOG_INFO,
                            "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
-                           LOG_MESSAGE("System resumed."),
-                           "SLEEP=%s", arg_verb);
+                           LOG_MESSAGE("System returned from sleep state."),
+                           "SLEEP=%s", sleep_operation_to_string(arg_operation));
 
         arguments[1] = (char*) "post";
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
@@ -519,7 +543,7 @@ static int execute_s2h(Manager *sleep_config) {
                 return log_error_errno(errno, "Error setting hibernate timer: %m");
 
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
-        r = execute(sleep_config->suspend_modes, sleep_config->suspend_states, "suspend");
+        r = execute(sleep_config, SLEEP_SUSPEND, NULL);
 #else // 0
         r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
@@ -539,7 +563,7 @@ static int execute_s2h(Manager *sleep_config) {
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
-        r = execute(sleep_config->hibernate_modes, sleep_config->hibernate_states, "hibernate");
+        r = execute(sleep_config, SLEEP_HIBERNATE, NULL);
 #else // 0
         r = execute(sleep_config, "hibernate", sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #endif // 0
@@ -547,7 +571,7 @@ static int execute_s2h(Manager *sleep_config) {
                 log_notice_errno(r, "Couldn't hibernate, will try to suspend again: %m");
 
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
-                r = execute(sleep_config->suspend_modes, sleep_config->suspend_states, "suspend-after-failed-hibernate");
+                r = execute(sleep_config, SLEEP_SUSPEND, "suspend-after-failed-hibernate");
 #else // 0
                 r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
@@ -620,20 +644,14 @@ static int parse_argv(int argc, char *argv[]) {
                                        "Usage: %s COMMAND",
                                        program_invocation_short_name);
 
-        arg_verb = strdup(argv[optind]);
-        if (!arg_verb)
-                return log_oom();
-
-        if (!STR_IN_SET(arg_verb, "suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"))
-                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
-                                       "Unknown command '%s'.", arg_verb);
+        arg_operation = sleep_operation_from_string(argv[optind]);
+        if (arg_operation < 0)
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Unknown command '%s'.", argv[optind]);
 
         return 1 /* work to do */;
 }
 
 static int run(int argc, char *argv[]) {
-        bool allow;
-        char **modes = NULL, **states = NULL;
         _cleanup_(free_sleep_configp) SleepConfig *sleep_config = NULL;
         int r;
 
@@ -647,19 +665,15 @@ static int run(int argc, char *argv[]) {
         if (r < 0)
                 return r;
 
-        r = sleep_settings(arg_verb, sleep_config, &allow, &modes, &states);
-        if (r < 0)
-                return r;
-
-        if (!allow)
+        if (!sleep_config->allow[arg_operation])
                 return log_error_errno(SYNTHETIC_ERRNO(EACCES),
-                                       "Sleep mode \"%s\" is disabled by configuration, refusing.",
-                                       arg_verb);
+                                       "Sleep operation \"%s\" is disabled by configuration, refusing.",
+                                       sleep_operation_to_string(arg_operation));
 
-        if (streq(arg_verb, "suspend-then-hibernate"))
+        if (arg_operation == SLEEP_SUSPEND_THEN_HIBERNATE)
                 return execute_s2h(sleep_config);
         else
-                return execute(modes, states, arg_verb);
+                return execute(sleep_config, arg_operation, NULL);
 }
 
 DEFINE_MAIN_FUNCTION(run);
