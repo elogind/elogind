@@ -565,7 +565,7 @@ static int execute_s2h(Manager *sleep_config) {
         r = execute(sleep_config, "hibernate", sleep_config->hibernate_modes, sleep_config->hibernate_states);
 #endif // 0
         if (r < 0) {
-                log_notice_errno(r, "Couldn't hibernate, will try to suspend again: %m");
+                log_notice("Couldn't hibernate, will try to suspend again.");
 
 #if 0 /// For the elogind extra stuff, we have to submit the manager instance
                 r = execute(sleep_config, SLEEP_SUSPEND, "suspend-after-failed-hibernate");
@@ -573,7 +573,7 @@ static int execute_s2h(Manager *sleep_config) {
                 r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
 #endif // 0
                 if (r < 0)
-                        return log_error_errno(r, "Could neither hibernate nor suspend, giving up: %m");
+                        return r;
         }
 
         return 0;
