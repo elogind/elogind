@@ -737,9 +737,9 @@ static int can_sleep_internal(
                 return can_s2h(sleep_config);
 
 #if 0 /// elogind supports setting a suspend mode
-        if (!can_sleep_state(sleep_config->states[operation]) ||
-            !can_sleep_disk(sleep_config->modes[operation]))
                 return false;
+        if (can_sleep_state(sleep_config->states[operation]) <= 0 ||
+            can_sleep_disk(sleep_config->modes[operation]) <= 0)
 #else // 0
         if (!can_sleep_state(states) ||
             !((strcmp("suspend", verb) && can_sleep_disk(modes)) ||
