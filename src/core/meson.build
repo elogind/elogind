@@ -168,7 +168,7 @@ libcore_la_sources = files('''
 #         include_directories : includes,
 #         dependencies : [versiondep,
 #                         threads,
-#                         libbpf,
+#                         libdl,
 #                         librt,
 #                         libseccomp,
 #                         libpam,

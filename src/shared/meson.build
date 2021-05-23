@@ -24,6 +24,8 @@
 #         boot-timestamps.h
 #         bootspec.c
 #         bootspec.h
+#         bpf-dlopen.c
+#         bpf-dlopen.h
 #         bpf-program.c
 #         bpf-program.h
 #         bridge-util.c
@@ -493,9 +495,9 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 # libshared_deps = [threads,
 #                   libacl,
 #                   libblkid,
-#                   libbpf,
 #                   libcap,
 #                   libcrypt,
+#                   libdl,
 #                   libgcrypt,
 #                   libiptc,
 #                   libkmod,
