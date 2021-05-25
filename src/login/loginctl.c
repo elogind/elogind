@@ -1116,9 +1116,15 @@ static int terminate_user(int argc, char *argv[], void *userdata) {
         for (int i = 1; i < argc; i++) {
                 uid_t uid;
 
-                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
+                if (isempty(argv[i]))
+                        uid = getuid();
+                else {
+                        const char *u = argv[i];
+
+                        r = get_user_creds(&u, &uid, NULL, NULL, NULL, 0);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
+                }
 
                 r = bus_call_method(bus, bus_login_mgr, "TerminateUser", &error, NULL, "u", (uint32_t) uid);
                 if (r < 0)
@@ -1144,9 +1150,15 @@ static int kill_user(int argc, char *argv[], void *userdata) {
         for (int i = 1; i < argc; i++) {
                 uid_t uid;
 
-                r = get_user_creds((const char**) (argv+i), &uid, NULL, NULL, NULL, 0);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
+                if (isempty(argv[i]))
+                        uid = getuid();
+                else {
+                        const char *u = argv[i];
+
+                        r = get_user_creds(&u, &uid, NULL, NULL, NULL, 0);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to look up user %s: %m", argv[i]);
+                }
 
                 r = bus_call_method(
                         bus,
