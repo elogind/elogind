@@ -385,6 +385,27 @@ static void test_path_join(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
+static void test_path_extend(void) {
+        _cleanup_free_ char *p = NULL;
+
+        log_info("/* %s */", __func__);
+
+        assert_se(path_extend(&p, "foo", "bar", "baz") == p);
+        assert_se(streq(p, "foo/bar/baz"));
+
+        assert_se(path_extend(&p, "foo", "bar", "baz") == p);
+        assert_se(streq(p, "foo/bar/baz/foo/bar/baz"));
+
+        p = mfree(p);
+        assert_se(path_extend(&p, "foo") == p);
+        assert_se(streq(p, "foo"));
+
+        assert_se(path_extend(&p, "/foo") == p);
+        assert_se(streq(p, "foo/foo"));
+        assert_se(path_extend(&p, "waaaah/wahhh/") == p);
+        assert_se(streq(p, "foo/foo/waaaah/wahhh/"));
+}
+
 static void test_fsck_exists(void) {
         log_info("/* %s */", __func__);
 
@@ -871,6 +892,7 @@ int main(int argc, char **argv) {
         test_prefixes();
         test_path_join();
 #if 0 /// UNNEEDED by elogind
+        test_path_extend();
         test_fsck_exists();
         test_make_relative();
 #endif // 0
