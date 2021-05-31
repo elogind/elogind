@@ -2651,7 +2651,6 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads,
-#                                 libcryptsetup,
 #                                 libblkid,
 #                                 libcrypt,
 #                                 libopenssl,
