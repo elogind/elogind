@@ -87,6 +87,8 @@
 #         locale-setup.h
 #         manager.c
 #         manager.h
+#         manager-dump.c
+#         manager-dump.h
 #         mount.c
 #         mount.h
 #         namespace.c
@@ -170,7 +172,7 @@ libcore_la_sources = files('''
 #         include_directories : includes,
 #         dependencies : [versiondep,
 #                         threads,
-#                         libbpf,
+#                         libdl,
 #                         librt,
 #                         libseccomp,
 #                         libpam,
