@@ -9,10 +9,6 @@ Bugfixes:
 
 * Get rid of nftw(). We should refuse to use such useless APIs on principle.
 
-* Jun 01 09:43:02 krowka elogind[1]: Unit user@1000.service has alias user@.service.
-  Jun 01 09:43:02 krowka elogind[1]: Unit user@6.service has alias user@.service.
-  Jun 01 09:43:02 krowka elogind[1]: Unit user-runtime-dir@6.service has alias user-runtime-dir@.service.
-
 External:
 
 * Fedora: add an rpmlint check that verifies that all unit files in the RPM are listed in %systemd_post macros.
@@ -668,8 +664,6 @@ Features:
   files and suchlike we operate on.
 
 * add support for "portablectl attach http://foobar.com/waaa.raw (i.e. importd integration)
-
-* add attach --enable and attach --now (for attach+enable+start)
 
 * sync dynamic uids/gids between host+portable srvice (i.e. if DynamicUser=1 is set for a service, make sure that the
   selected user is resolvable in the service even if it ships its own /etc/passwd)
