@@ -40,8 +40,6 @@
 #         creds-util.c
 #         creds-util.h
 #         def.h
-#         device-nodes.c
-#         device-nodes.h
 #         dirent-util.c
 #         dirent-util.h
 #         dlfcn-util.c
