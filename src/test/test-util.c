@@ -317,7 +317,7 @@ static void test_raw_clone(void) {
 
         errno = 0;
         assert_se(raw_clone(CLONE_FS|CLONE_NEWNS) == -1);
-        assert_se(errno == EINVAL);
+        assert_se(errno == EINVAL || ERRNO_IS_PRIVILEGE(errno)); /* Certain container environments prohibit namespaces to us, don't fail in that case */
 }
 #endif // 0
 
