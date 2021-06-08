@@ -15,6 +15,8 @@
 #         bpf-firewall.h
 #         bpf-foreign.c
 #         bpf-foreign.h
+#         bpf-socket-bind.c
+#         bpf-socket-bind.h
 #         cgroup.c
 #         cgroup.h
 #         core-varlink.c
@@ -85,10 +87,10 @@
 #         load-fragment.h
 #         locale-setup.c
 #         locale-setup.h
-#         manager.c
-#         manager.h
 #         manager-dump.c
 #         manager-dump.h
+#         manager.c
+#         manager.h
 #         mount.c
 #         mount.h
 #         namespace.c
@@ -109,8 +111,6 @@
 #         slice.h
 #         smack-setup.c
 #         smack-setup.h
-#         socket-bind.c
-#         socket-bind.h
 #         socket.c
 #         socket.h
 #         swap.c
