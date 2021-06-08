@@ -2469,18 +2469,27 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
 }
 
 #if 0 /// UNNEEDED by elogind
-static int return_data(sd_journal *j, JournalFile *f, Object *o, const void **data, size_t *size) {
+static int return_data(
+                sd_journal *j,
+                JournalFile *f,
+                Object *o,
+                const void **ret_data,
+                size_t *ret_size) {
+
         size_t t;
         uint64_t l;
         int compression;
+
+        assert(j);
+        assert(f);
 
         l = le64toh(READ_NOW(o->object.size));
         if (l < offsetof(Object, data.payload))
                 return -EBADMSG;
         l -= offsetof(Object, data.payload);
-        t = (size_t) l;
 
         /* We can't read objects larger than 4G on a 32bit machine */
+        t = (size_t) l;
         if ((uint64_t) t != l)
                 return -E2BIG;
 
@@ -2498,14 +2507,18 @@ static int return_data(sd_journal *j, JournalFile *f, Object *o, const void **da
                 if (r < 0)
                         return r;
 
-                *data = f->compress_buffer;
-                *size = (size_t) rsize;
+                if (ret_data)
+                        *ret_data = f->compress_buffer;
+                if (ret_size)
+                        *ret_size = (size_t) rsize;
 #else
                 return -EPROTONOSUPPORT;
 #endif
         } else {
-                *data = o->data.payload;
-                *size = t;
+                if (ret_data)
+                        *ret_data = o->data.payload;
+                if (ret_size)
+                        *ret_size = t;
         }
 
         return 0;
@@ -3044,14 +3057,16 @@ _public_ int sd_journal_query_unique(sd_journal *j, const char *field) {
 #endif // 0
 }
 
-_public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_t *l) {
 #if 0 /// UNSUPPORTED by elogind
+_public_ int sd_journal_enumerate_unique(
+                sd_journal *j,
+                const void **ret_data,
+                size_t *ret_size) {
+
         size_t k;
 
         assert_return(j, -EINVAL);
         assert_return(!journal_pid_changed(j), -ECHILD);
-        assert_return(data, -EINVAL);
-        assert_return(l, -EINVAL);
         assert_return(j->unique_field, -EINVAL);
 
         k = strlen(j->unique_field);
@@ -3125,16 +3140,15 @@ _public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_
                                                j->unique_file->path,
                                                j->unique_offset, ol, k + 1);
 
-                if (memcmp(odata, j->unique_field, k) || ((const char*) odata)[k] != '=')
+                if (memcmp(odata, j->unique_field, k) != 0 || ((const char*) odata)[k] != '=')
                         return log_debug_errno(SYNTHETIC_ERRNO(EBADMSG),
                                                "%s:offset " OFSfmt ": object does not start with \"%s=\"",
                                                j->unique_file->path,
                                                j->unique_offset,
                                                j->unique_field);
 
-                /* OK, now let's see if we already returned this data
-                 * object by checking if it exists in the earlier
-                 * traversed files. */
+                /* OK, now let's see if we already returned this data object by checking if it exists in the
+                 * earlier traversed files. */
                 found = false;
                 ORDERED_HASHMAP_FOREACH(of, j->files) {
                         if (of == j->unique_file)
@@ -3156,7 +3170,7 @@ _public_ int sd_journal_enumerate_unique(sd_journal *j, const void **data, size_
                 if (found)
                         continue;
 
-                r = return_data(j, j->unique_file, o, data, l);
+                r = return_data(j, j->unique_file, o, ret_data, ret_size);
                 if (r < 0)
                         return r;
 
