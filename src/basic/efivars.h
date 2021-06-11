@@ -52,6 +52,7 @@ bool is_efi_secure_boot_setup_mode(void);
 
 int cache_efi_options_variable(void);
 int elogind_efi_options_variable(char **line);
+int elogind_efi_options_efivarfs_if_newer(char **line);
 
 #else
 
@@ -88,6 +89,10 @@ static inline int cache_efi_options_variable(void) {
 }
 
 static inline int elogind_efi_options_variable(char **line) {
+        return -ENODATA;
+}
+
+static inline int elogind_efi_options_efivarfs_if_newer(char **line) {
         return -ENODATA;
 }
 #endif
