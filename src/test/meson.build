@@ -280,6 +280,8 @@ tests += [
 #         [['src/test/test-sysctl-util.c']],
 #endif // 0
 
+        [['src/test/test-import-util.c']],
+
         [['src/test/test-user-record.c']],
 
         [['src/test/test-user-util.c']],
