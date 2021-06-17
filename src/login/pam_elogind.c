@@ -714,8 +714,12 @@ _public_ PAM_EXTERN int pam_sm_open_session(
          * "systemd-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
 
-        (void) pam_get_item(handle, PAM_SERVICE, (const void**) &service);
 #if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
+        r = pam_get_item(handle, PAM_SERVICE, (const void**) &service);
+        if (!IN_SET(r, PAM_BAD_ITEM, PAM_SUCCESS)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM service: %s", pam_strerror(handle, r));
+                return r;
+        }
         if (streq_ptr(service, "systemd-user")) {
                 char rt[STRLEN("/run/user/") + DECIMAL_STR_MAX(uid_t)];
 
@@ -730,10 +734,26 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         /* Otherwise, we ask logind to create a session for us */
 
-        (void) pam_get_item(handle, PAM_XDISPLAY, (const void**) &display);
-        (void) pam_get_item(handle, PAM_TTY, (const void**) &tty);
-        (void) pam_get_item(handle, PAM_RUSER, (const void**) &remote_user);
-        (void) pam_get_item(handle, PAM_RHOST, (const void**) &remote_host);
+        r = pam_get_item(handle, PAM_XDISPLAY, (const void**) &display);
+        if (!IN_SET(r, PAM_BAD_ITEM, PAM_SUCCESS)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM XDISPLAY: %s", pam_strerror(handle, r));
+                return r;
+        }
+        r = pam_get_item(handle, PAM_TTY, (const void**) &tty);
+        if (!IN_SET(r, PAM_BAD_ITEM, PAM_SUCCESS)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM TTY: %s", pam_strerror(handle, r));
+                return r;
+        }
+        r = pam_get_item(handle, PAM_RUSER, (const void**) &remote_user);
+        if (!IN_SET(r, PAM_BAD_ITEM, PAM_SUCCESS)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM RUSER: %s", pam_strerror(handle, r));
+                return r;
+        }
+        r = pam_get_item(handle, PAM_RHOST, (const void**) &remote_host);
+        if (!IN_SET(r, PAM_BAD_ITEM, PAM_SUCCESS)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM RHOST: %s", pam_strerror(handle, r));
+                return r;
+        }
 
         seat = getenv_harder(handle, "XDG_SEAT", NULL);
         cvtnr = getenv_harder(handle, "XDG_VTNR", NULL);
@@ -800,11 +820,31 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         remote = !isempty(remote_host) && !is_localhost(remote_host);
 
-        (void) pam_get_data(handle, "elogind.memory_max", (const void **)&memory_max);
-        (void) pam_get_data(handle, "elogind.tasks_max",  (const void **)&tasks_max);
-        (void) pam_get_data(handle, "elogind.cpu_weight", (const void **)&cpu_weight);
-        (void) pam_get_data(handle, "elogind.io_weight",  (const void **)&io_weight);
-        (void) pam_get_data(handle, "elogind.runtime_max_sec", (const void **)&runtime_max_sec);
+        r = pam_get_data(handle, "elogind.memory_max", (const void **)&memory_max);
+        if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM elogind.memory_max data: %s", pam_strerror(handle, r));
+                return r;
+        }
+        r = pam_get_data(handle, "elogind.tasks_max",  (const void **)&tasks_max);
+        if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM elogind.tasks_max data: %s", pam_strerror(handle, r));
+                return r;
+        }
+        r = pam_get_data(handle, "elogind.cpu_weight", (const void **)&cpu_weight);
+        if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM elogind.cpu_weight data: %s", pam_strerror(handle, r));
+                return r;
+        }
+        r = pam_get_data(handle, "elogind.io_weight",  (const void **)&io_weight);
+        if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM elogind.io_weight data: %s", pam_strerror(handle, r));
+                return r;
+        }
+        r = pam_get_data(handle, "elogind.runtime_max_sec", (const void **)&runtime_max_sec);
+        if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM elogind.runtime_max_sec data: %s", pam_strerror(handle, r));
+                return r;
+        }
 
         /* Talk to logind over the message bus */
 
@@ -1007,7 +1047,11 @@ _public_ PAM_EXTERN int pam_sm_close_session(
 
         /* Only release session if it wasn't pre-existing when we
          * tried to create it */
-        (void) pam_get_data(handle, "elogind.existing", &existing);
+        r = pam_get_data(handle, "elogind.existing", &existing);
+        if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA)) {
+                pam_syslog(handle, LOG_ERR, "Failed to get PAM elogind.existing data: %s", pam_strerror(handle, r));
+                return r;
+        }
 
         id = pam_getenv(handle, "XDG_SESSION_ID");
         if (id && !existing) {
