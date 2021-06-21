@@ -533,7 +533,7 @@ int mode_to_inaccessible_node(
 }
 #endif // 0
 
-static int mount_flags_to_string(long unsigned flags, char **ret) {
+int mount_flags_to_string(long unsigned flags, char **ret) {
         static const struct {
                 long unsigned flag;
                 const char *name;
