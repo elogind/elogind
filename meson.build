@@ -2008,7 +2008,6 @@ install_libelogind_static = static_library(
 #                         libcap,
 #                         libblkid,
 #                         libmount,
-#                         libselinux,
 #                         libgcrypt],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #

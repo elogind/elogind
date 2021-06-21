@@ -607,9 +607,7 @@ libbasic = static_library(
                         threads,
                         libcap,
 #if 0 /// UNNEEDED by elogind
-#                         libseccomp,
 #endif // 0
-                        libselinux,
                         libm],
         c_args : ['-fvisibility=default'],
         install : false)
