@@ -655,7 +655,6 @@ int mount_option_mangle(
 
         const struct libmnt_optmap *map;
         _cleanup_free_ char *ret = NULL;
-        const char *p;
         int r;
 
         /* This extracts mount flags from the mount options, and store
@@ -680,8 +679,7 @@ int mount_option_mangle(
         if (!map)
                 return -EINVAL;
 
-        p = options;
-        for (;;) {
+        for (const char *p = options;;) {
                 _cleanup_free_ char *word = NULL;
                 const struct libmnt_optmap *ent;
 
