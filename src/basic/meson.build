@@ -44,8 +44,6 @@
 #         def.h
 #         dirent-util.c
 #         dirent-util.h
-#         dlfcn-util.c
-#         dlfcn-util.h
 #         dns-def.h
 #         efivars.c
 #         efivars.h
@@ -630,8 +628,7 @@ libbasic = static_library(
 #                         libseccomp,
 #endif // 0
                         libselinux,
-                        libm,
-                        libdl],
+                        libm],
         c_args : ['-fvisibility=default'],
         install : false)
 
