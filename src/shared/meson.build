@@ -224,6 +224,8 @@
 #         pwquality-util.h
 #         qrcode-util.c
 #         qrcode-util.h
+#         quota-util.c
+#         quota-util.h
 #         reboot-util.c
 #         reboot-util.h
 #         resize-fs.c

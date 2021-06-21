@@ -17,6 +17,10 @@
 #         async.h
 #         audit-util.c
 #         audit-util.h
+#         blockdev-util.c
+#         blockdev-util.h
+#         btrfs-util.c
+#         btrfs-util.h
 #         build.c
 #         build.h
 #         bus-label.c
@@ -31,11 +35,15 @@
 #         chattr-util.h
 #         conf-files.c
 #         conf-files.h
+#         copy.c
+#         copy.h
 #         creds-util.c
 #         creds-util.h
 #         def.h
 #         dirent-util.c
 #         dirent-util.h
+#         dlfcn-util.c
+#         dlfcn-util.h
 #         dns-def.h
 #         efivars.c
 #         efivars.h
@@ -79,6 +87,8 @@
 #         ioprio.h
 #         khash.c
 #         khash.h
+#         label.c
+#         label.h
 #         limits-util.c
 #         limits-util.h
 #         linux/btrfs.h
@@ -149,6 +159,7 @@
 #         missing_syscall.h
 #         missing_timerfd.h
 #         missing_type.h
+#         mkdir-label.c
 #         mkdir.c
 #         mkdir.h
 #         mountpoint-util.c
@@ -191,63 +202,9 @@
 #         replace-var.h
 #         rlimit-util.c
 #         rlimit-util.h
-#         set.h
-#         sigbus.c
-#         sigbus.h
-#         signal-util.c
-#         signal-util.h
-#         siphash24.c
-#         siphash24.h
-#         socket-util.c
-#         socket-util.h
-#         sort-util.c
-#         sort-util.h
-#         sparse-endian.h
-#         special.h
-#         stat-util.c
-#         stat-util.h
-#         static-destruct.h
-#         stdio-util.h
-#         strbuf.c
-#         strbuf.h
-#         string-table.c
-#         string-table.h
-#         string-util.c
-#         string-util.h
-#         strv.c
-#         strv.h
-#         strxcpyx.c
-#         strxcpyx.h
-#         sysctl-util.c
-#         sysctl-util.h
-#         syslog-util.c
-#         syslog-util.h
-#         terminal-util.c
-#         terminal-util.h
-#         time-util.c
-#         time-util.h
-#         tmpfile-util.c
-#         tmpfile-util.h
-#         umask-util.h
-#         unaligned.h
-#         unit-def.c
-#         unit-def.h
-#         unit-file.c
-#         unit-file.h
-#         unit-name.c
-#         unit-name.h
-#         user-util.c
-#         user-util.h
-#         utf8.c
-#         utf8.h
-#         util.c
-#         util.h
-#         virt.c
-#         virt.h
-#         xattr-util.c
-#         xattr-util.h
-# '''.split())
-#
+#         rm-rf.c
+#         rm-rf.h
+#         selinux-util.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
@@ -410,6 +367,7 @@ basic_sources = files('''
         siphash24.h
         smack-util.c
         smack-util.h
+        socket-label.c
         socket-util.c
         socket-util.h
         sort-util.c
@@ -420,6 +378,8 @@ basic_sources = files('''
         stat-util.h
         static-destruct.h
         stdio-util.h
+        strbuf.c
+        strbuf.h
         string-table.c
         string-table.h
         string-util.c
@@ -428,6 +388,8 @@ basic_sources = files('''
         strv.h
         strxcpyx.c
         strxcpyx.h
+        sysctl-util.c
+        sysctl-util.h
         syslog-util.c
         syslog-util.h
         terminal-util.c
@@ -440,6 +402,8 @@ basic_sources = files('''
         unaligned.h
         unit-def.c
         unit-def.h
+        unit-file.c
+        unit-file.h
         unit-name.c
         unit-name.h
         user-util.c
@@ -460,7 +424,6 @@ basic_sources = files('''
 #endif // 0
 
 missing_capability_h = files('missing_capability.h')
-
 missing_socket_h = files('missing_socket.h')
 
 missing_syscall_def_h = files('missing_syscall_def.h')
@@ -607,9 +570,11 @@ libbasic = static_library(
         dependencies : [versiondep,
                         threads,
                         libcap,
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-                        libm],
+/// elogind empty mask removed (UNNEEDED by elogind)
+                        libseccomp,
+                        libselinux,
+                        libm,
+                        libdl],
         c_args : ['-fvisibility=default'],
         install : false)
 
