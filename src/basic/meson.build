@@ -17,10 +17,6 @@
 #         async.h
 #         audit-util.c
 #         audit-util.h
-#         blockdev-util.c
-#         blockdev-util.h
-#         btrfs-util.c
-#         btrfs-util.h
 #         build.c
 #         build.h
 #         bus-label.c
@@ -35,12 +31,8 @@
 #         chattr-util.h
 #         conf-files.c
 #         conf-files.h
-#         copy.c
-#         copy.h
 #         creds-util.c
 #         creds-util.h
-#         data-fd-util.c
-#         data-fd-util.h
 #         def.h
 #         dirent-util.c
 #         dirent-util.h
@@ -87,8 +79,6 @@
 #         ioprio.h
 #         khash.c
 #         khash.h
-#         label.c
-#         label.h
 #         limits-util.c
 #         limits-util.h
 #         linux/btrfs.h
@@ -159,7 +149,6 @@
 #         missing_syscall.h
 #         missing_timerfd.h
 #         missing_type.h
-#         mkdir-label.c
 #         mkdir.c
 #         mkdir.h
 #         mountpoint-util.c
@@ -202,15 +191,9 @@
 #         replace-var.h
 #         rlimit-util.c
 #         rlimit-util.h
-#         rm-rf.c
-#         rm-rf.h
-#         selinux-util.c
-#         selinux-util.h
 #         set.h
 #         sigbus.c
 #         sigbus.h
-#         signal-util.c
-#         signal-util.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
