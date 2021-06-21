@@ -82,9 +82,10 @@ enum {
         ACQUIRE_NO_REGULAR  = 1 << 4,
 };
 
+int acquire_data_fd(const void *data, size_t size, unsigned flags);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+int fd_duplicate_data_fd(int fd);
 
 int fd_move_above_stdio(int fd);
 
