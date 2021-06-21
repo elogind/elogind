@@ -39,6 +39,8 @@
 #         copy.h
 #         creds-util.c
 #         creds-util.h
+#         data-fd-util.c
+#         data-fd-util.h
 #         def.h
 #         dirent-util.c
 #         dirent-util.h
@@ -205,6 +207,9 @@
 #         rm-rf.c
 #         rm-rf.h
 #         selinux-util.c
+#         selinux-util.h
+#         set.h
+#         sigbus.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c

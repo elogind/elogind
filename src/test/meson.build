@@ -153,7 +153,6 @@ tests += [
         [['src/test/test-utf8.c']],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-blockdev-util.c']],
 #endif // 0
 
         [['src/test/test-dev-setup.c']],
@@ -272,7 +271,6 @@ tests += [
         [['src/test/test-parse-argument.c']],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-parse-socket-bind-item.c']],
 #endif // 0
 
         [['src/test/test-parse-util.c']],
@@ -420,8 +418,6 @@ tests += [
          [threads]],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-hash-funcs.c']],
-#
 #         [['src/test/test-bitmap.c']],
 #
 #         [['src/test/test-xml.c']],
