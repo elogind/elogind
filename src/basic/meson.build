@@ -39,6 +39,8 @@
 #         copy.h
 #         creds-util.c
 #         creds-util.h
+#         data-fd-util.c
+#         data-fd-util.h
 #         def.h
 #         dirent-util.c
 #         dirent-util.h
