@@ -190,8 +190,6 @@
 #         procfs-util.c
 #         procfs-util.h
 #         pthread-util.h
-#         quota-util.c
-#         quota-util.h
 #         random-util.c
 #         random-util.h
 #         ratelimit.c
