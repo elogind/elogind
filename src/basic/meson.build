@@ -194,6 +194,13 @@
 #         set.h
 #         sigbus.c
 #         sigbus.h
+#         signal-util.c
+#         signal-util.h
+#         siphash24.c
+#         siphash24.h
+#         socket-util.c
+#         socket-util.h
+#         sort-util.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
@@ -560,8 +567,6 @@ libbasic = static_library(
                         threads,
                         libcap,
 /// elogind empty mask removed (UNNEEDED by elogind)
-                        libseccomp,
-                        libselinux,
                         libm],
         c_args : ['-fvisibility=default'],
         install : false)
