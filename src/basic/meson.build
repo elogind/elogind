@@ -31,8 +31,6 @@
 #         chattr-util.h
 #         conf-files.c
 #         conf-files.h
-#         creds-util.c
-#         creds-util.h
 #         def.h
 #         dirent-util.c
 #         dirent-util.h
@@ -201,6 +199,9 @@
 #         socket-util.c
 #         socket-util.h
 #         sort-util.c
+#         sort-util.h
+#         sparse-endian.h
+#         special.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
