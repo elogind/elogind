@@ -152,8 +152,6 @@ tests += [
 
         [['src/test/test-utf8.c']],
 
-        [['src/test/test-blockdev-util.c']],
-
         [['src/test/test-dev-setup.c']],
 
 #if 0 /// UNNEEDED in elogind
@@ -168,8 +166,6 @@ tests += [
         [['src/test/test-locale-util.c']],
 
         [['src/test/test-copy.c']],
-
-        [['src/test/test-data-fd-util.c']],
 
         [['src/test/test-static-destruct.c']],
 
@@ -412,6 +408,8 @@ tests += [
          [threads]],
 
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-hash-funcs.c']],
+#
 #         [['src/test/test-bitmap.c']],
 #
 #         [['src/test/test-xml.c']],
