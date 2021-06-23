@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
+#include "blockdev-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -750,8 +751,7 @@ bool unsafe_transition(const struct stat *a, const struct stat *b) {
 }
 
 static int log_unsafe_transition(int a, int b, const char *path, unsigned flags) {
-        _cleanup_free_ char *n1 = NULL, *n2 = NULL, *user_a = NULL, *user_b = NULL;
-        struct stat st;
+        _cleanup_free_ char *n1 = NULL, *n2 = NULL;
 
         if (!FLAGS_SET(flags, CHASE_WARN))
                 return -ENOLINK;
@@ -759,14 +759,9 @@ static int log_unsafe_transition(int a, int b, const char *path, unsigned flags)
         (void) fd_get_path(a, &n1);
         (void) fd_get_path(b, &n2);
 
-        if (fstat(a, &st) == 0)
-                user_a = uid_to_name(st.st_uid);
-        if (fstat(b, &st) == 0)
-                user_b = uid_to_name(st.st_uid);
-
         return log_warning_errno(SYNTHETIC_ERRNO(ENOLINK),
-                                 "Detected unsafe path transition %s (owned by %s) %s %s (owned by %s) during canonicalization of %s.",
-                                 strna(n1), strna(user_a), special_glyph(SPECIAL_GLYPH_ARROW), strna(n2), strna(user_b), path);
+                                 "Detected unsafe path transition %s %s %s during canonicalization of %s.",
+                                 strna(n1), special_glyph(SPECIAL_GLYPH_ARROW), strna(n2), path);
 }
 
 static int log_autofs_mount_point(int fd, const char *path, unsigned flags) {
@@ -1518,6 +1513,91 @@ int open_parent(const char *path, int flags, mode_t mode) {
 }
 
 #if 0 /// UNNEEDED by elogind
+static int blockdev_is_encrypted(const char *sysfs_path, unsigned depth_left) {
+        _cleanup_free_ char *p = NULL, *uuids = NULL;
+        _cleanup_closedir_ DIR *d = NULL;
+        int r, found_encrypted = false;
+
+        assert(sysfs_path);
+
+        if (depth_left == 0)
+                return -EINVAL;
+
+        p = path_join(sysfs_path, "dm/uuid");
+        if (!p)
+                return -ENOMEM;
+
+        r = read_one_line_file(p, &uuids);
+        if (r != -ENOENT) {
+                if (r < 0)
+                        return r;
+
+                /* The DM device's uuid attribute is prefixed with "CRYPT-" if this is a dm-crypt device. */
+                if (startswith(uuids, "CRYPT-"))
+                        return true;
+        }
+
+        /* Not a dm-crypt device itself. But maybe it is on top of one? Follow the links in the "slaves/"
+         * subdir. */
+
+        p = mfree(p);
+        p = path_join(sysfs_path, "slaves");
+        if (!p)
+                return -ENOMEM;
+
+        d = opendir(p);
+        if (!d) {
+                if (errno == ENOENT) /* Doesn't have underlying devices */
+                        return false;
+
+                return -errno;
+        }
+
+        for (;;) {
+                _cleanup_free_ char *q = NULL;
+                struct dirent *de;
+
+                errno = 0;
+                de = readdir_no_dot(d);
+                if (!de) {
+                        if (errno != 0)
+                                return -errno;
+
+                        break; /* No more underlying devices */
+                }
+
+                q = path_join(p, de->d_name);
+                if (!q)
+                        return -ENOMEM;
+
+                r = blockdev_is_encrypted(q, depth_left - 1);
+                if (r < 0)
+                        return r;
+                if (r == 0) /* we found one that is not encrypted? then propagate that immediately */
+                        return false;
+
+                found_encrypted = true;
+        }
+
+        return found_encrypted;
+}
+
+int path_is_encrypted(const char *path) {
+        char p[SYS_BLOCK_PATH_MAX(NULL)];
+        dev_t devt;
+        int r;
+
+        r = get_block_device(path, &devt);
+        if (r < 0)
+                return r;
+        if (r == 0) /* doesn't have a block device */
+                return false;
+
+        xsprintf_sys_block_path(p, NULL, devt);
+
+        return blockdev_is_encrypted(p, 10 /* safety net: maximum recursion depth */);
+}
+
 int conservative_renameat(
                 int olddirfd, const char *oldpath,
                 int newdirfd, const char *newpath) {

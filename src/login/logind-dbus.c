@@ -1984,7 +1984,6 @@ static int method_do_shutdown_or_sleep(
                 if ((HANDLE_REBOOT != unit_name) && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
 #endif // 0
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Reboot via kexec is only applicable with reboot operations");
-
         } else {
                 /* Old style method: no flags parameter, but interactive bool passed as boolean in
                  * payload. Let's convert this argument to the new-style flags parameter for our internal
@@ -2002,7 +2001,6 @@ static int method_do_shutdown_or_sleep(
                           __FUNCTION__, action,
                           sleep_operation_to_string(sleep_operation),
                           flags & SD_LOGIND_INTERACTIVE ? "" : "NOT ");
-
         if ((flags & SD_LOGIND_REBOOT_VIA_KEXEC) && kexec_loaded())
 #if 0 /// elogind uses HandleAction enum instead of char strings
                 unit_name = SPECIAL_KEXEC_TARGET;
