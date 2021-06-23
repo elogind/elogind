@@ -153,8 +153,6 @@ tests += [
         [['src/test/test-utf8.c']],
 
 /// elogind empty mask removed (UNNEEDED in elogind)
-        [['src/test/test-blockdev-util.c']],
-
         [['src/test/test-dev-setup.c']],
 
 #if 0 /// UNNEEDED in elogind
@@ -171,7 +169,6 @@ tests += [
         [['src/test/test-copy.c']],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-data-fd-util.c']],
 #endif // 0
 
         [['src/test/test-static-destruct.c']],
@@ -418,6 +415,8 @@ tests += [
          [threads]],
 
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-hash-funcs.c']],
+#
 #         [['src/test/test-bitmap.c']],
 #
 #         [['src/test/test-xml.c']],
