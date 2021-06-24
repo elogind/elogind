@@ -18,4 +18,5 @@ static inline int procfs_memory_get_used(uint64_t *ret) {
 }
 #endif // 0
 
-int convert_meminfo_value_to_uint64_bytes(const char *word, uint64_t *ret);
+/* This function destroys "word" (it'll be truncated to perform conversion) */
+int convert_meminfo_value_to_uint64_bytes(char *word, uint64_t *ret);
