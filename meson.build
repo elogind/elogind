@@ -2016,7 +2016,8 @@ install_libelogind_static = static_library(
 #                         libcap,
 #                         libblkid,
 #                         libmount,
-#                         libgcrypt],
+#                         libgcrypt,
+#                         libopenssl],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
 # libudev = shared_library(
