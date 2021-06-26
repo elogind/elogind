@@ -273,6 +273,7 @@ _public_ int sd_device_new_from_ifname(sd_device **ret, const char *ifname) {
                 if (r >= 0)
                         return r;
         }
+
 #if 0 /// elogind does not support this, or we would have to pull in a ton of dependencies for one never really needed call
         r = rtnl_resolve_link_alternative_name(NULL, ifname, &main_name);
         if (r < 0)
