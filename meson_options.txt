@@ -258,7 +258,7 @@ option('default-net-naming-scheme', type : 'combo',
        choices : ['latest', 'v238', 'v239', 'v240'],
        description : 'default net.naming-scheme= value')
 option('status-unit-format-default', type : 'combo',
-       choices : ['description', 'name'],
+       choices : ['description', 'name', 'combined'],
        description : 'use unit name or description in messages by default')
 #if 0 /// UNNEEDED by elogind
 # option('time-epoch', type : 'integer', value : '-1',
