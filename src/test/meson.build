@@ -153,6 +153,8 @@ tests += [
         [['src/test/test-utf8.c']],
 
 /// elogind empty mask removed (UNNEEDED in elogind)
+        [['src/test/test-blockdev-util.c']],
+
         [['src/test/test-dev-setup.c']],
 
 #if 0 /// UNNEEDED in elogind
@@ -168,8 +170,8 @@ tests += [
 
         [['src/test/test-copy.c']],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED in elogind)
+        [['src/test/test-data-fd-util.c']],
 
         [['src/test/test-static-destruct.c']],
 
@@ -267,8 +269,8 @@ tests += [
 
         [['src/test/test-parse-argument.c']],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED in elogind)
+        [['src/test/test-parse-socket-bind-item.c']],
 
         [['src/test/test-parse-util.c']],
 
