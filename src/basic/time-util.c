@@ -1274,7 +1274,7 @@ int parse_nsec(const char *t, nsec_t *nsec) {
         return 0;
 }
 
-static int get_timezones_from_zone1970_tab(char ***ret) {
+int get_timezones(char ***ret) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_strv_free_ char **zones = NULL;
         int r;
@@ -1282,104 +1282,34 @@ static int get_timezones_from_zone1970_tab(char ***ret) {
         assert(ret);
 
         f = fopen("/usr/share/zoneinfo/zone1970.tab", "re");
-        if (!f)
+        if (f) {
+                for (;;) {
+                        _cleanup_free_ char *line = NULL, *cc = NULL, *co = NULL, *tz = NULL;
+
+                        r = read_line(f, LONG_LINE_MAX, &line);
+                        if (r < 0)
+                                return r;
+                        if (r == 0)
+                                break;
+
+                        const char *p = line;
+
+                        /* Line format is:
+                         * 'country codes' 'coordinates' 'timezone' 'comments' */
+                        r = extract_many_words(&p, NULL, 0, &cc, &co, &tz, NULL);
+                        if (r < 0)
+                                continue;
+
+                        /* Lines that start with # are comments. */
+                        if (*cc == '#')
+                                continue;
+
+                        r = strv_extend(&zones, tz);
+                        if (r < 0)
+                                return r;
+                }
+        } else if (errno != ENOENT)
                 return -errno;
-
-        for (;;) {
-                _cleanup_free_ char *line = NULL, *cc = NULL, *co = NULL, *tz = NULL;
-
-                r = read_line(f, LONG_LINE_MAX, &line);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        break;
-
-                const char *p = line;
-
-                /* Line format is:
-                 * 'country codes' 'coordinates' 'timezone' 'comments' */
-                r = extract_many_words(&p, NULL, 0, &cc, &co, &tz, NULL);
-                if (r < 0)
-                        continue;
-
-                /* Lines that start with # are comments. */
-                if (*cc == '#')
-                        continue;
-
-                r = strv_extend(&zones, tz);
-                if (r < 0)
-                        return r;
-        }
-
-        *ret = TAKE_PTR(zones);
-        return 0;
-}
-
-static int get_timezones_from_tzdata_zi(char ***ret) {
-        _cleanup_fclose_ FILE *f = NULL;
-        _cleanup_strv_free_ char **zones = NULL;
-        int r;
-
-        f = fopen("/usr/share/zoneinfo/tzdata.zi", "re");
-        if (!f)
-                return -errno;
-
-        for (;;) {
-                _cleanup_free_ char *line = NULL, *type = NULL, *f1 = NULL, *f2 = NULL;
-
-                r = read_line(f, LONG_LINE_MAX, &line);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        break;
-
-                const char *p = line;
-
-                /* The only lines we care about are Zone and Link lines.
-                 * Zone line format is:
-                 * 'Zone' 'timezone' ...
-                 * Link line format is:
-                 * 'Link' 'target' 'alias'
-                 * See 'man zic' for more detail. */
-                r = extract_many_words(&p, NULL, 0, &type, &f1, &f2, NULL);
-                if (r < 0)
-                        continue;
-
-                char *tz;
-                if (*type == 'Z' || *type == 'z')
-                        /* Zone lines have timezone in field 1. */
-                        tz = f1;
-                else if (*type == 'L' || *type == 'l')
-                        /* Link lines have timezone in field 2. */
-                        tz = f2;
-                else
-                        /* Not a line we care about. */
-                        continue;
-
-                r = strv_extend(&zones, tz);
-                if (r < 0)
-                        return r;
-        }
-
-        *ret = TAKE_PTR(zones);
-        return 0;
-}
-
-int get_timezones(char ***ret) {
-        _cleanup_strv_free_ char **zones = NULL;
-        int r;
-
-        assert(ret);
-
-        r = get_timezones_from_tzdata_zi(&zones);
-        if (r == -ENOENT) {
-                log_debug_errno(r, "Could not get timezone data from tzdata.zi, using zone1970.tab: %m");
-                r = get_timezones_from_zone1970_tab(&zones);
-                if (r == -ENOENT)
-                        log_debug_errno(r, "Could not get timezone data from zone1970.tab, using UTC: %m");
-        }
-        if (r < 0 && r != -ENOENT)
-                return r;
 
         /* Always include UTC */
         r = strv_extend(&zones, "UTC");
@@ -1394,7 +1324,7 @@ int get_timezones(char ***ret) {
 }
 #endif // 0
 
-int verify_timezone(const char *name, int log_level) {
+bool timezone_is_valid(const char *name, int log_level) {
         bool slash = false;
         const char *p, *t;
         _cleanup_close_ int fd = -1;
@@ -1402,26 +1332,26 @@ int verify_timezone(const char *name, int log_level) {
         int r;
 
         if (isempty(name))
-                return -EINVAL;
+                return false;
 
         /* Always accept "UTC" as valid timezone, since it's the fallback, even if user has no timezones installed. */
         if (streq(name, "UTC"))
-                return 0;
+                return true;
 
         if (name[0] == '/')
-                return -EINVAL;
+                return false;
 
         for (p = name; *p; p++) {
                 if (!(*p >= '0' && *p <= '9') &&
                     !(*p >= 'a' && *p <= 'z') &&
                     !(*p >= 'A' && *p <= 'Z') &&
                     !IN_SET(*p, '-', '_', '+', '/'))
-                        return -EINVAL;
+                        return false;
 
                 if (*p == '/') {
 
                         if (slash)
-                                return -EINVAL;
+                                return false;
 
                         slash = true;
                 } else
@@ -1429,31 +1359,38 @@ int verify_timezone(const char *name, int log_level) {
         }
 
         if (slash)
-                return -EINVAL;
+                return false;
 
         if (p - name >= PATH_MAX)
-                return -ENAMETOOLONG;
+                return false;
 
         t = strjoina("/usr/share/zoneinfo/", name);
 
         fd = open(t, O_RDONLY|O_CLOEXEC);
-        if (fd < 0)
-                return log_full_errno(log_level, errno, "Failed to open timezone file '%s': %m", t);
+        if (fd < 0) {
+                log_full_errno(log_level, errno, "Failed to open timezone file '%s': %m", t);
+                return false;
+        }
 
         r = fd_verify_regular(fd);
-        if (r < 0)
-                return log_full_errno(log_level, r, "Timezone file '%s' is not  a regular file: %m", t);
+        if (r < 0) {
+                log_full_errno(log_level, r, "Timezone file '%s' is not  a regular file: %m", t);
+                return false;
+        }
 
         r = loop_read_exact(fd, buf, 4, false);
-        if (r < 0)
-                return log_full_errno(log_level, r, "Failed to read from timezone file '%s': %m", t);
+        if (r < 0) {
+                log_full_errno(log_level, r, "Failed to read from timezone file '%s': %m", t);
+                return false;
+        }
 
         /* Magic from tzfile(5) */
-        if (memcmp(buf, "TZif", 4) != 0)
-                return log_full_errno(log_level, SYNTHETIC_ERRNO(EBADMSG),
-                                      "Timezone file '%s' has wrong magic bytes", t);
+        if (memcmp(buf, "TZif", 4) != 0) {
+                log_full(log_level, "Timezone file '%s' has wrong magic bytes", t);
+                return false;
+        }
 
-        return 0;
+        return true;
 }
 
 bool clock_boottime_supported(void) {
