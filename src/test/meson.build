@@ -49,6 +49,8 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-device-nodes.c']],
 #
+#         [['src/test/test-ether-addr-util.c']],
+#
 #         [['src/test/test-engine.c'],
 #          [libcore,
 #           libshared],
