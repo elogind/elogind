@@ -85,6 +85,7 @@
 #         linux/can/vxcan.h
 #         linux/fib_rules.h
 #         linux/fou.h
+#         linux/genetlink.h
 #         linux/hdlc/ioctl.h
 #         linux/if.h
 #         linux/if_addr.h
@@ -202,6 +203,9 @@
 #         sort-util.h
 #         sparse-endian.h
 #         special.h
+#         stat-util.c
+#         stat-util.h
+#         static-destruct.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
