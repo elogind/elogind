@@ -20,7 +20,6 @@
 #include "fileio.h"
 #include "fs-util.h"
 #include "io-util.h"
-#include "ip-protocol-list.h"
 #include "limits-util.h"
 #include "nulstr-util.h"
 #include "parse-util.h"
@@ -519,9 +518,8 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
 
         LIST_FOREACH(device_limits, il, c->io_device_limits) {
                 char buf[FORMAT_BYTES_MAX];
-                CGroupIOLimitType type;
 
-                for (type = 0; type < _CGROUP_IO_LIMIT_TYPE_MAX; type++)
+                for (CGroupIOLimitType type = 0; type < _CGROUP_IO_LIMIT_TYPE_MAX; type++)
                         if (il->limits[type] != cgroup_io_limit_defaults[type])
                                 fprintf(f,
                                         "%s%s: %s %s\n",
@@ -595,24 +593,18 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
 }
 
 void cgroup_context_dump_socket_bind_item(const CGroupSocketBindItem *item, FILE *f) {
-        const char *family, *colon1, *protocol = "", *colon2 = "";
+        const char *family, *colon;
 
         family = strempty(af_to_ipv4_ipv6(item->address_family));
-        colon1 = isempty(family) ? "" : ":";
-
-        if (item->ip_protocol != 0) {
-                protocol = ip_protocol_to_tcp_udp(item->ip_protocol);
-                colon2 = ":";
-        }
+        colon = isempty(family) ? "" : ":";
 
         if (item->nr_ports == 0)
-                fprintf(f, " %s%s%s%sany", family, colon1, protocol, colon2);
+                fprintf(f, " %s%sany", family, colon);
         else if (item->nr_ports == 1)
-                fprintf(f, " %s%s%s%s%" PRIu16, family, colon1, protocol, colon2, item->port_min);
+                fprintf(f, " %s%s%" PRIu16, family, colon, item->port_min);
         else {
                 uint16_t port_max = item->port_min + item->nr_ports - 1;
-                fprintf(f, " %s%s%s%s%" PRIu16 "-%" PRIu16, family, colon1, protocol, colon2,
-                        item->port_min, port_max);
+                fprintf(f, " %s%s%" PRIu16 "-%" PRIu16, family, colon, item->port_min, port_max);
         }
 }
 
@@ -1355,9 +1347,8 @@ static void cgroup_context_apply(
 
                         LIST_FOREACH(device_bandwidths, b, c->blockio_device_bandwidths) {
                                 uint64_t limits[_CGROUP_IO_LIMIT_TYPE_MAX];
-                                CGroupIOLimitType type;
 
-                                for (type = 0; type < _CGROUP_IO_LIMIT_TYPE_MAX; type++)
+                                for (CGroupIOLimitType type = 0; type < _CGROUP_IO_LIMIT_TYPE_MAX; type++)
                                         limits[type] = cgroup_io_limit_defaults[type];
 
                                 limits[CGROUP_IO_RBPS_MAX] = b->rbps;
@@ -1542,7 +1533,6 @@ static void cgroup_context_apply(
 
 static bool unit_get_needs_bpf_firewall(Unit *u) {
         CGroupContext *c;
-        Unit *p;
         assert(u);
 
         c = unit_get_cgroup_context(u);
@@ -1557,7 +1547,7 @@ static bool unit_get_needs_bpf_firewall(Unit *u) {
                 return true;
 
         /* If any parent slice has an IP access list defined, it applies too */
-        for (p = UNIT_GET_SLICE(u); p; p = UNIT_GET_SLICE(p)) {
+        for (Unit *p = UNIT_GET_SLICE(u); p; p = UNIT_GET_SLICE(p)) {
                 c = unit_get_cgroup_context(p);
                 if (!c)
                         return false;
@@ -2171,7 +2161,6 @@ int unit_attach_pids_to_cgroup(Unit *u, Set *pids, const char *suffix_path) {
         r = 0;
         SET_FOREACH(pidp, pids) {
                 pid_t pid = PTR_TO_PID(pidp);
-                CGroupController c;
 
                 /* First, attach the PID to the main cgroup hierarchy */
                 q = cg_attach(SYSTEMD_CGROUP_CONTROLLER, p, pid);
@@ -2208,7 +2197,7 @@ int unit_attach_pids_to_cgroup(Unit *u, Set *pids, const char *suffix_path) {
                 /* In the legacy hierarchy, attach the process to the request cgroup if possible, and if not to the
                  * innermost realized one */
 
-                for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
+                for (CGroupController c = 0; c < _CGROUP_CONTROLLER_MAX; c++) {
                         CGroupMask bit = CGROUP_CONTROLLER_TO_MASK(c);
                         const char *realized;
 
@@ -3146,7 +3135,6 @@ static int cg_bpf_mask_supported(CGroupMask *ret) {
 int manager_setup_cgroup(Manager *m) {
         _cleanup_free_ char *path = NULL;
         const char *scope_path;
-        CGroupController c;
         int r, all_unified;
 #if 0 /// UNNEEDED by elogind
         CGroupMask mask;
@@ -3328,8 +3316,9 @@ int manager_setup_cgroup(Manager *m) {
 #endif // 0
 
         /* 10. Log which controllers are supported */
-        for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++)
-                log_debug("Controller '%s' supported: %s", cgroup_controller_to_string(c), yes_no(m->cgroup_supported & CGROUP_CONTROLLER_TO_MASK(c)));
+        for (CGroupController c = 0; c < _CGROUP_CONTROLLER_MAX; c++)
+                log_debug("Controller '%s' supported: %s", cgroup_controller_to_string(c),
+                          yes_no(m->cgroup_supported & CGROUP_CONTROLLER_TO_MASK(c)));
 
         return 0;
 }
