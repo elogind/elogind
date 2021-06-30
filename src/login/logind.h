@@ -12,7 +12,6 @@
 #include "hashmap.h"
 #include "list.h"
 #include "set.h"
-//#include "sleep-config.h"
 #include "time-util.h"
 #include "user-record.h"
 
@@ -28,7 +27,6 @@ typedef struct Manager Manager;
 #include "elogind.h"
 #include "musl_missing.h"
 #include "sleep-config.h"
-
 
 #if 1 /// elogind has to ident itself
 #define MANAGER_IS_SYSTEM(m)   (  (m)->is_system)
