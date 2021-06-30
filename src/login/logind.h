@@ -104,7 +104,7 @@ struct Manager {
         InhibitWhat action_what;
 
 #if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
-        /* If a shutdown/suspend was delayed due to a inhibitor this
+        /* If a shutdown/suspend was delayed due to an inhibitor this
            contains the unit name we are supposed to start after the
            delay is over */
         const char *action_unit;
