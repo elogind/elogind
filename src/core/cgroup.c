@@ -20,6 +20,7 @@
 #include "fileio.h"
 #include "fs-util.h"
 #include "io-util.h"
+#include "ip-protocol-list.h"
 #include "limits-util.h"
 #include "nulstr-util.h"
 #include "parse-util.h"
@@ -593,18 +594,24 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
 }
 
 void cgroup_context_dump_socket_bind_item(const CGroupSocketBindItem *item, FILE *f) {
-        const char *family, *colon;
+        const char *family, *colon1, *protocol = "", *colon2 = "";
 
         family = strempty(af_to_ipv4_ipv6(item->address_family));
-        colon = isempty(family) ? "" : ":";
+        colon1 = isempty(family) ? "" : ":";
+
+        if (item->ip_protocol != 0) {
+                protocol = ip_protocol_to_tcp_udp(item->ip_protocol);
+                colon2 = ":";
+        }
 
         if (item->nr_ports == 0)
-                fprintf(f, " %s%sany", family, colon);
+                fprintf(f, " %s%s%s%sany", family, colon1, protocol, colon2);
         else if (item->nr_ports == 1)
-                fprintf(f, " %s%s%" PRIu16, family, colon, item->port_min);
+                fprintf(f, " %s%s%s%s%" PRIu16, family, colon1, protocol, colon2, item->port_min);
         else {
                 uint16_t port_max = item->port_min + item->nr_ports - 1;
-                fprintf(f, " %s%s%" PRIu16 "-%" PRIu16, family, colon, item->port_min, port_max);
+                fprintf(f, " %s%s%s%s%" PRIu16 "-%" PRIu16, family, colon1, protocol, colon2,
+                        item->port_min, port_max);
         }
 }
 
@@ -3333,7 +3340,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
 #if 0 /// elogind is not init
         /* We can't really delete the group, since we are in it. But
          * let's trim it. */
-        if (delete && m->cgroup_root && m->test_run_flags != MANAGER_TEST_RUN_MINIMAL)
+        if (delete && m->cgroup_root && !FLAGS_SET(m->test_run_flags, MANAGER_TEST_RUN_MINIMAL))
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
         m->cgroup_empty_event_source = sd_event_source_unref(m->cgroup_empty_event_source);
