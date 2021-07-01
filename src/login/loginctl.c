@@ -476,7 +476,6 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
 
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
-        char since1[FORMAT_TIMESTAMP_RELATIVE_MAX];
         const char *s1, *s2;
         SessionStatusInfo i = {};
         int r;
@@ -497,7 +496,7 @@ static int print_session_status_info(sd_bus *bus, const char *path, bool *new_li
         else
                 printf("%"PRIu32"\n", i.uid);
 
-        s1 = format_timestamp_relative(since1, sizeof(since1), i.timestamp.realtime);
+        s1 = FORMAT_TIMESTAMP_RELATIVE(i.timestamp.realtime);
         s2 = FORMAT_TIMESTAMP(i.timestamp.realtime);
 
         if (s1)
@@ -608,7 +607,6 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
 
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
-        char since1[FORMAT_TIMESTAMP_RELATIVE_MAX];
         const char *s1, *s2;
         _cleanup_(user_status_info_clear) UserStatusInfo i = {};
         int r;
@@ -627,7 +625,7 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
         else
                 printf("%"PRIu32"\n", i.uid);
 
-        s1 = format_timestamp_relative(since1, sizeof(since1), i.timestamp.realtime);
+        s1 = FORMAT_TIMESTAMP_RELATIVE(i.timestamp.realtime);
         s2 = FORMAT_TIMESTAMP(i.timestamp.realtime);
 
         if (s1)
