@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[]) {
 #if 0 /// elogind only needs v
-        char buf[CONST_MAX(FORMAT_TIMESPAN_MAX, FORMAT_BYTES_MAX)];
+        char buf[FORMAT_BYTES_MAX];
         nsec_t nsec;
 #endif // 0
         uint64_t v;
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
 #if 0 /// UNSUPPORTED by elogind (we aren't init)
         assert_se(procfs_cpu_get_usage(&nsec) >= 0);
-        log_info("Current system CPU time: %s", format_timespan(buf, sizeof(buf), nsec/NSEC_PER_USEC, 1));
+        log_info("Current system CPU time: %s", FORMAT_TIMESPAN(nsec/NSEC_PER_USEC, 1));
 
         assert_se(procfs_memory_get_used(&v) >= 0);
         log_info("Current memory usage: %s", format_bytes(buf, sizeof(buf), v));

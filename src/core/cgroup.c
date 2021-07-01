@@ -395,8 +395,6 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
         CGroupSocketBindItem *bi;
         IPAddressAccessItem *iaai;
         char **path;
-        char q[FORMAT_TIMESPAN_MAX];
-        char v[FORMAT_TIMESPAN_MAX];
 
         char cda[FORMAT_CGROUP_DIFF_MAX];
         char cdb[FORMAT_CGROUP_DIFF_MAX];
@@ -461,8 +459,8 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
                 prefix, c->startup_cpu_weight,
                 prefix, c->cpu_shares,
                 prefix, c->startup_cpu_shares,
-                prefix, format_timespan(q, sizeof(q), c->cpu_quota_per_sec_usec, 1),
-                prefix, format_timespan(v, sizeof(v), c->cpu_quota_period_usec, 1),
+                prefix, FORMAT_TIMESPAN(c->cpu_quota_per_sec_usec, 1),
+                prefix, FORMAT_TIMESPAN(c->cpu_quota_period_usec, 1),
                 prefix, strempty(cpuset_cpus),
                 prefix, strempty(cpuset_mems),
                 prefix, c->io_weight,
@@ -515,7 +513,7 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
                         "%sIODeviceLatencyTargetSec: %s %s\n",
                         prefix,
                         l->path,
-                        format_timespan(q, sizeof(q), l->target_usec, 1));
+                        FORMAT_TIMESPAN(l->target_usec, 1));
 
         LIST_FOREACH(device_limits, il, c->io_device_limits) {
                 char buf[FORMAT_BYTES_MAX];
@@ -870,10 +868,9 @@ static usec_t cgroup_cpu_adjust_period_and_log(Unit *u, usec_t period, usec_t qu
         new_period = cgroup_cpu_adjust_period(period, quota, USEC_PER_MSEC, USEC_PER_SEC);
 
         if (new_period != period) {
-                char v[FORMAT_TIMESPAN_MAX];
                 log_unit_full(u, u->warned_clamping_cpu_quota_period ? LOG_DEBUG : LOG_WARNING,
                               "Clamping CPU interval for cpu.max: period is now %s",
-                              format_timespan(v, sizeof(v), new_period, 1));
+                              FORMAT_TIMESPAN(new_period, 1));
                 u->warned_clamping_cpu_quota_period = true;
         }
 
@@ -3213,7 +3210,7 @@ int manager_setup_cgroup(Manager *m) {
 
 #if 0 /// elogind is not init, and does not install the agent here.
         /* 3. Allocate cgroup empty defer event source */
-        m->cgroup_empty_event_source = sd_event_source_unref(m->cgroup_empty_event_source);
+        m->cgroup_empty_event_source = sd_event_source_disable_unref(m->cgroup_empty_event_source);
         r = sd_event_add_defer(m->event, &m->cgroup_empty_event_source, on_cgroup_empty_event, m);
         if (r < 0)
                 return log_error_errno(r, "Failed to create cgroup empty event source: %m");
@@ -3236,7 +3233,7 @@ int manager_setup_cgroup(Manager *m) {
 
                 /* In the unified hierarchy we can get cgroup empty notifications via inotify. */
 
-                m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
+                m->cgroup_inotify_event_source = sd_event_source_disable_unref(m->cgroup_inotify_event_source);
                 safe_close(m->cgroup_inotify_fd);
 
                 m->cgroup_inotify_fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
@@ -3343,12 +3340,12 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         if (delete && m->cgroup_root && !FLAGS_SET(m->test_run_flags, MANAGER_TEST_RUN_MINIMAL))
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
-        m->cgroup_empty_event_source = sd_event_source_unref(m->cgroup_empty_event_source);
+        m->cgroup_empty_event_source = sd_event_source_disable_unref(m->cgroup_empty_event_source);
 
         m->cgroup_control_inotify_wd_unit = hashmap_free(m->cgroup_control_inotify_wd_unit);
         m->cgroup_memory_inotify_wd_unit = hashmap_free(m->cgroup_memory_inotify_wd_unit);
 
-        m->cgroup_inotify_event_source = sd_event_source_unref(m->cgroup_inotify_event_source);
+        m->cgroup_inotify_event_source = sd_event_source_disable_unref(m->cgroup_inotify_event_source);
         m->cgroup_inotify_fd = safe_close(m->cgroup_inotify_fd);
 #endif // 0
 
