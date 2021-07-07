@@ -3962,6 +3962,7 @@ if want_tests != 'false' and static_libelogind_pic
 endif
 #endif // 0
 #if 0 /// UNNEEDED by elogind
+# subdir('modprobe.d')
 # subdir('sysctl.d')
 # subdir('sysusers.d')
 # subdir('tmpfiles.d')
@@ -3988,9 +3989,6 @@ install_subdir('factory/etc',
 #                      install_dir : xinitrcdir)
 # endif
 #endif // 0
-install_data('README',
-             'modprobe.d/elogind.conf',
-             install_dir : modprobedir)
 install_data('LICENSE.GPL2',
              'LICENSE.LGPL2.1',
 #if 0 /// elogind has upgraded to markdown, and the NEWS file is useless
