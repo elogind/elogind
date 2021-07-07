@@ -205,6 +205,29 @@ static void test_shell_maybe_quote(void) {
 }
 #endif // 0
 
+static void test_quote_command_line_one(char **argv, const char *expected) {
+        _cleanup_free_ char *s;
+
+        assert_se(s = quote_command_line(argv));
+        log_info("%s", s);
+        assert_se(streq(s, expected));
+}
+
+static void test_quote_command_line(void) {
+        log_info("/* %s */", __func__);
+
+        test_quote_command_line_one(STRV_MAKE("true", "true"),
+                                    "true true");
+        test_quote_command_line_one(STRV_MAKE("true", "with a space"),
+                                    "true \"with a space\"");
+        test_quote_command_line_one(STRV_MAKE("true", "with a 'quote'"),
+                                    "true \"with a 'quote'\"");
+        test_quote_command_line_one(STRV_MAKE("true", "with a \"quote\""),
+                                    "true \"with a \\\"quote\\\"\"");
+        test_quote_command_line_one(STRV_MAKE("true", "$dollar"),
+                                    "true \"\\$dollar\"");
+}
+
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
 
@@ -217,6 +240,7 @@ int main(int argc, char *argv[]) {
         test_shell_escape();
         test_shell_maybe_quote();
 #endif // 0
+        test_quote_command_line();
 
         return 0;
 }
