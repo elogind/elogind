@@ -342,6 +342,7 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('UDEV_HWDB_DIR',                              udevhwdbdir)
 # conf.set_quoted('UDEV_RULES_DIR',                             udevrulesdir)
+# conf.set_quoted('UPDATE_HELPER_USER_TIMEOUT',                 get_option('update-helper-user-timeout'))
 # conf.set_quoted('USER_CONFIG_UNIT_DIR',                       join_paths(pkgsysconfdir, 'user'))
 # conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
 # conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)

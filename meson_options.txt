@@ -226,6 +226,8 @@ option('pkgconfiglibdir', type : 'string', value : '',
 # option('rpmmacrosdir', type : 'string', value : 'lib/rpm/macros.d',
 #        description : 'directory for rpm macros ["no" disables]')
 #endif // 0
+option('update-helper-user-timeout', type : 'string', value : '15s',
+       description : 'how long to wait for user manager operations')
 option('pamlibdir', type : 'string',
        description : 'directory for PAM modules')
 option('pamconfdir', type : 'string',
