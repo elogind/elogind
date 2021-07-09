@@ -106,9 +106,9 @@ char** path_strv_resolve(char **l, const char *root);
 char** path_strv_resolve_uniq(char **l, const char *root);
 
 #if 0 /// UNNEEDED by elogind
-int find_executable_full(const char *name, const char *root, bool use_path_envvar, char **ret_filename, int *ret_fd);
+int find_executable_full(const char *name, const char *root, char **exec_search_path, bool use_path_envvar, char **ret_filename, int *ret_fd);
 static inline int find_executable(const char *name, char **ret_filename) {
-        return find_executable_full(name, /* root= */ NULL, true, ret_filename, NULL);
+        return find_executable_full(name, /* root= */ NULL, NULL, true, ret_filename, NULL);
 }
 
 bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
