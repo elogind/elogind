@@ -120,10 +120,13 @@ int efi_get_variable(
                 n = st.st_size - 4;
 
         if (DEBUG_LOGGING) {
-                usec_t end = now(CLOCK_MONOTONIC);
+                char ts[FORMAT_TIMESPAN_MAX];
+                usec_t end;
+
+                end = now(CLOCK_MONOTONIC);
                 if (end > begin + EFI_RETRY_DELAY)
                         log_debug("Detected slow EFI variable read access on %s: %s",
-                                  variable, FORMAT_TIMESPAN(end - begin, 1));
+                                  variable, format_timespan(ts, sizeof(ts), end - begin, 1));
         }
 
         /* Note that efivarfs interestingly doesn't require ftruncate() to update an existing EFI variable
@@ -379,7 +382,7 @@ int elogind_efi_options_efivarfs_if_newer(char **line) {
                 return log_debug_errno(errno, "Failed to stat EFI variable SystemdOptions: %m");
 
         if (stat(EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions)), &b) < 0) {
-                if (errno != -ENOENT)
+                if (errno != ENOENT)
                         log_debug_errno(errno, "Failed to stat "EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions))": %m");
         } else if (compare_stat_mtime(&a, &b) > 0)
                 log_debug("Variable SystemdOptions in evifarfs is newer than in cache.");
