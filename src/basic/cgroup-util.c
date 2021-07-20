@@ -39,6 +39,7 @@
 #include "user-util.h"
 /// Additional includes needed by elogind
 #include "env-file.h"
+#include "xattr-util.h"
 
 static int cg_enumerate_items(const char *controller, const char *path, FILE **_f, const char *item) {
         _cleanup_free_ char *fs = NULL;
@@ -157,6 +158,24 @@ bool cg_freezer_supported(void) {
                 return supported;
 
         supported = cg_all_unified() > 0 && access("/sys/fs/cgroup/init.scope/cgroup.freeze", F_OK) == 0;
+
+        return supported;
+}
+
+bool cg_kill_supported(void) {
+        static thread_local int supported = -1;
+
+        if (supported >= 0)
+                return supported;
+
+        if (cg_all_unified() <= 0)
+                supported = false;
+        else if (access("/sys/fs/cgroup/init.scope/cgroup.kill", F_OK) < 0) {
+                if (errno != ENOENT)
+                        log_debug_errno(errno, "Failed to check if cgroup.kill is available, assuming not: %m");
+                supported = false;
+        } else
+                supported = true;
 
         return supported;
 }
@@ -359,6 +378,29 @@ int cg_kill(
         return cg_kill_items(controller, path, sig, flags, s, log_kill, userdata, "cgroup.threads");
 }
 
+int cg_kill_kernel_sigkill(const char *controller, const char *path) {
+        /* Kills the cgroup at `path` directly by writing to its cgroup.kill file.
+         * This sends SIGKILL to all processes in the cgroup and has the advantage of
+         * being completely atomic, unlike cg_kill_items. */
+        int r;
+        _cleanup_free_ char *killfile = NULL;
+
+        assert(path);
+
+        if (!cg_kill_supported())
+                return -EOPNOTSUPP;
+
+        r = cg_get_path(controller, path, "cgroup.kill", &killfile);
+        if (r < 0)
+                return r;
+
+        r = write_string_file(killfile, "1", WRITE_STRING_FILE_DISABLE_BUFFER);
+        if (r < 0)
+                return r;
+
+        return 0;
+}
+
 int cg_kill_recursive(
                 const char *controller,
                 const char *path,
@@ -376,38 +418,46 @@ int cg_kill_recursive(
         assert(path);
         assert(sig >= 0);
 
-        if (!s) {
-                s = allocated_set = set_new(NULL);
-                if (!s)
-                        return -ENOMEM;
-        }
+        if (sig == SIGKILL && cg_kill_supported() &&
+            !FLAGS_SET(flags, CGROUP_IGNORE_SELF) && !s && !log_kill) {
+                /* ignore CGROUP_SIGCONT, since this is a no-op alongside SIGKILL */
+                ret = cg_kill_kernel_sigkill(controller, path);
+                if (ret < 0)
+                        return ret;
+        } else {
+                if (!s) {
+                        s = allocated_set = set_new(NULL);
+                        if (!s)
+                                return -ENOMEM;
+                }
 
-        ret = cg_kill(controller, path, sig, flags, s, log_kill, userdata);
+                ret = cg_kill(controller, path, sig, flags, s, log_kill, userdata);
 
-        r = cg_enumerate_subgroups(controller, path, &d);
-        if (r < 0) {
-                if (ret >= 0 && r != -ENOENT)
-                        return r;
+                r = cg_enumerate_subgroups(controller, path, &d);
+                if (r < 0) {
+                        if (ret >= 0 && r != -ENOENT)
+                                return r;
 
-                return ret;
-        }
+                        return ret;
+                }
 
-        while ((r = cg_read_subgroup(d, &fn)) > 0) {
-                _cleanup_free_ char *p = NULL;
+                while ((r = cg_read_subgroup(d, &fn)) > 0) {
+                        _cleanup_free_ char *p = NULL;
 
-                p = path_join(empty_to_root(path), fn);
-                free(fn);
-                if (!p)
-                        return -ENOMEM;
+                        p = path_join(empty_to_root(path), fn);
+                        free(fn);
+                        if (!p)
+                                return -ENOMEM;
 
-                r = cg_kill_recursive(controller, p, sig, flags, s, log_kill, userdata);
-                if (r != 0 && ret >= 0)
+                        r = cg_kill_recursive(controller, p, sig, flags, s, log_kill, userdata);
+                        if (r != 0 && ret >= 0)
+                                ret = r;
+                }
+                if (ret >= 0 && r < 0)
                         ret = r;
         }
-        if (ret >= 0 && r < 0)
-                ret = r;
 
-        if (flags & CGROUP_REMOVE) {
+        if (FLAGS_SET(flags, CGROUP_REMOVE)) {
                 r = cg_rmdir(controller, path);
                 if (r < 0 && ret >= 0 && !IN_SET(r, -ENOENT, -EBUSY))
                         return r;
