@@ -10,7 +10,7 @@ project('elogind', 'c',
                 'localstatedir=/var',
                 'warning_level=2',
         ],
-        meson_version : '>= 0.46',
+        meson_version : '>= 0.47',
        )
 
 libsystemd_version = '0.32.0'
@@ -110,7 +110,6 @@ rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 # sysvrcnd_path = get_option('sysvrcnd-path')
 # conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
 #            description : 'SysV init scripts and rcN.d links are supported')
-# conf.set10('CREATE_LOG_DIRS', get_option('create-log-dirs'))
 #
 # if get_option('hibernate') and not get_option('initrd')
 #         error('hibernate depends on initrd')
@@ -270,7 +269,6 @@ endif
 # conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 #endif // 0
-conf.set_quoted('DOC_DIR',                                    docdir)
 conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('ENVIRONMENT_DIR',                            environmentdir)
@@ -323,6 +321,7 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlib
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SYSTEMD_TEST_DATA',                          join_paths(testsdir, 'testdata'))
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
+# conf.set_quoted('SYSTEMD_UPDATE_HELPER_PATH',                 join_paths(rootlibexecdir, 'systemd-update-helper'))
 # conf.set_quoted('SYSTEMD_USERWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-userwork'))
 # conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   join_paths(rootlibexecdir, 'systemd-veritysetup'))
 # conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     join_paths(pkgsysconfdir, 'system'))
