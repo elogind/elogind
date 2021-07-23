@@ -1063,29 +1063,6 @@ bool is_main_thread(void) {
         return cached > 0;
 }
 
-_noreturn_ void freeze(void) {
-
-        log_close();
-
-        /* Make sure nobody waits for us on a socket anymore */
-        (void) close_all_fds(NULL, 0);
-
-        sync();
-
-        /* Let's not freeze right away, but keep reaping zombies. */
-        for (;;) {
-                int r;
-                siginfo_t si = {};
-
-                r = waitid(P_ALL, 0, &si, WEXITED);
-                if (r < 0 && errno != EINTR)
-                        break;
-        }
-
-        /* waitid() failed with an unexpected error, things are really borked. Freeze now! */
-        for (;;)
-                pause();
-}
 
 #if 0 /// UNNEEDED by elogind
 unsigned long personality_from_string(const char *p) {
