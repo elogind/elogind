@@ -91,7 +91,6 @@ bool is_main_thread(void);
 _noreturn_ void freeze(void);
 
 #if 0 /// UNNEEDED by elogind
-bool oom_score_adjust_is_valid(int oa);
 #endif // 0
 
 #ifndef PERSONALITY_INVALID
