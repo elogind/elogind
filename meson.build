@@ -1930,8 +1930,7 @@ subdir('src/boot/efi')
 
 ############################################################
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 generate_gperfs = find_program('tools/generate-gperfs.py')
 
 #if 0 /// UNNEEDED by elogind
@@ -1950,6 +1949,7 @@ update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 
 update_syscall_tables_sh = find_program('tools/update-syscall-tables.sh')
 xml_helper_py = find_program('tools/xml_helper.py')
+export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
 
 #if 1 /// These are not needed by elogind, but meson wants them although they are commented out.
 conf.set_quoted('CERTIFICATE_ROOT',                 '/dev/null')
@@ -1976,9 +1976,15 @@ add_project_arguments('-include', 'config.h', language : 'c')
 # usually, but not always, installed in /bin.
 public_programs = []
 
-tests = []
+# D-Bus introspection XML export
+dbus_programs = []
+dbus_interfaces_dir = get_option('dbus-interfaces-dir')
+if dbus_interfaces_dir == ''
+   dbus_interfaces_dir = get_option('datadir') + '/dbus-1'
+endif
 
 #if 0 /// elogind does not fuzz
+# tests = []
 # fuzzers = []
 #endif // 0
 
@@ -2318,7 +2324,7 @@ test_dlopen = executable(
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# executable(
+# dbus_programs += executable(
 #         'systemd',
 #         systemd_sources,
 #         include_directories : includes,
@@ -2487,7 +2493,7 @@ test_dlopen = executable(
 # endif
 #
 # if conf.get('ENABLE_RESOLVE') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-resolved',
 #                 systemd_resolved_sources,
 #                 include_directories : resolve_includes,
@@ -2524,7 +2530,7 @@ test_dlopen = executable(
 # endif
 #
 # if conf.get('ENABLE_LOGIND') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-logind',
 #                 systemd_logind_sources,
 #                 include_directories : includes,
@@ -2732,7 +2738,7 @@ endif
 #         install_dir : rootbindir)
 #
 # if conf.get('ENABLE_PORTABLED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-portabled',
 #                 systemd_portabled_sources,
 #                 include_directories : includes,
@@ -2812,7 +2818,7 @@ endif
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-homed',
 #                 systemd_homed_sources,
 #                 include_directories : home_includes,
@@ -3015,7 +3021,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_HOSTNAMED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-hostnamed',
 #                 'src/hostname/hostnamed.c',
 #                 include_directories : includes,
@@ -3042,7 +3048,7 @@ endif
 #                 deps = []
 #         endif
 #
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-localed',
 #                 systemd_localed_sources,
 #                 include_directories : includes,
@@ -3062,7 +3068,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_TIMEDATED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-timedated',
 #                 'src/timedate/timedated.c',
 #                 include_directories : includes,
@@ -3106,7 +3112,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_MACHINED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-machined',
 #                 systemd_machined_sources,
 #                 include_directories : includes,
@@ -3131,7 +3137,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_IMPORTD') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-importd',
 #                 systemd_importd_sources,
 #                 include_directories : includes,
@@ -3290,7 +3296,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_OOMD') == 1
-#         executable('systemd-oomd',
+#         dbus_programs += executable('systemd-oomd',
 #                    systemd_oomd_sources,
 #                    include_directories : includes,
 #                    link_with : [libshared],
@@ -4310,6 +4316,13 @@ alias_target('update-dbus-docs', update_dbus_docs)
 alias_target('update-man-rules', update_man_rules)
 
 #if 0 /// elogind is not (and never will be) PID 1
+# custom_target(
+#         'export-dbus-interfaces',
+#         output : 'interfaces',
+#         install : dbus_interfaces_dir != 'no',
+#         install_dir : dbus_interfaces_dir,
+#         command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
+#
 # ############################################################
 #endif // 0
 
