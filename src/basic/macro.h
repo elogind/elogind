@@ -23,12 +23,28 @@
 #define _packed_ __attribute__((__packed__))
 #define _malloc_ __attribute__((__malloc__))
 #define _weak_ __attribute__((__weak__))
+#define _likely_(x) (__builtin_expect(!!(x), 1))
+#define _unlikely_(x) (__builtin_expect(!!(x), 0))
 #define _public_ __attribute__((__visibility__("default")))
 #define _hidden_ __attribute__((__visibility__("hidden")))
 #define _weakref_(x) __attribute__((__weakref__(#x)))
 #define _alignas_(x) __attribute__((__aligned__(__alignof(x))))
 #define _alignptr_ __attribute__((__aligned__(sizeof(void*))))
 #define _warn_unused_result_ __attribute__((__warn_unused_result__))
+#if __GNUC__ >= 7
+#define _fallthrough_ __attribute__((__fallthrough__))
+#else
+#define _fallthrough_
+#endif
+/* Define C11 noreturn without <stdnoreturn.h> and even on older gcc
+ * compiler versions */
+#ifndef _noreturn_
+#if __STDC_VERSION__ >= 201112L
+#define _noreturn_ _Noreturn
+#else
+#define _noreturn_ __attribute__((__noreturn__))
+#endif
+#endif
 
 #if !defined(HAS_FEATURE_MEMORY_SANITIZER)
 #  if defined(__has_feature)
@@ -192,6 +208,13 @@ static inline size_t GREEDY_ALLOC_ROUND_UP(size_t l) {
 
         return m;
 }
+
+/*
+ * STRLEN - return the length of a string literal, minus the trailing NUL byte.
+ *          Contrary to strlen(), this is a constant expression.
+ * @x: a string literal.
+ */
+#define STRLEN(x) (sizeof(""x"") - 1U)
 
 /*
  * container_of - cast a member of a structure out to the containing structure
@@ -459,5 +482,11 @@ static inline int __coverity_check_and_return__(int condition) {
 static inline size_t size_add(size_t x, size_t y) {
         return y >= SIZE_MAX - x ? SIZE_MAX : x + y;
 }
+
+typedef struct {
+        int _empty[0];
+} dummy_t;
+
+assert_cc(sizeof(dummy_t) == 0);
 
 #include "log.h"
