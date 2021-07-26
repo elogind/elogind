@@ -99,8 +99,6 @@
 #         namespace.h
 #         path.c
 #         path.h
-#         restrict-ifaces.c
-#         restrict-ifaces.h
 #         scope.c
 #         scope.h
 #         selinux-access.c
@@ -145,11 +143,6 @@ libcore_sources = files('''
 # subdir('bpf/socket_bind')
 # if conf.get('BPF_FRAMEWORK') == 1
 #         libcore_sources += [socket_bind_skel_h]
-# endif
-#
-# subdir('bpf/restrict_ifaces')
-# if conf.get('BPF_FRAMEWORK') == 1
-#         libcore_sources += [restrict_ifaces_skel_h]
 # endif
 #
 # load_fragment_gperf_gperf = custom_target(
@@ -211,7 +204,7 @@ libcore_sources = files('''
 #                 output: file,
 #                 command : [meson_render_jinja2, config_h, '@INPUT@'],
 #                 capture : true,
-#                 install : dir != 'no',
+#                 install : (dir == pkgsysconfdir and install_sysconfdir_samples) or (dir != pkgsysconfdir and dir != 'no'),
 #                 install_dir : dir)
 # endforeach
 #
@@ -233,9 +226,9 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 #
 #endif // 0
 if install_sysconfdir
-        meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'system'))
-        meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'user'))
-        meson.add_install_script('sh', '-c', mkdir_p.format(sysconfdir / 'xdg/elogind'))
+        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'system')))
+        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
+        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(sysconfdir, 'xdg/elogind')))
 endif
 
 ############################################################
