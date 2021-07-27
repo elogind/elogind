@@ -10,7 +10,7 @@ project('elogind', 'c',
                 'localstatedir=/var',
                 'warning_level=2',
         ],
-        meson_version : '>= 0.47',
+        meson_version : '>= 0.53.2',
        )
 
 libsystemd_version = '0.32.0'
@@ -460,7 +460,7 @@ if cc.get_id() == 'gcc'
 endif
 
 # --as-needed and --no-undefined are provided by meson by default,
-# run mesonconf to see what is enabled
+# run 'meson configure' to see what is enabled
 possible_link_flags = [
         '-Wl,-z,relro',
         '-Wl,-z,now',
@@ -717,7 +717,7 @@ mkdir_p = 'mkdir -p $DESTDIR/@0@'
 # splash_bmp = files('test/splash.bmp')
 #endif // 0
 
-# if -Dxxx-path option is found, use that. Otherwise, check in $PATH,
+# If -Dxxx-path option is found, use that. Otherwise, check in $PATH,
 # /usr/sbin, /sbin, and fall back to the default from middle column.
 #if 0 /// elogind has a bit different list and some adaptions
 # progs = [['quotaon',    '/usr/sbin/quotaon'    ],
@@ -1091,10 +1091,6 @@ conf.set10('LOG_TRACE', get_option('log-trace'))
 default_user_path = get_option('user-path')
 if default_user_path != ''
         conf.set_quoted('DEFAULT_USER_PATH', default_user_path)
-        default_user_path_display = default_user_path
-else
-        # meson 0.49 fails when ?: is used in .format()
-        default_user_path_display = '(same as system services)'
 endif
 
 
@@ -2095,7 +2091,7 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
                         'cryptsetup-token-elogind-tpm2',
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
-                        dependencies : libshared_deps + [libcryptsetup, versiondep],
+                        dependencies : libshared_deps + [libcryptsetup],
                         link_with : [libshared],
                         link_whole : [cryptsetup_token_elogind_tpm2_static],
                         link_depends : cryptsetup_token_sym,
@@ -4311,7 +4307,8 @@ status = [
 #         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
 #         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
 #         'default locale:                    @0@'.format(default_locale),
-#         'default user $PATH:                @0@'.format(default_user_path_display),
+#         'default user $PATH:                @0@'.format(
+#                 default_user_path != '' ? default_user_path : '(same as system services)'),
 #         'systemd service watchdog:          @0@'.format(watchdog_opt)]
 #else // 0
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
