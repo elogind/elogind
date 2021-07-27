@@ -57,7 +57,7 @@ static int io_handler(sd_event_source *s, int fd, uint32_t revents, void *userda
                 else
                         assert_se(sd_event_source_set_enabled(s, SD_EVENT_OFF) >= 0);
         } else
-                assert_not_reached("Yuck!");
+                assert_not_reached();
 
         return 1;
 }
@@ -172,7 +172,7 @@ static int time_handler(sd_event_source *s, uint64_t usec, void *userdata) {
                         got_c = true;
                 }
         } else
-                assert_not_reached("Huh?");
+                assert_not_reached();
 
         return 2;
 }
@@ -454,7 +454,7 @@ static int inotify_handler(sd_event_source *s, const struct inotify_event *ev, v
                 log_info("inotify-handler <%s>: delete of %s", description, ev->name);
                 assert_se(streq(ev->name, "sub"));
         } else
-                assert_not_reached("unexpected inotify event");
+                assert_not_reached();
 
         maybe_exit(s, c);
         return 1;
@@ -472,7 +472,7 @@ static int delete_self_handler(sd_event_source *s, const struct inotify_event *e
         } else if (ev->mask & IN_IGNORED) {
                 log_info("delete-self-handler: ignore");
         } else
-                assert_not_reached("unexpected inotify event (delete-self)");
+                assert_not_reached();
 
         maybe_exit(s, c);
         return 1;

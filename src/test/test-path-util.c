@@ -352,7 +352,7 @@ static void test_prefixes(void) {
         assert_se(values[i] == NULL);
 
         PATH_FOREACH_PREFIX(s, "////")
-                assert_not_reached("Wut?");
+                assert_not_reached();
 
         b = false;
         PATH_FOREACH_PREFIX_MORE(s, "////") {
@@ -363,7 +363,7 @@ static void test_prefixes(void) {
         assert_se(b);
 
         PATH_FOREACH_PREFIX(s, "")
-                assert_not_reached("wut?");
+                assert_not_reached();
 
         b = false;
         PATH_FOREACH_PREFIX_MORE(s, "") {

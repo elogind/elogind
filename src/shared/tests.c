@@ -162,7 +162,7 @@ bool have_namespaces(void) {
         if (si.si_status == EXIT_FAILURE)
                 return false;
 
-        assert_not_reached("unexpected exit code");
+        assert_not_reached();
 }
 
 #if 0 /// UNNEEDED by elogind

@@ -643,7 +643,7 @@ int device_read_uevent_file(sd_device *device) {
 
                         break;
                 default:
-                        assert_not_reached("Invalid state when parsing uevent file");
+                        assert_not_reached();
                 }
 
         if (major) {
@@ -1140,18 +1140,6 @@ _public_ int sd_device_get_seqnum(sd_device *device, uint64_t *ret) {
 
         if (ret)
                 *ret = device->seqnum;
-
-        return 0;
-}
-
-_public_ int sd_device_get_diskseq(sd_device *device, uint64_t *ret) {
-        assert_return(device, -EINVAL);
-
-        if (device->diskseq == 0)
-                return -ENOENT;
-
-        if (ret)
-                *ret = device->diskseq;
 
         return 0;
 }

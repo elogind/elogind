@@ -232,7 +232,7 @@ int user_runtime_dir(const char *verb, User *u) {
                 return do_mount(argv[2]);
         if (streq(argv[1], "stop"))
                 return do_umount(argv[2]);
-        assert_not_reached("Unknown verb!");
+        assert_not_reached();
 #else // 0
         if (streq(verb, "start"))
                 r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->manager->runtime_dir_inodes,

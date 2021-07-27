@@ -90,7 +90,7 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
                 break;
 
         default:
-                assert_not_reached("Unexpected state?");
+                assert_not_reached();
         }
 
         sd_event_unref(iterator->event);
@@ -333,7 +333,7 @@ static int userdb_on_query_reply(
         }
 
         default:
-                assert_not_reached("unexpected lookup");
+                assert_not_reached();
         }
 
 finish:
@@ -1452,7 +1452,6 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
         return 0;
 }
 #endif // 0
-
 
 int userdb_block_nss_elogind(int b) {
         _cleanup_(dlclosep) void *dl = NULL;
