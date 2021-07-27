@@ -17,7 +17,7 @@ test_env = environment()
 # test_env.set('SYSTEMD_KBD_MODEL_MAP', kbd_model_map)
 # test_env.set('SYSTEMD_LANGUAGE_FALLBACK_MAP', language_fallback_map)
 #endif // 0
-test_env.set('PATH', '@0@:@1@'.format(meson.build_root(), path))
+test_env.set('PATH', project_build_root + ':' + path)
 
 ############################################################
 
