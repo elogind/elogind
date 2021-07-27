@@ -226,9 +226,9 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 #
 #endif // 0
 if install_sysconfdir
-        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'system')))
-        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
-        meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(sysconfdir, 'xdg/elogind')))
+        meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'system'))
+        meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'user'))
+        meson.add_install_script('sh', '-c', mkdir_p.format(sysconfdir / 'xdg/elogind'))
 endif
 
 ############################################################

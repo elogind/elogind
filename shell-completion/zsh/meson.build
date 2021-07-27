@@ -2,7 +2,7 @@
 
 zshcompletiondir = get_option('zshcompletiondir')
 if zshcompletiondir == ''
-        zshcompletiondir = join_paths(datadir, 'zsh/site-functions')
+        zshcompletiondir = datadir / 'zsh/site-functions'
 endif
 
 #if 0 /// elogind has a *very* short list for this...
@@ -17,12 +17,12 @@ endif
 #
 # items = [['_busctl',                   ''],
 #          ['_journalctl',               ''],
-#          ['_elogind-analyze',          ''],
-#          ['_elogind-delta',            ''],
-#          ['_elogind-nspawn',           ''],
-#          ['_elogind',                  ''],
-#          ['_elogind-path',             ''],
-#          ['_elogind-run',              ''],
+#          ['_systemd-analyze',          ''],
+#          ['_systemd-delta',            ''],
+#          ['_systemd-nspawn',           ''],
+#          ['_systemd',                  ''],
+#          ['_systemd-path',             ''],
+#          ['_systemd-run',              ''],
 #          ['_udevadm',                  ''],
 #          ['_kernel-install',           ''],
 #          ['_sd_hosts_or_user_at_host', ''],
@@ -36,9 +36,9 @@ endif
 #          ['_loginctl',                 'ENABLE_LOGIND'],
 #          ['_machinectl',               'ENABLE_MACHINED'],
 #          ['_networkctl',               'ENABLE_NETWORKD'],
-#          ['_elogind-inhibit',          'ENABLE_LOGIND'],
+#          ['_systemd-inhibit',          'ENABLE_LOGIND'],
 #          ['_resolvectl',               'ENABLE_RESOLVE'],
-#          ['_elogind-tmpfiles',         'ENABLE_TMPFILES'],
+#          ['_systemd-tmpfiles',         'ENABLE_TMPFILES'],
 #          ['_timedatectl',              'ENABLE_TIMEDATED']]
 #else // 0
 items = [['_busctl',                   ''],
