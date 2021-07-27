@@ -39,7 +39,7 @@
     <!-- // 0 -->
 
     <para>The module also applies various resource management and runtime parameters to the new session, as
-    configured in the <ulink url="https://elogind.io/USER_RECORD">JSON User Record</ulink> of the user, when
+    configured in the <ulink url="https://elogind.io/USER_RECORD">JSON User Records</ulink> of the user, when
     one is defined.</para>
 
     <para>On login, this module — in conjunction with <filename>elogind-logind.service</filename> — ensures the
