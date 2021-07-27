@@ -2089,14 +2089,13 @@ install_libelogind_static = static_library(
         c_args : libsystemd_c_args)
 #endif // 0
 
-
 if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         if conf.get('HAVE_TPM2') == 1
                 cryptsetup_token_elogind_tpm2 = shared_library(
                         'cryptsetup-token-elogind-tpm2',
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
-                        dependencies : libshared_deps + [libcryptsetup],
+                        dependencies : libshared_deps + [libcryptsetup, versiondep],
                         link_with : [libshared],
                         link_whole : [cryptsetup_token_elogind_tpm2_static],
                         link_depends : cryptsetup_token_sym,
