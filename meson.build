@@ -4216,109 +4216,104 @@ alias_target('update-man-rules', update_man_rules)
 
 #if 0 /// elogind is not (and never will be) PID 1
 # ############################################################
-# watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
 #endif // 0
 
-status = [
-        '@0@ @1@'.format(meson.project_name(), meson.project_version()),
-
-        'build mode:                        @0@'.format(get_option('mode')),
-        'split /usr:                        @0@'.format(split_usr),
-        'split bin-sbin:                    @0@'.format(split_bin),
-        'prefix directory:                  @0@'.format(prefixdir),
-        'rootprefix directory:              @0@'.format(rootprefixdir),
-        'sysconf directory:                 @0@'.format(sysconfdir),
-        'include directory:                 @0@'.format(includedir),
-        'lib directory:                     @0@'.format(libdir),
-        'rootlib directory:                 @0@'.format(rootlibdir),
 #if 1 /// Needed by elogind
         'rootexeclib dir:                   @0@'.format(rootlibexecdir),
 #endif // 1
 #if 0 /// UNNEEDED by elogind
-#         'SysV init scripts:                 @0@'.format(sysvinit_path),
-#         'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
 #endif // 0
-        'PAM modules directory:             @0@'.format(pamlibdir),
-        'PAM configuration directory:       @0@'.format(pamconfdir),
 #if 0 /// UNNEEDED by elogind
-#         'libcryptsetup plugins directory:   @0@'.format(libcryptsetup_plugins_dir),
-#         'RPM macros directory:              @0@'.format(rpmmacrosdir),
-#         'modprobe.d directory:              @0@'.format(modprobedir),
 #endif // 0
-        'D-Bus policy directory:            @0@'.format(dbuspolicydir),
-        'D-Bus session directory:           @0@'.format(dbussessionservicedir),
-        'D-Bus system directory:            @0@'.format(dbussystemservicedir),
-        'bash completions directory:        @0@'.format(bashcompletiondir),
-        'zsh completions directory:         @0@'.format(zshcompletiondir),
 #if 0 /// UNSUPPORTED by elogind
-#         'extra start script:                @0@'.format(get_option('rc-local')),
-#         'debug shell:                       @0@ @ @1@'.format(get_option('debug-shell'),
-#                                                               get_option('debug-tty')),
-#         'system UIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_UID_MAX'),
-#                                                                         conf.get('SYSTEM_ALLOC_UID_MIN')),
-#         'system GIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_GID_MAX'),
-#                                                                         conf.get('SYSTEM_ALLOC_GID_MIN')),
-#         'dynamic UIDs:                      @0@…@1@'.format(dynamic_uid_min, dynamic_uid_max),
-#         'container UID bases:               @0@…@1@'.format(container_uid_base_min, container_uid_base_max),
-#         'static UID/GID allocations:        @0@'.format(' '.join(static_ugids)),
 #endif // 0
-        '/dev/kvm access mode:              @0@'.format(get_option('dev-kvm-mode')),
-        'render group access mode:          @0@'.format(get_option('group-render-mode')),
 #if 0 /// UNSUPPORTED by elogind
-#         'certificate root directory:        @0@'.format(get_option('certificate-root')),
-#         'support URL:                       @0@'.format(support_url),
 #endif // 0
-        'nobody user name:                  @0@'.format(nobody_user),
-        'nobody group name:                 @0@'.format(nobody_group),
 #if 0 /// UNSUPPORTED by elogind
-#         'fallback hostname:                 @0@'.format(get_option('fallback-hostname')),
-#
-#         'default DNSSEC mode:               @0@'.format(default_dnssec),
-#         'default DNS-over-TLS mode:         @0@'.format(default_dns_over_tls),
-#         'default mDNS mode:                 @0@'.format(default_mdns),
-#         'default LLMNR mode:                @0@'.format(default_llmnr),
-#         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
-#         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
-#         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
-#         'default locale:                    @0@'.format(default_locale),
-#         'default user $PATH:                @0@'.format(
-#                 default_user_path != '' ? default_user_path : '(same as system services)'),
-#         'systemd service watchdog:          @0@'.format(watchdog_opt)]
 #else // 0
         'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
 #endif // 0
 
 #if 0 /// UNSUPPORTED by elogind
-# alt_dns_servers = '\n                                            '.join(dns_servers.split(' '))
-# alt_ntp_servers = '\n                                            '.join(ntp_servers.split(' '))
-# status += [
-#         'default DNS servers:               @0@'.format(alt_dns_servers),
-#         'default NTP servers:               @0@'.format(alt_ntp_servers)]
 #
 # alt_time_epoch = run_command('date', '-Is', '-u', '-d',
 #                              '@@0@'.format(time_epoch)).stdout().strip()
-# status += [
-#         'time epoch:                        @0@ (@1@)'.format(time_epoch, alt_time_epoch)]
 #endif // 0
 #if 0 /// elogind does not ship libudeb. Obviously.
 #
 #endif // 0
+summary({
+        'build mode' :                      get_option('mode'),
+        'split /usr' :                      split_usr,
+        'split bin-sbin' :                  split_bin,
+        'prefix directory' :                prefixdir,
+        'rootprefix directory' :            rootprefixdir,
+        'sysconf directory' :               sysconfdir,
+        'include directory' :               includedir,
+        'lib directory' :                   libdir,
+        'rootlib directory' :               rootlibdir,
+        'SysV init scripts' :               sysvinit_path,
+        'SysV rc?.d directories' :          sysvrcnd_path,
+        'PAM modules directory' :           pamlibdir,
+        'PAM configuration directory' :     pamconfdir,
+        'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
+        'RPM macros directory' :            rpmmacrosdir,
+        'modprobe.d directory' :            modprobedir,
+        'D-Bus policy directory' :          dbuspolicydir,
+        'D-Bus session directory' :         dbussessionservicedir,
+        'D-Bus system directory' :          dbussystemservicedir,
+        'bash completions directory' :      bashcompletiondir,
+        'zsh completions directory' :       zshcompletiondir,
+        'extra start script' :              get_option('rc-local'),
+        'debug shell' :                     '@0@ @ @1@'.format(get_option('debug-shell'),
+                                                               get_option('debug-tty')),
+        'system UIDs' :                     '<=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_UID_MAX'),
+                                                                         conf.get('SYSTEM_ALLOC_UID_MIN')),
+        'system GIDs' :                     '<=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_GID_MAX'),
+                                                                         conf.get('SYSTEM_ALLOC_GID_MIN')),
+        'dynamic UIDs' :                    '@0@…@1@'.format(dynamic_uid_min, dynamic_uid_max),
+        'container UID bases' :             '@0@…@1@'.format(container_uid_base_min, container_uid_base_max),
+        'static UID/GID allocations' :      ' '.join(static_ugids),
+        '/dev/kvm access mode' :            get_option('dev-kvm-mode'),
+        'render group access mode' :        get_option('group-render-mode'),
+        'certificate root directory' :      get_option('certificate-root'),
+        'support URL' :                     support_url,
+        'nobody user name' :                nobody_user,
+        'nobody group name' :               nobody_group,
+        'fallback hostname' :               get_option('fallback-hostname'),
+        'default DNSSEC mode' :             default_dnssec,
+        'default DNS-over-TLS mode' :       default_dns_over_tls,
+        'default mDNS mode' :               default_mdns,
+        'default LLMNR mode' :              default_llmnr,
+        'default DNS servers' :             dns_servers.split(' '),
+        'default NTP servers' :             ntp_servers.split(' '),
+        'default cgroup hierarchy' :        default_hierarchy,
+        'default net.naming-scheme value' : default_net_naming_scheme,
+        'default KillUserProcesses value' : kill_user_processes,
+        'default locale' :                  default_locale,
+        'default user $PATH' :
+                default_user_path != '' ? default_user_path : '(same as system services)',
+        'elogind service watchdog' :        service_watchdog == '' ? 'disabled' : service_watchdog,
+        'time epoch' :                      '@0@ (@1@)'.format(time_epoch, alt_time_epoch)})
+
 # TODO:
 # CFLAGS:   ${OUR_CFLAGS} ${CFLAGS}
 # CPPFLAGS: ${OUR_CPPFLAGS} ${CPPFLAGS}
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
 if conf.get('ENABLE_EFI') == 1
-        status += 'efi arch:                          @0@'.format(efi_arch)
+        summary({'efi arch' : efi_arch},
+                section : 'Extensible Firmware Interface')
 
 #if 0 /// UNNEEDED by elogind
 #         if have_gnu_efi
-#                 status += [
-#                         'EFI machine type:                  @0@'.format(EFI_MACHINE_TYPE_NAME),
-#                         'EFI CC                             @0@'.format(' '.join(efi_cc)),
-#                         'EFI lds:                           @0@'.format(efi_lds),
-#                         'EFI crt0:                          @0@'.format(efi_crt0),
-#                         'EFI include directory:             @0@'.format(efi_incdir)]
+#                 summary({
+#                         'EFI machine type' :                EFI_MACHINE_TYPE_NAME,
+#                         'EFI CC' :                          '@0@'.format(' '.join(efi_cc)),
+#                         'EFI lds' :                         efi_lds,
+#                         'EFI crt0' :                        efi_crt0,
+#                         'EFI include directory' :           efi_incdir},
+#                         section : 'Extensible Firmware Interface')
 #         endif
 #endif // 0
 endif
@@ -4497,13 +4492,10 @@ endif
 # endif
 #endif // 0
 
-status += [
-        '',
-        'enabled features: @0@'.format(', '.join(found)),
-        '',
-        'disabled features: @0@'.format(', '.join(missing)),
-        '']
-message('\n         '.join(status))
+summary({
+        'enabled' :  ', '.join(found),
+        'disabled' : ', '.join(missing)},
+        section : 'Features')
 
 #if 0 /// Nicely enough this isn't true for elogind. :-)
 # if rootprefixdir != rootprefix_default
