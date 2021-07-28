@@ -859,6 +859,8 @@ conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 #         time_epoch = time_epoch.to_int()
 # endif
 # conf.set('TIME_EPOCH', time_epoch)
+#
+# conf.set('CLOCK_VALID_RANGE_USEC_MAX', get_option('clock-valid-range-usec-max'))
 #else // 0
 ############################################################
 # elogind needs to know which cgroups controller to follow.
@@ -2093,7 +2095,7 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
                         'cryptsetup-token-elogind-tpm2',
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
-                        dependencies : libshared_deps + [libcryptsetup],
+                        dependencies : libshared_deps + [libcryptsetup, versiondep],
                         link_with : [libshared],
                         link_whole : [cryptsetup_token_elogind_tpm2_static],
                         link_depends : cryptsetup_token_sym,
