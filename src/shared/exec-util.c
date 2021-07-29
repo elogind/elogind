@@ -454,7 +454,6 @@ ExecCommandFlags exec_command_flags_from_string(const char *s) {
 }
 #endif // 0
 
-
 int fexecve_or_execve(int executable_fd, const char *executable, char *const argv[], char *const envp[]) {
 #if ENABLE_FEXECVE
         execveat(executable_fd, "", argv, envp, AT_EMPTY_PATH);
@@ -478,7 +477,7 @@ int fexecve_or_execve(int executable_fd, const char *executable, char *const arg
         return -errno;
 }
 
-int fork_agent(const char *name, int except[], size_t n_except, pid_t *ret_pid, const char *path, ...) {
+int fork_agent(const char *name, const int except[], size_t n_except, pid_t *ret_pid, const char *path, ...) {
         bool stdout_is_tty, stderr_is_tty;
         size_t n, i;
         va_list ap;
