@@ -129,6 +129,7 @@
 #         'pager.c',
 #         'parse-argument.c',
 #         'parse-helpers.c',
+#         'password-quality-util-passwdqc.c',
 #         'password-quality-util-pwquality.c',
 #         'pcre2-util.c',
 #         'pkcs11-util.c',

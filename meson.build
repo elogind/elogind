@@ -1379,8 +1379,13 @@ libmount = dependency('mount',
 # endif
 # conf.set10('HAVE_LIBFDISK', have)
 #
+# want_passwdqc = get_option('passwdqc')
 # want_pwquality = get_option('pwquality')
-# if want_pwquality != 'false' and not skip_deps
+# if want_passwdqc == 'true' and want_pwquality == 'true'
+#         error('passwdqc and pwquality cannot be requested simultaneously')
+# endif
+#
+# if want_pwquality != 'false' and want_passwdqc != 'true' and not skip_deps
 #         libpwquality = dependency('pwquality',
 #                                   version : '>= 1.4.1',
 #                                   required : want_pwquality == 'true')
@@ -1390,6 +1395,16 @@ libmount = dependency('mount',
 #         libpwquality = []
 # endif
 # conf.set10('HAVE_PWQUALITY', have)
+#
+# if not have and want_passwdqc != 'false' and not skip_deps
+#         libpasswdqc = dependency('passwdqc',
+#                                  required : want_passwdqc == 'true')
+#         have = libpasswdqc.found()
+# else
+#         have = false
+#         libpasswdqc = []
+# endif
+# conf.set10('HAVE_PASSWDQC', have)
 #
 # want_seccomp = get_option('seccomp')
 # if want_seccomp != 'false' and not skip_deps
@@ -5456,6 +5471,7 @@ foreach tuple : [
 #         ['microhttpd'],
 #         ['openssl'],
 #         ['p11kit'],
+#         ['passwdqc'],
 #         ['pcre2'],
 #         ['pwquality'],
 #         ['qrencode'],
