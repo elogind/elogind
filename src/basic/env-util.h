@@ -40,7 +40,8 @@ char **strv_env_clean_with_callback(char **l, void (*invalid_callback)(const cha
 bool strv_env_name_is_valid(char **l);
 bool strv_env_name_or_assignment_is_valid(char **l);
 
-char **strv_env_merge(size_t n_lists, ...);
+char** _strv_env_merge(char **first, ...);
+#define strv_env_merge(first, ...) _strv_env_merge(first, __VA_ARGS__, POINTER_MAX)
 char **strv_env_delete(char **x, size_t n_lists, ...); /* New copy */
 
 #endif // 0
