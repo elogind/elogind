@@ -545,7 +545,9 @@ libbasic = static_library(
         dependencies : [versiondep,
                         threads,
                         libcap,
-                        libseccomp,
+#if 0 /// UNSUPPORTED by elogind
+#                         libseccomp,
+#endif // 0
                         libselinux,
                         libm,
                         libdl],

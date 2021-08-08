@@ -13,9 +13,11 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
-/// elogind empty mask removed (UNNEEDED by elogind - libudev is external)
-libelogind_version = '0.30.0'
-libudev_version = '1.7.0'
+libsystemd_version = '0.30.0'
+#if 0 /// elogind does not ship libudev
+# libudev_version = '1.7.0'
+#endif // 0
+
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -1065,9 +1067,7 @@ threads = dependency('threads')
 #endif //  0
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
-#if 0 /// UNNEEDED by elogind
-# libcrypt = cc.find_library('crypt')
-#endif // 0
+libcrypt = cc.find_library('crypt')
 
 crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
 foreach ident : [
@@ -1718,7 +1718,8 @@ conf.set10('ENABLE_REMOTE', have)
 #                 'vconsole',
 #                 'xdg-autostart']
 #else // 0
-                'smack']
+foreach term : ['smack',
+                'utmp']
 #endif // 0
         have = get_option(term)
         name = 'ENABLE_' + term.underscorify().to_upper()
@@ -1819,16 +1820,13 @@ meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 
 includes = include_directories('src/basic',
                                'src/boot',
+                               'src/core',
 #if 0 /// UNNEEDED by elogind
-#                                'src/core',
 #                                'src/home',
 #endif // 0
                                'src/journal',
-#if 0 /// UNNEEDED by elogind
-#                                'src/journal-remote',
-#endif // 0
-/// elogind empty mask removed (UNNEEDED by elogind)
 #if 0 /// elogind has a different list
+#                                'src/journal-remote',
 #                                'src/libsystemd-network',
 #                                'src/libsystemd/sd-bus',
 #                                'src/libsystemd/sd-device',
@@ -1855,7 +1853,10 @@ includes = include_directories('src/basic',
                                'src/libelogind/sd-event',
                                'src/libelogind/sd-hwdb',
                                'src/libelogind/sd-id128',
+                               'src/login',
+                               'src/shared',
                                'src/sleep',
+                               'src/systemd',
                                'src/update-utmp',
 #endif // 0
                                '.')
@@ -1867,8 +1868,8 @@ generate_gperfs = find_program('tools/generate-gperfs.py')
 subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
+# subdir('src/libudev')
 #endif // 0
-subdir('src/libudev')
 subdir('src/systemd')
 subdir('src/basic')
 #if 0 /// UNNEEDED by elogind
@@ -1959,23 +1960,26 @@ install_libelogind_static = static_library(
 #                         libmount,
 #                         libselinux,
 #                         libgcrypt],
-#         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
-#
-# ############################################################
-#
-# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
-# hwdb_update_sh = find_program('tools/hwdb-update.sh')
-# make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
-# make_directive_index_py = find_program('tools/make-directive-index.py')
-# make_man_index_py = find_program('tools/make-man-index.py')
-# syscall_names_update_sh = find_program('tools/syscall-names-update.sh')
-# xml_helper_py = find_program('tools/xml_helper.py')
-# update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 #else // 0
         dependencies : [threads,
                         libcap,
                         libselinux],
+#endif // 0
         c_args : libsystemd_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
+
+# ############################################################
+
+#if 0 /// UNNEEDED by elogind
+# autosuspend_update_sh = find_program('tools/autosuspend-update.sh')
+# hwdb_update_sh = find_program('tools/hwdb-update.sh')
+# make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+#endif // 0
+make_directive_index_py = find_program('tools/make-directive-index.py')
+make_man_index_py = find_program('tools/make-man-index.py')
+syscall_names_update_sh = find_program('tools/syscall-names-update.sh')
+xml_helper_py = find_program('tools/xml_helper.py')
+#if 0 /// UNNEEDED by elogind
+# update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 #endif // 0
 
 ############################################################
@@ -1984,11 +1988,9 @@ install_libelogind_static = static_library(
 # usually, but not always, installed in /bin.
 public_programs = []
 
-#if 0 /// UNNEEDED by elogind
-#else // 0
-# elogind depends on external libudev:
+#if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
-#endif // 0
+#endif // 1
 subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/core')
@@ -4342,8 +4344,8 @@ foreach tuple : [
 #         ['link-networkd-shared',  get_option('link-networkd-shared')],
 #         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
 #         ['kernel-install',        get_option('kernel-install')],
+#         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 #endif // 0
-        ['elogind-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 ]
 
         if tuple.length() >= 2

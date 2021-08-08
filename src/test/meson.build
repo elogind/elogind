@@ -358,9 +358,15 @@ tests += [
          [],
          []],
 
+#if 0 /// elogind has nothing to test that needs libseccomp
+#         [['src/test/test-parse-util.c'],
+#          [],
+#          [libseccomp]],
+#else // 0
         [['src/test/test-parse-util.c'],
          [],
-         [libseccomp]],
+         []],
+#endif // 0
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-sysctl-util.c'],
@@ -471,16 +477,18 @@ tests += [
          [],
          []],
 
-        [['src/test/test-loop-block.c'],
-         [libcore,
-          libshared],
-         [threads,
-          libblkid],
-         '',
-         '',
-         [],
-         includes,
-         false],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-loop-block.c'],
+#          [libcore,
+#           libshared],
+#          [threads,
+#           libblkid],
+#          '',
+#          '',
+#          [],
+#          includes,
+#          false],
+#endif // 0
 
         [['src/test/test-selinux.c'],
          [],
