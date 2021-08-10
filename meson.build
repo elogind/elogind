@@ -1086,10 +1086,10 @@ if not libcap.found()
         libcap = cc.find_library('cap')
 endif
 
+libmount = dependency('mount',
+                      version : fuzzer_build ? '>= 0' : '>= 2.30')
+
 #if 0 /// UNNEEDED by elogind
-# libmount = dependency('mount',
-#                       version : fuzzer_build ? '>= 0' : '>= 2.30')
-#
 # want_libfdisk = get_option('fdisk')
 # if want_libfdisk != 'false' and not skip_deps
 #         libfdisk = dependency('fdisk',
@@ -1727,6 +1727,11 @@ foreach term : ['smack',
         substs.set10(name, have)
 endforeach
 
+#if 1 /// elogind always looks at uid boundaries in /etc/login.defs
+conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
+substs.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
+#endif // 1
+
 #if 0 /// UNNEEDED by elogind
 # enable_sysusers = conf.get('ENABLE_SYSUSERS') == 1
 #
@@ -1948,7 +1953,7 @@ install_libelogind_static = static_library(
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
         install_dir : rootlibdir,
-#if 0 /// elogind only needs libcap, threads and selinux.
+#if 0 /// elogind only needs libcap, libmount threads and selinux.
 #         pic : static_libsystemd == 'true' or static_libsystemd == 'pic',
 #         dependencies : [threads,
 #                         librt,
@@ -1963,6 +1968,7 @@ install_libelogind_static = static_library(
 #else // 0
         dependencies : [threads,
                         libcap,
+                        libmount,
                         libselinux],
 #endif // 0
         c_args : libsystemd_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
