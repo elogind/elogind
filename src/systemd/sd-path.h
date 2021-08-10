@@ -102,6 +102,7 @@ enum {
         SD_PATH_SYSTEMD_SLEEP,
         SD_PATH_SYSTEMD_SHUTDOWN,
 
+#if 0 /** INVALID in elogind */
         SD_PATH_TMPFILES,
         SD_PATH_SYSUSERS,
         SD_PATH_SYSCTL,
@@ -109,7 +110,6 @@ enum {
         SD_PATH_MODULES_LOAD,
         SD_PATH_CATALOG,
 
-#if 0 /** INVALID in elogind */
         /* systemd-networkd search paths */
         SD_PATH_SYSTEMD_SEARCH_NETWORK,
 #endif /* 0 */
