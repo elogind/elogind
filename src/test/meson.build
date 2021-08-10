@@ -894,15 +894,15 @@ tests += [
 #         [['src/test/test-local-addresses.c'],
 #          [],
 #          []],
+#
+#         [['src/test/test-psi-util.c'],
+#          [],
+#          []],
+#
+#         [['src/test/test-qrcode-util.c'],
+#          [libshared],
+#          [libdl]],
 #endif // 0
-
-        [['src/test/test-psi-util.c'],
-         [],
-         []],
-
-        [['src/test/test-qrcode-util.c'],
-         [libshared],
-         [libdl]],
 ]
 
 ############################################################

@@ -166,6 +166,7 @@ static void test_path_equal_root(void) {
         assert_se(!path_equal_or_files_same("/", "/.../", AT_SYMLINK_NOFOLLOW));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_find_executable_full(void) {
         char *p;
 
@@ -237,6 +238,7 @@ static void test_find_executable(const char *self) {
         assert_se(find_executable("/some/dir/xxxx-xxxx", &p) == -ENOENT);
         assert_se(find_executable("/proc/filesystems", &p) == -EACCES);
 }
+#endif // 0
 
 static void test_prefixes(void) {
         static const char* const values[] = {
@@ -721,8 +723,10 @@ int main(int argc, char **argv) {
         test_print_paths();
         test_path();
         test_path_equal_root();
+#if 0 /// UNNEEDED by elogind
         test_find_executable_full();
         test_find_executable(argv[0]);
+#endif // 0
         test_prefixes();
         test_path_join();
 #if 0 /// UNNEEDED by elogind
