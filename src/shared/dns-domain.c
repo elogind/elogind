@@ -12,8 +12,8 @@
 //#include "hashmap.h"
 //#include "hexdecoct.h"
 #include "hostname-util.h"
-#include "idn-util.h"
-#include "in-addr-util.h"
+//#include "idn-util.h"
+//#include "in-addr-util.h"
 #include "macro.h"
 //#include "parse-util.h"
 //#include "string-util.h"
@@ -1397,7 +1397,6 @@ int dns_name_is_valid_or_address(const char *name) {
 
         return dns_name_is_valid(name);
 }
-#endif // 0
 
 int dns_name_dot_suffixed(const char *name) {
         const char *p = name;
@@ -1414,3 +1413,4 @@ int dns_name_dot_suffixed(const char *name) {
                         return false;
         }
 }
+#endif // 0

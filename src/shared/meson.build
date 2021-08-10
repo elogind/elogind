@@ -288,6 +288,7 @@ shared_sources = '''
         clean-ipc.h
         conf-parser.c
         conf-parser.h
+        daemon-util.h
         dev-setup.c
         dev-setup.h
         dns-domain.c
@@ -310,8 +311,10 @@ shared_sources = '''
         json-internal.h
         main-func.h
         mount-util.h
+        mount-util.c
         libcrypt-util.c
         libcrypt-util.h
+        libmount-util.h
         musl_missing.c
         musl_missing.h
         nsflags.c
@@ -472,6 +475,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 libshared_deps = [threads,
                   libacl,
                   libcap,
+                  libmount,
                   libpam,
                   libselinux]
 #endif // 0

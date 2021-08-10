@@ -96,7 +96,6 @@ int make_salt(char **ret) {
         return 0;
 #endif
 }
-#endif // 0
 
 #if HAVE_CRYPT_RA
 #  define CRYPT_RA_NAME "crypt_ra"
@@ -164,6 +163,7 @@ int hash_password_full(const char *password, void **cd_data, int *cd_size, char 
         *ret = p;
         return 0;
 }
+#endif // 0
 
 bool looks_like_hashed_password(const char *s) {
         /* Returns false if the specified string is certainly not a hashed UNIX password. crypt(5) lists
@@ -181,6 +181,7 @@ bool looks_like_hashed_password(const char *s) {
         return !STR_IN_SET(s, "x", "*");
 }
 
+#if 0 /// UNNEEDED by elogind
 int test_password_one(const char *hashed_password, const char *password) {
         _cleanup_(erase_and_freep) void *cd_data = NULL;
         int cd_size = 0;
@@ -212,3 +213,4 @@ int test_password_many(char **hashed_password, const char *password) {
 
         return false;
 }
+#endif // 0

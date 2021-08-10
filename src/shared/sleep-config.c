@@ -33,6 +33,9 @@
 #include "strv.h"
 #include "time-util.h"
 
+/// Extra includes needed by elogind
+#include <stdlib.h>
+
 int parse_sleep_config(SleepConfig **ret_sleep_config) {
 #if 0 /// elogind uses its own manager
         _cleanup_(free_sleep_configp) SleepConfig *sc;
@@ -183,7 +186,6 @@ int can_sleep_disk(char **types) {
                 return false;
         }
 
-        r = read_one_line_file("/sys/power/disk", &p);
         r = read_one_line_file("/sys/power/disk", &text);
         if (r < 0) {
                 log_debug_errno(r, "Couldn't read /sys/power/disk: %m");
@@ -193,10 +195,35 @@ int can_sleep_disk(char **types) {
         for (const char *p = text;;) {
                 _cleanup_free_ char *word = NULL;
 
+                r = extract_first_word(&p, &word, NULL, 0);
+                if (r < 0)
+                        return log_debug_errno(r, "Failed to parse /sys/power/disk: %m");
+                if (r == 0)
+                        break;
+
+                char *s = word;
+                size_t l = strlen(s);
+                if (s[0] == '[' && s[l-1] == ']') {
+                        s[l-1] = '\0';
+                        s++;
+                }
+
+                if (strv_contains(types, s)) {
+                        log_debug("Disk sleep mode \"%s\" is supported by the kernel.", s);
+                        return true;
+                }
+        }
+
+        if (DEBUG_LOGGING) {
+                _cleanup_free_ char *t = strv_join(types, "/");
+                log_debug("Disk sleep mode %s not supported by the kernel, sorry.", strnull(t));
+        }
+        return false;
+}
+
 #if 1 /// Let's check the mem_sleep so elogind supports suspend modes
 static int can_sleep_mem(char **types) {
-        _cleanup_free_ char *p = NULL;
-        char **type;
+        _cleanup_free_ char *text = NULL;
         int r;
 
         if (strv_isempty(types))
@@ -208,25 +235,21 @@ static int can_sleep_mem(char **types) {
                 return false;
         }
 
-        r = read_one_line_file("/sys/power/mem_sleep", &p);
+        r = read_one_line_file("/sys/power/mem_sleep", &text);
         if (r < 0) {
                 log_debug_errno(r, "Couldn't read /sys/power/mem_sleep: %m");
                 return false;
         }
 
-        STRV_FOREACH(type, types) {
-                const char *word, *state;
-                size_t l, k;
+        for (const char *p = text;;) {
+                _cleanup_free_ char *word = NULL;
+
                 r = extract_first_word(&p, &word, NULL, 0);
                 if (r < 0)
-                        return log_debug_errno(r, "Failed to parse /sys/power/disk: %m");
+                        return log_debug_errno(r, "Failed to parse /sys/power/mem_sleep: %m");
                 if (r == 0)
                         break;
 
-                k = strlen(*type);
-                FOREACH_WORD_SEPARATOR(word, l, p, WHITESPACE, state) {
-                        if (l == k && memcmp(word, *type, l) == 0)
-                                return true;
                 char *s = word;
                 size_t l = strlen(s);
                 if (s[0] == '[' && s[l-1] == ']') {
@@ -234,20 +257,15 @@ static int can_sleep_mem(char **types) {
                         s++;
                 }
 
-                        if (l == k + 2 &&
-                            word[0] == '[' &&
-                            memcmp(word + 1, *type, l - 2) == 0 &&
-                            word[l-1] == ']')
-                                return true;
                 if (strv_contains(types, s)) {
-                        log_debug("Disk sleep mode \"%s\" is supported by the kernel.", s);
+                        log_debug("Mem sleep mode \"%s\" is supported by the kernel.", s);
                         return true;
                 }
         }
 
         if (DEBUG_LOGGING) {
                 _cleanup_free_ char *t = strv_join(types, "/");
-                log_debug("Disk sleep mode %s not supported by the kernel, sorry.", strnull(t));
+                log_debug("Mem sleep mode %s not supported by the kernel, sorry.", strnull(t));
         }
         return false;
 }

@@ -557,7 +557,6 @@ int json_variant_new_array(JsonVariant **ret, JsonVariant **array, size_t n) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n) {
         JsonVariant *v;
         size_t i;
@@ -596,7 +595,6 @@ int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n) {
         *ret = v;
         return 0;
 }
-#endif // 0
 
 int json_variant_new_array_strv(JsonVariant **ret, char **l) {
         _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;

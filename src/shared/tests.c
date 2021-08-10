@@ -20,7 +20,7 @@
 #include "bus-error.h"
 #include "bus-locator.h"
 #include "bus-util.h"
-#include "bus-wait-for-jobs.h"
+//#include "bus-wait-for-jobs.h"
 #include "cgroup-setup.h"
 #include "cgroup-util.h"
 #include "env-file.h"
@@ -296,7 +296,6 @@ static int enter_cgroup(char **ret_cgroup, bool enter_subroot) {
 
         return 0;
 }
-#endif // 0
 
 int enter_cgroup_subroot(char **ret_cgroup) {
         return enter_cgroup(ret_cgroup, true);
@@ -305,6 +304,7 @@ int enter_cgroup_subroot(char **ret_cgroup) {
 int enter_cgroup_root(char **ret_cgroup) {
         return enter_cgroup(ret_cgroup, false);
 }
+#endif // 0
 
 const char *ci_environment(void) {
         /* We return a string because we might want to provide multiple bits of information later on: not

@@ -5,7 +5,7 @@
 //#include <stdio.h>
 //#include <unistd.h>
 
-//#include "errno-util.h"
+#include "errno-util.h"
 //#include "macro.h"
 
 /* 4MB for contents of regular files, 64k inodes for directories, symbolic links and device specials, using
@@ -32,10 +32,10 @@
 #define TMPFS_LIMITS_ROOTFS          TMPFS_LIMITS_VAR
 #define TMPFS_LIMITS_VOLATILE_STATE  TMPFS_LIMITS_VAR
 
-#if 0 /// UNNEEDED by elogind
 int mount_fd(const char *source, int target_fd, const char *filesystemtype, unsigned long mountflags, const void *data);
 int mount_nofollow(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data);
 
+#if 0 /// UNNEEDED by elogind
 int repeat_unmount(const char *path, int flags);
 int umount_recursive(const char *target, int flags);
 int bind_remount_recursive(const char *prefix, unsigned long new_flags, unsigned long flags_mask, char **deny_list);
@@ -46,6 +46,7 @@ int mount_move_root(const char *path);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(FILE*, endmntent);
 #define _cleanup_endmntent_ _cleanup_(endmntentp)
+#endif // 0
 
 int mount_verbose_full(
                 int error_log_level,
@@ -56,6 +57,7 @@ int mount_verbose_full(
                 const char *options,
                 bool follow_symlink);
 
+#if 0 /// UNNEEDED by elogind
 static inline int mount_follow_verbose(
                 int error_log_level,
                 const char *what,
@@ -65,6 +67,7 @@ static inline int mount_follow_verbose(
                 const char *options) {
         return mount_verbose_full(error_log_level, what, where, type, flags, options, true);
 }
+#endif // 0
 
 static inline int mount_nofollow_verbose(
                 int error_log_level,
@@ -76,10 +79,13 @@ static inline int mount_nofollow_verbose(
         return mount_verbose_full(error_log_level, what, where, type, flags, options, false);
 }
 
+#if 0 /// UNNEEDED by elogind
 int umount_verbose(
                 int error_log_level,
                 const char *where,
                 int flags);
+
+#endif // 0
 
 int mount_option_mangle(
                 const char *options,
@@ -87,6 +93,7 @@ int mount_option_mangle(
                 unsigned long *ret_mount_flags,
                 char **ret_remaining_options);
 
+#if 0 /// UNNEEDED by elogind
 int mode_to_inaccessible_node(const char *runtime_dir, mode_t mode, char **dest);
 
 /* Useful for usage with _cleanup_(), unmounts, removes a directory and frees the pointer */

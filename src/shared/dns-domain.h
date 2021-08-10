@@ -116,6 +116,6 @@ int dns_name_common_suffix(const char *a, const char *b, const char **ret);
 int dns_name_apply_idna(const char *name, char **ret);
 
 int dns_name_is_valid_or_address(const char *name);
-#endif // 0
 
 int dns_name_dot_suffixed(const char *name);
+#endif // 0

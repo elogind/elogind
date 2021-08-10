@@ -1684,6 +1684,7 @@ int varlink_error_invalid_parameter(Varlink *v, JsonVariant *parameters) {
 
         return -EINVAL;
 }
+#endif // 0
 
 int varlink_error_errno(Varlink *v, int error) {
         return varlink_errorb(
@@ -1692,6 +1693,7 @@ int varlink_error_errno(Varlink *v, int error) {
                         JSON_BUILD_OBJECT(JSON_BUILD_PAIR("errno", JSON_BUILD_INTEGER(abs(error)))));
 }
 
+#if 0 /// UNNEEDED by elogind
 int varlink_notify(Varlink *v, JsonVariant *parameters) {
         _cleanup_(json_variant_unrefp) JsonVariant *m = NULL;
         int r;

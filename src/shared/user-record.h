@@ -20,6 +20,7 @@
 bool uid_is_system(uid_t uid);
 bool gid_is_system(gid_t gid);
 
+#if 0 /// UNNEEDED by elogind
 static inline bool uid_is_dynamic(uid_t uid) {
         return DYNAMIC_UID_MIN <= uid && uid <= DYNAMIC_UID_MAX;
 }
@@ -35,6 +36,7 @@ static inline bool uid_is_container(uid_t uid) {
 static inline bool gid_is_container(gid_t gid) {
         return uid_is_container((uid_t) gid);
 }
+#endif // 0
 
 typedef struct UGIDAllocationRange {
         uid_t system_alloc_uid_min;
