@@ -351,7 +351,6 @@ int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 int sockaddr_pretty(
                 const struct sockaddr *_sa,
                 socklen_t salen,
@@ -491,6 +490,7 @@ int sockaddr_pretty(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int getpeername_pretty(int fd, bool include_port, char **ret) {
         union sockaddr_union sa;
         socklen_t salen = sizeof(sa);
@@ -1236,6 +1236,7 @@ int socket_get_family(int fd, int *ret) {
         return af;
 }
 
+#if 0 /// UNNEEDED by elogind
 int socket_set_recvpktinfo(int fd, int af, bool b) {
         int r;
 
@@ -1402,3 +1403,4 @@ int socket_set_transparent(int fd, int af, bool b) {
                 return -EAFNOSUPPORT;
         }
 }
+#endif // 0

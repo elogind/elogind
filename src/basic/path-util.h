@@ -42,7 +42,6 @@
 #  define DEFAULT_USER_PATH DEFAULT_PATH
 #endif
 
-#if 0 /// UNNEEDED by elogind
 static inline bool is_path(const char *p) {
         assert(p);
         return strchr(p, '/');
@@ -53,9 +52,8 @@ static inline bool path_is_absolute(const char *p) {
         return p[0] == '/';
 }
 
-int path_split_and_make_absolute(const char *p, char ***ret);
-#endif // 0
 #if 0 /// UNNEEDED by elogind
+int path_split_and_make_absolute(const char *p, char ***ret);
 char* path_make_absolute(const char *p, const char *prefix);
 #endif // 0
 int safe_getcwd(char **ret);
@@ -96,12 +94,12 @@ int path_strv_make_absolute_cwd(char **l);
 char** path_strv_resolve(char **l, const char *root);
 char** path_strv_resolve_uniq(char **l, const char *root);
 
+#if 0 /// UNNEEDED by elogind
 int find_executable_full(const char *name, bool use_path_envvar, char **ret);
 static inline int find_executable(const char *name, char **ret) {
         return find_executable_full(name, true, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
 int fsck_exists(const char *fstype);
@@ -196,8 +194,9 @@ static inline const char *empty_to_root(const char *path) {
         return isempty(path) ? "/" : path;
 }
 
-/// elogind empty mask removed ()
 bool path_strv_contains(char **l, const char *path);
+#if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char **l, const char *path);
 
 bool credential_name_valid(const char *s);
+#endif // 0

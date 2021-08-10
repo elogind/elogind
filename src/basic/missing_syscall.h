@@ -60,7 +60,7 @@ static inline int missing_pivot_root(const char *new_root, const char *put_old) 
 #elif defined __arm__
 #  define elogind_NR_memfd_create 385
 #elif defined __aarch64__
-#  define systemd_NR_memfd_create 279
+#  define elogind_NR_memfd_create 279
 #elif defined(__powerpc__)
 #  define elogind_NR_memfd_create 360
 #elif defined __s390__
@@ -117,7 +117,7 @@ static inline int missing_memfd_create(const char *name, unsigned int flags) {
 #elif defined(__arm__)
 #  define elogind_NR_getrandom 384
 #elif defined(__aarch64__)
-#  define systemd_NR_getrandom 278
+#  define elogind_NR_getrandom 278
 #elif defined(__ia64__)
 #  define elogind_NR_getrandom elogind_SC_arch_bias(318)
 #elif defined(__m68k__)
@@ -191,7 +191,7 @@ static inline pid_t missing_gettid(void) {
 #elif defined(__arm__)
 #  define elogind_NR_name_to_handle_at 370
 #elif defined __aarch64__
-#  define systemd_NR_name_to_handle_at 264
+#  define elogind_NR_name_to_handle_at 264
 #elif defined(__powerpc__)
 #  define elogind_NR_name_to_handle_at 345
 #elif defined __s390__ || defined __s390x__
@@ -246,7 +246,7 @@ static inline int missing_name_to_handle_at(int fd, const char *name, struct fil
 /* ======================================================================= */
 
 #if defined __aarch64__
-#  define systemd_NR_setns 268
+#  define elogind_NR_setns 268
 #elif defined __arm__
 #  define elogind_NR_setns 375
 #elif defined(__x86_64__)
@@ -315,7 +315,7 @@ static inline pid_t raw_getpid(void) {
 #elif defined __arm__
 #  define elogind_NR_renameat2 382
 #elif defined __aarch64__
-#  define systemd_NR_renameat2 276
+#  define elogind_NR_renameat2 276
 #elif defined _MIPS_SIM
 #  if _MIPS_SIM == _MIPS_SIM_ABI32
 #    define elogind_NR_renameat2 elogind_SC_arch_bias(351)
@@ -426,7 +426,7 @@ static inline key_serial_t missing_request_key(const char *type, const char *des
 #elif defined __arm__
 #  define elogind_NR_copy_file_range 391
 #elif defined __aarch64__
-#  define systemd_NR_copy_file_range 285
+#  define elogind_NR_copy_file_range 285
 #elif defined __powerpc__
 #  define elogind_NR_copy_file_range 379
 #elif defined __arc__
@@ -477,28 +477,28 @@ static inline ssize_t missing_copy_file_range(int fd_in, loff_t *off_in,
 
 #if 0 /// elogind does not control/manage Berkeley packet filters
 #if defined __i386__
-#  define systemd_NR_bpf 357
+#  define elogind_NR_bpf 357
 #elif defined __x86_64__
-#  define systemd_NR_bpf systemd_SC_arch_bias(321)
+#  define elogind_NR_bpf systemd_SC_arch_bias(321)
 #elif defined __aarch64__
-#  define systemd_NR_bpf 280
+#  define elogind_NR_bpf 280
 #elif defined __arm__
-#  define systemd_NR_bpf 386
+#  define elogind_NR_bpf 386
 #elif defined(__powerpc__)
-#  define systemd_NR_bpf 361
+#  define elogind_NR_bpf 361
 #elif defined __sparc__
-#  define systemd_NR_bpf 349
+#  define elogind_NR_bpf 349
 #elif defined __s390__
-#  define systemd_NR_bpf 351
+#  define elogind_NR_bpf 351
 #elif defined __tilegx__
-#  define systemd_NR_bpf 280
+#  define elogind_NR_bpf 280
 #elif defined _MIPS_SIM
 #  if _MIPS_SIM == _MIPS_SIM_ABI32
-#    define systemd_NR_bpf systemd_SC_arch_bias(355)
+#    define elogind_NR_bpf systemd_SC_arch_bias(355)
 #  elif _MIPS_SIM == _MIPS_SIM_NABI32
-#    define systemd_NR_bpf systemd_SC_arch_bias(319)
+#    define elogind_NR_bpf systemd_SC_arch_bias(319)
 #  elif _MIPS_SIM == _MIPS_SIM_ABI64
-#    define systemd_NR_bpf systemd_SC_arch_bias(315)
+#    define elogind_NR_bpf systemd_SC_arch_bias(315)
 #  endif
 #else
 #  warning "bpf() syscall number unknown for your architecture"
@@ -544,7 +544,7 @@ static inline int missing_bpf(int cmd, union bpf_attr *attr, size_t size) {
 #  elif defined __aarch64__
 #    define elogind_NR_pkey_mprotect 288
 #  elif defined __arm__
-#    define systemd_NR_pkey_mprotect 394
+#    define elogind_NR_pkey_mprotect 394
 #  elif defined __powerpc__
 #    define elogind_NR_pkey_mprotect 386
 #  elif defined __s390__
@@ -684,33 +684,18 @@ static inline long missing_get_mempolicy(int *mode, unsigned long *nodemask,
 /* ======================================================================= */
 
 /* should be always defined, see kernel 39036cd2727395c3369b1051005da74059a85317 */
-#    define elogind_NR_pidfd_send_signal (424 + 4000)
-#  endif
-#  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
-#    define elogind_NR_pidfd_send_signal (424 + 6000)
-#  endif
-#  if _MIPS_SIM == _MIPS_SIM_ABI64	/* n64 */
-#    define elogind_NR_pidfd_send_signal (424 + 5000)
-#  endif
-#elif defined __ia64__
-#  define elogind_NR_pidfd_send_signal (424 + 1024)
-#else
-#  define elogind_NR_pidfd_send_signal elogind_SC_arch_bias(424)
-#endif
-#define elogind_NR_pidfd_send_signal elogind_SC_arch_bias(424)
+#define elogind_NR_pidfd_send_signal systemd_SC_arch_bias(424)
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_pidfd_send_signal && __NR_pidfd_send_signal >= 0
-#  if defined elogind_NR_pidfd_send_signal
-assert_cc(__NR_pidfd_send_signal == elogind_NR_pidfd_send_signal);
-#  if defined elogind_NR_pidfd_send_signal
-assert_cc(__NR_pidfd_send_signal == elogind_NR_pidfd_send_signal);
+#  if defined systemd_NR_pidfd_send_signal
+assert_cc(__NR_pidfd_send_signal == systemd_NR_pidfd_send_signal);
 #  endif
 #else
 #  if defined __NR_pidfd_send_signal
 #    undef __NR_pidfd_send_signal
 #  endif
-#  define __NR_pidfd_send_signal elogind_NR_pidfd_send_signal
+#  define __NR_pidfd_send_signal systemd_NR_pidfd_send_signal
 #endif
 
 #if !HAVE_PIDFD_SEND_SIGNAL
@@ -727,33 +712,18 @@ static inline int missing_pidfd_send_signal(int fd, int sig, siginfo_t *info, un
 #endif
 
 /* should be always defined, see kernel 7615d9e1780e26e0178c93c55b73309a5dc093d7 */
-#    define elogind_NR_pidfd_open (434 + 4000)
-#  endif
-#  if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
-#    define elogind_NR_pidfd_open (434 + 6000)
-#  endif
-#  if _MIPS_SIM == _MIPS_SIM_ABI64	/* n64 */
-#    define elogind_NR_pidfd_open (434 + 5000)
-#  endif
-#elif defined __ia64__
-#  define elogind_NR_pidfd_open (434 + 1024)
-#else
-#  define elogind_NR_pidfd_open elogind_SC_arch_bias(434)
-#endif
-#define elogind_NR_pidfd_open elogind_SC_arch_bias(434)
+#define elogind_NR_pidfd_open systemd_SC_arch_bias(434)
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_pidfd_open && __NR_pidfd_open >= 0
-#  if defined elogind_NR_pidfd_open
-assert_cc(__NR_pidfd_open == elogind_NR_pidfd_open);
-#  if defined elogind_NR_pidfd_open
-assert_cc(__NR_pidfd_open == elogind_NR_pidfd_open);
+#  if defined systemd_NR_pidfd_open
+assert_cc(__NR_pidfd_open == systemd_NR_pidfd_open);
 #  endif
 #else
 #  if defined __NR_pidfd_open
 #    undef __NR_pidfd_open
 #  endif
-#  define __NR_pidfd_open elogind_NR_pidfd_open
+#  define __NR_pidfd_open systemd_NR_pidfd_open
 #endif
 
 #if !HAVE_PIDFD_OPEN
@@ -785,46 +755,46 @@ static inline int missing_rt_sigqueueinfo(pid_t tgid, int sig, siginfo_t *info) 
 
 /* ======================================================================= */
 
-#define elogind_NR_close_range elogind_SC_arch_bias(436)
+#define elogind_NR_close_range systemd_SC_arch_bias(436)
 
 /* may be (invalid) negative number due to libseccomp, see PR 13319 */
 #if defined __NR_close_range && __NR_close_range >= 0
-#  if defined elogind_NR_close_range
-assert_cc(__NR_close_range == elogind_NR_close_range);
+#  if defined systemd_NR_close_range
+assert_cc(__NR_close_range == systemd_NR_close_range);
 #  endif
 #else
 #  if defined __NR_close_range
 #    undef __NR_close_range
 #  endif
-#  if defined elogind_NR_close_range
-#    define __NR_close_range elogind_NR_close_range
+#  if defined systemd_NR_close_range
+#    define __NR_close_range systemd_NR_close_range
 #  endif
 #endif
 
 #if !HAVE_CLOSE_RANGE
-static inline int missing_close_range(int first_fd, int end_fd, unsigned flags) {
+        static inline int missing_close_range(int first_fd, int end_fd, unsigned flags) {
 #  ifdef __NR_close_range
-        /* Kernel-side the syscall expects fds as unsigned integers (just like close() actually), while
-         * userspace exclusively uses signed integers for fds. We don't know just yet how glibc is going to
-         * wrap this syscall, but let's assume it's going to be similar to what they do for close(),
-         * i.e. make the same unsigned → signed type change from the raw kernel syscall compared to the
-         * userspace wrapper. There's only one caveat for this: unlike for close() there's the special
-         * UINT_MAX fd value for the 'end_fd' argument. Let's safely map that to -1 here. And let's refuse
-         * any other negative values. */
-        if ((first_fd < 0) || (end_fd < 0 && end_fd != -1)) {
-                errno = -EBADF;
-                return -1;
-        }
+                /* Kernel-side the syscall expects fds as unsigned integers (just like close() actually), while
+                 * userspace exclusively uses signed integers for fds. We don't know just yet how glibc is going to
+                 * wrap this syscall, but let's assume it's going to be similar to what they do for close(),
+                 * i.e. make the same unsigned → signed type change from the raw kernel syscall compared to the
+                 * userspace wrapper. There's only one caveat for this: unlike for close() there's the special
+                 * UINT_MAX fd value for the 'end_fd' argument. Let's safely map that to -1 here. And let's refuse
+                 * any other negative values. */
+                if ((first_fd < 0) || (end_fd < 0 && end_fd != -1)) {
+                        errno = -EBADF;
+                        return -1;
+                }
 
-        return syscall(__NR_close_range,
-                       (unsigned) first_fd,
-                       end_fd == -1 ? UINT_MAX : (unsigned) end_fd, /* Of course, the compiler should figure out that this is the identity mapping IRL */
-                       flags);
+                return syscall(__NR_close_range,
+                               (unsigned) first_fd,
+                               end_fd == -1 ? UINT_MAX : (unsigned) end_fd, /* Of course, the compiler should figure out that this is the identity mapping IRL */
+                               flags);
 #  else
-        errno = ENOSYS;
-        return -1;
+                errno = ENOSYS;
+                return -1;
 #  endif
-}
+        }
 
 #  define close_range missing_close_range
 #endif

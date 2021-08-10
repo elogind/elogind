@@ -38,11 +38,11 @@ union sockaddr_union {
 #if 0 /// UNNEEDED by elogind
         /* Ensure there is enough space to store Infiniband addresses */
         uint8_t ll_buffer[offsetof(struct sockaddr_ll, sll_addr) + CONST_MAX(ETH_ALEN, INFINIBAND_ALEN)];
+#endif // 0
 
         /* Ensure there is enough space after the AF_UNIX sun_path for one more NUL byte, just to be sure that the path
          * component is always followed by at least one NUL byte. */
         uint8_t un_buffer[sizeof(struct sockaddr_un) + 1];
-#endif // 0
 };
 
 #if 0 /// UNNEEDED by elogind
@@ -109,8 +109,8 @@ bool socket_ipv6_is_supported(void);
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
 
-#if 0 /// UNNEEDED by elogind
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
+#if 0 /// UNNEEDED by elogind
 int getpeername_pretty(int fd, bool include_port, char **ret);
 int getsockname_pretty(int fd, char **ret);
 
@@ -126,7 +126,6 @@ int netlink_family_from_string(const char *s) _pure_;
 bool sockaddr_equal(const union sockaddr_union *a, const union sockaddr_union *b);
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int fd_set_sndbuf(int fd, size_t n, bool increase);
 static inline int fd_inc_sndbuf(int fd, size_t n) {
         return fd_set_sndbuf(fd, n, true);
@@ -136,6 +135,7 @@ static inline int fd_inc_rcvbuf(int fd, size_t n) {
         return fd_set_rcvbuf(fd, n, true);
 }
 
+#if 0 /// UNNEEDED by elogind
 int ip_tos_to_string_alloc(int i, char **s);
 int ip_tos_from_string(const char *s);
 
@@ -278,6 +278,7 @@ int socket_bind_to_ifindex(int fd, int ifindex);
 ssize_t recvmsg_safe(int sockfd, struct msghdr *msg, int flags);
 
 int socket_get_family(int fd, int *ret);
+#if 0 /// UNNEEDED by elogind
 int socket_set_recvpktinfo(int fd, int af, bool b);
 int socket_set_recverr(int fd, int af, bool b);
 int socket_set_recvttl(int fd, int af, bool b);
@@ -285,3 +286,4 @@ int socket_set_ttl(int fd, int af, int ttl);
 int socket_set_unicast_if(int fd, int af, int ifi);
 int socket_set_freebind(int fd, int af, bool b);
 int socket_set_transparent(int fd, int af, bool b);
+#endif // 0

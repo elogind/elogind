@@ -218,7 +218,6 @@ int lock_whole_block_device(dev_t devt, int operation) {
 
         return TAKE_FD(lock_fd);
 }
-#endif // 0
 
 int blockdev_partscan_enabled(int fd) {
         _cleanup_free_ char *p = NULL, *buf = NULL;
@@ -256,3 +255,4 @@ int blockdev_partscan_enabled(int fd) {
 
         return !FLAGS_SET(ull, GENHD_FL_NO_PART_SCAN);
 }
+#endif // 0

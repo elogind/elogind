@@ -127,11 +127,11 @@ char *format_timestamp_style(char *buf, size_t l, usec_t t, TimestampStyle style
 char *format_timestamp_relative(char *buf, size_t l, usec_t t);
 char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
 
-#if 0 /// UNNEEDED by elogind
 static inline char *format_timestamp(char *buf, size_t l, usec_t t) {
         return format_timestamp_style(buf, l, t, TIMESTAMP_PRETTY);
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec);
 #endif // 0
 

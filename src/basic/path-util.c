@@ -592,6 +592,7 @@ char* path_join_internal(const char *first, ...) {
         return joined;
 }
 
+#if 0 /// UNNEEDED by elogind
 int find_executable_full(const char *name, bool use_path_envvar, char **ret) {
         int last_error, r;
         const char *p = NULL;
@@ -665,7 +666,6 @@ int find_executable_full(const char *name, bool use_path_envvar, char **ret) {
         return last_error;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool paths_check_timestamp(const char* const* paths, usec_t *timestamp, bool update) {
         bool changed = false;
         const char* const* i;
@@ -737,9 +737,6 @@ int fsck_exists(const char *fstype) {
         return executable_is_good(checker);
 }
 
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 int parse_path_argument_and_warn(const char *path, bool suppress_root, char **arg) {
         char *p;
         int r;
@@ -1119,7 +1116,6 @@ bool empty_or_root(const char *root) {
         return root[strspn(root, "/")] == 0;
 }
 
-/// elogind empty mask removed ()
 bool path_strv_contains(char **l, const char *path) {
         char **i;
 
@@ -1130,6 +1126,7 @@ bool path_strv_contains(char **l, const char *path) {
         return false;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char **l, const char *path) {
         char **i, *j;
 
@@ -1151,3 +1148,4 @@ bool credential_name_valid(const char *s) {
          * them around) and as fdnames (which is how we might want to pass them around eventually) */
         return filename_is_valid(s) && fdname_is_valid(s);
 }
+#endif // 0

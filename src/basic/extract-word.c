@@ -228,6 +228,7 @@ int extract_first_word_and_warn(
         /* Can be any error, report it */
         return log_syntax(unit, LOG_ERR, filename, line, r, "Unable to decode word \"%s\", ignoring: %m", rvalue);
 }
+#endif // 0
 
 /* We pass ExtractFlags as unsigned int (to avoid undefined behaviour when passing
  * an object that undergoes default argument promotion as an argument to va_start).
@@ -289,4 +290,3 @@ int extract_many_words(const char **p, const char *separators, unsigned flags, .
 
         return c;
 }
-#endif // 0
