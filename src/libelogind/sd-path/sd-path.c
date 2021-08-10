@@ -378,6 +378,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
 #endif // 0
                 return 0;
 
+#if 0 /// UNNEEDED by elogind
         case SD_PATH_TMPFILES:
                 *ret = "/usr/lib/tmpfiles.d";
                 return 0;
@@ -401,6 +402,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
         case SD_PATH_CATALOG:
                 *ret = "/usr/lib/systemd/catalog";
                 return 0;
+#endif // 0
         }
 
         return -EOPNOTSUPP;
