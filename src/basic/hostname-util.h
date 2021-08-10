@@ -8,13 +8,40 @@
 #include "strv.h"
 
 #if 0 /// UNNEEDED by elogind
+typedef enum GetHostnameFlags {
+        GET_HOSTNAME_ALLOW_NONE       = 1 << 0, /* accepts "(none)". */
+        GET_HOSTNAME_ALLOW_LOCALHOST  = 1 << 1, /* accepts "localhost" or friends. */
+        GET_HOSTNAME_FALLBACK_DEFAULT = 1 << 2, /* use default hostname if no hostname is set. */
+        GET_HOSTNAME_SHORT            = 1 << 3, /* kills the FQDN part if present. */
+} GetHostnameFlags;
+
+int gethostname_full(GetHostnameFlags flags, char **ret);
+static inline int gethostname_strict(char **ret) {
+        return gethostname_full(0, ret);
+}
+
+static inline char* gethostname_malloc(void) {
+        char *s;
+
+        if (gethostname_full(GET_HOSTNAME_ALLOW_LOCALHOST | GET_HOSTNAME_FALLBACK_DEFAULT, &s) < 0)
+                return NULL;
+
+        return s;
+}
+
+static inline char* gethostname_short_malloc(void) {
+        char *s;
+
+        if (gethostname_full(GET_HOSTNAME_ALLOW_LOCALHOST | GET_HOSTNAME_FALLBACK_DEFAULT | GET_HOSTNAME_SHORT, &s) < 0)
+                return NULL;
+
+        return s;
+}
+
 char* get_default_hostname(void);
 #endif // 0
-char* gethostname_malloc(void);
 #if 0 /// UNNEEDED by elogind
-char* gethostname_short_malloc(void);
 #endif // 0
-int gethostname_strict(char **ret);
 
 bool valid_ldh_char(char c) _const_;
 
