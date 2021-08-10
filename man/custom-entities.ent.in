@@ -13,7 +13,7 @@
 <!ENTITY KILL_USER_PROCESSES @KILL_USER_PROCESSES_YES_NO@>
 <!-- 0 /// elogind does not have a DEBUGTTY.
 <!ENTITY DEBUGTTY @DEBUGTTY@>
-// 0 -->
 <!ENTITY RC_LOCAL_PATH @RC_LOCAL_PATH@>
+// 0 -->
 <!ENTITY fedora_latest_version "33">
 <!ENTITY fedora_cloud_release "1.2">
