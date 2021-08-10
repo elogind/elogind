@@ -55,21 +55,18 @@ static void test_login(void) {
         assert_se(IN_SET(r, 0, -ENODATA));
 
         r = sd_pid_get_user_unit(0, &user_unit);
-#endif // 0
         log_info("sd_pid_get_user_unit(0, …) → %s / \"%s\"", e(r), strnull(user_unit));
         assert_se(IN_SET(r, 0, -ENODATA));
 
         r = sd_pid_get_slice(0, &slice);
         log_info("sd_pid_get_slice(0, …) → %s / \"%s\"", e(r), strnull(slice));
         assert_se(IN_SET(r, 0, -ENODATA));
+#endif // 0
 
+#if 0 /// elogind might just be getting installed, and /run/systemd be nonexistant
         r = sd_pid_get_owner_uid(0, &u2);
         log_info("sd_pid_get_owner_uid(0, …) → %s / "UID_FMT, e(r), u2);
         assert_se(IN_SET(r, 0, -ENODATA));
-
-        r = sd_pid_get_session(0, &session);
-
-#if 0 /// elogind might just be getting installed, and /run/systemd be nonexistant
 #else // 0
                 r = sd_pid_get_owner_uid(0, &u2);
                 if (-ENODATA == r) {
@@ -79,6 +76,7 @@ static void test_login(void) {
                 } else {
                         assert_se(r == 0);
 #endif // 0
+        r = sd_pid_get_session(0, &session);
         log_info("sd_pid_get_session(0, …) → %s / \"%s\"", e(r), strnull(session));
 
         r = sd_pid_get_cgroup(0, &cgroup);
