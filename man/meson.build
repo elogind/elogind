@@ -230,10 +230,6 @@ endif
 
 ############################################################
 
-#if 0 /// UNNEEDED by elogind
-#else // 0
-                )
-#endif // 0
 custom_target(
         'update-man-rules',
         output : 'update-man-rules',
