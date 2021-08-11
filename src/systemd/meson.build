@@ -77,6 +77,7 @@ endif
 #                 opts += [['c++', '-std=c++17']]
 #         endif
 # endif
+#endif // 0
 
 #if 0 /// neither not_installed nor libudev headers get shipped with elogind
 # foreach header : _systemd_headers + _not_installed_headers + ['../libudev/libudev.h']
