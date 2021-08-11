@@ -45,9 +45,6 @@ test_dlopen_c = files('test-dlopen.c')
 
 ############################################################
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 tests += [
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-device-nodes.c']],
@@ -204,14 +201,10 @@ tests += [
 
         [['src/test/test-alloc-util.c']],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
         [['src/test/test-xattr-util.c']],
 
         [['src/test/test-io-util.c']],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
         [['src/test/test-glob-util.c']],
 
         [['src/test/test-fs-util.c']],
@@ -260,8 +253,6 @@ tests += [
          []],
 #endif // 0
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
         [['src/test/test-sysctl-util.c']],
 
         [['src/test/test-user-record.c']],
@@ -388,8 +379,6 @@ tests += [
         [['src/test/test-set.c'],
          [libbasic]],
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         [['src/test/test-ordered-set.c']],
 
         [['src/test/test-set-disable-mempool.c'],
@@ -619,8 +608,6 @@ tests += [
 
         [['src/test/test-sd-hwdb.c']],
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         [['src/test/test-sd-path.c']],
 
 
@@ -642,37 +629,9 @@ tests += [
 
 # define some tests here, because the link_with deps were not defined earlier
 
-#if 0 /// No systemd-journal in elogind, of course
-# tests += [
-#endif // 0
-
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
+tests += [
         [['src/libelogind/sd-bus/test-bus-error.c'],
          [libshared_static,
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
           libelogind_static]],
 
         [['src/libelogind/sd-device/test-sd-device-thread.c'],
@@ -681,24 +640,7 @@ tests += [
 
 #if 0 /// elogind does not ship libudev itself
 #         [['src/libudev/test-udev-device-thread.c'],
+#          [libudev],
+#          [threads]],
 #endif // 0
-         [libudev],
-         [threads]],
-
-#if 0 /// UNNEEDED in elogind
-#else // 0
 ]
-#endif // 0
-
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-
-#if 0 /// elogind does not have src/analyze/*
-#endif // 0
-#if 0 /// elogind does not include udev implicitly
-# ]
-#else // 0
-         [threads,libudev]],
-#endif // 0
