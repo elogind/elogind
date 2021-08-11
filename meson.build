@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
+libsystemd_version = '0.31.0'
 #if 0 /// elogind does not ship libudev
-# libsystemd_version = '0.31.0'
-#endif // 0
 libudev_version = '1.7.1'
+#endif // 0
 
 # We need the same data in two different formats, ugh!
 # Also, for hysterical reasons, we use different variable
@@ -1027,17 +1027,17 @@ substs.set('KILL_USER_PROCESSES', kill_user_processes ? 'yes' : 'no')
 # endif
 # conf.set_quoted('SYSTEMD_DEFAULT_LOCALE', default_locale)
 #
+# localegen_path = get_option('localegen-path')
+# have = false
+# writable = ''
+# if localegen_path != ''
+#         conf.set_quoted('LOCALEGEN_PATH', localegen_path)
+#         have = true
+#         writable = ' /usr/lib/locale'
+# endif
+# substs.set('SERVICE_LOCALEGEN_WRITABLE', writable)
+# conf.set10('HAVE_LOCALEGEN', have)
 #endif // 0
-localegen_path = get_option('localegen-path')
-have = false
-writable = ''
-if localegen_path != ''
-        conf.set_quoted('LOCALEGEN_PATH', localegen_path)
-        have = true
-        writable = ' /usr/lib/locale'
-endif
-substs.set('SERVICE_LOCALEGEN_WRITABLE', writable)
-conf.set10('HAVE_LOCALEGEN', have)
 
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 
@@ -1846,13 +1846,21 @@ conf.set10('ENABLE_EFI', have)
 ############################################################
 
 generate_gperfs = find_program('tools/generate-gperfs.py')
-make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+
+#if 0 /// UNNEEDED by elogind
+# make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+#endif // 0
+
 make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 meson_apply_m4 = find_program('tools/meson-apply-m4.sh')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
-update_hwdb_sh = find_program('tools/update-hwdb.sh')
-update_hwdb_autosuspend_sh = find_program('tools/update-hwdb-autosuspend.sh')
+
+#if 0 /// UNNEEDED by elogind
+# update_hwdb_sh = find_program('tools/update-hwdb.sh')
+# update_hwdb_autosuspend_sh = find_program('tools/update-hwdb-autosuspend.sh')
+#endif // 0
+
 update_syscall_tables_sh = find_program('tools/update-syscall-tables.sh')
 xml_helper_py = find_program('tools/xml_helper.py')
 
@@ -1882,27 +1890,15 @@ add_project_arguments('-include', 'config.h', language : 'c')
 public_programs = []
 
 tests = []
-fuzzers = []
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not fuzz
+# fuzzers = []
 #endif // 0
-#if 0 /// elogind has a different list
-#else // 0
-                               'src/libelogind/sd-bus',
-                               'src/libelogind/sd-device',
-                               'src/libelogind/sd-event',
-                               'src/libelogind/sd-hwdb',
-                               'src/libelogind/sd-id128',
-                               'src/login',
-                               'src/shared',
-                               'src/sleep',
-                               'src/systemd',
-                               'src/update-utmp',
-#endif // 0
+
 basic_includes = include_directories(
         'src/basic',
         'src/fundamental',
-        'src/elogind',
+        'src/systemd',
         '.')
 
 libelogind_includes = [basic_includes, include_directories(
@@ -1910,11 +1906,15 @@ libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-device',
         'src/libelogind/sd-event',
         'src/libelogind/sd-hwdb',
-        'src/libelogind/sd-id128',
-        'src/libelogind/sd-journal',
-        'src/libelogind/sd-netlink',
-        'src/libelogind/sd-network',
-        'src/libelogind/sd-resolve')]
+#if 0 /// sd-id128 is the only one that elogind has and needs
+#         'src/libelogind/sd-id128',
+#         'src/libelogind/sd-journal',
+#         'src/libelogind/sd-netlink',
+#         'src/libelogind/sd-network',
+#         'src/libelogind/sd-resolve')]
+#else // 0
+        'src/libelogind/sd-id128')]
+#endif // 0
 
 includes = [libelogind_includes, include_directories('src/shared')]
 
@@ -1924,20 +1924,12 @@ subdir('po')
 #endif // 0
 subdir('src/fundamental')
 subdir('src/basic')
-#if 0 /// UNNEEDED by elogind
-# subdir('src/libsystemd')
-#else // 0
-subdir('src/core')
-subdir('src/journal')
 subdir('src/libelogind')
-subdir('src/sleep')
-subdir('src/update-utmp')
-#endif // 0
 subdir('src/shared')
-subdir('src/udev')
-subdir('src/libudev')
-
-/// elogind empty mask removed (UNNEEDED by elogind)
+#if 0 /// UNNEEDED by elogind
+# subdir('src/udev')
+# subdir('src/libudev')
+#endif // 0
 
 libelogind = shared_library(
         'elogind',
@@ -1945,7 +1937,7 @@ libelogind = shared_library(
         version : libsystemd_version,
         include_directories : libelogind_includes,
         link_args : ['-shared',
-#if 0 /// elogind does not need gcrypt, only threads.
+#if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
 #                      libbasic_gcrypt],
@@ -1959,8 +1951,7 @@ libelogind = shared_library(
 #else // 0
                      '-Wl,--version-script=' + libelogind_sym_path],
         link_with : [libbasic],
-        link_whole : [libelogind_static,
-                      libjournal_client],
+        link_whole : [libelogind_static],
         dependencies : [threads],
         link_depends : libelogind_sym,
 #endif // 0
@@ -1976,8 +1967,6 @@ libelogind = shared_library(
 install_libelogind_static = static_library(
         'elogind',
         libelogind_sources,
-#endif // 0
-#if 0 /// No journald with elogind (And before you ask: NO!)
 #endif // 0
         basic_sources,
 #if 0 /// No gcrypt with elogind
@@ -2038,27 +2027,39 @@ install_libelogind_static = static_library(
                         libcap,
                         libmount,
                         libselinux],
+        c_args : libsystemd_c_args)
 #endif // 0
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-/// elogind empty mask removed (UNNEEDED by elogind)
 ############################################################
 
 
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
+
+# systemd-analyze requires 'libcore'
+subdir('src/core')
+# systemd-journal-remote requires 'libjournal_core'
+subdir('src/journal')
+
 #if 0 /// UNNEEDED by elogind
-# # systemd-analyze requires 'libcore'
-# subdir('src/core')
-# # systemd-journal-remote requires 'libjournal_core'
-# subdir('src/journal')
 # # systemd-networkd requires 'libsystemd_network'
 # subdir('src/libsystemd-network')
-#
+#endif // 0
+
+#if 1 /// elogind has a few extras as libraries
+subdir('src/sleep')
+subdir('src/update-utmp')
+#endif // 1
+
+#if 0 /// UNNEEDED by elogind
 # subdir('src/analyze')
 # subdir('src/boot/efi')
-# subdir('src/busctl')
+#endif // 0
+
+subdir('src/busctl')
+
+#if 0 /// UNNEEDED by elogind
 # subdir('src/coredump')
 # subdir('src/cryptenroll')
 # subdir('src/cryptsetup')
@@ -2068,7 +2069,11 @@ libudev = dependency('libudev', required : true)
 # subdir('src/journal-remote')
 # subdir('src/kernel-install')
 # subdir('src/locale')
-# subdir('src/login')
+#endif // 0
+
+subdir('src/login')
+
+#if 0 /// UNNEEDED by elogind
 # subdir('src/machine')
 # subdir('src/network')
 # subdir('src/nspawn')
@@ -2086,15 +2091,17 @@ libudev = dependency('libudev', required : true)
 # subdir('src/tmpfiles')
 # subdir('src/userdb')
 # subdir('src/vconsole')
+# subdir('src/xdg-autostart-generator')
 #endif // 0
-subdir('src/xdg-autostart-generator')
 
-subdir('src/elogind')
+subdir('src/systemd')
 
 subdir('src/test')
+
 #if 0 /// UNNEEDED by elogind
 # subdir('src/fuzz')
 # subdir('rules.d')
+#
 # subdir('test')
 #endif // 0
 
@@ -3941,8 +3948,8 @@ install_data('LICENSE.GPL2',
 #              'docs/TRANSIENT-SETTINGS.md',
 #              'docs/TRANSLATORS.md',
 #              'docs/UIDS-GIDS.md',
+#              'docs/GVARIANT-SERIALIZATION.md',
 #endif // 0
-             'docs/GVARIANT-SERIALIZATION.md',
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind
@@ -4084,34 +4091,35 @@ run_target(
 #endif // 0
 ############################################################
 
-#if 0 /// elogind is not PID 1
-# if dbus_docs.length() > 0
-#         custom_target(
-#                 'update-dbus-docs',
-#                 output : 'update-dbus-docs',
-#                 command : [update_dbus_docs_py,
-#                            '--build-dir=@0@'.format(project_build_root),
-#                            '@INPUT@'],
-#                 input : dbus_docs)
-#
-#         if conf.get('BUILD_MODE') == 'BUILD_MODE_DEVELOPER'
-#                 test('dbus-docs-fresh',
-#                      update_dbus_docs_py,
-#                      args : ['--build-dir=@0@'.format(project_build_root),
-#                              '--test'] + dbus_docs)
-#         endif
-# endif
-#
-# custom_target(
-#         'update-man-rules',
-#         output : 'update-man-rules',
-#         command : ['sh', '-c',
-#                    'cd @0@ && '.format(meson.build_root()) +
-#                    'python3 @0@/tools/update-man-rules.py $(find @0@ -wholename "*/man/*.xml") >t && '.format(project_source_root) +
-#                    'mv t @0@/man/rules/meson.build'.format(meson.current_source_dir())],
-#         depend_files : custom_entities_ent)
-#
+if dbus_docs.length() > 0
+        custom_target(
+                'update-dbus-docs',
+                output : 'update-dbus-docs',
+                command : [update_dbus_docs_py,
+                           '--build-dir=@0@'.format(project_build_root),
+                           '@INPUT@'],
+                input : dbus_docs)
+
+        if conf.get('BUILD_MODE') == 'BUILD_MODE_DEVELOPER'
+                test('dbus-docs-fresh',
+                     update_dbus_docs_py,
+                     args : ['--build-dir=@0@'.format(project_build_root),
+                             '--test'] + dbus_docs)
+        endif
+endif
+
+custom_target(
+        'update-man-rules',
+        output : 'update-man-rules',
+        command : ['sh', '-c',
+                   'cd @0@ && '.format(meson.build_root()) +
+                   'python3 @0@/tools/update-man-rules.py $(find @0@ -wholename "*/man/*.xml") >t && '.format(project_source_root) +
+                   'mv t @0@/man/rules/meson.build'.format(meson.current_source_dir())],
+        depend_files : custom_entities_ent)
+
 # ############################################################
+
+#if 0 /// elogind is not (and never will be) PID 1
 # watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
 #endif // 0
 

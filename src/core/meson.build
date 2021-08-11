@@ -224,9 +224,11 @@ endif
 
 ############################################################
 
-fuzzers += [
-        [['src/core/fuzz-unit-file.c'],
-         [libcore,
-          libshared],
-         [libmount]],
-]
+#if 0 /// elogind does not fuzz
+# fuzzers += [
+#         [['src/core/fuzz-unit-file.c'],
+#          [libcore,
+#           libshared],
+#          [libmount]],
+# ]
+#endif // 0

@@ -1,57 +1,59 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-sd_journal_sources = files(
-        'sd-journal/audit-type.c',
-        'sd-journal/audit-type.h',
-        'sd-journal/catalog.c',
-        'sd-journal/catalog.h',
-        'sd-journal/compress.c',
-        'sd-journal/compress.h',
-        'sd-journal/journal-def.h',
-        'sd-journal/journal-file.c',
-        'sd-journal/journal-file.h',
-        'sd-journal/journal-internal.h',
-        'sd-journal/journal-send.c',
-        'sd-journal/journal-vacuum.c',
-        'sd-journal/journal-vacuum.h',
-        'sd-journal/journal-verify.c',
-        'sd-journal/journal-verify.h',
-        'sd-journal/lookup3.c',
-        'sd-journal/lookup3.h',
-        'sd-journal/mmap-cache.c',
-        'sd-journal/mmap-cache.h',
-        'sd-journal/sd-journal.c')
-
-if conf.get('HAVE_GCRYPT') == 1
-        sd_journal_sources += files(
-                'sd-journal/fsprg.c',
-                'sd-journal/fsprg.h',
-                'sd-journal/journal-authenticate.c',
-                'sd-journal/journal-authenticate.h')
-endif
-
-audit_type_includes = [config_h,
-                       missing_audit_h,
-                       'linux/audit.h']
-if conf.get('HAVE_AUDIT') == 1
-        audit_type_includes += 'libaudit.h'
-endif
-
-generate_audit_type_list = find_program('sd-journal/generate-audit_type-list.sh')
-audit_type_list_txt = custom_target(
-        'audit_type-list.txt',
-        output : 'audit_type-list.txt',
-        command : [generate_audit_type_list, cpp] + audit_type_includes,
-        capture : true)
-
-audit_type_to_name = custom_target(
-        'audit_type-to-name.h',
-        input : ['sd-journal/audit_type-to-name.awk', audit_type_list_txt],
-        output : 'audit_type-to-name.h',
-        command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
-        capture : true)
-
-sd_journal_sources += [audit_type_to_name]
+#if 0 /// UNNEEDED by elogind
+# sd_journal_sources = files(
+#         'sd-journal/audit-type.c',
+#         'sd-journal/audit-type.h',
+#         'sd-journal/catalog.c',
+#         'sd-journal/catalog.h',
+#         'sd-journal/compress.c',
+#         'sd-journal/compress.h',
+#         'sd-journal/journal-def.h',
+#         'sd-journal/journal-file.c',
+#         'sd-journal/journal-file.h',
+#         'sd-journal/journal-internal.h',
+#         'sd-journal/journal-send.c',
+#         'sd-journal/journal-vacuum.c',
+#         'sd-journal/journal-vacuum.h',
+#         'sd-journal/journal-verify.c',
+#         'sd-journal/journal-verify.h',
+#         'sd-journal/lookup3.c',
+#         'sd-journal/lookup3.h',
+#         'sd-journal/mmap-cache.c',
+#         'sd-journal/mmap-cache.h',
+#         'sd-journal/sd-journal.c')
+#
+# if conf.get('HAVE_GCRYPT') == 1
+#         sd_journal_sources += files(
+#                 'sd-journal/fsprg.c',
+#                 'sd-journal/fsprg.h',
+#                 'sd-journal/journal-authenticate.c',
+#                 'sd-journal/journal-authenticate.h')
+# endif
+#
+# audit_type_includes = [config_h,
+#                        missing_audit_h,
+#                        'linux/audit.h']
+# if conf.get('HAVE_AUDIT') == 1
+#         audit_type_includes += 'libaudit.h'
+# endif
+#
+# generate_audit_type_list = find_program('sd-journal/generate-audit_type-list.sh')
+# audit_type_list_txt = custom_target(
+#         'audit_type-list.txt',
+#         output : 'audit_type-list.txt',
+#         command : [generate_audit_type_list, cpp] + audit_type_includes,
+#         capture : true)
+#
+# audit_type_to_name = custom_target(
+#         'audit_type-to-name.h',
+#         input : ['sd-journal/audit_type-to-name.awk', audit_type_list_txt],
+#         output : 'audit_type-to-name.h',
+#         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
+#         capture : true)
+#
+# sd_journal_sources += [audit_type_to_name]
+#if 0 /// UNNEEDED by elogind
 
 ############################################################
 
@@ -397,7 +399,11 @@ libelogind_static = static_library(
         dependencies : [threads],
         c_args : libsystemd_c_args)
 
-libelogind_sym = 'src/libelogind/libelogind.sym'
+libelogind_sym = files('libelogind.sym')
+libelogind_sym_path = join_paths(meson.current_source_dir(), 'libelogind.sym')
+
+static_libelogind = get_option('static-libelogind')
+static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
 libelogind_pc = configure_file(
         input : 'libelogind.pc.in',

@@ -13,9 +13,6 @@ journal_client_sources = files('''
 '''.split())
 #endif // 0
 
-/// elogind empty mask removed (No gcrypt in elogind needed)
-/// elogind empty mask removed (No audit in elogind journald stubs)
-
 #if 0 /// After the stubs lib above, elogind needs nothing else.
 # sources = files('''
 #         journald-audit.c
@@ -95,57 +92,61 @@ journal_client_sources = files('''
 
 ############################################################
 
-tests += [
-        [['src/journal/test-journal-syslog.c'],
-         [libjournal_core,
-          libshared],
-         [threads,
-          libxz,
-          liblz4,
-          libselinux]],
+#if 0 /// without journald, elogind has no tests do do here
+# tests += [
+#         [['src/journal/test-journal-syslog.c'],
+#          [libjournal_core,
+#           libshared],
+#          [threads,
+#           libxz,
+#           liblz4,
+#           libselinux]],
+# 
+#         [['src/journal/test-journal-config.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libxz,
+#           liblz4,
+#           libselinux]],
+# ]
+#endif // 0
 
-        [['src/journal/test-journal-config.c'],
-         [libjournal_core,
-          libshared],
-         [libxz,
-          liblz4,
-          libselinux]],
-]
-
-fuzzers += [
-        [['src/journal/fuzz-journald-audit.c',
-          'src/journal/fuzz-journald.c'],
-         [libjournal_core,
-          libshared],
-         [libselinux]],
-
-        [['src/journal/fuzz-journald-kmsg.c',
-          'src/journal/fuzz-journald.c'],
-         [libjournal_core,
-          libshared],
-         [libselinux]],
-
-        [['src/journal/fuzz-journald-native.c',
-          'src/journal/fuzz-journald.c'],
-         [libjournal_core,
-          libshared],
-         [libselinux]],
-
-        [['src/journal/fuzz-journald-native-fd.c',
-          'src/journal/fuzz-journald.c'],
-         [libjournal_core,
-          libshared],
-         [libselinux]],
-
-        [['src/journal/fuzz-journald-stream.c',
-          'src/journal/fuzz-journald.c'],
-         [libjournal_core,
-          libshared],
-         [libselinux]],
-
-        [['src/journal/fuzz-journald-syslog.c',
-          'src/journal/fuzz-journald.c'],
-         [libjournal_core,
-          libshared],
-         [libselinux]],
-]
+#if 0 /// elogind does not fuzz
+# fuzzers += [
+#         [['src/journal/fuzz-journald-audit.c',
+#           'src/journal/fuzz-journald.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libselinux]],
+#
+#         [['src/journal/fuzz-journald-kmsg.c',
+#           'src/journal/fuzz-journald.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libselinux]],
+#
+#         [['src/journal/fuzz-journald-native.c',
+#           'src/journal/fuzz-journald.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libselinux]],
+#
+#         [['src/journal/fuzz-journald-native-fd.c',
+#           'src/journal/fuzz-journald.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libselinux]],
+#
+#         [['src/journal/fuzz-journald-stream.c',
+#           'src/journal/fuzz-journald.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libselinux]],
+#
+#         [['src/journal/fuzz-journald-syslog.c',
+#           'src/journal/fuzz-journald.c'],
+#          [libjournal_core,
+#           libshared],
+#          [libselinux]],
+# ]
+#endif // 0

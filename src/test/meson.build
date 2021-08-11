@@ -149,8 +149,8 @@ tests += [
 #          [libcap]],
 #
 #         [['src/test/test-async.c'],
+#          [], [], [], '', 'timeout=120'],
 #endif // 0
-         [], [], [], '', 'timeout=120'],
 
         [['src/test/test-locale-util.c']],
 
@@ -165,8 +165,8 @@ tests += [
 #
 #         [['src/test/test-fdset.c']],
 #
+#         [['src/test/test-fstab-util.c']],
 #endif // 0
-        [['src/test/test-fstab-util.c']],
 
         [['src/test/test-random-util.c']],
 
@@ -175,8 +175,8 @@ tests += [
         [['src/test/test-format-util.c']],
 
 #if 0 /// UNNEEDED in elogind
+#         [['src/test/test-ratelimit.c']],
 #endif // 0
-        [['src/test/test-ratelimit.c']],
 
         [['src/test/test-util.c']],
 
@@ -205,7 +205,9 @@ tests += [
 
         [['src/test/test-io-util.c']],
 
-        [['src/test/test-glob-util.c']],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-glob-util.c']],
+#endif // 0
 
         [['src/test/test-fs-util.c']],
 
@@ -218,8 +220,8 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-web-util.c']],
 #
+#         [['src/test/test-cpu-set-util.c']],
 #endif // 0
-        [['src/test/test-cpu-set-util.c']],
 
         [['src/test/test-stat-util.c']],
 
@@ -236,24 +238,20 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-exit-status.c']],
 #
+#         [['src/test/test-specifier.c']],
 #endif // 0
-        [['src/test/test-specifier.c']],
 
         [['src/test/test-string-util.c']],
 
         [['src/test/test-extract-word.c']],
 
-#if 0 /// elogind has nothing to test that needs libseccomp
-#         [['src/test/test-parse-argument.c']],
-#
-#         [['src/test/test-parse-util.c']],
-#else // 0
-        [['src/test/test-parse-util.c'],
-         [],
-         []],
-#endif // 0
+        [['src/test/test-parse-argument.c']],
 
-        [['src/test/test-sysctl-util.c']],
+        [['src/test/test-parse-util.c']],
+
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-sysctl-util.c']],
+#endif // 0
 
         [['src/test/test-user-record.c']],
 
@@ -261,8 +259,8 @@ tests += [
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-hostname-setup.c']],
-#
 #endif // 0
+
         [['src/test/test-hostname-util.c']],
 
         [['src/test/test-process-util.c']],
@@ -297,9 +295,9 @@ tests += [
 #          [libcore,
 #           libshared],
 #          [threads,
+#           libblkid],
+#          core_includes],
 #endif // 0
-          libblkid],
-         core_includes],
 
         [['src/test/test-verbs.c']],
 
@@ -317,8 +315,8 @@ tests += [
 #         [['src/test/test-rlimit-util.c']],
 #
 #         [['src/test/test-ask-password-api.c'],
+#          [], [], [], '', 'manual'],
 #endif // 0
-         [], [], [], '', 'manual'],
 
         [['src/test/test-signal-util.c']],
 
@@ -328,8 +326,8 @@ tests += [
 #           libshared],
 #          [threads,
 #           libblkid],
+#          core_includes, '', '', [], false],
 #endif // 0
-         core_includes, '', '', [], false],
 
         [['src/test/test-selinux.c']],
 
@@ -367,9 +365,9 @@ tests += [
 #           librt,
 #           libseccomp,
 #           libselinux,
+#           libblkid],
+#          core_includes],
 #endif // 0
-          libblkid],
-         core_includes],
 
         [['src/test/test-hashmap.c',
           'src/test/test-hashmap-plain.c',
@@ -379,7 +377,9 @@ tests += [
         [['src/test/test-set.c'],
          [libbasic]],
 
-        [['src/test/test-ordered-set.c']],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-ordered-set.c']],
+#endif // 0
 
         [['src/test/test-set-disable-mempool.c'],
          [],
@@ -388,8 +388,8 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-bitmap.c']],
 #
+#         [['src/test/test-xml.c']],
 #endif // 0
-        [['src/test/test-xml.c']],
 
         [['src/test/test-list.c']],
 
@@ -409,8 +409,8 @@ tests += [
 #           libxz,
 #           liblz4,
 #           libblkid],
+#          [core_includes, journal_includes, udev_includes]],
 #endif // 0
-         [core_includes, journal_includes, udev_includes]],
 
         [['src/test/test-prioq.c']],
 
@@ -440,8 +440,8 @@ tests += [
 #         [['src/test/test-netlink-manual.c'],
 #          [],
 #          [libkmod],
+#          [], 'HAVE_KMOD', 'manual'],
 #endif // 0
-         [], 'HAVE_KMOD', 'manual'],
 
         [['src/test/test-ellipsize.c']],
 
@@ -452,8 +452,8 @@ tests += [
 #
 #         [['src/test/test-replace-var.c']],
 #
+#         [['src/test/test-calendarspec.c']],
 #endif // 0
-        [['src/test/test-calendarspec.c']],
 
         [['src/test/test-strip-tab-ansi.c']],
 
@@ -534,8 +534,8 @@ tests += [
 #           libselinux,
 #           libmount,
 #           libblkid],
+#          core_includes, '', 'timeout=360'],
 #endif // 0
-         core_includes, '', 'timeout=360'],
 
         [['src/test/test-siphash24.c']],
 
@@ -558,9 +558,9 @@ tests += [
 #           libseccomp,
 #           libselinux,
 #           libmount,
+#           libblkid],
+#          core_includes],
 #endif // 0
-          libblkid],
-         core_includes],
 
         [['src/test/test-conf-files.c']],
 
@@ -587,8 +587,8 @@ tests += [
 #           libkmod,
 #           libacl,
 #           libselinux],
+#          udev_includes, '', 'manual'],
 #endif // 0
-         udev_includes, '', 'manual'],
 
         [['src/test/test-udev-util.c']],
 
@@ -623,10 +623,10 @@ tests += [
 #         [['src/test/test-qrcode-util.c'],
 #          [],
 #          [libdl]],
+#
+#         [['src/test/test-nscd-flush.c'],
+#          [], [], [], 'ENABLE_NSCD', 'manual'],
 #endif // 0
-
-        [['src/test/test-nscd-flush.c'],
-         [], [], [], 'ENABLE_NSCD', 'manual'],
 ]
 
 ############################################################

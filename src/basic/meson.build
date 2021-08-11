@@ -464,16 +464,20 @@ basic_sources = files('''
 '''.split())
 #endif // 0
 
-#if 0 /// elogind has only the cap and errno list.
+#if 0 /// UNNEEDED by elogind
 # missing_audit_h = files('missing_audit.h')
 #endif // 0
+
 missing_capability_h = files('missing_capability.h')
-#if 0 /// elogind has only the cap and errno list.
+
+#if 0 /// UNNEEDED by elogind
 # missing_socket_h = files('missing_socket.h')
-#
-# missing_syscall_def_h = files('missing_syscall_def.h')
-# basic_sources += missing_syscall_def_h
-#
+#endif // 0
+
+missing_syscall_def_h = files('missing_syscall_def.h')
+basic_sources += missing_syscall_def_h
+
+#if 0 /// UNNEEDED by elogind
 # generate_af_list = find_program('generate-af-list.sh')
 # af_list_txt = custom_target(
 #         'af-list.txt',
@@ -610,7 +614,9 @@ libbasic = static_library(
         dependencies : [versiondep,
                         threads,
                         libcap,
-                        libseccomp,
+#if 0 /// UNNEEDED by elogind
+#                         libseccomp,
+#endif // 0
                         libselinux,
                         libm,
                         libdl],
@@ -619,15 +625,17 @@ libbasic = static_library(
 
 ############################################################
 
-basic_gcrypt_sources = files(
-        'gcrypt-util.c',
-        'gcrypt-util.h')
-
-# A convenience library that is separate from libbasic to avoid
-# unnecessary linking to libgcrypt.
-libbasic_gcrypt = static_library(
-        'basic-gcrypt',
-        basic_gcrypt_sources,
-        include_directories : basic_includes,
-        dependencies : [libgcrypt],
-        c_args : ['-fvisibility=default'])
+#if 0 /// UNNEEDED by elogind
+# basic_gcrypt_sources = files(
+#         'gcrypt-util.c',
+#         'gcrypt-util.h')
+#
+# # A convenience library that is separate from libbasic to avoid
+# # unnecessary linking to libgcrypt.
+# libbasic_gcrypt = static_library(
+#         'basic-gcrypt',
+#         basic_gcrypt_sources,
+#         include_directories : basic_includes,
+#         dependencies : [libgcrypt],
+#         c_args : ['-fvisibility=default'])
+#endif // 0
