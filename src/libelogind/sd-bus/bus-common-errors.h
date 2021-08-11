@@ -18,13 +18,6 @@
 #define BUS_ERROR_TRANSACTION_JOBS_CONFLICTING "org.freedesktop.systemd1.TransactionJobsConflicting"
 #endif // 0
 
-#if 0 /// no machined in elogind
-#endif // 0
-
-
-#if 0 /// more services unsupported by elogind
-#endif // 0
-
 #define BUS_ERROR_TRANSACTION_ORDER_IS_CYCLIC  "org.freedesktop.elogind1.TransactionOrderIsCyclic"
 #define BUS_ERROR_TRANSACTION_IS_DESTRUCTIVE   "org.freedesktop.elogind1.TransactionIsDestructive"
 #define BUS_ERROR_UNIT_MASKED                  "org.freedesktop.elogind1.UnitMasked"
