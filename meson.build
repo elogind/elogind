@@ -298,6 +298,7 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
 # conf.set_quoted('SYSTEMD_STDIO_BRIDGE_BINARY_PATH',           join_paths(bindir, 'systemd-stdio-bridge'))
 #else // 0
+conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'elogind-cgroups-agent'))
 conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               join_paths(rootlibexecdir, 'elogind-uaccess-command'))
 conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'elogind'))
@@ -4355,8 +4356,8 @@ foreach tuple : [
 #endif // 0
         ['valgrind',         conf.get('VALGRIND') == 1],
         ['trace logging',    conf.get('LOG_TRACE') == 1],
-#if 0 /// elogind ships neitehr libudev nor systemctl or any other of those
-#         ['install tests',    install_tests],
+        ['install tests',    install_tests],
+#if 0 /// elogind ships neither libudev nor systemctl or any other of those
 #         ['link-udev-shared',      get_option('link-udev-shared')],
 #         ['link-systemctl-shared', get_option('link-systemctl-shared')],
 #         ['link-networkd-shared',  get_option('link-networkd-shared')],
@@ -4365,7 +4366,9 @@ foreach tuple : [
 #         ['systemd-analyze',  conf.get('ENABLE_ANALYZE') == 1],
 #endif // 0
         ['fexecve'],
-        ['standalone-binaries',   get_option('standalone-binaries')],
+#if 0 /// elogind has everything standalone that can be standalone already
+#         ['standalone-binaries',   get_option('standalone-binaries')],
+#endif // 0
 ]
 
         if tuple.length() >= 2
