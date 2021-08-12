@@ -142,6 +142,8 @@ libcore_sources = files('''
 #endif // 0
 
 #if 0 /// Almost the rest is not needed by elogind, we use the sources directly in login
+# subdir('bpf')
+#
 # subdir('bpf/socket_bind')
 # if conf.get('BPF_FRAMEWORK') == 1
 #         libcore_sources += [socket_bind_skel_h]
