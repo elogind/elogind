@@ -247,7 +247,9 @@ tests += [
 
         [['src/test/test-proc-cmdline.c']],
 
-        [['src/test/test-fd-util.c']],
+        [['src/test/test-fd-util.c'],
+         [],
+         [libseccomp]],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-web-util.c']],
