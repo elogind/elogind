@@ -882,3 +882,20 @@ int getenv_path_list(const char *name, char ***ret_paths) {
         return 1;
 }
 #endif // 0
+
+int unsetenv_erase(const char *name) {
+        char *p;
+
+        assert(name);
+
+        p = getenv(name);
+        if (!p)
+                return 0;
+
+        string_erase(p);
+
+        if (unsetenv(name) < 0)
+                return -errno;
+
+        return 1;
+}
