@@ -76,7 +76,6 @@ static inline const char *empty_or_dash_to_null(const char *p) {
 }
 #endif // 0
 
-
 char *first_word(const char *s, const char *word) _pure_;
 
 char *strnappend(const char *s, const char *suffix, size_t length);

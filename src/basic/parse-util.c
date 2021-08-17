@@ -640,7 +640,6 @@ int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
 
 #endif // 0
 
-
 #if 0 /// UNNEEDED by elogind
 int parse_nice(const char *p, int *ret) {
         int n, r;

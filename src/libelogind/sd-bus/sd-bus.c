@@ -1586,8 +1586,8 @@ int bus_set_address_machine(sd_bus *b, bool user, const char *machine) {
                 if (user) {
                         char *k;
 
-                        /* Ideally we'd use the "--user" switch to elogind-stdio-bridge here, but it's only
-                         * available in recent elogind versions. Using the "-p" switch with the explicit path
+                        /* Ideally we'd use the "--user" switch to systemd-stdio-bridge here, but it's only
+                         * available in recent systemd versions. Using the "-p" switch with the explicit path
                          * is a working alternative, and is compatible with older versions, hence that's what
                          * we use here. */
 

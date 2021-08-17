@@ -1206,18 +1206,8 @@ static bool should_parse_proc_cmdline(void) {
         if (getpid_cached() == 1)
                 return true;
 
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), systemd-importd,
+         * or systemd-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         e = getenv("SYSTEMD_EXEC_PID");
         if (!e)
                 return false;

@@ -40,40 +40,40 @@ def parse_syscall_tables(filenames):
 DEF_TEMPLATE = '''
 #ifndef __IGNORE_{syscall}
 #  if defined(__aarch64__)
-#    define elogind_NR_{syscall} {nr_arm64}
+#    define systemd_NR_{syscall} {nr_arm64}
 #  elif defined(__alpha__)
-#    define elogind_NR_{syscall} {nr_alpha}
+#    define systemd_NR_{syscall} {nr_alpha}
 #  elif defined(__arc__) || defined(__tilegx__)
-#    define elogind_NR_{syscall} {nr_arc}
+#    define systemd_NR_{syscall} {nr_arc}
 #  elif defined(__arm__)
-#    define elogind_NR_{syscall} {nr_arm}
+#    define systemd_NR_{syscall} {nr_arm}
 #  elif defined(__i386__)
-#    define elogind_NR_{syscall} {nr_i386}
+#    define systemd_NR_{syscall} {nr_i386}
 #  elif defined(__ia64__)
-#    define elogind_NR_{syscall} {nr_ia64}
+#    define systemd_NR_{syscall} {nr_ia64}
 #  elif defined(__m68k__)
-#    define elogind_NR_{syscall} {nr_m68k}
+#    define systemd_NR_{syscall} {nr_m68k}
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define elogind_NR_{syscall} {nr_mipso32}
+#      define systemd_NR_{syscall} {nr_mipso32}
 #    elif _MIPS_SIM == _MIPS_SIM_NABI32
-#      define elogind_NR_{syscall} {nr_mips64n32}
+#      define systemd_NR_{syscall} {nr_mips64n32}
 #    elif _MIPS_SIM == _MIPS_SIM_ABI64
-#      define elogind_NR_{syscall} {nr_mips64}
+#      define systemd_NR_{syscall} {nr_mips64}
 #    else
 #      error "Unknown MIPS ABI"
 #    endif
 #  elif defined(__powerpc__)
-#    define elogind_NR_{syscall} {nr_powerpc}
+#    define systemd_NR_{syscall} {nr_powerpc}
 #  elif defined(__s390__)
-#    define elogind_NR_{syscall} {nr_s390}
+#    define systemd_NR_{syscall} {nr_s390}
 #  elif defined(__sparc__)
-#    define elogind_NR_{syscall} {nr_sparc}
+#    define systemd_NR_{syscall} {nr_sparc}
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
-#      define elogind_NR_{syscall} ({nr_x86_64} | /* __X32_SYSCALL_BIT */ 0x40000000)
+#      define systemd_NR_{syscall} ({nr_x86_64} | /* __X32_SYSCALL_BIT */ 0x40000000)
 #    else
-#      define elogind_NR_{syscall} {nr_x86_64}
+#      define systemd_NR_{syscall} {nr_x86_64}
 #    endif
 #  else
 #    warning "{syscall}() syscall number is unknown for your architecture"
@@ -81,15 +81,15 @@ DEF_TEMPLATE = '''
 
 /* may be an (invalid) negative number due to libseccomp, see PR 13319 */
 #  if defined __NR_{syscall} && __NR_{syscall} >= 0
-#    if defined elogind_NR_{syscall}
-assert_cc(__NR_{syscall} == elogind_NR_{syscall});
+#    if defined systemd_NR_{syscall}
+assert_cc(__NR_{syscall} == systemd_NR_{syscall});
 #    endif
 #  else
 #    if defined __NR_{syscall}
 #      undef __NR_{syscall}
 #    endif
-#    if defined elogind_NR_{syscall} && elogind_NR_{syscall} >= 0
-#      define __NR_{syscall} elogind_NR_{syscall}
+#    if defined systemd_NR_{syscall} && systemd_NR_{syscall} >= 0
+#      define __NR_{syscall} systemd_NR_{syscall}
 #    endif
 #  endif
 #endif

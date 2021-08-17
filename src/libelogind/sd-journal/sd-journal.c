@@ -66,7 +66,7 @@ static bool journal_pid_changed(sd_journal *j) {
 
 #if 0 /// UNNEEDED by elogind
 static int journal_put_error(sd_journal *j, int r, const char *path) {
-        char *copy;
+        _cleanup_free_ char *copy = NULL;
         int k;
 
         /* Memorize an error we encountered, and store which
@@ -83,27 +83,21 @@ static int journal_put_error(sd_journal *j, int r, const char *path) {
         if (r >= 0)
                 return r;
 
-        k = hashmap_ensure_allocated(&j->errors, NULL);
-        if (k < 0)
-                return k;
-
         if (path) {
                 copy = strdup(path);
                 if (!copy)
                         return -ENOMEM;
-        } else
-                copy = NULL;
+        }
 
-        k = hashmap_put(j->errors, INT_TO_PTR(r), copy);
+        k = hashmap_ensure_put(&j->errors, NULL, INT_TO_PTR(r), copy);
         if (k < 0) {
-                free(copy);
-
                 if (k == -EEXIST)
                         return 0;
 
                 return k;
         }
 
+        TAKE_PTR(copy);
         return 0;
 }
 
@@ -461,6 +455,9 @@ _pure_ static int compare_with_location(const JournalFile *f, const Location *l,
             f->current_realtime == l->realtime &&
             l->xor_hash_set &&
             f->current_xor_hash == l->xor_hash &&
+            l->seqnum_set &&
+            sd_id128_equal(f->header->seqnum_id, l->seqnum_id) &&
+            f->current_seqnum == l->seqnum &&
             f != current_file)
                 return 0;
 
@@ -2048,7 +2045,7 @@ _public_ int sd_journal_open_container(sd_journal **ret, const char *machine, in
         assert_return(machine, -EINVAL);
         assert_return(ret, -EINVAL);
         assert_return((flags & ~OPEN_CONTAINER_ALLOWED_FLAGS) == 0, -EINVAL);
-        assert_return(machine_name_is_valid(machine), -EINVAL);
+        assert_return(hostname_is_valid(machine, 0), -EINVAL);
 
         p = strjoina("/run/systemd/machines/", machine);
         r = parse_env_file(NULL, p,
@@ -2257,7 +2254,7 @@ _public_ void sd_journal_close(sd_journal *j) {
         safe_close(j->inotify_fd);
 
         if (j->mmap) {
-                log_debug("mmap cache statistics: %u hit, %u miss", mmap_cache_get_hit(j->mmap), mmap_cache_get_missed(j->mmap));
+                mmap_cache_stats_log_debug(j->mmap);
                 mmap_cache_unref(j->mmap);
         }
 
@@ -2666,7 +2663,7 @@ _public_ int sd_journal_get_timeout(sd_journal *j, uint64_t *timeout_usec) {
                 return fd;
 
         if (!j->on_network) {
-                *timeout_usec = (uint64_t) -1;
+                *timeout_usec = UINT64_MAX;
                 return 0;
         }
 
@@ -2858,13 +2855,10 @@ _public_ int sd_journal_wait(sd_journal *j, uint64_t timeout_usec) {
         if (r < 0)
                 return r;
 
-        if (t != (uint64_t) -1) {
-                usec_t n;
+        if (t != UINT64_MAX) {
+                t = usec_sub_unsigned(t, now(CLOCK_MONOTONIC));
 
-                n = now(CLOCK_MONOTONIC);
-                t = t > n ? t - n : 0;
-
-                if (timeout_usec == (uint64_t) -1 || timeout_usec > t)
+                if (timeout_usec == UINT64_MAX || timeout_usec > t)
                         timeout_usec = t;
         }
 

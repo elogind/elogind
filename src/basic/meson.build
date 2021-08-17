@@ -85,8 +85,6 @@
 #         io-util.c
 #         io-util.h
 #         ioprio.h
-#         kbd-util.c
-#         kbd-util.h
 #         khash.c
 #         khash.h
 #         label.c

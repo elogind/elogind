@@ -502,9 +502,7 @@ static int running_in_cgroupns(void) {
         } else {
                 /* cgroup v1 */
 
-                /* If elogind controller is not mounted, do not even bother. */
-                /* If elogind controller is not mounted, do not even bother. */
-                /* If elogind controller is not mounted, do not even bother. */
+                /* If systemd controller is not mounted, do not even bother. */
                 r = access("/sys/fs/cgroup/elogind", F_OK);
                 if (r < 0) {
                         if (errno != ENOENT)

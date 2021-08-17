@@ -6,14 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //#include <string.h>
-/// Additional includes needed by elogind
-#include "string-util.h"
 
-
-#if 0 /// To pacify gcc-10 ftrace, call strnull() on `val` in elogind (#189)
-#else // 0
-                        printf("%s: %d → %s → %d\n", name, i, strnull(val), rev);
-#endif // 0
 #include "string-util.h"
 
 #define _test_table(name, lookup, reverse, size, sparse)                \

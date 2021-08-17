@@ -34,7 +34,7 @@
 /* Put this test here for a lack of better place */
 assert_cc(EAGAIN == EWOULDBLOCK);
 
-static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid, bool set_elogind_exec_pid) {
+static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid, bool set_systemd_exec_pid) {
         pid_t _pid;
         int r;
 
@@ -57,9 +57,7 @@ static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid, b
 
                 (void) rlimit_nofile_safe();
 
-                        r = setenv_elogind_exec_pid(false);
-                        r = setenv_elogind_exec_pid(false);
-                if (set_elogind_exec_pid) {
+                if (set_systemd_exec_pid) {
                         r = setenv_elogind_exec_pid(false);
                         if (r < 0)
                                 log_warning_errno(r, "Failed to set $SYSTEMD_EXEC_PID, ignoring: %m");
@@ -285,18 +283,12 @@ static int gather_environment_generate(int fd, void *arg) {
                 return r;
 
         STRV_FOREACH_PAIR(x, y, new) {
-                char *p;
-
                 if (!env_name_is_valid(*x)) {
                         log_warning("Invalid variable assignment \"%s=...\", ignoring.", *x);
                         continue;
                 }
 
-                p = strjoin(*x, "=", *y);
-                if (!p)
-                        return -ENOMEM;
-
-                r = strv_env_replace(env, p);
+                r = strv_env_assign(env, *x, *y);
                 if (r < 0)
                         return r;
 
@@ -304,7 +296,7 @@ static int gather_environment_generate(int fd, void *arg) {
                         return -errno;
         }
 
-        return r;
+        return 0;
 }
 
 static int gather_environment_collect(int fd, void *arg) {

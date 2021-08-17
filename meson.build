@@ -1902,19 +1902,25 @@ basic_includes = include_directories(
         'src/systemd',
         '.')
 
+#if 0 /// elogind has fewer subdirectories here
+# libsystemd_includes = [basic_includes, include_directories(
+#         'src/libsystemd/sd-bus',
+#         'src/libsystemd/sd-device',
+#         'src/libsystemd/sd-event',
+#         'src/libsystemd/sd-hwdb',
+#         'src/libsystemd/sd-id128',
+#         'src/libsystemd/sd-journal',
+#         'src/libsystemd/sd-netlink',
+#         'src/libsystemd/sd-network',
+#         'src/libsystemd/sd-resolve')]
+#else // 0
 libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-bus',
         'src/libelogind/sd-device',
         'src/libelogind/sd-event',
         'src/libelogind/sd-hwdb',
-#if 0 /// sd-id128 is the only one that elogind has and needs
-#         'src/libelogind/sd-id128',
-#         'src/libelogind/sd-journal',
-#         'src/libelogind/sd-netlink',
-#         'src/libelogind/sd-network',
-#         'src/libelogind/sd-resolve')]
-#else // 0
-        'src/libelogind/sd-id128')]
+        'src/libelogind/sd-id128',
+        'src/libelogind/sd-journal')]
 #endif // 0
 
 includes = [libelogind_includes, include_directories('src/shared')]
@@ -2102,7 +2108,6 @@ subdir('src/test')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/fuzz')
 # subdir('rules.d')
-#
 # subdir('test')
 #endif // 0
 
@@ -4118,9 +4123,9 @@ custom_target(
                    'mv t @0@/man/rules/meson.build'.format(meson.current_source_dir())],
         depend_files : custom_entities_ent)
 
-# ############################################################
 
 #if 0 /// elogind is not (and never will be) PID 1
+# ############################################################
 # watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
 #endif // 0
 

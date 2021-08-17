@@ -104,7 +104,7 @@ int make_salt(char **ret) {
 
 /* Provide a poor man's fallback that uses a fixed size buffer. */
 
-static char* elogind_crypt_ra(const char *phrase, const char *setting, void **data, int *size) {
+static char* systemd_crypt_ra(const char *phrase, const char *setting, void **data, int *size) {
         assert(data);
         assert(size);
 
@@ -134,7 +134,7 @@ static char* elogind_crypt_ra(const char *phrase, const char *setting, void **da
         return t;
 }
 
-#define crypt_ra elogind_crypt_ra
+#define crypt_ra systemd_crypt_ra
 
 #endif
 
