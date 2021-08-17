@@ -3949,8 +3949,8 @@ install_data('LICENSE.GPL2',
 #              'docs/TRANSIENT-SETTINGS.md',
 #              'docs/TRANSLATORS.md',
 #              'docs/UIDS-GIDS.md',
-#              'docs/GVARIANT-SERIALIZATION.md',
 #endif // 0
+             'docs/GVARIANT-SERIALIZATION.md',
              install_dir : docdir)
 
 #if 0 /// UNNEEDED by elogind

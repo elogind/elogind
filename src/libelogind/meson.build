@@ -1,28 +1,31 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
+sd_journal_sources = files(
 #if 0 /// UNNEEDED by elogind
-# sd_journal_sources = files(
 #         'sd-journal/audit-type.c',
 #         'sd-journal/audit-type.h',
 #         'sd-journal/catalog.c',
 #         'sd-journal/catalog.h',
 #         'sd-journal/compress.c',
 #         'sd-journal/compress.h',
-#         'sd-journal/journal-def.h',
-#         'sd-journal/journal-file.c',
-#         'sd-journal/journal-file.h',
-#         'sd-journal/journal-internal.h',
-#         'sd-journal/journal-send.c',
+#endif // 0
+        'sd-journal/journal-def.h',
+        'sd-journal/journal-file.c',
+        'sd-journal/journal-file.h',
+        'sd-journal/journal-internal.h',
+        'sd-journal/journal-send.c',
+#if 0 /// UNNEEDED by elogind
 #         'sd-journal/journal-vacuum.c',
 #         'sd-journal/journal-vacuum.h',
 #         'sd-journal/journal-verify.c',
 #         'sd-journal/journal-verify.h',
 #         'sd-journal/lookup3.c',
 #         'sd-journal/lookup3.h',
-#         'sd-journal/mmap-cache.c',
-#         'sd-journal/mmap-cache.h',
-#         'sd-journal/sd-journal.c')
-#
+#endif // 0
+        'sd-journal/mmap-cache.c',
+        'sd-journal/mmap-cache.h',
+        'sd-journal/sd-journal.c')
+
 # if conf.get('HAVE_GCRYPT') == 1
 #         sd_journal_sources += files(
 #                 'sd-journal/fsprg.c',
@@ -218,7 +221,7 @@ libelogind_sources = files('''
         sd-hwdb/sd-hwdb.c
         sd-device/sd-device.c
         sd-path/sd-path.c
-'''.split()) + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
+'''.split()) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
 
 disable_mempool_c = files('disable-mempool.c')

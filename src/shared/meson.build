@@ -309,6 +309,7 @@ shared_sources = '''
         daemon-util.h
         dev-setup.c
         dev-setup.h
+        devnode-acl.h
         dns-domain.c
         dns-domain.h
         efi-loader.c
@@ -328,6 +329,8 @@ shared_sources = '''
         json.h
         json-internal.h
         main-func.h
+        mount-setup.c
+        mount-setup.h
         mount-util.h
         mount-util.c
         libcrypt-util.c

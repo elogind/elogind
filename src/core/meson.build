@@ -126,8 +126,6 @@
 libcore_la_sources = files('''
         cgroup.c
         cgroup.h
-        mount-setup.c
-        mount-setup.h
 '''.split())
 #endif // 0
 
