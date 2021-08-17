@@ -26,6 +26,7 @@ sd_journal_sources = files(
         'sd-journal/mmap-cache.h',
         'sd-journal/sd-journal.c')
 
+#if 0 /// UNNEEDED by elogind
 # if conf.get('HAVE_GCRYPT') == 1
 #         sd_journal_sources += files(
 #                 'sd-journal/fsprg.c',
