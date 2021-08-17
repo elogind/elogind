@@ -101,7 +101,7 @@ journal_client_sources = files('''
 #           libxz,
 #           liblz4,
 #           libselinux]],
-# 
+#
 #         [['src/journal/test-journal-config.c'],
 #          [libjournal_core,
 #           libshared],

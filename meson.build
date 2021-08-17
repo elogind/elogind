@@ -15,7 +15,7 @@ project('elogind', 'c',
 
 libsystemd_version = '0.31.0'
 #if 0 /// elogind does not ship libudev
-libudev_version = '1.7.1'
+# libudev_version = '1.7.1'
 #endif // 0
 
 # We need the same data in two different formats, ugh!

@@ -53,7 +53,7 @@
 #         capture : true)
 #
 # sd_journal_sources += [audit_type_to_name]
-#if 0 /// UNNEEDED by elogind
+#endif // 0
 
 ############################################################
 
