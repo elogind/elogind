@@ -314,14 +314,11 @@ int fchmod_umask(int fd, mode_t m) {
 }
 
 int fchmod_opath(int fd, mode_t m) {
-        char procfs_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int)];
-
         /* This function operates also on fd that might have been opened with
          * O_PATH. Indeed fchmodat() doesn't have the AT_EMPTY_PATH flag like
          * fchownat() does. */
 
-        xsprintf(procfs_path, "/proc/self/fd/%i", fd);
-        if (chmod(procfs_path, m) < 0) {
+        if (chmod(FORMAT_PROC_FD_PATH(fd), m) < 0) {
                 if (errno != ENOENT)
                         return -errno;
 
@@ -335,12 +332,9 @@ int fchmod_opath(int fd, mode_t m) {
 }
 
 int futimens_opath(int fd, const struct timespec ts[2]) {
-        char procfs_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int)];
-
         /* Similar to fchmod_path() but for futimens() */
 
-        xsprintf(procfs_path, "/proc/self/fd/%i", fd);
-        if (utimensat(AT_FDCWD, procfs_path, ts, 0) < 0) {
+        if (utimensat(AT_FDCWD, FORMAT_PROC_FD_PATH(fd), ts, 0) < 0) {
                 if (errno != ENOENT)
                         return -errno;
 
@@ -386,7 +380,6 @@ int fd_warn_permissions(const char *path, int fd) {
 }
 
 int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gid, mode_t mode) {
-        char fdpath[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int)];
         _cleanup_close_ int fd = -1;
         int r, ret = 0;
 
@@ -418,8 +411,6 @@ int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gi
         /* Let's make a path from the fd, and operate on that. With this logic, we can adjust the access mode,
          * ownership and time of the file node in all cases, even if the fd refers to an O_PATH object — which is
          * something fchown(), fchmod(), futimensat() don't allow. */
-        xsprintf(fdpath, "/proc/self/fd/%i", fd);
-
         ret = fchmod_and_chown(fd, mode, uid, gid);
 
         if (stamp != USEC_INFINITY) {
@@ -427,9 +418,9 @@ int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gi
 
                 timespec_store(&ts[0], stamp);
                 ts[1] = ts[0];
-                r = utimensat(AT_FDCWD, fdpath, ts, 0);
+                r = utimensat(AT_FDCWD, FORMAT_PROC_FD_PATH(fd), ts, 0);
         } else
-                r = utimensat(AT_FDCWD, fdpath, NULL, 0);
+                r = utimensat(AT_FDCWD, FORMAT_PROC_FD_PATH(fd), NULL, 0);
         if (r < 0 && ret >= 0)
                 return -errno;
 
@@ -711,13 +702,10 @@ int unlink_or_warn(const char *filename) {
 }
 
 int inotify_add_watch_fd(int fd, int what, uint32_t mask) {
-        char path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int) + 1];
         int wd;
 
         /* This is like inotify_add_watch(), except that the file to watch is not referenced by a path, but by an fd */
-        xsprintf(path, "/proc/self/fd/%i", what);
-
-        wd = inotify_add_watch(fd, path, mask);
+        wd = inotify_add_watch(fd, FORMAT_PROC_FD_PATH(what), mask);
         if (wd < 0)
                 return -errno;
 
@@ -1165,7 +1153,6 @@ int chase_symlinks_and_opendir(
                 char **ret_path,
                 DIR **ret_dir) {
 
-        char procfs_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(int)];
         _cleanup_close_ int path_fd = -1;
         _cleanup_free_ char *p = NULL;
         DIR *d;
@@ -1191,8 +1178,7 @@ int chase_symlinks_and_opendir(
                 return r;
         assert(path_fd >= 0);
 
-        xsprintf(procfs_path, "/proc/self/fd/%i", path_fd);
-        d = opendir(procfs_path);
+        d = opendir(FORMAT_PROC_FD_PATH(path_fd));
         if (!d)
                 return -errno;
 
@@ -1247,12 +1233,9 @@ int chase_symlinks_and_stat(
 #endif // 0
 
 int access_fd(int fd, int mode) {
-        char p[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(fd) + 1];
-
         /* Like access() but operates on an already open fd */
 
-        xsprintf(p, "/proc/self/fd/%i", fd);
-        if (access(p, mode) < 0) {
+        if (access(FORMAT_PROC_FD_PATH(fd), mode) < 0) {
                 if (errno != ENOENT)
                         return -errno;
 
