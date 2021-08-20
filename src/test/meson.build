@@ -202,6 +202,8 @@ tests += [
 
         [['src/test/test-util.c']],
 
+        [['src/test/test-macro.c']],
+
         [['src/test/test-json.c']],
 
 #if 0 /// UNNEEDED in elogind
