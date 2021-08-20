@@ -2163,7 +2163,6 @@ _public_ int sd_device_trigger_with_uuid(
                 sd_device_action_t action,
                 sd_id128_t *ret_uuid) {
 
-        char buf[ID128_UUID_STRING_MAX];
         const char *s, *j;
         sd_id128_t u;
         int r;
@@ -2182,8 +2181,7 @@ _public_ int sd_device_trigger_with_uuid(
         if (r < 0)
                 return r;
 
-        id128_to_uuid_string(u, buf);
-        j = strjoina(s, " ", buf);
+        j = strjoina(s, " ", ID128_TO_UUID_STRING(u));
 
         r = sd_device_set_sysattr_value(device, "uevent", j);
         if (r < 0)
