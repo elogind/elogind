@@ -743,6 +743,7 @@ int log_dispatch_internal(
         return -ERRNO_VALUE(error);
 }
 
+#if 0 /// UNNEEDED by elogind
 int log_dump_internal(
                 int level,
                 int error,
@@ -760,6 +761,7 @@ int log_dump_internal(
 
         return log_dispatch_internal(level, error, file, line, func, NULL, NULL, NULL, NULL, buffer);
 }
+#endif // 0
 
 int log_internalv(
                 int level,

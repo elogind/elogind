@@ -162,7 +162,6 @@ int log_struct_iovec_internal(
                 const char *func,
                 const struct iovec *input_iovec,
                 size_t n_input_iovec);
-#endif // 0
 
 /* This modifies the buffer passed! */
 int log_dump_internal(
@@ -172,6 +171,7 @@ int log_dump_internal(
                 int line,
                 const char *func,
                 char *buffer);
+#endif // 0
 
 /* Logging for various assertions */
 _noreturn_ void log_assert_failed(
@@ -232,18 +232,16 @@ int log_emergency_level(void);
 
 #if ENABLE_DEBUG_ELOGIND
 #  define log_debug_elogind_full(...) do { \
-        log_set_max_level_realm(LOG_REALM, LOG_DEBUG);              \
-        log_full_errno_realm(LOG_REALM, LOG_DEBUG, 0, __VA_ARGS__); \
+        log_set_max_level(LOG_DEBUG);              \
+        log_full_errno(LOG_DEBUG, 0, __VA_ARGS__); \
 } while(0)
 #  define log_debug_elogind(fmt, ...) \
           log_debug_elogind_full("(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
 #else
 #  define log_debug_elogind(...) do {} while (0)
 #endif // ENABLE_DEBUG_ELOGIND
+
 /* Structured logging */
-#define log_struct_errno(level, error, ...) \
-        log_struct_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, level), \
-                            error, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__, NULL)
 #define log_struct_errno(level, error, ...)                             \
         log_struct_internal(level, error, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__, NULL)
 #define log_struct(level, ...) log_struct_errno(level, 0, __VA_ARGS__)
@@ -255,25 +253,16 @@ int log_emergency_level(void);
                                   error, PROJECT_FILE, __LINE__, __func__, iovec, n_iovec)
         log_struct_iovec_internal(level, error, PROJECT_FILE, __LINE__, __func__, iovec, n_iovec)
 #define log_struct_iovec(level, iovec, n_iovec) log_struct_iovec_errno(level, 0, iovec, n_iovec)
-#endif // 0
 
 /* This modifies the buffer passed! */
 #define log_dump(level, buffer) \
         log_dump_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, level), \
                           0, PROJECT_FILE, __LINE__, __func__, buffer)
+#endif // 0
 
-#define log_oom() log_oom_internal(LOG_REALM, PROJECT_FILE, __LINE__, __func__)
-#define log_oom() log_oom_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, LOG_ERR), PROJECT_FILE, __LINE__, __func__)
-#define log_oom_debug() log_oom_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, LOG_DEBUG), PROJECT_FILE, __LINE__, __func__)
-#define log_dump(level, buffer)                                         \
-        log_dump_internal(level, 0, PROJECT_FILE, __LINE__, __func__, buffer)
-
-bool log_on_console(void) _pure_;
 #define log_oom() log_oom_internal(LOG_ERR, PROJECT_FILE, __LINE__, __func__)
 #define log_oom_debug() log_oom_internal(LOG_DEBUG, PROJECT_FILE, __LINE__, __func__)
 
-const char *log_target_to_string(LogTarget target) _const_;
-LogTarget log_target_from_string(const char *s) _pure_;
 bool log_on_console(void) _pure_;
 
 /* Helper to prepare various field for structured logging */
