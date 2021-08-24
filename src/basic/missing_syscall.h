@@ -31,6 +31,7 @@
 
 /* ======================================================================= */
 
+#if 0 /// UNNEEDED by elogind
 #if !HAVE_PIVOT_ROOT
 static inline int missing_pivot_root(const char *new_root, const char *put_old) {
         return syscall(__NR_pivot_root, new_root, put_old);
@@ -38,6 +39,7 @@ static inline int missing_pivot_root(const char *new_root, const char *put_old) 
 
 #  define pivot_root missing_pivot_root
 #endif
+#endif // 0
 
 /* ======================================================================= */
 
