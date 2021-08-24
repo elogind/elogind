@@ -4333,7 +4333,7 @@ summary({
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
 if conf.get('ENABLE_EFI') == 1
-        summary({'efi arch' : efi_arch},
+        summary({'EFI arch' : efi_arch},
                 section : 'Extensible Firmware Interface')
 
 #if 0 /// UNNEEDED by elogind
