@@ -10,7 +10,9 @@ sd_journal_sources = files(
 #         'sd-journal/compress.h',
 #endif // 0
         'sd-journal/journal-def.h',
-        'sd-journal/journal-file.c',
+#if 0 /// UNNEEDED by elogind
+#         'sd-journal/journal-file.c',
+#endif // 0
         'sd-journal/journal-file.h',
         'sd-journal/journal-internal.h',
         'sd-journal/journal-send.c',
