@@ -795,26 +795,17 @@ conf.set('GPERF_LEN_TYPE', gperf_len_type,
 if not cc.has_header('sys/capability.h')
         error('POSIX caps headers not found')
 endif
-#if 0 /// elogind also needs to check printf.h
-# foreach header : ['crypt.h',
-#                   'linux/memfd.h',
-#                   'linux/vm_sockets.h',
-#                   'sys/auxv.h',
-#                   'valgrind/memcheck.h',
-#                   'valgrind/valgrind.h',
-#                   'linux/time_types.h',
-#                  ]
-#
-#else // 0
 foreach header : ['crypt.h',
                   'linux/memfd.h',
                   'linux/vm_sockets.h',
+#if 1 /// elogind also needs to check printf.h
                   'printf.h',
+#endif // 1
                   'sys/auxv.h',
                   'valgrind/memcheck.h',
                   'valgrind/valgrind.h',
+                  'linux/time_types.h',
                  ]
-#endif // 0
         conf.set10('HAVE_' + header.underscorify().to_upper(),
                    cc.has_header(header))
 endforeach
