@@ -338,8 +338,6 @@ shared_sources = '''
         libcrypt-util.c
         libcrypt-util.h
         libmount-util.h
-        musl_missing.c
-        musl_missing.h
         nsflags.c
         nsflags.h
         openssl-util.h
@@ -352,8 +350,6 @@ shared_sources = '''
         pkcs11-util.h
         pretty-print.c
         pretty-print.h
-        qsort_r_missing.c
-        qsort_r_missing.h
         reboot-util.c
         reboot-util.h
         serialize.c

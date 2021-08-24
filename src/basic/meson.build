@@ -380,6 +380,8 @@ basic_sources = files('''
         mkdir-label.c
         mountpoint-util.c
         mountpoint-util.h
+        musl_missing.c
+        musl_missing.h
         namespace-util.c
         namespace-util.h
         nulstr-util.c
@@ -398,6 +400,8 @@ basic_sources = files('''
         procfs-util.h
         process-util.c
         process-util.h
+        qsort_r_missing.c
+        qsort_r_missing.h
         random-util.c
         random-util.h
         ratelimit.c
