@@ -2046,10 +2046,10 @@ libudev = dependency('libudev', required : true)
 
 # systemd-analyze requires 'libcore'
 subdir('src/core')
-# systemd-journal-remote requires 'libjournal_core'
-subdir('src/journal')
-
 #if 0 /// UNNEEDED by elogind
+# # systemd-journal-remote requires 'libjournal_core'
+# subdir('src/journal')
+#
 # # systemd-networkd requires 'libsystemd_network'
 # subdir('src/libsystemd-network')
 #endif // 0
