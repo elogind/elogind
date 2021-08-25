@@ -136,8 +136,8 @@ tests += [
 #           libblkid],
 #          core_includes],
 #
+#         [['src/test/test-serialize.c']],
 #endif // 0
-        [['src/test/test-serialize.c']],
 
         [['src/test/test-utf8.c']],
 
@@ -201,7 +201,9 @@ tests += [
 
         [['src/test/test-alloc-util.c']],
 
-        [['src/test/test-xattr-util.c']],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-xattr-util.c']],
+#endif // 0
 
         [['src/test/test-io-util.c']],
 
@@ -268,8 +270,8 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-terminal-util.c']],
 #
+#         [['src/test/test-path-lookup.c']],
 #endif // 0
-        [['src/test/test-path-lookup.c']],
 
         [['src/test/test-pretty-print.c']],
 
@@ -424,7 +426,9 @@ tests += [
 #endif // 0
         [['src/test/test-tmpfile-util.c']],
 
-        [['src/test/test-architecture.c']],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-architecture.c']],
+#endif // 0
 
         [['src/test/test-log.c']],
 
@@ -588,9 +592,9 @@ tests += [
 #           libacl,
 #           libselinux],
 #          udev_includes, '', 'manual'],
+#
+#         [['src/test/test-udev-util.c']],
 #endif // 0
-
-        [['src/test/test-udev-util.c']],
 
         [['src/test/test-id128.c']],
 
