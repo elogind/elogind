@@ -3,7 +3,7 @@
 
 #include "version.h"
 
-extern const char* const systemd_features;
+extern const char* const elogind_features;
 
 enum {
         BUILD_MODE_DEVELOPER,

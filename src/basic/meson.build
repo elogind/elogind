@@ -274,12 +274,15 @@ basic_sources = files('''
         alloc-util.c
         alloc-util.h
         architecture.h
+        async.c
+        async.h
         audit-util.c
         audit-util.h
         blockdev-util.c
         blockdev-util.h
         btrfs-util.c
         btrfs-util.h
+        build.c
         build.h
         bus-label.c
         bus-label.h
@@ -424,6 +427,7 @@ basic_sources = files('''
         smack-util.h
         socket-util.c
         socket-util.h
+        sort-util.c
         sort-util.h
         sparse-endian.h
         special.h
