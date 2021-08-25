@@ -1890,10 +1890,13 @@ tests = []
 basic_includes = include_directories(
         'src/basic',
         'src/fundamental',
+#if 1 /// elogind also needs access to login in more places
+        'src/login',
+#endif // 1
         'src/systemd',
         '.')
 
-#if 0 /// elogind has fewer subdirectories here
+#if 0 /// elogind has fewer subdirectories here, and needs a few others
 # libsystemd_includes = [basic_includes, include_directories(
 #         'src/libsystemd/sd-bus',
 #         'src/libsystemd/sd-device',
@@ -1911,7 +1914,9 @@ libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-event',
         'src/libelogind/sd-hwdb',
         'src/libelogind/sd-id128',
-        'src/libelogind/sd-journal')]
+        'src/libelogind/sd-journal',
+        'src/sleep',
+        'src/update-utmp')]
 #endif // 0
 
 includes = [libelogind_includes, include_directories('src/shared')]
