@@ -614,7 +614,9 @@ tests += [
 
         [['src/test/test-percent-util.c']],
 
-        [['src/test/test-sd-hwdb.c']],
+#if 0 /// UNNEEDED by elogind
+#         [['src/test/test-sd-hwdb.c']],
+#endif // 0
 
         [['src/test/test-sd-path.c']],
 
