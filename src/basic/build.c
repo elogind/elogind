@@ -71,6 +71,7 @@ const char* const elogind_features =
         " -OPENSSL"
 #endif
 #endif // 0
+
         /* all other libraries, sorted alphabetically */
 
 #if HAVE_ACL

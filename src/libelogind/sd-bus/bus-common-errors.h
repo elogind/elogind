@@ -15,7 +15,6 @@
 #define BUS_ERROR_ALREADY_SUBSCRIBED           "org.freedesktop.elogind1.AlreadySubscribed"
 #define BUS_ERROR_ONLY_BY_DEPENDENCY           "org.freedesktop.elogind1.OnlyByDependency"
 #define BUS_ERROR_TRANSACTION_JOBS_CONFLICTING "org.freedesktop.elogind1.TransactionJobsConflicting"
-
 #define BUS_ERROR_TRANSACTION_ORDER_IS_CYCLIC  "org.freedesktop.elogind1.TransactionOrderIsCyclic"
 #define BUS_ERROR_TRANSACTION_IS_DESTRUCTIVE   "org.freedesktop.elogind1.TransactionIsDestructive"
 #define BUS_ERROR_UNIT_MASKED                  "org.freedesktop.elogind1.UnitMasked"

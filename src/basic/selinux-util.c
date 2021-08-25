@@ -84,15 +84,24 @@ void mac_selinux_retest(void) {
 }
 
 #if HAVE_SELINUX
-#  if HAVE_MALLINFO
-static struct mallinfo mallinfo_nowarn(void) {
-        /* glibc has deprecated mallinfo(), but the replacement malloc_info() returns an XML blob ;=[ */
+#  if HAVE_MALLINFO2
+#    define HAVE_GENERIC_MALLINFO 1
+typedef struct mallinfo2 generic_mallinfo;
+static generic_mallinfo generic_mallinfo_get(void) {
+        return mallinfo2();
+}
+#  elif HAVE_MALLINFO
+#    define HAVE_GENERIC_MALLINFO 1
+typedef struct mallinfo generic_mallinfo;
+static generic_mallinfo generic_mallinfo_get(void) {
+        /* glibc has deprecated mallinfo(), let's suppress the deprecation warning if mallinfo2() doesn't
+         * exist yet. */
 DISABLE_WARNING_DEPRECATED_DECLARATIONS
         return mallinfo();
 REENABLE_WARNING
 }
 #  else
-#    warning "mallinfo() is missing, add mallinfo2() supported instead."
+#    define HAVE_GENERIC_MALLINFO 0
 #  endif
 
 static int open_label_db(void) {
@@ -100,8 +109,8 @@ static int open_label_db(void) {
         usec_t before_timestamp, after_timestamp;
         char timespan[FORMAT_TIMESPAN_MAX];
 
-#  if HAVE_MALLINFO
-        struct mallinfo before_mallinfo = mallinfo_nowarn();
+#  if HAVE_GENERIC_MALLINFO
+        generic_mallinfo before_mallinfo = generic_mallinfo_get();
 #  endif
         before_timestamp = now(CLOCK_MONOTONIC);
 
@@ -110,10 +119,10 @@ static int open_label_db(void) {
                 return log_enforcing_errno(errno, "Failed to initialize SELinux labeling handle: %m");
 
         after_timestamp = now(CLOCK_MONOTONIC);
-#  if HAVE_MALLINFO
-        struct mallinfo after_mallinfo = mallinfo_nowarn();
-        int l = after_mallinfo.uordblks > before_mallinfo.uordblks ? after_mallinfo.uordblks - before_mallinfo.uordblks : 0;
-        log_debug("Successfully loaded SELinux database in %s, size on heap is %iK.",
+#  if HAVE_GENERIC_MALLINFO
+        generic_mallinfo after_mallinfo = generic_mallinfo_get();
+        size_t l = LESS_BY((size_t) after_mallinfo.uordblks, (size_t) before_mallinfo.uordblks);
+        log_debug("Successfully loaded SELinux database in %s, size on heap is %zuK.",
                   format_timespan(timespan, sizeof(timespan), after_timestamp - before_timestamp, 0),
                   DIV_ROUND_UP(l, 1024));
 #  else
@@ -173,28 +182,27 @@ int mac_selinux_init(void) {
 
 void mac_selinux_maybe_reload(void) {
 #if HAVE_SELINUX
-        int r;
+        int policyload;
 
         if (!initialized)
                 return;
 
-        r = selinux_status_updated();
-        if (r < 0)
-                log_debug_errno(errno, "Failed to update SELinux from status page: %m");
-        if (r > 0) {
-                int policyload;
+        /* Do not use selinux_status_updated(3), cause since libselinux 3.2 selinux_check_access(3),
+         * called in core and user instances, does also use it under the hood.
+         * That can cause changes to be consumed by selinux_check_access(3) and not being visible here.
+         * Also do not use selinux callbacks, selinux_set_callback(3), cause they are only automatically
+         * invoked since libselinux 3.2 by selinux_status_updated(3).
+         * Relevant libselinux commit: https://github.com/SELinuxProject/selinux/commit/05bdc03130d741e53e1fb45a958d0a2c184be503
+         * Debian Bullseye is going to ship libselinux 3.1, so stay compatible for backports. */
+        policyload = selinux_status_policyload();
+        if (policyload < 0) {
+                log_debug_errno(errno, "Failed to get SELinux policyload from status page: %m");
+                return;
+        }
 
-                log_debug("SELinux status page update");
-
-                /* from libselinux > 3.1 callbacks gets automatically called, see
-                   https://github.com/SELinuxProject/selinux/commit/05bdc03130d741e53e1fb45a958d0a2c184be503 */
-
-                /* only reload on policy changes, not enforcing status changes */
-                policyload = selinux_status_policyload();
-                if (policyload != last_policyload) {
-                        mac_selinux_reload(policyload);
-                        last_policyload = policyload;
-                }
+        if (policyload != last_policyload) {
+                mac_selinux_reload(policyload);
+                last_policyload = policyload;
         }
 #endif
 }

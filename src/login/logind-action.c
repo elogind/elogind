@@ -113,12 +113,12 @@ int manager_handle_action(
 
 #if 0 /// elogind needs its own can_sleep() variant.
         if (handle == HANDLE_SUSPEND)
-        else if (handle == HANDLE_HIBERNATE)
-        else if (handle == HANDLE_HYBRID_SLEEP)
-        else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
                 supported = can_sleep(SLEEP_SUSPEND) > 0;
+        else if (handle == HANDLE_HIBERNATE)
                 supported = can_sleep(SLEEP_HIBERNATE) > 0;
+        else if (handle == HANDLE_HYBRID_SLEEP)
                 supported = can_sleep(SLEEP_HYBRID_SLEEP) > 0;
+        else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
                 supported = can_sleep(SLEEP_SUSPEND_THEN_HIBERNATE) > 0;
 #else // 0
         if (handle == HANDLE_SUSPEND)

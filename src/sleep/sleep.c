@@ -43,9 +43,6 @@
 #include "utmp-wtmp.h"
 
 
-#if 0 /// UNNEEDED by elogind (arg_verb is pointing elsewhere and is not strdup'd!)
-#endif // 0
-
 #if 1 /// If an nvidia card is present, elogind informs its driver about suspend/resume actions
 static int nvidia_sleep(Manager* m, char const* verb, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";

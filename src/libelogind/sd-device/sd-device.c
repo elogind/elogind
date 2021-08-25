@@ -322,7 +322,6 @@ _public_ int sd_device_new_from_subsystem_sysname(
                 if (name[i] == '/')
                         name[i] = '!';
 
-
         FOREACH_STRING(s, "/sys/subsystem/", "/sys/bus/") {
                 r = device_strjoin_new(s, subsystem, "/devices/", name, ret);
                 if (r < 0)
@@ -330,6 +329,7 @@ _public_ int sd_device_new_from_subsystem_sysname(
                 if (r > 0)
                         return 0;
         }
+
         r = device_strjoin_new("/sys/class/", subsystem, "/", name, ret);
         if (r < 0)
                 return r;

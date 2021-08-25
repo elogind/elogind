@@ -63,7 +63,6 @@ int sigaction_many_internal(const struct sigaction *sa, ...) {
                 }
         }
 
-
         va_end(ap);
 
         return r;

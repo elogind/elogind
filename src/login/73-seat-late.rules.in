@@ -1,4 +1,4 @@
-#  SPDX-License-Identifier: LGPL-2.1+
+#  SPDX-License-Identifier: LGPL-2.1-or-later
 #
 #  This file is part of elogind.
 #
@@ -13,8 +13,8 @@ ENV{ID_SEAT}=="", ENV{ID_AUTOSEAT}=="1", ENV{ID_FOR_SEAT}!="", ENV{ID_SEAT}="sea
 ENV{ID_SEAT}=="", IMPORT{parent}="ID_SEAT"
 
 ENV{ID_SEAT}!="", TAG+="$env{ID_SEAT}"
-m4_ifdef(`HAVE_ACL',``
-TAG=="uaccess", ENV{MAJOR}!="", RUN{program}+="@rootlibexecdir@/elogind-uaccess-command %N $env{ID_SEAT}"''
-)m4_dnl
+{% if HAVE_ACL %}
+TAG=="uaccess", ENV{MAJOR}!="", RUN{program}+="@rootlibexecdir@/elogind-uaccess-command %N $env{ID_SEAT}"
+{% endif %}
 
 LABEL="seat_late_end"

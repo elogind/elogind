@@ -210,23 +210,18 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 
 #ifndef __IGNORE_epoll_pwait2
 #  if defined(__aarch64__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__alpha__)
 #    define elogind_NR_epoll_pwait2 551
 #  elif defined(__arc__) || defined(__tilegx__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__arm__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__i386__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__ia64__)
 #    define elogind_NR_epoll_pwait2 1465
 #  elif defined(__m68k__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
@@ -239,16 +234,12 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 #      error "Unknown MIPS ABI"
 #    endif
 #  elif defined(__powerpc__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__riscv) && defined(__LP64__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__s390__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__sparc__)
-#    define elogind_NR_epoll_pwait2 441
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
@@ -393,23 +384,18 @@ assert_cc(__NR_memfd_create == systemd_NR_memfd_create);
 
 #ifndef __IGNORE_mount_setattr
 #  if defined(__aarch64__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__alpha__)
 #    define elogind_NR_mount_setattr 552
 #  elif defined(__arc__) || defined(__tilegx__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__arm__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__i386__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__ia64__)
 #    define elogind_NR_mount_setattr 1466
 #  elif defined(__m68k__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
@@ -422,16 +408,12 @@ assert_cc(__NR_memfd_create == systemd_NR_memfd_create);
 #      error "Unknown MIPS ABI"
 #    endif
 #  elif defined(__powerpc__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__riscv) && defined(__LP64__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__s390__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__sparc__)
-#    define elogind_NR_mount_setattr 442
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
@@ -460,23 +442,18 @@ assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
 
 #ifndef __IGNORE_move_mount
 #  if defined(__aarch64__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__alpha__)
 #    define elogind_NR_move_mount 539
 #  elif defined(__arc__) || defined(__tilegx__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__arm__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__i386__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__ia64__)
 #    define elogind_NR_move_mount 1453
 #  elif defined(__m68k__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
@@ -489,16 +466,12 @@ assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
 #      error "Unknown MIPS ABI"
 #    endif
 #  elif defined(__powerpc__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__riscv) && defined(__LP64__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__s390__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__sparc__)
-#    define elogind_NR_move_mount 429
 #    define systemd_NR_move_mount 429
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
@@ -585,23 +558,18 @@ assert_cc(__NR_name_to_handle_at == systemd_NR_name_to_handle_at);
 
 #ifndef __IGNORE_open_tree
 #  if defined(__aarch64__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__alpha__)
 #    define elogind_NR_open_tree 538
 #  elif defined(__arc__) || defined(__tilegx__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__arm__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__i386__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__ia64__)
 #    define elogind_NR_open_tree 1452
 #  elif defined(__m68k__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
@@ -614,16 +582,12 @@ assert_cc(__NR_name_to_handle_at == systemd_NR_name_to_handle_at);
 #      error "Unknown MIPS ABI"
 #    endif
 #  elif defined(__powerpc__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__riscv) && defined(__LP64__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__s390__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__sparc__)
-#    define elogind_NR_open_tree 428
 #    define systemd_NR_open_tree 428
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
