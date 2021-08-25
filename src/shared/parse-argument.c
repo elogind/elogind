@@ -52,6 +52,7 @@ int parse_json_argument(const char *s, JsonFormatFlags *ret) {
         return 1; /* 1 means → properly parsed */
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_path_argument(const char *path, bool suppress_root, char **arg) {
         char *p;
         int r;
@@ -79,6 +80,7 @@ int parse_path_argument(const char *path, bool suppress_root, char **arg) {
 
         return free_and_replace(*arg, p);
 }
+#endif // 0
 
 int parse_signal_argument(const char *s, int *ret) {
         int r;

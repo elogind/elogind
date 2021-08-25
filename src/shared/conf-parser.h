@@ -157,8 +157,8 @@ CONFIG_PARSER_PROTOTYPE(config_parse_vlanprotocol);
 CONFIG_PARSER_PROTOTYPE(config_parse_hwaddr);
 CONFIG_PARSER_PROTOTYPE(config_parse_hwaddrs);
 CONFIG_PARSER_PROTOTYPE(config_parse_percent);
-CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 #endif // 0
+CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,

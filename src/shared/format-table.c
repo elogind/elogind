@@ -610,6 +610,7 @@ int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         table_get_data(t, cell)->minimum_width = minimum_width;
         return 0;
 }
+#endif // 0
 
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         int r;
@@ -624,7 +625,6 @@ int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         table_get_data(t, cell)->maximum_width = maximum_width;
         return 0;
 }
-#endif // 0
 
 int table_set_weight(Table *t, TableCell *cell, unsigned weight) {
         int r;
@@ -985,13 +985,13 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         r = table_set_minimum_width(t, last_cell, w);
                         break;
                 }
+#endif // 0
 
                 case TABLE_SET_MAXIMUM_WIDTH: {
                         size_t w = va_arg(ap, size_t);
                         r = table_set_maximum_width(t, last_cell, w);
                         break;
                 }
-#endif // 0
 
                 case TABLE_SET_WEIGHT: {
                         unsigned w = va_arg(ap, unsigned);
@@ -1114,7 +1114,6 @@ static int table_set_display_all(Table *t) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_set_display_internal(Table *t, size_t first_column, ...) {
         size_t allocated, column;
         va_list ap;
@@ -1173,7 +1172,6 @@ int table_set_sort_internal(Table *t, size_t first_column, ...) {
 
         return 0;
 }
-#endif // 0
 
 int table_hide_column_from_display(Table *t, size_t column) {
         int r;
