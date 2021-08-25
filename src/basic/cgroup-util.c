@@ -135,7 +135,6 @@ int cg_read_event(
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 bool cg_ns_supported(void) {
         static thread_local int enabled = -1;
 
@@ -151,7 +150,6 @@ bool cg_ns_supported(void) {
 
         return enabled;
 }
-#endif // 0
 
 bool cg_freezer_supported(void) {
         static thread_local int supported = -1;

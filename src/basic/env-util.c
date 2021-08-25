@@ -405,7 +405,6 @@ int strv_env_replace_consume(char ***l, char *p) {
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_env_replace_strdup(char ***l, const char *assignment) {
         /* Like strv_env_replace_consume(), but copies the argument. */
 
@@ -416,6 +415,7 @@ int strv_env_replace_strdup(char ***l, const char *assignment) {
         return strv_env_replace_consume(l, p);
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_env_assign(char ***l, const char *key, const char *value) {
         if (!env_name_is_valid(key))
                 return -EINVAL;
@@ -776,7 +776,7 @@ int set_unset_env(const char *name, const char *value, bool overwrite) {
         return 0;
 }
 
-int setenv_elogind_exec_pid(bool update_only) {
+#if 0 /// UNNEEDED by elogind
 int putenv_dup(const char *assignment, bool override) {
         const char *e, *n;
 
@@ -791,6 +791,7 @@ int putenv_dup(const char *assignment, bool override) {
                 return -errno;
         return 0;
 }
+#endif // 0
 
 int setenv_elogind_exec_pid(bool update_only) {
         char str[DECIMAL_STR_MAX(pid_t)];
@@ -813,6 +814,7 @@ int setenv_elogind_exec_pid(bool update_only) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int getenv_path_list(const char *name, char ***ret_paths) {
         _cleanup_strv_free_ char **l = NULL;
         const char *e;
@@ -851,3 +853,4 @@ int getenv_path_list(const char *name, char ***ret_paths) {
         *ret_paths = TAKE_PTR(l);
         return 1;
 }
+#endif // 0

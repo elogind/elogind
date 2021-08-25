@@ -64,9 +64,6 @@ int sigaction_many_internal(const struct sigaction *sa, ...) {
         }
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
         va_end(ap);
 
         return r;

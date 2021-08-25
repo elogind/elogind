@@ -1213,7 +1213,6 @@ bool terminal_is_dumb(void) {
         return getenv_terminal_is_dumb();
 }
 
-#if 0 /// elogind does not allow such forcing, and we are never init!
 static ColorMode parse_systemd_colors(void) {
         const char *e;
         int r;
@@ -1250,6 +1249,7 @@ ColorMode get_color_mode(void) {
                         /* We only check for the presence of the variable; value is ignored. */
                         cached_color_mode = COLOR_OFF;
 
+#if 0 /// elogind is never init!
                 else if (getpid_cached() == 1)
                         /* PID1 outputs to the console without holding it open all the time.
                          *

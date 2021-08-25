@@ -127,7 +127,6 @@ char* getlogname_malloc(void) {
         return uid_to_name(uid);
 }
 
-#if 0 /// UNNEEDED by elogind
 char *getusername_malloc(void) {
         const char *e;
 
@@ -137,7 +136,6 @@ char *getusername_malloc(void) {
 
         return uid_to_name(getuid());
 }
-#endif // 0
 
 bool is_nologin_shell(const char *shell) {
 

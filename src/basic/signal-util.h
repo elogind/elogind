@@ -8,7 +8,6 @@
 int reset_all_signal_handlers(void);
 int reset_signal_mask(void);
 
-#if 0 /// UNNEEDED by elogind
 int sigaction_many_internal(const struct sigaction *sa, ...);
 
 #define ignore_signals(...)                                             \
@@ -29,6 +28,7 @@ int sigaction_many_internal(const struct sigaction *sa, ...);
                         __VA_ARGS__,                                    \
                         -1)
 
+#if 0 /// UNNEEDED by elogind
 #define sigaction_many(sa, ...)                                         \
         sigaction_many_internal(sa, __VA_ARGS__, -1)
 

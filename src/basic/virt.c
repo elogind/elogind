@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #if defined(__i386__) || defined(__x86_64__)
-//#include <cpuid.h>
+#include <cpuid.h>
 #endif
 #include <errno.h>
 #include <stdint.h>

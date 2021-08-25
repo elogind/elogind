@@ -106,8 +106,8 @@ bool socket_address_equal(const SocketAddress *a, const SocketAddress *b) _pure_
 const char* socket_address_get_path(const SocketAddress *a);
 
 bool socket_ipv6_is_supported(void);
-#endif // 0
 bool socket_ipv6_is_enabled(void);
+#endif // 0
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
 const union in_addr_union *sockaddr_in_addr(const struct sockaddr *sa);
@@ -133,6 +133,7 @@ int fd_set_sndbuf(int fd, size_t n, bool increase);
 static inline int fd_inc_sndbuf(int fd, size_t n) {
         return fd_set_sndbuf(fd, n, true);
 }
+
 int fd_set_rcvbuf(int fd, size_t n, bool increase);
 static inline int fd_inc_rcvbuf(int fd, size_t n) {
         return fd_set_rcvbuf(fd, n, true);
@@ -184,7 +185,6 @@ int flush_accept(int fd);
 
 #if 0 /// UNNEEDED by elogind
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length);
-#endif // 0
 
 /* Type-safe, dereferencing version of cmsg_find() */
 #define CMSG_FIND_DATA(mh, level, type, ctype) \
@@ -193,6 +193,7 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
                 _found = cmsg_find(mh, level, type, CMSG_LEN(sizeof(ctype))); \
                 (ctype*) (_found ? CMSG_DATA(_found) : NULL);         \
         })
+#endif // 0
 
 /* Resolves to a type that can carry cmsghdr structures. Make sure things are properly aligned, i.e. the type
  * itself is placed properly in memory and the size is also aligned to what's appropriate for "cmsghdr"
@@ -303,6 +304,7 @@ int socket_set_option(int fd, int af, int opt_ipv4, int opt_ipv6, int val);
 static inline int socket_set_recverr(int fd, int af, bool b) {
         return socket_set_option(fd, af, IP_RECVERR, IPV6_RECVERR, b);
 }
+#if 0 /// UNNEEDED by elogind
 static inline int socket_set_recvttl(int fd, int af, bool b) {
         return socket_set_option(fd, af, IP_RECVTTL, IPV6_RECVHOPLIMIT, b);
 }
@@ -320,3 +322,4 @@ static inline int socket_set_recvfragsize(int fd, int af, bool b) {
 }
 
 int socket_get_mtu(int fd, int af, size_t *ret);
+#endif // 0

@@ -7,9 +7,9 @@
 #include "macro.h"
 #include "strv.h"
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
+#if 0 /// UNNEEDED by elogind
 char* get_default_hostname(void);
+#endif // 0
 char* gethostname_malloc(void);
 #if 0 /// UNNEEDED by elogind
 char* gethostname_short_malloc(void);
@@ -17,8 +17,6 @@ char* gethostname_short_malloc(void);
 int gethostname_strict(char **ret);
 
 bool valid_ldh_char(char c) _const_;
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 typedef enum ValidHostnameFlags {
         VALID_HOSTNAME_TRAILING_DOT = 1 << 0,   /* Accept trailing dot on multi-label names */
@@ -29,8 +27,8 @@ bool hostname_is_valid(const char *s, ValidHostnameFlags flags) _pure_;
 char* hostname_cleanup(char *s);
 
 bool is_localhost(const char *hostname);
-#if 0 /// UNNEEDED by elogind
 
+#if 0 /// UNNEEDED by elogind
 static inline bool is_gateway_hostname(const char *hostname) {
         /* This tries to identify the valid syntaxes for the our synthetic "gateway" host. */
         return STRCASE_IN_SET(hostname, "_gateway", "_gateway.");

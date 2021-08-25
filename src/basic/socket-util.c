@@ -31,7 +31,7 @@
 #include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
-#include "sysctl-util.h"
+//#include "sysctl-util.h"
 #include "user-util.h"
 #include "utf8.h"
 
@@ -1378,7 +1378,6 @@ int socket_set_option(int fd, int af, int opt_ipv4, int opt_ipv6, int val) {
                 return -EAFNOSUPPORT;
         }
 }
-#endif // 0
 
 int socket_get_mtu(int fd, int af, size_t *ret) {
         int mtu, r;
@@ -1411,3 +1410,4 @@ int socket_get_mtu(int fd, int af, size_t *ret) {
         *ret = (size_t) mtu;
         return 0;
 }
+#endif // 0

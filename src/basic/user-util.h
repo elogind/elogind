@@ -30,9 +30,7 @@ static inline int parse_gid(const char *s, gid_t *ret_gid) {
 }
 
 char* getlogname_malloc(void);
-#if 0 /// UNNEEDED by elogind
 char* getusername_malloc(void);
-#endif // 0
 
 typedef enum UserCredsFlags {
         USER_CREDS_PREFER_NSS    = 1 << 0,  /* if set, only synthesize user records if database lacks them. Normally we bypass the userdb entirely for the records we can synthesize */

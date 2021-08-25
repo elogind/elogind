@@ -9,11 +9,11 @@
 
 #include "alloc-util.h"
 #include "hostname-util.h"
-#include "os-util.h"
+//#include "os-util.h"
 #include "string-util.h"
 #include "strv.h"
 
-/// elogind empty mask removed (UNNEEDED by elogind)
+#if 0 /// UNNEEDED by elogind
 char* get_default_hostname(void) {
         int r;
 
@@ -36,6 +36,7 @@ char* get_default_hostname(void) {
 
         return strdup(FALLBACK_HOSTNAME);
 }
+#endif // 0
 
 char* gethostname_malloc(void) {
         struct utsname u;
@@ -52,7 +53,7 @@ char* gethostname_malloc(void) {
         if (isempty(s) || streq(s, "(none)"))
                 return get_default_hostname();
 #else // 0
-                return strdup("localhost");
+        return strdup("localhost");
 #endif // 0
 
         return strdup(s);
