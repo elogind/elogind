@@ -30,11 +30,13 @@ const char* const elogind_features =
         " -APPARMOR"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if ENABLE_IMA
         " +IMA"
 #else
         " -IMA"
 #endif
+#endif // 0
 
 #if ENABLE_SMACK
         " +SMACK"
@@ -56,6 +58,7 @@ const char* const elogind_features =
         " -GCRYPT"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_GNUTLS
         " +GNUTLS"
 #else
@@ -67,7 +70,7 @@ const char* const elogind_features =
 #else
         " -OPENSSL"
 #endif
-
+#endif // 0
         /* all other libraries, sorted alphabetically */
 
 #if HAVE_ACL
@@ -82,6 +85,7 @@ const char* const elogind_features =
         " -BLKID"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_LIBCURL
         " +CURL"
 #else
@@ -117,6 +121,7 @@ const char* const elogind_features =
 #else
         " -IPTC"
 #endif
+#endif // 0
 
 #if HAVE_KMOD
         " +KMOD"
@@ -124,6 +129,7 @@ const char* const elogind_features =
         " -KMOD"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_LIBCRYPTSETUP
         " +LIBCRYPTSETUP"
 #else
@@ -199,6 +205,7 @@ const char* const elogind_features =
 #else
         " -XKBCOMMON"
 #endif
+#endif // 0
 
 #if ENABLE_UTMP
         " +UTMP"
@@ -206,11 +213,13 @@ const char* const elogind_features =
         " -UTMP"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_SYSV_COMPAT
         " +SYSVINIT"
 #else
         " -SYSVINIT"
 #endif
+#endif // 0
 
         " default-hierarchy=" DEFAULT_HIERARCHY_NAME
         ;

@@ -98,6 +98,7 @@ static int parse_parts_value_with_hundredths_place(const char *p, const char *sy
         return v;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_percent_unbounded(const char *p) {
         return parse_parts_value_whole(p, "%");
 }
@@ -131,6 +132,7 @@ int parse_permille(const char *p) {
 
         return v;
 }
+#endif // 0
 
 int parse_permyriad_unbounded(const char *p) {
         const char *pm;

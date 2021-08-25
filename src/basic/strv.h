@@ -59,8 +59,8 @@ int strv_consume_prepend(char ***l, char *value);
 char **strv_remove(char **l, const char *s);
 char **strv_uniq(char **l);
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 bool strv_is_uniq(char * const *l);
+#endif // 0
 
 int strv_compare(char * const *a, char * const *b);
 static inline bool strv_equal(char * const *a, char * const *b) {
@@ -94,6 +94,7 @@ static inline char **strv_split(const char *s, const char *separators) {
         return ret;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_split_newlines_full(char ***ret, const char *s, ExtractFlags flags);
 static inline char **strv_split_newlines(const char *s) {
         char **ret;
@@ -103,6 +104,7 @@ static inline char **strv_split_newlines(const char *s) {
 
         return ret;
 }
+#endif // 0
 
 /* Given a string containing white-space separated tuples of words themselves separated by ':',
  * returns a vector of strings. If the second element in a tuple is missing, the corresponding
@@ -130,7 +132,9 @@ static inline int strv_from_nulstr(char ***a, const char *nulstr) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool strv_overlap(char * const *a, char * const *b) _pure_;
+#endif // 0
 
 #define STRV_FOREACH(s, l)                      \
         for ((s) = (l); (s) && *(s); (s)++)

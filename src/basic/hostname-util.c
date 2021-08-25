@@ -172,7 +172,6 @@ bool hostname_is_valid(const char *s, ValidHostnameFlags flags) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
 char* hostname_cleanup(char *s) {
         char *p, *d;
         bool dot, hyphen;
@@ -210,7 +209,6 @@ char* hostname_cleanup(char *s) {
 
         return s;
 }
-#endif // 0
 
 bool is_localhost(const char *hostname) {
         assert(hostname);

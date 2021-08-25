@@ -6,11 +6,13 @@
 
 #include "macro.h"
 
+#if 0 /// UNNEEDED by elogind
 int parse_percent_unbounded(const char *p);
 int parse_percent(const char *p);
 
 int parse_permille_unbounded(const char *p);
 int parse_permille(const char *p);
+#endif // 0
 
 int parse_permyriad_unbounded(const char *p);
 int parse_permyriad(const char *p);
