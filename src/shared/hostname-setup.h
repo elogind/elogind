@@ -23,4 +23,6 @@ int read_etc_hostname(const char *path, char **ret);
 
 bool get_hostname_filtered(char ret[static HOST_NAME_MAX + 1]);
 void hostname_update_source_hint(const char *hostname, HostnameSource source);
+#if 0 /// UNNEEDED by elogind
 int hostname_setup(bool really);
+#endif // 0

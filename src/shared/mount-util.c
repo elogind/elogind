@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 //#include "alloc-util.h"
-#include "dissect-image.h"
+//#include "dissect-image.h"
 #include "extract-word.h"
 #include "fd-util.h"
 //#include "fileio.h"
@@ -755,6 +755,7 @@ int mount_option_mangle(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int mount_in_namespace(
                 pid_t target,
                 const char *propagate_path,
@@ -1013,3 +1014,4 @@ int mount_image_in_namespace(
 
         return mount_in_namespace(target, propagate_path, incoming_path, src, dest, read_only, make_file_or_directory, options, true);
 }
+#endif // 0

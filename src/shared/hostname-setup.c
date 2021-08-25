@@ -161,6 +161,7 @@ void hostname_update_source_hint(const char *hostname, HostnameSource source) {
                 unlink_or_warn("/run/systemd/default-hostname");
 }
 
+#if 0 /// UNNEEDED by elogind
 int hostname_setup(bool really) {
         _cleanup_free_ char *b = NULL;
         const char *hn = NULL;
@@ -229,6 +230,7 @@ int hostname_setup(bool really) {
 
         return r;
 }
+#endif // 0
 
 static const char* const hostname_source_table[] = {
         [HOSTNAME_STATIC]    = "static",

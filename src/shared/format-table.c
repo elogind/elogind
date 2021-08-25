@@ -1114,6 +1114,7 @@ static int table_set_display_all(Table *t) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_set_display_internal(Table *t, size_t first_column, ...) {
         size_t allocated, column;
         va_list ap;
@@ -1172,6 +1173,7 @@ int table_set_sort_internal(Table *t, size_t first_column, ...) {
 
         return 0;
 }
+#endif // 0
 
 int table_hide_column_from_display(Table *t, size_t column) {
         int r;

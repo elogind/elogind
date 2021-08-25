@@ -6,7 +6,7 @@
 //#include <unistd.h>
 
 #include "alloc-util.h"
-#include "dissect-image.h"
+//#include "dissect-image.h"
 #include "errno-util.h"
 //#include "macro.h"
 
@@ -106,7 +106,7 @@ static inline char* umount_and_rmdir_and_free(char *p) {
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, umount_and_rmdir_and_free);
-#endif // 0
 
 int bind_mount_in_namespace(pid_t target, const char *propagate_path, const char *incoming_path, const char *src, const char *dest, bool read_only, bool make_file_or_directory);
 int mount_image_in_namespace(pid_t target, const char *propagate_path, const char *incoming_path, const char *src, const char *dest, bool read_only, bool make_file_or_directory, const MountOptions *options);
+#endif // 0

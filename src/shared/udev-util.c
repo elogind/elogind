@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-#include "device-nodes.h"
+//#include "device-nodes.h"
 #include "device-private.h"
 #include "device-util.h"
 #include "env-file.h"
@@ -336,6 +336,7 @@ bool device_for_action(sd_device *dev, sd_device_action_t a) {
         return a == b;
 }
 
+#if 0 /// UNNEEDED by elogind
 void log_device_uevent(sd_device *device, const char *str) {
         sd_device_action_t action = _SD_DEVICE_ACTION_INVALID;
         uint64_t seqnum = 0;
@@ -563,3 +564,4 @@ int udev_queue_init(void) {
 
         return TAKE_FD(fd);
 }
+#endif // 0

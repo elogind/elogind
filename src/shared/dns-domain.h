@@ -8,7 +8,7 @@
 
 #include "dns-def.h"
 #include "hashmap.h"
-#include "in-addr-util.h"
+//#include "in-addr-util.h"
 
 typedef enum DNSLabelFlags {
         DNS_LABEL_LDH                = 1 << 0, /* Follow the "LDH" rule — only letters, digits, and internal hyphens. */
