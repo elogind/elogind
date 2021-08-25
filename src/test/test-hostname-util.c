@@ -115,10 +115,12 @@ static void test_default_hostname(void) {
                 exit(EXIT_FAILURE);
         }
 
+#if 0 /// UNNEEDED by elogind
         _cleanup_free_ char *n = get_default_hostname();
         assert_se(n);
         log_info("get_default_hostname: \"%s\"", n);
         assert_se(hostname_is_valid(n, 0));
+#endif // 0
 }
 
 int main(int argc, char *argv[]) {

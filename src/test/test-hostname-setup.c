@@ -58,15 +58,19 @@ static void test_read_etc_hostname(void) {
         unlink(path);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_hostname_setup(void) {
         hostname_setup(false);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
 
         test_read_etc_hostname();
+#if 0 /// UNNEEDED by elogind
         test_hostname_setup();
+#endif // 0
 
         return 0;
 }
