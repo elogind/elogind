@@ -3,20 +3,18 @@
 
 #include "bus-error.h"
 
-#if 0 /// only system command elogind knows are needed
-#define BUS_ERROR_NO_SUCH_UNIT                 "org.freedesktop.systemd1.NoSuchUnit"
-#define BUS_ERROR_NO_UNIT_FOR_PID              "org.freedesktop.systemd1.NoUnitForPID"
-#define BUS_ERROR_NO_UNIT_FOR_INVOCATION_ID    "org.freedesktop.systemd1.NoUnitForInvocationID"
-#define BUS_ERROR_UNIT_EXISTS                  "org.freedesktop.systemd1.UnitExists"
-#define BUS_ERROR_LOAD_FAILED                  "org.freedesktop.systemd1.LoadFailed"
-#define BUS_ERROR_BAD_UNIT_SETTING             "org.freedesktop.systemd1.BadUnitSetting"
-#define BUS_ERROR_JOB_FAILED                   "org.freedesktop.systemd1.JobFailed"
-#define BUS_ERROR_NO_SUCH_JOB                  "org.freedesktop.systemd1.NoSuchJob"
-#define BUS_ERROR_NOT_SUBSCRIBED               "org.freedesktop.systemd1.NotSubscribed"
-#define BUS_ERROR_ALREADY_SUBSCRIBED           "org.freedesktop.systemd1.AlreadySubscribed"
-#define BUS_ERROR_ONLY_BY_DEPENDENCY           "org.freedesktop.systemd1.OnlyByDependency"
-#define BUS_ERROR_TRANSACTION_JOBS_CONFLICTING "org.freedesktop.systemd1.TransactionJobsConflicting"
-#endif // 0
+#define BUS_ERROR_NO_SUCH_UNIT                 "org.freedesktop.elogind1.NoSuchUnit"
+#define BUS_ERROR_NO_UNIT_FOR_PID              "org.freedesktop.elogind1.NoUnitForPID"
+#define BUS_ERROR_NO_UNIT_FOR_INVOCATION_ID    "org.freedesktop.elogind1.NoUnitForInvocationID"
+#define BUS_ERROR_UNIT_EXISTS                  "org.freedesktop.elogind1.UnitExists"
+#define BUS_ERROR_LOAD_FAILED                  "org.freedesktop.elogind1.LoadFailed"
+#define BUS_ERROR_BAD_UNIT_SETTING             "org.freedesktop.elogind1.BadUnitSetting"
+#define BUS_ERROR_JOB_FAILED                   "org.freedesktop.elogind1.JobFailed"
+#define BUS_ERROR_NO_SUCH_JOB                  "org.freedesktop.elogind1.NoSuchJob"
+#define BUS_ERROR_NOT_SUBSCRIBED               "org.freedesktop.elogind1.NotSubscribed"
+#define BUS_ERROR_ALREADY_SUBSCRIBED           "org.freedesktop.elogind1.AlreadySubscribed"
+#define BUS_ERROR_ONLY_BY_DEPENDENCY           "org.freedesktop.elogind1.OnlyByDependency"
+#define BUS_ERROR_TRANSACTION_JOBS_CONFLICTING "org.freedesktop.elogind1.TransactionJobsConflicting"
 
 #define BUS_ERROR_TRANSACTION_ORDER_IS_CYCLIC  "org.freedesktop.elogind1.TransactionOrderIsCyclic"
 #define BUS_ERROR_TRANSACTION_IS_DESTRUCTIVE   "org.freedesktop.elogind1.TransactionIsDestructive"

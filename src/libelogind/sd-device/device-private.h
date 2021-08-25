@@ -75,8 +75,8 @@ static inline int device_read_db(sd_device *device) {
         return device_read_db_internal(device, false);
 }
 
-#if 0 /// UNNEEDED by elogind
 sd_device_action_t device_action_from_string(const char *s) _pure_;
 const char *device_action_to_string(sd_device_action_t a) _const_;
+#if 0 /// UNNEEDED by elogind
 void dump_device_action_table(void);
 #endif // 0

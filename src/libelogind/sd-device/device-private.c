@@ -209,9 +209,6 @@ static int device_set_action(sd_device *device, const char *action) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 static int device_set_seqnum(sd_device *device, const char *str) {
         uint64_t seqnum;
         int r;
@@ -715,7 +712,6 @@ int device_new_from_synthetic_event(sd_device **new_device, const char *syspath,
 
         return 0;
 }
-
 #endif // 0
 
 int device_copy_properties(sd_device *device_dst, sd_device *device_src) {
