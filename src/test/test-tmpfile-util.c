@@ -7,6 +7,7 @@
 #include "tests.h"
 #include "tmpfile-util.h"
 
+#if 0 /// UNNEEDED by elogind
 static void test_tempfn_random_one(const char *p, const char *extra, const char *expect, int ret) {
         _cleanup_free_ char *s = NULL;
         int r;
@@ -49,6 +50,7 @@ static void test_tempfn_random(void) {
         test_tempfn_random_one("../foo/", NULL, "../.#foo", 0);
         test_tempfn_random_one("../foo/", "bar", "../.#barfoo", 0);
 }
+#endif // 0
 
 static void test_tempfn_xxxxxx_one(const char *p, const char *extra, const char *expect, int ret) {
         _cleanup_free_ char *s = NULL;
@@ -95,7 +97,9 @@ static void test_tempfn_xxxxxx(void) {
 int main(int argc, char **argv) {
         test_setup_logging(LOG_DEBUG);
 
+#if 0 /// UNNEEDED by elogind
         test_tempfn_random();
+#endif // 0
         test_tempfn_xxxxxx();
 
         return 0;

@@ -103,10 +103,13 @@ static void test_hostname_malloc(void) {
         assert_se(h = gethostname_malloc());
         log_info("hostname_malloc: \"%s\"", h);
 
+#if 0 /// UNNEEDED by elogind
         assert_se(l = gethostname_short_malloc());
         log_info("hostname_short_malloc: \"%s\"", l);
+#endif // 0
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_default_hostname(void) {
         log_info("/* %s */", __func__);
 
@@ -115,13 +118,12 @@ static void test_default_hostname(void) {
                 exit(EXIT_FAILURE);
         }
 
-#if 0 /// UNNEEDED by elogind
         _cleanup_free_ char *n = get_default_hostname();
         assert_se(n);
         log_info("get_default_hostname: \"%s\"", n);
         assert_se(hostname_is_valid(n, 0));
-#endif // 0
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
@@ -129,7 +131,9 @@ int main(int argc, char *argv[]) {
         test_hostname_is_valid();
         test_hostname_cleanup();
         test_hostname_malloc();
+#if 0 /// UNNEEDED by elogind
         test_default_hostname();
+#endif // 0
 
         return 0;
 }

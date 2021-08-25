@@ -3,10 +3,11 @@
 #include "alloc-util.h"
 #include "escape.h"
 #include "nulstr-util.h"
-#include "specifier.h"
+//#include "specifier.h"
 #include "string-util.h"
 #include "strv.h"
 
+#if 0 /// UNNEEDED by elogind
 static void test_specifier_printf(void) {
         static const Specifier table[] = {
                 { 'X', specifier_string,         (char*) "AAAA" },
@@ -38,6 +39,7 @@ static void test_specifier_printf(void) {
         if (w)
                 puts(w);
 }
+#endif // 0
 
 static void test_str_in_set(void) {
         log_info("/* %s */", __func__);
@@ -118,6 +120,7 @@ static const char* const input_table_one_empty[] = {
         NULL,
 };
 
+#if 0 /// UNNEEDED by elogind
 static const char* const input_table_unescape[] = {
         "ID_VENDOR=QEMU",
         "ID_VENDOR_ENC=QEMUx20x20x20x20",
@@ -131,6 +134,7 @@ static const char* const input_table_retain_escape[] = {
         "ID_MODEL_ENC=QEMU\\x20HARDDISK\\x20\\x20\\x20",
         NULL,
 };
+#endif // 0
 
 static void test_strv_find(void) {
         log_info("/* %s */", __func__);
@@ -452,6 +456,7 @@ static void test_strv_split_colon_pairs(void) {
         assert_se(r == -EINVAL);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strv_split_newlines(void) {
         unsigned i = 0;
         char **s;
@@ -485,6 +490,7 @@ static void test_strv_split_newlines_full(void) {
         assert_se(strv_split_newlines_full(&l, str, EXTRACT_RETAIN_ESCAPE) == 3);
         assert_se(strv_equal(l, (char**) input_table_retain_escape));
 }
+#endif // 0
 
 static void test_strv_split_nulstr(void) {
         _cleanup_strv_free_ char **l = NULL;
@@ -521,6 +527,7 @@ static void test_strv_parse_nulstr(void) {
         assert_se(streq(l[6], "xxx"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strv_overlap(void) {
         const char * const input_table[] = {
                 "one",
@@ -544,6 +551,7 @@ static void test_strv_overlap(void) {
         assert_se(strv_overlap((char **)input_table, (char**)input_table_overlap));
         assert_se(!strv_overlap((char **)input_table, (char**)input_table_unique));
 }
+#endif // 0
 
 static void test_strv_sort(void) {
         const char* input_table[] = {
@@ -566,6 +574,7 @@ static void test_strv_sort(void) {
         assert_se(streq(input_table[4], "durian"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strv_extend_strv_concat(void) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL;
 
@@ -583,6 +592,7 @@ static void test_strv_extend_strv_concat(void) {
         assert_se(streq(a[2], "with_suffix"));
         assert_se(streq(a[3], "suffix_suffix"));
 }
+#endif // 0
 
 static void test_strv_extend_strv(void) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL, **n = NULL;
@@ -628,6 +638,7 @@ static void test_strv_extend(void) {
         assert_se(streq(b[0], "test3"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strv_extendf(void) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL;
 
@@ -643,6 +654,7 @@ static void test_strv_extendf(void) {
         assert_se(streq(a[2], "test2 foo 128 bar"));
         assert_se(streq(b[0], "test3 bar foo 128"));
 }
+#endif // 0
 
 static void test_strv_foreach(void) {
         _cleanup_strv_free_ char **a;
@@ -819,6 +831,7 @@ static void test_strv_compare(void) {
         assert_se(strv_compare(b, NULL) == 1);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strv_is_uniq(void) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL, **c = NULL, **d = NULL;
 
@@ -887,6 +900,7 @@ static void test_strv_shell_escape(void) {
         assert_se(streq_ptr(v[2], "wal\\\\do"));
         assert_se(streq_ptr(v[3], NULL));
 }
+#endif // 0
 
 static void test_strv_skip_one(char **a, size_t n, char **b) {
         a = strv_skip(a, n);
@@ -941,6 +955,7 @@ static void test_strv_extend_n(void) {
         assert_se(v[1] == NULL);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strv_make_nulstr_one(char **l) {
         _cleanup_free_ char *b = NULL, *c = NULL;
         _cleanup_strv_free_ char **q = NULL;
@@ -985,6 +1000,7 @@ static void test_strv_free_free(void) {
 
         t = strv_free_free(t);
 }
+#endif // 0
 
 static void test_foreach_string(void) {
         const char * const t[] = {
@@ -1007,6 +1023,7 @@ static void test_foreach_string(void) {
                 assert_se(streq(x, "zzz"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_strv_fnmatch(void) {
         _cleanup_strv_free_ char **v = NULL;
         size_t pos;
@@ -1020,9 +1037,12 @@ static void test_strv_fnmatch(void) {
         assert_se(strv_fnmatch_full(v, "\\", FNM_NOESCAPE, &pos));
         assert(pos == 1);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
+#if 0 /// UNNEEDED by elogind
         test_specifier_printf();
+#endif // 0
         test_str_in_set();
         test_strptr_in_set();
         test_startswith_set();
@@ -1063,31 +1083,45 @@ int main(int argc, char *argv[]) {
         test_strv_split_empty();
         test_strv_split_full();
         test_strv_split_colon_pairs();
+#if 0 /// UNNEEDED by elogind
         test_strv_split_newlines();
         test_strv_split_newlines_full();
+#endif // 0
         test_strv_split_nulstr();
         test_strv_parse_nulstr();
+#if 0 /// UNNEEDED by elogind
         test_strv_overlap();
+#endif // 0
         test_strv_sort();
         test_strv_extend_strv();
+#if 0 /// UNNEEDED by elogind
         test_strv_extend_strv_concat();
+#endif // 0
         test_strv_extend();
+#if 0 /// UNNEEDED by elogind
         test_strv_extendf();
+#endif // 0
         test_strv_from_stdarg_alloca();
         test_strv_insert();
         test_strv_push_prepend();
         test_strv_push();
         test_strv_compare();
+#if 0 /// UNNEEDED by elogind
         test_strv_is_uniq();
         test_strv_reverse();
         test_strv_shell_escape();
+#endif // 0
         test_strv_skip();
         test_strv_extend_n();
+#if 0 /// UNNEEDED by elogind
         test_strv_make_nulstr();
         test_strv_free_free();
+#endif // 0
 
         test_foreach_string();
+#if 0 /// UNNEEDED by elogind
         test_strv_fnmatch();
+#endif // 0
 
         return 0;
 }

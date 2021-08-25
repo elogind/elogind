@@ -233,7 +233,6 @@ static void test_find_executable(const char *self) {
         assert_se(find_executable("/some/dir/xxxx-xxxx", &p) == -ENOENT);
         assert_se(find_executable("/proc/filesystems", &p) == -EACCES);
 }
-#endif // 0
 
 static void test_find_executable_exec_one(const char *path) {
         _cleanup_free_ char *t = NULL;
@@ -271,6 +270,7 @@ static void test_find_executable_exec(void) {
         assert_se(get_testdata_dir("test-path-util/script.sh", &script) >= 0);
         test_find_executable_exec_one(script);
 }
+#endif // 0
 
 static void test_prefixes(void) {
         static const char* const values[] = {
@@ -861,8 +861,8 @@ int main(int argc, char **argv) {
 #if 0 /// UNNEEDED by elogind
         test_find_executable_full();
         test_find_executable(argv[0]);
-#endif // 0
         test_find_executable_exec();
+#endif // 0
         test_prefixes();
         test_path_join();
 #if 0 /// UNNEEDED by elogind

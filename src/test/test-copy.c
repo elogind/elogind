@@ -306,7 +306,6 @@ static void test_copy_atomic(void) {
 
         assert_se(copy_file_atomic("/etc/fstab", q, 0644, 0, 0, COPY_REPLACE) >= 0);
 }
-#endif // 0
 
 static void test_copy_proc(void) {
         _cleanup_(rm_rf_physical_and_freep) char *p = NULL;
@@ -323,6 +322,7 @@ static void test_copy_proc(void) {
         assert_se(streq(a, b));
         assert_se(!isempty(a));
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
@@ -341,8 +341,8 @@ int main(int argc, char *argv[]) {
         test_copy_bytes_regular_file(argv[0], true, 32000);
 #if 0 /// UNNEEDED by elogind
         test_copy_atomic();
-#endif // 0
         test_copy_proc();
+#endif // 0
 
         return 0;
 }

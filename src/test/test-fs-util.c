@@ -849,7 +849,6 @@ static void test_path_is_encrypted(void) {
         test_path_is_encrypted_one("/sys", false);
         test_path_is_encrypted_one("/dev", booted > 0 ? false : -1);
 }
-#endif // 0
 
 static void create_binary_file(const char *p, const void *data, size_t l) {
         _cleanup_close_ int fd = -1;
@@ -910,6 +909,7 @@ static void test_conservative_rename(void) {
         assert_se(conservative_renameat(AT_FDCWD, q, AT_FDCWD, p) > 0);
         assert_se(access(q, F_OK) < 0 && errno == ENOENT);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_INFO);
@@ -936,8 +936,8 @@ int main(int argc, char *argv[]) {
 #endif // 0
 #if 0 /// UNNEEDED by elogind
         test_path_is_encrypted();
-#endif // 0
         test_conservative_rename();
+#endif // 0
 
         return 0;
 }

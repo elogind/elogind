@@ -169,8 +169,8 @@ int main(int argc, char *argv[]) {
         test_is_symlink();
         test_path_is_fs_type();
         test_path_is_temporary_fs();
-#endif // 0
         test_fd_is_ns();
+#endif // 0
         test_device_major_minor_valid();
         test_device_path_make_canonical();
 

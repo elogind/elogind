@@ -4,6 +4,7 @@
 #include "tests.h"
 #include "time-util.h"
 
+#if 0 /// UNNEEDED by elogind
 static void test_parse_percent(void) {
         assert_se(parse_percent("") == -EINVAL);
         assert_se(parse_percent("foo") == -EINVAL);
@@ -82,6 +83,7 @@ static void test_parse_permille_unbounded(void) {
         assert_se(parse_permille_unbounded("429496729.5%") == -ERANGE);
         assert_se(parse_permille_unbounded("429496729.6%") == -ERANGE);
 }
+#endif // 0
 
 static void test_parse_permyriad(void) {
         assert_se(parse_permyriad("") == -EINVAL);
@@ -199,10 +201,12 @@ static void test_scale(void) {
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
 
+#if 0 /// UNNEEDED by elogind
         test_parse_percent();
         test_parse_percent_unbounded();
         test_parse_permille();
         test_parse_permille_unbounded();
+#endif // 0
         test_parse_permyriad();
         test_parse_permyriad_unbounded();
         test_scale();

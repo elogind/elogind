@@ -16,6 +16,7 @@ static void test_parse_json_argument(void) {
         assert_se(flags == JSON_FORMAT_OFF);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_parse_path_argument(void) {
         log_info("/* %s */", __func__);
 
@@ -30,6 +31,7 @@ static void test_parse_path_argument(void) {
         assert_se(parse_path_argument("/", true, &path) == 0);
         assert_se(path == NULL);
 }
+#endif // 0
 
 static void test_parse_signal_argument(void) {
         log_info("/* %s */", __func__);
@@ -58,6 +60,8 @@ int main(int argc, char *argv[]) {
         test_setup_logging(LOG_INFO);
 
         test_parse_json_argument();
+#if 0 /// UNNEEDED by elogind
         test_parse_path_argument();
+#endif // 0
         test_parse_signal_argument();
 }
