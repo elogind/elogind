@@ -1545,8 +1545,6 @@ conf.set10('HAVE_XKBCOMMON', false)
 #         libpcre2 = []
 # endif
 # conf.set10('HAVE_PCRE2', have)
-#else // 0
-conf.set10('HAVE_PCRE2', false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
@@ -1890,7 +1888,8 @@ tests = []
 basic_includes = include_directories(
         'src/basic',
         'src/fundamental',
-#if 1 /// elogind also needs access to login in more places
+#if 1 /// elogind also needs access to core and login in more places
+        'src/core',
         'src/login',
 #endif // 1
         'src/systemd',
