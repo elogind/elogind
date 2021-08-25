@@ -83,6 +83,7 @@
 #         linux/btrfs_tree.h
 #         linux/can/netlink.h
 #         linux/can/vxcan.h
+#         linux/cfm_bridge.h
 #         linux/fib_rules.h
 #         linux/fou.h
 #         linux/genetlink.h
@@ -103,6 +104,7 @@
 #         linux/l2tp.h
 #         linux/libc-compat.h
 #         linux/loadavg.h
+#         linux/mrp_bridge.h
 #         linux/netdevice.h
 #         linux/netfilter/nf_tables.h
 #         linux/netfilter/nfnetlink.h
@@ -206,6 +208,9 @@
 #         stat-util.c
 #         stat-util.h
 #         static-destruct.h
+#         stdio-util.h
+#         strbuf.c
+#         strbuf.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
