@@ -349,11 +349,9 @@ Features:
 
 * unify on openssl (as soon as OpenSSL 3.0 is out, and the Debian license
   confusion is gone)
-  - port sd_id128_get_machine_app_specific() over from khash
   - port resolved over from libgcrypt (DNSSEC code)
   - port journald + fsprg over from libgcrypt
   - port importd over from libgcrypt
-  - when that's done: kill khash.c
   - when that's done: kill gnutls support in resolved
 
 * add growvol and makevol options for /etc/crypttab, similar to
@@ -1250,10 +1248,6 @@ Features:
     fallback logic to get a regular user created on uninitialized systems.
   - store PKCS#11 + FIDO2 token info in LUKS2 header, compatible with
     elogind-cryptsetup, so that it can unlock homed volumes
-  - try to unmount in regular intervals when home dir was busy when we
-    tried because idle.
-  - keep an fd to the homedir open at all times, to keep the fs pinned
-    (autofs and such) while user is logged in.
 
 * add a new switch --auto-definitions=yes/no or so to elogind-repart. If
   specified, synthesize a definition automatically if we can: enlarge last
