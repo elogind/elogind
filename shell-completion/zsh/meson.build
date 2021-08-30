@@ -29,7 +29,7 @@ endif
 #          ['_sd_outputmodes',           ''],
 #          ['_sd_unit_files',            ''],
 #          ['_sd_machines',              ''],
-#          ['_bootctl',                  'ENABLE_EFI'],
+#          ['_bootctl',                  'HAVE_GNU_EFI'],
 #          ['_coredumpctl',              'ENABLE_COREDUMP'],
 #          ['_hostnamectl',              'ENABLE_HOSTNAMED'],
 #          ['_localectl',                'ENABLE_LOCALED'],

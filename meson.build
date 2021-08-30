@@ -1885,6 +1885,10 @@ else
 endif
 conf.set10('ENABLE_EFI', have)
 
+subdir('src/fundamental')
+subdir('src/boot/efi')
+conf.set10('HAVE_GNU_EFI', have_gnu_efi)
+
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
@@ -1979,7 +1983,6 @@ subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
 #endif // 0
-subdir('src/fundamental')
 subdir('src/basic')
 subdir('src/libelogind')
 subdir('src/shared')
@@ -2155,7 +2158,6 @@ subdir('src/update-utmp')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/analyze')
-# subdir('src/boot/efi')
 #endif // 0
 
 subdir('src/busctl')
@@ -2626,7 +2628,7 @@ if conf.get('HAVE_PAM') == 1
 endif
 
 #if 0 /// UNNEEDED by elogind
-# if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_BLKID') == 1
+# if conf.get('HAVE_BLKID') == 1 and conf.get('HAVE_GNU_EFI') == 1
 #         public_programs += executable(
 #                 'bootctl',
 #                 'src/boot/bootctl.c',
@@ -2696,7 +2698,7 @@ endif
 #                 systemd_portabled_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 dependencies : [threads, libselinux],
+#                 dependencies : [threads],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)

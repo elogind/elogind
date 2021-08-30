@@ -34,7 +34,7 @@ endif
 #          ['systemd-run',         ''],
 #          ['udevadm',             ''],
 #          ['kernel-install',      ''],
-#          ['bootctl',             'ENABLE_EFI'],
+#          ['bootctl',             'HAVE_GNU_EFI'],
 #          ['coredumpctl',         'ENABLE_COREDUMP'],
 #          ['homectl',             'ENABLE_HOMED'],
 #          ['hostnamectl',         'ENABLE_HOSTNAMED'],
