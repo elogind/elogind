@@ -1144,6 +1144,18 @@ _public_ int sd_device_get_seqnum(sd_device *device, uint64_t *ret) {
         return 0;
 }
 
+_public_ int sd_device_get_diskseq(sd_device *device, uint64_t *ret) {
+        assert_return(device, -EINVAL);
+
+        if (device->diskseq == 0)
+                return -ENOENT;
+
+        if (ret)
+                *ret = device->diskseq;
+
+        return 0;
+}
+
 static bool is_valid_tag(const char *tag) {
         assert(tag);
 
@@ -1195,6 +1207,13 @@ int device_add_devlink(sd_device *device, const char *devlink) {
         device->property_devlinks_outdated = true;
 
         return 0;
+}
+
+bool device_has_devlink(sd_device *device, const char *devlink) {
+        assert(device);
+        assert(devlink);
+
+        return set_contains(device->devlinks, devlink);
 }
 
 static int device_add_property_internal_from_string(sd_device *device, const char *str) {

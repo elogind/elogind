@@ -39,6 +39,7 @@ void device_set_devlink_priority(sd_device *device, int priority);
 int device_ensure_usec_initialized(sd_device *device, sd_device *device_old);
 #endif // 0
 int device_add_devlink(sd_device *device, const char *devlink);
+bool device_has_devlink(sd_device *device, const char *devlink);
 int device_add_property(sd_device *device, const char *property, const char *value);
 int device_add_tag(sd_device *device, const char *tag, bool both);
 #if 0 /// UNNEEDED by elogind
