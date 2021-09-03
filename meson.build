@@ -42,7 +42,7 @@ conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
-# if want_ossfuzz + want_libfuzzer > 1
+# if want_ossfuzz and want_libfuzzer
 #         error('only one of oss-fuzz or llvm-fuzz can be specified')
 # endif
 #
