@@ -302,6 +302,8 @@
 #         utmp-wtmp.h
 #         varlink.c
 #         varlink.h
+#         verb-log-control.c
+#         verb-log-control.h
 #         verbs.c
 #         verbs.h
 #         vlan-util.c
