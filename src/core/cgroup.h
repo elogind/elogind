@@ -4,8 +4,7 @@
 //#include <stdbool.h>
 
 #include "cgroup-util.h"
-//#include "cpu-set-util.h"
-//#include "ip-address-access.h"
+#include "cpu-set-util.h"
 #include "list.h"
 #include "time-util.h"
 
@@ -154,8 +153,12 @@ struct CGroupContext {
         bool memory_min_set:1;
         bool memory_low_set:1;
 
-        LIST_HEAD(IPAddressAccessItem, ip_address_allow);
-        LIST_HEAD(IPAddressAccessItem, ip_address_deny);
+        Set *ip_address_allow;
+        Set *ip_address_deny;
+        /* These two flags indicate that redundant entries have been removed from
+         * ip_address_allow/ip_address_deny, i.e. in_addr_prefixes_reduce() has already been called. */
+        bool ip_address_allow_reduced;
+        bool ip_address_deny_reduced;
 
         char **ip_filters_ingress;
         char **ip_filters_egress;
