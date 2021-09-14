@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
+#include <unistd.h>
+
 #include "alloc-util.h"
 #include "cgroup-util.h"
 #include "limits-util.h"
@@ -10,7 +12,6 @@
 #include "string-util.h"
 
 /// Additional includes needed by elogind
-#include <unistd.h>
 
 uint64_t physical_memory(void) {
         _cleanup_free_ char *root = NULL, *value = NULL;
