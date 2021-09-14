@@ -74,7 +74,6 @@
 #         in-addr-util.h
 #         io-util.c
 #         io-util.h
-#         ioprio.h
 #         khash.c
 #         khash.h
 #         limits-util.c
@@ -133,6 +132,7 @@
 #         missing_fcntl.h
 #         missing_fs.h
 #         missing_input.h
+#         missing_ioprio.h
 #         missing_keyctl.h
 #         missing_magic.h
 #         missing_mman.h
@@ -213,6 +213,9 @@
 #         string-table.c
 #         string-table.h
 #         string-util.c
+#         string-util.h
+#         strv.c
+#         strv.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
