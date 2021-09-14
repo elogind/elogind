@@ -152,6 +152,8 @@
 #         ima-util.h
 #         import-util.c
 #         import-util.h
+#         in-addr-prefix-util.c
+#         in-addr-prefix-util.h
 #         initreq.h
 #         install-file.c
 #         install-file.h
