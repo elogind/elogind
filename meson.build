@@ -591,6 +591,8 @@ foreach ident : [
 #if 1 /// elogind supports musl, but upstream refuses to add qsort_r
         ['qsort_r',           '''#include <stdlib.h>'''],
 #endif // 1
+        ['ioprio_get',        '''#include <sched.h>'''],      # no known header declares ioprio_get
+        ['ioprio_set',        '''#include <sched.h>'''],      # no known header declares ioprio_set
         ['name_to_handle_at', '''#include <sys/types.h>
                                  #include <sys/stat.h>
                                  #include <fcntl.h>'''],
@@ -2701,7 +2703,7 @@ endif
 #                 systemd_portabled_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 dependencies : [threads],
+#                 dependencies : [threads, libselinux],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
