@@ -2,6 +2,7 @@
 title: Testing elogind Using Sanitizers
 category: Contributing
 layout: default
+SPDX-License-Identifier: LGPL-2.1-or-later
 ---
 
 # Testing elogind Using Sanitizers
