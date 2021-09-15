@@ -90,7 +90,6 @@
 #         linux/hdlc/ioctl.h
 #         linux/if.h
 #         linux/if_addr.h
-#         linux/if_arp.h
 #         linux/if_bonding.h
 #         linux/if_bridge.h
 #         linux/if_ether.h
@@ -211,6 +210,9 @@
 #         stdio-util.h
 #         strbuf.c
 #         strbuf.h
+#         string-table.c
+#         string-table.h
+#         string-util.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
