@@ -6,14 +6,15 @@
 # Bernd Homuth <dev@hmt.im>, 2015.
 # Fabian Affolter <mail@fabian-affolter.ch>, 2020.
 # Ettore Atalan <atalanttore@googlemail.com>, 2021.
+# Christian Wehrli <christian@chw.onl>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: elogind master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-08 17:48+0100\n"
+"PO-Revision-Date: 2021-09-16 18:04+0000\n"
+"Last-Translator: Christian Wehrli <christian@chw.onl>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/elogind/"
-"PO-Revision-Date: 2021-08-23 18:04+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "master/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -178,7 +179,7 @@ msgstr ""
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:51
 # msgid "Get product UUID"
-# msgstr ""
+# msgstr "Die Produkte-UUID erhalten"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:52
 # #, fuzzy
@@ -388,13 +389,11 @@ msgstr ""
 "Legitimierung ist erforderlich, damit nicht angemeldete Benutzer Programme "
 "ausführen dürfen."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 # https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Allow attaching devices to seats"
 msgstr "Das Anschließen von Geräten an Arbeitsstationen erlauben"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 # https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:149
 msgid "Authentication is required to attach a device to a seat."
@@ -402,7 +401,6 @@ msgstr ""
 "Legitimierung ist zum Anschließen eines Geräts an eine Arbeitsstation "
 "notwendig."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 # https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:159
 msgid "Flush device to seat attachments"
@@ -627,7 +625,7 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:352
 msgid "Set the reboot \"reason\" in the kernel"
-msgstr ""
+msgstr "Den Reboot-\"Grund\" im Kernel festlegen"
 
 #: src/login/org.freedesktop.login1.policy:353
 #, fuzzy
