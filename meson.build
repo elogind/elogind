@@ -1883,7 +1883,6 @@ if get_option('efi')
         conf.set_quoted('EFI_MACHINE_TYPE_NAME', EFI_MACHINE_TYPE_NAME)
 
 #if 0 /// UNNEEDED by elogind
-#         conf.set('SD_TPM_PCR', get_option('tpm-pcrindex'))
 #endif // 0
 else
         have = false
