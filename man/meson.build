@@ -65,6 +65,7 @@ foreach tuple : manpages
 #endif // 0
 /// elogind empty mask removed (UNNEEDED by elogind)
                 file = files(tuple[0] + '.xml')
+                source_xml_files += file
                 if tuple[0].startswith('org.freedesktop.')
                         dbus_docs += file
                 endif
