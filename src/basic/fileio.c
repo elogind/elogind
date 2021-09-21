@@ -1446,16 +1446,4 @@ int warn_file_is_world_accessible(const char *filename, struct stat *st, const c
 }
 
 #if 0 /// UNNEEDED by elogind
-int rename_and_apply_smack_floor_label(const char *from, const char *to) {
-        int r = 0;
-        if (rename(from, to) < 0)
-                return -errno;
-
-#if HAVE_SMACK_RUN_LABEL
-        r = mac_smack_apply(to, SMACK_ATTR_ACCESS, SMACK_FLOOR_LABEL);
-        if (r < 0)
-                return r;
-#endif
-        return r;
-}
 #endif // 0
