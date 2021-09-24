@@ -418,6 +418,7 @@ possible_common_cc_flags = [
         '-Werror=format=2',
         '-Werror=implicit-function-declaration',
         '-Werror=incompatible-pointer-types',
+        '-Werror=int-conversion',
         '-Werror=overflow',
         '-Werror=return-type',
         '-Werror=shift-count-overflow',
