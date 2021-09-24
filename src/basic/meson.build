@@ -101,7 +101,6 @@
 #         linux/ipv6_route.h
 #         linux/l2tp.h
 #         linux/libc-compat.h
-#         linux/loadavg.h
 #         linux/mrp_bridge.h
 #         linux/netdevice.h
 #         linux/netfilter/nf_tables.h
@@ -216,6 +215,9 @@
 #         string-util.h
 #         strv.c
 #         strv.h
+#         strxcpyx.c
+#         strxcpyx.h
+#         sysctl-util.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
