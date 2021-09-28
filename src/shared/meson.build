@@ -119,6 +119,7 @@
 #         exit-status.h
 #         extension-release.c
 #         extension-release.h
+#         fdisk-util.h
 #         fdset.c
 #         fdset.h
 #         fileio-label.c
