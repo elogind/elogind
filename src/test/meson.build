@@ -413,7 +413,7 @@ tests += [
         [['src/test/test-hashmap.c',
           'src/test/test-hashmap-plain.c',
           test_hashmap_ordered_c],
-         [], [], [], '', 'timeout=180'],
+         [], [], [], '', 'timeout=90'],
 
         [['src/test/test-set.c'],
          [libbasic]],
@@ -481,6 +481,8 @@ tests += [
 #          [], [], [], '', 'manual'],
 #
 #         [['src/test/test-firewall-util.c']],
+#
+#         [['src/test/test-net-naming-scheme.c']],
 #
 #         [['src/test/test-netlink-manual.c'],
 #          [],

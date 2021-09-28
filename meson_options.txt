@@ -257,8 +257,7 @@ option('default-hierarchy', type : 'combo',
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
 #endif // 0
-option('default-net-naming-scheme', type : 'combo',
-       choices : ['latest', 'v238', 'v239', 'v240', 'v241', 'v243', 'v245', 'v247', 'v249'],
+option('default-net-naming-scheme', type : 'string', value : 'latest',
        description : 'default net.naming-scheme= value')
 option('status-unit-format-default', type : 'combo',
        choices : ['description', 'name', 'combined'],
