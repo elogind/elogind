@@ -95,6 +95,9 @@ static inline char **strv_split(const char *s, const char *separators) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int strv_split_and_extend_full(char ***t, const char *s, const char *separators, bool filter_duplicates, ExtractFlags flags);
+#define strv_split_and_extend(t, s, sep, dup) strv_split_and_extend_full(t, s, sep, dup, 0)
+
 int strv_split_newlines_full(char ***ret, const char *s, ExtractFlags flags);
 static inline char **strv_split_newlines(const char *s) {
         char **ret;

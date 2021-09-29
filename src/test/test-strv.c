@@ -395,6 +395,28 @@ static void test_strv_split_full(void) {
         assert_se(streq_ptr(l[5], NULL));
 }
 
+static void test_strv_split_and_extend_full(void) {
+        _cleanup_strv_free_ char **l = NULL;
+        const char *str1 = ":foo\\:bar:";
+        const char *str2 = "waldo::::::baz";
+        int r;
+
+        log_info("/* %s */", __func__);
+
+        r = strv_split_and_extend(&l, "", ":", false);
+        assert_se(r == (int) strv_length(l));
+        r = strv_split_and_extend_full(&l, str1, ":", false, EXTRACT_DONT_COALESCE_SEPARATORS);
+        assert_se(r == (int) strv_length(l));
+        assert_se(streq_ptr(l[0], ""));
+        assert_se(streq_ptr(l[1], "foo:bar"));
+        assert_se(streq_ptr(l[2], ""));
+        r = strv_split_and_extend_full(&l, str2, ":", false, 0);
+        assert_se(r == (int) strv_length(l));
+        assert_se(streq_ptr(l[3], "waldo"));
+        assert_se(streq_ptr(l[4], "baz"));
+        assert_se(streq_ptr(l[5], NULL));
+}
+
 static void test_strv_split_colon_pairs(void) {
         _cleanup_strv_free_ char **l = NULL;
         const char *str = "one:two three four:five six seven:eight\\:nine ten\\:eleven\\\\",
@@ -1049,6 +1071,7 @@ int main(int argc, char *argv[]) {
         test_strv_split();
         test_strv_split_empty();
         test_strv_split_full();
+        test_strv_split_and_extend_full();
         test_strv_split_colon_pairs();
 #if 0 /// UNNEEDED by elogind
         test_strv_split_newlines();
