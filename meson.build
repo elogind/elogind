@@ -4123,6 +4123,9 @@ install_data('LICENSE.GPL2',
              install_dir : docdir)
 
 #if 0 /// irrelevant for elogind
+# install_subdir('LICENSES',
+#                install_dir : docdir)
+#
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemdstatedir))
 #endif // 0
 meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
