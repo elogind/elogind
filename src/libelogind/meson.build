@@ -243,8 +243,7 @@ libsystemd_c_args = ['-fvisibility=default']
 #         include_directories : libsystemd_includes,
 #         link_with : libbasic,
 #         dependencies : [threads,
-#                         librt,
-#                         libopenssl],
+#                         librt],
 #         c_args : libsystemd_c_args)
 #
 # libsystemd_sym = files('libsystemd.sym')
