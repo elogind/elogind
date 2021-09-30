@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <fcntl.h>
+#include <linux/oom.h>
 #include <sys/mount.h>
 #include <sys/personality.h>
 #include <sys/prctl.h>
@@ -895,6 +896,24 @@ static void test_get_process_ppid(void) {
         }
 }
 
+static void test_set_oom_score_adjust(void) {
+        int a, b, r;
+
+        assert_se(get_oom_score_adjust(&a) >= 0);
+
+        r = set_oom_score_adjust(OOM_SCORE_ADJ_MIN);
+        assert_se(r >= 0 || ERRNO_IS_PRIVILEGE(r));
+
+        if (r >= 0) {
+                assert_se(get_oom_score_adjust(&b) >= 0);
+                assert_se(b == OOM_SCORE_ADJ_MIN);
+        }
+
+        assert_se(set_oom_score_adjust(a) >= 0);
+        assert_se(get_oom_score_adjust(&b) >= 0);
+        assert_se(b == a);
+}
+
 int main(int argc, char *argv[]) {
         log_show_color(true);
         test_setup_logging(LOG_INFO);
@@ -931,6 +950,7 @@ int main(int argc, char *argv[]) {
         test_setpriority_closest();
 #endif // 0
         test_get_process_ppid();
+        test_set_oom_score_adjust();
 
         return 0;
 }
