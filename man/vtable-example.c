@@ -1,9 +1,11 @@
-//#include <errno.h>
-//#include <stdbool.h>
-//#include <stddef.h>
-//#include <stdlib.h>
-//#include <stdio.h>
-//#include <elogind/sd-bus.h>
+/* SPDX-License-Identifier: CC0-1.0 */
+
+#include <errno.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <elogind/sd-bus.h>
 
 #define _cleanup_(f) __attribute__((cleanup(f)))
 
