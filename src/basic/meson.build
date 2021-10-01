@@ -194,6 +194,8 @@
 #         raw-reboot.h
 #         recovery-key.c
 #         recovery-key.h
+#         recurse-dir.c
+#         recurse-dir.h
 #         replace-var.c
 #         replace-var.h
 #         rlimit-util.c
@@ -245,6 +247,9 @@
 #         unit-file.h
 #         unit-name.c
 #         unit-name.h
+#         user-util.c
+#         user-util.h
+#         utf8.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
