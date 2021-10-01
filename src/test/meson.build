@@ -155,6 +155,8 @@ tests += [
         [['src/test/test-utf8.c']],
 
 /// elogind empty mask removed (UNNEEDED in elogind)
+        [['src/test/test-kbd-util.c']],
+
         [['src/test/test-blockdev-util.c']],
 
         [['src/test/test-dev-setup.c']],
