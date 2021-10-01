@@ -173,6 +173,8 @@ tests += [
         [['src/test/test-copy.c']],
 
 /// elogind empty mask removed (UNNEEDED in elogind)
+        [['src/test/test-recurse-dir.c']],
+
         [['src/test/test-data-fd-util.c']],
 
         [['src/test/test-static-destruct.c']],
