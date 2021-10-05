@@ -74,6 +74,8 @@
 #         hostname-util.h
 #         in-addr-util.c
 #         in-addr-util.h
+#         inotify-util.c
+#         inotify-util.h
 #         io-util.c
 #         io-util.h
 #         khash.c
@@ -227,6 +229,9 @@
 #         syslog-util.h
 #         terminal-util.c
 #         terminal-util.h
+#         time-util.c
+#         time-util.h
+#         tmpfile-util.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
