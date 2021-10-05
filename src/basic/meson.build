@@ -217,7 +217,11 @@
 #         strv.h
 #         strxcpyx.c
 #         strxcpyx.h
+#         sync-util.c
+#         sync-util.h
 #         sysctl-util.c
+#         sysctl-util.h
+#         syslog-util.c
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
