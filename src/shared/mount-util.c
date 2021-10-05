@@ -9,8 +9,9 @@
 #include <linux/loop.h>
 #include <linux/fs.h>
 
-//#include "alloc-util.h"
-//#include "dissect-image.h"
+#include "alloc-util.h"
+#include "chase-symlinks.h"
+#include "dissect-image.h"
 #include "exec-util.h"
 #include "extract-word.h"
 #include "fd-util.h"

@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "alloc-util.h"
+#include "chase-symlinks.h"
 #include "fd-util.h"
 #include "format-util.h"
 #include "fs-util.h"
@@ -133,10 +134,10 @@ int mkdir_parents_internal(const char *prefix, const char *path, mode_t mode, ui
                 return -ENOTDIR;
 
         /* create every parent directory in the path, except the last component */
-
         for (p = path;;) {
                 char *s;
                 int n;
+
                 n = path_find_first_component(&p, /* accept_dot_dot= */ false, (const char **) &s);
                 if (n <= 0)
                         return n;

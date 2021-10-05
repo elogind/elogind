@@ -27,6 +27,8 @@
 #         capability-util.h
 #         cgroup-util.c
 #         cgroup-util.h
+#         chase-symlinks.c
+#         chase-symlinks.h
 #         chattr-util.c
 #         chattr-util.h
 #         conf-files.c
@@ -232,6 +234,9 @@
 #         time-util.c
 #         time-util.h
 #         tmpfile-util.c
+#         tmpfile-util.h
+#         umask-util.h
+#         unaligned.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
