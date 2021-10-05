@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-//#include "kbd-util.h"
+#include "glyph-util.h"
+#include "kbd-util.h"
 #include "locale-util.h"
 #include "macro.h"
 #include "strv.h"

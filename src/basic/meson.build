@@ -60,6 +60,8 @@
 #         fs-util.h
 #         glob-util.c
 #         glob-util.h
+#         glyph-util.c
+#         glyph-util.h
 #         gunicode.c
 #         gunicode.h
 #         hash-funcs.c
@@ -222,6 +224,9 @@
 #         sysctl-util.c
 #         sysctl-util.h
 #         syslog-util.c
+#         syslog-util.h
+#         terminal-util.c
+#         terminal-util.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
