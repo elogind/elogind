@@ -97,14 +97,6 @@ int search_and_fopen(const char *path, const char *mode, const char *root, const
 #endif // 0
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **ret, char **ret_path);
 
-int chase_symlinks_and_fopen_unlocked(
-                const char *path,
-                const char *root,
-                unsigned chase_flags,
-                const char *open_flags,
-                FILE **ret_file,
-                char **ret_path);
-
 int fflush_and_check(FILE *f);
 int fflush_sync_and_check(FILE *f);
 
@@ -135,5 +127,5 @@ int safe_fgetc(FILE *f, char *ret);
 
 int warn_file_is_world_accessible(const char *filename, struct stat *st, const char *unit, unsigned line);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+int fopen_mode_to_flags(const char *mode);
