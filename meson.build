@@ -13,20 +13,20 @@ project('elogind', 'c',
         meson_version : '>= 0.46',
        )
 
+libsystemd_version = '0.32.0'
 #if 0 /// elogind does not ship libudev
+# libudev_version = '1.7.2'
 #endif // 0
-libelogind_version = '0.32.0'
-libudev_version = '1.7.2'
 
 conf = configuration_data()
-conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/elogind')
+#if 0 /// Set elogind Package PROJECT_URL
+# conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/elogind')
+#else // 0
+conf.set_quoted('PROJECT_URL', 'https://github.com/elogind/elogind')
+#endif // 0
 conf.set('PROJECT_VERSION',    meson.project_version(),
          description : 'Numerical project version (used where a simple number is expected)')
 
-#if 0 /// Set elogind Package PROJECT_URL
-#else // 0
-substs.set('PROJECT_URL',          'https://github.com/elogind/elogind')
-#endif // 0
 # This is to be used instead of meson.source_root(), as the latter will return
 # the wrong result when elogind is being built as a meson subproject
 project_source_root = meson.current_source_dir()
@@ -167,8 +167,8 @@ polkitpkladir = join_paths(localstatedir, 'lib/polkit-1/localauthority/10-vendor
 # if rpmmacrosdir != 'no'
 #         rpmmacrosdir = join_paths(prefixdir, rpmmacrosdir)
 # endif
+# modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 #endif // 0
-modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
 
 # Our own paths
 #if 0 /// elogind has a bit different layout and does not need all of theses
@@ -263,18 +263,22 @@ endif
 #if 0 /// UNNEEDED by elogind
 # memory_accounting_default = get_option('memory-accounting-default')
 # status_unit_format_default = get_option('status-unit-format-default')
+#
+# conf.set_quoted('BINFMT_DIR',                                 binfmtdir)
+# conf.set_quoted('BOOTLIBDIR',                                 bootlibdir)
+# conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
+# conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 #endif // 0
-
-conf.set_quoted('BINFMT_DIR',                                 binfmtdir)
-conf.set_quoted('BOOTLIBDIR',                                 bootlibdir)
-conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
-conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
-conf.set_quoted('ENVIRONMENT_DIR',                            environmentdir)
+#if 0 /// UNNEEDED by elogind
+# conf.set_quoted('ENVIRONMENT_DIR',                            environmentdir)
+#endif // 0
 conf.set_quoted('INCLUDE_DIR',                                includedir)
 conf.set_quoted('LIBDIR',                                     libdir)
-conf.set_quoted('MODPROBE_DIR',                               modprobedir)
-conf.set_quoted('MODULESLOAD_DIR',                            modulesloaddir)
+#if 0 /// UNNEEDED by elogind
+# conf.set_quoted('MODPROBE_DIR',                               modprobedir)
+# conf.set_quoted('MODULESLOAD_DIR',                            modulesloaddir)
+#endif // 0
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   join_paths(bindir, 'pkttyagent'))
@@ -284,7 +288,9 @@ conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 # conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
 # conf.set_quoted('ROOTBINDIR',                                 rootbindir)
 # conf.set_quoted('ROOTLIBDIR',                                 rootlibdir)
-# conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
+#endif // 0
+conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
+#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
 # conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 # conf.set_quoted('SYSCONF_DIR',                                sysconfdir)
@@ -320,9 +326,9 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlib
 # conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     join_paths(pkgsysconfdir, 'system'))
 # conf.set_quoted('SYSTEM_DATA_UNIT_DIR',                       systemunitdir)
 # conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
+# conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
+# conf.set_quoted('SYSTEM_PRESET_DIR',                          systempresetdir)
 #endif // 0
-conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
-conf.set_quoted('SYSTEM_PRESET_DIR',                          systempresetdir)
 conf.set_quoted('SYSTEM_SHUTDOWN_PATH',                       systemshutdowndir)
 conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 #if 0 /// UNNEEDED by elogind
@@ -347,15 +353,9 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 # conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
+# conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
 #endif // 0
-conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 #####################################################################
 
 cc = meson.get_compiler('c')
@@ -686,16 +686,19 @@ ln = find_program('ln')
 git = find_program('git', required : false)
 env = find_program('env')
 perl = find_program('perl', required : false)
-rsync = find_program('rsync', required : false)
-meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
-test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
-
-#if 0 /// elogind does not use this but needs a tool to symlink its installed headers.
-#else // 0
-meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
+#if 0 /// UNNEEDED by elogind
+# rsync = find_program('rsync', required : false)
 #endif // 0
+meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
+#if 0 /// UNNEEDED by elogind
+# test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
+#endif // 0
+
+#if 1 /// elogind needs a tool to symlink its installed headers.
+meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
+#endif // 1
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
-#if 0 /// unneeded by elogind
+#if 0 /// UNNEEDED by elogind
 # splash_bmp = files('test/splash.bmp')
 #endif // 0
 
@@ -1025,8 +1028,8 @@ conf.set10('KILL_USER_PROCESSES', kill_user_processes)
 # if localegen_path != ''
 #         conf.set_quoted('LOCALEGEN_PATH', localegen_path)
 # endif
+# conf.set10('HAVE_LOCALEGEN', localegen_path != '')
 #endif // 0
-conf.set10('HAVE_LOCALEGEN', localegen_path != '')
 
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 
@@ -1776,7 +1779,6 @@ endforeach
 
 #if 1 /// elogind always looks at uid boundaries in /etc/login.defs
 conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
-substs.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
 #endif // 1
 
 #if 0 /// UNNEEDED by elogind
@@ -1851,7 +1853,9 @@ conf.set10('ENABLE_EFI', have)
 
 ############################################################
 
-build_bpf_skel_py = find_program('tools/build-bpf-skel.py')
+#if 0 /// UNNEEDED by elogind
+# build_bpf_skel_py = find_program('tools/build-bpf-skel.py')
+#endif // 0
 generate_gperfs = find_program('tools/generate-gperfs.py')
 
 #if 0 /// UNNEEDED by elogind
@@ -4000,8 +4004,9 @@ install_data('LICENSE.GPL2',
              'docs/GVARIANT-SERIALIZATION.md',
              install_dir : docdir)
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-meson.add_install_script('sh', '-c', mkdir_p.format(elogindstatedir))
+#if 0 /// irrelevant for elogind
+# meson.add_install_script('sh', '-c', mkdir_p.format(systemdstatedir))
+#endif // 0
 meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
 
 ############################################################
@@ -4206,8 +4211,8 @@ status = [
         'PAM configuration directory:       @0@'.format(pamconfdir),
 #if 0 /// UNNEEDED by elogind
 #         'RPM macros directory:              @0@'.format(rpmmacrosdir),
+#         'modprobe.d directory:              @0@'.format(modprobedir),
 #endif // 0
-        'modprobe.d directory:              @0@'.format(modprobedir),
         'D-Bus policy directory:            @0@'.format(dbuspolicydir),
         'D-Bus session directory:           @0@'.format(dbussessionservicedir),
         'D-Bus system directory:            @0@'.format(dbussystemservicedir),
@@ -4217,9 +4222,6 @@ status = [
 #         'extra start script:                @0@'.format(get_option('rc-local')),
 #         'debug shell:                       @0@ @ @1@'.format(get_option('debug-shell'),
 #                                                               get_option('debug-tty')),
-#endif // 0
-/// elogind empty mask removed (UNSUPPORTED by elogind)
-#if 0 /// UNSUPPORTED by elogind
 #         'system UIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_UID_MAX'),
 #                                                                         conf.get('SYSTEM_ALLOC_UID_MIN')),
 #         'system GIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_GID_MAX'),
@@ -4451,19 +4453,21 @@ else
         found += 'static-libelogind(@0@)'.format(static_libelogind)
 endif
 
-if static_libudev == 'false'
-        missing += 'static-libudev'
-else
-        found += 'static-libudev(@0@)'.format(static_libudev)
-endif
-
-if conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1
-        found += 'DNS-over-TLS(gnutls)'
-elif conf.get('DNS_OVER_TLS_USE_OPENSSL') == 1
-        found += 'DNS-over-TLS(openssl)'
-else
-        missing += 'DNS-over-TLS'
-endif
+#if 0 /// UNNEEDED by eloignd
+# if static_libudev == 'false'
+#         missing += 'static-libudev'
+# else
+#         found += 'static-libudev(@0@)'.format(static_libudev)
+# endif
+#
+# if conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1
+#         found += 'DNS-over-TLS(gnutls)'
+# elif conf.get('DNS_OVER_TLS_USE_OPENSSL') == 1
+#         found += 'DNS-over-TLS(openssl)'
+# else
+#         missing += 'DNS-over-TLS'
+# endif
+#endif // 0
 
 status += [
         '',

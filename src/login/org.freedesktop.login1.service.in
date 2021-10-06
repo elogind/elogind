@@ -7,5 +7,5 @@
 
 [D-BUS Service]
 Name=org.freedesktop.login1
-Exec=@rootlibexecdir@/elogind --daemon
+Exec={{ROOTLIBEXECDIR}}/elogind --daemon
 User=root

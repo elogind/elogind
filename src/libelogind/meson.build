@@ -418,7 +418,7 @@ static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic
 libelogind_pc = configure_file(
         input : 'libelogind.pc.in',
         output : 'libelogind.pc',
-        configuration : substs)
+        configuration : conf)
 install_data(libelogind_pc,
              install_dir : pkgconfiglibdir)
 #endif // 0

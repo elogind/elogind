@@ -15,34 +15,35 @@ endif
 #         install : zshcompletiondir != 'no',
 #         install_dir : zshcompletiondir)
 #
+# items = [['_busctl',                   ''],
+#          ['_journalctl',               ''],
+#          ['_elogind-analyze',          ''],
+#          ['_elogind-delta',            ''],
+#          ['_elogind-nspawn',           ''],
+#          ['_elogind',                  ''],
+#          ['_elogind-path',             ''],
+#          ['_elogind-run',              ''],
+#          ['_udevadm',                  ''],
+#          ['_kernel-install',           ''],
+#          ['_sd_hosts_or_user_at_host', ''],
+#          ['_sd_outputmodes',           ''],
+#          ['_sd_unit_files',            ''],
+#          ['_sd_machines',              ''],
+#          ['_bootctl',                  'ENABLE_EFI'],
+#          ['_coredumpctl',              'ENABLE_COREDUMP'],
+#          ['_hostnamectl',              'ENABLE_HOSTNAMED'],
+#          ['_localectl',                'ENABLE_LOCALED'],
+#          ['_loginctl',                 'ENABLE_LOGIND'],
+#          ['_machinectl',               'ENABLE_MACHINED'],
+#          ['_networkctl',               'ENABLE_NETWORKD'],
+#          ['_elogind-inhibit',          'ENABLE_LOGIND'],
+#          ['_resolvectl',               'ENABLE_RESOLVE'],
+#          ['_elogind-tmpfiles',         'ENABLE_TMPFILES'],
+#          ['_timedatectl',              'ENABLE_TIMEDATED']]
 #else // 0
-        items = [['_loginctl',            ''],
-#endif // 0
 items = [['_busctl',                   ''],
-         ['_journalctl',               ''],
-         ['_elogind-analyze',          ''],
-         ['_elogind-delta',            ''],
-         ['_elogind-nspawn',           ''],
-         ['_elogind',                  ''],
-         ['_elogind-path',             ''],
-         ['_elogind-run',              ''],
-         ['_udevadm',                  ''],
-         ['_kernel-install',           ''],
-         ['_sd_hosts_or_user_at_host', ''],
-         ['_sd_outputmodes',           ''],
-         ['_sd_unit_files',            ''],
-         ['_sd_machines',              ''],
-         ['_bootctl',                  'ENABLE_EFI'],
-         ['_coredumpctl',              'ENABLE_COREDUMP'],
-         ['_hostnamectl',              'ENABLE_HOSTNAMED'],
-         ['_localectl',                'ENABLE_LOCALED'],
-         ['_loginctl',                 'ENABLE_LOGIND'],
-         ['_machinectl',               'ENABLE_MACHINED'],
-         ['_networkctl',               'ENABLE_NETWORKD'],
-         ['_elogind-inhibit',          'ENABLE_LOGIND'],
-         ['_resolvectl',               'ENABLE_RESOLVE'],
-         ['_elogind-tmpfiles',         'ENABLE_TMPFILES'],
-         ['_timedatectl',              'ENABLE_TIMEDATED']]
+         ['_loginctl',                 '']]
+#endif // 0
 
 foreach item : items
         if zshcompletiondir != 'no' and (item[1] == '' or conf.get(item[1]) == 1)

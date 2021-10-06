@@ -137,18 +137,18 @@ tests += [
 #          core_includes],
 #
 #         [['src/test/test-serialize.c']],
+#
+#         [['src/test/test-unit-serialize.c'],
+#          [libcore,
+#           libshared],
+#          [threads,
+#           librt,
+#           libseccomp,
+#           libselinux,
+#           libmount,
+#           libblkid],
+#          core_includes],
 #endif // 0
-
-        [['src/test/test-unit-serialize.c'],
-         [libcore,
-          libshared],
-         [threads,
-          librt,
-          libseccomp,
-          libselinux,
-          libmount,
-          libblkid],
-         core_includes],
 
         [['src/test/test-utf8.c']],
 
@@ -694,11 +694,13 @@ tests += [
 #endif // 0
 ]
 
-tests += [
-         [['src/test/test-socket-bind.c'],
-          [libcore,
-          libshared],
-         [libdl],
-         core_includes,
-         'BPF_FRAMEWORK'],
-]
+#if 0 /// UNNEEDED by elogind
+# tests += [
+#          [['src/test/test-socket-bind.c'],
+#           [libcore,
+#           libshared],
+#          [libdl],
+#          core_includes,
+#          'BPF_FRAMEWORK'],
+# ]
+#endif // 0

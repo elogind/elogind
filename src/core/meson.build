@@ -131,7 +131,7 @@
 #         unit.h
 # '''.split()
 #else // 0
-libcore_la_sources = files('''
+libcore_sources = files('''
         cgroup.c
         cgroup.h
 '''.split())

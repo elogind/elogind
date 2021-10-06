@@ -1,6 +1,6 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 #if 0 /// rename to elogind
-# # SPDX-License-Identifier: LGPL-2.1-or-later
-#
 # systemd_logind_sources = files('''
 #         logind.c
 #         logind.h
@@ -60,7 +60,7 @@ liblogind_core_sources += [files('''
         user-runtime-dir.c
         user-runtime-dir.h
 '''.split()),
-        libcore_la_sources,
+        libcore_sources,
         sleep_files,
         update_utmp_files]
 #endif // 1
@@ -96,12 +96,15 @@ loginctl_sources += files('''
 '''.split())
 #endif // 1
 
-#if 0 /// elogind builds itself unconditionally
-#endif // 0
 pam_elogind_sym = 'src/login/pam_elogind.sym'
 pam_elogind_c = files('pam_elogind.c')
 
-enable_logind = conf.get('ENABLE_LOGIND') == 1
+#if 0 /// elogind builds itself unconditionally
+# enable_logind = conf.get('ENABLE_LOGIND') == 1
+#else // 0
+enable_logind = true
+#endif // 0
+
 in_files = [
         ['logind.conf',        pkgsysconfdir, enable_logind],
         ['70-uaccess.rules',   udevrulesdir,  enable_logind and conf.get('HAVE_ACL') == 1],
@@ -131,7 +134,7 @@ if enable_logind
         logind_service = configure_file(
                 input : 'org.freedesktop.login1.service.in',
                 output : 'org.freedesktop.login1.service',
-                configuration : substs)
+                configuration : conf)
         install_data(logind_service,
                 install_dir : dbussystemservicedir)
 #endif // 0
@@ -139,20 +142,7 @@ if enable_logind
                      install_dir : polkitpolicydir)
         install_data('70-power-switch.rules',
                      install_dir : udevrulesdir)
-
-#if 1 /// elogind needs two passes of this file
-        seat_late_rules = configure_file(
-                input : '73-seat-late.rules.in',
-                output : '73-seat-late.rules.m4',
-                configuration : substs)
-#endif // 1
-#if 0 /// elogind must configure the source
-#else // 0
-                input : seat_late_rules,
-#endif // 0
-#if 0 /// elogind builds itself unconditionally
-# endif
-#endif //0
+endif
 
 ############################################################
 

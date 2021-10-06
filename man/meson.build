@@ -196,20 +196,21 @@ html = custom_target(
         depends : html_pages,
         command : [echo])
 
-/// elogind empty mask removed (UNNEEDED in elogind)
-if rsync.found()
-        run_target(
-                'doc-sync',
-                depends : man_pages + html_pages,
-                command : [rsync, '-rlv',
-                           '--delete-excluded',
-                           '--include=man',
-                           '--include=*.html',
-                           '--exclude=*',
-                           '--omit-dir-times',
-                           meson.current_build_dir(),
-                           get_option('www-target')])
-endif
+#if 0 /// elogind does not upload anything
+# if rsync.found()
+#         run_target(
+#                 'doc-sync',
+#                 depends : man_pages + html_pages,
+#                 command : [rsync, '-rlv',
+#                            '--delete-excluded',
+#                            '--include=man',
+#                            '--include=*.html',
+#                            '--exclude=*',
+#                            '--omit-dir-times',
+#                            meson.current_build_dir(),
+#                            get_option('www-target')])
+# endif
+#endif // 0
 
 ############################################################
 

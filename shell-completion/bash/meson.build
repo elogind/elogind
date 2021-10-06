@@ -20,35 +20,36 @@ endif
 #         install : bashcompletiondir != 'no',
 #         install_dir : bashcompletiondir)
 #
+# items = [['busctl',              ''],
+#          ['journalctl',          ''],
+#          ['systemd-analyze',     ''],
+#          ['systemd-cat',         ''],
+#          ['systemd-cgls',        ''],
+#          ['systemd-cgtop',       ''],
+#          ['systemd-delta',       ''],
+#          ['systemd-detect-virt', ''],
+#          ['systemd-id128',       ''],
+#          ['systemd-nspawn',      ''],
+#          ['systemd-path',        ''],
+#          ['systemd-run',         ''],
+#          ['udevadm',             ''],
+#          ['kernel-install',      ''],
+#          ['bootctl',             'ENABLE_EFI'],
+#          ['coredumpctl',         'ENABLE_COREDUMP'],
+#          ['homectl',             'ENABLE_HOMED'],
+#          ['hostnamectl',         'ENABLE_HOSTNAMED'],
+#          ['localectl',           'ENABLE_LOCALED'],
+#          ['loginctl',            'ENABLE_LOGIND'],
+#          ['machinectl',          'ENABLE_MACHINED'],
+#          ['networkctl',          'ENABLE_NETWORKD'],
+#          ['portablectl',         'ENABLE_PORTABLED'],
+#          ['resolvectl',          'ENABLE_RESOLVE'],
+#          ['systemd-resolve',     'ENABLE_RESOLVE'],
+#          ['timedatectl',         'ENABLE_TIMEDATED']]
 #else // 0
-        items = [['loginctl',            ''],
-#endif // 0
 items = [['busctl',              ''],
-         ['journalctl',          ''],
-         ['elogind-analyze',     ''],
-         ['elogind-cat',         ''],
-         ['elogind-cgls',        ''],
-         ['elogind-cgtop',       ''],
-         ['elogind-delta',       ''],
-         ['elogind-detect-virt', ''],
-         ['elogind-id128',       ''],
-         ['elogind-nspawn',      ''],
-         ['elogind-path',        ''],
-         ['elogind-run',         ''],
-         ['udevadm',             ''],
-         ['kernel-install',      ''],
-         ['bootctl',             'ENABLE_EFI'],
-         ['coredumpctl',         'ENABLE_COREDUMP'],
-         ['homectl',             'ENABLE_HOMED'],
-         ['hostnamectl',         'ENABLE_HOSTNAMED'],
-         ['localectl',           'ENABLE_LOCALED'],
-         ['loginctl',            'ENABLE_LOGIND'],
-         ['machinectl',          'ENABLE_MACHINED'],
-         ['networkctl',          'ENABLE_NETWORKD'],
-         ['portablectl',         'ENABLE_PORTABLED'],
-         ['resolvectl',          'ENABLE_RESOLVE'],
-         ['elogind-resolve',     'ENABLE_RESOLVE'],
-         ['timedatectl',         'ENABLE_TIMEDATED']]
+         ['loginctl',            '']]
+#endif // 0
 
 foreach item : items
         if bashcompletiondir != 'no' and (item[1] == '' or conf.get(item[1]) == 1)
