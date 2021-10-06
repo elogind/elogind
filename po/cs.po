@@ -923,4 +923,3 @@ msgstr "Pro změnu virtuálního terminálu je vyžadováno ověření."
 # "Pro zmrazení nebo rozmrazení procesů jednotky „$(unit)” je vyžadováno "
 # "ověření."
 #endif // 0
-

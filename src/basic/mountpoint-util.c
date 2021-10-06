@@ -513,4 +513,3 @@ int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
         return 0;
 }
 #endif // 0
-

@@ -68,9 +68,9 @@
 #    define systemd_NR_bpf 361
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_bpf 280
+#      define systemd_NR_bpf 280
 #    elif __riscv_xlen == 64
-#      define elogind_NR_bpf 280
+#      define systemd_NR_bpf 280
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -132,9 +132,9 @@ assert_cc(__NR_bpf == systemd_NR_bpf);
 #    define systemd_NR_close_range 436
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_close_range 436
+#      define systemd_NR_close_range 436
 #    elif __riscv_xlen == 64
-#      define elogind_NR_close_range 436
+#      define systemd_NR_close_range 436
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -196,9 +196,9 @@ assert_cc(__NR_close_range == systemd_NR_close_range);
 #    define systemd_NR_copy_file_range 379
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_copy_file_range 285
+#      define systemd_NR_copy_file_range 285
 #    elif __riscv_xlen == 64
-#      define elogind_NR_copy_file_range 285
+#      define systemd_NR_copy_file_range 285
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -235,7 +235,7 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 #  if defined(__aarch64__)
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__alpha__)
-#    define elogind_NR_epoll_pwait2 551
+#    define systemd_NR_epoll_pwait2 551
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__arm__)
@@ -243,16 +243,16 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 #  elif defined(__i386__)
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__ia64__)
-#    define elogind_NR_epoll_pwait2 1465
+#    define systemd_NR_epoll_pwait2 1465
 #  elif defined(__m68k__)
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define elogind_NR_epoll_pwait2 4441
+#      define systemd_NR_epoll_pwait2 4441
 #    elif _MIPS_SIM == _MIPS_SIM_NABI32
-#      define elogind_NR_epoll_pwait2 6441
+#      define systemd_NR_epoll_pwait2 6441
 #    elif _MIPS_SIM == _MIPS_SIM_ABI64
-#      define elogind_NR_epoll_pwait2 5441
+#      define systemd_NR_epoll_pwait2 5441
 #    else
 #      error "Unknown MIPS ABI"
 #    endif
@@ -260,9 +260,9 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_epoll_pwait2 441
+#      define systemd_NR_epoll_pwait2 441
 #    elif __riscv_xlen == 64
-#      define elogind_NR_epoll_pwait2 441
+#      define systemd_NR_epoll_pwait2 441
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -272,9 +272,9 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 #    define systemd_NR_epoll_pwait2 441
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
-#      define elogind_NR_epoll_pwait2 (441 | /* __X32_SYSCALL_BIT */ 0x40000000)
+#      define systemd_NR_epoll_pwait2 (441 | /* __X32_SYSCALL_BIT */ 0x40000000)
 #    else
-#      define elogind_NR_epoll_pwait2 441
+#      define systemd_NR_epoll_pwait2 441
 #    endif
 #  elif !defined(missing_arch_template)
 #    warning "epoll_pwait2() syscall number is unknown for your architecture"
@@ -282,15 +282,15 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 
 /* may be an (invalid) negative number due to libseccomp, see PR 13319 */
 #  if defined __NR_epoll_pwait2 && __NR_epoll_pwait2 >= 0
-#    if defined elogind_NR_epoll_pwait2
-assert_cc(__NR_epoll_pwait2 == elogind_NR_epoll_pwait2);
+#    if defined systemd_NR_epoll_pwait2
+assert_cc(__NR_epoll_pwait2 == systemd_NR_epoll_pwait2);
 #    endif
 #  else
 #    if defined __NR_epoll_pwait2
 #      undef __NR_epoll_pwait2
 #    endif
-#    if defined elogind_NR_epoll_pwait2 && elogind_NR_epoll_pwait2 >= 0
-#      define __NR_epoll_pwait2 elogind_NR_epoll_pwait2
+#    if defined systemd_NR_epoll_pwait2 && systemd_NR_epoll_pwait2 >= 0
+#      define __NR_epoll_pwait2 systemd_NR_epoll_pwait2
 #    endif
 #  endif
 #endif
@@ -324,9 +324,9 @@ assert_cc(__NR_epoll_pwait2 == elogind_NR_epoll_pwait2);
 #    define systemd_NR_getrandom 359
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_getrandom 278
+#      define systemd_NR_getrandom 278
 #    elif __riscv_xlen == 64
-#      define elogind_NR_getrandom 278
+#      define systemd_NR_getrandom 278
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -388,9 +388,9 @@ assert_cc(__NR_getrandom == systemd_NR_getrandom);
 #    define systemd_NR_memfd_create 360
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_memfd_create 279
+#      define systemd_NR_memfd_create 279
 #    elif __riscv_xlen == 64
-#      define elogind_NR_memfd_create 279
+#      define systemd_NR_memfd_create 279
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -427,7 +427,7 @@ assert_cc(__NR_memfd_create == systemd_NR_memfd_create);
 #  if defined(__aarch64__)
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__alpha__)
-#    define elogind_NR_mount_setattr 552
+#    define systemd_NR_mount_setattr 552
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__arm__)
@@ -435,16 +435,16 @@ assert_cc(__NR_memfd_create == systemd_NR_memfd_create);
 #  elif defined(__i386__)
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__ia64__)
-#    define elogind_NR_mount_setattr 1466
+#    define systemd_NR_mount_setattr 1466
 #  elif defined(__m68k__)
 #    define systemd_NR_mount_setattr 442
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define elogind_NR_mount_setattr 4442
+#      define systemd_NR_mount_setattr 4442
 #    elif _MIPS_SIM == _MIPS_SIM_NABI32
-#      define elogind_NR_mount_setattr 6442
+#      define systemd_NR_mount_setattr 6442
 #    elif _MIPS_SIM == _MIPS_SIM_ABI64
-#      define elogind_NR_mount_setattr 5442
+#      define systemd_NR_mount_setattr 5442
 #    else
 #      error "Unknown MIPS ABI"
 #    endif
@@ -452,9 +452,9 @@ assert_cc(__NR_memfd_create == systemd_NR_memfd_create);
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_mount_setattr 442
+#      define systemd_NR_mount_setattr 442
 #    elif __riscv_xlen == 64
-#      define elogind_NR_mount_setattr 442
+#      define systemd_NR_mount_setattr 442
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -464,9 +464,9 @@ assert_cc(__NR_memfd_create == systemd_NR_memfd_create);
 #    define systemd_NR_mount_setattr 442
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
-#      define elogind_NR_mount_setattr (442 | /* __X32_SYSCALL_BIT */ 0x40000000)
+#      define systemd_NR_mount_setattr (442 | /* __X32_SYSCALL_BIT */ 0x40000000)
 #    else
-#      define elogind_NR_mount_setattr 442
+#      define systemd_NR_mount_setattr 442
 #    endif
 #  elif !defined(missing_arch_template)
 #    warning "mount_setattr() syscall number is unknown for your architecture"
@@ -474,15 +474,15 @@ assert_cc(__NR_memfd_create == systemd_NR_memfd_create);
 
 /* may be an (invalid) negative number due to libseccomp, see PR 13319 */
 #  if defined __NR_mount_setattr && __NR_mount_setattr >= 0
-#    if defined elogind_NR_mount_setattr
-assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
+#    if defined systemd_NR_mount_setattr
+assert_cc(__NR_mount_setattr == systemd_NR_mount_setattr);
 #    endif
 #  else
 #    if defined __NR_mount_setattr
 #      undef __NR_mount_setattr
 #    endif
-#    if defined elogind_NR_mount_setattr && elogind_NR_mount_setattr >= 0
-#      define __NR_mount_setattr elogind_NR_mount_setattr
+#    if defined systemd_NR_mount_setattr && systemd_NR_mount_setattr >= 0
+#      define __NR_mount_setattr systemd_NR_mount_setattr
 #    endif
 #  endif
 #endif
@@ -491,7 +491,7 @@ assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
 #  if defined(__aarch64__)
 #    define systemd_NR_move_mount 429
 #  elif defined(__alpha__)
-#    define elogind_NR_move_mount 539
+#    define systemd_NR_move_mount 539
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define systemd_NR_move_mount 429
 #  elif defined(__arm__)
@@ -499,16 +499,16 @@ assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
 #  elif defined(__i386__)
 #    define systemd_NR_move_mount 429
 #  elif defined(__ia64__)
-#    define elogind_NR_move_mount 1453
+#    define systemd_NR_move_mount 1453
 #  elif defined(__m68k__)
 #    define systemd_NR_move_mount 429
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define elogind_NR_move_mount 4429
+#      define systemd_NR_move_mount 4429
 #    elif _MIPS_SIM == _MIPS_SIM_NABI32
-#      define elogind_NR_move_mount 6429
+#      define systemd_NR_move_mount 6429
 #    elif _MIPS_SIM == _MIPS_SIM_ABI64
-#      define elogind_NR_move_mount 5429
+#      define systemd_NR_move_mount 5429
 #    else
 #      error "Unknown MIPS ABI"
 #    endif
@@ -516,9 +516,9 @@ assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
 #    define systemd_NR_move_mount 429
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_move_mount 429
+#      define systemd_NR_move_mount 429
 #    elif __riscv_xlen == 64
-#      define elogind_NR_move_mount 429
+#      define systemd_NR_move_mount 429
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -528,9 +528,9 @@ assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
 #    define systemd_NR_move_mount 429
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
-#      define elogind_NR_move_mount (429 | /* __X32_SYSCALL_BIT */ 0x40000000)
+#      define systemd_NR_move_mount (429 | /* __X32_SYSCALL_BIT */ 0x40000000)
 #    else
-#      define elogind_NR_move_mount 429
+#      define systemd_NR_move_mount 429
 #    endif
 #  elif !defined(missing_arch_template)
 #    warning "move_mount() syscall number is unknown for your architecture"
@@ -538,15 +538,15 @@ assert_cc(__NR_mount_setattr == elogind_NR_mount_setattr);
 
 /* may be an (invalid) negative number due to libseccomp, see PR 13319 */
 #  if defined __NR_move_mount && __NR_move_mount >= 0
-#    if defined elogind_NR_move_mount
-assert_cc(__NR_move_mount == elogind_NR_move_mount);
+#    if defined systemd_NR_move_mount
+assert_cc(__NR_move_mount == systemd_NR_move_mount);
 #    endif
 #  else
 #    if defined __NR_move_mount
 #      undef __NR_move_mount
 #    endif
-#    if defined elogind_NR_move_mount && elogind_NR_move_mount >= 0
-#      define __NR_move_mount elogind_NR_move_mount
+#    if defined systemd_NR_move_mount && systemd_NR_move_mount >= 0
+#      define __NR_move_mount systemd_NR_move_mount
 #    endif
 #  endif
 #endif
@@ -580,9 +580,9 @@ assert_cc(__NR_move_mount == elogind_NR_move_mount);
 #    define systemd_NR_name_to_handle_at 345
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_name_to_handle_at 264
+#      define systemd_NR_name_to_handle_at 264
 #    elif __riscv_xlen == 64
-#      define elogind_NR_name_to_handle_at 264
+#      define systemd_NR_name_to_handle_at 264
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -619,7 +619,7 @@ assert_cc(__NR_name_to_handle_at == systemd_NR_name_to_handle_at);
 #  if defined(__aarch64__)
 #    define systemd_NR_open_tree 428
 #  elif defined(__alpha__)
-#    define elogind_NR_open_tree 538
+#    define systemd_NR_open_tree 538
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define systemd_NR_open_tree 428
 #  elif defined(__arm__)
@@ -627,16 +627,16 @@ assert_cc(__NR_name_to_handle_at == systemd_NR_name_to_handle_at);
 #  elif defined(__i386__)
 #    define systemd_NR_open_tree 428
 #  elif defined(__ia64__)
-#    define elogind_NR_open_tree 1452
+#    define systemd_NR_open_tree 1452
 #  elif defined(__m68k__)
 #    define systemd_NR_open_tree 428
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
-#      define elogind_NR_open_tree 4428
+#      define systemd_NR_open_tree 4428
 #    elif _MIPS_SIM == _MIPS_SIM_NABI32
-#      define elogind_NR_open_tree 6428
+#      define systemd_NR_open_tree 6428
 #    elif _MIPS_SIM == _MIPS_SIM_ABI64
-#      define elogind_NR_open_tree 5428
+#      define systemd_NR_open_tree 5428
 #    else
 #      error "Unknown MIPS ABI"
 #    endif
@@ -644,9 +644,9 @@ assert_cc(__NR_name_to_handle_at == systemd_NR_name_to_handle_at);
 #    define systemd_NR_open_tree 428
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_open_tree 428
+#      define systemd_NR_open_tree 428
 #    elif __riscv_xlen == 64
-#      define elogind_NR_open_tree 428
+#      define systemd_NR_open_tree 428
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -656,9 +656,9 @@ assert_cc(__NR_name_to_handle_at == systemd_NR_name_to_handle_at);
 #    define systemd_NR_open_tree 428
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
-#      define elogind_NR_open_tree (428 | /* __X32_SYSCALL_BIT */ 0x40000000)
+#      define systemd_NR_open_tree (428 | /* __X32_SYSCALL_BIT */ 0x40000000)
 #    else
-#      define elogind_NR_open_tree 428
+#      define systemd_NR_open_tree 428
 #    endif
 #  elif !defined(missing_arch_template)
 #    warning "open_tree() syscall number is unknown for your architecture"
@@ -666,15 +666,15 @@ assert_cc(__NR_name_to_handle_at == systemd_NR_name_to_handle_at);
 
 /* may be an (invalid) negative number due to libseccomp, see PR 13319 */
 #  if defined __NR_open_tree && __NR_open_tree >= 0
-#    if defined elogind_NR_open_tree
-assert_cc(__NR_open_tree == elogind_NR_open_tree);
+#    if defined systemd_NR_open_tree
+assert_cc(__NR_open_tree == systemd_NR_open_tree);
 #    endif
 #  else
 #    if defined __NR_open_tree
 #      undef __NR_open_tree
 #    endif
-#    if defined elogind_NR_open_tree && elogind_NR_open_tree >= 0
-#      define __NR_open_tree elogind_NR_open_tree
+#    if defined systemd_NR_open_tree && systemd_NR_open_tree >= 0
+#      define __NR_open_tree systemd_NR_open_tree
 #    endif
 #  endif
 #endif
@@ -708,9 +708,9 @@ assert_cc(__NR_open_tree == elogind_NR_open_tree);
 #    define systemd_NR_pidfd_open 434
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_pidfd_open 434
+#      define systemd_NR_pidfd_open 434
 #    elif __riscv_xlen == 64
-#      define elogind_NR_pidfd_open 434
+#      define systemd_NR_pidfd_open 434
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -772,9 +772,9 @@ assert_cc(__NR_pidfd_open == systemd_NR_pidfd_open);
 #    define systemd_NR_pidfd_send_signal 424
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_pidfd_send_signal 424
+#      define systemd_NR_pidfd_send_signal 424
 #    elif __riscv_xlen == 64
-#      define elogind_NR_pidfd_send_signal 424
+#      define systemd_NR_pidfd_send_signal 424
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -836,9 +836,9 @@ assert_cc(__NR_pidfd_send_signal == systemd_NR_pidfd_send_signal);
 #    define systemd_NR_pkey_mprotect 386
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_pkey_mprotect 288
+#      define systemd_NR_pkey_mprotect 288
 #    elif __riscv_xlen == 64
-#      define elogind_NR_pkey_mprotect 288
+#      define systemd_NR_pkey_mprotect 288
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -900,9 +900,9 @@ assert_cc(__NR_pkey_mprotect == systemd_NR_pkey_mprotect);
 #    define systemd_NR_renameat2 357
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_renameat2 276
+#      define systemd_NR_renameat2 276
 #    elif __riscv_xlen == 64
-#      define elogind_NR_renameat2 276
+#      define systemd_NR_renameat2 276
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -964,9 +964,9 @@ assert_cc(__NR_renameat2 == systemd_NR_renameat2);
 #    define systemd_NR_setns 350
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_setns 268
+#      define systemd_NR_setns 268
 #    elif __riscv_xlen == 64
-#      define elogind_NR_setns 268
+#      define systemd_NR_setns 268
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
@@ -1028,9 +1028,9 @@ assert_cc(__NR_setns == systemd_NR_setns);
 #    define systemd_NR_statx 383
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_statx 291
+#      define systemd_NR_statx 291
 #    elif __riscv_xlen == 64
-#      define elogind_NR_statx 291
+#      define systemd_NR_statx 291
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif

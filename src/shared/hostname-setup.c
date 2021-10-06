@@ -169,7 +169,7 @@ int hostname_setup(bool really) {
         bool enoent = false;
         int r;
 
-        r = proc_cmdline_get_key("elogind.hostname", 0, &b);
+        r = proc_cmdline_get_key("systemd.hostname", 0, &b);
         if (r < 0)
                 log_warning_errno(r, "Failed to retrieve system hostname from kernel command line, ignoring: %m");
         else if (r > 0) {

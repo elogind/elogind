@@ -27,4 +27,3 @@ const char *mount_propagation_flags_to_string(unsigned long flags);
 #if 0 /// UNNEEDED by elogind
 int mount_propagation_flags_from_string(const char *name, unsigned long *ret);
 #endif // 0
-
