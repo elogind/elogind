@@ -7,8 +7,6 @@ Bugfixes:
 * userdbctl: "Password OK: yes" is shown even when there are no passwords
   or the password is locked.
 
-* Get rid of nftw(). We should refuse to use such useless APIs on principle.
-
 * Jun 01 09:43:02 krowka elogind[1]: Unit user@1000.service has alias user@.service.
   Jun 01 09:43:02 krowka elogind[1]: Unit user@6.service has alias user@.service.
   Jun 01 09:43:02 krowka elogind[1]: Unit user-runtime-dir@6.service has alias user-runtime-dir@.service.
@@ -354,11 +352,9 @@ Features:
 
 * unify on openssl (as soon as OpenSSL 3.0 is out, and the Debian license
   confusion is gone)
-  - port sd_id128_get_machine_app_specific() over from khash
   - port resolved over from libgcrypt (DNSSEC code)
   - port journald + fsprg over from libgcrypt
   - port importd over from libgcrypt
-  - when that's done: kill khash.c
   - when that's done: kill gnutls support in resolved
 
 * add growvol and makevol options for /etc/crypttab, similar to

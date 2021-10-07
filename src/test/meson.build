@@ -658,7 +658,6 @@ tests += [
 
         [['src/test/test-id128.c']],
 
-        [['src/test/test-hash.c']],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-gcrypt-util.c'],

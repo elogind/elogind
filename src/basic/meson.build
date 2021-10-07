@@ -84,8 +84,6 @@
 #         inotify-util.h
 #         io-util.c
 #         io-util.h
-#         khash.c
-#         khash.h
 #         limits-util.c
 #         limits-util.h
 #         linux/btrfs.h
@@ -255,6 +253,11 @@
 #         utf8.h
 #         util.c
 #         util.h
+#         virt.c
+#         virt.h
+#         xattr-util.c
+#         xattr-util.h
+# '''.split())
 #else // 0
 basic_sources = files('''
         MurmurHash2.c
