@@ -74,6 +74,8 @@
 #         hashmap.h
 #         hexdecoct.c
 #         hexdecoct.h
+#         hmac.c
+#         hmac.h
 #         hostname-util.c
 #         hostname-util.h
 #         in-addr-util.c
@@ -250,6 +252,9 @@
 #         user-util.c
 #         user-util.h
 #         utf8.c
+#         utf8.h
+#         util.c
+#         util.h
 #else // 0
 basic_sources = files('''
         MurmurHash2.c

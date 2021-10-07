@@ -702,6 +702,8 @@ tests += [
 #         [['src/test/test-nscd-flush.c'],
 #          [], [], [], 'ENABLE_NSCD', 'manual'],
 #endif // 0
+
+        [['src/test/test-hmac.c']],
 ]
 
 ############################################################
