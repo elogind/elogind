@@ -49,7 +49,6 @@ const char* exec_command_flags_to_string(ExecCommandFlags i);
 ExecCommandFlags exec_command_flags_from_string(const char *s);
 #endif // 0
 
-_noreturn_ void freeze(void);
 
 int fexecve_or_execve(int executable_fd, const char *executable, char *const argv[], char *const envp[]);
 
