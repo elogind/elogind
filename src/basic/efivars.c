@@ -120,13 +120,10 @@ int efi_get_variable(
                 n = st.st_size - 4;
 
         if (DEBUG_LOGGING) {
-                char ts[FORMAT_TIMESPAN_MAX];
-                usec_t end;
-
-                end = now(CLOCK_MONOTONIC);
+                usec_t end = now(CLOCK_MONOTONIC);
                 if (end > begin + EFI_RETRY_DELAY)
                         log_debug("Detected slow EFI variable read access on %s: %s",
-                                  variable, format_timespan(ts, sizeof(ts), end - begin, 1));
+                                  variable, FORMAT_TIMESPAN(end - begin, 1));
         }
 
         /* Note that efivarfs interestingly doesn't require ftruncate() to update an existing EFI variable
@@ -296,13 +293,28 @@ bool is_efi_secure_boot(void) {
         return cache > 0;
 }
 
-bool is_efi_secure_boot_setup_mode(void) {
-        static int cache = -1;
+SecureBootMode efi_get_secure_boot_mode(void) {
+        static SecureBootMode cache = _SECURE_BOOT_INVALID;
 
-        if (cache < 0)
-                cache = read_flag(EFI_GLOBAL_VARIABLE(SetupMode));
+        if (cache != _SECURE_BOOT_INVALID)
+                return cache;
 
-        return cache > 0;
+        int secure = read_flag(EFI_GLOBAL_VARIABLE(SecureBoot));
+        if (secure < 0) {
+                if (secure != -ENOENT)
+                        log_debug_errno(secure, "Error reading SecureBoot EFI variable: %m");
+                return (cache = SECURE_BOOT_UNSUPPORTED);
+        }
+
+        /* We can assume false for all these if they are abscent (AuditMode and
+         * DeployedMode may not exist on older firmware). */
+        int audit    = read_flag(EFI_GLOBAL_VARIABLE(AuditMode));
+        int deployed = read_flag(EFI_GLOBAL_VARIABLE(DeployedMode));
+        int setup    = read_flag(EFI_GLOBAL_VARIABLE(SetupMode));
+        log_debug("Secure boot variables: SecureBoot=%d AuditMode=%d DeployedMode=%d SetupMode=%d",
+                  secure, audit, deployed, setup);
+
+        return (cache = decode_secure_boot_mode(secure, audit > 0, deployed > 0, setup > 0));
 }
 
 static int read_efi_options_variable(char **line) {
