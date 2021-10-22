@@ -936,6 +936,36 @@ static void test_rmdir_parents(void) {
         assert_se(rm_rf(temp, REMOVE_ROOT|REMOVE_PHYSICAL) >= 0);
 }
 
+static void test_parse_cifs_service_one(const char *f, const char *h, const char *s, const char *d, int ret) {
+        _cleanup_free_ char *a = NULL, *b = NULL, *c = NULL;
+
+        assert_se(parse_cifs_service(f, &a, &b, &c) == ret);
+        assert_se(streq_ptr(a, h));
+        assert_se(streq_ptr(b, s));
+        assert_se(streq_ptr(c, d));
+}
+
+static void test_parse_cifs_service(void) {
+        log_info("/* %s */", __func__);
+
+        test_parse_cifs_service_one("//foo/bar/baz", "foo", "bar", "baz", 0);
+        test_parse_cifs_service_one("\\\\foo\\bar\\baz", "foo", "bar", "baz", 0);
+        test_parse_cifs_service_one("//foo/bar", "foo", "bar", NULL, 0);
+        test_parse_cifs_service_one("\\\\foo\\bar", "foo", "bar", NULL, 0);
+        test_parse_cifs_service_one("//foo/bar/baz/uuu", "foo", "bar", "baz/uuu", 0);
+        test_parse_cifs_service_one("\\\\foo\\bar\\baz\\uuu", "foo", "bar", "baz/uuu", 0);
+
+        test_parse_cifs_service_one(NULL, NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("", NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("abc", NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("abc/cde/efg", NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("//foo/bar/baz/..", NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("//foo///", NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("//foo/.", NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("//foo/a/.", NULL, NULL, NULL, -EINVAL);
+        test_parse_cifs_service_one("//./a", NULL, NULL, NULL, -EINVAL);
+}
+
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_INFO);
 
@@ -963,6 +993,7 @@ int main(int argc, char *argv[]) {
         test_conservative_rename();
 #endif // 0
         test_rmdir_parents();
+        test_parse_cifs_service();
 
         return 0;
 }
