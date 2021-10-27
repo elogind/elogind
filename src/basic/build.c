@@ -50,7 +50,7 @@ const char* const elogind_features =
         " -SECCOMP"
 #endif
 
-        /* crypto libraries */
+        /* cryptographic libraries */
 
 #if HAVE_GCRYPT
         " +GCRYPT"
