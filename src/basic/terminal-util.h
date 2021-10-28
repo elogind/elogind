@@ -124,6 +124,8 @@ int terminal_vhangup_fd(int fd);
 int terminal_vhangup(const char *name);
 #endif // 0
 
+int terminal_set_size_fd(int fd, const char *ident, unsigned rows, unsigned cols);
+
 int chvt(int vt);
 
 #if 0 /// UNNEEDED by elogind
