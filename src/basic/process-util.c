@@ -183,13 +183,13 @@ static int get_process_cmdline_nulstr(
         return r;
 }
 
-int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags, char **line) {
+int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret) {
         _cleanup_free_ char *t = NULL;
         size_t k;
         char *ans;
 
-        assert(line);
         assert(pid >= 0);
+        assert(ret);
 
         /* Retrieve and format a commandline. See above for discussion of retrieval options.
          *
@@ -242,7 +242,7 @@ int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags
                 ans = str_realloc(ans);
         }
 
-        *line = ans;
+        *ret = ans;
         return 0;
 }
 
@@ -462,16 +462,16 @@ int is_kernel_thread(pid_t pid) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int get_process_capeff(pid_t pid, char **capeff) {
+int get_process_capeff(pid_t pid, char **ret) {
         const char *p;
         int r;
 
-        assert(capeff);
         assert(pid >= 0);
+        assert(ret);
 
         p = procfs_file_alloca(pid, "status");
 
-        r = get_proc_field(p, "CapEff", WHITESPACE, capeff);
+        r = get_proc_field(p, "CapEff", WHITESPACE, ret);
         if (r == -ENOENT)
                 return -ESRCH;
 
@@ -479,13 +479,13 @@ int get_process_capeff(pid_t pid, char **capeff) {
 }
 #endif // 0
 
-static int get_process_link_contents(const char *proc_file, char **name) {
+static int get_process_link_contents(const char *proc_file, char **ret) {
         int r;
 
         assert(proc_file);
-        assert(name);
+        assert(ret);
 
-        r = readlink_malloc(proc_file, name);
+        r = readlink_malloc(proc_file, ret);
         if (r == -ENOENT)
                 return -ESRCH;
         if (r < 0)
@@ -494,19 +494,20 @@ static int get_process_link_contents(const char *proc_file, char **name) {
         return 0;
 }
 
-int get_process_exe(pid_t pid, char **name) {
+int get_process_exe(pid_t pid, char **ret) {
         const char *p;
         char *d;
         int r;
 
         assert(pid >= 0);
+        assert(ret);
 
         p = procfs_file_alloca(pid, "exe");
-        r = get_process_link_contents(p, name);
+        r = get_process_link_contents(p, ret);
         if (r < 0)
                 return r;
 
-        d = endswith(*name, " (deleted)");
+        d = endswith(*ret, " (deleted)");
         if (d)
                 *d = '\0';
 
@@ -514,13 +515,13 @@ int get_process_exe(pid_t pid, char **name) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
+static int get_process_id(pid_t pid, const char *field, uid_t *ret) {
         _cleanup_fclose_ FILE *f = NULL;
         const char *p;
         int r;
 
         assert(field);
-        assert(uid);
+        assert(ret);
 
         if (pid < 0)
                 return -EINVAL;
@@ -550,62 +551,64 @@ static int get_process_id(pid_t pid, const char *field, uid_t *uid) {
 
                         l[strcspn(l, WHITESPACE)] = 0;
 
-                        return parse_uid(l, uid);
+                        return parse_uid(l, ret);
                 }
         }
 
         return -EIO;
 }
 
-int get_process_uid(pid_t pid, uid_t *uid) {
+int get_process_uid(pid_t pid, uid_t *ret) {
 
         if (pid == 0 || pid == getpid_cached()) {
-                *uid = getuid();
+                *ret = getuid();
                 return 0;
         }
 
-        return get_process_id(pid, "Uid:", uid);
+        return get_process_id(pid, "Uid:", ret);
 }
 
-int get_process_gid(pid_t pid, gid_t *gid) {
+int get_process_gid(pid_t pid, gid_t *ret) {
 
         if (pid == 0 || pid == getpid_cached()) {
-                *gid = getgid();
+                *ret = getgid();
                 return 0;
         }
 
         assert_cc(sizeof(uid_t) == sizeof(gid_t));
-        return get_process_id(pid, "Gid:", gid);
+        return get_process_id(pid, "Gid:", ret);
 }
 
-int get_process_cwd(pid_t pid, char **cwd) {
+int get_process_cwd(pid_t pid, char **ret) {
         const char *p;
 
         assert(pid >= 0);
+        assert(ret);
 
         if (pid == 0 || pid == getpid_cached())
-                return safe_getcwd(cwd);
+                return safe_getcwd(ret);
 
         p = procfs_file_alloca(pid, "cwd");
 
-        return get_process_link_contents(p, cwd);
+        return get_process_link_contents(p, ret);
 }
 
-int get_process_root(pid_t pid, char **root) {
+int get_process_root(pid_t pid, char **ret) {
         const char *p;
 
         assert(pid >= 0);
+        assert(ret);
 
         p = procfs_file_alloca(pid, "root");
 
-        return get_process_link_contents(p, root);
+        return get_process_link_contents(p, ret);
 }
 #endif // 0
 
 #define ENVIRONMENT_BLOCK_MAX (5U*1024U*1024U)
 
 #if 0 /// UNNEEDED by elogind
-int get_process_environ(pid_t pid, char **env) {
+int get_process_environ(pid_t pid, char **ret) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *outcome = NULL;
         size_t sz = 0;
@@ -613,7 +616,7 @@ int get_process_environ(pid_t pid, char **env) {
         int r;
 
         assert(pid >= 0);
-        assert(env);
+        assert(ret);
 
         p = procfs_file_alloca(pid, "environ");
 
@@ -645,7 +648,7 @@ int get_process_environ(pid_t pid, char **env) {
         }
 
         outcome[sz] = '\0';
-        *env = TAKE_PTR(outcome);
+        *ret = TAKE_PTR(outcome);
 
         return 0;
 }
@@ -704,13 +707,13 @@ int get_process_ppid(pid_t pid, pid_t *ret) {
         return 0;
 }
 
-int get_process_umask(pid_t pid, mode_t *umask) {
+int get_process_umask(pid_t pid, mode_t *ret) {
         _cleanup_free_ char *m = NULL;
         const char *p;
         int r;
 
-        assert(umask);
         assert(pid >= 0);
+        assert(ret);
 
         p = procfs_file_alloca(pid, "status");
 
@@ -718,7 +721,7 @@ int get_process_umask(pid_t pid, mode_t *umask) {
         if (r == -ENOENT)
                 return -ESRCH;
 
-        return parse_mode(m, umask);
+        return parse_mode(m, ret);
 }
 #endif // 0
 
@@ -1072,8 +1075,8 @@ unsigned long personality_from_string(const char *p) {
 
         if (architecture == native_architecture())
                 return PER_LINUX;
-#ifdef SECONDARY_ARCHITECTURE
-        if (architecture == SECONDARY_ARCHITECTURE)
+#ifdef ARCHITECTURE_SECONDARY
+        if (architecture == ARCHITECTURE_SECONDARY)
                 return PER_LINUX32;
 #endif
 
@@ -1085,9 +1088,9 @@ const char* personality_to_string(unsigned long p) {
 
         if (p == PER_LINUX)
                 architecture = native_architecture();
-#ifdef SECONDARY_ARCHITECTURE
+#ifdef ARCHITECTURE_SECONDARY
         else if (p == PER_LINUX32)
-                architecture = SECONDARY_ARCHITECTURE;
+                architecture = ARCHITECTURE_SECONDARY;
 #endif
 
         if (architecture < 0)
