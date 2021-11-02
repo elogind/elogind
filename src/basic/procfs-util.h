@@ -5,8 +5,10 @@
 
 #include "time-util.h"
 
-int procfs_tasks_get_limit(uint64_t *ret);
 #if 0 /// UNNEEDED by elogind
+int procfs_get_pid_max(uint64_t *ret);
+int procfs_get_threads_max(uint64_t *ret);
+
 int procfs_tasks_set_limit(uint64_t limit);
 int procfs_tasks_get_current(uint64_t *ret);
 
