@@ -57,22 +57,8 @@ int bus_connect_transport_systemd(BusTransport transport, const char *host, bool
 /// elogind empty mask removed (UNNEEDED by elogind)
 
 /// elogind empty mask removed (UNNEEDED by elogind)
-#define bus_log_address_error(r)                                        \
-        ({                                                              \
-                int _k = (r);                                           \
-                log_error_errno(_k,                                     \
-                                _k == -ENOMEDIUM ? "Failed to set bus address: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined (consider using --machine=<user>@.host --user to connect to bus of other user)" : \
-                                                   "Failed to set bus address: %m"); \
-        })
-
-#define bus_log_connect_error(r)                                        \
-        ({                                                              \
-                int _k = (r);                                           \
-                log_error_errno(_k,                                     \
-                                _k == -ENOMEDIUM       ? "Failed to connect to bus: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined (consider using --machine=<user>@.host --user to connect to bus of other user)" : \
-                                ERRNO_IS_PRIVILEGE(_k) ? "Failed to connect to bus: Operation not permitted (consider using --machine=<user>@.host --user to connect to bus of other user)" : \
-                                                         "Failed to connect to bus: %m"); \
-        })
+int bus_log_address_error(int r);
+int bus_log_connect_error(int r);
 
 #define bus_log_parse_error(r)                                  \
         log_error_errno(r, "Failed to parse bus message: %m")
