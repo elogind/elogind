@@ -57,7 +57,7 @@ int bus_connect_transport_systemd(BusTransport transport, const char *host, bool
 /// elogind empty mask removed (UNNEEDED by elogind)
 
 /// elogind empty mask removed (UNNEEDED by elogind)
-int bus_log_address_error(int r);
+int bus_log_address_error(int r, BusTransport transport);
 int bus_log_connect_error(int r);
 
 #define bus_log_parse_error(r)                                  \
