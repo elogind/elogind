@@ -147,7 +147,7 @@ static int list_sessions(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         r = bus_call_method(bus, bus_login_mgr, "ListSessions", &error, &reply, NULL);
         if (r < 0)
@@ -221,7 +221,7 @@ static int list_users(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         r = bus_call_method(bus, bus_login_mgr, "ListUsers", &error, &reply, NULL);
         if (r < 0)
@@ -271,7 +271,7 @@ static int list_seats(int argc, char *argv[], void *userdata) {
         assert(bus);
         assert(argv);
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         r = bus_call_method(bus, bus_login_mgr, "ListSeats", &error, &reply, NULL);
         if (r < 0)
@@ -840,7 +840,7 @@ static int show_session(int argc, char *argv[], void *userdata) {
 
         properties = !strstr(argv[0], "status");
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         if (argc <= 1) {
                 /* If no argument is specified inspect the manager itself */
@@ -877,7 +877,7 @@ static int show_user(int argc, char *argv[], void *userdata) {
 
         properties = !strstr(argv[0], "status");
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         if (argc <= 1) {
                 /* If no argument is specified inspect the manager itself */
@@ -934,7 +934,7 @@ static int show_seat(int argc, char *argv[], void *userdata) {
 
         properties = !strstr(argv[0], "status");
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         if (argc <= 1) {
                 /* If no argument is specified inspect the manager itself */
@@ -1274,7 +1274,7 @@ static int help(int argc, char *argv[], void *userdata) {
         _cleanup_free_ char *link = NULL;
         int r;
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         r = terminal_urlify_man("loginctl", "1", &link);
         if (r < 0)
@@ -1660,7 +1660,7 @@ static int run(int argc, char *argv[]) {
 
         r = bus_connect_transport(arg_transport, arg_host, false, &bus);
         if (r < 0)
-                return bus_log_connect_error(r);
+                return bus_log_connect_error(r, arg_transport);
 
         (void) sd_bus_set_allow_interactive_authorization(bus, arg_ask_password);
 

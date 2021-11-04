@@ -73,7 +73,7 @@ static int print_inhibitors(sd_bus *bus) {
         _cleanup_(table_unrefp) Table *table = NULL;
         int r;
 
-        pager_open(arg_pager_flags);
+        (void) pager_open(arg_pager_flags);
 
         r = sd_bus_call_method(
                         bus,
@@ -287,7 +287,7 @@ static int run(int argc, char *argv[]) {
 
         r = sd_bus_default_system(&bus);
         if (r < 0)
-                return bus_log_connect_error(r);
+                return bus_log_connect_error(r, BUS_TRANSPORT_LOCAL);
 
         if (arg_action == ACTION_LIST)
                 return print_inhibitors(bus);
