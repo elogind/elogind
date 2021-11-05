@@ -256,8 +256,7 @@ libsystemd_c_args = ['-fvisibility=default']
 #         'libsystemd.pc',
 #         input : 'libsystemd.pc.in',
 #         output : 'libsystemd.pc',
-#         command : [meson_render_jinja2, config_h, '@INPUT@'],
-#         capture : true,
+#         command : [meson_render_jinja2, config_h, '@INPUT@', '@OUTPUT@'],
 #         install : pkgconfiglibdir != 'no',
 #         install_dir : pkgconfiglibdir)
 #
