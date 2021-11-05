@@ -285,7 +285,6 @@ static UserRecord* user_record_free(UserRecord *h) {
         free(h->luks_cipher_mode);
         free(h->luks_pbkdf_hash_algorithm);
         free(h->luks_pbkdf_type);
-        free(h->luks_extra_mount_options);
 
         free(h->state);
         free(h->service);
@@ -1288,7 +1287,6 @@ static int dispatch_per_machine(const char *name, JsonVariant *variant, JsonDisp
                 { "luksPbkdfTimeCostUSec",      JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, luks_pbkdf_time_cost_usec),     0         },
                 { "luksPbkdfMemoryCost",        JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, luks_pbkdf_memory_cost),        0         },
                 { "luksPbkdfParallelThreads",   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, luks_pbkdf_parallel_threads),   0         },
-                { "luksExtraMountOptions",      JSON_VARIANT_STRING,        json_dispatch_string,                 offsetof(UserRecord, luks_extra_mount_options),      0         },
                 { "dropCaches",                 JSON_VARIANT_BOOLEAN,       json_dispatch_tristate,               offsetof(UserRecord, drop_caches),                   0         },
                 { "rateLimitIntervalUSec",      JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, ratelimit_interval_usec),       0         },
                 { "rateLimitBurst",             JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, ratelimit_burst),               0         },
@@ -1356,21 +1354,23 @@ static int dispatch_per_machine(const char *name, JsonVariant *variant, JsonDisp
 static int dispatch_status(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
 
         static const JsonDispatch status_dispatch_table[] = {
-                { "diskUsage",                  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, disk_usage),                    0         },
-                { "diskFree",                   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, disk_free),                     0         },
-                { "diskSize",                   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, disk_size),                     0         },
-                { "diskCeiling",                JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, disk_ceiling),                  0         },
-                { "diskFloor",                  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, disk_floor),                    0         },
-                { "state",                      JSON_VARIANT_STRING,        json_dispatch_string,   offsetof(UserRecord, state),                         JSON_SAFE },
-                { "service",                    JSON_VARIANT_STRING,        json_dispatch_string,   offsetof(UserRecord, service),                       JSON_SAFE },
-                { "signedLocally",              _JSON_VARIANT_TYPE_INVALID, json_dispatch_tristate, offsetof(UserRecord, signed_locally),                0         },
-                { "goodAuthenticationCounter",  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, good_authentication_counter),   0         },
-                { "badAuthenticationCounter",   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, bad_authentication_counter),    0         },
-                { "lastGoodAuthenticationUSec", JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, last_good_authentication_usec), 0         },
-                { "lastBadAuthenticationUSec",  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, last_bad_authentication_usec),  0         },
-                { "rateLimitBeginUSec",         JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, ratelimit_begin_usec),          0         },
-                { "rateLimitCount",             JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,   offsetof(UserRecord, ratelimit_count),               0         },
-                { "removable",                  JSON_VARIANT_BOOLEAN,       json_dispatch_boolean,  offsetof(UserRecord, removable),                     0         },
+                { "diskUsage",                  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, disk_usage),                    0         },
+                { "diskFree",                   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, disk_free),                     0         },
+                { "diskSize",                   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, disk_size),                     0         },
+                { "diskCeiling",                JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, disk_ceiling),                  0         },
+                { "diskFloor",                  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, disk_floor),                    0         },
+                { "state",                      JSON_VARIANT_STRING,        json_dispatch_string,      offsetof(UserRecord, state),                         JSON_SAFE },
+                { "service",                    JSON_VARIANT_STRING,        json_dispatch_string,      offsetof(UserRecord, service),                       JSON_SAFE },
+                { "signedLocally",              _JSON_VARIANT_TYPE_INVALID, json_dispatch_tristate,    offsetof(UserRecord, signed_locally),                0         },
+                { "goodAuthenticationCounter",  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, good_authentication_counter),   0         },
+                { "badAuthenticationCounter",   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, bad_authentication_counter),    0         },
+                { "lastGoodAuthenticationUSec", JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, last_good_authentication_usec), 0         },
+                { "lastBadAuthenticationUSec",  JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, last_bad_authentication_usec),  0         },
+                { "rateLimitBeginUSec",         JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, ratelimit_begin_usec),          0         },
+                { "rateLimitCount",             JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,      offsetof(UserRecord, ratelimit_count),               0         },
+                { "removable",                  JSON_VARIANT_BOOLEAN,       json_dispatch_boolean,     offsetof(UserRecord, removable),                     0         },
+                { "accessMode",                 JSON_VARIANT_UNSIGNED,      json_dispatch_access_mode, offsetof(UserRecord, access_mode),                   0         },
+                { "fileSystemType",             JSON_VARIANT_STRING,        json_dispatch_string,      offsetof(UserRecord, file_system_type),              JSON_SAFE },
                 {},
         };
 
@@ -1636,7 +1636,6 @@ int user_record_load(UserRecord *h, JsonVariant *v, UserRecordLoadFlags load_fla
                 { "luksPbkdfTimeCostUSec",      JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, luks_pbkdf_time_cost_usec),     0         },
                 { "luksPbkdfMemoryCost",        JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, luks_pbkdf_memory_cost),        0         },
                 { "luksPbkdfParallelThreads",   JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, luks_pbkdf_parallel_threads),   0         },
-                { "luksExtraMountOptions",      JSON_VARIANT_STRING,        json_dispatch_string,                 offsetof(UserRecord, luks_extra_mount_options),      0         },
                 { "dropCaches",                 JSON_VARIANT_BOOLEAN,       json_dispatch_tristate,               offsetof(UserRecord, drop_caches),                   0         },
                 { "service",                    JSON_VARIANT_STRING,        json_dispatch_string,                 offsetof(UserRecord, service),                       JSON_SAFE },
                 { "rateLimitIntervalUSec",      JSON_VARIANT_UNSIGNED,      json_dispatch_uint64,                 offsetof(UserRecord, ratelimit_interval_usec),       0         },
