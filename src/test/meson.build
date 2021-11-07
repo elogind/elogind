@@ -635,7 +635,7 @@ tests += [
           generated_gperf_headers]],
 
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-arphrd-list.c',
+#         [['src/test/test-arphrd-util.c',
 #           generated_gperf_headers]],
 #
 #         [['src/test/test-ip-protocol-list.c',
