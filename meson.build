@@ -1886,42 +1886,10 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 #####################################################################
 
-if get_option('efi')
-        efi_arch = host_machine.cpu_family()
 
-        if efi_arch == 'x86'
-                EFI_MACHINE_TYPE_NAME = 'ia32'
-                gnu_efi_arch = 'ia32'
-        elif efi_arch == 'x86_64'
-                EFI_MACHINE_TYPE_NAME = 'x64'
-                gnu_efi_arch = 'x86_64'
-        elif efi_arch == 'arm'
-                EFI_MACHINE_TYPE_NAME = 'arm'
-                gnu_efi_arch = 'arm'
-        elif efi_arch == 'aarch64'
-                EFI_MACHINE_TYPE_NAME = 'aa64'
-                gnu_efi_arch = 'aarch64'
-        elif efi_arch == 'riscv64'
-                EFI_MACHINE_TYPE_NAME = 'riscv64'
-                gnu_efi_arch = 'riscv64'
-        else
-                EFI_MACHINE_TYPE_NAME = ''
-                gnu_efi_arch = ''
-        endif
-
-        have = true
-        conf.set_quoted('EFI_MACHINE_TYPE_NAME', EFI_MACHINE_TYPE_NAME)
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-else
-        have = false
-endif
-conf.set10('ENABLE_EFI', have)
-
+/// elogind empty mask removed (UNNEEDED by elogind)
 subdir('src/fundamental')
 subdir('src/boot/efi')
-conf.set10('HAVE_GNU_EFI', have_gnu_efi)
 
 ############################################################
 
@@ -4391,20 +4359,16 @@ summary({
 # CPPFLAGS: ${OUR_CPPFLAGS} ${CPPFLAGS}
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
-if conf.get('ENABLE_EFI') == 1
-        summary({'EFI arch' : efi_arch},
+if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_GNU_EFI') == 1
+        summary({
+                'EFI machine type' :                efi_arch[0],
+                'EFI CC' :                          '@0@'.format(' '.join(efi_cc)),
+                'EFI lds' :                         efi_lds,
+                'EFI crt0' :                        efi_crt0,
+                'EFI include directory' :           efi_incdir},
                 section : 'Extensible Firmware Interface')
 
 #if 0 /// UNNEEDED by elogind
-#         if have_gnu_efi
-#                 summary({
-#                         'EFI machine type' :                EFI_MACHINE_TYPE_NAME,
-#                         'EFI CC' :                          '@0@'.format(' '.join(efi_cc)),
-#                         'EFI lds' :                         efi_lds,
-#                         'EFI crt0' :                        efi_crt0,
-#                         'EFI include directory' :           efi_incdir},
-#                         section : 'Extensible Firmware Interface')
-#         endif
 #endif // 0
 endif
 
@@ -4456,11 +4420,11 @@ foreach tuple : [
 #         # components
 #         ['backlight'],
 #         ['binfmt'],
-#         ['bpf-framework',         conf.get('BPF_FRAMEWORK') == 1],
+#         ['bpf-framework'],
 #         ['coredump'],
 #         ['environment.d'],
 #         ['efi'],
-#         ['gnu-efi',               have_gnu_efi],
+#         ['gnu-efi'],
 #         ['firstboot'],
 #         ['hibernate'],
 #         ['homed'],
@@ -4532,7 +4496,7 @@ foreach tuple : [
         ['debug mmap cache'],
         ['debug siphash'],
 #if 0 /// elogind ships any other of those
-#         ['valgrind',              conf.get('VALGRIND') == 1],
+#         ['valgrind'],
 #         ['trace logging',         conf.get('LOG_TRACE') == 1],
 #         ['install tests',         install_tests],
 #         ['link-udev-shared',      get_option('link-udev-shared')],
