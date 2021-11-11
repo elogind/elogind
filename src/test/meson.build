@@ -600,10 +600,10 @@ tests += [
 
         [['src/test/test-conf-parser.c']],
 
+        [['src/test/test-af-list.c',
+          generated_gperf_headers]],
+
 #if 0 /// UNNEEDED in elogind
-#         [['src/test/test-af-list.c',
-#           generated_gperf_headers]],
-#
 #         [['src/test/test-arphrd-list.c',
 #           generated_gperf_headers]],
 #

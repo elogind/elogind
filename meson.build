@@ -36,10 +36,10 @@ relative_source_path = run_command('realpath',
                                    project_source_root).stdout().strip()
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
+conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
+           description : 'tailor build to development or release builds')
+
 #if 0 /// fuzz regression tests are not supported by elogind
-# conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
-#            description : 'tailor build to development or release builds')
-#
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
 # if want_ossfuzz + want_libfuzzer > 1

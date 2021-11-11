@@ -252,6 +252,8 @@
 basic_sources = files('''
         MurmurHash2.c
         MurmurHash2.h
+        af-list.c
+        af-list.h
         alloc-util.c
         alloc-util.h
         architecture.h
@@ -459,21 +461,19 @@ basic_sources = files('''
 
 missing_capability_h = files('missing_capability.h')
 
-#if 0 /// UNNEEDED by elogind
-# missing_socket_h = files('missing_socket.h')
-#endif // 0
+missing_socket_h = files('missing_socket.h')
 
 missing_syscall_def_h = files('missing_syscall_def.h')
 basic_sources += missing_syscall_def_h
 
+generate_af_list = find_program('generate-af-list.sh')
+af_list_txt = custom_target(
+        'af-list.txt',
+        output : 'af-list.txt',
+        command : [generate_af_list, cpp, config_h, missing_socket_h],
+        capture : true)
+
 #if 0 /// UNNEEDED by elogind
-# generate_af_list = find_program('generate-af-list.sh')
-# af_list_txt = custom_target(
-#         'af-list.txt',
-#         output : 'af-list.txt',
-#         command : [generate_af_list, cpp, config_h, missing_socket_h],
-#         capture : true)
-#
 # generate_arphrd_list = find_program('generate-arphrd-list.sh')
 # arphrd_list_txt = custom_target(
 #         'arphrd-list.txt',
@@ -501,13 +501,14 @@ errno_list_txt = custom_target(
         capture : true)
 
 generated_gperf_headers = []
-#if 0 /// elogind has only the cap and errno list.
+#if 0 /// elogind has only the af, cap and errno list.
 # foreach item : [['af',     af_list_txt,     'af',         ''],
 #                 ['arphrd', arphrd_list_txt, 'arphrd',     'ARPHRD_'],
 #                 ['cap',    cap_list_txt,    'capability', ''],
 #                 ['errno',  errno_list_txt,  'errno',      '']]
 #else // 0
-foreach item : [['cap',    cap_list_txt,    'capability', ''],
+foreach item : [['af',     af_list_txt,     'af',         ''],
+                ['cap',    cap_list_txt,    'capability', ''],
                 ['errno',  errno_list_txt,  'errno',      '']]
 #endif // 0
 
