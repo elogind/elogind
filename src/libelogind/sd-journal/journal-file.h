@@ -274,3 +274,5 @@ uint64_t journal_file_hash_data(JournalFile *f, const void *data, size_t sz);
 
 bool journal_field_valid(const char *p, size_t l, bool allow_protected);
 #endif // 0
+
+const char* journal_object_type_to_string(ObjectType type) _const_;
