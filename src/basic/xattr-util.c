@@ -8,6 +8,7 @@
 #include <sys/xattr.h>
 
 #include "alloc-util.h"
+#include "errno-util.h"
 #include "fd-util.h"
 #include "macro.h"
 #include "missing_syscall.h"
@@ -203,10 +204,7 @@ int fd_setcrtime(int fd, usec_t usec) {
                 usec = now(CLOCK_REALTIME);
 
         le = htole64((uint64_t) usec);
-        if (fsetxattr(fd, "user.crtime_usec", &le, sizeof(le), 0) < 0)
-                return -errno;
-
-        return 0;
+        return RET_NERRNO(fsetxattr(fd, "user.crtime_usec", &le, sizeof(le), 0));
 }
 #endif // 0
 

@@ -1195,11 +1195,7 @@ int session_create_fifo(Session *s) {
 
         /* Open writing side */
         log_debug_elogind("Opening writing side of fifo for session %s", s->id);
-        r = open(s->fifo_path, O_WRONLY|O_CLOEXEC|O_NONBLOCK);
-        if (r < 0)
-                return -errno;
-
-        return r;
+        return RET_NERRNO(open(s->fifo_path, O_WRONLY|O_CLOEXEC|O_NONBLOCK));
 }
 
 static void session_remove_fifo(Session *s) {

@@ -60,11 +60,7 @@ static int inhibit(sd_bus *bus, sd_bus_error *error) {
         if (r < 0)
                 return r;
 
-        r = fcntl(fd, F_DUPFD_CLOEXEC, 3);
-        if (r < 0)
-                return -errno;
-
-        return r;
+        return RET_NERRNO(fcntl(fd, F_DUPFD_CLOEXEC, 3));
 }
 
 static int print_inhibitors(sd_bus *bus) {
@@ -73,7 +69,7 @@ static int print_inhibitors(sd_bus *bus) {
         _cleanup_(table_unrefp) Table *table = NULL;
         int r;
 
-        (void) pager_open(arg_pager_flags);
+        pager_open(arg_pager_flags);
 
         r = sd_bus_call_method(
                         bus,
