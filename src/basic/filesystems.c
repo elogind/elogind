@@ -57,6 +57,7 @@ const FilesystemSet filesystem_sets[_FILESYSTEM_SET_MAX] = {
                 "cgroup\0"
                 "cgroup2\0"
                 "devpts\0"
+                "devtmpfs\0"
                 "mqueue\0"
                 "proc\0"
                 "sysfs\0"
@@ -86,6 +87,7 @@ const FilesystemSet filesystem_sets[_FILESYSTEM_SET_MAX] = {
                 "efivarfs\0"
                 "fusectl\0"
                 "hugetlbfs\0"
+                "rpc_pipefs\0"
                 "securityfs\0"
         },
         [FILESYSTEM_SET_COMMON_BLOCK] = {
@@ -97,6 +99,7 @@ const FilesystemSet filesystem_sets[_FILESYSTEM_SET_MAX] = {
                 "exfat\0"
                 "ext4\0"
                 "iso9660\0"
+                "ntfs3\0"
                 "squashfs\0"
                 "udf\0"
                 "vfat\0"
@@ -115,15 +118,16 @@ const FilesystemSet filesystem_sets[_FILESYSTEM_SET_MAX] = {
                 .help = "Well-known network filesystems",
                 .value =
                 "afs\0"
-                "cifs\0"
                 "ceph\0"
+                "cifs\0"
                 "gfs\0"
                 "gfs2\0"
-                "ncpfs\0"
                 "ncp\0"
+                "ncpfs\0"
                 "nfs\0"
                 "nfs4\0"
                 "ocfs2\0"
+                "orangefs\0"
                 "pvfs2\0"
                 "smb3\0"
                 "smbfs\0"
