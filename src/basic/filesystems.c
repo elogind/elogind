@@ -1,6 +1,17 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include "filesystems-gperf.h"
+#include "stat-util.h"
+
+const char *fs_type_to_string(statfs_f_type_t magic) {
+
+        switch (magic) {
+#include "filesystem-switch-case.h"
+        }
+
+        return NULL;
+}
+
 
 int fs_type_from_string(const char *name, const statfs_f_type_t **ret) {
         const struct FilesystemMagic *fs_magic;
@@ -13,7 +24,6 @@ int fs_type_from_string(const char *name, const statfs_f_type_t **ret) {
                 return -EINVAL;
 
         *ret = fs_magic->magic;
-
         return 0;
 }
 
@@ -59,10 +69,19 @@ const FilesystemSet filesystem_sets[_FILESYSTEM_SET_MAX] = {
                 "pipefs\0"
                 "sockfs\0"
         },
+        [FILESYSTEM_SET_APPLICATION] = {
+                .name = "@application",
+                .help = "Application virtual filesystems",
+                .value =
+                "autofs\0"
+                "fuse\0"
+                "overlay\0"
+        },
         [FILESYSTEM_SET_AUXILIARY_API] = {
                 .name = "@auxiliary-api",
                 .help = "Auxiliary filesystem API",
                 .value =
+                "binfmt_misc\0"
                 "configfs\0"
                 "efivarfs\0"
                 "fusectl\0"
