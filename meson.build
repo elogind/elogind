@@ -426,7 +426,6 @@ possible_common_cc_flags = [
         '-Werror=shift-count-overflow',
         '-Werror=shift-overflow=2',
         '-Werror=undef',
-        '-Werror=unused-function',
         '-Wfloat-equal',
         '-Wimplicit-fallthrough=5',
         '-Winit-self',
@@ -441,6 +440,7 @@ possible_common_cc_flags = [
         '-Wstrict-aliasing=2',
         '-Wstrict-prototypes',
         '-Wsuggest-attribute=noreturn',
+        '-Wunused-function',
         '-Wwrite-strings',
 
         # negative arguments are correctly detected starting with meson 0.46.
