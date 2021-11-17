@@ -61,6 +61,8 @@ int main(void) {
         info(__syscall_ulong_t);
         info(__syscall_slong_t);
 #endif // ifdef __GLIBC__
+        info(intmax_t);
+        info(uintmax_t);
 
         info(float);
         info(double);
