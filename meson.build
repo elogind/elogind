@@ -1527,6 +1527,10 @@ conf.set10('HAVE_PAM', have)
 #         libdw = dependency('libdw',
 #                            required : want_elfutils == 'true')
 #         have = libdw.found()
+#
+#         # New in elfutils 0.177
+#         conf.set10('HAVE_DWELF_ELF_E_MACHINE_STRING',
+#                    have and cc.has_function('dwelf_elf_e_machine_string', dependencies : libdw))
 # else
 #         have = false
 #         libdw = []
@@ -1754,24 +1758,12 @@ conf.set10('HAVE_DBUS', have)
 # endif
 # conf.set10('ENABLE_REPART', have)
 #
-# # We support one or the other. If gcrypt is available, we assume it's there to
-# # be used, and use it in preference.
-# opt = get_option('cryptolib')
-# if opt == 'openssl' and conf.get('HAVE_OPENSSL') == 0
-#         error('openssl requested as the default cryptolib, but not available')
-# endif
-# conf.set10('PREFER_OPENSSL',
-#            opt == 'openssl' or (opt == 'auto' and conf.get('HAVE_OPENSSL') == 1 and conf.get('HAVE_GCRYPT') == 0))
-# conf.set10('HAVE_OPENSSL_OR_GCRYPT',
-#            conf.get('HAVE_OPENSSL') == 1 or conf.get('HAVE_GCRYPT') == 1)
-# lib_openssl_or_gcrypt = conf.get('PREFER_OPENSSL') == 1 ? libopenssl : libgcrypt
-#
 # want_importd = get_option('importd')
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
-#                 conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and
 #                 conf.get('HAVE_ZLIB') == 1 and
-#                 conf.get('HAVE_XZ') == 1)
+#                 conf.get('HAVE_XZ') == 1 and
+#                 conf.get('HAVE_GCRYPT') == 1)
 #         if want_importd == 'true' and not have
 #                 error('importd support was requested, but dependencies are not available')
 #         endif
@@ -2494,7 +2486,6 @@ test_dlopen = executable(
 #                              libbasic_gcrypt,
 #                              libsystemd_resolve_core],
 #                 dependencies : [threads,
-#                                 lib_openssl_or_gcrypt,
 #                                 libgpg_error,
 #                                 libm,
 #                                 libidn],
@@ -3135,10 +3126,10 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [versiondep,
 #                                 libcurl,
-#                                 lib_openssl_or_gcrypt,
 #                                 libz,
 #                                 libbzip2,
-#                                 libxz],
+#                                 libxz,
+#                                 libgcrypt],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3240,7 +3231,6 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libacl,
-#                                 libdw,
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
@@ -3269,7 +3259,6 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libacl,
-#                                 libdw,
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
@@ -4561,14 +4550,6 @@ endif
 #         missing += 'static-libudev'
 # else
 #         found += 'static-libudev(@0@)'.format(static_libudev)
-# endif
-#
-# if conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and conf.get('PREFER_OPENSSL') == 1
-#         found += 'cryptolib(openssl)'
-# elif conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1
-#         found += 'cryptolib(gcrypt)'
-# else
-#         missing += 'cryptolib'
 # endif
 #
 # if conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1
