@@ -487,6 +487,8 @@ tests += [
 #         [['src/test/test-architecture.c']],
 #endif // 0
 
+        [['src/test/test-gpt.c']],
+
         [['src/test/test-log.c']],
 
         [['src/test/test-ipcrm.c'],
