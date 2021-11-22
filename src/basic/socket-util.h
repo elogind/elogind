@@ -15,6 +15,7 @@
 #include <sys/un.h>
 
 #include "errno-util.h"
+#include "in-addr-util.h"
 #include "macro.h"
 #include "missing_network.h"
 #include "missing_socket.h"
@@ -112,6 +113,7 @@ bool socket_ipv6_is_enabled(void);
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
 const union in_addr_union *sockaddr_in_addr(const struct sockaddr *sa);
+int sockaddr_set_in_addr(union sockaddr_union *u, int family, const union in_addr_union *a, uint16_t port);
 
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
 #if 0 /// UNNEEDED by elogind
