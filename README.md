@@ -55,8 +55,8 @@ Finally, bug reports:
 Why bother?
 ===========
 
-Elogind has been developed for use in GuixSD, the OS distribution of
-GNU Guix.  See http://gnu.org/s/guix for more on Guix.  GuixSD uses a
+Elogind has been developed for use in Guix System, the OS distribution of
+GNU Guix.  See http://gnu.org/s/guix for more on Guix.  Guix System uses a
 specific init manager (GNU Shepherd), for reasons that are not relevant
 here, but still aims to eventually be a full-featured distribution that
 can run GNOME and other desktop environments.  However, to run GNOME
