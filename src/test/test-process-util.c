@@ -40,7 +40,7 @@
 /// Additional includes needed by elogind
 #include "locale-util.h"
 
-static void test_get_process_comm(pid_t pid) {
+static void test_get_process_comm_one(pid_t pid) {
         struct stat st;
         _cleanup_free_ char *a = NULL, *c = NULL, *d = NULL, *f = NULL, *i = NULL;
         _cleanup_free_ char *env = NULL;
@@ -107,6 +107,18 @@ static void test_get_process_comm(pid_t pid) {
         log_info("PID"PID_FMT" $PATH: '%s'", pid, strna(i));
 }
 
+TEST(get_process_comm) {
+        if (saved_argc > 1) {
+                pid_t pid = 0;
+
+                (void) parse_pid(saved_argv[1], &pid);
+                test_get_process_comm_one(pid);
+        } else {
+                TEST_REQ_RUNNING_SYSTEMD(test_get_process_comm_one(1));
+                test_get_process_comm_one(getpid());
+        }
+}
+
 static void test_get_process_cmdline_one(pid_t pid) {
         _cleanup_free_ char *c = NULL, *d = NULL, *e = NULL, *f = NULL, *g = NULL, *h = NULL;
         int r;
@@ -130,11 +142,9 @@ static void test_get_process_cmdline_one(pid_t pid) {
         log_info("      %s", r >= 0 ? h : errno_to_name(r));
 }
 
-static void test_get_process_cmdline(void) {
+TEST(get_process_cmdline) {
         _cleanup_closedir_ DIR *d = NULL;
         struct dirent *de;
-
-        log_info("/* %s */", __func__);
 
         assert_se(d = opendir("/proc"));
 
@@ -164,10 +174,8 @@ static void test_get_process_comm_escape_one(const char *input, const char *outp
         assert_se(streq_ptr(n, output));
 }
 
-static void test_get_process_comm_escape(void) {
+TEST(get_process_comm_escape) {
         _cleanup_free_ char *saved = NULL;
-
-        log_info("/* %s */", __func__);
 
         assert_se(get_process_comm(0, &saved) >= 0);
 
@@ -191,7 +199,7 @@ static void test_get_process_comm_escape(void) {
         assert_se(prctl(PR_SET_NAME, saved) >= 0);
 }
 
-static void test_pid_is_unwaited(void) {
+TEST(pid_is_unwaited) {
         pid_t pid;
 
         pid = fork();
@@ -208,10 +216,8 @@ static void test_pid_is_unwaited(void) {
         assert_se(!pid_is_unwaited(-1));
 }
 
-static void test_pid_is_alive(void) {
+TEST(pid_is_alive) {
         pid_t pid;
-
-        log_info("/* %s */", __func__);
 
         pid = fork();
         assert_se(pid >= 0);
@@ -228,9 +234,7 @@ static void test_pid_is_alive(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_personality(void) {
-        log_info("/* %s */", __func__);
-
+TEST(personality) {
         assert_se(personality_to_string(PER_LINUX));
         assert_se(!personality_to_string(PERSONALITY_INVALID));
 
@@ -253,13 +257,11 @@ static void test_personality(void) {
 }
 #endif // 0
 
-static void test_get_process_cmdline_harder(void) {
+TEST(get_process_cmdline_harder) {
         char path[] = "/tmp/test-cmdlineXXXXXX";
         _cleanup_close_ int fd = -1;
         _cleanup_free_ char *line = NULL;
         pid_t pid;
-
-        log_info("/* %s */", __func__);
 
         if (geteuid() != 0) {
                 log_info("Skipping %s: not root", __func__);
@@ -607,7 +609,7 @@ static void test_rename_process_one(const char *p, int ret) {
         assert_se(si.si_status == EXIT_SUCCESS);
 }
 
-static void test_rename_process_multi(void) {
+TEST(rename_process_multi) {
         pid_t pid;
 
         pid = fork();
@@ -634,21 +636,18 @@ static void test_rename_process_multi(void) {
         _exit(EXIT_SUCCESS);
 }
 
-static void test_rename_process(void) {
+TEST(rename_process) {
         test_rename_process_one(NULL, -EINVAL);
         test_rename_process_one("", -EINVAL);
         test_rename_process_one("foo", 1); /* should always fit */
         test_rename_process_one("this is a really really long process name, followed by some more words", 0); /* unlikely to fit */
         test_rename_process_one("1234567", 1); /* should always fit */
-        test_rename_process_multi(); /* multiple invocations and dropped privileges */
 }
 #endif // 0
 
-static void test_getpid_cached(void) {
+TEST(getpid_cached) {
         siginfo_t si;
         pid_t a, b, c, d, e, f, child;
-
-        log_info("/* %s */", __func__);
 
         a = raw_getpid();
         b = getpid_cached();
@@ -680,7 +679,7 @@ static void test_getpid_cached(void) {
         assert_se(si.si_code == CLD_EXITED);
 }
 
-static void test_getpid_measure(void) {
+TEST(getpid_measure) {
         usec_t t, q;
 
         unsigned long long iterations = slow_tests_enabled() ? 1000000 : 1000;
@@ -704,12 +703,10 @@ static void test_getpid_measure(void) {
         log_info("getpid_cached(): %lf µs each\n", (double) q / iterations);
 }
 
-static void test_safe_fork(void) {
+TEST(safe_fork) {
         siginfo_t status;
         pid_t pid;
         int r;
-
-        log_info("/* %s */", __func__);
 
         BLOCK_SIGNALS(SIGCHLD);
 
@@ -728,8 +725,7 @@ static void test_safe_fork(void) {
         assert_se(status.si_status == 88);
 }
 
-static void test_pid_to_ptr(void) {
-
+TEST(pid_to_ptr) {
         assert_se(PTR_TO_PID(NULL) == 0);
         assert_se(PID_TO_PTR(0) == NULL);
 
@@ -765,9 +761,7 @@ static void test_ioprio_class_from_to_string_one(const char *val, int expected, 
         }
 }
 
-static void test_ioprio_class_from_to_string(void) {
-        log_info("/* %s */", __func__);
-
+TEST(ioprio_class_from_to_string) {
         test_ioprio_class_from_to_string_one("none", IOPRIO_CLASS_NONE, IOPRIO_CLASS_BE);
         test_ioprio_class_from_to_string_one("realtime", IOPRIO_CLASS_RT, IOPRIO_CLASS_RT);
         test_ioprio_class_from_to_string_one("best-effort", IOPRIO_CLASS_BE, IOPRIO_CLASS_BE);
@@ -780,10 +774,8 @@ static void test_ioprio_class_from_to_string(void) {
         test_ioprio_class_from_to_string_one("-1", -EINVAL, -EINVAL);
 }
 
-static void test_setpriority_closest(void) {
+TEST(setpriority_closest) {
         int r;
-
-        log_info("/* %s */", __func__);
 
         r = safe_fork("(test-setprio)",
                       FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_WAIT|FORK_LOG, NULL);
@@ -870,11 +862,9 @@ static void test_setpriority_closest(void) {
 }
 
 #endif // 0
-static void test_get_process_ppid(void) {
+TEST(get_process_ppid) {
         uint64_t limit;
         int r;
-
-        log_info("/* %s */", __func__);
 
         assert_se(get_process_ppid(1, NULL) == -EADDRNOTAVAIL);
 
@@ -909,7 +899,7 @@ static void test_get_process_ppid(void) {
         }
 }
 
-static void test_set_oom_score_adjust(void) {
+TEST(set_oom_score_adjust) {
         int a, b, r;
 
         assert_se(get_oom_score_adjust(&a) >= 0);
@@ -927,43 +917,10 @@ static void test_set_oom_score_adjust(void) {
         assert_se(b == a);
 }
 
-int main(int argc, char *argv[]) {
-        log_show_color(true);
-        test_setup_logging(LOG_INFO);
-
-        save_argc_argv(argc, argv);
-
-        if (argc > 1) {
-                pid_t pid = 0;
-
-                (void) parse_pid(argv[1], &pid);
-                test_get_process_comm(pid);
-        } else {
-                TEST_REQ_RUNNING_SYSTEMD(test_get_process_comm(1));
-                test_get_process_comm(getpid());
-        }
-
-        test_get_process_comm_escape();
-        test_get_process_cmdline();
-        test_pid_is_unwaited();
-        test_pid_is_alive();
 #if 0 /// UNNEEDED by elogind
-        test_personality();
 #endif // 0
-        test_get_process_cmdline_harder();
 #if 0 /// UNNEEDED by elogind
-        test_rename_process();
 #endif // 0
-        test_getpid_cached();
-        test_getpid_measure();
-        test_safe_fork();
-        test_pid_to_ptr();
 #if 0 /// UNNEEDED by elogind
-        test_ioprio_class_from_to_string();
-        test_setpriority_closest();
 #endif // 0
-        test_get_process_ppid();
-        test_set_oom_score_adjust();
-
-        return 0;
-}
+DEFINE_CUSTOM_TEST_MAIN(LOG_INFO, log_show_color(true), /* no outro */);
