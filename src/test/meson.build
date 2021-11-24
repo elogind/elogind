@@ -431,8 +431,7 @@ tests += [
           test_hashmap_ordered_c],
          [], [], [], '', 'timeout=180'],
 
-        [['src/test/test-set.c'],
-         [libbasic]],
+        [['src/test/test-set.c']],
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-ordered-set.c']],

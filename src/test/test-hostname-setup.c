@@ -9,7 +9,7 @@
 #include "tests.h"
 #include "tmpfile-util.h"
 
-static void test_read_etc_hostname(void) {
+TEST(read_etc_hostname) {
         char path[] = "/tmp/hostname.XXXXXX";
         char *hostname;
         int fd;
@@ -59,18 +59,12 @@ static void test_read_etc_hostname(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_hostname_setup(void) {
+TEST(hostname_setup) {
         hostname_setup(false);
 }
 #endif // 0
 
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_DEBUG);
-
-        test_read_etc_hostname();
 #if 0 /// UNNEEDED by elogind
-        test_hostname_setup();
 #endif // 0
 
-        return 0;
-}
+DEFINE_TEST_MAIN(LOG_DEBUG);

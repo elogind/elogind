@@ -6,10 +6,11 @@
 #include "pretty-print.h"
 #include "string-util.h"
 #include "terminal-util.h"
+#include "tests.h"
 #include "util.h"
 
-int main(int argc, char *argv[]) {
 #if 0 /// urlified and z are UNNEEDED by elogind
+TEST(strip_tab_ansi) {
         _cleanup_free_ char *urlified = NULL, *q = NULL, *qq = NULL;
         char *p, *z;
 #else // 0
@@ -75,5 +76,6 @@ int main(int argc, char *argv[]) {
         }
 #endif // 0
 
-        return 0;
 }
+
+DEFINE_TEST_MAIN(LOG_INFO);

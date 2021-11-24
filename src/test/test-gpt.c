@@ -4,21 +4,20 @@
 #include "glyph-util.h"
 #include "gpt.h"
 #include "log.h"
+#include "pretty-print.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "tests.h"
 #include "util.h"
 
-static void test_gpt_types_against_architectures(void) {
+TEST(gpt_types_against_architectures) {
         const char *prefix;
         int r;
-
-        log_info("/* %s */", __func__);
 
         /* Dumps a table indicating for which architectures we know we have matching GPT partition
          * types. Also validates whether we can properly categorize the entries. */
 
-        FOREACH_STRING(prefix, "root-", "usr-") {
+        FOREACH_STRING(prefix, "root-", "usr-")
                 for (int a = 0; a < _ARCHITECTURE_MAX; a++) {
                         const char *suffix;
 
@@ -32,11 +31,11 @@ static void test_gpt_types_against_architectures(void) {
 
                                 r = gpt_partition_type_uuid_from_string(joined, &id);
                                 if (r < 0) {
-                                        printf("%s%s%s %s\n", ansi_highlight_red(), special_glyph(SPECIAL_GLYPH_CROSS_MARK), ansi_normal(), joined);
+                                        printf("%s %s\n", RED_CROSS_MARK(), joined);
                                         continue;
                                 }
 
-                                printf("%s%s%s %s\n", ansi_highlight_green(), special_glyph(SPECIAL_GLYPH_CHECK_MARK), ansi_normal(), joined);
+                                printf("%s %s\n", GREEN_CHECK_MARK(), joined);
 
                                 if (streq(prefix, "root-") && streq(suffix, ""))
                                         assert_se(gpt_partition_type_is_root(id));
@@ -48,14 +47,6 @@ static void test_gpt_types_against_architectures(void) {
                                         assert_se(gpt_partition_type_is_usr_verity(id));
                         }
                 }
-        }
 }
 
-int main(int argc, char *argv[]) {
-
-        test_setup_logging(LOG_INFO);
-
-        test_gpt_types_against_architectures();
-
-        return 0;
-}
+DEFINE_TEST_MAIN(LOG_INFO);

@@ -5,22 +5,18 @@
 #include "nulstr-util.h"
 #include "string-util.h"
 #include "strv.h"
+#include "tests.h"
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
-static void test_str_in_set(void) {
-        log_info("/* %s */", __func__);
-
+TEST(str_in_set) {
         assert_se(STR_IN_SET("x", "x", "y", "z"));
         assert_se(!STR_IN_SET("X", "x", "y", "z"));
         assert_se(!STR_IN_SET("", "x", "y", "z"));
         assert_se(STR_IN_SET("x", "w", "x"));
 }
 
-static void test_strptr_in_set(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strptr_in_set) {
         assert_se(STRPTR_IN_SET("x", "x", "y", "z"));
         assert_se(!STRPTR_IN_SET("X", "x", "y", "z"));
         assert_se(!STRPTR_IN_SET("", "x", "y", "z"));
@@ -32,9 +28,7 @@ static void test_strptr_in_set(void) {
         assert_se(!STRPTR_IN_SET(NULL, NULL));
 }
 
-static void test_startswith_set(void) {
-        log_info("/* %s */", __func__);
-
+TEST(startswith_set) {
         assert_se(!STARTSWITH_SET("foo", "bar", "baz", "waldo"));
         assert_se(!STARTSWITH_SET("foo", "bar"));
 
@@ -104,16 +98,13 @@ static const char* const input_table_retain_escape[] = {
 };
 #endif // 0
 
-static void test_strv_find(void) {
-        log_info("/* %s */", __func__);
 
+TEST(strv_find) {
         assert_se(strv_find((char **)input_table_multiple, "three"));
         assert_se(!strv_find((char **)input_table_multiple, "four"));
 }
 
-static void test_strv_find_prefix(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strv_find_prefix) {
         assert_se(strv_find_prefix((char **)input_table_multiple, "o"));
         assert_se(strv_find_prefix((char **)input_table_multiple, "one"));
         assert_se(strv_find_prefix((char **)input_table_multiple, ""));
@@ -121,10 +112,8 @@ static void test_strv_find_prefix(void) {
         assert_se(!strv_find_prefix((char **)input_table_multiple, "onee"));
 }
 
-static void test_strv_find_startswith(void) {
+TEST(strv_find_startswith) {
         char *r;
-
-        log_info("/* %s */", __func__);
 
         r = strv_find_startswith((char **)input_table_multiple, "o");
         assert_se(r && streq(r, "ne"));
@@ -139,9 +128,7 @@ static void test_strv_find_startswith(void) {
         assert_se(!strv_find_startswith((char **)input_table_multiple, "onee"));
 }
 
-static void test_strv_join(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strv_join) {
         _cleanup_free_ char *p = strv_join((char **)input_table_multiple, ", ");
         assert_se(p);
         assert_se(streq(p, "one, two, three"));
@@ -175,9 +162,7 @@ static void test_strv_join(void) {
         assert_se(streq(w, ""));
 }
 
-static void test_strv_join_full(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strv_join_full) {
         _cleanup_free_ char *p = strv_join_full((char **)input_table_multiple, ", ", "foo", false);
         assert_se(p);
         assert_se(streq(p, "fooone, footwo, foothree"));
@@ -220,7 +205,7 @@ static void test_strv_join_full(void) {
         assert_se(streq(y, "foo"));
 }
 
-static void test_strv_unquote(const char *quoted, char **list) {
+static void test_strv_unquote_one(const char *quoted, char **list) {
         _cleanup_strv_free_ char **s;
         _cleanup_free_ char *j;
         unsigned i = 0;
@@ -242,7 +227,25 @@ static void test_strv_unquote(const char *quoted, char **list) {
         assert_se(list[i] == NULL);
 }
 
-static void test_invalid_unquote(const char *quoted) {
+TEST(strv_unquote) {
+        test_strv_unquote_one("    foo=bar     \"waldo\"    zzz    ", STRV_MAKE("foo=bar", "waldo", "zzz"));
+        test_strv_unquote_one("", STRV_MAKE_EMPTY);
+        test_strv_unquote_one(" ", STRV_MAKE_EMPTY);
+        test_strv_unquote_one("   ", STRV_MAKE_EMPTY);
+        test_strv_unquote_one("   x", STRV_MAKE("x"));
+        test_strv_unquote_one("x   ", STRV_MAKE("x"));
+        test_strv_unquote_one("  x   ", STRV_MAKE("x"));
+        test_strv_unquote_one("  \"x\"   ", STRV_MAKE("x"));
+        test_strv_unquote_one("  'x'   ", STRV_MAKE("x"));
+        test_strv_unquote_one("  'x\"'   ", STRV_MAKE("x\""));
+        test_strv_unquote_one("  \"x'\"   ", STRV_MAKE("x'"));
+        test_strv_unquote_one("a  '--b=c \"d e\"'", STRV_MAKE("a", "--b=c \"d e\""));
+
+        /* trailing backslashes */
+        test_strv_unquote_one("  x\\\\", STRV_MAKE("x\\"));
+}
+
+static void test_invalid_unquote_one(const char *quoted) {
         char **s = NULL;
         int r;
 
@@ -253,11 +256,19 @@ static void test_invalid_unquote(const char *quoted) {
         assert_se(r == -EINVAL);
 }
 
-static void test_strv_split(void) {
+TEST(invalid_unquote) {
+        test_invalid_unquote_one("  x\\");
+        test_invalid_unquote_one("a  --b='c \"d e\"''");
+        test_invalid_unquote_one("a  --b='c \"d e\" '\"");
+        test_invalid_unquote_one("a  --b='c \"d e\"garbage");
+        test_invalid_unquote_one("'");
+        test_invalid_unquote_one("\"");
+        test_invalid_unquote_one("'x'y'g");
+}
+
+TEST(strv_split) {
         _cleanup_(strv_free_erasep) char **l = NULL;
         const char str[] = "one,two,three";
-
-        log_info("/* %s */", __func__);
 
         l = strv_split(str, ",");
         assert_se(l);
@@ -314,10 +325,8 @@ static void test_strv_split(void) {
         assert_se(strv_equal(l, STRV_MAKE("\\")));
 }
 
-static void test_strv_split_empty(void) {
+TEST(strv_split_empty) {
         _cleanup_strv_free_ char **l = NULL;
-
-        log_info("/* %s */", __func__);
 
         l = strv_split("", WHITESPACE);
         assert_se(l);
@@ -378,12 +387,10 @@ static void test_strv_split_empty(void) {
         assert_se(strv_isempty(l));
 }
 
-static void test_strv_split_full(void) {
+TEST(strv_split_full) {
         _cleanup_strv_free_ char **l = NULL;
         const char *str = ":foo\\:bar::waldo:";
         int r;
-
-        log_info("/* %s */", __func__);
 
         r = strv_split_full(&l, str, ":", EXTRACT_DONT_COALESCE_SEPARATORS);
         assert_se(r == (int) strv_length(l));
@@ -395,13 +402,11 @@ static void test_strv_split_full(void) {
         assert_se(streq_ptr(l[5], NULL));
 }
 
-static void test_strv_split_and_extend_full(void) {
+TEST(strv_split_and_extend_full) {
         _cleanup_strv_free_ char **l = NULL;
         const char *str1 = ":foo\\:bar:";
         const char *str2 = "waldo::::::baz";
         int r;
-
-        log_info("/* %s */", __func__);
 
         r = strv_split_and_extend(&l, "", ":", false);
         assert_se(r == (int) strv_length(l));
@@ -417,13 +422,11 @@ static void test_strv_split_and_extend_full(void) {
         assert_se(streq_ptr(l[5], NULL));
 }
 
-static void test_strv_split_colon_pairs(void) {
+TEST(strv_split_colon_pairs) {
         _cleanup_strv_free_ char **l = NULL;
         const char *str = "one:two three four:five six seven:eight\\:nine ten\\:eleven\\\\",
                    *str_inval="one:two three:four:five";
         int r;
-
-        log_info("/* %s */", __func__);
 
         r = strv_split_colon_pairs(&l, str);
         assert_se(r == (int) strv_length(l));
@@ -447,13 +450,11 @@ static void test_strv_split_colon_pairs(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_strv_split_newlines(void) {
+TEST(strv_split_newlines) {
         unsigned i = 0;
         char **s;
         _cleanup_strv_free_ char **l = NULL;
         const char str[] = "one\ntwo\nthree";
-
-        log_info("/* %s */", __func__);
 
         l = strv_split_newlines(str);
         assert_se(l);
@@ -462,15 +463,13 @@ static void test_strv_split_newlines(void) {
                 assert_se(streq(*s, input_table_multiple[i++]));
 }
 
-static void test_strv_split_newlines_full(void) {
+TEST(strv_split_newlines_full) {
         const char str[] =
                 "ID_VENDOR=QEMU\n"
                 "ID_VENDOR_ENC=QEMU\\x20\\x20\\x20\\x20\n"
                 "ID_MODEL_ENC=QEMU\\x20HARDDISK\\x20\\x20\\x20\n"
                 "\n\n\n";
         _cleanup_strv_free_ char **l = NULL;
-
-        log_info("/* %s */", __func__);
 
         assert_se(strv_split_newlines_full(&l, str, 0) == 3);
         assert_se(strv_equal(l, (char**) input_table_unescape));
@@ -482,11 +481,9 @@ static void test_strv_split_newlines_full(void) {
 }
 #endif // 0
 
-static void test_strv_split_nulstr(void) {
+TEST(strv_split_nulstr) {
         _cleanup_strv_free_ char **l = NULL;
         const char nulstr[] = "str0\0str1\0str2\0str3\0";
-
-        log_info("/* %s */", __func__);
 
         l = strv_split_nulstr (nulstr);
         assert_se(l);
@@ -497,11 +494,9 @@ static void test_strv_split_nulstr(void) {
         assert_se(streq(l[3], "str3"));
 }
 
-static void test_strv_parse_nulstr(void) {
+TEST(strv_parse_nulstr) {
         _cleanup_strv_free_ char **l = NULL;
         const char nulstr[] = "hoge\0hoge2\0hoge3\0\0hoge5\0\0xxx";
-
-        log_info("/* %s */", __func__);
 
         l = strv_parse_nulstr(nulstr, sizeof(nulstr)-1);
         assert_se(l);
@@ -518,7 +513,7 @@ static void test_strv_parse_nulstr(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_strv_overlap(void) {
+TEST(strv_overlap) {
         const char * const input_table[] = {
                 "one",
                 "two",
@@ -536,14 +531,12 @@ static void test_strv_overlap(void) {
                 NULL
         };
 
-        log_info("/* %s */", __func__);
-
         assert_se(strv_overlap((char **)input_table, (char**)input_table_overlap));
         assert_se(!strv_overlap((char **)input_table, (char**)input_table_unique));
 }
 #endif // 0
 
-static void test_strv_sort(void) {
+TEST(strv_sort) {
         const char* input_table[] = {
                 "durian",
                 "apple",
@@ -552,8 +545,6 @@ static void test_strv_sort(void) {
                 "banana",
                 NULL
         };
-
-        log_info("/* %s */", __func__);
 
         strv_sort((char **)input_table);
 
@@ -565,10 +556,8 @@ static void test_strv_sort(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_strv_extend_strv_concat(void) {
+TEST(strv_extend_strv_concat) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("without", "suffix");
         b = strv_new("with", "suffix");
@@ -584,10 +573,8 @@ static void test_strv_extend_strv_concat(void) {
 }
 #endif // 0
 
-static void test_strv_extend_strv(void) {
+TEST(strv_extend_strv) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL, **n = NULL;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("abc", "def", "ghi");
         b = strv_new("jkl", "mno", "abc", "pqr");
@@ -612,10 +599,8 @@ static void test_strv_extend_strv(void) {
         assert_se(strv_length(n) == 4);
 }
 
-static void test_strv_extend(void) {
+TEST(strv_extend) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("test", "test1");
         assert_se(a);
@@ -629,10 +614,8 @@ static void test_strv_extend(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_strv_extendf(void) {
+TEST(strv_extendf) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("test", "test1");
         assert_se(a);
@@ -646,12 +629,10 @@ static void test_strv_extendf(void) {
 }
 #endif // 0
 
-static void test_strv_foreach(void) {
+TEST(strv_foreach) {
         _cleanup_strv_free_ char **a;
         unsigned i = 0;
         char **check;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("one", "two", "three");
         assert_se(a);
@@ -660,12 +641,10 @@ static void test_strv_foreach(void) {
                 assert_se(streq(*check, input_table_multiple[i++]));
 }
 
-static void test_strv_foreach_backwards(void) {
+TEST(strv_foreach_backwards) {
         _cleanup_strv_free_ char **a;
         unsigned i = 2;
         char **check;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("one", "two", "three");
 
@@ -681,11 +660,9 @@ static void test_strv_foreach_backwards(void) {
                 assert_not_reached();
 }
 
-static void test_strv_foreach_pair(void) {
+TEST(strv_foreach_pair) {
         _cleanup_strv_free_ char **a = NULL;
         char **x, **y;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("pair_one",   "pair_one",
                      "pair_two",   "pair_two",
@@ -710,18 +687,14 @@ static void test_strv_from_stdarg_alloca_one(char **l, const char *first, ...) {
         }
 }
 
-static void test_strv_from_stdarg_alloca(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strv_from_stdarg_alloca) {
         test_strv_from_stdarg_alloca_one(STRV_MAKE("foo", "bar"), "foo", "bar", NULL);
         test_strv_from_stdarg_alloca_one(STRV_MAKE("foo"), "foo", NULL);
         test_strv_from_stdarg_alloca_one(STRV_MAKE_EMPTY, NULL);
 }
 
-static void test_strv_insert(void) {
+TEST(strv_insert) {
         _cleanup_strv_free_ char **a = NULL;
-
-        log_info("/* %s */", __func__);
 
         assert_se(strv_insert(&a, 0, strdup("first")) == 0);
         assert_se(streq(a[0], "first"));
@@ -750,10 +723,8 @@ static void test_strv_insert(void) {
         assert_se(!a[4]);
 }
 
-static void test_strv_push_prepend(void) {
+TEST(strv_push_prepend) {
         _cleanup_strv_free_ char **a = NULL;
-
-        log_info("/* %s */", __func__);
 
         assert_se(a = strv_new("foo", "bar", "three"));
 
@@ -773,11 +744,9 @@ static void test_strv_push_prepend(void) {
         assert_se(!a[5]);
 }
 
-static void test_strv_push(void) {
+TEST(strv_push) {
         _cleanup_strv_free_ char **a = NULL;
         char *i, *j;
-
-        log_info("/* %s */", __func__);
 
         assert_se(i = strdup("foo"));
         assert_se(strv_push(&a, i) >= 0);
@@ -792,13 +761,11 @@ static void test_strv_push(void) {
         assert_se(streq_ptr(a[3], NULL));
 }
 
-static void test_strv_compare(void) {
+TEST(strv_compare) {
         _cleanup_strv_free_ char **a = NULL;
         _cleanup_strv_free_ char **b = NULL;
         _cleanup_strv_free_ char **c = NULL;
         _cleanup_strv_free_ char **d = NULL;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new("one", "two", "three");
         assert_se(a);
@@ -822,10 +789,8 @@ static void test_strv_compare(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_strv_is_uniq(void) {
+TEST(strv_is_uniq) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL, **c = NULL, **d = NULL;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new(NULL);
         assert_se(a);
@@ -844,10 +809,8 @@ static void test_strv_is_uniq(void) {
         assert_se(!strv_is_uniq(d));
 }
 
-static void test_strv_reverse(void) {
+TEST(strv_reverse) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL, **c = NULL, **d = NULL;
-
-        log_info("/* %s */", __func__);
 
         a = strv_new(NULL);
         assert_se(a);
@@ -877,10 +840,8 @@ static void test_strv_reverse(void) {
         assert_se(streq_ptr(d[3], NULL));
 }
 
-static void test_strv_shell_escape(void) {
+TEST(strv_shell_escape) {
         _cleanup_strv_free_ char **v = NULL;
-
-        log_info("/* %s */", __func__);
 
         v = strv_new("foo:bar", "bar,baz", "wal\\do");
         assert_se(v);
@@ -897,9 +858,7 @@ static void test_strv_skip_one(char **a, size_t n, char **b) {
         assert_se(strv_equal(a, b));
 }
 
-static void test_strv_skip(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strv_skip) {
         test_strv_skip_one(STRV_MAKE("foo", "bar", "baz"), 0, STRV_MAKE("foo", "bar", "baz"));
         test_strv_skip_one(STRV_MAKE("foo", "bar", "baz"), 1, STRV_MAKE("bar", "baz"));
         test_strv_skip_one(STRV_MAKE("foo", "bar", "baz"), 2, STRV_MAKE("baz"));
@@ -916,10 +875,8 @@ static void test_strv_skip(void) {
         test_strv_skip_one(STRV_MAKE(NULL), 55, STRV_MAKE(NULL));
 }
 
-static void test_strv_extend_n(void) {
+TEST(strv_extend_n) {
         _cleanup_strv_free_ char **v = NULL;
-
-        log_info("/* %s */", __func__);
 
         v = strv_new("foo", "bar");
         assert_se(v);
@@ -968,9 +925,7 @@ static void test_strv_make_nulstr_one(char **l) {
         assert_se(i == strv_length(l));
 }
 
-static void test_strv_make_nulstr(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strv_make_nulstr) {
         test_strv_make_nulstr_one(NULL);
         test_strv_make_nulstr_one(STRV_MAKE(NULL));
         test_strv_make_nulstr_one(STRV_MAKE("foo"));
@@ -978,10 +933,8 @@ static void test_strv_make_nulstr(void) {
         test_strv_make_nulstr_one(STRV_MAKE("foo", "bar", "quuux"));
 }
 
-static void test_strv_free_free(void) {
+TEST(strv_free_free) {
         char ***t;
-
-        log_info("/* %s */", __func__);
 
         assert_se(t = new(char**, 3));
         assert_se(t[0] = strv_new("a", "b"));
@@ -992,7 +945,7 @@ static void test_strv_free_free(void) {
 }
 #endif // 0
 
-static void test_foreach_string(void) {
+TEST(foreach_string) {
         const char * const t[] = {
                 "foo",
                 "bar",
@@ -1001,8 +954,6 @@ static void test_foreach_string(void) {
         };
         const char *x;
         unsigned i = 0;
-
-        log_info("/* %s */", __func__);
 
         FOREACH_STRING(x, "foo", "bar", "waldo")
                 assert_se(streq_ptr(t[i++], x));
@@ -1014,11 +965,9 @@ static void test_foreach_string(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_strv_fnmatch(void) {
+TEST(strv_fnmatch) {
         _cleanup_strv_free_ char **v = NULL;
         size_t pos;
-
-        log_info("/* %s */", __func__);
 
         assert_se(!strv_fnmatch(STRV_MAKE_EMPTY, "a"));
 
@@ -1029,89 +978,21 @@ static void test_strv_fnmatch(void) {
 }
 #endif // 0
 
-int main(int argc, char *argv[]) {
+/// elogind empty mask removed (UNNEEDED by elogind)
 #if 0 /// UNNEEDED by elogind
 #endif // 0
-        test_str_in_set();
-        test_strptr_in_set();
-        test_startswith_set();
-        test_strv_foreach();
-        test_strv_foreach_backwards();
-        test_strv_foreach_pair();
-        test_strv_find();
-        test_strv_find_prefix();
-        test_strv_find_startswith();
-        test_strv_join();
-        test_strv_join_full();
-
-        test_strv_unquote("    foo=bar     \"waldo\"    zzz    ", STRV_MAKE("foo=bar", "waldo", "zzz"));
-        test_strv_unquote("", STRV_MAKE_EMPTY);
-        test_strv_unquote(" ", STRV_MAKE_EMPTY);
-        test_strv_unquote("   ", STRV_MAKE_EMPTY);
-        test_strv_unquote("   x", STRV_MAKE("x"));
-        test_strv_unquote("x   ", STRV_MAKE("x"));
-        test_strv_unquote("  x   ", STRV_MAKE("x"));
-        test_strv_unquote("  \"x\"   ", STRV_MAKE("x"));
-        test_strv_unquote("  'x'   ", STRV_MAKE("x"));
-        test_strv_unquote("  'x\"'   ", STRV_MAKE("x\""));
-        test_strv_unquote("  \"x'\"   ", STRV_MAKE("x'"));
-        test_strv_unquote("a  '--b=c \"d e\"'", STRV_MAKE("a", "--b=c \"d e\""));
-
-        /* trailing backslashes */
-        test_strv_unquote("  x\\\\", STRV_MAKE("x\\"));
-        test_invalid_unquote("  x\\");
-
-        test_invalid_unquote("a  --b='c \"d e\"''");
-        test_invalid_unquote("a  --b='c \"d e\" '\"");
-        test_invalid_unquote("a  --b='c \"d e\"garbage");
-        test_invalid_unquote("'");
-        test_invalid_unquote("\"");
-        test_invalid_unquote("'x'y'g");
-
-        test_strv_split();
-        test_strv_split_empty();
-        test_strv_split_full();
-        test_strv_split_and_extend_full();
-        test_strv_split_colon_pairs();
 #if 0 /// UNNEEDED by elogind
-        test_strv_split_newlines();
-        test_strv_split_newlines_full();
 #endif // 0
-        test_strv_split_nulstr();
-        test_strv_parse_nulstr();
 #if 0 /// UNNEEDED by elogind
-        test_strv_overlap();
 #endif // 0
-        test_strv_sort();
-        test_strv_extend_strv();
 #if 0 /// UNNEEDED by elogind
-        test_strv_extend_strv_concat();
 #endif // 0
-        test_strv_extend();
 #if 0 /// UNNEEDED by elogind
-        test_strv_extendf();
 #endif // 0
-        test_strv_from_stdarg_alloca();
-        test_strv_insert();
-        test_strv_push_prepend();
-        test_strv_push();
-        test_strv_compare();
 #if 0 /// UNNEEDED by elogind
-        test_strv_is_uniq();
-        test_strv_reverse();
-        test_strv_shell_escape();
-#endif // 0
-        test_strv_skip();
-        test_strv_extend_n();
-#if 0 /// UNNEEDED by elogind
-        test_strv_make_nulstr();
-        test_strv_free_free();
 #endif // 0
 
-        test_foreach_string();
 #if 0 /// UNNEEDED by elogind
-        test_strv_fnmatch();
 #endif // 0
 
-        return 0;
-}
+DEFINE_TEST_MAIN(LOG_INFO);

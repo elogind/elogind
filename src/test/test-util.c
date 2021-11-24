@@ -17,9 +17,7 @@
 #include "tests.h"
 #include "util.h"
 
-static void test_u64log2(void) {
-        log_info("/* %s */", __func__);
-
+TEST(u64log2) {
         assert_se(u64log2(0) == 0);
         assert_se(u64log2(8) == 3);
         assert_se(u64log2(9) == 3);
@@ -29,9 +27,7 @@ static void test_u64log2(void) {
         assert_se(u64log2(1024*1024+5) == 20);
 }
 
-static void test_protect_errno(void) {
-        log_info("/* %s */", __func__);
-
+TEST(protect_errno) {
         errno = 12;
         {
                 PROTECT_ERRNO;
@@ -46,9 +42,7 @@ static void test_unprotect_errno_inner_function(void) {
         errno = 2222;
 }
 
-static void test_unprotect_errno(void) {
-        log_info("/* %s */", __func__);
-
+TEST(unprotect_errno) {
         errno = 4711;
 
         PROTECT_ERRNO;
@@ -64,9 +58,7 @@ static void test_unprotect_errno(void) {
         assert_se(errno == 4711);
 }
 
-static void test_log2i(void) {
-        log_info("/* %s */", __func__);
-
+TEST(log2i) {
         assert_se(log2i(1) == 0);
         assert_se(log2i(2) == 1);
         assert_se(log2i(3) == 1);
@@ -77,13 +69,11 @@ static void test_log2i(void) {
         assert_se(log2i(INT_MAX) == sizeof(int)*8-2);
 }
 
-static void test_eqzero(void) {
+TEST(eqzero) {
         const uint32_t zeros[] = {0, 0, 0};
         const uint32_t ones[] = {1, 1};
         const uint32_t mixed[] = {0, 1, 0, 0, 0};
         const uint8_t longer[] = {[55] = 255};
-
-        log_info("/* %s */", __func__);
 
         assert_se(eqzero(zeros));
         assert_se(!eqzero(ones));
@@ -92,10 +82,8 @@ static void test_eqzero(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_raw_clone(void) {
+TEST(raw_clone) {
         pid_t parent, pid, pid2;
-
-        log_info("/* %s */", __func__);
 
         parent = getpid();
         log_info("before clone: getpid()→"PID_FMT, parent);
@@ -124,10 +112,8 @@ static void test_raw_clone(void) {
 }
 #endif // 0
 
-static void test_physical_memory(void) {
+TEST(physical_memory) {
         uint64_t p;
-
-        log_info("/* %s */", __func__);
 
         p = physical_memory();
         assert_se(p > 0);
@@ -137,10 +123,8 @@ static void test_physical_memory(void) {
         log_info("Memory: %s (%" PRIu64 ")", FORMAT_BYTES(p), p);
 }
 
-static void test_physical_memory_scale(void) {
+TEST(physical_memory_scale) {
         uint64_t p;
-
-        log_info("/* %s */", __func__);
 
         p = physical_memory();
 
@@ -174,10 +158,8 @@ static void test_physical_memory_scale(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_system_tasks_max(void) {
+TEST(system_tasks_max) {
         uint64_t t;
-
-        log_info("/* %s */", __func__);
 
         t = system_tasks_max();
         assert_se(t > 0);
@@ -186,10 +168,8 @@ static void test_system_tasks_max(void) {
         log_info("Max tasks: %" PRIu64, t);
 }
 
-static void test_system_tasks_max_scale(void) {
+TEST(system_tasks_max_scale) {
         uint64_t t;
-
-        log_info("/* %s */", __func__);
 
         t = system_tasks_max();
 
@@ -216,24 +196,9 @@ static void test_system_tasks_max_scale(void) {
 }
 #endif // 0
 
-
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_INFO);
-
-        test_u64log2();
-        test_protect_errno();
-        test_unprotect_errno();
-        test_log2i();
-        test_eqzero();
 #if 0 /// UNNEEDED by elogind
-        test_raw_clone();
 #endif // 0
-        test_physical_memory();
-        test_physical_memory_scale();
 #if 0 /// UNNEEDED by elogind
-        test_system_tasks_max();
-        test_system_tasks_max_scale();
 #endif // 0
 
-        return 0;
-}
+DEFINE_TEST_MAIN(LOG_INFO);

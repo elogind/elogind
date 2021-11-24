@@ -53,7 +53,7 @@ static const gather_stdout_callback_t ignore_stdout[] = {
         ignore_stdout_func3,
 };
 
-static void test_execute_directory(bool gather_stdout) {
+static void test_execute_directory_one(bool gather_stdout) {
         char template_lo[] = "/tmp/test-exec-util.lo.XXXXXXX";
         char template_hi[] = "/tmp/test-exec-util.hi.XXXXXXX";
         const char * dirs[] = {template_hi, template_lo, NULL};
@@ -135,7 +135,12 @@ static void test_execute_directory(bool gather_stdout) {
         (void) rm_rf(template_hi, REMOVE_ROOT|REMOVE_PHYSICAL);
 }
 
-static void test_execution_order(void) {
+TEST(execute_directory) {
+        test_execute_directory_one(true);
+        test_execute_directory_one(false);
+}
+
+TEST(execution_order) {
         char template_lo[] = "/tmp/test-exec-util-lo.XXXXXXX";
         char template_hi[] = "/tmp/test-exec-util-hi.XXXXXXX";
         const char *dirs[] = {template_hi, template_lo, NULL};
@@ -237,7 +242,7 @@ const gather_stdout_callback_t gather_stdout[] = {
         gather_stdout_three,
 };
 
-static void test_stdout_gathering(void) {
+TEST(stdout_gathering) {
         char template[] = "/tmp/test-exec-util.XXXXXXX";
         const char *dirs[] = {template, NULL};
         const char *name, *name2, *name3;
@@ -249,8 +254,6 @@ static void test_stdout_gathering(void) {
         void* args[] = {&tmp, &tmp, &output};
 
         assert_se(mkdtemp(template));
-
-        log_info("/* %s */", __func__);
 
         /* write files */
         name = strjoina(template, "/10-foo");
@@ -283,7 +286,7 @@ static void test_stdout_gathering(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_environment_gathering(void) {
+TEST(environment_gathering) {
         char template[] = "/tmp/test-exec-util.XXXXXXX", **p;
         const char *dirs[] = {template, NULL};
         const char *name, *name2, *name3, *old;
@@ -295,8 +298,6 @@ static void test_environment_gathering(void) {
         void* const args[] = { &tmp, &tmp, &env };
 
         assert_se(mkdtemp(template));
-
-        log_info("/* %s */", __func__);
 
         /* write files */
         name = strjoina(template, "/10-foo");
@@ -376,15 +377,13 @@ static void test_environment_gathering(void) {
         assert_se(set_unset_env("PATH", old, true) == 0);
 }
 
-static void test_error_catching(void) {
+TEST(error_catching) {
         char template[] = "/tmp/test-exec-util.XXXXXXX";
         const char *dirs[] = {template, NULL};
         const char *name, *name2, *name3;
         int r;
 
         assert_se(mkdtemp(template));
-
-        log_info("/* %s */", __func__);
 
         /* write files */
         name = strjoina(template, "/10-foo");
@@ -414,7 +413,7 @@ static void test_error_catching(void) {
         assert_se(r == 42);
 }
 
-static void test_exec_command_flags_from_strv(void) {
+TEST(exec_command_flags_from_strv) {
         ExecCommandFlags flags = 0;
         char **valid_strv = STRV_MAKE("no-env-expand", "no-setuid", "ignore-failure");
         char **invalid_strv = STRV_MAKE("no-env-expand", "no-setuid", "nonexistent-option", "ignore-failure");
@@ -434,7 +433,7 @@ static void test_exec_command_flags_from_strv(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_exec_command_flags_to_strv(void) {
+TEST(exec_command_flags_to_strv) {
         _cleanup_strv_free_ char **opts = NULL, **empty_opts = NULL, **invalid_opts = NULL;
         ExecCommandFlags flags = 0;
         int r;
@@ -459,19 +458,7 @@ static void test_exec_command_flags_to_strv(void) {
 }
 #endif // 0
 
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_DEBUG);
-
-        test_execute_directory(true);
-        test_execute_directory(false);
-        test_execution_order();
-        test_stdout_gathering();
 #if 0 /// UNNEEDED by elogind
-        test_environment_gathering();
-        test_error_catching();
-        test_exec_command_flags_from_strv();
-        test_exec_command_flags_to_strv();
 #endif // 0
 
-        return 0;
-}
+DEFINE_TEST_MAIN(LOG_DEBUG);

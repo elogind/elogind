@@ -11,7 +11,7 @@
 #include "strv.h"
 #include "tests.h"
 
-static void test_terminal_urlify(void) {
+TEST(terminal_urlify) {
         _cleanup_free_ char *formatted = NULL;
 
 #if 0 /// Aww... lets use an elogind URL, okay?
@@ -30,7 +30,7 @@ static void test_terminal_urlify(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_cat_files(void) {
+TEST(cat_files) {
         assert_se(cat_files("/no/such/file", NULL, 0) == -ENOENT);
         assert_se(cat_files("/no/such/file", NULL, CAT_FLAGS_MAIN_FILE_OPTIONAL) == 0);
 
@@ -39,7 +39,7 @@ static void test_cat_files(void) {
 }
 #endif // 0
 
-static void test_red_green_cross_check_mark(void) {
+TEST(red_green_cross_check_mark) {
         bool b = false;
 
         printf("yea: <%s>\n", GREEN_CHECK_MARK());
@@ -52,16 +52,11 @@ static void test_red_green_cross_check_mark(void) {
                COLOR_MARK_BOOL(!!!b));
 }
 
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_INFO);
-
-        test_terminal_urlify();
 #if 0 /// UNNEEDED by elogind
-        test_cat_files();
-        test_red_green_cross_check_mark();
-
+TEST(print_separator) {
         print_separator();
 #endif // 0
 
-        return 0;
 }
+
+DEFINE_TEST_MAIN(LOG_INFO);

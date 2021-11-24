@@ -10,8 +10,9 @@
 #include "log.h"
 #include "parse-util.h"
 #include "string-util.h"
+#include "tests.h"
 
-static void test_parse_boolean(void) {
+TEST(parse_boolean) {
         assert_se(parse_boolean("1") == 1);
         assert_se(parse_boolean("y") == 1);
         assert_se(parse_boolean("Y") == 1);
@@ -37,7 +38,7 @@ static void test_parse_boolean(void) {
         assert_se(parse_boolean("full") < 0);
 }
 
-static void test_parse_pid(void) {
+TEST(parse_pid) {
         int r;
         pid_t pid;
 
@@ -72,7 +73,7 @@ static void test_parse_pid(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_parse_mode(void) {
+TEST(parse_mode) {
         mode_t m;
 
         assert_se(parse_mode("-1", &m) < 0);
@@ -95,7 +96,7 @@ static void test_parse_mode(void) {
 }
 #endif // 0
 
-static void test_parse_size(void) {
+TEST(parse_size) {
         uint64_t bytes;
 
         assert_se(parse_size("", 1024, &bytes) == -EINVAL);
@@ -166,7 +167,7 @@ static void test_parse_size(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_parse_range(void) {
+TEST(parse_range) {
         unsigned lower, upper;
 
         /* Successful cases */
@@ -350,7 +351,7 @@ static void test_parse_range(void) {
 }
 #endif // 0
 
-static void test_safe_atolli(void) {
+TEST(safe_atolli) {
         int r;
         long long l;
 
@@ -401,7 +402,7 @@ static void test_safe_atolli(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_safe_atou16(void) {
+TEST(safe_atou16) {
         int r;
         uint16_t l;
 
@@ -435,7 +436,7 @@ static void test_safe_atou16(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_safe_atoi16(void) {
+TEST(safe_atoi16) {
         int r;
         int16_t l;
 
@@ -482,7 +483,7 @@ static void test_safe_atoi16(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_safe_atoux16(void) {
+TEST(safe_atoux16) {
         int r;
         uint16_t l;
 
@@ -527,7 +528,7 @@ static void test_safe_atoux16(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_safe_atou64(void) {
+TEST(safe_atou64) {
         int r;
         uint64_t l;
 
@@ -569,7 +570,7 @@ static void test_safe_atou64(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_safe_atoi64(void) {
+TEST(safe_atoi64) {
         int r;
         int64_t l;
 
@@ -616,7 +617,7 @@ static void test_safe_atoi64(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_safe_atoux64(void) {
+TEST(safe_atoux64) {
         int r;
         uint64_t l;
 
@@ -661,7 +662,7 @@ static void test_safe_atoux64(void) {
         assert_se(r == -EINVAL);
 }
 
-static void test_safe_atod(void) {
+TEST(safe_atod) {
         int r;
         double d;
         char *e;
@@ -723,7 +724,7 @@ static void test_safe_atod(void) {
 /// elogind empty mask removed (UNNEEDED by elogind)
 
 #if 0 /// UNNEEDED by elogind
-static void test_parse_nice(void) {
+TEST(parse_nice) {
         int n;
 
         assert_se(parse_nice("0", &n) >= 0 && n == 0);
@@ -751,7 +752,7 @@ static void test_parse_nice(void) {
 }
 #endif // 0
 
-static void test_parse_dev(void) {
+TEST(parse_dev) {
         dev_t dev;
 
         assert_se(parse_dev("", &dev) == -EINVAL);
@@ -769,7 +770,7 @@ static void test_parse_dev(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_parse_errno(void) {
+TEST(parse_errno) {
         assert_se(parse_errno("EILSEQ") == EILSEQ);
         assert_se(parse_errno("EINVAL") == EINVAL);
         assert_se(parse_errno("0") == 0);
@@ -790,7 +791,7 @@ static void test_parse_errno(void) {
         assert_se(parse_errno("EINVALaaa") == -EINVAL);
 }
 
-static void test_parse_mtu(void) {
+TEST(parse_mtu) {
         uint32_t mtu = 0;
 
         assert_se(parse_mtu(AF_UNSPEC, "1500", &mtu) >= 0 && mtu == 1500);
@@ -812,7 +813,7 @@ static void test_parse_mtu(void) {
 }
 #endif // 0
 
-static void test_parse_loadavg_fixed_point(void) {
+TEST(parse_loadavg_fixed_point) {
         loadavg_t fp;
 
         assert_se(parse_loadavg_fixed_point("1.23", &fp) == 0);
@@ -848,38 +849,13 @@ static void test_parse_loadavg_fixed_point(void) {
         assert_se(parse_loadavg_fixed_point("", &fp) == -EINVAL);
 }
 
-int main(int argc, char *argv[]) {
-        log_parse_environment();
-        log_open();
-
-        test_parse_boolean();
-        test_parse_pid();
-#if 0 /// UNNEEDED by elogind
-        test_parse_mode();
-#endif // 0
-        test_parse_size();
-#if 0 /// UNNEEDED by elogind
-        test_parse_range();
-#endif // 0
-        test_safe_atolli();
-        test_safe_atou16();
-        test_safe_atoi16();
-        test_safe_atoux16();
-        test_safe_atou64();
-        test_safe_atoi64();
-        test_safe_atoux64();
-        test_safe_atod();
 #if 0 /// UNNEEDED by elogind
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-        test_parse_nice();
 #endif // 0
-        test_parse_dev();
+/// elogind empty mask removed (UNNEEDED by elogind)
 #if 0 /// UNNEEDED by elogind
-        test_parse_errno();
-        test_parse_mtu();
 #endif // 0
-        test_parse_loadavg_fixed_point();
-
-        return 0;
-}
+#if 0 /// UNNEEDED by elogind
+#endif // 0
+DEFINE_TEST_MAIN(LOG_INFO);
