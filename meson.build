@@ -3255,7 +3255,6 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libacl,
-#                                 libdw,
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
