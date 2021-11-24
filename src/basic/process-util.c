@@ -1072,8 +1072,8 @@ unsigned long personality_from_string(const char *p) {
 
         if (architecture == native_architecture())
                 return PER_LINUX;
-#ifdef ARCHITECTURE_SECONDARY
-        if (architecture == ARCHITECTURE_SECONDARY)
+#ifdef SECONDARY_ARCHITECTURE
+        if (architecture == SECONDARY_ARCHITECTURE)
                 return PER_LINUX32;
 #endif
 
@@ -1085,9 +1085,9 @@ const char* personality_to_string(unsigned long p) {
 
         if (p == PER_LINUX)
                 architecture = native_architecture();
-#ifdef ARCHITECTURE_SECONDARY
+#ifdef SECONDARY_ARCHITECTURE
         else if (p == PER_LINUX32)
-                architecture = ARCHITECTURE_SECONDARY;
+                architecture = SECONDARY_ARCHITECTURE;
 #endif
 
         if (architecture < 0)
@@ -1159,22 +1159,6 @@ int pid_compare_func(const pid_t *a, const pid_t *b) {
         return CMP(*a, *b);
 }
 
-int ioprio_parse_priority(const char *s, int *ret) {
-        int i, r;
-
-        assert(s);
-        assert(ret);
-
-        r = safe_atoi(s, &i);
-        if (r < 0)
-                return r;
-
-        if (!ioprio_priority_is_valid(i))
-                return -EINVAL;
-
-        *ret = i;
-        return 0;
-}
 #endif // 0
 
 /* The cached PID, possible values:
@@ -1658,14 +1642,6 @@ _noreturn_ void freeze(void) {
                 pause();
 }
 
-static const char *const ioprio_class_table[] = {
-        [IOPRIO_CLASS_NONE] = "none",
-        [IOPRIO_CLASS_RT] = "realtime",
-        [IOPRIO_CLASS_BE] = "best-effort",
-        [IOPRIO_CLASS_IDLE] = "idle",
-};
-
-DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ioprio_class, int, IOPRIO_N_CLASSES);
 
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",

@@ -14,7 +14,6 @@
 #include "alloc-util.h"
 #include "format-util.h"
 #include "macro.h"
-#include "missing_ioprio.h"
 #include "time-util.h"
 
 #define procfs_file_alloca(pid, field)                                  \
@@ -104,9 +103,6 @@ const char *personality_to_string(unsigned long);
 int safe_personality(unsigned long p);
 int opinionated_personality(unsigned long *ret);
 
-int ioprio_class_to_string_alloc(int i, char **s);
-int ioprio_class_from_string(const char *s);
-
 const char *sigchld_code_to_string(int i) _const_;
 int sigchld_code_from_string(const char *s) _pure_;
 #endif // 0
@@ -141,13 +137,6 @@ static inline bool sched_priority_is_valid(int i) {
         return i >= 0 && i <= sched_get_priority_max(SCHED_RR);
 }
 
-static inline bool ioprio_class_is_valid(int i) {
-        return IN_SET(i, IOPRIO_CLASS_NONE, IOPRIO_CLASS_RT, IOPRIO_CLASS_BE, IOPRIO_CLASS_IDLE);
-}
-
-static inline bool ioprio_priority_is_valid(int i) {
-        return i >= 0 && i < IOPRIO_BE_NR;
-}
 #endif // 0
 
 static inline bool pid_is_valid(pid_t p) {
@@ -156,7 +145,6 @@ static inline bool pid_is_valid(pid_t p) {
 
 
 #if 0 /// UNNEEDED by elogind
-int ioprio_parse_priority(const char *s, int *ret);
 #endif // 0
 
 pid_t getpid_cached(void);

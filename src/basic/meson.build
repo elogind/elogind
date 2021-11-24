@@ -84,6 +84,8 @@
 #         inotify-util.h
 #         io-util.c
 #         io-util.h
+#         ioprio-util.c
+#         ioprio-util.h
 #         limits-util.c
 #         limits-util.h
 #         linux/btrfs.h
