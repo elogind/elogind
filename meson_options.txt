@@ -490,7 +490,7 @@ option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
 # option('efi-includedir', type : 'string', value : '/usr/include/efi',
 #        description : 'path to the EFI header directory')
 #endif // 0
-option('sbat-distro', type : 'string',
+option('sbat-distro', type : 'string', value : 'auto',
        description : 'SBAT distribution ID, e.g. fedora, or auto for autodetection')
 option('sbat-distro-generation', type : 'integer', value : 1,
        description : 'SBAT distribution generation')
