@@ -875,15 +875,6 @@ bool strv_fnmatch_full(char* const* patterns, const char *s, int flags, size_t *
         return false;
 }
 
-char*** strv_free_free(char ***l) {
-        if (!l)
-                return NULL;
-
-        for (char ***i = l; *i; i++)
-                strv_free(*i);
-
-        return mfree(l);
-}
 #endif // 0
 
 char** strv_skip(char **l, size_t n) {

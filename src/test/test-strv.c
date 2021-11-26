@@ -98,7 +98,6 @@ static const char* const input_table_retain_escape[] = {
 };
 #endif // 0
 
-
 TEST(strv_find) {
         assert_se(strv_find((char **)input_table_multiple, "three"));
         assert_se(!strv_find((char **)input_table_multiple, "four"));
@@ -933,16 +932,6 @@ TEST(strv_make_nulstr) {
         test_strv_make_nulstr_one(STRV_MAKE("foo", "bar", "quuux"));
 }
 
-TEST(strv_free_free) {
-        char ***t;
-
-        assert_se(t = new(char**, 3));
-        assert_se(t[0] = strv_new("a", "b"));
-        assert_se(t[1] = strv_new("c", "d", "e"));
-        t[2] = NULL;
-
-        t = strv_free_free(t);
-}
 #endif // 0
 
 TEST(foreach_string) {
