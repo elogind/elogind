@@ -1536,6 +1536,10 @@ conf.set10('HAVE_PAM', have)
 #         libdw = dependency('libdw',
 #                            required : want_elfutils == 'true')
 #         have = libdw.found()
+#
+#         # New in elfutils 0.177
+#         conf.set10('HAVE_DWELF_ELF_E_MACHINE_STRING',
+#                    have and cc.has_function('dwelf_elf_e_machine_string', dependencies : libdw))
 # else
 #         have = false
 #         libdw = []
@@ -3215,7 +3219,7 @@ endif
 #         public_programs += executable(
 #                 'systemd-journal-remote',
 #                 systemd_journal_remote_sources,
-#                 include_directories : includes,
+#                 include_directories : journal_includes,
 #                 link_with : [libshared,
 #                              libsystemd_journal_remote],
 #                 dependencies : [threads,
@@ -3231,7 +3235,7 @@ endif
 #         public_programs += executable(
 #                 'systemd-journal-gatewayd',
 #                 systemd_journal_gatewayd_sources,
-#                 include_directories : includes,
+#                 include_directories : journal_includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libmicrohttpd,
