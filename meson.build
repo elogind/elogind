@@ -1176,8 +1176,17 @@ conf.set10('HAVE_LIBBPF', libbpf.found())
 if want_bpf_framework == 'false'
         conf.set10('BPF_FRAMEWORK', 0)
 else
-        clang = find_program('clang', required : bpf_framework_required)
-        llvm_strip = find_program('llvm-strip', required : bpf_framework_required)
+        # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
+        # (like clang-10/llvm-strip-10)
+        clang_bin = cc.get_id() == 'clang' ? cc.cmd_array()[0] : 'clang'
+        clang = find_program(clang_bin, required : bpf_framework_required)
+        if clang.found()
+                llvm_strip_bin = run_command(clang, '--print-prog-name', 'llvm-strip',
+                                             check : true).stdout().strip()
+        else
+                llvm_strip_bin = 'llvm-strip'
+        endif
+        llvm_strip = find_program(llvm_strip_bin, required : bpf_framework_required)
 
         # Debian installs this in /usr/sbin/ which is not in $PATH.
         # We check for 'bpftool' first, honouring $PATH, and in /usr/sbin/ for Debian.
@@ -1679,21 +1688,25 @@ endif
 conf.set10('HAVE_DBUS', have)
 
 #if 0 /// UNNEEDED by elogind
-# default_dnssec = get_option('default-dnssec')
-# if skip_deps
-#         default_dnssec = 'no'
+# # We support one or the other. If gcrypt is available, we assume it's there to
+# # be used, and use it in preference.
+# opt = get_option('cryptolib')
+# if opt == 'openssl' and conf.get('HAVE_OPENSSL') == 0
+#         error('openssl requested as the default cryptolib, but not available')
 # endif
-# if default_dnssec != 'no' and conf.get('HAVE_GCRYPT') == 0
-#         message('default-dnssec cannot be set to yes or allow-downgrade when gcrypt is disabled. Setting default-dnssec to no.')
-#         default_dnssec = 'no'
-# endif
-# conf.set('DEFAULT_DNSSEC_MODE',
-#          'DNSSEC_' + default_dnssec.underscorify().to_upper())
-# conf.set_quoted('DEFAULT_DNSSEC_MODE_STR', default_dnssec)
+# conf.set10('PREFER_OPENSSL',
+#            opt == 'openssl' or (opt == 'auto' and conf.get('HAVE_OPENSSL') == 1 and conf.get('HAVE_GCRYPT') == 0))
+# conf.set10('HAVE_OPENSSL_OR_GCRYPT',
+#            conf.get('HAVE_OPENSSL') == 1 or conf.get('HAVE_GCRYPT') == 1)
+# lib_openssl_or_gcrypt = conf.get('PREFER_OPENSSL') == 1 ? libopenssl : libgcrypt
 #
 # dns_over_tls = get_option('dns-over-tls')
 # if dns_over_tls != 'false'
-#         if dns_over_tls == 'openssl'
+#         if dns_over_tls == 'gnutls' and conf.get('PREFER_OPENSSL') == 1
+#                 error('Sorry, -Ddns-over-tls=gnutls is not supported when openssl is used as the cryptolib')
+#         endif
+#
+#         if dns_over_tls == 'openssl' or conf.get('PREFER_OPENSSL') == 1
 #                 have_gnutls = false
 #         else
 #                 have_gnutls = (conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.6.0'))
@@ -1754,12 +1767,24 @@ conf.set10('HAVE_DBUS', have)
 # endif
 # conf.set10('ENABLE_REPART', have)
 #
+# default_dnssec = get_option('default-dnssec')
+# if skip_deps
+#         default_dnssec = 'no'
+# endif
+# if default_dnssec != 'no' and conf.get('HAVE_OPENSSL_OR_GCRYPT') == 0
+#         message('default-dnssec cannot be set to yes or allow-downgrade openssl and gcrypt are disabled. Setting default-dnssec to no.')
+#         default_dnssec = 'no'
+# endif
+# conf.set('DEFAULT_DNSSEC_MODE',
+#          'DNSSEC_' + default_dnssec.underscorify().to_upper())
+# conf.set_quoted('DEFAULT_DNSSEC_MODE_STR', default_dnssec)
+#
 # want_importd = get_option('importd')
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
+#                 conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and
 #                 conf.get('HAVE_ZLIB') == 1 and
-#                 conf.get('HAVE_XZ') == 1 and
-#                 conf.get('HAVE_GCRYPT') == 1)
+#                 conf.get('HAVE_XZ') == 1)
 #         if want_importd == 'true' and not have
 #                 error('importd support was requested, but dependencies are not available')
 #         endif
@@ -2482,6 +2507,7 @@ test_dlopen = executable(
 #                              libbasic_gcrypt,
 #                              libsystemd_resolve_core],
 #                 dependencies : [threads,
+#                                 lib_openssl_or_gcrypt,
 #                                 libgpg_error,
 #                                 libm,
 #                                 libidn],
@@ -3122,10 +3148,10 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [versiondep,
 #                                 libcurl,
+#                                 lib_openssl_or_gcrypt,
 #                                 libz,
 #                                 libbzip2,
-#                                 libxz,
-#                                 libgcrypt],
+#                                 libxz],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -4546,6 +4572,14 @@ endif
 #         missing += 'static-libudev'
 # else
 #         found += 'static-libudev(@0@)'.format(static_libudev)
+# endif
+#
+# if conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and conf.get('PREFER_OPENSSL') == 1
+#         found += 'cryptolib(openssl)'
+# elif conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1
+#         found += 'cryptolib(gcrypt)'
+# else
+#         missing += 'cryptolib'
 # endif
 #
 # if conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1
