@@ -1757,8 +1757,7 @@ conf.set10('HAVE_DBUS', have)
 #
 # want_repart = get_option('repart')
 # if want_repart != 'false'
-#         have = (conf.get('HAVE_OPENSSL') == 1 and
-#                 conf.get('HAVE_LIBFDISK') == 1)
+#         have = conf.get('HAVE_LIBFDISK') == 1
 #         if want_repart == 'true' and not have
 #                 error('repart support was requested, but dependencies are not available')
 #         endif
@@ -3336,8 +3335,7 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libblkid,
-#                                 libfdisk,
-#                                 libopenssl],
+#                                 libfdisk],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
