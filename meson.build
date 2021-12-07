@@ -3168,7 +3168,8 @@ endif
 #                 'systemd-pull',
 #                 systemd_pull_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              lib_import_common],
 #                 dependencies : [versiondep,
 #                                 libcurl,
 #                                 lib_openssl_or_gcrypt,
@@ -3183,7 +3184,8 @@ endif
 #                 'systemd-import',
 #                 systemd_import_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              lib_import_common],
 #                 dependencies : [libcurl,
 #                                 libz,
 #                                 libbzip2,
@@ -3196,7 +3198,8 @@ endif
 #                 'systemd-import-fs',
 #                 systemd_import_fs_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              lib_import_common],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3205,7 +3208,8 @@ endif
 #                 'systemd-export',
 #                 systemd_export_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              lib_import_common],
 #                 dependencies : [libcurl,
 #                                 libz,
 #                                 libbzip2,
@@ -3883,22 +3887,22 @@ public_programs += executable(
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : rootbindir)
-# endif
 #
-# exe = executable(
-#         'systemd-network-generator',
-#         network_generator_sources,
-#         include_directories : includes,
-#         link_with : [networkd_link_with],
-#         install_rpath : rootlibexecdir,
-#         install : true,
-#         install_dir : rootlibexecdir)
+#         exe = executable(
+#                 'systemd-network-generator',
+#                 network_generator_sources,
+#                 include_directories : includes,
+#                 link_with : [networkd_link_with],
+#                 install_rpath : rootlibexecdir,
+#                 install : true,
+#                 install_dir : rootlibexecdir)
 #
-# if want_tests != 'false'
-#         test('test-network-generator-conversion',
-#              test_network_generator_conversion_sh,
-#              # https://github.com/mesonbuild/meson/issues/2681
-#              args : exe.full_path())
+#         if want_tests != 'false'
+#                 test('test-network-generator-conversion',
+#                      test_network_generator_conversion_sh,
+#                      # https://github.com/mesonbuild/meson/issues/2681
+#                      args : exe.full_path())
+#         endif
 # endif
 #
 # executable(
