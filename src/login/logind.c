@@ -272,7 +272,6 @@ static int manager_enumerate_buttons(Manager *m) {
 
 static int manager_enumerate_seats(Manager *m) {
         _cleanup_closedir_ DIR *d = NULL;
-        struct dirent *de;
         int r = 0;
 
         assert(m);
@@ -316,7 +315,6 @@ static int manager_enumerate_seats(Manager *m) {
 
 static int manager_enumerate_linger_users(Manager *m) {
         _cleanup_closedir_ DIR *d = NULL;
-        struct dirent *de;
         int r = 0;
 
         assert(m);
@@ -345,7 +343,6 @@ static int manager_enumerate_linger_users(Manager *m) {
 
 static int manager_enumerate_users(Manager *m) {
         _cleanup_closedir_ DIR *d = NULL;
-        struct dirent *de;
         int r, k;
 
         assert(m);
@@ -505,7 +502,6 @@ static int manager_attach_fds(Manager *m) {
 
 static int manager_enumerate_sessions(Manager *m) {
         _cleanup_closedir_ DIR *d = NULL;
-        struct dirent *de;
         int r = 0, k;
 
         assert(m);
@@ -549,7 +545,6 @@ static int manager_enumerate_sessions(Manager *m) {
 
 static int manager_enumerate_inhibitors(Manager *m) {
         _cleanup_closedir_ DIR *d = NULL;
-        struct dirent *de;
         int r = 0;
 
         assert(m);
