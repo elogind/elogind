@@ -1387,9 +1387,7 @@ static int flush_devices(Manager *m) {
         if (!d) {
                 if (errno != ENOENT)
                         log_warning_errno(errno, "Failed to open /etc/udev/rules.d: %m");
-        } else {
-                struct dirent *de;
-
+        } else
                 FOREACH_DIRENT_ALL(de, d, break) {
                         if (!dirent_is_file(de))
                                 continue;
@@ -1403,7 +1401,6 @@ static int flush_devices(Manager *m) {
                         if (unlinkat(dirfd(d), de->d_name, 0) < 0)
                                 log_warning_errno(errno, "Failed to unlink %s: %m", de->d_name);
                 }
-        }
 
         return trigger_device(m, NULL);
 }
