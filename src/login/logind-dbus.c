@@ -2095,6 +2095,8 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_POWEROFF_TARGET);
+        (void)free_and_strdup(&m->scheduled_shutdown_type, "poweroff");
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2115,6 +2117,8 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_REBOOT_TARGET);
+        (void)free_and_strdup(&m->scheduled_shutdown_type, "reboot");
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2135,6 +2139,8 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_HALT_TARGET);
+        (void)free_and_strdup(&m->scheduled_shutdown_type, "halt");
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2155,6 +2161,8 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_SUSPEND_TARGET);
+        (void)free_and_strdup(&m->scheduled_shutdown_type, "suspend");
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2175,6 +2183,8 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_HIBERNATE_TARGET);
+        (void)free_and_strdup(&m->scheduled_shutdown_type, "hibernate");
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2195,6 +2205,8 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
         Manager *m = userdata;
 
         log_debug_elogind("Called for '%s'", SPECIAL_HYBRID_SLEEP_TARGET);
+        (void)free_and_strdup(&m->scheduled_shutdown_type, "hybrid-sleep");
+
         return method_do_shutdown_or_sleep(
                         m, message,
 #if 0 /// elogind uses HandleAction instead of const char* unit names
@@ -2213,6 +2225,8 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
 
 static int method_suspend_then_hibernate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
+
+        (void)free_and_strdup(&m->scheduled_shutdown_type, "sleep");
 
         return method_do_shutdown_or_sleep(
                         m, message,
