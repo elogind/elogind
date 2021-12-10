@@ -201,6 +201,12 @@ const char* const elogind_features =
 
         /* other stuff that doesn't fit above */
 
+#if BPF_FRAMEWORK
+        " +BPF_FRAMEWORK"
+#else
+        " -BPF_FRAMEWORK"
+#endif
+
 #if HAVE_XKBCOMMON
         " +XKBCOMMON"
 #else
