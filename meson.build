@@ -1921,10 +1921,15 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
 
 conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
-#####################################################################
+############################################################
 
+tests = []
+fuzzers = []
+
+############################################################
 
 /// elogind empty mask removed (UNNEEDED by elogind)
+# Include these now as they provide gnu-efi detection.
 subdir('src/fundamental')
 subdir('src/boot/efi')
 
@@ -1962,6 +1967,7 @@ conf.set_quoted('USER_ENV_GENERATOR_PATH',          '/dev/null')
 conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
 conf.set_quoted('DEBUGTTY',                         '/dev/null')
 #####################################################################
+############################################################
 
 #endif // 1
 config_h = configure_file(
@@ -1984,8 +1990,6 @@ if dbus_interfaces_dir == ''
 endif
 
 #if 0 /// elogind does not fuzz
-# tests = []
-# fuzzers = []
 #endif // 0
 
 basic_includes = include_directories(
