@@ -25,6 +25,9 @@ option('rootprefix', type : 'string',
 # option('link-timesyncd-shared', type: 'boolean',
 #        description : 'link systemd-timesyncd and its helpers to libsystemd-shared.so')
 #endif // 0
+option('link-boot-shared', type: 'boolean',
+       description : 'link bootctl and elogind-bless-boot against libelogind-shared.so')
+
 option('static-libelogind', type : 'combo',
        choices : ['false', 'true', 'pic', 'no-pic'],
 #if 0 /// UNNEEDED by elogind

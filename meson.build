@@ -2685,11 +2685,17 @@ endif
 
 #if 0 /// UNNEEDED by elogind
 # if conf.get('HAVE_BLKID') == 1 and conf.get('HAVE_GNU_EFI') == 1
+#         if get_option('link-boot-shared')
+#                 boot_link_with = [libshared]
+#         else
+#                 boot_link_with = [libsystemd_static, libshared_static]
+#         endif
+#
 #         public_programs += executable(
 #                 'bootctl',
 #                 'src/boot/bootctl.c',
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [boot_link_with],
 #                 dependencies : [libblkid],
 #                 install_rpath : rootlibexecdir,
 #                 install : true)
@@ -2698,7 +2704,7 @@ endif
 #                 'systemd-bless-boot',
 #                 'src/boot/bless-boot.c',
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [boot_link_with],
 #                 dependencies : [libblkid],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
@@ -2708,7 +2714,7 @@ endif
 #                 'systemd-bless-boot-generator',
 #                 'src/boot/bless-boot-generator.c',
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [boot_link_with],
 #                 install_rpath : rootlibexecdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
@@ -4565,6 +4571,7 @@ foreach tuple : [
 #         ['link-networkd-shared',  get_option('link-networkd-shared')],
 #         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
 #endif // 0
+        ['link-boot-shared',      get_option('link-boot-shared')],
         ['fexecve'],
 #if 0 /// elogind has everything standalone that can be standalone already
 #         ['standalone-binaries',   get_option('standalone-binaries')],
