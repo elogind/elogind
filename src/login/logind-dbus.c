@@ -1952,6 +1952,29 @@ static int verify_shutdown_creds(
         return 0;
 }
 
+static int setup_wall_message_timer(Manager *m, sd_bus_message* message) {
+        _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
+        int r;
+
+        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_AUGMENT|SD_BUS_CREDS_TTY|SD_BUS_CREDS_UID, &creds);
+        if (r >= 0) {
+                const char *tty = NULL;
+
+                (void) sd_bus_creds_get_uid(creds, &m->scheduled_shutdown_uid);
+                (void) sd_bus_creds_get_tty(creds, &tty);
+
+                r = free_and_strdup(&m->scheduled_shutdown_tty, tty);
+                if (r < 0)
+                        return log_oom();
+        }
+
+        r = manager_setup_wall_message_timer(m);
+        if (r < 0)
+                return r;
+
+        return 0;
+}
+
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
@@ -2059,6 +2082,7 @@ static int method_do_shutdown_or_sleep(
                 (void) sd_bus_creds_get_uid(creds, &m->scheduled_sleep_uid);
         }
 #endif // 1
+        (void) setup_wall_message_timer(m, message);
 
         r = bus_manager_shutdown_or_sleep_now_or_later(m, unit_name, w, error);
         if (r < 0)
@@ -2367,7 +2391,6 @@ error:
 
 static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
-        _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
         const char *action_multiple_sessions = NULL;
         const char *action_ignore_inhibit = NULL;
         const char *action = NULL;
@@ -2449,23 +2472,11 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
 
         m->scheduled_shutdown_timeout = elapse;
 
-        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_AUGMENT|SD_BUS_CREDS_TTY|SD_BUS_CREDS_UID, &creds);
-        if (r >= 0) {
-                const char *tty = NULL;
-
-                (void) sd_bus_creds_get_uid(creds, &m->scheduled_shutdown_uid);
-                (void) sd_bus_creds_get_tty(creds, &tty);
-
-                r = free_and_strdup(&m->scheduled_shutdown_tty, tty);
-                if (r < 0) {
-                        m->scheduled_shutdown_timeout_source = sd_event_source_unref(m->scheduled_shutdown_timeout_source);
-                        return log_oom();
-                }
-        }
-
-        r = manager_setup_wall_message_timer(m);
-        if (r < 0)
+        r = setup_wall_message_timer(m, message);
+        if (r < 0) {
+                m->scheduled_shutdown_timeout_source = sd_event_source_unref(m->scheduled_shutdown_timeout_source);
                 return r;
+        }
 
         r = update_schedule_file(m);
         if (r < 0)
@@ -3225,7 +3236,7 @@ static int boot_loader_entry_exists(Manager *m, const char *id) {
 
         r = manager_read_efi_boot_loader_entries(m);
         if (r >= 0)
-                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries);
+                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries, true);
 
         return boot_config_has_entry(&config, id);
 }
@@ -3383,7 +3394,7 @@ static int property_get_boot_loader_entries(
 
         r = manager_read_efi_boot_loader_entries(m);
         if (r >= 0)
-                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries);
+                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries, true);
 
         r = sd_bus_message_open_container(reply, 'a', "s");
         if (r < 0)
