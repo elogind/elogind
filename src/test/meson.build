@@ -469,7 +469,8 @@ tests += [
 #           libmount,
 #           libxz,
 #           liblz4,
-#           libblkid],
+#           libblkid,
+#           libselinux],
 #          [core_includes, journal_includes, udev_includes]],
 #endif // 0
 
