@@ -176,7 +176,7 @@ libcore_sources = files('''
 #         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
 #         capture : true)
 #
-# libcore_name = 'systemd-core-@0@'.format(meson.project_version())
+# libcore_name = 'systemd-core-@0@'.format(shared_lib_tag)
 #
 # libcore = shared_library(
 #         libcore_name,

@@ -222,8 +222,6 @@ option('dbussessionservicedir', type : 'string',
 option('dbussystemservicedir', type : 'string',
        description : 'D-Bus system service directory')
 #if 0 /// UNNEEDED by elogind
-# option('dbus-interfaces-dir', type : 'string',
-#        description : 'export D-Bus introspection XML as standalone files')
 # option('pkgconfigdatadir', type : 'string', value : '',
 #        description : 'directory for arch-independent pkg-config files')
 #endif // 0
@@ -561,3 +559,6 @@ option('fexecve', type : 'boolean', value : 'false',
 
 option('bpf-framework', type : 'combo', choices : ['auto', 'true', 'false'],
     description: 'build BPF programs from source code in restricted C')
+
+option('dbus-interfaces-dir', type : 'string',
+       description : 'export D-Bus introspection XML as standalone files')
