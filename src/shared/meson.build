@@ -553,7 +553,7 @@ endif
 # shared_sources += shared_generated_gperf_headers
 #endif // 0
 
-libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
+libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 
 #if 0 /// elogind doesn't need all this
 # libshared_deps = [threads,

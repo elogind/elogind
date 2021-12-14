@@ -2374,12 +2374,7 @@ test_dlopen = executable(
 #         link_with : [libcore,
 #                      libshared],
 #         dependencies : [versiondep,
-#                         threads,
-#                         librt,
-#                         libseccomp,
-#                         libselinux,
-#                         libmount,
-#                         libblkid],
+#                         libseccomp],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
@@ -2395,12 +2390,7 @@ test_dlopen = executable(
 #         link_with : [libcore,
 #                      libshared],
 #         dependencies : [versiondep,
-#                         threads,
-#                         librt,
-#                         libseccomp,
-#                         libselinux,
-#                         libmount,
-#                         libblkid],
+#                         libseccomp],
 #         install_rpath : rootlibexecdir,
 #         install : conf.get('ENABLE_ANALYZE'))
 #
@@ -4181,6 +4171,7 @@ subdir('shell-completion/zsh')
 
 install_subdir('factory/etc',
                install_dir : factorydir)
+subdir('factory/templates')
 
 #if 0 /// UNNEEDED by elogind
 # if install_sysconfdir
