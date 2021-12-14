@@ -59,6 +59,7 @@ static int manager_new(Manager **ret) {
                 .console_active_fd = -1,
 #if 0 /// elogind does not support autospawning of vts
                 .reserve_vt_fd = -1,
+                .enable_wall_messages = true,
                 .idle_action_not_before_usec = now(CLOCK_MONOTONIC),
 #endif // 0
         };
