@@ -71,7 +71,8 @@ liblogind_core = static_library(
         liblogind_core_sources,
         include_directories : includes,
 #if 0 /// elogind needs audit support for utmp inclusion
-#         dependencies : [libacl])
+#         dependencies : libacl,
+#         build_by_default : false)
 #else // 0
         dependencies : [libacl,
                         libaudit])

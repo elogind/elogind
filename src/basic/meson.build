@@ -667,7 +667,7 @@ libbasic = static_library(
 /// elogind empty mask removed (UNNEEDED by elogind)
                         libm],
         c_args : ['-fvisibility=default'],
-        install : false)
+        build_by_default : false)
 
 ############################################################
 
@@ -683,5 +683,6 @@ libbasic = static_library(
 #         basic_gcrypt_sources,
 #         include_directories : basic_includes,
 #         dependencies : [libgcrypt],
-#         c_args : ['-fvisibility=default'])
 #endif // 0
+        c_args : ['-fvisibility=default'],
+        build_by_default : false)
