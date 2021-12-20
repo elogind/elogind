@@ -546,6 +546,7 @@ conf.set('SIZEOF_DEV_T', cc.sizeof('dev_t', prefix : '#include <sys/types.h>'))
 conf.set('SIZEOF_INO_T', cc.sizeof('ino_t', prefix : '#include <sys/types.h>'))
 conf.set('SIZEOF_TIME_T', cc.sizeof('time_t', prefix : '#include <sys/time.h>'))
 conf.set('SIZEOF_RLIM_T', cc.sizeof('rlim_t', prefix : '#include <sys/resource.h>'))
+conf.set('SIZEOF_TIMEX_MEMBER', cc.sizeof('((struct timex *)0)->freq', prefix : '#include <sys/timex.h>'))
 
 decl_headers = '''
 #if 1 /// elogind supports system where _GNU_SOURCE is not set in ENV
