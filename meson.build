@@ -51,9 +51,6 @@ conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
 # skip_deps = want_ossfuzz or want_libfuzzer
 # fuzzer_build = want_ossfuzz or want_libfuzzer
 #
-# # Create a title-less summary section early, so it ends up first in the output.
-# # More items are added later after they have been detected.
-# summary({'build mode' : get_option('mode')})
 #else // 0
 skip_deps = false
 #endif // 0
@@ -221,6 +218,21 @@ polkitpolicydir = datadir / 'polkit-1/actions'
 # if docdir == ''
 #         docdir = datadir / 'doc/systemd'
 # endif
+#
+# dbuspolicydir = get_option('dbuspolicydir')
+# if dbuspolicydir == ''
+#         dbuspolicydir = datadir / 'dbus-1/system.d'
+# endif
+#
+# dbussessionservicedir = get_option('dbussessionservicedir')
+# if dbussessionservicedir == ''
+#         dbussessionservicedir = datadir / 'dbus-1/services'
+# endif
+#
+# dbussystemservicedir = get_option('dbussystemservicedir')
+# if dbussystemservicedir == ''
+#         dbussystemservicedir = datadir / 'dbus-1/system-services'
+# endif
 #else // 0
 pkgdatadir = join_paths(datadir, 'elogind')
 pkgsysconfdir = join_paths(sysconfdir, 'elogind')
@@ -247,6 +259,7 @@ varrunissymllink = run_command('test', '-L', '/var/run').returncode() == 0
 message('Setting VARRUN_IS_SYMLINK to: @0@'.format(varrunissymllink))
 conf.set10('VARRUN_IS_SYMLINK', varrunissymllink)
 #endif // 1
+
 pamlibdir = get_option('pamlibdir')
 if pamlibdir == ''
         pamlibdir = rootlibdir / 'security'
@@ -698,11 +711,6 @@ else
 endif
 
 versiondep = declare_dependency(sources: version_h)
-
-shared_lib_tag = get_option('shared-lib-tag')
-if shared_lib_tag == ''
-        shared_lib_tag = meson.project_version()
-endif
 
 sh = find_program('sh')
 echo = find_program('echo')
@@ -1176,11 +1184,8 @@ else
         # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
         # (like clang-10/llvm-strip-10)
         clang_bin = cc.get_id() == 'clang' ? cc.cmd_array()[0] : 'clang'
-        if meson.is_cross_build() or clang_bin.contains('afl-clang') or clang_bin.contains('hfuzz-clang')
-                clang_bin = 'clang'
-        endif
         clang = find_program(clang_bin, required : bpf_framework_required)
-        if not meson.is_cross_build() and clang.found()
+        if clang.found()
                 llvm_strip_bin = run_command(clang, '--print-prog-name', 'llvm-strip',
                                              check : true).stdout().strip()
         else
@@ -1695,58 +1700,6 @@ else
 endif
 conf.set10('HAVE_DBUS', have)
 
-dbusdatadir = datadir / 'dbus-1'
-if conf.get('HAVE_DBUS') == 1
-        dbusdatadir = libdbus.get_variable(pkgconfig: 'datadir', default_value: datadir) / 'dbus-1'
-endif
-
-dbuspolicydir = get_option('dbuspolicydir')
-if dbuspolicydir == ''
-        dbuspolicydir = dbusdatadir / 'system.d'
-endif
-
-dbussessionservicedir = get_option('dbussessionservicedir')
-if dbussessionservicedir == ''
-        dbussessionservicedir = dbusdatadir / 'services'
-        if conf.get('HAVE_DBUS') == 1
-                dbussessionservicedir = libdbus.get_variable(pkgconfig: 'session_bus_services_dir', default_value: dbussessionservicedir)
-        endif
-endif
-
-dbussystemservicedir = get_option('dbussystemservicedir')
-if dbussystemservicedir == ''
-        dbussystemservicedir = dbusdatadir / 'system-services'
-        if conf.get('HAVE_DBUS') == 1
-                dbussystemservicedir = libdbus.get_variable(pkgconfig: 'system_bus_services_dir', default_value: dbussystemservicedir)
-        endif
-endif
-
-dbus_interfaces_dir = get_option('dbus-interfaces-dir')
-if dbus_interfaces_dir == '' or dbus_interfaces_dir == 'yes'
-        if meson.is_cross_build() and dbus_interfaces_dir != 'yes'
-                dbus_interfaces_dir = 'no'
-                warning('Exporting D-Bus interface XML files is disabled during cross build. Pass path or "yes" to force enable.')
-        else
-                dbus_interfaces_dir = dbusdatadir / 'interfaces'
-                if conf.get('HAVE_DBUS') == 1
-                        dbus_interfaces_dir = libdbus.get_variable(pkgconfig: 'interfaces_dir', default_value: dbus_interfaces_dir)
-                endif
-        endif
-endif
-if dbus_interfaces_dir == dbusdatadir / 'interfaces' or dbus_interfaces_dir == 'no'
-        dbus_interfaces_dir_name = 'interfaces'
-        dbus_interfaces_dir_parent = dbusdatadir
-else
-        elements = dbus_interfaces_dir.split('/')
-        dbus_interfaces_dir_name = elements[-1]
-        dbus_interfaces_dir_parent = '/'
-        foreach elem : elements
-                if elem == dbus_interfaces_dir_name and dbus_interfaces_dir == dbus_interfaces_dir_parent / dbus_interfaces_dir_name
-                        break
-                endif
-                dbus_interfaces_dir_parent = dbus_interfaces_dir_parent / elem
-        endforeach
-endif
 
 #if 0 /// UNNEEDED by elogind
 # # We support one or the other. If gcrypt is available, we assume it's there to
@@ -1759,7 +1712,7 @@ endif
 #            opt == 'openssl' or (opt == 'auto' and conf.get('HAVE_OPENSSL') == 1 and conf.get('HAVE_GCRYPT') == 0))
 # conf.set10('HAVE_OPENSSL_OR_GCRYPT',
 #            conf.get('HAVE_OPENSSL') == 1 or conf.get('HAVE_GCRYPT') == 1)
-# lib_openssl_or_gcrypt = conf.get('PREFER_OPENSSL') == 1 ? [libopenssl] : [libgcrypt, libgpg_error]
+# lib_openssl_or_gcrypt = conf.get('PREFER_OPENSSL') == 1 ? libopenssl : libgcrypt
 #
 # dns_over_tls = get_option('dns-over-tls')
 # if dns_over_tls != 'false'
@@ -2048,6 +2001,17 @@ public_programs = []
 
 # D-Bus introspection XML export
 dbus_programs = []
+dbus_interfaces_dir = get_option('dbus-interfaces-dir')
+if dbus_interfaces_dir == ''
+        if not meson.is_cross_build()
+                dbus_interfaces_dir = datadir / 'dbus-1'
+        else
+                message('D-Bus interfaces export is disabled during cross build. Pass path or yes to force enable.')
+                dbus_interfaces_dir = 'no'
+        endif
+elif dbus_interfaces_dir == 'yes'
+        dbus_interfaces_dir = datadir / 'dbus-1'
+endif
 
 basic_includes = include_directories(
         'src/basic',
@@ -2404,7 +2368,12 @@ test_dlopen = executable(
 #         link_with : [libcore,
 #                      libshared],
 #         dependencies : [versiondep,
-#                         libseccomp],
+#                         threads,
+#                         librt,
+#                         libseccomp,
+#                         libselinux,
+#                         libmount,
+#                         libblkid],
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
@@ -2420,7 +2389,12 @@ test_dlopen = executable(
 #         link_with : [libcore,
 #                      libshared],
 #         dependencies : [versiondep,
-#                         libseccomp],
+#                         threads,
+#                         librt,
+#                         libseccomp,
+#                         libselinux,
+#                         libmount,
+#                         libblkid],
 #         install_rpath : rootlibexecdir,
 #         install : conf.get('ENABLE_ANALYZE'))
 #
@@ -2577,6 +2551,7 @@ test_dlopen = executable(
 #                              libsystemd_resolve_core],
 #                 dependencies : [threads,
 #                                 lib_openssl_or_gcrypt,
+#                                 libgpg_error,
 #                                 libm,
 #                                 libidn],
 #                 install_rpath : rootlibexecdir,
@@ -3713,7 +3688,6 @@ public_programs += executable(
         busctl_sources,
         include_directories : includes,
         link_with : [libshared],
-        dependencies : [versiondep],
         install_rpath : rootlibexecdir,
         install : true)
 
@@ -4201,7 +4175,6 @@ subdir('shell-completion/zsh')
 
 install_subdir('factory/etc',
                install_dir : factorydir)
-subdir('factory/templates')
 
 #if 0 /// UNNEEDED by elogind
 # if install_sysconfdir
@@ -4391,9 +4364,9 @@ alias_target('update-man-rules', update_man_rules)
 #if 0 /// elogind is not (and never will be) PID 1
 # custom_target(
 #         'export-dbus-interfaces',
-#         output : dbus_interfaces_dir_name,
+#         output : 'interfaces',
 #         install : dbus_interfaces_dir != 'no',
-#         install_dir : dbus_interfaces_dir_parent,
+#         install_dir : dbus_interfaces_dir,
 #         command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
 #
 # ############################################################
@@ -4403,6 +4376,7 @@ alias_target('update-man-rules', update_man_rules)
 #endif // 0
 
 summary({
+        'build mode' :                      get_option('mode'),
         'split /usr' :                      split_usr,
         'split bin-sbin' :                  split_bin,
         'prefix directory' :                prefixdir,
@@ -4426,11 +4400,9 @@ summary({
         'D-Bus policy directory' :          dbuspolicydir,
         'D-Bus session directory' :         dbussessionservicedir,
         'D-Bus system directory' :          dbussystemservicedir,
-        'D-Bus interfaces directory' :      dbus_interfaces_dir,
         'bash completions directory' :      bashcompletiondir,
         'zsh completions directory' :       zshcompletiondir,
 #if 0 /// UNNEEDED by elogind
-#         'private shared lib version tag' :  shared_lib_tag,
 #         'extra start script' :              get_option('rc-local'),
 #         'debug shell' :                     '@0@ @ @1@'.format(get_option('debug-shell'),
 #                                                                get_option('debug-tty')),
@@ -4484,6 +4456,17 @@ summary({
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
 /// elogind empty mask removed (UNSUPPORTED by elogind (at the moment))
+if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_GNU_EFI') == 1
+        summary({
+                'EFI machine type' :                efi_arch[0],
+                'EFI CC' :                          '@0@'.format(' '.join(efi_cc)),
+                'EFI LD' :                          efi_ld,
+                'EFI lds' :                         efi_lds,
+                'EFI crt0' :                        efi_crt0,
+                'EFI include directory' :           efi_incdir},
+                section : 'Extensible Firmware Interface')
+endif
+
 found = []
 missing = []
 
