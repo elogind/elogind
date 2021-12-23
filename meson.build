@@ -51,6 +51,9 @@ conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
 # skip_deps = want_ossfuzz or want_libfuzzer
 # fuzzer_build = want_ossfuzz or want_libfuzzer
 #
+# # Create a title-less summary section early, so it ends up first in the output.
+# # More items are added later after they have been detected.
+# summary({'build mode' : get_option('mode')})
 #else // 0
 skip_deps = false
 #endif // 0
@@ -4178,7 +4181,6 @@ subdir('shell-completion/zsh')
 
 install_subdir('factory/etc',
                install_dir : factorydir)
-subdir('factory/templates')
 
 #if 0 /// UNNEEDED by elogind
 # if install_sysconfdir
@@ -4380,7 +4382,6 @@ alias_target('update-man-rules', update_man_rules)
 #endif // 0
 
 summary({
-        'build mode' :                      get_option('mode'),
         'split /usr' :                      split_usr,
         'split bin-sbin' :                  split_bin,
         'prefix directory' :                prefixdir,
@@ -4460,17 +4461,6 @@ summary({
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
 /// elogind empty mask removed (UNSUPPORTED by elogind (at the moment))
-if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_GNU_EFI') == 1
-        summary({
-                'EFI machine type' :                efi_arch[0],
-                'EFI CC' :                          '@0@'.format(' '.join(efi_cc)),
-                'EFI LD' :                          efi_ld,
-                'EFI lds' :                         efi_lds,
-                'EFI crt0' :                        efi_crt0,
-                'EFI include directory' :           efi_incdir},
-                section : 'Extensible Firmware Interface')
-endif
-
 found = []
 missing = []
 
