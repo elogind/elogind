@@ -238,7 +238,7 @@ static void match_free_if_empty(Match *m) {
 
 _public_ int sd_journal_add_match(sd_journal *j, const void *data, size_t size) {
 #if 0 /// UNSUPPORTED by elogind
-        Match *l3, *l4, *add_here = NULL, *m;
+        Match *l3, *l4, *add_here = NULL, *m = NULL;
         uint64_t hash;
 
         assert_return(j, -EINVAL);
@@ -327,6 +327,7 @@ _public_ int sd_journal_add_match(sd_journal *j, const void *data, size_t size) 
         return 0;
 
 fail:
+        match_free(m);
         match_free_if_empty(add_here);
         match_free_if_empty(j->level2);
         match_free_if_empty(j->level1);
