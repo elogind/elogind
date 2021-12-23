@@ -4178,6 +4178,7 @@ subdir('shell-completion/zsh')
 
 install_subdir('factory/etc',
                install_dir : factorydir)
+subdir('factory/templates')
 
 
 #if 0 /// UNNEEDED by elogind
