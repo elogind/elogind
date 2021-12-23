@@ -215,7 +215,7 @@ static Match *match_new(Match *p, MatchType t) {
         return m;
 }
 
-static Match *match_free(Match *m) {
+static void match_free(Match *m) {
         assert(m);
 
         while (m->matches)
@@ -225,14 +225,14 @@ static Match *match_free(Match *m) {
                 LIST_REMOVE(matches, m->parent->matches, m);
 
         free(m->data);
-        return mfree(m);
+        free(m);
 }
 
-static Match *match_free_if_empty(Match *m) {
+static void match_free_if_empty(Match *m) {
         if (!m || m->matches)
-                return m;
+                return;
 
-        return match_free(m);
+        match_free(m);
 }
 #endif // 0
 
@@ -329,9 +329,9 @@ _public_ int sd_journal_add_match(sd_journal *j, const void *data, size_t size) 
 fail:
         match_free(m);
         match_free_if_empty(add_here);
-        j->level2 = match_free_if_empty(j->level2);
-        j->level1 = match_free_if_empty(j->level1);
-        j->level0 = match_free_if_empty(j->level0);
+        match_free_if_empty(j->level2);
+        match_free_if_empty(j->level1);
+        match_free_if_empty(j->level0);
 
         return -ENOMEM;
 #else // 0
