@@ -616,11 +616,11 @@ int bus_message_pcap_frame(sd_bus_message *m, size_t snaplen, FILE *f) {
         assert(snaplen > 0);
         assert((size_t) (uint32_t) snaplen == snaplen);
 
-
         ts = m->realtime ?: now(CLOCK_REALTIME);
         msglen = BUS_MESSAGE_SIZE(m);
         caplen = MIN(msglen, snaplen);
         pad = ALIGN4(caplen) - caplen;
+
         /* packet block has no options */
         length = sizeof(struct pcapng_enhance_packet_block)
                 + caplen + pad + sizeof(uint32_t);
