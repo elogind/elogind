@@ -677,14 +677,14 @@ tests += [
 #           'src/test/nss-test-util.h'],
 #          [],
 #          [libdl],
-#          [], 'ENABLE_NSS', 'manual'],
+#          [], 'ENABLE_NSS'],
 #
 #         [['src/test/test-nss-users.c',
 #           'src/test/nss-test-util.c',
 #           'src/test/nss-test-util.h'],
 #          [],
 #          [libdl],
-#          [], 'ENABLE_NSS', 'manual'],
+#          [], 'ENABLE_NSS'],
 #
 #endif // 0
         [['src/test/test-bus-util.c']],
