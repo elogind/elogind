@@ -1714,7 +1714,6 @@ error:
 #endif // 0
 
 int manager_dispatch_delayed(Manager *manager, bool timeout) {
-
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         Inhibitor *offending = NULL;
         int r;
@@ -1756,7 +1755,6 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 #if 0 /// elogind has no action_unit but a pending_action
                 manager->action_unit = NULL;
                 manager->action_what = 0;
-                return r;
 #else // 0
                 manager->pending_action = HANDLE_IGNORE;
                 manager->action_what    = 0;
@@ -1764,7 +1762,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 #endif // 0
         }
 
-        return 1;
+        return 1; /* We did some work. */
 }
 
 static int manager_inhibit_timeout_handler(
@@ -1773,13 +1771,11 @@ static int manager_inhibit_timeout_handler(
                         void *userdata) {
 
         Manager *manager = userdata;
-        int r;
 
         assert(manager);
         assert(manager->inhibit_timeout_source == s);
 
-        r = manager_dispatch_delayed(manager, true);
-        return (r < 0) ? r : 0;
+        return manager_dispatch_delayed(manager, true);
 }
 
 #if 0 /// elogind does not have unit_name but action
