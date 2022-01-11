@@ -11,7 +11,7 @@ test_hashmap_ordered_c = custom_target(
 
 test_include_dir = include_directories('.')
 
-path = run_command(sh, '-c', 'echo "$PATH"').stdout().strip()
+path = run_command(sh, '-c', 'echo "$PATH"', check: true).stdout().strip()
 test_env = environment()
 #if 0 /// UNNEEDED in elogind
 # test_env.set('SYSTEMD_LANGUAGE_FALLBACK_MAP', language_fallback_map)
@@ -722,8 +722,8 @@ tests += [
          [libshared_static,
           libelogind_static]],
 
-         [libelogind],
         [files('../libelogind/sd-device/test-sd-device-thread.c'),
+         [libelogind],
          [threads]],
 
 #if 0 /// elogind does not ship libudev itself
