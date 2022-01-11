@@ -88,6 +88,7 @@ void log_close(void);
 void log_forget_fds(void);
 #endif // 0
 
+void log_parse_environment_variables(void);
 void log_parse_environment(void);
 
 int log_dispatch_internal(
