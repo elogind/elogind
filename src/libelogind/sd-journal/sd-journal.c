@@ -624,9 +624,9 @@ static int find_location_for_match(
                 /* FIXME: missing: find by monotonic */
 
                 if (j->current_location.type == LOCATION_HEAD)
-                        return journal_file_next_entry_for_data(f, dp, DIRECTION_DOWN, ret, offset);
+                        return journal_file_next_entry_for_data(f, NULL, 0, dp, DIRECTION_DOWN, ret, offset);
                 if (j->current_location.type == LOCATION_TAIL)
-                        return journal_file_next_entry_for_data(f, dp, DIRECTION_UP, ret, offset);
+                        return journal_file_next_entry_for_data(f, NULL, 0, dp, DIRECTION_UP, ret, offset);
                 if (j->current_location.seqnum_set && sd_id128_equal(j->current_location.seqnum_id, f->header->seqnum_id))
                         return journal_file_move_to_entry_by_seqnum_for_data(f, dp, j->current_location.seqnum, direction, ret, offset);
                 if (j->current_location.monotonic_set) {
@@ -637,7 +637,7 @@ static int find_location_for_match(
                 if (j->current_location.realtime_set)
                         return journal_file_move_to_entry_by_realtime_for_data(f, dp, j->current_location.realtime, direction, ret, offset);
 
-                return journal_file_next_entry_for_data(f, dp, direction, ret, offset);
+                return journal_file_next_entry_for_data(f, NULL, 0, dp, direction, ret, offset);
 
         } else if (m->type == MATCH_OR_TERM) {
                 uint64_t np = 0;
@@ -2402,8 +2402,8 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
                 p = le64toh(o->entry.items[i].object_offset);
                 le_hash = o->entry.items[i].hash;
                 r = journal_file_move_to_object(f, OBJECT_DATA, p, &d);
-                if (r == -EBADMSG) {
-                        log_debug("Entry item %"PRIu64" data object is bad, skipping over it.", i);
+                if (IN_SET(r, -EADDRNOTAVAIL, -EBADMSG)) {
+                        log_debug_errno(r, "Entry item %"PRIu64" data object is bad, skipping over it: %m", i);
                         continue;
                 }
                 if (r < 0)
@@ -2551,8 +2551,8 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
                 p = le64toh(o->entry.items[j->current_field].object_offset);
                 le_hash = o->entry.items[j->current_field].hash;
                 r = journal_file_move_to_object(f, OBJECT_DATA, p, &o);
-                if (r == -EBADMSG) {
-                        log_debug("Entry item %"PRIu64" data object is bad, skipping over it.", j->current_field);
+                if (IN_SET(r, -EADDRNOTAVAIL, -EBADMSG)) {
+                        log_debug_errno(r, "Entry item %"PRIu64" data object is bad, skipping over it: %m", j->current_field);
                         continue;
                 }
                 if (r < 0)
