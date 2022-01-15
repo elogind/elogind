@@ -1425,7 +1425,7 @@ int device_read_db_internal_filename(sd_device *device, const char *filename) {
 
         device->db_loaded = true;
 
-        for (size_t i = 0; i < db_len; i++) {
+        for (size_t i = 0; i < db_len; i++)
                 switch (state) {
                 case PRE_KEY:
                         if (!strchr(NEWLINE, db[i])) {
@@ -1473,7 +1473,6 @@ int device_read_db_internal_filename(sd_device *device, const char *filename) {
                 default:
                         return log_device_debug_errno(device, SYNTHETIC_ERRNO(EINVAL), "sd-device: invalid db syntax.");
                 }
-        }
 
         return 0;
 }
