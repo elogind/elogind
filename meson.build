@@ -719,15 +719,14 @@ perl = find_program('perl', required : false)
 #endif // 0
 meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #if 0 /// UNNEEDED by elogind
-# test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
 #endif // 0
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
 meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
+
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// UNNEEDED by elogind
-# splash_bmp = files('test/splash.bmp')
 #endif // 0
 
 # If -Dxxx-path option is found, use that. Otherwise, check in $PATH,
@@ -4033,9 +4032,9 @@ executable('elogind-uaccess-command',
 
 ############################################################
 
+runtest_env = custom_target(
         'elogind-runtest.env',
         output : 'elogind-runtest.env',
-runtest_env = custom_target(
         command : [sh, '-c',
                    '{ echo SYSTEMD_TEST_DATA=@0@; echo SYSTEMD_CATALOG_DIR=@1@; } >@OUTPUT@'.format(
                            project_source_root / 'test',
