@@ -142,6 +142,7 @@ static inline int fd_inc_rcvbuf(int fd, size_t n) {
 #if 0 /// UNNEEDED by elogind
 int ip_tos_to_string_alloc(int i, char **s);
 int ip_tos_from_string(const char *s);
+#endif // 0
 
 typedef enum {
         IFNAME_VALID_ALTERNATIVE = 1 << 0,
@@ -153,6 +154,7 @@ bool ifname_valid_full(const char *p, IfnameValidFlags flags);
 static inline bool ifname_valid(const char *p) {
         return ifname_valid_full(p, 0);
 }
+#if 0 /// UNNEEDED by elogind
 bool address_label_valid(const char *p);
 #endif // 0
 

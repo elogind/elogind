@@ -15,9 +15,9 @@ static inline void save_argc_argv(int argc, char **argv) {
         saved_argv = argv;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool kexec_loaded(void);
 
+#if 0 /// UNNEEDED by elogind
 int prot_from_flags(int flags) _const_;
 
 bool in_initrd(void);

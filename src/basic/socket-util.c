@@ -756,6 +756,7 @@ static const char* const ip_tos_table[] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(ip_tos, int, 0xff);
+#endif // 0
 
 bool ifname_valid_char(char a) {
         if ((unsigned char) a >= 127U)
@@ -820,6 +821,7 @@ bool ifname_valid_full(const char *p, IfnameValidFlags flags) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool address_label_valid(const char *p) {
 
         if (isempty(p))

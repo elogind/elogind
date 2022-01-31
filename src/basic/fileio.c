@@ -959,7 +959,6 @@ int xfopenat(int dir_fd, const char *path, const char *mode, int flags, FILE **r
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int search_and_fopen_internal(
                 const char *path,
                 const char *mode,
@@ -1001,6 +1000,7 @@ static int search_and_fopen_internal(
         return -ENOENT;
 }
 
+#if 0 /// UNNEEDED by elogind
 int search_and_fopen(
                 const char *filename,
                 const char *mode,
@@ -1042,6 +1042,7 @@ int search_and_fopen(
 
         return search_and_fopen_internal(filename, mode, root, copy, ret, ret_path);
 }
+#endif // 0
 
 int search_and_fopen_nulstr(
                 const char *filename,
@@ -1080,7 +1081,6 @@ int search_and_fopen_nulstr(
 
         return search_and_fopen_internal(filename, mode, root, s, ret, ret_path);
 }
-#endif // 0
 
 int chase_symlinks_and_fopen_unlocked(
                 const char *path,

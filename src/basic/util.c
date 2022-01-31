@@ -26,8 +26,6 @@ char **saved_argv = NULL;
 static int saved_in_initrd = -1;
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-
 bool kexec_loaded(void) {
        _cleanup_free_ char *s = NULL;
 
@@ -37,6 +35,7 @@ bool kexec_loaded(void) {
        return s[0] == '1';
 }
 
+#if 0 /// UNNEEDED by elogind
 int prot_from_flags(int flags) {
 
         switch (flags & O_ACCMODE) {
