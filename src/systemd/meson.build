@@ -18,7 +18,7 @@ _systemd_headers = '''
 # https://github.com/mesonbuild/meson/issues/1633
 systemd_headers = files(_systemd_headers)
 
-#if 0 /// elogind has none of them
+#if 0 /// elogind does not need all of these
 # _not_installed_headers = '''
 #         sd-dhcp6-client.h
 #         sd-dhcp6-lease.h
@@ -37,6 +37,10 @@ systemd_headers = files(_systemd_headers)
 #         sd-resolve.h
 #         sd-utf8.h
 # '''.split()
+#else // 0
+_not_installed_headers = '''
+        sd-netlink.h
+'''.split()
 #endif // 0
 
 install_headers(
@@ -81,10 +85,10 @@ endif
 # endif
 #endif // 0
 
-#if 0 /// neither not_installed nor libudev headers get shipped with elogind
+#if 0 /// libudev headers are not shipped with elogind
 # foreach header : _systemd_headers + _not_installed_headers + [libudev_h_path]
 #else // 0
-foreach header : _systemd_headers
+foreach header : _systemd_headers + _not_installed_headers
 #endif // 0
         foreach opt : opts
                 std_name = opt.length() == 2 ? '_'.join(opt[1].split(':')) : ''
