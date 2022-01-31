@@ -402,11 +402,15 @@ static int execute(
 }
 
 #else // 0
-static int execute(Manager* m, char const* verb, char **modes, char **states) {
+static int execute(
+        const Manager* m,
+        SleepOperation operation,
+        const char *action) {
+
         char* arguments[] = {
                 NULL,
                 (char*) "pre",
-                (char*) verb,
+                (char*) sleep_operation_to_string(operation),
                 NULL
         };
         static const char* const dirs[] = {
@@ -424,7 +428,7 @@ static int execute(Manager* m, char const* verb, char **modes, char **states) {
         int e;
         _cleanup_free_ char *l = NULL;
 
-        log_debug_elogind("Called for '%s' (Manager is %s)", verb, m ? "Set" : "NULL");
+        log_debug_elogind("Called for '%s' (Manager is %s)", sleep_operation_to_string(operation), m ? "Set" : "NULL");
 
         assert(m);
 
@@ -539,11 +543,7 @@ static int execute_s2h(Manager *sleep_config) {
         if (r < 0)
                 return log_error_errno(errno, "Error setting hibernate timer: %m");
 
-#if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config, SLEEP_SUSPEND, NULL);
-#else // 0
-        r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
-#endif // 0
         if (r < 0)
                 return r;
 
@@ -559,19 +559,11 @@ static int execute_s2h(Manager *sleep_config) {
         log_debug("Attempting to hibernate after waking from %s timer",
                   format_timespan(buf, sizeof(buf), sleep_config->hibernate_delay_sec, USEC_PER_SEC));
 
-#if 0 /// For the elogind extra stuff, we have to submit the manager instance
         r = execute(sleep_config, SLEEP_HIBERNATE, NULL);
-#else // 0
-        r = execute(sleep_config, "hibernate", sleep_config->hibernate_modes, sleep_config->hibernate_states);
-#endif // 0
         if (r < 0) {
                 log_notice("Couldn't hibernate, will try to suspend again.");
 
-#if 0 /// For the elogind extra stuff, we have to submit the manager instance
                 r = execute(sleep_config, SLEEP_SUSPEND, "suspend-after-failed-hibernate");
-#else // 0
-                r = execute(sleep_config, "suspend", sleep_config->suspend_modes, sleep_config->suspend_states);
-#endif // 0
                 if (r < 0)
                         return r;
         }
