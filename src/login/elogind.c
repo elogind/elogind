@@ -374,12 +374,10 @@ void elogind_manager_free( Manager* m ) {
 
         safe_close( m->cgroups_agent_fd );
 
-        strv_free( m->suspend_modes );
-        strv_free( m->suspend_states );
-        strv_free( m->hibernate_modes );
-        strv_free( m->hibernate_states );
-        strv_free( m->hybrid_modes );
-        strv_free( m->hybrid_states );
+        for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
+                strv_free(m->modes[i]);
+                strv_free(m->states[i]);
+        }
 }
 
 
@@ -403,18 +401,12 @@ int elogind_manager_new( Manager* m ) {
         /* allow manipulating Nvidia cards */
         m->handle_nvidia_sleep = false;
 
-        /* Init sleep modes and states */
-        m->suspend_modes       = NULL;
-        m->suspend_states      = NULL;
-        m->hibernate_modes     = NULL;
-        m->hibernate_states    = NULL;
-        m->hybrid_modes        = NULL;
-        m->hybrid_states       = NULL;
-        m->hibernate_delay_sec = 0;
-        m->allow_suspend       = true;
-        m->allow_hibernate     = true;
-        m->allow_hybrid_sleep  = true;
-        m->allow_s2h           = true;
+        /* Init sleep values */
+        m->allow[SLEEP_SUSPEND]                = true;
+        m->allow[SLEEP_HIBERNATE]              = true;
+        m->allow[SLEEP_HYBRID_SLEEP]           = true;
+        m->allow[SLEEP_SUSPEND_THEN_HIBERNATE] = true;
+        m->hibernate_delay_sec                 = 0;
 
         /* If elogind should be its own controller, mount its cgroup */
         if ( streq( SYSTEMD_CGROUP_CONTROLLER, "_elogind" ) ) {

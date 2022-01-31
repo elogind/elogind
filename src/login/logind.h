@@ -12,6 +12,7 @@
 #include "hashmap.h"
 #include "list.h"
 #include "set.h"
+//#include "sleep-config.h"
 #include "time-util.h"
 #include "user-record.h"
 
@@ -26,6 +27,8 @@ typedef struct Manager Manager;
 #include "cgroup-util.h"
 #include "elogind.h"
 #include "musl_missing.h"
+#include "sleep-config.h"
+
 
 #if 1 /// elogind has to ident itself
 #define MANAGER_IS_SYSTEM(m)   (  (m)->is_system)
@@ -114,18 +117,9 @@ struct Manager {
         char *action_job;
 #else // 0
         /* Suspension and hibernation can be disabled in logind.conf. */
-        bool allow_suspend;         /* AllowSuspend */
-        bool allow_hibernate;       /* AllowHibernation */
-        bool allow_s2h;             /* AllowSuspendThenHibernate */
-        bool allow_hybrid_sleep;    /* AllowHybridSleep */
-
-        char **suspend_modes;       /* SuspendMode */
-        char **suspend_states;      /* SuspendState */
-        char **hibernate_modes;     /* HibernateMode */
-        char **hibernate_states;    /* HibernateState */
-        char **hybrid_modes;        /* HybridSleepMode */
-        char **hybrid_states;       /* HybridSleepState */
-
+        bool allow[_SLEEP_OPERATION_MAX];
+        char **modes[_SLEEP_OPERATION_MAX];
+        char **states[_SLEEP_OPERATION_MAX];
         usec_t hibernate_delay_sec; /* HibernateDelaySec */
 
         /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or

@@ -1978,17 +1978,19 @@ static int method_do_shutdown_or_sleep(
                         return r;
                 if ((flags & ~SD_LOGIND_SHUTDOWN_AND_SLEEP_FLAGS_PUBLIC) != 0)
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid flags parameter");
+#if 0 /// elogind uses its own "HandleAction"
                 if (!streq(unit_name, SPECIAL_REBOOT_TARGET) && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
+#else // 0
+                if ((HANDLE_REBOOT != unit_name) && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
+#endif // 0
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Reboot via kexec is only applicable with reboot operations");
+
         } else {
                 /* Old style method: no flags parameter, but interactive bool passed as boolean in
                  * payload. Let's convert this argument to the new-style flags parameter for our internal
                  * use. */
                 int interactive;
 
-        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
-                          __FUNCTION__, action, strnull(sleep_verb),
-                          interactive ? "" : "NOT ");
                 r = sd_bus_message_read(message, "b", &interactive);
                 if (r < 0)
                         return r;
@@ -1996,19 +1998,28 @@ static int method_do_shutdown_or_sleep(
                 flags = interactive ? SD_LOGIND_INTERACTIVE : 0;
         }
 
+        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
+                          __FUNCTION__, action,
+                          sleep_operation_to_string(sleep_operation),
+                          flags & SD_LOGIND_INTERACTIVE ? "" : "NOT ");
+
         if ((flags & SD_LOGIND_REBOOT_VIA_KEXEC) && kexec_loaded())
+#if 0 /// elogind uses HandleAction enum instead of char strings
                 unit_name = SPECIAL_KEXEC_TARGET;
+#else // 0
+                unit_name = HANDLE_KEXEC;
+#endif // 0
 
         /* Don't allow multiple jobs being executed at the same time */
         if (m->action_what > 0)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS,
                                          "There's already a shutdown or sleep operation in progress");
 
-#if 0 /// Within elogind the manager m must be provided, too
         if (sleep_operation >= 0) {
+#if 0 /// Within elogind the manager m must be provided, too
                 r = can_sleep(sleep_operation);
 #else // 0
-                r = can_sleep(m, sleep_verb);
+                r = can_sleep(m, sleep_operation);
 #endif // 0
                 if (r == -ENOSPC)
                         return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
@@ -2525,11 +2536,11 @@ static int method_can_shutdown_or_sleep(
         assert(action_multiple_sessions);
         assert(action_ignore_inhibit);
 
-#if 0 /// elogind needs to have the manager being passed
         if (sleep_operation >= 0) {
+#if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(sleep_operation);
 #else // 0
-                r = can_sleep(m, sleep_verb);
+                r = can_sleep(m, sleep_operation);
 #endif // 0
                 if (IN_SET(r,  0, -ENOSPC))
                         return sd_bus_reply_method_return(message, "s", "na");
@@ -2571,8 +2582,8 @@ static int method_can_shutdown_or_sleep(
                         }
                 }
 #else // 0
-                log_debug_elogind("CanShutDownOrSleep: %s [%d] %s blocked",
-                                  sleep_verb, handle, blocked ? "is" : "not");
+                log_debug_elogind("CanShutDownOrSleep: %d [%d] %s blocked",
+                                  sleep_operation, handle, blocked ? "is" : "not");
 #endif // 0
         }
 
