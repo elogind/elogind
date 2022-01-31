@@ -387,19 +387,19 @@ msgstr ""
 "Legitimierung ist erforderlich, damit nicht angemeldete Benutzer Programme "
 "ausführen dürfen."
 
-# https://www.freedesktop.org/software/systemd/man/sd-login.html
+# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Allow attaching devices to seats"
 msgstr "Das Anschließen von Geräten an Arbeitsstationen erlauben"
 
-# https://www.freedesktop.org/software/systemd/man/sd-login.html
+# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:149
 msgid "Authentication is required to attach a device to a seat."
 msgstr ""
 "Legitimierung ist zum Anschließen eines Geräts an eine Arbeitsstation "
 "notwendig."
 
-# https://www.freedesktop.org/software/systemd/man/sd-login.html
+# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:159
 msgid "Flush device to seat attachments"
 msgstr "Zurücksetzen der an eine Arbeitsstation angeschlossenen Geräte"
@@ -689,17 +689,17 @@ msgstr "Nachricht an alle einstellen"
 msgid "Authentication is required to set a wall message"
 msgstr "Legitimierung ist zum Einstellen einer Nachricht an alle notwendig"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to set the local hostname."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Legitimierung ist zum Festlegen des lokalen Rechnernamens notwendig"
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to set the local hostname."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Legitimierung ist zum Festlegen des lokalen Rechnernamens notwendig"
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "In einem lokalen Container anmelden"

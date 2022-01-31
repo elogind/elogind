@@ -878,9 +878,9 @@ msgstr "仮想ターミナルを変更するには認証が必要です。"
 # "'$(unit)'."
 # msgstr ""
 # "'$(unit)'に関連付けられたファイルやディレクトリの削除には認証が必要です。"
+#
+# #: src/core/dbus-unit.c:757
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "'$(unit)'のプロセスを凍結もしくは凍結解除するには認証が必要です。"
 #endif // 0
-
-#: src/core/dbus-unit.c:757
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "'$(unit)'のプロセスを凍結もしくは凍結解除するには認証が必要です。"

@@ -598,17 +598,17 @@ msgstr ""
 msgid "Authentication is required to set a wall message"
 msgstr ""
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to set the local hostname."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to set the local hostname."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Prihlásenie do miestneho kontajneru"
@@ -982,21 +982,21 @@ msgstr ""
 # #: src/core/dbus-unit.c:599
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
+#
+# #: src/core/dbus-unit.c:708
+# #, fuzzy
+# #| msgid "Authentication is required to reload the systemd state."
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
+#
+# #: src/core/dbus-unit.c:757
+# #, fuzzy
+# #| msgid "Authentication is required to reload the systemd state."
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
 #endif // 0
-
-#: src/core/dbus-unit.c:708
-#, fuzzy
-#| msgid "Authentication is required to reload the systemd state."
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
-
-#: src/core/dbus-unit.c:757
-#, fuzzy
-#| msgid "Authentication is required to reload the elogind state."
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."

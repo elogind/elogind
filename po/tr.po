@@ -603,15 +603,15 @@ msgstr "Bir duvar mesajı ayarla"
 msgid "Authentication is required to set a wall message"
 msgstr "Duvar mesajı ayarlamak için kimlik doğrulaması gereklidir"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr "Oturumu Değiştir"
+
+#: src/login/org.freedesktop.login1.policy:407
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Sanal uçbirimi değiştirmek kimlik doğrulaması gerektirir."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr "Oturumu Değiştir"
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Sanal uçbirimi değiştirmek kimlik doğrulaması gerektirir."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Yerel kapsayıcıda oturum aç"

@@ -647,17 +647,17 @@ msgstr "Falüzenet beállítása"
 msgid "Authentication is required to set a wall message"
 msgstr "Hitelesítés szükséges a falüzenet beállításához"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to set the local hostname."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Hitelesítés szükséges a helyi gépnév beállításához."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to set the local hostname."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Hitelesítés szükséges a helyi gépnév beállításához."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Bejelentkezés helyi konténerbe"
@@ -1033,27 +1033,27 @@ msgstr "Hitelesítés szükséges a falüzenet beállításához"
 # msgstr ""
 # "Hitelesítés szükséges a következő tulajdonságainak beállításához: „$(unit)”."
 #
+# #: src/core/dbus-unit.c:708
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Hitelesítés szükséges a következő „sikertelen” állapotának törléséhez: "
+# "„$(unit)”."
+#
+# #: src/core/dbus-unit.c:757
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Hitelesítés szükséges a következő „sikertelen” állapotának törléséhez: "
+# "„$(unit)”."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "Hitelesítés szükséges a következő kilövéséhez: „$(unit)”."
 #endif // 0
-#: src/core/dbus-unit.c:708
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Hitelesítés szükséges a következő „sikertelen” állapotának törléséhez: "
-"„$(unit)”."
-
-#: src/core/dbus-unit.c:757
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Hitelesítés szükséges a következő „sikertelen” állapotának törléséhez: "
-"„$(unit)”."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "Hitelesítés szükséges a következő kilövéséhez: „$(unit)”."

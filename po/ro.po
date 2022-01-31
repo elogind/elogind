@@ -222,8 +222,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Autentificarea este necesară pentru a seta configurările tastaturii."
 #endif // 0
-msgstr "Autentificarea este necesară pentru a seta configurările tastaturii."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
@@ -619,15 +619,15 @@ msgstr "Setează un mesaj pentru toată lumea"
 msgid "Authentication is required to set a wall message"
 msgstr "Autentificarea este necesară pentru a seta un mesaj pentru toată lumea"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr "Schimbă sesiune"
+
+#: src/login/org.freedesktop.login1.policy:407
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Autentificarea este necesară pentru a schimba un terminal virtual."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr "Schimbă sesiune"
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Autentificarea este necesară pentru a schimba un terminal virtual."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Conectare la un container local"
@@ -982,24 +982,24 @@ msgstr "Autentificarea este necesară pentru a seta un mesaj pentru toată lumea
 #
 # #: src/core/dbus-unit.c:599
 # msgid "Authentication is required to set properties on '$(unit)'."
+# msgstr ""
+# "Autentificarea este necesară pentru a seta proprietățile lui „$(unit)”."
+#
+# #: src/core/dbus-unit.c:708
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Autentificarea este necesară pentru a șterge fișierele și directoarele "
+# "asociate lui „$(unit)”."
+#
+# #: src/core/dbus-unit.c:757
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Autentificarea este necesară pentru a îngheța sau dezgheța procesele "
+# "corespunzătoare lui „$(unit)”."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "Autentificarea este necesară pentru a omorî „$(unit)”."
 #endif // 0
-msgstr ""
-"Autentificarea este necesară pentru a seta proprietățile lui „$(unit)”."
-
-#: src/core/dbus-unit.c:708
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Autentificarea este necesară pentru a șterge fișierele și directoarele "
-"asociate lui „$(unit)”."
-
-#: src/core/dbus-unit.c:757
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Autentificarea este necesară pentru a îngheța sau dezgheța procesele "
-"corespunzătoare lui „$(unit)”."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "Autentificarea este necesară pentru a omorî „$(unit)”."

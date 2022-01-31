@@ -12,10 +12,10 @@ src/core/dbus-swap.c
 src/core/dbus-target.c
 src/core/dbus-timer.c
 src/core/dbus-unit.c
-src/core/org.freedesktop.elogind1.policy
+src/core/org.freedesktop.systemd1.policy
 src/hostname/hostnamed.c
 src/locale/localed.c
 src/timedate/timedated.c
 units/debug-shell.service.in
-units/elogind-journald.service.in
+units/systemd-journald.service.in
 units/user@.service.in

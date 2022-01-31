@@ -203,8 +203,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Для наладкі параметраў клавіятуры патрабуецца аўтэнтыфікацыя."
 #endif // 0
-msgstr "Для наладкі параметраў клавіятуры патрабуецца аўтэнтыфікацыя."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
@@ -591,15 +591,15 @@ msgstr "Вызначыць усеагульнае паведамленне"
 msgid "Authentication is required to set a wall message"
 msgstr "Для вызначэння ўсеагульнага паведамлення патрабуецца аўтэнтыфікацыя"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr "Змяніць сеанс"
+
+#: src/login/org.freedesktop.login1.policy:407
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Для змены віртуальнага сеанса патрабуецца аўтэнтыфікацыя."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr "Змяніць сеанс"
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Для змены віртуальнага сеанса патрабуецца аўтэнтыфікацыя."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Увайсці ў лакальны кантэйнер"
@@ -943,23 +943,23 @@ msgstr "Для вызначэння ўсеагульнага паведамле�
 #
 # #: src/core/dbus-unit.c:599
 # msgid "Authentication is required to set properties on '$(unit)'."
+# msgstr "Для змены ўласцівасцей \"$(unit)\" патрабуецца аўтэнтыфікацыя."
+#
+# #: src/core/dbus-unit.c:708
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Для выдалення файлаў і каталогаў, якія звязаныя з \"$(unit)\", патрабуецца "
+# "аўтэнтыфікацыя."
+#
+# #: src/core/dbus-unit.c:757
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Для спынення альбо ўзнаўлення працэсаў \"$(unit)\" патрабуецца "
+# "аўтэнтыфікацыя."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "Неабходна аўтэнтыфікацыя для забойства '$(unit)'."
 #endif // 0
-msgstr "Для змены ўласцівасцей \"$(unit)\" патрабуецца аўтэнтыфікацыя."
-
-#: src/core/dbus-unit.c:708
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Для выдалення файлаў і каталогаў, якія звязаныя з \"$(unit)\", патрабуецца "
-"аўтэнтыфікацыя."
-
-#: src/core/dbus-unit.c:757
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Для спынення альбо ўзнаўлення працэсаў \"$(unit)\" патрабуецца "
-"аўтэнтыфікацыя."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "Неабходна аўтэнтыфікацыя для забойства '$(unit)'."

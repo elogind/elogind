@@ -630,17 +630,17 @@ msgstr "Постави зидну поруку"
 msgid "Authentication is required to set a wall message"
 msgstr "Потребно је да се идентификујете да бисте поставили зидну поруку"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to halt the system."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Потребно је да се идентификујете да бисте зауставили систем."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to halt the system."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Потребно је да се идентификујете да бисте зауставили систем."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Пријави се у локални контејнер"
@@ -1058,23 +1058,23 @@ msgstr "Потребно је да се идентификујете да бис
 # "Потребно је да се идентификујете да бисте поново поставили „неуспешно“ стање "
 # "за „$(unit)“."
 #
+# #~ msgid ""
+# #~ "Authentication is required to halt the system while an application asked "
+# #~ "to inhibit it."
+# #~ msgstr ""
+# #~ "Потребно је да се идентификујете да бисте зауставили систем иако програм "
+# #~ "тражи да се спречи заустављање система."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "Потребно је да се идентификујете да бисте убили „$(unit)“."
+#
+# #~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
+# #~ msgstr ""
+# #~ "Притисните Ctrl+C да бисте прекинули све текуће провере система датотека"
+#
+# #~ msgid "Checking in progress on %d disk (%3.1f%% complete)"
+# #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
+# #~ msgstr[0] "Провера у току на %d диску (%3.1f%% готово)"
+# #~ msgstr[1] "Провера у току на %d диска (%3.1f%% готово)"
+# #~ msgstr[2] "Провера у току на %d дискова (%3.1f%% готово)"
 #endif // 0
-#~ msgid ""
-#~ "Authentication is required to halt the system while an application asked "
-#~ "to inhibit it."
-#~ msgstr ""
-#~ "Потребно је да се идентификујете да бисте зауставили систем иако програм "
-#~ "тражи да се спречи заустављање система."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "Потребно је да се идентификујете да бисте убили „$(unit)“."
-
-#~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
-#~ msgstr ""
-#~ "Притисните Ctrl+C да бисте прекинули све текуће провере система датотека"
-
-#~ msgid "Checking in progress on %d disk (%3.1f%% complete)"
-#~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
-#~ msgstr[0] "Провера у току на %d диску (%3.1f%% готово)"
-#~ msgstr[1] "Провера у току на %d диска (%3.1f%% готово)"
-#~ msgstr[2] "Провера у току на %d дискова (%3.1f%% готово)"

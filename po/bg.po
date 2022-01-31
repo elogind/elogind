@@ -666,17 +666,17 @@ msgstr "Задаване на системно съобщение „wall“"
 msgid "Authentication is required to set a wall message"
 msgstr "За задаване на системно съобщение „wall“ е необходима идентификация."
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to set the local hostname."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "За задаване на име на локалната машина е необходима идентификация."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to set the local hostname."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "За задаване на име на локалната машина е необходима идентификация."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Вписване в локален контейнер"
@@ -1060,28 +1060,28 @@ msgstr "За задаване на системно съобщение „wall�
 # #: src/core/dbus-unit.c:599
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "За задаване на свойствата на „$(unit)“ е необходима идентификация."
+#
+# #: src/core/dbus-unit.c:708
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "За премахване на състоянието за неуспех на „$(unit)“ е необходима "
+# "идентификация."
+#
+# #: src/core/dbus-unit.c:757
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "За премахване на състоянието за неуспех на „$(unit)“ е необходима "
+# "идентификация."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "За убиване на „$(unit)“ е необходима идентификация."
 #endif // 0
-
-#: src/core/dbus-unit.c:708
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"За премахване на състоянието за неуспех на „$(unit)“ е необходима "
-"идентификация."
-
-#: src/core/dbus-unit.c:757
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"За премахване на състоянието за неуспех на „$(unit)“ е необходима "
-"идентификация."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "За убиване на „$(unit)“ е необходима идентификация."

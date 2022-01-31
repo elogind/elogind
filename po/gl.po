@@ -620,17 +620,17 @@ msgstr "Estabelecer a mensaxe do muro"
 msgid "Authentication is required to set a wall message"
 msgstr "Requírese autenticación para estabelecer unha mensaxe de muro"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to halt the system."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Requírese autenticación para deter o sistema."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to halt the system."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Requírese autenticación para deter o sistema."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Iniciar sesión nun contenedor local"
@@ -983,22 +983,22 @@ msgstr "Requírese autenticación para estabelecer unha mensaxe de muro"
 # msgstr ""
 # "Requírese autenticación para eliminar ficheiros ou directorios asociados con "
 # "'$(unit)'."
+#
+# #: src/core/dbus-unit.c:757
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to send a UNIX signal to the processes of "
+# #| "'$(unit)'."
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Requírese autenticación para enviarlle un sinal UNIX aos procesos de "
+# "'$(unit)'."
+#
+# #~ msgid ""
+# #~ "Authentication is required to halt the system while an application asked "
+# #~ "to inhibit it."
+# #~ msgstr ""
+# #~ "Requírese autenticación para deter o sistema mentres unha aplicación "
+# #~ "solicitou a súa inhibición."
 #endif // 0
-
-#: src/core/dbus-unit.c:757
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to send a UNIX signal to the processes of "
-#| "'$(unit)'."
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Requírese autenticación para enviarlle un sinal UNIX aos procesos de "
-"'$(unit)'."
-
-#~ msgid ""
-#~ "Authentication is required to halt the system while an application asked "
-#~ "to inhibit it."
-#~ msgstr ""
-#~ "Requírese autenticación para deter o sistema mentres unha aplicación "
-#~ "solicitou a súa inhibición."

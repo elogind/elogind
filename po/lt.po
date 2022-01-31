@@ -614,17 +614,17 @@ msgstr "Nustatyti sienos pranešimą"
 msgid "Authentication is required to set a wall message"
 msgstr "Norint nustatyti sienos pranešimą, reikia nustatyti tapatybę"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to halt the system."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Norint stabdyti sistemą, reikia nustatyti tapatybę."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to halt the system."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Norint stabdyti sistemą, reikia nustatyti tapatybę."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Prisijungti prie vietinio konteinerio"

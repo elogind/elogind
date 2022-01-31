@@ -648,17 +648,17 @@ msgid "Authentication is required to set a wall message"
 msgstr ""
 "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia ŭsieahuĺnaha paviedamliennia"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to set the local hostname."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia imia vuzla."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to set the local hostname."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia imia vuzla."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Uvajsci ŭ lakaĺny kantejnier"
@@ -1045,26 +1045,26 @@ msgstr ""
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 # "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia ŭlascivasciej '$(unit)'."
+#
+# #: src/core/dbus-unit.c:708
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Nieabchodna aŭtentyfikacyja dlia anuliavannia pamylkovaha stanu '$(unit)'."
+#
+# #: src/core/dbus-unit.c:757
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Nieabchodna aŭtentyfikacyja dlia anuliavannia pamylkovaha stanu '$(unit)'."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "Nieabchodna aŭtentyfikacyja dlia zabojstva '$(unit)'."
 #endif // 0
-
-#: src/core/dbus-unit.c:708
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia anuliavannia pamylkovaha stanu '$(unit)'."
-
-#: src/core/dbus-unit.c:757
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Nieabchodna aŭtentyfikacyja dlia anuliavannia pamylkovaha stanu '$(unit)'."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "Nieabchodna aŭtentyfikacyja dlia zabojstva '$(unit)'."

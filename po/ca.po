@@ -648,17 +648,17 @@ msgstr "Estableix un missatge de mur"
 msgid "Authentication is required to set a wall message"
 msgstr "Es requereix autenticació per establir un missatge de mur"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to halt the system."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Es requereix autenticació per aturar el sistema."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to halt the system."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Es requereix autenticació per aturar el sistema."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Inicia la sessió a un contenidor local"
@@ -1039,30 +1039,30 @@ msgstr "Es requereix autenticació per establir un missatge de mur"
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Es requereix autenticació per establir les propietats a «$(unit)»."
 #
+# #: src/core/dbus-unit.c:708
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr "Es requereix autenticació per restablir l'estat «failed» de «$(unit)»."
+#
+# #: src/core/dbus-unit.c:757
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Es requereix autenticació per restablir l'estat «failed» de «$(unit)»."
+#
+# #~ msgid ""
+# #~ "Authentication is required to halt the system while an application asked "
+# #~ "to inhibit it."
+# #~ msgstr ""
+# #~ "Es requereix autenticació per aturar el sistema mentre hi ha una "
+# #~ "aplicació que ha demanat d'inhibir-ho."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "Es requereix autenticació per matar «$(unit)»."
 #endif // 0
-#: src/core/dbus-unit.c:708
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr "Es requereix autenticació per restablir l'estat «failed» de «$(unit)»."
-
-#: src/core/dbus-unit.c:757
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Es requereix autenticació per restablir l'estat «failed» de «$(unit)»."
-
-#~ msgid ""
-#~ "Authentication is required to halt the system while an application asked "
-#~ "to inhibit it."
-#~ msgstr ""
-#~ "Es requereix autenticació per aturar el sistema mentre hi ha una "
-#~ "aplicació que ha demanat d'inhibir-ho."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "Es requereix autenticació per matar «$(unit)»."

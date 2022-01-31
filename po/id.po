@@ -602,17 +602,17 @@ msgstr "Setel suatu pesan wall"
 msgid "Authentication is required to set a wall message"
 msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
 
+#: src/login/org.freedesktop.login1.policy:406
+msgid "Change Session"
+msgstr ""
+
+#: src/login/org.freedesktop.login1.policy:407
+#, fuzzy
+#| msgid "Authentication is required to halt the system."
+msgid "Authentication is required to change the virtual terminal."
+msgstr "Otentikasi diperlukan untuk meng-halt sistem."
+
 #if 0 /// UNNEEDED by elogind
-# #: src/login/org.freedesktop.login1.policy:406
-# msgid "Change Session"
-# msgstr ""
-#
-# #: src/login/org.freedesktop.login1.policy:407
-# #, fuzzy
-# #| msgid "Authentication is required to halt the system."
-# msgid "Authentication is required to change the virtual terminal."
-# msgstr "Otentikasi diperlukan untuk meng-halt sistem."
-#
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
 # msgstr "Log masuk ke dalam suatu kontainer lokal"
@@ -987,33 +987,33 @@ msgstr "Otentikasi diperlukan untuk menyetel pesan wall"
 # #: src/core/dbus-unit.c:599
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Otentikasi diperlukan untuk menata properti pada '$(unit)'."
+#
+# #: src/core/dbus-unit.c:708
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
+# msgstr ""
+# "Otentikasi diperlukan untuk me-reset keadaan \"failed\" dari '$(unit)'."
+#
+# #: src/core/dbus-unit.c:757
+# #, fuzzy
+# #| msgid ""
+# #| "Authentication is required to reset the \"failed\" state of '$(unit)'."
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Otentikasi diperlukan untuk me-reset keadaan \"failed\" dari '$(unit)'."
+#
+# #~ msgid ""
+# #~ "Authentication is required to halt the system while an application asked "
+# #~ "to inhibit it."
+# #~ msgstr ""
+# #~ "Otentikasi diperlukan untuk meng-halt sistem ketika sebuah aplikasi "
+# #~ "meminta untuk mencegahnya."
+#
+# #~ msgid "Authentication is required to kill '$(unit)'."
+# #~ msgstr "Otentikasi diperlukan untuk mematikan '$(unit)'."
 #endif // 0
-
-#: src/core/dbus-unit.c:708
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to delete files and directories associated with "
-"'$(unit)'."
-msgstr ""
-"Otentikasi diperlukan untuk me-reset keadaan \"failed\" dari '$(unit)'."
-
-#: src/core/dbus-unit.c:757
-#, fuzzy
-#| msgid ""
-#| "Authentication is required to reset the \"failed\" state of '$(unit)'."
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Otentikasi diperlukan untuk me-reset keadaan \"failed\" dari '$(unit)'."
-
-#~ msgid ""
-#~ "Authentication is required to halt the system while an application asked "
-#~ "to inhibit it."
-#~ msgstr ""
-#~ "Otentikasi diperlukan untuk meng-halt sistem ketika sebuah aplikasi "
-#~ "meminta untuk mencegahnya."
-
-#~ msgid "Authentication is required to kill '$(unit)'."
-#~ msgstr "Otentikasi diperlukan untuk mematikan '$(unit)'."

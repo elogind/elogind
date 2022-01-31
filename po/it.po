@@ -202,8 +202,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Autenticazione richiesta per configurare la tastiera di sistema."
 #endif // 0
-msgstr "Autenticazione richiesta per configurare la tastiera di sistema."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
@@ -958,13 +958,13 @@ msgstr "Autenticazione richiesta per cambiare il terminale virtuale."
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
 # msgstr ""
+# "Autenticazione richiesta per eliminare i file e le directory associate a "
+# "'${unit}'."
+#
+# #: src/core/dbus-unit.c:757
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr ""
+# "Autenticazione richiesta per bloccare/sbloccare il processo dell'unità "
+# "'$(unit)'."
 #endif // 0
-"Autenticazione richiesta per eliminare i file e le directory associate a "
-"'${unit}'."
-
-#: src/core/dbus-unit.c:757
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Autenticazione richiesta per bloccare/sbloccare il processo dell'unità "
-"'$(unit)'."
