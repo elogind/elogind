@@ -2934,12 +2934,12 @@ _public_ int sd_journal_get_cutoff_realtime_usec(sd_journal *j, uint64_t *from, 
 #endif // 0
 }
 
-#if 0 /// UNSUPPORTED by elogind
 _public_ int sd_journal_get_cutoff_monotonic_usec(
                 sd_journal *j,
                 sd_id128_t boot_id,
                 uint64_t *ret_from,
                 uint64_t *ret_to) {
+#if 0 /// UNSUPPORTED by elogind
 
         uint64_t from = UINT64_MAX, to = UINT64_MAX;
         bool found = false;
@@ -3000,8 +3000,8 @@ void journal_print_header(sd_journal *j) {
 }
 #endif // 0
 
-#if 0 /// UNSUPPORTED by elogind
 _public_ int sd_journal_get_usage(sd_journal *j, uint64_t *ret) {
+#if 0 /// UNSUPPORTED by elogind
         JournalFile *f;
         uint64_t sum = 0;
 
@@ -3029,7 +3029,7 @@ _public_ int sd_journal_get_usage(sd_journal *j, uint64_t *ret) {
         *ret = sum;
         return 0;
 #else // 0
-        *bytes = 0;
+        *ret = 0;
         return 0;
 #endif // 0
 }
@@ -3057,11 +3057,11 @@ _public_ int sd_journal_query_unique(sd_journal *j, const char *field) {
 #endif // 0
 }
 
-#if 0 /// UNSUPPORTED by elogind
 _public_ int sd_journal_enumerate_unique(
                 sd_journal *j,
                 const void **ret_data,
                 size_t *ret_size) {
+#if 0 /// UNSUPPORTED by elogind
 
         size_t k;
 

@@ -218,10 +218,13 @@ libelogind_sources = files('''
         sd-device/device-monitor.c
         sd-device/device-private.c
         sd-device/device-private.h
+        sd-device/device-util.c
         sd-device/device-util.h
+        sd-device/sd-device.c
         sd-hwdb/hwdb-internal.h
         sd-hwdb/sd-hwdb.c
-        sd-device/sd-device.c
+        sd-netlink/netlink-internal.h
+        sd-netlink/netlink-types.h
         sd-netlink/netlink-util.c
         sd-netlink/netlink-util.h
         sd-path/sd-path.c
