@@ -280,15 +280,15 @@ conf.set_quoted('LIBDIR',                                     libdir)
 # conf.set_quoted('MODULESLOAD_DIR',                            modulesloaddir)
 #endif // 0
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
+conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   join_paths(bindir, 'pkttyagent'))
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   join_paths(bindir, 'pkttyagent'))
 # conf.set_quoted('PREFIX',                                     prefixdir)
 # conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
-# conf.set_quoted('ROOTBINDIR',                                 rootbindir)
-# conf.set_quoted('ROOTLIBDIR',                                 rootlibdir)
 #endif // 0
+conf.set_quoted('ROOTBINDIR',                                 rootbindir)
+conf.set_quoted('ROOTLIBDIR',                                 rootlibdir)
 conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('ROOTPREFIX',                                 rootprefixdir)
