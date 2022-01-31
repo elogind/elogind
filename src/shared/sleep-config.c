@@ -3,17 +3,17 @@
   Copyright © 2018 Dell Inc.
 ***/
 
-//#include <errno.h>
-//#include <fcntl.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <linux/fs.h>
 #include <linux/magic.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <sys/ioctl.h>
-//#include <sys/stat.h>
-//#include <sys/types.h>
-//#include <syslog.h>
-//#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <syslog.h>
+#include <unistd.h>
 
 #include "alloc-util.h"
 #include "blockdev-util.h"
@@ -165,10 +165,10 @@ int can_sleep_state(char **types) {
         if (r < 0)
                 return log_debug_errno(r, "Failed to parse /sys/power/state: %m");
         if (r > 0)
-                log_debug("Sleep mode \"%s\" is supported by the kernel.", found);
+                log_debug_errno(r, "Sleep mode \"%s\" is supported by the kernel.", found);
         else if (DEBUG_LOGGING) {
                 _cleanup_free_ char *t = strv_join(types, "/");
-                log_debug("Sleep mode %s not supported by the kernel, sorry.", strnull(t));
+                log_debug_errno(r, "Sleep mode %s not supported by the kernel, sorry.", strnull(t));
         }
         return r;
 }
@@ -212,14 +212,14 @@ int can_sleep_disk(char **types) {
                 }
 
                 if (strv_contains(types, s)) {
-                        log_debug("Disk sleep mode \"%s\" is supported by the kernel.", s);
+                        log_debug_errno(r, "Disk sleep mode \"%s\" is supported by the kernel.", s);
                         return true;
                 }
         }
 
         if (DEBUG_LOGGING) {
                 _cleanup_free_ char *t = strv_join(types, "/");
-                log_debug("Disk sleep mode %s not supported by the kernel, sorry.", strnull(t));
+                log_debug_errno(r, "Disk sleep mode %s not supported by the kernel, sorry.", strnull(t));
         }
         return false;
 }
@@ -261,14 +261,14 @@ static int can_sleep_mem(char **types) {
                 }
 
                 if (strv_contains(types, s)) {
-                        log_debug("Mem sleep mode \"%s\" is supported by the kernel.", s);
+                        log_debug_errno(r, "Mem sleep mode \"%s\" is supported by the kernel.", s);
                         return true;
                 }
         }
 
         if (DEBUG_LOGGING) {
                 _cleanup_free_ char *t = strv_join(types, "/");
-                log_debug("Mem sleep mode %s not supported by the kernel, sorry.", strnull(t));
+                log_debug_errno(r, "Mem sleep mode %s not supported by the kernel, sorry.", strnull(t));
         }
         return false;
 }
@@ -343,7 +343,7 @@ static int calculate_swap_file_offset(const SwapEntry *swap, uint64_t *ret_offse
         if (r < 0)
                 return log_debug_errno(r, "Error checking %s for Btrfs filesystem: %m", swap->device);
         if (r > 0) {
-                log_debug("%s: detection of swap file offset on Btrfs is not supported", swap->device);
+                log_debug_errno(r, "%s: detection of swap file offset on Btrfs is not supported", swap->device);
                 *ret_offset = UINT64_MAX;
                 return 0;
         }
@@ -382,7 +382,7 @@ static int read_resume_files(dev_t *ret_resume, uint64_t *ret_resume_offset) {
         }
 
         if (resume_offset > 0 && resume == 0)
-                log_debug("Warning: found /sys/power/resume_offset==%" PRIu64 ", but /sys/power/resume unset. Misconfiguration?",
+                log_debug_errno(r, "Warning: found /sys/power/resume_offset==%" PRIu64 ", but /sys/power/resume unset. Misconfiguration?",
                           resume_offset);
 
         *ret_resume = resume;
@@ -455,13 +455,13 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
                 if (k == EOF)
                         break;
                 if (k != 5) {
-                        log_debug("Failed to parse /proc/swaps:%u, ignoring", i);
+                        log_debug_errno(r, "Failed to parse /proc/swaps:%u, ignoring", i);
                         continue;
                 }
 
                 if (streq(swap->type, "file")) {
                         if (endswith(swap->device, "\\040(deleted)")) {
-                                log_debug("Ignoring deleted swap file '%s'.", swap->device);
+                                log_debug_errno(r, "Ignoring deleted swap file '%s'.", swap->device);
                                 continue;
                         }
 
@@ -474,24 +474,24 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
 
                         fn = path_startswith(swap->device, "/dev/");
                         if (fn && startswith(fn, "zram")) {
-                                log_debug("%s: ignoring zram swap", swap->device);
+                                log_debug_errno(r, "%s: ignoring zram swap", swap->device);
                                 continue;
                         }
 
                 } else {
-                        log_debug("%s: swap type %s is unsupported for hibernation, ignoring", swap->device, swap->type);
+                        log_debug_errno(r, "%s: swap type %s is unsupported for hibernation, ignoring", swap->device, swap->type);
                         continue;
                 }
 
                 /* prefer resume device or highest priority swap with most remaining space */
                 if (hibernate_location && swap->priority < hibernate_location->swap->priority) {
-                        log_debug("%s: ignoring device with lower priority", swap->device);
+                        log_debug_errno(r, "%s: ignoring device with lower priority", swap->device);
                         continue;
                 }
                 if (hibernate_location &&
                     (swap->priority == hibernate_location->swap->priority
                      && swap->size - swap->used < hibernate_location->swap->size - hibernate_location->swap->used)) {
-                        log_debug("%s: ignoring device with lower usable space", swap->device);
+                        log_debug_errno(r, "%s: ignoring device with lower usable space", swap->device);
                         continue;
                 }
 
@@ -515,12 +515,12 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
 
                 /* if the swap is the resume device, stop the loop */
                 if (location_is_resume_device(hibernate_location, sys_resume, sys_offset)) {
-                        log_debug("%s: device matches configured resume settings.", hibernate_location->swap->device);
+                        log_debug_errno(r, "%s: device matches configured resume settings.", hibernate_location->swap->device);
                         resume_match = true;
                         break;
                 }
 
-                log_debug("%s: is a candidate device.", hibernate_location->swap->device);
+                log_debug_errno(r, "%s: is a candidate device.", hibernate_location->swap->device);
         }
 
         /* We found nothing at all */
@@ -541,11 +541,11 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
         }
 
         if (resume_match)
-                log_debug("Hibernation will attempt to use swap entry with path: %s, device: %u:%u, offset: %" PRIu64 ", priority: %i",
+                log_debug_errno(r, "Hibernation will attempt to use swap entry with path: %s, device: %u:%u, offset: %" PRIu64 ", priority: %i",
                           hibernate_location->swap->device, major(hibernate_location->devno), minor(hibernate_location->devno),
                           hibernate_location->offset, hibernate_location->swap->priority);
         else
-                log_debug("/sys/power/resume is not configured; attempting to hibernate with path: %s, device: %u:%u, offset: %" PRIu64 ", priority: %i",
+                log_debug_errno(r, "/sys/power/resume is not configured; attempting to hibernate with path: %s, device: %u:%u, offset: %" PRIu64 ", priority: %i",
                           hibernate_location->swap->device, major(hibernate_location->devno), minor(hibernate_location->devno),
                           hibernate_location->offset, hibernate_location->swap->priority);
 
@@ -577,7 +577,7 @@ static bool enough_swap_for_hibernation(void) {
          * return true and let the system attempt hibernation.
          */
         if (r > 0 && !hibernate_location) {
-                log_debug("Unable to determine remaining swap space; hibernation may fail");
+                log_debug_errno(r, "Unable to determine remaining swap space; hibernation may fail");
                 return true;
         }
 
@@ -597,7 +597,7 @@ static bool enough_swap_for_hibernation(void) {
         }
 
         r = act <= (hibernate_location->swap->size - hibernate_location->swap->used) * HIBERNATION_SWAP_THRESHOLD;
-        log_debug("%s swap for hibernation, Active(anon)=%llu kB, size=%" PRIu64 " kB, used=%" PRIu64 " kB, threshold=%.2g%%",
+        log_debug_errno(r, "%s swap for hibernation, Active(anon)=%llu kB, size=%" PRIu64 " kB, used=%" PRIu64 " kB, threshold=%.2g%%",
                   r ? "Enough" : "Not enough", act, hibernate_location->swap->size, hibernate_location->swap->used, 100*HIBERNATION_SWAP_THRESHOLD);
 
         return r;
@@ -704,7 +704,7 @@ static bool can_s2h(const SleepConfig *sleep_config) {
         for (size_t i = 0; i < ELEMENTSOF(operations); i++) {
                 r = can_sleep_internal(sleep_config, operations[i], false);
                 if (IN_SET(r, 0, -ENOSPC)) {
-                        log_debug("Unable to %s system.", sleep_operation_to_string(operations[i]));
+                        log_debug_errno(r, "Unable to %s system.", sleep_operation_to_string(operations[i]));
                         return false;
                 }
                 if (r < 0)
@@ -722,15 +722,15 @@ static int can_sleep_internal(
         assert(operation >= 0);
         assert(operation < _SLEEP_OPERATION_MAX);
 
-#if 0 /// be a bit more verbose in elogind
         if (check_allowed && !sleep_config->allow[operation]) {
-                log_debug("Sleep mode \"%s\" is disabled by configuration.", sleep_operation_to_string(operation));
+#if 0 /// be a bit more verbose in elogind
+                log_debug_errno(r, "Sleep mode \"%s\" is disabled by configuration.", sleep_operation_to_string(operation));
 #else // 0
-                log_info("Sleep mode \"%s\" is disabled by configuration.", verb);
-                log_debug("allow_suspend               : %d", sleep_config->allow_suspend);
-                log_debug("allow_hibernation           : %d", sleep_config->allow_hibernate);
-                log_debug("allow_hybrid_sleep          : %d", sleep_config->allow_hybrid_sleep);
-                log_debug("allow_suspend_then_hibernate: %d", sleep_config->allow_s2h);
+                log_info("Sleep mode \"%s\" is disabled by configuration.", sleep_operation_to_string(operation));
+                log_debug("allow_suspend               : %d", sleep_config->allow[SLEEP_SUSPEND]);
+                log_debug("allow_hibernation           : %d", sleep_config->allow[SLEEP_HIBERNATE]);
+                log_debug("allow_hybrid_sleep          : %d", sleep_config->allow[SLEEP_HYBRID_SLEEP]);
+                log_debug("allow_suspend_then_hibernate: %d", sleep_config->allow[SLEEP_SUSPEND_THEN_HIBERNATE]);
 #endif // 0
                 return false;
         }
@@ -743,9 +743,9 @@ static int can_sleep_internal(
             can_sleep_disk(sleep_config->modes[operation]) <= 0)
                 return false;
 #else // 0
-        if (!can_sleep_state(states) ||
-            !((strcmp("suspend", verb) && can_sleep_disk(modes)) ||
-              (streq("suspend", verb) && can_sleep_mem(modes))))
+        if ( (can_sleep_state(sleep_config->states[operation]) <= 0) ||
+             ( (SLEEP_SUSPEND != operation) && (can_sleep_disk(sleep_config->modes[operation]) <= 0) ) ||
+             (can_sleep_mem(sleep_config->modes[operation]) <= 0))
                 return false;
 #endif // 0
 
@@ -762,18 +762,19 @@ static int can_sleep_internal(
 int can_sleep(SleepOperation operation) {
         _cleanup_(free_sleep_configp) SleepConfig *sleep_config = NULL;
 #else // 0
-int can_sleep(Manager *sleep_config, const char *verb) {
+int can_sleep(Manager *sleep_config, SleepOperation s) {
 #endif // 0
         int r;
+
+        log_debug_elogind("Called for '%s'", sleep_operation_to_string(s));
 
         r = parse_sleep_config(&sleep_config);
         if (r < 0)
                 return r;
 
-        return can_sleep_internal(sleep_config, operation, true);
+        return can_sleep_internal(sleep_config, s, true);
 }
 
-        log_debug_elogind("Called for '%s'", verb);
 
 #if 0 /// UNNEEDED by elogind
 SleepConfig* free_sleep_config(SleepConfig *sc) {

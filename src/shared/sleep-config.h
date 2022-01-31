@@ -4,7 +4,6 @@
 #include <linux/fiemap.h>
 #include "time-util.h"
 
-#if 0 /// elogind needs to hand over its manager
 typedef enum SleepOperation {
         SLEEP_SUSPEND,
         SLEEP_HIBERNATE,
@@ -14,6 +13,7 @@ typedef enum SleepOperation {
         _SLEEP_OPERATION_INVALID = -EINVAL,
 } SleepOperation;
 
+#if 0 /// elogind needs to hand over its manager
 typedef struct SleepConfig {
         bool allow[_SLEEP_OPERATION_MAX];
         char **modes[_SLEEP_OPERATION_MAX];
@@ -63,9 +63,9 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location);
 int can_sleep(SleepOperation operation);
 int can_sleep_disk(char **types);
 int can_sleep_state(char **types);
+#else // 0
+int can_sleep(Manager *m, SleepOperation s);
+#endif // 0
 
 const char* sleep_operation_to_string(SleepOperation s) _const_;
 SleepOperation sleep_operation_from_string(const char *s) _pure_;
-#else // 0
-int can_sleep(Manager *m, const char *verb);
-#endif // 0

@@ -19,5 +19,7 @@
 int dropin_user_record_by_name(const char *name, const char *path, UserDBFlags flags, UserRecord **ret);
 int dropin_user_record_by_uid(uid_t uid, const char *path, UserDBFlags flags, UserRecord **ret);
 
+#if 0 /// UNNEEDED by elogind
 int dropin_group_record_by_name(const char *name, const char *path, UserDBFlags flags, GroupRecord **ret);
 int dropin_group_record_by_gid(gid_t gid, const char *path, UserDBFlags flags, GroupRecord **ret);
+#endif // 0

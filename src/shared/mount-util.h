@@ -98,7 +98,10 @@ int mount_option_mangle(
 
 #if 0 /// UNNEEDED by elogind
 int mode_to_inaccessible_node(const char *runtime_dir, mode_t mode, char **dest);
+#endif // 0
 int mount_flags_to_string(long unsigned flags, char **ret);
+
+#if 0 /// UNNEEDED by elogind
 
 /* Useful for usage with _cleanup_(), unmounts, removes a directory and frees the pointer */
 static inline char* umount_and_rmdir_and_free(char *p) {
@@ -113,11 +116,10 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(char*, umount_and_rmdir_and_free);
 
 int bind_mount_in_namespace(pid_t target, const char *propagate_path, const char *incoming_path, const char *src, const char *dest, bool read_only, bool make_file_or_directory);
 int mount_image_in_namespace(pid_t target, const char *propagate_path, const char *incoming_path, const char *src, const char *dest, bool read_only, bool make_file_or_directory, const MountOptions *options);
-#endif // 0
-
 int make_mount_point(const char *path);
 
 int remount_idmap(const char *p, uid_t uid_shift, uid_t uid_range);
+#endif // 0
 
 /* Creates a mount point (not parents) based on the source path or stat - ie, a file or a directory */
 int make_mount_point_inode_from_stat(const struct stat *st, const char *dest, mode_t mode);

@@ -982,7 +982,6 @@ int mount_image_in_namespace(
 
         return mount_in_namespace(target, propagate_path, incoming_path, src, dest, read_only, make_file_or_directory, options, true);
 }
-#endif // 0
 
 int make_mount_point(const char *path) {
         int r;
@@ -1084,6 +1083,7 @@ int remount_idmap(
 
         return 0;
 }
+#endif // 0
 
 int make_mount_point_inode_from_stat(const struct stat *st, const char *dest, mode_t mode) {
         assert(st);

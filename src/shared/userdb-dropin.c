@@ -161,6 +161,7 @@ int dropin_user_record_by_uid(uid_t uid, const char *path, UserDBFlags flags, Us
         return load_user(f, path, NULL, uid, flags, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 static int load_group(
                 FILE *f,
                 const char *path,
@@ -302,3 +303,4 @@ int dropin_group_record_by_gid(gid_t gid, const char *path, UserDBFlags flags, G
 
         return load_group(f, path, NULL, gid, flags, ret);
 }
+#endif // 0
