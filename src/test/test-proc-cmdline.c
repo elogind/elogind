@@ -251,16 +251,14 @@ TEST(proc_cmdline_key_startswith) {
 }
 
 #endif // 0
+static int intro(void) {
+        if (access("/proc/cmdline", R_OK) < 0 && ERRNO_IS_PRIVILEGE(errno))
+                return log_tests_skipped("can't read /proc/cmdline");
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+/// elogind empty mask removed (UNNEEDED by elogind)
 
-DEFINE_CUSTOM_TEST_MAIN(
-        LOG_INFO,
-        ({
-                if (access("/proc/cmdline", R_OK) < 0 && ERRNO_IS_PRIVILEGE(errno))
-                        return log_tests_skipped("can't read /proc/cmdline");
-        }),
-        /* no outro */);
+        return EXIT_SUCCESS;
+}
+
+DEFINE_CUSTOM_TEST_MAIN(LOG_INFO, intro, test_nop);
