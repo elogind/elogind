@@ -276,7 +276,7 @@ int log_emergency_level(void);
 #if ENABLE_DEBUG_ELOGIND
 #  define log_debug_elogind_full(...) do { \
         log_set_max_level(LOG_DEBUG);              \
-        log_full_errno(LOG_DEBUG, 0, __VA_ARGS__); \
+        log_full(LOG_DEBUG, __VA_ARGS__); \
 } while(0)
 #  define log_debug_elogind(fmt, ...) \
           log_debug_elogind_full("(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
