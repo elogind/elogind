@@ -171,7 +171,9 @@ tests += [
 
         [['src/test/test-copy.c']],
 
-        [['src/test/test-data-fd-util.c']],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-data-fd-util.c']],
+#endif // 0
 
         [['src/test/test-static-destruct.c']],
 
@@ -269,7 +271,9 @@ tests += [
 
         [['src/test/test-parse-argument.c']],
 
-        [['src/test/test-parse-socket-bind-item.c']],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-parse-socket-bind-item.c']],
+#endif // 0
 
         [['src/test/test-parse-util.c']],
 
