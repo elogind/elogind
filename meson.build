@@ -4452,7 +4452,7 @@ else
         found += 'static-libelogind(@0@)'.format(static_libelogind)
 endif
 
-#if 0 /// UNNEEDED by eloignd
+#if 0 /// UNNEEDED by elogind
 # if static_libudev == 'false'
 #         missing += 'static-libudev'
 # else
