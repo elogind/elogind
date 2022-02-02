@@ -84,7 +84,7 @@ endif
 #if 0 /// libudev headers are not shipped with elogind
 # foreach header : _systemd_headers + _not_installed_headers + [libudev_h_path]
 #else // 0
-foreach header : _systemd_headers + _not_installed_headers
+foreach header : _systemd_headers
 #endif // 0
         foreach opt : opts
                 std_name = opt.length() == 2 ? '_'.join(opt[1].split(':')) : ''
