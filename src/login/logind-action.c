@@ -122,13 +122,13 @@ int manager_handle_action(
                 supported = can_sleep(SLEEP_SUSPEND_THEN_HIBERNATE) > 0;
 #else // 0
         if (handle == HANDLE_SUSPEND)
-                supported = can_sleep(m, "suspend") > 0;
+                supported = can_sleep(m, SLEEP_SUSPEND) > 0;
         else if (handle == HANDLE_HIBERNATE)
-                supported = can_sleep(m, "hibernate") > 0;
+                supported = can_sleep(m, SLEEP_HIBERNATE) > 0;
         else if (handle == HANDLE_HYBRID_SLEEP)
-                supported = can_sleep(m, "hybrid-sleep") > 0;
+                supported = can_sleep(m, SLEEP_HYBRID_SLEEP) > 0;
         else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
-                supported = can_sleep(m, "suspend-then-hibernate") > 0;
+                supported = can_sleep(m, SLEEP_SUSPEND_THEN_HIBERNATE) > 0;
 #endif // 0
         else if (handle == HANDLE_KEXEC)
                 supported = access(KEXEC, X_OK) >= 0;
@@ -139,7 +139,7 @@ int manager_handle_action(
 #if 0 /// elogind needs the manager
                 supported = can_sleep(SLEEP_SUSPEND) > 0;
 #else // 0
-                supported = can_sleep(m, "suspend") > 0;
+                supported = can_sleep(m, SLEEP_SUSPEND) > 0;
 #endif // 0
                 if (supported) {
                         log_notice("Requested %s operation is not supported, using regular suspend instead.",

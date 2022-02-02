@@ -925,7 +925,10 @@ int session_finalize(Session *s) {
                            "USER_ID=%s", s->user->user_record->user_name,
                            "LEADER="PID_FMT, s->leader,
                            LOG_MESSAGE("Removed session %s.", s->id));
+#if 1 /// let elogind at least put out a debug message if s was not started
+        else
                 log_debug_elogind("Session %s not started, finalizing...", s->id);
+#endif // 1
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 

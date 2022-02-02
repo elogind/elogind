@@ -283,12 +283,10 @@ option('system-gid-max', type : 'integer', value : '-1',
 # option('container-uid-base-max', type : 'integer', value : 0x6FFF0000,
 #        description : 'maximum container UID base')
 #endif // 0
-#if 0 /// UNNEEDED by elogind
-# option('adm-group', type : 'boolean',
-#        description : 'the ACL for adm group should be added')
-# option('wheel-group', type : 'boolean',
-#        description : 'the ACL for wheel group should be added')
-#endif // 0
+option('adm-group', type : 'boolean',
+       description : 'the ACL for adm group should be added')
+option('wheel-group', type : 'boolean',
+       description : 'the ACL for wheel group should be added')
 option('nobody-user', type : 'string',
        description : 'The name of the nobody user (the one with UID 65534)',
        value : 'nobody')
@@ -338,12 +336,12 @@ option('nobody-group', type : 'string',
 #        description : 'soft-static allocation for the systemd-resolve user')
 # option('systemd-timesync-uid', type : 'integer', value : '-1',
 #        description : 'soft-static allocation for the systemd-timesync user')
-#
-# option('dev-kvm-mode', type : 'string', value : '0666',
-#        description : '/dev/kvm access mode')
-# option('group-render-mode', type : 'string', value : '0666',
-#        description : 'Access mode for devices owned by render group (e.g. /dev/dri/renderD*, /dev/kfd).')
 #endif // 0
+
+option('dev-kvm-mode', type : 'string', value : '0666',
+       description : '/dev/kvm access mode')
+option('group-render-mode', type : 'string', value : '0666',
+       description : 'Access mode for devices owned by render group (e.g. /dev/dri/renderD*, /dev/kfd).')
 option('default-kill-user-processes', type : 'boolean',
        description : 'the default value for KillUserProcesses= setting')
 #if 0 /// UNNEEDED by elogind

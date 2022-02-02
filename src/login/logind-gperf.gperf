@@ -29,11 +29,11 @@ Sleep.AllowSuspendInterrupts,      config_parse_bool,          0, offsetof(Manag
 Sleep.BroadcastSuspendInterrupts,  config_parse_bool,          0, offsetof(Manager, broadcast_suspend_interrupts)
 Sleep.HandleNvidiaSleep,           config_parse_bool,          0, offsetof(Manager, handle_nvidia_sleep)
 Sleep.SuspendMode,                 config_parse_strv,          0, offsetof(Manager, modes[SLEEP_SUSPEND])
-Sleep.SuspendState,                config_parse_strv,          0, offsetof(Manager, states + SLEEP_SUSPEND)
-Sleep.HibernateMode,               config_parse_strv,          0, offsetof(Manager, modes + SLEEP_HIBERNATE)
-Sleep.HibernateState,              config_parse_strv,          0, offsetof(Manager, states + SLEEP_HIBERNATE)
-Sleep.HybridSleepMode,             config_parse_strv,          0, offsetof(Manager, modes + SLEEP_HYBRID_SLEEP)
-Sleep.HybridSleepState,            config_parse_strv,          0, offsetof(Manager, states + SLEEP_HYBRID_SLEEP)
+Sleep.SuspendState,                config_parse_strv,          0, offsetof(Manager, states[SLEEP_SUSPEND])
+Sleep.HibernateMode,               config_parse_strv,          0, offsetof(Manager, modes[SLEEP_HIBERNATE])
+Sleep.HibernateState,              config_parse_strv,          0, offsetof(Manager, states[SLEEP_HIBERNATE])
+Sleep.HybridSleepMode,             config_parse_strv,          0, offsetof(Manager, modes[SLEEP_HYBRID_SLEEP])
+Sleep.HybridSleepState,            config_parse_strv,          0, offsetof(Manager, states[SLEEP_HYBRID_SLEEP])
 Sleep.HibernateDelaySec,           config_parse_sec,           0, offsetof(Manager, hibernate_delay_sec)
 #endif // 1
 #if 0 /// UNNEEDED by elogind
