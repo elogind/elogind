@@ -547,6 +547,7 @@ libshared_name = 'elogind-shared-@0@'.format(meson.project_version())
 libshared_deps = [threads,
                   libacl,
                   libcap,
+                  libdl,
                   libmount,
                   libpam,
                   libselinux]
