@@ -139,15 +139,16 @@ static int on_reboot(Context *c) {
         /* If this call fails it will return 0, which
          * utmp_put_reboot() will then fix to the current time */
         t = get_startup_monotonic_time(c);
+#else // 0
+        t = now(CLOCK_REALTIME);
+#endif // 0
+
         boottime = map_clock_usec(t, CLOCK_MONOTONIC, CLOCK_REALTIME);
         /* We query the recorded monotonic time here (instead of the system clock CLOCK_REALTIME),
          * even though we actually want the system clock time. That's because there's a likely
          * chance that the system clock wasn't set right during early boot. By manually converting
          * the monotonic clock to the system clock here we can compensate
          * for incorrectly set clocks during early boot. */
-#else // 0
-        t = now(CLOCK_REALTIME);
-#endif // 0
 
         q = utmp_put_reboot(boottime);
         if (q < 0)
