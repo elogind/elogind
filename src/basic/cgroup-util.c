@@ -1,19 +1,19 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <ftw.h>
+//#include <ftw.h>
 #include <limits.h>
 #include <signal.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/utsname.h>
-#include <sys/xattr.h>
+//#include <sys/utsname.h>
+//#include <sys/xattr.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
 #include "cgroup-util.h"
-#include "def.h"
+//#include "def.h"
 #include "dirent-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
@@ -24,12 +24,12 @@
 #include "login-util.h"
 #include "macro.h"
 #include "missing_magic.h"
-#include "mkdir.h"
+//#include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "set.h"
-#include "special.h"
+//#include "special.h"
 #include "stat-util.h"
 #include "stdio-util.h"
 #include "string-table.h"
@@ -39,7 +39,6 @@
 #include "user-util.h"
 /// Additional includes needed by elogind
 #include "env-file.h"
-#include "xattr-util.h"
 
 static int cg_enumerate_items(const char *controller, const char *path, FILE **_f, const char *item) {
         _cleanup_free_ char *fs = NULL;
@@ -665,11 +664,7 @@ int cg_remove_xattr(const char *controller, const char *path, const char *name) 
 
 int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
         _cleanup_fclose_ FILE *f = NULL;
-#if 0 /// At elogind we do not want that (false alarm) "maybe uninitialized" warning
         const char *fs, *controller_str = NULL;  /* avoid false maybe-uninitialized warning */
-#else // 0
-        const char *fs, *controller_str = NULL;
-#endif // 0
         int unified, r;
 
         assert(pid >= 0);
@@ -692,8 +687,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
         }
 
         fs = procfs_file_alloca(pid, "cgroup");
-        log_debug_elogind("Searching for PID %u in \"%s\" (controller \"%s\")",
-                          pid, fs, controller);
+        log_debug_elogind("Searching for PID %u in \"%s\" (controller \"%s\")", pid, fs, controller);
         r = fopen_unlocked(fs, "re", &f);
         if (r == -ENOENT)
                 return -ESRCH;
