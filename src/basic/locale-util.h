@@ -59,4 +59,3 @@ static inline void locale_variables_freep(char*(*l)[_VARIABLE_LC_MAX]) {
         locale_variables_free(*l);
 }
 #endif // 0
-

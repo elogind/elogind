@@ -54,8 +54,6 @@ SecureBootMode efi_get_secure_boot_mode(void);
 int cache_efi_options_variable(void);
 int elogind_efi_options_variable(char **line);
 int elogind_efi_options_efivarfs_if_newer(char **line);
-int elogind_efi_options_variable(char **line);
-int elogind_efi_options_efivarfs_if_newer(char **line);
 
 #else
 
