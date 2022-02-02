@@ -68,8 +68,7 @@ option('udevrulesdir', type : 'string',
 option('udevbindir', type : 'string',
        description : '''directory for udev binary files''')
 
-# We are nice and make the documentation paths configurable
-option('docdir', type : 'string', description : 'path where to install the documentation.')
+# We are nice and make the html path configurable
 option('htmldir', type : 'string', description : 'path where to install the HTML documentation.')
 
 # We have no systemd-shutdown binary, so we need 'halt', 'reboot' and 'poweroff'
