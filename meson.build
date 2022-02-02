@@ -4299,25 +4299,17 @@ found = []
 missing = []
 
 foreach tuple : [
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         # dependencies
         ['ACL'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
 #         ['AppArmor'],
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 #         ['IMA'],
 #         ['PAM'],
 #         ['SECCOMP'],
 #endif // 0
         ['SELinux'],
         ['SMACK'],
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 #if 0 /// UNNEEDED by elogind
 #         ['blkid'],
 #         ['elfutils'],
@@ -4390,8 +4382,8 @@ foreach tuple : [
 #         ['xdg-autostart'],
 #
 #         # optional features
+#         ['idn'],
 #endif // 0
-        ['idn'],
         ['polkit'],
 #if 0 /// UNNEEDED by elogind
 #         ['nscd'],
@@ -4403,20 +4395,20 @@ foreach tuple : [
 #if 0 /// UNNEEDED by elogind
 #         ['tpm'],
 #endif // 0
+        ['man pages',             want_man],
+        ['html pages',            want_html],
+        ['man page indices',      want_man and have_lxml],
 #if 0 /// UNNEEDED by elogind
-#         ['man pages',             want_man],
-#         ['html pages',            want_html],
-#         ['man page indices',      want_man and have_lxml],
 #         ['SysV compat'],
+#         ['compat-mutable-uid-boundaries'],
 #endif // 0
-        ['compat-mutable-uid-boundaries'],
         ['utmp'],
 #if 0 /// UNNEEDED by elogind
 #         ['ldconfig'],
 #endif // 0
         ['adm group',             get_option('adm-group')],
         ['wheel group',           get_option('wheel-group')],
-#if 1 /// Extra debugging for elogind
+#if 0 /// UNNEEDED by elogind
 #         ['gshadow'],
 #endif // 0
 #if 1 /// Extra debugging for elogind
@@ -4424,10 +4416,8 @@ foreach tuple : [
 #endif // 1
         ['debug hashmap'],
         ['debug mmap cache'],
-#if 0 /// elogind does not ships libudev.
-#         ['debug siphash'],
-#endif // 0
-#if 0 /// elogind ships neither libudev nor systemctl or any other of those
+        ['debug siphash'],
+#if 0 /// elogind ships any other of those
 #         ['valgrind',              conf.get('VALGRIND') == 1],
 #         ['trace logging',         conf.get('LOG_TRACE') == 1],
 #         ['install tests',         install_tests],
