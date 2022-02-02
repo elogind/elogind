@@ -90,9 +90,6 @@ bool is_main_thread(void);
 
 _noreturn_ void freeze(void);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 #ifndef PERSONALITY_INVALID
 /* personality(7) documents that 0xffffffffUL is used for querying the
  * current personality, hence let's use that here as error
