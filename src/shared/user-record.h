@@ -18,9 +18,6 @@
 #define USER_DISK_SIZE_DEFAULT_PERCENT 85
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 typedef enum UserDisposition {
         USER_INTRINSIC,   /* root and nobody */
         USER_SYSTEM,      /* statically allocated users for system services */
