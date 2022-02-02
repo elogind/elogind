@@ -1545,6 +1545,8 @@ liblz4 = []
 libzstd = []
 libxkbcommon = []
 conf.set10('HAVE_GCRYPT', false)
+conf.set10('HAVE_LIBIDN2', false)
+conf.set10('HAVE_LIBIDN', false)
 conf.set10('HAVE_LZ4', false)
 conf.set10('HAVE_XZ', false)
 conf.set10('HAVE_ZSTD', false)
@@ -2003,7 +2005,7 @@ install_libelogind_static = static_library(
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
         install_dir : rootlibdir,
-#if 0 /// elogind only needs libcap, libmount threads and selinux.
+#if 0 /// elogind only needs libcap, libdl, libmount threads and selinux.
 #         pic : static_libsystemd_pic,
 #         dependencies : [threads,
 #                         librt,
@@ -2050,6 +2052,7 @@ install_libelogind_static = static_library(
 #else // 0
         dependencies : [threads,
                         libcap,
+                        libdl,
                         libmount,
                         libselinux],
         c_args : libsystemd_c_args)
