@@ -49,9 +49,14 @@ int acquire_data_fd(const void *data, size_t size, unsigned flags) {
          * It sucks a bit that depending on the situation we return very different objects here, but that's Linux I
          * figure. */
 
-        if (size == 0 && ((flags & ACQUIRE_NO_DEV_NULL) == 0))
+        if (size == 0 && ((flags & ACQUIRE_NO_DEV_NULL) == 0)) {
                 /* As a special case, return /dev/null if we have been called for an empty data block */
-                return RET_NERRNO(open("/dev/null", O_RDONLY|O_CLOEXEC|O_NOCTTY));
+                r = open("/dev/null", O_RDONLY|O_CLOEXEC|O_NOCTTY);
+                if (r < 0)
+                        return -errno;
+
+                return r;
+        }
 
         if ((flags & ACQUIRE_NO_MEMFD) == 0) {
                 fd = memfd_new("data-fd");
@@ -157,7 +162,6 @@ try_dev_shm_without_o_tmpfile:
         return -EOPNOTSUPP;
 }
 
-#if 0 /// UNNEEDED by elogind
 int copy_data_fd(int fd) {
         _cleanup_close_ int copy_fd = -1, tmp_fd = -1;
         _cleanup_free_ void *remains = NULL;
@@ -344,4 +348,3 @@ finish:
 
         return fd_reopen(tmp_fd, O_RDONLY|O_CLOEXEC);
 }
-#endif // 0
