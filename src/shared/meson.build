@@ -341,6 +341,8 @@ shared_sources = '''
         conf-parser.c
         conf-parser.h
         daemon-util.h
+        data-fd-util.c
+        data-fd-util.h
         dev-setup.c
         dev-setup.h
         devnode-acl.h
