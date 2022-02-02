@@ -31,7 +31,6 @@ TEST(parse_path_argument) {
 }
 #endif // 0
 
-
 TEST(parse_signal_argument) {
         int  signal = -1;
 

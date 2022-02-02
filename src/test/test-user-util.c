@@ -488,11 +488,8 @@ TEST(mangle_gecos) {
 #if 0 /// elogind has no sysusers.d and thus nowhere TTY_GID is set
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
 DEFINE_TEST_MAIN(LOG_INFO);

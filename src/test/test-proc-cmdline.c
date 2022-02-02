@@ -220,7 +220,6 @@ TEST(proc_cmdline_get_key_many) {
 }
 #endif // 0
 
-
 TEST(proc_cmdline_key_streq) {
         assert_se(proc_cmdline_key_streq("", ""));
         assert_se(proc_cmdline_key_streq("a", "a"));

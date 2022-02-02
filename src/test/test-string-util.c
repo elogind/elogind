@@ -315,7 +315,6 @@ TEST(ascii_strlower) {
 }
 #endif // 0
 
-
 TEST(strshorten) {
         char s[] = "foobar";
 

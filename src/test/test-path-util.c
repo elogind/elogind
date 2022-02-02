@@ -984,7 +984,6 @@ TEST(systemd_installation_has_version) {
 }
 #endif // 0
 
-
 TEST(skip_dev_prefix) {
         assert_se(streq(skip_dev_prefix("/"), "/"));
         assert_se(streq(skip_dev_prefix("/dev"), ""));

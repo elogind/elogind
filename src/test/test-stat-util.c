@@ -129,7 +129,6 @@ TEST(fd_is_ns) {
 }
 #endif // 0
 
-
 TEST(device_major_minor_valid) {
         /* on glibc dev_t is 64bit, even though in the kernel it is only 32bit */
         assert_cc(sizeof(dev_t) == sizeof(uint64_t));

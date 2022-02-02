@@ -514,7 +514,6 @@ TEST(var_tmp) {
 }
 #endif // 0
 
-
 TEST(dot_or_dot_dot) {
         assert_se(!dot_or_dot_dot(NULL));
         assert_se(!dot_or_dot_dot(""));
