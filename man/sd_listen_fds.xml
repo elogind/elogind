@@ -62,10 +62,10 @@
     importantly this means it's generally not a good idea to invoke <citerefentry
     project='man-pages'><refentrytitle>shutdown</refentrytitle><manvolnum>2</manvolnum></citerefentry> on
     such sockets, since it will shut down communication on the file descriptor the service manager holds for
-
     the same socket too. Also note that if a daemon is restarted (and its associated sockets are not) it will
     receive file descriptors to the very same sockets as the earlier invocations, thus all socket options
     applied then will still apply.</para>
+
     --><!-- else // 0 -->
     will be passed in the same order as configured in the service manager.
     It is thereforce recommended to verify the correct

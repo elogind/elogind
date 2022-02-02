@@ -149,8 +149,8 @@ This is based on crypttab(5).
       <varlistentry>
         <term><option>x-initrd.attach</option></term>
 
-        <citerefentry><refentrytitle>elogind.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         <listitem><para>Setup this verity protected block device in the initramfs, similarly to
+        <citerefentry><refentrytitle>elogind.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         units marked with <option>x-initrd.mount</option>.</para>
 
         <para>Although it's not necessary to mark the mount entry for the root file system with
