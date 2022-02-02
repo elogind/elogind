@@ -49,7 +49,9 @@ static void test_get_process_comm(pid_t pid) {
         gid_t g;
 #endif // 0
         dev_t h;
+#if 0 /// UNNEEDED by elogind
         int r;
+#endif // 0
 
         log_info("/* %s */", __func__);
 
@@ -72,13 +74,12 @@ static void test_get_process_comm(pid_t pid) {
         log_info("PID"PID_FMT" cmdline truncated to 1: '%s'", pid, d);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
         r = get_process_ppid(pid, &e);
         assert_se(pid == 1 ? r == -EADDRNOTAVAIL : r >= 0);
         if (r >= 0) {
-                log_info("PID"PID_FMT" PPID: "PID_FMT, pid, e);
-                assert_se(e > 0);
-        }
+        log_info("PID"PID_FMT" PPID: "PID_FMT, pid, e);
+        assert_se(e > 0);
+}
 
         assert_se(is_kernel_thread(pid) == 0 || pid != 1);
 
@@ -86,7 +87,6 @@ static void test_get_process_comm(pid_t pid) {
         assert_se(r >= 0 || r == -EACCES);
         log_info("PID"PID_FMT" exe: '%s'", pid, strna(f));
 
-#if 0 /// UNNEEDED by elogind
         assert_se(get_process_uid(pid, &u) == 0);
         log_info("PID"PID_FMT" UID: "UID_FMT, pid, u);
 
@@ -860,7 +860,6 @@ static void test_setpriority_closest(void) {
                 _exit(EXIT_SUCCESS);
         }
 }
-#endif // 0
 
 static void test_get_process_ppid(void) {
         uint64_t limit;
@@ -894,6 +893,7 @@ static void test_get_process_ppid(void) {
                 pid = ppid;
         }
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         log_show_color(true);
@@ -929,8 +929,8 @@ int main(int argc, char *argv[]) {
 #if 0 /// UNNEEDED by elogind
         test_ioprio_class_from_to_string();
         test_setpriority_closest();
-#endif // 0
         test_get_process_ppid();
+#endif // 0
 
         return 0;
 }

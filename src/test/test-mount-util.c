@@ -129,6 +129,7 @@ static void test_mount_flags_to_string(void) {
                                        "MS_I_VERSION|MS_STRICTATIME|MS_LAZYTIME|fc000200");
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_bind_remount_recursive(void) {
         _cleanup_(rm_rf_physical_and_freep) char *tmp = NULL;
         _cleanup_free_ char *subdir = NULL;
@@ -218,6 +219,7 @@ static void test_bind_remount_one(void) {
 
         assert_se(wait_for_terminate_and_check("test-remount-one", pid, WAIT_LOG) == EXIT_SUCCESS);
 }
+#endif // 0
 
 static void test_make_mount_point_inode(void) {
         _cleanup_(rm_rf_physical_and_freep) char *d = NULL;
@@ -270,8 +272,10 @@ int main(int argc, char *argv[]) {
 
         test_mount_option_mangle();
         test_mount_flags_to_string();
+#if 0 /// UNNEEDED by elogind
         test_bind_remount_recursive();
         test_bind_remount_one();
+#endif // 0
         test_make_mount_point_inode();
 
         return 0;

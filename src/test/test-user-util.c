@@ -483,7 +483,9 @@ int main(int argc, char *argv[]) {
 
         test_gid_to_name_one(0, "root");
         test_gid_to_name_one(GID_NOBODY, NOBODY_GROUP_NAME);
+#if 0 /// elogind has no sysusers.d and thus nowhere TTY_GID is set
         test_gid_to_name_one(TTY_GID, "tty");
+#endif // 0
         test_gid_to_name_one(0xFFFF, "65535");
         test_gid_to_name_one(0xFFFFFFFF, "4294967295");
 
