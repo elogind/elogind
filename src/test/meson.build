@@ -152,7 +152,9 @@ tests += [
 
         [['src/test/test-utf8.c']],
 
-        [['src/test/test-blockdev-util.c']],
+#if 0 /// UNNEEDED in elogind
+#         [['src/test/test-blockdev-util.c']],
+#endif // 0
 
         [['src/test/test-dev-setup.c']],
 
