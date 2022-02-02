@@ -17,12 +17,17 @@ int block_get_whole_disk(dev_t d, dev_t *ret);
 int block_get_originating(dev_t d, dev_t *ret);
 #endif // 0
 
+int get_block_device_fd(int fd, dev_t *ret);
 int get_block_device(const char *path, dev_t *dev);
 
 #if 0 /// UNNEEDED by elogind
+int get_block_device_harder_fd(int fd, dev_t *dev);
 int get_block_device_harder(const char *path, dev_t *dev);
 
 int lock_whole_block_device(dev_t devt, int operation);
 
 int blockdev_partscan_enabled(int fd);
 #endif // 0
+
+int fd_is_encrypted(int fd);
+int path_is_encrypted(const char *path);

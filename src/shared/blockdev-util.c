@@ -59,20 +59,15 @@ int block_get_whole_disk(dev_t d, dev_t *ret) {
 }
 #endif // 0
 
-int get_block_device(const char *path, dev_t *ret) {
-        _cleanup_close_ int fd = -1;
+int get_block_device_fd(int fd, dev_t *ret) {
         struct stat st;
         int r;
 
-        assert(path);
+        assert(fd >= 0);
         assert(ret);
 
         /* Gets the block device directly backing a file system. If the block device is encrypted, returns
          * the device mapper block device. */
-
-        fd = open(path, O_RDONLY|O_NOFOLLOW|O_CLOEXEC);
-        if (fd < 0)
-                return -errno;
 
         if (fstat(fd, &st))
                 return -errno;
@@ -93,12 +88,24 @@ int get_block_device(const char *path, dev_t *ret) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int get_block_device(const char *path, dev_t *ret) {
+        _cleanup_close_ int fd = -1;
+
+        assert(path);
+        assert(ret);
+
+        fd = open(path, O_RDONLY|O_NOFOLLOW|O_CLOEXEC);
+        if (fd < 0)
+                return -errno;
+
+        return get_block_device_fd(fd, ret);
+}
+
 int block_get_originating(dev_t dt, dev_t *ret) {
         _cleanup_closedir_ DIR *d = NULL;
         _cleanup_free_ char *t = NULL;
         char p[SYS_BLOCK_PATH_MAX("/slaves")];
         _cleanup_free_ char *first_found = NULL;
-        struct dirent *de;
         const char *q;
         dev_t devt;
         int r;
@@ -177,24 +184,37 @@ int block_get_originating(dev_t dt, dev_t *ret) {
         return 1;
 }
 
-int get_block_device_harder(const char *path, dev_t *ret) {
+int get_block_device_harder_fd(int fd, dev_t *ret) {
         int r;
 
-        assert(path);
+        assert(fd >= 0);
         assert(ret);
 
         /* Gets the backing block device for a file system, and handles LUKS encrypted file systems, looking for its
          * immediate parent, if there is one. */
 
-        r = get_block_device(path, ret);
+        r = get_block_device_fd(fd, ret);
         if (r <= 0)
                 return r;
 
         r = block_get_originating(*ret, ret);
         if (r < 0)
-                log_debug_errno(r, "Failed to chase block device '%s', ignoring: %m", path);
+                log_debug_errno(r, "Failed to chase block device, ignoring: %m");
 
         return 1;
+}
+
+int get_block_device_harder(const char *path, dev_t *ret) {
+        _cleanup_close_ int fd = -1;
+
+        assert(path);
+        assert(ret);
+
+        fd = open(path, O_RDONLY|O_NOFOLLOW|O_CLOEXEC);
+        if (fd < 0)
+                return -errno;
+
+        return get_block_device_harder_fd(fd, ret);
 }
 
 int lock_whole_block_device(dev_t devt, int operation) {
@@ -261,3 +281,104 @@ int blockdev_partscan_enabled(int fd) {
         return !FLAGS_SET(ull, GENHD_FL_NO_PART_SCAN);
 }
 #endif // 0
+
+static int blockdev_is_encrypted(const char *sysfs_path, unsigned depth_left) {
+        _cleanup_free_ char *p = NULL, *uuids = NULL;
+        _cleanup_closedir_ DIR *d = NULL;
+        int r, found_encrypted = false;
+
+        assert(sysfs_path);
+
+        if (depth_left == 0)
+                return -EINVAL;
+
+        p = path_join(sysfs_path, "dm/uuid");
+        if (!p)
+                return -ENOMEM;
+
+        r = read_one_line_file(p, &uuids);
+        if (r != -ENOENT) {
+                if (r < 0)
+                        return r;
+
+                /* The DM device's uuid attribute is prefixed with "CRYPT-" if this is a dm-crypt device. */
+                if (startswith(uuids, "CRYPT-"))
+                        return true;
+        }
+
+        /* Not a dm-crypt device itself. But maybe it is on top of one? Follow the links in the "slaves/"
+         * subdir. */
+
+        p = mfree(p);
+        p = path_join(sysfs_path, "slaves");
+        if (!p)
+                return -ENOMEM;
+
+        d = opendir(p);
+        if (!d) {
+                if (errno == ENOENT) /* Doesn't have underlying devices */
+                        return false;
+
+                return -errno;
+        }
+
+        for (;;) {
+                _cleanup_free_ char *q = NULL;
+                struct dirent *de;
+
+                errno = 0;
+                de = readdir_no_dot(d);
+                if (!de) {
+                        if (errno != 0)
+                                return -errno;
+
+                        break; /* No more underlying devices */
+                }
+
+                q = path_join(p, de->d_name);
+                if (!q)
+                        return -ENOMEM;
+
+                r = blockdev_is_encrypted(q, depth_left - 1);
+                if (r < 0)
+                        return r;
+                if (r == 0) /* we found one that is not encrypted? then propagate that immediately */
+                        return false;
+
+                found_encrypted = true;
+        }
+
+        return found_encrypted;
+}
+
+int fd_is_encrypted(int fd) {
+        char p[SYS_BLOCK_PATH_MAX(NULL)];
+        dev_t devt;
+        int r;
+
+        r = get_block_device_fd(fd, &devt);
+        if (r < 0)
+                return r;
+        if (r == 0) /* doesn't have a block device */
+                return false;
+
+        xsprintf_sys_block_path(p, NULL, devt);
+
+        return blockdev_is_encrypted(p, 10 /* safety net: maximum recursion depth */);
+}
+
+int path_is_encrypted(const char *path) {
+        char p[SYS_BLOCK_PATH_MAX(NULL)];
+        dev_t devt;
+        int r;
+
+        r = get_block_device(path, &devt);
+        if (r < 0)
+                return r;
+        if (r == 0) /* doesn't have a block device */
+                return false;
+
+        xsprintf_sys_block_path(p, NULL, devt);
+
+        return blockdev_is_encrypted(p, 10 /* safety net: maximum recursion depth */);
+}

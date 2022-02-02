@@ -35,14 +35,13 @@ typedef enum BtrfsSnapshotFlags {
         BTRFS_SNAPSHOT_FALLBACK_DIRECTORY = 1 << 4, /* If the destination doesn't support subvolumes, reflink/copy instead */
         BTRFS_SNAPSHOT_FALLBACK_IMMUTABLE = 1 << 5, /* When we can't create a subvolume, use the FS_IMMUTABLE attribute for indicating read-only */
         BTRFS_SNAPSHOT_SIGINT             = 1 << 6, /* Check for SIGINT regularly, and return EINTR if seen */
+        BTRFS_SNAPSHOT_SIGTERM            = 1 << 7, /* Ditto, but for SIGTERM */
 } BtrfsSnapshotFlags;
 
 typedef enum BtrfsRemoveFlags {
         BTRFS_REMOVE_RECURSIVE = 1 << 0,
         BTRFS_REMOVE_QUOTA     = 1 << 1,
 } BtrfsRemoveFlags;
-
-int btrfs_is_filesystem(int fd);
 
 int btrfs_is_subvol_fd(int fd);
 #if 0 /// UNNEEDED by elogind
@@ -56,7 +55,6 @@ int btrfs_get_block_device_fd(int fd, dev_t *dev);
 #if 0 /// UNNEEDED by elogind
 int btrfs_get_block_device(const char *path, dev_t *dev);
 
-int btrfs_defrag_fd(int fd);
 int btrfs_defrag(const char *p);
 
 int btrfs_quota_enable_fd(int fd, bool b);

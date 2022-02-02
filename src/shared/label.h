@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
+#include <fcntl.h>
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -14,10 +15,6 @@ static inline int label_fix(const char *path, LabelFixFlags flags) {
         return label_fix_container(path, path, flags);
 }
 
-int mkdir_label(const char *path, mode_t mode);
-#if 0 /// UNNEEDED by elogind
-int mkdirat_label(int dirfd, const char *path, mode_t mode);
-#endif // 0
 int symlink_label(const char *old_path, const char *new_path);
 #if 0 /// UNNEEDED by elogind
 int symlink_atomic_label(const char *from, const char *to);

@@ -23,14 +23,17 @@
 #include "io-util.h"
 #include "macro.h"
 #include "missing_syscall.h"
+#include "mkdir-label.h"
 #include "mountpoint-util.h"
 #include "nulstr-util.h"
 #include "rm-rf.h"
 #include "selinux-util.h"
+#include "signal-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
+#include "sync-util.h"
 #include "time-util.h"
 #include "tmpfile-util.h"
 #include "umask-util.h"
@@ -90,20 +93,21 @@ static int fd_is_nonblock_pipe(int fd) {
         return FLAGS_SET(flags, O_NONBLOCK) ? FD_IS_NONBLOCKING_PIPE : FD_IS_BLOCKING_PIPE;
 }
 
-static int sigint_pending(void) {
-        sigset_t ss;
+static int look_for_signals(CopyFlags copy_flags) {
+        int r;
 
-        assert_se(sigemptyset(&ss) >= 0);
-        assert_se(sigaddset(&ss, SIGINT) >= 0);
+        if ((copy_flags & (COPY_SIGINT|COPY_SIGTERM)) == 0)
+                return 0;
 
-        if (sigtimedwait(&ss, NULL, &(struct timespec) { 0, 0 }) < 0) {
-                if (errno == EAGAIN)
-                        return false;
+        r = pop_pending_signal(copy_flags & COPY_SIGINT ? SIGINT : 0,
+                               copy_flags & COPY_SIGTERM ? SIGTERM : 0);
+        if (r < 0)
+                return r;
+        if (r != 0)
+                return log_debug_errno(SYNTHETIC_ERRNO(EINTR),
+                                       "Got %s, cancelling copy operation.", signal_to_string(r));
 
-                return -errno;
-        }
-
-        return true;
+        return 0;
 }
 
 int copy_bytes_full(
@@ -194,13 +198,9 @@ int copy_bytes_full(
                 if (max_bytes <= 0)
                         return 1; /* return > 0 if we hit the max_bytes limit */
 
-                if (FLAGS_SET(copy_flags, COPY_SIGINT)) {
-                        r = sigint_pending();
-                        if (r < 0)
-                                return r;
-                        if (r > 0)
-                                return -EINTR;
-                }
+                r = look_for_signals(copy_flags);
+                if (r < 0)
+                        return r;
 
                 if (max_bytes != UINT64_MAX && m > max_bytes)
                         m = max_bytes;
@@ -247,7 +247,6 @@ int copy_bytes_full(
                                         break;
 
                                 try_sendfile = try_splice = false; /* same logic as above for copy_file_range() */
-                                break;
                         } else
                                 /* Success! */
                                 goto next;
@@ -490,8 +489,6 @@ static int hardlink_context_setup(
 }
 
 static int hardlink_context_realize(HardlinkContext *c) {
-        int r;
-
         if (!c)
                 return 0;
 
@@ -503,15 +500,9 @@ static int hardlink_context_realize(HardlinkContext *c) {
 
         assert(c->subdir);
 
-        if (mkdirat(c->parent_fd, c->subdir, 0700) < 0)
-                return -errno;
-
-        c->dir_fd = openat(c->parent_fd, c->subdir, O_RDONLY|O_DIRECTORY|O_CLOEXEC);
-        if (c->dir_fd < 0) {
-                r = -errno;
-                (void) unlinkat(c->parent_fd, c->subdir, AT_REMOVEDIR);
-                return r;
-        }
+        c->dir_fd = open_mkdir_at(c->parent_fd, c->subdir, O_EXCL|O_CLOEXEC, 0700);
+        if (c->dir_fd < 0)
+                return c->dir_fd;
 
         return 1;
 }
@@ -647,10 +638,8 @@ static int fd_copy_regular(
                 return -errno;
 
         r = copy_bytes_full(fdf, fdt, UINT64_MAX, copy_flags, NULL, NULL, progress, userdata);
-        if (r < 0) {
-                (void) unlinkat(dt, to, 0);
-                return r;
-        }
+        if (r < 0)
+                goto fail;
 
         if (fchown(fdt,
                    uid_is_valid(override_uid) ? override_uid : st->st_uid,
@@ -661,17 +650,26 @@ static int fd_copy_regular(
                 r = -errno;
 
         (void) futimens(fdt, (struct timespec[]) { st->st_atim, st->st_mtim });
-        (void) copy_xattr(fdf, fdt);
+        (void) copy_xattr(fdf, fdt, copy_flags);
 
-        q = close(fdt);
-        fdt = -1;
+        if (copy_flags & COPY_FSYNC) {
+                if (fsync(fdt) < 0) {
+                        r = -errno;
+                        goto fail;
+                }
+        }
 
+        q = close_nointr(TAKE_FD(fdt)); /* even if this fails, the fd is now invalidated */
         if (q < 0) {
-                r = -errno;
-                (void) unlinkat(dt, to, 0);
+                r = q;
+                goto fail;
         }
 
         (void) memorize_hardlink(hardlink_context, st, dt, to);
+        return r;
+
+fail:
+        (void) unlinkat(dt, to, 0);
         return r;
 }
 
@@ -795,7 +793,6 @@ static int fd_copy_directory(
 
         _cleanup_close_ int fdf = -1, fdt = -1;
         _cleanup_closedir_ DIR *d = NULL;
-        struct dirent *de;
         bool exists, created;
         int r;
 
@@ -865,13 +862,9 @@ static int fd_copy_directory(
                 if (dot_or_dot_dot(de->d_name))
                         continue;
 
-                if (FLAGS_SET(copy_flags, COPY_SIGINT)) {
-                        r = sigint_pending();
-                        if (r < 0)
-                                return r;
-                        if (r > 0)
-                                return -EINTR;
-                }
+                r = look_for_signals(copy_flags);
+                if (r < 0)
+                        return r;
 
                 if (fstatat(dirfd(d), de->d_name, &buf, AT_SYMLINK_NOFOLLOW) < 0) {
                         r = -errno;
@@ -932,7 +925,7 @@ static int fd_copy_directory(
                 else
                         q = -EOPNOTSUPP;
 
-                if (q == -EINTR) /* Propagate SIGINT up instantly */
+                if (q == -EINTR) /* Propagate SIGINT/SIGTERM up instantly */
                         return q;
                 if (q == -EEXIST && (copy_flags & COPY_MERGE))
                         q = 0;
@@ -949,8 +942,13 @@ static int fd_copy_directory(
                 if (fchmod(fdt, st->st_mode & 07777) < 0)
                         r = -errno;
 
-                (void) copy_xattr(dirfd(d), fdt);
+                (void) copy_xattr(dirfd(d), fdt, copy_flags);
                 (void) futimens(fdt, (struct timespec[]) { st->st_atim, st->st_mtim });
+        }
+
+        if (copy_flags & COPY_FSYNC_FULL) {
+                if (fsync(fdt) < 0)
+                        return -errno;
         }
 
         return r;
@@ -969,6 +967,7 @@ int copy_tree_at_full(
                 void *userdata) {
 
         struct stat st;
+        int r;
 
         assert(from);
         assert(to);
@@ -977,17 +976,47 @@ int copy_tree_at_full(
                 return -errno;
 
         if (S_ISREG(st.st_mode))
-                return fd_copy_regular(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags, NULL, progress_bytes, userdata);
+                r = fd_copy_regular(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags, NULL, progress_bytes, userdata);
         else if (S_ISDIR(st.st_mode))
-                return fd_copy_directory(fdf, from, &st, fdt, to, st.st_dev, COPY_DEPTH_MAX, override_uid, override_gid, copy_flags, NULL, NULL, progress_path, progress_bytes, userdata);
+                r = fd_copy_directory(fdf, from, &st, fdt, to, st.st_dev, COPY_DEPTH_MAX, override_uid, override_gid, copy_flags, NULL, NULL, progress_path, progress_bytes, userdata);
         else if (S_ISLNK(st.st_mode))
-                return fd_copy_symlink(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags);
+                r = fd_copy_symlink(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags);
         else if (S_ISFIFO(st.st_mode))
-                return fd_copy_fifo(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags, NULL);
+                r = fd_copy_fifo(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags, NULL);
         else if (S_ISBLK(st.st_mode) || S_ISCHR(st.st_mode) || S_ISSOCK(st.st_mode))
-                return fd_copy_node(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags, NULL);
+                r = fd_copy_node(fdf, from, &st, fdt, to, override_uid, override_gid, copy_flags, NULL);
         else
                 return -EOPNOTSUPP;
+        if (r < 0)
+                return r;
+
+        if (S_ISDIR(st.st_mode) && (copy_flags & COPY_SYNCFS)) {
+                /* If the top-level inode is a directory run syncfs() now. */
+                r = syncfs_path(fdt, to);
+                if (r < 0)
+                        return r;
+        } else if ((copy_flags & (COPY_FSYNC_FULL|COPY_SYNCFS)) != 0) {
+                /* fsync() the parent dir of what we just copied if COPY_FSYNC_FULL is set. Also do this in
+                 * case COPY_SYNCFS is set but the top-level inode wasn't actually a directory. We do this so that
+                 * COPY_SYNCFS provides reasonable synchronization semantics on any kind of inode: when the
+                 * copy operation is done the whole inode — regardless of its type — and all its children
+                 * will be synchronized to disk. */
+                r = fsync_parent_at(fdt, to);
+                if (r < 0)
+                        return r;
+        }
+
+        return 0;
+}
+
+static int sync_dir_by_flags(const char *path, CopyFlags copy_flags) {
+
+        if (copy_flags & COPY_SYNCFS)
+                return syncfs_path(AT_FDCWD, path);
+        if (copy_flags & COPY_FSYNC_FULL)
+                return fsync_parent_at(AT_FDCWD, path);
+
+        return 0;
 }
 
 int copy_directory_fd_full(
@@ -1011,7 +1040,26 @@ int copy_directory_fd_full(
         if (r < 0)
                 return r;
 
-        return fd_copy_directory(dirfd, NULL, &st, AT_FDCWD, to, st.st_dev, COPY_DEPTH_MAX, UID_INVALID, GID_INVALID, copy_flags, NULL, NULL, progress_path, progress_bytes, userdata);
+        r = fd_copy_directory(
+                        dirfd, NULL,
+                        &st,
+                        AT_FDCWD, to,
+                        st.st_dev,
+                        COPY_DEPTH_MAX,
+                        UID_INVALID, GID_INVALID,
+                        copy_flags,
+                        NULL, NULL,
+                        progress_path,
+                        progress_bytes,
+                        userdata);
+        if (r < 0)
+                return r;
+
+        r = sync_dir_by_flags(to, copy_flags);
+        if (r < 0)
+                return r;
+
+        return 0;
 }
 
 int copy_directory_full(
@@ -1035,7 +1083,26 @@ int copy_directory_full(
         if (r < 0)
                 return r;
 
-        return fd_copy_directory(AT_FDCWD, from, &st, AT_FDCWD, to, st.st_dev, COPY_DEPTH_MAX, UID_INVALID, GID_INVALID, copy_flags, NULL, NULL, progress_path, progress_bytes, userdata);
+        r = fd_copy_directory(
+                        AT_FDCWD, from,
+                        &st,
+                        AT_FDCWD, to,
+                        st.st_dev,
+                        COPY_DEPTH_MAX,
+                        UID_INVALID, GID_INVALID,
+                        copy_flags,
+                        NULL, NULL,
+                        progress_path,
+                        progress_bytes,
+                        userdata);
+        if (r < 0)
+                return r;
+
+        r = sync_dir_by_flags(to, copy_flags);
+        if (r < 0)
+                return r;
+
+        return 0;
 }
 
 int copy_file_fd_full(
@@ -1046,6 +1113,7 @@ int copy_file_fd_full(
                 void *userdata) {
 
         _cleanup_close_ int fdf = -1;
+        struct stat st;
         int r;
 
         assert(from);
@@ -1055,12 +1123,32 @@ int copy_file_fd_full(
         if (fdf < 0)
                 return -errno;
 
+        r = fd_verify_regular(fdf);
+        if (r < 0)
+                return r;
+
+        if (fstat(fdt, &st) < 0)
+                return -errno;
+
         r = copy_bytes_full(fdf, fdt, UINT64_MAX, copy_flags, NULL, NULL, progress_bytes, userdata);
+        if (r < 0)
+                return r;
 
-        (void) copy_times(fdf, fdt, copy_flags);
-        (void) copy_xattr(fdf, fdt);
+        if (S_ISREG(fdt)) {
+                (void) copy_times(fdf, fdt, copy_flags);
+                (void) copy_xattr(fdf, fdt, copy_flags);
+        }
 
-        return r;
+        if (copy_flags & COPY_FSYNC_FULL) {
+                r = fsync_full(fdt);
+                if (r < 0)
+                        return r;
+        } else if (copy_flags & COPY_FSYNC) {
+                if (fsync(fdt) < 0)
+                        return -errno;
+        }
+
+        return 0;
 }
 
 int copy_file_full(
@@ -1074,9 +1162,9 @@ int copy_file_full(
                 copy_progress_bytes_t progress_bytes,
                 void *userdata) {
 
-        _cleanup_close_ int fdf = -1;
+        _cleanup_close_ int fdf = -1, fdt = -1;
         struct stat st;
-        int r, fdt = -1;  /* avoid false maybe-uninitialized warning */
+        int r;
 
         assert(from);
         assert(to);
@@ -1085,9 +1173,12 @@ int copy_file_full(
         if (fdf < 0)
                 return -errno;
 
-        if (mode == MODE_INVALID)
-                if (fstat(fdf, &st) < 0)
-                        return -errno;
+        if (fstat(fdf, &st) < 0)
+                return -errno;
+
+        r = stat_verify_regular(&st);
+        if (r < 0)
+                return r;
 
         RUN_WITH_UMASK(0000) {
                 if (copy_flags & COPY_MAC_CREATE) {
@@ -1103,28 +1194,50 @@ int copy_file_full(
                         return -errno;
         }
 
+        if (!FLAGS_SET(flags, O_EXCL)) { /* if O_EXCL was used we created the thing as regular file, no need to check again */
+                r = fd_verify_regular(fdt);
+                if (r < 0)
+                        goto fail;
+        }
+
         if (chattr_mask != 0)
                 (void) chattr_fd(fdt, chattr_flags, chattr_mask & CHATTR_EARLY_FL, NULL);
 
         r = copy_bytes_full(fdf, fdt, UINT64_MAX, copy_flags, NULL, NULL, progress_bytes, userdata);
-        if (r < 0) {
-                close(fdt);
-                (void) unlink(to);
-                return r;
-        }
+        if (r < 0)
+                goto fail;
 
         (void) copy_times(fdf, fdt, copy_flags);
-        (void) copy_xattr(fdf, fdt);
+        (void) copy_xattr(fdf, fdt, copy_flags);
 
         if (chattr_mask != 0)
                 (void) chattr_fd(fdt, chattr_flags, chattr_mask & ~CHATTR_EARLY_FL, NULL);
 
-        if (close(fdt) < 0) {
-                unlink_noerrno(to);
-                return -errno;
+        if (copy_flags & (COPY_FSYNC|COPY_FSYNC_FULL)) {
+                if (fsync(fdt) < 0) {
+                        r = -errno;
+                        goto fail;
+                }
+        }
+
+        r = close_nointr(TAKE_FD(fdt)); /* even if this fails, the fd is now invalidated */
+        if (r < 0)
+                goto fail;
+
+        if (copy_flags & COPY_FSYNC_FULL) {
+                r = fsync_parent_at(AT_FDCWD, to);
+                if (r < 0)
+                        goto fail;
         }
 
         return 0;
+
+fail:
+        /* Only unlink if we definitely are the ones who created the file */
+        if (FLAGS_SET(flags, O_EXCL))
+                (void) unlink(to);
+
+        return r;
 }
 
 int copy_file_atomic_full(
@@ -1192,6 +1305,12 @@ int copy_file_atomic_full(
         if (fchmod(fdt, mode) < 0)
                 return -errno;
 
+        if ((copy_flags & (COPY_FSYNC|COPY_FSYNC_FULL))) {
+                /* Sync the file */
+                if (fsync(fdt) < 0)
+                        return -errno;
+        }
+
         if (copy_flags & COPY_REPLACE) {
                 if (renameat(AT_FDCWD, t, AT_FDCWD, to) < 0)
                         return -errno;
@@ -1201,11 +1320,27 @@ int copy_file_atomic_full(
                         return r;
         }
 
+        t = mfree(t);
+
         if (chattr_mask != 0)
                 (void) chattr_fd(fdt, chattr_flags, chattr_mask & ~CHATTR_EARLY_FL, NULL);
 
-        t = mfree(t);
+        r = close_nointr(TAKE_FD(fdt)); /* even if this fails, the fd is now invalidated */
+        if (r < 0)
+                goto fail;
+
+        if (copy_flags & COPY_FSYNC_FULL) {
+                /* Sync the parent directory */
+                r = fsync_parent_at(AT_FDCWD, to);
+                if (r < 0)
+                        goto fail;
+        }
+
         return 0;
+
+fail:
+        (void) unlink(to);
+        return r;
 }
 
 int copy_times(int fdf, int fdt, CopyFlags flags) {
@@ -1241,13 +1376,10 @@ int copy_access(int fdf, int fdt) {
         if (fstat(fdf, &st) < 0)
                 return -errno;
 
-        if (fchmod(fdt, st.st_mode & 07777) < 0)
-                return -errno;
-
-        return 0;
+        return RET_NERRNO(fchmod(fdt, st.st_mode & 07777));
 }
 
-int copy_rights(int fdf, int fdt) {
+int copy_rights_with_fallback(int fdf, int fdt, const char *patht) {
         struct stat st;
 
         assert(fdf >= 0);
@@ -1258,10 +1390,10 @@ int copy_rights(int fdf, int fdt) {
         if (fstat(fdf, &st) < 0)
                 return -errno;
 
-        return fchmod_and_chown(fdt, st.st_mode & 07777, st.st_uid, st.st_gid);
+        return fchmod_and_chown_with_fallback(fdt, patht, st.st_mode & 07777, st.st_uid, st.st_gid);
 }
 
-int copy_xattr(int fdf, int fdt) {
+int copy_xattr(int fdf, int fdt, CopyFlags copy_flags) {
         _cleanup_free_ char *names = NULL;
         int ret = 0, r;
         const char *p;
@@ -1273,7 +1405,7 @@ int copy_xattr(int fdf, int fdt) {
         NULSTR_FOREACH(p, names) {
                 _cleanup_free_ char *value = NULL;
 
-                if (!startswith(p, "user."))
+                if (!(copy_flags & COPY_ALL_XATTRS) && !startswith(p, "user."))
                         continue;
 
                 r = fgetxattr_malloc(fdf, p, &value);
