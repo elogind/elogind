@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- 0 /// elogind does not has any of these but KILL_USER_PROCESSES.
-// 0 -->
-<!-- 0 /// elogind does not have a DEBUGTTY.
-// 0 -->
+<!-- 0 /// elogind does not has any of these but KILL_USER_PROCESSES. {#
 <!ENTITY MOUNT_PATH "{{MOUNT_PATH}}">
 <!ENTITY UMOUNT_PATH "{{UMOUNT_PATH}}">
 <!ENTITY SYSTEM_GENERATOR_DIR "{{SYSTEM_GENERATOR_DIR}}">
@@ -12,9 +9,12 @@
 <!ENTITY CERTIFICATE_ROOT "{{CERTIFICATE_ROOT}}">
 <!ENTITY FALLBACK_HOSTNAME "{{FALLBACK_HOSTNAME}}">
 <!ENTITY MEMORY_ACCOUNTING_DEFAULT "{{ 'yes' if MEMORY_ACCOUNTING_DEFAULT else 'no' }}">
+#} // 0 -->
 <!ENTITY KILL_USER_PROCESSES "{{ 'yes' if KILL_USER_PROCESSES else 'no' }}">
+<!-- 0 /// elogind does not have any of these {#
 <!ENTITY DEBUGTTY "{{DEBUGTTY}}">
 <!ENTITY RC_LOCAL_PATH "{{RC_LOCAL_PATH}}">
 <!ENTITY HIGH_RLIMIT_NOFILE "{{HIGH_RLIMIT_NOFILE}}">
 <!ENTITY fedora_latest_version "34">
 <!ENTITY fedora_cloud_release "1.2">
+#} // 0 -->
