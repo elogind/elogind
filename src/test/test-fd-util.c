@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "data-fd-util.h"
+#include "data-fd-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "macro.h"
@@ -157,9 +157,7 @@ static void test_rearrange_stdio(void) {
                         assert_se(fd_move_above_stdio(0) == 3);
                 }
                 assert_se(open("/dev/full", O_WRONLY|O_CLOEXEC) == 0);
-#if 0 /// UNNEEDED by elogind
                 assert_se(acquire_data_fd("foobar", 6, 0) == 2);
-#endif // 0
 
                 assert_se(rearrange_stdio(2, 0, 1) >= 0);
 
