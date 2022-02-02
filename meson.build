@@ -1724,8 +1724,10 @@ conf.set10('HAVE_DBUS', have)
 # else
 #         have = false
 # endif
+# conf.set10('ENABLE_REMOTE', have)
+#else // 0
+conf.set10('ENABLE_HOMED', false)
 #endif // 0
-conf.set10('ENABLE_REMOTE', have)
 
 #if 0 /// UNNEEDED by elogind
 # foreach term : ['analyze',
