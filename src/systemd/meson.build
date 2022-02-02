@@ -18,7 +18,7 @@ _systemd_headers = '''
 # https://github.com/mesonbuild/meson/issues/1633
 systemd_headers = files(_systemd_headers)
 
-#if 0 /// elogind does not need all of these
+#if 0 /// elogind does not need these
 # _not_installed_headers = '''
 #         sd-dhcp6-client.h
 #         sd-dhcp6-lease.h
@@ -37,10 +37,6 @@ systemd_headers = files(_systemd_headers)
 #         sd-resolve.h
 #         sd-utf8.h
 # '''.split()
-#else // 0
-_not_installed_headers = '''
-        sd-netlink.h
-'''.split()
 #endif // 0
 
 install_headers(

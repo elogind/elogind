@@ -223,10 +223,6 @@ libelogind_sources = files('''
         sd-device/sd-device.c
         sd-hwdb/hwdb-internal.h
         sd-hwdb/sd-hwdb.c
-        sd-netlink/netlink-internal.h
-        sd-netlink/netlink-types.h
-        sd-netlink/netlink-util.c
-        sd-netlink/netlink-util.h
         sd-path/sd-path.c
 '''.split()) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
