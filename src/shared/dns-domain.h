@@ -109,3 +109,5 @@ int dns_name_is_valid_or_address(const char *name);
 
 int dns_name_dot_suffixed(const char *name);
 #endif // 0
+
+bool dns_name_dont_resolve(const char *name);
