@@ -13,16 +13,17 @@ project('elogind', 'c',
         meson_version : '>= 0.53.2',
        )
 
+libsystemd_version = '0.33.0'
 #if 0 /// elogind does not ship libudev
+# libudev_version = '1.7.3'
 #endif // 0
-libelogind_version = '0.33.0'
-libudev_version = '1.7.3'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
 # conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/systemd')
 #else // 0
-conf.set_quoted('PROJECT_URL', 'https://github.com/elogind/elogind')
+support_url = 'https://github.com/elogind/elogind'
+conf.set_quoted('PROJECT_URL', support_url)
 #endif // 0
 conf.set('PROJECT_VERSION',    meson.project_version(),
          description : 'Numerical project version (used where a simple number is expected)')
@@ -135,16 +136,16 @@ if prefixdir != rootprefixdir and rootprefixdir != '/' and not prefixdir.strip('
                 rootprefixdir, prefixdir))
 endif
 
+bindir = prefixdir / get_option('bindir')
+libdir = prefixdir / get_option('libdir')
+sysconfdir = prefixdir / get_option('sysconfdir')
+includedir = prefixdir / get_option('includedir')
+datadir = prefixdir / get_option('datadir')
+localstatedir = '/' / get_option('localstatedir')
+
+rootbindir = rootprefixdir / 'bin'
+rootsbindir = rootprefixdir / (split_bin ? 'sbin' : 'bin')
 #if 0 /// elogind has a different default
-# bindir = prefixdir / get_option('bindir')
-# libdir = prefixdir / get_option('libdir')
-# sysconfdir = prefixdir / get_option('sysconfdir')
-# includedir = prefixdir / get_option('includedir')
-# datadir = prefixdir / get_option('datadir')
-# localstatedir = '/' / get_option('localstatedir')
-#
-# rootbindir = rootprefixdir / 'bin'
-# rootsbindir = rootprefixdir / (split_bin ? 'sbin' : 'bin')
 # rootlibexecdir = rootprefixdir / 'lib/systemd'
 #else // 0
 rootlibexecdir = get_option('rootlibexecdir')
@@ -161,8 +162,10 @@ install_sysconfdir_samples = get_option('install-sysconfdir') == 'true'
 # Dirs of external packages
 #if 0 /// UNNEEDED by elogind
 # pkgconfigdatadir = get_option('pkgconfigdatadir') != '' ? get_option('pkgconfigdatadir') : datadir / 'pkgconfig'
-# pkgconfiglibdir = get_option('pkgconfiglibdir') != '' ? get_option('pkgconfiglibdir') : libdir / 'pkgconfig'
-# polkitpolicydir = datadir / 'polkit-1/actions'
+#endif // 0
+pkgconfiglibdir = get_option('pkgconfiglibdir') != '' ? get_option('pkgconfiglibdir') : libdir / 'pkgconfig'
+polkitpolicydir = datadir / 'polkit-1/actions'
+#if 0 /// UNNEEDED by elogind
 # polkitrulesdir = datadir / 'polkit-1/rules.d'
 # polkitpkladir = localstatedir / 'lib/polkit-1/localauthority/10-vendor.d'
 # xinitrcdir = get_option('xinitrcdir') != '' ? get_option('xinitrcdir') : sysconfdir / 'X11/xinit/xinitrc.d'
@@ -170,8 +173,8 @@ install_sysconfdir_samples = get_option('install-sysconfdir') == 'true'
 # if rpmmacrosdir != 'no'
 #         rpmmacrosdir = prefixdir / rpmmacrosdir
 # endif
+# modprobedir = rootprefixdir / 'lib/modprobe.d'
 #endif // 0
-modprobedir = rootprefixdir / 'lib/modprobe.d'
 
 # Our own paths
 #if 0 /// elogind has a bit different layout and does not need all of theses
@@ -228,8 +231,9 @@ udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : join_paths(udevlibexecdir, 'rules.d')
 factorydir = join_paths(datadir, 'factory')
 docdir = get_option('docdir')
-docdir = docdir != '' ? docdir: '-'.join([join_paths(datadir, 'doc/elogind'),
-                                          meson.project_version()])
+if docdir == ''
+        docdir = datadir / 'doc/elogind'
+endif
 testsdir = join_paths(prefixdir, 'lib/elogind/tests')
 randomseeddir = join_paths(localstatedir, 'lib/elogind')
 #endif // 0
@@ -855,32 +859,32 @@ else
         conf.set('DEFAULT_HIERARCHY', 'CGROUP_UNIFIED_ALL')
 endif
 
-extra_net_naming_schemes = []
-extra_net_naming_map = []
-foreach scheme: get_option('extra-net-naming-schemes').split(',')
-        if scheme != ''
-                name = scheme.split('=')[0]
-                value = scheme.split('=')[1]
-                NAME = name.underscorify().to_upper()
-                VALUE = []
-                foreach field: value.split('+')
-                        VALUE += 'NAMING_' + field.underscorify().to_upper()
-                endforeach
-                extra_net_naming_schemes += 'NAMING_@0@ = @1@,'.format(NAME, '|'.join(VALUE))
-                extra_net_naming_map += '{ "@0@", NAMING_@1@ },'.format(name, NAME)
-        endif
-endforeach
-conf.set('EXTRA_NET_NAMING_SCHEMES', ' '.join(extra_net_naming_schemes))
-conf.set('EXTRA_NET_NAMING_MAP', ' '.join(extra_net_naming_map))
-
-default_net_naming_scheme = get_option('default-net-naming-scheme')
-conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
-if default_net_naming_scheme != 'latest'
-        conf.set('_DEFAULT_NET_NAMING_SCHEME_TEST',
-                 'NAMING_' + default_net_naming_scheme.underscorify().to_upper())
-endif
-
 #if 0 /// UNNEEDED by elogind
+# extra_net_naming_schemes = []
+# extra_net_naming_map = []
+# foreach scheme: get_option('extra-net-naming-schemes').split(',')
+#         if scheme != ''
+#                 name = scheme.split('=')[0]
+#                 value = scheme.split('=')[1]
+#                 NAME = name.underscorify().to_upper()
+#                 VALUE = []
+#                 foreach field: value.split('+')
+#                         VALUE += 'NAMING_' + field.underscorify().to_upper()
+#                 endforeach
+#                 extra_net_naming_schemes += 'NAMING_@0@ = @1@,'.format(NAME, '|'.join(VALUE))
+#                 extra_net_naming_map += '{ "@0@", NAMING_@1@ },'.format(name, NAME)
+#         endif
+# endforeach
+# conf.set('EXTRA_NET_NAMING_SCHEMES', ' '.join(extra_net_naming_schemes))
+# conf.set('EXTRA_NET_NAMING_MAP', ' '.join(extra_net_naming_map))
+#
+# default_net_naming_scheme = get_option('default-net-naming-scheme')
+# conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
+# if default_net_naming_scheme != 'latest'
+#         conf.set('_DEFAULT_NET_NAMING_SCHEME_TEST',
+#                  'NAMING_' + default_net_naming_scheme.underscorify().to_upper())
+# endif
+#
 # time_epoch = get_option('time-epoch')
 # if time_epoch == -1
 #         time_epoch = run_command(sh, '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).stdout().strip()
@@ -1240,6 +1244,7 @@ libmount = dependency('mount',
 # endif
 # conf.set10('HAVE_SECCOMP', have)
 #else // 0
+libseccomp = []
 conf.set10('HAVE_SECCOMP', false)
 #endif // 0
 
@@ -1636,6 +1641,8 @@ libxz = []
 liblz4 = []
 libzstd = []
 libxkbcommon = []
+conf.set10('HAVE_LIBCRYPTSETUP', false)
+conf.set10('HAVE_LIBCRYPTSETUP_PLUGINS', false)
 conf.set10('HAVE_GCRYPT', false)
 conf.set10('HAVE_LIBIDN2', false)
 conf.set10('HAVE_LIBIDN', false)
@@ -1933,14 +1940,19 @@ fuzzers = []
 
 ############################################################
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 # Include these now as they provide gnu-efi detection.
 subdir('src/fundamental')
-subdir('src/boot/efi')
+#if 0 /// UNSUPPORTED by elogind (at the moment)
+# subdir('src/boot/efi')
+#else // 0
+# But we need the EFI configuration that is now determined in src/boot/efi/meson.build
+# TODO : Include EFI support
+conf.set10('ENABLE_EFI', get_option('efi'))
+conf.set10('HAVE_GNU_EFI', false)
+#endif // 0
 
 ############################################################
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 generate_gperfs = find_program('tools/generate-gperfs.py')
 
 #if 0 /// UNNEEDED by elogind
@@ -2049,8 +2061,8 @@ subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/udev')
 # subdir('src/libudev')
+# subdir('src/cryptsetup/cryptsetup-tokens')
 #endif // 0
-subdir('src/cryptsetup/cryptsetup-tokens')
 
 libelogind = shared_library(
         'elogind',
@@ -4362,31 +4374,11 @@ alias_target('update-man-rules', update_man_rules)
 #         command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
 #
 # ############################################################
-#endif // 0
-
-#if 1 /// Needed by elogind
-        'rootexeclib dir:                   @0@'.format(rootlibexecdir),
-#endif // 1
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNSUPPORTED by elogind
-#endif // 0
-#if 0 /// UNSUPPORTED by elogind
-#endif // 0
-#if 0 /// UNSUPPORTED by elogind
-#else // 0
-        'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
-#endif // 0
-
-#if 0 /// UNSUPPORTED by elogind
-#endif // 0
-#if 0 /// elogind does not ship libudeb. Obviously.
+#
 # alt_time_epoch = run_command('date', '-Is', '-u', '-d', '@@0@'.format(time_epoch),
 #                              check : true).stdout().strip()
-#
 #endif // 0
+
 summary({
         'build mode' :                      get_option('mode'),
         'split /usr' :                      split_usr,
@@ -4397,68 +4389,87 @@ summary({
         'include directory' :               includedir,
         'lib directory' :                   libdir,
         'rootlib directory' :               rootlibdir,
-        'SysV init scripts' :               sysvinit_path,
-        'SysV rc?.d directories' :          sysvrcnd_path,
-        'PAM modules directory' :           pamlibdir,
-        'PAM configuration directory' :     pamconfdir,
-        'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
-        'RPM macros directory' :            rpmmacrosdir,
-        'modprobe.d directory' :            modprobedir,
+#if 1 /// Needed by elogind
+        'rootexeclib dir' :                 rootlibexecdir,
+#endif // 1
+#if 0 /// UNNEEDED by elogind
+#         'SysV init scripts' :               sysvinit_path,
+#         'SysV rc?.d directories' :          sysvrcnd_path,
+#         'PAM modules directory' :           pamlibdir,
+#         'PAM configuration directory' :     pamconfdir,
+#         'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
+#         'RPM macros directory' :            rpmmacrosdir,
+#         'modprobe.d directory' :            modprobedir,
+#endif // 0
         'D-Bus policy directory' :          dbuspolicydir,
         'D-Bus session directory' :         dbussessionservicedir,
         'D-Bus system directory' :          dbussystemservicedir,
         'bash completions directory' :      bashcompletiondir,
         'zsh completions directory' :       zshcompletiondir,
-        'extra start script' :              get_option('rc-local'),
-        'debug shell' :                     '@0@ @ @1@'.format(get_option('debug-shell'),
-                                                               get_option('debug-tty')),
+#if 0 /// UNNEEDED by elogind
+#         'extra start script' :              get_option('rc-local'),
+#         'debug shell' :                     '@0@ @ @1@'.format(get_option('debug-shell'),
+#                                                                get_option('debug-tty')),
+#endif // 0
         'system UIDs' :                     '<=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_UID_MAX'),
                                                                          conf.get('SYSTEM_ALLOC_UID_MIN')),
         'system GIDs' :                     '<=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_GID_MAX'),
                                                                          conf.get('SYSTEM_ALLOC_GID_MIN')),
-        'dynamic UIDs' :                    '@0@…@1@'.format(dynamic_uid_min, dynamic_uid_max),
-        'container UID bases' :             '@0@…@1@'.format(container_uid_base_min, container_uid_base_max),
-        'static UID/GID allocations' :      ' '.join(static_ugids),
+#if 0 /// UNNEEDED by elogind
+#         'dynamic UIDs' :                    '@0@…@1@'.format(dynamic_uid_min, dynamic_uid_max),
+#         'container UID bases' :             '@0@…@1@'.format(container_uid_base_min, container_uid_base_max),
+#         'static UID/GID allocations' :      ' '.join(static_ugids),
+#endif // 0
         '/dev/kvm access mode' :            get_option('dev-kvm-mode'),
         'render group access mode' :        get_option('group-render-mode'),
-        'certificate root directory' :      get_option('certificate-root'),
+#if 0 /// UNNEEDED by elogind
+#         'certificate root directory' :      get_option('certificate-root'),
+#endif // 0
         'support URL' :                     support_url,
         'nobody user name' :                nobody_user,
         'nobody group name' :               nobody_group,
-        'fallback hostname' :               get_option('fallback-hostname'),
-        'default DNSSEC mode' :             default_dnssec,
-        'default DNS-over-TLS mode' :       default_dns_over_tls,
-        'default mDNS mode' :               default_mdns,
-        'default LLMNR mode' :              default_llmnr,
-        'default DNS servers' :             dns_servers.split(' '),
-        'default NTP servers' :             ntp_servers.split(' '),
+#if 0 /// UNNEEDED by elogind
+#         'fallback hostname' :               get_option('fallback-hostname'),
+#         'default DNSSEC mode' :             default_dnssec,
+#         'default DNS-over-TLS mode' :       default_dns_over_tls,
+#         'default mDNS mode' :               default_mdns,
+#         'default LLMNR mode' :              default_llmnr,
+#         'default DNS servers' :             dns_servers.split(' '),
+#         'default NTP servers' :             ntp_servers.split(' '),
+#endif // 0
         'default cgroup hierarchy' :        default_hierarchy,
-        'default net.naming-scheme value' : default_net_naming_scheme,
+#if 0 /// UNNEEDED by elogind
+#         'default net.naming-scheme value' : default_net_naming_scheme,
+#endif // 0
         'default KillUserProcesses value' : kill_user_processes,
-        'default locale' :                  default_locale,
+#if 0 /// UNNEEDED by elogind
+#         'default locale' :                  default_locale,
+#endif // 0
         'default user $PATH' :
                 default_user_path != '' ? default_user_path : '(same as system services)',
-        'elogind service watchdog' :        service_watchdog == '' ? 'disabled' : service_watchdog,
-        'time epoch' :                      '@0@ (@1@)'.format(time_epoch, alt_time_epoch)})
+#if 0 /// UNNEEDED by elogind
+#         'systemd service watchdog' :        service_watchdog == '' ? 'disabled' : service_watchdog,
+#         'time epoch' :                      '@0@ (@1@)'.format(time_epoch, alt_time_epoch)})
+#else // 0
+})
+#endif // 0
 
 # TODO:
 # CFLAGS:   ${OUR_CFLAGS} ${CFLAGS}
 # CPPFLAGS: ${OUR_CPPFLAGS} ${CPPFLAGS}
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
-if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_GNU_EFI') == 1
-        summary({
-                'EFI machine type' :                efi_arch[0],
-                'EFI CC' :                          '@0@'.format(' '.join(efi_cc)),
-                'EFI LD' :                          efi_ld,
-                'EFI lds' :                         efi_lds,
-                'EFI crt0' :                        efi_crt0,
-                'EFI include directory' :           efi_incdir},
-                section : 'Extensible Firmware Interface')
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-endif
+#if 0 /// UNSUPPORTED by elogind (at the moment)
+# if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_GNU_EFI') == 1
+#         summary({
+#                 'EFI machine type' :                efi_arch[0],
+#                 'EFI CC' :                          '@0@'.format(' '.join(efi_cc)),
+#                 'EFI LD' :                          efi_ld,
+#                 'EFI lds' :                         efi_lds,
+#                 'EFI crt0' :                        efi_crt0,
+#                 'EFI include directory' :           efi_incdir},
+#                 section : 'Extensible Firmware Interface')
+# endif
 
 found = []
 missing = []

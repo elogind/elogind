@@ -219,8 +219,10 @@ option('dbussessionservicedir', type : 'string',
        description : 'D-Bus session service directory')
 option('dbussystemservicedir', type : 'string',
        description : 'D-Bus system service directory')
-option('pkgconfigdatadir', type : 'string', value : '',
-       description : 'directory for arch-independent pkg-config files')
+#if 0 /// UNNEEDED by elogind
+# option('pkgconfigdatadir', type : 'string', value : '',
+#        description : 'directory for arch-independent pkg-config files')
+#endif // 0
 option('pkgconfiglibdir', type : 'string', value : '',
        description : 'directory for standard pkg-config files')
 #if 0 /// UNNEEDED by elogind
@@ -242,9 +244,9 @@ option('docdir', type : 'string',
 option('install-sysconfdir', type : 'combo', choices : ['true', 'no-samples', 'false'], value : 'true',
        description : 'install configuration files and directories to $sysconfdir')
 
-option('fallback-hostname', type : 'string', value : 'localhost',
-       description : 'the hostname used if none configured')
 #if 0 /// UNNEEDED by elogind
+# option('fallback-hostname', type : 'string', value : 'localhost',
+#        description : 'the hostname used if none configured')
 #endif // 0
 option('default-hierarchy', type : 'combo',
        choices : ['legacy', 'hybrid', 'unified'], value : 'unified',
