@@ -22,8 +22,6 @@
 #include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "gpt.h"
-#include "id128-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "pe-header.h"
@@ -761,7 +759,8 @@ int boot_entries_load_config_auto(
 
 int boot_entries_augment_from_loader(
                 BootConfig *config,
-                char **found_by_loader) {
+                char **found_by_loader,
+                bool only_auto) {
 
         static const char *const title_table[] = {
                 /* Pretty names for a few well-known automatically discovered entries. */
@@ -786,12 +785,7 @@ int boot_entries_augment_from_loader(
                 if (boot_config_has_entry(config, *i))
                         continue;
 
-                /*
-                 * consider the 'auto-' entries only, because the others
-                 * ones are detected scanning the 'esp' and 'xbootldr'
-                 * directories by boot_entries_load_config()
-                 */
-                if (!startswith(*i, "auto-"))
+                if (only_auto && !startswith(*i, "auto-"))
                         continue;
 
                 c = strdup(*i);
@@ -891,7 +885,7 @@ static int verify_esp_blkid(
         r = blkid_probe_lookup_value(b, "PART_ENTRY_TYPE", &v, NULL);
         if (r != 0)
                 return log_error_errno(errno ?: EIO, "Failed to probe partition type UUID of \"%s\": %m", node);
-        if (id128_equal_string(v, GPT_ESP) <= 0)
+        if (!streq(v, "c12a7328-f81f-11d2-ba4b-00a0c93ec93b"))
                 return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                        SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
                                        "File system \"%s\" has wrong type for an EFI System Partition (ESP).", node);
@@ -984,7 +978,7 @@ static int verify_esp_udev(
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_TYPE", &v);
         if (r < 0)
                 return log_error_errno(r, "Failed to get device property: %m");
-        if (id128_equal_string(v, GPT_ESP) <= 0)
+        if (!streq(v, "c12a7328-f81f-11d2-ba4b-00a0c93ec93b"))
                 return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                        SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
                                        "File system \"%s\" has wrong type for an EFI System Partition (ESP).", node);
@@ -1282,7 +1276,7 @@ static int verify_xbootldr_blkid(
                 r = blkid_probe_lookup_value(b, "PART_ENTRY_TYPE", &v, NULL);
                 if (r != 0)
                         return log_error_errno(errno ?: SYNTHETIC_ERRNO(EIO), "Failed to probe partition type UUID of \"%s\": %m", node);
-                if (id128_equal_string(v, GPT_XBOOTLDR) <= 0)
+                if (!streq(v, "bc13c2ff-59e6-4262-a352-b275fd6f7172"))
                         return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                               searching ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : SYNTHETIC_ERRNO(ENODEV),
                                               "File system \"%s\" has wrong type for extended boot loader partition.", node);
@@ -1346,7 +1340,7 @@ static int verify_xbootldr_udev(
                 r = sd_device_get_property_value(d, "ID_PART_ENTRY_TYPE", &v);
                 if (r < 0)
                         return log_error_errno(r, "Failed to get device property: %m");
-                if (id128_equal_string(v, GPT_XBOOTLDR))
+                if (!streq(v, "bc13c2ff-59e6-4262-a352-b275fd6f7172"))
                         return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                               searching ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : SYNTHETIC_ERRNO(ENODEV),
                                               "File system \"%s\" has wrong type for extended boot loader partition.", node);
