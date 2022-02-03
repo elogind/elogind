@@ -273,10 +273,6 @@ basic_sources = files('''
         async.h
         audit-util.c
         audit-util.h
-        blockdev-util.c
-        blockdev-util.h
-        btrfs-util.c
-        btrfs-util.h
         build.c
         build.h
         bus-label.c
@@ -291,12 +287,9 @@ basic_sources = files('''
         cgroup-util.h
         conf-files.c
         conf-files.h
-        copy.c
-        copy.h
         def.h
         dirent-util.c
         dirent-util.h
-        dlfcn-util.h
         efivars.c
         efivars.h
         env-file.c
@@ -330,10 +323,6 @@ basic_sources = files('''
         hostname-util.h
         io-util.c
         io-util.h
-        khash.c
-        khash.h
-        label.c
-        label.h
         linux/btrfs.h
         linux/btrfs_tree.h
         linux/if.h
@@ -375,7 +364,6 @@ basic_sources = files('''
         missing_type.h
         mkdir.c
         mkdir.h
-        mkdir-label.c
         mountpoint-util.c
         mountpoint-util.h
         musl_missing.c
@@ -409,10 +397,6 @@ basic_sources = files('''
         raw-clone.h
         rlimit-util.c
         rlimit-util.h
-        rm-rf.c
-        rm-rf.h
-        selinux-util.c
-        selinux-util.h
         set.h
         sigbus.c
         sigbus.h
@@ -420,9 +404,6 @@ basic_sources = files('''
         signal-util.h
         siphash24.c
         siphash24.h
-        smack-util.c
-        smack-util.h
-        socket-label.c
         socket-util.c
         socket-util.h
         sort-util.c
@@ -433,8 +414,6 @@ basic_sources = files('''
         stat-util.h
         static-destruct.h
         stdio-util.h
-        strbuf.c
-        strbuf.h
         string-table.c
         string-table.h
         string-util.c
@@ -443,8 +422,6 @@ basic_sources = files('''
         strv.h
         strxcpyx.c
         strxcpyx.h
-        sysctl-util.c
-        sysctl-util.h
         syslog-util.c
         syslog-util.h
         terminal-util.c
@@ -457,8 +434,6 @@ basic_sources = files('''
         unaligned.h
         unit-def.c
         unit-def.h
-        unit-file.c
-        unit-file.h
         unit-name.c
         unit-name.h
         user-util.c
@@ -664,7 +639,6 @@ libbasic = static_library(
         dependencies : [versiondep,
                         threads,
                         libcap,
-/// elogind empty mask removed (UNNEEDED by elogind)
                         libm],
         c_args : ['-fvisibility=default'],
         build_by_default : false)
@@ -683,6 +657,6 @@ libbasic = static_library(
 #         basic_gcrypt_sources,
 #         include_directories : basic_includes,
 #         dependencies : [libgcrypt],
+#         c_args : ['-fvisibility=default'],
+#         build_by_default : false)
 #endif // 0
-        c_args : ['-fvisibility=default'],
-        build_by_default : false)

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
 //#include <endian.h>
 //#include <netinet/in.h>
 //#include <stdio.h>

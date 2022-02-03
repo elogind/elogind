@@ -791,8 +791,6 @@ TEST(safe_atod) {
         assert_se(r == -EINVAL);
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
 #if 0 /// UNNEEDED by elogind
 TEST(parse_nice) {
         int n;
@@ -919,13 +917,4 @@ TEST(parse_loadavg_fixed_point) {
         assert_se(parse_loadavg_fixed_point("", &fp) == -EINVAL);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-/// elogind empty mask removed (UNNEEDED by elogind)
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 DEFINE_TEST_MAIN(LOG_INFO);

@@ -198,7 +198,6 @@ int json_variant_set_field_unsigned(JsonVariant **v, const char *field, uint64_t
 int json_variant_set_field_boolean(JsonVariant **v, const char *field, bool b);
 int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l);
 
-/// elogind empty mask removed ()
 int json_variant_append_array(JsonVariant **v, JsonVariant *element);
 
 int json_variant_merge(JsonVariant **v, JsonVariant *m);

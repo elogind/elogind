@@ -153,7 +153,6 @@ tests += [
 
         [['src/test/test-utf8.c']],
 
-/// elogind empty mask removed (UNNEEDED in elogind)
         [['src/test/test-kbd-util.c']],
 
         [['src/test/test-blockdev-util.c']],
@@ -173,7 +172,6 @@ tests += [
 
         [['src/test/test-copy.c']],
 
-/// elogind empty mask removed (UNNEEDED in elogind)
         [['src/test/test-recurse-dir.c']],
 
         [['src/test/test-data-fd-util.c']],
@@ -280,7 +278,6 @@ tests += [
 
         [['src/test/test-parse-argument.c']],
 
-/// elogind empty mask removed (UNNEEDED in elogind)
         [['src/test/test-parse-socket-bind-item.c']],
 
         [['src/test/test-parse-util.c']],

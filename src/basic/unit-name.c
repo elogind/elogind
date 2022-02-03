@@ -802,7 +802,6 @@ bool slice_name_is_valid(const char *name) {
 
         return true;
 }
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 bool unit_name_prefix_equal(const char *a, const char *b) {
         const char *p, *q;

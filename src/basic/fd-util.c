@@ -579,7 +579,6 @@ int move_fd(int from, int to, int cloexec) {
 }
 
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int fd_move_above_stdio(int fd) {
         int flags, copy;
         PROTECT_ERRNO;

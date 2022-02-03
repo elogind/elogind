@@ -130,5 +130,4 @@ int safe_fgetc(FILE *f, char *ret);
 
 int warn_file_is_world_accessible(const char *filename, struct stat *st, const char *unit, unsigned line);
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int fopen_mode_to_flags(const char *mode);

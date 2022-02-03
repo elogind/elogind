@@ -186,8 +186,6 @@ TEST(rearrange_stdio) {
         }
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
 TEST(read_nr_open) {
         log_info("nr-open: %i", read_nr_open());
 }
@@ -530,7 +528,4 @@ TEST(take_fd) {
         assert_se(array[1] == -1);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-/// elogind empty mask removed (UNNEEDED by elogind)
 DEFINE_TEST_MAIN(LOG_DEBUG);

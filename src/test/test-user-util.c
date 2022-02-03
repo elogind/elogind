@@ -485,11 +485,5 @@ TEST(mangle_gecos) {
         test_mangle_gecos_one("\xe2\x28\xa1", " ( ");
 }
 
-#if 0 /// elogind has no sysusers.d and thus nowhere TTY_GID is set
-#endif // 0
-
-/// elogind empty mask removed (UNNEEDED by elogind)
-
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 DEFINE_TEST_MAIN(LOG_INFO);

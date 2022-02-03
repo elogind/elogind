@@ -101,7 +101,9 @@ int manager_serialize(
         (void) serialize_bool(f, "taint-usr", m->taint_usr);
         (void) serialize_bool(f, "ready-sent", m->ready_sent);
         (void) serialize_bool(f, "taint-logged", m->taint_logged);
+#if 0 /// UNNEEDED by elogind
         (void) serialize_bool(f, "service-watchdogs", m->service_watchdogs);
+#endif // 0
 
         /* After switching root, udevd has not been started yet. So, enumeration results should not be emitted. */
         (void) serialize_bool(f, "honor-device-enumeration", !switching_root);
@@ -386,6 +388,7 @@ int manager_deserialize(Manager *m, FILE *f, FDSet *fds) {
                         else
                                 m->taint_logged = m->taint_logged || b;
 
+#if 0 /// UNSUPPORTED BY elogind
                 } else if ((val = startswith(l, "service-watchdogs="))) {
                         int b;
 
@@ -394,6 +397,7 @@ int manager_deserialize(Manager *m, FILE *f, FDSet *fds) {
                                 log_notice("Failed to parse service-watchdogs flag '%s', ignoring.", val);
                         else
                                 m->service_watchdogs = b;
+#endif // 0
 
                 } else if ((val = startswith(l, "honor-device-enumeration="))) {
                         int b;

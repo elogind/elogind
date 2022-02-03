@@ -7,7 +7,6 @@
 #include "strv.h"
 #include "tests.h"
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 TEST(str_in_set) {
         assert_se(STR_IN_SET("x", "x", "y", "z"));
@@ -967,21 +966,5 @@ TEST(strv_fnmatch) {
 }
 #endif // 0
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);

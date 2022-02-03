@@ -28,7 +28,6 @@ int device_get_devnode_mode(sd_device *device, mode_t *mode);
 int device_get_devnode_uid(sd_device *device, uid_t *uid);
 int device_get_devnode_gid(sd_device *device, gid_t *gid);
 #endif // 0
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 int device_cache_sysattr_value(sd_device *device, const char *key, char *value);
 int device_get_cached_sysattr_value(sd_device *device, const char *key, const char **ret_value);

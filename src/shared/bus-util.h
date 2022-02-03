@@ -24,11 +24,6 @@ typedef enum BusTransport {
 
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-/// elogind empty mask removed (UNNEEDED by elogind)
-
-#if 0 /// UNNEEDED by elogind
 int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name);
 #endif // 0
 
@@ -54,9 +49,7 @@ int bus_connect_transport(BusTransport transport, const char *host, bool user, s
 #if 0 /// UNNEEDED by elogind
 int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #endif // 0
-/// elogind empty mask removed (UNNEEDED by elogind)
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int bus_log_address_error(int r, BusTransport transport);
 int bus_log_connect_error(int r, BusTransport transport);
 
@@ -66,15 +59,12 @@ int bus_log_connect_error(int r, BusTransport transport);
 #define bus_log_create_error(r)                                 \
         log_error_errno(r, "Failed to create bus message: %m")
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
 #if 0 /// UNNEEDED by elogind
 int bus_path_encode_unique(sd_bus *b, const char *prefix, const char *sender_id, const char *external_id, char **ret_path);
 int bus_path_decode_unique(const char *path, const char *prefix, char **ret_sender, char **ret_external);
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-
 int bus_track_add_name_many(sd_bus_track *t, char **l);
 #endif // 0
 

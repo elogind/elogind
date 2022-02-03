@@ -64,11 +64,9 @@ char* xescape_full(const char *s, const char *bad, size_t console_width, XEscape
 static inline char* xescape(const char *s, const char *bad) {
         return xescape_full(s, bad, SIZE_MAX, 0);
 }
-/// elogind empty mask removed (UNNEEDED by elogind)
 char* octescape(const char *s, size_t len);
 char* escape_non_printable_full(const char *str, size_t console_width, XEscapeFlags flags);
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 char* shell_escape(const char *s, const char *bad);
 char* shell_maybe_quote(const char *s, ShellEscapeFlags flags);
 char* quote_command_line(char **argv, ShellEscapeFlags flags);
