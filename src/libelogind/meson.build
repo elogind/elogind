@@ -409,10 +409,12 @@ libelogind_sym_path = join_paths(meson.current_source_dir(), 'libelogind.sym')
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
-libelogind_pc = configure_file(
+custom_target(
+        'libelogind.pc',
         input : 'libelogind.pc.in',
         output : 'libelogind.pc',
-        configuration : conf)
-install_data(libelogind_pc,
-             install_dir : pkgconfiglibdir)
+        command : [meson_render_jinja2, config_h, '@INPUT@', '@OUTPUT@'],
+        install : pkgconfiglibdir != 'no',
+        install_dir : pkgconfiglibdir)
+
 #endif // 0

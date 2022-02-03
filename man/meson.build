@@ -241,11 +241,19 @@ configure_file(
 
 ############################################################
 
+#if 0 /// meson errors out if a custom_target has @INPUT@ but no input: (fixed in elogind only for now)
+# update_dbus_docs = custom_target(
+#         'update-dbus-docs',
+#         output : 'update-dbus-docs',
+#         command : [update_dbus_docs_py, '--build-dir', project_build_root, '@INPUT@'],
+#         input : dbus_docs)
+#else // 0
 update_dbus_docs = custom_target(
         'update-dbus-docs',
         output : 'update-dbus-docs',
-        command : [update_dbus_docs_py, '--build-dir', project_build_root, '@INPUT@'],
+        command : [update_dbus_docs_py, '--build-dir', project_build_root],
         input : dbus_docs)
+#endif // 0
 
 if conf.get('BUILD_MODE_DEVELOPER') == 1
         test('dbus-docs-fresh',
