@@ -3138,7 +3138,7 @@ static int boot_loader_entry_exists(Manager *m, const char *id) {
 
         r = manager_read_efi_boot_loader_entries(m);
         if (r >= 0)
-                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries, true);
+                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries);
 
         return boot_config_has_entry(&config, id);
 }
@@ -3296,7 +3296,7 @@ static int property_get_boot_loader_entries(
 
         r = manager_read_efi_boot_loader_entries(m);
         if (r >= 0)
-                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries, true);
+                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries);
 
         r = sd_bus_message_open_container(reply, 'a', "s");
         if (r < 0)
@@ -3334,7 +3334,7 @@ static int method_set_wall_message(
         /* sysvinit has a 252 (256-(strlen(" \r\n")+1)) character
          * limit for the wall message. There is no real technical
          * need for that but doesn't make sense to store arbitrary
-         * armounts either.
+         * amounts either.
          * https://git.savannah.nongnu.org/cgit/sysvinit.git/tree/src/shutdown.c#n72)
         */
         if (strlen(wall_message) > 252)
