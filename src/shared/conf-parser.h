@@ -203,6 +203,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_non_null);
 CONFIG_PARSER_PROTOTYPE(config_parse_percent);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
+CONFIG_PARSER_PROTOTYPE(config_parse_pid);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
