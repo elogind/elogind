@@ -173,6 +173,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_id128);
 CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
 CONFIG_PARSER_PROTOTYPE(config_parse_string);
 #if 0 /// UNNEEDED by elogind
+CONFIG_PARSER_PROTOTYPE(config_parse_safe_string);
 CONFIG_PARSER_PROTOTYPE(config_parse_path);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_strv);
