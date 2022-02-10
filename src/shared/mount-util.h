@@ -103,7 +103,7 @@ int mount_option_mangle(
 #if 0 /// UNNEEDED by elogind
 int mode_to_inaccessible_node(const char *runtime_dir, mode_t mode, char **dest);
 #endif // 0
-int mount_flags_to_string(long unsigned flags, char **ret);
+int mount_flags_to_string(unsigned long flags, char **ret);
 
 #if 0 /// UNNEEDED by elogind
 /* Useful for usage with _cleanup_(), unmounts, removes a directory and frees the pointer */
