@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <linux/oom.h>
+#include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1189,14 +1190,8 @@ void reset_cached_pid(void) {
         cached_pid = CACHED_PID_UNSET;
 }
 
-/* We use glibc __register_atfork() + __dso_handle directly here, as they are not included in the glibc
- * headers. __register_atfork() is mostly equivalent to pthread_atfork(), but doesn't require us to link against
- * libpthread, as it is part of glibc anyway. */
 #ifdef __GLIBC__
-extern int __register_atfork(void (*prepare) (void), void (*parent) (void), void (*child) (void), void *dso_handle);
 #endif // ifdef __GLIBC__
-extern void* __dso_handle _weak_;
-
 pid_t getpid_cached(void) {
         static bool installed = false;
         pid_t current_value;
@@ -1224,7 +1219,7 @@ pid_t getpid_cached(void) {
                          * only half-documented (glibc doesn't document it but LSB does — though only superficially)
                          * we'll check for errors only in the most generic fashion possible. */
 
-                        if (__register_atfork(NULL, NULL, reset_cached_pid, __dso_handle) != 0) {
+                        if (pthread_atfork(NULL, NULL, reset_cached_pid) != 0) {
                                 /* OOM? Let's try again later */
                                 cached_pid = CACHED_PID_UNSET;
                                 return new_pid;
