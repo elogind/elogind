@@ -449,7 +449,7 @@ int same_fd(int a, int b) {
         if (fstat(b, &stb) < 0)
                 return -errno;
 
-        if ((sta.st_mode & S_IFMT) != (stb.st_mode & S_IFMT))
+        if (!stat_inode_same(&sta, &stb))
                 return false;
 
         /* We consider all device fds different, since two device fds
@@ -459,13 +459,8 @@ int same_fd(int a, int b) {
         if (S_ISCHR(sta.st_mode) || S_ISBLK(sta.st_mode))
                 return false;
 
-        if (sta.st_dev != stb.st_dev || sta.st_ino != stb.st_ino)
-                return false;
-
-        /* The fds refer to the same inode on disk, let's also check
-         * if they have the same fd flags. This is useful to
-         * distinguish the read and write side of a pipe created with
-         * pipe(). */
+        /* The fds refer to the same inode on disk, let's also check if they have the same fd flags. This is
+         * useful to distinguish the read and write side of a pipe created with pipe(). */
         fa = fcntl(a, F_GETFL);
         if (fa < 0)
                 return -errno;
@@ -577,7 +572,6 @@ int move_fd(int from, int to, int cloexec) {
 
         return to;
 }
-
 
 int fd_move_above_stdio(int fd) {
         int flags, copy;
@@ -793,7 +787,7 @@ int read_nr_open(void) {
 
 #if 0 /// UNNEEDED by elogind
 /* This is here because it's fd-related and is called from sd-journal code. Other btrfs-related utilities are
- * in src/shared, but libelogind must not link to libelogind-shared, see docs/ARCHITECTURE.md. */
+ * in src/shared, but libsystemd must not link to libsystemd-shared, see docs/ARCHITECTURE.md. */
 int btrfs_defrag_fd(int fd) {
         int r;
 
