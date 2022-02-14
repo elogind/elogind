@@ -248,10 +248,6 @@ _public_ int sd_device_new_from_devnum(sd_device **ret, char type, dev_t devnum)
         assert_return(ret, -EINVAL);
         assert_return(IN_SET(type, 'b', 'c'), -EINVAL);
 
-        if (devnum == 0)
-                return log_debug_errno(SYNTHETIC_ERRNO(ENODEV),
-                                       "sd-device: Attempted to allocate device by zero major/minor, refusing.");
-
         /* use /sys/dev/{block,char}/<maj>:<min> link */
         xsprintf(id, "%u:%u", major(devnum), minor(devnum));
 
@@ -2204,7 +2200,7 @@ _public_ int sd_device_trigger_with_uuid(
         if (r < 0)
                 return r;
 
-        j = strjoina(s, " ", ID128_TO_UUID_STRING(u));
+        j = strjoina(s, " ", SD_ID128_TO_UUID_STRING(u));
 
         r = sd_device_set_sysattr_value(device, "uevent", j);
         if (r < 0)
