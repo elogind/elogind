@@ -56,6 +56,15 @@
 
 /// Additional includes needed by elogind
 #include "elogind-dbus.h"
+/* As a random fun fact sysvinit had a 252 (256-(strlen(" \r\n")+1))
+ * character limit for the wall message.
+ * https://git.savannah.nongnu.org/cgit/sysvinit.git/tree/src/shutdown.c#n72
+ * There is no real technical need for that but doesn't make sense
+ * to store arbitrary amounts either. As we are not stingy here, we
+ * allow 4k.
+ */
+#define WALL_MESSAGE_MAX 4096
+
 static void reset_scheduled_shutdown(Manager *m);
 
 static int get_sender_session(
@@ -351,7 +360,7 @@ static int property_get_scheduled_shutdown(
                 return r;
 
         r = sd_bus_message_append(reply, "st",
-                handle_action_to_string(manager_handle_for_item(m->scheduled_shutdown_type)),
+                m->scheduled_shutdown_type ? handle_action_to_string(m->scheduled_shutdown_type->handle) : NULL,
                 m->scheduled_shutdown_timeout);
         if (r < 0)
                 return r;
@@ -1551,13 +1560,13 @@ static int bus_manager_log_shutdown(
                 Manager *m,
                 const ActionTableItem *a) {
 
-        const char *message, *log_str;
+        const char *message, *log_message;
 
         assert(m);
         assert(a);
 
         message = a->message;
-        log_str = a->log_str;
+        log_message = a->log_message;
 
         if (message)
                 message = strjoina("MESSAGE=", message);
@@ -1569,13 +1578,13 @@ static int bus_manager_log_shutdown(
         else
                 message = strjoina(message, " (", m->wall_message, ").");
 
-        if (log_str)
-                log_str = strjoina("SHUTDOWN=", log_str);
+        if (log_message)
+                log_message = strjoina("SHUTDOWN=", log_message);
 
         return log_struct(LOG_NOTICE,
                         "MESSAGE_ID=%s", a->message_id ? a->message_id : SD_MESSAGE_SHUTDOWN_STR,
                         message,
-                        log_str);
+                        log_message);
 }
 #endif // 0
 
@@ -1992,7 +2001,7 @@ static int method_do_shutdown_or_sleep(
                 if ((flags & ~SD_LOGIND_SHUTDOWN_AND_SLEEP_FLAGS_PUBLIC) != 0)
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid flags parameter");
 #if 0 /// elogind uses its own "HandleAction"
-                if (manager_handle_for_item(a) != HANDLE_REBOOT && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
+                if (a->handle != HANDLE_REBOOT && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
 #else // 0
                 if ((HANDLE_REBOOT != unit_name) && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
 #endif // 0
@@ -2205,6 +2214,7 @@ static int update_schedule_file(Manager *m) {
         int r;
 
         assert(m);
+        assert(m->scheduled_shutdown_type);
 
         r = mkdir_safe_label("/run/systemd/shutdown", 0755, 0, 0, MKDIR_WARN_MODE);
         if (r < 0)
@@ -2218,11 +2228,11 @@ static int update_schedule_file(Manager *m) {
 
         fprintf(f,
                 "USEC="USEC_FMT"\n"
-                "WARN_WALL=%i\n"
+                "WARN_WALL=%s\n"
                 "MODE=%s\n",
                 m->scheduled_shutdown_timeout,
-                m->enable_wall_messages,
-                handle_action_to_string(manager_handle_for_item(m->scheduled_shutdown_type)));
+                one_zero(m->enable_wall_messages),
+                handle_action_to_string(m->scheduled_shutdown_type->handle));
 
         if (!isempty(m->wall_message)) {
                 _cleanup_free_ char *t = NULL;
@@ -2421,9 +2431,10 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         assert(message);
 
         log_debug_elogind("Called with wall message '%s'", strempty(m->wall_message));
-        cancelled = !IN_SET(manager_handle_for_item(m->scheduled_shutdown_type), HANDLE_IGNORE, _HANDLE_ACTION_INVALID);
+        cancelled = m->scheduled_shutdown_type
+                && !IN_SET(m->scheduled_shutdown_type->handle, HANDLE_IGNORE, _HANDLE_ACTION_INVALID);
         if (!cancelled)
-                goto done;
+                return sd_bus_reply_method_return(message, "b", false);
 
         a = m->scheduled_shutdown_type;
         if (!a->polkit_action)
@@ -2474,8 +2485,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
 #endif // 0
         }
 
-done:
-        return sd_bus_reply_method_return(message, "b", cancelled);
+        return sd_bus_reply_method_return(message, "b", true);
 }
 
 static int method_can_shutdown_or_sleep(
@@ -2526,7 +2536,7 @@ static int method_can_shutdown_or_sleep(
 #if 0 /// elogind uses its own variant, which can use the handle directly.
                 const char *target;
 
-                target = manager_target_for_action(handle);
+                target = manager_item_for_handle(handle)->target;
                 if (target) {
                         _cleanup_free_ char *load_state = NULL;
 
@@ -3321,7 +3331,7 @@ static int method_set_wall_message(
         int r;
         Manager *m = userdata;
         char *wall_message;
-        unsigned enable_wall_messages;
+        int enable_wall_messages;
 
         assert(message);
         assert(m);
@@ -3331,14 +3341,10 @@ static int method_set_wall_message(
                 return r;
 
 #if 0 /// elogind only calls this for shutdown/reboot, which already needs authorization.
-        /* sysvinit has a 252 (256-(strlen(" \r\n")+1)) character
-         * limit for the wall message. There is no real technical
-         * need for that but doesn't make sense to store arbitrary
-         * amounts either.
-         * https://git.savannah.nongnu.org/cgit/sysvinit.git/tree/src/shutdown.c#n72)
-        */
-        if (strlen(wall_message) > 252)
-                return -EMSGSIZE;
+        if (strlen(wall_message) > WALL_MESSAGE_MAX)
+                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                        "Wall message too long, maximum permitted length is %u characters.",
+                        WALL_MESSAGE_MAX);
 
         /* Short-circuit the operation if the desired state is already in place, to
          * avoid an unnecessary polkit permission check. */
@@ -3491,7 +3497,7 @@ static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error 
 static const sd_bus_vtable manager_vtable[] = {
         SD_BUS_VTABLE_START(0),
 
-        SD_BUS_WRITABLE_PROPERTY("EnableWallMessages", "b", NULL, NULL, offsetof(Manager, enable_wall_messages), 0),
+        SD_BUS_WRITABLE_PROPERTY("EnableWallMessages", "b", bus_property_get_bool, bus_property_set_bool, offsetof(Manager, enable_wall_messages), 0),
         SD_BUS_WRITABLE_PROPERTY("WallMessage", "s", NULL, NULL, offsetof(Manager, wall_message), 0),
 
 #if 0 /// UNNEEDED by elogind
