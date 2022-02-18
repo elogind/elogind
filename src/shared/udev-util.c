@@ -735,10 +735,13 @@ bool udev_available(void) {
         /* The service elogind-udevd is started only when /sys is read write.
          * See elogind-udevd.service: ConditionPathIsReadWrite=/sys
          * Also, our container interface (http://elogind.io/CONTAINER_INTERFACE/) states that /sys must
+        /* The service elogind-udevd is started only when /sys is read write.
+         * See elogind-udevd.service: ConditionPathIsReadWrite=/sys
+         * Also, our container interface (http://elogind.io/CONTAINER_INTERFACE/) states that /sys must
          * be mounted in read-only mode in containers. */
 
         if (cache >= 0)
                 return cache;
 
-        return (cache = path_is_read_only_fs("/sys/") <= 0);
+        return (cache = (path_is_read_only_fs("/sys/") <= 0));
 }
