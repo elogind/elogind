@@ -80,7 +80,6 @@ int setenv_elogind_exec_pid(bool update_only);
  * PATH-like colon-separated absolute paths */
 int getenv_path_list(const char *name, char ***ret_paths);
 
-int unsetenv_erase(const char *name);
 #endif // 0
 
 int getenv_steal_erase(const char *name, char **ret);
