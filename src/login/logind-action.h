@@ -54,6 +54,5 @@ HandleAction handle_action_from_string(const char *s) _pure_;
 
 /// elogind empty mask removed (elogind does this itself. No target table required)
 const HandleActionData* manager_item_for_handle(HandleAction handle);
-HandleAction manager_handle_for_item(const HandleActionData* a);
 
 CONFIG_PARSER_PROTOTYPE(config_parse_handle_action);
