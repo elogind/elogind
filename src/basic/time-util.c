@@ -128,7 +128,7 @@ usec_t map_clock_usec(usec_t from, clockid_t from_clock, clockid_t to_clock) {
 dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u) {
         assert(ts);
 
-        if (u == USEC_INFINITY || u == 0) {
+        if (!timestamp_is_set(u)) {
                 ts->realtime = ts->monotonic = u;
                 return ts;
         }
@@ -144,7 +144,7 @@ triple_timestamp* triple_timestamp_from_realtime(triple_timestamp *ts, usec_t u)
 
         assert(ts);
 
-        if (u == USEC_INFINITY || u == 0) {
+        if (!timestamp_is_set(u)) {
                 ts->realtime = ts->monotonic = ts->boottime = u;
                 return ts;
         }
@@ -357,7 +357,7 @@ char *format_timestamp_style(
                           1 + 1 +              /* space and shortest possible zone */
                           1))
                 return NULL; /* Not enough space even for the shortest form. */
-        if (t <= 0 || t == USEC_INFINITY)
+        if (!timestamp_is_set(t))
                 return NULL; /* Timestamp is unset */
 
         if (style == TIMESTAMP_UNIX) {
@@ -435,7 +435,7 @@ char *format_timestamp_relative(char *buf, size_t l, usec_t t) {
         const char *s;
         usec_t n, d;
 
-        if (t <= 0 || t == USEC_INFINITY)
+        if (!timestamp_is_set(t))
                 return NULL;
 
         n = now(CLOCK_REALTIME);
