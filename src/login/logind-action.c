@@ -22,7 +22,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "strv.h"
-static const ActionTableItem action_table[_HANDLE_ACTION_MAX] = {
+static const HandleActionData action_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_POWEROFF] = {
                 .handle                          = HANDLE_POWEROFF,
                 .target                          = SPECIAL_POWEROFF_TARGET,
@@ -118,7 +118,7 @@ static const ActionTableItem action_table[_HANDLE_ACTION_MAX] = {
 };
 
 #if 0 /// elogind does this itself. No target table required
-const ActionTableItem* manager_item_for_handle(HandleAction handle) {
+const HandleActionData* manager_item_for_handle(HandleAction handle) {
         assert(handle >= 0);
         assert(handle < (ssize_t) ELEMENTSOF(action_table));
 

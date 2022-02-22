@@ -1565,7 +1565,7 @@ static int have_multiple_sessions(
 #if 0 /// elogind has its own variant in elogind-dbus.c
 static int bus_manager_log_shutdown(
                 Manager *m,
-                const ActionTableItem *a) {
+                const HandleActionData *a) {
 
         const char *message, *log_message;
 
@@ -1661,7 +1661,7 @@ int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 #if 0 /// elogind has its own variant in elogind-dbus.c
 static int execute_shutdown_or_sleep(
                 Manager *m,
-                const ActionTableItem *a,
+                const HandleActionData *a,
                 sd_bus_error *error) {
 
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
@@ -1774,7 +1774,7 @@ static int manager_inhibit_timeout_handler(
 #if 0 /// elogind does not have unit_name but action
 static int delay_shutdown_or_sleep(
                 Manager *m,
-                const ActionTableItem *a) {
+                const HandleActionData *a) {
 
 #else // 0
 int delay_shutdown_or_sleep(
@@ -1822,7 +1822,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 #else // 0
                 HandleAction unit_name,
 #endif // 0
-                const ActionTableItem *a,
+                const HandleActionData *a,
                 sd_bus_error *error) {
 
         _cleanup_free_ char *load_state = NULL;
@@ -1870,7 +1870,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 static int verify_shutdown_creds(
                 Manager *m,
                 sd_bus_message *message,
-                const ActionTableItem *a,
+                const HandleActionData *a,
                 uint64_t flags,
                 sd_bus_error *error) {
 
@@ -1983,7 +1983,7 @@ static int method_do_shutdown_or_sleep(
 #else // 0
                 HandleAction unit_name,
 #endif // 0
-                const ActionTableItem *a,
+                const HandleActionData *a,
                 bool with_flags,
                 sd_bus_error *error) {
 
@@ -2372,7 +2372,7 @@ static int manager_scheduled_shutdown_handler(
                         uint64_t usec,
                         void *userdata) {
 
-        const ActionTableItem *a = NULL;
+        const HandleActionData *a = NULL;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         Manager *m = userdata;
         int r;
@@ -2419,7 +2419,7 @@ error:
 static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
         HandleAction handle;
-        const ActionTableItem *a;
+        const HandleActionData *a;
         uint64_t elapse;
         char *type;
         int r;
@@ -2500,7 +2500,7 @@ fail:
 
 static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
-        const ActionTableItem *a;
+        const HandleActionData *a;
         bool cancelled;
 #if 1 /// elogind needs to construct the message to allow extra wall messages
         _cleanup_free_ char *l = NULL;
@@ -2571,7 +2571,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
 static int method_can_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
-                const ActionTableItem *a,
+                const HandleActionData *a,
                 sd_bus_error *error) {
 
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
