@@ -17,6 +17,7 @@ sd_journal_sources = files(
         'sd-journal/journal-internal.h',
         'sd-journal/journal-send.c',
 #if 0 /// UNNEEDED by elogind
+#         'sd-journal/journal-send.h',
 #         'sd-journal/journal-vacuum.c',
 #         'sd-journal/journal-vacuum.h',
 #         'sd-journal/journal-verify.c',
