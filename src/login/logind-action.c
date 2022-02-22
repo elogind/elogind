@@ -22,7 +22,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "strv.h"
-static const HandleActionData action_table[_HANDLE_ACTION_MAX] = {
+static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_POWEROFF] = {
                 .handle                          = HANDLE_POWEROFF,
                 .target                          = SPECIAL_POWEROFF_TARGET,
@@ -118,14 +118,14 @@ static const HandleActionData action_table[_HANDLE_ACTION_MAX] = {
 };
 
 #if 0 /// elogind does this itself. No target table required
-const HandleActionData* manager_item_for_handle(HandleAction handle) {
-        assert(handle >= 0);
-        assert(handle < (ssize_t) ELEMENTSOF(action_table));
+const HandleActionData* handle_action_lookup(HandleAction action) {
 
-        return &action_table[handle];
-}
+        if (action < 0 || (size_t) action >= ELEMENTSOF(handle_action_data_table))
+                return NULL;
 
 #endif // 0
+        return &handle_action_data_table[action];
+}
 
 int manager_handle_action(
                 Manager *m,
@@ -243,10 +243,9 @@ int manager_handle_action(
                                        handle_action_to_string(handle));
 
 
-#if 0 /// elogind uses its own variant, which can use the handle directly.
-#endif // 0
+/// elogind empty mask removed (elogind uses its own variant, which can use the handle directly.)
 
-        inhibit_operation = manager_item_for_handle(handle)->inhibit_what;
+        inhibit_operation = handle_action_lookup(handle)->inhibit_what;
 
         /* If the actual operation is inhibited, warn and fail */
         if (!ignore_inhibited &&
@@ -270,7 +269,7 @@ int manager_handle_action(
         log_info("%s", message_table[handle]);
 
 #if 0 /// elogind uses its own variant, which can use the handle directly.
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, manager_item_for_handle(handle), &error);
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, handle_action_lookup(handle), &error);
 #else // 0
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
 #endif // 0
