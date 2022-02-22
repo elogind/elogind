@@ -102,13 +102,11 @@ struct Manager {
 
 
 #if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
-        /* If a shutdown/suspend was delayed due to an inhibitor this
-           contains the action we are supposed to start after the
-           delay is over */
+        /* If a shutdown/suspend was delayed due to an inhibitor this contains the action we are supposed to
+         * start after the delay is over */
         const HandleActionData *delayed_action;
 
-        /* If a shutdown/suspend is currently executed, then this is
-         * the job of it */
+        /* If a shutdown/suspend is currently executed, then this is the job of it */
         char *action_job;
 #else // 0
         /* Suspension and hibernation can be disabled in logind.conf. */
@@ -138,7 +136,7 @@ struct Manager {
 #endif // 0
         sd_event_source *inhibit_timeout_source;
 
-        const HandleActionData *scheduled_shutdown_type;
+        const HandleActionData *scheduled_shutdown_action;
         usec_t scheduled_shutdown_timeout;
         sd_event_source *scheduled_shutdown_timeout_source;
         uid_t scheduled_shutdown_uid;
