@@ -1232,8 +1232,8 @@ static int can_sleep_internal(
                 return false;
 #else // 0
         if ( (can_sleep_state(sleep_config->states[operation]) <= 0) ||
-             ( (SLEEP_SUSPEND != operation) && (can_sleep_disk(sleep_config->modes[operation]) <= 0) ) ||
-             (can_sleep_mem(sleep_config->modes[operation]) <= 0))
+            ( (SLEEP_SUSPEND != operation) && (can_sleep_disk(sleep_config->modes[operation]) <= 0) ) ||
+            ( (SLEEP_SUSPEND == operation) && (can_sleep_mem(sleep_config->modes[operation]) <= 0)))
                 return false;
 #endif // 0
 
