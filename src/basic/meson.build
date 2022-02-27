@@ -264,8 +264,6 @@
 basic_sources = files('''
         MurmurHash2.c
         MurmurHash2.h
-        af-list.c
-        af-list.h
         alloc-util.c
         alloc-util.h
         architecture.h
@@ -459,14 +457,14 @@ missing_socket_h = files('missing_socket.h')
 missing_syscall_def_h = files('missing_syscall_def.h')
 basic_sources += missing_syscall_def_h
 
-generate_af_list = find_program('generate-af-list.sh')
-af_list_txt = custom_target(
-        'af-list.txt',
-        output : 'af-list.txt',
-        command : [generate_af_list, cpp, config_h, missing_socket_h],
-        capture : true)
-
 #if 0 /// UNNEEDED by elogind
+# generate_af_list = find_program('generate-af-list.sh')
+# af_list_txt = custom_target(
+#         'af-list.txt',
+#         output : 'af-list.txt',
+#         command : [generate_af_list, cpp, config_h, missing_socket_h],
+#         capture : true)
+#
 # generate_arphrd_list = find_program('generate-arphrd-list.sh')
 # arphrd_list_txt = custom_target(
 #         'arphrd-list.txt',
