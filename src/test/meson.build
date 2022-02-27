@@ -155,7 +155,9 @@ tests += [
 
         [['src/test/test-kbd-util.c']],
 
-        [['src/test/test-blockdev-util.c']],
+#if 0 /// UNNEEDED by elogind
+#         [['src/test/test-blockdev-util.c']],
+#endif // 0
 
         [['src/test/test-dev-setup.c']],
 
