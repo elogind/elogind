@@ -230,17 +230,17 @@ tests += [
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-xattr-util.c']],
-#endif // 0
-
-        [['src/test/test-io-util.c']],
-
-#if 0 /// UNNEEDED in elogind
+#
+#         [['src/test/test-io-util.c']],
+#
 #         [['src/test/test-glob-util.c']],
 #endif // 0
 
         [['src/test/test-fs-util.c']],
 
-        [['src/test/test-install-file.c']],
+#if 0 /// UNNEEDED by elogind
+#         [['src/test/test-install-file.c']],
+#endif // 0
 
         [['src/test/test-umask-util.c']],
 
@@ -518,11 +518,9 @@ tests += [
 #         [['src/test/test-replace-var.c']],
 #
 #         [['src/test/test-calendarspec.c']],
-#endif // 0
-
-        [['src/test/test-strip-tab-ansi.c']],
-
-#if 0 /// UNNEEDED in elogind
+#
+#         [['src/test/test-strip-tab-ansi.c']],
+#
 #         [['src/test/test-coredump-util.c']],
 #
 #endif // 0

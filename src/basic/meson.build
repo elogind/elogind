@@ -288,6 +288,7 @@ basic_sources = files('''
         def.h
         dirent-util.c
         dirent-util.h
+        dns-def.h
         efivars.c
         efivars.h
         env-file.c
@@ -309,6 +310,8 @@ basic_sources = files('''
         format-util.h
         fs-util.c
         fs-util.h
+        glyph-util.c
+        glyph-util.h
         gunicode.c
         gunicode.h
         hash-funcs.c
@@ -332,7 +335,6 @@ basic_sources = files('''
         locale-util.h
         log.c
         log.h
-        login-util.c
         login-util.h
         macro.h
         memfd-util.c
