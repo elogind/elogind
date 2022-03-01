@@ -444,8 +444,6 @@ basic_sources = files('''
         util.h
         virt.c
         virt.h
-        xattr-util.c
-        xattr-util.h
 '''.split())
 #endif // 0
 
