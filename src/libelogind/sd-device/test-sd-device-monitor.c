@@ -281,6 +281,7 @@ static void test_sd_device_monitor_filter_remove(sd_device *device) {
         assert_se(sd_event_loop(sd_device_monitor_get_event(monitor_client)) == 100);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_device_copy_properties(sd_device *device) {
         _cleanup_(sd_device_unrefp) sd_device *copy = NULL;
 
@@ -289,6 +290,7 @@ static void test_device_copy_properties(sd_device *device) {
 
         test_send_receive_one(copy, false, false, false);
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         _cleanup_(sd_device_unrefp) sd_device *loopback = NULL, *sda = NULL;
@@ -322,7 +324,9 @@ int main(int argc, char *argv[]) {
         test_tag_filter(loopback);
         test_sysattr_filter(loopback, "ifindex");
         test_sd_device_monitor_filter_remove(loopback);
+#if 0 /// UNNEEDED by elogind
         test_device_copy_properties(loopback);
+#endif // 0
 
         r = sd_device_new_from_subsystem_sysname(&sda, "block", "sda");
         if (r < 0) {

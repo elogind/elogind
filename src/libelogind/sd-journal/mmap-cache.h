@@ -30,5 +30,5 @@ void mmap_cache_fd_free(MMapFileDescriptor *f);
 
 void mmap_cache_stats_log_debug(MMapCache *m);
 
-#endif // 0
 bool mmap_cache_fd_got_sigbus(MMapFileDescriptor *f);
+#endif // 0

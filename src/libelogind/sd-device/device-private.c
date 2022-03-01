@@ -582,6 +582,7 @@ int device_get_properties_nulstr(sd_device *device, const uint8_t **nulstr, size
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_get_properties_strv(sd_device *device, char ***strv) {
         int r;
 
@@ -597,7 +598,6 @@ int device_get_properties_strv(sd_device *device, char ***strv) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int device_get_devlink_priority(sd_device *device, int *priority) {
         int r;
 
@@ -785,7 +785,6 @@ int device_rename(sd_device *device, const char *name) {
 
         return 0;
 }
-#endif // 0
 
 int device_shallow_clone(sd_device *old_device, sd_device **new_device) {
         _cleanup_(sd_device_unrefp) sd_device *ret = NULL;
@@ -839,6 +838,7 @@ int device_shallow_clone(sd_device *old_device, sd_device **new_device) {
         *new_device = TAKE_PTR(ret);
         return 0;
 }
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int device_clone_with_db(sd_device *old_device, sd_device **new_device) {
@@ -887,7 +887,6 @@ int device_new_from_synthetic_event(sd_device **new_device, const char *syspath,
 
         return 0;
 }
-#endif // 0
 
 int device_copy_properties(sd_device *device_dst, sd_device *device_src) {
         const char *property, *value;
@@ -914,6 +913,7 @@ int device_copy_properties(sd_device *device_dst, sd_device *device_src) {
 
         return 0;
 }
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 void device_cleanup_tags(sd_device *device) {

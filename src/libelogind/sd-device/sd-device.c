@@ -1212,12 +1212,14 @@ int device_add_devlink(sd_device *device, const char *devlink) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool device_has_devlink(sd_device *device, const char *devlink) {
         assert(device);
         assert(devlink);
 
         return set_contains(device->devlinks, devlink);
 }
+#endif // 0
 
 static int device_add_property_internal_from_string(sd_device *device, const char *str) {
         _cleanup_free_ char *key = NULL;

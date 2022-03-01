@@ -35,6 +35,7 @@ char *id128_to_uuid_string(sd_id128_t id, char s[static ID128_UUID_STRING_MAX]) 
         return s;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool id128_is_valid(const char *s) {
         size_t i, l;
 
@@ -77,6 +78,7 @@ bool id128_is_valid(const char *s) {
 
         return true;
 }
+#endif // 0
 
 int id128_read_fd(int fd, Id128Format f, sd_id128_t *ret) {
         char buffer[36 + 2];
@@ -210,7 +212,6 @@ sd_id128_t id128_make_v4_uuid(sd_id128_t id) {
 
 #if 0 /// UNNEEDED by elogind
 DEFINE_HASH_OPS(id128_hash_ops, sd_id128_t, id128_hash_func, id128_compare_func);
-#endif // 0
 
 int id128_get_product(sd_id128_t *ret) {
         sd_id128_t uuid;
@@ -233,3 +234,4 @@ int id128_get_product(sd_id128_t *ret) {
         *ret = uuid;
         return 0;
 }
+#endif // 0
