@@ -320,6 +320,8 @@ basic_sources = files('''
         hashmap.h
         hexdecoct.c
         hexdecoct.h
+        hmac.c
+        hmac.h
         hostname-util.c
         hostname-util.h
         io-util.c
