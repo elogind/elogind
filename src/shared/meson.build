@@ -244,6 +244,8 @@
 #         parse-argument.h
 #         parse-socket-bind-item.c
 #         parse-socket-bind-item.h
+#         pcre2-dlopen.c
+#         pcre2-dlopen.h
 #         pe-header.h
 #         pkcs11-util.c
 #         pkcs11-util.h
