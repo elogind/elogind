@@ -341,6 +341,7 @@ SecureBootMode efi_get_secure_boot_mode(void) {
         return (cache = decode_secure_boot_mode(secure, audit > 0, deployed > 0, setup > 0));
 }
 
+#if 0 /// UNNEEDED by elogind
 static int read_efi_options_variable(char **line) {
         int r;
 
@@ -378,6 +379,7 @@ int cache_efi_options_variable(void) {
         return write_string_file(EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions)), line,
                                  WRITE_STRING_FILE_ATOMIC|WRITE_STRING_FILE_CREATE|WRITE_STRING_FILE_MKDIR_0755);
 }
+#endif // 0
 
 int elogind_efi_options_variable(char **line) {
         const char *e;
@@ -410,7 +412,8 @@ static inline int compare_stat_mtime(const struct stat *a, const struct stat *b)
         return CMP(timespec_load(&a->st_mtim), timespec_load(&b->st_mtim));
 }
 
-int elogind_efi_options_efivarfs_if_newer(char **line) {
+#if 0 /// UNNEEDED by elogind
+int systemd_efi_options_efivarfs_if_newer(char **line) {
         struct stat a = {}, b;
         int r;
 
@@ -435,4 +438,6 @@ int elogind_efi_options_efivarfs_if_newer(char **line) {
                 return -ENODATA;
         return r;
 }
+#endif // 0
+
 #endif

@@ -752,7 +752,6 @@ int parse_oom_score_adjust(const char *s, int *ret) {
         *ret = v;
         return 0;
 }
-#endif // 0
 
 int store_loadavg_fixed_point(unsigned long i, unsigned long f, loadavg_t *ret) {
         assert(ret);
@@ -795,3 +794,4 @@ int parse_loadavg_fixed_point(const char *s, loadavg_t *ret) {
 
         return store_loadavg_fixed_point(i, f, ret);
 }
+#endif // 0

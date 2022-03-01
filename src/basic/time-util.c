@@ -259,6 +259,7 @@ struct timespec *timespec_store(struct timespec *ts, usec_t u)  {
         return ts;
 }
 
+#if 0 /// UNNEEDED by elogind
 struct timespec *timespec_store_nsec(struct timespec *ts, nsec_t n)  {
         assert(ts);
 
@@ -288,6 +289,7 @@ usec_t timeval_load(const struct timeval *tv) {
                 (usec_t) tv->tv_sec * USEC_PER_SEC +
                 (usec_t) tv->tv_usec;
 }
+#endif // 0
 
 struct timeval *timeval_store(struct timeval *tv, usec_t u) {
         assert(tv);
@@ -606,9 +608,6 @@ char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
 
         return buf;
 }
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 static int parse_timestamp_impl(const char *t, usec_t *usec, bool with_tz) {
@@ -1642,7 +1641,6 @@ int time_change_fd(void) {
 
         return -errno;
 }
-#endif // 0
 
 static const char* const timestamp_style_table[_TIMESTAMP_STYLE_MAX] = {
         [TIMESTAMP_PRETTY] = "pretty",
@@ -1667,3 +1665,4 @@ TimestampStyle timestamp_style_from_string(const char *s) {
                 return TIMESTAMP_US_UTC;
         return t;
 }
+#endif // 0

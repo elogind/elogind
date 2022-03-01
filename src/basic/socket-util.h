@@ -15,7 +15,7 @@
 #include <sys/un.h>
 
 #include "errno-util.h"
-#include "in-addr-util.h"
+//#include "in-addr-util.h"
 #include "macro.h"
 #include "missing_network.h"
 #include "missing_socket.h"
@@ -112,8 +112,10 @@ bool socket_ipv6_is_enabled(void);
 #endif // 0
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
+#if 0 /// UNNEEDED by elogind
 const union in_addr_union *sockaddr_in_addr(const struct sockaddr *sa);
 int sockaddr_set_in_addr(union sockaddr_union *u, int family, const union in_addr_union *a, uint16_t port);
+#endif // 0
 
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
 #if 0 /// UNNEEDED by elogind
@@ -240,6 +242,7 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
                          strnlen(_sa->sun_path, sizeof(_sa->sun_path))+1); \
         })
 
+#if 0 /// UNNEEDED by elogind
 #define SOCKADDR_LEN(sa)                                                \
         ({                                                              \
                 const union sockaddr_union *__sa = &(sa);               \
@@ -272,6 +275,7 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
 int socket_ioctl_fd(void);
 
 int sockaddr_un_set_path(struct sockaddr_un *ret, const char *path);
+#endif // 0
 
 static inline int setsockopt_int(int fd, int level, int optname, int value) {
         if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
@@ -322,17 +326,15 @@ struct timespec_large {
 
 ssize_t recvmsg_safe(int sockfd, struct msghdr *msg, int flags);
 
-int socket_get_family(int fd, int *ret);
 #if 0 /// UNNEEDED by elogind
+int socket_get_family(int fd, int *ret);
 int socket_set_recvpktinfo(int fd, int af, bool b);
 int socket_set_unicast_if(int fd, int af, int ifi);
-#endif // 0
 
 int socket_set_option(int fd, int af, int opt_ipv4, int opt_ipv6, int val);
 static inline int socket_set_recverr(int fd, int af, bool b) {
         return socket_set_option(fd, af, IP_RECVERR, IPV6_RECVERR, b);
 }
-#if 0 /// UNNEEDED by elogind
 static inline int socket_set_recvttl(int fd, int af, bool b) {
         return socket_set_option(fd, af, IP_RECVTTL, IPV6_RECVHOPLIMIT, b);
 }

@@ -156,7 +156,9 @@ int parse_oom_score_adjust(const char *s, int *ret);
 #define LOADAVG_INT_SIDE(x)     ((x) >> LOADAVG_PRECISION_BITS)
 #define LOADAVG_DECIMAL_SIDE(x) LOADAVG_INT_SIDE(((x) & (LOADAVG_FIXED_POINT_1_0 - 1)) * 100)
 
+#if 0 /// UNNEEDED by elogind
 /* Given a Linux load average (e.g. decimal number 34.89 where 34 is passed as i and 89 is passed as f), convert it
  * to a loadavg_t. */
 int store_loadavg_fixed_point(unsigned long i, unsigned long f, loadavg_t *ret);
 int parse_loadavg_fixed_point(const char *s, loadavg_t *ret);
+#endif // 0

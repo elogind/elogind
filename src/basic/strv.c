@@ -40,6 +40,7 @@ char* strv_find_case(char * const *l, const char *name) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* strv_find_prefix(char * const *l, const char *name) {
         char * const *i;
 
@@ -51,6 +52,7 @@ char* strv_find_prefix(char * const *l, const char *name) {
 
         return NULL;
 }
+#endif // 0
 
 char* strv_find_startswith(char * const *l, const char *name) {
         char * const *i, *e;
@@ -318,6 +320,7 @@ int strv_split_and_extend_full(char ***t, const char *s, const char *separators,
         return (int) strv_length(*t);
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_split_colon_pairs(char ***t, const char *s) {
         _cleanup_strv_free_ char **l = NULL;
         size_t n = 0;
@@ -369,6 +372,7 @@ int strv_split_colon_pairs(char ***t, const char *s) {
 
         return (int) n;
 }
+#endif // 0
 
 char* strv_join_full(char * const *l, const char *separator, const char *prefix, bool unescape_separators) {
         char * const *s;
@@ -540,6 +544,7 @@ int strv_consume_prepend(char ***l, char *value) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_prepend(char ***l, const char *value) {
         char *v;
 
@@ -552,6 +557,7 @@ int strv_prepend(char ***l, const char *value) {
 
         return strv_consume_prepend(l, v);
 }
+#endif // 0
 
 int strv_extend(char ***l, const char *value) {
         char *v;

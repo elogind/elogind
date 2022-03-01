@@ -53,6 +53,7 @@ int is_dir(const char* path, bool follow) {
         return !!S_ISDIR(st.st_mode);
 }
 
+#if 0 /// UNNEEDED by elogind
 int is_dir_fd(int fd) {
         struct stat st;
 
@@ -62,7 +63,6 @@ int is_dir_fd(int fd) {
         return !!S_ISDIR(st.st_mode);
 }
 
-#if 0 /// UNNEEDED by elogind
 int is_device_node(const char *path) {
         struct stat info;
 
@@ -286,6 +286,7 @@ int fd_verify_regular(int fd) {
         return stat_verify_regular(&st);
 }
 
+#if 0 /// UNNEEDED by elogind
 int stat_verify_directory(const struct stat *st) {
         assert(st);
 
@@ -308,6 +309,7 @@ int fd_verify_directory(int fd) {
 
         return stat_verify_directory(&st);
 }
+#endif // 0
 
 int device_path_make_major_minor(mode_t mode, dev_t devno, char **ret) {
         const char *t;

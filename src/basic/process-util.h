@@ -38,11 +38,10 @@ typedef enum ProcessCmdlineFlags {
         PROCESS_CMDLINE_QUOTE_POSIX   = 1 << 3,
 } ProcessCmdlineFlags;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int get_process_comm(pid_t pid, char **ret);
 int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret);
 int get_process_exe(pid_t pid, char **ret);
+#if 0 /// UNNEEDED by elogind
 int get_process_uid(pid_t pid, uid_t *ret);
 int get_process_gid(pid_t pid, gid_t *ret);
 int get_process_capeff(pid_t pid, char **ret);
@@ -51,6 +50,7 @@ int get_process_root(pid_t pid, char **ret);
 int get_process_environ(pid_t pid, char **ret);
 int get_process_ppid(pid_t pid, pid_t *ret);
 int get_process_umask(pid_t pid, mode_t *ret);
+#endif // 0
 
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 
@@ -63,8 +63,8 @@ typedef enum WaitFlags {
 } WaitFlags;
 
 int wait_for_terminate_and_check(const char *name, pid_t pid, WaitFlags flags);
-int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout);
 #if 0 /// UNNEEDED by elogind
+int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout);
 
 void sigkill_wait(pid_t pid);
 void sigkill_waitp(pid_t *pid);
@@ -120,23 +120,24 @@ static inline void* PID_TO_PTR(pid_t pid) {
         return (void*) ((uintptr_t) pid);
 }
 
+#if 0 /// UNNEEDED by elogind
 void valgrind_summary_hack(void);
 
 int pid_compare_func(const pid_t *a, const pid_t *b);
+#endif // 0
 
 static inline bool nice_is_valid(int n) {
         return n >= PRIO_MIN && n < PRIO_MAX;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline bool sched_policy_is_valid(int i) {
         return IN_SET(i, SCHED_OTHER, SCHED_BATCH, SCHED_IDLE, SCHED_FIFO, SCHED_RR);
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline bool sched_priority_is_valid(int i) {
         return i >= 0 && i <= sched_get_priority_max(SCHED_RR);
 }
-
 #endif // 0
 
 static inline bool pid_is_valid(pid_t p) {
@@ -144,13 +145,13 @@ static inline bool pid_is_valid(pid_t p) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 pid_t getpid_cached(void);
 void reset_cached_pid(void);
 
+#if 0 /// UNNEEDED by elogind
 int must_be_root(void);
+#endif // 0
 
 typedef enum ForkFlags {
         FORK_RESET_SIGNALS      = 1 <<  0, /* Reset all signal handlers and signal mask */
@@ -177,8 +178,10 @@ static inline int safe_fork(const char *name, ForkFlags flags, pid_t *ret_pid) {
 
 int namespace_fork(const char *outer_name, const char *inner_name, const int except_fds[], size_t n_except_fds, ForkFlags flags, int pidns_fd, int mntns_fd, int netns_fd, int userns_fd, int root_fd, pid_t *ret_pid);
 
+#if 0 /// UNNEEDED by elogind
 int set_oom_score_adjust(int value);
 int get_oom_score_adjust(int *ret);
+#endif // 0
 
 /* The highest possibly (theoretic) pid_t value on this architecture. */
 #define PID_T_MAX ((pid_t) INT32_MAX)
@@ -203,8 +206,10 @@ assert_cc(TASKS_MAX <= (unsigned long) PID_T_MAX);
 
 int pidfd_get_pid(int fd, pid_t *ret);
 
+#if 0 /// UNNEEDED by elogind
 int setpriority_closest(int priority);
 
 bool invoked_as(char *argv[], const char *token);
+#endif // 0
 
 _noreturn_ void freeze(void);

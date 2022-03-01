@@ -415,6 +415,7 @@ char* uid_to_name(uid_t uid) {
         return ret;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* gid_to_name(gid_t gid) {
         char *ret;
         int r;
@@ -459,7 +460,6 @@ char* gid_to_name(gid_t gid) {
         return ret;
 }
 
-#if 0 /// UNNEEDED by elogind
 static bool gid_list_has(const gid_t *list, size_t size, gid_t val) {
         for (size_t i = 0; i < size; i++)
                 if (list[i] == val)
@@ -1077,7 +1077,6 @@ int fgetsgent_sane(FILE *stream, struct sgrp **sg) {
         return !!s;
 }
 #endif
-#endif // 0
 
 int is_this_me(const char *username) {
         uid_t uid;
@@ -1091,6 +1090,7 @@ int is_this_me(const char *username) {
 
         return uid == getuid();
 }
+#endif // 0
 
 const char *get_home_root(void) {
         const char *e;

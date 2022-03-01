@@ -352,6 +352,7 @@ int open_terminal(const char *name, int mode) {
         return TAKE_FD(fd);
 }
 
+#if 0 /// UNNEEDED by elogind
 int acquire_terminal(
                 const char *name,
                 AcquireTerminalFlags flags,
@@ -480,7 +481,6 @@ int acquire_terminal(
         return TAKE_FD(fd);
 }
 
-#if 0 /// UNNEEDED by elogind
 int release_terminal(void) {
         static const struct sigaction sa_new = {
                 .sa_handler = SIG_IGN,
@@ -855,6 +855,7 @@ unsigned lines(void) {
         return cached_lines;
 }
 
+#if 0 /// UNNEEDED by elogind
 int terminal_set_size_fd(int fd, const char *ident, unsigned rows, unsigned cols) {
         struct winsize ws;
 
@@ -889,12 +890,10 @@ int terminal_set_size_fd(int fd, const char *ident, unsigned rows, unsigned cols
 }
 
 /* intended to be used as a SIGWINCH sighandler */
-#if 0 /// UNNEEDED by elogind
 void columns_lines_cache_reset(int signum) {
         cached_columns = 0;
         cached_lines = 0;
 }
-#endif // 0
 
 void reset_terminal_feature_caches(void) {
         cached_columns = 0;
@@ -904,6 +903,7 @@ void reset_terminal_feature_caches(void) {
         cached_underline_enabled = -1;
         cached_on_tty = -1;
 }
+#endif // 0
 
 bool on_tty(void) {
 

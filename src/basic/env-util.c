@@ -878,7 +878,6 @@ int getenv_path_list(const char *name, char ***ret_paths) {
         *ret_paths = TAKE_PTR(l);
         return 1;
 }
-#endif // 0
 
 int unsetenv_erase(const char *name) {
         char *p;
@@ -896,3 +895,4 @@ int unsetenv_erase(const char *name) {
 
         return 1;
 }
+#endif // 0

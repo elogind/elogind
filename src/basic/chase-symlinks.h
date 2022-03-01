@@ -26,7 +26,9 @@ bool unsafe_transition(const struct stat *a, const struct stat *b);
 int chase_symlinks(const char *path_with_prefix, const char *root, unsigned flags, char **ret_path, int *ret_fd);
 
 int chase_symlinks_and_open(const char *path, const char *root, unsigned chase_flags, int open_flags, char **ret_path);
+#if 0 /// UNNEEDED by elogind
 int chase_symlinks_and_opendir(const char *path, const char *root, unsigned chase_flags, char **ret_path, DIR **ret_dir);
+#endif // 0
 int chase_symlinks_and_stat(const char *path, const char *root, unsigned chase_flags, char **ret_path, struct stat *ret_stat, int *ret_fd);
 
 int chase_symlinks_and_fopen_unlocked(const char *path, const char *root, unsigned chase_flags, const char *open_flags, char **ret_path, FILE **ret_file);

@@ -191,8 +191,10 @@ int cg_kill(const char *controller, const char *path, int sig, CGroupFlags flags
 int cg_kill_kernel_sigkill(const char *controller, const char *path);
 int cg_kill_recursive(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
 
+#if 0 /// UNNEEDED by elogind
 int cg_split_spec(const char *spec, char **ret_controller, char **ret_path);
 int cg_mangle_path(const char *path, char **result);
+#endif // 0
 
 int cg_get_path(const char *controller, const char *path, const char *suffix, char **fs);
 int cg_get_path_and_check(const char *controller, const char *path, const char *suffix, char **fs);
@@ -227,11 +229,9 @@ static inline int cg_get_keyed_attribute_graceful(
                 char **ret_values) {
         return cg_get_keyed_attribute_full(controller, path, attribute, keys, ret_values, CG_KEY_MODE_GRACEFUL);
 }
-#endif // 0
 
 int cg_get_attribute_as_uint64(const char *controller, const char *path, const char *attribute, uint64_t *ret);
 
-#if 0 /// UNNEEDED by elogind
 /* Does a parse_boolean() on the attribute contents and sets ret accordingly */
 int cg_get_attribute_as_bool(const char *controller, const char *path, const char *attribute, bool *ret);
 
@@ -254,11 +254,13 @@ int cg_is_empty_recursive(const char *controller, const char *path);
 
 int cg_get_root_path(char **path);
 
+#if 0 /// UNNEEDED by elogind
 int cg_path_get_cgroupid(const char *path, uint64_t *ret);
+#endif // 0
 int cg_path_get_session(const char *path, char **session);
 int cg_path_get_owner_uid(const char *path, uid_t *uid);
-int cg_path_get_unit(const char *path, char **unit);
 #if 0 /// UNNEEDED by elogind
+int cg_path_get_unit(const char *path, char **unit);
 int cg_path_get_user_unit(const char *path, char **unit);
 int cg_path_get_machine_name(const char *path, char **machine);
 #endif // 0
@@ -270,17 +272,19 @@ int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
 int cg_pid_get_session(pid_t pid, char **session);
 int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
-int cg_pid_get_unit(pid_t pid, char **unit);
 #if 0 /// UNNEEDED by elogind
+int cg_pid_get_unit(pid_t pid, char **unit);
 int cg_pid_get_user_unit(pid_t pid, char **unit);
 int cg_pid_get_machine_name(pid_t pid, char **machine);
 #endif // 0
 int cg_pid_get_slice(pid_t pid, char **slice);
 int cg_pid_get_user_slice(pid_t pid, char **slice);
 
+#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit);
 
 char *cg_escape(const char *p);
+#endif // 0
 char *cg_unescape(const char *p) _pure_;
 
 bool cg_controller_is_valid(const char *p);
@@ -290,18 +294,20 @@ int cg_slice_to_path(const char *unit, char **ret);
 
 typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
-#endif // 0
 int cg_mask_supported(CGroupMask *ret);
+#endif // 0
 int cg_mask_supported_subtree(const char *root, CGroupMask *ret);
 int cg_mask_from_string(const char *s, CGroupMask *ret);
+#if 0 /// UNNEEDED by elogind
 int cg_mask_to_string(CGroupMask mask, char **ret);
 
-#if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set **controllers);
 #endif // 0
 
 bool cg_ns_supported(void);
+#if 0 /// UNNEEDED by elogind
 bool cg_freezer_supported(void);
+#endif // 0
 bool cg_kill_supported(void);
 
 int cg_all_unified(void);
@@ -316,6 +322,7 @@ const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
 
 bool is_cgroup_fs(const struct statfs *s);
+#if 0 /// UNNEEDED by elogind
 bool fd_is_cgroup_fs(int fd);
 
 typedef enum ManagedOOMMode {
@@ -347,3 +354,4 @@ typedef union {
 
 #define CG_FILE_HANDLE_INIT { .file_handle.handle_bytes = sizeof(uint64_t) }
 #define CG_FILE_HANDLE_CGROUPID(fh) (*(uint64_t*) (fh).file_handle.f_handle)
+#endif // 0

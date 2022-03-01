@@ -50,6 +50,7 @@ bool dirent_is_file(const struct dirent *de) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) {
         assert(de);
 
@@ -64,6 +65,7 @@ bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) {
 
         return endswith(de->d_name, suffix);
 }
+#endif // 0
 
 struct dirent *readdir_ensure_type(DIR *d) {
         int r;
@@ -92,6 +94,7 @@ struct dirent *readdir_ensure_type(DIR *d) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 struct dirent *readdir_no_dot(DIR *d) {
         assert(d);
 
@@ -103,3 +106,4 @@ struct dirent *readdir_no_dot(DIR *d) {
                         return de;
         }
 }
+#endif // 0

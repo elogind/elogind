@@ -44,9 +44,9 @@ int get_group_creds(const char **groupname, gid_t *gid, UserCredsFlags flags);
 #endif // 0
 
 char* uid_to_name(uid_t uid);
+#if 0 /// UNNEEDED by elogind
 char* gid_to_name(gid_t gid);
 
-#if 0 /// UNNEEDED by elogind
 int in_gid(gid_t gid);
 int in_group(const char *name);
 
@@ -73,9 +73,6 @@ int take_etc_passwd_lock(const char *root);
 
 #define ETC_PASSWD_LOCK_PATH "/etc/.pwd.lock"
 
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 /* The following macros add 1 when converting things, since UID 0 is a valid UID, while the pointer
  * NULL is special */
@@ -133,7 +130,9 @@ int putsgent_sane(const struct sgrp *sg, FILE *stream);
 
 bool is_nologin_shell(const char *shell);
 
+#if 0 /// UNNEEDED by elogind
 int is_this_me(const char *username);
+#endif // 0
 
 const char *get_home_root(void);
 

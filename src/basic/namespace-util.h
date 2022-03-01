@@ -7,11 +7,12 @@ int namespace_open(pid_t pid, int *pidns_fd, int *mntns_fd, int *netns_fd, int *
 int namespace_enter(int pidns_fd, int mntns_fd, int netns_fd, int userns_fd, int root_fd);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int fd_is_ns(int fd, unsigned long nsflag);
+#endif // 0
 
 int detach_mount_namespace(void);
 
+#if 0 /// UNNEEDED by elogind
 static inline bool userns_shift_range_valid(uid_t shift, uid_t range) {
         /* Checks that the specified userns range makes sense, i.e. contains at least one UID, and the end
          * doesn't overflow uid_t. */
@@ -28,3 +29,4 @@ static inline bool userns_shift_range_valid(uid_t shift, uid_t range) {
 }
 
 int userns_acquire(const char *uid_map, const char *gid_map);
+#endif // 0

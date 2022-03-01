@@ -6,6 +6,7 @@
 
 /* BE */
 
+#if 0 /// UNNEEDED by elogind
 static inline uint16_t unaligned_read_be16(const void *_u) {
         const struct __attribute__((__packed__, __may_alias__)) { uint16_t x; } *u = _u;
 
@@ -41,6 +42,7 @@ static inline void unaligned_write_be64(void *_u, uint64_t a) {
 
         u->x = be64toh(a);
 }
+#endif // 0
 
 /* LE */
 
@@ -62,6 +64,7 @@ static inline uint64_t unaligned_read_le64(const void *_u) {
         return le64toh(u->x);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline void unaligned_write_le16(void *_u, uint16_t a) {
         struct __attribute__((__packed__, __may_alias__)) { uint16_t x; } *u = _u;
 
@@ -97,3 +100,4 @@ static inline void unaligned_write_le64(void *_u, uint64_t a) {
 #define unaligned_write_ne32 unaligned_write_le32
 #define unaligned_write_ne64 unaligned_write_le64
 #endif
+#endif // 0

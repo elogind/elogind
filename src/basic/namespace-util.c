@@ -183,6 +183,7 @@ int detach_mount_namespace(void) {
         return RET_NERRNO(mount(NULL, "/", NULL, MS_SLAVE | MS_REC, NULL));
 }
 
+#if 0 /// UNNEEDED by elogind
 int userns_acquire(const char *uid_map, const char *gid_map) {
         char path[STRLEN("/proc//uid_map") + DECIMAL_STR_MAX(pid_t) + 1];
         _cleanup_(sigkill_waitp) pid_t pid = 0;
@@ -220,3 +221,4 @@ int userns_acquire(const char *uid_map, const char *gid_map) {
         return TAKE_FD(userns_fd);
 
 }
+#endif // 0

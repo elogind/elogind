@@ -803,6 +803,7 @@ bool slice_name_is_valid(const char *name) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool unit_name_prefix_equal(const char *a, const char *b) {
         const char *p, *q;
 
@@ -825,3 +826,4 @@ bool unit_name_prefix_equal(const char *a, const char *b) {
 
         return memcmp_nn(a, p - a, b, q - b) == 0;
 }
+#endif / 0

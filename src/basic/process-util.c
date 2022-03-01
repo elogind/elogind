@@ -811,6 +811,7 @@ int wait_for_terminate_and_check(const char *name, pid_t pid, WaitFlags flags) {
         return -EPROTO;
 }
 
+#if 0 /// UNNEEDED by elogind
 /*
  * Return values:
  *
@@ -875,7 +876,6 @@ int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout) {
         return -EPROTO;
 }
 
-#if 0 /// UNNEEDED by elogind
 void sigkill_wait(pid_t pid) {
         assert(pid > 1);
 
@@ -1170,8 +1170,8 @@ int pid_compare_func(const pid_t *a, const pid_t *b) {
         /* Suitable for usage in qsort() */
         return CMP(*a, *b);
 }
-
 #endif // 0
+
 
 /* The cached PID, possible values:
  *
@@ -1246,6 +1246,7 @@ pid_t getpid_cached(void) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int must_be_root(void) {
 
         if (geteuid() == 0)
@@ -1253,6 +1254,7 @@ int must_be_root(void) {
 
         return log_error_errno(SYNTHETIC_ERRNO(EPERM), "Need to be root.");
 }
+#endif // 0
 
 static void restore_sigsetp(sigset_t **ssp) {
         if (*ssp)
@@ -1507,6 +1509,7 @@ int namespace_fork(
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int set_oom_score_adjust(int value) {
         char t[DECIMAL_STR_MAX(int)];
 
@@ -1533,6 +1536,7 @@ int get_oom_score_adjust(int *ret) {
                 *ret = a;
         return 0;
 }
+#endif // 0
 
 int pidfd_get_pid(int fd, pid_t *ret) {
         char path[STRLEN("/proc/self/fdinfo/") + DECIMAL_STR_MAX(int)];
@@ -1632,6 +1636,7 @@ bool invoked_as(char *argv[], const char *token) {
 
         return strstr(last_path_component(argv[0]), token);
 }
+#endif // 0
 
 _noreturn_ void freeze(void) {
         log_close();
@@ -1654,7 +1659,7 @@ _noreturn_ void freeze(void) {
                 pause();
 }
 
-
+#if 0 /// UNNEEDED by elogind
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
         [CLD_KILLED] = "killed",

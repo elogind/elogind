@@ -59,8 +59,8 @@ char* path_make_absolute(const char *p, const char *prefix);
 int safe_getcwd(char **ret);
 int path_make_absolute_cwd(const char *p, char **ret);
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int path_make_relative(const char *from, const char *to, char **ret);
+#endif // 0
 char *path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) _pure_;
 static inline char* path_startswith(const char *path, const char *prefix) {
         return path_startswith_full(path, prefix, true);
@@ -72,8 +72,10 @@ static inline bool path_equal(const char *a, const char *b) {
 }
 
 bool path_equal_or_files_same(const char *a, const char *b, int flags);
+#if 0 /// UNNEEDED by elogind
 /* Compares only the last portion of the input paths, ie: the filenames */
 bool path_equal_filename(const char *a, const char *b);
+#endif // 0
 
 char* path_extend_internal(char **x, ...);
 #define path_extend(x, ...) path_extend_internal(x, __VA_ARGS__, POINTER_MAX)
@@ -87,7 +89,9 @@ enum {
         PATH_CHECK_RELATIVE = 1 << 2,
 };
 
+#if 0 /// UNNEEDED by elogind
 int path_simplify_and_warn(char *path, unsigned flag, const char *unit, const char *filename, unsigned line, const char *lvalue);
+#endif // 0
 
 static inline bool path_equal_ptr(const char *a, const char *b) {
         return !!a == !!b && (!a || path_equal(a, b));
@@ -163,9 +167,6 @@ int fsck_exists(const char *fstype);
                 _ret;                                                   \
         })
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 char* dirname_malloc(const char *path);
 int path_find_first_component(const char **p, bool accept_dot_dot, const char **ret);
 int path_find_last_component(const char *path, bool accept_dot_dot, const char **next, const char **ret);
@@ -183,7 +184,9 @@ static inline bool path_is_safe(const char *p) {
 }
 bool path_is_normalized(const char *p) _pure_;
 
+#if 0 /// UNNEEDED by elogind
 char *file_in_same_dir(const char *path, const char *filename);
+#endif // 0
 
 bool hidden_or_backup_file(const char *filename) _pure_;
 

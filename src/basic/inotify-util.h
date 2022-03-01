@@ -19,4 +19,6 @@ union inotify_event_buffer {
 };
 
 int inotify_add_watch_fd(int fd, int what, uint32_t mask);
+#if 0 /// UNNEEDED by elogind
 int inotify_add_watch_and_warn(int fd, const char *pathname, uint32_t mask);
+#endif // 0

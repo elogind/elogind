@@ -88,10 +88,12 @@ dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, us
 #endif // 0
 
 triple_timestamp* triple_timestamp_get(triple_timestamp *ts);
+#if 0 /// UNNEEDED by elogind
 triple_timestamp* triple_timestamp_from_realtime(triple_timestamp *ts, usec_t u);
 
 #define DUAL_TIMESTAMP_HAS_CLOCK(clock)                               \
         IN_SET(clock, CLOCK_REALTIME, CLOCK_REALTIME_ALARM, CLOCK_MONOTONIC)
+#endif // 0
 
 #define TRIPLE_TIMESTAMP_HAS_CLOCK(clock)                               \
         IN_SET(clock, CLOCK_REALTIME, CLOCK_REALTIME_ALARM, CLOCK_MONOTONIC, CLOCK_BOOTTIME, CLOCK_BOOTTIME_ALARM)
@@ -118,9 +120,11 @@ usec_t timespec_load(const struct timespec *ts) _pure_;
 nsec_t timespec_load_nsec(const struct timespec *ts) _pure_;
 #endif // 0
 struct timespec* timespec_store(struct timespec *ts, usec_t u);
+#if 0 /// UNNEEDED by elogind
 struct timespec* timespec_store_nsec(struct timespec *ts, nsec_t n);
 
 usec_t timeval_load(const struct timeval *tv) _pure_;
+#endif // 0
 struct timeval* timeval_store(struct timeval *tv, usec_t u);
 
 char* format_timestamp_style(char *buf, size_t l, usec_t t, TimestampStyle style) _warn_unused_result_;
@@ -132,7 +136,6 @@ static inline char* format_timestamp(char *buf, size_t l, usec_t t) {
         return format_timestamp_style(buf, l, t, TIMESTAMP_PRETTY);
 }
 
-#if 0 /// UNNEEDED by elogind
 /* Note: the lifetime of the compound literal is the immediately surrounding block,
  * see C11 §6.5.2.5, and
  * https://stackoverflow.com/questions/34880638/compound-literal-lifetime-and-if-blocks */
@@ -143,6 +146,7 @@ static inline char* format_timestamp(char *buf, size_t l, usec_t t) {
 #define FORMAT_TIMESTAMP_STYLE(t, style) \
         format_timestamp_style((char[FORMAT_TIMESTAMP_MAX]){}, FORMAT_TIMESTAMP_MAX, t, style)
 
+#if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec);
 #endif // 0
 
@@ -203,12 +207,14 @@ static inline usec_t usec_sub_unsigned(usec_t timestamp, usec_t delta) {
         return timestamp - delta;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline usec_t usec_sub_signed(usec_t timestamp, int64_t delta) {
         if (delta < 0)
                 return usec_add(timestamp, (usec_t) (-delta));
         else
                 return usec_sub_unsigned(timestamp, (usec_t) delta);
 }
+#endif // 0
 
 #if SIZEOF_TIME_T == 8
   /* The last second we can format is 31. Dec 9999, 1s before midnight, because otherwise we'd enter 5 digit
@@ -223,7 +229,7 @@ static inline usec_t usec_sub_signed(usec_t timestamp, int64_t delta) {
 
 #if 0 /// UNNEEDED by elogind
 int time_change_fd(void);
-#endif // 0
 
 const char* timestamp_style_to_string(TimestampStyle t) _const_;
 TimestampStyle timestamp_style_from_string(const char *s) _pure_;
+#endif // 0

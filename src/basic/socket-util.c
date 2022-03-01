@@ -387,6 +387,7 @@ int sockaddr_port(const struct sockaddr *_sa, unsigned *ret_port) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 const union in_addr_union *sockaddr_in_addr(const struct sockaddr *_sa) {
         const union sockaddr_union *sa = (const union sockaddr_union*) _sa;
 
@@ -440,6 +441,7 @@ int sockaddr_set_in_addr(
 
         }
 }
+#endif // 0
 
 int sockaddr_pretty(
                 const struct sockaddr *_sa,
@@ -1185,7 +1187,6 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
 
         return NULL;
 }
-#endif // 0
 
 int socket_ioctl_fd(void) {
         int fd;
@@ -1204,7 +1205,6 @@ int socket_ioctl_fd(void) {
         return fd;
 }
 
-#if 0 /// UNNEEDED by elogind
 int sockaddr_un_unlink(const struct sockaddr_un *sa) {
         const char *p, * nul;
 
@@ -1324,6 +1324,7 @@ ssize_t recvmsg_safe(int sockfd, struct msghdr *msg, int flags) {
         return n;
 }
 
+#if 0 /// UNNEEDED by elogind
 int socket_get_family(int fd, int *ret) {
         int af;
         socklen_t sl = sizeof(af);
@@ -1337,7 +1338,6 @@ int socket_get_family(int fd, int *ret) {
         return af;
 }
 
-#if 0 /// UNNEEDED by elogind
 int socket_set_recvpktinfo(int fd, int af, bool b) {
         int r;
 

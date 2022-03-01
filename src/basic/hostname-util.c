@@ -36,7 +36,6 @@ char* get_default_hostname(void) {
 
         return strdup(FALLBACK_HOSTNAME);
 }
-#endif // 0
 
 int gethostname_full(GetHostnameFlags flags, char **ret) {
         _cleanup_free_ char *buf = NULL, *fallback = NULL;
@@ -47,7 +46,6 @@ int gethostname_full(GetHostnameFlags flags, char **ret) {
 
         assert_se(uname(&u) >= 0);
 
-#if 0 /// elogind has no hostnamed and such nonsense
         s = u.nodename;
         if (isempty(s) ||
             (!FLAGS_SET(flags, GET_HOSTNAME_ALLOW_NONE) && streq(s, "(none)")) ||
@@ -55,12 +53,7 @@ int gethostname_full(GetHostnameFlags flags, char **ret) {
             (FLAGS_SET(flags, GET_HOSTNAME_SHORT) && s[0] == '.')) {
                 if (!FLAGS_SET(flags, GET_HOSTNAME_FALLBACK_DEFAULT))
                         return -ENXIO;
-#else // 0
-        return strdup("localhost");
-#endif // 0
 
-
-#if 0 /// UNNEEDED by elogind
                 s = fallback = get_default_hostname();
                 if (!s)
                         return -ENOMEM;
@@ -69,7 +62,6 @@ int gethostname_full(GetHostnameFlags flags, char **ret) {
                         return -ENXIO;
         }
 
-#endif // 0
 
         if (FLAGS_SET(flags, GET_HOSTNAME_SHORT))
                 buf = strndup(s, strcspn(s, "."));
@@ -81,6 +73,7 @@ int gethostname_full(GetHostnameFlags flags, char **ret) {
         *ret = TAKE_PTR(buf);
         return 0;
 }
+#endif // 0
 
 bool valid_ldh_char(char c) {
         /* "LDH" → "Letters, digits, hyphens", as per RFC 5890, Section 2.3.1 */

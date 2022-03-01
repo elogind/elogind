@@ -7,13 +7,13 @@
 /// Additional includes needed by elogind
 #include "musl_missing.h"
 
-#if 0 /// UNNEEDED by elogind
 /* This is the same as glibc's internal __compar_d_fn_t type. glibc exports a public comparison_fn_t, for the
  * external type __compar_fn_t, but doesn't do anything similar for __compar_d_fn_t. Let's hence do that
  * ourselves, picking a name that is obvious, but likely enough to not clash with glibc's choice of naming if
  * they should ever add one. */
 typedef int (*comparison_userdata_fn_t)(const void *, const void *, void *);
 
+#if 0 /// UNNEEDED by elogind
 void *xbsearch_r(const void *key, const void *base, size_t nmemb, size_t size,
                  comparison_userdata_fn_t compar, void *arg);
 

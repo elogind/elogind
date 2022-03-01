@@ -182,6 +182,7 @@ static int conf_files_list_strv_internal(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_insert(char ***strv, const char *root, char **dirs, const char *path) {
         /* Insert a path into strv, at the place honouring the usual sorting rules:
          * - we first compare by the basename
@@ -252,6 +253,7 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
 
         return r;
 }
+#endif // 0
 
 int conf_files_list_strv(char ***ret, const char *suffix, const char *root, unsigned flags, const char* const* dirs) {
         _cleanup_strv_free_ char **copy = NULL;
@@ -289,6 +291,7 @@ int conf_files_list_nulstr(char ***ret, const char *suffix, const char *root, un
         return conf_files_list_strv_internal(ret, suffix, root, flags, d);
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_list_with_replacement(
                 const char *root,
                 char **config_dirs,
@@ -324,6 +327,4 @@ int conf_files_list_with_replacement(
 
         return 0;
 }
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0

@@ -32,13 +32,11 @@ static inline int memcmp_safe(const void *s1, const void *s2, size_t n) {
         return memcmp(s1, s2, n);
 }
 
-#if 0 /// UNNEEDED by elogind
 /* Compare s1 (length n1) with s2 (length n2) in lexicographic order. */
 static inline int memcmp_nn(const void *s1, size_t n1, const void *s2, size_t n2) {
         return memcmp_safe(s1, s2, MIN(n1, n2))
             ?: CMP(n1, n2);
 }
-#endif // 0
 
 #define memzero(x,l)                                            \
         ({                                                      \
@@ -75,6 +73,7 @@ static inline void *memmem_safe(const void *haystack, size_t haystacklen, const 
         return memmem(haystack, haystacklen, needle, needlelen);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline void *mempmem_safe(const void *haystack, size_t haystacklen, const void *needle, size_t needlelen) {
         const uint8_t *p;
 
@@ -84,6 +83,7 @@ static inline void *mempmem_safe(const void *haystack, size_t haystacklen, const
 
         return (uint8_t*) p + needlelen;
 }
+#endif // 0
 
 #if HAVE_EXPLICIT_BZERO
 static inline void* explicit_bzero_safe(void *p, size_t l) {

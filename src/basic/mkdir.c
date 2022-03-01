@@ -151,9 +151,11 @@ int mkdir_parents(const char *path, mode_t mode) {
         return mkdir_parents_internal(NULL, path, mode, UID_INVALID, UID_INVALID, 0, mkdirat_errno_wrapper);
 }
 
+#if 0 /// UNNEEDED by elogind
 int mkdir_parents_safe(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags) {
         return mkdir_parents_internal(prefix, path, mode, uid, gid, flags, mkdirat_errno_wrapper);
 }
+#endif // 0
 
 int mkdir_p_internal(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags, mkdirat_func_t _mkdirat) {
         int r;
@@ -183,6 +185,7 @@ int mkdir_p(const char *path, mode_t mode) {
         return mkdir_p_internal(NULL, path, mode, UID_INVALID, UID_INVALID, 0, mkdirat_errno_wrapper);
 }
 
+#if 0 /// UNNEEDED by elogind
 int mkdir_p_safe(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags) {
         return mkdir_p_internal(prefix, path, mode, uid, gid, flags, mkdirat_errno_wrapper);
 }
@@ -237,3 +240,4 @@ int mkdir_p_root(const char *root, const char *p, uid_t uid, gid_t gid, mode_t m
 
         return 1;
 }
+#endif // 0

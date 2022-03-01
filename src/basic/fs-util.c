@@ -178,6 +178,7 @@ int readlink_value(const char *p, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int readlink_and_make_absolute(const char *p, char **r) {
         _cleanup_free_ char *target = NULL;
         char *k;
@@ -197,9 +198,8 @@ int readlink_and_make_absolute(const char *p, char **r) {
         *r = k;
         return 0;
 }
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0
+
 int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
         _cleanup_close_ int fd = -1;
 
@@ -343,6 +343,7 @@ int stat_warn_permissions(const char *path, const struct stat *st) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int fd_warn_permissions(const char *path, int fd) {
         struct stat st;
 
@@ -354,6 +355,7 @@ int fd_warn_permissions(const char *path, int fd) {
 
         return stat_warn_permissions(path, &st);
 }
+#endif // 0
 
 int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gid, mode_t mode) {
         _cleanup_close_ int fd = -1;
@@ -678,8 +680,6 @@ int unlink_or_warn(const char *filename) {
 
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
 int access_fd(int fd, int mode) {
         /* Like access() but operates on an already open fd */
 
@@ -699,6 +699,7 @@ int access_fd(int fd, int mode) {
 
         return 0;
 }
+#endif // 0
 
 void unlink_tempfilep(char (*p)[]) {
         /* If the file is created with mkstemp(), it will (almost always)
@@ -709,6 +710,7 @@ void unlink_tempfilep(char (*p)[]) {
                 (void) unlink_noerrno(*p);
 }
 
+#if 0 /// UNNEEDED by elogind
 int unlinkat_deallocate(int fd, const char *name, UnlinkDeallocateFlags flags) {
         _cleanup_close_ int truncate_fd = -1;
         struct stat st;
@@ -817,6 +819,7 @@ int unlinkat_deallocate(int fd, const char *name, UnlinkDeallocateFlags flags) {
 
         return 0;
 }
+#endif // 0
 
 int open_parent(const char *path, int flags, mode_t mode) {
         _cleanup_free_ char *parent = NULL;
@@ -928,7 +931,6 @@ do_rename:
 
         return 1;
 }
-#endif // 0
 
 int posix_fallocate_loop(int fd, uint64_t offset, uint64_t size) {
         RateLimit rl;
@@ -1098,3 +1100,4 @@ int open_mkdir_at(int dirfd, const char *path, int flags, mode_t mode) {
 
         return TAKE_FD(fd);
 }
+#endif // 0

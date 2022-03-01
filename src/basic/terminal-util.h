@@ -116,15 +116,15 @@ typedef enum ColorMode {
         _COLOR_INVALID = -EINVAL,
 } ColorMode;
 
-int acquire_terminal(const char *name, AcquireTerminalFlags flags, usec_t timeout);
 #if 0 /// UNNEEDED by elogind
+int acquire_terminal(const char *name, AcquireTerminalFlags flags, usec_t timeout);
 int release_terminal(void);
 
 int terminal_vhangup_fd(int fd);
 int terminal_vhangup(const char *name);
-#endif // 0
 
 int terminal_set_size_fd(int fd, const char *ident, unsigned rows, unsigned cols);
+#endif // 0
 
 int chvt(int vt);
 
@@ -135,9 +135,9 @@ int ask_string(char **ret, const char *text, ...) _printf_(2, 3);
 
 int vt_disallocate(const char *name);
 
-#endif // 0
 int resolve_dev_console(char **ret);
 int get_kernel_consoles(char ***ret);
+#endif // 0
 bool tty_is_vc(const char *tty);
 #if 0 /// UNNEEDED by elogind
 bool tty_is_vc_resolve(const char *tty);
@@ -159,8 +159,8 @@ unsigned lines(void);
 
 #if 0 /// UNNEEDED by elogind
 void columns_lines_cache_reset(int _unused_ signum);
-#endif // 0
 void reset_terminal_feature_caches(void);
+#endif // 0
 
 bool on_tty(void);
 bool terminal_is_dumb(void);
@@ -197,6 +197,7 @@ static inline bool colors_enabled(void) {
         }
 
 
+#if 0 /// UNNEEDED by elogind
 #define DEFINE_ANSI_FUNC_UNDERLINE_256(name, NAME, FALLBACK)                                                           \
         static inline const char *ansi_##name(void) {                                                                  \
                 switch (get_color_mode()) {                                                                            \
@@ -205,19 +206,25 @@ static inline bool colors_enabled(void) {
                         default : return underline_enabled() ? ANSI_##NAME ANSI_UNDERLINE: ANSI_##NAME;                \
                 }                                                                                                      \
         }
+#endif // 0
 
 DEFINE_ANSI_FUNC(normal,            NORMAL);
 DEFINE_ANSI_FUNC(highlight,         HIGHLIGHT);
+#if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC(black,             BLACK);
 DEFINE_ANSI_FUNC(red,               RED);
+#endif // 0
 DEFINE_ANSI_FUNC(green,             GREEN);
+#if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC(yellow,            YELLOW);
 DEFINE_ANSI_FUNC(blue,              BLUE);
 DEFINE_ANSI_FUNC(magenta,           MAGENTA);
 DEFINE_ANSI_FUNC(cyan,              CYAN);
 DEFINE_ANSI_FUNC(white,             WHITE);
+#endif // 0
 DEFINE_ANSI_FUNC_256(grey,          GREY, BRIGHT_BLACK);
 
+#if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC(bright_black,      BRIGHT_BLACK);
 DEFINE_ANSI_FUNC(bright_red,        BRIGHT_RED);
 DEFINE_ANSI_FUNC(bright_green,      BRIGHT_GREEN);
@@ -228,11 +235,13 @@ DEFINE_ANSI_FUNC(bright_cyan,       BRIGHT_CYAN);
 DEFINE_ANSI_FUNC(bright_white,      BRIGHT_WHITE);
 
 DEFINE_ANSI_FUNC(highlight_black,       HIGHLIGHT_BLACK);
+#endif // 0
 DEFINE_ANSI_FUNC(highlight_red,         HIGHLIGHT_RED);
 DEFINE_ANSI_FUNC(highlight_green,       HIGHLIGHT_GREEN);
 DEFINE_ANSI_FUNC_256(highlight_yellow,  HIGHLIGHT_YELLOW, HIGHLIGHT_YELLOW_FALLBACK);
 DEFINE_ANSI_FUNC_256(highlight_yellow4, HIGHLIGHT_YELLOW4, HIGHLIGHT_YELLOW_FALLBACK);
 DEFINE_ANSI_FUNC(highlight_blue,        HIGHLIGHT_BLUE);
+#if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC(highlight_magenta,     HIGHLIGHT_MAGENTA);
 DEFINE_ANSI_FUNC(highlight_cyan,        HIGHLIGHT_CYAN);
 DEFINE_ANSI_FUNC_256(highlight_grey,    HIGHLIGHT_GREY, HIGHLIGHT_GREY_FALLBACK);
@@ -241,8 +250,10 @@ DEFINE_ANSI_FUNC(highlight_white,       HIGHLIGHT_WHITE);
 static inline const char* _ansi_highlight_yellow(void) {
         return colors_enabled() ? _ANSI_HIGHLIGHT_YELLOW : "";
 }
+#endif // 0
 
 DEFINE_ANSI_FUNC_UNDERLINE(underline,                       NORMAL);
+#if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC_UNDERLINE(highlight_underline,             HIGHLIGHT);
 DEFINE_ANSI_FUNC_UNDERLINE_256(grey_underline,              GREY, BRIGHT_BLACK);
 DEFINE_ANSI_FUNC_UNDERLINE(highlight_red_underline,         HIGHLIGHT_RED);
@@ -251,6 +262,7 @@ DEFINE_ANSI_FUNC_UNDERLINE_256(highlight_yellow_underline,  HIGHLIGHT_YELLOW, HI
 DEFINE_ANSI_FUNC_UNDERLINE(highlight_blue_underline,        HIGHLIGHT_BLUE);
 DEFINE_ANSI_FUNC_UNDERLINE(highlight_magenta_underline,     HIGHLIGHT_MAGENTA);
 DEFINE_ANSI_FUNC_UNDERLINE_256(highlight_grey_underline,    HIGHLIGHT_GREY, HIGHLIGHT_GREY_FALLBACK);
+#endif // 0
 
 int get_ctty_devnr(pid_t pid, dev_t *d);
 int get_ctty(pid_t, dev_t *_devnr, char **r);
@@ -273,9 +285,11 @@ int vt_release(int fd, bool restore_vt);
 
 void get_log_colors(int priority, const char **on, const char **off, const char **highlight);
 
+#if 0 /// UNNEEDED by elogind
 static inline const char* ansi_highlight_green_red(bool b) {
         return b ? ansi_highlight_green() : ansi_highlight_red();
 }
+#endif // 0
 
 /* This assumes there is a 'tty' group */
 #define TTY_MODE 0620

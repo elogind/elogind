@@ -428,6 +428,7 @@ void random_bytes(void *p, size_t n) {
         pseudo_random_bytes(p, n);
 }
 
+#if 0 /// UNNEEDED by elogind
 size_t random_pool_size(void) {
         _cleanup_free_ char *s = NULL;
         int r;
@@ -494,6 +495,7 @@ int random_write_entropy(int fd, const void *seed, size_t size, bool credit) {
 
         return 1;
 }
+#endif // 0
 
 uint64_t random_u64_range(uint64_t m) {
         uint64_t x, remainder;

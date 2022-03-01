@@ -16,8 +16,8 @@
 int is_symlink(const char *path);
 #endif // 0
 int is_dir(const char *path, bool follow);
-int is_dir_fd(int fd);
 #if 0 /// UNNEEDED by elogind
+int is_dir_fd(int fd);
 int is_device_node(const char *path);
 
 int dir_is_empty_at(int dir_fd, const char *path);
@@ -73,8 +73,10 @@ int path_is_temporary_fs(const char *path);
 int stat_verify_regular(const struct stat *st);
 int fd_verify_regular(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int stat_verify_directory(const struct stat *st);
 int fd_verify_directory(int fd);
+#endif // 0
 
 /* glibc and the Linux kernel have different ideas about the major/minor size. These calls will check whether the
  * specified major is valid by the Linux kernel's standards, not by glibc's. Linux has 20bits of minor, and 12 bits of

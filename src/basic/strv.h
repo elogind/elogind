@@ -15,7 +15,9 @@
 
 char* strv_find(char * const *l, const char *name) _pure_;
 char* strv_find_case(char * const *l, const char *name) _pure_;
+#if 0 /// UNNEEDED by elogind
 char* strv_find_prefix(char * const *l, const char *name) _pure_;
+#endif // 0
 char* strv_find_startswith(char * const *l, const char *name) _pure_;
 
 #define strv_contains(l, s) (!!strv_find((l), (s)))
@@ -35,8 +37,8 @@ size_t strv_length(char * const *l) _pure_;
 int strv_extend_strv(char ***a, char * const *b, bool filter_duplicates);
 #if 0 /// UNNEEDED by elogind
 int strv_extend_strv_concat(char ***a, char * const *b, const char *suffix);
-#endif // 0
 int strv_prepend(char ***l, const char *value);
+#endif // 0
 int strv_extend(char ***l, const char *value);
 #if 0 /// UNNEEDED by elogind
 int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
@@ -73,16 +75,15 @@ char** strv_new_ap(const char *x, va_list ap);
 
 #define STRV_IGNORE ((const char *) POINTER_MAX)
 
+#if 0 /// UNNEEDED by elogind
 static inline const char* STRV_IFNOTNULL(const char *x) {
         return x ? x : STRV_IGNORE;
 }
+#endif // 0
 
 static inline bool strv_isempty(char * const *l) {
         return !l || !*l;
 }
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 int strv_split_full(char ***t, const char *s, const char *separators, ExtractFlags flags);
 static inline char** strv_split(const char *s, const char *separators) {
@@ -107,12 +108,12 @@ static inline char** strv_split_newlines(const char *s) {
 
         return ret;
 }
-#endif // 0
 
 /* Given a string containing white-space separated tuples of words themselves separated by ':',
  * returns a vector of strings. If the second element in a tuple is missing, the corresponding
  * string in the vector is an empty string. */
 int strv_split_colon_pairs(char ***t, const char *s);
+#endif // 0
 
 char* strv_join_full(char * const *l, const char *separator, const char *prefix, bool escape_separtor);
 static inline char *strv_join(char * const *l, const char *separator) {
@@ -121,10 +122,12 @@ static inline char *strv_join(char * const *l, const char *separator) {
 
 #if 0 /// UNNEEDED by elogind
 char** strv_parse_nulstr(const char *s, size_t l);
-char** strv_split_nulstr(const char *s);
-int strv_make_nulstr(char * const *l, char **p, size_t *n);
-
 #endif // 0
+char** strv_split_nulstr(const char *s);
+#if 0 /// UNNEEDED by elogind
+int strv_make_nulstr(char * const *l, char **p, size_t *n);
+#endif // 0
+
 static inline int strv_from_nulstr(char ***a, const char *nulstr) {
         char **t;
 
@@ -253,8 +256,8 @@ char** strv_skip(char **l, size_t n);
 int strv_extend_n(char ***l, const char *value, size_t n);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int fputstrv(FILE *f, char * const *l, const char *separator, bool *space);
+#endif // 0
 
 #define strv_free_and_replace(a, b)             \
         ({                                      \
@@ -268,8 +271,8 @@ int fputstrv(FILE *f, char * const *l, const char *separator, bool *space);
 
 extern const struct hash_ops string_strv_hash_ops;
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int _string_strv_hashmap_put(Hashmap **h, const char *key, const char *value  HASHMAP_DEBUG_PARAMS);
 int _string_strv_ordered_hashmap_put(OrderedHashmap **h, const char *key, const char *value  HASHMAP_DEBUG_PARAMS);
 #define string_strv_hashmap_put(h, k, v) _string_strv_hashmap_put(h, k, v  HASHMAP_DEBUG_SRC_ARGS)
 #define string_strv_ordered_hashmap_put(h, k, v) _string_strv_ordered_hashmap_put(h, k, v  HASHMAP_DEBUG_SRC_ARGS)
+#endif // 0

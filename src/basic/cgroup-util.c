@@ -38,7 +38,6 @@
 #include "user-util.h"
 /// Additional includes needed by elogind
 #include "env-file.h"
-#include "xattr-util.h"
 
 static int cg_enumerate_items(const char *controller, const char *path, FILE **_f, const char *item) {
         _cleanup_free_ char *fs = NULL;
@@ -150,6 +149,7 @@ bool cg_ns_supported(void) {
         return enabled;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool cg_freezer_supported(void) {
         static thread_local int supported = -1;
 
@@ -160,6 +160,7 @@ bool cg_freezer_supported(void) {
 
         return supported;
 }
+#endif // 0
 
 bool cg_kill_supported(void) {
         static thread_local int supported = -1;
@@ -951,6 +952,7 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_split_spec(const char *spec, char **ret_controller, char **ret_path) {
         _cleanup_free_ char *controller = NULL, *path = NULL;
 
@@ -1036,6 +1038,7 @@ int cg_mangle_path(const char *path, char **result) {
 
         return cg_get_path(c ?: SYSTEMD_CGROUP_CONTROLLER, p ?: "/", NULL, result);
 }
+#endif // 0
 
 int cg_get_root_path(char **path) {
         char *p, *e;
@@ -1130,6 +1133,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit) {
         char *c, *s;
         size_t n;
@@ -1137,21 +1141,13 @@ int cg_path_decode_unit(const char *cgroup, char **unit) {
         assert(cgroup);
         assert(unit);
 
-#if 0 /// elogind has a different naming: <controller>:/<session id>. So prefix is always len < 3
         n = strcspn(cgroup, "/");
         if (n < 3)
                 return -ENXIO;
-#else // 0
-        n = strspn(cgroup, "/") + 1;
-#endif // 0
 
         c = strndupa_safe(cgroup, n);
         c = cg_unescape(c);
 
-#if 0 /// elogind session ids are never valid unit names.
-        if (!unit_name_is_valid(c, UNIT_NAME_PLAIN|UNIT_NAME_INSTANCE))
-                return -ENXIO;
-#endif // 0
 
         s = strdup(c);
         if (!s)
@@ -1236,7 +1232,6 @@ int cg_pid_get_unit(pid_t pid, char **unit) {
         return cg_path_get_unit(cgroup, unit);
 }
 
-#if 0 /// UNNEEDED by elogind
 /**
  * Skip session-*.scope, but require it to be there.
  */
@@ -1382,7 +1377,6 @@ int cg_pid_get_machine_name(pid_t pid, char **machine) {
 
         return cg_path_get_machine_name(cgroup, machine);
 }
-#endif // 0
 
 int cg_path_get_cgroupid(const char *path, uint64_t *ret) {
         cg_file_handle fh = CG_FILE_HANDLE_INIT;
@@ -1399,6 +1393,7 @@ int cg_path_get_cgroupid(const char *path, uint64_t *ret) {
         *ret = CG_FILE_HANDLE_CGROUPID(fh);
         return 0;
 }
+#endif // 0
 
 int cg_path_get_session(const char *path, char **session) {
 #if 0 /// UNNEEDED by elogind
@@ -1630,6 +1625,7 @@ int cg_pid_get_user_slice(pid_t pid, char **slice) {
         return cg_path_get_user_slice(cgroup, slice);
 }
 
+#if 0 /// UNNEEDED by elogind
 char *cg_escape(const char *p) {
         bool need_prefix = false;
 
@@ -1677,6 +1673,7 @@ char *cg_escape(const char *p) {
 
         return strdup(p);
 }
+#endif // 0
 
 char *cg_unescape(const char *p) {
         assert(p);
@@ -1820,6 +1817,7 @@ int cg_get_attribute(const char *controller, const char *path, const char *attri
         return read_one_line_file(p, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_get_attribute_as_uint64(const char *controller, const char *path, const char *attribute, uint64_t *ret) {
         _cleanup_free_ char *value = NULL;
         uint64_t v;
@@ -1846,7 +1844,6 @@ int cg_get_attribute_as_uint64(const char *controller, const char *path, const c
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_get_attribute_as_bool(const char *controller, const char *path, const char *attribute, bool *ret) {
         _cleanup_free_ char *value = NULL;
         int r;
@@ -1971,7 +1968,6 @@ done:
 
         return 0;
 }
-#endif // 0
 
 int cg_mask_to_string(CGroupMask mask, char **ret) {
         _cleanup_free_ char *s = NULL;
@@ -2014,6 +2010,7 @@ int cg_mask_to_string(CGroupMask mask, char **ret) {
 
         return 0;
 }
+#endif // 0
 
 int cg_mask_from_string(const char *value, CGroupMask *ret) {
         CGroupMask m = 0;
@@ -2335,6 +2332,7 @@ bool is_cgroup_fs(const struct statfs *s) {
                is_fs_type(s, CGROUP2_SUPER_MAGIC);
 }
 
+#if 0 /// UNNEEDED by elogind
 bool fd_is_cgroup_fs(int fd) {
         struct statfs s;
 
@@ -2343,6 +2341,7 @@ bool fd_is_cgroup_fs(int fd) {
 
         return is_cgroup_fs(&s);
 }
+#endif // 0
 
 static const char *const cgroup_controller_table[_CGROUP_CONTROLLER_MAX] = {
         [CGROUP_CONTROLLER_CPU] = "cpu",

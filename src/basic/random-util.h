@@ -37,8 +37,10 @@ int rdrand(unsigned long *ret);
 #define RANDOM_POOL_SIZE_MIN 512U
 #define RANDOM_POOL_SIZE_MAX (10U*1024U*1024U)
 
+#if 0 /// UNNEEDED by elogind
 size_t random_pool_size(void);
 
 int random_write_entropy(int fd, const void *seed, size_t size, bool credit);
+#endif // 0
 
 uint64_t random_u64_range(uint64_t max);

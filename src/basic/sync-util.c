@@ -85,6 +85,7 @@ int fsync_full(int fd) {
         return q;
 }
 
+#if 0 /// UNNEEDED by elogind
 int fsync_path_at(int at_fd, const char *path) {
         _cleanup_close_ int opened_fd = -1;
         int fd;
@@ -161,3 +162,4 @@ int syncfs_path(int at_fd, const char *path) {
 
         return RET_NERRNO(syncfs(fd));
 }
+#endif // 0

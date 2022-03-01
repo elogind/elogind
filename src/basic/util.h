@@ -43,6 +43,7 @@ static inline unsigned log2u64(uint64_t x) {
 #endif
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline unsigned u32ctz(uint32_t n) {
 #if __SIZEOF_INT__ == 4
         return n != 0 ? __builtin_ctz(n) : 32;
@@ -50,6 +51,7 @@ static inline unsigned u32ctz(uint32_t n) {
 #  error "Wut?"
 #endif
 }
+#endif // 0
 
 #define CONST_LOG2U(x) ((x) > 1 ? __SIZEOF_INT__ * 8 - __builtin_clz(x) - 1 : 0)
 #define NONCONST_LOG2U(x) ({                                             \
@@ -58,9 +60,11 @@ static inline unsigned u32ctz(uint32_t n) {
         })
 #define LOG2U(x) __builtin_choose_expr(__builtin_constant_p(x), CONST_LOG2U(x), NONCONST_LOG2U(x))
 
+#if 0 /// UNNEEDED by elogind
 static inline unsigned log2i(int x) {
         return LOG2U(x);
 }
+#endif // 0
 
 static inline unsigned log2u(unsigned x) {
         return LOG2U(x);

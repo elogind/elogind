@@ -157,11 +157,13 @@ char *cellescape(char *buf, size_t len, const char *s);
 /* This limit is arbitrary, enough to give some idea what the string contains */
 #define CELLESCAPE_DEFAULT_LENGTH 64
 
+#if 0 /// UNNEEDED by elogind
 char* strshorten(char *s, size_t l);
 
 char *strreplace(const char *text, const char *old_string, const char *new_string);
 
 char *strip_tab_ansi(char **ibuf, size_t *_isz, size_t highlight[2]);
+#endif // 0
 
 char *strextend_with_separator_internal(char **x, const char *separator, ...) _sentinel_;
 #define strextend_with_separator(x, separator, ...) strextend_with_separator_internal(x, separator, __VA_ARGS__, NULL)
@@ -170,9 +172,11 @@ char *strextend_with_separator_internal(char **x, const char *separator, ...) _s
 int strextendf_with_separator(char **x, const char *separator, const char *format, ...) _printf_(3,4);
 #define strextendf(x, ...) strextendf_with_separator(x, NULL, __VA_ARGS__)
 
+#if 0 /// UNNEEDED by elogind
 char *strrep(const char *s, unsigned n);
 
 int split_pair(const char *s, const char *sep, char **l, char **r);
+#endif // 0
 
 int free_and_strdup(char **p, const char *s);
 static inline int free_and_strdup_warn(char **p, const char *s) {
@@ -228,7 +232,9 @@ static inline char* str_realloc(char *p) {
         return realloc(p, strlen(p) + 1) ?: p;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* string_erase(char *x);
+#endif // 0
 
 int string_truncate_lines(const char *s, size_t n_lines, char **ret);
 int string_extract_line(const char *s, size_t i, char **ret);

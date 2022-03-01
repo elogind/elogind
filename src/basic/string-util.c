@@ -514,6 +514,7 @@ char *cellescape(char *buf, size_t len, const char *s) {
         return buf;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* strshorten(char *s, size_t l) {
         assert(s);
 
@@ -721,6 +722,7 @@ char *strip_tab_ansi(char **ibuf, size_t *_isz, size_t highlight[2]) {
 
         return *ibuf;
 }
+#endif // 0
 
 char *strextend_with_separator_internal(char **x, const char *separator, ...) {
         size_t f, l, l_separator;
@@ -878,6 +880,7 @@ oom:
         return -ENOMEM;
 }
 
+#if 0 /// UNNEEDED by elogind
 char *strrep(const char *s, unsigned n) {
         char *r, *p;
         size_t l;
@@ -926,6 +929,7 @@ int split_pair(const char *s, const char *sep, char **l, char **r) {
 
         return 0;
 }
+#endif // 0
 
 int free_and_strdup(char **p, const char *s) {
         char *t;
@@ -994,6 +998,7 @@ bool string_is_safe(const char *p) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* string_erase(char *x) {
         if (!x)
                 return NULL;
@@ -1003,6 +1008,7 @@ char* string_erase(char *x) {
         explicit_bzero_safe(x, strlen(x));
         return x;
 }
+#endif // 0
 
 int string_truncate_lines(const char *s, size_t n_lines, char **ret) {
         const char *p = s, *e = s;

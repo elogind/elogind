@@ -4,8 +4,10 @@
 int fsync_directory_of_file(int fd);
 int fsync_full(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int fsync_path_at(int at_fd, const char *path);
 int fsync_parent_at(int at_fd, const char *path);
 int fsync_path_and_parent_at(int at_fd, const char *path);
 
 int syncfs_path(int at_fd, const char *path);
+#endif // 0

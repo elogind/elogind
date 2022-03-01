@@ -791,6 +791,7 @@ int read_nr_open(void) {
         return 1024 * 1024;
 }
 
+#if 0 /// UNNEEDED by elogind
 /* This is here because it's fd-related and is called from sd-journal code. Other btrfs-related utilities are
  * in src/shared, but libelogind must not link to libelogind-shared, see docs/ARCHITECTURE.md. */
 int btrfs_defrag_fd(int fd) {
@@ -804,3 +805,4 @@ int btrfs_defrag_fd(int fd) {
 
         return RET_NERRNO(ioctl(fd, BTRFS_IOC_DEFRAG, NULL));
 }
+#endif // 0

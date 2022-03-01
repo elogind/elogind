@@ -12,10 +12,14 @@ int mkdirat_errno_wrapper(int dirfd, const char *pathname, mode_t mode);
 
 int mkdir_safe(const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags);
 int mkdir_parents(const char *path, mode_t mode);
+#if 0 /// UNNEEDED by elogind
 int mkdir_parents_safe(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags);
+#endif // 0
 int mkdir_p(const char *path, mode_t mode);
+#if 0 /// UNNEEDED by elogind
 int mkdir_p_safe(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags);
 int mkdir_p_root(const char *root, const char *p, uid_t uid, gid_t gid, mode_t m);
+#endif // 0
 
 /* The following are used to implement the mkdir_xyz_label() calls, don't use otherwise. */
 typedef int (*mkdirat_func_t)(int dir_fd, const char *pathname, mode_t mode);

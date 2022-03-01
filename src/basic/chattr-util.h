@@ -51,7 +51,6 @@ static inline int chattr_path(const char *path, unsigned value, unsigned mask, u
 #if 0 /// UNNEEDED by elogind
 int read_attr_fd(int fd, unsigned *ret);
 int read_attr_path(const char *p, unsigned *ret);
-#endif // 0
 
 /* Combination of chattr flags, that should be appropriate for secrets stored on disk: Secure Remove +
  * Exclusion from Dumping + Synchronous Writing (i.e. not caching in memory) + In-Place Updating (i.e. not
@@ -61,3 +60,4 @@ int read_attr_path(const char *p, unsigned *ret);
 static inline int chattr_secret(int fd, ChattrApplyFlags flags) {
         return chattr_full(NULL, fd, CHATTR_SECRET_FLAGS, CHATTR_SECRET_FLAGS, NULL, NULL, flags|CHATTR_FALLBACK_BITWISE);
 }
+#endif // 0

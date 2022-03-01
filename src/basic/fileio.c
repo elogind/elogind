@@ -95,6 +95,7 @@ FILE* take_fdopen(int *fd, const char *options) {
         return f;
 }
 
+#if 0 /// UNNEEDED by elogind
 DIR* take_fdopendir(int *dfd) {
         assert(dfd);
 
@@ -106,6 +107,7 @@ DIR* take_fdopendir(int *dfd) {
 
         return d;
 }
+#endif // 0
 
 FILE* open_memstream_unlocked(char **ptr, size_t *sizeloc) {
         FILE *f = open_memstream(ptr, sizeloc);
@@ -335,6 +337,7 @@ fail:
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int write_string_filef(
                 const char *fn,
                 WriteStringFileFlags flags,
@@ -353,6 +356,7 @@ int write_string_filef(
 
         return write_string_file(fn, p, flags);
 }
+#endif // 0
 
 int read_one_line_file(const char *fn, char **line) {
         _cleanup_fclose_ FILE *f = NULL;

@@ -41,8 +41,6 @@ static inline char* gethostname_short_malloc(void) {
 
 char* get_default_hostname(void);
 #endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 bool valid_ldh_char(char c) _const_;
 
@@ -61,7 +59,6 @@ static inline bool is_gateway_hostname(const char *hostname) {
         /* This tries to identify the valid syntaxes for the our synthetic "gateway" host. */
         return STRCASE_IN_SET(hostname, "_gateway", "_gateway.");
 }
-#endif // 0
 
 static inline bool is_outbound_hostname(const char *hostname) {
         /* This tries to identify the valid syntaxes for the our synthetic "outbound" host. */
@@ -71,3 +68,4 @@ static inline bool is_outbound_hostname(const char *hostname) {
 static inline int get_pretty_hostname(char **ret) {
         return parse_env_file(NULL, "/etc/machine-info", "PRETTY_HOSTNAME", ret);
 }
+#endif // 0

@@ -1,11 +1,12 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include "alloc-util.h"
-#include "bus-label.h"
+//#include "alloc-util.h"
+//#include "bus-label.h"
 #include "string-table.h"
 #include "unit-def.h"
-#include "unit-name.h"
+//#include "unit-name.h"
 
+#if 0 /// elogind does not support systemd units
 char *unit_dbus_path_from_name(const char *name) {
         _cleanup_free_ char *e = NULL;
 
@@ -18,7 +19,6 @@ char *unit_dbus_path_from_name(const char *name) {
         return strjoin("/org/freedesktop/elogind1/unit/", e);
 }
 
-#if 0 /// elogind does not support systemd units
 int unit_name_from_dbus_path(const char *path, char **name) {
         const char *e;
         char *n;
@@ -306,7 +306,6 @@ static const char* const notify_access_table[_NOTIFY_ACCESS_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(notify_access, NotifyAccess);
-#endif // 0
 
 SpecialGlyph unit_active_state_to_glyph(UnitActiveState state) {
         static const SpecialGlyph map[_UNIT_ACTIVE_STATE_MAX] = {
@@ -325,3 +324,4 @@ SpecialGlyph unit_active_state_to_glyph(UnitActiveState state) {
         assert(state < _UNIT_ACTIVE_STATE_MAX);
         return map[state];
 }
+#endif // 0

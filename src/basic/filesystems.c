@@ -3,6 +3,7 @@
 #include "filesystems-gperf.h"
 #include "stat-util.h"
 
+#if 0 /// UNNEEDED by elogind
 const char *fs_type_to_string(statfs_f_type_t magic) {
 
         switch (magic) {
@@ -11,7 +12,7 @@ const char *fs_type_to_string(statfs_f_type_t magic) {
 
         return NULL;
 }
-
+#endif // 0
 
 int fs_type_from_string(const char *name, const statfs_f_type_t **ret) {
         const struct FilesystemMagic *fs_magic;
@@ -165,6 +166,7 @@ const FilesystemSet filesystem_sets[_FILESYSTEM_SET_MAX] = {
         },
 };
 
+#if 0 /// UNNEEDED by elogind
 const FilesystemSet *filesystem_set_find(const char *name) {
         if (isempty(name) || name[0] != '@')
                 return NULL;
@@ -175,3 +177,4 @@ const FilesystemSet *filesystem_set_find(const char *name) {
 
         return NULL;
 }
+#endif // 0

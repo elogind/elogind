@@ -385,6 +385,7 @@ char *path_simplify(char *path) {
         return path;
 }
 
+#if 0 /// UNNEEDED by elogind
 int path_simplify_and_warn(
                 char *path,
                 unsigned flag,
@@ -430,6 +431,7 @@ int path_simplify_and_warn(
 
         return 0;
 }
+#endif // 0
 
 char *path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) {
         assert(path);
@@ -528,6 +530,7 @@ bool path_equal_or_files_same(const char *a, const char *b, int flags) {
         return path_equal(a, b) || files_same(a, b, flags) > 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool path_equal_filename(const char *a, const char *b) {
         _cleanup_free_ char *a_basename = NULL, *b_basename = NULL;
         int r;
@@ -548,6 +551,7 @@ bool path_equal_filename(const char *a, const char *b) {
 
         return path_equal(a_basename, b_basename);
 }
+#endif // 0
 
 char* path_extend_internal(char **x, ...) {
         size_t sz, old_sz;
@@ -1219,6 +1223,7 @@ bool path_is_normalized(const char *p) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 char *file_in_same_dir(const char *path, const char *filename) {
         char *e, *ret;
         size_t k;
@@ -1245,6 +1250,7 @@ char *file_in_same_dir(const char *path, const char *filename) {
         memcpy(mempcpy(ret, path, e + 1 - path), filename, k + 1);
         return ret;
 }
+#endif // 0
 
 bool hidden_or_backup_file(const char *filename) {
         const char *p;

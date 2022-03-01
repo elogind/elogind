@@ -73,9 +73,11 @@ int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret);
 static inline int format_ifname(int ifindex, char buf[static IF_NAMESIZE]) {
         return format_ifname_full(ifindex, 0, buf);
 }
+#if 0 /// UNNEEDED by elogind
 static inline int format_ifname_alloc(int ifindex, char **ret) {
         return format_ifname_full_alloc(ifindex, 0, ret);
 }
+#endif // 0
 
 static inline char *_format_ifname_full(int ifindex, FormatIfnameFlag flag, char buf[static IF_NAMESIZE]) {
         (void) format_ifname_full(ifindex, flag, buf);

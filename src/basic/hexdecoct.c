@@ -162,6 +162,7 @@ on_failure:
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 /* https://tools.ietf.org/html/rfc4648#section-6
  * Notice that base32hex differs from base32 in the alphabet it uses.
  * The distinction is that the base32hex representation preserves the
@@ -535,6 +536,7 @@ char urlsafe_base64char(int x) {
                                       "0123456789-_";
         return table[x & 63];
 }
+#endif // 0
 
 int unbase64char(char c) {
         unsigned offset;
@@ -565,6 +567,7 @@ int unbase64char(char c) {
         return -EINVAL;
 }
 
+#if 0 /// UNNEEDED by elogind
 static void maybe_line_break(char **x, char *start, size_t line_break) {
         size_t n;
 
@@ -649,7 +652,6 @@ ssize_t base64mem_full(
         return z - r;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int base64_append_width(
                 char **prefix, int plen,
                 char sep, int indent,
