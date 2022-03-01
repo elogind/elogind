@@ -11,9 +11,11 @@ static const sd_char * const table[_SECURE_BOOT_MAX] = {
         [SECURE_BOOT_USER]        = STR_C("user"),
 };
 
+#if 0 /// UNNEEDED by elogind
 const sd_char *secure_boot_mode_to_string(SecureBootMode m) {
         return (m >= 0 && m < _SECURE_BOOT_MAX) ? table[m] : NULL;
 }
+#endif // 0
 
 SecureBootMode decode_secure_boot_mode(
                 sd_bool secure,

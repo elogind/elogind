@@ -28,7 +28,9 @@ typedef enum SecureBootMode {
         _SECURE_BOOT_INVALID = -EINVAL,
 } SecureBootMode;
 
+#if 0 /// UNNEEDED by elogind
 const sd_char *secure_boot_mode_to_string(SecureBootMode m);
+#endif // 0
 SecureBootMode decode_secure_boot_mode(
                 sd_bool secure,
                 sd_bool audit,
