@@ -3,9 +3,9 @@
 
 //#include <stdbool.h>
 
-#include "bpf-lsm.h"
+//#include "bpf-lsm.h"
 #include "cgroup-util.h"
-#include "cpu-set-util.h"
+//#include "cpu-set-util.h"
 #include "list.h"
 #include "time-util.h"
 
@@ -319,9 +319,9 @@ int unit_reset_accounting(Unit *u);
 #if 0 /// UNNEEDED by elogind
 bool manager_owns_host_root_cgroup(Manager *m);
 bool unit_has_host_root_cgroup(Unit *u);
-#endif // 0
 
 bool unit_has_startup_cgroup_constraints(Unit *u);
+#endif // 0
 
 int manager_notify_cgroup_empty(Manager *m, const char *group);
 
