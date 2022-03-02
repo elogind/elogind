@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 #if 0 /// rename to elogind
-# systemd_logind_sources = files('''
-#         logind.c
-#         logind.h
-# '''.split())
+# systemd_logind_sources = files(
+#         'logind.c',
+#         'logind.h')
 #else // 0
 elogind_sources = files('''
         elogind.c
@@ -20,38 +19,6 @@ logind_gperf_c = custom_target(
         output : 'logind-gperf.c',
         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
 
-liblogind_core_sources = files('''
-        logind-action.c
-        logind-action.h
-        logind-brightness.c
-        logind-brightness.h
-        logind-button.c
-        logind-button.h
-        logind-core.c
-        logind-dbus.c
-        logind-dbus.h
-        logind-device.c
-        logind-device.h
-        logind-inhibit.c
-        logind-inhibit.h
-        logind-polkit.c
-        logind-polkit.h
-        logind-seat-dbus.c
-        logind-seat-dbus.h
-        logind-seat.c
-        logind-seat.h
-        logind-session-dbus.c
-        logind-session-dbus.h
-        logind-session-device.c
-        logind-session-device.h
-        logind-session.c
-        logind-session.h
-        logind-user-dbus.c
-        logind-user-dbus.h
-        logind-user.c
-        logind-user.h
-        logind-utmp.c
-'''.split())
 
 #if 1 /// elogind has some additional files:
 liblogind_core_sources += [files('''
@@ -64,6 +31,38 @@ liblogind_core_sources += [files('''
         sleep_files,
         update_utmp_files]
 #endif // 1
+liblogind_core_sources = files(
+        'logind-action.c',
+        'logind-action.h',
+        'logind-brightness.c',
+        'logind-brightness.h',
+        'logind-button.c',
+        'logind-button.h',
+        'logind-core.c',
+        'logind-dbus.c',
+        'logind-dbus.h',
+        'logind-device.c',
+        'logind-device.h',
+        'logind-inhibit.c',
+        'logind-inhibit.h',
+        'logind-polkit.c',
+        'logind-polkit.h',
+        'logind-seat-dbus.c',
+        'logind-seat-dbus.h',
+        'logind-seat.c',
+        'logind-seat.h',
+        'logind-session-dbus.c',
+        'logind-session-dbus.h',
+        'logind-session-device.c',
+        'logind-session-device.h',
+        'logind-session.c',
+        'logind-session.h',
+        'logind-user-dbus.c',
+        'logind-user-dbus.h',
+        'logind-user.c',
+        'logind-user.h',
+        'logind-utmp.c')
+
 liblogind_core_sources += [logind_gperf_c]
 
 liblogind_core = static_library(
@@ -78,16 +77,8 @@ liblogind_core = static_library(
                         libaudit])
 #endif // 0
 
-loginctl_sources = files('''
-        loginctl.c
-        sysfs-show.h
-        sysfs-show.c
-'''.split())
 
 #if 0 /// UNNEEDED by elogind
-# user_runtime_dir_sources = files('''
-#         user-runtime-dir.c
-# '''.split())
 #endif // 0
 
 #if 1 /// elogind has and needs some additional files:
@@ -97,15 +88,21 @@ loginctl_sources += files('''
 '''.split())
 #endif // 1
 
-pam_elogind_sym = 'src/login/pam_elogind.sym'
-pam_elogind_c = files('pam_elogind.c')
+loginctl_sources = files(
+        'loginctl.c',
+        'sysfs-show.h',
+        'sysfs-show.c')
 
 #if 0 /// elogind builds itself unconditionally
-# enable_logind = conf.get('ENABLE_LOGIND') == 1
+# user_runtime_dir_sources = files('user-runtime-dir.c')
 #else // 0
 enable_logind = true
 #endif // 0
 
+pam_elogind_sym = 'src/login/pam_elogind.sym'
+pam_elogind_c = files('pam_elogind.c')
+
+enable_logind = conf.get('ENABLE_LOGIND') == 1
 in_files = [
         ['logind.conf',        pkgsysconfdir, enable_logind and install_sysconfdir_samples],
         ['70-uaccess.rules',   udevrulesdir,  enable_logind and conf.get('HAVE_ACL') == 1],
