@@ -73,6 +73,7 @@ TEST(log2u) {
         assert_se(log2u(INT_MAX) == sizeof(int)*8-2);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(log2i) {
         assert_se(log2i(0) == 0);
         assert_se(log2i(1) == 0);
@@ -84,6 +85,7 @@ TEST(log2i) {
         assert_se(log2i(63) == 5);
         assert_se(log2i(INT_MAX) == sizeof(int)*8-2);
 }
+#endif // 0
 
 TEST(protect_errno) {
         errno = 12;

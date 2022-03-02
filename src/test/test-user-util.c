@@ -31,6 +31,7 @@ TEST(uid_to_name) {
         test_uid_to_name_one(0xFFFFFFFF, "4294967295");
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_gid_to_name_one(gid_t gid, const char *name) {
         _cleanup_free_ char *t = NULL;
 
@@ -51,6 +52,7 @@ TEST(gid_to_name) {
         test_gid_to_name_one(0xFFFF, "65535");
         test_gid_to_name_one(0xFFFFFFFF, "4294967295");
 }
+#endif // 0
 
 TEST(parse_uid) {
         int r;

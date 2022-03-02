@@ -73,6 +73,7 @@ TEST(id128) {
         assert_se(sd_id128_from_string("01020304-0506-0708-090a0b0c0d0e0f10", &id) < 0);
         assert_se(sd_id128_from_string("010203040506-0708-090a-0b0c0d0e0f10", &id) < 0);
 
+#if 0 /// UNNEEDED by elogind
         assert_se(id128_is_valid(STR_WALDI));
         assert_se(id128_is_valid(UUID_WALDI));
         assert_se(!id128_is_valid(""));
@@ -80,6 +81,7 @@ TEST(id128) {
         assert_se(!id128_is_valid("01020304-0506-0708-090a-0b0c0d0e0f10-"));
         assert_se(!id128_is_valid("01020304-0506-0708-090a0b0c0d0e0f10"));
         assert_se(!id128_is_valid("010203040506-0708-090a-0b0c0d0e0f10"));
+#endif // 0
 
         fd = open_tmpfile_unlinkable(NULL, O_RDWR|O_CLOEXEC);
         assert_se(fd >= 0);

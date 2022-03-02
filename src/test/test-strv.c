@@ -102,6 +102,7 @@ TEST(strv_find) {
         assert_se(!strv_find((char **)input_table_multiple, "four"));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(strv_find_prefix) {
         assert_se(strv_find_prefix((char **)input_table_multiple, "o"));
         assert_se(strv_find_prefix((char **)input_table_multiple, "one"));
@@ -109,6 +110,7 @@ TEST(strv_find_prefix) {
         assert_se(!strv_find_prefix((char **)input_table_multiple, "xxx"));
         assert_se(!strv_find_prefix((char **)input_table_multiple, "onee"));
 }
+#endif // 0
 
 TEST(strv_find_startswith) {
         char *r;
@@ -420,6 +422,7 @@ TEST(strv_split_and_extend_full) {
         assert_se(streq_ptr(l[5], NULL));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(strv_split_colon_pairs) {
         _cleanup_strv_free_ char **l = NULL;
         const char *str = "one:two three four:five six seven:eight\\:nine ten\\:eleven\\\\",
@@ -447,7 +450,6 @@ TEST(strv_split_colon_pairs) {
         assert_se(r == -EINVAL);
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(strv_split_newlines) {
         unsigned i = 0;
         char **s;

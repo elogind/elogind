@@ -10,6 +10,7 @@
 #include "string-util.h"
 #include "tests.h"
 
+#if 0 /// UNNEEDED by elogind
 TEST(cg_split_spec) {
         char *c, *p;
 
@@ -39,6 +40,7 @@ TEST(cg_split_spec) {
         assert_se(p == NULL);
         c = mfree(c);
 }
+#endif // 0
 
 TEST(cg_create) {
         int r;

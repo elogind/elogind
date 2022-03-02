@@ -10,6 +10,7 @@ static uint8_t data[] = {
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
 };
 
+#if 0 /// UNNEEDED by elogind
 TEST(be) {
         uint8_t scratch[16];
 
@@ -75,9 +76,12 @@ TEST(be) {
         unaligned_write_be64(&scratch[7], 0x0708090a0b0c0d0e);
         assert_se(memcmp(&scratch[7], &data[7], sizeof(uint64_t)) == 0);
 }
+#endif // 0
 
 TEST(le) {
+#if 0 /// UNNEEDED by elogind
         uint8_t scratch[16];
+#endif // 0
 
         assert_se(unaligned_read_le16(&data[0]) == 0x0100);
         assert_se(unaligned_read_le16(&data[1]) == 0x0201);
@@ -96,6 +100,7 @@ TEST(le) {
         assert_se(unaligned_read_le64(&data[6]) == 0x0d0c0b0a09080706);
         assert_se(unaligned_read_le64(&data[7]) == 0x0e0d0c0b0a090807);
 
+#if 0 /// UNNEEDED by elogind
         zero(scratch);
         unaligned_write_le16(&scratch[0], 0x0100);
         assert_se(memcmp(&scratch[0], &data[0], sizeof(uint16_t)) == 0);
@@ -141,8 +146,10 @@ TEST(le) {
         zero(scratch);
         unaligned_write_le64(&scratch[7], 0x0e0d0c0b0a090807);
         assert_se(memcmp(&scratch[7], &data[7], sizeof(uint64_t)) == 0);
+#endif // 0
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(ne) {
         uint16_t x = 4711;
         uint32_t y = 123456;
@@ -164,5 +171,6 @@ TEST(ne) {
         assert_se(y == 2);
         assert_se(z == 3);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);

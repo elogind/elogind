@@ -413,6 +413,7 @@ TEST(unlink_noerrno) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(readlink_and_make_absolute) {
         const char *tempdir, *name, *name2, *name_alias;
         _cleanup_free_ char *r1 = NULL, *r2 = NULL, *pwd = NULL;
@@ -446,6 +447,7 @@ TEST(readlink_and_make_absolute) {
 
         assert_se(rm_rf(tempdir, REMOVE_ROOT|REMOVE_PHYSICAL) >= 0);
 }
+#endif // 0
 
 TEST(get_files_in_directory) {
         _cleanup_strv_free_ char **l = NULL, **t = NULL;
@@ -796,9 +798,6 @@ TEST(chmod_and_chown) {
         assert_se(lstat(p, &st) >= 0);
         assert_se(S_ISLNK(st.st_mode));
 }
-#endif // 0
-
-#if 0 /// No need for encrypted devices in elogind
 
 static void create_binary_file(const char *p, const void *data, size_t l) {
         _cleanup_close_ int fd = -1;
@@ -913,6 +912,7 @@ TEST(rmdir_parents) {
         assert_se(rm_rf(temp, REMOVE_ROOT|REMOVE_PHYSICAL) >= 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_parse_cifs_service_one(const char *f, const char *h, const char *s, const char *d, int ret) {
         _cleanup_free_ char *a = NULL, *b = NULL, *c = NULL;
 
@@ -982,13 +982,6 @@ TEST(open_mkdir_at) {
         subsubdir_fd = open_mkdir_at(fd, "xxx/yyy", O_CLOEXEC, 0700);
         assert_se(subsubdir_fd >= 0);
 }
+#endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// Uses functions that elogind does not need
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 DEFINE_CUSTOM_TEST_MAIN(LOG_INFO, arg_test_dir = argv[1], /* no outro */);

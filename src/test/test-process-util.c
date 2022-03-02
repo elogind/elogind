@@ -19,7 +19,7 @@
 #include "errno-list.h"
 #include "errno-util.h"
 #include "fd-util.h"
-#include "ioprio-util.h"
+//#include "ioprio-util.h"
 #include "log.h"
 #include "macro.h"
 #include "missing_sched.h"
@@ -860,7 +860,6 @@ TEST(setpriority_closest) {
         }
 }
 
-#endif // 0
 TEST(get_process_ppid) {
         uint64_t limit;
         int r;
@@ -915,11 +914,6 @@ TEST(set_oom_score_adjust) {
         assert_se(get_oom_score_adjust(&b) >= 0);
         assert_se(b == a);
 }
+#endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 DEFINE_CUSTOM_TEST_MAIN(LOG_INFO, log_show_color(true), /* no outro */);

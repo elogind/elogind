@@ -50,10 +50,12 @@ TEST(path) {
         assert_se(!path_equal_ptr("/a", NULL));
         assert_se(!path_equal_ptr(NULL, "/a"));
 
+#if 0 /// UNNEEDED by elogind
         assert_se(path_equal_filename("/a/c", "/b/c"));
         assert_se(path_equal_filename("/a", "/a"));
         assert_se(!path_equal_filename("/a/b", "/a/c"));
         assert_se(!path_equal_filename("/b", "/c"));
+#endif // 0
 }
 
 static void test_path_simplify_one(const char *in, const char *out) {
@@ -578,6 +580,7 @@ TEST(prefix_root) {
         test_prefix_root_one("/foo///", "//bar", "/foo/bar");
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(file_in_same_dir) {
         char *t;
 
@@ -601,6 +604,7 @@ TEST(file_in_same_dir) {
         assert_se(streq(t, "bar/bar"));
         free(t);
 }
+#endif // 0
 
 static void test_path_find_first_component_one(
                 const char *path,

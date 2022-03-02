@@ -879,7 +879,6 @@ TEST(parse_mtu) {
         assert_se(parse_mtu(AF_UNSPEC, "0", &mtu) == -ERANGE);
         assert_se(parse_mtu(AF_UNSPEC, "", &mtu) == -EINVAL);
 }
-#endif // 0
 
 TEST(parse_loadavg_fixed_point) {
         loadavg_t fp;
@@ -916,5 +915,6 @@ TEST(parse_loadavg_fixed_point) {
         assert_se(parse_loadavg_fixed_point(".", &fp) == -EINVAL);
         assert_se(parse_loadavg_fixed_point("", &fp) == -EINVAL);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);

@@ -9,6 +9,7 @@
 #include "utf8.h"
 #include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 TEST(string_erase) {
         char *x;
         x = strdupa_safe("");
@@ -30,6 +31,7 @@ TEST(string_erase) {
         assert_se(x[8] == '\0');
         assert_se(x[9] == '\0');
 }
+#endif // 0
 
 static void test_free_and_strndup_one(char **t, const char *src, size_t l, const char *expected, bool change) {
         log_debug("%s: \"%s\", \"%s\", %zd (expect \"%s\", %s)",
@@ -283,6 +285,7 @@ TEST(strextend_with_separator) {
         assert_se(streq_ptr(str, "start,,1,234;more;5;678"));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(strrep) {
         _cleanup_free_ char *one, *three, *zero;
         one = strrep("waldo", 1);
@@ -293,6 +296,7 @@ TEST(strrep) {
         assert_se(streq(three, "waldowaldowaldo"));
         assert_se(streq(zero, ""));
 }
+#endif // 0
 
 TEST(string_has_cc) {
         assert_se(string_has_cc("abc\1", NULL));
@@ -313,7 +317,6 @@ TEST(ascii_strlower) {
         char a[] = "AabBcC Jk Ii Od LKJJJ kkd LK";
         assert_se(streq(ascii_strlower(a), "aabbcc jk ii od lkjjj kkd lk"));
 }
-#endif // 0
 
 TEST(strshorten) {
         char s[] = "foobar";
@@ -323,6 +326,7 @@ TEST(strshorten) {
         assert_se(strlen(strshorten(s, 2)) == 2);
         assert_se(strlen(strshorten(s, 0)) == 0);
 }
+#endif // 0
 
 TEST(strjoina) {
         char *actual;
@@ -554,6 +558,7 @@ TEST(in_charset) {
         assert_se(!in_charset("dddaaabbbcccc", "abc f"));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(split_pair) {
         _cleanup_free_ char *a = NULL, *b = NULL;
 
@@ -575,6 +580,7 @@ TEST(split_pair) {
         assert_se(streq(a, ""));
         assert_se(streq(b, "="));
 }
+#endif // 0
 
 TEST(first_word) {
         assert_se(first_word("Hello", ""));

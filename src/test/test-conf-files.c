@@ -94,6 +94,7 @@ TEST(conf_files_list) {
         test_conf_files_list_one(true);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_conf_files_insert_one(const char *root) {
         _cleanup_strv_free_ char **s = NULL;
 
@@ -153,5 +154,6 @@ TEST(conf_files_insert) {
         test_conf_files_insert_one("/root");
         test_conf_files_insert_one("/root/");
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);

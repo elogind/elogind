@@ -23,6 +23,7 @@ TEST(unhexchar) {
         assert_se(unhexchar('0') == 0x0);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(base32hexchar) {
         assert_se(base32hexchar(0) == '0');
         assert_se(base32hexchar(9) == '9');
@@ -43,6 +44,7 @@ TEST(base64char) {
         assert_se(base64char(26) == 'a');
         assert_se(base64char(63) == '/');
 }
+#endif // 0
 
 TEST(unbase64char) {
         assert_se(unbase64char('A') == 0);
@@ -112,6 +114,7 @@ TEST(unhexmem) {
         test_unhexmem_one(hex_space, SIZE_MAX, 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 /* https://tools.ietf.org/html/rfc4648#section-10 */
 TEST(base32hexmem) {
         char *b32;
@@ -310,6 +313,7 @@ TEST(base64mem_linebreak) {
                         assert_se((encoded[j] == '\n') == (j % (m + 1) == m));
         }
 }
+#endif // 0
 
 static void test_unbase64mem_one(const char *input, const char *output, int ret) {
         _cleanup_free_ void *buffer = NULL;

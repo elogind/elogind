@@ -212,7 +212,6 @@ TEST(bind_remount_one) {
 
         assert_se(wait_for_terminate_and_check("test-remount-one", pid, WAIT_LOG) == EXIT_SUCCESS);
 }
-#endif // 0
 
 TEST(make_mount_point_inode) {
         _cleanup_(rm_rf_physical_and_freep) char *d = NULL;
@@ -257,7 +256,6 @@ TEST(make_mount_point_inode) {
         assert_se(!(S_IXGRP & st.st_mode));
         assert_se(!(S_IXOTH & st.st_mode));
 }
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0
+
 DEFINE_TEST_MAIN(LOG_DEBUG);

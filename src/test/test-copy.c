@@ -21,7 +21,7 @@
 #include "tmpfile-util.h"
 #include "user-util.h"
 #include "util.h"
-#include "xattr-util.h"
+//#include "xattr-util.h"
 
 #if 0 /// UNNEEDED by elogind
 TEST(copy_file) {

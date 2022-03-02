@@ -155,6 +155,7 @@ TEST(parse_permyriad_unbounded) {
 
 TEST(scale) {
         /* Check some fixed values */
+#if 0 /// UNNEEDED by elogind
         assert_se(UINT32_SCALE_FROM_PERCENT(0) == 0);
         assert_se(UINT32_SCALE_FROM_PERCENT(50) == UINT32_MAX/2+1);
         assert_se(UINT32_SCALE_FROM_PERCENT(100) == UINT32_MAX);
@@ -162,11 +163,13 @@ TEST(scale) {
         assert_se(UINT32_SCALE_FROM_PERMILLE(0) == 0);
         assert_se(UINT32_SCALE_FROM_PERMILLE(500) == UINT32_MAX/2+1);
         assert_se(UINT32_SCALE_FROM_PERMILLE(1000) == UINT32_MAX);
+#endif // 0
 
         assert_se(UINT32_SCALE_FROM_PERMYRIAD(0) == 0);
         assert_se(UINT32_SCALE_FROM_PERMYRIAD(5000) == UINT32_MAX/2+1);
         assert_se(UINT32_SCALE_FROM_PERMYRIAD(10000) == UINT32_MAX);
 
+#if 0 /// UNNEEDED by elogind
         /* Make sure there's no numeric noise on the 0%…100% scale when converting from percent and back. */
         for (int percent = 0; percent <= 100; percent++) {
                 log_debug("%i%% → %" PRIu32 " → %i%%",
@@ -186,6 +189,7 @@ TEST(scale) {
 
                 assert_se(UINT32_SCALE_TO_PERMILLE(UINT32_SCALE_FROM_PERMILLE(permille)) == permille);
         }
+#endif // 0
 
         /* Make sure there's no numeric noise on the 0‱…10000‱ scale when converting from permyriad and back. */
         for (int permyriad = 0; permyriad <= 10000; permyriad++) {
@@ -199,6 +203,4 @@ TEST(scale) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 DEFINE_TEST_MAIN(LOG_DEBUG);
