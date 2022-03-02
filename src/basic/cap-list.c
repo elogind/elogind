@@ -12,9 +12,11 @@
 #include "stdio-util.h"
 #include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 static const struct capability_name* lookup_capability(register const char *str, register GPERF_LEN_TYPE len);
 
 #include "cap-from-name.h"
+#endif // 0
 #include "cap-to-name.h"
 
 const char *capability_to_name(int id) {
