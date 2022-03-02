@@ -70,7 +70,9 @@ int varlink_get_timeout(Varlink *v, usec_t *ret);
 
 int varlink_attach_event(Varlink *v, sd_event *e, int64_t priority);
 void varlink_detach_event(Varlink *v);
+#if 0 /// UNNEEDED by elogind
 sd_event *varlink_get_event(Varlink *v);
+#endif // 0
 
 int varlink_process(Varlink *v);
 #if 0 /// UNNEEDED by elogind

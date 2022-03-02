@@ -534,6 +534,7 @@ int mac_selinux_create_file_prepare_at(
 #endif
 }
 
+#if 0 /// UNNEEDED by elogind
 int mac_selinux_create_file_prepare_label(const char *path, const char *label) {
 #if HAVE_SELINUX
 
@@ -548,6 +549,7 @@ int mac_selinux_create_file_prepare_label(const char *path, const char *label) {
 #endif
         return 0;
 }
+#endif // 0
 
 void mac_selinux_create_file_clear(void) {
 

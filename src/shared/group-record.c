@@ -2,7 +2,7 @@
 
 #include "group-record.h"
 #include "strv.h"
-#include "uid-alloc-range.h"
+//#include "uid-alloc-range.h"
 #include "user-util.h"
 
 GroupRecord* group_record_new(void) {
@@ -259,6 +259,7 @@ int group_record_load(
         return 0;
 }
 
+#if 0 /// UNNEEDED in elogind
 int group_record_build(GroupRecord **ret, ...) {
         _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;
         _cleanup_(group_record_unrefp) GroupRecord *g = NULL;
@@ -286,7 +287,6 @@ int group_record_build(GroupRecord **ret, ...) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 const char *group_record_group_name_and_realm(GroupRecord *h) {
         assert(h);
 

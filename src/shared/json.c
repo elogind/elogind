@@ -1077,11 +1077,13 @@ bool json_variant_is_blank_object(JsonVariant *v) {
                 (json_variant_is_object(v) && json_variant_elements(v) == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 bool json_variant_is_blank_array(JsonVariant *v) {
         return !v ||
                 json_variant_is_null(v) ||
                 (json_variant_is_array(v) && json_variant_elements(v) == 0);
 }
+#endif // 0
 
 JsonVariantType json_variant_type(JsonVariant *v) {
 
@@ -1960,6 +1962,7 @@ int json_variant_set_field_string(JsonVariant **v, const char *field, const char
         return json_variant_set_field(v, field, m);
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_set_field_integer(JsonVariant **v, const char *field, int64_t i) {
         _cleanup_(json_variant_unrefp) JsonVariant *m = NULL;
         int r;
@@ -2003,6 +2006,7 @@ int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l) {
 
         return json_variant_set_field(v, field, m);
 }
+#endif // 0
 
 int json_variant_merge(JsonVariant **v, JsonVariant *m) {
         _cleanup_(json_variant_unrefp) JsonVariant *w = NULL;
@@ -2070,6 +2074,7 @@ int json_variant_merge(JsonVariant **v, JsonVariant *m) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_append_array(JsonVariant **v, JsonVariant *element) {
         _cleanup_(json_variant_unrefp) JsonVariant *nv = NULL;
         bool blank;
@@ -2173,6 +2178,7 @@ fail:
 
         return r;
 }
+#endif // 0
 
 static int json_variant_copy(JsonVariant **nv, JsonVariant *v) {
         JsonVariantType t;
@@ -4375,6 +4381,7 @@ int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchF
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         int64_t *i = userdata;
 
@@ -4387,6 +4394,7 @@ int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlag
         *i = json_variant_integer(variant);
         return 0;
 }
+#endif // 0
 
 int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         uint64_t *u = userdata;
@@ -4755,6 +4763,7 @@ bool json_variant_is_sorted(JsonVariant *v) {
         return v->sorted;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size) {
 
         if (!json_variant_is_string(v))
@@ -4770,6 +4779,7 @@ int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size) {
 
         return unhexmem(json_variant_string(v), SIZE_MAX, ret, ret_size);
 }
+#endif // 0
 
 static const char* const json_variant_type_table[_JSON_VARIANT_TYPE_MAX] = {
         [JSON_VARIANT_STRING] = "string",

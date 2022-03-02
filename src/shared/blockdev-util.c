@@ -57,7 +57,6 @@ int block_get_whole_disk(dev_t d, dev_t *ret) {
         *ret = devt;
         return 1;
 }
-#endif // 0
 
 int get_block_device_fd(int fd, dev_t *ret) {
         struct stat st;
@@ -86,8 +85,8 @@ int get_block_device_fd(int fd, dev_t *ret) {
         *ret = 0;
         return 0;
 }
+#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int get_block_device(const char *path, dev_t *ret) {
         _cleanup_close_ int fd = -1;
 
@@ -101,6 +100,7 @@ int get_block_device(const char *path, dev_t *ret) {
         return get_block_device_fd(fd, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int block_get_originating(dev_t dt, dev_t *ret) {
         _cleanup_closedir_ DIR *d = NULL;
         _cleanup_free_ char *t = NULL;
@@ -280,7 +280,6 @@ int blockdev_partscan_enabled(int fd) {
 
         return !FLAGS_SET(ull, GENHD_FL_NO_PART_SCAN);
 }
-#endif // 0
 
 static int blockdev_is_encrypted(const char *sysfs_path, unsigned depth_left) {
         _cleanup_free_ char *p = NULL, *uuids = NULL;
@@ -382,3 +381,4 @@ int path_is_encrypted(const char *path) {
 
         return blockdev_is_encrypted(p, 10 /* safety net: maximum recursion depth */);
 }
+#endif // 0

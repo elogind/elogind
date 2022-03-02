@@ -452,7 +452,6 @@ ExecCommandFlags exec_command_flags_from_string(const char *s) {
         else
                 return 1 << idx;
 }
-#endif // 0
 
 int fexecve_or_execve(int executable_fd, const char *executable, char *const argv[], char *const envp[]) {
 #if ENABLE_FEXECVE
@@ -476,6 +475,7 @@ int fexecve_or_execve(int executable_fd, const char *executable, char *const arg
                 execve(executable, argv, envp);
         return -errno;
 }
+#endif // 0
 
 int fork_agent(const char *name, const int except[], size_t n_except, pid_t *ret_pid, const char *path, ...) {
         bool stdout_is_tty, stderr_is_tty;

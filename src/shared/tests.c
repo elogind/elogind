@@ -304,7 +304,6 @@ int enter_cgroup_subroot(char **ret_cgroup) {
 int enter_cgroup_root(char **ret_cgroup) {
         return enter_cgroup(ret_cgroup, false);
 }
-#endif // 0
 
 const char *ci_environment(void) {
         /* We return a string because we might want to provide multiple bits of information later on: not
@@ -345,3 +344,4 @@ const char *ci_environment(void) {
 
         return (ans = NULL);
 }
+#endif // 0

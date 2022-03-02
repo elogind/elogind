@@ -317,6 +317,7 @@ int nss_user_record_by_uid(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int nss_group_to_group_record(
                 const struct group *grp,
                 const struct sgrp *sgrp,
@@ -529,3 +530,4 @@ int nss_group_record_by_gid(
         (*ret)->incomplete = incomplete;
         return 0;
 }
+#endif // 0

@@ -46,8 +46,10 @@ bool can_memlock(void);
                 printf("elogind not booted, skipping '%s'\n", #x);   \
         }
 
+#if 0 /// UNNEEDED by elogind
 /* Provide a convenient way to check if we're running in CI. */
 const char *ci_environment(void);
+#endif // 0
 
 typedef struct TestFunc {
         union f {

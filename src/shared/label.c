@@ -25,6 +25,7 @@ int label_fix_container(const char *path, const char *inside_path, LabelFixFlags
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int symlink_label(const char *old_path, const char *new_path) {
         int r;
 
@@ -44,7 +45,6 @@ int symlink_label(const char *old_path, const char *new_path) {
         return mac_smack_fix(new_path, 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 int symlink_atomic_label(const char *from, const char *to) {
         int r;
 

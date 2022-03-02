@@ -10,7 +10,6 @@ DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(void*, dlclose, NULL);
 #if 0 /// UNNEEDED by elogind
 int dlsym_many_or_warn_sentinel(void *dl, int log_level, ...) _sentinel_;
 int dlopen_many_sym_or_warn_sentinel(void **dlp, const char *filename, int log_level, ...) _sentinel_;
-#endif // 0
 
 #define dlsym_many_or_warn(dl, log_level, ...) \
         dlsym_many_or_warn_sentinel(dl, log_level, __VA_ARGS__, NULL)
@@ -22,3 +21,4 @@ int dlopen_many_sym_or_warn_sentinel(void **dlp, const char *filename, int log_l
  * "foobar" is loaded into a variable "sym_foobar". */
 #define DLSYM_ARG(arg) \
         &sym_##arg, STRINGIFY(arg)
+#endif // 0

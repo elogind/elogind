@@ -10,6 +10,7 @@
 
 #include "time-util.h"
 
+#if 0 /// UNNEEDED by elogind
 #define UDEV_NAME_SIZE   512
 #define UDEV_PATH_SIZE  1024
 #define UDEV_LINE_SIZE 16384
@@ -25,7 +26,6 @@ typedef enum ResolveNameTiming {
 ResolveNameTiming resolve_name_timing_from_string(const char *s) _pure_;
 const char *resolve_name_timing_to_string(ResolveNameTiming i) _const_;
 
-#if 0 /// UNNEEDED by elogind
 int udev_parse_config_full(
                 unsigned *ret_children_max,
                 usec_t *ret_exec_delay_usec,
@@ -55,7 +55,6 @@ int udev_resolve_subsys_kernel(const char *string, char *result, size_t maxsize,
 
 int udev_queue_is_empty(void);
 int udev_queue_init(void);
-#endif // 0
 
 #if HAVE_SYS_SDT_H
 
@@ -83,3 +82,4 @@ int udev_queue_init(void);
 #else
 #define DEVICE_TRACE_POINT(name, dev, ...) ((void) 0)
 #endif
+#endif // 0

@@ -1,30 +1,31 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <ctype.h>
-#include <errno.h>
-#include <sys/inotify.h>
-#include <unistd.h>
+//#include <ctype.h>
+//#include <errno.h>
+//#include <sys/inotify.h>
+//#include <unistd.h>
 
-#include "alloc-util.h"
+//#include "alloc-util.h"
 //#include "device-nodes.h"
 #include "device-private.h"
-#include "device-util.h"
-#include "env-file.h"
-#include "errno-util.h"
-#include "escape.h"
+//#include "device-util.h"
+//#include "env-file.h"
+//#include "errno-util.h"
+//#include "escape.h"
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"
-#include "parse-util.h"
-#include "path-util.h"
-#include "signal-util.h"
-#include "socket-util.h"
-#include "string-table.h"
-#include "string-util.h"
-#include "strxcpyx.h"
+//#include "parse-util.h"
+//#include "path-util.h"
+//#include "signal-util.h"
+//#include "socket-util.h"
+//#include "string-table.h"
+//#include "string-util.h"
+//#include "strxcpyx.h"
 #include "udev-util.h"
-#include "utf8.h"
+//#include "utf8.h"
 
+#if 0 /// UNNEEDED by elogind
 static const char* const resolve_name_timing_table[_RESOLVE_NAME_TIMING_MAX] = {
         [RESOLVE_NAME_NEVER] = "never",
         [RESOLVE_NAME_LATE] = "late",
@@ -33,7 +34,6 @@ static const char* const resolve_name_timing_table[_RESOLVE_NAME_TIMING_MAX] = {
 
 DEFINE_STRING_TABLE_LOOKUP(resolve_name_timing, ResolveNameTiming);
 
-#if 0 /// UNNEEDED by elogind
 int udev_parse_config_full(
                 unsigned *ret_children_max,
                 usec_t *ret_exec_delay_usec,

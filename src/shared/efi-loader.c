@@ -223,6 +223,7 @@ static void efi_guid_to_id128(const void *guid, sd_id128_t *id128) {
         memcpy(&id128->bytes[8], uuid->u4, sizeof(uuid->u4));
 }
 
+#if 0 /// UNNEEDED by elogind
 int efi_get_boot_option(
                 uint16_t id,
                 char **title,
@@ -325,6 +326,7 @@ int efi_get_boot_option(
 
         return 0;
 }
+#endif // 0
 
 static void to_utf16(uint16_t *dest, const char *src) {
         int i;
@@ -352,6 +354,7 @@ static uint16_t *tilt_slashes(uint16_t *s) {
         return s;
 }
 
+#if 0 /// UNNEEDED by elogind
 int efi_add_boot_option(
                 uint16_t id,
                 const char *title,
@@ -461,6 +464,7 @@ int efi_set_boot_order(uint16_t *order, size_t n) {
 
         return efi_set_variable(EFI_GLOBAL_VARIABLE(BootOrder), order, n * sizeof(uint16_t));
 }
+#endif // 0
 
 static int boot_id_hex(const char s[static 4]) {
         int id = 0;
@@ -482,6 +486,7 @@ static int cmp_uint16(const uint16_t *a, const uint16_t *b) {
         return CMP(*a, *b);
 }
 
+#if 0 /// UNNEEDED by elogind
 int efi_get_boot_options(uint16_t **options) {
         _cleanup_closedir_ DIR *dir = NULL;
         _cleanup_free_ uint16_t *list = NULL;
@@ -524,6 +529,7 @@ int efi_get_boot_options(uint16_t **options) {
 
         return count;
 }
+#endif // 0
 
 static int read_usec(const char *variable, usec_t *u) {
         _cleanup_free_ char *j = NULL;
@@ -545,6 +551,7 @@ static int read_usec(const char *variable, usec_t *u) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int efi_loader_get_boot_usec(usec_t *firmware, usec_t *loader) {
         uint64_t x, y;
         int r;
@@ -598,6 +605,7 @@ int efi_loader_get_device_part_uuid(sd_id128_t *u) {
 
         return 0;
 }
+#endif // 0
 
 int efi_loader_get_entries(char ***ret) {
         _cleanup_free_ char16_t *entries = NULL;
@@ -763,6 +771,7 @@ int efi_loader_update_entry_one_shot_cache(char **cache, struct stat *cache_stat
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool efi_has_tpm2(void) {
         static int cache = -1;
 
@@ -785,6 +794,7 @@ bool efi_has_tpm2(void) {
 
         return cache;
 }
+#endif // 0
 
 #endif
 
@@ -795,6 +805,7 @@ bool efi_loader_entry_name_valid(const char *s) {
         return in_charset(s, ALPHANUMERICAL "+-_.");
 }
 
+#if 0 /// UNNEEDED in elogind
 char *efi_tilt_backslashes(char *s) {
         for (char *p = s; *p; p++)
                 if (*p == '\\')
@@ -802,3 +813,4 @@ char *efi_tilt_backslashes(char *s) {
 
         return s;
 }
+#endif // 0

@@ -13,5 +13,7 @@ static inline int mkdir_label(const char *path, mode_t mode) {
 }
 
 int mkdir_safe_label(const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags);
+#if 0 /// UNNEEDED by elogind
 int mkdir_parents_label(const char *path, mode_t mod);
+#endif // 0
 int mkdir_p_label(const char *path, mode_t mode);

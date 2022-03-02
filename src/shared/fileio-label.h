@@ -12,4 +12,6 @@ static inline int write_string_file_atomic_label(const char *fn, const char *lin
         return write_string_file_atomic_label_ts(fn, line, NULL);
 }
 
+#if 0 /// UNNEEDED in elogind
 int create_shutdown_run_nologin_or_warn(void);
+#endif // 0

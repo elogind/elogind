@@ -138,10 +138,12 @@ typedef enum UserRecordLoadFlags {
         USER_RECORD_EMPTY_OK            = 1U << 30,
 } UserRecordLoadFlags;
 
+#if 0 /// UNNEEDED by elogind
 static inline UserRecordLoadFlags USER_RECORD_REQUIRE(UserRecordMask m) {
         assert((m & ~_USER_RECORD_MASK_MAX) == 0);
         return m << 7;
 }
+#endif // 0
 
 static inline UserRecordLoadFlags USER_RECORD_ALLOW(UserRecordMask m) {
         assert((m & ~_USER_RECORD_MASK_MAX) == 0);
@@ -408,10 +410,10 @@ int user_record_removable(UserRecord *h);
 usec_t user_record_ratelimit_interval_usec(UserRecord *h);
 uint64_t user_record_ratelimit_burst(UserRecord *h);
 bool user_record_can_authenticate(UserRecord *h);
-#endif // 0
 bool user_record_drop_caches(UserRecord *h);
 AutoResizeMode user_record_auto_resize_mode(UserRecord *h);
 uint64_t user_record_rebalance_weight(UserRecord *h);
+#endif // 0
 
 int user_record_build_image_path(UserStorage storage, const char *user_name_and_realm, char **ret);
 
@@ -439,11 +441,17 @@ int per_machine_id_match(JsonVariant *ids, JsonDispatchFlags flags);
 int per_machine_hostname_match(JsonVariant *hns, JsonDispatchFlags flags);
 int user_group_record_mangle(JsonVariant *v, UserRecordLoadFlags load_flags, JsonVariant **ret_variant, UserRecordMask *ret_mask);
 
+#if 0 /// UNNEEDED by elogind
 const char* user_storage_to_string(UserStorage t) _const_;
+#endif // 0
 UserStorage user_storage_from_string(const char *s) _pure_;
 
+#if 0 /// UNNEEDED by elogind
 const char* user_disposition_to_string(UserDisposition t) _const_;
+#endif // 0
 UserDisposition user_disposition_from_string(const char *s) _pure_;
 
+#if 0 /// UNNEEDED by elogind
 const char* auto_resize_mode_to_string(AutoResizeMode m) _const_;
+#endif // 0
 AutoResizeMode auto_resize_mode_from_string(const char *s) _pure_;

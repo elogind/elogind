@@ -3,6 +3,7 @@
 #include "bus-locator.h"
 #include "macro.h"
 
+#if 0 /// UNNEEDED by elogind
 const BusLocator* const bus_home_mgr = &(BusLocator){
         .destination = "org.freedesktop.home1",
         .path = "/org/freedesktop/home1",
@@ -20,6 +21,7 @@ const BusLocator* const bus_locale = &(BusLocator){
         .path = "/org/freedesktop/locale1",
         .interface = "org.freedesktop.locale1"
 };
+#endif // 0
 
 const BusLocator* const bus_login_mgr = &(BusLocator){
         .destination = "org.freedesktop.login1",
@@ -27,6 +29,7 @@ const BusLocator* const bus_login_mgr = &(BusLocator){
         .interface = "org.freedesktop.login1.Manager"
 };
 
+#if 0 /// UNNEEDED by elogind
 const BusLocator* const bus_machine_mgr = &(BusLocator){
         .destination ="org.freedesktop.machine1",
         .path = "/org/freedesktop/machine1",
@@ -62,6 +65,7 @@ const BusLocator* const bus_timedate = &(BusLocator){
         .path = "/org/freedesktop/timedate1",
         .interface = "org.freedesktop.timedate1"
 };
+#endif // 0
 
 /* Shorthand flavors of the sd-bus convenience helpers with destination,path,interface strings encapsulated
  * within a single struct. */
@@ -106,6 +110,7 @@ int bus_call_method(
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_get_property(
                 sd_bus *bus,
                 const BusLocator *locator,
@@ -200,6 +205,7 @@ int bus_match_signal_async(
 
         return sd_bus_match_signal_async(bus, ret, locator->destination, locator->path, locator->interface, member, callback, install_callback, userdata);
 }
+#endif // 0
 
 int bus_message_new_method_call(
                 sd_bus *bus,

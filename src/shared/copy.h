@@ -72,9 +72,9 @@ static inline int copy_bytes(int fdf, int fdt, uint64_t max_bytes, CopyFlags cop
 #if 0 /// UNNEEDED by elogind
 int copy_times(int fdf, int fdt, CopyFlags flags);
 int copy_access(int fdf, int fdt);
-#endif // 0
 int copy_rights_with_fallback(int fdf, int fdt, const char *patht);
 static inline int copy_rights(int fdf, int fdt) {
         return copy_rights_with_fallback(fdf, fdt, NULL); /* no fallback */
 }
 int copy_xattr(int fdf, int fdt, CopyFlags copy_flags);
+#endif // 0

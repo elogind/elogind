@@ -19,7 +19,7 @@
 #include "fs-util.h"
 //#include "hashmap.h"
 #include "label.h"
-#include "libmount-util.h"
+//#include "libmount-util.h"
 #include "missing_mount.h"
 #include "missing_syscall.h"
 #include "mkdir-label.h"
@@ -1113,7 +1113,6 @@ int remount_idmap(
 
         return 0;
 }
-#endif // 0
 
 int make_mount_point_inode_from_stat(const struct stat *st, const char *dest, mode_t mode) {
         assert(st);
@@ -1136,3 +1135,4 @@ int make_mount_point_inode_from_path(const char *source, const char *dest, mode_
 
         return make_mount_point_inode_from_stat(&st, dest, mode);
 }
+#endif // 0

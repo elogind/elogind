@@ -97,15 +97,15 @@ int reboot_with_parameter(RebootFlags flags) {
 
         return log_full_errno(flags & REBOOT_LOG ? LOG_ERR : LOG_DEBUG, errno, "Failed to reboot: %m");
 }
-#endif // 0
 
 int shall_restore_state(void) {
         bool ret;
         int r;
 
-        r = proc_cmdline_get_bool("elogind.restore_state", &ret);
+        r = proc_cmdline_get_bool("systemd.restore_state", &ret);
         if (r < 0)
                 return r;
 
         return r > 0 ? ret : true;
 }
+#endif // 0

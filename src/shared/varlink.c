@@ -2005,13 +2005,13 @@ void varlink_detach_event(Varlink *v) {
         v->event = sd_event_unref(v->event);
 }
 
+#if 0 /// UNNEEDED by elogind
 sd_event *varlink_get_event(Varlink *v) {
         assert_return(v, NULL);
 
         return v->event;
 }
 
-#if 0 /// UNNEEDED by elogind
 int varlink_server_new(VarlinkServer **ret, VarlinkServerFlags flags) {
         VarlinkServer *s;
 

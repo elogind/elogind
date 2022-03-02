@@ -21,7 +21,7 @@
 #include "smack-util.h"
 #include "stdio-util.h"
 #include "string-table.h"
-#include "xattr-util.h"
+//#include "xattr-util.h"
 
 #if ENABLE_SMACK
 bool mac_smack_use(void) {
@@ -289,11 +289,11 @@ int mac_smack_fix_container(const char *path, const char *inside_path, LabelFixF
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int mac_smack_fix_at(int dirfd, const char *path, LabelFixFlags flags) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int mac_smack_copy(const char *dest, const char *src) {
         return 0;
 }

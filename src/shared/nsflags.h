@@ -22,7 +22,9 @@
 int namespace_flags_from_string(const char *name, unsigned long *ret);
 #endif // 0
 int namespace_flags_to_string(unsigned long flags, char **ret);
+#if 0 /// UNNEEDED by elogind
 const char *namespace_single_flag_to_string(unsigned long flag);
+#endif // 0
 
 struct namespace_flag_map {
         unsigned long flag;

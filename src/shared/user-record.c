@@ -14,7 +14,7 @@
 #include "rlimit-util.h"
 #include "string-table.h"
 #include "strv.h"
-#include "uid-alloc-range.h"
+//#include "uid-alloc-range.h"
 #include "user-record.h"
 #include "user-util.h"
 
@@ -1897,7 +1897,7 @@ UserDisposition user_record_disposition(UserRecord *h) {
         if (uid_is_system(h->uid))
                 return USER_SYSTEM;
 
-#if 0 /// UNNEEDED by elogind ; no dynamic or contaiiner uids here...
+#if 0 /// UNNEEDED by elogind ; no dynamic or container uids here...
         if (uid_is_dynamic(h->uid))
                 return USER_DYNAMIC;
 

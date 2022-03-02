@@ -73,6 +73,7 @@ int namespace_flags_to_string(unsigned long flags, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 const char *namespace_single_flag_to_string(unsigned long flag) {
         for (unsigned i = 0; namespace_flag_map[i].name; i++)
                 if (namespace_flag_map[i].flag == flag)
@@ -80,3 +81,4 @@ const char *namespace_single_flag_to_string(unsigned long flag) {
 
         return NULL;
 }
+#endif // 0

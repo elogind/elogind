@@ -15,8 +15,8 @@ static inline int label_fix(const char *path, LabelFixFlags flags) {
         return label_fix_container(path, path, flags);
 }
 
-int symlink_label(const char *old_path, const char *new_path);
 #if 0 /// UNNEEDED by elogind
+int symlink_label(const char *old_path, const char *new_path);
 int symlink_atomic_label(const char *from, const char *to);
 #endif // 0
 int mknod_label(const char *pathname, mode_t mode, dev_t dev);

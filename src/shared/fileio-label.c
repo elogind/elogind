@@ -20,6 +20,7 @@ int write_string_file_atomic_label_ts(const char *fn, const char *line, struct t
         return r;
 }
 
+#if 0 /// UNNEEDED in elogind
 int create_shutdown_run_nologin_or_warn(void) {
         int r;
 
@@ -35,3 +36,4 @@ int create_shutdown_run_nologin_or_warn(void) {
 
         return 0;
 }
+#endif // 0

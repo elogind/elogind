@@ -359,8 +359,6 @@ shared_sources = '''
         conf-parser.c
         conf-parser.h
         daemon-util.h
-        data-fd-util.c
-        data-fd-util.h
         dev-setup.c
         dev-setup.h
         devnode-acl.h
@@ -389,10 +387,8 @@ shared_sources = '''
         mount-util.c
         libcrypt-util.c
         libcrypt-util.h
-        libmount-util.h
         nsflags.c
         nsflags.h
-        openssl-util.h
         output-mode.c
         output-mode.h
         pager.c

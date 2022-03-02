@@ -38,9 +38,7 @@ bool bus_error_is_unknown_service(const sd_bus_error *error);
 
 #if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c);
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int bus_connect_system_systemd(sd_bus **_bus);
 int bus_connect_user_systemd(sd_bus **_bus);
 #endif // 0
@@ -62,9 +60,7 @@ int bus_log_connect_error(int r, BusTransport transport);
 #if 0 /// UNNEEDED by elogind
 int bus_path_encode_unique(sd_bus *b, const char *prefix, const char *sender_id, const char *external_id, char **ret_path);
 int bus_path_decode_unique(const char *path, const char *prefix, char **ret_sender, char **ret_external);
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int bus_track_add_name_many(sd_bus_track *t, char **l);
 #endif // 0
 

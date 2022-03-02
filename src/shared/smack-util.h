@@ -36,9 +36,9 @@ static inline int mac_smack_fix(const char *path, LabelFixFlags flags) {
         return mac_smack_fix_container(path, path, flags);
 }
 
+#if 0 /// UNNEEDED by elogind
 int mac_smack_fix_at(int dirfd, const char *path, LabelFixFlags flags);
 
-#if 0 /// UNNEEDED by elogind
 const char* smack_attr_to_string(SmackAttr i) _const_;
 SmackAttr smack_attr_from_string(const char *s) _pure_;
 int mac_smack_read(const char *path, SmackAttr attr, char **label);

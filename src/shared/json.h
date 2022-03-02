@@ -9,8 +9,8 @@
 
 #include "sd-id128.h"
 
-#include "ether-addr-util.h"
-#include "in-addr-util.h"
+//#include "ether-addr-util.h"
+//#include "in-addr-util.h"
 #include "log.h"
 #include "macro.h"
 #include "string-util.h"
@@ -131,7 +131,9 @@ static inline bool json_variant_is_null(JsonVariant *v) {
 
 bool json_variant_is_negative(JsonVariant *v);
 bool json_variant_is_blank_object(JsonVariant *v);
+#if 0 /// UNNEEDED by elogind
 bool json_variant_is_blank_array(JsonVariant *v);
+#endif // 0
 bool json_variant_is_normalized(JsonVariant *v);
 bool json_variant_is_sorted(JsonVariant *v);
 
@@ -193,16 +195,19 @@ int json_variant_filter(JsonVariant **v, char **to_remove);
 
 int json_variant_set_field(JsonVariant **v, const char *field, JsonVariant *value);
 int json_variant_set_field_string(JsonVariant **v, const char *field, const char *value);
+#if 0 /// UNNEEDED by elogind
 int json_variant_set_field_integer(JsonVariant **v, const char *field, int64_t value);
 int json_variant_set_field_unsigned(JsonVariant **v, const char *field, uint64_t value);
 int json_variant_set_field_boolean(JsonVariant **v, const char *field, bool b);
 int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l);
 
 int json_variant_append_array(JsonVariant **v, JsonVariant *element);
-
+#endif // 0
 int json_variant_merge(JsonVariant **v, JsonVariant *m);
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_strv(JsonVariant *v, char ***ret);
+#endif // 0
 
 int json_variant_sort(JsonVariant **v);
 int json_variant_normalize(JsonVariant **v);
@@ -282,6 +287,7 @@ enum {
 #define JSON_BUILD_ETHER_ADDR(v) JSON_BUILD_BYTE_ARRAY(((const struct ether_addr*) { v })->ether_addr_octet, sizeof(struct ether_addr))
 #define JSON_BUILD_HW_ADDR(v) _JSON_BUILD_HW_ADDR, (const struct hw_addr_data*) { v }
 
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_PAIR_STRING(name, s) JSON_BUILD_PAIR(name, JSON_BUILD_STRING(s))
 #define JSON_BUILD_PAIR_INTEGER(name, i) JSON_BUILD_PAIR(name, JSON_BUILD_INTEGER(i))
 #define JSON_BUILD_PAIR_UNSIGNED(name, u) JSON_BUILD_PAIR(name, JSON_BUILD_UNSIGNED(u))
@@ -316,6 +322,7 @@ enum {
 #define JSON_BUILD_PAIR_IN_ADDR_NON_NULL(name, v, f) _JSON_BUILD_PAIR_IN_ADDR_NON_NULL, (const char*) { name }, (const union in_addr_union*) { v }, (int) { f }
 #define JSON_BUILD_PAIR_ETHER_ADDR_NON_NULL(name, v) _JSON_BUILD_PAIR_ETHER_ADDR_NON_NULL, (const char*) { name }, (const struct ether_addr*) { v }
 #define JSON_BUILD_PAIR_HW_ADDR_NON_NULL(name, v) _JSON_BUILD_PAIR_HW_ADDR_NON_NULL, (const char*) { name }, (const struct hw_addr_data*) { v }
+#endif // 0
 
 int json_build(JsonVariant **ret, ...);
 int json_buildv(JsonVariant **ret, va_list ap);
@@ -354,7 +361,9 @@ int json_dispatch_strv(const char *name, JsonVariant *variant, JsonDispatchFlags
 int json_dispatch_boolean(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+#if 0 /// UNNEEDED by elogind
 int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+#endif // 0
 int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_int32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
@@ -409,8 +418,12 @@ int json_log_internal(JsonVariant *variant, int level, int error, const char *fi
                 (JsonVariant*) ((uintptr_t) UNIQ_T(json_string_const, xq) + 1); \
         })
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size);
 int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size);
+#endif // 0
 
 const char *json_variant_type_to_string(JsonVariantType t);
+#if 0 /// UNNEEDED by elogind
 JsonVariantType json_variant_type_from_string(const char *s);
+#endif // 0

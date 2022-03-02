@@ -38,7 +38,7 @@
 #include "tmpfile-util.h"
 #include "umask-util.h"
 #include "user-util.h"
-#include "xattr-util.h"
+//#include "xattr-util.h"
 
 #define COPY_BUFFER_SIZE (16U*1024U)
 

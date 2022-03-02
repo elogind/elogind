@@ -30,11 +30,11 @@ static inline int mac_selinux_fix(const char *path, LabelFixFlags flags) {
 }
 
 int mac_selinux_fix_container_fd(int fd, const char *path, const char *inside_path, LabelFixFlags flags);
+#if 0 /// UNNEEDED by elogind
 static inline int mac_selinux_fix_fd(int fd, const char *path, LabelFixFlags flags) {
         return mac_selinux_fix_container_fd(fd, path, path, flags);
 }
 
-#if 0 /// UNNEEDED by elogind
 int mac_selinux_apply(const char *path, const char *label);
 int mac_selinux_apply_fd(int fd, const char *path, const char *label);
 
@@ -48,10 +48,12 @@ int mac_selinux_create_file_prepare_at(int dirfd, const char *path, mode_t mode)
 static inline int mac_selinux_create_file_prepare(const char *path, mode_t mode) {
         return mac_selinux_create_file_prepare_at(AT_FDCWD, path, mode);
 }
-int mac_selinux_create_file_prepare_label(const char *path, const char *label);
-void mac_selinux_create_file_clear(void);
 #if 0 /// UNNEEDED by elogind
+int mac_selinux_create_file_prepare_label(const char *path, const char *label);
+#endif // 0
+void mac_selinux_create_file_clear(void);
 
+#if 0 /// UNNEEDED by elogind
 int mac_selinux_create_socket_prepare(const char *label);
 void mac_selinux_create_socket_clear(void);
 
