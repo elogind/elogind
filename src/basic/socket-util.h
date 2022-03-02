@@ -273,9 +273,9 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
         })
 
 int socket_ioctl_fd(void);
+#endif // 0
 
 int sockaddr_un_set_path(struct sockaddr_un *ret, const char *path);
-#endif // 0
 
 static inline int setsockopt_int(int fd, int level, int optname, int value) {
         if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
