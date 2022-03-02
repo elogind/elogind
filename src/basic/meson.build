@@ -494,14 +494,13 @@ errno_list_txt = custom_target(
         capture : true)
 
 generated_gperf_headers = []
-#if 0 /// elogind has only the af, cap and errno list.
+#if 0 /// elogind has only the cap and errno list.
 # foreach item : [['af',     af_list_txt,     'af',         ''],
 #                 ['arphrd', arphrd_list_txt, 'arphrd',     'ARPHRD_'],
 #                 ['cap',    cap_list_txt,    'capability', ''],
 #                 ['errno',  errno_list_txt,  'errno',      '']]
 #else // 0
-foreach item : [['af',     af_list_txt,     'af',         ''],
-                ['cap',    cap_list_txt,    'capability', ''],
+foreach item : [['cap',    cap_list_txt,    'capability', ''],
                 ['errno',  errno_list_txt,  'errno',      '']]
 #endif // 0
 
