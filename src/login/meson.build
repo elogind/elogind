@@ -3,7 +3,8 @@
 #if 0 /// rename to elogind
 # systemd_logind_sources = files(
 #         'logind.c',
-#         'logind.h')
+#         'logind.h',
+# )
 #else // 0
 elogind_sources = files('''
         elogind.c
@@ -61,7 +62,8 @@ liblogind_core_sources = files(
         'logind-user-dbus.h',
         'logind-user.c',
         'logind-user.h',
-        'logind-utmp.c')
+        'logind-utmp.c',
+)
 
 liblogind_core_sources += [logind_gperf_c]
 
@@ -77,9 +79,7 @@ liblogind_core = static_library(
                         libaudit])
 #endif // 0
 
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
 #if 1 /// elogind has and needs some additional files:
 loginctl_sources += files('''
@@ -91,7 +91,8 @@ loginctl_sources += files('''
 loginctl_sources = files(
         'loginctl.c',
         'sysfs-show.h',
-        'sysfs-show.c')
+        'sysfs-show.c',
+)
 
 #if 0 /// elogind builds itself unconditionally
 # user_runtime_dir_sources = files('user-runtime-dir.c')
