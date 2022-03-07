@@ -573,6 +573,8 @@ tests += [
 #         [files('test-strbuf.c')],
 #
 #endif // 0
+        [files('test-bootspec.c')],
+
         [files('test-strv.c')],
 
         [files('test-path-util.c')],
