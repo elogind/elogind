@@ -49,26 +49,23 @@ char* setup_fake_runtime_dir(void) {
 
 static void load_testdata_env(void) {
         static bool called = false;
-        _cleanup_free_ char *s = NULL, *d = NULL, *envpath = NULL;
+        _cleanup_free_ char *s = NULL;
+        _cleanup_free_ char *envpath = NULL;
         _cleanup_strv_free_ char **pairs = NULL;
-        int r;
 
         if (called)
                 return;
         called = true;
 
         assert_se(readlink_and_make_absolute("/proc/self/exe", &s) >= 0);
-        assert_se(path_extract_directory(s, &d) >= 0);
-        assert_se(envpath = path_join(d, "systemd-runtest.env"));
+        dirname(s);
 
-        r = load_env_file_pairs(NULL, envpath, &pairs);
-        if (r < 0) {
-                log_debug_errno(r, "Reading %s failed: %m", envpath);
+        envpath = path_join(s, "systemd-runtest.env");
+        if (load_env_file_pairs(NULL, envpath, &pairs) < 0)
                 return;
-        }
 
         STRV_FOREACH_PAIR(k, v, pairs)
-                assert_se(setenv(*k, *v, 0) >= 0);
+                setenv(*k, *v, 0);
 }
 
 int get_testdata_dir(const char *suffix, char **ret) {
