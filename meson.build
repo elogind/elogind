@@ -902,9 +902,6 @@ endif
 #
 # conf.set('CLOCK_VALID_RANGE_USEC_MAX', get_option('clock-valid-range-usec-max'))
 #
-# default_user_shell = get_option('default-user-shell')
-# conf.set_quoted('DEFAULT_USER_SHELL',      default_user_shell)
-# conf.set_quoted('DEFAULT_USER_SHELL_NAME', fs.name(default_user_shell))
 #else // 0
 ############################################################
 # elogind needs to know which cgroups controller to follow.
@@ -2866,7 +2863,7 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true)
 #
-# public_programs += executable(
+# exe = executable(
 #         'systemctl',
 #         systemctl_sources,
 #         include_directories : includes,
@@ -2880,6 +2877,13 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
+# public_programs += exe
+# if want_tests != 'false'
+#         test('test-systemctl-enable',
+#              test_systemctl_enable_sh,
+#              # https://github.com/mesonbuild/meson/issues/2681
+#              args : exe.full_path())
+# endif
 #
 # if conf.get('ENABLE_PORTABLED') == 1
 #         dbus_programs += executable(
