@@ -4,7 +4,6 @@
 #include <endian.h>
 
 #include "macro.h"
-#include "util.h"
 
 /* A cleaned up architecture definition. We don't want to get lost in
  * processor features, models, generations or even ABIs. Hence we
@@ -200,10 +199,10 @@ Architecture uname_architecture(void);
 #  elif defined(__SH4A__)
 #    define LIB_ARCH_TUPLE "sh4a-linux-gnu"
 #  endif
-#elif defined(__loongarch64)
+#elif defined(__loongarch_lp64)
 #  define native_architecture() ARCHITECTURE_LOONGARCH64
 #  if defined(__loongarch_double_float)
-#    define LIB_ARCH_TUPLE "loongarch64-linux-gnuf64"
+#    define LIB_ARCH_TUPLE "loongarch64-linux-gnu"
 #  elif defined(__loongarch_single_float)
 #    define LIB_ARCH_TUPLE "loongarch64-linux-gnuf32"
 #  elif defined(__loongarch_soft_float)
