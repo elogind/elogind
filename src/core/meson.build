@@ -206,7 +206,12 @@ libcore_sources = files('''
 #
 # core_includes = [includes, include_directories('.')]
 #
-# systemd_sources = files('main.c')
+# systemd_sources = files(
+#         'main.c',
+#         'main.h',
+#         'crash-handler.c',
+#         'crash-handler.h',
+# )
 #
 # in_files = [['system.conf',                     pkgsysconfdir],
 #             ['user.conf',                       pkgsysconfdir],
