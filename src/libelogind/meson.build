@@ -257,6 +257,8 @@ libsystemd_c_args = ['-fvisibility=default']
 # ############################################################
 #
 # tests += [
+#         [files('sd-journal/test-journal-file.c')],
+#
 #         [files('sd-journal/test-journal-send.c')],
 #
 #         [files('sd-journal/test-journal-match.c')],
