@@ -903,7 +903,6 @@ TEST(strverscmp_improved) {
                 "124",
                 NULL,
         };
-        const char * const *p, * const *q;
 
         STRV_FOREACH(p, versions)
                 STRV_FOREACH(q, p + 1)

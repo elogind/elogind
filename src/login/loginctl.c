@@ -629,7 +629,6 @@ static int print_user_status_info(sd_bus *bus, const char *path, bool *new_line)
                 printf("\t   State: %s\n", i.state);
 
         if (!strv_isempty(i.sessions)) {
-                char **l;
                 printf("\tSessions:");
 
                 STRV_FOREACH(l, i.sessions)
@@ -692,7 +691,6 @@ static int print_seat_status_info(sd_bus *bus, const char *path, bool *new_line)
         printf("%s\n", strna(i.id));
 
         if (!strv_isempty(i.sessions)) {
-                char **l;
                 printf("\tSessions:");
 
                 STRV_FOREACH(l, i.sessions) {

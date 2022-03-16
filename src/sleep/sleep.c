@@ -187,7 +187,6 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
 #if 0 /// elogind uses a special variant to heed suspension modes
 static int write_mode(char **modes) {
         int r = 0;
-        char **mode;
 
         STRV_FOREACH(mode, modes) {
                 int k;
@@ -236,7 +235,6 @@ static int write_mode(SleepOperation operation, char **modes) {
 #endif // 0
 
 static int write_state(FILE **f, char **states) {
-        char **state;
         int r = 0;
 
         assert(f);

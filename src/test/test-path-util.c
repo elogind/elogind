@@ -489,7 +489,6 @@ TEST(path_strv_resolve) {
         char tmp_dir[] = "/tmp/test-path-util-XXXXXX";
         _cleanup_strv_free_ char **search_dirs = NULL;
         _cleanup_strv_free_ char **absolute_dirs = NULL;
-        char **d;
 
         assert_se(mkdtemp(tmp_dir) != NULL);
 

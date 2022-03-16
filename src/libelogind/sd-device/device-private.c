@@ -446,7 +446,6 @@ static int device_verify(sd_device *device) {
 #if 0 /// UNNEEDED by elogind
 int device_new_from_strv(sd_device **ret, char **strv) {
         _cleanup_(sd_device_unrefp) sd_device *device = NULL;
-        char **key;
         const char *major = NULL, *minor = NULL;
         int r;
 
