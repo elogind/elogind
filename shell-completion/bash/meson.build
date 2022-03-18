@@ -41,6 +41,7 @@ endif
 #          ['loginctl',            'ENABLE_LOGIND'],
 #          ['machinectl',          'ENABLE_MACHINED'],
 #          ['networkctl',          'ENABLE_NETWORKD'],
+#          ['oomctl',              'ENABLE_OOMD'],
 #          ['portablectl',         'ENABLE_PORTABLED'],
 #          ['resolvectl',          'ENABLE_RESOLVE'],
 #          ['systemd-resolve',     'ENABLE_RESOLVE'],

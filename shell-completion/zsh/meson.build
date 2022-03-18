@@ -35,6 +35,7 @@ endif
 #          ['_loginctl',                 'ENABLE_LOGIND'],
 #          ['_machinectl',               'ENABLE_MACHINED'],
 #          ['_networkctl',               'ENABLE_NETWORKD'],
+#          ['_oomctl',                   'ENABLE_OOMD'],
 #          ['_systemd-inhibit',          'ENABLE_LOGIND'],
 #          ['_resolvectl',               'ENABLE_RESOLVE'],
 #          ['_systemd-tmpfiles',         'ENABLE_TMPFILES'],
