@@ -126,6 +126,8 @@
 #         'fdset.h',
 #         'fileio-label.c',
 #         'fileio-label.h',
+#         'find-esp.c',
+#         'find-esp.h',
 #         'firewall-util-nft.c',
 #         'firewall-util-private.h',
 #         'firewall-util.c',
