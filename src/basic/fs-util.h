@@ -129,3 +129,5 @@ int parse_cifs_service(const char *s, char **ret_host, char **ret_service, char 
 
 int open_mkdir_at(int dirfd, const char *path, int flags, mode_t mode);
 #endif // 0
+
+int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, bool *ret_newly_created);
