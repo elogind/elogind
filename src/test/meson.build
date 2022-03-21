@@ -681,7 +681,7 @@ tests += [
 #                'nss-test-util.h'),
 #          [],
 #          [libdl],
-#          [], 'ENABLE_NSS'],
+#          [], 'ENABLE_NSS', 'timeout=120'],
 #
 #         [files('test-nss-users.c',
 #                'nss-test-util.c',
