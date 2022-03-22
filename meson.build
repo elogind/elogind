@@ -2071,6 +2071,7 @@ meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 
 #if 0 /// UNNEEDED by elogind
+# update_man_rules_py = find_program('tools/update-man-rules.py')
 # update_hwdb_sh = find_program('tools/update-hwdb.sh')
 # update_hwdb_autosuspend_sh = find_program('tools/update-hwdb-autosuspend.sh')
 #endif // 0
