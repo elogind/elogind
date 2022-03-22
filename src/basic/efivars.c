@@ -310,9 +310,17 @@ static int read_flag(const char *variable) {
 
 bool is_efi_secure_boot(void) {
         static int cache = -1;
+        int r;
 
-        if (cache < 0)
-                cache = read_flag(EFI_GLOBAL_VARIABLE(SecureBoot));
+        if (cache < 0) {
+                r = read_flag(EFI_GLOBAL_VARIABLE(SecureBoot));
+                if (r == -ENOENT)
+                        cache = false;
+                else if (r < 0)
+                        log_debug_errno(r, "Error reading SecureBoot EFI variable, assuming not in SecureBoot mode: %m");
+                else
+                        cache = r;
+        }
 
         return cache > 0;
 }
@@ -346,7 +354,7 @@ static int read_efi_options_variable(char **line) {
         int r;
 
         /* In SecureBoot mode this is probably not what you want. As your cmdline is cryptographically signed
-         * like when using Type #2 EFI Unified Kernel Images (https://elogind.io/BOOT_LOADER_SPECIFICATION)
+         * like when using Type #2 EFI Unified Kernel Images (https://systemd.io/BOOT_LOADER_SPECIFICATION)
          * The user's intention is then that the cmdline should not be modified. You want to make sure that
          * the system starts up as exactly specified in the signed artifact.
          *
