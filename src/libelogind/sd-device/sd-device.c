@@ -344,7 +344,7 @@ _public_ int sd_device_new_from_subsystem_sysname(
         assert_return(path_is_normalized(sysname), -EINVAL);
 
         if (streq(subsystem, "subsystem")) {
-                FOREACH_STRING(s, "/sys/bus/", "/sys/class/") {
+                FOREACH_STRING(s, "/sys/subsystem/", "/sys/bus/", "/sys/class/") {
                         r = device_strjoin_new(s, sysname, NULL, NULL, ret);
                         if (r < 0)
                                 return r;
@@ -368,11 +368,13 @@ _public_ int sd_device_new_from_subsystem_sysname(
                         const char *subsys = memdupa_suffix0(sysname, sep - sysname);
                         sep++;
 
-                        r = device_strjoin_new("/sys/bus/", subsys, "/drivers/", sep, ret);
-                        if (r < 0)
-                                return r;
-                        if (r > 0)
-                                return 0;
+                        FOREACH_STRING(s, "/sys/subsystem/", "/sys/bus/") {
+                                r = device_strjoin_new(s, subsys, "/drivers/", sep, ret);
+                                if (r < 0)
+                                        return r;
+                                if (r > 0)
+                                        return 0;
+                        }
                 }
         }
 
@@ -382,11 +384,13 @@ _public_ int sd_device_new_from_subsystem_sysname(
                 if (name[i] == '/')
                         name[i] = '!';
 
-        r = device_strjoin_new("/sys/bus/", subsystem, "/devices/", name, ret);
-        if (r < 0)
-                return r;
-        if (r > 0)
-                return 0;
+        FOREACH_STRING(s, "/sys/subsystem/", "/sys/bus/") {
+                r = device_strjoin_new(s, subsystem, "/devices/", name, ret);
+                if (r < 0)
+                        return r;
+                if (r > 0)
+                        return 0;
+        }
 
         r = device_strjoin_new("/sys/class/", subsystem, "/", name, ret);
         if (r < 0)
@@ -417,46 +421,6 @@ _public_ int sd_device_new_from_stat_rdev(sd_device **ret, const struct stat *st
                 return -ENOTTY;
 
         return sd_device_new_from_devnum(ret, type, st->st_rdev);
-}
-
-_public_ int sd_device_new_from_devname(sd_device **ret, const char *devname) {
-        struct stat st;
-
-        assert_return(ret, -EINVAL);
-        assert_return(devname, -EINVAL);
-
-        /* This function actually accepts both devlinks and devnames, i.e. both symlinks and device
-         * nodes below /dev/. */
-
-        /* Also ignore when the specified path is "/dev". */
-        if (isempty(path_startswith(devname, "/dev")))
-                return -EINVAL;
-
-        if (device_path_parse_major_minor(devname, NULL, NULL) >= 0) {
-                _cleanup_free_ char *syspath = NULL;
-
-                /* Let's shortcut when "/dev/block/maj:min" or "/dev/char/maj:min" is specified.
-                 * In that case, we directly convert the path to syspath, hence it is not necessary
-                 * that the specified path exists. So, this works fine without udevd being running. */
-
-                syspath = path_join("/sys", devname);
-                return sd_device_new_from_syspath(ret, syspath);
-        }
-
-        if (stat(devname, &st) < 0)
-                return ERRNO_IS_DEVICE_ABSENT(errno) ? -ENODEV : -errno;
-
-        return sd_device_new_from_stat_rdev(ret, &st);
-}
-
-_public_ int sd_device_new_from_path(sd_device **ret, const char *path) {
-        assert_return(ret, -EINVAL);
-        assert_return(path, -EINVAL);
-
-        if (path_startswith(path, "/dev"))
-                return sd_device_new_from_devname(ret, path);
-
-        return sd_device_new_from_syspath(ret, path);
 }
 
 int device_set_devtype(sd_device *device, const char *devtype) {
@@ -574,34 +538,7 @@ int device_set_devnum(sd_device *device, const char *major, const char *minor) {
         return 0;
 }
 
-int device_set_diskseq(sd_device *device, const char *str) {
-        uint64_t diskseq;
-        int r;
-
-        assert(device);
-        assert(str);
-
-        r = safe_atou64(str, &diskseq);
-        if (r < 0)
-                return r;
-        if (diskseq == 0)
-                return -EINVAL;
-
-        r = device_add_property_internal(device, "DISKSEQ", str);
-        if (r < 0)
-                return r;
-
-        device->diskseq = diskseq;
-
-        return 0;
-}
-
-static int handle_uevent_line(
-                sd_device *device,
-                const char *key,
-                const char *value,
-                const char **major,
-                const char **minor) {
+static int handle_uevent_line(sd_device *device, const char *key, const char *value, const char **major, const char **minor) {
         int r;
 
         assert(device);
@@ -624,10 +561,6 @@ static int handle_uevent_line(
                         return r;
         } else if (streq(key, "DEVMODE")) {
                 r = device_set_devmode(device, value);
-                if (r < 0)
-                        return r;
-        } else if (streq(key, "DISKSEQ")) {
-                r = device_set_diskseq(device, value);
                 if (r < 0)
                         return r;
         } else if (streq(key, "MAJOR"))
@@ -810,7 +743,7 @@ _public_ int sd_device_get_syspath(sd_device *device, const char **ret) {
 
 static int device_new_from_child(sd_device **ret, sd_device *child) {
         _cleanup_free_ char *path = NULL;
-        const char *syspath;
+        const char *subdir, *syspath;
         int r;
 
         assert(ret);
@@ -820,35 +753,35 @@ static int device_new_from_child(sd_device **ret, sd_device *child) {
         if (r < 0)
                 return r;
 
+        path = strdup(syspath);
+        if (!path)
+                return -ENOMEM;
+        subdir = path + STRLEN("/sys");
+
         for (;;) {
-                _cleanup_free_ char *p = NULL;
+                char *pos;
 
-                r = path_extract_directory(path ?: syspath, &p);
-                if (r < 0)
-                        return r;
-
-                if (path_equal(p, "/sys"))
+                pos = strrchr(subdir, '/');
+                if (!pos || pos < subdir + 2)
                         return -ENODEV;
 
-                r = sd_device_new_from_syspath(ret, p);
-                if (r != -ENODEV)
-                        return r;
+                *pos = '\0';
 
-                free_and_replace(path, p);
+                r = sd_device_new_from_syspath(ret, path);
+                if (r < 0)
+                        continue;
+
+                return 0;
         }
 }
 
 _public_ int sd_device_get_parent(sd_device *child, sd_device **ret) {
-        int r;
-
         assert_return(child, -EINVAL);
 
         if (!child->parent_set) {
-                r = device_new_from_child(&child->parent, child);
-                if (r < 0 && r != -ENODEV)
-                        return r;
-
                 child->parent_set = true;
+
+                (void) device_new_from_child(&child->parent, child);
         }
 
         if (!child->parent)
@@ -940,7 +873,9 @@ _public_ int sd_device_get_subsystem(sd_device *device, const char **ret) {
                         r = device_set_subsystem(device, "module");
                 else if (strstr(syspath, "/drivers/"))
                         r = device_set_drivers_subsystem(device);
-                else if (PATH_STARTSWITH_SET(device->devpath, "/class/", "/bus/"))
+                else if (PATH_STARTSWITH_SET(device->devpath, "/subsystem/",
+                                                              "/class/",
+                                                              "/bus/"))
                         r = device_set_subsystem(device, "subsystem");
                 else {
                         device->subsystem_set = true;
@@ -1082,15 +1017,14 @@ _public_ int sd_device_get_driver(sd_device *device, const char **ret) {
         return 0;
 }
 
-_public_ int sd_device_get_devpath(sd_device *device, const char **ret) {
+_public_ int sd_device_get_devpath(sd_device *device, const char **devpath) {
         assert_return(device, -EINVAL);
 
         assert(device->devpath);
         assert(device->devpath[0] == '/');
 
-        if (ret)
-                *ret = device->devpath;
-
+        if (devpath)
+                *devpath = device->devpath;
         return 0;
 }
 
@@ -1214,13 +1148,7 @@ _public_ int sd_device_get_seqnum(sd_device *device, uint64_t *ret) {
 }
 
 _public_ int sd_device_get_diskseq(sd_device *device, uint64_t *ret) {
-        int r;
-
         assert_return(device, -EINVAL);
-
-        r = device_read_uevent_file(device);
-        if (r < 0)
-                return r;
 
         if (device->diskseq == 0)
                 return -ENOENT;
@@ -2274,69 +2202,4 @@ _public_ int sd_device_trigger_with_uuid(
 
         *ret_uuid = u;
         return 0;
-}
-
-_public_ int sd_device_open(sd_device *device, int flags) {
-        _cleanup_close_ int fd = -1, fd2 = -1;
-        const char *devname, *subsystem = NULL;
-        uint64_t q, diskseq = 0;
-        struct stat st;
-        dev_t devnum;
-        int r;
-
-        assert_return(device, -EINVAL);
-        assert_return(FLAGS_SET(flags, O_PATH) || !FLAGS_SET(flags, O_NOFOLLOW), -EINVAL);
-
-        r = sd_device_get_devname(device, &devname);
-        if (r == -ENOENT)
-                return -ENOEXEC;
-        if (r < 0)
-                return r;
-
-        r = sd_device_get_devnum(device, &devnum);
-        if (r == -ENOENT)
-                return -ENOEXEC;
-        if (r < 0)
-                return r;
-
-        r = sd_device_get_subsystem(device, &subsystem);
-        if (r < 0 && r != -ENOENT)
-                return r;
-
-        r = sd_device_get_diskseq(device, &diskseq);
-        if (r < 0 && r != -ENOENT)
-                return r;
-
-        fd = open(devname, FLAGS_SET(flags, O_PATH) ? flags : O_CLOEXEC|O_NOFOLLOW|O_PATH);
-        if (fd < 0)
-                return -errno;
-
-        if (fstat(fd, &st) < 0)
-                return -errno;
-
-        if (st.st_rdev != devnum)
-                return -ENXIO;
-
-        if (streq_ptr(subsystem, "block") ? !S_ISBLK(st.st_mode) : !S_ISCHR(st.st_mode))
-                return -ENXIO;
-
-        /* If flags has O_PATH, then we cannot check diskseq. Let's return earlier. */
-        if (FLAGS_SET(flags, O_PATH))
-                return TAKE_FD(fd);
-
-        fd2 = open(FORMAT_PROC_FD_PATH(fd), flags);
-        if (fd2 < 0)
-                return -errno;
-
-        if (diskseq == 0)
-                return TAKE_FD(fd2);
-
-        r = fd_get_diskseq(fd2, &q);
-        if (r < 0)
-                return r;
-
-        if (q != diskseq)
-                return -ENXIO;
-
-        return TAKE_FD(fd2);
 }
