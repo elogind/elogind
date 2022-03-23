@@ -106,6 +106,8 @@
 #         'dns-domain.h',
 #         'dropin.c',
 #         'dropin.h',
+#         'efi-api.c',
+#         'efi-api.h',
 #         'efi-loader.c',
 #         'efi-loader.h',
 #         'elf-util.c',
