@@ -17,13 +17,17 @@
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fs-util.h"
+#include "glob-util.h"
 #include "log.h"
 #include "macro.h"
+#include "nulstr-util.h"
+#include "parse-util.h"
 #include "path-util.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
+#include "utf8.h"
 
 
 #if 0 /// UNNEEDED by elogind
@@ -62,7 +66,7 @@ char *path_make_absolute(const char *p, const char *prefix) {
 #endif // 0
 
 int safe_getcwd(char **ret) {
-        _cleanup_free_ char *cwd = NULL;
+        char *cwd;
 
         cwd = get_current_dir_name();
         if (!cwd)
@@ -70,12 +74,12 @@ int safe_getcwd(char **ret) {
 
         /* Let's make sure the directory is really absolute, to protect us from the logic behind
          * CVE-2018-1000001 */
-        if (cwd[0] != '/')
+        if (cwd[0] != '/') {
+                free(cwd);
                 return -ENOMEDIUM;
+        }
 
-        if (ret)
-                *ret = TAKE_PTR(cwd);
-
+        *ret = cwd;
         return 0;
 }
 
@@ -380,6 +384,52 @@ char *path_simplify(char *path) {
 }
 
 /// elogind empty mask removed (UNNEEDED by elogind)
+int path_simplify_and_warn(
+                char *path,
+                unsigned flag,
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *lvalue) {
+
+        bool fatal = flag & PATH_CHECK_FATAL;
+
+        assert(!FLAGS_SET(flag, PATH_CHECK_ABSOLUTE | PATH_CHECK_RELATIVE));
+
+        if (!utf8_is_valid(path))
+                return log_syntax_invalid_utf8(unit, LOG_ERR, filename, line, path);
+
+        if (flag & (PATH_CHECK_ABSOLUTE | PATH_CHECK_RELATIVE)) {
+                bool absolute;
+
+                absolute = path_is_absolute(path);
+
+                if (!absolute && (flag & PATH_CHECK_ABSOLUTE))
+                        return log_syntax(unit, LOG_ERR, filename, line, SYNTHETIC_ERRNO(EINVAL),
+                                          "%s= path is not absolute%s: %s",
+                                          lvalue, fatal ? "" : ", ignoring", path);
+
+                if (absolute && (flag & PATH_CHECK_RELATIVE))
+                        return log_syntax(unit, LOG_ERR, filename, line, SYNTHETIC_ERRNO(EINVAL),
+                                          "%s= path is absolute%s: %s",
+                                          lvalue, fatal ? "" : ", ignoring", path);
+        }
+
+        path_simplify(path);
+
+        if (!path_is_valid(path))
+                return log_syntax(unit, LOG_ERR, filename, line, SYNTHETIC_ERRNO(EINVAL),
+                                  "%s= path has invalid length (%zu bytes)%s.",
+                                  lvalue, strlen(path), fatal ? "" : ", ignoring");
+
+        if (!path_is_normalized(path))
+                return log_syntax(unit, LOG_ERR, filename, line, SYNTHETIC_ERRNO(EINVAL),
+                                  "%s= path is not normalized%s: %s",
+                                  lvalue, fatal ? "" : ", ignoring", path);
+
+        return 0;
+}
+
 char *path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) {
         assert(path);
         assert(prefix);
@@ -1200,10 +1250,9 @@ bool hidden_or_backup_file(const char *filename) {
         assert(filename);
 
         if (filename[0] == '.' ||
-            STR_IN_SET(filename,
-                       "lost+found",
-                       "aquota.user",
-                       "aquota.group") ||
+            streq(filename, "lost+found") ||
+            streq(filename, "aquota.user") ||
+            streq(filename, "aquota.group") ||
             endswith(filename, "~"))
                 return true;
 
@@ -1305,6 +1354,50 @@ int elogind_installation_has_version(const char *root, unsigned minimal_version)
                 char *c;
 
                 path = path_join(root, pattern);
+                if (!path)
+                        return -ENOMEM;
+
+                r = glob_extend(&names, path, 0);
+                if (r == -ENOENT)
+                        continue;
+                if (r < 0)
+                        return r;
+
+                assert_se(c = endswith(path, "*.so"));
+                *c = '\0'; /* truncate the glob part */
+
+                STRV_FOREACH(name, names) {
+                        /* This is most likely to run only once, hence let's not optimize anything. */
+                        char *t, *t2;
+                        unsigned version;
+
+                        t = startswith(*name, path);
+                        if (!t)
+                                continue;
+
+                        t2 = endswith(t, ".so");
+                        if (!t2)
+                                continue;
+
+                        t2[0] = '\0'; /* truncate the suffix */
+
+                        r = safe_atou(t, &version);
+                        if (r < 0) {
+                                log_debug_errno(r, "Found libelogind shared at \"%s.so\", but failed to parse version: %m", *name);
+                                continue;
+                        }
+
+                        log_debug("Found libelogind shared at \"%s.so\", version %u (%s).",
+                                  *name, version,
+                                  version >= minimal_version ? "OK" : "too old");
+                        if (version >= minimal_version)
+                                return true;
+                }
+        }
+
+        return false;
+}
+
 bool dot_or_dot_dot(const char *path) {
         if (!path)
                 return false;
