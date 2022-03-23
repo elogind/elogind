@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+#include "set.h"
 #include "string-util.h"
 
 typedef enum BootEntryType {
@@ -27,6 +28,7 @@ typedef struct BootEntry {
         char *root;     /* The root path in which the drop-in was found, i.e. to which 'kernel', 'efi' and 'initrd' are relative */
         char *title;
         char *show_title;
+        char *sort_key;
         char *version;
         char *machine_id;
         char *architecture;
@@ -56,6 +58,8 @@ typedef struct BootConfig {
         size_t n_entries;
         ssize_t default_entry;
         ssize_t selected_entry;
+
+        Set *inodes_seen;
 } BootConfig;
 
 static inline BootEntry* boot_config_find_entry(BootConfig *config, const char *id) {
