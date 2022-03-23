@@ -672,7 +672,6 @@ int user_check_linger_file(User *u) {
 
 #if 0 /// UNNEEDED by elogind
 static bool user_unit_active(User *u) {
-        const char *i;
         int r;
 
         assert(u->service);
