@@ -35,10 +35,14 @@ static inline int dir_is_populated(const char *path) {
 #endif // 0
 
 bool null_or_empty(struct stat *st) _pure_;
-int null_or_empty_path(const char *fn);
 #if 0 /// UNNEEDED by elogind
+int null_or_empty_path_with_root(const char *fn, const char *root);
 int null_or_empty_fd(int fd);
 #endif // 0
+
+static inline int null_or_empty_path(const char *fn) {
+        return null_or_empty_path_with_root(fn, NULL);
+}
 
 int path_is_read_only_fs(const char *path);
 #if 0 /// UNNEEDED by elogind
@@ -127,3 +131,9 @@ int statx_fallback(int dfd, const char *path, int flags, unsigned mask, struct s
                 struct new_statx nsx;           \
         } var
 #endif
+
+static inline bool devid_set_and_equal(dev_t a, dev_t b) {
+        /* Returns true if a and b definitely refer to the same device. If either is zero, this means "don't
+         * know" and we'll return false */
+        return a == b && a != 0;
+}
