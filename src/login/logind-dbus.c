@@ -3217,19 +3217,19 @@ static int property_get_reboot_to_boot_loader_entry(
 }
 
 static int boot_loader_entry_exists(Manager *m, const char *id) {
-        _cleanup_(boot_config_free) BootConfig config = BOOT_CONFIG_NULL;
+        _cleanup_(boot_config_free) BootConfig config = {};
         int r;
 
         assert(m);
         assert(id);
 
-        r = boot_config_load_auto(&config, NULL, NULL);
+        r = boot_entries_load_config_auto(NULL, NULL, &config);
         if (r < 0 && r != -ENOKEY) /* don't complain if no GPT is found, hence skip ENOKEY */
                 return r;
 
         r = manager_read_efi_boot_loader_entries(m);
         if (r >= 0)
-                (void) boot_config_augment_from_loader(&config, m->efi_boot_loader_entries, /* auto_only= */ true);
+                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries, /* auto_only= */ true);
 
         return !!boot_config_find_entry(&config, id);
 }
@@ -3372,7 +3372,7 @@ static int property_get_boot_loader_entries(
                 void *userdata,
                 sd_bus_error *error) {
 
-        _cleanup_(boot_config_free) BootConfig config = BOOT_CONFIG_NULL;
+        _cleanup_(boot_config_free) BootConfig config = {};
         Manager *m = userdata;
         size_t i;
         int r;
@@ -3381,13 +3381,13 @@ static int property_get_boot_loader_entries(
         assert(reply);
         assert(m);
 
-        r = boot_config_load_auto(&config, NULL, NULL);
+        r = boot_entries_load_config_auto(NULL, NULL, &config);
         if (r < 0 && r != -ENOKEY) /* don't complain if there's no GPT found */
                 return r;
 
         r = manager_read_efi_boot_loader_entries(m);
         if (r >= 0)
-                (void) boot_config_augment_from_loader(&config, m->efi_boot_loader_entries, /* auto_only= */ true);
+                (void) boot_entries_augment_from_loader(&config, m->efi_boot_loader_entries, /* auto_only= */ true);
 
         r = sd_bus_message_open_container(reply, 'a', "s");
         if (r < 0)
@@ -3600,13 +3600,8 @@ static const sd_bus_vtable manager_vtable[] = {
         SD_BUS_PROPERTY("InhibitDelayMaxUSec", "t", NULL, offsetof(Manager, inhibit_delay_max), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("UserStopDelayUSec", "t", NULL, offsetof(Manager, user_stop_delay), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("HandlePowerKey", "s", property_get_handle_action, offsetof(Manager, handle_power_key), SD_BUS_VTABLE_PROPERTY_CONST),
-        SD_BUS_PROPERTY("HandlePowerKeyLongPress", "s", property_get_handle_action, offsetof(Manager, handle_power_key_long_press), SD_BUS_VTABLE_PROPERTY_CONST),
-        SD_BUS_PROPERTY("HandleRebootKey", "s", property_get_handle_action, offsetof(Manager, handle_reboot_key), SD_BUS_VTABLE_PROPERTY_CONST),
-        SD_BUS_PROPERTY("HandleRebootKeyLongPress", "s", property_get_handle_action, offsetof(Manager, handle_reboot_key_long_press), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("HandleSuspendKey", "s", property_get_handle_action, offsetof(Manager, handle_suspend_key), SD_BUS_VTABLE_PROPERTY_CONST),
-        SD_BUS_PROPERTY("HandleSuspendKeyLongPress", "s", property_get_handle_action, offsetof(Manager, handle_suspend_key_long_press), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("HandleHibernateKey", "s", property_get_handle_action, offsetof(Manager, handle_hibernate_key), SD_BUS_VTABLE_PROPERTY_CONST),
-        SD_BUS_PROPERTY("HandleHibernateKeyLongPress", "s", property_get_handle_action, offsetof(Manager, handle_hibernate_key_long_press), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("HandleLidSwitch", "s", property_get_handle_action, offsetof(Manager, handle_lid_switch), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("HandleLidSwitchExternalPower", "s", property_get_handle_action, offsetof(Manager, handle_lid_switch_ep), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("HandleLidSwitchDocked", "s", property_get_handle_action, offsetof(Manager, handle_lid_switch_docked), SD_BUS_VTABLE_PROPERTY_CONST),
