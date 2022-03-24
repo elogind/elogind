@@ -69,17 +69,7 @@ typedef struct BootConfig {
                 .selected_entry = -1, \
         }
 
-static inline BootEntry* boot_config_find_entry(BootConfig *config, const char *id) {
-        assert(config);
-        assert(id);
-
-        for (size_t j = 0; j < config->n_entries; j++)
-                if (streq_ptr(config->entries[j].id, id) ||
-                    streq_ptr(config->entries[j].id_old, id))
-                        return config->entries + j;
-
-        return NULL;
-}
+BootEntry* boot_config_find_entry(BootConfig *config, const char *id);
 
 #if 0 /// UNNEEDED by elogind
 static inline BootEntry* boot_config_default_entry(BootConfig *config) {
