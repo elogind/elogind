@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
-        version : '251',
+        version : '250',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu11',
@@ -13,10 +13,9 @@ project('elogind', 'c',
         meson_version : '>= 0.53.2',
        )
 
-#if 0 /// elogind does not ship libudev
-#endif // 0
-libelogind_version = '0.34.0'
-libudev_version = '1.7.4'
+/// elogind empty mask removed (elogind does not ship libudev)
+libelogind_version = '0.33.0'
+libudev_version = '1.7.3'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -1917,9 +1916,6 @@ endif
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
 #
-# want_kernel_install = get_option('kernel-install')
-# conf.set10('ENABLE_KERNEL_INSTALL', want_kernel_install)
-#
 # want_homed = get_option('homed')
 # if want_homed != 'false'
 #         have = (conf.get('HAVE_OPENSSL') == 1 and
@@ -2108,8 +2104,6 @@ config_h = configure_file(
         configuration : conf)
 
 add_project_arguments('-include', 'config.h', language : 'c')
-
-jinja2_cmdline = [meson_render_jinja2, config_h, version_h]
 
 ############################################################
 
@@ -2470,7 +2464,7 @@ test_dlopen = executable(
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# exe = executable(
+# dbus_programs += executable(
 #         'systemd',
 #         systemd_sources,
 #         include_directories : includes,
@@ -2481,8 +2475,6 @@ test_dlopen = executable(
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
-# dbus_programs += exe
-# public_programs += exe
 #
 # meson.add_install_script(meson_make_symlink,
 #                          rootlibexecdir / 'systemd',
@@ -2874,7 +2866,7 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true)
 #
-# systemctl = executable(
+# public_programs += executable(
 #         'systemctl',
 #         systemctl_sources,
 #         include_directories : includes,
@@ -2888,7 +2880,6 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
-# public_programs += systemctl
 #
 # if conf.get('ENABLE_PORTABLED') == 1
 #         dbus_programs += executable(
@@ -3101,7 +3092,7 @@ endif
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
-#         public_programs += executable(
+#         executable(
 #                 'systemd-cryptenroll',
 #                 systemd_cryptenroll_sources,
 #                 include_directories : includes,
@@ -3497,6 +3488,27 @@ endif
 #         endif
 # endif
 #
+# if conf.get('ENABLE_REPART') == 1
+#         exe = executable(
+#                 'systemd-repart',
+#                 systemd_repart_sources,
+#                 include_directories : includes,
+#                 link_with : [libshared],
+#                 dependencies : [threads,
+#                                 libblkid,
+#                                 libfdisk],
+#                 install_rpath : rootlibexecdir,
+#                 install : true,
+#                 install_dir : rootbindir)
+#         public_programs += exe
+#
+#         if want_tests != 'false'
+#                 test('test-repart',
+#                      test_repart_sh,
+#                      args : exe.full_path())
+#         endif
+# endif
+#
 # if conf.get('ENABLE_SYSUPDATE') == 1
 #         exe = executable(
 #                 'systemd-sysupdate',
@@ -3536,7 +3548,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_FIRSTBOOT') == 1
-#         public_programs += executable(
+#         executable(
 #                 'systemd-firstboot',
 #                 'src/firstboot/firstboot.c',
 #                 include_directories : includes,
@@ -3696,22 +3708,13 @@ executable('elogind-cgroups-agent',
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# systemd_id128 = executable(
+# public_programs += executable(
 #         'systemd-id128',
 #         'src/id128/id128.c',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         install_rpath : rootlibexecdir,
 #         install : true)
-# public_programs += systemd_id128
-#
-# if want_tests != 'false'
-#         test('test-systemctl-enable',
-#              test_systemctl_enable_sh,
-#              # https://github.com/mesonbuild/meson/issues/2681
-#              args : [systemctl.full_path(),
-#                      systemd_id128.full_path()])
-# endif
 #
 # public_programs += executable(
 #         'systemd-path',
@@ -3929,7 +3932,7 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# udevadm = executable(
+# public_programs += executable(
 #         'udevadm',
 #         udevadm_sources,
 #         include_directories : includes,
@@ -3943,28 +3946,6 @@ public_programs += executable(
 #         install_rpath : udev_rpath,
 #         install : true,
 #         install_dir : rootbindir)
-# public_programs += udevadm
-#
-# if conf.get('ENABLE_REPART') == 1
-#         exe = executable(
-#                 'systemd-repart',
-#                 systemd_repart_sources,
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : [threads,
-#                                 libblkid,
-#                                 libfdisk],
-#                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootbindir)
-#         public_programs += exe
-#
-#         if want_tests != 'false'
-#                 test('test-repart',
-#                      test_repart_sh,
-#                      args : [exe.full_path(), udevadm.full_path()])
-#         endif
-# endif
 #
 # executable(
 #         'systemd-shutdown',
@@ -4038,7 +4019,7 @@ public_programs += executable(
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         public_programs += executable(
+#         executable(
 #                 'systemd-networkd-wait-online',
 #                 systemd_networkd_wait_online_sources,
 #                 include_directories : includes,
@@ -4084,14 +4065,6 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# public_programs += custom_target(
-#         'kernel-install',
-#         input : kernel_install_in,
-#         output : 'kernel-install',
-#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-#         install : want_kernel_install,
-#         install_mode : 'rwxr-xr-x',
-#         install_dir : bindir)
 #else // 0
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
@@ -4386,7 +4359,6 @@ endif
 ############################################################
 
 check_help = find_program('tools/check-help.sh')
-check_version = find_program('tools/check-version.sh')
 
 foreach exec : public_programs
         name = exec.full_path().split('/')[-1]
@@ -4394,12 +4366,6 @@ foreach exec : public_programs
                 test('check-help-' + name,
                      check_help,
                      args : exec.full_path(),
-                     depends: exec)
-
-                test('check-version-' + name,
-                     check_version,
-                     args : [exec.full_path(),
-                             meson.project_version()],
                      depends: exec)
         endif
 endforeach
@@ -4685,7 +4651,7 @@ foreach tuple : [
 #         ['hwdb'],
 #         ['importd'],
 #         ['initrd'],
-#         ['kernel-install'],
+#         ['kernel-install',        get_option('kernel-install')],
 #         ['localed'],
 #         ['logind'],
 #         ['machined'],
