@@ -2804,7 +2804,6 @@ _public_ int sd_journal_process(sd_journal *j) {
 
         for (;;) {
                 union inotify_event_buffer buffer;
-                struct inotify_event *e;
                 ssize_t l;
 
                 l = read(j->inotify_fd, &buffer, sizeof(buffer));
