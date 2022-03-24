@@ -901,6 +901,10 @@ endif
 # conf.set('TIME_EPOCH', time_epoch)
 #
 # conf.set('CLOCK_VALID_RANGE_USEC_MAX', get_option('clock-valid-range-usec-max'))
+#
+# default_user_shell = get_option('default-user-shell')
+# conf.set_quoted('DEFAULT_USER_SHELL',      default_user_shell)
+# conf.set_quoted('DEFAULT_USER_SHELL_NAME', fs.name(default_user_shell))
 #else // 0
 ############################################################
 # elogind needs to know which cgroups controller to follow.
