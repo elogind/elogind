@@ -47,6 +47,7 @@ int device_add_devlink(sd_device *device, const char *devlink);
 bool device_has_devlink(sd_device *device, const char *devlink);
 #endif // 0
 int device_add_property(sd_device *device, const char *property, const char *value);
+int device_add_propertyf(sd_device *device, const char *key, const char *format, ...) _printf_(3, 4);
 int device_add_tag(sd_device *device, const char *tag, bool both);
 #if 0 /// UNNEEDED by elogind
 void device_remove_tag(sd_device *device, const char *tag);
