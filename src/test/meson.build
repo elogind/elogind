@@ -489,9 +489,9 @@ tests += [
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-architecture.c']],
+#
+#         [['src/test/test-gpt.c']],
 #endif // 0
-
-        [['src/test/test-gpt.c']],
 
         [['src/test/test-log.c']],
 
