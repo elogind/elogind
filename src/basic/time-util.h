@@ -85,8 +85,8 @@ dual_timestamp* dual_timestamp_get(dual_timestamp *ts);
 dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u);
 #if 0 /// UNNEEDED by elogind
 dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
-dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, usec_t u);
 #endif // 0
+dual_timestamp* dual_timestamp_from_boottime(dual_timestamp *ts, usec_t u);
 
 triple_timestamp* triple_timestamp_get(triple_timestamp *ts);
 #if 0 /// UNNEEDED by elogind
@@ -171,9 +171,7 @@ static inline bool timezone_is_valid(const char *name, int log_level) {
         return verify_timezone(name, log_level) >= 0;
 }
 
-bool clock_boottime_supported(void);
 bool clock_supported(clockid_t clock);
-clockid_t clock_boottime_or_monotonic(void);
 
 #if 0 /// UNNEEDED by elogind
 usec_t usec_shift_clock(usec_t, clockid_t from, clockid_t to);
