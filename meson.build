@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
-        version : '250',
+        version : '251',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu11',
@@ -14,8 +14,8 @@ project('elogind', 'c',
        )
 
 /// elogind empty mask removed (elogind does not ship libudev)
-libelogind_version = '0.33.0'
-libudev_version = '1.7.3'
+libelogind_version = '0.34.0'
+libudev_version = '1.7.4'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -902,6 +902,9 @@ endif
 #
 # conf.set('CLOCK_VALID_RANGE_USEC_MAX', get_option('clock-valid-range-usec-max'))
 #
+# default_user_shell = get_option('default-user-shell')
+# conf.set_quoted('DEFAULT_USER_SHELL',      default_user_shell)
+# conf.set_quoted('DEFAULT_USER_SHELL_NAME', fs.name(default_user_shell))
 #else // 0
 ############################################################
 # elogind needs to know which cgroups controller to follow.
@@ -2863,7 +2866,7 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true)
 #
-# systemctl = executable(
+# public_programs += executable(
 #         'systemctl',
 #         systemctl_sources,
 #         include_directories : includes,
@@ -2877,7 +2880,6 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
-# public_programs += systemctl
 #
 # if conf.get('ENABLE_PORTABLED') == 1
 #         dbus_programs += executable(
@@ -3706,22 +3708,13 @@ executable('elogind-cgroups-agent',
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# systemd_id128 = executable(
+# public_programs += executable(
 #         'systemd-id128',
 #         'src/id128/id128.c',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         install_rpath : rootlibexecdir,
 #         install : true)
-# public_programs += systemd_id128
-#
-# if want_tests != 'false'
-#         test('test-systemctl-enable',
-#              test_systemctl_enable_sh,
-#              # https://github.com/mesonbuild/meson/issues/2681
-#              args : [systemctl.full_path(),
-#                      systemd_id128.full_path()])
-# endif
 #
 # public_programs += executable(
 #         'systemd-path',
