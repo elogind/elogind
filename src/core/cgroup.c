@@ -1064,8 +1064,14 @@ static uint64_t cgroup_weight_io_to_blkio(uint64_t io_weight) {
                      CGROUP_BLKIO_WEIGHT_MIN, CGROUP_BLKIO_WEIGHT_MAX);
 }
 
-static void set_bfq_weight(Unit *u, const char *controller, uint64_t io_weight) {
-        char buf[DECIMAL_STR_MAX(uint64_t)+STRLEN("\n")];
+static void set_bfq_weight(Unit *u, const char *controller, dev_t dev, uint64_t io_weight) {
+        static const char * const prop_names[] = {
+                "IOWeight",
+                "BlockIOWeight",
+                "IODeviceWeight",
+                "BlockIODeviceWeight",
+        };
+        char buf[DECIMAL_STR_MAX(dev_t)*2+2+DECIMAL_STR_MAX(uint64_t)+STRLEN("\n")];
         const char *p;
         uint64_t bfq_weight;
 
@@ -1076,11 +1082,14 @@ static void set_bfq_weight(Unit *u, const char *controller, uint64_t io_weight) 
         /* Adjust to kernel range is 1..1000, the default is 100. */
         bfq_weight = BFQ_WEIGHT(io_weight);
 
-        xsprintf(buf, "%" PRIu64 "\n", bfq_weight);
+        if (major(dev) > 0)
+                xsprintf(buf, "%u:%u %" PRIu64 "\n", major(dev), minor(dev), bfq_weight);
+        else
+                xsprintf(buf, "%" PRIu64 "\n", bfq_weight);
 
         if (set_attribute_and_warn(u, controller, p, buf) >= 0 && io_weight != bfq_weight)
-                log_unit_debug(u, "%sIOWeight=%" PRIu64 " scaled to %s=%" PRIu64,
-                               streq(controller, "blkio") ? "Block" : "",
+                log_unit_debug(u, "%s=%" PRIu64 " scaled to %s=%" PRIu64,
+                               prop_names[2*(major(dev) > 0) + streq(controller, "blkio")],
                                io_weight, p, bfq_weight);
 }
 
@@ -1092,6 +1101,9 @@ static void cgroup_apply_io_device_weight(Unit *u, const char *dev_path, uint64_
         r = lookup_block_device(dev_path, &dev);
         if (r < 0)
                 return;
+
+        /* BFQ per-device weights work since Linux kernel v5.4. */
+        set_bfq_weight(u, "io", dev, io_weight);
 
         xsprintf(buf, "%u:%u %" PRIu64 "\n", major(dev), minor(dev), io_weight);
         (void) set_attribute_and_warn(u, "io", "io.weight", buf);
@@ -1299,7 +1311,7 @@ static void set_io_weight(Unit *u, uint64_t weight) {
 
         assert(u);
 
-        set_bfq_weight(u, "io", weight);
+        set_bfq_weight(u, "io", makedev(0, 0), weight);
 
         xsprintf(buf, "default %" PRIu64 "\n", weight);
         (void) set_attribute_and_warn(u, "io", "io.weight", buf);
@@ -1310,7 +1322,7 @@ static void set_blkio_weight(Unit *u, uint64_t weight) {
 
         assert(u);
 
-        set_bfq_weight(u, "blkio", weight);
+        set_bfq_weight(u, "blkio", makedev(0, 0), weight);
 
         xsprintf(buf, "%" PRIu64 "\n", weight);
         (void) set_attribute_and_warn(u, "blkio", "blkio.weight", buf);
@@ -3228,6 +3240,7 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
 
         for (;;) {
                 union inotify_event_buffer buffer;
+                struct inotify_event *e;
                 ssize_t l;
 
                 l = read(fd, &buffer, sizeof(buffer));
@@ -3238,7 +3251,7 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                         return log_error_errno(errno, "Failed to read control group inotify events: %m");
                 }
 
-                FOREACH_INOTIFY_EVENT_WARN(e, buffer, l) {
+                FOREACH_INOTIFY_EVENT(e, buffer, l) {
                         Unit *u;
 
                         if (e->wd < 0)
