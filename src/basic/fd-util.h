@@ -117,6 +117,7 @@ int read_nr_open(void);
 #if 0 /// UNNEEDED by elogind
 int btrfs_defrag_fd(int fd);
 #endif // 0
+int fd_get_diskseq(int fd, uint64_t *ret);
 
 /* The maximum length a buffer for a /proc/self/fd/<fd> path needs */
 #define PROC_FD_PATH_MAX \
