@@ -15,7 +15,7 @@ endif
 #         'systemctl',
 #         input : 'systemctl.in',
 #         output : 'systemctl',
-#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+#         command : [meson_render_jinja2, config_h, '@INPUT@', '@OUTPUT@'],
 #         install : bashcompletiondir != 'no',
 #         install_dir : bashcompletiondir)
 #

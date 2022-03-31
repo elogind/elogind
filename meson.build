@@ -1916,6 +1916,9 @@ endif
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
 #
+# want_kernel_install = get_option('kernel-install')
+# conf.set10('ENABLE_KERNEL_INSTALL', want_kernel_install)
+#
 # want_homed = get_option('homed')
 # if want_homed != 'false'
 #         have = (conf.get('HAVE_OPENSSL') == 1 and
@@ -2866,7 +2869,7 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true)
 #
-# public_programs += executable(
+# systemctl = executable(
 #         'systemctl',
 #         systemctl_sources,
 #         include_directories : includes,
@@ -2880,6 +2883,7 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootbindir)
+# public_programs += systemctl
 #
 # if conf.get('ENABLE_PORTABLED') == 1
 #         dbus_programs += executable(
@@ -3708,13 +3712,22 @@ executable('elogind-cgroups-agent',
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# public_programs += executable(
+# systemd_id128 = executable(
 #         'systemd-id128',
 #         'src/id128/id128.c',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         install_rpath : rootlibexecdir,
 #         install : true)
+# public_programs += systemd_id128
+#
+# if want_tests != 'false'
+#         test('test-systemctl-enable',
+#              test_systemctl_enable_sh,
+#              # https://github.com/mesonbuild/meson/issues/2681
+#              args : [systemctl.full_path(),
+#                      systemd_id128.full_path()])
+# endif
 #
 # public_programs += executable(
 #         'systemd-path',
@@ -4651,7 +4664,7 @@ foreach tuple : [
 #         ['hwdb'],
 #         ['importd'],
 #         ['initrd'],
-#         ['kernel-install',        get_option('kernel-install')],
+#         ['kernel-install'],
 #         ['localed'],
 #         ['logind'],
 #         ['machined'],
