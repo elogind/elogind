@@ -211,3 +211,5 @@ bool invoked_as(char *argv[], const char *token);
 #endif // 0
 
 _noreturn_ void freeze(void);
+
+bool argv_looks_like_help(int argc, char **argv);
