@@ -123,7 +123,6 @@ int readlinkat_malloc(int fd, const char *p, char **ret) {
         size_t l = PATH_MAX;
 
         assert(p);
-        assert(ret);
 
         for (;;) {
                 _cleanup_free_ char *c = NULL;
@@ -139,7 +138,10 @@ int readlinkat_malloc(int fd, const char *p, char **ret) {
 
                 if ((size_t) n < l) {
                         c[n] = 0;
-                        *ret = TAKE_PTR(c);
+
+                        if (ret)
+                                *ret = TAKE_PTR(c);
+
                         return 0;
                 }
 

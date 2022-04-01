@@ -488,37 +488,33 @@ int get_process_capeff(pid_t pid, char **ret) {
 }
 #endif // 0
 
-static int get_process_link_contents(const char *proc_file, char **ret) {
+static int get_process_link_contents(pid_t pid, const char *proc_file, char **ret) {
+        const char *p;
         int r;
 
         assert(proc_file);
-        assert(ret);
 
-        r = readlink_malloc(proc_file, ret);
-        if (r == -ENOENT)
-                return -ESRCH;
-        if (r < 0)
-                return r;
+        p = procfs_file_alloca(pid, proc_file);
 
-        return 0;
+        r = readlink_malloc(p, ret);
+        return r == -ENOENT ? -ESRCH : r;
 }
 
 int get_process_exe(pid_t pid, char **ret) {
-        const char *p;
         char *d;
         int r;
 
         assert(pid >= 0);
-        assert(ret);
 
-        p = procfs_file_alloca(pid, "exe");
-        r = get_process_link_contents(p, ret);
+        r = get_process_link_contents(pid, "exe", ret);
         if (r < 0)
                 return r;
 
-        d = endswith(*ret, " (deleted)");
-        if (d)
-                *d = '\0';
+        if (ret) {
+                d = endswith(*ret, " (deleted)");
+                if (d)
+                        *d = '\0';
+        }
 
         return 0;
 }
@@ -589,28 +585,17 @@ int get_process_gid(pid_t pid, gid_t *ret) {
 }
 
 int get_process_cwd(pid_t pid, char **ret) {
-        const char *p;
-
         assert(pid >= 0);
-        assert(ret);
 
         if (pid == 0 || pid == getpid_cached())
                 return safe_getcwd(ret);
 
-        p = procfs_file_alloca(pid, "cwd");
-
-        return get_process_link_contents(p, ret);
+        return get_process_link_contents(pid, "cwd", ret);
 }
 
 int get_process_root(pid_t pid, char **ret) {
-        const char *p;
-
         assert(pid >= 0);
-        assert(ret);
-
-        p = procfs_file_alloca(pid, "root");
-
-        return get_process_link_contents(p, ret);
+        return get_process_link_contents(pid, "root", ret);
 }
 #endif // 0
 
