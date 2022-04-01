@@ -1251,9 +1251,10 @@ bool hidden_or_backup_file(const char *filename) {
         assert(filename);
 
         if (filename[0] == '.' ||
-            streq(filename, "lost+found") ||
-            streq(filename, "aquota.user") ||
-            streq(filename, "aquota.group") ||
+            STR_IN_SET(filename,
+                       "lost+found",
+                       "aquota.user",
+                       "aquota.group") ||
             endswith(filename, "~"))
                 return true;
 
