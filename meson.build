@@ -3492,27 +3492,6 @@ endif
 #         endif
 # endif
 #
-# if conf.get('ENABLE_REPART') == 1
-#         exe = executable(
-#                 'systemd-repart',
-#                 systemd_repart_sources,
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : [threads,
-#                                 libblkid,
-#                                 libfdisk],
-#                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootbindir)
-#         public_programs += exe
-#
-#         if want_tests != 'false'
-#                 test('test-repart',
-#                      test_repart_sh,
-#                      args : exe.full_path())
-#         endif
-# endif
-#
 # if conf.get('ENABLE_SYSUPDATE') == 1
 #         exe = executable(
 #                 'systemd-sysupdate',
@@ -3945,7 +3924,7 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# public_programs += executable(
+# udevadm = executable(
 #         'udevadm',
 #         udevadm_sources,
 #         include_directories : includes,
@@ -3959,6 +3938,28 @@ public_programs += executable(
 #         install_rpath : udev_rpath,
 #         install : true,
 #         install_dir : rootbindir)
+# public_programs += udevadm
+#
+# if conf.get('ENABLE_REPART') == 1
+#         exe = executable(
+#                 'systemd-repart',
+#                 systemd_repart_sources,
+#                 include_directories : includes,
+#                 link_with : [libshared],
+#                 dependencies : [threads,
+#                                 libblkid,
+#                                 libfdisk],
+#                 install_rpath : rootlibexecdir,
+#                 install : true,
+#                 install_dir : rootbindir)
+#         public_programs += exe
+#
+#         if want_tests != 'false'
+#                 test('test-repart',
+#                      test_repart_sh,
+#                      args : [exe.full_path(), udevadm.full_path()])
+#         endif
+# endif
 #
 # executable(
 #         'systemd-shutdown',
