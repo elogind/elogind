@@ -49,8 +49,8 @@ typedef enum {
 } Architecture;
 
 #if 0 /// UNNEEDED by elogind
-int uname_architecture(void);
 #endif // 0
+Architecture uname_architecture(void);
 
 /*
  * LIB_ARCH_TUPLE should resolve to the local library path
@@ -246,6 +246,6 @@ int uname_architecture(void);
 #endif
 
 #if 0 /// UNNEEDED by elogind
-const char *architecture_to_string(int a) _const_;
-int architecture_from_string(const char *s) _pure_;
 #endif // 0
+const char *architecture_to_string(Architecture a) _const_;
+Architecture architecture_from_string(const char *s) _pure_;
