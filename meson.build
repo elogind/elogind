@@ -2467,7 +2467,7 @@ test_dlopen = executable(
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# dbus_programs += executable(
+# exe = executable(
 #         'systemd',
 #         systemd_sources,
 #         include_directories : includes,
@@ -2478,6 +2478,8 @@ test_dlopen = executable(
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
+# dbus_programs += exe
+# public_programs += exe
 #
 # meson.add_install_script(meson_make_symlink,
 #                          rootlibexecdir / 'systemd',
@@ -3096,7 +3098,7 @@ endif
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
-#         executable(
+#         public_programs += executable(
 #                 'systemd-cryptenroll',
 #                 systemd_cryptenroll_sources,
 #                 include_directories : includes,
@@ -3531,7 +3533,7 @@ endif
 # endif
 #
 # if conf.get('ENABLE_FIRSTBOOT') == 1
-#         executable(
+#         public_programs += executable(
 #                 'systemd-firstboot',
 #                 'src/firstboot/firstboot.c',
 #                 include_directories : includes,
@@ -4033,7 +4035,7 @@ public_programs += executable(
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         executable(
+#         public_programs += executable(
 #                 'systemd-networkd-wait-online',
 #                 systemd_networkd_wait_online_sources,
 #                 include_directories : includes,
