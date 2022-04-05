@@ -78,37 +78,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* elogind creds hookup with qemu fw_cfg. (Quite possibly might not need any
-  code at all, given the fw_cfg stuff are just files, but we should then
-  document how to use it). Goal: provide symmetric ways to pass creds to nspawn
-  containers and qemu VMs. (maybe also pick up env vars from fw_cfg?)
-
-* beef up sd_notify() to support AV_VSOCK in $NOTIFY_SOCKET, so that VM
-  managers can get ready notifications from VMs, just like container managers
-  from their payload. Also pick up address from qemu/fw_cfg if set there.
-  (which has benefits, given SecureBoot and kernel cmdline are not necessarily
-  friends.)
-
-* mirroring this: maybe support binding to AV_VSOCK in Type=notify services,
-  then passing $NOTIFY_SOCKET and $NOTIFY_GUESTCID with PID1's cid (typically
-  fixed to "2", i.e. the official host cid) and the expected guest cid, for the
-  two sides of the channe. The latter env var could then be used in an
-  appropriate qemu cmdline. That way qemu payloads could talk sd_notify()
-  directly to host service manager.
-
-* maybe write a tool that binds an AF_VFSOCK socket, then invokes qemu,
-  extending the command line to enable vsock on the VM, and using fw_cfg to
-  configure socket address.
-
-* sd-boot: rework random seed handling following recent kernel changes: always
-  pass seed to kernel, but credit only if secure boot is used
-
-* sd-boot: hash data from GetNextHighMonotonicCount() into updated random seed,
-  so that we might even open up up the random seed logic to non-SecureBoot
-  systems?
-
-* sd-boot: add menu item for shutdown? or hotkey?
-
 * sd-device has an API to create an sd_device object from a device id, but has
   no api to query the device id
 
