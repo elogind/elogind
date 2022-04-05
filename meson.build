@@ -55,8 +55,6 @@ conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
 # # More items are added later after they have been detected.
 # summary({'build mode' : get_option('mode')})
 #
-# # GCOV doesn't define any macro when compiled with, so let's define it ourselves
-# conf.set10('BUILT_WITH_COVERAGE', get_option('b_coverage'))
 #else // 0
 skip_deps = false
 #endif // 0
@@ -4376,6 +4374,7 @@ endif
 ############################################################
 
 check_help = find_program('tools/check-help.sh')
+check_version = find_program('tools/check-version.sh')
 
 foreach exec : public_programs
         name = exec.full_path().split('/')[-1]
@@ -4383,6 +4382,12 @@ foreach exec : public_programs
                 test('check-help-' + name,
                      check_help,
                      args : exec.full_path(),
+                     depends: exec)
+
+                test('check-version-' + name,
+                     check_version,
+                     args : [exec.full_path(),
+                             meson.project_version()],
                      depends: exec)
         endif
 endforeach
