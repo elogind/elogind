@@ -4084,6 +4084,14 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
+# public_programs += custom_target(
+#         'kernel-install',
+#         input : kernel_install_in,
+#         output : 'kernel-install',
+#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+#         install : want_kernel_install,
+#         install_mode : 'rwxr-xr-x',
+#         install_dir : bindir)
 #else // 0
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
