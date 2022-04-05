@@ -640,7 +640,12 @@ static bool match_subsystem(sd_device_enumerator *enumerator, const char *subsys
         return false;
 }
 
-static int enumerator_scan_dir(sd_device_enumerator *enumerator, const char *basedir, const char *subdir, const char *subsystem) {
+static int enumerator_scan_dir(
+                sd_device_enumerator *enumerator,
+                const char *basedir,
+                const char *subdir,
+                const char *subsystem) {
+
         _cleanup_closedir_ DIR *dir = NULL;
         char *path;
         int r = 0;
@@ -1000,7 +1005,7 @@ _public_ sd_device *sd_device_enumerator_get_subsystem_next(sd_device_enumerator
 
 #if 0 /// UNNEEDED by elogind
 int device_enumerator_scan_devices_and_subsystems(sd_device_enumerator *enumerator) {
-        int r = 0, k;
+        int r;
 
         assert(enumerator);
 
@@ -1010,22 +1015,14 @@ int device_enumerator_scan_devices_and_subsystems(sd_device_enumerator *enumerat
 
         device_enumerator_unref_devices(enumerator);
 
-        if (!set_isempty(enumerator->match_tag)) {
-                k = enumerator_scan_devices_tags(enumerator);
-                if (k < 0)
-                        r = k;
-        } else if (enumerator->match_parent) {
-                k = enumerator_scan_devices_children(enumerator);
-                if (k < 0)
-                        r = k;
-        } else {
-                k = enumerator_scan_dir(enumerator, "class", NULL, NULL);
-                if (k < 0)
-                        r = log_debug_errno(k, "sd-device-enumerator: Failed to scan /sys/class: %m");
+        if (!set_isempty(enumerator->match_tag))
+                r = enumerator_scan_devices_tags(enumerator);
+        else if (enumerator->match_parent)
+                r = enumerator_scan_devices_children(enumerator);
+        else {
+                int k;
 
-                k = enumerator_scan_dir(enumerator, "bus", "devices", NULL);
-                if (k < 0)
-                        r = log_debug_errno(k, "sd-device-enumerator: Failed to scan /sys/bus: %m");
+                r = enumerator_scan_devices_all(enumerator);
 
                 if (match_subsystem(enumerator, "module")) {
                         k = enumerator_scan_dir_and_add_devices(enumerator, "module", NULL, NULL);
