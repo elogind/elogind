@@ -4373,6 +4373,7 @@ endif
 ############################################################
 
 check_help = find_program('tools/check-help.sh')
+check_version = find_program('tools/check-version.sh')
 
 foreach exec : public_programs
         name = exec.full_path().split('/')[-1]
@@ -4380,6 +4381,12 @@ foreach exec : public_programs
                 test('check-help-' + name,
                      check_help,
                      args : exec.full_path(),
+                     depends: exec)
+
+                test('check-version-' + name,
+                     check_version,
+                     args : [exec.full_path(),
+                             meson.project_version()],
                      depends: exec)
         endif
 endforeach
