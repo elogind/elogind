@@ -61,6 +61,12 @@ tests += [
 #           libblkid],
 #          core_includes],
 #
+#         [files('test-manager.c'),
+#          [libcore,
+#           libshared],
+#          [],
+#          core_includes],
+#
 #         [files('test-emergency-action.c'),
 #          [libcore,
 #           libshared],
@@ -277,7 +283,7 @@ tests += [
 
         [files('test-parse-argument.c')],
 
-        [files('test-parse-helpers.c')],
+        [files('test-parse-socket-bind-item.c')],
 
         [files('test-parse-util.c')],
 
