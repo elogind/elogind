@@ -97,10 +97,10 @@ Features:
   - elogind-fstab-generator should look for rootfs device to mount in creds
   - pid 1 should look for machine ID in creds
   - elogind-resume-generator should look for resume partition uuid in creds
-  - elogind-creds should have a fallback logic that uses neither TPM nor the
   - sd-stub: automatically pick up microcode from ESP (/loader/microcode/*)
     and synthesize initrd from it, and measure it. Signing is not necessary, as
     microcode does that on its own. Pass as first initrd to kernel.
+  - elogind-creds should have a fallback logic that uses neither TPM nor the
     system key in /var for encryption and instead some fixed key. This should
     be opt in (since it provides no security properties) but be used by
     kernel-install when encrypting the creds it generates on systems that lack
@@ -168,12 +168,6 @@ Features:
   along with their properties. uninitialized devices should be greyed out.
 
 * bootctl: show whether UEFI audit mode is available
-
-* dissect: rework how we access partitions: instead of letting the kernel probe
-  partition tables asynchronously, just pass the stuff we parsed in userspace
-  to the kernel via BLKPG_ADD_PARTITION. Benefit: we don't have to wait for
-  kernel/netlink/udev, but can run this synchronously without chance of losing
-  events or similar.
 
 * sd-event: optionally, if per-event source rate limit is hit, downgrade
   priority, but leave enabled, and once ratelimit window is over, upgrade
