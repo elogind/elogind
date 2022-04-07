@@ -246,6 +246,8 @@
 #         'pager.h',
 #         'parse-argument.c',
 #         'parse-argument.h',
+#         'parse-helpers.c',
+#         'parse-helpers.h',
 #         'parse-socket-bind-item.c',
 #         'parse-socket-bind-item.h',
 #         'pcre2-dlopen.c',
