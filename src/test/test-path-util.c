@@ -971,20 +971,6 @@ TEST(hidden_or_backup_file) {
 }
 
 #if 0 /// UNNEEDED by elogind
-TEST(systemd_installation_has_version) {
-        int r;
-        const unsigned versions[] = {0, 231, PROJECT_VERSION, 999};
-        unsigned i;
-
-        log_info("/* %s */", __func__);
-
-        for (i = 0; i < ELEMENTSOF(versions); i++) {
-                r = systemd_installation_has_version(saved_argv[1], versions[i]);
-                assert_se(r >= 0);
-                log_info("%s has systemd >= %u: %s",
-                         saved_argv[1] ?: "Current installation", versions[i], yes_no(r));
-        }
-}
 #endif // 0
 
 TEST(skip_dev_prefix) {
