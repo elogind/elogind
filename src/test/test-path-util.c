@@ -972,21 +972,7 @@ TEST(hidden_or_backup_file) {
 
 /// elogind empty mask removed (UNNEEDED by elogind)
                 r = elogind_installation_has_version(saved_argv[1], versions[i]);
-TEST(elogind_installation_has_version) {
-        int r;
-        const unsigned versions[] = {0, 231, PROJECT_VERSION, 999};
-        unsigned i;
-
-        log_info("/* %s */", __func__);
-
-        for (i = 0; i < ELEMENTSOF(versions); i++) {
                 r = elogind_installation_has_version(saved_argv[1], versions[i]);
-                assert_se(r >= 0);
-                log_info("%s has elogind >= %u: %s",
-                         saved_argv[1] ?: "Current installation", versions[i], yes_no(r));
-        }
-}
-
 TEST(skip_dev_prefix) {
         assert_se(streq(skip_dev_prefix("/"), "/"));
         assert_se(streq(skip_dev_prefix("/dev"), ""));

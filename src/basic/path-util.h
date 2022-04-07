@@ -197,7 +197,6 @@ bool valid_device_allow_pattern(const char *path);
 
 #endif // 0
 int elogind_installation_has_version(const char *root, unsigned minimal_version);
-
 bool dot_or_dot_dot(const char *path);
 
 static inline const char *skip_dev_prefix(const char *p) {
