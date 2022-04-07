@@ -75,6 +75,8 @@
 #         generator-setup.h
 #         ima-setup.c
 #         ima-setup.h
+#         import-creds.c
+#         import-creds.h
 #         job.c
 #         job.h
 #         kill.c
