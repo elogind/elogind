@@ -65,6 +65,7 @@ int path_make_absolute_cwd(const char *p, char **ret);
 #if 0 /// UNNEEDED by elogind
 int path_make_relative(const char *from, const char *to, char **ret);
 #endif // 0
+int path_make_relative_parent(const char *from_child, const char *to, char **ret);
 char *path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) _pure_;
 static inline char* path_startswith(const char *path, const char *prefix) {
         return path_startswith_full(path, prefix, true);
