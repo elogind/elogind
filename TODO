@@ -140,7 +140,7 @@ Features:
 * mirroring this: maybe support binding to AV_VSOCK in Type=notify services,
   then passing $NOTIFY_SOCKET and $NOTIFY_GUESTCID with PID1's cid (typically
   fixed to "2", i.e. the official host cid) and the expected guest cid, for the
-  two sides of the channe. The latter env var could then be used in an
+  two sides of the channel. The latter env var could then be used in an
   appropriate qemu cmdline. That way qemu payloads could talk sd_notify()
   directly to host service manager.
 
@@ -168,6 +168,12 @@ Features:
   along with their properties. uninitialized devices should be greyed out.
 
 * bootctl: show whether UEFI audit mode is available
+
+* dissect: rework how we access partitions: instead of letting the kernel probe
+  partition tables asynchronously, just pass the stuff we parsed in userspace
+  to the kernel via BLKPG_ADD_PARTITION. Benefit: we don't have to wait for
+  kernel/netlink/udev, but can run this synchronously without chance of losing
+  events or similar.
 
 * sd-event: optionally, if per-event source rate limit is hit, downgrade
   priority, but leave enabled, and once ratelimit window is over, upgrade
