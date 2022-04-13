@@ -12,7 +12,6 @@
 #include "device-internal.h"
 #include "device-private.h"
 #include "device-util.h"
-#include "devnum-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -26,6 +25,7 @@
 #include "path-util.h"
 #include "set.h"
 #include "socket-util.h"
+#include "stat-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -790,7 +790,7 @@ _public_ int sd_device_new_from_device_id(sd_device **ret, const char *id) {
                 if (isempty(id))
                         return -EINVAL;
 
-                r = parse_devnum(id + 1, &devt);
+                r = parse_dev(id + 1, &devt);
                 if (r < 0)
                         return r;
 
@@ -2287,7 +2287,7 @@ _public_ int sd_device_trigger_with_uuid(
 
 _public_ int sd_device_open(sd_device *device, int flags) {
         _cleanup_close_ int fd = -1, fd2 = -1;
-        const char *devname, *subsystem = NULL;
+        const char *devname, *subsystem = NULL, *val = NULL;
         uint64_t q, diskseq = 0;
         struct stat st;
         dev_t devnum;
@@ -2312,10 +2312,6 @@ _public_ int sd_device_open(sd_device *device, int flags) {
         if (r < 0 && r != -ENOENT)
                 return r;
 
-        r = sd_device_get_diskseq(device, &diskseq);
-        if (r < 0 && r != -ENOENT)
-                return r;
-
         fd = open(devname, FLAGS_SET(flags, O_PATH) ? flags : O_CLOEXEC|O_NOFOLLOW|O_PATH);
         if (fd < 0)
                 return -errno;
@@ -2332,6 +2328,16 @@ _public_ int sd_device_open(sd_device *device, int flags) {
         /* If flags has O_PATH, then we cannot check diskseq. Let's return earlier. */
         if (FLAGS_SET(flags, O_PATH))
                 return TAKE_FD(fd);
+
+        r = sd_device_get_property_value(device, "ID_IGNORE_DISKSEQ", &val);
+        if (r < 0 && r != -ENOENT)
+                return r;
+
+        if (!val || parse_boolean(val) <= 0) {
+                r = sd_device_get_diskseq(device, &diskseq);
+                if (r < 0 && r != -ENOENT)
+                        return r;
+        }
 
         fd2 = open(FORMAT_PROC_FD_PATH(fd), flags);
         if (fd2 < 0)
