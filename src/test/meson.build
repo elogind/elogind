@@ -263,6 +263,8 @@ tests += [
         [files('test-stat-util.c')],
 
 #if 0 /// UNNEEDED in elogind
+#         [files('test-devnum-util.c')],
+#
 #         [files('test-os-util.c')],
 #
 #         [files('test-libcrypt-util.c'),
@@ -283,7 +285,7 @@ tests += [
 
         [files('test-parse-argument.c')],
 
-        [files('test-parse-socket-bind-item.c')],
+        [files('test-parse-helpers.c')],
 
         [files('test-parse-util.c')],
 

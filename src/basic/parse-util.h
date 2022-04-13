@@ -12,7 +12,6 @@
 typedef unsigned long loadavg_t;
 
 int parse_boolean(const char *v) _pure_;
-int parse_dev(const char *s, dev_t *ret);
 int parse_pid(const char *s, pid_t* ret_pid);
 #if 0 /// UNNEEDED by elogind
 int parse_mode(const char *s, mode_t *ret);

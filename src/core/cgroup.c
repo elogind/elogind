@@ -16,6 +16,7 @@
 #include "cgroup-setup.h"
 #include "cgroup-util.h"
 #include "cgroup.h"
+#include "devnum-util.h"
 #include "fd-util.h"
 //#include "fileio.h"
 //#include "in-addr-prefix-util.h"
@@ -29,9 +30,8 @@
 #include "percent-util.h"
 //#include "process-util.h"
 #include "procfs-util.h"
-//#include "restrict-ifaces.h"
-//#include "special.h"
-//#include "stat-util.h"
+#include "restrict-ifaces.h"
+#include "special.h"
 #include "stdio-util.h"
 //#include "string-table.h"
 #include "string-util.h"
@@ -3261,7 +3261,6 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
 
         for (;;) {
                 union inotify_event_buffer buffer;
-                struct inotify_event *e;
                 ssize_t l;
 
                 l = read(fd, &buffer, sizeof(buffer));
@@ -3272,7 +3271,7 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                         return log_error_errno(errno, "Failed to read control group inotify events: %m");
                 }
 
-                FOREACH_INOTIFY_EVENT(e, buffer, l) {
+                FOREACH_INOTIFY_EVENT_WARN(e, buffer, l) {
                         Unit *u;
 
                         if (e->wd < 0)

@@ -820,22 +820,6 @@ TEST(parse_nice) {
 }
 #endif // 0
 
-TEST(parse_dev) {
-        dev_t dev;
-
-        assert_se(parse_dev("", &dev) == -EINVAL);
-        assert_se(parse_dev("junk", &dev) == -EINVAL);
-        assert_se(parse_dev("0", &dev) == -EINVAL);
-        assert_se(parse_dev("5", &dev) == -EINVAL);
-        assert_se(parse_dev("5:", &dev) == -EINVAL);
-        assert_se(parse_dev(":5", &dev) == -EINVAL);
-        assert_se(parse_dev("-1:-1", &dev) == -EINVAL);
-#if SIZEOF_DEV_T < 8
-        assert_se(parse_dev("4294967295:4294967295", &dev) == -EINVAL);
-#endif
-        assert_se(parse_dev("8:11", &dev) >= 0 && major(dev) == 8 && minor(dev) == 11);
-        assert_se(parse_dev("0:0", &dev) >= 0 && major(dev) == 0 && minor(dev) == 0);
-}
 
 #if 0 /// UNNEEDED by elogind
 TEST(parse_errno) {
