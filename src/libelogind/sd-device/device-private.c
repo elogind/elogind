@@ -948,15 +948,11 @@ static int device_tag(sd_device *device, const char *tag, bool add) {
 
         path = strjoina("/run/udev/tags/", tag, "/", id);
 
-        if (add) {
-                r = touch_file(path, true, USEC_INFINITY, UID_INVALID, GID_INVALID, 0444);
-                if (r < 0)
-                        return r;
-        } else {
-                r = unlink(path);
-                if (r < 0 && errno != ENOENT)
-                        return -errno;
-        }
+        if (add)
+                return touch_file(path, true, USEC_INFINITY, UID_INVALID, GID_INVALID, 0444);
+
+        if (unlink(path) < 0 && errno != ENOENT)
+                return -errno;
 
         return 0;
 }
@@ -965,16 +961,14 @@ int device_tag_index(sd_device *device, sd_device *device_old, bool add) {
         const char *tag;
         int r = 0, k;
 
-        if (add && device_old) {
+        if (add && device_old)
                 /* delete possible left-over tags */
-                FOREACH_DEVICE_TAG(device_old, tag) {
+                FOREACH_DEVICE_TAG(device_old, tag)
                         if (!sd_device_has_tag(device, tag)) {
                                 k = device_tag(device_old, tag, false);
                                 if (r >= 0 && k < 0)
                                         r = k;
                         }
-                }
-        }
 
         FOREACH_DEVICE_TAG(device, tag) {
                 k = device_tag(device, tag, add);
@@ -1032,8 +1026,7 @@ int device_update_db(sd_device *device) {
 
         /* do not store anything for otherwise empty devices */
         if (!has_info && major(device->devnum) == 0 && device->ifindex == 0) {
-                r = unlink(path);
-                if (r < 0 && errno != ENOENT)
+                if (unlink(path) < 0 && errno != ENOENT)
                         return -errno;
 
                 return 0;
@@ -1121,8 +1114,7 @@ int device_delete_db(sd_device *device) {
 
         path = strjoina("/run/udev/data/", id);
 
-        r = unlink(path);
-        if (r < 0 && errno != ENOENT)
+        if (unlink(path) < 0 && errno != ENOENT)
                 return -errno;
 
         return 0;
