@@ -159,7 +159,7 @@ int readlink_malloc(const char *p, char **ret) {
 }
 
 int readlink_value(const char *p, char **ret) {
-        _cleanup_free_ char *link = NULL;
+        _cleanup_free_ char *link = NULL, *name = NULL;
         int r;
 
         assert(p);
@@ -169,7 +169,14 @@ int readlink_value(const char *p, char **ret) {
         if (r < 0)
                 return r;
 
-        return path_extract_filename(link, ret);
+        r = path_extract_filename(link, &name);
+        if (r < 0)
+                return r;
+        if (r == O_DIRECTORY)
+                return -EINVAL;
+
+        *ret = TAKE_PTR(name);
+        return 0;
 }
 
 #if 0 /// UNNEEDED by elogind
