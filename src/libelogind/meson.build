@@ -6,8 +6,6 @@ sd_journal_sources = files(
 #         'sd-journal/audit-type.h',
 #         'sd-journal/catalog.c',
 #         'sd-journal/catalog.h',
-#         'sd-journal/compress.c',
-#         'sd-journal/compress.h',
 #endif // 0
         'sd-journal/journal-def.h',
 #if 0 /// UNNEEDED by elogind
@@ -244,7 +242,8 @@ libsystemd_c_args = ['-fvisibility=default']
 #         libsystemd_sources,
 #         include_directories : libsystemd_includes,
 #         c_args : libsystemd_c_args,
-#         link_with : libbasic,
+#         link_with : [libbasic,
+#                      libbasic_compress],
 #         dependencies : [threads,
 #                         librt],
 #         build_by_default : false)
@@ -278,19 +277,6 @@ libsystemd_c_args = ['-fvisibility=default']
 #         [files('sd-journal/test-mmap-cache.c')],
 #
 #         [files('sd-journal/test-catalog.c')],
-#
-#         [files('sd-journal/test-compress.c'),
-#          [],
-#          [liblz4,
-#           libzstd,
-#           libxz]],
-#
-#         [files('sd-journal/test-compress-benchmark.c'),
-#          [],
-#          [liblz4,
-#           libzstd,
-#           libxz],
-#          [], '', 'timeout=90'],
 #
 #         [files('sd-journal/test-audit-type.c')],
 # ]

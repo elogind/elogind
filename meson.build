@@ -1675,7 +1675,7 @@ conf.set10('HAVE_PAM', have)
 # endif
 # conf.set('DEFAULT_COMPRESSION',
 #          compression == 'none' ? 0 :
-#                  'OBJECT_COMPRESSED_@0@'.format(compression.to_upper()))
+#                  'COMPRESSION_@0@'.format(compression.to_upper()))
 #
 # want_xkbcommon = get_option('xkbcommon')
 # if want_xkbcommon != 'false' and not skip_deps
@@ -2200,17 +2200,16 @@ libelogind = shared_library(
         disable_mempool_c,
         version : libsystemd_version,
         include_directories : libelogind_includes,
+        include_directories : libsystemd_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
-#                      libbasic_gcrypt],
+#                      libbasic_gcrypt,
+#                      libbasic_compress],
 #         link_whole : [libsystemd_static],
 #         dependencies : [threads,
-#                         librt,
-#                         libxz,
-#                         libzstd,
-#                         liblz4],
+#                         librt],
 #         link_depends : libsystemd_sym,
 #else // 0
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -2236,6 +2235,7 @@ install_libelogind_static = static_library(
 #if 0 /// No gcrypt with elogind
 #         basic_gcrypt_sources,
 #endif // 0
+        basic_compress_sources,
         fundamental_sources,
         disable_mempool_c,
         include_directories : libelogind_includes,
@@ -3447,7 +3447,8 @@ endif
 #                 'systemd-coredump',
 #                 systemd_coredump_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              libbasic_compress],
 #                 dependencies : [threads,
 #                                 libacl,
 #                                 libxz,
@@ -3461,7 +3462,8 @@ endif
 #                 'coredumpctl',
 #                 coredumpctl_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              libbasic_compress],
 #                 dependencies : [threads,
 #                                 libxz,
 #                                 liblz4,
