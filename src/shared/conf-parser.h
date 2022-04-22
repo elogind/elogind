@@ -116,6 +116,15 @@ int config_parse_many(
                 Hashmap **ret_stats_by_path);   /* possibly NULL */
 #endif // 0
 
+int config_get_stats_by_path(
+                const char *suffix,
+                const char *root,
+                unsigned flags,
+                const char* const* dirs,
+                Hashmap **ret);
+
+bool stats_by_path_equal(Hashmap *a, Hashmap *b);
+
 typedef struct ConfigSection {
         unsigned line;
         bool invalid;
