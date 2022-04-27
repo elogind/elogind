@@ -2199,7 +2199,6 @@ libelogind = shared_library(
         'elogind',
         disable_mempool_c,
         version : libsystemd_version,
-        include_directories : libelogind_includes,
         include_directories : libsystemd_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
@@ -4632,6 +4631,7 @@ summary({
         'nobody group name' :               nobody_group,
         'fallback hostname' :               get_option('fallback-hostname'),
 #if 0 /// UNNEEDED by elogind
+#         'default compression method' :      compression,
 #         'default DNSSEC mode' :             default_dnssec,
 #         'default DNS-over-TLS mode' :       default_dns_over_tls,
 #         'default mDNS mode' :               default_mdns,
