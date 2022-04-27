@@ -2216,6 +2216,7 @@ libelogind = shared_library(
         link_depends : libelogind_sym,
 #endif // 0
         install : true,
+        install_tag: 'libelogind',
         install_dir : rootlibdir)
 
 
@@ -2238,6 +2239,7 @@ install_libelogind_static = static_library(
         include_directories : libelogind_includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
+        install_tag: 'libelogind',
         install_dir : rootlibdir,
 #if 0 /// elogind only needs libcap, libdl, libmount threads and selinux.
 #         pic : static_libsystemd_pic,
@@ -2266,6 +2268,7 @@ install_libelogind_static = static_library(
 #         dependencies : [threads],
 #         link_depends : libudev_sym,
 #         install : true,
+#         install_tag: 'libudev',
 #         install_dir : rootlibdir)
 #
 # install_libudev_static = static_library(
@@ -2279,6 +2282,7 @@ install_libelogind_static = static_library(
 #         include_directories : includes,
 #         build_by_default : static_libudev != 'false',
 #         install : static_libudev != 'false',
+#         install_tag: 'libudev',
 #         install_dir : rootlibdir,
 #         link_depends : libudev_sym,
 #         dependencies : libshared_deps + [libmount],
