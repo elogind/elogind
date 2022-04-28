@@ -19,6 +19,7 @@ static inline int device_new_from_watch_handle(sd_device **ret, int wd) {
 }
 #endif // 0
 
+int device_get_property_bool(sd_device *device, const char *key);
 int device_get_device_id(sd_device *device, const char **ret);
 
 #if 0 /// UNNEEDED by elogind
