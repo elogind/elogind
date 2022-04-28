@@ -31,6 +31,7 @@ External:
 * zsh shell completion:
   - <command> <verb> -<TAB> should complete options, but currently does not
   - systemctl add-wants,add-requires
+  - systemctl reboot --boot-loader-entry=
 
 * systemctl status should know about 'elogind-analyze calendar ... --iterations='
 * If timer has just OnInactiveSec=..., it should fire after a specified time
@@ -78,29 +79,6 @@ Janitorial Clean-ups:
 
 Features:
 
-* TPM2: add auth policy for signed PCR values to make updates easy. i.e. do
-  what tpm2_policyauthorize tool does.  To be truly useful scheme needs to be a
-  bit more elaborate though: policy probably must take some nvram based
-  generation counter into account that can only monotonically increase and can
-  be used to invalidate old PCR signatures. Otherwise people could downgrade to
-  old signed PCR sets whenever they want. Usecase: encrypt the rootfs with LUKS
-  with a key that can only be unlocked via a pristine pre-built Fedora
-  kernel+initrd.
-
-* update HACKING.md to suggest developing elogind with the ideas from:
-  https://0pointer.net/blog/testing-my-system-code-in-usr-without-modifying-usr.html
-  https://0pointer.net/blog/running-an-container-off-the-host-usr.html
-
-* add a clear concept how the initrd can make up credentials on their own to
-  pass to the system when transitioning into the host OS. usecase: things like
-  cloud-init/ignitation and similar can parameterize the host with data they
-  acquire.
-
-* Add ConditionCredentialExists= or so, that allows conditionalizing services
-  depending on whether a specific system credential is set. Usecase: a service
-  similar to the ssh keygen service that installs any SSH host key supplied via
-  system credentials into /etc/ssh.
-
 * drop support for kernels that lack ambient capabilities support (i.e. make
   4.3 new baseline). Then drop support for "!!" modifier for ExecStart= which
   is only supported for such old kernels
@@ -109,7 +87,7 @@ Features:
   descriptors, and clear this set piecemeal when we see the IN_IGNORED event
   for it, or when read() returns EAGAIN or on IN_Q_OVERFLOW. Then, whenever we
   see an inotify wd event check against this set, and if it is contained ignore
-  the event. (to be fully correct this would have to count the occurrences, in
+  the event. (to be fully correct this would have to count the occurances, in
   case the same wd is reused multiple times before we start processing
   IN_IGNORED again)
 
@@ -194,10 +172,6 @@ Features:
   so that we might even open up up the random seed logic to non-SecureBoot
   systems?
 
-* sd-boot: also include the hyperv "vm generation id" in the random seed hash,
-  to cover nicely for machine clones. It's found in the ACPI tables, which
-  should be easily accessible from UEFI.
-
 * sd-boot: add menu item for shutdown? or hotkey?
 
 * sd-device has an API to create an sd_device object from a device id, but has
@@ -206,8 +180,6 @@ Features:
 * sd-device should return the devnum type (i.e. 'b' or 'c') via some API for an
   sd_device object, so that data passed into sd_device_new_from_devnum() can
   also be queried.
-
-* bootctl: show whether UEFI audit mode is available
 
 * sd-event: optionally, if per-event source rate limit is hit, downgrade
   priority, but leave enabled, and once ratelimit window is over, upgrade
@@ -1353,10 +1325,12 @@ Features:
 * bootctl,sd-boot: actually honour the "architecture" key
 
 * bootctl:
+  - show whether UEFI audit mode is available
   - teach it to prepare an ESP wholesale, i.e. with mkfs.vfat invocation
   - teach it to copy in unified kernel images and maybe type #1 boot loader spec entries from host
   - make it operate on loopback files, dissecting enough to find ESP to operate on
   - bootspec: properly support boot attempt counters when parsing entry file names
+  - support --quiet in is-installed, update
 
 * kernel-install:
   - optionally, support generating type #2 entries instead of type #1, including signing them
