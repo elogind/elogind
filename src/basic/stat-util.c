@@ -109,7 +109,7 @@ int dir_is_empty_at(int dir_fd, const char *path) {
         msan_unpoison(&buffer, n);
 
         FOREACH_DIRENT_IN_BUFFER(de, &buffer.de, n)
-                if (!dot_or_dot_dot(de->d_name))
+                if (!hidden_or_backup_file(de->d_name))
                         return 0;
 
         return 1;
@@ -323,7 +323,6 @@ int fd_verify_directory(int fd) {
         return stat_verify_directory(&st);
 }
 #endif // 0
-
 
 int proc_mounted(void) {
         int r;
