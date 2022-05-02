@@ -100,6 +100,8 @@ foreach header : _systemd_headers
                      args : [cc.cmd_array(),
                              '-c',
                              '-x', opt,
+                             '-Wall',
+                             '-Wextra',
                              '-Werror',
                              '-include', meson.current_source_dir() / header,
                              '-o/dev/null',
