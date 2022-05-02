@@ -368,7 +368,6 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 
 cc = meson.get_compiler('c')
 pkgconfig = import('pkgconfig')
-check_compilation_sh = find_program('tools/check-compilation.sh')
 meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
@@ -2222,7 +2221,6 @@ libelogind = shared_library(
         link_depends : libelogind_sym,
 #endif // 0
         install : true,
-        install_tag: 'libelogind',
         install_tag: 'libsystemd',
         install_dir : rootlibdir)
 

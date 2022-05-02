@@ -94,11 +94,14 @@ foreach header : _systemd_headers
 #endif // 0
         foreach opt : opts
                 std_name = opt.length() == 2 ? '_'.join(opt[1].split(':')) : ''
-                name = ''.join(['cc-', header.split('/')[-1], '_', opt[0], std_name])
-                test(name,
-                     check_compilation_sh,
-                     args : cc.cmd_array() + ['-c', '-x'] + opt +
-                             ['-Werror', '-include',
-                             meson.current_source_dir() / header])
+                test('cc-' + header.split('/')[-1] + '_' + opt[0] + std_name,
+                     env,
+                     args : [cc.cmd_array(),
+                             '-c',
+                             '-x', opt,
+                             '-Werror',
+                             '-include', meson.current_source_dir() / header,
+                             '-o/dev/null',
+                             '/dev/null'])
         endforeach
 endforeach
