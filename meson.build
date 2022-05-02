@@ -3946,6 +3946,7 @@ public_programs += executable(
 #         if want_tests != 'false'
 #                 test('hwdb-test',
 #                      hwdb_test_sh,
+#                      suite : 'dist-check',
 #                      args : [systemd_hwdb.full_path()],
 #                      timeout : 90)
 #         endif
@@ -4319,6 +4320,7 @@ endforeach
 #                         if b == name
 #                                 test('@0@_@1@'.format(b, c),
 #                                      exe,
+#                                      suite : 'fuzzers',
 #                                      args : [project_source_root / p])
 #                         endif
 #                 endforeach
@@ -4421,6 +4423,7 @@ jekyll = find_program('jekyll', required : false)
 if get_option('mode') == 'developer' and want_tests != 'false' and jekyll.found()
         test('github-pages',
              jekyll,
+             suite : 'dist-check',
              args : ['build',
                      '--source', project_source_root / 'docs',
                      '--destination', project_build_root / '_site'])
@@ -4436,11 +4439,13 @@ foreach exec : public_programs
         if want_tests != 'false'
                 test('check-help-' + name,
                      check_help,
+                     suite : 'dist-check',
                      args : exec.full_path(),
                      depends: exec)
 
                 test('check-version-' + name,
                      check_version,
+                     suite : 'dist-check',
                      args : [exec.full_path(),
                              meson.project_version()],
                      depends: exec)
@@ -4455,6 +4460,7 @@ endforeach
 # if want_tests != 'false'
 #         test('check-directives',
 #              check_directives_sh,
+#              suite : 'dist-check',
 #              args : [project_source_root, project_build_root])
 # endif
 #
@@ -4494,6 +4500,7 @@ endforeach
 #                         if fuzz_tests
 #                                 test('@0@_@1@_@2@'.format(b, c, sanitizer),
 #                                      env,
+#                                      suite : 'fuzz+san',
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
 #                                      timeout : 60,
 #                                      args : [exe.full_path(),
