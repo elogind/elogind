@@ -57,6 +57,10 @@ meson.add_install_script(meson_symlink_headers,
 
 ############################################################
 
+if want_tests == 'false'
+        subdir_done()
+endif
+
 opts = [['c'],
         ['c', '-ansi'],
         ['c', '-std=iso9899:1990'],
@@ -91,12 +95,10 @@ foreach header : _systemd_headers
         foreach opt : opts
                 std_name = opt.length() == 2 ? '_'.join(opt[1].split(':')) : ''
                 name = ''.join(['cc-', header.split('/')[-1], '_', opt[0], std_name])
-                if want_tests != 'false'
-                        test(name,
-                             check_compilation_sh,
-                             args : cc.cmd_array() + ['-c', '-x'] + opt +
-                                    ['-Werror', '-include',
-                                     meson.current_source_dir() / header])
-                endif
+                test(name,
+                     check_compilation_sh,
+                     args : cc.cmd_array() + ['-c', '-x'] + opt +
+                             ['-Werror', '-include',
+                             meson.current_source_dir() / header])
         endforeach
 endforeach
