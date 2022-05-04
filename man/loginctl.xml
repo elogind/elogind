@@ -526,7 +526,7 @@
 
       <!-- 1 /// elogind has a few options on its own. -->
       <varlistentry>
-        <term><option>-</option></term>
+        <term><option>-c</option></term>
 
         <listitem><para>Cancel a pending shutdown or reboot.</para></listitem>
       </varlistentry>
