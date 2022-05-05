@@ -1340,7 +1340,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "     --version             Show package version\n"
                "     --no-pager            Do not pipe output into a pager\n"
 #if 1 /// elogind supports --no-wall and --dry-run
-               "     --no-wall             Do not print any wall message\n"
+               "     --no-wall             Do not send wall messages\n"
                "     --dry-run             Only print what would be done\n"
                "  -q --quiet               Suppress output\n"
 #endif // 1

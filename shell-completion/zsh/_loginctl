@@ -183,7 +183,7 @@ _arguments -s \
     '--no-pager[Do not pipe output into a pager]' \
     '--no-legend[Do not show the headers and footers]' \
     '--no-ask-password[Do not ask for system passwords]' \
-    "--no-wall[Do not print any wall message]" \
+    "--no-wall[Do not send wall messages]" \
     {-n+,--lines=}'[Number of journal entries to show]' \
     {-o+,--output=}'[Change journal output mode]:output modes:_sd_outputmodes' \
     '-c[Cancel a pending shutdown or reboot]' \
