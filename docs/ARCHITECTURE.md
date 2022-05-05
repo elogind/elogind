@@ -91,7 +91,12 @@ and generally safe to run on the host without side effects.
 Ideally, every module in `src/basic/` and `src/shared/` should have a
 corresponding unit test under `src/test/`, exercising every helper function.
 
-## Fuzzer test cases
+## Fuzzing
+
+Fuzzers are a type of unit tests that execute code on an externally-supplied
+input sample. Fuzzers are called `fuzz-*`. Fuzzers for `src/basic/` and
+`src/shared` live under `src/fuzz/`, and those for other parts of the codebase
+should be located next to the code they test.
 
 Files under `test/fuzz/` contain input data for fuzzers, one subdirectory for
 each fuzzer. Some of the files are "seed corpora", i.e. files that contain
@@ -102,13 +107,23 @@ When adding new input samples under `test/fuzz/*/`, please use some
 short-but-meaningful names. Names of meson tests include the input file name
 and output looks awkward if they are too long.
 
-# Integration Tests
+Fuzzers are invoked primarily in three ways: firstly, each fuzzer is compiled
+as a normal executable and executed for each of the input samples under
+`test/fuzz/` as part of the test suite. Secondly, fuzzers may be instrumented
+with sanitizers and invoked as part of the test suite (if `-Dfuzz-tests=true`
+is configured). Thirdly, fuzzers are executed through fuzzing engines that try
+to find new "interesting" inputs through coverage feedback and massive
+parallelization; see the links for oss-fuzz in [Code
+quality](https://elogind.io/CODE_QUALITY). For testing and debugging, fuzzers
+can be executed as any other program, including under `valgrind` or `gdb`.
 
+# Integration Tests
 
 Sources in `test/TEST-*` implement system-level testing for executables,
 libraries and daemons that are shipped by the project. They require privileges
 to run, and are not safe to execute directly on a host. By default they will
 build an image and run the test under it via `qemu` or `elogind-nspawn`.
+
 Most of those tests should be able to run via `elogind-nspawn`, which is
 orders-of-magnitude faster than `qemu`, but some tests require privileged
 operations like using `dm-crypt` or `loopdev`. They are clearly marked if that
