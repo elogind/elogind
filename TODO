@@ -33,10 +33,6 @@ External:
 
 * register catalog database signature as file magic
 
-* zsh shell completion:
-  - <command> <verb> -<TAB> should complete options, but currently does not
-  - systemctl add-wants,add-requires
-
 * systemctl status should know about 'elogind-analyze calendar ... --iterations='
 * If timer has just OnInactiveSec=..., it should fire after a specified time
   after being started.
