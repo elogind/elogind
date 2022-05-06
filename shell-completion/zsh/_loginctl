@@ -113,9 +113,6 @@ _loginctl_attach() {
                '*:device:_files'
 }
 
-# no loginctl completion for:
-# [STANDALONE]='list-sessions list-users list-seats flush-devices'
-
 (( $+functions[_loginctl_commands] )) ||
 _loginctl_commands() {
     local -a _loginctl_cmds
