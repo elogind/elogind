@@ -545,6 +545,25 @@
           additional privileges.</para>
         </listitem>
       </varlistentry>
+
+      <varlistentry>
+        <term><option>--dry-run</option></term>
+
+        <listitem>
+          <para>Just print what would be done. Currently supported by verbs
+          <command>halt</command>, <command>poweroff</command>, <command>reboot</command>,
+          <command>suspend</command>, <command>hibernate</command>, <command>hybrid-sleep</command>,
+          and <command>suspend-then-hibernate</command>.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--no-wall</option></term>
+
+        <listitem>
+          <para>Do not send wall messages before halt, power-off and reboot.</para>
+        </listitem>
+      </varlistentry>
       <!-- // 1 -->
 
       <xi:include href="user-system-options.xml" xpointer="host" />
