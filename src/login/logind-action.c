@@ -33,7 +33,7 @@ static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
                 .sleep_operation                 = _SLEEP_OPERATION_INVALID,
                 .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
                 .message                         = "System is powering down",
-                .log_message                     = "power-off",
+                .log_verb                        = "power-off",
         },
         [HANDLE_REBOOT] = {
                 .handle                          = HANDLE_REBOOT,
@@ -45,7 +45,7 @@ static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
                 .sleep_operation                 = _SLEEP_OPERATION_INVALID,
                 .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
                 .message                         = "System is rebooting",
-                .log_message                     = "reboot",
+                .log_verb                        = "reboot",
         },
         [HANDLE_HALT] = {
                 .handle                          = HANDLE_HALT,
@@ -57,7 +57,7 @@ static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
                 .sleep_operation                 = _SLEEP_OPERATION_INVALID,
                 .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
                 .message                         = "System is halting",
-                .log_message                     = "halt",
+                .log_verb                        = "halt",
         },
         [HANDLE_KEXEC] = {
                 .handle                          = HANDLE_KEXEC,
@@ -69,7 +69,7 @@ static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
                 .sleep_operation                 = _SLEEP_OPERATION_INVALID,
                 .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
                 .message                         = "System is rebooting with kexec",
-                .log_message                     = "kexec",
+                .log_verb                        = "kexec",
         },
         [HANDLE_SUSPEND] = {
                 .handle                          = HANDLE_SUSPEND,
