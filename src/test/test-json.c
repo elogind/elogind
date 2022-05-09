@@ -323,8 +323,8 @@ TEST(build) {
         b = json_variant_unref(b);
 
 #if 0 /// UNNEEDED by elogind
-        assert_se(json_build(&a, JSON_BUILD_REAL(M_PIl)) >= 0);
 #endif // 0
+        assert_se(json_build(&a, JSON_BUILD_REAL(M_PI)) >= 0);
 
         s = mfree(s);
 #if 0 /// UNNEEDED by elogind
