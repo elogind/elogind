@@ -4775,7 +4775,6 @@ bool json_variant_is_sorted(JsonVariant *v) {
 
 #if 0 /// UNNEEDED by elogind
 int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size) {
-
         if (!json_variant_is_string(v))
                 return -EINVAL;
 
@@ -4783,7 +4782,6 @@ int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size) {
 }
 
 int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size) {
-
         if (!json_variant_is_string(v))
                 return -EINVAL;
 
@@ -4792,15 +4790,15 @@ int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size) {
 #endif // 0
 
 static const char* const json_variant_type_table[_JSON_VARIANT_TYPE_MAX] = {
-        [JSON_VARIANT_STRING] = "string",
-        [JSON_VARIANT_INTEGER] = "integer",
+        [JSON_VARIANT_STRING]   = "string",
+        [JSON_VARIANT_INTEGER]  = "integer",
         [JSON_VARIANT_UNSIGNED] = "unsigned",
-        [JSON_VARIANT_REAL] = "real",
-        [JSON_VARIANT_NUMBER] = "number",
-        [JSON_VARIANT_BOOLEAN] = "boolean",
-        [JSON_VARIANT_ARRAY] = "array",
-        [JSON_VARIANT_OBJECT] = "object",
-        [JSON_VARIANT_NULL] = "null",
+        [JSON_VARIANT_REAL]     = "real",
+        [JSON_VARIANT_NUMBER]   = "number",
+        [JSON_VARIANT_BOOLEAN]  = "boolean",
+        [JSON_VARIANT_ARRAY]    = "array",
+        [JSON_VARIANT_OBJECT]   = "object",
+        [JSON_VARIANT_NULL]     = "null",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(json_variant_type, JsonVariantType);
