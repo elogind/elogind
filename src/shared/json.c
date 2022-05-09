@@ -576,9 +576,6 @@ int json_variant_new_array(JsonVariant **ret, JsonVariant **array, size_t n) {
 }
 
 int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n) {
-        JsonVariant *v;
-        size_t i;
-
         assert_return(ret, -EINVAL);
         if (n == 0) {
                 *ret = JSON_VARIANT_MAGIC_EMPTY_ARRAY;
@@ -586,7 +583,7 @@ int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n) {
         }
         assert_return(p, -EINVAL);
 
-        v = new(JsonVariant, n + 1);
+        JsonVariant *v = new(JsonVariant, n + 1);
         if (!v)
                 return -ENOMEM;
 
@@ -597,7 +594,7 @@ int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n) {
                 .depth = 1,
         };
 
-        for (i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
                 JsonVariant *w = v + 1 + i;
 
                 *w = (JsonVariant) {
@@ -792,12 +789,9 @@ static void json_variant_free_inner(JsonVariant *v, bool force_sensitive) {
                 return;
         }
 
-        if (IN_SET(v->type, JSON_VARIANT_ARRAY, JSON_VARIANT_OBJECT)) {
-                size_t i;
-
-                for (i = 0; i < v->n_elements; i++)
+        if (IN_SET(v->type, JSON_VARIANT_ARRAY, JSON_VARIANT_OBJECT))
+                for (size_t i = 0; i < v->n_elements; i++)
                         json_variant_free_inner(v + 1 + i, sensitive);
-        }
 
         if (sensitive)
                 explicit_bzero_safe(v, json_variant_size(v));
@@ -841,11 +835,9 @@ JsonVariant *json_variant_unref(JsonVariant *v) {
 }
 
 void json_variant_unref_many(JsonVariant **array, size_t n) {
-        size_t i;
-
         assert(array || n == 0);
 
-        for (i = 0; i < n; i++)
+        for (size_t i = 0; i < n; i++)
                 json_variant_unref(array[i]);
 }
 
@@ -1222,8 +1214,6 @@ mismatch:
 }
 
 JsonVariant *json_variant_by_key_full(JsonVariant *v, const char *key, JsonVariant **ret_key) {
-        size_t i;
-
         if (!v)
                 goto not_found;
         if (!key)
@@ -1245,6 +1235,7 @@ JsonVariant *json_variant_by_key_full(JsonVariant *v, const char *key, JsonVaria
                 while (b > a) {
                         JsonVariant *p;
                         const char *f;
+                        size_t i;
                         int c;
 
                         i = (a + b) / 2;
@@ -1268,7 +1259,7 @@ JsonVariant *json_variant_by_key_full(JsonVariant *v, const char *key, JsonVaria
         }
 
         /* The variant is not sorted, hence search for the field linearly */
-        for (i = 0; i < v->n_elements; i += 2) {
+        for (size_t i = 0; i < v->n_elements; i += 2) {
                 JsonVariant *p;
 
                 p = json_variant_dereference(v + 1 + i);
@@ -1339,34 +1330,28 @@ bool json_variant_equal(JsonVariant *a, JsonVariant *b) {
                 return true;
 
         case JSON_VARIANT_ARRAY: {
-                size_t i, n;
-
-                n = json_variant_elements(a);
+                size_t n = json_variant_elements(a);
                 if (n != json_variant_elements(b))
                         return false;
 
-                for (i = 0; i < n; i++) {
+                for (size_t i = 0; i < n; i++)
                         if (!json_variant_equal(json_variant_by_index(a, i), json_variant_by_index(b, i)))
                                 return false;
-                }
 
                 return true;
         }
 
         case JSON_VARIANT_OBJECT: {
-                size_t i, n;
-
-                n = json_variant_elements(a);
+                size_t n = json_variant_elements(a);
                 if (n != json_variant_elements(b))
                         return false;
 
                 /* Iterate through all keys in 'a' */
-                for (i = 0; i < n; i += 2) {
+                for (size_t i = 0; i < n; i += 2) {
                         bool found = false;
-                        size_t j;
 
                         /* Match them against all keys in 'b' */
-                        for (j = 0; j < n; j += 2) {
+                        for (size_t j = 0; j < n; j += 2) {
                                 JsonVariant *key_b;
 
                                 key_b = json_variant_by_index(b, j);
@@ -1474,16 +1459,14 @@ static int print_source(FILE *f, JsonVariant *v, JsonFormatFlags flags, bool whi
                 DECIMAL_STR_MAX(unsigned) -1;
 
         if (whitespace) {
-                size_t i, n;
+                size_t n = 1 + (v->source ? strlen(v->source->name) : 0) +
+                               ((v->source && (v->line > 0 || v->column > 0)) ? 1 : 0) +
+                               (v->line > 0 ? w : 0) +
+                               (((v->source || v->line > 0) && v->column > 0) ? 1 : 0) +
+                               (v->column > 0 ? k : 0) +
+                               2;
 
-                n = 1 + (v->source ? strlen(v->source->name) : 0) +
-                        ((v->source && (v->line > 0 || v->column > 0)) ? 1 : 0) +
-                        (v->line > 0 ? w : 0) +
-                        (((v->source || v->line > 0) && v->column > 0) ? 1 : 0) +
-                        (v->column > 0 ? k : 0) +
-                        2;
-
-                for (i = 0; i < n; i++)
+                for (size_t i = 0; i < n; i++)
                         fputc(' ', f);
         } else {
                 fputc('[', f);
@@ -1635,10 +1618,7 @@ static int json_format(FILE *f, JsonVariant *v, JsonFormatFlags flags, const cha
                 break;
 
         case JSON_VARIANT_ARRAY: {
-                size_t i, n;
-
-                n = json_variant_elements(v);
-
+                size_t n = json_variant_elements(v);
                 if (n == 0)
                         fputs("[]", f);
                 else {
@@ -1657,7 +1637,7 @@ static int json_format(FILE *f, JsonVariant *v, JsonFormatFlags flags, const cha
                                 fputc('[', f);
                         }
 
-                        for (i = 0; i < n; i++) {
+                        for (size_t i = 0; i < n; i++) {
                                 JsonVariant *e;
 
                                 assert_se(e = json_variant_by_index(v, i));
@@ -1691,10 +1671,7 @@ static int json_format(FILE *f, JsonVariant *v, JsonFormatFlags flags, const cha
         }
 
         case JSON_VARIANT_OBJECT: {
-                size_t i, n;
-
-                n = json_variant_elements(v);
-
+                size_t n = json_variant_elements(v);
                 if (n == 0)
                         fputs("{}", f);
                 else {
@@ -1713,7 +1690,7 @@ static int json_format(FILE *f, JsonVariant *v, JsonFormatFlags flags, const cha
                                 fputc('{', f);
                         }
 
-                        for (i = 0; i < n; i += 2) {
+                        for (size_t i = 0; i < n; i += 2) {
                                 JsonVariant *e;
 
                                 e = json_variant_by_index(v, i);
@@ -1830,7 +1807,7 @@ void json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const cha
 int json_variant_filter(JsonVariant **v, char **to_remove) {
         _cleanup_(json_variant_unrefp) JsonVariant *w = NULL;
         _cleanup_free_ JsonVariant **array = NULL;
-        size_t i, n = 0, k = 0;
+        size_t n = 0, k = 0;
         int r;
 
         assert(v);
@@ -1843,7 +1820,7 @@ int json_variant_filter(JsonVariant **v, char **to_remove) {
         if (strv_isempty(to_remove))
                 return 0;
 
-        for (i = 0; i < json_variant_elements(*v); i += 2) {
+        for (size_t i = 0; i < json_variant_elements(*v); i += 2) {
                 JsonVariant *p;
 
                 p = json_variant_by_index(*v, i);
@@ -1885,7 +1862,7 @@ int json_variant_filter(JsonVariant **v, char **to_remove) {
 int json_variant_set_field(JsonVariant **v, const char *field, JsonVariant *value) {
         _cleanup_(json_variant_unrefp) JsonVariant *field_variant = NULL, *w = NULL;
         _cleanup_free_ JsonVariant **array = NULL;
-        size_t i, k = 0;
+        size_t k = 0;
         int r;
 
         assert(v);
@@ -1900,7 +1877,7 @@ int json_variant_set_field(JsonVariant **v, const char *field, JsonVariant *valu
                 if (!json_variant_is_object(*v))
                         return -EINVAL;
 
-                for (i = 0; i < json_variant_elements(*v); i += 2) {
+                for (size_t i = 0; i < json_variant_elements(*v); i += 2) {
                         JsonVariant *p;
 
                         p = json_variant_by_index(*v, i);
@@ -2013,7 +1990,7 @@ int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l) {
 int json_variant_merge(JsonVariant **v, JsonVariant *m) {
         _cleanup_(json_variant_unrefp) JsonVariant *w = NULL;
         _cleanup_free_ JsonVariant **array = NULL;
-        size_t v_elements, m_elements, i, k;
+        size_t v_elements, m_elements, k;
         bool v_blank, m_blank;
         int r;
 
@@ -2046,7 +2023,7 @@ int json_variant_merge(JsonVariant **v, JsonVariant *m) {
                 return -ENOMEM;
 
         k = 0;
-        for (i = 0; i < v_elements; i += 2) {
+        for (size_t i = 0; i < v_elements; i += 2) {
                 JsonVariant *u;
 
                 u = json_variant_by_index(*v, i);
@@ -2060,7 +2037,7 @@ int json_variant_merge(JsonVariant **v, JsonVariant *m) {
                 array[k++] = json_variant_by_index(*v, i + 1);
         }
 
-        for (i = 0; i < m_elements; i++)
+        for (size_t i = 0; i < m_elements; i++)
                 array[k++] = json_variant_by_index(m, i);
 
         r = json_variant_new_object(&w, array, k);
@@ -2096,19 +2073,17 @@ int json_variant_append_array(JsonVariant **v, JsonVariant *element) {
         if (blank)
                 r = json_variant_new_array(&nv, (JsonVariant*[]) { element }, 1);
         else {
-                _cleanup_free_ JsonVariant **array = NULL;
-                size_t i;
-
-                array = new(JsonVariant*, json_variant_elements(*v) + 1);
+                _cleanup_free_ JsonVariant **array = new(JsonVariant*, json_variant_elements(*v) + 1);
                 if (!array)
                         return -ENOMEM;
 
-                for (i = 0; i < json_variant_elements(*v); i++)
+                size_t size = json_variant_elements(*v);
+                for (size_t i = 0; i < size; i++)
                         array[i] = json_variant_by_index(*v, i);
 
-                array[i] = element;
+                array[size] = element;
 
-                r = json_variant_new_array(&nv, array, i + 1);
+                r = json_variant_new_array(&nv, array, size + 1);
         }
         if (r < 0)
                 return r;
@@ -2123,7 +2098,6 @@ int json_variant_append_array(JsonVariant **v, JsonVariant *element) {
 
 int json_variant_strv(JsonVariant *v, char ***ret) {
         char **l = NULL;
-        size_t n, i;
         bool sensitive;
         int r;
 
@@ -2143,12 +2117,12 @@ int json_variant_strv(JsonVariant *v, char ***ret) {
 
         sensitive = v->sensitive;
 
-        n = json_variant_elements(v);
+        size_t n = json_variant_elements(v);
         l = new(char*, n+1);
         if (!l)
                 return -ENOMEM;
 
-        for (i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
                 JsonVariant *e;
 
                 assert_se(e = json_variant_by_index(v, i));
@@ -2167,7 +2141,7 @@ int json_variant_strv(JsonVariant *v, char ***ret) {
                 }
         }
 
-        l[i] = NULL;
+        l[n] = NULL;
         *ret = TAKE_PTR(l);
 
         return 0;
@@ -2855,7 +2829,7 @@ static int json_parse_internal(
                 unsigned *column,
                 bool continue_end) {
 
-        size_t n_stack = 1, i;
+        size_t n_stack = 1;
         unsigned line_buffer = 0, column_buffer = 0;
         void *tokenizer_state = NULL;
         JsonStack *stack = NULL;
@@ -3194,7 +3168,7 @@ done:
         r = 0;
 
 finish:
-        for (i = 0; i < n_stack; i++)
+        for (size_t i = 0; i < n_stack; i++)
                 json_stack_release(stack + i);
 
         free(stack);
@@ -3239,7 +3213,7 @@ int json_parse_file_at(FILE *f, int dir_fd, const char *path, JsonParseFlags fla
 
 int json_buildv(JsonVariant **ret, va_list ap) {
         JsonStack *stack = NULL;
-        size_t n_stack = 1, i;
+        size_t n_stack = 1;
         int r;
 
         assert_return(ret, -EINVAL);
@@ -4165,7 +4139,7 @@ done:
         r = 0;
 
 finish:
-        for (i = 0; i < n_stack; i++)
+        for (size_t i = 0; i < n_stack; i++)
                 json_stack_release(stack + i);
 
         free(stack);
@@ -4249,8 +4223,7 @@ int json_log_internal(
 }
 
 int json_dispatch(JsonVariant *v, const JsonDispatch table[], JsonDispatchCallback bad, JsonDispatchFlags flags, void *userdata) {
-        const JsonDispatch *p;
-        size_t i, n, m;
+        size_t m;
         int r, done = 0;
         bool *found;
 
@@ -4263,14 +4236,16 @@ int json_dispatch(JsonVariant *v, const JsonDispatch table[], JsonDispatchCallba
                 return -EINVAL;
         }
 
-        for (p = table, m = 0; p->name; p++)
+        m = 0;
+        for (const JsonDispatch *p = table; p->name; p++)
                 m++;
 
         found = newa0(bool, m);
 
-        n = json_variant_elements(v);
-        for (i = 0; i < n; i += 2) {
+        size_t n = json_variant_elements(v);
+        for (size_t i = 0; i < n; i += 2) {
                 JsonVariant *key, *value;
+                const JsonDispatch *p;
 
                 assert_se(key = json_variant_by_index(v, i));
                 assert_se(value = json_variant_by_index(v, i+1));
@@ -4344,7 +4319,7 @@ int json_dispatch(JsonVariant *v, const JsonDispatch table[], JsonDispatchCallba
                 }
         }
 
-        for (p = table; p->name; p++) {
+        for (const JsonDispatch *p = table; p->name; p++) {
                 JsonDispatchFlags merged_flags = p->flags | flags;
 
                 if ((merged_flags & JSON_MANDATORY) && !found[p-table]) {
@@ -4641,7 +4616,7 @@ static int json_cmp_strings(const void *x, const void *y) {
 int json_variant_sort(JsonVariant **v) {
         _cleanup_free_ JsonVariant **a = NULL;
         JsonVariant *n = NULL;
-        size_t i, m;
+        size_t m;
         int r;
 
         assert(v);
@@ -4659,7 +4634,7 @@ int json_variant_sort(JsonVariant **v) {
         if (!a)
                 return -ENOMEM;
 
-        for (i = 0; i < m; i++)
+        for (size_t i = 0; i < m; i++)
                 a[i] = json_variant_by_index(*v, i);
 
         qsort(a, m/2, sizeof(JsonVariant*)*2, json_cmp_strings);
@@ -4682,7 +4657,7 @@ int json_variant_sort(JsonVariant **v) {
 int json_variant_normalize(JsonVariant **v) {
         _cleanup_free_ JsonVariant **a = NULL;
         JsonVariant *n = NULL;
-        size_t i, j, m;
+        size_t i, m;
         int r;
 
         assert(v);
@@ -4734,7 +4709,7 @@ int json_variant_normalize(JsonVariant **v) {
         r = 1;
 
 finish:
-        for (j = 0; j < i; j++)
+        for (size_t j = 0; j < i; j++)
                 json_variant_unref(a[j]);
 
         return r;
