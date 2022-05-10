@@ -39,6 +39,7 @@ conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
            description : 'tailor build to development or release builds')
+conf.set10('LOG_MESSAGE_VERIFICATION', get_option('log-message-verification'))
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
@@ -368,7 +369,6 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 
 cc = meson.get_compiler('c')
 pkgconfig = import('pkgconfig')
-check_compilation_sh = find_program('tools/check-compilation.sh')
 meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
@@ -3946,6 +3946,7 @@ public_programs += executable(
 #         if want_tests != 'false'
 #                 test('hwdb-test',
 #                      hwdb_test_sh,
+#                      suite : 'dist-check',
 #                      args : [systemd_hwdb.full_path()],
 #                      timeout : 90)
 #         endif
@@ -4319,6 +4320,7 @@ endforeach
 #                         if b == name
 #                                 test('@0@_@1@'.format(b, c),
 #                                      exe,
+#                                      suite : 'fuzzers',
 #                                      args : [project_source_root / p])
 #                         endif
 #                 endforeach
@@ -4421,6 +4423,7 @@ jekyll = find_program('jekyll', required : false)
 if get_option('mode') == 'developer' and want_tests != 'false' and jekyll.found()
         test('github-pages',
              jekyll,
+             suite : 'dist-check',
              args : ['build',
                      '--source', project_source_root / 'docs',
                      '--destination', project_build_root / '_site'])
@@ -4436,11 +4439,13 @@ foreach exec : public_programs
         if want_tests != 'false'
                 test('check-help-' + name,
                      check_help,
+                     suite : 'dist-check',
                      args : exec.full_path(),
                      depends: exec)
 
                 test('check-version-' + name,
                      check_version,
+                     suite : 'dist-check',
                      args : [exec.full_path(),
                              meson.project_version()],
                      depends: exec)
@@ -4455,6 +4460,7 @@ endforeach
 # if want_tests != 'false'
 #         test('check-directives',
 #              check_directives_sh,
+#              suite : 'dist-check',
 #              args : [project_source_root, project_build_root])
 # endif
 #
@@ -4494,6 +4500,7 @@ endforeach
 #                         if fuzz_tests
 #                                 test('@0@_@1@_@2@'.format(b, c, sanitizer),
 #                                      env,
+#                                      suite : 'fuzz+san',
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
 #                                      timeout : 60,
 #                                      args : [exe.full_path(),
