@@ -260,6 +260,7 @@ libsystemd_c_args = ['-fvisibility=default']
 #         output : 'libsystemd.pc',
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
 #         install : pkgconfiglibdir != 'no',
+#         install_tag : 'devel',
 #         install_dir : pkgconfiglibdir)
 #
 # ############################################################
