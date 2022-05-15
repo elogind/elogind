@@ -10,7 +10,7 @@ project('elogind', 'c',
                 'localstatedir=/var',
                 'warning_level=2',
         ],
-        meson_version : '>= 0.55.0',
+        meson_version : '>= 0.56.0',
        )
 
 #if 0 /// elogind does not ship lubudev
