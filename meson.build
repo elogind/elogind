@@ -2753,6 +2753,7 @@ test_dlopen = executable(
 #                                         libpam_misc],
 #                         link_depends : pam_systemd_sym,
 #                         install : true,
+#                         install_tag : 'pam',
 #                         install_dir : pamlibdir)
 #
 #                 if want_tests != 'false'
@@ -3043,6 +3044,7 @@ endif
 #                                         libcrypt],
 #                         link_depends : pam_systemd_home_sym,
 #                         install : true,
+#                         install_tag : 'pam',
 #                         install_dir : pamlibdir)
 #         endif
 # endif
