@@ -10,7 +10,7 @@ project('elogind', 'c',
                 'localstatedir=/var',
                 'warning_level=2',
         ],
-        meson_version : '>= 0.53.2',
+        meson_version : '>= 0.54.0',
        )
 
 libsystemd_version = '0.36.0'
@@ -415,7 +415,7 @@ fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
 install_tests = get_option('install-tests')
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
-# if add_languages('cpp', required : fuzzer_build)
+# if add_languages('cpp', native : false, required : fuzzer_build)
 #         #  Used only for tests
 #         cxx = meson.get_compiler('cpp')
 #         cxx_cmd = ' '.join(cxx.cmd_array())
@@ -4892,8 +4892,8 @@ foreach test : tests
                 versiondep,
         ]
 
-        # FIXME: Use fs.stem() with meson >= 0.54.0
-        name = '@0@'.format(sources[0]).split('/')[-1]
+        # FIXME: Drop .format with meson >= 0.59.0
+        name = fs.stem('@0@'.format(sources[0]))
         if not name.endswith('.cc')
                 deps += [userspace]
         endif
@@ -5033,8 +5033,8 @@ endforeach
 #         endif
 #         sources += fuzz_generated_directives
 #
-#         # FIXME: Use fs.stem() with meson >= 0.54.0
-#         name = '@0@'.format(sources[0]).split('/')[-1].split('.')[0]
+#         # FIXME: Drop .format with meson >= 0.59.0
+#         name = fs.stem('@0@'.format(sources[0]))
 #
 #         exe = executable(
 #                 name,
