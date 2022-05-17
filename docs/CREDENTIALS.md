@@ -34,7 +34,7 @@ purpose. Specifically, the following features are provided:
    environment variables the credential data is not propagated down the process
    tree. Instead each time a credential is accessed an access check is enforced
    by the kernel. If the service is using file system namespacing the loaded
-   credential data is invisble to any other services.
+   credential data is invisible to any other services.
 
 4. Service credentials may be acquired from files on disk, specified as literal
    strings in unit files, acquired from another service dynamically via an
@@ -57,9 +57,9 @@ purpose. Specifically, the following features are provided:
 
 8. Credentials are an effective way to pass parameters into services that run
    with `RootImage=` or `RootDirectory=` and thus cannot read these resources
-   directly from the host directory tree. Specifically, [Portable
-   Services](https://elogind.io/PORTABLE_SERVICES) may be parameterized this
-   way securely and robustly.
+   directly from the host directory tree.
+   Specifically, [Portable Services](PORTABLE_SERVICES.md) may be
+   parameterized this way securely and robustly.
 
 9. Credentials can be binary and relatively large (though currently an overall
    size limit of 1M per service is enforced).
@@ -146,7 +146,7 @@ data it needs from there. For daemons that do not support this but allow
 passing credentials via a path supplied over the command line use
 `${CREDENTIAL_PATH}` in the `ExecStart=` command line to reference the
 credentials directory. For daemons that allow passing credentials via a path
-supplied as environment variabe, use the `%d` specifier in the `Environment=`
+supplied as environment variable, use the `%d` specifier in the `Environment=`
 setting to build valid paths to specific credentials.
 
 ## Tools
@@ -195,8 +195,8 @@ encrypt and decrypt/authenticate credentials. Example:
 
 ```sh
 elogind-creds encrypt plaintext.txt ciphertext.cred
-shred -u plaintext-txt
 elogind-run -P --wait -p LoadCredentialEncrypted=foobar:$(pwd)/ciphertext.cred elogind-creds cat foobar
+shred -u plaintext.txt
 ```
 
 This will first create an encrypted copy of the file `plaintext.txt` in the
@@ -251,7 +251,7 @@ services where they are ultimately consumed.
    invokes. [`elogind-nspawn(1)`](https://www.freedesktop.org/software/elogind/man/elogind-nspawn.html#Credentials)'s
    `--set-credential=` and `--load-credential=` switches implement this, in
    order to pass arbitrary credentials from host to container payload. Also see
-   the [Container Interface](https://elogind.io/CONTAINER_INTERFACE)
+   the [Container Interface](CONTAINER_INTERFACE.md)
    documentation.
 
 2. Quite similar, qemu VMs can be invoked with `-fw_cfg
@@ -270,7 +270,7 @@ services where they are ultimately consumed.
    [`elogind-stub`](https://www.freedesktop.org/software/elogind/man/elogind-stub.html)
    UEFI kernel stub is used. This allows placing encrypted credentials in the
    EFI System Partition, which are then picked up by `elogind-stub` and passed
-   to the kernel and ultimately userpace where elogind receives them. This is
+   to the kernel and ultimately userspace where elogind receives them. This is
    useful to implement secure parameterization of vendor-built and signed
    initial RAM disks, as userspace can place credentials next to these EFI
    kernels, and be sure they can be accessed securely from initrd context.
