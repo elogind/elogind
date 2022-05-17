@@ -2,7 +2,8 @@
 #pragma once
 
 #ifndef SD_BOOT
-#include <assert.h>
+#  include <assert.h>
+#  include <stddef.h>
 #endif
 
 #include <limits.h>
@@ -24,7 +25,15 @@
 #else
 #define _fallthrough_
 #endif
+/* Define C11 noreturn without <stdnoreturn.h> and even on older gcc
+ * compiler versions */
+#ifndef _noreturn_
+#if __STDC_VERSION__ >= 201112L
 #define _noreturn_ _Noreturn
+#else
+#define _noreturn_ __attribute__((__noreturn__))
+#endif
+#endif
 
 #define XSTRINGIFY(x) #x
 #define STRINGIFY(x) XSTRINGIFY(x)
@@ -45,7 +54,7 @@
 #define CONCATENATE(x, y) XCONCATENATE(x, y)
 
 #ifdef SD_BOOT
-        _noreturn_ void efi_assert(const char *expr, const char *file, unsigned line, const char *function);
+        void efi_assert(const char *expr, const char *file, unsigned line, const char *function) _noreturn_;
 
         #ifdef NDEBUG
                 #define assert(expr)
@@ -54,7 +63,6 @@
                 #define assert(expr) ({ _likely_(expr) ? VOID_0 : efi_assert(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__); })
                 #define assert_not_reached() efi_assert("Code should not be reached", __FILE__, __LINE__, __PRETTY_FUNCTION__)
         #endif
-        #define static_assert _Static_assert
         #define assert_se(expr) ({ _likely_(expr) ? VOID_0 : efi_assert(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__); })
 
         #define memcpy(a, b, c) CopyMem((a), (b), (c))
@@ -76,8 +84,15 @@
                 _expr_;                         \
         })
 
-#define assert_cc(expr) static_assert(expr, #expr)
-
+#if defined(static_assert)
+#define assert_cc(expr)                                                 \
+        static_assert(expr, #expr)
+#else
+#define assert_cc(expr)                                                 \
+        struct CONCATENATE(_assert_struct_, __COUNTER__) {              \
+                char x[(expr) ? 0 : -1];                                \
+        }
+#endif
 
 #define UNIQ_T(x, uniq) CONCATENATE(__unique_prefix_, CONCATENATE(x, uniq))
 #define UNIQ __COUNTER__
