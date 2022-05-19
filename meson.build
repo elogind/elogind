@@ -20,7 +20,7 @@ libsystemd_version = '0.34.0'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
-# conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/systemd')
+# conf.set_quoted('PROJECT_URL', 'https://systemd.io/')
 #else // 0
 support_url = 'https://github.com/elogind/elogind'
 conf.set_quoted('PROJECT_URL', support_url)
@@ -2100,7 +2100,6 @@ make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
-
 update_man_rules_py = find_program('tools/update-man-rules.py')
 #if 0 /// UNNEEDED by elogind
 # update_hwdb_sh = find_program('tools/update-hwdb.sh')
