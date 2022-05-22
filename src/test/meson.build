@@ -675,6 +675,8 @@ tests += [
 #
 #         [files('test-journal-importer.c')],
 #
+#         [files('test-utmp.c')],
+#
 #         [files('test-udev.c'),
 #          [libudevd_core,
 #           libshared],
@@ -738,6 +740,9 @@ tests += [
         [files('test-hmac.c')],
 
         [files('test-sha256.c')],
+
+        [files('test-nft-set.c'),
+         [], [], [], '', 'manual'],
 ]
 
 ############################################################
