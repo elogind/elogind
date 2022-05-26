@@ -225,7 +225,9 @@ tests += [
 
         [files('test-mkdir.c')],
 
-        [files('test-json.c')],
+        [files('test-json.c'),
+         [],
+         [libm]],
 
 #if 0 /// UNNEEDED in elogind
 #         [files('test-modhex.c')],
@@ -303,7 +305,9 @@ tests += [
 #         [files('test-parse-helpers.c')],
 #endif // 0
 
-        [files('test-parse-util.c')],
+        [files('test-parse-util.c'),
+         [],
+         [libm]],
 
 #if 0 /// UNNEEDED in elogind
 #         [files('test-sysctl-util.c')],
@@ -681,7 +685,6 @@ tests += [
 #           libacl,
 #           libselinux],
 #          udev_includes, '', 'manual'],
-#
 #
 #         [files('test-udev-util.c')],
 #endif // 0

@@ -288,7 +288,8 @@ libsystemd_c_args = ['-fvisibility=default']
 #           libglib,
 #           libgobject,
 #           libgio,
-#           libdbus]],
+#           libdbus,
+#           libm]],
 #
 #         [files('sd-bus/test-bus-signature.c'),
 #          [],
