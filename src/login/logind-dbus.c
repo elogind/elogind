@@ -1879,7 +1879,6 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
                 log_warning("Error during inhibitor-delayed operation (already returned success to client): %s",
                             bus_error_message(&error, r));
 
-
                 manager->delayed_action = NULL;
         }
 
@@ -2598,8 +2597,6 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
         if (r == 0)
                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
 
-        reset_scheduled_shutdown(m);
-
         if (m->enable_wall_messages) {
                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
                 _cleanup_free_ char *username = NULL;
@@ -2628,6 +2625,8 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                 utmp_wall(l, uid_to_name(uid), tty, logind_wall_tty_filter, m);
 #endif // 0
         }
+
+        reset_scheduled_shutdown(m);
 
         return sd_bus_reply_method_return(message, "b", true);
 }
