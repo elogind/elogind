@@ -103,6 +103,9 @@ foreach header : _systemd_headers
                              '-Wall',
                              '-Wextra',
                              '-Werror',
+                             '-pedantic',
+                             '-Wno-long-long',
+                             '-Wno-variadic-macros',
                              '-include', meson.current_source_dir() / header,
                              '-o/dev/null',
                              '/dev/null'])
