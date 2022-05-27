@@ -77,6 +77,7 @@
         #define static_assert _Static_assert
         #define assert_se(expr) ({ _likely_(expr) ? VOID_0 : efi_assert(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__); })
 
+        #define memcpy(a, b, c) CopyMem((a), (b), (c))
         #define free(a) FreePool(a)
 #endif
 
@@ -319,6 +320,14 @@ static inline size_t ALIGN_TO(size_t l, size_t ali) {
 
         return ((l + ali - 1) & ~(ali - 1));
 }
+
+#define ALIGN4(l) ALIGN_TO(l, 4)
+#define ALIGN8(l) ALIGN_TO(l, 8)
+#ifndef SD_BOOT
+/* libefi also provides ALIGN, and we do not use them in sd-boot explicitly. */
+#define ALIGN(l)  ALIGN_TO(l, sizeof(void*))
+#define ALIGN_PTR(p) ((void*) ALIGN((uintptr_t) (p)))
+#endif
 
 /* Same as ALIGN_TO but callable in constant contexts. */
 #define CONST_ALIGN_TO(l, ali)                                         \
