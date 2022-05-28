@@ -436,6 +436,9 @@ possible_common_cc_flags = [
         '-Werror=shift-overflow=2',
         '-Werror=undef',
         '-Wfloat-equal',
+        # gperf prevents us from enabling this because it does not emit fallthrough
+        # attribute with clang.
+        #'-Wimplicit-fallthrough',
         '-Wimplicit-fallthrough=5',
         '-Winit-self',
         '-Wlogical-op',
@@ -1737,7 +1740,7 @@ conf.set10('HAVE_XKBCOMMON', false)
 
 #if 0 /// UNNEEDED by elogind
 # want_pcre2 = get_option('pcre2')
-# if want_pcre2 != 'false' and not skip_deps
+# if want_pcre2 != 'false'
 #         libpcre2 = dependency('libpcre2-8',
 #                               required : want_pcre2 == 'true')
 #         have = libpcre2.found()
@@ -2991,7 +2994,8 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads],
 #                 install_rpath : rootlibexecdir,
-#                 install : true)
+#                 install : true,
+#                 install_dir : rootbindir)
 # endif
 #
 # if conf.get('ENABLE_HOMED') == 1
@@ -3034,7 +3038,8 @@ endif
 #                                 libp11kit,
 #                                 libdl],
 #                 install_rpath : rootlibexecdir,
-#                 install : true)
+#                 install : true,
+#                 install_dir : rootbindir)
 #
 #         if conf.get('HAVE_PAM') == 1
 #                 version_script_arg = project_source_root / pam_systemd_home_sym
