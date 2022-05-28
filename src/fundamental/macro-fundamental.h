@@ -10,29 +10,40 @@
 #include "types-fundamental.h"
 
 #define _align_(x) __attribute__((__aligned__(x)))
-#define _const_ __attribute__((__const__))
-#define _pure_ __attribute__((__pure__))
-#define _section_(x) __attribute__((__section__(x)))
-#define _packed_ __attribute__((__packed__))
-#define _retain_ __attribute__((__retain__))
-#define _used_ __attribute__((__used__))
-#define _unused_ __attribute__((__unused__))
+#define _alignas_(x) __attribute__((__aligned__(__alignof__(x))))
+#define _alignptr_ __attribute__((__aligned__(sizeof(void *))))
 #define _cleanup_(x) __attribute__((__cleanup__(x)))
+#define _const_ __attribute__((__const__))
+#define _deprecated_ __attribute__((__deprecated__))
+#define _destructor_ __attribute__((__destructor__))
+#define _hidden_ __attribute__((__visibility__("hidden")))
 #define _likely_(x) (__builtin_expect(!!(x), 1))
-#define _unlikely_(x) (__builtin_expect(!!(x), 0))
-#if __GNUC__ >= 7
-#define _fallthrough_ __attribute__((__fallthrough__))
-#else
-#define _fallthrough_
-#endif
-/* Define C11 noreturn without <stdnoreturn.h> and even on older gcc
- * compiler versions */
-#ifndef _noreturn_
-#if __STDC_VERSION__ >= 201112L
+#define _malloc_ __attribute__((__malloc__))
 #define _noreturn_ _Noreturn
+#define _packed_ __attribute__((__packed__))
+#define _printf_(a, b) __attribute__((__format__(printf, a, b)))
+#define _public_ __attribute__((__visibility__("default")))
+#define _pure_ __attribute__((__pure__))
+#define _retain_ __attribute__((__retain__))
+#define _section_(x) __attribute__((__section__(x)))
+#define _sentinel_ __attribute__((__sentinel__))
+#define _unlikely_(x) (__builtin_expect(!!(x), 0))
+#define _unused_ __attribute__((__unused__))
+#define _used_ __attribute__((__used__))
+#define _warn_unused_result_ __attribute__((__warn_unused_result__))
+#define _weak_ __attribute__((__weak__))
+#define _weakref_(x) __attribute__((__weakref__(#x)))
+
+#ifdef __clang__
+#  define _alloc_(...)
 #else
-#define _noreturn_ __attribute__((__noreturn__))
+#  define _alloc_(...) __attribute__((__alloc_size__(__VA_ARGS__)))
 #endif
+
+#if __GNUC__ >= 7
+#  define _fallthrough_ __attribute__((__fallthrough__))
+#else
+#  define _fallthrough_
 #endif
 
 #define XSTRINGIFY(x) #x
@@ -54,7 +65,7 @@
 #define CONCATENATE(x, y) XCONCATENATE(x, y)
 
 #ifdef SD_BOOT
-        void efi_assert(const char *expr, const char *file, unsigned line, const char *function) _noreturn_;
+        _noreturn_ void efi_assert(const char *expr, const char *file, unsigned line, const char *function);
 
         #ifdef NDEBUG
                 #define assert(expr)
@@ -63,6 +74,7 @@
                 #define assert(expr) ({ _likely_(expr) ? VOID_0 : efi_assert(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__); })
                 #define assert_not_reached() efi_assert("Code should not be reached", __FILE__, __LINE__, __PRETTY_FUNCTION__)
         #endif
+        #define static_assert _Static_assert
         #define assert_se(expr) ({ _likely_(expr) ? VOID_0 : efi_assert(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__); })
 
         #define memcpy(a, b, c) CopyMem((a), (b), (c))
@@ -84,15 +96,8 @@
                 _expr_;                         \
         })
 
-#if defined(static_assert)
-#define assert_cc(expr)                                                 \
-        static_assert(expr, #expr)
-#else
-#define assert_cc(expr)                                                 \
-        struct CONCATENATE(_assert_struct_, __COUNTER__) {              \
-                char x[(expr) ? 0 : -1];                                \
-        }
-#endif
+#define assert_cc(expr) static_assert(expr, #expr)
+
 
 #define UNIQ_T(x, uniq) CONCATENATE(__unique_prefix_, CONCATENATE(x, uniq))
 #define UNIQ __COUNTER__
