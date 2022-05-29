@@ -25,7 +25,7 @@ conf = configuration_data()
 support_url = 'https://github.com/elogind/elogind'
 conf.set_quoted('PROJECT_URL', support_url)
 #endif // 0
-conf.set('PROJECT_VERSION',    meson.project_version(),
+conf.set('PROJECT_VERSION', meson.project_version(),
          description : 'Numerical project version (used where a simple number is expected)')
 
 # This is to be used instead of meson.source_root(), as the latter will return
@@ -5178,7 +5178,7 @@ check_help = find_program('tools/check-help.sh')
 check_version = find_program('tools/check-version.sh')
 
 foreach exec : public_programs
-        name = exec.full_path().split('/')[-1]
+        name = fs.name(exec.full_path())
         if want_tests != 'false'
                 test('check-help-' + name,
                      check_help,
