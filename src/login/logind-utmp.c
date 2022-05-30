@@ -42,28 +42,20 @@ _const_ static usec_t when_wall(usec_t n, usec_t elapse) {
         return left % USEC_PER_HOUR;
 }
 
-bool logind_wall_tty_filter(const char *tty, bool is_local, void *userdata) {
-        Manager *m = ASSERT_PTR(userdata);
+bool logind_wall_tty_filter(const char *tty, void *userdata) {
+        Manager *m = userdata;
+        const char *p;
 
-        assert(m->scheduled_shutdown_action);
+        assert(m);
 
-        const char *p = path_startswith(tty, "/dev/");
+        if (!m->scheduled_shutdown_tty)
+                return true;
+
+        p = path_startswith(tty, "/dev/");
         if (!p)
                 return true;
 
-        /* Do not send information about events which do not destroy local sessions to local terminals. We
-         * can assume that if the system enters sleep or hibernation, this will be visible in an obvious way
-         * for any local user. And once the systems exits sleep or hibernation, the notication would be just
-         * noise, in particular for auto-suspend. */
-        if (is_local &&
-            IN_SET(m->scheduled_shutdown_action->handle,
-                   HANDLE_SUSPEND,
-                   HANDLE_HIBERNATE,
-                   HANDLE_HYBRID_SLEEP,
-                   HANDLE_SUSPEND_THEN_HIBERNATE))
-                return false;
-
-        return !streq_ptr(p, m->scheduled_shutdown_tty);
+        return !streq(p, m->scheduled_shutdown_tty);
 }
 
 static int warn_wall(Manager *m, usec_t n) {
@@ -78,11 +70,11 @@ static int warn_wall(Manager *m, usec_t n) {
 
         left = m->scheduled_shutdown_timeout > n;
 
-        r = asprintf(&l, "%s%sThe system is going down for %s %s%s!",
+        r = asprintf(&l, "%s%sThe system will %s %s%s!",
                      strempty(m->wall_message),
                      isempty(m->wall_message) ? "" : "\n",
-                     handle_action_to_string(m->scheduled_shutdown_action->handle),
-                     left ? "at " : "NOW",
+                     handle_action_verb_to_string(m->scheduled_shutdown_action->handle),
+                     left ? "at " : "now",
                      left ? FORMAT_TIMESTAMP(m->scheduled_shutdown_timeout) : "");
         if (r < 0) {
                 log_oom();
