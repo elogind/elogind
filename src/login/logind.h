@@ -100,7 +100,6 @@ struct Manager {
         usec_t inhibit_delay_max;
         usec_t user_stop_delay;
 
-
         /* If a shutdown/suspend was delayed due to an inhibitor this contains the action we are supposed to
          * start after the delay is over */
         const HandleActionData *delayed_action;
@@ -235,6 +234,6 @@ CONFIG_PARSER_PROTOTYPE(config_parse_n_autovts);
 CONFIG_PARSER_PROTOTYPE(config_parse_tmpfs_size);
 
 int manager_setup_wall_message_timer(Manager *m);
-bool logind_wall_tty_filter(const char *tty, void *userdata);
+bool logind_wall_tty_filter(const char *tty, bool is_local, void *userdata);
 
 int manager_read_efi_boot_loader_entries(Manager *m);
