@@ -675,6 +675,8 @@ tests += [
 #
 #         [files('test-journal-importer.c')],
 #
+#         [files('test-utmp.c')],
+#
 #         [files('test-udev.c'),
 #          [libudevd_core,
 #           libshared],
