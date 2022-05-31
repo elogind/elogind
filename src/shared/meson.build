@@ -267,6 +267,8 @@
 #         'quota-util.h',
 #         'reboot-util.c',
 #         'reboot-util.h',
+#         'recovery-key.c',
+#         'recovery-key.h',
 #         'resize-fs.c',
 #         'resize-fs.h',
 #         'resolve-util.c',

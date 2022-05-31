@@ -195,8 +195,6 @@
 #         'ratelimit.h',
 #         'raw-clone.h',
 #         'raw-reboot.h',
-#         'recovery-key.c',
-#         'recovery-key.h',
 #         'recurse-dir.c',
 #         'recurse-dir.h',
 #         'replace-var.c',
