@@ -136,6 +136,12 @@ libcore_sources = files(
 )
 
 #if 0 /// elogind has only two of the parts here in it...
+# if conf.get('BPF_FRAMEWORK') == 1
+#         libcore_sources += files(
+#                 'bpf-util.c',
+#                 'bpf-util.h',
+#         )
+# endif
 #else // 0
 libcore_sources = files('''
         cgroup.c
