@@ -173,6 +173,7 @@ rootlibdir = get_option('rootlibdir')
 if rootlibdir == ''
         rootlibdir = rootprefixdir / libdir.split('/')[-1]
 endif
+rootpkglibdir = rootlibdir / 'elogind'
 
 install_sysconfdir = get_option('install-sysconfdir') != 'false'
 install_sysconfdir_samples = get_option('install-sysconfdir') == 'true'
@@ -2314,7 +2315,7 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
                                         tpm2,
                                         versiondep],
                         link_depends : cryptsetup_token_sym,
-                        install_rpath : rootlibexecdir,
+                        install_rpath : rootpkglibdir,
                         install : true,
                         install_dir : libcryptsetup_plugins_dir)
         endif
@@ -2332,7 +2333,7 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
                                         libfido2,
                                         versiondep],
                         link_depends : cryptsetup_token_sym,
-                        install_rpath : rootlibexecdir,
+                        install_rpath : rootpkglibdir,
                         install : true,
                         install_dir : libcryptsetup_plugins_dir)
         endif
@@ -2350,7 +2351,7 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
                                         libp11kit,
                                         versiondep],
                         link_depends : cryptsetup_token_sym,
-                        install_rpath : rootlibexecdir,
+                        install_rpath : rootpkglibdir,
                         install : true,
                         install_dir : libcryptsetup_plugins_dir)
         endif
@@ -2511,7 +2512,7 @@ test_dlopen = executable(
 #                      libshared],
 #         dependencies : [versiondep,
 #                         libseccomp],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 # dbus_programs += exe
@@ -2529,7 +2530,7 @@ test_dlopen = executable(
 #                      libshared],
 #         dependencies : [versiondep,
 #                         libseccomp],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : conf.get('ENABLE_ANALYZE'))
 # public_programs += exe
 #
@@ -2550,7 +2551,7 @@ test_dlopen = executable(
 #                         liblz4,
 #                         libselinux,
 #                         libzstd],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -2561,7 +2562,7 @@ test_dlopen = executable(
 #         link_with : [libjournal_core,
 #                      libshared],
 #         dependencies : [threads],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -2575,7 +2576,7 @@ test_dlopen = executable(
 #                         liblz4,
 #                         libzstd,
 #                         libdl],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -2584,7 +2585,7 @@ test_dlopen = executable(
 #         'src/getty-generator/getty-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -2593,7 +2594,7 @@ test_dlopen = executable(
 #         'src/debug-generator/debug-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -2602,7 +2603,7 @@ test_dlopen = executable(
 #         'src/run-generator/run-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -2611,7 +2612,7 @@ test_dlopen = executable(
 #         'src/fstab-generator/fstab-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -2629,7 +2630,7 @@ test_dlopen = executable(
 #                 'src/environment-d-generator/environment-d-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : userenvgeneratordir)
 #
@@ -2644,7 +2645,7 @@ test_dlopen = executable(
 #                 'src/hibernate-resume/hibernate-resume-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -2653,7 +2654,7 @@ test_dlopen = executable(
 #                 'src/hibernate-resume/hibernate-resume.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -2665,7 +2666,7 @@ test_dlopen = executable(
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : libblkid,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -2674,7 +2675,7 @@ test_dlopen = executable(
 #                 'src/dissect/dissect.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
@@ -2687,7 +2688,7 @@ test_dlopen = executable(
 #                              libbasic_gcrypt,
 #                              libsystemd_resolve_core],
 #                 dependencies : systemd_resolved_dependencies,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2702,7 +2703,7 @@ test_dlopen = executable(
 #                                 lib_openssl_or_gcrypt,
 #                                 libm,
 #                                 libidn],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 #
 #         meson.add_install_script(meson_make_symlink,
@@ -2723,7 +2724,7 @@ test_dlopen = executable(
 #                              libshared],
 #                 dependencies : [threads,
 #                                 libacl],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2736,7 +2737,7 @@ test_dlopen = executable(
 #                                 liblz4,
 #                                 libxz,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #
@@ -2745,7 +2746,7 @@ test_dlopen = executable(
 #                 'src/login/inhibit.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #
@@ -2782,7 +2783,7 @@ test_dlopen = executable(
 #                 user_runtime_dir_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -2829,7 +2830,7 @@ if conf.get('HAVE_PAM') == 1
 #                 'src/user-sessions/user-sessions.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #else // 0
@@ -2873,7 +2874,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [boot_link_with],
 #                 dependencies : [libblkid],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 #
 #         public_programs += executable(
@@ -2882,7 +2883,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [boot_link_with],
 #                 dependencies : [libblkid],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2891,7 +2892,7 @@ endif
 #                 'src/boot/bless-boot-generator.c',
 #                 include_directories : includes,
 #                 link_with : [boot_link_with],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 # endif
@@ -2902,7 +2903,7 @@ endif
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [libblkid],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -2912,7 +2913,7 @@ endif
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [threads],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # systemctl = executable(
@@ -2926,7 +2927,7 @@ endif
 #                         libxz,
 #                         liblz4,
 #                         libzstd],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 # public_programs += systemctl
@@ -2938,7 +2939,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads, libselinux],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2948,7 +2949,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -2959,7 +2960,7 @@ endif
 #                 systemd_sysext_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -2971,7 +2972,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2981,7 +2982,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2991,7 +2992,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
@@ -3007,7 +3008,7 @@ endif
 #                                 libopenssl,
 #                                 libfdisk,
 #                                 libp11kit],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3020,7 +3021,7 @@ endif
 #                                 libcrypt,
 #                                 libopenssl,
 #                                 libm],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3034,7 +3035,7 @@ endif
 #                                 libopenssl,
 #                                 libp11kit,
 #                                 libdl],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 #
 #         if conf.get('HAVE_PAM') == 1
@@ -3084,7 +3085,7 @@ endif
 #                 'src/backlight/backlight.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3095,7 +3096,7 @@ endif
 #                 'src/rfkill/rfkill.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3105,7 +3106,7 @@ endif
 #         'src/system-update-generator/system-update-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -3117,7 +3118,7 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [libcryptsetup,
 #                                 libp11kit],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3126,7 +3127,7 @@ endif
 #                 'src/cryptsetup/cryptsetup-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -3136,7 +3137,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libcryptsetup],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3145,7 +3146,7 @@ endif
 #                 'src/veritysetup/veritysetup-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -3158,7 +3159,7 @@ endif
 #                                 libdl,
 #                                 libopenssl,
 #                                 libp11kit],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 #
 #         executable(
@@ -3167,7 +3168,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libcryptsetup],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3176,7 +3177,7 @@ endif
 #                 ['src/integritysetup/integritysetup-generator.c', 'src/integritysetup/integrity-util.c'],
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 # endif
@@ -3187,7 +3188,7 @@ endif
 #                 'src/sysv-generator/sysv-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -3203,7 +3204,7 @@ endif
 #                 'src/rc-local-generator/rc-local-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 # endif
@@ -3214,7 +3215,7 @@ endif
 #                 systemd_xdg_autostart_generator_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : usergeneratordir)
 #
@@ -3223,7 +3224,7 @@ endif
 #                 'src/xdg-autostart-generator/xdg-autostart-condition.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3234,7 +3235,7 @@ endif
 #                 'src/hostname/hostnamed.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3243,7 +3244,7 @@ endif
 #                 'src/hostname/hostnamectl.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
@@ -3262,7 +3263,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : deps,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3271,7 +3272,7 @@ endif
 #                 localectl_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
@@ -3281,7 +3282,7 @@ endif
 #                 'src/timedate/timedated.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3291,7 +3292,7 @@ endif
 #                 'timedatectl',
 #                 'src/timedate/timedatectl.c',
 #                 include_directories : includes,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 link_with : [libshared],
 #                 dependencies : [libm],
 #                 install : true)
@@ -3305,7 +3306,7 @@ endif
 #                 link_with : [libtimesyncd_core],
 #                 dependencies : [threads,
 #                                 libm],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3314,7 +3315,7 @@ endif
 #                 'src/timesync/wait-sync.c',
 #                 include_directories : includes,
 #                 link_with : [libtimesyncd_core],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3326,7 +3327,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libmachine_core,
 #                              libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3339,7 +3340,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -3351,7 +3352,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3367,7 +3368,7 @@ endif
 #                                 libz,
 #                                 libbzip2,
 #                                 libxz],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3381,7 +3382,7 @@ endif
 #                                 libz,
 #                                 libbzip2,
 #                                 libxz],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3391,7 +3392,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared,
 #                              lib_import_common],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3405,7 +3406,7 @@ endif
 #                                 libz,
 #                                 libbzip2,
 #                                 libxz],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3425,7 +3426,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3443,7 +3444,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3458,7 +3459,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3475,7 +3476,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3489,7 +3490,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
@@ -3504,7 +3505,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3515,7 +3516,7 @@ endif
 #                    include_directories : includes,
 #                    link_with : [libshared],
 #                    dependencies : [],
-#                    install_rpath : rootlibexecdir,
+#                    install_rpath : rootpkglibdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 #
@@ -3525,7 +3526,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
@@ -3535,7 +3536,7 @@ endif
 #                 'src/binfmt/binfmt.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3557,7 +3558,7 @@ endif
 #                                 libblkid,
 #                                 libfdisk,
 #                                 libopenssl],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #         public_programs += exe
@@ -3569,7 +3570,7 @@ endif
 #                 'src/vconsole/vconsole-setup.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3580,7 +3581,7 @@ endif
 #                 'src/random-seed/random-seed.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3592,7 +3593,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libcrypt],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -3602,7 +3603,7 @@ endif
 #         'src/remount-fs/remount-fs.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3611,7 +3612,7 @@ endif
 #         'src/machine-id-setup/machine-id-setup-main.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3620,7 +3621,7 @@ endif
 #         'src/fsck/fsck.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3628,7 +3629,7 @@ endif
 #            'src/partition/growfs.c',
 #            include_directories : includes,
 #            link_with : [libshared],
-#            install_rpath : rootlibexecdir,
+#            install_rpath : rootpkglibdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
 #
@@ -3637,7 +3638,7 @@ endif
 #         'src/partition/makefs.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3646,7 +3647,7 @@ endif
 #         'src/sleep/sleep.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #endif // 0
@@ -3662,7 +3663,7 @@ endif
 #         'src/sysctl/sysctl.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3671,7 +3672,7 @@ endif
 #         'src/ac-power/ac-power.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3680,7 +3681,7 @@ endif
 #         'src/detect-virt/detect-virt.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3688,7 +3689,7 @@ endif
 #         'src/delta/delta.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3696,7 +3697,7 @@ endif
 #         'src/escape/escape.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3705,7 +3706,7 @@ endif
 #         'src/notify/notify.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3716,7 +3717,7 @@ endif
 #         link_with : [libshared],
 #         dependencies : [threads,
 #                         libopenssl],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3725,7 +3726,7 @@ endif
 #         'src/volatile-root/volatile-root.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : conf.get('ENABLE_INITRD') == 1,
 #         install_dir : rootlibexecdir)
 #endif // 0
@@ -3746,7 +3747,7 @@ executable('elogind-cgroups-agent',
 #         'src/cgroups-agent/cgroups-agent.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3755,7 +3756,7 @@ executable('elogind-cgroups-agent',
 #         'src/id128/id128.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 # public_programs += systemd_id128
 #
@@ -3772,7 +3773,7 @@ executable('elogind-cgroups-agent',
 #         'src/path/path.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3780,7 +3781,7 @@ executable('elogind-cgroups-agent',
 #         'src/ask-password/ask-password.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3789,7 +3790,7 @@ executable('elogind-cgroups-agent',
 #         'src/reply-password/reply-password.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3798,7 +3799,7 @@ executable('elogind-cgroups-agent',
 #         'src/tty-ask-password-agent/tty-ask-password-agent.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3807,7 +3808,7 @@ executable('elogind-cgroups-agent',
 #         'src/cgls/cgls.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3815,7 +3816,7 @@ executable('elogind-cgroups-agent',
 #         'src/cgtop/cgtop.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # executable(
@@ -3823,7 +3824,7 @@ executable('elogind-cgroups-agent',
 #         'src/initctl/initctl.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : (conf.get('HAVE_SYSV_COMPAT') == 1),
 #         install_dir : rootlibexecdir)
 #
@@ -3833,7 +3834,7 @@ executable('elogind-cgroups-agent',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies: [libmount],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # meson.add_install_script(meson_make_symlink,
@@ -3844,7 +3845,7 @@ executable('elogind-cgroups-agent',
 #         'src/run/run.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3853,7 +3854,7 @@ executable('elogind-cgroups-agent',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [versiondep],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #endif // 0
 
@@ -3863,7 +3864,7 @@ public_programs += executable(
         include_directories : includes,
         link_with : [libshared],
         dependencies : [versiondep],
-        install_rpath : rootlibexecdir,
+        install_rpath : rootpkglibdir,
         install : true)
 
 #if 0 /// UNNEEDED by elogind
@@ -3873,7 +3874,7 @@ public_programs += executable(
 #                 'src/sysusers/sysusers.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #         public_programs += exe
@@ -3915,7 +3916,7 @@ public_programs += executable(
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libacl],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #         public_programs += exe
@@ -3977,7 +3978,7 @@ public_programs += executable(
 #                 'src/quotacheck/quotacheck.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3988,7 +3989,7 @@ public_programs += executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [threads],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -4017,7 +4018,7 @@ public_programs += executable(
 #                 dependencies : [threads,
 #                                 libblkid,
 #                                 libfdisk],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #         public_programs += exe
@@ -4035,7 +4036,7 @@ public_programs += executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [libmount],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -4044,7 +4045,7 @@ public_programs += executable(
 #         'src/update-done/update-done.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -4054,7 +4055,7 @@ public_programs += executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [libaudit],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : (conf.get('ENABLE_UTMP') == 1),
 #         install_dir : rootlibexecdir)
 #
@@ -4065,7 +4066,7 @@ public_programs += executable(
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libkmod],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -4085,7 +4086,7 @@ public_programs += executable(
 #                      libshared],
 #         dependencies : [libblkid,
 #                         libseccomp],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # if conf.get('ENABLE_NETWORKD') == 1
@@ -4097,7 +4098,7 @@ public_programs += executable(
 #                              libsystemd_network,
 #                              networkd_link_with],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -4106,7 +4107,7 @@ public_programs += executable(
 #                 systemd_networkd_wait_online_sources,
 #                 include_directories : includes,
 #                 link_with : [networkd_link_with],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -4116,7 +4117,7 @@ public_programs += executable(
 #                 include_directories : libsystemd_network_includes,
 #                 link_with : [libsystemd_network,
 #                              networkd_link_with],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -4126,7 +4127,7 @@ public_programs += executable(
 #         network_generator_sources,
 #         include_directories : includes,
 #         link_with : [networkd_link_with],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -4143,7 +4144,7 @@ public_programs += executable(
 #         'src/sulogin-shell/sulogin-shell.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -4218,7 +4219,7 @@ foreach tuple : tests
                                         dependencies],
                         c_args : defs,
                         build_by_default : want_tests != 'false',
-                        install_rpath : rootlibexecdir,
+                        install_rpath : rootpkglibdir,
                         install : install_tests,
                         install_dir : testsdir / type,
                         link_depends : runtest_env)

@@ -210,7 +210,7 @@ libcore_sources = files('''
 #                         libblkid,
 #                         libacl],
 #         install : true,
-#         install_dir : rootlibexecdir)
+#         install_dir : rootpkglibdir)
 #
 # core_includes = [includes, include_directories('.')]
 #

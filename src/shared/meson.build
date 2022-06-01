@@ -627,4 +627,4 @@ libshared = shared_library(
 #endif // 0
         dependencies : libshared_deps,
         install : true,
-        install_dir : rootlibexecdir)
+        install_dir : rootpkglibdir)
