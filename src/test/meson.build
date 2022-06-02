@@ -675,8 +675,6 @@ tests += [
 #
 #         [files('test-journal-importer.c')],
 #
-#         [files('test-utmp.c')],
-#
 #         [files('test-udev.c'),
 #          [libudevd_core,
 #           libshared],
@@ -738,6 +736,8 @@ tests += [
 #endif // 0
 
         [files('test-hmac.c')],
+
+        [files('test-sha256.c')],
 ]
 
 ############################################################
