@@ -19,7 +19,6 @@
 #include "devnum-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "firewall-util.h"
 #include "in-addr-prefix-util.h"
 #include "inotify-util.h"
 #include "io-util.h"
@@ -281,8 +280,6 @@ void cgroup_context_done(CGroupContext *c) {
         cpu_set_reset(&c->startup_cpuset_cpus);
         cpu_set_reset(&c->cpuset_mems);
         cpu_set_reset(&c->startup_cpuset_mems);
-
-        c->nft_set_context = nft_set_context_free_many(c->nft_set_context, &c->n_nft_set_contexts);
 }
 
 static int unit_get_kernel_memory_limit(Unit *u, const char *file, uint64_t *ret) {
@@ -578,23 +575,15 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
                                 FORMAT_BYTES(b->wbps));
         }
 
-        SET_FOREACH(iaai, c->ip_address_allow) {
-                _cleanup_free_ char *k = NULL;
-
-                (void) in_addr_prefix_to_string(iaai->family, &iaai->address, iaai->prefixlen, &k);
-                fprintf(f, "%sIPAddressAllow: %s\n", prefix, strnull(k));
-        }
-
-        SET_FOREACH(iaai, c->ip_address_deny) {
-                _cleanup_free_ char *k = NULL;
-
-                (void) in_addr_prefix_to_string(iaai->family, &iaai->address, iaai->prefixlen, &k);
-                fprintf(f, "%sIPAddressDeny: %s\n", prefix, strnull(k));
-        }
+        SET_FOREACH(iaai, c->ip_address_allow)
+                fprintf(f, "%sIPAddressAllow: %s\n", prefix,
+                        IN_ADDR_PREFIX_TO_STRING(iaai->family, &iaai->address, iaai->prefixlen));
+        SET_FOREACH(iaai, c->ip_address_deny)
+                fprintf(f, "%sIPAddressDeny: %s\n", prefix,
+                        IN_ADDR_PREFIX_TO_STRING(iaai->family, &iaai->address, iaai->prefixlen));
 
         STRV_FOREACH(path, c->ip_filters_ingress)
                 fprintf(f, "%sIPIngressFilterPath: %s\n", prefix, *path);
-
         STRV_FOREACH(path, c->ip_filters_egress)
                 fprintf(f, "%sIPEgressFilterPath: %s\n", prefix, *path);
 
@@ -621,11 +610,6 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
                 SET_FOREACH(iface, c->restrict_network_interfaces)
                         fprintf(f, "%sRestrictNetworkInterfaces: %s\n", prefix, iface);
         }
-
-        for (size_t i = 0; i < c->n_nft_set_contexts; i++)
-                fprintf(f, "%sControlGroupNFTSet: %s:%s:%s\n", prefix,
-                        nfproto_to_string(c->nft_set_context[i].nfproto),
-                        c->nft_set_context[i].table, c->nft_set_context[i].set);
 }
 
 void cgroup_context_dump_socket_bind_item(const CGroupSocketBindItem *item, FILE *f) {
@@ -1235,46 +1219,6 @@ static void cgroup_apply_firewall(Unit *u) {
         (void) bpf_firewall_install(u);
 }
 
-static void cgroup_apply_nft_set(Unit *u) {
-        int r;
-        CGroupContext *c;
-
-        assert(u);
-
-        assert_se(c = unit_get_cgroup_context(u));
-
-        for (size_t i = 0; i < c->n_nft_set_contexts; i++) {
-                NFTSetContext *s = &c->nft_set_context[i];
-                r = nft_set_element_add_uint64(s, u->cgroup_id);
-                if (r < 0)
-                        log_warning_errno(r, "Adding NFT family %s table %s set %s cgroup %" PRIu64 " failed, ignoring: %m",
-                                 nfproto_to_string(s->nfproto),
-                                 s->table,
-                                 s->set,
-                                 u->cgroup_id);
-        }
-}
-
-static void cgroup_delete_nft_set(Unit *u) {
-        int r;
-        CGroupContext *c;
-
-        assert(u);
-
-        assert_se(c = unit_get_cgroup_context(u));
-
-        for (size_t i = 0; i < c->n_nft_set_contexts; i++) {
-                NFTSetContext *s = &c->nft_set_context[i];
-                r = nft_set_element_del_uint64(s, u->cgroup_id);
-                if (r < 0)
-                        log_warning_errno(r, "Deleting NFT family %s table %s set %s cgroup %" PRIu64 " failed, ignoring: %m",
-                                 nfproto_to_string(s->nfproto),
-                                 s->table,
-                                 s->set,
-                                 u->cgroup_id);
-        }
-}
-
 static void cgroup_apply_socket_bind(Unit *u) {
         assert(u);
 
@@ -1707,8 +1651,6 @@ static void cgroup_context_apply(
 
         if (apply_mask & CGROUP_MASK_BPF_RESTRICT_NETWORK_INTERFACES)
                 cgroup_apply_restrict_network_interfaces(u);
-
-        cgroup_apply_nft_set(u);
 }
 
 static bool unit_get_needs_bpf_firewall(Unit *u) {
@@ -2857,8 +2799,6 @@ void unit_prune_cgroup(Unit *u) {
 #if BPF_FRAMEWORK
         (void) lsm_bpf_cleanup(u); /* Remove cgroup from the global LSM BPF map */
 #endif
-
-        cgroup_delete_nft_set(u);
 
         is_root_slice = unit_has_name(u, SPECIAL_ROOT_SLICE);
 
