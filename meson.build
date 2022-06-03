@@ -20,7 +20,7 @@ libsystemd_version = '0.34.0'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
-# conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/systemd')
+# conf.set_quoted('PROJECT_URL', 'https://systemd.io/')
 #else // 0
 support_url = 'https://github.com/elogind/elogind'
 conf.set_quoted('PROJECT_URL', support_url)
@@ -436,6 +436,9 @@ possible_common_cc_flags = [
         '-Werror=shift-overflow=2',
         '-Werror=undef',
         '-Wfloat-equal',
+        # gperf prevents us from enabling this because it does not emit fallthrough
+        # attribute with clang.
+        #'-Wimplicit-fallthrough',
         '-Wimplicit-fallthrough=5',
         '-Winit-self',
         '-Wlogical-op',
@@ -815,8 +818,7 @@ gperf_test_format = '''
 const char * in_word_set(const char *, @0@);
 @1@
 '''
-gperf_snippet_format = 'echo foo,bar | @0@ -L ANSI-C'
-gperf_snippet = run_command(sh, '-c', gperf_snippet_format.format(gperf.path()),
+gperf_snippet = run_command(sh, '-c', 'echo foo,bar | "$1" -L ANSI-C', '_', gperf,
                             check : true)
 gperf_test = gperf_test_format.format('size_t', gperf_snippet.stdout())
 if cc.compiles(gperf_test)
@@ -1101,15 +1103,6 @@ conf.set10('KILL_USER_PROCESSES', kill_user_processes)
 # conf.set_quoted('NTP_SERVERS', ntp_servers)
 #
 # default_locale = get_option('default-locale')
-# if default_locale == ''
-#         if not meson.is_cross_build()
-#                 choose_default_locale_sh = find_program('tools/choose-default-locale.sh')
-#                 default_locale = run_command(choose_default_locale_sh,
-#                                              check : true).stdout().strip()
-#         else
-#                 default_locale = 'C.UTF-8'
-#         endif
-# endif
 # conf.set_quoted('SYSTEMD_DEFAULT_LOCALE', default_locale)
 #
 # localegen_path = get_option('localegen-path')
@@ -1200,8 +1193,8 @@ bpf_framework_required = want_bpf_framework == 'true'
 libbpf = dependency('libbpf', required : bpf_framework_required, version : '>= 0.2')
 conf.set10('HAVE_LIBBPF', libbpf.found())
 
-if want_bpf_framework == 'false' or not libbpf.found()
-        conf.set10('BPF_FRAMEWORK', 0)
+if want_bpf_framework == 'false' or not libbpf.found() or skip_deps
+        conf.set10('BPF_FRAMEWORK', false)
 else
         # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
         # (like clang-10/llvm-strip-10)
@@ -1209,11 +1202,7 @@ else
                 r = find_program('clang', required : bpf_framework_required, version : '>= 10.0.0')
                 clang_found = r.found()
                 if clang_found
-                        if meson.version().version_compare('>= 0.55')
-                                clang = [r.full_path()]
-                        else
-                                clang = [r.path()]
-                        endif
+                        clang = r.path()
                 endif
                 # Assume that the required flags are supported by the found clang.
                 clang_supports_flags = clang_found
@@ -1749,7 +1738,7 @@ conf.set10('HAVE_XKBCOMMON', false)
 
 #if 0 /// UNNEEDED by elogind
 # want_pcre2 = get_option('pcre2')
-# if want_pcre2 != 'false'
+# if want_pcre2 != 'false' and not skip_deps
 #         libpcre2 = dependency('libpcre2-8',
 #                               required : want_pcre2 == 'true')
 #         have = libpcre2.found()
@@ -1833,20 +1822,6 @@ if dbus_interfaces_dir == '' or dbus_interfaces_dir == 'yes'
                 endif
         endif
 endif
-if dbus_interfaces_dir == dbusdatadir / 'interfaces' or dbus_interfaces_dir == 'no'
-        dbus_interfaces_dir_name = 'interfaces'
-        dbus_interfaces_dir_parent = dbusdatadir
-else
-        elements = dbus_interfaces_dir.split('/')
-        dbus_interfaces_dir_name = elements[-1]
-        dbus_interfaces_dir_parent = '/'
-        foreach elem : elements
-                if elem == dbus_interfaces_dir_name and dbus_interfaces_dir == dbus_interfaces_dir_parent / dbus_interfaces_dir_name
-                        break
-                endif
-                dbus_interfaces_dir_parent = dbus_interfaces_dir_parent / elem
-        endforeach
-endif
 
 #if 0 /// UNNEEDED by elogind
 # # We support one or the other. If gcrypt is available, we assume it's there to
@@ -1867,20 +1842,20 @@ endif
 #                 error('Sorry, -Ddns-over-tls=gnutls is not supported when openssl is used as the cryptolib')
 #         endif
 #
-#         if dns_over_tls == 'openssl' or conf.get('PREFER_OPENSSL') == 1
-#                 have_gnutls = false
-#         else
-#                 have_gnutls = (conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.6.0'))
-#                 if dns_over_tls == 'gnutls' and not have_gnutls
-#                         error('DNS-over-TLS support was requested with gnutls, but dependencies are not available')
-#                 endif
-#         endif
-#         if dns_over_tls == 'gnutls' or have_gnutls
+#         if dns_over_tls == 'gnutls'
 #                 have_openssl = false
 #         else
 #                 have_openssl = conf.get('HAVE_OPENSSL') == 1
-#                 if dns_over_tls != 'auto' and not have_openssl
-#                         str = dns_over_tls == 'openssl' ? ' with openssl' : ''
+#                 if dns_over_tls == 'openssl' and not have_openssl
+#                         error('DNS-over-TLS support was requested with openssl, but dependencies are not available')
+#                 endif
+#         endif
+#         if dns_over_tls == 'openssl' or have_openssl
+#                 have_gnutls = false
+#         else
+#                 have_gnutls = conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.6.0')
+#                 if dns_over_tls != 'auto' and not have_gnutls
+#                         str = dns_over_tls == 'gnutls' ? ' with gnutls' : ''
 #                         error('DNS-over-TLS support was requested@0@, but dependencies are not available'.format(str))
 #                 endif
 #         endif
@@ -2503,13 +2478,16 @@ test_dlopen = executable(
 #                                         librt],
 #                         link_depends : sym,
 #                         install : true,
+#                         install_tag : 'nss',
 #                         install_dir : rootlibdir)
 #
 #                 # We cannot use shared_module because it does not support version suffix.
 #                 # Unfortunately shared_library insists on creating the symlink…
 #                 meson.add_install_script('sh', '-c',
 #                                          'rm $DESTDIR@0@/libnss_@1@.so'
-#                                          .format(rootlibdir, module))
+#                                          .format(rootlibdir, module),
+#                                          install_tag : 'nss'
+#                                          )
 #
 #                 if want_tests != 'false'
 #                         test('dlopen-nss_' + module,
@@ -2543,7 +2521,7 @@ test_dlopen = executable(
 #                          rootlibexecdir / 'systemd',
 #                          rootsbindir / 'init')
 #
-# public_programs += executable(
+# exe = executable(
 #         'systemd-analyze',
 #         systemd_analyze_sources,
 #         include_directories : core_includes,
@@ -2553,6 +2531,13 @@ test_dlopen = executable(
 #                         libseccomp],
 #         install_rpath : rootlibexecdir,
 #         install : conf.get('ENABLE_ANALYZE'))
+# public_programs += exe
+#
+# if want_tests != 'false'
+#         test('test-compare-versions',
+#              test_compare_versions_sh,
+#              args : exe.full_path())
+# endif
 #
 # executable(
 #         'systemd-journald',
@@ -2780,6 +2765,7 @@ test_dlopen = executable(
 #                                         libpam_misc],
 #                         link_depends : pam_systemd_sym,
 #                         install : true,
+#                         install_tag : 'pam',
 #                         install_dir : pamlibdir)
 #
 #                 if want_tests != 'false'
@@ -3006,8 +2992,7 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads],
 #                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootbindir)
+#                 install : true)
 # endif
 #
 # if conf.get('ENABLE_HOMED') == 1
@@ -3050,12 +3035,11 @@ endif
 #                                 libp11kit,
 #                                 libdl],
 #                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootbindir)
+#                 install : true)
 #
 #         if conf.get('HAVE_PAM') == 1
 #                 version_script_arg = project_source_root / pam_systemd_home_sym
-#                 pam_systemd = shared_library(
+#                 pam_systemd_home = shared_library(
 #                         'pam_systemd_home',
 #                         pam_systemd_home_c,
 #                         name_prefix : '',
@@ -3070,7 +3054,16 @@ endif
 #                                         libcrypt],
 #                         link_depends : pam_systemd_home_sym,
 #                         install : true,
+#                         install_tag : 'pam',
 #                         install_dir : pamlibdir)
+#
+#                 if want_tests != 'false'
+#                         test('dlopen-pam_systemd_home',
+#                              test_dlopen,
+#                              # path to dlopen must include a slash
+#                              args : pam_systemd_home.full_path(),
+#                              depends : pam_systemd_home)
+#                 endif
 #         endif
 # endif
 #
@@ -4426,7 +4419,6 @@ install_data('LICENSE.GPL2',
 #              'docs/TRANSLATORS.md',
 #              'docs/UIDS-GIDS.md',
 #endif // 0
-             'docs/GVARIANT-SERIALIZATION.md',
              install_dir : docdir)
 
 #if 0 /// irrelevant for elogind
@@ -4605,9 +4597,9 @@ alias_target('update-man-rules', update_man_rules)
 # if not meson.is_cross_build()
 #         custom_target(
 #                 'export-dbus-interfaces',
-#                 output : dbus_interfaces_dir_name,
+#                 output : fs.name(dbus_interfaces_dir),
 #                 install : dbus_interfaces_dir != 'no',
-#                 install_dir : dbus_interfaces_dir_parent,
+#                 install_dir : fs.parent(dbus_interfaces_dir),
 #                 command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
 # endif
 #
