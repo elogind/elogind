@@ -150,8 +150,6 @@ static void set_location(sd_journal *j, JournalFile *f, Object *o) {
 }
 
 static int match_is_valid(const void *data, size_t size) {
-        const char *b, *p;
-
         assert(data);
 
         if (size < 2)
@@ -160,8 +158,8 @@ static int match_is_valid(const void *data, size_t size) {
         if (((char*) data)[0] == '_' && ((char*) data)[1] == '_')
                 return false;
 
-        b = data;
-        for (p = b; p < b + size; p++) {
+        const char *b = data;
+        for (const char *p = b; p < b + size; p++) {
 
                 if (*p == '=')
                         return p > b;
@@ -183,9 +181,8 @@ static int match_is_valid(const void *data, size_t size) {
 
 static bool same_field(const void *_a, size_t s, const void *_b, size_t t) {
         const uint8_t *a = _a, *b = _b;
-        size_t j;
 
-        for (j = 0; j < s && j < t; j++) {
+        for (size_t j = 0; j < s && j < t; j++) {
 
                 if (a[j] != b[j])
                         return false;
@@ -831,7 +828,7 @@ static int next_beyond_location(sd_journal *j, JournalFile *f, direction_t direc
 
 static int real_journal_next(sd_journal *j, direction_t direction) {
         JournalFile *new_file = NULL;
-        unsigned i, n_files;
+        unsigned n_files;
         const void **files;
         Object *o;
         int r;
@@ -843,7 +840,7 @@ static int real_journal_next(sd_journal *j, direction_t direction) {
         if (r < 0)
                 return r;
 
-        for (i = 0; i < n_files; i++) {
+        for (unsigned i = 0; i < n_files; i++) {
                 JournalFile *f = (JournalFile *)files[i];
                 bool found;
 
@@ -2167,7 +2164,6 @@ _public_ int sd_journal_open_files_fd(sd_journal **ret, int fds[], unsigned n_fd
 #if 0 /// UNSUPPORTED by elogind
         JournalFile *f;
         _cleanup_(sd_journal_closep) sd_journal *j = NULL;
-        unsigned i;
         int r;
 
         assert_return(ret, -EINVAL);
@@ -2178,7 +2174,7 @@ _public_ int sd_journal_open_files_fd(sd_journal **ret, int fds[], unsigned n_fd
         if (!j)
                 return -ENOMEM;
 
-        for (i = 0; i < n_fds; i++) {
+        for (unsigned i = 0; i < n_fds; i++) {
                 struct stat st;
 
                 if (fds[i] < 0) {
@@ -2329,8 +2325,6 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
 
 #if 0 /// UNNEEDED by elogind
 static bool field_is_valid(const char *field) {
-        const char *p;
-
         assert(field);
 
         if (isempty(field))
@@ -2339,7 +2333,7 @@ static bool field_is_valid(const char *field) {
         if (startswith(field, "__"))
                 return false;
 
-        for (p = field; *p; p++) {
+        for (const char *p = field; *p; p++) {
 
                 if (*p == '_')
                         continue;
@@ -2360,7 +2354,6 @@ static bool field_is_valid(const char *field) {
 _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **data, size_t *size) {
 #if 0 /// UNSUPPORTED by elogind
         JournalFile *f;
-        uint64_t i, n;
         size_t field_length;
         int r;
         Object *o;
@@ -2385,8 +2378,8 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
 
         field_length = strlen(field);
 
-        n = journal_file_entry_n_items(o);
-        for (i = 0; i < n; i++) {
+        uint64_t n = journal_file_entry_n_items(o);
+        for (uint64_t i = 0; i < n; i++) {
                 Object *d;
                 uint64_t p, l;
                 size_t t;
