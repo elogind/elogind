@@ -271,7 +271,7 @@ option('cgroup-controller', type : 'string',
 option('default-net-naming-scheme', type : 'string', value : 'latest',
        description : 'default net.naming-scheme= value')
 option('status-unit-format-default', type : 'combo',
-       choices : ['description', 'name', 'combined'],
+       choices : ['auto', 'description', 'name', 'combined'],
        description : 'use unit name or description in messages by default')
 #if 0 /// UNNEEDED by elogind
 # option('time-epoch', type : 'integer', value : '-1',
@@ -573,8 +573,6 @@ option('fexecve', type : 'boolean', value : 'false',
 #        description : 'install systemd-analyze')
 #endif // 0
 
-option('bpf-compiler', type : 'combo', choices : ['clang', 'gcc'],
-    description: 'compiler used to build BPF programs, note: gcc is experimental')
 option('bpf-framework', type : 'combo', choices : ['auto', 'true', 'false'],
     description: 'build BPF programs from source code in restricted C')
 
