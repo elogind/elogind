@@ -535,10 +535,6 @@ if get_option('buildtype') != 'debug'
         possible_link_flags += '-Wl,--gc-sections'
 endif
 
-if get_option('mode') == 'developer'
-        possible_cc_flags += '-fno-omit-frame-pointer'
-endif
-
 add_project_arguments(cc.get_supported_arguments(basic_disabled_warnings), language : 'c')
 add_project_arguments(cc.get_supported_arguments(possible_cc_flags), language : 'c')
 add_project_link_arguments(cc.get_supported_link_arguments(possible_link_flags), language : 'c')
@@ -1209,74 +1205,58 @@ conf.set10('HAVE_LIBBPF', libbpf.found())
 if want_bpf_framework == 'false' or not libbpf.found() or skip_deps
         conf.set10('BPF_FRAMEWORK', false)
 else
-        bpf_compiler = get_option('bpf-compiler')
-        clang_found = false
-        clang_supports_bpf = false
-        bpf_gcc_found = false
-        deps_found = false
-
-        if bpf_compiler == 'clang'
-                # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
-                # (like clang-10/llvm-strip-10)
-                if meson.is_cross_build() or cc.get_id() != 'clang' or cc.cmd_array()[0].contains('afl-clang') or cc.cmd_array()[0].contains('hfuzz-clang')
-                        r = find_program('clang', required : bpf_framework_required, version : '>= 10.0.0')
-                        clang_found = r.found()
-                        if clang_found
-                                clang = r.path()
-                        endif
-                        # Assume that the required flags are supported by the found clang.
-                        clang_supports_flags = clang_found
-                else
-                        clang_found = true
-                        clang = cc.cmd_array()
-                        clang_supports_flags = cc.has_argument('-Wno-compare-distinct-pointer-types')
-                endif
-
+        # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
+        # (like clang-10/llvm-strip-10)
+        if meson.is_cross_build() or cc.get_id() != 'clang' or cc.cmd_array()[0].contains('afl-clang') or cc.cmd_array()[0].contains('hfuzz-clang')
+                r = find_program('clang', required : bpf_framework_required, version : '>= 10.0.0')
+                clang_found = r.found()
                 if clang_found
-                        # Check if 'clang -target bpf' is supported.
-                        clang_supports_bpf = run_command(clang, '-target', 'bpf', '--print-supported-cpus', check : false).returncode() == 0
+                        clang = r.path()
                 endif
-        elif bpf_compiler == 'gcc'
-                warning('GCC BPF Compiler support is experimental and not recommended.')
-                bpf_gcc = find_program('bpf-gcc',
-                                       required : true,
-                                       version : '>= 12.1.0')
-                bpf_gcc_found = bpf_gcc.found()
+                # Assume that the required flags are supported by the found clang.
+                clang_supports_flags = clang_found
+        else
+                clang_found = true
+                clang = cc.cmd_array()
+                clang_supports_flags = cc.has_argument('-Wno-compare-distinct-pointer-types')
         endif
 
-        if clang_supports_bpf or bpf_gcc_found
-                # Debian installs this in /usr/sbin/ which is not in $PATH.
-                # We check for 'bpftool' first, honouring $PATH, and in /usr/sbin/ for Debian.
-                # We use 'bpftool gen object' subcommand for bpftool strip, it was added by d80b2fcbe0a023619e0fc73112f2a02c2662f6ab (v5.13).
+        if clang_found
+                # Check if 'clang -target bpf' is supported.
+                clang_supports_bpf = run_command(clang, '-target', 'bpf', '--print-supported-cpus', check : false).returncode() == 0
+        else
+                clang_supports_bpf = false
+        endif
+
+        # Debian installs this in /usr/sbin/ which is not in $PATH.
+        # We check for 'bpftool' first, honouring $PATH, and in /usr/sbin/ for Debian.
+        # We use 'bpftool gen' subcommand, it was added by 985ead416df39d6fe8e89580cc1db6aa273e0175 (v5.6).
+        bpftool = find_program('bpftool',
+                               '/usr/sbin/bpftool',
+                               required : false,
+                               version : '>= 5.13.0')
+
+        if bpftool.found()
+                bpftool_strip = true
+        else
+                bpftool_strip = false
                 bpftool = find_program('bpftool',
                                        '/usr/sbin/bpftool',
-                                       required : false,
-                                       version : '>= 5.13.0')
-
-                if bpftool.found()
-                        bpftool_strip = true
-                        deps_found = true
-                else
-                        bpftool_strip = false
-                        # We require the 'bpftool gen skeleton' subcommand, it was added by 985ead416df39d6fe8e89580cc1db6aa273e0175 (v5.6).
-                        bpftool = find_program('bpftool',
-                                               '/usr/sbin/bpftool',
-                                               required : bpf_framework_required,
-                                               version : '>= 5.6.0')
-                endif
-
-                # We use `llvm-strip` as a fallback if `bpftool gen object` strip support is not available.
-                if not bpftool_strip and bpftool.found() and clang_supports_bpf
-                        if not meson.is_cross_build()
-                                llvm_strip_bin = run_command(clang, '--print-prog-name', 'llvm-strip',
-                                                             check : true).stdout().strip()
-                        else
-                                llvm_strip_bin = 'llvm-strip'
-                        endif
-                        llvm_strip = find_program(llvm_strip_bin, required : bpf_framework_required, version : '>= 10.0.0')
-                        deps_found = llvm_strip.found()
-                endif
+                                       required : bpf_framework_required,
+                                       version : '>= 5.6.0')
         endif
+
+        if not bpftool_strip
+                if not meson.is_cross_build() and clang_found
+                        llvm_strip_bin = run_command(clang, '--print-prog-name', 'llvm-strip',
+                                                     check : true).stdout().strip()
+                else
+                        llvm_strip_bin = 'llvm-strip'
+                endif
+                llvm_strip = find_program(llvm_strip_bin, required : bpf_framework_required, version : '>= 10.0.0')
+        endif
+
+        deps_found = clang_found and clang_supports_bpf and clang_supports_flags and (bpftool_strip or llvm_strip.found()) and bpftool.found()
 
         # Can build BPF program from source code in restricted C
         conf.set10('BPF_FRAMEWORK', deps_found)
@@ -4706,6 +4686,7 @@ summary({
 #if 0 /// UNNEEDED by elogind
 #         'default locale' :                  default_locale,
 #endif // 0
+        'default status unit format' :      status_unit_format_default,
         'default user $PATH' :
                 default_user_path != '' ? default_user_path : '(same as system services)',
 #if 0 /// UNNEEDED by elogind
