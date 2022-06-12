@@ -2234,7 +2234,6 @@ alias_target('devel', libelogind_pc, libudev_pc)
 
 libelogind = shared_library(
         'elogind',
-        disable_mempool_c,
         version : libsystemd_version,
         include_directories : libelogind_includes,
         link_args : ['-shared',
@@ -2275,7 +2274,6 @@ install_libelogind_static = static_library(
 #         basic_compress_sources,
 #endif // 0
         fundamental_sources,
-        disable_mempool_c,
         include_directories : libelogind_includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
@@ -2298,7 +2296,6 @@ install_libelogind_static = static_library(
 #
 # libudev = shared_library(
 #         'udev',
-#         disable_mempool_c,
 #         version : libudev_version,
 #         include_directories : includes,
 #         link_args : ['-shared',
@@ -2320,7 +2317,6 @@ install_libelogind_static = static_library(
 #         shared_sources,
 #         libsystemd_sources,
 #         libudev_sources,
-#         disable_mempool_c,
 #         include_directories : includes,
 #         build_by_default : static_libudev != 'false',
 #         install : static_libudev != 'false',
@@ -2472,7 +2468,6 @@ subdir('src/test')
 test_dlopen = executable(
         'test-dlopen',
         test_dlopen_c,
-        disable_mempool_c,
         include_directories : includes,
         link_with : [libbasic],
         dependencies : [libdl],
@@ -2503,7 +2498,6 @@ test_dlopen = executable(
 #                 nss = shared_library(
 #                         'nss_' + module,
 #                         sources,
-#                         disable_mempool_c,
 #                         version : '2',
 #                         include_directories : incs,
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
