@@ -162,7 +162,6 @@ static inline void* BUS_MESSAGE_FIELDS(sd_bus_message *m) {
 #if 0 /// UNNEEDED by elogind
 int bus_message_get_blob(sd_bus_message *m, void **buffer, size_t *sz);
 #endif // 0
-int bus_message_read_strv_extend(sd_bus_message *m, char ***l);
 
 int bus_message_from_malloc(
                 sd_bus *bus,
