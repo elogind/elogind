@@ -200,6 +200,8 @@
 #         'linux/ethtool.h',
 #         'local-addresses.c',
 #         'local-addresses.h',
+#         'locale-setup.c',
+#         'locale-setup.h',
 #         'lockfile-util.c',
 #         'lockfile-util.h',
 #         'log-link.h',
@@ -627,4 +629,4 @@ libshared = shared_library(
 #endif // 0
         dependencies : libshared_deps,
         install : true,
-        install_dir : rootlibexecdir)
+        install_dir : rootpkglibdir)
