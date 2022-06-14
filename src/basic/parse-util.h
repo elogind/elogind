@@ -162,4 +162,3 @@ int store_loadavg_fixed_point(unsigned long i, unsigned long f, loadavg_t *ret);
 int parse_loadavg_fixed_point(const char *s, loadavg_t *ret);
 #endif // 0
 
-bool nft_identifier_bad(const char *id);
