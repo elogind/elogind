@@ -159,6 +159,7 @@ static Virtualization detect_vm_dmi_vendor(void) {
         } dmi_vendor_table[] = {
                 { "KVM",                 VIRTUALIZATION_KVM       },
                 { "OpenStack",           VIRTUALIZATION_KVM       }, /* Detect OpenStack instance as KVM in non x86 architecture */
+                { "KubeVirt",            VIRTUALIZATION_KVM       }, /* Detect KubeVirt instance as KVM in non x86 architecture */
                 { "Amazon EC2",          VIRTUALIZATION_AMAZON    },
                 { "QEMU",                VIRTUALIZATION_QEMU      },
                 { "VMware",              VIRTUALIZATION_VMWARE    }, /* https://kb.vmware.com/s/article/1009458 */
@@ -1009,7 +1010,6 @@ bool has_cpu_with_flag(const char *flag) {
 #endif // 0
 
 static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
-
         [VIRTUALIZATION_NONE]            = "none",
         [VIRTUALIZATION_KVM]             = "kvm",
         [VIRTUALIZATION_AMAZON]          = "amazon",
@@ -1027,6 +1027,7 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_ACRN]            = "acrn",
         [VIRTUALIZATION_POWERVM]         = "powervm",
         [VIRTUALIZATION_VM_OTHER]        = "vm-other",
+
         [VIRTUALIZATION_SYSTEMD_NSPAWN]  = "elogind-nspawn",
         [VIRTUALIZATION_LXC_LIBVIRT]     = "lxc-libvirt",
         [VIRTUALIZATION_LXC]             = "lxc",
