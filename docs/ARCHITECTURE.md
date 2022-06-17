@@ -9,8 +9,8 @@ SPDX-License-Identifier: LGPL-2.1-or-later
 
 ## Code Map
 
-This section will attempt to provide a high-level overview of the various
-components of the elogind repository.
+This document provides a high-level overview of the various components of the
+elogind repository.
 
 ## Source Code
 
@@ -21,30 +21,60 @@ names are self-explanatory.
 
 ### Shared Code
 
-You might wonder what kind of common code belongs in `src/shared/` and what
-belongs in `src/basic/`. The split is like this: anything that is used to
-implement the public shared objects we provide (`sd-bus`, `sd-login`,
-`sd-id128`, `nss-elogind`, `nss-mymachines`, `nss-resolve`, `nss-myhostname`,
-`pam_elogind`), must be located in `src/basic` (those objects are not allowed
-to link to `libelogind-shared.so`). Conversely, anything which is shared
-between multiple components and does not need to be in `src/basic/`, should be
-in `src/shared/`.
+The code that is shared between components is split into a few directories,
+each with a different purpose:
+
+- `src/basic/` and `src/fundamental/` — those directories contain code
+  primitives that are used by all other code. `src/fundamental/` is stricter,
+  because it used for EFI and user-space code, while `src/basic/` is only used
+  for user-space code. The code in `src/fundamental/` cannot depend on any
+  other code in the tree, and `src/basic/` can depend only on itself and
+  `src/fundamental/`. For user-space, a static library is built from this code
+  and linked statically in various places.
+
+- `src/libelogind/` implements the `libelogind.so` shared library (also
+  available as static `libelogind.a`). This code may use anything in
+  `src/basic/` or `src/fundamental/`.
+
+- `src/shared/` provides various utilities and code shared between other
+  components that is exposed as the `libelogind-shared-<nnn>.so` shared library.
+
+The other subdirectories implement individual components. They may depend only
+on `src/fundamental/` + `src/basic/`, or also on `src/libelogind/`, or also on
+`src/shared/`.
+
+You might wonder what kind of code belongs where. In general, the rule is that
+code should linked as few times as possible, ideally only once. Thus code that
+is used by "higher-level" components (e.g. our binaries which are linked to
+`libelogind-shared-<nnn>.so`), would go to a subdirectory specific to that
+component if it is only used there. If the code is to be shared between
+components, it'd go to `src/shared/`. Shared code that that is used by multiple
+components that do not link to `libelogind-shared-<nnn>.so` may live either in
+`src/libelogind/`, `src/basic/`, or `src/fundamental/`. Any code that is used
+only for EFI goes under `src/boot/efi/`, and `src/fundamental/` if is shared
+with non-EFI compoenents.
 
 To summarize:
 
+`src/fundamental/`
+- may be used by all code in the tree
+- may not use any code outside of `src/fundamental/`
+
 `src/basic/`
 - may be used by all code in the tree
-- may not use any code outside of `src/basic/`
+- may not use any code outside of `src/fundamental/` and `src/basic/`
 
 `src/libelogind/`
-- may be used by all code in the tree, except for code in `src/basic/`
-- may not use any code outside of `src/basic/`, `src/libelogind/`
+- may be used by all code in the tree that links to `libsystem.so`
+- may not use any code outside of `src/fundamental/`, `src/basic/`, and
+  `src/libelogind/`
 
 `src/shared/`
 - may be used by all code in the tree, except for code in `src/basic/`,
-`src/libelogind/`, `src/nss-*`, `src/login/pam_elogind.*`, and files under
-`src/journal/` that end up in `libjournal-client.a` convenience library.
-- may not use any code outside of `src/basic/`, `src/libelogind/`, `src/shared/`
+  `src/libelogind/`, `src/nss-*`, `src/login/pam_elogind.*`, and files under
+  `src/journal/` that end up in `libjournal-client.a` convenience library.
+- may not use any code outside of `src/fundamental/`, `src/basic/`,
+  `src/libelogind/`, `src/shared/`
 
 ### PID 1
 
