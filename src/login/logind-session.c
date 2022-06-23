@@ -369,12 +369,11 @@ fail:
 }
 
 static int session_load_devices(Session *s, const char *devices) {
-        const char *p;
         int r = 0;
 
         assert(s);
 
-        for (p = devices;;) {
+        for (const char *p = devices;;) {
                 _cleanup_free_ char *word = NULL;
                 SessionDevice *sd;
                 dev_t dev;
@@ -564,7 +563,7 @@ int session_load(Session *s) {
                         s->class = c;
         }
 
-        if (state && streq(state, "closing"))
+        if (streq_ptr(state, "closing"))
                 s->stopping = true;
 
         if (s->fifo_path) {
@@ -1142,11 +1141,8 @@ int session_set_display(Session *s, const char *display) {
         assert(s);
         assert(display);
 
-        if (streq(s->display, display))
-                return 0;
-
         r = free_and_strdup(&s->display, display);
-        if (r < 0)
+        if (r <= 0)  /* 0 means the strings were equal */
                 return r;
 
         session_save(s);
@@ -1481,9 +1477,7 @@ void session_leave_vt(Session *s) {
 }
 
 bool session_is_controller(Session *s, const char *sender) {
-        assert(s);
-
-        return streq_ptr(s->controller, sender);
+        return streq_ptr(ASSERT_PTR(s)->controller, sender);
 }
 
 static void session_release_controller(Session *s, bool notify) {
