@@ -4716,6 +4716,7 @@ summary({
 #if 0 /// UNNEEDED by elogind
 #         'default locale' :                  default_locale,
 #endif // 0
+        'default nspawn locale' :           nspawn_locale,
         'default status unit format' :      status_unit_format_default,
         'default user $PATH' :
                 default_user_path != '' ? default_user_path : '(same as system services)',
