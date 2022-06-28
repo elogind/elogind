@@ -13,7 +13,6 @@
 #include "event-source.h"
 #include "fd-util.h"
 #include "fs-util.h"
-#include "glyph-util.h"
 #include "hashmap.h"
 #include "list.h"
 #include "macro.h"
@@ -406,8 +405,7 @@ _public_ int sd_event_new(sd_event** ret) {
         e->epoll_fd = fd_move_above_stdio(e->epoll_fd);
 
         if (secure_getenv("SD_EVENT_PROFILE_DELAYS")) {
-                log_debug("Event loop profiling enabled. Logarithmic histogram of event loop iterations in the range 2^0 %s 2^63 us will be logged every 5s.",
-                          special_glyph(SPECIAL_GLYPH_ELLIPSIS));
+                log_debug("Event loop profiling enabled. Logarithmic histogram of event loop iterations in the range 2^0 … 2^63 us will be logged every 5s.");
                 e->profile_delays = true;
         }
 
@@ -1801,7 +1799,7 @@ static void event_free_inode_data(
         if (!d)
                 return;
 
-        assert(LIST_IS_EMPTY(d->event_sources));
+        assert(!d->event_sources);
 
         if (d->fd >= 0) {
                 LIST_REMOVE(to_close, e->inode_data_to_close, d);
@@ -1864,7 +1862,7 @@ static void event_gc_inode_data(
         if (!d)
                 return;
 
-        if (!LIST_IS_EMPTY(d->event_sources))
+        if (d->event_sources)
                 return;
 
         inotify_data = d->inotify_data;
@@ -2413,10 +2411,6 @@ fail:
 }
 
 _public_ int sd_event_source_get_enabled(sd_event_source *s, int *ret) {
-        /* Quick mode: the event source doesn't exist and we only want to query boolean enablement state. */
-        if (!s && !ret)
-                return false;
-
         assert_return(s, -EINVAL);
         assert_return(!event_pid_changed(s->event), -ECHILD);
 
@@ -2594,13 +2588,8 @@ static int event_source_online(
 _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
         int r;
 
-        assert_return(IN_SET(m, SD_EVENT_OFF, SD_EVENT_ON, SD_EVENT_ONESHOT), -EINVAL);
-
-        /* Quick mode: if the source doesn't exist, SD_EVENT_OFF is a noop. */
-        if (m == SD_EVENT_OFF && !s)
-                return 0;
-
         assert_return(s, -EINVAL);
+        assert_return(IN_SET(m, SD_EVENT_OFF, SD_EVENT_ON, SD_EVENT_ONESHOT), -EINVAL);
         assert_return(!event_pid_changed(s->event), -ECHILD);
 
         /* If we are dead anyway, we are fine with turning off sources, but everything else needs to fail. */
@@ -3885,7 +3874,7 @@ _public_ int sd_event_prepare(sd_event *e) {
 
         event_close_inode_data_fds(e);
 
-        if (event_next_pending(e) || e->need_process_child || !LIST_IS_EMPTY(e->inotify_data_buffered))
+        if (event_next_pending(e) || e->need_process_child || e->inotify_data_buffered)
                 goto pending;
 
         e->state = SD_EVENT_ARMED;
@@ -3965,7 +3954,7 @@ static int process_epoll(sd_event *e, usec_t timeout, int64_t threshold, int64_t
         n_event_max = MALLOC_ELEMENTSOF(e->event_queue);
 
         /* If we still have inotify data buffered, then query the other fds, but don't wait on it */
-        if (!LIST_IS_EMPTY(e->inotify_data_buffered))
+        if (e->inotify_data_buffered)
                 timeout = 0;
 
         for (;;) {
