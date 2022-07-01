@@ -388,7 +388,6 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 # conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
 #endif // 0
 
-conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 
 #####################################################################
 
@@ -1366,10 +1365,6 @@ conf.set10('HAVE_APPARMOR', have)
 #         conf.set_quoted('SMACK_RUN_LABEL', get_option('smack-run-label'))
 # endif
 #
-# have = get_option('smack') and get_option('smack-default-process-label') != ''
-# if have
-#         conf.set_quoted('SMACK_DEFAULT_PROCESS_LABEL', get_option('smack-default-process-label'))
-# endif
 #else // 0
 conf.set10('HAVE_SMACK_RUN_LABEL', false)
 #endif // 0
@@ -2241,6 +2236,7 @@ alias_target('devel', libelogind_pc, libudev_pc)
 
 libelogind = shared_library(
         'elogind',
+        disable_mempool_c,
         version : libsystemd_version,
         include_directories : libelogind_includes,
         link_args : ['-shared',
@@ -2281,6 +2277,7 @@ install_libelogind_static = static_library(
 #         basic_compress_sources,
 #endif // 0
         fundamental_sources,
+        disable_mempool_c,
         include_directories : libelogind_includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
@@ -2303,6 +2300,7 @@ install_libelogind_static = static_library(
 #
 # libudev = shared_library(
 #         'udev',
+#         disable_mempool_c,
 #         version : libudev_version,
 #         include_directories : includes,
 #         link_args : ['-shared',
@@ -2324,6 +2322,7 @@ install_libelogind_static = static_library(
 #         shared_sources,
 #         libsystemd_sources,
 #         libudev_sources,
+#         disable_mempool_c,
 #         include_directories : includes,
 #         build_by_default : static_libudev != 'false',
 #         install : static_libudev != 'false',
@@ -2475,6 +2474,7 @@ subdir('src/test')
 test_dlopen = executable(
         'test-dlopen',
         test_dlopen_c,
+        disable_mempool_c,
         include_directories : includes,
         link_with : [libbasic],
         dependencies : [libdl],
@@ -2505,6 +2505,7 @@ test_dlopen = executable(
 #                 nss = shared_library(
 #                         'nss_' + module,
 #                         sources,
+#                         disable_mempool_c,
 #                         version : '2',
 #                         include_directories : incs,
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
@@ -4187,7 +4188,7 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# public_programs += custom_target(
+# exe = custom_target(
 #         'kernel-install',
 #         input : kernel_install_in,
 #         output : 'kernel-install',
@@ -4195,6 +4196,13 @@ public_programs += executable(
 #         install : want_kernel_install,
 #         install_mode : 'rwxr-xr-x',
 #         install_dir : bindir)
+# public_programs += exe
+#
+# if want_tests != 'false'
+#         test('test-kernel-install',
+#              test_kernel_install_sh,
+#              args : [exe.full_path(), loaderentry_install])
+# endif
 #else // 0
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
@@ -4248,10 +4256,6 @@ foreach tuple : tests
                 type = ''
         endif
 
-        suite = fs.name(fs.parent('@0@'.format(sources[0])))
-        # FIXME: Use str.replace() with meson >= 0.58.0
-        suite = suite.split('sd-')[-1]
-
         if condition == '' or conf.get(condition) == 1
                 exe = executable(
                         name,
@@ -4274,8 +4278,7 @@ foreach tuple : tests
                 elif want_tests != 'false'
                         test(name, exe,
                              env : test_env,
-                             timeout : timeout,
-                             suite : suite)
+                             timeout : timeout)
                 endif
         else
                 message('Not compiling @0@ because @1@ is not true'.format(name, condition))
@@ -4872,7 +4875,6 @@ foreach tuple : [
 #         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
 #endif // 0
         ['link-boot-shared',      get_option('link-boot-shared')],
-        ['first-boot-full-preset'],
         ['fexecve'],
 #if 0 /// elogind has everything standalone that can be standalone already
 #         ['standalone-binaries',   get_option('standalone-binaries')],
