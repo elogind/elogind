@@ -381,7 +381,7 @@ static int execute(
 #if 0 /// elogind supports suspend modes
                 r = write_mode(modes);
                 if (r < 0)
-                        return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");;
+                        return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
         }
 #else // 0
         }
