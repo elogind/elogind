@@ -27,7 +27,7 @@ bool id128_is_valid(const char *s) {
                 for (i = 0; i < l; i++) {
                         char c = s[i];
 
-                        if (!(c >= '0' && c <= '9') &&
+                        if (!ascii_isdigit(c) &&
                             !(c >= 'a' && c <= 'f') &&
                             !(c >= 'A' && c <= 'F'))
                                 return false;
@@ -44,7 +44,7 @@ bool id128_is_valid(const char *s) {
                                 if (c != '-')
                                         return false;
                         } else {
-                                if (!(c >= '0' && c <= '9') &&
+                                if (!ascii_isdigit(c) &&
                                     !(c >= 'a' && c <= 'f') &&
                                     !(c >= 'A' && c <= 'F'))
                                         return false;
