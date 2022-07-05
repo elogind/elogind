@@ -28,8 +28,8 @@ bool id128_is_valid(const char *s) {
                         char c = s[i];
 
                         if (!(c >= '0' && c <= '9') &&
-                            !(c >= 'a' && c <= 'z') &&
-                            !(c >= 'A' && c <= 'Z'))
+                            !(c >= 'a' && c <= 'f') &&
+                            !(c >= 'A' && c <= 'F'))
                                 return false;
                 }
 
@@ -45,8 +45,8 @@ bool id128_is_valid(const char *s) {
                                         return false;
                         } else {
                                 if (!(c >= '0' && c <= '9') &&
-                                    !(c >= 'a' && c <= 'z') &&
-                                    !(c >= 'A' && c <= 'Z'))
+                                    !(c >= 'a' && c <= 'f') &&
+                                    !(c >= 'A' && c <= 'F'))
                                         return false;
                         }
                 }
@@ -213,4 +213,3 @@ int id128_get_product(sd_id128_t *ret) {
         return 0;
 }
 #endif // 0
-
