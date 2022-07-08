@@ -79,11 +79,31 @@ Janitorial Clean-ups:
 
 Features:
 
+* similar to the existing fw_cfg support, also support reading system
+  credentials from DMI vendor fields, as supported by qemu
+
+* sd-boot: instead of uncondtionally deriving the ESP to search boot loader
+  spec entries in from the paths of sd-boot binary, let's optionally allow it
+  to be configured on sd-boot cmdline + efi var. Usecase: embedd sd-boot in the
+  UEFI firmware (for example, ovmf supports that via qemu cmdline option), and
+  use it to load stuff from the ESP).
+
+* make tmpfiles read lines from creds, so that we can provision SSH host keys
+  via creds. Similar: sysusers, sysctl, homed
+
+* mount /var/ from initrd, so that we can apply sysext and stuff before the
+  initrd transition. Specifically:
+  1. There should be a var= kernel cmdline option, matching root= and usr=
+  2. elogind-gpt-auto-generator should auto-mount /var if it finds it on disk
+  3. mount.x-initrd mount option in fstab should be implied for /var
+
+* implement varlink introspection
+
 * we should probably drop all use of prefix_roota() and friends, and use
   chase_symlinks() instead
 
 * make persistent restarts easier by adding a new setting OpenPersistentFile=
-  or so, which allows openeing one or more files that is "persistent" across
+  or so, which allows opening one or more files that is "persistent" across
   service restarts, hot reboot, cold reboots (depending on configuration): the
   files are created empty on first invocation, and on subsequent invocations
   the files are reboot. The files would be backed by tmpfs, pmem or /var
@@ -751,9 +771,9 @@ Features:
   mapping to $RUNTIME_DIRECTORY, $STATE_DIRECTORY and such
 
 * All tools that support --root= should also learn --image= so that they can
-  elogind-repart, elogind-tmpfiles, elogind-sysusers, journalctl)
   operate on disk images directly. Specifically: systemctl, coredumpctl.
   (Already done: bootctl, elogind-nspawn, elogind-firstboot,
+  elogind-repart, elogind-tmpfiles, elogind-sysusers, journalctl)
 
 * seccomp: by default mask x32 ABI system wide on x86-64. it's on its way out
 
