@@ -39,3 +39,5 @@ int load_extension_release_pairs(const char *root, const char *extension, char *
 int load_os_release_pairs(const char *root, char ***ret);
 int load_os_release_pairs_with_prefix(const char *root, const char *prefix, char ***ret);
 #endif // 0
+
+int os_release_support_ended(const char *support_end, bool quiet);
