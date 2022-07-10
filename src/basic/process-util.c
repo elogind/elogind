@@ -1177,7 +1177,7 @@ void reset_cached_pid(void) {
 #endif // ifdef __GLIBC__
 pid_t getpid_cached(void) {
         static bool installed = false;
-        pid_t current_value;
+        pid_t current_value = CACHED_PID_UNSET;
 
         /* getpid_cached() is much like getpid(), but caches the value in local memory, to avoid having to invoke a
          * system call each time. This restores glibc behaviour from before 2.24, when getpid() was unconditionally
@@ -1188,7 +1188,13 @@ pid_t getpid_cached(void) {
          * https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=c579f48edba88380635ab98cb612030e3ed8691e
          */
 
-        current_value = __sync_val_compare_and_swap(&cached_pid, CACHED_PID_UNSET, CACHED_PID_BUSY);
+        __atomic_compare_exchange_n(
+                        &cached_pid,
+                        &current_value,
+                        CACHED_PID_BUSY,
+                        false,
+                        __ATOMIC_SEQ_CST,
+                        __ATOMIC_SEQ_CST);
 
         switch (current_value) {
 
@@ -1615,29 +1621,9 @@ bool invoked_as(char *argv[], const char *token) {
 }
 #endif // 0
 
-bool invoked_by_elogind(void) {
-        int r;
-
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
          * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
-        const char *e = getenv("SYSTEMD_EXEC_PID");
-        if (!e)
-                return false;
-
-        if (streq(e, "*"))
-                /* For testing. */
-                return true;
-
-        pid_t p;
-        r = parse_pid(e, &p);
-        if (r < 0) {
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
-                log_debug_errno(r, "Failed to parse \"SYSTEMD_EXEC_PID=%s\", ignoring: %m", e);
-                return false;
-        }
-
-        return getpid_cached() == p;
-}
 
 _noreturn_ void freeze(void) {
         log_close();
