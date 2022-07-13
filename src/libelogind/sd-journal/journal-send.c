@@ -65,7 +65,8 @@ retry:
 
         fd_inc_sndbuf(fd, SNDBUF_SIZE);
 
-        if (!__sync_bool_compare_and_swap(&fd_plus_one, 0, fd+1)) {
+        if (!__atomic_compare_exchange_n(&fd_plus_one, &(int){0}, fd+1,
+                false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)) {
                 safe_close(fd);
                 goto retry;
         }
@@ -74,15 +75,6 @@ retry:
 }
 #endif // 0
 
-int journal_fd_nonblock(bool nonblock) {
-        int r;
-
-        r = journal_fd();
-        if (r < 0)
-                return r;
-
-        return fd_nonblock(r, nonblock);
-}
 
 #if VALGRIND
 void close_journal_fd(void) {
@@ -379,7 +371,7 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
         if (errno == ENOENT)
                 return 0;
 
-        if (!IN_SET(errno, EMSGSIZE, ENOBUFS, EAGAIN))
+        if (!IN_SET(errno, EMSGSIZE, ENOBUFS))
                 return -errno;
 
         /* Message doesn't fit... Let's dump the data in a memfd or
