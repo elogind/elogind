@@ -79,6 +79,14 @@ Janitorial Clean-ups:
 
 Features:
 
+* PID 1 should look for an SMBIOS variable that encodes an AF_VSOCK address it
+  should send sd_notify() ready notifications to. That way a VMM can boot up a
+  system, and generically know when it finished booting.
+
+* add "elogind-sysext identify" verb, that you can point on any file in /usr/
+  and that determines from which overlayfs layer it originates, which image, and with
+  what it was signed.
+
 * journald: generate recognizable log events whenever we shutdown journald
   cleanly, and when we migrate run → var. This way tools can verify that a
   previous boot terminated cleanly, because either of these two messages must
@@ -141,9 +149,6 @@ Features:
 
 * pam_elogind: on interactive logins, maybe show SUPPORT_END information at
   login time, á la motd
-
-* similar to the existing fw_cfg support, also support reading system
-  credentials from DMI vendor fields, as supported by qemu
 
 * sd-boot: instead of uncondtionally deriving the ESP to search boot loader
   spec entries in from the paths of sd-boot binary, let's optionally allow it
