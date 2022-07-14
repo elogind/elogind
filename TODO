@@ -77,107 +77,7 @@ Janitorial Clean-ups:
 * rework mount.c and swap.c to follow proper state enumeration/deserialization
   semantics, like we do for device.c now
 
-Deprecations and removals:
-
-* Remove any support for booting without /usr pre-mounted in the initrd entirely.
-  Update INITRD_INTERFACE.md accordingly.
-
-* 2019-10 – Remove POINTINGSTICK_CONST_ACCEL references from the hwdb, see #9573
-
-* remove cgrouspv1 support EOY 2023. As per
-  https://lists.freedesktop.org/archives/elogind-devel/2022-July/048120.html
-  and then rework cgroupsv2 support around fds, i.e. keep one fd per active
-  unit around, and always operate on that, instead of cgroup fs paths.
-
-* drop support for kernels that lack ambient capabilities support (i.e. make
-  4.3 new baseline). Then drop support for "!!" modifier for ExecStart= which
-  is only supported for such old kernels.
-
-* drop support for getrandom()-less kernels. (GRND_INSECURE means once kernel
-  5.6 becomes our baseline). See
-  https://github.com/systemd/systemd/pull/24101#issuecomment-1193966468 for
-  details. Maybe before that: at taint-flags/warn about kernels that lack
-  getrandom()/environments where it is blocked.
-
-* drop support for LOOP_CONFIGURE-less loopback block devices, once kernel
-  baseline is 5.8.
-
-* drop fd_is_mount_point() fallback mess once we can rely on
-  STATX_ATTR_MOUNT_ROOT to exist i.e. kernel baseline 5.8
-
-* rework our PID tracking in services and so on, to be strictly based on pidfd,
-  once kernel baseline is 5.13.
-
-* ~2023: remove support for TPM_PCR_INDEX_KERNEL_PARAMETERS_COMPAT
-
 Features:
-
-* sd-stub/sd-boot: write RNG seed to LINUX_EFI_RANDOM_SEED_TABLE_GUID config
-  table as well. (and possibly drop our efi var). Current kernels will pick up
-  the seed from there already, if EFI_RNG_PROTOCOL is not implemented by
-  firmware.
-
-* sd-boot: include domain specific hash string in hash function for random seed
-  plus sizes of everything. also include DMI/SMBIOS blob
-
-* accept a random seed via DMI/SMBIOS vendor string that is credited to the
-  kernel RNG, as cheap alternative to virtio-rng
-
-* sd-stub: invoke random seed logic the same way as in sd-boot, except if
-  random seed EFI variable is already set. That way, the variable set will be
-  set in all cases: if you just use sd-stub, or just sd-boot, or both.
-
-* sd-boot: we probably should include all BootXY EFI variable defined boot
-  entries in our menu, and then suppress ourselves. Benefit: instant
-  compatibility with all other OSes which register things there, in particular
-  on other disks. Always boot into them via NextBoot EFI variable, to not
-  affect PCR values.
-
-* elogind-measure tool:
-  - pre-calculate PCR 12 (command line) + PCR 13 (sysext) the same way we can precalculate PCR 11
-  - sign pre-calculated hashes in a way compatible with TPM2 PCR hash signature
-    policies, in a way they can be included in unified PE kernel images, and
-    made available to userspace. There, this should be consumed by
-    elogind-cryptsetup to implement PCR signature based TPM volume unlock
-    policies.
-
-* in sd-boot: load EFI drivers from a new PE section. That way, one can have a
-  "supercharged" sd-boot binary, that could carry ext4 drivers built-in.
-
-* sd-bus: document that sd_bus_process() only returns messages that non of the
-  filters/handlers installed on the connection took possession of.
-
-* sd-device: add an API for opening a child device, given a device object
-
-* sd-device: add an API for acquiring list of child devices, given a device
-  objects (i.e. all child dirents that dirs or symlinks to dirs)
-
-* sd-device: maybe pin the sysfs dir with an fd, during the entire runtime of
-  an sd_device, then always work based on that.
-
-* add small wrapper around qemu that implements sd_notify/AF_VSOCK + machined and
-  maybe some other stuff and boots it
-
-* maybe add new flags to gpt partition tables for rootfs and usrfs indicating
-  purpose, i.e. whether something is supposed to be bootable in a VM, on
-  baremetal, on an nspawn-style container, if it is a portable service image,
-  or a sysext for initrd, for host os, or for portable container. Then hook
-  portabled/… up to udev to watch block devices coming up with the flags set, and
-  use it.
-
-* portabled: read a credential "portable.extra" or so, that takes a list of
-  file system paths to enable on start.
-
-* sd-boot should look for information what to boot in SMBIOS, too, so that VM
-  managers can tell sd-boot what to boot into and suchlike
-
-* PID 1 should look for an SMBIOS variable that encodes an AF_VSOCK address it
-  should send sd_notify() ready notifications to. That way a VMM can boot up a
-  system, and generically know when it finished booting.
-
-* add "elogind-sysext identify" verb, that you can point on any file in /usr/
-  and that determines from which overlayfs layer it originates, which image, and with
-  what it was signed.
 
 * journald: generate recognizable log events whenever we shutdown journald
   cleanly, and when we migrate run → var. This way tools can verify that a
@@ -209,7 +109,7 @@ Features:
 * networkd/udevd: add a way to define additional .link, .network, .netdev files
   via the credentials logic.
 
-* fstab-generator: allow defining additional fstab-like mounts via
+* fstab-generator: allow definining additional fstab-like mounts via
   credentials (similar: crypttab-generator, verity-generator,
   integrity-generator)
 
@@ -220,14 +120,6 @@ Features:
 * resolved: allow defining additional /etc/hosts entries via a credential (it
   might make sense to then synthesize a new combined /etc/hosts file in /run
   and bind mount it on /etc/hosts for other clients that want to read it.
-  Similar, allow picking up DNS server IP addresses from credential.
-
-* repart: allow defining additional partitions via credential
-
-* tmpfiles: add snippet that provisions /etc/hosts, /etc/motd,
-  /root/.ssh/authorized_keys from credential
-
-* timesyncd: pick NTP server info from credential
 
 * define a JSON format for units, separating out unit definitions from unit
   runtime state. Then, expose it:
@@ -250,11 +142,14 @@ Features:
 * pam_elogind: on interactive logins, maybe show SUPPORT_END information at
   login time, á la motd
 
-* sd-boot: instead of unconditionally deriving the ESP to search boot loader
+* similar to the existing fw_cfg support, also support reading system
+  credentials from DMI vendor fields, as supported by qemu
+
+* sd-boot: instead of uncondtionally deriving the ESP to search boot loader
   spec entries in from the paths of sd-boot binary, let's optionally allow it
-  to be configured on sd-boot cmdline + efi var. Usecase: embed sd-boot in the
+  to be configured on sd-boot cmdline + efi var. Usecase: embedd sd-boot in the
   UEFI firmware (for example, ovmf supports that via qemu cmdline option), and
-  use it to load stuff from the ESP.
+  use it to load stuff from the ESP).
 
 * make tmpfiles read lines from creds, so that we can provision SSH host keys
   via creds. Similar: sysusers, sysctl, homed
@@ -298,6 +193,8 @@ Features:
 
 * ask dracut to generate usr= on the kernel cmdline so that we don't need to
   read /etc/fstab from the root fs from the initrd and do daemon-reload
+
+* document that process resource limits are bullshit
 
 * add PR_SET_DUMPABLE service setting
 
@@ -399,6 +296,15 @@ Features:
   cloud-init/ignitation and similar can parameterize the host with data they
   acquire.
 
+* Add ConditionCredentialExists= or so, that allows conditionalizing services
+  depending on whether a specific system credential is set. Usecase: a service
+  similar to the ssh keygen service that installs any SSH host key supplied via
+  system credentials into /etc/ssh.
+
+* drop support for kernels that lack ambient capabilities support (i.e. make
+  4.3 new baseline). Then drop support for "!!" modifier for ExecStart= which
+  is only supported for such old kernels
+
 * sd-event: compat wd reuse in inotify code: keep a set of removed watch
   descriptors, and clear this set piecemeal when we see the IN_IGNORED event
   for it, or when read() returns EAGAIN or on IN_Q_OVERFLOW. Then, whenever we
@@ -406,6 +312,12 @@ Features:
   the event. (to be fully correct this would have to count the occurrences, in
   case the same wd is reused multiple times before we start processing
   IN_IGNORED again)
+
+* sd-stub: set efi var indicating stub features, i.e. whether they pick up
+  creds, sysexts and so on. similar to existing variable of sd-boot
+
+* sd-stub: set efi vars declaring TPM PCRs we measured creds/cmdline + sysext
+  into (even if we hardcode them)
 
 * elogind-fstab-generator: support addition mount specifications via kernel
   cmdline. Usecase: invoke a VM, and mount a host homedir into it via
@@ -429,6 +341,10 @@ Features:
   - sd-stub: automatically pick up microcode from ESP (/loader/microcode/*)
     and synthesize initrd from it, and measure it. Signing is not necessary, as
     microcode does that on its own. Pass as first initrd to kernel.
+  - sd-stub should measure the kernel/initrd/… into a separate PCR, so that we
+    have one PCR we can bind the encrypted creds to that is not effected by
+    anything else but what we drop in via kernel-install, i.e. by earlier EFI
+    code running (i.e. like PCR 4)
 
 * Add a new service type very similar to Type=notify, that goes one step
   further and extends the protocol to cover reloads. Specifically, SIGHUP will
@@ -672,7 +588,7 @@ Features:
   dep in the base OS image)
 
 * sysext: automatically activate sysext images dropped in via new sd-stub
-  sysext pickup logic. (must insist on verity + signature on those though)
+  sysext pickup logic.
 
 * add concept for "exitrd" as inverse of "initrd", that we can transition to at
   shutdown, and has similar security semantics. This should then take the place
@@ -720,9 +636,9 @@ Features:
   what must be read-only, what requires encryption, and what requires
   authentication.
 
-* in uefi stub: query firmware regarding which PCR banks are being used, store
-  that in EFI var. then use this when enrolling TPM2 in cryptsetup to verify
-  that the selected PCRs actually are used by firmware.
+* in uefi stub: query firmware regarding which PCRs are being used, store that
+  in EFI var. then use this when enrolling TPM2 in cryptsetup to verify that
+  the selected PCRs actually are used by firmware.
 
 * rework recursive read-only remount to use new mount API
 
@@ -888,6 +804,9 @@ Features:
 * make use of new glibc 2.32 APIs sigabbrev_np() and strerrorname_np().
 
 * if /usr/bin/swapoff fails due to OOM, log a friendly explanatory message about it
+
+* Remove any support for booting without /usr pre-mounted in the initrd entirely.
+  Update INITRD_INTERFACE.md accordingly.
 
 * pid1: Move to tracking of main pid/control pid of units per pidfd
 
@@ -1306,10 +1225,6 @@ Features:
 
 * fstab-generator: default to tmpfs-as-root if only usr= is specified on the kernel cmdline
 
-* initrd-parse-etc.service: can we skip daemon-reload if /sysroot/etc/fstab is missing?
-  Note that we start initrd-fs.target and initrd-cleanup.target there, so a straightforward
-  ConditionPathExists= is not enough.
-
 * docs: bring https://www.freedesktop.org/wiki/Software/elogind/MyServiceCantGetRealtime up to date
 
 * add a job mode that will fail if a transaction would mean stopping
@@ -1618,6 +1533,7 @@ Features:
   - show whether UEFI audit mode is available
   - teach it to prepare an ESP wholesale, i.e. with mkfs.vfat invocation
   - teach it to copy in unified kernel images and maybe type #1 boot loader spec entries from host
+  - make it operate on loopback files, dissecting enough to find ESP to operate on
   - bootspec: properly support boot attempt counters when parsing entry file names
 
 * kernel-install:
