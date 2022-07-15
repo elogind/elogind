@@ -13,6 +13,7 @@
 #include "event-source.h"
 #include "fd-util.h"
 #include "fs-util.h"
+#include "glyph-util.h"
 #include "hashmap.h"
 #include "list.h"
 #include "macro.h"
@@ -405,7 +406,8 @@ _public_ int sd_event_new(sd_event** ret) {
         e->epoll_fd = fd_move_above_stdio(e->epoll_fd);
 
         if (secure_getenv("SD_EVENT_PROFILE_DELAYS")) {
-                log_debug("Event loop profiling enabled. Logarithmic histogram of event loop iterations in the range 2^0 … 2^63 us will be logged every 5s.");
+                log_debug("Event loop profiling enabled. Logarithmic histogram of event loop iterations in the range 2^0 %s 2^63 us will be logged every 5s.",
+                          special_glyph(SPECIAL_GLYPH_ELLIPSIS));
                 e->profile_delays = true;
         }
 
@@ -2137,12 +2139,9 @@ static sd_event_source* event_source_free(sd_event_source *s) {
          * we still retain a valid event source object after
          * the callback. */
 
-        if (s->dispatching) {
-                if (s->type == SOURCE_IO)
-                        source_io_unregister(s);
-
+        if (s->dispatching)
                 source_disconnect(s);
-        } else
+        else
                 source_free(s);
 
         return NULL;
@@ -2411,6 +2410,10 @@ fail:
 }
 
 _public_ int sd_event_source_get_enabled(sd_event_source *s, int *ret) {
+        /* Quick mode: the event source doesn't exist and we only want to query boolean enablement state. */
+        if (!s && !ret)
+                return false;
+
         assert_return(s, -EINVAL);
         assert_return(!event_pid_changed(s->event), -ECHILD);
 
@@ -2588,8 +2591,13 @@ static int event_source_online(
 _public_ int sd_event_source_set_enabled(sd_event_source *s, int m) {
         int r;
 
-        assert_return(s, -EINVAL);
         assert_return(IN_SET(m, SD_EVENT_OFF, SD_EVENT_ON, SD_EVENT_ONESHOT), -EINVAL);
+
+        /* Quick mode: if the source doesn't exist, SD_EVENT_OFF is a noop. */
+        if (m == SD_EVENT_OFF && !s)
+                return 0;
+
+        assert_return(s, -EINVAL);
         assert_return(!event_pid_changed(s->event), -ECHILD);
 
         /* If we are dead anyway, we are fine with turning off sources, but everything else needs to fail. */
