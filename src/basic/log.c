@@ -1193,31 +1193,14 @@ static int parse_proc_cmdline_item(const char *key, const char *value, void *dat
 }
 
 static bool should_parse_proc_cmdline(void) {
-        const char *e;
-        pid_t p;
-
         /* PID1 always reads the kernel command line. */
         if (getpid_cached() == 1)
                 return true;
 
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), systemd-importd,
-         * or systemd-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
-        e = getenv("SYSTEMD_EXEC_PID");
-        if (!e)
-                return false;
-
-        if (streq(e, "*"))
-                /* For testing. */
-                return true;
-
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
-        if (parse_pid(e, &p) < 0) {
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
-                log_debug("Failed to parse \"$SYSTEMD_EXEC_PID=%s\". Ignoring.", e);
-                return false;
-        }
-
-        return getpid_cached() == p;
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
+        return invoked_by_elogind();
 }
 
 void log_parse_environment_variables(void) {
