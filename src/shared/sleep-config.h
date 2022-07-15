@@ -63,6 +63,8 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location);
 int can_sleep(SleepOperation operation);
 int can_sleep_disk(char **types);
 int can_sleep_state(char **types);
+int read_battery_capacity_percentage(void);
+int battery_is_low(void);
 #else // 0
 int can_sleep(Manager *m, SleepOperation s);
 #endif // 0
