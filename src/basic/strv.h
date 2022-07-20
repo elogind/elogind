@@ -283,14 +283,7 @@ int fputstrv(FILE *f, char * const *l, const char *separator, bool *space);
 #endif // 0
 
 #define strv_free_and_replace(a, b)             \
-        ({                                      \
-                char ***_a = &(a);              \
-                char ***_b = &(b);              \
-                strv_free(*_a);                 \
-                (*_a) = (*_b);                  \
-                (*_b) = NULL;                   \
-                0;                              \
-        })
+        free_and_replace_full(a, b, strv_free)
 
 extern const struct hash_ops string_strv_hash_ops;
 #if 0 /// UNNEEDED by elogind
