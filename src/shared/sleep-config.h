@@ -65,6 +65,8 @@ int can_sleep_disk(char **types);
 int can_sleep_state(char **types);
 int read_battery_capacity_percentage(void);
 int battery_is_low(void);
+int get_battery_discharge_rate(void);
+int put_battery_discharge_rate(int estimated_battery_discharge_rate);
 #else // 0
 int can_sleep(Manager *m, SleepOperation s);
 #endif // 0
