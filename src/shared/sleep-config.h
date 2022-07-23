@@ -73,6 +73,8 @@ int estimate_battery_discharge_rate_per_hour(
                 Hashmap *current_capacity,
                 usec_t before_timestamp,
                 usec_t after_timestamp);
+int check_wakeup_type(void);
+int battery_trip_point_alarm_exists(void);
 #else // 0
 int can_sleep(Manager *m, SleepOperation s);
 #endif // 0
