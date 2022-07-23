@@ -601,7 +601,6 @@ decl_headers = '''
 #include <uchar.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
-#include <linux/fs.h>
 '''
 
 foreach decl : ['char16_t',
@@ -612,6 +611,17 @@ foreach decl : ['char16_t',
 
         # We get -1 if the size cannot be determined
         have = cc.sizeof(decl, prefix : decl_headers, args : '-D_GNU_SOURCE') > 0
+
+        if decl == 'struct mount_attr'
+                if have
+                        want_linux_fs_h = false
+                else
+                        have = cc.sizeof(decl,
+                                         prefix : decl_headers + '#include <linux/fs.h>',
+                                         args : '-D_GNU_SOURCE') > 0
+                        want_linux_fs_h = have
+                endif
+        endif
 
         if decl == 'struct statx'
                 if have
