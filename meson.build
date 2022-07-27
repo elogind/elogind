@@ -390,6 +390,8 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 
 conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 
+conf.set10('EFI_TPM_PCR_COMPAT',                              get_option('efi-tpm-pcr-compat'))
+
 #####################################################################
 
 cc = meson.get_compiler('c')
