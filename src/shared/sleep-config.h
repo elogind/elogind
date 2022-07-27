@@ -2,6 +2,8 @@
 #pragma once
 
 #include <linux/fiemap.h>
+
+#include "hashmap.h"
 #include "time-util.h"
 
 typedef enum SleepOperation {
@@ -63,10 +65,14 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location);
 int can_sleep(SleepOperation operation);
 int can_sleep_disk(char **types);
 int can_sleep_state(char **types);
-int read_battery_capacity_percentage(void);
 int battery_is_low(void);
-int get_battery_discharge_rate(void);
-int put_battery_discharge_rate(int estimated_battery_discharge_rate);
+int get_total_suspend_interval(Hashmap *last_capacity, usec_t *ret);
+int fetch_batteries_capacity_by_name(Hashmap **ret_current_capacity);
+int estimate_battery_discharge_rate_per_hour(
+                Hashmap *last_capacity,
+                Hashmap *current_capacity,
+                usec_t before_timestamp,
+                usec_t after_timestamp);
 #else // 0
 int can_sleep(Manager *m, SleepOperation s);
 #endif // 0
