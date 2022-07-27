@@ -2618,11 +2618,19 @@ test_dlopen = executable(
 #         install_rpath : rootpkglibdir,
 #         install : true)
 #
+# if get_option('link-journalctl-shared')
+#         journalctl_link_with = [libshared]
+# else
+#         journalctl_link_with = [libsystemd_static,
+#                                 libshared_static,
+#                                 libbasic_gcrypt]
+# endif
+#
 # public_programs += executable(
 #         'journalctl',
 #         journalctl_sources,
 #         include_directories : includes,
-#         link_with : [libshared],
+#         link_with : [journalctl_link_with],
 #         dependencies : [threads,
 #                         libdl,
 #                         libxz,
@@ -4807,7 +4815,7 @@ foreach tuple : [
 #         # components
 #         ['backlight'],
 #         ['binfmt'],
-#         ['bpf-framework',         conf.get('BPF_FRAMEWORK') == 1],
+#         ['bpf-framework',          conf.get('BPF_FRAMEWORK') == 1],
 #         ['coredump'],
 #         ['environment.d'],
 #         ['efi'],
@@ -4837,7 +4845,7 @@ foreach tuple : [
 #         ['resolve'],
 #         ['rfkill'],
 #         ['sysext'],
-#         ['systemd-analyze',       conf.get('ENABLE_ANALYZE') == 1],
+#         ['systemd-analyze',        conf.get('ENABLE_ANALYZE') == 1],
 #         ['sysupdate'],
 #         ['sysusers'],
 #         ['timedated'],
@@ -4853,7 +4861,7 @@ foreach tuple : [
         ['polkit'],
 #if 0 /// UNNEEDED by elogind
 #         ['nscd'],
-#         ['legacy-pkla',           install_polkit_pkla],
+#         ['legacy-pkla',            install_polkit_pkla],
 #         ['kmod'],
 #endif // 0
         ['dbus'],
@@ -4861,10 +4869,10 @@ foreach tuple : [
 #if 0 /// UNNEEDED by elogind
 #         ['tpm'],
 #endif // 0
-        ['man pages',             want_man],
-        ['html pages',            want_html],
-        ['man page indices',      want_man and have_lxml],
 #if 0 /// UNNEEDED by elogind
+#         ['man pages',              want_man],
+#         ['html pages',             want_html],
+#         ['man page indices',       want_man and have_lxml],
 #         ['SysV compat'],
 #         ['compat-mutable-uid-boundaries'],
 #endif // 0
@@ -4872,9 +4880,9 @@ foreach tuple : [
 #if 0 /// UNNEEDED by elogind
 #         ['ldconfig'],
 #endif // 0
-        ['adm group',             get_option('adm-group')],
-        ['wheel group',           get_option('wheel-group')],
 #if 0 /// UNNEEDED by elogind
+#         ['adm group',              get_option('adm-group')],
+#         ['wheel group',            get_option('wheel-group')],
 #         ['gshadow'],
 #endif // 0
 #if 1 /// Extra debugging for elogind
@@ -4884,21 +4892,22 @@ foreach tuple : [
         ['debug mmap cache'],
         ['debug siphash'],
 #if 0 /// elogind ships any other of those
-#         ['valgrind',              conf.get('VALGRIND') == 1],
-#         ['trace logging',         conf.get('LOG_TRACE') == 1],
-#         ['install tests',         install_tests],
-#         ['link-udev-shared',      get_option('link-udev-shared')],
-#         ['link-systemctl-shared', get_option('link-systemctl-shared')],
-#         ['link-networkd-shared',  get_option('link-networkd-shared')],
-#         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
 #endif // 0
-        ['link-boot-shared',      get_option('link-boot-shared')],
+        ['valgrind',               conf.get('VALGRIND') == 1],
+        ['trace logging',          conf.get('LOG_TRACE') == 1],
+        ['install tests',          install_tests],
+        ['link-udev-shared',       get_option('link-udev-shared')],
+        ['link-systemctl-shared',  get_option('link-systemctl-shared')],
+        ['link-networkd-shared',   get_option('link-networkd-shared')],
+        ['link-timesyncd-shared',  get_option('link-timesyncd-shared')],
+        ['link-journalctl-shared', get_option('link-journalctl-shared')],
+        ['link-boot-shared',       get_option('link-boot-shared')],
         ['first-boot-full-preset'],
         ['fexecve'],
 #if 0 /// elogind has everything standalone that can be standalone already
-#         ['standalone-binaries',   get_option('standalone-binaries')],
 #endif // 0
-        ['coverage',              get_option('b_coverage')],
+        ['standalone-binaries',    get_option('standalone-binaries')],
+        ['coverage',               get_option('b_coverage')],
 ]
 
         if tuple.length() >= 2
