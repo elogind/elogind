@@ -102,12 +102,19 @@ Deprecations and removals:
 * drop support for LOOP_CONFIGURE-less loopback block devices, once kernel
   baseline is 5.8.
 
+* drop fd_is_mount_point() fallback mess once we can rely on
+  STATX_ATTR_MOUNT_ROOT to exist i.e. kernel baseline 5.8
+
 * rework our PID tracking in services and so on, to be strictly based on pidfd,
   once kernel baseline is 5.13.
 
 * ~2023: remove support for TPM_PCR_INDEX_KERNEL_PARAMETERS_COMPAT
 
 Features:
+
+* sd-stub: invoke random seed logic the same way as in sd-boot, except if
+  random seed EFI variable is already set. That way, the variable set will be
+  set in all cases: if you just use sd-stub, or just sd-boot, or both.
 
 * sd-boot: we probably should include all BootXY EFI variable defined boot
   entries in our menu, and then suppress ourselves. Benefit: instant
