@@ -62,3 +62,4 @@
 #HybridSleepState=disk
 #HybridSleepMode=suspend platform shutdown
 #HibernateDelaySec=10800
+#StopIdleSessionSec=infinity

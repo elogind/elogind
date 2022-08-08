@@ -3695,6 +3695,7 @@ static const sd_bus_vtable manager_vtable[] = {
         SD_BUS_PROPERTY("SessionsMax", "t", NULL, offsetof(Manager, sessions_max), SD_BUS_VTABLE_PROPERTY_CONST),
         SD_BUS_PROPERTY("NCurrentSessions", "t", property_get_hashmap_size, offsetof(Manager, sessions), 0),
         SD_BUS_PROPERTY("UserTasksMax", "t", property_get_compat_user_tasks_max, 0, SD_BUS_VTABLE_PROPERTY_CONST|SD_BUS_VTABLE_HIDDEN),
+        SD_BUS_PROPERTY("StopIdleSessionUSec", "t", NULL, offsetof(Manager, stop_idle_session_usec), SD_BUS_VTABLE_PROPERTY_CONST),
 
 #if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
         SD_BUS_METHOD("ReloadConfig", NULL, NULL, method_reload_config, SD_BUS_VTABLE_UNPRIVILEGED),

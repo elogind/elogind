@@ -80,7 +80,6 @@ void manager_reset_config(Manager *m) {
 
         m->kill_only_users = strv_free(m->kill_only_users);
         m->kill_exclude_users = strv_free(m->kill_exclude_users);
-}
 
 #if 1 /// Add-On for manager_reset_config() used by elogind
 void elogind_manager_reset_config(Manager* m) {
@@ -120,6 +119,7 @@ void elogind_manager_reset_config(Manager* m) {
                           m->hibernate_delay_sec / USEC_PER_SEC,
                           m->hibernate_delay_sec / USEC_PER_MINUTE);
 #endif // ENABLE_DEBUG_ELOGIND
+        m->stop_idle_session_usec = USEC_INFINITY;
 }
 #endif // 1
 
