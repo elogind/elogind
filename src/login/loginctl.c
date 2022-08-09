@@ -141,10 +141,9 @@ static int list_sessions(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         _cleanup_(table_unrefp) Table *table = NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         pager_open(arg_pager_flags);
@@ -215,10 +214,9 @@ static int list_users(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         _cleanup_(table_unrefp) Table *table = NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         pager_open(arg_pager_flags);
@@ -278,10 +276,9 @@ static int list_seats(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         _cleanup_(table_unrefp) Table *table = NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         pager_open(arg_pager_flags);
@@ -841,12 +838,11 @@ static int show_properties(sd_bus *bus, const char *path, bool *new_line) {
 
 static int show_session(int argc, char *argv[], void *userdata) {
         bool properties, new_line = false;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_free_ char *path = NULL;
 
-        assert(bus);
         assert(argv);
 
         properties = !strstr(argv[0], "status");
@@ -880,10 +876,9 @@ static int show_session(int argc, char *argv[], void *userdata) {
 
 static int show_user(int argc, char *argv[], void *userdata) {
         bool properties, new_line = false;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         properties = !strstr(argv[0], "status");
@@ -937,10 +932,9 @@ static int show_user(int argc, char *argv[], void *userdata) {
 
 static int show_seat(int argc, char *argv[], void *userdata) {
         bool properties, new_line = false;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         properties = !strstr(argv[0], "status");
@@ -982,10 +976,9 @@ static int show_seat(int argc, char *argv[], void *userdata) {
 
 static int activate(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1027,10 +1020,9 @@ static int activate(int argc, char *argv[], void *userdata) {
 
 static int kill_session(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1055,12 +1047,11 @@ static int kill_session(int argc, char *argv[], void *userdata) {
 
 static int enable_linger(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         char* short_argv[3];
         bool b;
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1104,10 +1095,9 @@ static int enable_linger(int argc, char *argv[], void *userdata) {
 
 static int terminate_user(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1135,10 +1125,9 @@ static int terminate_user(int argc, char *argv[], void *userdata) {
 
 static int kill_user(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1174,10 +1163,9 @@ static int kill_user(int argc, char *argv[], void *userdata) {
 
 static int attach(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1199,10 +1187,9 @@ static int attach(int argc, char *argv[], void *userdata) {
 
 static int flush_devices(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1216,10 +1203,9 @@ static int flush_devices(int argc, char *argv[], void *userdata) {
 
 static int lock_sessions(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
@@ -1238,10 +1224,9 @@ static int lock_sessions(int argc, char *argv[], void *userdata) {
 
 static int terminate_seat(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
+        sd_bus *bus = ASSERT_PTR(userdata);
         int r;
 
-        assert(bus);
         assert(argv);
 
         polkit_agent_open_if_enabled(arg_transport, arg_ask_password);

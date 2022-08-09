@@ -24,10 +24,9 @@
 
 #if 0 /// UNNEEDED by elogind
 static int name_owner_change_callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
-        sd_event *e = userdata;
+        sd_event *e = ASSERT_PTR(userdata);
 
         assert(m);
-        assert(e);
 
         sd_bus_close(sd_bus_message_get_bus(m));
         sd_event_exit(e, 0);

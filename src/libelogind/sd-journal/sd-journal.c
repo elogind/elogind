@@ -150,7 +150,7 @@ static void set_location(sd_journal *j, JournalFile *f, Object *o) {
 }
 
 static int match_is_valid(const void *data, size_t size) {
-        assert(data);
+        const char *b = ASSERT_PTR(data);
 
         if (size < 2)
                 return false;
@@ -158,7 +158,6 @@ static int match_is_valid(const void *data, size_t size) {
         if (((char*) data)[0] == '_' && ((char*) data)[1] == '_')
                 return false;
 
-        const char *b = data;
         for (const char *p = b; p < b + size; p++) {
 
                 if (*p == '=')
@@ -3374,13 +3373,12 @@ _public_ int sd_journal_reliable_fd(sd_journal *j) {
 
 #if 0 /// UNNEEDED by elogind
 static char *lookup_field(const char *field, void *userdata) {
-        sd_journal *j = userdata;
+        sd_journal *j = ASSERT_PTR(userdata);
         const void *data;
         size_t size, d;
         int r;
 
         assert(field);
-        assert(j);
 
         r = sd_journal_get_data(j, field, &data, &size);
         if (r < 0 ||

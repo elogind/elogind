@@ -258,7 +258,7 @@ int execute_directories(
 
 #if 0 /// UNNEEDED by elogind
 static int gather_environment_generate(int fd, void *arg) {
-        char ***env = arg;
+        char ***env = ASSERT_PTR(arg);
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_strv_free_ char **new = NULL;
         int r;
@@ -268,8 +268,6 @@ static int gather_environment_generate(int fd, void *arg) {
          *
          * fd is always consumed, even on error.
          */
-
-        assert(env);
 
         f = fdopen(fd, "r");
         if (!f) {
@@ -300,12 +298,10 @@ static int gather_environment_generate(int fd, void *arg) {
 
 static int gather_environment_collect(int fd, void *arg) {
         _cleanup_fclose_ FILE *f = NULL;
-        char ***env = arg;
+        char ***env = ASSERT_PTR(arg);
         int r;
 
         /* Write out a series of env=cescape(VAR=value) assignments to fd. */
-
-        assert(env);
 
         f = fdopen(fd, "w");
         if (!f) {
@@ -326,12 +322,10 @@ static int gather_environment_collect(int fd, void *arg) {
 
 static int gather_environment_consume(int fd, void *arg) {
         _cleanup_fclose_ FILE *f = NULL;
-        char ***env = arg;
+        char ***env = ASSERT_PTR(arg);
         int r = 0;
 
         /* Read a series of env=cescape(VAR=value) assignments from fd into env. */
-
-        assert(env);
 
         f = fdopen(fd, "r");
         if (!f) {

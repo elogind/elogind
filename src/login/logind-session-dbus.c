@@ -36,11 +36,10 @@ static int property_get_user(
                 sd_bus_error *error) {
 
         _cleanup_free_ char *p = NULL;
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
 
         assert(bus);
         assert(reply);
-        assert(s);
 
         p = user_bus_path(s->user);
         if (!p)
@@ -58,11 +57,10 @@ static int property_get_name(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
 
         assert(bus);
         assert(reply);
-        assert(s);
 
         return sd_bus_message_append(reply, "s", s->user->user_record->user_name);
 }
@@ -77,11 +75,10 @@ static int property_get_seat(
                 sd_bus_error *error) {
 
         _cleanup_free_ char *p = NULL;
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
 
         assert(bus);
         assert(reply);
-        assert(s);
 
         p = s->seat ? seat_bus_path(s->seat) : strdup("/");
         if (!p)
@@ -104,11 +101,10 @@ static int property_get_idle_hint(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
 
         assert(bus);
         assert(reply);
-        assert(s);
 
         return sd_bus_message_append(reply, "b", session_get_idle_hint(s, NULL) > 0);
 }
@@ -122,14 +118,13 @@ static int property_get_idle_since_hint(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         dual_timestamp t = DUAL_TIMESTAMP_NULL;
         uint64_t u;
         int r;
 
         assert(bus);
         assert(reply);
-        assert(s);
 
         r = session_get_idle_hint(s, &t);
         if (r < 0)
@@ -149,21 +144,19 @@ static int property_get_locked_hint(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
 
         assert(bus);
         assert(reply);
-        assert(s);
 
         return sd_bus_message_append(reply, "b", session_get_locked_hint(s) > 0);
 }
 
 int bus_session_method_terminate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(s);
 
         r = bus_verify_polkit_async(
                         message,
@@ -189,11 +182,10 @@ int bus_session_method_terminate(sd_bus_message *message, void *userdata, sd_bus
 }
 
 int bus_session_method_activate(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(s);
 
         r = check_polkit_chvt(message, s->manager, error);
         if (r < 0)
@@ -209,11 +201,10 @@ int bus_session_method_activate(sd_bus_message *message, void *userdata, sd_bus_
 }
 
 int bus_session_method_lock(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(s);
 
         r = bus_verify_polkit_async(
                         message,
@@ -238,12 +229,11 @@ int bus_session_method_lock(sd_bus_message *message, void *userdata, sd_bus_erro
 
 static int method_set_idle_hint(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         uid_t uid;
         int r, b;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "b", &b);
         if (r < 0)
@@ -271,12 +261,11 @@ static int method_set_idle_hint(sd_bus_message *message, void *userdata, sd_bus_
 
 static int method_set_locked_hint(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         uid_t uid;
         int r, b;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "b", &b);
         if (r < 0)
@@ -299,14 +288,13 @@ static int method_set_locked_hint(sd_bus_message *message, void *userdata, sd_bu
 }
 
 int bus_session_method_kill(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         const char *swho;
         int32_t signo;
         KillWho who;
         int r;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "si", &swho, &signo);
         if (r < 0)
@@ -346,12 +334,11 @@ int bus_session_method_kill(sd_bus_message *message, void *userdata, sd_bus_erro
 
 static int method_take_control(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         int r, force;
         uid_t uid;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "b", &force);
         if (r < 0)
@@ -376,10 +363,9 @@ static int method_take_control(sd_bus_message *message, void *userdata, sd_bus_e
 }
 
 static int method_release_control(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
 
         assert(message);
-        assert(s);
 
         if (!session_is_controller(s, sd_bus_message_get_sender(message)))
                 return sd_bus_error_set(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
@@ -390,13 +376,12 @@ static int method_release_control(sd_bus_message *message, void *userdata, sd_bu
 }
 
 static int method_set_type(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         const char *t;
         SessionType type;
         int r;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "s", &t);
         if (r < 0)
@@ -440,14 +425,13 @@ static int method_set_display(sd_bus_message *message, void *userdata, sd_bus_er
 }
 
 static int method_take_device(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         uint32_t major, minor;
         SessionDevice *sd;
         dev_t dev;
         int r;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "uu", &major, &minor);
         if (r < 0)
@@ -490,14 +474,13 @@ error:
 }
 
 static int method_release_device(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         uint32_t major, minor;
         SessionDevice *sd;
         dev_t dev;
         int r;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "uu", &major, &minor);
         if (r < 0)
@@ -521,14 +504,13 @@ static int method_release_device(sd_bus_message *message, void *userdata, sd_bus
 }
 
 static int method_pause_device_complete(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         uint32_t major, minor;
         SessionDevice *sd;
         dev_t dev;
         int r;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "uu", &major, &minor);
         if (r < 0)
@@ -554,13 +536,12 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
         _cleanup_(sd_device_unrefp) sd_device *d = NULL;
         const char *subsystem, *name, *seat;
-        Session *s = userdata;
+        Session *s = ASSERT_PTR(userdata);
         uint32_t brightness;
         uid_t uid;
         int r;
 
         assert(message);
-        assert(s);
 
         r = sd_bus_message_read(message, "ssu", &subsystem, &name, &brightness);
         if (r < 0)
@@ -607,7 +588,7 @@ static int method_set_brightness(sd_bus_message *message, void *userdata, sd_bus
 static int session_object_find(sd_bus *bus, const char *path, const char *interface, void *userdata, void **found, sd_bus_error *error) {
         _cleanup_free_ char *e = NULL;
         sd_bus_message *message;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         const char *p;
         int r;
@@ -616,7 +597,6 @@ static int session_object_find(sd_bus *bus, const char *path, const char *interf
         assert(path);
         assert(interface);
         assert(found);
-        assert(m);
 
         p = startswith(path, "/org/freedesktop/login1/session/");
         if (!p)

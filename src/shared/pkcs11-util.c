@@ -981,7 +981,7 @@ static int pkcs11_acquire_certificate_callback(
                 void *userdata) {
 
         _cleanup_(erase_and_freep) char *pin_used = NULL;
-        struct pkcs11_acquire_certificate_callback_data *data = userdata;
+        struct pkcs11_acquire_certificate_callback_data *data = ASSERT_PTR(userdata);
         CK_OBJECT_HANDLE object;
         int r;
 
@@ -989,7 +989,6 @@ static int pkcs11_acquire_certificate_callback(
         assert(slot_info);
         assert(token_info);
         assert(uri);
-        assert(data);
 
         /* Called for every token matching our URI */
 
@@ -1203,7 +1202,7 @@ int pkcs11_crypt_device_callback(
                 P11KitUri *uri,
                 void *userdata) {
 
-        pkcs11_crypt_device_callback_data *data = userdata;
+        pkcs11_crypt_device_callback_data *data = ASSERT_PTR(userdata);
         CK_OBJECT_HANDLE object;
         int r;
 
@@ -1211,7 +1210,6 @@ int pkcs11_crypt_device_callback(
         assert(slot_info);
         assert(token_info);
         assert(uri);
-        assert(data);
 
         /* Called for every token matching our URI */
 

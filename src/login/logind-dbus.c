@@ -274,11 +274,10 @@ static int property_get_idle_hint(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
 
         assert(bus);
         assert(reply);
-        assert(m);
 
         return sd_bus_message_append(reply, "b", manager_get_idle_hint(m, NULL) > 0);
 }
@@ -292,12 +291,11 @@ static int property_get_idle_since_hint(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         dual_timestamp t = DUAL_TIMESTAMP_NULL;
 
         assert(bus);
         assert(reply);
-        assert(m);
 
         manager_get_idle_hint(m, &t);
 
@@ -313,12 +311,11 @@ static int property_get_inhibited(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         InhibitWhat w;
 
         assert(bus);
         assert(reply);
-        assert(m);
 
         w = manager_inhibit_what(m, streq(property, "BlockInhibited") ? INHIBIT_BLOCK : INHIBIT_DELAY);
 
@@ -334,12 +331,11 @@ static int property_get_preparing(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         bool b = false;
 
         assert(bus);
         assert(reply);
-        assert(m);
 
         if (m->delayed_action) {
                 if (streq(property, "PreparingForShutdown"))
@@ -360,12 +356,11 @@ static int property_get_scheduled_shutdown(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         int r;
 
         assert(bus);
         assert(reply);
-        assert(m);
 
         r = sd_bus_message_open_container(reply, 'r', "st");
         if (r < 0)
@@ -389,13 +384,12 @@ static BUS_DEFINE_PROPERTY_GET_REF(property_get_hashmap_size, "t", Hashmap *, (u
 
 static int method_get_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *p = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const char *name;
         Session *session;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -418,12 +412,11 @@ static int method_get_session(sd_bus_message *message, void *userdata, sd_bus_er
 static int method_get_session_by_pid(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *p = NULL;
         Session *session = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         pid_t pid;
         int r;
 
         assert(message);
-        assert(m);
 
         assert_cc(sizeof(pid_t) == sizeof(uint32_t));
 
@@ -456,13 +449,12 @@ static int method_get_session_by_pid(sd_bus_message *message, void *userdata, sd
 
 static int method_get_user(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *p = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         uint32_t uid;
         User *user;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "u", &uid);
         if (r < 0)
@@ -481,13 +473,12 @@ static int method_get_user(sd_bus_message *message, void *userdata, sd_bus_error
 
 static int method_get_user_by_pid(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *p = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         User *user = NULL;
         pid_t pid;
         int r;
 
         assert(message);
-        assert(m);
 
         assert_cc(sizeof(pid_t) == sizeof(uint32_t));
 
@@ -520,13 +511,12 @@ static int method_get_user_by_pid(sd_bus_message *message, void *userdata, sd_bu
 
 static int method_get_seat(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *p = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const char *name;
         Seat *seat;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -545,12 +535,11 @@ static int method_get_seat(sd_bus_message *message, void *userdata, sd_bus_error
 
 static int method_list_sessions(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_new_method_return(message, &reply);
         if (r < 0)
@@ -586,12 +575,11 @@ static int method_list_sessions(sd_bus_message *message, void *userdata, sd_bus_
 
 static int method_list_users(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         User *user;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_new_method_return(message, &reply);
         if (r < 0)
@@ -625,12 +613,11 @@ static int method_list_users(sd_bus_message *message, void *userdata, sd_bus_err
 
 static int method_list_seats(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Seat *seat;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_new_method_return(message, &reply);
         if (r < 0)
@@ -661,12 +648,11 @@ static int method_list_seats(sd_bus_message *message, void *userdata, sd_bus_err
 
 static int method_list_inhibitors(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Inhibitor *inhibitor;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_new_method_return(message, &reply);
         if (r < 0)
@@ -701,7 +687,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         _cleanup_free_ char *id = NULL;
         Session *session = NULL;
         uint32_t audit_id = 0;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         User *user = NULL;
         Seat *seat = NULL;
         pid_t leader;
@@ -713,7 +699,6 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
         int r;
 
         assert(message);
-        assert(m);
 
         assert_cc(sizeof(pid_t) == sizeof(uint32_t));
         assert_cc(sizeof(uid_t) == sizeof(uint32_t));
@@ -1013,13 +998,12 @@ fail:
 }
 
 static int method_release_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         const char *name;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -1043,13 +1027,12 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
 }
 
 static int method_activate_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         const char *name;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -1066,13 +1049,12 @@ static int method_activate_session(sd_bus_message *message, void *userdata, sd_b
 
 static int method_activate_session_on_seat(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         const char *session_name, *seat_name;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         Seat *seat;
         int r;
 
         assert(message);
-        assert(m);
 
         /* Same as ActivateSession() but refuses to work if the seat doesn't match */
 
@@ -1106,13 +1088,12 @@ static int method_activate_session_on_seat(sd_bus_message *message, void *userda
 }
 
 static int method_lock_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         const char *name;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -1126,11 +1107,10 @@ static int method_lock_session(sd_bus_message *message, void *userdata, sd_bus_e
 }
 
 static int method_lock_sessions(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(m);
 
         r = bus_verify_polkit_async(
                         message,
@@ -1155,12 +1135,11 @@ static int method_lock_sessions(sd_bus_message *message, void *userdata, sd_bus_
 
 static int method_kill_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         const char *name;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -1174,13 +1153,12 @@ static int method_kill_session(sd_bus_message *message, void *userdata, sd_bus_e
 }
 
 static int method_kill_user(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         uint32_t uid;
         User *user;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "u", &uid);
         if (r < 0)
@@ -1194,13 +1172,12 @@ static int method_kill_user(sd_bus_message *message, void *userdata, sd_bus_erro
 }
 
 static int method_terminate_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const char *name;
         Session *session;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -1214,13 +1191,12 @@ static int method_terminate_session(sd_bus_message *message, void *userdata, sd_
 }
 
 static int method_terminate_user(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         uint32_t uid;
         User *user;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "u", &uid);
         if (r < 0)
@@ -1234,13 +1210,12 @@ static int method_terminate_user(sd_bus_message *message, void *userdata, sd_bus
 }
 
 static int method_terminate_seat(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const char *name;
         Seat *seat;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &name);
         if (r < 0)
@@ -1256,14 +1231,13 @@ static int method_terminate_seat(sd_bus_message *message, void *userdata, sd_bus
 static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
         _cleanup_free_ char *cc = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         int r, b, interactive;
         struct passwd *pw;
         const char *path;
         uint32_t uid, auth_uid;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "ubb", &uid, &b, &interactive);
         if (r < 0)
@@ -1434,11 +1408,10 @@ static int flush_devices(Manager *m) {
 
 static int method_attach_device(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         const char *sysfs, *seat;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         int interactive, r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "ssb", &seat, &sysfs, &interactive);
         if (r < 0)
@@ -1483,11 +1456,10 @@ static int method_attach_device(sd_bus_message *message, void *userdata, sd_bus_
 }
 
 static int method_flush_devices(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         int interactive, r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "b", &interactive);
         if (r < 0)
@@ -1587,10 +1559,9 @@ static int bus_manager_log_shutdown(
 }
 
 static int lid_switch_ignore_handler(sd_event_source *e, uint64_t usec, void *userdata) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
 
         assert(e);
-        assert(m);
 
         m->lid_switch_ignore_event_source = sd_event_source_unref(m->lid_switch_ignore_event_source);
         return 0;
@@ -1890,9 +1861,8 @@ static int manager_inhibit_timeout_handler(
                         uint64_t usec,
                         void *userdata) {
 
-        Manager *manager = userdata;
+        Manager *manager = ASSERT_PTR(userdata);
 
-        assert(manager);
         assert(manager->inhibit_timeout_source == s);
 
         return manager_dispatch_delayed(manager, true);
@@ -2441,10 +2411,8 @@ static int manager_scheduled_shutdown_handler(
 
         const HandleActionData *a = NULL;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         int r;
-
-        assert(m);
 
         a = m->scheduled_shutdown_action;
         assert(a);
@@ -2483,7 +2451,7 @@ error:
 }
 
 static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         HandleAction handle;
         const HandleActionData *a;
         uint64_t elapse;
@@ -2491,7 +2459,6 @@ static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_
         int r;
         bool dry_run = false;
 
-        assert(m);
         assert(message);
 
         r = sd_bus_message_read(message, "st", &type, &elapse);
@@ -2565,7 +2532,7 @@ fail:
 }
 
 static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const HandleActionData *a;
         bool cancelled;
 #if 1 /// elogind needs to construct the message to allow extra wall messages
@@ -2573,7 +2540,6 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
 #endif // 1
         int r;
 
-        assert(m);
         assert(message);
 
         log_debug_elogind("Called with wall message '%s'", strempty(m->wall_message));
@@ -2843,12 +2809,11 @@ static int method_set_reboot_parameter(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const char *arg;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &arg);
         if (r < 0)
@@ -2886,11 +2851,10 @@ static int method_can_reboot_parameter(
                 void *userdata,
                 sd_bus_error *error) {
 
-        _unused_ Manager *m = userdata;
+        _unused_ Manager *m = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(m);
 
         r = detect_container();
         if (r < 0)
@@ -2948,12 +2912,11 @@ static int method_set_reboot_to_firmware_setup(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         bool use_efi;
         int b, r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "b", &b);
         if (r < 0)
@@ -3018,11 +2981,10 @@ static int method_can_reboot_to_firmware_setup(
                 void *userdata,
                 sd_bus_error *error) {
 
-        _unused_ Manager *m = userdata;
+        _unused_ Manager *m = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(m);
 
         r = getenv_bool("SYSTEMD_REBOOT_TO_FIRMWARE_SETUP");
         if (r == -ENXIO) {
@@ -3111,13 +3073,12 @@ static int method_set_reboot_to_boot_loader_menu(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         bool use_efi;
         uint64_t x;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "t", &x);
         if (r < 0)
@@ -3200,11 +3161,10 @@ static int method_can_reboot_to_boot_loader_menu(
                 void *userdata,
                 sd_bus_error *error) {
 
-        _unused_ Manager *m = userdata;
+        _unused_ Manager *m = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(m);
 
         r = getenv_bool("SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU");
         if (r == -ENXIO) {
@@ -3246,13 +3206,12 @@ static int property_get_reboot_to_boot_loader_entry(
                 sd_bus_error *error) {
 
         _cleanup_free_ char *v = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const char *x = NULL;
         int r;
 
         assert(bus);
         assert(reply);
-        assert(m);
 
         r = getenv_bool("SYSTEMD_REBOOT_TO_BOOT_LOADER_ENTRY");
         if (r == -ENXIO) {
@@ -3307,13 +3266,12 @@ static int method_set_reboot_to_boot_loader_entry(
                 void *userdata,
                 sd_bus_error *error) {
 
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         bool use_efi;
         const char *v;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "s", &v);
         if (r < 0)
@@ -3395,11 +3353,10 @@ static int method_can_reboot_to_boot_loader_entry(
                 void *userdata,
                 sd_bus_error *error) {
 
-        _unused_ Manager *m = userdata;
+        _unused_ Manager *m = ASSERT_PTR(userdata);
         int r;
 
         assert(message);
-        assert(m);
 
         r = getenv_bool("SYSTEMD_REBOOT_TO_BOOT_LOADER_ENTRY");
         if (r == -ENXIO) {
@@ -3441,13 +3398,12 @@ static int property_get_boot_loader_entries(
                 sd_bus_error *error) {
 
         _cleanup_(boot_config_free) BootConfig config = BOOT_CONFIG_NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         size_t i;
         int r;
 
         assert(bus);
         assert(reply);
-        assert(m);
 
         r = boot_config_load_auto(&config, NULL, NULL);
         if (r < 0 && r != -ENOKEY) /* don't complain if there's no GPT found */
@@ -3478,12 +3434,11 @@ static int method_set_wall_message(
                 sd_bus_error *error) {
 
         int r;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         char *wall_message;
         int enable_wall_messages;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "sb", &wall_message, &enable_wall_messages);
         if (r < 0)
@@ -3533,7 +3488,7 @@ static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error 
         const char *who, *why, *what, *mode;
         _cleanup_free_ char *id = NULL;
         _cleanup_close_ int fifo_fd = -1;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         InhibitMode mm;
         InhibitWhat w;
         pid_t pid;
@@ -3541,7 +3496,6 @@ static int method_inhibit(sd_bus_message *message, void *userdata, sd_bus_error 
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "ssss", &what, &who, &why, &mode);
         if (r < 0)
@@ -4069,14 +4023,13 @@ static int session_jobs_reply(Session *s, uint32_t jid, const char *unit, const 
 
 int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         const char *path, *result, *unit;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         uint32_t id;
         User *user;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "uoss", &id, &path, &unit, &result);
         if (r < 0) {
@@ -4128,13 +4081,12 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
 
 int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         const char *path, *unit;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         User *user;
         int r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "so", &unit, &path);
         if (r < 0) {
@@ -4155,14 +4107,13 @@ int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *er
 
 int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         _cleanup_free_ char *unit = NULL;
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         const char *path;
         Session *session;
         User *user;
         int r;
 
         assert(message);
-        assert(m);
 
         path = sd_bus_message_get_path(message);
         if (!path)
@@ -4188,12 +4139,11 @@ int match_properties_changed(sd_bus_message *message, void *userdata, sd_bus_err
 }
 
 int match_reloading(sd_bus_message *message, void *userdata, sd_bus_error *error) {
-        Manager *m = userdata;
+        Manager *m = ASSERT_PTR(userdata);
         Session *session;
         int b, r;
 
         assert(message);
-        assert(m);
 
         r = sd_bus_message_read(message, "b", &b);
         if (r < 0) {

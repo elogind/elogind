@@ -4340,10 +4340,9 @@ int json_dispatch(JsonVariant *v, const JsonDispatch table[], JsonDispatchCallba
 }
 
 int json_dispatch_boolean(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        bool *b = userdata;
+        bool *b = ASSERT_PTR(userdata);
 
         assert(variant);
-        assert(b);
 
         if (!json_variant_is_boolean(variant))
                 return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not a boolean.", strna(name));
@@ -4353,10 +4352,9 @@ int json_dispatch_boolean(const char *name, JsonVariant *variant, JsonDispatchFl
 }
 
 int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        int *b = userdata;
+        int *b = ASSERT_PTR(userdata);
 
         assert(variant);
-        assert(b);
 
         if (json_variant_is_null(variant)) {
                 *b = -1;
@@ -4372,10 +4370,9 @@ int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchF
 
 #if 0 /// UNNEEDED by elogind
 int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        int64_t *i = userdata;
+        int64_t *i = ASSERT_PTR(userdata);
 
         assert(variant);
-        assert(i);
 
         if (!json_variant_is_integer(variant))
                 return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not an integer.", strna(name));
@@ -4386,10 +4383,9 @@ int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlag
 #endif // 0
 
 int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        uint64_t *u = userdata;
+        uint64_t *u = ASSERT_PTR(userdata);
 
         assert(variant);
-        assert(u);
 
         if (!json_variant_is_unsigned(variant))
                 return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not an unsigned integer.", strna(name));
@@ -4399,10 +4395,9 @@ int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFla
 }
 
 int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        uint32_t *u = userdata;
+        uint32_t *u = ASSERT_PTR(userdata);
 
         assert(variant);
-        assert(u);
 
         if (!json_variant_is_unsigned(variant))
                 return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not an unsigned integer.", strna(name));
@@ -4415,10 +4410,9 @@ int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFla
 }
 
 int json_dispatch_int32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        int32_t *i = userdata;
+        int32_t *i = ASSERT_PTR(userdata);
 
         assert(variant);
-        assert(i);
 
         if (!json_variant_is_integer(variant))
                 return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not an integer.", strna(name));
@@ -4431,11 +4425,10 @@ int json_dispatch_int32(const char *name, JsonVariant *variant, JsonDispatchFlag
 }
 
 int json_dispatch_string(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        char **s = userdata;
+        char **s = ASSERT_PTR(userdata);
         int r;
 
         assert(variant);
-        assert(s);
 
         if (json_variant_is_null(variant)) {
                 *s = mfree(*s);
@@ -4456,10 +4449,9 @@ int json_dispatch_string(const char *name, JsonVariant *variant, JsonDispatchFla
 }
 
 int json_dispatch_const_string(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
-        const char **s = userdata;
+        const char **s = ASSERT_PTR(userdata);
 
         assert(variant);
-        assert(s);
 
         if (json_variant_is_null(variant)) {
                 *s = NULL;
@@ -4478,12 +4470,11 @@ int json_dispatch_const_string(const char *name, JsonVariant *variant, JsonDispa
 
 int json_dispatch_strv(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         _cleanup_strv_free_ char **l = NULL;
-        char ***s = userdata;
+        char ***s = ASSERT_PTR(userdata);
         JsonVariant *e;
         int r;
 
         assert(variant);
-        assert(s);
 
         if (json_variant_is_null(variant)) {
                 *s = strv_free(*s);
