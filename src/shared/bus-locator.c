@@ -67,6 +67,12 @@ const BusLocator* const bus_timedate = &(BusLocator){
 };
 #endif // 0
 
+const BusLocator* const bus_hostname = &(BusLocator){
+        .destination = "org.freedesktop.hostname1",
+        .path = "/org/freedesktop/hostname1",
+        .interface = "org.freedesktop.hostname1"
+};
+
 /* Shorthand flavors of the sd-bus convenience helpers with destination,path,interface strings encapsulated
  * within a single struct. */
 int bus_call_method_async(
