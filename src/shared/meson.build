@@ -86,6 +86,7 @@
 #         'creds-util.h',
 #         'cryptsetup-util.c',
 #         'cryptsetup-util.h',
+#         'daemon-util.c',
 #         'daemon-util.h',
 #         'data-fd-util.c',
 #         'data-fd-util.h',
