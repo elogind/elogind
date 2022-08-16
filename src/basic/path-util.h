@@ -214,3 +214,5 @@ bool path_strv_contains(char **l, const char *path);
 #if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char **l, const char *path);
 #endif // 0
+
+int path_glob_can_match(const char *pattern, const char *prefix, char **ret);
