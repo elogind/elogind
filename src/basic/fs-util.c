@@ -406,9 +406,6 @@ int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gi
         return ret;
 }
 
-int touch(const char *path) {
-        return touch_file(path, false, USEC_INFINITY, UID_INVALID, GID_INVALID, MODE_INVALID);
-}
 
 #if 0 /// UNNEEDED by elogind
 int symlink_idempotent(const char *from, const char *to, bool make_relative) {
