@@ -28,12 +28,6 @@ _SD_BEGIN_DECLARATIONS;
 /* And if you add a new ID here, make sure to generate a random one with "elogind-id128 new". Do not use any
  * other IDs, and do not count them up manually. */
 
-
-
-
-
-
-
 #define SD_MESSAGE_JOURNAL_START                      SD_ID128_MAKE(f7,73,79,a8,49,0b,40,8b,be,5f,69,40,50,5a,77,7b)
 #define SD_MESSAGE_JOURNAL_START_STR                  SD_ID128_MAKE_STR(f7,73,79,a8,49,0b,40,8b,be,5f,69,40,50,5a,77,7b)
 #define SD_MESSAGE_JOURNAL_STOP                       SD_ID128_MAKE(d9,3f,b3,c9,c2,4d,45,1a,97,ce,a6,15,ce,59,c0,0b)
@@ -44,12 +38,14 @@ _SD_BEGIN_DECLARATIONS;
 #define SD_MESSAGE_JOURNAL_MISSED_STR                 SD_ID128_MAKE_STR(e9,bf,28,e6,e8,34,48,1b,b6,f4,8f,54,8a,d1,36,06)
 #define SD_MESSAGE_JOURNAL_USAGE                      SD_ID128_MAKE(ec,38,7f,57,7b,84,4b,8f,a9,48,f3,3c,ad,9a,75,e6)
 #define SD_MESSAGE_JOURNAL_USAGE_STR                  SD_ID128_MAKE_STR(ec,38,7f,57,7b,84,4b,8f,a9,48,f3,3c,ad,9a,75,e6)
+
 #define SD_MESSAGE_COREDUMP                           SD_ID128_MAKE(fc,2e,22,bc,6e,e6,47,b6,b9,07,29,ab,34,a2,50,b1)
 #define SD_MESSAGE_COREDUMP_STR                       SD_ID128_MAKE_STR(fc,2e,22,bc,6e,e6,47,b6,b9,07,29,ab,34,a2,50,b1)
 #define SD_MESSAGE_TRUNCATED_CORE                     SD_ID128_MAKE(5a,ad,d8,e9,54,dc,4b,1a,8c,95,4d,63,fd,9e,11,37)
 #define SD_MESSAGE_TRUNCATED_CORE_STR                 SD_ID128_MAKE_STR(5a,ad,d8,e9,54,dc,4b,1a,8c,95,4d,63,fd,9e,11,37)
 #define SD_MESSAGE_BACKTRACE                          SD_ID128_MAKE(1f,4e,0a,44,a8,86,49,93,9a,ae,a3,4f,c6,da,8c,95)
 #define SD_MESSAGE_BACKTRACE_STR                      SD_ID128_MAKE_STR(1f,4e,0a,44,a8,86,49,93,9a,ae,a3,4f,c6,da,8c,95)
+
 #define SD_MESSAGE_SESSION_START                      SD_ID128_MAKE(8d,45,62,0c,1a,43,48,db,b1,74,10,da,57,c6,0c,66)
 #define SD_MESSAGE_SESSION_START_STR                  SD_ID128_MAKE_STR(8d,45,62,0c,1a,43,48,db,b1,74,10,da,57,c6,0c,66)
 #define SD_MESSAGE_SESSION_STOP                       SD_ID128_MAKE(33,54,93,94,24,b4,45,6d,98,02,ca,83,33,ed,42,4a)
@@ -62,10 +58,12 @@ _SD_BEGIN_DECLARATIONS;
 #define SD_MESSAGE_MACHINE_START_STR                  SD_ID128_MAKE_STR(24,d8,d4,45,25,73,40,24,96,06,83,81,a6,31,2d,f2)
 #define SD_MESSAGE_MACHINE_STOP                       SD_ID128_MAKE(58,43,2b,d3,ba,ce,47,7c,b5,14,b5,63,81,b8,a7,58)
 #define SD_MESSAGE_MACHINE_STOP_STR                   SD_ID128_MAKE_STR(58,43,2b,d3,ba,ce,47,7c,b5,14,b5,63,81,b8,a7,58)
+
 #define SD_MESSAGE_TIME_CHANGE                        SD_ID128_MAKE(c7,a7,87,07,9b,35,4e,aa,a9,e7,7b,37,18,93,cd,27)
 #define SD_MESSAGE_TIME_CHANGE_STR                    SD_ID128_MAKE_STR(c7,a7,87,07,9b,35,4e,aa,a9,e7,7b,37,18,93,cd,27)
 #define SD_MESSAGE_TIMEZONE_CHANGE                    SD_ID128_MAKE(45,f8,2f,4a,ef,7a,4b,bf,94,2c,e8,61,d1,f2,09,90)
 #define SD_MESSAGE_TIMEZONE_CHANGE_STR                SD_ID128_MAKE_STR(45,f8,2f,4a,ef,7a,4b,bf,94,2c,e8,61,d1,f2,09,90)
+
 #define SD_MESSAGE_TAINTED                            SD_ID128_MAKE(50,87,6a,9d,b0,0f,4c,40,bd,e1,a2,ad,38,1c,3a,1b)
 #define SD_MESSAGE_TAINTED_STR                        SD_ID128_MAKE_STR(50,87,6a,9d,b0,0f,4c,40,bd,e1,a2,ad,38,1c,3a,1b)
 #define SD_MESSAGE_STARTUP_FINISHED                   SD_ID128_MAKE(b0,7a,24,9c,d0,24,41,4a,82,dd,00,cd,18,13,78,ff)
@@ -107,6 +105,7 @@ _SD_BEGIN_DECLARATIONS;
 
 #define SD_MESSAGE_UNIT_RESOURCES                     SD_ID128_MAKE(ae,8f,7b,86,6b,03,47,b9,af,31,fe,1c,80,b1,27,c0)
 #define SD_MESSAGE_UNIT_RESOURCES_STR                 SD_ID128_MAKE_STR(ae,8f,7b,86,6b,03,47,b9,af,31,fe,1c,80,b1,27,c0)
+
 #define SD_MESSAGE_UNIT_SUCCESS                       SD_ID128_MAKE(7a,d2,d1,89,f7,e9,4e,70,a3,8c,78,13,54,91,24,48)
 #define SD_MESSAGE_UNIT_SUCCESS_STR                   SD_ID128_MAKE_STR(7a,d2,d1,89,f7,e9,4e,70,a3,8c,78,13,54,91,24,48)
 #define SD_MESSAGE_UNIT_SKIPPED                       SD_ID128_MAKE(0e,42,84,a0,ca,ca,4b,fc,81,c0,bb,67,86,97,26,73)
@@ -166,6 +165,7 @@ _SD_BEGIN_DECLARATIONS;
 #define SD_MESSAGE_DNSSEC_TRUST_ANCHOR_REVOKED_STR    SD_ID128_MAKE_STR(4d,44,08,cf,d0,d1,44,85,91,84,d1,e6,5d,7c,8a,65)
 #define SD_MESSAGE_DNSSEC_DOWNGRADE                   SD_ID128_MAKE(36,db,2d,fa,5a,90,45,e1,bd,4a,f5,f9,3e,1c,f0,57)
 #define SD_MESSAGE_DNSSEC_DOWNGRADE_STR               SD_ID128_MAKE_STR(36,db,2d,fa,5a,90,45,e1,bd,4a,f5,f9,3e,1c,f0,57)
+
 #define SD_MESSAGE_UNSAFE_USER_NAME                   SD_ID128_MAKE(b6,1f,da,c6,12,e9,4b,91,82,28,5b,99,88,43,06,1f)
 #define SD_MESSAGE_UNSAFE_USER_NAME_STR               SD_ID128_MAKE_STR(b6,1f,da,c6,12,e9,4b,91,82,28,5b,99,88,43,06,1f)
 
@@ -183,11 +183,11 @@ _SD_BEGIN_DECLARATIONS;
 #define SD_MESSAGE_TIME_SYNC                          SD_ID128_MAKE(7c,8a,41,f3,7b,76,49,41,a0,e1,78,0b,1b,e2,f0,37)
 #define SD_MESSAGE_TIME_SYNC_STR                      SD_ID128_MAKE_STR(7c,8a,41,f3,7b,76,49,41,a0,e1,78,0b,1b,e2,f0,37)
 
-#define SD_MESSAGE_LOGIND_SHUTDOWN                    SD_ID128_MAKE(9e,70,66,27,9d,c8,40,3d,a7,9c,e4,b1,a6,90,64,b2)
-#define SD_MESSAGE_LOGIND_SHUTDOWN_STR                SD_ID128_MAKE_STR(9e,70,66,27,9d,c8,40,3d,a7,9c,e4,b1,a6,90,64,b2)
+#define SD_MESSAGE_SHUTDOWN_SCHEDULED                 SD_ID128_MAKE(9e,70,66,27,9d,c8,40,3d,a7,9c,e4,b1,a6,90,64,b2)
+#define SD_MESSAGE_SHUTDOWN_SCHEDULED_STR             SD_ID128_MAKE_STR(9e,70,66,27,9d,c8,40,3d,a7,9c,e4,b1,a6,90,64,b2)
 
-#define SD_MESSAGE_LOGIND_SHUTDOWN_CANCELED           SD_ID128_MAKE(24,9f,6f,b9,e6,e2,42,8c,96,f3,f0,87,56,81,ff,a3)
-#define SD_MESSAGE_LOGIND_SHUTDOWN_CANCELED_STR       SD_ID128_MAKE_STR(24,9f,6f,b9,e6,e2,42,8c,96,f3,f0,87,56,81,ff,a3)
+#define SD_MESSAGE_SHUTDOWN_CANCELED                  SD_ID128_MAKE(24,9f,6f,b9,e6,e2,42,8c,96,f3,f0,87,56,81,ff,a3)
+#define SD_MESSAGE_SHUTDOWN_CANCELED_STR              SD_ID128_MAKE_STR(24,9f,6f,b9,e6,e2,42,8c,96,f3,f0,87,56,81,ff,a3)
 
 _SD_END_DECLARATIONS;
 
