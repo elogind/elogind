@@ -64,8 +64,8 @@ int getgroups_alloc(gid_t** gids);
 
 int get_home_dir(char **ret);
 #if 0 /// UNNEEDED by elogind
-int get_shell(char **_ret);
 #endif // 0
+int get_shell(char **ret);
 
 int reset_uid_gid(void);
 
