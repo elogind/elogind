@@ -390,6 +390,8 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 
 conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 
+conf.set10('EFI_TPM_PCR_COMPAT',                              get_option('efi-tpm-pcr-compat'))
+
 #####################################################################
 
 cc = meson.get_compiler('c')
@@ -474,6 +476,11 @@ possible_common_cc_flags = [
 ]
 
 c_args = get_option('c_args')
+
+# Our json library does not support -ffinite-math-only, which is enabled by -Ofast or -ffast-math.
+if (('-Ofast' in c_args or '-ffast-math' in c_args or '-ffinite-math-only' in c_args) and '-fno-finite-math-only' not in c_args)
+        error('-Ofast, -ffast-math, or -ffinite-math-only is specified in c_args.')
+endif
 
 # Disable -Wmaybe-uninitialized when compiling with -Os/-O1/-O3/etc. There are
 # too many false positives with gcc >= 8. Effectively, we only test with -O0
@@ -596,7 +603,6 @@ decl_headers = '''
 #include <uchar.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
-#include <linux/fs.h>
 '''
 
 foreach decl : ['char16_t',
@@ -607,6 +613,17 @@ foreach decl : ['char16_t',
 
         # We get -1 if the size cannot be determined
         have = cc.sizeof(decl, prefix : decl_headers, args : '-D_GNU_SOURCE') > 0
+
+        if decl == 'struct mount_attr'
+                if have
+                        want_linux_fs_h = false
+                else
+                        have = cc.sizeof(decl,
+                                         prefix : decl_headers + '#include <linux/fs.h>',
+                                         args : '-D_GNU_SOURCE') > 0
+                        want_linux_fs_h = have
+                endif
+        endif
 
         if decl == 'struct statx'
                 if have
@@ -623,6 +640,7 @@ foreach decl : ['char16_t',
 endforeach
 
 conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
+conf.set10('WANT_LINUX_FS_H', want_linux_fs_h)
 
 foreach ident : ['secure_getenv', '__secure_getenv']
         conf.set10('HAVE_' + ident.to_upper(), cc.has_function(ident))
@@ -920,7 +938,7 @@ endif
 # endif
 #
 # time_epoch = get_option('time-epoch')
-# if time_epoch == -1
+# if time_epoch <= 0
 #         time_epoch = run_command(sh, '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).stdout().strip()
 #         if time_epoch == '' and git.found() and fs.exists('.git')
 #                 # If we're in a git repository, use the creation time of the latest git tag.
@@ -938,7 +956,7 @@ endif
 #                 time_epoch = run_command(stat, '-c', '%Y', NEWS,
 #                                          check : true).stdout()
 #         endif
-#         time_epoch = time_epoch.to_int()
+#         time_epoch = time_epoch.strip().to_int()
 # endif
 # conf.set('TIME_EPOCH', time_epoch)
 #
@@ -978,7 +996,7 @@ foreach tuple : [['system-alloc-uid-min', 'SYS_UID_MIN', 1],  # Also see login.d
                  ['system-alloc-gid-min', 'SYS_GID_MIN', 1],
                  ['system-gid-max',       'SYS_GID_MAX', 999]]
         v = get_option(tuple[0])
-        if v == -1
+        if v <= 0
                 v = run_command(
                         awk,
                         '/^\s*@0@\s+/ { uid=$2 } END { print uid }'.format(tuple[1]),
@@ -1026,7 +1044,7 @@ if not meson.is_cross_build()
         endif
         id_result = run_command('id', '-u', nobody_user, check : false)
         if id_result.returncode() == 0
-                id = id_result.stdout().to_int()
+                id = id_result.stdout().strip().to_int()
                 if id != 65534
                         warning('\n' +
                                 'The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
@@ -1045,7 +1063,7 @@ if not meson.is_cross_build()
         endif
         id_result = run_command('id', '-g', nobody_group, check : false)
         if id_result.returncode() == 0
-                id = id_result.stdout().to_int()
+                id = id_result.stdout().strip().to_int()
                 if id != 65534
                         warning('\n' +
                                 'The local group with the configured group name "@0@" of the nobody group does not have GID 65534 (it has @1@).\n'.format(nobody_group, id) +
@@ -1090,8 +1108,8 @@ conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
 #         val = get_option(option)
 #
 #         # Ensure provided GID argument is numeric, otherwise fall back to default assignment
-#         conf.set(name, val >= 0 ? val : '-')
-#         if val >= 0
+#         conf.set(name, val > 0 ? val : '-')
+#         if val > 0
 #                 static_ugids += '@0@:@1@'.format(option, val)
 #         endif
 # endforeach
@@ -2568,7 +2586,7 @@ test_dlopen = executable(
 #         dependencies : [versiondep,
 #                         libseccomp],
 #         install_rpath : rootpkglibdir,
-#         install : conf.get('ENABLE_ANALYZE'))
+#         install : conf.get('ENABLE_ANALYZE') == 1)
 # public_programs += exe
 #
 # if want_tests != 'false'
@@ -2602,11 +2620,19 @@ test_dlopen = executable(
 #         install_rpath : rootpkglibdir,
 #         install : true)
 #
+# if get_option('link-journalctl-shared')
+#         journalctl_link_with = [libshared]
+# else
+#         journalctl_link_with = [libsystemd_static,
+#                                 libshared_static,
+#                                 libbasic_gcrypt]
+# endif
+#
 # public_programs += executable(
 #         'journalctl',
 #         journalctl_sources,
 #         include_directories : includes,
-#         link_with : [libshared],
+#         link_with : [journalctl_link_with],
 #         dependencies : [threads,
 #                         libdl,
 #                         libxz,
@@ -2936,6 +2962,18 @@ endif
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
+#
+#         if conf.get('HAVE_OPENSSL') == 1
+#                 executable(
+#                         'systemd-measure',
+#                         'src/boot/measure.c',
+#                         include_directories : includes,
+#                         link_with : [libshared],
+#                         dependencies : [libopenssl],
+#                         install_rpath : rootpkglibdir,
+#                         install : true,
+#                         install_dir : rootlibexecdir)
+#         endif
 # endif
 #
 # executable(
@@ -4063,12 +4101,6 @@ public_programs += executable(
 #                 install : true,
 #                 install_dir : rootbindir)
 #         public_programs += exe
-#
-#         if want_tests != 'false'
-#                 test('test-repart',
-#                      test_repart_sh,
-#                      args : [exe.full_path(), udevadm.full_path()])
-#         endif
 # endif
 #
 # executable(
@@ -4795,7 +4827,7 @@ foreach tuple : [
 #         # components
 #         ['backlight'],
 #         ['binfmt'],
-#         ['bpf-framework',         conf.get('BPF_FRAMEWORK') == 1],
+#         ['bpf-framework',          conf.get('BPF_FRAMEWORK') == 1],
 #         ['coredump'],
 #         ['environment.d'],
 #         ['efi'],
@@ -4825,7 +4857,7 @@ foreach tuple : [
 #         ['resolve'],
 #         ['rfkill'],
 #         ['sysext'],
-#         ['systemd-analyze',       conf.get('ENABLE_ANALYZE') == 1],
+#         ['systemd-analyze',        conf.get('ENABLE_ANALYZE') == 1],
 #         ['sysupdate'],
 #         ['sysusers'],
 #         ['timedated'],
@@ -4841,7 +4873,7 @@ foreach tuple : [
         ['polkit'],
 #if 0 /// UNNEEDED by elogind
 #         ['nscd'],
-#         ['legacy-pkla',           install_polkit_pkla],
+#         ['legacy-pkla',            install_polkit_pkla],
 #         ['kmod'],
 #endif // 0
         ['dbus'],
@@ -4850,9 +4882,9 @@ foreach tuple : [
 #         ['tpm'],
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-#         ['man pages',             want_man],
-#         ['html pages',            want_html],
-#         ['man page indices',      want_man and have_lxml],
+#         ['man pages',              want_man],
+#         ['html pages',             want_html],
+#         ['man page indices',       want_man and have_lxml],
 #         ['SysV compat'],
 #         ['compat-mutable-uid-boundaries'],
 #endif // 0
@@ -4861,8 +4893,8 @@ foreach tuple : [
 #         ['ldconfig'],
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-#         ['adm group',             get_option('adm-group')],
-#         ['wheel group',           get_option('wheel-group')],
+#         ['adm group',              get_option('adm-group')],
+#         ['wheel group',            get_option('wheel-group')],
 #         ['gshadow'],
 #endif // 0
 #if 1 /// Extra debugging for elogind
@@ -4872,19 +4904,20 @@ foreach tuple : [
         ['debug mmap cache'],
         ['debug siphash'],
 /// elogind empty mask removed (elogind ships any other of those)
-        ['valgrind',              conf.get('VALGRIND') == 1],
-        ['trace logging',         conf.get('LOG_TRACE') == 1],
-        ['install tests',         install_tests],
-        ['link-udev-shared',      get_option('link-udev-shared')],
-        ['link-systemctl-shared', get_option('link-systemctl-shared')],
-        ['link-networkd-shared',  get_option('link-networkd-shared')],
-        ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
-        ['link-boot-shared',      get_option('link-boot-shared')],
+        ['valgrind',               conf.get('VALGRIND') == 1],
+        ['trace logging',          conf.get('LOG_TRACE') == 1],
+        ['install tests',          install_tests],
+        ['link-udev-shared',       get_option('link-udev-shared')],
+        ['link-systemctl-shared',  get_option('link-systemctl-shared')],
+        ['link-networkd-shared',   get_option('link-networkd-shared')],
+        ['link-timesyncd-shared',  get_option('link-timesyncd-shared')],
+        ['link-journalctl-shared', get_option('link-journalctl-shared')],
+        ['link-boot-shared',       get_option('link-boot-shared')],
         ['first-boot-full-preset'],
         ['fexecve'],
 /// elogind empty mask removed (elogind has everything standalone that can be standalone already)
-        ['standalone-binaries',   get_option('standalone-binaries')],
-        ['coverage',              get_option('b_coverage')],
+        ['standalone-binaries',    get_option('standalone-binaries')],
+        ['coverage',               get_option('b_coverage')],
 ]
 
         if tuple.length() >= 2
