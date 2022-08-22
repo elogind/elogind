@@ -77,6 +77,11 @@ Janitorial Clean-ups:
 * rework mount.c and swap.c to follow proper state enumeration/deserialization
   semantics, like we do for device.c now
 
+* get rid of prefix_roota() and similar, only use chase_symlinks() and related
+  calls instead.
+
+* get rid of basename() and replace by path_extract_filename()
+
 Deprecations and removals:
 
 * Remove any support for booting without /usr pre-mounted in the initrd entirely.
@@ -116,6 +121,12 @@ Features:
   table as well. (and possibly drop our efi var). Current kernels will pick up
   the seed from there already, if EFI_RNG_PROTOCOL is not implemented by
   firmware.
+
+* sd-boot: include domain specific hash string in hash function for random seed
+  plus sizes of everything. also include DMI/SMBIOS blob
+
+* accept a random seed via DMI/SMBIOS vendor string that is credited to the
+  kernel RNG, as cheap alternative to virtio-rng
 
 * sd-stub: invoke random seed logic the same way as in sd-boot, except if
   random seed EFI variable is already set. That way, the variable set will be
@@ -1296,10 +1307,6 @@ Features:
   https://lists.freedesktop.org/archives/elogind-devel/2015-June/032962.html
 
 * fstab-generator: default to tmpfs-as-root if only usr= is specified on the kernel cmdline
-
-* initrd-parse-etc.service: can we skip daemon-reload if /sysroot/etc/fstab is missing?
-  Note that we start initrd-fs.target and initrd-cleanup.target there, so a straightforward
-  ConditionPathExists= is not enough.
 
 * docs: bring https://www.freedesktop.org/wiki/Software/elogind/MyServiceCantGetRealtime up to date
 
