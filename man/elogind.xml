@@ -1377,6 +1377,19 @@
   // 0 -->
 
   <refsect1>
+      <title>History</title>
+
+      <variablelist>
+        <varlistentry>
+          <term>elogind 252</term>
+          <listitem><para>Kernel command-line arguments <varname>elogind.unified_cgroup_hierarchy</varname>
+          and <varname>elogind.legacy_elogind_cgroup_controller</varname> were deprecated. Please switch to
+          the unified cgroup hierarchy.</para></listitem>
+        </varlistentry>
+      </variablelist>
+  </refsect1>
+
+  <refsect1>
     <title>See Also</title>
     <para>
       <!-- 0 /// elogind does not have that much to see also...
