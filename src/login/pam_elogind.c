@@ -278,7 +278,7 @@ static int get_seat_from_display(const char *display, const char **seat, uint32_
         if (r < 0)
                 return r;
 
-        if (asprintf(&sys_path, "/sys/dev/char/%d:%d", major(display_ctty), minor(display_ctty)) < 0)
+        if (asprintf(&sys_path, "/sys/dev/char/%u:%u", major(display_ctty), minor(display_ctty)) < 0)
                 return -ENOMEM;
         r = readlink_value(sys_path, &tty);
         if (r < 0)
@@ -425,8 +425,8 @@ static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, con
                 r = sd_bus_message_append(m, "(sv)", field, "t", val);
                 if (r < 0)
                         return pam_bus_log_create_error(handle, r);
-                pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.cpu_weight, ignoring: %s", limit);
         } else if (is_cpu_weight)
+                pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.cpu_weight, ignoring: %s", limit);
         else
                 pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.io_weight, ignoring: %s", limit);
 

@@ -906,7 +906,7 @@ int64_t json_variant_integer(JsonVariant *v) {
                 if (v->value.unsig <= INT64_MAX)
                         return (int64_t) v->value.unsig;
 
-                log_debug("Unsigned integer %ju requested as signed integer and out of range, returning 0.", v->value.unsig);
+                log_debug("Unsigned integer %" PRIu64 " requested as signed integer and out of range, returning 0.", v->value.unsig);
                 return 0;
 
         case JSON_VARIANT_REAL: {
@@ -948,7 +948,7 @@ uint64_t json_variant_unsigned(JsonVariant *v) {
                 if (v->value.integer >= 0)
                         return (uint64_t) v->value.integer;
 
-                log_debug("Signed integer %ju requested as unsigned integer and out of range, returning 0.", v->value.integer);
+                log_debug("Signed integer %" PRIi64 " requested as unsigned integer and out of range, returning 0.", v->value.integer);
                 return 0;
 
         case JSON_VARIANT_UNSIGNED:
@@ -998,7 +998,7 @@ double json_variant_real(JsonVariant *v) {
                 if ((int64_t) converted == v->value.integer)
                         return converted;
 
-                log_debug("Signed integer %ji requested as real, and cannot be converted losslessly, returning 0.", v->value.integer);
+                log_debug("Signed integer %" PRIi64 " requested as real, and cannot be converted losslessly, returning 0.", v->value.integer);
                 return 0.0;
         }
 
@@ -1008,7 +1008,7 @@ double json_variant_real(JsonVariant *v) {
                 if ((uint64_t) converted == v->value.unsig)
                         return converted;
 
-                log_debug("Unsigned integer %ju requested as real, and cannot be converted losslessly, returning 0.", v->value.unsig);
+                log_debug("Unsigned integer %" PRIu64 " requested as real, and cannot be converted losslessly, returning 0.", v->value.unsig);
                 return 0.0;
         }
 
