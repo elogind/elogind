@@ -1144,7 +1144,7 @@ TEST(strextendf) {
         assert_se(strextendf(&p, "<%80i>", 88) >= 0);
         assert_se(streq(p, "<77><99><                                                                              88>"));
 
-        assert_se(strextendf(&p, "<%08x>", 0x1234) >= 0);
+        assert_se(strextendf(&p, "<%08x>", 0x1234u) >= 0);
         assert_se(streq(p, "<77><99><                                                                              88><00001234>"));
 
         p = mfree(p);
@@ -1158,7 +1158,7 @@ TEST(strextendf) {
         assert_se(strextendf_with_separator(&p, ",", "<%80i>", 88) >= 0);
         assert_se(streq(p, "<77>,<99>,<                                                                              88>"));
 
-        assert_se(strextendf_with_separator(&p, ",", "<%08x>", 0x1234) >= 0);
+        assert_se(strextendf_with_separator(&p, ",", "<%08x>", 0x1234u) >= 0);
         assert_se(streq(p, "<77>,<99>,<                                                                              88>,<00001234>"));
 }
 
