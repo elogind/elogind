@@ -1200,6 +1200,7 @@ static bool should_parse_proc_cmdline(void) {
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
         return invoked_by_elogind();
 }
 
@@ -1511,7 +1512,7 @@ int log_dup_console(void) {
         /* Duplicate the fd we use for fd logging if it's < 3 and use the copy from now on. This call is useful
          * whenever we want to continue logging through the original fd, but want to rearrange stderr. */
 
-        if (console_fd >= 3)
+        if (console_fd < 0 || console_fd >= 3)
                 return 0;
 
         copy = fcntl(console_fd, F_DUPFD_CLOEXEC, 3);
