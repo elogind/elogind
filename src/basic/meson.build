@@ -241,6 +241,8 @@
 #         'time-util.h',
 #         'tmpfile-util.c',
 #         'tmpfile-util.h',
+#         'uid-range.c',
+#         'uid-range.h',
 #         'umask-util.h',
 #         'unaligned.h',
 #         'unit-def.c',
