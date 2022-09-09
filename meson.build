@@ -1237,7 +1237,7 @@ want_bpf_framework = get_option('bpf-framework')
 bpf_compiler = get_option('bpf-compiler')
 bpf_framework_required = want_bpf_framework == 'true'
 
-libbpf_version_requirement = '>= 0.2.0'
+libbpf_version_requirement = '>= 0.7.0'
 if bpf_compiler == 'gcc'
         libbpf_version_requirement = '>= 1.0.0'
 endif
@@ -2990,7 +2990,7 @@ endif
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
-#         if conf.get('HAVE_OPENSSL') == 1 and conf.get('HAVE_TPM2') == 1
+#         if conf.get('HAVE_OPENSSL') == 1
 #                 executable(
 #                         'systemd-measure',
 #                         'src/boot/measure.c',
