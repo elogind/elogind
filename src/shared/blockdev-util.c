@@ -514,7 +514,7 @@ int block_device_resize_partition(
         return RET_NERRNO(ioctl(fd, BLKPG, &ba));
 }
 
-static int partition_enumerator_new(sd_device *dev, sd_device_enumerator **ret) {
+int partition_enumerator_new(sd_device *dev, sd_device_enumerator **ret) {
         _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
         const char *s;
         int r;
@@ -545,6 +545,16 @@ static int partition_enumerator_new(sd_device *dev, sd_device_enumerator **ret) 
                 return r;
 
         r = sd_device_enumerator_add_match_parent(e, dev);
+        if (r < 0)
+                return r;
+
+        r = sd_device_get_sysname(dev, &s);
+        if (r < 0)
+                return r;
+
+        /* Also add sysname check for safety. Hopefully, this also improves performance. */
+        s = strjoina(s, "*");
+        r = sd_device_enumerator_add_match_sysname(e, s);
         if (r < 0)
                 return r;
 
