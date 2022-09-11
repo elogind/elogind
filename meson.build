@@ -4115,7 +4115,8 @@ public_programs += executable(
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libblkid,
-#                                 libfdisk],
+#                                 libfdisk,
+#                                 libopenssl],
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
