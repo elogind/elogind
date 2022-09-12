@@ -1198,6 +1198,16 @@ endif
 
 #####################################################################
 
+libatomic = []
+if not cc.links('''#include <stdint.h>
+                   int main() {
+                     char i;
+                     __atomic_exchange_1(&i, 1, 0);
+                     return 1;
+                   }''',
+                name : 'Atomic builtin requires -latomic')
+        libatomic = cc.find_library('atomic')
+endif
 threads = dependency('threads')
 #if 0 /// UNNEEDED in elogind
 # librt = cc.find_library('rt')
@@ -3594,7 +3604,7 @@ endif
 #                    systemd_oomd_sources,
 #                    include_directories : includes,
 #                    link_with : [libshared],
-#                    dependencies : [],
+#                    dependencies : [libatomic],
 #                    install_rpath : rootpkglibdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
