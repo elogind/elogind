@@ -18,8 +18,11 @@ static inline int label_fix(const char *path, LabelFixFlags flags) {
 
 #if 0 /// UNNEEDED by elogind
 int symlink_label(const char *old_path, const char *new_path);
-int symlink_atomic_label(const char *from, const char *to);
 #endif // 0
+int symlink_atomic_full_label(const char *from, const char *to, bool make_relative);
+static inline int symlink_atomic_label(const char *from, const char *to) {
+        return symlink_atomic_full_label(from, to, false);
+}
 int mknod_label(const char *pathname, mode_t mode, dev_t dev);
 
 #if 0 /// UNNEEDED by elogind
