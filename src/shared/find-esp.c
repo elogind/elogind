@@ -7,14 +7,12 @@
 #include "sd-id128.h"
 
 #include "alloc-util.h"
-//#include "blkid-util.h"
-#include "btrfs-util.h"
+#include "blkid-util.h"
 #include "chase-symlinks.h"
 #include "device-util.h"
 #include "devnum-util.h"
 #include "env-util.h"
 #include "errno-util.h"
-#include "fd-util.h"
 #include "find-esp.h"
 #include "gpt.h"
 #include "parse-util.h"
@@ -94,7 +92,7 @@ static int verify_esp_blkid(
         r = blkid_probe_lookup_value(b, "PART_ENTRY_TYPE", &v, NULL);
         if (r != 0)
                 return log_error_errno(errno ?: EIO, "Failed to probe partition type UUID of \"%s\": %m", node);
-        if (sd_id128_string_equal(v, GPT_ESP) <= 0)
+        if (sd_id128_string_equal(v, SD_GPT_ESP) <= 0)
                 return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                        SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
                                        "File system \"%s\" has wrong type for an EFI System Partition (ESP).", node);
@@ -186,7 +184,7 @@ static int verify_esp_udev(
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_TYPE", &v);
         if (r < 0)
                 return log_error_errno(r, "Failed to get device property: %m");
-        if (sd_id128_string_equal(v, GPT_ESP) <= 0)
+        if (sd_id128_string_equal(v, SD_GPT_ESP) <= 0)
                 return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                        SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
                                        "File system \"%s\" has wrong type for an EFI System Partition (ESP).", node);
@@ -237,104 +235,70 @@ static int verify_fsroot_dir(
                 bool unprivileged_mode,
                 dev_t *ret_dev) {
 
-        _cleanup_close_ int fd = -1;
-        STRUCT_NEW_STATX_DEFINE(sxa);
-        STRUCT_NEW_STATX_DEFINE(sxb);
+        struct stat st, st2;
+        const char *t2, *trigger;
         int r;
 
-        /* Checks if the specified directory is at the root of its file system, and returns device
-         * major/minor of the device, if it is. */
-
         assert(path);
-
-        /* We are using O_PATH here, since that way we can operate on directory inodes we cannot look into,
-         * which is quite likely if we run unprivileged */
-        fd = open(path, O_CLOEXEC|O_DIRECTORY|O_PATH);
-        if (fd < 0)
-                return log_full_errno((searching && errno == ENOENT) ||
-                                      (unprivileged_mode && ERRNO_IS_PRIVILEGE(errno)) ? LOG_DEBUG : LOG_ERR, errno,
-                                      "Failed to open directory \"%s\": %m", path);
+        assert(ret_dev);
 
         /* So, the ESP and XBOOTLDR partition are commonly located on an autofs mount. stat() on the
          * directory won't trigger it, if it is not mounted yet. Let's hence explicitly trigger it here,
          * before stat()ing */
-        (void) faccessat(fd, "trigger", F_OK, AT_SYMLINK_NOFOLLOW); /* Filename doesn't matter... */
+        trigger = strjoina(path, "/trigger"); /* Filename doesn't matter... */
+        (void) access(trigger, F_OK);
 
-        r = statx_fallback(fd, "", AT_EMPTY_PATH, STATX_TYPE|STATX_INO|STATX_MNT_ID, &sxa.sx);
-        if (r < 0)
-                return log_full_errno((unprivileged_mode && ERRNO_IS_PRIVILEGE(r)) ? LOG_DEBUG : LOG_ERR, r,
+        if (stat(path, &st) < 0)
+                return log_full_errno((searching && errno == ENOENT) ||
+                                      (unprivileged_mode && errno == EACCES) ? LOG_DEBUG : LOG_ERR, errno,
                                       "Failed to determine block device node of \"%s\": %m", path);
 
-        assert(S_ISDIR(sxa.sx.stx_mode)); /* We used O_DIRECTORY above, when opening, so this must hold */
+        if (major(st.st_dev) == 0)
+                return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
+                                      SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
+                                      "Block device node of \"%s\" is invalid.", path);
 
-        if (FLAGS_SET(sxa.sx.stx_attributes_mask, STATX_ATTR_MOUNT_ROOT)) {
+        if (path_equal(path, "/")) {
+                /* Let's assume that the root directory of the OS is always the root of its file system
+                 * (which technically doesn't have to be the case, but it's close enough, and it's not easy
+                 * to be fully correct for it, since we can't look further up than the root dir easily.) */
+                if (ret_dev)
+                        *ret_dev = st.st_dev;
 
-                /* If we have STATX_ATTR_MOUNT_ROOT, we are happy, that's all we need. We operate under the
-                 * assumption that a top of a mount point is also the top of the file system. (Which of
-                 * course is strictly speaking not always true...) */
-
-                if (!FLAGS_SET(sxa.sx.stx_attributes, STATX_ATTR_MOUNT_ROOT))
-                        return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
-                                              SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
-                                              "Directory \"%s\" is not the root of the file system.", path);
-
-                goto success;
+                return 0;
         }
 
-        /* Now let's look at the parent */
-        r = statx_fallback(fd, "..", 0, STATX_TYPE|STATX_INO|STATX_MNT_ID, &sxb.sx);
-        if (r < 0 && ERRNO_IS_PRIVILEGE(r)) {
-                _cleanup_free_ char *parent = NULL;
+        t2 = strjoina(path, "/..");
+        if (stat(t2, &st2) < 0) {
+                if (errno != EACCES)
+                        r = -errno;
+                else {
+                        _cleanup_free_ char *parent = NULL;
 
-                /* If going via ".." didn't work due to EACCESS, then let's determine the parent path
-                 * directly instead. It's not as good, due to symlinks and such, but we can't do anything
-                 * better here.
-                 *
-                 * (In case you wonder where this fallback is useful: consider a classic Fedora setup with
-                 * /boot/ being an ext4 partition and /boot/efi/ being the VFAT ESP. The latter is mounted
-                 * inaccessible for regular users via the dmask= mount option. In that case as unprivileged
-                 * user we can stat() /boot/efi/, and we can stat()/enumerate /boot/. But we cannot look into
-                 * /boot/efi/, and in particular not use /boot/efi/../ – hence this work-around.) */
+                        /* If going via ".." didn't work due to EACCESS, then let's determine the parent path
+                         * directly instead. It's not as good, due to symlinks and such, but we can't do
+                         * anything better here. */
 
-                if (path_equal(path, "/"))
-                        goto success;
+                        r = path_extract_directory(path, &parent);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to extract parent path from '%s': %m", path);
 
-                r = path_extract_directory(path, &parent);
+                        r = RET_NERRNO(stat(parent, &st2));
+                }
+
                 if (r < 0)
-                        return log_error_errno(r, "Failed to extract parent path from '%s': %m", path);
-
-                r = statx_fallback(AT_FDCWD, parent, AT_SYMLINK_NOFOLLOW, STATX_TYPE|STATX_INO|STATX_MNT_ID, &sxb.sx);
+                        return log_full_errno(unprivileged_mode && r == -EACCES ? LOG_DEBUG : LOG_ERR, r,
+                                              "Failed to determine block device node of parent of \"%s\": %m", path);
         }
-        if (r < 0)
-                return log_full_errno(unprivileged_mode && ERRNO_IS_PRIVILEGE(r) ? LOG_DEBUG : LOG_ERR, r,
-                                      "Failed to determine block device node of parent of \"%s\": %m", path);
 
-        if (statx_inode_same(&sxa.sx, &sxb.sx)) /* for the root dir inode nr for both inodes will be the same */
-                goto success;
-
-        if (statx_mount_same(&sxa.nsx, &sxb.nsx))
+        if (st.st_dev == st2.st_dev)
                 return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                       SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
                                       "Directory \"%s\" is not the root of the file system.", path);
 
-success:
-        if (!ret_dev)
-                return 0;
+        if (ret_dev)
+                *ret_dev = st.st_dev;
 
-        if (sxa.sx.stx_dev_major == 0) { /* Hmm, maybe a btrfs device, and the caller asked for the backing device? Then let's try to get it. */
-                _cleanup_close_ int real_fd = -1;
-
-                /* The statx() above we can execute on an O_PATH fd. But the btrfs ioctl we cannot. Hence
-                 * acquire a "real" fd first, without the O_PATH flag. */
-
-                real_fd = fd_reopen(fd, O_DIRECTORY|O_CLOEXEC);
-                if (real_fd < 0)
-                        return real_fd;
-
-                return btrfs_get_block_device_fd(real_fd, ret_dev);
-        }
-
-        *ret_dev = makedev(sxa.sx.stx_dev_major, sxa.sx.stx_dev_minor);
         return 0;
 }
 
@@ -349,7 +313,7 @@ static int verify_esp(
 
         bool relax_checks, searching = FLAGS_SET(flags, VERIFY_ESP_SEARCHING),
              unprivileged_mode = FLAGS_SET(flags, VERIFY_ESP_UNPRIVILEGED_MODE);
-        dev_t devid = 0;
+        dev_t devid;
         int r;
 
         assert(p);
@@ -361,9 +325,7 @@ static int verify_esp(
          *  -EACESS        → if 'unprivileged_mode' is set, and we have trouble accessing the thing
          */
 
-        relax_checks =
-                getenv_bool("SYSTEMD_RELAX_ESP_CHECKS") > 0 ||
-                FLAGS_SET(flags, VERIFY_ESP_RELAX_CHECKS);
+        relax_checks = getenv_bool("SYSTEMD_RELAX_ESP_CHECKS") > 0 || FLAGS_SET(flags, VERIFY_ESP_RELAX_CHECKS);
 
         /* Non-root user can only check the status, so if an error occurred in the following, it does not cause any
          * issues. Let's also, silence the error messages. */
@@ -383,17 +345,13 @@ static int verify_esp(
                                               "File system \"%s\" is not a FAT EFI System Partition (ESP) file system.", p);
         }
 
-        relax_checks =
-                relax_checks ||
-                detect_container() > 0;
-
-        r = verify_fsroot_dir(p, searching, unprivileged_mode, relax_checks ? NULL : &devid);
+        r = verify_fsroot_dir(p, searching, unprivileged_mode, &devid);
         if (r < 0)
                 return r;
 
         /* In a container we don't have access to block devices, skip this part of the verification, we trust
          * the container manager set everything up correctly on its own. */
-        if (relax_checks)
+        if (detect_container() > 0 || relax_checks)
                 goto finish;
 
         /* If we are unprivileged we ask udev for the metadata about the partition. If we are privileged we
@@ -521,7 +479,7 @@ int find_esp_and_warn(
                                flags | VERIFY_ESP_SEARCHING);
                 if (r >= 0)
                         goto found;
-                if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL, -ENOTDIR)) /* This one is not it */
+                if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL)) /* This one is not it */
                         return r;
 
                 p = mfree(p);
@@ -582,7 +540,7 @@ static int verify_xbootldr_blkid(
                 r = blkid_probe_lookup_value(b, "PART_ENTRY_TYPE", &v, NULL);
                 if (r != 0)
                         return log_error_errno(errno ?: SYNTHETIC_ERRNO(EIO), "%s: Failed to probe PART_ENTRY_TYPE: %m", node);
-                if (sd_id128_string_equal(v, GPT_XBOOTLDR) <= 0)
+                if (sd_id128_string_equal(v, SD_GPT_XBOOTLDR) <= 0)
                         return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                               searching ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : SYNTHETIC_ERRNO(ENODEV),
                                               "%s: Partitition has wrong PART_ENTRY_TYPE=%s for XBOOTLDR partition.", node, v);
@@ -646,7 +604,7 @@ static int verify_xbootldr_udev(
                 if (r < 0)
                         return log_device_error_errno(d, r, "Failed to query ID_PART_ENTRY_TYPE: %m");
 
-                r = sd_id128_string_equal(v, GPT_XBOOTLDR);
+                r = sd_id128_string_equal(v, SD_GPT_XBOOTLDR);
                 if (r < 0)
                         return log_device_error_errno(d, r, "Failed to parse ID_PART_ENTRY_TYPE=%s: %m", v);
                 if (r == 0)
@@ -696,20 +654,18 @@ static int verify_xbootldr(
                 dev_t *ret_devid) {
 
         bool relax_checks;
-        dev_t devid = 0;
+        dev_t devid;
         int r;
 
         assert(p);
 
-        relax_checks =
-                getenv_bool("SYSTEMD_RELAX_XBOOTLDR_CHECKS") > 0 ||
-                detect_container() > 0;
+        relax_checks = getenv_bool("SYSTEMD_RELAX_XBOOTLDR_CHECKS") > 0;
 
-        r = verify_fsroot_dir(p, searching, unprivileged_mode, relax_checks ? NULL : &devid);
+        r = verify_fsroot_dir(p, searching, unprivileged_mode, &devid);
         if (r < 0)
                 return r;
 
-        if (relax_checks)
+        if (detect_container() > 0 || relax_checks)
                 goto finish;
 
         if (unprivileged_mode)
@@ -801,10 +757,10 @@ int find_xbootldr_and_warn(
                                        root ? " under directory " : "",
                                        strempty(root));
 
-        r = verify_xbootldr(p, /* searching= */ true, unprivileged_mode, ret_uuid, ret_devid);
+        r = verify_xbootldr(p, true, unprivileged_mode, ret_uuid, ret_devid);
         if (r >= 0)
                 goto found;
-        if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL, -ENOTDIR)) /* This one is not it */
+        if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL)) /* This one is not it */
                 return r;
 
         return -ENOKEY;
