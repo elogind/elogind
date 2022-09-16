@@ -2983,6 +2983,15 @@ endif
 #                         install_rpath : rootpkglibdir,
 #                         install : true,
 #                         install_dir : rootlibexecdir)
+#                 executable(
+#                         'systemd-pcrphase',
+#                         'src/boot/pcrphase.c',
+#                         include_directories : includes,
+#                         link_with : [libshared],
+#                         dependencies : [libopenssl, tpm2],
+#                         install_rpath : rootpkglibdir,
+#                         install : true,
+#                         install_dir : rootlibexecdir)
 #         endif
 # endif
 #
