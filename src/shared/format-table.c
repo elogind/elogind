@@ -1528,7 +1528,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                         return NULL;
 
                 if (!format_bytes(p, FORMAT_BYTES_MAX, d->size))
-                        return "-";
+                        return table_ersatz_string(t);
 
                 d->formatted = TAKE_PTR(p);
                 break;
@@ -1543,7 +1543,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                         return NULL;
 
                 if (!format_bytes_full(p, FORMAT_BYTES_MAX, d->size, 0))
-                        return "-";
+                        return table_ersatz_string(t);
 
                 n = strlen(p);
                 strscpy(p + n, FORMAT_BYTES_MAX + 2 - n, "bps");
@@ -1746,7 +1746,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                 char *p;
 
                 if (!uid_is_valid(d->uid))
-                        return "-";
+                        return table_ersatz_string(t);
 
                 p = new(char, DECIMAL_STR_WIDTH(d->uid) + 1);
                 if (!p)
@@ -1761,7 +1761,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                 char *p;
 
                 if (!gid_is_valid(d->gid))
-                        return "-";
+                        return table_ersatz_string(t);
 
                 p = new(char, DECIMAL_STR_WIDTH(d->gid) + 1);
                 if (!p)
@@ -1776,7 +1776,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                 char *p;
 
                 if (!pid_is_valid(d->pid))
-                        return "-";
+                        return table_ersatz_string(t);
 
                 p = new(char, DECIMAL_STR_WIDTH(d->pid) + 1);
                 if (!p)
@@ -1793,7 +1793,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
 
                 suffix = signal_to_string(d->int_val);
                 if (!suffix)
-                        return "-";
+                        return table_ersatz_string(t);
 
                 p = strjoin("SIG", suffix);
                 if (!p)
@@ -1807,7 +1807,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                 char *p;
 
                 if (d->mode == MODE_INVALID)
-                        return "-";
+                        return table_ersatz_string(t);
 
                 p = new(char, 4 + 1);
                 if (!p)
