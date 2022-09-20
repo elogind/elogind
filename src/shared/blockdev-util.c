@@ -21,7 +21,7 @@
 #include "parse-util.h"
 
 #if 0 /// UNNEEDED by elogind
-static int block_device_is_whole_disk(sd_device *dev) {
+int block_device_is_whole_disk(sd_device *dev) {
         const char *s;
         int r;
 
