@@ -1348,9 +1348,8 @@ static int help(int argc, char *argv[], void *userdata) {
 #endif // 0
                "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
                "                             short-iso, short-iso-precise, short-full,\n"
-               "                             short-monotonic, short-unix, verbose, export,\n"
+               "                             short-monotonic, short-unix, short-delta,\n"
                "                             json, json-pretty, json-sse, json-seq, cat,\n"
-               "                             with-unit)\n"
 #if 1 /// As elogind can reboot, it allows to control the reboot process
 #if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
@@ -1362,6 +1361,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "                           Boot into a specific boot loader entry on next boot\n"
 #endif
 #endif // 1
+               "                             verbose, export, with-unit)\n"
                "\nSee the %s for details.\n",
                program_invocation_short_name,
                ansi_highlight(),
