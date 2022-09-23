@@ -149,8 +149,8 @@ This is based on crypttab(5).
       <varlistentry>
         <term><option>x-initrd.attach</option></term>
 
-        <listitem><para>Setup this verity protected block device in the initramfs, similarly to
         <citerefentry><refentrytitle>elogind.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        <listitem><para>Setup this verity protected block device in the initrd, similarly to
         units marked with <option>x-initrd.mount</option>.</para>
 
         <para>Although it's not necessary to mark the mount entry for the root file system with
@@ -160,8 +160,8 @@ This is based on crypttab(5).
         use. With this option the device will still be detached but later after the root file
         system is unmounted.</para>
 
-        <para>All other verity protected block devices that contain file systems mounted in the
-        initramfs should use this option.</para>
+        <para>All other verity protected block devices that contain file systems mounted in the initrd should
+        use this option.</para>
         </listitem>
       </varlistentry>
 
