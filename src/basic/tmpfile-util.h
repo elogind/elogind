@@ -23,3 +23,4 @@ int flink_tmpfile(FILE *f, const char *path, const char *target);
 #endif // 0
 
 int mkdtemp_malloc(const char *template, char **ret);
+int mkdtemp_open(const char *template, int flags, char **ret);
