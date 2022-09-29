@@ -14,6 +14,7 @@ int path_is_mount_point(const char *path, const char *root, int flags);
 
 #if 0 /// UNNEEDED by elogind
 bool fstype_is_network(const char *fstype);
+bool fstype_needs_quota(const char *fstype);
 bool fstype_is_api_vfs(const char *fstype);
 bool fstype_is_blockdev_backed(const char *fstype);
 bool fstype_is_ro(const char *fsype);
