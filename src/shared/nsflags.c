@@ -4,21 +4,9 @@
 
 #include "alloc-util.h"
 #include "extract-word.h"
+#include "namespace-util.h"
 #include "nsflags.h"
 #include "string-util.h"
-
-const struct namespace_flag_map namespace_flag_map[] = {
-        { CLONE_NEWCGROUP, "cgroup" },
-        { CLONE_NEWIPC,    "ipc"    },
-        { CLONE_NEWNET,    "net"    },
-        /* So, the mount namespace flag is called CLONE_NEWNS for historical reasons. Let's expose it here under a more
-         * explanatory name: "mnt". This is in-line with how the kernel exposes namespaces in /proc/$PID/ns. */
-        { CLONE_NEWNS,     "mnt"    },
-        { CLONE_NEWPID,    "pid"    },
-        { CLONE_NEWUSER,   "user"   },
-        { CLONE_NEWUTS,    "uts"    },
-        {}
-};
 
 
 #if 0 /// UNNEEDED by elogind
@@ -39,9 +27,9 @@ int namespace_flags_from_string(const char *name, unsigned long *ret) {
                 if (r == 0)
                         break;
 
-                for (i = 0; namespace_flag_map[i].name; i++)
-                        if (streq(word, namespace_flag_map[i].name)) {
-                                 f = namespace_flag_map[i].flag;
+                for (i = 0; namespace_info[i].proc_name; i++)
+                        if (streq(word, namespace_info[i].proc_name)) {
+                                 f = namespace_info[i].clone_flag;
                                  break;
                         }
 
@@ -60,11 +48,11 @@ int namespace_flags_to_string(unsigned long flags, char **ret) {
         _cleanup_free_ char *s = NULL;
         unsigned i;
 
-        for (i = 0; namespace_flag_map[i].name; i++) {
-                if ((flags & namespace_flag_map[i].flag) != namespace_flag_map[i].flag)
+        for (i = 0; namespace_info[i].proc_name; i++) {
+                if ((flags & namespace_info[i].clone_flag) != namespace_info[i].clone_flag)
                         continue;
 
-                if (!strextend_with_separator(&s, " ", namespace_flag_map[i].name))
+                if (!strextend_with_separator(&s, " ", namespace_info[i].proc_name))
                         return -ENOMEM;
         }
 
@@ -75,9 +63,9 @@ int namespace_flags_to_string(unsigned long flags, char **ret) {
 
 #if 0 /// UNNEEDED by elogind
 const char *namespace_single_flag_to_string(unsigned long flag) {
-        for (unsigned i = 0; namespace_flag_map[i].name; i++)
-                if (namespace_flag_map[i].flag == flag)
-                        return namespace_flag_map[i].name;
+        for (unsigned i = 0; namespace_info[i].proc_name; i++)
+                if (namespace_info[i].clone_flag == flag)
+                        return namespace_info[i].proc_name;
 
         return NULL;
 }

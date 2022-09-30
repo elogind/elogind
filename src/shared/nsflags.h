@@ -26,9 +26,3 @@ int namespace_flags_to_string(unsigned long flags, char **ret);
 const char *namespace_single_flag_to_string(unsigned long flag);
 #endif // 0
 
-struct namespace_flag_map {
-        unsigned long flag;
-        const char *name;
-};
-
-extern const struct namespace_flag_map namespace_flag_map[];
