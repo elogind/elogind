@@ -327,6 +327,7 @@
 #         'utmp-wtmp.h',
 #         'varlink.c',
 #         'varlink.h',
+#         'varlink-internal.h',
 #         'verb-log-control.c',
 #         'verb-log-control.h',
 #         'verbs.c',
