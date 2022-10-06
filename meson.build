@@ -1195,6 +1195,16 @@ endif
 
 #####################################################################
 
+libatomic = []
+if not cc.links('''#include <stdint.h>
+                   int main() {
+                     char i;
+                     __atomic_exchange_1(&i, 1, 0);
+                     return 1;
+                   }''',
+                name : 'Atomic builtin requires -latomic')
+        libatomic = cc.find_library('atomic')
+endif
 threads = dependency('threads')
 #if 0 /// UNNEEDED in elogind
 # librt = cc.find_library('rt')
@@ -1202,17 +1212,6 @@ threads = dependency('threads')
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
 libcrypt = cc.find_library('crypt')
-
-# On some architectures, libatomic is required. But on some installations,
-# it is found, but actual linking fails. So let's try to use it opportunistically.
-# If it is installed, but not needed, it will be dropped because of --as-needed.
-if cc.links('''int main(int argc, char **argv) { return 0; }''',
-            args : '-latomic',
-            name : 'libatomic')
-        libatomic = declare_dependency(link_args : '-latomic')
-else
-        libatomic = []
-endif
 
 crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
 foreach ident : [
@@ -1597,7 +1596,7 @@ conf.set10('HAVE_PAM', have)
 # want_qrencode = get_option('qrencode')
 # if want_qrencode != 'false' and not skip_deps
 #         libqrencode = dependency('libqrencode',
-#                                  version : '>= 3',
+#                                  version : '>= 4',
 #                                  required : want_qrencode == 'true')
 #         have = libqrencode.found()
 # else
@@ -4449,19 +4448,14 @@ endforeach
 #                 build_by_default : fuzzer_build)
 #         fuzzer_exes += exe
 #
-#         if want_tests != 'false'
+#         if want_tests != 'false' and name in fuzz_regression_tests
 #                 # Run the fuzz regression tests without any sanitizers enabled.
 #                 # Additional invocations with sanitizers may be added below.
-#                 foreach p : fuzz_regression_tests
-#                         b = p.split('/')[-2]
-#                         c = p.split('/')[-1]
-#
-#                         if b == name
-#                                 test('@0@_@1@'.format(b, c),
-#                                      exe,
-#                                      suite : 'fuzzers',
-#                                      args : [project_source_root / p])
-#                         endif
+#                 foreach fuzz_in : fuzz_regression_tests[name]
+#                         test('@0@_@1@'.format(name, fuzz_in),
+#                              exe,
+#                              suite : 'fuzzers',
+#                              args : [project_source_root / fuzz_testsdir / name / fuzz_in])
 #                 endforeach
 #         endif
 # endforeach
@@ -4603,45 +4597,39 @@ endforeach
 # ############################################################
 #
 # # Enable tests for all supported sanitizers
-# foreach tuple : sanitizers
+# foreach tuple : fuzz_sanitizers
 #         sanitizer = tuple[0]
 #         build = tuple[1]
 #
 #         if cc.has_link_argument('-fsanitize=@0@'.format(sanitizer))
-#                 prev = ''
-#                 foreach p : fuzz_regression_tests
-#                         b = p.split('/')[-2]
-#                         c = p.split('/')[-1]
-#
-#                         name = '@0@:@1@'.format(b, sanitizer)
-#
-#                         if name != prev
-#                                 if want_tests == 'false'
-#                                         message('Not compiling @0@ because tests is set to false'.format(name))
-#                                 elif fuzz_tests
-#                                         exe = custom_target(
-#                                                 name,
-#                                                 output : name,
-#                                                 depends : build,
-#                                                 command : [ln, '-fs',
-#                                                            build.full_path() / b,
-#                                                            '@OUTPUT@'],
-#                                                 build_by_default : true)
-#                                 else
-#                                         message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
-#                                 endif
+#                 foreach fuzzer, fuzz_ins : fuzz_regression_tests
+#                         name = '@0@:@1@'.format(fuzzer, sanitizer)
+#                         if want_tests == 'false'
+#                                 message('Not compiling @0@ because tests is set to false'.format(name))
+#                                 continue
 #                         endif
-#                         prev = name
+#                         if not fuzz_tests
+#                                 message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
+#                                 continue
+#                         endif
+#                         exe = custom_target(
+#                                 name,
+#                                 output : name,
+#                                 depends : build,
+#                                 command : [ln, '-fs',
+#                                            build.full_path() / fuzzer,
+#                                            '@OUTPUT@'],
+#                                 build_by_default : true)
 #
-#                         if fuzz_tests
-#                                 test('@0@_@1@_@2@'.format(b, c, sanitizer),
+#                         foreach fuzz_in : fuzz_ins
+#                                 test('@0@_@1@_@2@'.format(fuzzer, fuzz_in, sanitizer),
 #                                      env,
 #                                      suite : 'fuzz+san',
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
 #                                      timeout : 60,
 #                                      args : [exe.full_path(),
-#                                              project_source_root / p])
-#                         endif
+#                                              project_source_root / fuzz_testsdir / fuzzer / fuzz_in])
+#                         endforeach
 #                 endforeach
 #         endif
 # endforeach
