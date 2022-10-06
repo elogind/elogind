@@ -2990,7 +2990,7 @@ endif
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
-#         if conf.get('HAVE_OPENSSL') == 1
+#         if conf.get('HAVE_OPENSSL') == 1 and conf.get('HAVE_TPM2') == 1
 #                 executable(
 #                         'systemd-measure',
 #                         'src/boot/measure.c',
