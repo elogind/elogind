@@ -22,6 +22,10 @@ static inline void _reset_errno_(int *saved_errno) {
                 _saved_errno_ = -1;             \
         } while (false)
 
+#define LOCAL_ERRNO(value)                      \
+        PROTECT_ERRNO;                          \
+        errno = abs(value)
+
 static inline int negative_errno(void) {
         /* This helper should be used to shut up gcc if you know 'errno' is
          * negative. Instead of "return -errno;", use "return negative_errno();"
@@ -152,11 +156,4 @@ static inline bool ERRNO_IS_DEVICE_ABSENT(int r) {
                       ENODEV,
                       ENXIO,
                       ENOENT);
-}
-
-/* Quite often we want to handle cases where the backing FS doesn't support extended attributes at all and
- * where it simply doesn't have the requested xattr the same way */
-static inline bool ERRNO_IS_XATTR_ABSENT(int r) {
-        return abs(r) == ENODATA ||
-                ERRNO_IS_NOT_SUPPORTED(r);
 }
