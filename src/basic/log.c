@@ -1201,6 +1201,7 @@ static bool should_parse_proc_cmdline(void) {
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
         return invoked_by_elogind();
 }
 
@@ -1388,17 +1389,18 @@ int log_syntax_internal(
                 const char *func,
                 const char *format, ...) {
 
+        PROTECT_ERRNO;
+
         if (log_syntax_callback)
                 log_syntax_callback(unit, level, log_syntax_callback_userdata);
-
-        PROTECT_ERRNO;
-        char buffer[LINE_MAX];
-        va_list ap;
-        const char *unit_fmt = NULL;
 
         if (_likely_(LOG_PRI(level) > log_max_level) ||
             log_target == LOG_TARGET_NULL)
                 return -ERRNO_VALUE(error);
+
+        char buffer[LINE_MAX];
+        va_list ap;
+        const char *unit_fmt = NULL;
 
         errno = ERRNO_VALUE(error);
 
