@@ -2648,13 +2648,11 @@ test_dlopen = executable(
 #         install : true)
 #
 # if get_option('link-journalctl-shared')
-#         journalctl_link_with = [libshared,
-#                                 libjournal_core]
+#         journalctl_link_with = [libshared]
 # else
 #         journalctl_link_with = [libsystemd_static,
 #                                 libshared_static,
-#                                 libbasic_gcrypt,
-#                                 libjournal_core]
+#                                 libbasic_gcrypt]
 # endif
 #
 # public_programs += executable(
