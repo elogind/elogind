@@ -836,7 +836,7 @@ int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout) {
                         if (status.si_pid == pid) {
                                 /* This is the correct child. */
                                 if (status.si_code == CLD_EXITED)
-                                        return (status.si_status == 0) ? 0 : -EPROTO;
+                                        return status.si_status == 0 ? 0 : -EPROTO;
                                 else
                                         return -EPROTO;
                         }
@@ -1624,6 +1624,29 @@ bool invoked_as(char *argv[], const char *token) {
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
          * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
+bool invoked_by_elogind(void) {
+        int r;
+
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
+         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
+        const char *e = getenv("SYSTEMD_EXEC_PID");
+        if (!e)
+                return false;
+
+        if (streq(e, "*"))
+                /* For testing. */
+                return true;
+
+        pid_t p;
+        r = parse_pid(e, &p);
+        if (r < 0) {
+                /* We know that elogind sets the variable correctly. Something else must have set it. */
+                log_debug_errno(r, "Failed to parse \"SYSTEMD_EXEC_PID=%s\", ignoring: %m", e);
+                return false;
+        }
+
+        return getpid_cached() == p;
+}
 
 _noreturn_ void freeze(void) {
         log_close();
