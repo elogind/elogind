@@ -2405,6 +2405,29 @@ int varlink_server_shutdown(VarlinkServer *s) {
 }
 
 #if 0 /// UNNEEDED by elogind
+static int varlink_server_add_socket_event_source(VarlinkServer *s, VarlinkServerSocket *ss, int64_t priority) {
+        _cleanup_(sd_event_source_unrefp) sd_event_source *es = NULL;
+
+        int r;
+
+        assert(s);
+        assert(s->event);
+        assert(ss);
+        assert(ss->fd >= 0);
+        assert(!ss->event_source);
+
+        r = sd_event_add_io(s->event, &es, ss->fd, EPOLLIN, connect_callback, ss);
+        if (r < 0)
+                return r;
+
+        r = sd_event_source_set_priority(es, priority);
+        if (r < 0)
+                return r;
+
+        ss->event_source = TAKE_PTR(es);
+        return 0;
+}
+
 int varlink_server_attach_event(VarlinkServer *s, sd_event *e, int64_t priority) {
         int r;
 
@@ -2420,13 +2443,7 @@ int varlink_server_attach_event(VarlinkServer *s, sd_event *e, int64_t priority)
         }
 
         LIST_FOREACH(sockets, ss, s->sockets) {
-                assert(!ss->event_source);
-
-                r = sd_event_add_io(s->event, &ss->event_source, ss->fd, EPOLLIN, connect_callback, ss);
-                if (r < 0)
-                        goto fail;
-
-                r = sd_event_source_set_priority(ss->event_source, priority);
+                r = varlink_server_add_socket_event_source(s, ss, priority);
                 if (r < 0)
                         goto fail;
         }
