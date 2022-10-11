@@ -9,33 +9,33 @@
 bool image_name_is_valid(const char *s) _pure_;
 
 #if 0 /// UNNEEDED by elogind
-int path_is_extension_tree(const char *path, const char *extension);
+int path_is_extension_tree(const char *path, const char *extension, bool relax_extension_release_check);
 static inline int path_is_os_tree(const char *path) {
-        return path_is_extension_tree(path, NULL);
+        return path_is_extension_tree(path, NULL, false);
 }
 #endif // 0
 
-int open_extension_release(const char *root, const char *extension, char **ret_path, int *ret_fd);
+int open_extension_release(const char *root, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
 static inline int open_os_release(const char *root, char **ret_path, int *ret_fd) {
-        return open_extension_release(root, NULL, ret_path, ret_fd);
+        return open_extension_release(root, NULL, false, ret_path, ret_fd);
 }
 
-int fopen_extension_release(const char *root, const char *extension, char **ret_path, FILE **ret_file);
+int fopen_extension_release(const char *root, const char *extension, bool relax_extension_release_check, char **ret_path, FILE **ret_file);
 static inline int fopen_os_release(const char *root, char **ret_path, FILE **ret_file) {
-        return fopen_extension_release(root, NULL, ret_path, ret_file);
+        return fopen_extension_release(root, NULL, false, ret_path, ret_file);
 }
 
 #if 0 /// UNNEEDED by elogind
-int _parse_extension_release(const char *root, const char *extension, ...) _sentinel_;
 #endif // 0
+int _parse_extension_release(const char *root, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
 int _parse_os_release(const char *root, ...) _sentinel_;
 #if 0 /// UNNEEDED by elogind
-#define parse_extension_release(root, extension, ...) _parse_extension_release(root, extension, __VA_ARGS__, NULL)
 #endif // 0
+#define parse_extension_release(root, relax_extension_release_check, extension, ...) _parse_extension_release(root, relax_extension_release_check, extension, __VA_ARGS__, NULL)
 #define parse_os_release(root, ...) _parse_os_release(root, __VA_ARGS__, NULL)
 
 #if 0 /// UNNEEDED by elogind
-int load_extension_release_pairs(const char *root, const char *extension, char ***ret);
+int load_extension_release_pairs(const char *root, const char *extension, bool relax_extension_release_check, char ***ret);
 int load_os_release_pairs(const char *root, char ***ret);
 int load_os_release_pairs_with_prefix(const char *root, const char *prefix, char ***ret);
 #endif // 0
