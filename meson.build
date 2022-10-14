@@ -3099,6 +3099,7 @@ endif
 #                         link_with : [libshared],
 #                         dependencies : [libopenssl,
 #                                         tpm2,
+#                                         libblkid,
 #                                         versiondep],
 #                         install_rpath : rootpkglibdir,
 #                         install : true,
