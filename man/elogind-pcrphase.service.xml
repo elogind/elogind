@@ -20,40 +20,56 @@
     <refname>elogind-pcrphase.service</refname>
     <refname>elogind-pcrphase-sysinit.service</refname>
     <refname>elogind-pcrphase-initrd.service</refname>
+    <refname>elogind-pcrmachine.service</refname>
+    <refname>elogind-pcrfs-root.service</refname>
+    <refname>elogind-pcrfs@.service</refname>
     <refname>elogind-pcrphase</refname>
-    <refpurpose>Measure boot phase into TPM2 PCR 11</refpurpose>
+    <refpurpose>Measure boot phase into TPM2 PCR 11, machine ID and file system identity into PCR 15</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <para><filename>elogind-pcrphase.service</filename></para>
     <para><filename>elogind-pcrphase-sysinit.service</filename></para>
     <para><filename>elogind-pcrphase-initrd.service</filename></para>
-    <para><filename>/usr/lib/elogind/system-pcrphase</filename> <replaceable>STRING</replaceable></para>
+    <para><filename>elogind-pcrmachine.service</filename></para>
+    <para><filename>elogind-pcrfs-root.service</filename></para>
+    <para><filename>elogind-pcrfs@.service</filename></para>
+    <para><filename>/usr/lib/elogind/system-pcrphase</filename> <optional><replaceable>STRING</replaceable></optional></para>
   </refsynopsisdiv>
 
   <refsect1>
     <title>Description</title>
 
     <para><filename>elogind-pcrphase.service</filename>,
-    <filename>elogind-pcrphase-initrd.service</filename> are system services that measure specific strings
     <filename>elogind-pcrphase-sysinit.service</filename>, and
+    <filename>elogind-pcrphase-initrd.service</filename> are system services that measure specific strings
     into TPM2 PCR 11 during boot at various milestones of the boot process.</para>
+
+    <para><filename>elogind-pcrmachine.service</filename> is a system service that measures the machine ID
+    (see <citerefentry><refentrytitle>machine-id</refentrytitle><manvolnum>5</manvolnum></citerefentry>) into
+    PCR 15.</para>
+
+    <para><filename>elogind-pcrfs-root.service</filename> and <filename>elogind-pcrfs@.service</filename> are
+    services that measure file system identity information (i.e. mount point, file system type, label and
+    UUID, partition label and UUID) into PCR 15. <filename>elogind-pcrfs-root.service</filename> does so for
+    the root file system, <filename>elogind-pcrfs@.service</filename> is a template unit that measures the
+    file system indicated by its instance identifier instead.</para>
 
     <para>These services require
     <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry> to be
     used in a unified kernel image (UKI). They execute no operation when the stub has not been used to invoke
     the kernel. The stub will measure the invoked kernel and associated vendor resources into PCR 11 before
     handing control to it; once userspace is invoked these services then will extend TPM2 PCR 11 with certain
-    literal strings indicating phases of the boot process. During a regular boot process the following
-    strings are used:</para>
+    literal strings indicating phases of the boot process. During a regular boot process PCR 11 is extended
+    with the following strings:</para>
 
     <orderedlist>
-
       <listitem><para><literal>enter-initrd</literal> — early when the initrd initializes, before activating
       system extension images for the initrd. It acts as a barrier between the time where the kernel
       initializes and where the initrd starts operating and enables system extension images, i.e. code
       shipped outside of the UKI. (This extension happens when
       <filename>elogind-pcrphase-initrd.service</filename> is started.)</para></listitem>
+
       <listitem><para><literal>leave-initrd</literal> — when the initrd is about to transition into the host
       file system. It acts as barrier between initrd code and host OS code. (This extension happens when
       <filename>elogind-pcrphase-initrd.service</filename> is stopped.)</para></listitem>
@@ -87,12 +103,12 @@
     <para>Specific phases of the boot process may be referenced via the series of strings measured, separated
     by colons (the "phase path"). For example, the phase path for the regular system runtime is
     <literal>enter-initrd:leave-initrd:sysinit:ready</literal>, while the one for the initrd is just
-
     <literal>enter-initrd</literal>. The phase path for the boot phase before the initrd is an empty string;
     because that's hard to pass around a single colon (<literal>:</literal>) may be used instead. Note that
     the aforementioned six strings are just the default strings and individual systems might measure other
     strings at other times, and thus implement different and more fine-grained boot phases to bind policy
     to.</para>
+
     <para>By binding policy of TPM2 objects to a specific phase path it is possible to restrict access to
     them to specific phases of the boot process, for example making it impossible to access the root file
     system's encryption key after the system transitioned from the initrd into the host root file system.
@@ -102,6 +118,14 @@
     <citerefentry><refentrytitle>elogind-measure</refentrytitle><manvolnum>8</manvolnum></citerefentry> to
     pre-calculate expected PCR 11 values for specific boot phases (via the <option>--phase=</option> switch).
     </para>
+
+    <para><filename>elogind-pcrfs-root.service</filename> and <filename>elogind-pcrfs@.service</filename> are
+    automatically pulled into the initial transaction by
+    <citerefentry><refentrytitle>elogind-gpt-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    for the root and <filename>/var/</filename> file
+    systems. <citerefentry><refentrytitle>elogind-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    will do this for all mounts with the <option>x-elogind.pcrfs</option> mount option in
+    <filename>/etc/fstab</filename>.</para>
   </refsect1>
 
   <refsect1>
@@ -137,6 +161,21 @@
         TPM2 device will cause the invocation to fail.</para></listitem>
       </varlistentry>
 
+      <varlistentry>
+        <term><option>--machine-id</option></term>
+
+        <listitem><para>Instead of measuring a word specified on the command line into PCR 11, measure the
+        host's machine ID into PCR 15.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--file-system=</option></term>
+
+        <listitem><para>Instead of measuring a word specified on the command line into PCR 11, measure
+        identity information of the specified file system into PCR 15. The parameter must be the path to the
+        established mount point of the file system to measure.</para></listitem>
+      </varlistentry>
+
       <xi:include href="standard-options.xml" xpointer="help" />
       <xi:include href="standard-options.xml" xpointer="version" />
 
@@ -148,7 +187,9 @@
     <para>
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind-measure</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind-measure</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind-gpt-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     </para>
   </refsect1>
 
