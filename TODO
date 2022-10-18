@@ -119,63 +119,6 @@ Deprecations and removals:
 
 Features:
 
-* dissection policy should enforce that unlocking can only take place by
-  certain means, i.e. only via pw, only via tpm2, or only via fido, or a
-  combination thereof.
-
-* make the elogind-repart "seed" value provisionable via credentials, so that
-  confidential computing environments can set it and deterministically
-  enforce the uuids for partitions created, so that they can calculate PCR 15
-  ahead of time.
-
-* elogind-repart: also derive the volume key from the seed value, for the
-  aforementioned purpose.
-
-* in the initrd: derive the default machine ID to pass to the host PID 1 via
-  $machine_id from the same seed credential.
-
-* Add elogind-sysupdate-initrd.service or so that runs elogind-sysupdate in the
-  initrd to bootstrap the initrd to populate the initial partitions. Some things
-  to figure out:
-  - Should it run on firstboot or on every boot?
-  - If run on every boot, should it use the sysupdate config from the host on
-    subsequent boots?
-
-* hook up journald with TPMs? measure new journal records to the TPM in regular
-  intervals, validate the journal against current TPM state with that. (taking
-  inspiration from IMA log)
-
-* provide an API to apps to encrypt/decrypt credentials. usecase: allow
-  bluez bluetooth daemon to pass pairings to initrd that way, without shelling
-  out to our tools.
-
-* revisit default PCR bindings in cryptenroll and elogind-creds. Currently they
-  use PCR 7 which should contain secureboot state db/dbx. Which sounded like a
-  safe bet, given that it should change only on policy changes, and not
-  software updates. But that's wrong. Recent fwupd (rightfully) contains code
-  for updating the dbx denylist. This means even without any active policy
-  change PCR 7 might change. Hence, better idea might be in elogind-creds to
-  default to PCR 15 at least of sd-stub is used (i.e. bind to system identity),
-  and in cryptsetup simply the empty list?
-
-* move discoverable partition spec and boot loader spec over to uapi group
-
-* maybe measure UUIDs of important mounted file systems (after mount, via the
-  new ioctls to query them) into PCR 15? Add "x-elogind.measure-pcr=" or so for
-  this that pulls in a per mount service?
-
-* measure /etc/machine-id during early boot into PCR 15?
-
-* To mimic the new tpm2-measure-pcr= crypttab option add the same to veritytab
-  (measuring the root hash) and integritytab (measuring the HMAC key if one is
-  used)
-
-* We should start measuring all services, containers, and system extensions we
-  activate. probably into PCR 13. i.e. add --tpm2-measure-pcr= or so to
-  elogind-nspawn, and MeasurePCR= to unit files. Should contain a measurement
-  of the activated configuration and the image that is being activated (in case
-  verity is used, hash of the root hash).
-
 * whenever we measure something into a TPM PCR from userspace, write a record in
   TCG's "Canonical Event Log" format to some file, so that we can reason about
   how PCR values we manage came to
@@ -553,9 +496,6 @@ Features:
   came from. We apparently don't do that right now.
 
 * add ability to set hostname with suffix derived from machine id at boot
-
-* ask dracut to generate usr= on the kernel cmdline so that we don't need to
-  read /etc/fstab from the root fs from the initrd and do daemon-reload
 
 * add PR_SET_DUMPABLE service setting
 
