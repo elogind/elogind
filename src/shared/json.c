@@ -1789,9 +1789,9 @@ int json_variant_format(JsonVariant *v, JsonFormatFlags flags, char **ret) {
         return (int) sz - 1;
 }
 
-void json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const char *prefix) {
+int json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const char *prefix) {
         if (!v)
-                return;
+                return 0;
 
         if (!f)
                 f = stdout;
@@ -1817,7 +1817,8 @@ void json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const cha
                 fputc('\n', f); /* In case of SSE add a second newline */
 
         if (flags & JSON_FORMAT_FLUSH)
-                fflush(f);
+                return fflush_and_check(f);
+        return 0;
 }
 
 int json_variant_filter(JsonVariant **v, char **to_remove) {
