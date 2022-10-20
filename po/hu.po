@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-08 17:48+0100\n"
+"POT-Creation-Date: 2022-10-20 10:35+0200\n"
 "PO-Revision-Date: 2022-08-09 20:19+0000\n"
 "Last-Translator: Balázs Meskó <meskobalazs@mailbox.org>\n"
 "Language-Team: Hungarian <https://translate.fedoraproject.org/projects/"
@@ -161,6 +161,25 @@ msgstr ""
 # #: src/hostname/org.freedesktop.hostname1.policy:52
 # msgid "Authentication is required to get product UUID."
 # msgstr "Hitelesítés szükséges a termék UUID-jának lekéréséhez."
+#
+# #: src/hostname/org.freedesktop.hostname1.policy:61
+# msgid "Get hardware serial number"
+# msgstr ""
+#
+# #: src/hostname/org.freedesktop.hostname1.policy:62
+# #, fuzzy
+# msgid "Authentication is required to get hardware serial number."
+# msgstr "Hitelesítés szükséges a rendszeridő beállításához."
+#
+# #: src/hostname/org.freedesktop.hostname1.policy:71
+# #, fuzzy
+# msgid "Get system description"
+# msgstr "Rendszer időzónájának beállítása"
+#
+# #: src/hostname/org.freedesktop.hostname1.policy:72
+# #, fuzzy
+# msgid "Authentication is required to get system description."
+# msgstr "Hitelesítés szükséges a rendszer időzónájának beállításához."
 #
 # #: src/import/org.freedesktop.import1.policy:22
 # msgid "Import a VM or container image"
@@ -405,7 +424,8 @@ msgstr "Hitelesítés szükséges a rendszer újraindításához."
 
 #: src/login/org.freedesktop.login1.policy:213
 msgid "Reboot the system while other users are logged in"
-msgstr "A rendszer újraindítása miközben be vannak jelentkezve más felhasználók"
+msgstr ""
+"A rendszer újraindítása miközben be vannak jelentkezve más felhasználók"
 
 #: src/login/org.freedesktop.login1.policy:214
 msgid ""
@@ -933,7 +953,7 @@ msgstr "Hitelesítés szükséges a virtuális terminál módosításához."
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Hitelesítés szükséges a következő újraindításához: „$(unit)”."
 #
-# #: src/core/dbus-unit.c:535
+# #: src/core/dbus-unit.c:546
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
@@ -941,18 +961,18 @@ msgstr "Hitelesítés szükséges a virtuális terminál módosításához."
 # "Hitelesítés szükséges a UNIX szignál elküldéséhez a következő folyamatai "
 # "számára: „$(unit)”."
 #
-# #: src/core/dbus-unit.c:566
+# #: src/core/dbus-unit.c:576
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "Hitelesítés szükséges a következő „sikertelen” állapotának törléséhez: "
 # "„$(unit)”."
 #
-# #: src/core/dbus-unit.c:599
+# #: src/core/dbus-unit.c:608
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 # "Hitelesítés szükséges a következő tulajdonságainak beállításához: „$(unit)”."
 #
-# #: src/core/dbus-unit.c:708
+# #: src/core/dbus-unit.c:714
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -960,7 +980,7 @@ msgstr "Hitelesítés szükséges a virtuális terminál módosításához."
 # "Hitelesítés szükséges a következővel kapcsolatos fájlok és könyvtárak "
 # "törléséhez: „$(unit)”."
 #
-# #: src/core/dbus-unit.c:757
+# #: src/core/dbus-unit.c:762
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""
