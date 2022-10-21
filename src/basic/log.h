@@ -449,3 +449,6 @@ typedef struct LogRateLimit {
                 _e < 0 ? _e : -ESTRPIPE;                                \
         })
 #endif // 0
+
+#define log_ratelimit_full(level, format, ...)                          \
+        log_ratelimit_full_errno(level, 0, format, ##__VA_ARGS__)
