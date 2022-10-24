@@ -222,7 +222,7 @@ TEST(chase_symlinks) {
                 r = chase_symlinks("/var/lib/dbus/machine-id/foo", NULL, 0, &result, NULL);
         }
 #endif // 1
-        assert_se(r == -ENOTDIR);
+        assert_se(IN_SET(r, -ENOTDIR, -ENOENT));
         result = mfree(result);
 
         /* Path that loops back to self */
