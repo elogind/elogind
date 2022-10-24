@@ -115,7 +115,6 @@ static inline int make_null_stdio(void) {
 int fd_reopen(int fd, int flags);
 int read_nr_open(void);
 #if 0 /// UNNEEDED by elogind
-int btrfs_defrag_fd(int fd);
 #endif // 0
 int fd_get_diskseq(int fd, uint64_t *ret);
 
