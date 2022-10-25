@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-20 10:35+0200\n"
-"PO-Revision-Date: 2022-03-10 18:16+0000\n"
+"PO-Revision-Date: 2022-10-25 22:19+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "elogind/master/ka/>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11.2\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -150,22 +150,19 @@ msgstr ""
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:61
 # msgid "Get hardware serial number"
-# msgstr ""
+# msgstr "აპარატურის სერიული ნომრის მიღება"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:62
-# #, fuzzy
 # msgid "Authentication is required to get hardware serial number."
-# msgstr "სისტემური დროის დასაყენებლად საჭიროა ავთენტიკაცია."
+# msgstr "აპარატურის სერიული ნომრის მისაღებად საჭიროა ავთენტიკაცია."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:71
-# #, fuzzy
 # msgid "Get system description"
-# msgstr "სისტემური დროის სარტყლის დაყენება"
+# msgstr "სისტემის აღწერის მიღება"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:72
-# #, fuzzy
 # msgid "Authentication is required to get system description."
-# msgstr "სისტემური დროის სარტყლის დასაყენებლად საჭიროა ავთენტიკაცია."
+# msgstr "სისტემის აღწერის მისაღებად საჭიროა ავთენტიკაცია."
 #
 # #: src/import/org.freedesktop.import1.policy:22
 # msgid "Import a VM or container image"
