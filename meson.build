@@ -1195,16 +1195,6 @@ endif
 
 #####################################################################
 
-libatomic = []
-if not cc.links('''#include <stdint.h>
-                   int main() {
-                     char i;
-                     __atomic_exchange_1(&i, 1, 0);
-                     return 1;
-                   }''',
-                name : 'Atomic builtin requires -latomic')
-        libatomic = cc.find_library('atomic')
-endif
 threads = dependency('threads')
 #if 0 /// UNNEEDED in elogind
 # librt = cc.find_library('rt')
@@ -1212,6 +1202,17 @@ threads = dependency('threads')
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
 libcrypt = cc.find_library('crypt')
+
+# On some architectures, libatomic is required. But on some installations,
+# it is found, but actual linking fails. So let's try to use it opportunistically.
+# If it is installed, but not needed, it will be dropped because of --as-needed.
+if cc.links('''int main(int argc, char **argv) { return 0; }''',
+            args : '-latomic',
+            name : 'libatomic')
+        libatomic = declare_dependency(link_args : '-latomic')
+else
+        libatomic = []
+endif
 
 crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
 foreach ident : [
@@ -1596,7 +1597,7 @@ conf.set10('HAVE_PAM', have)
 # want_qrencode = get_option('qrencode')
 # if want_qrencode != 'false' and not skip_deps
 #         libqrencode = dependency('libqrencode',
-#                                  version : '>= 4',
+#                                  version : '>= 3',
 #                                  required : want_qrencode == 'true')
 #         have = libqrencode.found()
 # else
@@ -4133,6 +4134,24 @@ public_programs += executable(
 #                 install : true,
 #                 install_dir : rootbindir)
 #         public_programs += exe
+#
+#         if have_standalone_binaries
+#                 exe = executable(
+#                         elogind_repart_sources,
+#                         include_directories : includes,
+#                         c_args : '-DSTANDALONE',
+#                         link_with : [libshared_static,
+#                                      libbasic,
+#                                      libbasic_gcrypt,
+#                                      libelogind_static],
+#                         dependencies : [threads,
+#                                         libblkid,
+#                                         libfdisk,
+#                                         libopenssl],
+#                         install_rpath : rootpkglibdir,
+#                         install : true,
+#                         install_dir : rootbindir)
+#         endif
 # endif
 #
 # executable(
