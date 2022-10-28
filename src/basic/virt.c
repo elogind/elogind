@@ -543,7 +543,7 @@ finish:
 static const char *const container_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_LXC]            = "lxc",
         [VIRTUALIZATION_LXC_LIBVIRT]    = "lxc-libvirt",
-        [VIRTUALIZATION_SYSTEMD_NSPAWN] = "elogind-nspawn",
+        [VIRTUALIZATION_SYSTEMD_NSPAWN] = "systemd-nspawn",
         [VIRTUALIZATION_DOCKER]         = "docker",
         [VIRTUALIZATION_PODMAN]         = "podman",
         [VIRTUALIZATION_RKT]            = "rkt",
@@ -874,11 +874,27 @@ int running_in_chroot(void) {
         int r;
 
 #if 0 /// elogind does not allow to ignore chroots, we are never init!
+        /* If we're PID1, /proc may not be mounted (and most likely we're not in a chroot). But PID1 will
+         * mount /proc, so all other programs can assume that if /proc is *not* available, we're in some
+         * chroot. */
+
         if (getenv_bool("SYSTEMD_IGNORE_CHROOT") > 0)
                 return 0;
 #endif // 0
 
+        if (getpid_cached() == 1)
+                return false;  /* We're PID 1, we can't be in a chroot. */
+
         r = files_same("/proc/1/root", "/", 0);
+        if (r == -ENOENT) {
+                r = proc_mounted();
+                if (r == 0) {
+                        log_debug("/proc is not mounted, assuming we're in a chroot.");
+                        return 1;
+                }
+                if (r > 0)  /* If we have fake /proc/, we can't do the check properly. */
+                        return -ENOSYS;
+        }
         if (r < 0)
                 return r;
 
@@ -1032,7 +1048,7 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_APPLE]           = "apple",
         [VIRTUALIZATION_VM_OTHER]        = "vm-other",
 
-        [VIRTUALIZATION_SYSTEMD_NSPAWN]  = "elogind-nspawn",
+        [VIRTUALIZATION_SYSTEMD_NSPAWN]  = "systemd-nspawn",
         [VIRTUALIZATION_LXC_LIBVIRT]     = "lxc-libvirt",
         [VIRTUALIZATION_LXC]             = "lxc",
         [VIRTUALIZATION_OPENVZ]          = "openvz",
