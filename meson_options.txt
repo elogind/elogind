@@ -442,6 +442,8 @@ option('audit', type : 'combo', choices : ['auto', 'true', 'false'],
 # option('kmod', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'support for loadable modules')
 #endif // 0
+option('xenctrl', type : 'combo', choices : ['auto', 'true', 'false'],
+       description : 'support for Xen kexec')
 option('pam', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'PAM support')
 #if 0 /// UNNEEDED by elogind

@@ -15,3 +15,5 @@ int reboot_with_parameter(RebootFlags flags);
 
 int shall_restore_state(void);
 #endif // 0
+
+bool kexec_loaded(void);

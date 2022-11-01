@@ -1475,6 +1475,18 @@ conf.set10('HAVE_AUDIT', have)
 #         libkmod = []
 # endif
 # conf.set10('HAVE_KMOD', have)
+#
+# want_xenctrl = get_option('xenctrl')
+# if want_xenctrl != 'false' and not skip_deps
+#         libxenctrl = dependency('xencontrol',
+#                                 version : '>= 4.9',
+#                                 required : want_xenctrl == 'true')
+#         have = libxenctrl.found()
+# else
+#         have = false
+#         libxenctrl = []
+# endif
+# conf.set10('HAVE_XENCTRL', have)
 #else // 0
 conf.set10('HAVE_BLKID', false)
 conf.set10('HAVE_KMOD', false)
@@ -4915,6 +4927,7 @@ foreach tuple : [
 #         ['legacy-pkla',            install_polkit_pkla],
 #         ['kmod'],
 #endif // 0
+        ['xenctrl'],
         ['dbus'],
         ['glib'],
 #if 0 /// UNNEEDED by elogind
