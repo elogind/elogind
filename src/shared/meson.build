@@ -587,9 +587,9 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   librt,
 #                   libseccomp,
 #                   libselinux,
-#                   libzstd,
+#                   libxenctrl,
 #                   libxz,
-#                   libxenctrl]
+#                   libzstd]
 #else // 0
 libshared_deps = [threads,
                   libacl,
