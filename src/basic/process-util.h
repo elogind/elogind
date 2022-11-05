@@ -52,6 +52,8 @@ int get_process_ppid(pid_t pid, pid_t *ret);
 int get_process_umask(pid_t pid, mode_t *ret);
 #endif // 0
 
+int container_get_leader(const char *machine, pid_t *pid);
+
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 
 typedef enum WaitFlags {
