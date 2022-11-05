@@ -81,6 +81,8 @@
 #         'hostname-util.h',
 #         'in-addr-util.c',
 #         'in-addr-util.h',
+#         'initrd-util.c',
+#         'initrd-util.h',
 #         'inotify-util.c',
 #         'inotify-util.h',
 #         'io-util.c',
