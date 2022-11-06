@@ -9,6 +9,7 @@
 #include "sd-bus.h"
 
 #include "alloc-util.h"
+#include "build.h"
 #include "bus-error.h"
 #include "bus-util.h"
 #include "fd-util.h"
@@ -22,7 +23,6 @@
 #include "strv.h"
 #include "terminal-util.h"
 #include "user-util.h"
-#include "util.h"
 
 /// Additional includes needed by elogind
 #include "musl_missing.h"
