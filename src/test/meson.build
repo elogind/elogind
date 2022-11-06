@@ -219,6 +219,8 @@ tests += [
 
         [files('test-ratelimit.c')],
 
+        [files('test-limits-util.c')],
+
         [files('test-util.c')],
 
         [files('test-macro.c')],
@@ -687,8 +689,7 @@ tests += [
 #
 #         [files('test-journal-importer.c')],
 #
-#         [files('test-utmp.c'),
-#          [], [], [], 'ENABLE_UTMP'],
+#         [files('test-utmp.c')],
 #
 #         [files('test-udev.c'),
 #          [libudevd_core,
