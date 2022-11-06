@@ -232,6 +232,8 @@ tests += [
          [libm]],
 
 #if 0 /// UNNEEDED in elogind
+#         [files('test-memory-util.c')],
+#
 #         [files('test-mkdir.c')],
 #endif // 0
 
