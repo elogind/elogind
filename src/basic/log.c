@@ -16,6 +16,7 @@
 #include "sd-messages.h"
 
 #include "alloc-util.h"
+#include "argv-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
 #include "format-util.h"
@@ -299,6 +300,7 @@ int log_open(void) {
                         if (IN_SET(log_target,
                                    LOG_TARGET_SYSLOG_OR_KMSG,
                                    LOG_TARGET_SYSLOG)) {
+
                                 r = log_open_syslog();
                                 if (r >= 0) {
                                         log_close_journal();
@@ -1216,6 +1218,7 @@ static bool should_parse_proc_cmdline(void) {
                 return true;
 
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         return invoked_by_elogind();
 }

@@ -75,7 +75,6 @@ void sigterm_wait(pid_t pid);
 
 int kill_and_sigcont(pid_t pid, int sig);
 
-int rename_process(const char name[]);
 int is_kernel_thread(pid_t pid);
 
 int getenv_for_pid(pid_t pid, const char *field, char **_value);
@@ -212,13 +211,9 @@ int pidfd_get_pid(int fd, pid_t *ret);
 #if 0 /// UNNEEDED by elogind
 int setpriority_closest(int priority);
 
-bool invoked_as(char *argv[], const char *token);
 #endif // 0
-
-bool invoked_by_elogind(void);
 
 _noreturn_ void freeze(void);
 
 #if 0 /// UNNEEDED by elogind
-bool argv_looks_like_help(int argc, char **argv);
 #endif // 0
