@@ -34,7 +34,6 @@
 #include "terminal-util.h"
 #include "tests.h"
 #include "user-util.h"
-#include "util.h"
 #include "virt.h"
 
 /// Additional includes needed by elogind

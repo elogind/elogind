@@ -9,7 +9,6 @@
 #include "strv.h"
 #include "tests.h"
 #include "utf8.h"
-#include "util.h"
 
 #if 0 /// UNNEEDED by elogind
 TEST(string_erase) {

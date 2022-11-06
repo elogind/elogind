@@ -6,7 +6,6 @@
 #include "macro.h"
 #include "strv.h"
 #include "tests.h"
-#include "util.h"
 
 #if 0 /// UNNEEDED by elogind
 TEST(get_locales) {

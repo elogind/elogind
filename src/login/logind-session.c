@@ -38,7 +38,6 @@
 #include "tmpfile-util.h"
 #include "uid-alloc-range.h"
 #include "user-util.h"
-//#include "util.h"
 /// Additional includes needed by elogind
 #include "cgroup-setup.h"
 #include "extract-word.h"

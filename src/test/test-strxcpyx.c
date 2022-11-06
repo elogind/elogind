@@ -5,7 +5,6 @@
 #include "string-util.h"
 #include "strxcpyx.h"
 #include "tests.h"
-#include "util.h"
 
 #if 0 /// UNNEEDED by elogind
 TEST(strpcpy) {

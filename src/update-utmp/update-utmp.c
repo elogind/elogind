@@ -21,9 +21,8 @@
 //#include "process-util.h"
 //#include "special.h"
 #include "stdio-util.h"
-//#include "strv.h"
-//#include "unit-name.h"
-//#include "util.h"
+#include "strv.h"
+#include "unit-name.h"
 #include "utmp-wtmp.h"
 
 /// Additional includes needed by elogind

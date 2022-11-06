@@ -35,7 +35,6 @@
 #include "uid-alloc-range.h"
 #include "unit-name.h"
 #include "user-util.h"
-//#include "util.h"
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
 
