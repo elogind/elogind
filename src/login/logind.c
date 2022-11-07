@@ -14,8 +14,8 @@
 #include "bus-log-control-api.h"
 #include "bus-polkit.h"
 //#include "cgroup-util.h"
+#include "constants.h"
 #include "daemon-util.h"
-//#include "def.h"
 #include "device-util.h"
 #include "dirent-util.h"
 #include "fd-util.h"
@@ -38,6 +38,7 @@
 /// Additional includes needed by elogind
 #include "label.h"
 #include "musl_missing.h"
+#include "udev-util.h"
 #include "user-util.h"
 
 static Manager* manager_unref(Manager *m);

@@ -9,7 +9,7 @@
 #include <sys/statfs.h>
 #include <sys/types.h>
 
-#include "def.h"
+#include "constants.h"
 #include "set.h"
 
 #if 0 /// elogind has them set through config.h
