@@ -194,6 +194,7 @@
 #         'libcrypt-util.h',
 #         'libfido2-util.c',
 #         'libfido2-util.h',
+#         'libmount-util.c',
 #         'libmount-util.h',
 #         'linux/auto_dev-ioctl.h',
 #         'linux/bpf.h',
