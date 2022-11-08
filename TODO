@@ -4,9 +4,9 @@ Bugfixes:
   manager or system manager can be always set. It would be better to reject
   them when parsing config.
 
-* Jun 01 09:43:02 krowka elogind[1]: Unit user@1000.service has alias user@.service.
-  Jun 01 09:43:02 krowka elogind[1]: Unit user@6.service has alias user@.service.
-  Jun 01 09:43:02 krowka elogind[1]: Unit user-runtime-dir@6.service has alias user-runtime-dir@.service.
+* Jun 01 09:43:02 krowka systemd[1]: Unit user@1000.service has alias user@.service.
+  Jun 01 09:43:02 krowka systemd[1]: Unit user@6.service has alias user@.service.
+  Jun 01 09:43:02 krowka systemd[1]: Unit user-runtime-dir@6.service has alias user-runtime-dir@.service.
 
 External:
 
@@ -33,7 +33,7 @@ External:
   - systemctl add-wants,add-requires
   - systemctl reboot --boot-loader-entry=
 
-* systemctl status should know about 'elogind-analyze calendar ... --iterations='
+* systemctl status should know about 'systemd-analyze calendar ... --iterations='
 * If timer has just OnInactiveSec=..., it should fire after a specified time
   after being started.
 
@@ -90,7 +90,7 @@ Deprecations and removals:
 * 2019-10 – Remove POINTINGSTICK_CONST_ACCEL references from the hwdb, see #9573
 
 * remove cgrouspv1 support EOY 2023. As per
-  https://lists.freedesktop.org/archives/elogind-devel/2022-July/048120.html
+  https://lists.freedesktop.org/archives/systemd-devel/2022-July/048120.html
   and then rework cgroupsv2 support around fds, i.e. keep one fd per active
   unit around, and always operate on that, instead of cgroup fs paths.
 
@@ -118,6 +118,13 @@ Deprecations and removals:
 * H2 2023: remove support for unmerged-usr
 
 Features:
+
+* maybe: elogind-loop-generator that sets up loopback devices if requested via kernel
+  cmdline. usecase: include encrypted/verity root fs in UKI.
+
+* elogind-gpt-auto-generator: add kernel cmdline option to override block
+  device to dissect. also support dissecting a regular file. useccase: include
+  encrypted/verity root fs in UKI.
 
 * sd-stub: add ".bootcfg" section for kernel bootconfig data (as per
 
@@ -182,12 +189,12 @@ Features:
   certain means, i.e. only via pw, only via tpm2, or only via fido, or a
   combination thereof.
 
-* make the elogind-repart "seed" value provisionable via credentials, so that
+* make the systemd-repart "seed" value provisionable via credentials, so that
   confidential computing environments can set it and deterministically
   enforce the uuids for partitions created, so that they can calculate PCR 15
   ahead of time.
 
-* elogind-repart: also derive the volume key from the seed value, for the
+* systemd-repart: also derive the volume key from the seed value, for the
   aforementioned purpose.
 
 * in the initrd: derive the default machine ID to pass to the host PID 1 via
@@ -208,12 +215,12 @@ Features:
   bluez bluetooth daemon to pass pairings to initrd that way, without shelling
   out to our tools.
 
-* revisit default PCR bindings in cryptenroll and elogind-creds. Currently they
+* revisit default PCR bindings in cryptenroll and systemd-creds. Currently they
   use PCR 7 which should contain secureboot state db/dbx. Which sounded like a
   safe bet, given that it should change only on policy changes, and not
   software updates. But that's wrong. Recent fwupd (rightfully) contains code
   for updating the dbx denylist. This means even without any active policy
-  change PCR 7 might change. Hence, better idea might be in elogind-creds to
+  change PCR 7 might change. Hence, better idea might be in systemd-creds to
   default to PCR 15 at least if sd-stub is used (i.e. bind to system identity),
   and in cryptsetup simply the empty list? Also, PCR 14 almost certainly should
   be included as much as PCR 7 (as it contains shim's policy, which is
@@ -233,7 +240,7 @@ Features:
 
 * We should start measuring all services, containers, and system extensions we
   activate. probably into PCR 13. i.e. add --tpm2-measure-pcr= or so to
-  elogind-nspawn, and MeasurePCR= to unit files. Should contain a measurement
+  systemd-nspawn, and MeasurePCR= to unit files. Should contain a measurement
   of the activated configuration and the image that is being activated (in case
   verity is used, hash of the root hash).
 
@@ -273,9 +280,9 @@ Features:
   after mounting the rootfs, look for root-<arch>.v/ in the root fs, and then
   apply the logic, moving the switch root logic there.
 
-* elogind-repart: add support for generating ISO9660 images
+* systemd-repart: add support for generating ISO9660 images
 
-* elogind-repart: in addition to the existing "factory reset" mode (which
+* systemd-repart: in addition to the existing "factory reset" mode (which
   simply empties existing partitions marked for that). add a mode where
   partitions marked for it are entirely removed. Usecase: remove secondary OS
   copy, and redundant partitions entirely, and recreate them anew.
@@ -287,7 +294,7 @@ Features:
   is not immediately bombarded with a multitude of Linux kernel versions but
   only one for each OS.
 
-* elogind-repart: if the GPT *disk* UUID (i.e. the one global for the entire
+* systemd-repart: if the GPT *disk* UUID (i.e. the one global for the entire
   disk) is set to all FFFFF then use this as trigger for factory reset, in
   addition to the existing mechanisms via EFI variables and kernel command
   line. Benefit: works also on non-EFI systems, and can be requested on one
@@ -299,7 +306,7 @@ Features:
 * elogind-sysupdate: make transport pluggable, so people can plug casync or
   similar behind it, instead of http.
 
-* elogind-tmpfiles: add concept for conditionalizing lines on factory reset
+* systemd-tmpfiles: add concept for conditionalizing lines on factory reset
   boot, or on first boot.
 
 * in UKIs: add way to define allowlist of additional words that can be added to
@@ -318,12 +325,12 @@ Features:
   until users are allowed to log in).
 
 * Once the root fs LUKS volume key is measured into PCR 15, default to binding
-  credentials to PCR 15 in "elogind-creds"
+  credentials to PCR 15 in "systemd-creds"
 
 * add support for asymmetric LUKS2 TPM based encryption. i.e. allow preparing
   an encrypted image on some host given a public key belonging to a specific
   other host, so that only hosts possessing the private key in the TPM2 chip
-  can decrypt the volume key and activate the volume. Usecase: elogind-syscfg
+  can decrypt the volume key and activate the volume. Usecase: systemd-syscfg
   for a central orchestrator to generate syscfg images securely that can only
   be activated on one specific host (which can be used for installing a bunch
   of creds in /etc/credstore/ for example). Extending on this: allow binding
@@ -410,8 +417,8 @@ Features:
   keyring, so that the kernel does this validation for us for verity and kernel
   modules
 
-* for elogind-syscfg: add a tool that can generate suitable DDIs with verity +
-  sig using squashfs-tools-ng's library. Maybe just elogind-repart called under
+* for systemd-syscfg: add a tool that can generate suitable DDIs with verity +
+  sig using squashfs-tools-ng's library. Maybe just systemd-repart called under
   a new name with a built-in config?
 
 * gpt-auto: generate mount units that reference partitions via
@@ -422,7 +429,7 @@ Features:
   elogind.import_encrypted_creds=foobar.waldo,tmpfiles.extra to protect locked
   down kernels from credentials generated on the host with a weak kernel
 
-* Add support for extra verity configuration options to elogind-repart (FEC,
+* Add support for extra verity configuration options to systemd-repart (FEC,
   hash type, etc)
 
 * chase_symlinks(): take inspiraton from path_extract_filename() and return
@@ -440,7 +447,7 @@ Features:
 * measure credentials picked up from SMBIOS to some suitable PCR
 
 * measure GPT and LUKS headers somewhere when we use them (i.e. in
-  elogind-gpt-auto-generator/elogind-repart and in elogind-cryptsetup?)
+  systemd-gpt-auto-generator/systemd-repart and in systemd-cryptsetup?)
 
 * pick up creds from EFI vars
 
@@ -503,15 +510,15 @@ Features:
   previous boot terminated cleanly, because either of these two messages must
   be safely written to disk, then.
 
-* elogind-creds: extend encryption logic to support asymmetric
-  encryption/authentication. Idea: add new verb "elogind-creds public-key"
+* systemd-creds: extend encryption logic to support asymmetric
+  encryption/authentication. Idea: add new verb "systemd-creds public-key"
   which generates a priv/pub key pair on the TPM2 and stores the priv key
   locally in /var. It then outputs a certificate for the pub part to stdout.
   This can then be copied/taken elsewhere, and can be used for encrypting creds
   that only the host on its specific hw can decrypt. Then, support a drop-in
   dir with certificates that can be used to authenticate credentials. Flow of
   operations is then this: build image with owner certificate, then after
-  boot up issue "elogind-creds public-key" to acquire pubkey of the machine.
+  boot up issue "systemd-creds public-key" to acquire pubkey of the machine.
   Then, when passing data to the machine, sign with privkey belonging to one of
   the dropped in certs and encrypted with machine pubkey, and pass to machine.
   Machine is then able to authenticate you, and confidentiality is guaranteed.
@@ -795,7 +802,7 @@ Features:
   multiple versions are around of the same resource, show which ones. (in other
   words: show partition labels).
 
-* elogind-nspawn: make boot assessment do something sensible in a
+* systemd-nspawn: make boot assessment do something sensible in a
   container. i.e send an sd_notify() from payload to container manager once
   boot-up is completed successfully, and use that in nspawn for dealing with
   boot counting, implemented in the partition table labels and directory names.
@@ -861,7 +868,7 @@ Features:
 * Enable RestrictFileSystems= for all our long-running services (similar:
   RestrictNetworkInterfaces=)
 
-* Add elogind-analyze security checks for RestrictFileSystems= and
+* Add systemd-analyze security checks for RestrictFileSystems= and
   RestrictNetworkInterfaces=
 
 * cryptsetup/homed: implement TOTP authentication backed by TPM2 and its
@@ -891,7 +898,7 @@ Features:
   logic. Maybe then bind mount the original root into /.superior or something
   like that (so that update tools can look there). Further discussion in this
   thread:
-  https://lists.freedesktop.org/archives/elogind-devel/2021-November/047059.html
+  https://lists.freedesktop.org/archives/systemd-devel/2021-November/047059.html
   The GPT dissection logic should automatically enable this tool whenever we
   detect a specially marked root fs (i.e introduce a new generic root gpt type
   for this, that is arch independent). The also implement this in the image
@@ -900,7 +907,7 @@ Features:
 
 * if a path ending in ".auto.d/" is set for RootDirectory=/RootImage= then do a
   strverscmp() of everything inside that dir and use that. i.e. implement very
-  simple version control. Also use this in elogind-nspawn --image= and so on.
+  simple version control. Also use this in systemd-nspawn --image= and so on.
 
 * homed: while a home dir is not activated generate slightly different NSS
   records for it, that reports the home dir as "/" and the shell as some binary
@@ -1069,9 +1076,9 @@ Features:
 * importd: support image signature verification with PKCS#7 + OpenBSD signify
   logic, as alternative to crummy gpg
 
-* add "elogind-analyze debug" + AttachDebugger= in unit files: The former
+* add "systemd-analyze debug" + AttachDebugger= in unit files: The former
   specifies a command to execute; the latter specifies that an already running
-  "elogind-analyze debug" instance shall be contacted and execution paused
+  "systemd-analyze debug" instance shall be contacted and execution paused
   until it gives an OK. That way, tools like gdb or strace can be safely be
   invoked on processes forked off PID 1.
 
@@ -1084,13 +1091,13 @@ Features:
   - pass creds via keyring?
   - pass creds via memfd?
   - acquire + decrypt creds from pkcs11?
-  - make elogind-cryptsetup acquire pw via creds logic
+  - make systemd-cryptsetup acquire pw via creds logic
   - make PAMName= acquire pw via creds logic
   - make macsec/wireguard code in networkd read key via creds logic
   - make gatwayd/remote read key via creds logic
   - add sd_notify() command for flushing out creds not needed anymore
   - make user manager instances create and use a user-specific key (the one in
-    /var/lib is root-only) and add --user switch to elogind-creds to use it
+    /var/lib is root-only) and add --user switch to systemd-creds to use it
 
 * add tpm.target or so which is delayed until TPM2 device showed up in case
   firmware indicates there is one.
@@ -1135,7 +1142,7 @@ Features:
   address as conduit for some minimal connection metainfo, and use it to
   restore the "description" logic that kdbus used to have.
 
-* elogind-analyze netif that explains predictable interface (or networkctl)
+* systemd-analyze netif that explains predictable interface (or networkctl)
 
 * Add service setting to run a service within the specified VRF. i.e. do the
   equivalent of "ip vrf exec".
@@ -1181,8 +1188,8 @@ Features:
 
 * All tools that support --root= should also learn --image= so that they can
   operate on disk images directly. Specifically: systemctl, coredumpctl.
-  (Already done: bootctl, elogind-nspawn, elogind-firstboot,
-  elogind-repart, elogind-tmpfiles, elogind-sysusers, journalctl)
+  (Already done: bootctl, systemd-nspawn, systemd-firstboot,
+  systemd-repart, systemd-tmpfiles, systemd-sysusers, journalctl)
 
 * seccomp: by default mask x32 ABI system wide on x86-64. it's on its way out
 
@@ -1306,7 +1313,7 @@ Features:
 * when no locale is configured, default to UEFI's PlatformLang variable
 
 * add a new syscall group "@esoteric" for more esoteric stuff such as bpf() and
-  usefaultd() and make elogind-analyze check for it.
+  usefaultd() and make systemd-analyze check for it.
 
 * paranoia: whenever we process passwords, call mlock() on the memory
   first. i.e. look for all places we use free_and_erasep() and
@@ -1384,7 +1391,7 @@ Features:
 * introduce Ephemeral= unit file switch, that creates an ephemeral copy of all
   files and directories that are left writable for a unit, and which are
   removed after the unit goes down again. A bit like --ephemeral for
-  elogind-nspawn but for system services. If used together with RootImage= this
+  systemd-nspawn but for system services. If used together with RootImage= this
   should reflink the image file itself.
 
   Related: add Ephemeral=<path1> <path2> … which would allow marking
@@ -1410,7 +1417,7 @@ Features:
   options so that it is possible to move user session scopes and machines to a
   different slice too by default. Usecase: people who want to put resources on
   the entire system, with the exception of one specific service. See:
-  https://lists.freedesktop.org/archives/elogind-devel/2018-February/040369.html
+  https://lists.freedesktop.org/archives/systemd-devel/2018-February/040369.html
 
 * maybe rework get_user_creds() to query the user database if $SHELL is used
   for root, but only then.
@@ -1568,7 +1575,7 @@ Features:
 * there's probably something wrong with having user mounts below /sys,
   as we have for debugfs. for example, src/core/mount.c handles mounts
   prefixed with /sys generally special.
-  https://lists.freedesktop.org/archives/elogind-devel/2015-June/032962.html
+  https://lists.freedesktop.org/archives/systemd-devel/2015-June/032962.html
 
 * fstab-generator: default to tmpfs-as-root if only usr= is specified on the kernel cmdline
 
@@ -1577,7 +1584,7 @@ Features:
 * add a job mode that will fail if a transaction would mean stopping
   running units. Use this in timedated to manage the NTP service
   state.
-  https://lists.freedesktop.org/archives/elogind-devel/2015-April/030229.html
+  https://lists.freedesktop.org/archives/systemd-devel/2015-April/030229.html
 
 * The udev blkid built-in should expose a property that reflects
   whether media was sensed in USB CF/SD card readers. This should then
@@ -1588,13 +1595,13 @@ Features:
 * hostnamectl: show root image uuid
 
 * Find a solution for SMACK capabilities stuff:
-  https://lists.freedesktop.org/archives/elogind-devel/2014-December/026188.html
+  https://lists.freedesktop.org/archives/systemd-devel/2014-December/026188.html
 
 * synchronize console access with BSD locks:
-  https://lists.freedesktop.org/archives/elogind-devel/2014-October/024582.html
+  https://lists.freedesktop.org/archives/systemd-devel/2014-October/024582.html
 
 * as soon as we have sender timestamps, revisit coalescing multiple parallel daemon reloads:
-  https://lists.freedesktop.org/archives/elogind-devel/2014-December/025862.html
+  https://lists.freedesktop.org/archives/systemd-devel/2014-December/025862.html
 
 * figure out when we can use the coarse timers
 
@@ -1715,10 +1722,10 @@ Features:
     log both units as UNIT=, so that journalctl -u triggers on both.
   - generate better errors when people try to set transient properties
     that are not supported...
-    https://lists.freedesktop.org/archives/elogind-devel/2015-February/028076.html
+    https://lists.freedesktop.org/archives/systemd-devel/2015-February/028076.html
   - maybe introduce WantsMountsFor=? Usecase:
-    https://lists.freedesktop.org/archives/elogind-devel/2015-January/027729.html
   - recreate elogind's D-Bus private socket file on SIGUSR2
+    https://lists.freedesktop.org/archives/systemd-devel/2015-January/027729.html
   - move PAM code into its own binary
   - when we automatically restart a service, ensure we restart its rdeps, too.
   - hide PAM options in fragment parser when compile time disabled
@@ -1749,7 +1756,7 @@ Features:
   - introduce Type=pid-file
   - add a concept of RemainAfterExit= to scope units
   - Allow multiple ExecStart= for all Type= settings, so that we can cover rescue.service nicely
-  - add verification of [Install] section to elogind-analyze verify
+  - add verification of [Install] section to systemd-analyze verify
 
 * timer units:
   - timer units should get the ability to trigger when DST changes
@@ -1841,7 +1848,7 @@ Features:
 
 * mount: turn dependency information from /proc/self/mountinfo into dependency information between elogind units.
 
-* elogind-firstboot: make sure to always use chase_symlinks() before
+* systemd-firstboot: make sure to always use chase_symlinks() before
   reading/writing files
 
 * firstboot: make it useful to be run immediately after yum --installroot to set up a machine. (most specifically, make --copy-root-password work even if /etc/passwd already exists
@@ -2040,12 +2047,12 @@ Features:
     easily?
   - add a switch to homectl (maybe called --first-boot) where it will check if
     any non-system users exist, and if not prompts interactively for basic user
-    info, mimicking elogind-firstboot. Then, place this in a service that runs
+    info, mimicking systemd-firstboot. Then, place this in a service that runs
     after systemd-homed, but before gdm and friends, as a simple, barebones
     fallback logic to get a regular user created on uninitialized systems.
   - store PKCS#11 + FIDO2 token info in LUKS2 header, compatible with
-    elogind-cryptsetup, so that it can unlock homed volumes
-  - maybe make all *.home files owned by `elogind-home` user or so, so that we
+    systemd-cryptsetup, so that it can unlock homed volumes
+  - maybe make all *.home files owned by `systemd-home` user or so, so that we
     can easily set overall quota for all users
   - on login, if we can't fallocate initially, but rebalance is on, then allow
     login in discard mode, then immediately rebalance, then turn off discard
@@ -2054,65 +2061,65 @@ Features:
     but probably shouldn't be part of the record itself, since it might be
     large.
 
-* add a new switch --auto-definitions=yes/no or so to elogind-repart. If
+* add a new switch --auto-definitions=yes/no or so to systemd-repart. If
   specified, synthesize a definition automatically if we can: enlarge last
   partition on disk, but only if it is marked for growing and not read-only.
 
-* elogind-repart: read LUKS encryption key from $CREDENTIALS_DIRECTORY
+* systemd-repart: read LUKS encryption key from $CREDENTIALS_DIRECTORY
 
-* elogind-repart: add a switch to factory reset the partition table without
+* systemd-repart: add a switch to factory reset the partition table without
   immediately applying the new configuration again. i.e. --factory-reset=leave
   or so. (this is useful to factory reset an image, then putting it into
   another machine, ensuring that luks key is generated on new machine, not old)
 
-* elogind-repart: support setting up dm-integrity with HMAC
+* systemd-repart: support setting up dm-integrity with HMAC
 
-* elogind-repart: maybe remove half-initialized image on failure. It fails
+* systemd-repart: maybe remove half-initialized image on failure. It fails
   if the output file exists, so a repeated invocation will usually fail if
   something goes wrong on the way.
 
-* elogind-repart: drop pager mode on normal operation?
+* systemd-repart: drop pager mode on normal operation?
 
-* elogind-repart: by default generate minimized partition tables (i.e. tables
+* systemd-repart: by default generate minimized partition tables (i.e. tables
   that only cover the space actually used, excluding any free space at the
   end), in order to maximize dd'ability. Requires libfdisk work, see
   https://github.com/karelzak/util-linux/issues/907
 
-* elogind-repart: MBR partition table support. Care needs to be taken regarding
+* systemd-repart: MBR partition table support. Care needs to be taken regarding
   Type=, so that partition definitions can sanely apply to both the GPT and the
   MBR case. Idea: accept syntax "Type=gpt:home mbr:0x83" for setting the types
   for the two partition types explicitly. And provide an internal mapping so
   that "Type=linux-generic" maps to the right types for both partition tables
   automatically.
 
-* elogind-repart: allow sizing partitions as factor of available RAM, so that
+* systemd-repart: allow sizing partitions as factor of available RAM, so that
   we can reasonably size swap partitions for hibernation.
 
-* elogind-repart: allow boolean option that ensures that if existing partition
+* systemd-repart: allow boolean option that ensures that if existing partition
   doesn't exist within the configured size bounds the whole command fails. This
   is useful to implement ESP vs. XBOOTLDR schemes in installers: have one set
   of repart files for the case where ESP is large enough and one where it isn't
   and XBOOTLDR is added in instead.  Then apply the former first, and if it
   fails to apply use the latter.
 
-* elogind-repart: add per-partition option to never reuse existing partition
+* systemd-repart: add per-partition option to never reuse existing partition
   and always create anew even if matching partition already exists.
 
-* elogind-repart: add per-partition option to fail if partition already exist,
+* systemd-repart: add per-partition option to fail if partition already exist,
   i.e. is not added new. Similar, add option to fail if partition does not exist yet.
 
-* elogind-repart: allow disabling growing of specific partitions, or making
+* systemd-repart: allow disabling growing of specific partitions, or making
   them (think ESP: we don't ever want to grow it, since we cannot resize vfat)
   Also add option to disable operation via kernel command line.
 
-* elogind-repart: make it a static checker during early boot for existence and
+* systemd-repart: make it a static checker during early boot for existence and
   absence of other partitions for trusted boot environments
 
-* elogind-repart: add support for SD_GPT_FLAG_GROWFS also on real systems, i.e.
+* systemd-repart: add support for SD_GPT_FLAG_GROWFS also on real systems, i.e.
   generate some unit to actually enlarge the fs after growing the partition
   during boot.
 
-* elogind-repart: do not print "Successfully resized …" when no change was done.
+* systemd-repart: do not print "Successfully resized …" when no change was done.
 
 * document:
   - document that deps in [Unit] sections ignore Alias= fields in
