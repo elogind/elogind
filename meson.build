@@ -2667,7 +2667,8 @@ test_dlopen = executable(
 #         include_directories : includes,
 #         link_with : [libjournal_core,
 #                      libshared],
-#         dependencies : [threads],
+#         dependencies : [threads,
+#                         versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true)
 #
@@ -2794,6 +2795,7 @@ test_dlopen = executable(
 #                 'src/dissect/dissect.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
@@ -2868,6 +2870,7 @@ test_dlopen = executable(
 #                 'src/login/inhibit.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
@@ -3115,6 +3118,7 @@ endif
 #                 systemd_sysext_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
@@ -3411,6 +3415,7 @@ endif
 #                 'src/hostname/hostnamectl.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
@@ -3441,6 +3446,7 @@ endif
 #                 localectl_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
@@ -3566,6 +3572,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared,
 #                              lib_import_common],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3717,6 +3724,7 @@ endif
 #                 'src/binfmt/binfmt.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3763,6 +3771,7 @@ endif
 #                 'src/random-seed/random-seed.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
+#                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -3943,6 +3952,7 @@ executable(
 #         'src/id128/id128.c',
 #         include_directories : includes,
 #         link_with : [libshared],
+#         dependencies : [versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true)
 # public_programs += systemd_id128
@@ -3960,6 +3970,7 @@ executable(
 #         'src/path/path.c',
 #         include_directories : includes,
 #         link_with : [libshared],
+#         dependencies : [versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true)
 #
@@ -3968,6 +3979,7 @@ executable(
 #         'src/ask-password/ask-password.c',
 #         include_directories : includes,
 #         link_with : [libshared],
+#         dependencies : [versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
@@ -3986,6 +3998,7 @@ executable(
 #         'src/tty-ask-password-agent/tty-ask-password-agent.c',
 #         include_directories : includes,
 #         link_with : [libshared],
+#         dependencies : [versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
@@ -3995,6 +4008,7 @@ executable(
 #         'src/cgls/cgls.c',
 #         include_directories : includes,
 #         link_with : [libshared],
+#         dependencies : [versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true)
 #
@@ -4003,6 +4017,7 @@ executable(
 #         'src/cgtop/cgtop.c',
 #         include_directories : includes,
 #         link_with : [libshared],
+#         dependencies : [versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true)
 #
@@ -4152,6 +4167,7 @@ public_programs += executable(
 #                 'src/hwdb/hwdb.c',
 #                 include_directories : includes,
 #                 link_with : udev_link_with,
+#                 dependencies : [versiondep],
 #                 install_rpath : udev_rpath,
 #                 install : true,
 #                 install_dir : rootbindir)
