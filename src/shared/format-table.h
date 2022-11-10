@@ -12,6 +12,7 @@
 typedef enum TableDataType {
         TABLE_EMPTY,
         TABLE_STRING,
+        TABLE_FIELD, /* used in vertical mode */
         TABLE_STRV,
         TABLE_STRV_WRAPPED,
         TABLE_PATH,
@@ -84,6 +85,7 @@ typedef struct TableCell TableCell;
 Table *table_new_internal(const char *first_header, ...) _sentinel_;
 #define table_new(...) table_new_internal(__VA_ARGS__, NULL)
 Table *table_new_raw(size_t n_columns);
+Table *table_new_vertical(void);
 Table *table_unref(Table *t);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(Table*, table_unref);
@@ -161,7 +163,7 @@ int table_print_json(Table *t, FILE *f, JsonFormatFlags json_flags);
 
 int table_print_with_pager(Table *t, JsonFormatFlags json_format_flags, PagerFlags pager_flags, bool show_header);
 
-int table_set_json_field_name(Table *t, size_t column, const char *name);
+int table_set_json_field_name(Table *t, size_t idx, const char *name);
 
 #define table_log_add_error(r) \
         log_error_errno(r, "Failed to add cells to table: %m")
