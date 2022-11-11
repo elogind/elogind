@@ -617,6 +617,8 @@ tests += [
 
         [files('test-strv.c')],
 
+        [files('test-nulstr-util.c')],
+
         [files('test-path-util.c')],
 
         [files('test-rm-rf.c')],
@@ -695,7 +697,8 @@ tests += [
 #
 #         [files('test-journal-importer.c')],
 #
-#         [files('test-utmp.c')],
+#         [files('test-utmp.c'),
+#          [], [], [], 'ENABLE_UTMP'],
 #
 #         [files('test-udev.c'),
 #          [libudevd_core,

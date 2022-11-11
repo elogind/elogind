@@ -140,21 +140,9 @@ static inline char *strv_join(char * const *l, const char *separator) {
         return strv_join_full(l, separator, NULL, false);
 }
 
-char** strv_parse_nulstr(const char *s, size_t l);
-char** strv_split_nulstr(const char *s);
 #if 0 /// UNNEEDED by elogind
-int strv_make_nulstr(char * const *l, char **p, size_t *n);
 #endif // 0
 
-static inline int strv_from_nulstr(char ***a, const char *nulstr) {
-        char **t;
-
-        t = strv_split_nulstr(nulstr);
-        if (!t)
-                return -ENOMEM;
-        *a = t;
-        return 0;
-}
 
 #if 0 /// UNNEEDED by elogind
 bool strv_overlap(char * const *a, char * const *b) _pure_;
