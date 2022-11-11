@@ -80,9 +80,9 @@
         <option>--private-key=</option> and <option>--public-key=</option>. This will write a JSON object to
         standard output that contains signatures for all specified PCR banks (see
         <option>--pcr-bank=</option>) below, which may be used to unlock encrypted credentials (see
-        <citerefentry><refentrytitle>elogind-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry>) or
+        <citerefentry><refentrytitle>systemd-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry>) or
         LUKS volumes (see
-        <citerefentry><refentrytitle>elogind-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>). This
+        <citerefentry><refentrytitle>systemd-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>). This
         allows binding secrets to a set of kernels for which such PCR 11 signatures can be provided.</para>
 
         <para>Note that a TPM2 device must be available for this signing to take place, even though the
@@ -243,9 +243,9 @@
     --add-section .initrd=initrd.cpio --change-section-vma .initrd=0x3000000 \
     --add-section .splash=splash.bmp --change-section-vma .splash=0x100000 \
     --add-section .dtb=devicetree.dtb --change-section-vma .dtb=0x40000 \
-    --add-section .pcrsig=tpm2-pcr-signature.json --change-section-vma .splash=0x80000 \
-    --add-section .pcrpkey=tpm2-pcr-public.pem --change-section-vma .splash=0x90000 \
     /usr/lib/elogind/boot/efi/linuxx64.efi.stub \
+    --add-section .pcrsig=tpm2-pcr-signature.json --change-section-vma .pcrsig=0x80000 \
+    --add-section .pcrpkey=tpm2-pcr-public.pem --change-section-vma .pcrpkey=0x90000 \
     foo.efi</programlisting>
 
      <para>Later on, enroll the signed PCR policy on a LUKS volume:</para>
@@ -254,11 +254,11 @@
 
      <para>And then unlock the device with the signature:</para>
 
-     <programlisting># /usr/lib/elogind/elogind-cryptsetup attach myvolume /dev/sda5 - tpm2-device=auto,tpm2-signature=/path/to/tpm2-pcr-signature.json</programlisting>
+     <programlisting># /usr/lib/systemd/systemd-cryptsetup attach myvolume /dev/sda5 - tpm2-device=auto,tpm2-signature=/path/to/tpm2-pcr-signature.json</programlisting>
 
      <para>Note that when the generated unified kernel image <filename>foo.efi</filename> is booted the
      signature and public key files will be placed at locations <command>elogind-cryptenroll</command> and
-     <command>elogind-cryptsetup</command> will look for anyway, and thus these paths do not actually need to
+     <command>systemd-cryptsetup</command> will look for anyway, and thus these paths do not actually need to
      be specified.</para>
     </example>
   </refsect1>
@@ -275,9 +275,9 @@
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>objcopy</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind-pcrphase.service</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>systemd-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind-pcrphase.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
      </para>
   </refsect1>
 
