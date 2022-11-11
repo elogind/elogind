@@ -213,7 +213,6 @@ static int parse_line(
 
                 if (sections && !nulstr_contains(sections, n)) {
                         bool ignore;
-                        const char *t;
 
                         ignore = (flags & CONFIG_PARSE_RELAXED) || startswith(n, "X-");
 
