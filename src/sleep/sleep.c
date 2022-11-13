@@ -676,7 +676,6 @@ static int execute_s2h(const SleepConfig *sleep_config) {
                 log_debug_errno(r, "Failed to freeze unit user.slice, ignoring: %m");
 #endif // 0
 
-
         /* Only check if we have automated battery alarms if HibernateDelaySec= is not set, as in that case
          * we'll busy poll for the configured interval instead */
         if (!timestamp_is_set(sleep_config->hibernate_delay_usec)) {
@@ -706,9 +705,9 @@ static int execute_s2h(const SleepConfig *sleep_config) {
                         return 0;
         } else {
                 r = custom_timer_suspend(sleep_config);
-                if(r < 0)
+                if (r < 0)
                         return log_debug_errno(r, "Suspend cycle with manual battery discharge rate estimation failed: %m");
-                if(r == 0)
+                if (r == 0)
                         /* manual wakeup */
                         return 0;
         }
