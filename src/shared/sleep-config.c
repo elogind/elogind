@@ -22,7 +22,6 @@
 //#include "btrfs-util.h"
 #include "conf-parser.h"
 #include "def.h"
-#include "device-private.h"
 #include "device-util.h"
 #include "devnum-util.h"
 //#include "env-util.h"
@@ -76,13 +75,10 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
             allow_s2h = -1, allow_hybrid_sleep = -1;
 
 #if 0 /// elogind keeps its sleep config in memory. Just erase the modes and states so they can be read anew.
-        sc = new(SleepConfig, 1);
+        sc = new0(SleepConfig, 1);
         if (!sc)
                 return log_oom();
 
-        *sc = (SleepConfig) {
-                .hibernate_delay_usec = USEC_INFINITY,
-        };
 #else // 0
         for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
                 if (sc->modes[i]) {
@@ -120,7 +116,6 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 { "Sleep", "HybridSleepState",          config_parse_strv,     0, sc->states + SLEEP_HYBRID_SLEEP },
 
                 { "Sleep", "HibernateDelaySec",         config_parse_sec,      0, &sc->hibernate_delay_usec       },
-                { "Sleep", "SuspendEstimationSec",      config_parse_sec,      0, &sc->suspend_estimation_usec    },
                 {}
         };
 
@@ -151,8 +146,8 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 sc->modes[SLEEP_HYBRID_SLEEP] = strv_new("suspend", "platform", "shutdown");
         if (!sc->states[SLEEP_HYBRID_SLEEP])
                 sc->states[SLEEP_HYBRID_SLEEP] = strv_new("disk");
-        if (sc->suspend_estimation_usec == 0)
-                sc->suspend_estimation_usec = DEFAULT_SUSPEND_ESTIMATION_USEC;
+        if (sc->hibernate_delay_usec == 0)
+                sc->hibernate_delay_usec = 2 * USEC_PER_HOUR;
 
         /* Ensure values set for all required fields */
         if (!sc->states[SLEEP_SUSPEND] || !sc->modes[SLEEP_HIBERNATE]
@@ -200,27 +195,16 @@ static int battery_enumerator_new(sd_device_enumerator **ret) {
         if (r < 0)
                 return r;
 
-        r = sd_device_enumerator_add_match_subsystem(e, "power_supply", /* match = */ true);
+        r = sd_device_enumerator_add_match_subsystem(e, "power_supply", /* match= */ true);
         if (r < 0)
                 return r;
 
-        r = sd_device_enumerator_allow_uninitialized(e);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_add_match_sysattr(e, "type", "Battery", /* match = */ true);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_add_match_sysattr(e, "present", "1", /* match = */ true);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_add_match_sysattr(e, "scope", "Device", /* match = */ false);
+        r = sd_device_enumerator_add_match_property(e, "POWER_SUPPLY_TYPE", "Battery");
         if (r < 0)
                 return r;
 
         *ret = TAKE_PTR(e);
+
         return 0;
 }
 
@@ -239,13 +223,18 @@ static int get_capacity_by_name(Hashmap *capacities_by_name, const char *name) {
 
 /* Battery percentage capacity fetched from capacity file and if in range 0-100 then returned */
 static int read_battery_capacity_percentage(sd_device *dev) {
+        const char *power_supply_capacity;
         int battery_capacity, r;
 
         assert(dev);
 
-        r = device_get_sysattr_int(dev, "capacity", &battery_capacity);
+        r = sd_device_get_property_value(dev, "POWER_SUPPLY_CAPACITY", &power_supply_capacity);
         if (r < 0)
-                return log_device_debug_errno(dev, r, "Failed to read/parse POWER_SUPPLY_CAPACITY: %m");
+                return log_device_debug_errno(dev, r, "Failed to get property POWER_SUPPLY_CAPACITY: %m");
+
+        r = safe_atoi(power_supply_capacity, &battery_capacity);
+        if (r < 0)
+                return log_device_debug_errno(dev, r, "Failed to parse property POWER_SUPPLY_CAPACITY: %m");
 
         if (battery_capacity < 0 || battery_capacity > 100)
                 return log_device_debug_errno(dev, SYNTHETIC_ERRNO(ERANGE), "Invalid battery capacity");
@@ -267,9 +256,15 @@ int battery_is_low(void) {
         if (r < 0)
                 return log_debug_errno(r, "Failed to initialize battery enumerator: %m");
 
-        FOREACH_DEVICE(e, dev)
-                if (read_battery_capacity_percentage(dev) > BATTERY_LOW_CAPACITY_LEVEL)
+        FOREACH_DEVICE(e, dev) {
+                r = read_battery_capacity_percentage(dev);
+                if (r < 0) {
+                        log_device_debug_errno(dev, r, "Failed to get battery capacity, ignoring: %m");
+                        continue;
+                }
+                if (r > BATTERY_LOW_CAPACITY_LEVEL)
                         return false;
+        }
 
         return true;
 }
@@ -322,55 +317,61 @@ int fetch_batteries_capacity_by_name(Hashmap **ret) {
         return 0;
 }
 
-static int siphash24_compress_device_sysattr(sd_device *dev, const char *attr, struct siphash *state) {
+/* Read file path and return hash of value in that file */
+static int get_battery_identifier(sd_device *dev, const char *property, struct siphash *state) {
         const char *x;
         int r;
 
         assert(dev);
-        assert(attr);
+        assert(property);
         assert(state);
 
-        r = sd_device_get_sysattr_value(dev, attr, &x);
-        if (r < 0)
-                return log_device_debug_errno(dev, r, "Failed to read '%s' attribute: %m", attr);
+        r = sd_device_get_property_value(dev, property, &x);
+        if (r == -ENOENT)
+               log_device_debug_errno(dev, r, "Battery device property %s is unavailable, ignoring: %m", property);
+        else if (r < 0)
+               return log_device_debug_errno(dev, r, "Failed to get battery device property %s: %m", property);
+        else if (isempty(x))
+               log_device_debug(dev, "Battery device property '%s' is empty.", property);
+        else
+               siphash24_compress_string(x, state);
 
-        if (!isempty(x))
-                siphash24_compress_string(x, state);
-
-        return 0;
-}
-
-static int siphash24_compress_id128(int (*getter)(sd_id128_t*), const char *name, struct siphash *state) {
-        sd_id128_t id;
-        int r;
-
-        assert(getter);
-        assert(state);
-
-        r = getter(&id);
-        if (r < 0)
-                return log_debug_errno(r, "Failed to get %s ID: %m", name);
-
-        siphash24_compress(&id, sizeof(sd_id128_t), state);
         return 0;
 }
 
 /* Read system and battery identifier from specific location and generate hash of it */
 static int get_system_battery_identifier_hash(sd_device *dev, uint64_t *ret) {
         struct siphash state;
+        sd_id128_t machine_id, product_id;
+        int r;
 
         assert(ret);
         assert(dev);
 
         siphash24_init(&state, BATTERY_DISCHARGE_RATE_HASH_KEY.bytes);
 
-        (void) siphash24_compress_device_sysattr(dev, "manufacturer", &state);
-        (void) siphash24_compress_device_sysattr(dev, "model_name", &state);
-        (void) siphash24_compress_device_sysattr(dev, "serial_number", &state);
-        (void) siphash24_compress_id128(sd_id128_get_machine, "machine", &state);
-        (void) siphash24_compress_id128(id128_get_product, "product", &state);
+        get_battery_identifier(dev, "POWER_SUPPLY_MANUFACTURER", &state);
+        get_battery_identifier(dev, "POWER_SUPPLY_MODEL_NAME", &state);
+        get_battery_identifier(dev, "POWER_SUPPLY_SERIAL_NUMBER", &state);
+
+        r = sd_id128_get_machine(&machine_id);
+        if (r == -ENOENT)
+               log_debug_errno(r, "machine ID is unavailable: %m");
+        else if (r < 0)
+               return log_debug_errno(r, "Failed to get machine ID: %m");
+        else
+               siphash24_compress(&machine_id, sizeof(sd_id128_t), &state);
+
+        r = id128_get_product(&product_id);
+        if (r == -ENOENT)
+               log_debug_errno(r, "product_id does not exist: %m");
+        else if (r < 0)
+               return log_debug_errno(r, "Failed to get product ID: %m");
+        else
+               siphash24_compress(&product_id, sizeof(sd_id128_t), &state);
 
         *ret = siphash24_finalize(&state);
+
         return 0;
 }
 
@@ -448,11 +449,11 @@ static int put_battery_discharge_rate(int estimated_battery_discharge_rate, uint
                                         estimated_battery_discharge_rate);
 
         r = write_string_filef(
-                        DISCHARGE_RATE_FILEPATH,
-                        WRITE_STRING_FILE_CREATE | WRITE_STRING_FILE_MKDIR_0755 | (trunc ? WRITE_STRING_FILE_TRUNCATE : 0),
-                        "%"PRIu64" %d",
-                        system_hash_id,
-                        estimated_battery_discharge_rate);
+                DISCHARGE_RATE_FILEPATH,
+                WRITE_STRING_FILE_CREATE | WRITE_STRING_FILE_MKDIR_0755 | (trunc ? WRITE_STRING_FILE_TRUNCATE : 0),
+                "%"PRIu64" %d",
+                system_hash_id,
+                estimated_battery_discharge_rate);
         if (r < 0)
                 return log_debug_errno(r, "Failed to update %s: %m", DISCHARGE_RATE_FILEPATH);
 
