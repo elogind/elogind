@@ -75,9 +75,13 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
             allow_s2h = -1, allow_hybrid_sleep = -1;
 
 #if 0 /// elogind keeps its sleep config in memory. Just erase the modes and states so they can be read anew.
-        sc = new0(SleepConfig, 1);
+        sc = new(SleepConfig, 1);
         if (!sc)
                 return log_oom();
+
+        *sc = (SleepConfig) {
+                .hibernate_delay_usec = USEC_INFINITY,
+        };
 #else // 0
         for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
                 if (sc->modes[i]) {
@@ -115,6 +119,7 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 { "Sleep", "HybridSleepState",          config_parse_strv,     0, sc->states + SLEEP_HYBRID_SLEEP },
 
                 { "Sleep", "HibernateDelaySec",         config_parse_sec,      0, &sc->hibernate_delay_usec       },
+                { "Sleep", "SuspendEstimationSec",      config_parse_sec,      0, &sc->suspend_estimation_usec    },
                 {}
         };
 
@@ -145,8 +150,8 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 sc->modes[SLEEP_HYBRID_SLEEP] = strv_new("suspend", "platform", "shutdown");
         if (!sc->states[SLEEP_HYBRID_SLEEP])
                 sc->states[SLEEP_HYBRID_SLEEP] = strv_new("disk");
-        if (sc->hibernate_delay_usec == 0)
-                sc->hibernate_delay_usec = 2 * USEC_PER_HOUR;
+        if (sc->suspend_estimation_usec == 0)
+                sc->suspend_estimation_usec = DEFAULT_SUSPEND_ESTIMATION_USEC;
 
         /* Ensure values set for all required fields */
         if (!sc->states[SLEEP_SUSPEND] || !sc->modes[SLEEP_HIBERNATE]
