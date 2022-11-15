@@ -698,10 +698,6 @@ foreach ident : [
                                  #include <unistd.h>
                                  #include <signal.h>
                                  #include <sys/wait.h>'''],
-        ['rt_tgsigqueueinfo', '''#include <stdlib.h>
-                                 #include <unistd.h>
-                                 #include <signal.h>
-                                 #include <sys/wait.h>'''],
         ['mallinfo',          '''#include <malloc.h>'''],
         ['mallinfo2',         '''#include <malloc.h>'''],
         ['execveat',          '''#include <unistd.h>'''],
@@ -1537,10 +1533,7 @@ conf.set10('HAVE_PAM', have)
 #
 #         foreach ident : ['crypt_set_metadata_size',
 #                          'crypt_activate_by_signed_key',
-#                          'crypt_token_max',
-#                          'crypt_reencrypt_init_by_passphrase',
-#                          'crypt_reencrypt',
-#                          'crypt_set_data_offset']
+#                          'crypt_token_max']
 #                 have_ident = have and cc.has_function(
 #                         ident,
 #                         prefix : '#include <libcryptsetup.h>',
@@ -1702,14 +1695,11 @@ conf.set10('HAVE_PAM', have)
 #         tpm2 = dependency('tss2-esys tss2-rc tss2-mu',
 #                           required : want_tpm2 == 'true')
 #         have = tpm2.found()
-#         have_esys3 = tpm2.version().version_compare('>= 3.0.0')
 # else
 #         have = false
-#         have_esys3 = false
 #         tpm2 = []
 # endif
 # conf.set10('HAVE_TPM2', have)
-# conf.set10('HAVE_TSS2_ESYS3', have_esys3)
 #
 # want_elfutils = get_option('elfutils')
 # if want_elfutils != 'false' and not skip_deps
@@ -3878,14 +3868,15 @@ endif
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# public_programs += executable(
+# executable(
 #         'systemd-ac-power',
 #         'src/ac-power/ac-power.c',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [versiondep],
 #         install_rpath : rootpkglibdir,
-#         install : true)
+#         install : true,
+#         install_dir : rootlibexecdir)
 #
 # public_programs += executable(
 #         'systemd-detect-virt',
@@ -4404,7 +4395,7 @@ public_programs += executable(
 #         install_dir : bindir)
 # public_programs += exe
 #
-# if want_tests != 'false'
+# if want_tests != 'false' and want_kernel_install
 #         test('test-kernel-install',
 #              test_kernel_install_sh,
 #              args : [exe.full_path(), loaderentry_install])
