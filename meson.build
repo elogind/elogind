@@ -847,6 +847,17 @@ if run_command(python, '-c', 'import jinja2', check : false).returncode() != 0
         error('python3 jinja2 missing')
 endif
 
+python_310 = run_command(python, '-c',
+                         'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)',
+                         check : false).returncode() == 0
+if get_option('ukify') == 'auto'
+    want_ukify = python_310
+elif get_option('ukify') == 'true' and not python310
+    error('ukify requires Python >= 3.10')
+else
+    want_ukify = get_option('ukify') == 'true'
+endif
+
 ############################################################
 
 gperf = find_program('gperf')
@@ -4416,6 +4427,18 @@ public_programs += executable(
 #         test('test-kernel-install',
 #              test_kernel_install_sh,
 #              args : [exe.full_path(), loaderentry_install])
+# endif
+#
+# if want_ukify
+#    exe = custom_target(
+#         'ukify',
+#         input : 'src/ukify/ukify.py',
+#         output : 'ukify',
+#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+#         install : true,
+#         install_mode : 'rwxr-xr-x',
+#         install_dir : rootlibexecdir)
+#    public_programs += exe
 # endif
 #else // 0
 executable('elogind-uaccess-command',

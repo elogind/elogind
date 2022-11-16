@@ -579,6 +579,8 @@ option('urlify', type : 'boolean', value : true,
 #        description : 'build against LLVM libFuzzer')
 # option('kernel-install', type: 'boolean', value: true,
 #        description : 'install kernel-install and associated files')
+# option('ukify', type : 'combo', choices : ['auto', 'true', 'false'],
+#        description : 'install ukify')
 # option('analyze', type: 'boolean', value: true,
 #        description : 'install systemd-analyze')
 #endif // 0
