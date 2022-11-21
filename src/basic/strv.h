@@ -49,8 +49,8 @@ static inline int strv_extend(char ***l, const char *value) {
         return strv_extend_with_size(l, NULL, value);
 }
 
-int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
 #if 0 /// UNNEEDED by elogind
+int strv_extendf(char ***l, const char *format, ...) _printf_(2,3);
 int strv_extend_front(char ***l, const char *value);
 #endif // 0
 
