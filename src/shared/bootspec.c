@@ -19,6 +19,7 @@
 //#include "pretty-print.h"
 #include "recurse-dir.h"
 #include "sort-util.h"
+#include "stat-util.h"
 #include "string-table.h"
 #include "strv.h"
 //#include "terminal-util.h"
@@ -418,7 +419,6 @@ void boot_config_free(BootConfig *config) {
         free(config->auto_entries);
         free(config->auto_firmware);
         free(config->console_mode);
-        free(config->random_seed_mode);
         free(config->beep);
 
         free(config->entry_oneshot);
@@ -485,7 +485,7 @@ int boot_loader_read_conf(BootConfig *config, FILE *file, const char *path) {
                 else if (streq(field, "console-mode"))
                         r = free_and_strdup(&config->console_mode, p);
                 else if (streq(field, "random-seed-mode"))
-                        r = free_and_strdup(&config->random_seed_mode, p);
+                        log_syntax(NULL, LOG_WARNING, path, line, 0, "'random-seed-mode' has been deprecated, ignoring.");
                 else if (streq(field, "beep"))
                         r = free_and_strdup(&config->beep, p);
                 else {
@@ -507,7 +507,7 @@ static int boot_loader_read_conf_path(BootConfig *config, const char *root, cons
         assert(config);
         assert(path);
 
-        r = chase_symlinks_and_fopen_unlocked(path, root, CHASE_PREFIX_ROOT, "re", &full, &f);
+        r = chase_symlinks_and_fopen_unlocked(path, root, CHASE_PREFIX_ROOT|CHASE_PROHIBIT_SYMLINKS, "re", &full, &f);
         if (r == -ENOENT)
                 return 0;
         if (r < 0)
@@ -542,23 +542,6 @@ static int boot_entry_compare(const BootEntry *a, const BootEntry *b) {
 
         return -strverscmp_improved(a->id, b->id);
 }
-
-static void inode_hash_func(const struct stat *q, struct siphash *state) {
-        siphash24_compress(&q->st_dev, sizeof(q->st_dev), state);
-        siphash24_compress(&q->st_ino, sizeof(q->st_ino), state);
-}
-
-static int inode_compare_func(const struct stat *a, const struct stat *b) {
-        int r;
-
-        r = CMP(a->st_dev, b->st_dev);
-        if (r != 0)
-                return r;
-
-        return CMP(a->st_ino, b->st_ino);
-}
-
-DEFINE_HASH_OPS_WITH_KEY_DESTRUCTOR(inode_hash_ops, struct stat, inode_hash_func, inode_compare_func, free);
 
 static int config_check_inode_relevant_and_unseen(BootConfig *config, int fd, const char *fname) {
         _cleanup_free_ char *d = NULL;
@@ -609,7 +592,7 @@ static int boot_entries_find_type1(
         assert(root);
         assert(dir);
 
-        dir_fd = chase_symlinks_and_open(dir, root, CHASE_PREFIX_ROOT, O_DIRECTORY|O_CLOEXEC, &full);
+        dir_fd = chase_symlinks_and_open(dir, root, CHASE_PREFIX_ROOT|CHASE_PROHIBIT_SYMLINKS, O_DIRECTORY|O_CLOEXEC, &full);
         if (dir_fd == -ENOENT)
                 return 0;
         if (dir_fd < 0)
@@ -869,7 +852,7 @@ static int boot_entries_find_unified(
         assert(config);
         assert(dir);
 
-        r = chase_symlinks_and_opendir(dir, root, CHASE_PREFIX_ROOT, &full, &d);
+        r = chase_symlinks_and_opendir(dir, root, CHASE_PREFIX_ROOT|CHASE_PROHIBIT_SYMLINKS, &full, &d);
         if (r == -ENOENT)
                 return 0;
         if (r < 0)
@@ -1285,7 +1268,7 @@ static void boot_entry_file_list(
         assert(p);
         assert(ret_status);
 
-        int status = chase_symlinks_and_access(p, root, CHASE_PREFIX_ROOT, F_OK, NULL, NULL);
+        int status = chase_symlinks_and_access(p, root, CHASE_PREFIX_ROOT|CHASE_PROHIBIT_SYMLINKS, F_OK, NULL, NULL);
 
         /* Note that this shows two '/' between the root and the file. This is intentional to highlight (in
          * the abscence of color support) to the user that the boot loader is only interested in the second
