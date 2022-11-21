@@ -49,8 +49,8 @@ static inline int strv_extend(char ***l, const char *value) {
         return strv_extend_with_size(l, NULL, value);
 }
 
-int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
 #if 0 /// UNNEEDED by elogind
+int strv_extendf(char ***l, const char *format, ...) _printf_(2,3);
 int strv_extend_front(char ***l, const char *value);
 #endif // 0
 
@@ -140,9 +140,7 @@ static inline char *strv_join(char * const *l, const char *separator) {
         return strv_join_full(l, separator, NULL, false);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
+/// elogind empty mask removed (UNNEEDED by elogind)
 
 #if 0 /// UNNEEDED by elogind
 bool strv_overlap(char * const *a, char * const *b) _pure_;
