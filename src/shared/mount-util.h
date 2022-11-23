@@ -31,6 +31,7 @@
 #define TMPFS_LIMITS_RUN             ",size=20%,nr_inodes=800k"
 
 /* The limit used for various nested tmpfs mounts, in particular for guests started by elogind-nspawn.
+/* The limit used for various nested tmpfs mounts, in particular for guests started by systemd-nspawn.
  * 10% of RAM (using 16GB of RAM as a baseline) translates to 400k inodes (assuming 4k each) and 25%
  * translates to 1M inodes.
  * (On the host, /tmp is configured through a .mount unit file.) */
@@ -56,6 +57,7 @@ static inline int bind_remount_recursive(const char *prefix, unsigned long new_f
 int bind_remount_one_with_mountinfo(const char *path, unsigned long new_flags, unsigned long flags_mask, FILE *proc_self_mountinfo);
 
 int mount_move_root(const char *path);
+int mount_pivot_root(const char *path);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(FILE*, endmntent, NULL);
 #define _cleanup_endmntent_ _cleanup_(endmntentp)
