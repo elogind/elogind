@@ -5,21 +5,21 @@
 
 #if 0 /// elogind has no homed
 # {% if ENABLE_HOMED %}
-# -account sufficient pam_systemd_home.so
+# -account  sufficient pam_elogind_home.so
 # {% endif %}
 #endif // 0
-account sufficient pam_unix.so no_pass_expiry
-account required pam_permit.so
+account  sufficient pam_unix.so no_pass_expiry
+account  required pam_permit.so
 
 {% if HAVE_SELINUX %}
-session required pam_selinux.so close
-session required pam_selinux.so nottys open
+session  required pam_selinux.so close
+session  required pam_selinux.so nottys open
 {% endif %}
-session required pam_loginuid.so
-session optional pam_keyinit.so force revoke
 #if 0 /// elogind has no homed
+# session  required pam_loginuid.so
+# session  optional pam_keyinit.so force revoke
 # {% if ENABLE_HOMED %}
-# -session optional pam_systemd_home.so
+# -session  optional pam_elogind_home.so
 # {% endif %}
 #endif // 0
-session optional pam_elogind.so
+session  optional pam_elogind.so
