@@ -18,6 +18,7 @@ session  required pam_selinux.so nottys open
 #if 0 /// elogind has no homed
 # session  required pam_loginuid.so
 # session  optional pam_keyinit.so force revoke
+# session  required pam_namespace.so
 # {% if ENABLE_HOMED %}
 # -session  optional pam_elogind_home.so
 # {% endif %}
