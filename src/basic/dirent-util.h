@@ -12,6 +12,7 @@ bool dirent_is_file(const struct dirent *de) _pure_;
 #if 0 /// UNNEEDED by elogind
 bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) _pure_;
 #endif // 0
+int dirent_ensure_type(int dir_fd, struct dirent *de);
 
 struct dirent *readdir_ensure_type(DIR *d);
 #if 0 /// UNNEEDED by elogind
