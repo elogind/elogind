@@ -2555,6 +2555,7 @@ subdir('rules.d')
 #if 0 /// UNNEEDED by elogind
 # subdir('test')
 #endif // 0
+subdir('src/ukify/test')  # needs to be last for test_env variable
 
 ############################################################
 
