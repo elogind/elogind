@@ -4286,6 +4286,22 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
+# if have_standalone_binaries
+#         executable(
+#                 'elogind-shutdown.standalone',
+#                 elogind_shutdown_sources,
+#                 include_directories : includes,
+#                 c_args : '-DSTANDALONE',
+#                 link_with : [libshared_static,
+#                              libbasic,
+#                              libelogind_static],
+#                 dependencies : [libmount,
+#                                 versiondep],
+#                 install_rpath : rootpkglibdir,
+#                 install : true,
+#                 install_dir : rootlibexecdir)
+# endif
+#
 # executable(
 #         'systemd-update-done',
 #         'src/update-done/update-done.c',
