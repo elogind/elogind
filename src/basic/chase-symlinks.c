@@ -57,6 +57,21 @@ static int log_autofs_mount_point(int fd, const char *path, ChaseSymlinksFlags f
                                  strna(n1), path);
 }
 
+static int log_prohibited_symlink(int fd, ChaseSymlinksFlags flags) {
+        _cleanup_free_ char *n1 = NULL;
+
+        assert(fd >= 0);
+
+        if (!FLAGS_SET(flags, CHASE_WARN))
+                return -EREMCHG;
+
+        (void) fd_get_path(fd, &n1);
+
+        return log_warning_errno(SYNTHETIC_ERRNO(EREMCHG),
+                                 "Detected symlink where not symlink is allowed at %s, refusing.",
+                                 strna(n1));
+}
+
 int chase_symlinks_at(
                 int dir_fd,
                 const char *path,
@@ -290,6 +305,9 @@ int chase_symlinks_at(
 
                 if (S_ISLNK(st.st_mode) && !((flags & CHASE_NOFOLLOW) && isempty(todo))) {
                         _cleanup_free_ char *destination = NULL;
+
+                        if (flags & CHASE_PROHIBIT_SYMLINKS)
+                                return log_prohibited_symlink(child, flags);
 
                         /* This is a symlink, in this case read the destination. But let's make sure we
                          * don't follow symlinks without bounds. */
@@ -534,14 +552,22 @@ int chase_symlinks_and_opendir(
                 return 0;
         }
 
-        r = chase_symlinks(path, root, chase_flags, ret_path ? &p : NULL, &path_fd);
+        r = chase_symlinks(path, root, chase_flags, &p, &path_fd);
         if (r < 0)
                 return r;
         assert(path_fd >= 0);
 
         d = opendir(FORMAT_PROC_FD_PATH(path_fd));
-        if (!d)
-                return -errno;
+        if (!d) {
+                /* Hmm, we have the fd already but we got ENOENT, most likely /proc is not mounted.
+                 * Let's try opendir() again on the full path. */
+                if (errno == ENOENT) {
+                        d = opendir(p);
+                        if (!d)
+                                return -errno;
+                } else
+                        return -errno;
+        }
 
         if (ret_path)
                 *ret_path = TAKE_PTR(p);
