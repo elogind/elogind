@@ -82,6 +82,7 @@
 #         'id128-print.c',
 #         'idn-util.c',
 #         'ima-util.c',
+#         'image-policy.c',
 #         'import-util.c',
 #         'in-addr-prefix-util.c',
 #         'install-file.c',
