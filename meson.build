@@ -4271,6 +4271,7 @@ public_programs += executable(
 #                         install_rpath : rootpkglibdir,
 #                         install : true,
 #                         install_dir : rootbindir)
+#                 public_programs += exe
 #         endif
 # endif
 #
