@@ -101,3 +101,5 @@ static inline int devname_from_stat_rdev(const struct stat *st, char **ret) {
 }
 int device_open_from_devnum(mode_t mode, dev_t devnum, int flags, char **ret);
 #endif // 0
+
+char** device_make_log_fields(sd_device *device);
