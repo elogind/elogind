@@ -505,7 +505,8 @@ void cmsg_close_all(struct msghdr *mh) {
 
         CMSG_FOREACH(cmsg, mh)
                 if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS)
-                        close_many((int*) CMSG_DATA(cmsg), (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(int));
+                        close_many(CMSG_TYPED_DATA(cmsg, int),
+                                   (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(int));
 }
 
 #if 0 /// UNNEEDED by elogind
