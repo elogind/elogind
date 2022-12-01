@@ -292,9 +292,6 @@ Features:
   userspace to allow ordering boots (for example in journalctl). The counter
   would be monotonically increased on every boot.
 
-* elogind-sysext: for sysext DDIs picked up via EFI stub, set much stricter
-  image policy by default
-
 * pam_elogind_home: add module parameter to control whether to only accept
   only password or only pcks11/fido2 auth, and then use this to hook nicely
   into two of the three PAM stacks gdm provides.
@@ -520,13 +517,12 @@ Features:
 * add support for asymmetric LUKS2 TPM based encryption. i.e. allow preparing
   an encrypted image on some host given a public key belonging to a specific
   other host, so that only hosts possessing the private key in the TPM2 chip
-  can decrypt the volume key and activate the volume. Usecase: elogind-confext
-  for a central orchestrator to generate confext images securely that can only
+  for a central orchestrator to generate syscfg images securely that can only
   be activated on one specific host (which can be used for installing a bunch
   of creds in /etc/credstore/ for example). Extending on this: allow binding
   LUKS2 TPM based encryption also to the TPM2 internal clock. Net result:
-  prepare a confext image that can only be activated on a specific host that
-  runs a specific software in a specific time window. confext would be
+  prepare a syscfg image that can only be activated on a specific host that
+  runs a specific software in a specific time window. syscfg would be
   automatically invalidated outside of it.
 
 * maybe add a "elogind-report" tool, that generates a TPM2-backed "report" of
@@ -537,17 +533,17 @@ Features:
   this: have the report tool upload these reports every 3min somewhere. Then
   have the orchestrator collect these reports centrally over a 3min time
   window, and use them to determine what which node should now start/stop what,
-  and generate a small confext for each node, that uses Uphold= to pin services
-  on each node.  The confext would be encrypted using the asymmetric encryption
+  and generate a small syscfg for each node, that uses Uphold= to pin services
+  on each node.  The syscfg would be encrypted using the asymmetric encryption
   proposed above, so that it can only be activated on the specific host, if the
   software is in a good state, and within a specific time frame. Then run a
   loop on each node that sends report to orchestrator and then sysupdate to
-  update confext.  Orchestrator would be stateless, i.e. operate on desired
+  update syscfg.  Orchestrator would be stateless, i.e. operate on desired
   config and collected reports in the last 3min time window only, and thus can
   be trivially scaled up since all instances of the orchestrator should come to
   the same conclusions given the same inputs of reports/desired workload info.
   Could also be used to deliver Wireguard secrets and thus to clients, thus
-  permitting zero-trust networking: secrets are rolled over via confext updates,
+  permitting zero-trust networking: secrets are rolled over via syscfg updates,
   and via the time window TPM logic invalidated if node doesn't keep itself
   updated, or becomes corrupted in some way.
 
@@ -596,7 +592,6 @@ Features:
   keyring, so that the kernel does this validation for us for verity and kernel
   modules
 
-* for elogind-confext: add a tool that can generate suitable DDIs with verity +
   sig using squashfs-tools-ng's library. Maybe just systemd-repart called under
   a new name with a built-in config?
 
@@ -835,9 +830,6 @@ Features:
   virtio-fs.
 
 * for vendor-built signed initrds:
-  - make sysext run in the initrd
-  - sysext should pick up sysext images from /.extra/ in the initrd, and insist
-    on verification if in secureboot mode
   - kernel-install should be able to install pre-built unified kernel images in
     type #2 drop-in dir in the ESP.
   - kernel-install should be able install encrypted creds automatically for
@@ -912,6 +904,12 @@ Features:
   hence cheap for enumeration.
 
 * sysext: measure all activated sysext into a TPM PCR
+
+* maybe add a "syscfg" concept, that is almost entirely identical to "sysext",
+  but operates on /etc/ instead of /usr/ and /opt/. Use case would be: trusted,
+  authenticated, atomic, additive configuration management primitive: drop in a
+  configuration bundle, and activate it, so that it is instantly visible,
+  comprehensively.
 
 * elogind-dissect: show available versions inside of a disk image, i.e. if
   multiple versions are around of the same resource, show which ones. (in other
@@ -1039,9 +1037,6 @@ Features:
   CapabilityQuintet we already have. (This likely allows us to drop libcap
   dep in the base OS image)
 
-* sysext: automatically activate sysext images dropped in via new sd-stub
-  sysext pickup logic. (must insist on verity + signature on those though)
-
 * add concept for "exitrd" as inverse of "initrd", that we can transition to at
   shutdown, and has similar security semantics. This should then take the place
   of dracut's shutdown logic. Should probably support sysexts too. Care needs
@@ -1071,22 +1066,6 @@ Features:
   keys of /etc/crypttab. That way people can store/provide the roothash
   externally and provide to us on demand only.
 
-* add high-level lockdown level for GPT dissection logic: e.g. an enum that can
-  be ANY (to mount anything), TRUSTED (to require that /usr is on signed
-  verity, but rest doesn't matter), LOCKEDDOWN (to require that everything is
-  on signed verity, except for ESP), SUPERLOCKDOWN (like LOCKEDDOWN but ESP not
-  allowed). And then maybe some flavours of that that declare what is expected
-  from home/srv/var… Then, add a new cmdline flag to all tools that parse such
-  images, to configure this. Also, add a kernel cmdline option for this, to be
-  honoured by the gpt auto generator.
-
-  Alternative idea: add "elogind.gpt_auto_policy=rhvs" to allow gpt-auto to
-  only mount root dir, /home/ dir, /var/ and /srv/, but nothing else. And then
-  minor extension to this, insisting on encryption, for example
-  "elogind.gpt_auto_policy=r+v+h" to require encryption for root and var but not
-  for /home/, and similar. Similar add --image-dissect-policy= to tools that
-  take --image= that take the same short string.
-
 * we probably should extend the root verity hash of the root fs into some PCR
   on boot. (i.e. maybe add a veritytab option tpm2-measure=12 or so to measure
   it into PCR 12); Similar: we probably should extend the LUKS volume key of
@@ -1098,10 +1077,6 @@ Features:
   key). That way, we nicely distinguish resources supplied by the OS vendor
   (i.e. sysext, root verity) from those inherently local (i.e. encryption key),
   which is useful if they shall be signed separately.
-
-* add a "policy" to the dissection logic. i.e. a bit mask what is OK to mount,
-  what must be read-only, what requires encryption, and what requires
-  authentication.
 
 * in uefi stub: query firmware regarding which PCR banks are being used, store
   that in EFI var. then use this when enrolling TPM2 in cryptsetup to verify
