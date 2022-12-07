@@ -14,7 +14,7 @@
 #include "rlimit-util.h"
 #include "string-table.h"
 #include "strv.h"
-//#include "uid-alloc-range.h"
+#include "uid-alloc-range.h"
 #include "user-record.h"
 #include "user-util.h"
 
