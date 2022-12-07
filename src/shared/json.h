@@ -61,7 +61,9 @@ typedef enum JsonVariantType {
 } JsonVariantType;
 
 int json_variant_new_stringn(JsonVariant **ret, const char *s, size_t n);
+#if 0 /// UNNEEDED by elogind
 int json_variant_new_base64(JsonVariant **ret, const void *p, size_t n);
+#endif // 0
 int json_variant_new_hex(JsonVariant **ret, const void *p, size_t n);
 int json_variant_new_integer(JsonVariant **ret, int64_t i);
 int json_variant_new_unsigned(JsonVariant **ret, uint64_t u);
@@ -228,7 +230,9 @@ enum {
         _JSON_BUILD_STRING,
         _JSON_BUILD_INTEGER,
         _JSON_BUILD_UNSIGNED,
+#if 0 /// UNNEEDED by elogind
         _JSON_BUILD_REAL,
+#endif // 0
         _JSON_BUILD_BOOLEAN,
         _JSON_BUILD_ARRAY_BEGIN,
         _JSON_BUILD_ARRAY_END,
@@ -238,9 +242,12 @@ enum {
         _JSON_BUILD_PAIR_CONDITION,
         _JSON_BUILD_NULL,
         _JSON_BUILD_VARIANT,
+#if 0 /// UNNEEDED by elogind
         _JSON_BUILD_VARIANT_ARRAY,
         _JSON_BUILD_LITERAL,
+#endif // 0
         _JSON_BUILD_STRV,
+#if 0 /// UNNEEDED by elogind
         _JSON_BUILD_BASE64,
         _JSON_BUILD_HEX,
         _JSON_BUILD_ID128,
@@ -257,37 +264,48 @@ enum {
         _JSON_BUILD_PAIR_IN_ADDR_NON_NULL,
         _JSON_BUILD_PAIR_ETHER_ADDR_NON_NULL,
         _JSON_BUILD_PAIR_HW_ADDR_NON_NULL,
+#endif // 0
         _JSON_BUILD_MAX,
 };
 
 #define JSON_BUILD_STRING(s) _JSON_BUILD_STRING, (const char*) { s }
 #define JSON_BUILD_INTEGER(i) _JSON_BUILD_INTEGER, (int64_t) { i }
 #define JSON_BUILD_UNSIGNED(u) _JSON_BUILD_UNSIGNED, (uint64_t) { u }
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_REAL(d) _JSON_BUILD_REAL, (double) { d }
+#endif // 0
 #define JSON_BUILD_BOOLEAN(b) _JSON_BUILD_BOOLEAN, (bool) { b }
 #define JSON_BUILD_ARRAY(...) _JSON_BUILD_ARRAY_BEGIN, __VA_ARGS__, _JSON_BUILD_ARRAY_END
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_EMPTY_ARRAY _JSON_BUILD_ARRAY_BEGIN, _JSON_BUILD_ARRAY_END
+#endif // 0
 #define JSON_BUILD_OBJECT(...) _JSON_BUILD_OBJECT_BEGIN, __VA_ARGS__, _JSON_BUILD_OBJECT_END
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_EMPTY_OBJECT _JSON_BUILD_OBJECT_BEGIN, _JSON_BUILD_OBJECT_END
+#endif // 0
 #define JSON_BUILD_PAIR(n, ...) _JSON_BUILD_PAIR, (const char*) { n }, __VA_ARGS__
 #define JSON_BUILD_PAIR_CONDITION(c, n, ...) _JSON_BUILD_PAIR_CONDITION, (bool) { c }, (const char*) { n }, __VA_ARGS__
 #define JSON_BUILD_NULL _JSON_BUILD_NULL
 #define JSON_BUILD_VARIANT(v) _JSON_BUILD_VARIANT, (JsonVariant*) { v }
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_VARIANT_ARRAY(v, n) _JSON_BUILD_VARIANT_ARRAY, (JsonVariant **) { v }, (size_t) { n }
 #define JSON_BUILD_LITERAL(l) _JSON_BUILD_LITERAL, (const char*) { l }
+#endif // 0
 #define JSON_BUILD_STRV(l) _JSON_BUILD_STRV, (char**) { l }
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_BASE64(p, n) _JSON_BUILD_BASE64, (const void*) { p }, (size_t) { n }
 #define JSON_BUILD_HEX(p, n) _JSON_BUILD_HEX, (const void*) { p }, (size_t) { n }
 #define JSON_BUILD_ID128(id) _JSON_BUILD_ID128, (const sd_id128_t*) { &(id) }
 #define JSON_BUILD_BYTE_ARRAY(v, n) _JSON_BUILD_BYTE_ARRAY, (const void*) { v }, (size_t) { n }
+#endif // 0
 #define JSON_BUILD_CONST_STRING(s) _JSON_BUILD_VARIANT, JSON_VARIANT_STRING_CONST(s)
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_IN4_ADDR(v) JSON_BUILD_BYTE_ARRAY((const struct in_addr*) { v }, sizeof(struct in_addr))
 #define JSON_BUILD_IN6_ADDR(v) JSON_BUILD_BYTE_ARRAY((const struct in6_addr*) { v }, sizeof(struct in6_addr))
 #define JSON_BUILD_IN_ADDR(v, f) JSON_BUILD_BYTE_ARRAY(((const union in_addr_union*) { v })->bytes, FAMILY_ADDRESS_SIZE_SAFE(f))
 #define JSON_BUILD_ETHER_ADDR(v) JSON_BUILD_BYTE_ARRAY(((const struct ether_addr*) { v })->ether_addr_octet, sizeof(struct ether_addr))
 #define JSON_BUILD_HW_ADDR(v) _JSON_BUILD_HW_ADDR, (const struct hw_addr_data*) { v }
 
-#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_PAIR_STRING(name, s) JSON_BUILD_PAIR(name, JSON_BUILD_STRING(s))
 #define JSON_BUILD_PAIR_INTEGER(name, i) JSON_BUILD_PAIR(name, JSON_BUILD_INTEGER(i))
 #define JSON_BUILD_PAIR_UNSIGNED(name, u) JSON_BUILD_PAIR(name, JSON_BUILD_UNSIGNED(u))
@@ -424,6 +442,4 @@ int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size);
 #endif // 0
 
 const char *json_variant_type_to_string(JsonVariantType t);
-#if 0 /// UNNEEDED by elogind
 JsonVariantType json_variant_type_from_string(const char *s);
-#endif // 0
