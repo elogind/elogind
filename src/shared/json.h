@@ -244,8 +244,8 @@ enum {
         _JSON_BUILD_VARIANT,
 #if 0 /// UNNEEDED by elogind
         _JSON_BUILD_VARIANT_ARRAY,
-        _JSON_BUILD_LITERAL,
 #endif // 0
+        _JSON_BUILD_LITERAL,
         _JSON_BUILD_STRV,
 #if 0 /// UNNEEDED by elogind
         _JSON_BUILD_BASE64,
@@ -289,8 +289,8 @@ enum {
 #define JSON_BUILD_VARIANT(v) _JSON_BUILD_VARIANT, (JsonVariant*) { v }
 #if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_VARIANT_ARRAY(v, n) _JSON_BUILD_VARIANT_ARRAY, (JsonVariant **) { v }, (size_t) { n }
-#define JSON_BUILD_LITERAL(l) _JSON_BUILD_LITERAL, (const char*) { l }
 #endif // 0
+#define JSON_BUILD_LITERAL(l) _JSON_BUILD_LITERAL, (const char*) { l }
 #define JSON_BUILD_STRV(l) _JSON_BUILD_STRV, (char**) { l }
 #if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_BASE64(p, n) _JSON_BUILD_BASE64, (const void*) { p }, (size_t) { n }
