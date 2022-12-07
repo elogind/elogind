@@ -20,7 +20,6 @@ static inline int gethostname_strict(char **ret) {
         return gethostname_full(0, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline char* gethostname_malloc(void) {
         char *s;
 
@@ -30,6 +29,7 @@ static inline char* gethostname_malloc(void) {
         return s;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline char* gethostname_short_malloc(void) {
         char *s;
 
