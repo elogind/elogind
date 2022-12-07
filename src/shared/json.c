@@ -425,6 +425,7 @@ int json_variant_new_stringn(JsonVariant **ret, const char *s, size_t n) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_new_base64(JsonVariant **ret, const void *p, size_t n) {
         _cleanup_free_ char *s = NULL;
         ssize_t k;
@@ -438,6 +439,7 @@ int json_variant_new_base64(JsonVariant **ret, const void *p, size_t n) {
 
         return json_variant_new_stringn(ret, s, k);
 }
+#endif // 0
 
 int json_variant_new_hex(JsonVariant **ret, const void *p, size_t n) {
         _cleanup_free_ char *s = NULL;
@@ -3350,6 +3352,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
+#if 0 /// UNNEEDED by elogind
                 case _JSON_BUILD_REAL: {
                         double d;
 
@@ -3377,6 +3380,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
                 }
+#endif // 0
 
                 case _JSON_BUILD_BOOLEAN: {
                         bool b;
@@ -3456,6 +3460,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
 
+#if 0 /// UNNEEDED by elogind
                 case _JSON_BUILD_VARIANT_ARRAY: {
                         JsonVariant **array;
                         size_t n;
@@ -3517,6 +3522,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
                 }
+#endif // 0
 
                 case _JSON_BUILD_ARRAY_BEGIN:
 
@@ -3597,6 +3603,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
+#if 0 /// UNNEEDED by elogind
                 case _JSON_BUILD_BASE64: {
                         const void *p;
                         size_t n;
@@ -3742,6 +3749,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
                 }
+#endif // 0
 
                 case _JSON_BUILD_OBJECT_BEGIN:
 
@@ -3844,6 +3852,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
+#if 0 /// UNNEEDED by elogind
                 case _JSON_BUILD_PAIR_UNSIGNED_NON_ZERO: {
                         const char *n;
                         uint64_t u;
@@ -4122,6 +4131,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         current->expect = EXPECT_OBJECT_KEY;
                         break;
                 }
+#endif // 0
                 }
 
                 /* If variants were generated, add them to our current variant, but only if we are not supposed to suppress additions */
