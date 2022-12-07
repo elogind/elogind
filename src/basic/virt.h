@@ -65,7 +65,7 @@ int running_in_userns(void);
 int running_in_chroot(void);
 
 const char *virtualization_to_string(int v) _const_;
-#if 0 /// UNNEEDED by elogind
 int virtualization_from_string(const char *s) _pure_;
+#if 0 /// UNNEEDED by elogind
 bool has_cpu_with_flag(const char *flag);
 #endif // 0
