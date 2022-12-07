@@ -86,7 +86,6 @@ defaults:
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 const UGIDAllocationRange *acquire_ugid_allocation_range(void) {
 #if ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES
         static thread_local UGIDAllocationRange defs;
@@ -108,7 +107,6 @@ const UGIDAllocationRange *acquire_ugid_allocation_range(void) {
 #endif
         return &default_ugid_allocation_range;
 }
-#endif // 0
 
 bool uid_is_system(uid_t uid) {
         const UGIDAllocationRange *defs;
