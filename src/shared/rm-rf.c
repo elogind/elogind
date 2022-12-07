@@ -283,10 +283,10 @@ int rm_rf_children(
                                  if (!GREEDY_REALLOC0(todos, n_todo + 2))
                                          return log_oom();
 
-
                                  _cleanup_free_ char *newdirname = strdup(de->d_name);
                                  if (!newdirname)
                                          return log_oom();
+
                                  int newfd = openat(fd, de->d_name,
                                                     O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW|O_NOATIME);
                                  if (newfd >= 0) {
