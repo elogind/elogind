@@ -819,7 +819,6 @@ void strv_print(char * const *l) {
                 puts(*s);
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_extendf(char ***l, const char *format, ...) {
         va_list ap;
         char *x;
@@ -835,6 +834,7 @@ int strv_extendf(char ***l, const char *format, ...) {
         return strv_consume(l, x);
 }
 
+#if 0 /// UNNEEDED by elogind
 char** strv_reverse(char **l) {
         size_t n;
 
