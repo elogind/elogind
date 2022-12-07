@@ -335,6 +335,7 @@ int rm_rf(const char *path, RemoveFlags flags) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int rm_rf_child(int fd, const char *name, RemoveFlags flags) {
 
         /* Removes one specific child of the specified directory */
@@ -353,3 +354,4 @@ int rm_rf_child(int fd, const char *name, RemoveFlags flags) {
 
         return rm_rf_children_inner(fd, name, -1, flags, NULL);
 }
+#endif // 0
