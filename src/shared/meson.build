@@ -334,8 +334,12 @@
 #else // 0
 shared_sources = '''
         acl-util.h
+        blockdev-util.c
+        blockdev-util.h
         bootspec.c
         bootspec.h
+        btrfs-util.c
+        btrfs-util.h
         bus-get-properties.c
         bus-get-properties.h
         bus-locator.c
@@ -358,6 +362,8 @@ shared_sources = '''
         clean-ipc.h
         conf-parser.c
         conf-parser.h
+        copy.c
+        copy.h
         daemon-util.h
         dev-setup.c
         dev-setup.h
@@ -381,10 +387,14 @@ shared_sources = '''
         json.h
         json-internal.h
         main-func.h
+        mkdir-label.c
+        mkdir-label.h
         mount-setup.c
         mount-setup.h
         mount-util.h
         mount-util.c
+        label.c
+        label.h
         libcrypt-util.c
         libcrypt-util.h
         nsflags.c
@@ -402,12 +412,16 @@ shared_sources = '''
         pretty-print.h
         reboot-util.c
         reboot-util.h
+        selinux-util.c
+        selinux-util.h
         serialize.c
         serialize.h
         service-util.c
         service-util.h
         sleep-config.c
         sleep-config.h
+        smack-util.c
+        smack-util.h
         spawn-polkit-agent.c
         spawn-polkit-agent.h
         udev-util.c
