@@ -272,10 +272,12 @@ TEST(build) {
         _cleanup_free_ char *s = NULL, *t = NULL;
 
         assert_se(json_build(&a, JSON_BUILD_STRING("hallo")) >= 0);
+#if 0 /// UNNEEDED by elogind
         assert_se(json_build(&b, JSON_BUILD_LITERAL(" \"hallo\"   ")) >= 0);
         assert_se(json_variant_equal(a, b));
 
         b = json_variant_unref(b);
+#endif // 0
 
         assert_se(json_build(&b, JSON_BUILD_VARIANT(a)) >= 0);
         assert_se(json_variant_equal(a, b));
@@ -287,6 +289,7 @@ TEST(build) {
         a = json_variant_unref(a);
         b = json_variant_unref(b);
 
+#if 0 /// UNNEEDED by elogind
         assert_se(json_build(&a, JSON_BUILD_OBJECT(JSON_BUILD_PAIR("one", JSON_BUILD_INTEGER(7)),
                                                    JSON_BUILD_PAIR("two", JSON_BUILD_REAL(2.0)),
                                                    JSON_BUILD_PAIR("three", JSON_BUILD_INTEGER(0)))) >= 0);
@@ -299,6 +302,7 @@ TEST(build) {
 
         a = json_variant_unref(a);
         b = json_variant_unref(b);
+#endif // 0
 
         const char* arr_1234[] = {"one", "two", "three", "four", NULL};
         assert_se(json_build(&a, JSON_BUILD_ARRAY(JSON_BUILD_OBJECT(JSON_BUILD_PAIR("x", JSON_BUILD_BOOLEAN(true)),
@@ -320,9 +324,12 @@ TEST(build) {
         a = json_variant_unref(a);
         b = json_variant_unref(b);
 
+#if 0 /// UNNEEDED by elogind
         assert_se(json_build(&a, JSON_BUILD_REAL(M_PIl)) >= 0);
+#endif // 0
 
         s = mfree(s);
+#if 0 /// UNNEEDED by elogind
         assert_se(json_variant_format(a, 0, &s) >= 0);
         log_info("GOT: %s\n", s);
         assert_se(json_parse(s, 0, &b, NULL, NULL) >= 0);
@@ -330,6 +337,7 @@ TEST(build) {
         log_info("GOT: %s\n", t);
 
         assert_se(streq(s, t));
+#endif // 0
 
         a = json_variant_unref(a);
         b = json_variant_unref(b);
@@ -535,6 +543,7 @@ static void test_float_match(JsonVariant *v) {
                   json_variant_integer(json_variant_by_index(v, 8)) == -10);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(float) {
         _cleanup_(json_variant_unrefp) JsonVariant *v = NULL, *w = NULL;
         _cleanup_free_ char *text = NULL;
@@ -561,6 +570,7 @@ TEST(float) {
 
         test_float_match(w);
 }
+#endif // 0
 
 static void test_equal_text(JsonVariant *v, const char *text) {
         _cleanup_(json_variant_unrefp) JsonVariant *w = NULL;
