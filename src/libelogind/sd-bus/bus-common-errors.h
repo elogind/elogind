@@ -31,6 +31,7 @@
 #define BUS_ERROR_NOTHING_TO_CLEAN             "org.freedesktop.elogind1.NothingToClean"
 #define BUS_ERROR_UNIT_BUSY                    "org.freedesktop.elogind1.UnitBusy"
 #define BUS_ERROR_UNIT_INACTIVE                "org.freedesktop.elogind1.UnitInactive"
+#define BUS_ERROR_FREEZE_CANCELLED             "org.freedesktop.elogind1.FreezeCancelled"
 
 #define BUS_ERROR_NO_SUCH_MACHINE              "org.freedesktop.machine1.NoSuchMachine"
 #define BUS_ERROR_NO_SUCH_IMAGE                "org.freedesktop.machine1.NoSuchImage"
