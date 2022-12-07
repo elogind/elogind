@@ -645,9 +645,8 @@ static int freeze_thaw_user_slice(const char **method) {
 #endif // 0
 
 static int execute_s2h(const SleepConfig *sleep_config) {
-#if 0 /// elogind does not support systemd scopes and slices
-#endif // 0
-        _unused_ _cleanup_(freeze_thaw_user_slice) const char *auto_method_thaw = NULL;
+/// elogind empty mask removed (elogind does not support systemd scopes and slices)
+        _unused_ _cleanup_(freeze_thaw_user_slice) const char *auto_method_thaw = "ThawUnit";
         int r, k;
 
         assert(sleep_config);
@@ -657,8 +656,6 @@ static int execute_s2h(const SleepConfig *sleep_config) {
         if (r < 0)
                 log_debug_errno(r, "Failed to freeze unit user.slice, ignoring: %m");
 #endif // 0
-        else
-                auto_method_thaw = "ThawUnit"; /* from now on we want automatic thawing */;
 
         r = check_wakeup_type();
         if (r < 0)
