@@ -3664,6 +3664,7 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         unit_add_to_cgroup_empty_queue(u);
         return 1;
 }
+
 #else // 0
 int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         _cleanup_free_ char *path = NULL;
@@ -4245,8 +4246,22 @@ int unit_cgroup_freezer_action(Unit *u, FreezerAction action) {
         if (!cg_freezer_supported())
                 return 0;
 
+        /* Ignore all requests to thaw init.scope or -.slice and reject all requests to freeze them */
+        if (unit_has_name(u, SPECIAL_ROOT_SLICE) || unit_has_name(u, SPECIAL_INIT_SCOPE))
+                return action == FREEZER_FREEZE ? -EPERM : 0;
+
         if (!u->cgroup_realized)
                 return -EBUSY;
+
+        if (action == FREEZER_THAW) {
+                Unit *slice = UNIT_GET_SLICE(u);
+
+                if (slice) {
+                        r = unit_cgroup_freezer_action(slice, FREEZER_THAW);
+                        if (r < 0)
+                                return log_unit_error_errno(u, r, "Failed to thaw slice %s of unit: %m", slice->id);
+                }
+        }
 
         target = action == FREEZER_FREEZE ? FREEZER_FROZEN : FREEZER_RUNNING;
 
