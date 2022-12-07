@@ -160,7 +160,7 @@ libcore_sources = files('''
 #         'load-fragment-gperf.gperf',
 #         input : 'load-fragment-gperf.gperf.in',
 #         output: 'load-fragment-gperf.gperf',
-#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'])
+#         command : [meson_render_jinja2, config_h, '@INPUT@', '@OUTPUT@'])
 #
 # load_fragment_gperf_c = custom_target(
 #         'load-fragment-gperf.c',
@@ -226,7 +226,7 @@ libcore_sources = files('''
 #                 file,
 #                 input : file + '.in',
 #                 output: file,
-#                 command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+#                 command : [meson_render_jinja2, config_h, '@INPUT@', '@OUTPUT@'],
 #                 install : (dir == pkgsysconfdir) ? install_sysconfdir_samples : (dir != 'no'),
 #                 install_dir : dir)
 # endforeach
