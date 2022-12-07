@@ -26,8 +26,10 @@ static inline int unhexmem(const char *p, size_t l, void **mem, size_t *len) {
 #if 0 /// UNNEEDED by elogind
 char base32hexchar(int x) _const_;
 int unbase32hexchar(char c) _const_;
+#endif // 0
 
 char base64char(int x) _const_;
+#if 0 /// UNNEEDED by elogind
 char urlsafe_base64char(int x) _const_;
 #endif // 0
 int unbase64char(char c) _const_;
