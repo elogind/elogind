@@ -441,17 +441,11 @@ int per_machine_id_match(JsonVariant *ids, JsonDispatchFlags flags);
 int per_machine_hostname_match(JsonVariant *hns, JsonDispatchFlags flags);
 int user_group_record_mangle(JsonVariant *v, UserRecordLoadFlags load_flags, JsonVariant **ret_variant, UserRecordMask *ret_mask);
 
-#if 0 /// UNNEEDED by elogind
 const char* user_storage_to_string(UserStorage t) _const_;
-#endif // 0
 UserStorage user_storage_from_string(const char *s) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 const char* user_disposition_to_string(UserDisposition t) _const_;
-#endif // 0
 UserDisposition user_disposition_from_string(const char *s) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 const char* auto_resize_mode_to_string(AutoResizeMode m) _const_;
-#endif // 0
 AutoResizeMode auto_resize_mode_from_string(const char *s) _pure_;
