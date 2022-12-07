@@ -412,6 +412,8 @@ shared_sources = '''
         spawn-polkit-agent.h
         udev-util.c
         udev-util.h
+        uid-alloc-range.c
+        uid-alloc-range.h
         user-record-nss.c
         user-record-nss.h
         user-record.c
