@@ -38,9 +38,9 @@ static inline char* gethostname_short_malloc(void) {
 
         return s;
 }
+#endif // 0
 
 char* get_default_hostname(void);
-#endif // 0
 
 bool valid_ldh_char(char c) _const_;
 
