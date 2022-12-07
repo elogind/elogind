@@ -11,7 +11,7 @@
 
 #include "alloc-util.h"
 #include "chase-symlinks.h"
-#include "dissect-image.h"
+//#include "dissect-image.h"
 #include "exec-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
@@ -36,6 +36,8 @@
 //#include "strv.h"
 #include "tmpfile-util.h"
 #include "user-util.h"
+// Additional includes needed by elogind
+#include <libmount.h>
 
 int mount_fd(const char *source,
              int target_fd,
