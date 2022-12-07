@@ -241,7 +241,6 @@ int strv_extend_strv_concat(char ***a, char * const *b, const char *suffix) {
 }
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int strv_split_newlines_full(char ***ret, const char *s, ExtractFlags flags) {
         _cleanup_strv_free_ char **l = NULL;
         size_t n;
@@ -265,7 +264,6 @@ int strv_split_newlines_full(char ***ret, const char *s, ExtractFlags flags) {
         *ret = TAKE_PTR(l);
         return n;
 }
-#endif // 0
 
 int strv_split_full(char ***t, const char *s, const char *separators, ExtractFlags flags) {
         _cleanup_strv_free_ char **l = NULL;
@@ -302,6 +300,7 @@ int strv_split_full(char ***t, const char *s, const char *separators, ExtractFla
         return (int) n;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_split_and_extend_full(char ***t, const char *s, const char *separators, bool filter_duplicates, ExtractFlags flags) {
         _cleanup_strv_free_ char **l = NULL;
         int r;
@@ -320,7 +319,6 @@ int strv_split_and_extend_full(char ***t, const char *s, const char *separators,
         return (int) strv_length(*t);
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_split_colon_pairs(char ***t, const char *s) {
         _cleanup_strv_free_ char **l = NULL;
         size_t n = 0;
