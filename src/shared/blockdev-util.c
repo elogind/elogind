@@ -57,6 +57,7 @@ int block_get_whole_disk(dev_t d, dev_t *ret) {
         *ret = devt;
         return 1;
 }
+#endif // 0
 
 int get_block_device_fd(int fd, dev_t *ret) {
         struct stat st;
@@ -85,7 +86,6 @@ int get_block_device_fd(int fd, dev_t *ret) {
         *ret = 0;
         return 0;
 }
-#endif // 0
 
 int get_block_device(const char *path, dev_t *ret) {
         _cleanup_close_ int fd = -1;
