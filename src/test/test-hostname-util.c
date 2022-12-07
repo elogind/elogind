@@ -103,7 +103,6 @@ TEST(hostname_malloc) {
 #endif // 0
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(default_hostname) {
         if (!hostname_is_valid(FALLBACK_HOSTNAME, 0)) {
                 log_error("Configured fallback hostname \"%s\" is not valid.", FALLBACK_HOSTNAME);
@@ -115,9 +114,5 @@ TEST(default_hostname) {
         log_info("get_default_hostname: \"%s\"", n);
         assert_se(hostname_is_valid(n, 0));
 }
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
