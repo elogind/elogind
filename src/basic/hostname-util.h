@@ -8,7 +8,6 @@
 #include "macro.h"
 #include "strv.h"
 
-#if 0 /// UNNEEDED by elogind
 typedef enum GetHostnameFlags {
         GET_HOSTNAME_ALLOW_NONE       = 1 << 0, /* accepts "(none)". */
         GET_HOSTNAME_ALLOW_LOCALHOST  = 1 << 1, /* accepts "localhost" or friends. */
@@ -21,6 +20,7 @@ static inline int gethostname_strict(char **ret) {
         return gethostname_full(0, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline char* gethostname_malloc(void) {
         char *s;
 
