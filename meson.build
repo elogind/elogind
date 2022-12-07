@@ -4470,6 +4470,7 @@ summary({
 #                 'EFI include directory' :           efi_incdir},
 #                 section : 'Extensible Firmware Interface')
 # endif
+#endif // 0
 
 found = []
 missing = []
