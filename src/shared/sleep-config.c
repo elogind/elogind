@@ -764,11 +764,11 @@ static int can_sleep_internal(
 int can_sleep(SleepOperation operation) {
         _cleanup_(free_sleep_configp) SleepConfig *sleep_config = NULL;
 #else // 0
-int can_sleep(Manager *sleep_config, SleepOperation s) {
+int can_sleep(Manager *sleep_config, SleepOperation operation) {
 #endif // 0
         int r;
 
-        log_debug_elogind("Called for '%s'", sleep_operation_to_string(s));
+        log_debug_elogind("Called for '%s'", sleep_operation_to_string(operation));
         r = parse_sleep_config(&sleep_config);
         if (r < 0)
                 return r;
