@@ -294,9 +294,7 @@ conf.set_quoted('LIBDIR',                                     libdir)
 # conf.set_quoted('MODULESLOAD_DIR',                            modulesloaddir)
 #endif // 0
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
-#if 0 /// UNNEEDED by elogind
-# conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   bindir / 'pkttyagent')
-#endif // 0
+conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   bindir / 'pkttyagent')
 conf.set_quoted('PREFIX',                                     prefixdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('RANDOM_SEED',                                randomseeddir / 'random-seed')
@@ -355,8 +353,6 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 # conf.set_quoted('SYSUSERS_DIR',                               sysusersdir)
 # conf.set_quoted('TMPFILES_DIR',                               tmpfilesdir)
 # conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('UDEV_HWDB_DIR',                              udevhwdbdir)
 # conf.set_quoted('UDEV_RULES_DIR',                             udevrulesdir)
 # conf.set_quoted('UPDATE_HELPER_USER_TIMEOUT',                 get_option('update-helper-user-timeout'))
@@ -369,7 +365,9 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 # conf.set_quoted('VENDOR_KEYRING_PATH',                        rootlibexecdir / 'import-pubring.gpg')
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
-# conf.set10('ENABLE_URLIFY',                                   get_option('urlify'))
+#endif // 0
+conf.set10('ENABLE_URLIFY',                                   get_option('urlify'))
+#if 0 /// UNNEEDED by elogind
 # conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
