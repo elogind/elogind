@@ -9,7 +9,7 @@
 //#include "macro.h"
 #include "path-util.h"
 #include "string-table.h"
-//#include "syslog-util.h"
+#include "syslog-util.h"
 //#include "unit-name.h"
 
 #if 0 /// UNNEEDED by elogind
