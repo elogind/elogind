@@ -826,4 +826,4 @@ bool unit_name_prefix_equal(const char *a, const char *b) {
 
         return memcmp_nn(a, p - a, b, q - b) == 0;
 }
-#endif / 0
+#endif // 0
