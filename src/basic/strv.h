@@ -58,9 +58,9 @@ int strv_consume_pair(char ***l, char *a, char *b);
 #endif // 0
 int strv_consume_prepend(char ***l, char *value);
 
-#if 0 /// UNNEEDED by elogind
 char** strv_remove(char **l, const char *s);
 char** strv_uniq(char **l);
+#if 0 /// UNNEEDED by elogind
 bool strv_is_uniq(char * const *l);
 #endif // 0
 
@@ -98,6 +98,7 @@ static inline char** strv_split(const char *s, const char *separators) {
 #if 0 /// UNNEEDED by elogind
 int strv_split_and_extend_full(char ***t, const char *s, const char *separators, bool filter_duplicates, ExtractFlags flags);
 #define strv_split_and_extend(t, s, sep, dup) strv_split_and_extend_full(t, s, sep, dup, 0)
+#endif // 0
 
 int strv_split_newlines_full(char ***ret, const char *s, ExtractFlags flags);
 static inline char** strv_split_newlines(const char *s) {
@@ -109,6 +110,7 @@ static inline char** strv_split_newlines(const char *s) {
         return ret;
 }
 
+#if 0 /// UNNEEDED by elogind
 /* Given a string containing white-space separated tuples of words themselves separated by ':',
  * returns a vector of strings. If the second element in a tuple is missing, the corresponding
  * string in the vector is an empty string. */
@@ -120,9 +122,7 @@ static inline char *strv_join(char * const *l, const char *separator) {
         return strv_join_full(l, separator, NULL, false);
 }
 
-#if 0 /// UNNEEDED by elogind
 char** strv_parse_nulstr(const char *s, size_t l);
-#endif // 0
 char** strv_split_nulstr(const char *s);
 #if 0 /// UNNEEDED by elogind
 int strv_make_nulstr(char * const *l, char **p, size_t *n);
