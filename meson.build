@@ -296,7 +296,9 @@ conf.set_quoted('LIBDIR',                                     libdir)
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   bindir / 'pkttyagent')
-# conf.set_quoted('PREFIX',                                     prefixdir)
+#endif // 0
+conf.set_quoted('PREFIX',                                     prefixdir)
+#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('RANDOM_SEED',                                randomseeddir / 'random-seed')
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
@@ -1647,6 +1649,7 @@ conf.set10('HAVE_GCRYPT', false)
 conf.set10('HAVE_LIBIDN2', false)
 conf.set10('HAVE_LIBIDN', false)
 conf.set10('HAVE_OPENSSL', false)
+conf.set10('HAVE_P11KIT', false)
 conf.set10('HAVE_TPM2', false)
 conf.set10('HAVE_LZ4', false)
 conf.set10('HAVE_XZ', false)
