@@ -113,8 +113,8 @@ int config_parse_many(
                 const void *table,
                 ConfigParseFlags flags,
                 void *userdata,
-#endif // 0
                 Hashmap **ret_stats_by_path);   /* possibly NULL */
+#endif // 0
 
 CONFIG_PARSER_PROTOTYPE(config_parse_int);
 CONFIG_PARSER_PROTOTYPE(config_parse_unsigned);
@@ -129,8 +129,8 @@ CONFIG_PARSER_PROTOTYPE(config_parse_double);
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_size);
 CONFIG_PARSER_PROTOTYPE(config_parse_si_uint64);
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64);
-#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64_infinity);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_bool);
 CONFIG_PARSER_PROTOTYPE(config_parse_id128);
 CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
