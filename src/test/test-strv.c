@@ -402,6 +402,7 @@ TEST(strv_split_full) {
         assert_se(streq_ptr(l[5], NULL));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(strv_split_and_extend_full) {
         _cleanup_strv_free_ char **l = NULL;
         const char *str1 = ":foo\\:bar:";
@@ -422,7 +423,6 @@ TEST(strv_split_and_extend_full) {
         assert_se(streq_ptr(l[5], NULL));
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(strv_split_colon_pairs) {
         _cleanup_strv_free_ char **l = NULL;
         const char *str = "one:two three four:five six seven:eight\\:nine ten\\:eleven\\\\",
