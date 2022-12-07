@@ -502,7 +502,6 @@ const char *mount_propagation_flags_to_string(unsigned long flags) {
         return NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
 
         if (isempty(name))
@@ -517,4 +516,3 @@ int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
                 return -EINVAL;
         return 0;
 }
-#endif // 0
