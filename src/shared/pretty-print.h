@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
-#if 0 /// UNNEEDED by elogind
 #include "glyph-util.h"
 #include "terminal-util.h"
 
+#if 0 /// UNNEEDED by elogind
 void print_separator(void);
 
 int file_url_from_path(const char *path, char **ret);
