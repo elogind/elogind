@@ -18,7 +18,6 @@
 #include "utf8.h"
 #include "xattr-util.h"
 
-#if 0 /// UNNEEDED by elogind
 bool image_name_is_valid(const char *s) {
         if (!filename_is_valid(s))
                 return false;
@@ -36,6 +35,7 @@ bool image_name_is_valid(const char *s) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 int path_is_extension_tree(const char *path, const char *extension) {
         int r;
 
