@@ -2,6 +2,7 @@
 
 #include "efivars-fundamental.h"
 
+#if 0 /// UNNEEDED by elogind
 static const sd_char * const table[_SECURE_BOOT_MAX] = {
         [SECURE_BOOT_UNSUPPORTED] = STR_C("unsupported"),
         [SECURE_BOOT_UNKNOWN]     = STR_C("unknown"),
@@ -11,7 +12,6 @@ static const sd_char * const table[_SECURE_BOOT_MAX] = {
         [SECURE_BOOT_USER]        = STR_C("user"),
 };
 
-#if 0 /// UNNEEDED by elogind
 const sd_char *secure_boot_mode_to_string(SecureBootMode m) {
         return (m >= 0 && m < _SECURE_BOOT_MAX) ? table[m] : NULL;
 }
