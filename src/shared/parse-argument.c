@@ -80,6 +80,7 @@ int parse_path_argument(const char *path, bool suppress_root, char **arg) {
 
         return free_and_replace(*arg, p);
 }
+#endif // 0
 
 int parse_signal_argument(const char *s, int *ret) {
         int r;
@@ -122,4 +123,3 @@ int parse_signal_argument(const char *s, int *ret) {
         *ret = r;
         return 1; /* work to do */
 }
-#endif // 0
