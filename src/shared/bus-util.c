@@ -34,6 +34,7 @@ static int name_owner_change_callback(sd_bus_message *m, void *userdata, sd_bus_
 
         return 1;
 }
+#endif // 0
 
 int bus_log_address_error(int r, BusTransport transport) {
         bool hint = transport == BUS_TRANSPORT_LOCAL && r == -ENOMEDIUM;
@@ -53,6 +54,7 @@ int bus_log_connect_error(int r, BusTransport transport) {
                                                 "Failed to connect to bus: %m");
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name) {
         const char *match;
         const char *unique;
