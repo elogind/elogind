@@ -9,11 +9,10 @@
 
 #include "alloc-util.h"
 #include "hostname-util.h"
-//#include "os-util.h"
+#include "os-util.h"
 #include "string-util.h"
 #include "strv.h"
 
-#if 0 /// UNNEEDED by elogind
 char* get_default_hostname(void) {
         int r;
 
@@ -73,7 +72,6 @@ int gethostname_full(GetHostnameFlags flags, char **ret) {
         *ret = TAKE_PTR(buf);
         return 0;
 }
-#endif // 0
 
 bool valid_ldh_char(char c) {
         /* "LDH" → "Letters, digits, hyphens", as per RFC 5890, Section 2.3.1 */
