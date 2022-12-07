@@ -837,16 +837,13 @@ endforeach
 
 ############################################################
 
-#if 0 /// UNNEEDED by elogind
-# fallback_hostname = get_option('fallback-hostname')
-# if fallback_hostname == '' or fallback_hostname[0] == '.' or fallback_hostname[0] == '-'
-#         error('Invalid fallback-hostname configuration')
-#         # A more extensive test is done in test-hostname-util. Let's catch
-#         # the most obvious errors here so we don't fail with an assert later.
-# endif
-# conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
-#
-#endif // 0
+fallback_hostname = get_option('fallback-hostname')
+if fallback_hostname == '' or fallback_hostname[0] == '.' or fallback_hostname[0] == '-'
+        error('Invalid fallback-hostname configuration')
+        # A more extensive test is done in test-hostname-util. Let's catch
+        # the most obvious errors here so we don't fail with an assert later.
+endif
+conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
 
 default_hierarchy = get_option('default-hierarchy')
 conf.set_quoted('DEFAULT_HIERARCHY_NAME', default_hierarchy,
@@ -4431,8 +4428,8 @@ summary({
         'support URL' :                     support_url,
         'nobody user name' :                nobody_user,
         'nobody group name' :               nobody_group,
+        'fallback hostname' :               get_option('fallback-hostname'),
 #if 0 /// UNNEEDED by elogind
-#         'fallback hostname' :               get_option('fallback-hostname'),
 #         'default DNSSEC mode' :             default_dnssec,
 #         'default DNS-over-TLS mode' :       default_dns_over_tls,
 #         'default mDNS mode' :               default_mdns,
