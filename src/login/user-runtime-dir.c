@@ -240,7 +240,7 @@ int user_runtime_dir(const char *verb, User *u) {
         else if (streq(verb, "stop"))
                 r = do_umount(u->runtime_path);
         else
-                assert_not_reached("Unknown verb!");
+                assert_not_reached();
 
         return r;
 #endif // 0
