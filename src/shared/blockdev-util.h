@@ -15,9 +15,9 @@
 
 int block_get_whole_disk(dev_t d, dev_t *ret);
 int block_get_originating(dev_t d, dev_t *ret);
+#endif // 0
 
 int get_block_device_fd(int fd, dev_t *ret);
-#endif // 0
 int get_block_device(const char *path, dev_t *dev);
 
 #if 0 /// UNNEEDED by elogind
