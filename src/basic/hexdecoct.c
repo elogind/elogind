@@ -518,6 +518,7 @@ int unbase32hexmem(const char *p, size_t l, bool padding, void **mem, size_t *_l
 
         return 0;
 }
+#endif // 0
 
 /* https://tools.ietf.org/html/rfc4648#section-4 */
 char base64char(int x) {
@@ -527,6 +528,7 @@ char base64char(int x) {
         return table[x & 63];
 }
 
+#if 0 /// UNNEEDED by elogind
 /* This is almost base64char(), but not entirely, as it uses the "url and filename safe" alphabet,
  * since we don't want "/" appear in interface names (since interfaces appear in sysfs as filenames).
  * See section #5 of RFC 4648. */
