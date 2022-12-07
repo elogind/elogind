@@ -432,7 +432,6 @@ int chase_symlinks_and_open(
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int chase_symlinks_and_opendir(
                 const char *path,
                 const char *root,
@@ -475,7 +474,6 @@ int chase_symlinks_and_opendir(
         *ret_dir = d;
         return 0;
 }
-#endif // 0
 
 int chase_symlinks_and_stat(
                 const char *path,
