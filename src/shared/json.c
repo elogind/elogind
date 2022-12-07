@@ -3490,6 +3490,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
                 }
+#endif // 0
 
                 case _JSON_BUILD_LITERAL: {
                         const char *l;
@@ -3522,7 +3523,6 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
                 }
-#endif // 0
 
                 case _JSON_BUILD_ARRAY_BEGIN:
 
