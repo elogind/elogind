@@ -282,6 +282,8 @@ basic_sources = files('''
         cgroup-util.c
         cap-list.c
         cap-list.h
+        chase-symlinks.c
+        chase-symlinks.h
         chattr-util.c
         chattr-util.h
         cgroup-util.h
@@ -376,6 +378,8 @@ basic_sources = files('''
         namespace-util.h
         nulstr-util.c
         nulstr-util.h
+        os-util.c
+        os-util.h
         parse-printf-format.c
         parse-printf-format.h
         parse-util.c
@@ -399,6 +403,8 @@ basic_sources = files('''
         ratelimit.c
         ratelimit.h
         raw-clone.h
+        recurse-dir.c
+        recurse-dir.h
         rlimit-util.c
         rlimit-util.h
         set.h
@@ -448,6 +454,8 @@ basic_sources = files('''
         util.h
         virt.c
         virt.h
+        xattr-util.c
+        xattr-util.h
 '''.split())
 #endif // 0
 
