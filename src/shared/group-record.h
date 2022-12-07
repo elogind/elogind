@@ -33,9 +33,7 @@ typedef struct GroupRecord {
 } GroupRecord;
 
 GroupRecord* group_record_new(void);
-#if 0 /// UNNEEDED in elogind
 GroupRecord* group_record_ref(GroupRecord *g);
-#endif // 0
 GroupRecord* group_record_unref(GroupRecord *g);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(GroupRecord*, group_record_unref);
