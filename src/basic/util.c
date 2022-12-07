@@ -118,7 +118,6 @@ void in_initrd_force(bool value) {
 }
 #endif // 0
 
-
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;
         const char *p;
