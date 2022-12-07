@@ -25,7 +25,9 @@ int fstatat_harder(int dfd,
                 RemoveFlags remove_flags);
 
 int rm_rf_children(int fd, RemoveFlags flags, const struct stat *root_dev);
+#if 0 /// UNNEEDED by elogind
 int rm_rf_child(int fd, const char *name, RemoveFlags flags);
+#endif // 0
 int rm_rf(const char *path, RemoveFlags flags);
 
 /* Useful for usage with _cleanup_(), destroys a directory and frees the pointer */
