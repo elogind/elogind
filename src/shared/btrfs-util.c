@@ -259,7 +259,6 @@ int btrfs_clone_range(int infd, uint64_t in_offset, int outfd, uint64_t out_offs
         return RET_NERRNO(ioctl(outfd, BTRFS_IOC_CLONE_RANGE, &args));
 }
 
-#if 0 /// UNNEEDED by elogind
 int btrfs_get_block_device_fd(int fd, dev_t *dev) {
         struct btrfs_ioctl_fs_info_args fsi = {};
         uint64_t id;
@@ -321,6 +320,7 @@ int btrfs_get_block_device_fd(int fd, dev_t *dev) {
         return -ENODEV;
 }
 
+#if 0 /// UNNEEDED by elogind
 int btrfs_get_block_device(const char *path, dev_t *dev) {
         _cleanup_close_ int fd = -1;
 
