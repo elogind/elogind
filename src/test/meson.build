@@ -153,9 +153,9 @@ tests += [
 
         [['src/test/test-utf8.c']],
 
-        [['src/test/test-kbd-util.c']],
-
 #if 0 /// UNNEEDED by elogind
+#         [['src/test/test-kbd-util.c']],
+#
 #         [['src/test/test-blockdev-util.c']],
 #endif // 0
 
@@ -290,11 +290,9 @@ tests += [
 
 #if 0 /// UNNEEDED in elogind
 #         [['src/test/test-sysctl-util.c']],
-#endif // 0
-
-        [['src/test/test-import-util.c']],
-
-#if 0 /// UNNEEDED in elogind
+#
+#         [['src/test/test-import-util.c']],
+#
 #         [['src/test/test-uid-alloc-range.c']],
 #endif // 0
 
