@@ -237,6 +237,7 @@ static int userdb_on_query_reply(
         }
 
         case LOOKUP_GROUP: {
+#if 0 /// Nowhere needed in elogind
                 _cleanup_(user_group_data_release) struct user_group_data group_data = {};
 
                 static const JsonDispatch dispatch_table[] = {
@@ -284,12 +285,14 @@ static int userdb_on_query_reply(
 
                 if (FLAGS_SET(flags, VARLINK_REPLY_CONTINUES))
                         return 0;
+#endif // 0
 
                 r = 0;
                 goto finish;
         }
 
         case LOOKUP_MEMBERSHIP: {
+#if 0 /// Nowhere needed in elogind
                 struct membership_data {
                         const char *user_name;
                         const char *group_name;
@@ -327,6 +330,7 @@ static int userdb_on_query_reply(
 
                 if (FLAGS_SET(flags, VARLINK_REPLY_CONTINUES))
                         return 0;
+#endif // 0
 
                 r = 0;
                 goto finish;
@@ -545,6 +549,7 @@ static int userdb_process(
                         return 0;
                 }
 
+#if 0 /// Never happens in elogind
                 if (iterator->what == LOOKUP_GROUP && iterator->found_group) {
                         if (ret_group_record)
                                 *ret_group_record = TAKE_PTR(iterator->found_group);
@@ -579,6 +584,7 @@ static int userdb_process(
 
                         return 0;
                 }
+#endif // 0
 
                 if (set_isempty(iterator->links)) {
                         if (iterator->error == 0)
