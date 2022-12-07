@@ -687,7 +687,6 @@ int config_parse_iec_uint64(
 
         return 0;
 }
-#endif // 0
 
 int config_parse_iec_uint64_infinity(
                 const char* unit,
@@ -713,6 +712,7 @@ int config_parse_iec_uint64_infinity(
 
         return config_parse_iec_uint64(unit, filename, line, section, section_line, lvalue, ltype, rvalue, data, userdata);
 }
+#endif // 0
 
 int config_parse_bool(
                 const char* unit,
