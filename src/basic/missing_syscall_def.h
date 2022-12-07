@@ -702,26 +702,20 @@ assert_cc(__NR_open_tree == systemd_NR_open_tree);
 
 #ifndef __IGNORE_openat2
 #  if defined(__aarch64__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__alpha__)
 #    define elogind_NR_openat2 547
 #  elif defined(__arc__) || defined(__tilegx__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__arm__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__i386__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__ia64__)
 #    define elogind_NR_openat2 1461
 #  elif defined(__loongarch64)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__m68k__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
@@ -734,23 +728,18 @@ assert_cc(__NR_open_tree == systemd_NR_open_tree);
 #      error "Unknown MIPS ABI"
 #    endif
 #  elif defined(__powerpc__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_openat2 437
 #      define systemd_NR_openat2 437
 #    elif __riscv_xlen == 64
-#      define elogind_NR_openat2 437
 #      define systemd_NR_openat2 437
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
 #  elif defined(__s390__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__sparc__)
-#    define elogind_NR_openat2 437
 #    define systemd_NR_openat2 437
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
