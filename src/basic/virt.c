@@ -876,6 +876,7 @@ int running_in_chroot(void) {
         return r == 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 #if defined(__i386__) || defined(__x86_64__)
 struct cpuid_table_entry {
         uint32_t flag_bit;
@@ -960,7 +961,6 @@ static bool given_flag_in_set(const char *flag, const struct cpuid_table_entry *
         return false;
 }
 
-#if 0 /// UNNEEDED by elogind
 static bool real_has_cpu_with_flag(const char *flag) {
         uint32_t eax, ebx, ecx, edx;
 
@@ -991,10 +991,8 @@ static bool real_has_cpu_with_flag(const char *flag) {
 
         return false;
 }
-#endif // 0
 #endif
 
-#if 0 /// UNNEEDED by elogind
 bool has_cpu_with_flag(const char *flag) {
         /* CPUID is an x86 specific interface. Assume on all others that no CPUs have those flags. */
 #if defined(__i386__) || defined(__x86_64__)
@@ -1003,7 +1001,6 @@ bool has_cpu_with_flag(const char *flag) {
         return false;
 #endif
 }
-#endif // 0
 
 static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_NONE] = "none",
@@ -1038,3 +1035,4 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(virtualization, int);
+#endif // 0
