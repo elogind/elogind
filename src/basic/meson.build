@@ -310,6 +310,8 @@ basic_sources = files('''
         fd-util.h
         fileio.c
         fileio.h
+        filesystems.c
+        filesystems.h
         format-util.c
         format-util.h
         fs-util.c
@@ -328,6 +330,8 @@ basic_sources = files('''
         hmac.h
         hostname-util.c
         hostname-util.h
+        inotify-util.c
+        inotify-util.h
         io-util.c
         io-util.h
         linux/btrfs.h
@@ -341,6 +345,7 @@ basic_sources = files('''
         locale-util.h
         log.c
         log.h
+        login-util.c
         login-util.h
         macro.h
         memfd-util.c
@@ -432,6 +437,8 @@ basic_sources = files('''
         strv.h
         strxcpyx.c
         strxcpyx.h
+        sync-util.c
+        sync-util.h
         syslog-util.c
         syslog-util.h
         terminal-util.c
