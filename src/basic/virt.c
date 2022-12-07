@@ -1001,6 +1001,7 @@ bool has_cpu_with_flag(const char *flag) {
         return false;
 #endif
 }
+#endif // 0
 
 static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_NONE] = "none",
@@ -1035,4 +1036,3 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(virtualization, int);
-#endif // 0
