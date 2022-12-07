@@ -38,13 +38,13 @@ TEST(unbase32hexchar) {
         assert_se(unbase32hexchar('V') == 31);
         assert_se(unbase32hexchar('=') == -EINVAL);
 }
+#endif // 0
 
 TEST(base64char) {
         assert_se(base64char(0) == 'A');
         assert_se(base64char(26) == 'a');
         assert_se(base64char(63) == '/');
 }
-#endif // 0
 
 TEST(unbase64char) {
         assert_se(unbase64char('A') == 0);
