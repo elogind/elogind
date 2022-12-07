@@ -1,8 +1,5 @@
-#ifndef ELOGIND_SRC_SHARED_SLEEP_CONFIG_H_INCLUDED
-#define ELOGIND_SRC_SHARED_SLEEP_CONFIG_H_INCLUDED 1
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
-
 
 #include <linux/fiemap.h>
 #include "time-util.h"
@@ -72,5 +69,3 @@ int can_sleep(Manager *m, SleepOperation s);
 
 const char* sleep_operation_to_string(SleepOperation s) _const_;
 SleepOperation sleep_operation_from_string(const char *s) _pure_;
-
-#endif // ELOGIND_SRC_SHARED_SLEEP_CONFIG_H_INCLUDED

@@ -33,9 +33,10 @@
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
-#include "strv.h"
-#include "unit-name.h"
+//#include "strv.h"
+//#include "unit-name.h"
 #include "user-util.h"
+//#include "xattr-util.h"
 /// Additional includes needed by elogind
 #include "env-file.h"
 
@@ -1148,6 +1149,8 @@ int cg_path_decode_unit(const char *cgroup, char **unit) {
         c = strndupa_safe(cgroup, n);
         c = cg_unescape(c);
 
+        if (!unit_name_is_valid(c, UNIT_NAME_PLAIN|UNIT_NAME_INSTANCE))
+                return -ENXIO;
 
         s = strdup(c);
         if (!s)

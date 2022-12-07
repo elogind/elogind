@@ -204,10 +204,12 @@ int group_record_load(
 
                 /* Not defined for now, for groups, but let's at least generate sensible errors about it */
                 { "secret",         JSON_VARIANT_OBJECT,   json_dispatch_unsupported,      0,                                       0         },
+
                 /* Ignore the perMachine, binding and status stuff here, and process it later, so that it overrides whatever is set above */
                 { "perMachine",     JSON_VARIANT_ARRAY,    NULL,                           0,                                       0         },
                 { "binding",        JSON_VARIANT_OBJECT,   NULL,                           0,                                       0         },
                 { "status",         JSON_VARIANT_OBJECT,   NULL,                           0,                                       0         },
+
                 /* Ignore 'signature', we check it with explicit accessors instead */
                 { "signature",      JSON_VARIANT_ARRAY,    NULL,                           0,                                       0          },
                 {},

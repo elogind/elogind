@@ -7,7 +7,6 @@
 #include "strv.h"
 #include "tests.h"
 
-
 TEST(str_in_set) {
         assert_se(STR_IN_SET("x", "x", "y", "z"));
         assert_se(!STR_IN_SET("X", "x", "y", "z"));
@@ -967,6 +966,5 @@ TEST(strv_fnmatch) {
         assert_se(pos == 1);
 }
 #endif // 0
-
 
 DEFINE_TEST_MAIN(LOG_INFO);

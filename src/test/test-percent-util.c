@@ -202,5 +202,4 @@ TEST(scale) {
         }
 }
 
-
 DEFINE_TEST_MAIN(LOG_DEBUG);

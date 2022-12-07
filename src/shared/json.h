@@ -205,6 +205,7 @@ int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l);
 
 int json_variant_append_array(JsonVariant **v, JsonVariant *element);
 #endif // 0
+
 int json_variant_merge(JsonVariant **v, JsonVariant *m);
 
 #if 0 /// UNNEEDED by elogind

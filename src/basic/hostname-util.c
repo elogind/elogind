@@ -61,7 +61,6 @@ int gethostname_full(GetHostnameFlags flags, char **ret) {
                         return -ENXIO;
         }
 
-
         if (FLAGS_SET(flags, GET_HOSTNAME_SHORT))
                 buf = strndup(s, strcspn(s, "."));
         else

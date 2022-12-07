@@ -487,5 +487,4 @@ TEST(mangle_gecos) {
         test_mangle_gecos_one("\xe2\x28\xa1", " ( ");
 }
 
-
 DEFINE_TEST_MAIN(LOG_INFO);

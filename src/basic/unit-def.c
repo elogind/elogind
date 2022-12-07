@@ -16,7 +16,7 @@ char *unit_dbus_path_from_name(const char *name) {
         if (!e)
                 return NULL;
 
-        return strjoin("/org/freedesktop/elogind1/unit/", e);
+        return strjoin("/org/freedesktop/systemd1/unit/", e);
 }
 
 int unit_name_from_dbus_path(const char *path, char **name) {

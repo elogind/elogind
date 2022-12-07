@@ -54,10 +54,10 @@ const BusLocator* const bus_resolve_mgr = &(BusLocator){
         .interface = "org.freedesktop.resolve1.Manager"
 };
 
-const BusLocator* const bus_elogind_mgr = &(BusLocator){
-        .destination = "org.freedesktop.elogind1",
-        .path = "/org/freedesktop/elogind1",
-        .interface = "org.freedesktop.elogind1.Manager"
+const BusLocator* const bus_systemd_mgr = &(BusLocator){
+        .destination = "org.freedesktop.systemd1",
+        .path = "/org/freedesktop/systemd1",
+        .interface = "org.freedesktop.systemd1.Manager"
 };
 
 const BusLocator* const bus_timedate = &(BusLocator){

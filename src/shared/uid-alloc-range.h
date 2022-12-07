@@ -19,6 +19,7 @@ static inline bool gid_is_dynamic(gid_t gid) {
 static inline bool uid_is_container(uid_t uid) {
         return CONTAINER_UID_BASE_MIN <= uid && uid <= CONTAINER_UID_BASE_MAX;
 }
+
 static inline bool gid_is_container(gid_t gid) {
         return uid_is_container((uid_t) gid);
 }

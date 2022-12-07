@@ -5,7 +5,6 @@
 #include "smack-util.h"
 #include "user-util.h"
 
-
 int mkdirat_label(int dirfd, const char *path, mode_t mode) {
         int r;
 

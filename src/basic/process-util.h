@@ -144,8 +144,6 @@ static inline bool pid_is_valid(pid_t p) {
         return p > 0;
 }
 
-
-
 pid_t getpid_cached(void);
 void reset_cached_pid(void);
 

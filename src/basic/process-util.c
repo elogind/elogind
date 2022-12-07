@@ -1172,7 +1172,6 @@ int pid_compare_func(const pid_t *a, const pid_t *b) {
 }
 #endif // 0
 
-
 /* The cached PID, possible values:
  *
  *     == UNSET [0]  → cache not initialized yet
@@ -1658,6 +1657,7 @@ _noreturn_ void freeze(void) {
         for (;;)
                 pause();
 }
+
 
 #if 0 /// UNNEEDED by elogind
 static const char *const sigchld_code_table[] = {

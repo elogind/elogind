@@ -86,7 +86,6 @@ enum {
         ACQUIRE_NO_REGULAR  = 1 << 4,
 };
 
-
 int fd_move_above_stdio(int fd);
 
 int rearrange_stdio(int original_input_fd, int original_output_fd, int original_error_fd);

@@ -20,7 +20,7 @@ extern const BusLocator* const bus_machine_mgr;
 extern const BusLocator* const bus_network_mgr;
 extern const BusLocator* const bus_portable_mgr;
 extern const BusLocator* const bus_resolve_mgr;
-extern const BusLocator* const bus_elogind_mgr;
+extern const BusLocator* const bus_systemd_mgr;
 extern const BusLocator* const bus_timedate;
 #endif // 0
 

@@ -327,5 +327,4 @@ TEST(copy_proc) {
 }
 #endif // 0
 
-
 DEFINE_TEST_MAIN(LOG_DEBUG);

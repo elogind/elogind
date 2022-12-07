@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "sd-daemon.h"
+
 #include "macro.h"
 #include "util.h"
 
