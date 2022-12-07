@@ -242,9 +242,7 @@ int manager_handle_action(
                                        inhibit_what_to_string(m->delayed_action->inhibit_what),
                                        handle_action_to_string(handle));
 
-
 /// elogind empty mask removed (elogind uses its own variant, which can use the handle directly.)
-
         inhibit_operation = handle_action_lookup(handle)->inhibit_what;
 
         /* If the actual operation is inhibited, warn and fail */
