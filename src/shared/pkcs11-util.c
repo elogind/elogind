@@ -1184,7 +1184,6 @@ int pkcs11_find_token_auto(char **ret) {
                                "PKCS#11 tokens not supported on this build.");
 #endif
 }
-#endif // 0
 
 #if HAVE_P11KIT
 void pkcs11_crypt_device_callback_data_release(pkcs11_crypt_device_callback_data *data) {
@@ -1253,3 +1252,4 @@ int pkcs11_crypt_device_callback(
         return 0;
 }
 #endif
+#endif // 0
