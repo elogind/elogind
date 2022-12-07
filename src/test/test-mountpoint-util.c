@@ -19,7 +19,6 @@
 #include "virt.h"
 #include "tmpfile-util.h"
 
-#if 0 /// UNNEEDED by elogind
 static void test_mount_propagation_flags_one(const char *name, int ret, unsigned long expected) {
         long unsigned flags;
 
@@ -39,7 +38,6 @@ static void test_mount_propagation_flags_one(const char *name, int ret, unsigned
                         assert_se(streq(c, name));
         }
 }
-#endif // 0
 
 TEST(mount_propagation_flags) {
         test_mount_propagation_flags_one("shared", 0, MS_SHARED);

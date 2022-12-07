@@ -272,12 +272,10 @@ TEST(build) {
         _cleanup_free_ char *s = NULL, *t = NULL;
 
         assert_se(json_build(&a, JSON_BUILD_STRING("hallo")) >= 0);
-#if 0 /// UNNEEDED by elogind
         assert_se(json_build(&b, JSON_BUILD_LITERAL(" \"hallo\"   ")) >= 0);
         assert_se(json_variant_equal(a, b));
 
         b = json_variant_unref(b);
-#endif // 0
 
         assert_se(json_build(&b, JSON_BUILD_VARIANT(a)) >= 0);
         assert_se(json_variant_equal(a, b));
@@ -520,6 +518,7 @@ TEST(bisect) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_float_match(JsonVariant *v) {
         const double delta = 0.0001;
 
@@ -543,7 +542,6 @@ static void test_float_match(JsonVariant *v) {
                   json_variant_integer(json_variant_by_index(v, 8)) == -10);
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(float) {
         _cleanup_(json_variant_unrefp) JsonVariant *v = NULL, *w = NULL;
         _cleanup_free_ char *text = NULL;

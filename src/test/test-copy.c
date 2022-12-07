@@ -282,7 +282,6 @@ static void test_copy_bytes_regular_file_one(const char *src, bool try_reflink, 
         unlink(fn3);
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(copy_bytes_regular_file) {
         test_copy_bytes_regular_file_one(saved_argv[0], false, UINT64_MAX);
         test_copy_bytes_regular_file_one(saved_argv[0], true, UINT64_MAX);
@@ -292,6 +291,7 @@ TEST(copy_bytes_regular_file) {
         test_copy_bytes_regular_file_one(saved_argv[0], true, 32000);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(copy_atomic) {
         _cleanup_(rm_rf_physical_and_freep) char *p = NULL;
         const char *q;

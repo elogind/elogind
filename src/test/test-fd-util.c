@@ -16,7 +16,7 @@
 #include "process-util.h"
 #include "random-util.h"
 #include "rlimit-util.h"
-#include "seccomp-util.h"
+//#include "seccomp-util.h"
 #include "serialize.h"
 #include "string-util.h"
 #include "tests.h"
@@ -161,7 +161,9 @@ TEST(rearrange_stdio) {
                         assert_se(fd_move_above_stdio(0) == 3);
                 }
                 assert_se(open("/dev/full", O_WRONLY|O_CLOEXEC) == 0);
+#if 0 /// seccomptools are not needed by elogind
                 assert_se(acquire_data_fd("foobar", 6, 0) == 2);
+#endif // 0
 
                 assert_se(rearrange_stdio(2, 0, 1) >= 0);
 
@@ -350,10 +352,12 @@ TEST(close_all_fds) {
         }
         assert_se(r >= 0);
 
+#if 0 /// seccomptools are not needed by elogind
         if (!is_seccomp_available()) {
                 log_notice("Seccomp not available, skipping seccomp tests in %s", __func__);
                 return;
         }
+#endif // 0
 
         r = safe_fork("(caf-seccomp)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_LOG|FORK_WAIT, NULL);
         if (r == 0) {

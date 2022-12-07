@@ -10,10 +10,12 @@
 #include "tests.h"
 
 int main(int argc, char *argv[]) {
-#if 0 /// elogind only needs v
+#if 0 /// elogind only needs pid_max
         nsec_t nsec;
-#endif // 0
         uint64_t v, pid_max, threads_max, limit;
+#else // 0
+        uint64_t pid_max;
+#endif // 0
         int r;
 
         log_parse_environment();

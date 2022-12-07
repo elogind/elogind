@@ -348,7 +348,6 @@ static void test_get_user_creds_one(const char *id, const char *name, uid_t uid,
         assert_se(path_equal(rshell, shell));
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(get_user_creds) {
         test_get_user_creds_one("root", "root", 0, 0, "/root", "/bin/sh");
         test_get_user_creds_one("0", "root", 0, 0, "/root", "/bin/sh");
@@ -356,6 +355,7 @@ TEST(get_user_creds) {
         test_get_user_creds_one("65534", NOBODY_USER_NAME, UID_NOBODY, GID_NOBODY, "/", NOLOGIN);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_get_group_creds_one(const char *id, const char *name, gid_t gid) {
         gid_t rgid = GID_INVALID;
         int r;

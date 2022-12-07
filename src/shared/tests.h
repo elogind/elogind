@@ -4,11 +4,10 @@
 #include <stdbool.h>
 
 #include "sd-daemon.h"
-
-#if 0 /// UNNEEDED by elogind
 #include "macro.h"
 #include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 static inline bool manager_errno_skip_test(int r) {
         return IN_SET(abs(r),
                       EPERM,

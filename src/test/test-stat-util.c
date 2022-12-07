@@ -213,6 +213,7 @@ TEST(device_path_make_canonical) {
 #endif // 0
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(dir_is_empty) {
         _cleanup_(rm_rf_physical_and_freep) char *empty_dir = NULL;
         _cleanup_free_ char *j = NULL, *jj = NULL;
@@ -239,7 +240,6 @@ TEST(dir_is_empty) {
         assert_se(unlink(jj) >= 0);
         assert_se(dir_is_empty_at(AT_FDCWD, empty_dir) > 0);
 }
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0
+
 DEFINE_CUSTOM_TEST_MAIN(LOG_INFO, log_show_color(true), /* no outro */);

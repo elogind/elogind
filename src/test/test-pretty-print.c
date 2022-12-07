@@ -8,7 +8,7 @@
 #include "alloc-util.h"
 #include "macro.h"
 #include "pretty-print.h"
-#include "strv.h"
+//#include "strv.h"
 #include "tests.h"
 
 TEST(terminal_urlify) {
@@ -55,8 +55,7 @@ TEST(red_green_cross_check_mark) {
 #if 0 /// UNNEEDED by elogind
 TEST(print_separator) {
         print_separator();
-#endif // 0
-
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);

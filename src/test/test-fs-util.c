@@ -858,7 +858,6 @@ TEST(conservative_rename) {
         assert_se(conservative_renameat(AT_FDCWD, q, AT_FDCWD, p) > 0);
         assert_se(access(q, F_OK) < 0 && errno == ENOENT);
 }
-#endif // 0
 
 static void test_rmdir_parents_one(
                 const char *prefix,
@@ -912,7 +911,6 @@ TEST(rmdir_parents) {
         assert_se(rm_rf(temp, REMOVE_ROOT|REMOVE_PHYSICAL) >= 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 static void test_parse_cifs_service_one(const char *f, const char *h, const char *s, const char *d, int ret) {
         _cleanup_free_ char *a = NULL, *b = NULL, *c = NULL;
 
