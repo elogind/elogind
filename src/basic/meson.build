@@ -264,6 +264,8 @@
 basic_sources = files('''
         MurmurHash2.c
         MurmurHash2.h
+        af-list.c
+        af-list.h
         alloc-util.c
         alloc-util.h
         architecture.h
@@ -592,15 +594,17 @@ run_target(
 
 ############################################################
 
-filesystem_includes = ['linux/magic.h',
-                       'linux/gfs2_ondisk.h']
-
-check_filesystems = find_program('check-filesystems.sh')
-r = run_command([check_filesystems, cpp, 'filesystems-gperf.gperf'] + filesystem_includes)
-if r.returncode() != 0
-        error('found unknown filesystem(s) defined in kernel headers:\n\n' + r.stdout())
-        r.stdout()
-endif
+#if 0 /// For elogind it is irrelevant whether all filesystems are listed in filesystems-gperf.gperf or not
+# filesystem_includes = ['linux/magic.h',
+#                        'linux/gfs2_ondisk.h']
+#
+# check_filesystems = find_program('check-filesystems.sh')
+# r = run_command([check_filesystems, cpp, 'filesystems-gperf.gperf'] + filesystem_includes)
+# if r.returncode() != 0
+#         error('found unknown filesystem(s) defined in kernel headers:\n\n' + r.stdout())
+#         r.stdout()
+# endif
+#endif // 0
 
 filesystems_gperf_h = custom_target(
         'filesystems-gperf.h',
