@@ -592,10 +592,10 @@ void mmap_cache_fd_free(MMapFileDescriptor *f) {
 
         free(f);
 }
-#endif // 0
 
 MMapCache* mmap_cache_fd_cache(MMapFileDescriptor *f) {
         assert(f);
 
         return f->cache;
 }
+#endif // 0
