@@ -242,21 +242,6 @@ testsdir = join_paths(prefixdir, 'lib/elogind/tests')
 randomseeddir = join_paths(localstatedir, 'lib/elogind')
 #endif // 0
 
-dbuspolicydir = get_option('dbuspolicydir')
-if dbuspolicydir == ''
-        dbuspolicydir = datadir / 'dbus-1/system.d'
-endif
-
-dbussessionservicedir = get_option('dbussessionservicedir')
-if dbussessionservicedir == ''
-        dbussessionservicedir = datadir / 'dbus-1/services'
-endif
-
-dbussystemservicedir = get_option('dbussystemservicedir')
-if dbussystemservicedir == ''
-        dbussystemservicedir = datadir / 'dbus-1/system-services'
-endif
-
 #if 1 /// Will elogind find system_bus_socket in /run/dbus or /var/run/dbus ?
 varrunissymllink = run_command('test', '-L', '/var/run').returncode() == 0
 message('Setting VARRUN_IS_SYMLINK to: @0@'.format(varrunissymllink))
@@ -1710,6 +1695,59 @@ else
 endif
 conf.set10('HAVE_DBUS', have)
 
+dbusdatadir = datadir / 'dbus-1'
+if conf.get('HAVE_DBUS') == 1
+        dbusdatadir = libdbus.get_variable(pkgconfig: 'datadir', default_value: datadir) / 'dbus-1'
+endif
+
+dbuspolicydir = get_option('dbuspolicydir')
+if dbuspolicydir == ''
+        dbuspolicydir = dbusdatadir / 'system.d'
+endif
+
+dbussessionservicedir = get_option('dbussessionservicedir')
+if dbussessionservicedir == ''
+        dbussessionservicedir = dbusdatadir / 'services'
+        if conf.get('HAVE_DBUS') == 1
+                dbussessionservicedir = libdbus.get_variable(pkgconfig: 'session_bus_services_dir', default_value: dbussessionservicedir)
+        endif
+endif
+
+dbussystemservicedir = get_option('dbussystemservicedir')
+if dbussystemservicedir == ''
+        dbussystemservicedir = dbusdatadir / 'system-services'
+        if conf.get('HAVE_DBUS') == 1
+                dbussystemservicedir = libdbus.get_variable(pkgconfig: 'system_bus_services_dir', default_value: dbussystemservicedir)
+        endif
+endif
+
+dbus_interfaces_dir = get_option('dbus-interfaces-dir')
+if dbus_interfaces_dir == '' or dbus_interfaces_dir == 'yes'
+        if meson.is_cross_build() and dbus_interfaces_dir != 'yes'
+                dbus_interfaces_dir = 'no'
+                warning('Exporting D-Bus interface XML files is disabled during cross build. Pass path or "yes" to force enable.')
+        else
+                dbus_interfaces_dir = dbusdatadir / 'interfaces'
+                if conf.get('HAVE_DBUS') == 1
+                        dbus_interfaces_dir = libdbus.get_variable(pkgconfig: 'interfaces_dir', default_value: dbus_interfaces_dir)
+                endif
+        endif
+endif
+if dbus_interfaces_dir == dbusdatadir / 'interfaces' or dbus_interfaces_dir == 'no'
+        dbus_interfaces_dir_name = 'interfaces'
+        dbus_interfaces_dir_parent = dbusdatadir
+else
+        elements = dbus_interfaces_dir.split('/')
+        dbus_interfaces_dir_name = elements[-1]
+        dbus_interfaces_dir_parent = '/'
+        foreach elem : elements
+                if elem == dbus_interfaces_dir_name and dbus_interfaces_dir == dbus_interfaces_dir_parent / dbus_interfaces_dir_name
+                        break
+                endif
+                dbus_interfaces_dir_parent = dbus_interfaces_dir_parent / elem
+        endforeach
+endif
+
 #if 0 /// UNNEEDED by elogind
 # # We support one or the other. If gcrypt is available, we assume it's there to
 # # be used, and use it in preference.
@@ -2010,20 +2048,6 @@ public_programs = []
 
 # D-Bus introspection XML export
 dbus_programs = []
-dbus_interfaces_dir = get_option('dbus-interfaces-dir')
-if dbus_interfaces_dir == ''
-        if not meson.is_cross_build()
-                dbus_interfaces_dir = datadir / 'dbus-1'
-        else
-                message('D-Bus interfaces export is disabled during cross build. Pass path or yes to force enable.')
-                dbus_interfaces_dir = 'no'
-        endif
-elif dbus_interfaces_dir == 'yes'
-        dbus_interfaces_dir = datadir / 'dbus-1'
-endif
-
-#if 0 /// elogind does not fuzz
-#endif // 0
 
 basic_includes = include_directories(
         'src/basic',
@@ -4367,9 +4391,9 @@ alias_target('update-man-rules', update_man_rules)
 #if 0 /// elogind is not (and never will be) PID 1
 # custom_target(
 #         'export-dbus-interfaces',
-#         output : 'interfaces',
+#         output : dbus_interfaces_dir_name,
 #         install : dbus_interfaces_dir != 'no',
-#         install_dir : dbus_interfaces_dir,
+#         install_dir : dbus_interfaces_dir_parent,
 #         command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
 #
 # ############################################################
