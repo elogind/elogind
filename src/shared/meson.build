@@ -412,6 +412,8 @@ shared_sources = '''
         pretty-print.h
         reboot-util.c
         reboot-util.h
+        rm-rf.c
+        rm-rf.h
         selinux-util.c
         selinux-util.h
         serialize.c
