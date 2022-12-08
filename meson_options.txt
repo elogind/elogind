@@ -223,9 +223,9 @@ option('dbussessionservicedir', type : 'string',
        description : 'D-Bus session service directory')
 option('dbussystemservicedir', type : 'string',
        description : 'D-Bus system service directory')
+option('dbus-interfaces-dir', type : 'string',
+       description : 'export D-Bus introspection XML as standalone files')
 #if 0 /// UNNEEDED by elogind
-# option('dbus-interfaces-dir', type : 'string',
-#        description : 'export D-Bus introspection XML as standalone files')
 # option('pkgconfigdatadir', type : 'string', value : '',
 #        description : 'directory for arch-independent pkg-config files')
 #endif // 0
