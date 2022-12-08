@@ -126,11 +126,11 @@ _public_ int sd_id128_get_machine(sd_id128_t *ret) {
         assert_return(ret, -EINVAL);
 
         if (sd_id128_is_null(saved_machine_id)) {
-                r = id128_read("/etc/machine-id", ID128_PLAIN, &saved_machine_id);
 #if 1 /// elogind supports setups, where the machine-id is in the dbus default path
                 if (r < 0)
                         r = id128_read("/var/lib/dbus/machine-id", ID128_PLAIN, &saved_machine_id);
 #endif // 1
+                r = id128_read("/etc/machine-id", ID128_FORMAT_PLAIN, &saved_machine_id);
                 if (r < 0)
                         return r;
 
@@ -149,7 +149,7 @@ _public_ int sd_id128_get_boot(sd_id128_t *ret) {
         assert_return(ret, -EINVAL);
 
         if (sd_id128_is_null(saved_boot_id)) {
-                r = id128_read("/proc/sys/kernel/random/boot_id", ID128_UUID, &saved_boot_id);
+                r = id128_read("/proc/sys/kernel/random/boot_id", ID128_FORMAT_UUID, &saved_boot_id);
                 if (r < 0)
                         return r;
         }
