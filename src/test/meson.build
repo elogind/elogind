@@ -61,12 +61,6 @@ tests += [
 #           libblkid],
 #          core_includes],
 #
-#         [files('test-manager.c'),
-#          [libcore,
-#           libshared],
-#          [],
-#          core_includes],
-#
 #         [files('test-emergency-action.c'),
 #          [libcore,
 #           libshared],
