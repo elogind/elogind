@@ -83,6 +83,13 @@ char* path_extend_internal(char **x, ...);
 
 char* path_simplify(char *path);
 
+enum {
+        PATH_CHECK_FATAL    = 1 << 0,  /* If not set, then error message is appended with 'ignoring'. */
+        PATH_CHECK_ABSOLUTE = 1 << 1,
+        PATH_CHECK_RELATIVE = 1 << 2,
+};
+
+int path_simplify_and_warn(char *path, unsigned flag, const char *unit, const char *filename, unsigned line, const char *lvalue);
 
 /// elogind empty mask removed (UNNEEDED by elogind)
 static inline bool path_equal_ptr(const char *a, const char *b) {
@@ -190,6 +197,7 @@ bool valid_device_allow_pattern(const char *path);
 
 #endif // 0
 int elogind_installation_has_version(const char *root, unsigned minimal_version);
+
 bool dot_or_dot_dot(const char *path);
 
 static inline const char *skip_dev_prefix(const char *p) {
