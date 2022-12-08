@@ -61,12 +61,6 @@ tests += [
 #           libblkid],
 #          core_includes],
 #
-#         [files('test-manager.c'),
-#          [libcore,
-#           libshared],
-#          [],
-#          core_includes],
-#
 #         [files('test-emergency-action.c'),
 #          [libcore,
 #           libshared],
@@ -182,8 +176,6 @@ tests += [
 
         [files('test-recurse-dir.c')],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
         [files('test-data-fd-util.c')],
 
         [files('test-static-destruct.c')],
@@ -207,8 +199,6 @@ tests += [
 
         [files('test-format-util.c')],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
         [files('test-ratelimit.c')],
 
         [files('test-util.c')],
@@ -248,8 +238,6 @@ tests += [
 
         [files('test-fs-util.c')],
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         [files('test-install-file.c')],
 
         [files('test-umask-util.c')],
@@ -289,10 +277,8 @@ tests += [
 
         [files('test-parse-argument.c')],
 
-        [files('test-parse-socket-bind-item.c')],
+        [files('test-parse-helpers.c')],
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         [files('test-parse-util.c')],
 
         [files('test-sysctl-util.c')],
@@ -307,8 +293,6 @@ tests += [
 
         [files('test-hostname-setup.c')],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
         [files('test-hostname-util.c')],
 
         [files('test-process-util.c')],
@@ -443,8 +427,6 @@ tests += [
 
         [files('test-set.c')],
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
         [files('test-ordered-set.c')],
 
         [files('test-set-disable-mempool.c'),
@@ -699,8 +681,6 @@ tests += [
 #endif // 0
         [files('test-bus-util.c')],
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         [files('test-percent-util.c')],
 
         [files('test-sd-hwdb.c')],
