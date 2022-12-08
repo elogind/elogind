@@ -413,8 +413,10 @@ option('selinux', type : 'combo', choices : ['auto', 'true', 'false'],
 #endif // 0
 option('smack', type : 'boolean',
        description : 'SMACK support')
-option('smack-run-label', type : 'string',
-       description : 'run systemd --system itself with a specific SMACK label')
+#if 0 /// UNNEEDED by elogind
+# option('smack-run-label', type : 'string',
+#        description : 'run systemd --system itself with a specific SMACK label')
+#endif // 0
 option('polkit', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'polkit support')
 option('ima', type : 'boolean',
