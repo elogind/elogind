@@ -1321,11 +1321,15 @@ libapparmor = []
 #endif // 0
 conf.set10('HAVE_APPARMOR', have)
 
-have = get_option('smack') and get_option('smack-run-label') != ''
-conf.set10('HAVE_SMACK_RUN_LABEL', have)
-if have
-        conf.set_quoted('SMACK_RUN_LABEL', get_option('smack-run-label'))
-endif
+#if 0 /// UNNEEDED by elogind
+# have = get_option('smack') and get_option('smack-run-label') != ''
+# conf.set10('HAVE_SMACK_RUN_LABEL', have)
+# if have
+#         conf.set_quoted('SMACK_RUN_LABEL', get_option('smack-run-label'))
+# endif
+#else // 0
+conf.set10('HAVE_SMACK_RUN_LABEL', false)
+#endif // 0
 
 want_polkit = get_option('polkit')
 install_polkit = false
