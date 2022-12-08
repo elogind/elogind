@@ -112,7 +112,7 @@ int id128_read(const char *p, Id128FormatFlag f, sd_id128_t *ret) {
         return id128_read_fd(fd, f, ret);
 }
 
-int id128_write_fd(int fd, Id128FormatFlag f, sd_id128_t id, bool do_sync) {
+int id128_write_fd(int fd, Id128FormatFlag f, sd_id128_t id) {
         char buffer[SD_ID128_UUID_STRING_MAX + 1]; /* +1 is for trailing newline */
         size_t sz;
         int r;
@@ -133,7 +133,7 @@ int id128_write_fd(int fd, Id128FormatFlag f, sd_id128_t id, bool do_sync) {
         if (r < 0)
                 return r;
 
-        if (do_sync) {
+        if (FLAGS_SET(f, ID128_SYNC_ON_WRITE)) {
                 r = fsync_full(fd);
                 if (r < 0)
                         return r;
@@ -143,14 +143,14 @@ int id128_write_fd(int fd, Id128FormatFlag f, sd_id128_t id, bool do_sync) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int id128_write(const char *p, Id128FormatFlag f, sd_id128_t id, bool do_sync) {
+int id128_write(const char *p, Id128FormatFlag f, sd_id128_t id) {
         _cleanup_close_ int fd = -1;
 
         fd = open(p, O_WRONLY|O_CREAT|O_CLOEXEC|O_NOCTTY|O_TRUNC, 0444);
         if (fd < 0)
                 return -errno;
 
-        return id128_write_fd(fd, f, id, do_sync);
+        return id128_write_fd(fd, f, id);
 }
 #endif // 0
 
