@@ -652,9 +652,11 @@ static int enumerator_add_parent_devices(
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_enumerator_add_parent_devices(sd_device_enumerator *enumerator, sd_device *device) {
         return enumerator_add_parent_devices(enumerator, device, /* ignore_parent_match = */ true);
 }
+#endif // 0
 
 static bool relevant_sysfs_subdir(const struct dirent *de) {
         assert(de);
