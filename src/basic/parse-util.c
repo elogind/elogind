@@ -707,7 +707,6 @@ int parse_ip_prefix_length(const char *s, int *ret) {
 }
 #endif // 0
 
-
 #if 0 /// UNNEEDED by elogind
 int parse_oom_score_adjust(const char *s, int *ret) {
         int r, v;
