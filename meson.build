@@ -257,7 +257,7 @@ randomseeddir = join_paths(localstatedir, 'lib/elogind')
 #endif // 0
 
 #if 1 /// Will elogind find system_bus_socket in /run/dbus or /var/run/dbus ?
-varrunissymllink = run_command('test', '-L', '/var/run').returncode() == 0
+varrunissymllink = run_command('test', '-L', '/var/run', check : false).returncode() == 0
 message('Setting VARRUN_IS_SYMLINK to: @0@'.format(varrunissymllink))
 conf.set10('VARRUN_IS_SYMLINK', varrunissymllink)
 #endif // 1
@@ -928,7 +928,7 @@ endif
 get_cg_ctrl_sh = find_program('tools/meson-get-cg-controller.sh')
 with_cgroupctrl = get_option('cgroup-controller')
 if with_cgroupctrl == '' or with_cgroupctrl == 'auto'
-        with_cgroupctrl = run_command(get_cg_ctrl_sh, []).stdout().strip()
+        with_cgroupctrl = run_command(get_cg_ctrl_sh, [], check : false).stdout().strip()
 elif with_cgroupctrl == 'none'
         with_cgroupctrl = 'elogind'
 endif
@@ -2032,7 +2032,7 @@ foreach term : ['smack',
 endforeach
 
 #if 1 /// elogind always looks at uid boundaries in /etc/login.defs
-conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
+conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 #endif // 1
 
 #if 0 /// UNNEEDED by elogind
@@ -2101,8 +2101,8 @@ make_man_index_py = find_program('tools/make-man-index.py')
 meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 
+update_man_rules_py = find_program('tools/update-man-rules.py')
 #if 0 /// UNNEEDED by elogind
-# update_man_rules_py = find_program('tools/update-man-rules.py')
 # update_hwdb_sh = find_program('tools/update-hwdb.sh')
 # update_hwdb_autosuspend_sh = find_program('tools/update-hwdb-autosuspend.sh')
 #endif // 0
@@ -4379,13 +4379,11 @@ subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
 # subdir('docs/sysvinit')
 # subdir('docs/var-log')
-#endif // 0
-
-install_subdir('factory/etc',
-               install_dir : factorydir)
-subdir('factory/templates')
-
-#if 0 /// UNNEEDED by elogind
+#
+# install_subdir('factory/etc',
+#                install_dir : factorydir)
+# subdir('factory/templates')
+#
 # if install_sysconfdir
 #         install_data('xorg/50-systemd-user.sh',
 #                      install_dir : xinitrcdir)

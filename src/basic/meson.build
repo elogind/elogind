@@ -383,6 +383,8 @@ basic_sources = files(
         'namespace-util.h',
         'nulstr-util.c',
         'nulstr-util.h',
+        'ordered-set.c',
+        'ordered-set.h',
         'os-util.c',
         'os-util.h',
         'parse-printf-format.c',
