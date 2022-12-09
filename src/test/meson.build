@@ -162,8 +162,8 @@ tests += [
 #if 0 /// UNNEEDED by elogind
 #         [files('test-kbd-util.c')],
 #
+#         [files('test-blockdev-util.c')],
 #endif // 0
-        [files('test-blockdev-util.c')],
 
         [files('test-dev-setup.c')],
 
@@ -182,17 +182,19 @@ tests += [
 
         [files('test-recurse-dir.c')],
 
-        [files('test-compress.c'),
-         [libshared,
-          libbasic_compress]],
-
-        [files('test-compress-benchmark.c'),
-         [libshared,
-          libbasic_compress],
-         [],
-         [], '', 'timeout=90'],
-
-        [files('test-data-fd-util.c')],
+#if 0 /// UNNEEDED in elogind
+#         [files('test-compress.c'),
+#          [libshared,
+#           libbasic_compress]],
+#
+#         [files('test-compress-benchmark.c'),
+#          [libshared,
+#           libbasic_compress],
+#          [],
+#          [], '', 'timeout=90'],
+#
+#         [files('test-data-fd-util.c')],
+#endif // 0
 
         [files('test-static-destruct.c')],
 
@@ -203,8 +205,8 @@ tests += [
 #
 #         [files('test-fdset.c')],
 #
+#         [files('test-fstab-util.c')],
 #endif // 0
-        [files('test-fstab-util.c')],
 
         [files('test-random-util.c'),
          [],
@@ -249,12 +251,14 @@ tests += [
 #
 #         [files('test-io-util.c')],
 #
+#         [files('test-glob-util.c')],
 #endif // 0
-        [files('test-glob-util.c')],
 
         [files('test-fs-util.c')],
 
-        [files('test-install-file.c')],
+#if 0 /// UNNEEDED in elogind
+#         [files('test-install-file.c')],
+#endif // 0
 
         [files('test-umask-util.c')],
 
@@ -267,8 +271,8 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [files('test-web-util.c')],
 #
+#         [files('test-cpu-set-util.c')],
 #endif // 0
-        [files('test-cpu-set-util.c')],
 
         [files('test-stat-util.c')],
 
@@ -283,9 +287,9 @@ tests += [
 #endif // 0
         [files('test-escape.c')],
 
-        [files('test-exit-status.c')],
-
 #if 0 /// UNNEEDED in elogind
+#         [files('test-exit-status.c')],
+#
 #         [files('test-specifier.c')],
 #
 #endif // 0
@@ -295,13 +299,15 @@ tests += [
 
         [files('test-parse-argument.c')],
 
-        [files('test-parse-helpers.c')],
+#if 0 /// UNNEEDED in elogind
+#         [files('test-parse-helpers.c')],
+#endif // 0
 
         [files('test-parse-util.c')],
 
-        [files('test-sysctl-util.c')],
-
 #if 0 /// UNNEEDED in elogind
+#         [files('test-sysctl-util.c')],
+#
 #         [files('test-import-util.c')],
 #
 #         [files('test-uid-alloc-range.c')],
@@ -309,7 +315,9 @@ tests += [
 #endif // 0
         [files('test-user-util.c')],
 
-        [files('test-hostname-setup.c')],
+#if 0 /// UNNEEDED in elogind
+#         [files('test-hostname-setup.c')],
+#endif // 0
 
         [files('test-hostname-util.c')],
 
@@ -323,9 +331,9 @@ tests += [
 #endif // 0
         [files('test-pretty-print.c')],
 
-        [files('test-uid-range.c')],
-
 #if 0 /// UNNEEDED in elogind
+#         [files('test-uid-range.c')],
+#
 #         [files('test-cap-list.c') +
 #          generated_gperf_headers,
 #          [],
@@ -455,8 +463,8 @@ tests += [
 #         [files('test-hash-funcs.c')],
 #
 #         [files('test-bitmap.c')],
-#
 #endif // 0
+
         [files('test-xml.c')],
 
         [files('test-list.c')],
@@ -496,8 +504,8 @@ tests += [
 #if 0 /// UNNEEDED in elogind
 #         [files('test-architecture.c')],
 #
+#         [files('test-gpt.c')],
 #endif // 0
-        [files('test-gpt.c')],
 
         [files('test-log.c')],
 
@@ -674,9 +682,9 @@ tests += [
 #           libselinux],
 #          udev_includes, '', 'manual'],
 #
+#
+#         [files('test-udev-util.c')],
 #endif // 0
-
-        [files('test-udev-util.c')],
 
         [files('test-id128.c')],
 
@@ -705,7 +713,9 @@ tests += [
 
         [files('test-percent-util.c')],
 
-        [files('test-sd-hwdb.c')],
+#if 0 /// UNNEEDED by elogind
+#         [files('test-sd-hwdb.c')],
+#endif // 0
 
         [files('test-sd-path.c')],
 
