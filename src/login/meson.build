@@ -6,12 +6,11 @@
 #         'logind.h',
 # )
 #else // 0
-elogind_sources = files('''
-        elogind.c
-        elogind.h
-        logind.c
-        logind.h
-'''.split())
+elogind_sources = files(
+        'elogind.c',
+        'elogind.h',
+        'logind.c',
+        'logind.h')
 #endif // 0
 
 logind_gperf_c = custom_target(
@@ -20,18 +19,6 @@ logind_gperf_c = custom_target(
         output : 'logind-gperf.c',
         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
 
-
-#if 1 /// elogind has some additional files:
-liblogind_core_sources += [files('''
-        elogind-dbus.c
-        elogind-dbus.h
-        user-runtime-dir.c
-        user-runtime-dir.h
-'''.split()),
-        libcore_sources,
-        sleep_files,
-        update_utmp_files]
-#endif // 1
 liblogind_core_sources = files(
         'logind-action.c',
         'logind-action.h',
@@ -65,6 +52,18 @@ liblogind_core_sources = files(
         'logind-utmp.c',
 )
 
+#if 1 /// elogind has some additional files:
+liblogind_core_sources += [files(
+        'elogind-dbus.c',
+        'elogind-dbus.h',
+        'user-runtime-dir.c',
+        'user-runtime-dir.h',
+),
+        libcore_sources,
+        sleep_files,
+        update_utmp_files]
+#endif // 1
+
 liblogind_core_sources += [logind_gperf_c]
 
 liblogind_core = static_library(
@@ -79,20 +78,18 @@ liblogind_core = static_library(
                         libaudit])
 #endif // 0
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
-#if 1 /// elogind has and needs some additional files:
-loginctl_sources += files('''
-        eloginctl.c
-        eloginctl.h
-'''.split())
-#endif // 1
-
 loginctl_sources = files(
         'loginctl.c',
         'sysfs-show.h',
         'sysfs-show.c',
 )
+
+#if 1 /// elogind has and needs some additional files:
+loginctl_sources += files(
+        'eloginctl.c',
+        'eloginctl.h',
+)
+#endif // 1
 
 #if 0 /// elogind builds itself unconditionally
 # user_runtime_dir_sources = files('user-runtime-dir.c')
@@ -103,7 +100,11 @@ enable_logind = true
 pam_elogind_sym = 'src/login/pam_elogind.sym'
 pam_elogind_c = files('pam_elogind.c')
 
-enable_logind = conf.get('ENABLE_LOGIND') == 1
+#if 0 /// This is elogind
+# enable_logind = conf.get('ENABLE_LOGIND') == 1
+#else // 0
+enable_logind = true
+#endif // 0
 
 custom_target(
         'logind.conf',
