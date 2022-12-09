@@ -145,4 +145,5 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Dsmack=true \
 	)
 
+.DEFAULT: all
 #endif // 0
