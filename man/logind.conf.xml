@@ -41,8 +41,6 @@
     --><!-- else // 0 -->
     <para><filename>/etc/elogind/logind.conf</filename></para>
     <para><filename>/etc/elogind/logind.conf.d/*.conf</filename></para>
-    <para><filename>/etc/elogind/sleep.conf</filename></para>
-    <para><filename>/etc/elogind/sleep.conf.d/*.conf</filename></para>
     <!-- // 0 -->
   </refsynopsisdiv>
 
@@ -416,7 +414,7 @@
       </varlistentry>
 
     </variablelist>
-    <!-- 1 /// elogind has an additional section for system commands. -->
+    <!-- 0 /// Moved to the new sleep.conf elogind has derived from systemd-sleep.conf
     </refsect2>
 
     <refsect2><title>[Sleep] section:</title>
@@ -703,7 +701,7 @@
         </varlistentry>
       </variablelist>
     </refsect2>
-    <!-- // 1 -->
+  // 0 -->
   </refsect1>
 
   <refsect1>
@@ -718,6 +716,8 @@
         <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
         <!-- 0 /// UNNEEDED by elogind
         <citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        --><!-- else // 0 -->
+        <citerefentry><refentrytitle>sleep.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
         // 0 -->
       </para>
   </refsect1>
