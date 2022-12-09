@@ -13,9 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.53.2',
        )
 
-/// elogind empty mask removed (elogind does not ship libudev)
-libelogind_version = '0.34.0'
-libudev_version = '1.7.4'
+libsystemd_version = '0.34.0'
+#if 0 /// elogind does not ship lubudev
+# libudev_version = '1.7.4'
+#endif // 0
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -2199,7 +2200,7 @@ libelogind = shared_library(
         'elogind',
         disable_mempool_c,
         version : libsystemd_version,
-        include_directories : libsystemd_includes,
+        include_directories : libelogind_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
@@ -2232,10 +2233,10 @@ install_libelogind_static = static_library(
         libelogind_sources,
 #endif // 0
         basic_sources,
-#if 0 /// No gcrypt with elogind
+#if 0 /// No gcrypt or compress with elogind
 #         basic_gcrypt_sources,
+#         basic_compress_sources,
 #endif // 0
-        basic_compress_sources,
         fundamental_sources,
         disable_mempool_c,
         include_directories : libelogind_includes,
@@ -3635,12 +3636,14 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
-#
-# if install_sysconfdir_samples
-#         install_data('src/sleep/sleep.conf',
-#                      install_dir : pkgsysconfdir)
-# endif
-#
+#endif // 0
+
+if install_sysconfdir_samples
+        install_data('src/sleep/sleep.conf',
+                     install_dir : pkgsysconfdir)
+endif
+
+#if 0 /// UNNEEDED by elogind
 # public_programs += executable(
 #         'systemd-sysctl',
 #         'src/sysctl/sysctl.c',
@@ -3712,7 +3715,9 @@ endif
 #         install_rpath : rootlibexecdir,
 #         install : conf.get('ENABLE_INITRD') == 1,
 #         install_dir : rootlibexecdir)
-#else // 0
+#endif // 0
+
+#if 1 /// elogind brings its own cgroups agent
 executable('elogind-cgroups-agent',
            'src/cgroups-agent/cgroups-agent.c',
            include_directories : includes,
@@ -3720,7 +3725,7 @@ executable('elogind-cgroups-agent',
            install_rpath : rootlibexecdir,
            install : true,
            install_dir : rootlibexecdir)
-#endif // 0
+#endif // 1
 
 #if 0 /// UNNEEDED by elogind
 # executable(
@@ -4676,7 +4681,6 @@ summary({
 # CPPFLAGS: ${OUR_CPPFLAGS} ${CPPFLAGS}
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
-/// elogind empty mask removed (UNSUPPORTED by elogind (at the moment))
 found = []
 missing = []
 
