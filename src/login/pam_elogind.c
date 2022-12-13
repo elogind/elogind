@@ -708,10 +708,10 @@ _public_ PAM_EXTERN int pam_sm_open_session(
          * "systemd-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
 
-#if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
         r = pam_get_item(handle, PAM_SERVICE, (const void**) &service);
         if (!IN_SET(r, PAM_BAD_ITEM, PAM_SUCCESS))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM service: @PAMERR@");
+#if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
         if (streq_ptr(service, "systemd-user")) {
                 char rt[STRLEN("/run/user/") + DECIMAL_STR_MAX(uid_t)];
 
