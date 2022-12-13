@@ -45,7 +45,6 @@
 #include <libmount.h>
 
 
-
 #if 0 /// UNNEEDED by elogind
 int umount_recursive(const char *prefix, int flags) {
         int n = 0, r;
@@ -771,9 +770,9 @@ int mount_option_mangle(
         /* This extracts mount flags from the mount options, and stores
          * non-mount-flag options to '*ret_remaining_options'.
          * E.g.,
-         * "rw,nosuid,nodev,relatime,size=1630748k,mode=700,uid=1000,gid=1000"
+         * "rw,nosuid,nodev,relatime,size=1630748k,mode=0700,uid=1000,gid=1000"
          * is split to MS_NOSUID|MS_NODEV|MS_RELATIME and
-         * "size=1630748k,mode=700,uid=1000,gid=1000".
+         * "size=1630748k,mode=0700,uid=1000,gid=1000".
          * See more examples in test-mount-util.c.
          *
          * If 'options' does not contain any non-mount-flag options,
