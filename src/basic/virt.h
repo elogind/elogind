@@ -56,18 +56,18 @@ static inline bool VIRTUALIZATION_IS_CONTAINER(Virtualization x) {
         return x >= VIRTUALIZATION_CONTAINER_FIRST && x <= VIRTUALIZATION_CONTAINER_LAST;
 }
 
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 Virtualization detect_vm(void);
+#endif // 0
 Virtualization detect_container(void);
+#if 0 /// UNNEEDED by elogind
 Virtualization detect_virtualization(void);
 
 int running_in_userns(void);
 #endif // 0
 int running_in_chroot(void);
 
-#if 0 /// UNNEEDED by elogind
 const char *virtualization_to_string(Virtualization v) _const_;
 Virtualization virtualization_from_string(const char *s) _pure_;
+#if 0 /// UNNEEDED by elogind
 bool has_cpu_with_flag(const char *flag);
 #endif // 0
