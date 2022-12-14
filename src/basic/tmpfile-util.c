@@ -316,7 +316,6 @@ int link_tmpfile(int fd, const char *path, const char *target) {
 
         return RET_NERRNO(linkat(AT_FDCWD, FORMAT_PROC_FD_PATH(fd), AT_FDCWD, target, AT_SYMLINK_FOLLOW));
 }
-#endif // 0
 
 int flink_tmpfile(FILE *f, const char *path, const char *target) {
         int fd, r;
@@ -334,6 +333,7 @@ int flink_tmpfile(FILE *f, const char *path, const char *target) {
 
         return link_tmpfile(fd, path, target);
 }
+#endif // 0
 
 int mkdtemp_malloc(const char *template, char **ret) {
         _cleanup_free_ char *p = NULL;
