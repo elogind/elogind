@@ -1298,10 +1298,12 @@ ColorMode get_color_mode(void) {
                          * map them to the closest color in the 16 color palette (since kernel 3.16). Doing
                          * 256 colors is nice for people who invoke systemd in a container or via a serial
                          * link or such, and use a true 256 color terminal to do so. */
-#endif // 0
                         if (getenv_terminal_is_dumb())
                                 cached_color_mode = COLOR_OFF;
                 } else {
+#else // 0
+                else {
+#endif // 0
                         if (terminal_is_dumb())
                                 cached_color_mode = COLOR_OFF;
                 }
