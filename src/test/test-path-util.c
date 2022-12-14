@@ -970,9 +970,6 @@ TEST(hidden_or_backup_file) {
         assert_se(!hidden_or_backup_file("test.dpkg-old.foo"));
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-                r = elogind_installation_has_version(saved_argv[1], versions[i]);
-                r = elogind_installation_has_version(saved_argv[1], versions[i]);
 TEST(skip_dev_prefix) {
         assert_se(streq(skip_dev_prefix("/"), "/"));
         assert_se(streq(skip_dev_prefix("/dev"), ""));
