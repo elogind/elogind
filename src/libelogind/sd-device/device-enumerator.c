@@ -106,6 +106,7 @@ static sd_device_enumerator *device_enumerator_free(sd_device_enumerator *enumer
 
 DEFINE_PUBLIC_TRIVIAL_REF_UNREF_FUNC(sd_device_enumerator, sd_device_enumerator, device_enumerator_free);
 
+#if 0 /// UNNEEDED by elogind
 int device_enumerator_add_prioritized_subsystem(sd_device_enumerator *enumerator, const char *subsystem) {
         int r;
 
@@ -123,6 +124,7 @@ int device_enumerator_add_prioritized_subsystem(sd_device_enumerator *enumerator
 
         return 1;
 }
+#endif // 0
 
 _public_ int sd_device_enumerator_add_match_subsystem(sd_device_enumerator *enumerator, const char *subsystem, int match) {
         Set **set;
