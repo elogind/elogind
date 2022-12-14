@@ -1233,6 +1233,7 @@ int read_timestamp_file(const char *fn, usec_t *ret) {
         *ret = (usec_t) t;
         return 0;
 }
+#endif // 0
 
 int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space) {
         int r;
@@ -1262,7 +1263,6 @@ int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space)
 
         return fputs(s, f);
 }
-#endif // 0
 
 /* A bitmask of the EOL markers we know */
 typedef enum EndOfLineMarker {

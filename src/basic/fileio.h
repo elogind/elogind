@@ -110,9 +110,9 @@ int fflush_sync_and_check(FILE *f);
 #if 0 /// UNNEEDED by elogind
 int write_timestamp_file_atomic(const char *fn, usec_t n);
 int read_timestamp_file(const char *fn, usec_t *ret);
+#endif // 0
 
 int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space);
-#endif // 0
 
 typedef enum ReadLineFlags {
         READ_LINE_ONLY_NUL  = 1 << 0,
