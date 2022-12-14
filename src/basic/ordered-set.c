@@ -58,6 +58,7 @@ int _ordered_set_put_strdup(OrderedSet **s, const char *p  HASHMAP_DEBUG_PARAMS)
         return ordered_set_consume(*s, c);
 }
 
+#if 0 /// UNNEEDED by elogind
 int _ordered_set_put_strdupv(OrderedSet **s, char **l  HASHMAP_DEBUG_PARAMS) {
         int n = 0, r;
 
@@ -71,6 +72,7 @@ int _ordered_set_put_strdupv(OrderedSet **s, char **l  HASHMAP_DEBUG_PARAMS) {
 
         return n;
 }
+#endif // 0
 
 int ordered_set_put_string_set(OrderedSet **s, OrderedSet *l) {
         int n = 0, r;
