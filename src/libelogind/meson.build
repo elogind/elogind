@@ -403,8 +403,7 @@ custom_target(
         'libelogind.pc',
         input : 'libelogind.pc.in',
         output : 'libelogind.pc',
-        command : [meson_render_jinja2, config_h, '@INPUT@', '@OUTPUT@'],
+        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
         install : pkgconfiglibdir != 'no',
         install_dir : pkgconfiglibdir)
-
 #endif // 0
