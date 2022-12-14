@@ -1280,8 +1280,7 @@ bool valid_device_allow_pattern(const char *path) {
         return valid_device_node_path(path);
 }
 
-#endif // 0
-int elogind_installation_has_version(const char *root, unsigned minimal_version) {
+int systemd_installation_has_version(const char *root, unsigned minimal_version) {
         const char *pattern;
         int r;
 
@@ -1317,6 +1316,7 @@ bool dot_or_dot_dot(const char *path) {
 
         return path[2] == 0;
 }
+#endif // 0
 
 bool empty_or_root(const char *path) {
 
