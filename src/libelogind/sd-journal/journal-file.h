@@ -12,7 +12,7 @@
 #include "sd-event.h"
 #include "sd-id128.h"
 
-#include "compress.h"
+//#include "compress.h"
 #include "hashmap.h"
 #include "journal-def.h"
 #include "mmap-cache.h"
@@ -260,7 +260,6 @@ static inline bool JOURNAL_FILE_COMPRESS(JournalFile *f) {
 uint64_t journal_file_hash_data(JournalFile *f, const void *data, size_t sz);
 
 bool journal_field_valid(const char *p, size_t l, bool allow_protected);
-#endif // 0
 
 const char* journal_object_type_to_string(ObjectType type) _const_;
 
@@ -311,3 +310,4 @@ static inline bool journal_file_writable(JournalFile *f) {
         assert(f);
         return (f->open_flags & O_ACCMODE) != O_RDONLY;
 }
+#endif // 0
