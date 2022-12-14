@@ -124,8 +124,10 @@ struct timespec* timespec_store(struct timespec *ts, usec_t u);
 #if 0 /// UNNEEDED by elogind
 struct timespec* timespec_store_nsec(struct timespec *ts, nsec_t n);
 
+#endif // 0
 #define TIMESPEC_STORE(u) timespec_store(&(struct timespec) {}, (u))
 
+#if 0 /// UNNEEDED by elogind
 usec_t timeval_load(const struct timeval *tv) _pure_;
 #endif // 0
 struct timeval* timeval_store(struct timeval *tv, usec_t u);
