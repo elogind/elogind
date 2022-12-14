@@ -23,7 +23,6 @@ typedef enum MountAttrPropagationType {
 
 const char* mount_attr_propagation_type_to_string(MountAttrPropagationType t) _const_;
 MountAttrPropagationType mount_attr_propagation_type_from_string(const char *s) _pure_;
-unsigned int mount_attr_propagation_type_to_flag(MountAttrPropagationType t);
 
 /* The limit used for various nested tmpfs mounts, in particular for guests started by elogind-nspawn.
 /* The limit used for various nested tmpfs mounts, in particular for guests started by systemd-nspawn.
