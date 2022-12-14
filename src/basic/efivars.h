@@ -57,7 +57,7 @@ int cache_efi_options_variable(void);
 int systemd_efi_options_variable(char **ret);
 int systemd_efi_options_efivarfs_if_newer(char **ret);
 #else // 0
-int elogind_efi_options_variable(char **line);
+int elogind_efi_options_variable(char **ret);
 #endif // 0
 
 #else

@@ -390,16 +390,12 @@ int cache_efi_options_variable(void) {
 }
 #endif // 0
 
-int elogind_efi_options_variable(char **line) {
-int elogind_efi_options_variable(char **ret) {
-int elogind_efi_options_variable(char **line) {
 int elogind_efi_options_variable(char **ret) {
         const char *e;
         int r;
 
         /* Returns the contents of the variable for current boot from the cache. */
 
-        assert(line);
         assert(ret);
 
         /* For testing purposes it is sometimes useful to be able to override this */
