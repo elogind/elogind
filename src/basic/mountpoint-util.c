@@ -37,7 +37,6 @@ int name_to_handle_at_loop(
                 int *ret_mnt_id,
                 int flags) {
 
-        _cleanup_free_ struct file_handle *h = NULL;
         size_t n = ORIGINAL_MAX_HANDLE_SZ;
 
         assert((flags & ~(AT_SYMLINK_FOLLOW|AT_EMPTY_PATH)) == 0);
@@ -50,6 +49,7 @@ int name_to_handle_at_loop(
          * as NULL if there's no interest in either. */
 
         for (;;) {
+                _cleanup_free_ struct file_handle *h = NULL;
                 int mnt_id = -1;
 
                 h = malloc0(offsetof(struct file_handle, f_handle) + n);
@@ -91,8 +91,6 @@ int name_to_handle_at_loop(
                 n = h->handle_bytes;
                 if (offsetof(struct file_handle, f_handle) + n < n) /* check for addition overflow */
                         return -EOVERFLOW;
-
-                h = mfree(h);
         }
 }
 
@@ -572,7 +570,7 @@ int mount_nofollow(
         return mount_fd(source, fd, filesystemtype, mountflags, data);
 }
 
-const char *mount_propagation_flags_to_string(unsigned long flags) {
+const char *mount_propagation_flag_to_string(unsigned long flags) {
 
         switch (flags & (MS_SHARED|MS_SLAVE|MS_PRIVATE)) {
         case 0:
@@ -588,7 +586,7 @@ const char *mount_propagation_flags_to_string(unsigned long flags) {
         return NULL;
 }
 
-int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
+int mount_propagation_flag_from_string(const char *name, unsigned long *ret) {
 
         if (isempty(name))
                 *ret = 0;
