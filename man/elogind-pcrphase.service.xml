@@ -148,9 +148,9 @@
   <refsect1>
     <title>See Also</title>
     <para>
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-measure</refentrytitle><manvolnum>1</manvolnum></citerefentry>
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
     </para>
   </refsect1>
 
