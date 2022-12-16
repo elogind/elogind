@@ -10,7 +10,6 @@
 //#include "string-util.h"
 //#include "strv.h"
 #include "user-util.h"
-//#include "util.h"
 
 int acl_find_uid(acl_t acl, uid_t uid, acl_entry_t *ret_entry) {
         acl_entry_t i;
@@ -92,6 +91,7 @@ int add_base_acls_if_needed(acl_t *acl_p, const char *path) {
         _cleanup_(acl_freep) acl_t basic = NULL;
 
         assert(acl_p);
+        assert(path);
 
         for (r = acl_get_entry(*acl_p, ACL_FIRST_ENTRY, &i);
              r > 0;
@@ -210,24 +210,59 @@ int acl_search_groups(const char *path, char ***ret_groups) {
         return ret;
 }
 
-int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask) {
-        _cleanup_free_ char **a = NULL, **d = NULL; /* strings are not freed */
-        _cleanup_strv_free_ char **split = NULL;
-        int r = -EINVAL;
-        _cleanup_(acl_freep) acl_t a_acl = NULL, d_acl = NULL;
+int parse_acl(
+                const char *text,
+                acl_t *ret_acl_access,
+                acl_t *ret_acl_access_exec, /* extra rules to apply to inodes subject to uppercase X handling */
+                acl_t *ret_acl_default,
+                bool want_mask) {
+
+        _cleanup_strv_free_ char **a = NULL, **e = NULL, **d = NULL, **split = NULL;
+        _cleanup_(acl_freep) acl_t a_acl = NULL, e_acl = NULL, d_acl = NULL;
+        int r;
+
+        assert(text);
+        assert(ret_acl_access);
+        assert(ret_acl_access_exec);
+        assert(ret_acl_default);
 
         split = strv_split(text, ",");
         if (!split)
                 return -ENOMEM;
 
         STRV_FOREACH(entry, split) {
-                char *p;
+                _cleanup_strv_free_ char **entry_split = NULL;
+                _cleanup_free_ char *entry_join = NULL;
+                int n;
 
-                p = STARTSWITH_SET(*entry, "default:", "d:");
-                if (p)
-                        r = strv_push(&d, p);
-                else
-                        r = strv_push(&a, *entry);
+                n = strv_split_full(&entry_split, *entry, ":", EXTRACT_DONT_COALESCE_SEPARATORS|EXTRACT_RETAIN_ESCAPE);
+                if (n < 0)
+                        return n;
+
+                if (n < 3 || n > 4)
+                        return -EINVAL;
+
+                string_replace_char(entry_split[n-1], 'X', 'x');
+
+                if (n == 4) {
+                        if (!STR_IN_SET(entry_split[0], "default", "d"))
+                                return -EINVAL;
+
+                        entry_join = strv_join(entry_split + 1, ":");
+                        if (!entry_join)
+                                return -ENOMEM;
+
+                        r = strv_consume(&d, TAKE_PTR(entry_join));
+                } else { /* n == 3 */
+                        entry_join = strv_join(entry_split, ":");
+                        if (!entry_join)
+                                return -ENOMEM;
+
+                        if (!streq(*entry, entry_join))
+                                r = strv_consume(&e, TAKE_PTR(entry_join));
+                        else
+                                r = strv_consume(&a, TAKE_PTR(entry_join));
+                }
                 if (r < 0)
                         return r;
         }
@@ -250,6 +285,20 @@ int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want
                 }
         }
 
+        if (!strv_isempty(e)) {
+                _cleanup_free_ char *join = NULL;
+
+                join = strv_join(e, ",");
+                if (!join)
+                        return -ENOMEM;
+
+                e_acl = acl_from_text(join);
+                if (!e_acl)
+                        return -errno;
+
+                /* The mask must be calculated after deciding whether the execute bit should be set. */
+        }
+
         if (!strv_isempty(d)) {
                 _cleanup_free_ char *join = NULL;
 
@@ -268,8 +317,9 @@ int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want
                 }
         }
 
-        *acl_access = TAKE_PTR(a_acl);
-        *acl_default = TAKE_PTR(d_acl);
+        *ret_acl_access = TAKE_PTR(a_acl);
+        *ret_acl_access_exec = TAKE_PTR(e_acl);
+        *ret_acl_default = TAKE_PTR(d_acl);
 
         return 0;
 }
@@ -324,7 +374,7 @@ static int acl_entry_equal(acl_entry_t a, acl_entry_t b) {
         }
 }
 
-static int find_acl_entry(acl_t acl, acl_entry_t entry, acl_entry_t *out) {
+static int find_acl_entry(acl_t acl, acl_entry_t entry, acl_entry_t *ret) {
         acl_entry_t i;
         int r;
 
@@ -336,36 +386,40 @@ static int find_acl_entry(acl_t acl, acl_entry_t entry, acl_entry_t *out) {
                 if (r < 0)
                         return r;
                 if (r > 0) {
-                        *out = i;
-                        return 1;
+                        if (ret)
+                                *ret = i;
+                        return 0;
                 }
         }
         if (r < 0)
                 return -errno;
-        return 0;
+
+        return -ENOENT;
 }
 
-int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *acl) {
-        _cleanup_(acl_freep) acl_t old;
+int acls_for_file(const char *path, acl_type_t type, acl_t acl, acl_t *ret) {
+        _cleanup_(acl_freep) acl_t applied = NULL;
         acl_entry_t i;
         int r;
 
-        old = acl_get_file(path, type);
-        if (!old)
+        assert(path);
+
+        applied = acl_get_file(path, type);
+        if (!applied)
                 return -errno;
 
-        for (r = acl_get_entry(new, ACL_FIRST_ENTRY, &i);
+        for (r = acl_get_entry(acl, ACL_FIRST_ENTRY, &i);
              r > 0;
-             r = acl_get_entry(new, ACL_NEXT_ENTRY, &i)) {
+             r = acl_get_entry(acl, ACL_NEXT_ENTRY, &i)) {
 
                 acl_entry_t j;
 
-                r = find_acl_entry(old, i, &j);
-                if (r < 0)
-                        return r;
-                if (r == 0)
-                        if (acl_create_entry(&old, &j) < 0)
+                r = find_acl_entry(applied, i, &j);
+                if (r == -ENOENT) {
+                        if (acl_create_entry(&applied, &j) < 0)
                                 return -errno;
+                } else if (r < 0)
+                        return r;
 
                 if (acl_copy_entry(j, i) < 0)
                         return -errno;
@@ -373,7 +427,8 @@ int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *acl) {
         if (r < 0)
                 return -errno;
 
-        *acl = TAKE_PTR(old);
+        if (ret)
+                *ret = TAKE_PTR(applied);
 
         return 0;
 }
