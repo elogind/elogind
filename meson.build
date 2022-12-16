@@ -3033,6 +3033,8 @@ endif
 #                  'src/boot/bootctl-random-seed.h',
 #                  'src/boot/bootctl-reboot-to-firmware.c',
 #                  'src/boot/bootctl-reboot-to-firmware.h',
+#                  'src/boot/bootctl-set-efivar.c',
+#                  'src/boot/bootctl-set-efivar.h',
 #                  'src/boot/bootctl-elogind-efi-options.c',
 #                  'src/boot/bootctl-elogind-efi-options.h',
 #                  'src/boot/bootctl-util.c',
