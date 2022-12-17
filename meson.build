@@ -594,6 +594,14 @@ conf.set('SIZEOF_TIME_T', cc.sizeof('time_t', prefix : '#include <sys/time.h>'))
 conf.set('SIZEOF_RLIM_T', cc.sizeof('rlim_t', prefix : '#include <sys/resource.h>'))
 conf.set('SIZEOF_TIMEX_MEMBER', cc.sizeof('typeof(((struct timex *)0)->freq)', prefix : '#include <sys/timex.h>'))
 
+long_max = cc.compute_int(
+        'LONG_MAX',
+        prefix : '#include <limits.h>',
+        guess : 0x7FFFFFFFFFFFFFFF,
+        high : 0x7FFFFFFFFFFFFFFF)
+assert(long_max > 100000)
+conf.set_quoted('LONG_MAX_STR', '@0@'.format(long_max))
+
 decl_headers = '''
 #if 1 /// elogind supports system where _GNU_SOURCE is not set in ENV
 # ifndef _GNU_SOURCE
@@ -3194,7 +3202,8 @@ endif
 #                 'systemd-homework',
 #                 systemd_homework_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              libshared_fdisk],
 #                 dependencies : [threads,
 #                                 libblkid,
 #                                 libcrypt,
@@ -3773,7 +3782,8 @@ endif
 #                 'systemd-sysupdate',
 #                 systemd_sysupdate_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              libshared_fdisk],
 #                 dependencies : [threads,
 #                                 libblkid,
 #                                 libfdisk,
@@ -4255,7 +4265,8 @@ public_programs += executable(
 #                 'systemd-repart',
 #                 systemd_repart_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              libshared_fdisk],
 #                 dependencies : [threads,
 #                                 libblkid,
 #                                 libfdisk,
@@ -4274,7 +4285,8 @@ public_programs += executable(
 #                         link_with : [libshared_static,
 #                                      libbasic,
 #                                      libbasic_gcrypt,
-#                                      libelogind_static],
+#                                      libelogind_static,
+#                                      libshared_fdisk],
 #                         dependencies : [threads,
 #                                         libblkid,
 #                                         libfdisk,
@@ -4283,6 +4295,7 @@ public_programs += executable(
 #                         install_rpath : rootpkglibdir,
 #                         install : true,
 #                         install_dir : rootbindir)
+#                 public_programs += exe
 #         endif
 # endif
 #
@@ -4296,6 +4309,22 @@ public_programs += executable(
 #         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
+#
+# if have_standalone_binaries
+#         executable(
+#                 'elogind-shutdown.standalone',
+#                 elogind_shutdown_sources,
+#                 include_directories : includes,
+#                 c_args : '-DSTANDALONE',
+#                 link_with : [libshared_static,
+#                              libbasic,
+#                              libelogind_static],
+#                 dependencies : [libmount,
+#                                 versiondep],
+#                 install_rpath : rootpkglibdir,
+#                 install : true,
+#                 install_dir : rootlibexecdir)
+# endif
 #
 # executable(
 #         'systemd-update-done',
@@ -4669,21 +4698,21 @@ if want_tests != 'false' and static_libelogind_pic
 endif
 #endif // 0
 #if 0 /// UNNEEDED by elogind
+# subdir('docs/sysvinit')
+# subdir('docs/var-log')
+# subdir('hwdb.d')
+# subdir('man')
 # subdir('modprobe.d')
+# subdir('network')
+# subdir('presets')
+# subdir('shell-completion/bash')
+# subdir('shell-completion/zsh')
 # subdir('sysctl.d')
 # subdir('sysusers.d')
 # subdir('tmpfiles.d')
-# subdir('hwdb.d')
 # subdir('units')
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-# subdir('presets')
-# subdir('network')
-# subdir('man')
-# subdir('shell-completion/bash')
-# subdir('shell-completion/zsh')
-# subdir('docs/sysvinit')
-# subdir('docs/var-log')
 #
 # install_subdir('factory/etc',
 #                install_dir : factorydir)
