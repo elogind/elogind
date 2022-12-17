@@ -582,7 +582,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   liblz4,
 #                   libmount,
 #                   libopenssl,
-#                   libp11kit,
+#                   libp11kit_cflags,
 #                   libpam,
 #                   librt,
 #                   libseccomp,
