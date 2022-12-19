@@ -3035,6 +3035,8 @@ endif
 #                  'src/boot/bootctl-reboot-to-firmware.h',
 #                  'src/boot/bootctl-set-efivar.c',
 #                  'src/boot/bootctl-set-efivar.h',
+#                  'src/boot/bootctl-status.c',
+#                  'src/boot/bootctl-status.h',
 #                  'src/boot/bootctl-elogind-efi-options.c',
 #                  'src/boot/bootctl-elogind-efi-options.h',
 #                  'src/boot/bootctl-util.c',
