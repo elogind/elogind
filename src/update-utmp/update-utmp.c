@@ -43,7 +43,7 @@ static void context_clear(Context *c) {
 #if HAVE_AUDIT
         if (c->audit_fd >= 0)
                 audit_close(c->audit_fd);
-        c->audit_fd = -1;
+        c->audit_fd = -EBADF;
 #endif
 }
 
@@ -238,7 +238,7 @@ void update_utmp(int argc, char* argv[]) {
 #endif // 0
         _cleanup_(context_clear) Context c = {
 #if HAVE_AUDIT
-                .audit_fd = -1,
+                .audit_fd = -EBADF,
 #endif
         };
 #if 0 /// UNNEEDED by elogind

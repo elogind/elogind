@@ -202,7 +202,7 @@ int readlink_and_make_absolute(const char *p, char **r) {
 #endif // 0
 
 int chmod_and_chown_at(int dir_fd, const char *path, mode_t mode, uid_t uid, gid_t gid) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         assert(dir_fd >= 0 || dir_fd == AT_FDCWD);
 
@@ -369,7 +369,7 @@ int fd_warn_permissions(const char *path, int fd) {
 #endif // 0
 
 int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gid, mode_t mode) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         int r, ret;
 
         assert(path);
@@ -700,7 +700,7 @@ void unlink_tempfilep(char (*p)[]) {
 
 #if 0 /// UNNEEDED by elogind
 int unlinkat_deallocate(int fd, const char *name, UnlinkDeallocateFlags flags) {
-        _cleanup_close_ int truncate_fd = -1;
+        _cleanup_close_ int truncate_fd = -EBADF;
         struct stat st;
         off_t l, bs;
 
@@ -833,7 +833,7 @@ int conservative_renameat(
                 int olddirfd, const char *oldpath,
                 int newdirfd, const char *newpath) {
 
-        _cleanup_close_ int old_fd = -1, new_fd = -1;
+        _cleanup_close_ int old_fd = -EBADF, new_fd = -EBADF;
         struct stat old_stat, new_stat;
 
         /* Renames the old path to thew new path, much like renameat() — except if both are regular files and
@@ -1015,7 +1015,7 @@ int parse_cifs_service(
 }
 
 int open_mkdir_at(int dirfd, const char *path, int flags, mode_t mode) {
-        _cleanup_close_ int fd = -1, parent_fd = -1;
+        _cleanup_close_ int fd = -EBADF, parent_fd = -EBADF;
         _cleanup_free_ char *fname = NULL;
         bool made;
         int r;

@@ -169,7 +169,7 @@ int seat_load(Seat *s) {
 #if 0 /// UNNEEDED by elogind
 static int vt_allocate(unsigned vtnr) {
         char p[sizeof("/dev/tty") + DECIMAL_STR_MAX(unsigned)];
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         assert(vtnr >= 1);
 

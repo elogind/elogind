@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
                 .un.sun_path = "/run/systemd/cgroups-agent",
         };
 
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         ssize_t n;
         size_t l;
         int r;

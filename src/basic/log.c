@@ -50,9 +50,9 @@ static int log_max_level = LOG_INFO;
 static int log_facility = LOG_DAEMON;
 
 static int console_fd = STDERR_FILENO;
-static int syslog_fd = -1;
-static int kmsg_fd = -1;
-static int journal_fd = -1;
+static int syslog_fd = -EBADF;
+static int kmsg_fd = -EBADF;
+static int journal_fd = -EBADF;
 
 static bool syslog_is_stream = false;
 
@@ -390,7 +390,7 @@ void log_close(void) {
 void log_forget_fds(void) {
         /* Do not call from library code. */
 
-        console_fd = kmsg_fd = syslog_fd = journal_fd = -1;
+        console_fd = kmsg_fd = syslog_fd = journal_fd = -EBADF;
 }
 #endif // 0
 
@@ -1218,6 +1218,7 @@ static bool should_parse_proc_cmdline(void) {
                 return true;
 
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         return invoked_by_elogind();

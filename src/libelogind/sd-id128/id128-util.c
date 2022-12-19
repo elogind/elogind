@@ -105,7 +105,7 @@ int id128_read_fd(int fd, Id128FormatFlag f, sd_id128_t *ret) {
 }
 
 int id128_read(const char *p, Id128FormatFlag f, sd_id128_t *ret) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(p, O_RDONLY|O_CLOEXEC|O_NOCTTY);
         if (fd < 0)
@@ -146,7 +146,7 @@ int id128_write_fd(int fd, Id128FormatFlag f, sd_id128_t id) {
 
 #if 0 /// UNNEEDED by elogind
 int id128_write(const char *p, Id128FormatFlag f, sd_id128_t id) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(p, O_WRONLY|O_CREAT|O_CLOEXEC|O_NOCTTY|O_TRUNC, 0444);
         if (fd < 0)

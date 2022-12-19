@@ -86,7 +86,7 @@ int btrfs_is_subvol_fd(int fd) {
 
 #if 0 /// UNNEEDED by elogind
 int btrfs_is_subvol(const char *path) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         assert(path);
 
@@ -99,7 +99,7 @@ int btrfs_is_subvol(const char *path) {
 
 int btrfs_subvol_make_fd(int fd, const char *subvolume) {
         struct btrfs_ioctl_vol_args args = {};
-        _cleanup_close_ int real_fd = -1;
+        _cleanup_close_ int real_fd = -EBADF;
         int r;
 
         assert(subvolume);
@@ -120,7 +120,7 @@ int btrfs_subvol_make_fd(int fd, const char *subvolume) {
 }
 
 int btrfs_subvol_make(const char *path) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         const char *subvolume;
         int r;
 
@@ -187,7 +187,7 @@ int btrfs_subvol_set_read_only_fd(int fd, bool b) {
 
 #if 0 /// UNNEEDED by elogind
 int btrfs_subvol_set_read_only(const char *path, bool b) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(path, O_RDONLY|O_NOCTTY|O_CLOEXEC|O_DIRECTORY);
         if (fd < 0)
@@ -251,7 +251,7 @@ int btrfs_clone_range(int infd, uint64_t in_offset, int outfd, uint64_t out_offs
 
 int btrfs_get_block_device_fd(int fd, dev_t *dev) {
         struct btrfs_ioctl_fs_info_args fsi = {};
-        _cleanup_close_ int regfd = -1;
+        _cleanup_close_ int regfd = -EBADF;
         uint64_t id;
         int r;
 
@@ -317,7 +317,7 @@ int btrfs_get_block_device_fd(int fd, dev_t *dev) {
 
 #if 0 /// UNNEEDED by elogind
 int btrfs_get_block_device(const char *path, dev_t *dev) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         assert(path);
         assert(dev);
@@ -354,7 +354,7 @@ int btrfs_subvol_get_id_fd(int fd, uint64_t *ret) {
 
 #if 0 /// UNNEEDED by elogind
 int btrfs_subvol_get_id(int fd, const char *subvol, uint64_t *ret) {
-        _cleanup_close_ int subvol_fd = -1;
+        _cleanup_close_ int subvol_fd = -EBADF;
 
         assert(fd >= 0);
         assert(ret);
@@ -638,7 +638,7 @@ finish:
 }
 
 int btrfs_qgroup_get_quota(const char *path, uint64_t qgroupid, BtrfsQuotaInfo *ret) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW);
         if (fd < 0)
@@ -731,7 +731,7 @@ int btrfs_subvol_get_subtree_quota_fd(int fd, uint64_t subvol_id, BtrfsQuotaInfo
 }
 
 int btrfs_subvol_get_subtree_quota(const char *path, uint64_t subvol_id, BtrfsQuotaInfo *ret) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW);
         if (fd < 0)
@@ -753,7 +753,7 @@ int btrfs_defrag_fd(int fd) {
 }
 
 int btrfs_defrag(const char *p) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(p, O_RDWR|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW);
         if (fd < 0)
@@ -780,7 +780,7 @@ int btrfs_quota_enable_fd(int fd, bool b) {
 }
 
 int btrfs_quota_enable(const char *path, bool b) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW);
         if (fd < 0)
@@ -831,7 +831,7 @@ int btrfs_qgroup_set_limit_fd(int fd, uint64_t qgroupid, uint64_t referenced_max
 }
 
 int btrfs_qgroup_set_limit(const char *path, uint64_t qgroupid, uint64_t referenced_max) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW);
         if (fd < 0)
@@ -854,7 +854,7 @@ int btrfs_subvol_set_subtree_quota_limit_fd(int fd, uint64_t subvol_id, uint64_t
 }
 
 int btrfs_subvol_set_subtree_quota_limit(const char *path, uint64_t subvol_id, uint64_t referenced_max) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(path, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW);
         if (fd < 0)
@@ -1065,7 +1065,7 @@ static int subvol_remove_children(int fd, const char *subvolume, uint64_t subvol
         };
 
         struct btrfs_ioctl_vol_args vol_args = {};
-        _cleanup_close_ int subvol_fd = -1;
+        _cleanup_close_ int subvol_fd = -EBADF;
         struct stat st;
         bool made_writable = false;
         int r;
@@ -1165,7 +1165,7 @@ static int subvol_remove_children(int fd, const char *subvolume, uint64_t subvol
                                  * directory of the subvolume. */
                                 r = subvol_remove_children(subvol_fd, p, sh->objectid, flags);
                         else {
-                                _cleanup_close_ int child_fd = -1;
+                                _cleanup_close_ int child_fd = -EBADF;
 
                                 /* Subvolume is somewhere further down,
                                  * hence we need to open the
@@ -1196,7 +1196,7 @@ static int subvol_remove_children(int fd, const char *subvolume, uint64_t subvol
 }
 
 int btrfs_subvol_remove(const char *path, BtrfsRemoveFlags flags) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         const char *subvolume;
         int r;
 
@@ -1431,7 +1431,7 @@ static int subvol_snapshot_children(
                 .flags = flags & BTRFS_SNAPSHOT_READ_ONLY ? BTRFS_SUBVOL_RDONLY : 0,
                 .fd = old_fd,
         };
-        _cleanup_close_ int subvolume_fd = -1;
+        _cleanup_close_ int subvolume_fd = -EBADF;
         uint64_t new_subvol_id;
         int r;
 
@@ -1485,7 +1485,7 @@ static int subvol_snapshot_children(
                 FOREACH_BTRFS_IOCTL_SEARCH_HEADER(i, sh, args) {
                         _cleanup_free_ char *p = NULL, *c = NULL, *np = NULL;
                         const struct btrfs_root_ref *ref;
-                        _cleanup_close_ int old_child_fd = -1, new_child_fd = -1;
+                        _cleanup_close_ int old_child_fd = -EBADF, new_child_fd = -EBADF;
 
                         btrfs_ioctl_search_args_set(&args, sh);
 
@@ -1595,7 +1595,7 @@ int btrfs_subvol_snapshot_fd_full(
                 copy_progress_bytes_t progress_bytes,
                 void *userdata) {
 
-        _cleanup_close_ int new_fd = -1;
+        _cleanup_close_ int new_fd = -EBADF;
         const char *subvolume;
         int r;
 
@@ -1678,7 +1678,7 @@ int btrfs_subvol_snapshot_full(
                 copy_progress_bytes_t progress_bytes,
                 void *userdata) {
 
-        _cleanup_close_ int old_fd = -1;
+        _cleanup_close_ int old_fd = -EBADF;
 
         assert(old_path);
         assert(new_path);
@@ -1781,7 +1781,7 @@ int btrfs_qgroup_find_parents(int fd, uint64_t qgroupid, uint64_t **ret) {
 #if 0 /// UNNEEDED by elogind
 int btrfs_subvol_auto_qgroup_fd(int fd, uint64_t subvol_id, bool insert_intermediary_qgroup) {
         _cleanup_free_ uint64_t *qgroups = NULL;
-        _cleanup_close_ int real_fd = -1;
+        _cleanup_close_ int real_fd = -EBADF;
         uint64_t parent_subvol;
         bool changed = false;
         int n = 0, r;
@@ -1933,7 +1933,7 @@ int btrfs_subvol_auto_qgroup_fd(int fd, uint64_t subvol_id, bool insert_intermed
 }
 
 int btrfs_subvol_auto_qgroup(const char *path, uint64_t subvol_id, bool create_intermediary_qgroup) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open(path, O_RDONLY|O_NOCTTY|O_CLOEXEC|O_DIRECTORY);
         if (fd < 0)

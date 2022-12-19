@@ -226,7 +226,6 @@ int path_make_relative_parent(const char *from_child, const char *to, char **ret
 }
 #endif // 0
 
-
 char* path_startswith_strv(const char *p, char **set) {
         STRV_FOREACH(s, set) {
                 char *t;
@@ -598,7 +597,7 @@ char* path_extend_internal(char **x, ...) {
 
 #if 0 /// UNNEEDED by elogind
 static int check_x_access(const char *path, int *ret_fd) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         int r;
 
         /* We need to use O_PATH because there may be executables for which we have only exec
@@ -626,7 +625,7 @@ static int check_x_access(const char *path, int *ret_fd) {
 }
 
 static int find_executable_impl(const char *name, const char *root, char **ret_filename, int *ret_fd) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         _cleanup_free_ char *path_name = NULL;
         int r;
 
