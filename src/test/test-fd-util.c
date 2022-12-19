@@ -59,7 +59,7 @@ TEST(close_nointr) {
 
 #if 0 /// UNNEEDED by elogind
 TEST(same_fd) {
-        _cleanup_close_pair_ int p[2] = { -1, -1 };
+        _cleanup_close_pair_ int p[2];
         _cleanup_close_ int a, b, c;
 
         assert_se(pipe2(p, O_CLOEXEC) >= 0);
