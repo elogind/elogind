@@ -378,6 +378,8 @@ shared_sources = files(
         'devnode-acl.h',
         'dns-domain.c',
         'dns-domain.h',
+        'efi-api.c',
+        'efi-api.h',
         'efi-loader.c',
         'efi-loader.h',
         'enable-mempool.c',
