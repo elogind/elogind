@@ -1279,31 +1279,8 @@ bool valid_device_allow_pattern(const char *path) {
 
         return valid_device_node_path(path);
 }
+#endif // 0
 
-int systemd_installation_has_version(const char *root, unsigned minimal_version) {
-        const char *pattern;
-        int r;
-
-        /* Try to guess if elogind installation is later than the specified version. This
-         * is hacky and likely to yield false negatives, particularly if the installation
-         * is non-standard. False positives should be relatively rare.
-         */
-
-        NULSTR_FOREACH(pattern,
-                       /* /lib works for systems without usr-merge, and for systems with a sane
-                        * usr-merge, where /lib is a symlink to /usr/lib. /usr/lib is necessary
-                        * for Gentoo which does a merge without making /lib a symlink.
-                        */
-                       "lib/elogind/libelogind-shared-*.so\0"
-                       "lib64/elogind/libelogind-shared-*.so\0"
-                       "usr/lib/elogind/libelogind-shared-*.so\0"
-                       "usr/lib64/elogind/libelogind-shared-*.so\0") {
-
-                _cleanup_strv_free_ char **names = NULL;
-                _cleanup_free_ char *path = NULL;
-                char *c;
-
-                path = path_join(root, pattern);
 bool dot_or_dot_dot(const char *path) {
         if (!path)
                 return false;
@@ -1316,7 +1293,6 @@ bool dot_or_dot_dot(const char *path) {
 
         return path[2] == 0;
 }
-#endif // 0
 
 bool empty_or_root(const char *path) {
 
