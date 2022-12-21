@@ -54,8 +54,6 @@ liblogind_core_sources = files(
 
 #if 1 /// elogind has some additional files:
 liblogind_core_sources += [files(
-        'elogind-dbus.c',
-        'elogind-dbus.h',
         'user-runtime-dir.c',
         'user-runtime-dir.h',
 ),
