@@ -323,8 +323,8 @@ TEST(build) {
         b = json_variant_unref(b);
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
         assert_se(json_build(&a, JSON_BUILD_REAL(M_PI)) >= 0);
+#endif // 0
 
         s = mfree(s);
 #if 0 /// UNNEEDED by elogind
@@ -335,10 +335,10 @@ TEST(build) {
         log_info("GOT: %s\n", t);
 
         assert_se(streq(s, t));
-#endif // 0
 
         a = json_variant_unref(a);
         b = json_variant_unref(b);
+#endif // 0
 
         assert_se(json_build(&a, JSON_BUILD_OBJECT(
                                              JSON_BUILD_PAIR("x", JSON_BUILD_STRING("y")),
