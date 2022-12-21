@@ -1043,6 +1043,7 @@ int boot_config_augment_from_loader(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int boot_entry_file_check(const char *root, const char *p) {
         _cleanup_free_ char *path = NULL;
 
@@ -1052,6 +1053,7 @@ static int boot_entry_file_check(const char *root, const char *p) {
 
         return RET_NERRNO(access(path, F_OK));
 }
+#endif // 0
 
 BootEntry* boot_config_find_entry(BootConfig *config, const char *id) {
         assert(config);
@@ -1065,6 +1067,7 @@ BootEntry* boot_config_find_entry(BootConfig *config, const char *id) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 static void boot_entry_file_list(const char *field, const char *root, const char *p, int *ret_status) {
         int status = boot_entry_file_check(root, p);
 
@@ -1233,3 +1236,4 @@ int show_boot_entries(const BootConfig *config, JsonFormatFlags json_format) {
 
         return 0;
 }
+#endif // 0

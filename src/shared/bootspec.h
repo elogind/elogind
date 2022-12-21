@@ -110,6 +110,7 @@ static inline const char* boot_entry_title(const BootEntry *entry) {
         return ASSERT_PTR(entry->show_title ?: entry->title ?: entry->id);
 }
 
+#if 0 /// UNNEEDED by elogind
 int show_boot_entry(
                 const BootEntry *e,
                 bool show_as_default,
@@ -118,3 +119,4 @@ int show_boot_entry(
 int show_boot_entries(
                 const BootConfig *config,
                 JsonFormatFlags json_format);
+#endif // 0
