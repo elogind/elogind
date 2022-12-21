@@ -28,11 +28,9 @@ int mkdir_safe_label(const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirF
         return mkdir_safe_internal(path, mode, uid, gid, flags, mkdirat_label);
 }
 
-#if 0 /// UNNEEDED by elogind
 int mkdir_parents_label(const char *path, mode_t mode) {
         return mkdir_parents_internal(NULL, path, mode, UID_INVALID, UID_INVALID, 0, mkdirat_label);
 }
-#endif // 0
 
 int mkdir_p_label(const char *path, mode_t mode) {
         return mkdir_p_internal(NULL, path, mode, UID_INVALID, UID_INVALID, 0, mkdirat_label);
