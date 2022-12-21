@@ -1414,7 +1414,6 @@ int dns_name_dot_suffixed(const char *name) {
                         return false;
         }
 }
-#endif // 0
 
 bool dns_name_dont_resolve(const char *name) {
 
@@ -1430,3 +1429,4 @@ bool dns_name_dont_resolve(const char *name) {
 
         return false;
 }
+#endif // 0
