@@ -22,7 +22,7 @@
 ***/
 
 
-#include "elogind-dbus.h"
+#include "logind-dbus.h"
 #include "logind.h"
 #include "sd-bus.h"
 
