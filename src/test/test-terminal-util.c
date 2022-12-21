@@ -22,6 +22,7 @@
         "in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat " \
         "non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
+#if 0 /// Nowhere used in elogind
 TEST(default_term_for_tty) {
         puts(default_term_for_tty("/dev/tty23"));
         puts(default_term_for_tty("/dev/ttyS23"));
@@ -64,6 +65,7 @@ TEST(read_one_char) {
 
         assert_se(unlink(name) >= 0);
 }
+#endif // 0
 
 TEST(getttyname_malloc) {
         _cleanup_free_ char *ttyname = NULL;
@@ -84,16 +86,21 @@ typedef struct {
 static const Color colors[] = {
         { "normal", ansi_normal },
         { "highlight", ansi_highlight },
+#if 0 /// UNNEEDED by elogind
         { "black", ansi_black },
         { "red", ansi_red },
+#endif // 0
         { "green", ansi_green },
+#if 0 /// UNNEEDED by elogind
         { "yellow", ansi_yellow },
         { "blue", ansi_blue },
         { "magenta", ansi_magenta },
         { "cyan", ansi_cyan },
         { "white", ansi_white },
+#endif // 0
         { "grey", ansi_grey },
 
+#if 0 /// UNNEEDED by elogind
         { "bright-black", ansi_bright_black },
         { "bright-red", ansi_bright_red },
         { "bright-green", ansi_bright_green },
@@ -104,17 +111,23 @@ static const Color colors[] = {
         { "bright-white", ansi_bright_white },
 
         { "highlight-black", ansi_highlight_black },
+#endif // 0
         { "highlight-red", ansi_highlight_red },
         { "highlight-green", ansi_highlight_green },
+#if 0 /// UNNEEDED by elogind
         { "highlight-yellow (original)", _ansi_highlight_yellow },
+#endif // 0
         { "highlight-yellow (replacement)", ansi_highlight_yellow },
         { "highlight-blue", ansi_highlight_blue },
         { "highlight-magenta", ansi_highlight_magenta },
+#if 0 /// UNNEEDED by elogind
         { "highlight-cyan", ansi_highlight_cyan },
         { "highlight-white", ansi_highlight_white },
         { "highlight-grey", ansi_highlight_grey },
+#endif // 0
 
         { "underline", ansi_underline },
+#if 0 /// UNNEEDED by elogind
         { "highlight-underline", ansi_highlight_underline },
         { "highlight-red-underline", ansi_highlight_red_underline },
         { "highlight-green-underline", ansi_highlight_green_underline },
@@ -122,6 +135,7 @@ static const Color colors[] = {
         { "highlight-blue-underline", ansi_highlight_blue_underline },
         { "highlight-magenta-underline", ansi_highlight_magenta_underline },
         { "highlight-grey-underline", ansi_highlight_grey_underline },
+#endif // 0
 };
 
 TEST(colors) {
