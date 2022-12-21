@@ -74,23 +74,16 @@ id128_sources = files(
 
 sd_daemon_sources = files('sd-daemon/sd-daemon.c')
 
-#if 0 /// event-util is not needed in elogind
-# ############################################################
-#
-# sd_event_sources = files(
-#         'sd-event/event-source.h',
-#         'sd-event/event-util.c',
-#         'sd-event/event-util.h',
-#         'sd-event/sd-event.c',
-# )
-#
-# ############################################################
-#else // 0
-sd_event_sources = files('''
-        sd-event/event-source.h
-        sd-event/sd-event.c
-'''.split())
-#endif // 0
+############################################################
+
+sd_event_sources = files(
+        'sd-event/event-source.h',
+        'sd-event/event-util.c',
+        'sd-event/event-util.h',
+        'sd-event/sd-event.c',
+)
+
+############################################################
 
 sd_login_sources = files('sd-login/sd-login.c')
 
