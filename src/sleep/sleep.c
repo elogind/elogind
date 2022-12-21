@@ -48,7 +48,6 @@ static SleepOperation arg_operation = _SLEEP_OPERATION_INVALID;
 static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";
         int r;
-        char** session;
         char** sessions;
         struct stat std;
         unsigned vt = 0;
@@ -205,7 +204,6 @@ static int write_mode(char **modes) {
 #else // 0
 static int write_mode(SleepOperation operation, char **modes) {
         int r = 0;
-        char **mode;
         static char const mode_disk[] = "/sys/power/disk";
         static char const mode_mem[] = "/sys/power/mem_sleep";
         char const* mode_location = SLEEP_SUSPEND == operation ? mode_mem : mode_disk;
