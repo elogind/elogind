@@ -46,7 +46,6 @@ static void test_config_parse_si_uint64_one(const char *rvalue, uint64_t expecte
         assert_se(config_parse_si_uint64("unit", "filename", 1, "section", 1, "lvalue", 0, rvalue, &si_uint64, NULL) >= 0);
         assert_se(expected == si_uint64);
 }
-#endif // 0
 
 static void test_config_parse_int_one(const char *rvalue, int expected) {
         int v = -1;
@@ -61,6 +60,7 @@ static void test_config_parse_unsigned_one(const char *rvalue, unsigned expected
         assert_se(config_parse_unsigned("unit", "filename", 1, "section", 1, "lvalue", 0, rvalue, &v, NULL) >= 0);
         assert_se(expected == v);
 }
+#endif // 0
 
 static void test_config_parse_strv_one(const char *rvalue, char **expected) {
         _cleanup_strv_free_ char **strv = NULL;
@@ -143,7 +143,6 @@ TEST(config_parse_si_uint64) {
         test_config_parse_si_uint64_one("49874444198739873000000G", 0);
         test_config_parse_si_uint64_one("garbage", 0);
 }
-#endif // 0
 
 TEST(config_parse_int) {
         test_config_parse_int_one("1024", 1024);
@@ -166,6 +165,7 @@ TEST(config_parse_unsigned) {
         test_config_parse_unsigned_one("garbage", 0);
         test_config_parse_unsigned_one("1000garbage", 0);
 }
+#endif // 0
 
 TEST(config_parse_strv) {
         test_config_parse_strv_one("", STRV_MAKE_EMPTY);
@@ -211,6 +211,7 @@ TEST(config_parse_nsec) {
         test_config_parse_nsec_one("10foo", 0);
         test_config_parse_nsec_one("garbage", 0);
 }
+#endif // 0
 
 TEST(config_parse_iec_uint64) {
         uint64_t offset = 0;
@@ -220,7 +221,7 @@ TEST(config_parse_iec_uint64) {
         assert_se(config_parse_iec_uint64(NULL, "/this/file", 11, "Section", 22, "Size", 0, "4.5M", &offset, NULL) == 0);
 }
 
-#endif // 0
+#if 0 /// UNNEEDED by elogind
 #define x10(x) x x x x x x x x x x
 #define x100(x) x10(x10(x))
 #define x1000(x) x10(x100(x))
@@ -397,16 +398,10 @@ static void test_config_parse_one(unsigned i, const char *s) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 TEST(config_parse) {
         for (unsigned i = 0; i < ELEMENTSOF(config_file); i++)
                 test_config_parse_one(i, config_file[i]);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);
