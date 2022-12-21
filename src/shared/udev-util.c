@@ -729,6 +729,7 @@ int on_ac_power(void) {
         return found_online || !found_offline;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool udev_available(void) {
         static int cache = -1;
 
@@ -742,3 +743,4 @@ bool udev_available(void) {
 
         return (cache = (path_is_read_only_fs("/sys/") <= 0));
 }
+#endif // 0
