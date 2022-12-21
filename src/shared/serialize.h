@@ -8,12 +8,14 @@
 #include "string-util.h"
 #include "time-util.h"
 
-#if 0 /// UNNEEDED by elogind
 int serialize_item(FILE *f, const char *key, const char *value);
 int serialize_item_escaped(FILE *f, const char *key, const char *value);
 int serialize_item_format(FILE *f, const char *key, const char *value, ...) _printf_(3,4);
+#if 0 /// UNNEEDED by elogind
 int serialize_fd(FILE *f, FDSet *fds, const char *key, int fd);
+#endif // 0
 int serialize_usec(FILE *f, const char *key, usec_t usec);
+#if 0 /// UNNEEDED by elogind
 int serialize_dual_timestamp(FILE *f, const char *key, const dual_timestamp *t);
 int serialize_strv(FILE *f, const char *key, char **l);
 

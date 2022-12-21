@@ -14,7 +14,6 @@
 #include "strv.h"
 #include "tmpfile-util.h"
 
-#if 0 /// UNNEEDED by elogind
 int serialize_item(FILE *f, const char *key, const char *value) {
         assert(f);
         assert(key);
@@ -79,6 +78,7 @@ int serialize_item_format(FILE *f, const char *key, const char *format, ...) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int serialize_fd(FILE *f, FDSet *fds, const char *key, int fd) {
         int copy;
 
@@ -94,6 +94,7 @@ int serialize_fd(FILE *f, FDSet *fds, const char *key, int fd) {
 
         return serialize_item_format(f, key, "%i", copy);
 }
+#endif // 0
 
 int serialize_usec(FILE *f, const char *key, usec_t usec) {
         assert(f);
@@ -105,6 +106,7 @@ int serialize_usec(FILE *f, const char *key, usec_t usec) {
         return serialize_item_format(f, key, USEC_FMT, usec);
 }
 
+#if 0 /// UNNEEDED by elogind
 int serialize_dual_timestamp(FILE *f, const char *name, const dual_timestamp *t) {
         assert(f);
         assert(name);
