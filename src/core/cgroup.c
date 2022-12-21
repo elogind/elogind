@@ -30,7 +30,7 @@
 #include "percent-util.h"
 //#include "process-util.h"
 #include "procfs-util.h"
-#include "restrict-ifaces.h"
+//#include "restrict-ifaces.h"
 #include "special.h"
 #include "stdio-util.h"
 //#include "string-table.h"
