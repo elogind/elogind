@@ -22,6 +22,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "strv.h"
+
 static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_POWEROFF] = {
                 .handle                          = HANDLE_POWEROFF,
@@ -117,13 +118,11 @@ static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
         },
 };
 
-#if 0 /// elogind does this itself. No target table required
 const HandleActionData* handle_action_lookup(HandleAction action) {
 
         if (action < 0 || (size_t) action >= ELEMENTSOF(handle_action_data_table))
                 return NULL;
 
-#endif // 0
         return &handle_action_data_table[action];
 }
 
@@ -150,8 +149,6 @@ int manager_handle_action(
         InhibitWhat inhibit_operation;
         Inhibitor *offending = NULL;
         bool supported;
-#if 0 /// elogind uses its own variant, which can use the handle directly.
-#endif // 0
         int r;
 
         assert(m);
@@ -242,7 +239,6 @@ int manager_handle_action(
                                        inhibit_what_to_string(m->delayed_action->inhibit_what),
                                        handle_action_to_string(handle));
 
-/// elogind empty mask removed (elogind uses its own variant, which can use the handle directly.)
         inhibit_operation = handle_action_lookup(handle)->inhibit_what;
 
         /* If the actual operation is inhibited, warn and fail */
@@ -266,11 +262,7 @@ int manager_handle_action(
 
         log_info("%s", message_table[handle]);
 
-#if 0 /// elogind uses its own variant, which can use the handle directly.
         r = bus_manager_shutdown_or_sleep_now_or_later(m, handle_action_lookup(handle), &error);
-#else // 0
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
-#endif // 0
         if (r < 0)
                 return log_error_errno(r, "Failed to execute %s operation: %s",
                                        handle_action_to_string(handle),

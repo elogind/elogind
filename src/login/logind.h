@@ -101,11 +101,11 @@ struct Manager {
         usec_t user_stop_delay;
 
 
-#if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
         /* If a shutdown/suspend was delayed due to an inhibitor this contains the action we are supposed to
          * start after the delay is over */
         const HandleActionData *delayed_action;
 
+#if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
         /* If a shutdown/suspend is currently executed, then this is the job of it */
         char *action_job;
 #else // 0
@@ -124,11 +124,6 @@ struct Manager {
 
         /* Allow elogind to put Nvidia cards to sleep */
         bool handle_nvidia_sleep;
-
-        /* If a shutdown/suspend was delayed due to a inhibitor this
-           contains the action we are supposed to perform after the
-           delay is over */
-        HandleAction pending_action;
 
         /* To allow elogind to put nvidia cards to sleep on suspend/hibernate,
            we store the users uid to get the right VT information */

@@ -823,13 +823,12 @@ int user_kill(User *u, int signo) {
 
         return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);
 #else // 0
-        Session *s;
         int res = 0;
 
         assert(u);
 
-        LIST_FOREACH(sessions_by_user, s, u->sessions) {
-                int r = session_kill(s, KILL_ALL, signo);
+        LIST_FOREACH(sessions_by_user, session, u->sessions) {
+                int r = session_kill(session, KILL_ALL, signo);
                 if (res == 0 && r < 0)
                         res = r;
         }
