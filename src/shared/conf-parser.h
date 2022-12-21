@@ -136,9 +136,11 @@ static inline ConfigSection* config_section_free(ConfigSection *cs) {
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(ConfigSection*, config_section_free);
 
+#if 0 /// UNNEEDED by elogind
 int config_section_new(const char *filename, unsigned line, ConfigSection **s);
 extern const struct hash_ops config_section_hash_ops;
 unsigned hashmap_find_free_section_line(Hashmap *hashmap);
+#endif // 0
 
 static inline bool section_is_invalid(ConfigSection *section) {
         /* If this returns false, then it does _not_ mean the section is valid. */
@@ -162,6 +164,7 @@ static inline bool section_is_invalid(ConfigSection *section) {
         DEFINE_TRIVIAL_CLEANUP_FUNC(type*, free_func);                  \
         DEFINE_TRIVIAL_CLEANUP_FUNC(type*, free_func##_or_set_invalid);
 
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_int);
 CONFIG_PARSER_PROTOTYPE(config_parse_unsigned);
 CONFIG_PARSER_PROTOTYPE(config_parse_long);
@@ -169,19 +172,24 @@ CONFIG_PARSER_PROTOTYPE(config_parse_uint8);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint16);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint32);
 CONFIG_PARSER_PROTOTYPE(config_parse_int32);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_uint64);
 CONFIG_PARSER_PROTOTYPE(config_parse_double);
 #if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_size);
 CONFIG_PARSER_PROTOTYPE(config_parse_si_uint64);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64);
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64_infinity);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_bool);
-CONFIG_PARSER_PROTOTYPE(config_parse_id128);
-CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
-CONFIG_PARSER_PROTOTYPE(config_parse_string);
 #if 0 /// UNNEEDED by elogind
+CONFIG_PARSER_PROTOTYPE(config_parse_id128);
+#endif // 0
+CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
+#if 0 /// UNNEEDED by elogind
+CONFIG_PARSER_PROTOTYPE(config_parse_string);
 CONFIG_PARSER_PROTOTYPE(config_parse_dns_name);
 CONFIG_PARSER_PROTOTYPE(config_parse_hostname);
 CONFIG_PARSER_PROTOTYPE(config_parse_path);
@@ -211,8 +219,8 @@ CONFIG_PARSER_PROTOTYPE(config_parse_ether_addr);
 CONFIG_PARSER_PROTOTYPE(config_parse_ether_addrs);
 CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_non_null);
 CONFIG_PARSER_PROTOTYPE(config_parse_percent);
-#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_pid);
 
 typedef enum Disabled {

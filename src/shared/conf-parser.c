@@ -5,35 +5,35 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 
 #include "alloc-util.h"
 #include "conf-files.h"
 #include "conf-parser.h"
-#include "def.h"
-#include "dns-domain.h"
-#include "escape.h"
-#include "ether-addr-util.h"
+//#include "def.h"
+//#include "dns-domain.h"
+//#include "escape.h"
+//#include "ether-addr-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
 #include "hostname-util.h"
-#include "in-addr-util.h"
+//#include "in-addr-util.h"
 #include "log.h"
 #include "macro.h"
 #include "missing_network.h"
 #include "nulstr-util.h"
 //#include "parse-helpers.h"
 #include "parse-util.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "percent-util.h"
-#include "process-util.h"
-#include "rlimit-util.h"
+//#include "process-util.h"
+//#include "rlimit-util.h"
 #include "sd-id128.h"
 #include "set.h"
-#include "signal-util.h"
-#include "socket-util.h"
+//#include "signal-util.h"
+//#include "socket-util.h"
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -42,8 +42,8 @@
 #include "utf8.h"
 
 /// Additional includes needed by elogind
-#include "def.h"
-#include "fileio.h"
+//#include "def.h"
+//#include "fileio.h"
 
 int config_item_table_lookup(
                 const void *table,
@@ -716,7 +716,6 @@ bool stats_by_path_equal(Hashmap *a, Hashmap *b) {
 
         return true;
 }
-#endif // 0
 
 static void config_section_hash_func(const ConfigSection *c, struct siphash *state) {
         siphash24_compress_string(c->filename, state);
@@ -761,22 +760,23 @@ unsigned hashmap_find_free_section_line(Hashmap *hashmap) {
 
         return n + 1;
 }
+#endif // 0
 
 #define DEFINE_PARSER(type, vartype, conv_func)                         \
         DEFINE_CONFIG_PARSE_PTR(config_parse_##type, conv_func, vartype, "Failed to parse " #type " value")
 
+#if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(int, int, safe_atoi);
 DEFINE_PARSER(long, long, safe_atoli);
-#if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(uint8, uint8_t, safe_atou8);
 DEFINE_PARSER(uint16, uint16_t, safe_atou16);
 DEFINE_PARSER(uint32, uint32_t, safe_atou32);
-#endif // 0
 DEFINE_PARSER(int32, int32_t, safe_atoi32);
+#endif // 0
 DEFINE_PARSER(uint64, uint64_t, safe_atou64);
+#if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(unsigned, unsigned, safe_atou);
 DEFINE_PARSER(double, double, safe_atod);
-#if 0 /// UNNEEDED by elogind
 DEFINE_PARSER(nsec, nsec_t, parse_nsec);
 #endif // 0
 DEFINE_PARSER(sec, usec_t, parse_sec);
@@ -844,6 +844,7 @@ int config_parse_si_uint64(
 
         return 0;
 }
+#endif // 0
 
 int config_parse_iec_uint64(
                 const char* unit,
@@ -872,6 +873,7 @@ int config_parse_iec_uint64(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_iec_uint64_infinity(
                 const char* unit,
                 const char *filename,
@@ -931,6 +933,7 @@ int config_parse_bool(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_id128(
                 const char *unit,
                 const char *filename,
@@ -964,6 +967,7 @@ int config_parse_id128(
         *result = t;
         return 0;
 }
+#endif // 0
 
 int config_parse_tristate(
                 const char* unit,
@@ -1003,6 +1007,7 @@ int config_parse_tristate(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_string(
                 const char *unit,
                 const char *filename,
@@ -1021,7 +1026,6 @@ int config_parse_string(
         assert(lvalue);
         assert(rvalue);
 
-#if 0 /// UNNEEDED by elogind
         if (isempty(rvalue)) {
                 *s = mfree(*s);
                 return 0;
@@ -1885,5 +1889,5 @@ int config_parse_in_addr_non_null(
 }
 
 DEFINE_CONFIG_PARSE(config_parse_percent, parse_percent, "Failed to parse percent value");
-#endif // 0
 DEFINE_CONFIG_PARSE(config_parse_permyriad, parse_permyriad, "Failed to parse permyriad value");
+#endif // 0
