@@ -15,11 +15,7 @@ int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char 
 
 int manager_dispatch_delayed(Manager *manager, bool timeout);
 
-#if 0 /// elogind has a version that does the action itself
 int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, const HandleActionData *a, sd_bus_error *error);
-#else // 0
-int bus_manager_shutdown_or_sleep_now_or_later(Manager *m, HandleAction action, InhibitWhat w, sd_bus_error *error);
-#endif // 0
 
 int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);
 int match_unit_removed(sd_bus_message *message, void *userdata, sd_bus_error *error);

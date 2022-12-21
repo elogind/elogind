@@ -58,8 +58,12 @@
 #include "utmp-wtmp.h"
 #include "virt.h"
 
-/// Additional includes needed by elogind
-#include "elogind-dbus.h"
+// Additional includes needed by elogind
+#include <stdio.h>
+#include "exec-elogind.h"
+#include "sleep.h"
+#include "update-utmp.h"
+
 /* As a random fun fact sysvinit had a 252 (256-(strlen(" \r\n")+1))
  * character limit for the wall message.
  * https://git.savannah.nongnu.org/cgit/sysvinit.git/tree/src/shutdown.c#n72
@@ -1563,7 +1567,6 @@ static int have_multiple_sessions(
         return false;
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
 static int bus_manager_log_shutdown(
                 Manager *m,
                 const HandleActionData *a) {
@@ -1582,7 +1585,6 @@ static int bus_manager_log_shutdown(
                                       m->wall_message ? ")" : ""),
                           log_verb);
 }
-#endif // 0
 
 static int lid_switch_ignore_handler(sd_event_source *e, uint64_t usec, void *userdata) {
         Manager *m = userdata;
@@ -1629,11 +1631,7 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
         return r;
 }
 
-#if 0 /// elogind-dbus.c needs to access this
 static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
-#else // 0
-int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
-#endif // 0
         int active = _active;
 
         assert(m);
@@ -1647,14 +1645,160 @@ int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
                                   active);
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
+#if 1 /// elogind specific helper to make HALT and REBOOT possible.
+static int elogind_run_helper( Manager* m, const char* helper, const char* arg_verb ) {
+        static const char  * const dirs[] = {
+                        SYSTEM_SHUTDOWN_PATH,
+                        PKGSYSCONFDIR "/system-shutdown",
+                        NULL };
+        _cleanup_free_ char* l            = NULL;
+        int r, e;
+        void* gather_args[] = {
+                        [STDOUT_GENERATE] = m,
+                        [STDOUT_COLLECT] = m,
+                        [STDOUT_CONSUME] = m,
+        };
+        char* verb_args[]   = {
+                        NULL,
+                        (char*) arg_verb,
+                        NULL
+        };
+
+        m->callback_failed       = false;
+        m->callback_must_succeed = m->allow_poweroff_interrupts;
+
+        r = execute_directories( dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL, EXEC_DIR_NONE );
+
+        if ( m->callback_must_succeed && ( ( r < 0 ) || m->callback_failed ) ) {
+                e = asprintf( &l, "A shutdown script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
+                              SYSTEM_SHUTDOWN_PATH, PKGSYSCONFDIR "/system-shutdown", r, arg_verb );
+                if ( e < 0 ) {
+                        log_oom();
+                        return -ENOMEM;
+                }
+
+                if ( m->broadcast_poweroff_interrupts )
+                        utmp_wall( l, "root", "n/a", logind_wall_tty_filter, m );
+
+                log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR, LOG_MESSAGE("%s", l), "SHUTDOWN=%s", arg_verb);
+
+                return -ECANCELED;
+        }
+
+        r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
+
+        if ( r < 0 )
+                return log_error_errno( errno, "Failed to fork run %s: %m", helper );
+
+        if ( 0 == r ) {
+                /* Child */
+                execlp( helper, helper, NULL );
+                log_error_errno( errno, "Failed to execute %s: %m", helper );
+                _exit( EXIT_FAILURE );
+        }
+
+        return 0;
+}
+#endif // 1
+
+#if 1 /// elogind specific executor
+static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
+
+        assert( m );
+
+        log_debug_elogind( "Called for '%s'", handle_action_to_string( action ) );
+
+        switch ( action ) {
+                case HANDLE_POWEROFF:
+                        return elogind_run_helper( m, POWEROFF, "poweroff" );
+                case HANDLE_REBOOT:
+                        return elogind_run_helper( m, REBOOT, "reboot" );
+                case HANDLE_HALT:
+                        return elogind_run_helper( m, HALT, "halt" );
+                case HANDLE_KEXEC:
+                        return elogind_run_helper( m, KEXEC, "kexec" );
+                case HANDLE_SUSPEND:
+                        return do_sleep( m, SLEEP_SUSPEND );
+                case HANDLE_HIBERNATE:
+                        return do_sleep( m, SLEEP_HIBERNATE );
+                case HANDLE_HYBRID_SLEEP:
+                        return do_sleep( m, SLEEP_HYBRID_SLEEP );
+                case HANDLE_SUSPEND_THEN_HIBERNATE:
+                        return do_sleep( m, SLEEP_SUSPEND_THEN_HIBERNATE );
+                default:
+                        return -EINVAL;
+        }
+}
+#endif // 1
+
+#if 1 /// Moved from elogind-dbus.c to make elogind have fewer extra sources
+static int elogind_execute_shutdown_or_sleep(
+                Manager *m,
+                const HandleActionData *a,
+                sd_bus_error *error) {
+
+        char** argv_utmp = NULL;
+        int r;
+
+        assert( m );
+        assert( a->inhibit_what >= 0 );
+        assert( a->inhibit_what < _INHIBIT_WHAT_MAX );
+
+        log_debug_elogind( "Called for '%s'", handle_action_to_string( a->handle ) );
+
+        if ( IN_SET( a->handle, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT ) ) {
+
+                /* As we have no systemd update-utmp daemon running, we have to
+                 * set the relevant utmp/wtmp entries ourselves.
+                 */
+
+                if ( strv_extend( &argv_utmp, "elogind" ) < 0 )
+                        return log_oom();
+
+                if ( HANDLE_REBOOT == a->handle ) {
+                        if ( strv_extend( &argv_utmp, "reboot" ) < 0 )
+                                return log_oom();
+                } else {
+                        if ( strv_extend( &argv_utmp, "shutdown" ) < 0 )
+                                return log_oom();
+                }
+
+                /* This comes from our patched update-utmp/update-utmp.c */
+                update_utmp( 2, argv_utmp );
+                strv_free( argv_utmp );
+        }
+
+        /* Now perform the requested action */
+        r = elogind_shutdown_or_sleep( m, a->handle );
+
+        /* no more pending actions, whether this failed or not */
+        m->delayed_action = NULL;
+
+        if ( r < 0 )
+                return r;
+
+        /* As elogind can not rely on a systemd manager to call all
+         * sleeping processes to wake up, we have to tell them all
+         * by ourselves. */
+        if ( a->inhibit_what == INHIBIT_SLEEP ) {
+                (void) send_prepare_for( m, a->inhibit_what, false );
+                m->delayed_action = NULL;
+        } else
+                m->delayed_action = a;
+
+        return 0;
+}
+#endif // 1
+
 static int execute_shutdown_or_sleep(
                 Manager *m,
                 const HandleActionData *a,
                 sd_bus_error *error) {
 
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
+#if 0 /// elogind does not support systemd actions
         const char *p;
+#endif // 0
         int r;
 
         assert(m);
@@ -1663,6 +1807,7 @@ static int execute_shutdown_or_sleep(
         if (a->inhibit_what == INHIBIT_SHUTDOWN)
                 bus_manager_log_shutdown(m, a);
 
+#if 0 /// elogind does this on its own
         r = bus_call_method(
                         m->bus,
                         bus_systemd_mgr,
@@ -1674,12 +1819,17 @@ static int execute_shutdown_or_sleep(
                 goto error;
 
         r = sd_bus_message_read(reply, "o", &p);
+#else // 0
+        r = elogind_execute_shutdown_or_sleep(m, a, error);
+#endif // 0
         if (r < 0)
                 goto error;
 
+#if 0 /// elogind does not support systemd actions
         r = free_and_strdup(&m->action_job, p);
         if (r < 0)
                 goto error;
+#endif // 0
 
         m->delayed_action = a;
 
@@ -1694,7 +1844,6 @@ error:
 
         return r;
 }
-#endif // 0
 
 int manager_dispatch_delayed(Manager *manager, bool timeout) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -1703,10 +1852,10 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
         assert(manager);
 
-#if 0 /// elogind has no action_job, but a pending_action
+#if 0 /// elogind has no action_job
         if (!manager->delayed_action || manager->action_job)
 #else // 0
-        if ( (0 == manager->action_what) || (HANDLE_IGNORE == manager->pending_action) )
+        if (!manager->delayed_action)
 #endif // 0
                 return 0;
 
@@ -1725,23 +1874,13 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
         }
 
         /* Actually do the operation */
-#if 0 /// elogind has no action_unit but a pending_action
         r = execute_shutdown_or_sleep(manager, manager->delayed_action, &error);
-#else // 0
-        r = execute_shutdown_or_sleep(manager, manager->action_what, manager->pending_action, &error);
-#endif // 0
         if (r < 0) {
                 log_warning("Error during inhibitor-delayed operation (already returned success to client): %s",
                             bus_error_message(&error, r));
 
 
-#if 0 /// elogind has no action_unit but a pending_action
                 manager->delayed_action = NULL;
-#else // 0
-                manager->pending_action = HANDLE_IGNORE;
-                manager->action_what    = 0;
-                /* It is not a critical error for elogind if suspending fails */
-#endif // 0
         }
 
         return 1; /* We did some work. */
@@ -1760,22 +1899,13 @@ static int manager_inhibit_timeout_handler(
         return manager_dispatch_delayed(manager, true);
 }
 
-#if 0 /// elogind does not have unit_name but action
 static int delay_shutdown_or_sleep(
                 Manager *m,
                 const HandleActionData *a) {
 
-#else // 0
-int delay_shutdown_or_sleep(
-                Manager *m,
-                InhibitWhat w,
-                HandleAction action) {
-#endif // 0
         int r;
 
         assert(m);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         assert(a);
 
         if (m->inhibit_timeout_source) {
@@ -1796,10 +1926,6 @@ int delay_shutdown_or_sleep(
                         return r;
         }
 
-#if 0 /// elogind does not have unit_name but pendig_action
-#else // 0
-        m->pending_action = action;
-#endif // 0
         m->delayed_action = a;
 
         return 0;
@@ -1807,10 +1933,6 @@ int delay_shutdown_or_sleep(
 
 int bus_manager_shutdown_or_sleep_now_or_later(
                 Manager *m,
-#if 0 /// elogind has HandleAction instead of const char* unit_name
-#else // 0
-                HandleAction unit_name,
-#endif // 0
                 const HandleActionData *a,
                 sd_bus_error *error) {
 
@@ -1819,8 +1941,8 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         int r;
 
         assert(m);
-#if 0 /// for elogind only w has to be checked.
         assert(a);
+#if 0 /// elogind does neither use nor support systemd units
         assert(!m->action_job);
 
         r = unit_load_state(m->bus, a->target, &load_state);
@@ -1831,9 +1953,6 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 return log_notice_errno(SYNTHETIC_ERRNO(EACCES),
                                         "Unit %s is %s, refusing operation.",
                                         a->target, load_state);
-#else // 0
-        assert(w > 0);
-        assert(w <= _INHIBIT_WHAT_MAX);
 #endif // 0
 
         /* Tell everybody to prepare for shutdown/sleep */
@@ -1843,7 +1962,7 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                 m->inhibit_delay_max > 0 &&
                 manager_is_inhibited(m, a->inhibit_what, INHIBIT_DELAY, NULL, false, false, 0, NULL);
 
-        log_debug_elogind("Called for '%s' (%sdelayed)", handle_action_to_string(unit_name), delayed ? "" : "NOT ");
+        log_debug_elogind("Called for '%s' (%sdelayed)", handle_action_to_string(a->handle), delayed ? "" : "NOT ");
         if (delayed)
                 /* Shutdown is delayed, keep in mind what we
                  * want to do, and start a timeout */
@@ -1968,10 +2087,6 @@ static int setup_wall_message_timer(Manager *m, sd_bus_message* message) {
 static int method_do_shutdown_or_sleep(
                 Manager *m,
                 sd_bus_message *message,
-#if 0 /// elogind has HandleAction instead of const char* unit_name
-#else // 0
-                HandleAction unit_name,
-#endif // 0
                 const HandleActionData *a,
                 bool with_flags,
                 sd_bus_error *error) {
@@ -1985,8 +2100,6 @@ static int method_do_shutdown_or_sleep(
 
         assert(m);
         assert(message);
-#if 0 /// elogind does not need this to be checked
-#endif // 0
         assert(a);
 
         if (with_flags) {
@@ -1996,11 +2109,7 @@ static int method_do_shutdown_or_sleep(
                         return r;
                 if ((flags & ~SD_LOGIND_SHUTDOWN_AND_SLEEP_FLAGS_PUBLIC) != 0)
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid flags parameter");
-#if 0 /// elogind uses its own "HandleAction"
                 if (a->handle != HANDLE_REBOOT && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
-#else // 0
-                if ((HANDLE_REBOOT != unit_name) && (flags & SD_LOGIND_REBOOT_VIA_KEXEC))
-#endif // 0
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Reboot via kexec is only applicable with reboot operations");
         } else {
                 /* Old style method: no flags parameter, but interactive bool passed as boolean in
@@ -2016,26 +2125,22 @@ static int method_do_shutdown_or_sleep(
         }
 
         log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
-                          __FUNCTION__, action,
-                          sleep_operation_to_string(sleep_operation),
+                          __FUNCTION__, handle_action_to_string(a->handle),
+                          sleep_operation_to_string(a->sleep_operation),
                           flags & SD_LOGIND_INTERACTIVE ? "" : "NOT ");
         if ((flags & SD_LOGIND_REBOOT_VIA_KEXEC) && kexec_loaded())
-#if 0 /// elogind uses HandleAction enum instead of char strings
                 a = handle_action_lookup(HANDLE_KEXEC);
-#else // 0
-                unit_name = HANDLE_KEXEC;
-#endif // 0
 
         /* Don't allow multiple jobs being executed at the same time */
         if (m->delayed_action)
                 return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS,
                                          "There's already a shutdown or sleep operation in progress");
 
-#if 0 /// Within elogind the manager m must be provided, too
         if (a->sleep_operation >= 0) {
+#if 0 /// Within elogind the manager m must be provided, too
                 r = can_sleep(a->sleep_operation);
 #else // 0
-                r = can_sleep(m, sleep_operation);
+                r = can_sleep(m, a->sleep_operation);
 #endif // 0
                 if (r == -ENOSPC)
                         return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
@@ -2049,7 +2154,7 @@ static int method_do_shutdown_or_sleep(
 
 #if 1 && !ENABLE_POLKIT /// elogind checks whether polkit is actually used, so regular users can suspend/hibernate without it (#167)
         // System shutdown and reboot stay being privileged operations
-        if (IN_SET(unit_name, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
+        if (IN_SET(a->handle, HANDLE_HALT, HANDLE_POWEROFF, HANDLE_REBOOT)) {
 #endif // 1
         r = verify_shutdown_creds(m, message, a, flags, error);
         if (r != 0)
@@ -2086,10 +2191,6 @@ static int method_poweroff(sd_bus_message *message, void *userdata, sd_bus_error
         log_debug_elogind("Called for '%s'", SPECIAL_POWEROFF_TARGET);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unit names
-#else // 0
-                        HANDLE_POWEROFF,
-#endif // 0
                         handle_action_lookup(HANDLE_POWEROFF),
                         sd_bus_message_is_method_call(message, NULL, "PowerOffWithFlags"),
                         error);
@@ -2101,10 +2202,6 @@ static int method_reboot(sd_bus_message *message, void *userdata, sd_bus_error *
         log_debug_elogind("Called for '%s'", SPECIAL_REBOOT_TARGET);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unit names
-#else // 0
-                        HANDLE_REBOOT,
-#endif // 0
                         handle_action_lookup(HANDLE_REBOOT),
                         sd_bus_message_is_method_call(message, NULL, "RebootWithFlags"),
                         error);
@@ -2116,10 +2213,6 @@ static int method_halt(sd_bus_message *message, void *userdata, sd_bus_error *er
         log_debug_elogind("Called for '%s'", SPECIAL_HALT_TARGET);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unit names
-#else // 0
-                        HANDLE_HALT,
-#endif // 0
                         handle_action_lookup(HANDLE_HALT),
                         sd_bus_message_is_method_call(message, NULL, "HaltWithFlags"),
                         error);
@@ -2131,10 +2224,6 @@ static int method_suspend(sd_bus_message *message, void *userdata, sd_bus_error 
         log_debug_elogind("Called for '%s'", SPECIAL_SUSPEND_TARGET);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unit names
-#else // 0
-                        HANDLE_SUSPEND,
-#endif // 0
                         handle_action_lookup(HANDLE_SUSPEND),
                         sd_bus_message_is_method_call(message, NULL, "SuspendWithFlags"),
                         error);
@@ -2146,10 +2235,6 @@ static int method_hibernate(sd_bus_message *message, void *userdata, sd_bus_erro
         log_debug_elogind("Called for '%s'", SPECIAL_HIBERNATE_TARGET);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unit names
-#else // 0
-                        HANDLE_HIBERNATE,
-#endif // 0
                         handle_action_lookup(HANDLE_HIBERNATE),
                         sd_bus_message_is_method_call(message, NULL, "HibernateWithFlags"),
                         error);
@@ -2161,10 +2246,6 @@ static int method_hybrid_sleep(sd_bus_message *message, void *userdata, sd_bus_e
         log_debug_elogind("Called for '%s'", SPECIAL_HYBRID_SLEEP_TARGET);
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unit names
-#else // 0
-                        HANDLE_HYBRID_SLEEP,
-#endif // 0
                         handle_action_lookup(HANDLE_HYBRID_SLEEP),
                         sd_bus_message_is_method_call(message, NULL, "HybridSleepWithFlags"),
                         error);
@@ -2175,10 +2256,6 @@ static int method_suspend_then_hibernate(sd_bus_message *message, void *userdata
 
         return method_do_shutdown_or_sleep(
                         m, message,
-#if 0 /// elogind uses HandleAction instead of const char* unit names
-#else // 0
-                        HANDLE_SUSPEND_THEN_HIBERNATE,
-#endif // 0
                         handle_action_lookup(HANDLE_SUSPEND_THEN_HIBERNATE),
                         sd_bus_message_is_method_call(message, NULL, "SuspendThenHibernateWithFlags"),
                         error);
@@ -2355,7 +2432,6 @@ void reset_scheduled_shutdown(Manager *m) {
         (void) unlink(SHUTDOWN_SCHEDULE_FILE);
 }
 
-#if 0 /// elogind has its own variant in elogind-dbus.c
 static int manager_scheduled_shutdown_handler(
                         sd_event_source *s,
                         uint64_t usec,
@@ -2403,7 +2479,6 @@ error:
         reset_scheduled_shutdown(m);
         return r;
 }
-#endif // 0
 
 static int method_schedule_shutdown(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
@@ -2571,13 +2646,13 @@ static int method_can_shutdown_or_sleep(
 
         assert(m);
         assert(message);
-#if 0 /// elogind needs to have the manager being passed
         assert(a);
 
         if (a->sleep_operation >= 0) {
+#if 0 /// elogind needs to have the manager being passed
                 r = can_sleep(a->sleep_operation);
 #else // 0
-                r = can_sleep(m, sleep_operation);
+                r = can_sleep(m, a->sleep_operation);
 #endif // 0
                 if (IN_SET(r,  0, -ENOSPC))
                         return sd_bus_reply_method_return(message, "s", "na");
@@ -2619,8 +2694,8 @@ static int method_can_shutdown_or_sleep(
                         }
                 }
 #else // 0
-                log_debug_elogind("CanShutDownOrSleep: %d [%d] %s blocked",
-                                  sleep_operation, handle, blocked ? "is" : "not");
+                log_debug_elogind("CanShutDownOrSleep: %s [%d] %s blocked",
+                                  sleep_operation_to_string(a->sleep_operation), handle, blocked ? "is" : "not");
 #endif // 0
         }
 
@@ -2635,8 +2710,7 @@ static int method_can_shutdown_or_sleep(
                         result = "challenge";
                 else
                         result = "no";
-                log_debug_elogind("CanShutDownOrSleep: multiple_sessions: %s = %s",
-                                  action_multiple_sessions, result);
+                log_debug_elogind("CanShutDownOrSleep: multiple_sessions: %s", result);
         }
 
         if (blocked) {
@@ -2652,8 +2726,7 @@ static int method_can_shutdown_or_sleep(
                                 result = "challenge";
                 } else
                         result = "no";
-                log_debug_elogind("CanShutDownOrSleep: blocked          : %s = %s",
-                                  action_ignore_inhibit, result);
+                log_debug_elogind("CanShutDownOrSleep: blocked          : %s", result);
         }
 
         if (!multiple_sessions && !blocked) {
@@ -2670,8 +2743,7 @@ static int method_can_shutdown_or_sleep(
                         result = "challenge";
                 else
                         result = "no";
-                log_debug_elogind("CanShutDownOrSleep: regular          : %s = %s",
-                                  action, result);
+                log_debug_elogind("CanShutDownOrSleep: regular          : %s", result);
         }
 
 #if 0 /// UNNEEDED by elogind
