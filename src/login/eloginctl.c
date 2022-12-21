@@ -84,7 +84,6 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
         const char *what, *who, *why, *mode;
         uint32_t uid, pid;
         unsigned c = 0;
-        char **s;
         int r;
 
         if (arg_ignore_inhibitors)
