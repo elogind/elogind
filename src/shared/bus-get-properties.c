@@ -19,7 +19,6 @@ int bus_property_get_bool(
         return sd_bus_message_append_basic(reply, 'b', &b);
 }
 
-#if 0 /// UNNEEDED by elogind
 int bus_property_set_bool(
                 sd_bus *bus,
                 const char *path,
@@ -39,6 +38,7 @@ int bus_property_set_bool(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_property_get_id128(
                 sd_bus *bus,
                 const char *path,

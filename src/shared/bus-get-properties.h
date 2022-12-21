@@ -6,8 +6,8 @@
 #include "macro.h"
 
 int bus_property_get_bool(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
-#if 0 /// UNNEEDED by elogind
 int bus_property_set_bool(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *value, void *userdata, sd_bus_error *error);
+#if 0 /// UNNEEDED by elogind
 int bus_property_get_id128(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
 #endif // 0
 
