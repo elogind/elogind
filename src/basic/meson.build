@@ -290,6 +290,8 @@ basic_sources = files(
         'conf-files.c',
         'conf-files.h',
         'def.h',
+        'devnum-util.c',
+        'devnum-util.h',
         'dirent-util.c',
         'dirent-util.h',
         'dns-def.h',
