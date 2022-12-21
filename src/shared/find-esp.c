@@ -6,7 +6,7 @@
 #include "sd-device.h"
 
 #include "alloc-util.h"
-#include "blkid-util.h"
+//#include "blkid-util.h"
 #include "devnum-util.h"
 #include "env-util.h"
 #include "errno-util.h"
