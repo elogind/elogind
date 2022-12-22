@@ -397,7 +397,6 @@ static void test_config_parse_one(unsigned i, const char *s) {
         }
 }
 
-
 TEST(config_parse) {
         for (unsigned i = 0; i < ELEMENTSOF(config_file); i++)
                 test_config_parse_one(i, config_file[i]);
