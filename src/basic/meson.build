@@ -680,7 +680,7 @@ libbasic = static_library(
 # basic_compress_sources = files(
 #         'compress.c',
 #         'compress.h')
-# 
+#
 # # A convenience library that is separate from libbasic to avoid unnecessary
 # # linking to the compression libraries.
 # libbasic_compress = static_library(
