@@ -9,11 +9,13 @@
 #include "terminal-util.h"
 #include "tests.h"
 
-TEST(random_bytes) {
+static void test_genuine_random_bytes_one(RandomFlags flags) {
         uint8_t buf[16] = {};
 
+        log_info("/* %s(%d) */", __func__, flags);
+
         for (size_t i = 1; i < sizeof buf; i++) {
-                random_bytes(buf, i);
+                assert_se(genuine_random_bytes(buf, i, flags) == 0);
                 if (i + 1 < sizeof buf)
                         assert_se(buf[i] == 0);
 
@@ -21,11 +23,16 @@ TEST(random_bytes) {
         }
 }
 
-TEST(crypto_random_bytes) {
+TEST(genuine_random_bytes) {
+        test_genuine_random_bytes_one(0);
+        test_genuine_random_bytes_one(RANDOM_BLOCK);
+}
+
+TEST(pseudo_random_bytes) {
         uint8_t buf[16] = {};
 
         for (size_t i = 1; i < sizeof buf; i++) {
-                assert_se(crypto_random_bytes(buf, i) == 0);
+                pseudo_random_bytes(buf, i);
                 if (i + 1 < sizeof buf)
                         assert_se(buf[i] == 0);
 
