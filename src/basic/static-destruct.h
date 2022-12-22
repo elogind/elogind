@@ -55,9 +55,9 @@ static inline void static_destruct(void) {
         if (!__start_SYSTEMD_STATIC_DESTRUCT)
                 return;
 
-        d = ALIGN_PTR(__start_SYSTEMD_STATIC_DESTRUCT);
+        d = ALIGN_TO_PTR(__start_SYSTEMD_STATIC_DESTRUCT, sizeof(void*));
         while (d < __stop_SYSTEMD_STATIC_DESTRUCT) {
                 d->destroy(d->data);
-                d = ALIGN_PTR(d + 1);
+                d = ALIGN_TO_PTR(d + 1, sizeof(void*));
         }
 }
