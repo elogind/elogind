@@ -141,6 +141,7 @@ int bus_get_property_trivial(
 
         return sd_bus_get_property_trivial(bus, locator->destination, locator->path, locator->interface, member, error, type, ptr);
 }
+#endif // 0
 
 int bus_get_property_string(
                 sd_bus *bus,
@@ -154,6 +155,7 @@ int bus_get_property_string(
         return sd_bus_get_property_string(bus, locator->destination, locator->path, locator->interface, member, error, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_get_property_strv(
                 sd_bus *bus,
                 const BusLocator *locator,

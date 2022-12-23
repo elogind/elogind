@@ -32,7 +32,9 @@ int bus_call_method(sd_bus *bus, const BusLocator *locator, const char *member, 
 #if 0 /// UNNEEDED by elogind
 int bus_get_property(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, sd_bus_message **reply, const char *type);
 int bus_get_property_trivial(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, char type, void *ptr);
+#endif // 0
 int bus_get_property_string(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, char **ret);
+#if 0 /// UNNEEDED by elogind
 int bus_get_property_strv(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, char ***ret);
 int bus_set_property(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, const char *type, ...);
 int bus_match_signal(sd_bus *bus, sd_bus_slot **ret, const BusLocator *locator, const char *member, sd_bus_message_handler_t callback, void *userdata);
