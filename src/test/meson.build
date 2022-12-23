@@ -227,7 +227,9 @@ tests += [
          [],
          [libm]],
 
-        [files('test-mkdir.c')],
+#if 0 /// UNNEEDED in elogind
+#         [files('test-mkdir.c')],
+#endif // 0
 
         [files('test-json.c'),
          [],
@@ -248,7 +250,9 @@ tests += [
 
         [files('test-exec-util.c')],
 
-        [files('test-execve.c')],
+#if 0 /// UNNEEDED in elogind
+#         [files('test-execve.c')],
+#endif // 0
 
         [files('test-hexdecoct.c')],
 
