@@ -385,7 +385,7 @@ libelogind_sym_path = join_paths(meson.current_source_dir(), 'libelogind.sym')
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
-custom_target(
+libelogind_pc = custom_target(
         'libelogind.pc',
         input : 'libelogind.pc.in',
         output : 'libelogind.pc',

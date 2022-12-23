@@ -7,7 +7,7 @@
 # install:
 # 	DESTDIR=$(DESTDIR) ninja -C build install
 #else // 0
-.PHONY: all build clean install justprint loginctl test test-login
+.PHONY: all build clean full install justprint loginctl test test-login
 export
 
 # Set this to YES on the command line for a debug build
@@ -97,6 +97,8 @@ clean: $(CONFIG)
 	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) -t cleandead)
 	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) -t clean)
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
+
+full: build
 
 install: build
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")

@@ -26,13 +26,13 @@ option('rootprefix', type : 'string',
 #        description : 'link systemd-networkd and its helpers to libsystemd-shared.so')
 # option('link-timesyncd-shared', type: 'boolean',
 #        description : 'link systemd-timesyncd and its helpers to libsystemd-shared.so')
+# option('link-journalctl-shared', type: 'boolean',
+#        description : 'link journalctl against libelogind-shared.so')
+# option('link-boot-shared', type: 'boolean',
+#        description : 'link bootctl and elogind-bless-boot against libelogind-shared.so')
+# option('first-boot-full-preset', type: 'boolean', value: false,
+#        description : 'during first boot, do full preset-all (default will be changed to true later)')
 #endif // 0
-option('link-journalctl-shared', type: 'boolean',
-       description : 'link journalctl against libelogind-shared.so')
-option('link-boot-shared', type: 'boolean',
-       description : 'link bootctl and elogind-bless-boot against libelogind-shared.so')
-option('first-boot-full-preset', type: 'boolean', value: false,
-       description : 'during first boot, do full preset-all (default will be changed to true later)')
 
 option('static-libelogind', type : 'combo',
        choices : ['false', 'true', 'pic', 'no-pic'],
@@ -565,8 +565,10 @@ option('ok-color', type : 'combo',
        description: 'color of the "OK" status message')
 option('urlify', type : 'boolean', value : true,
        description : 'enable pager Hyperlink ANSI sequence support')
-option('fexecve', type : 'boolean', value : false,
-       description : 'use fexecve() to spawn children')
+#if 0 /// fexecve is nowhere used within elogind
+# option('fexecve', type : 'boolean', value : false,
+#        description : 'use fexecve() to spawn children')
+#endif // 0
 
 #if 0 /// fuzz regression tests are not supported by elogind, as is kernel-install or systemd-analyze
 # option('oss-fuzz', type : 'boolean', value : false,

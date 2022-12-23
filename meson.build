@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.53.2',
        )
 
+libsystemd_version = '0.35.0'
 #if 0 /// elogind does not ship lubudev
-#endif // 0
-libelogind_version = '0.35.0'
 libudev_version = '1.7.5'
+#endif // 0
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -326,8 +326,8 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      rootbindir / 'systemctl')
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        rootlibexecdir / 'systemd')
 # conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
+# conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 #else // 0
-conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'elogind-cgroups-agent'))
 conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               join_paths(rootlibexecdir, 'elogind-uaccess-command'))
 conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'elogind'))
@@ -386,9 +386,9 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 # conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
+#
+# conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 #endif // 0
-
-conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 
 conf.set10('EFI_TPM_PCR_COMPAT',                              get_option('efi-tpm-pcr-compat'))
 
@@ -2279,9 +2279,11 @@ subdir('src/shared')
 # subdir('src/udev')
 # subdir('src/libudev')
 # subdir('src/cryptsetup/cryptsetup-tokens')
+#
+# alias_target('devel', libsystemd_pc, libudev_pc)
+#else // 0
+alias_target('devel', libelogind_pc)
 #endif // 0
-
-alias_target('devel', libelogind_pc, libudev_pc)
 
 libelogind = shared_library(
         'elogind',
@@ -4801,9 +4803,9 @@ summary({
         'default KillUserProcesses value' : kill_user_processes,
 #if 0 /// UNNEEDED by elogind
 #         'default locale' :                  default_locale,
+#         'default nspawn locale' :           nspawn_locale,
+#         'default status unit format' :      status_unit_format_default,
 #endif // 0
-        'default nspawn locale' :           nspawn_locale,
-        'default status unit format' :      status_unit_format_default,
         'default user $PATH' :
                 default_user_path != '' ? default_user_path : '(same as system services)',
 #if 0 /// UNNEEDED by elogind
@@ -4942,20 +4944,20 @@ foreach tuple : [
         ['debug hashmap'],
         ['debug mmap cache'],
         ['debug siphash'],
-/// elogind empty mask removed (elogind ships any other of those)
         ['valgrind',               conf.get('VALGRIND') == 1],
         ['trace logging',          conf.get('LOG_TRACE') == 1],
         ['install tests',          install_tests],
-        ['link-udev-shared',       get_option('link-udev-shared')],
-        ['link-systemctl-shared',  get_option('link-systemctl-shared')],
-        ['link-networkd-shared',   get_option('link-networkd-shared')],
-        ['link-timesyncd-shared',  get_option('link-timesyncd-shared')],
-        ['link-journalctl-shared', get_option('link-journalctl-shared')],
-        ['link-boot-shared',       get_option('link-boot-shared')],
-        ['first-boot-full-preset'],
-        ['fexecve'],
-/// elogind empty mask removed (elogind has everything standalone that can be standalone already)
-        ['standalone-binaries',    get_option('standalone-binaries')],
+#if 0 /// elogind does not ship any of those
+#         ['link-udev-shared',       get_option('link-udev-shared')],
+#         ['link-systemctl-shared',  get_option('link-systemctl-shared')],
+#         ['link-networkd-shared',   get_option('link-networkd-shared')],
+#         ['link-timesyncd-shared',  get_option('link-timesyncd-shared')],
+#         ['link-journalctl-shared', get_option('link-journalctl-shared')],
+#         ['link-boot-shared',       get_option('link-boot-shared')],
+#         ['first-boot-full-preset'],
+#         ['fexecve'],
+#         ['standalone-binaries',    get_option('standalone-binaries')],
+#endif // 0
         ['coverage',               get_option('b_coverage')],
 ]
 
