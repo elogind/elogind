@@ -12,7 +12,7 @@
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fs-util.h"
-#include "glob-util.h"
+//#include "glob-util.h"
 #include "log.h"
 #include "macro.h"
 #include "path-util.h"
@@ -196,7 +196,6 @@ int path_make_relative(const char *from, const char *to, char **ret) {
         *ret = TAKE_PTR(result);
         return 0;
 }
-#endif // 0
 
 int path_make_relative_parent(const char *from_child, const char *to, char **ret) {
         _cleanup_free_ char *from = NULL;
@@ -225,6 +224,7 @@ int path_make_relative_parent(const char *from_child, const char *to, char **ret
 
         return path_make_relative(from, to, ret);
 }
+#endif // 0
 
 char* path_startswith_strv(const char *p, char **set) {
         STRV_FOREACH(s, set) {
@@ -1338,7 +1338,6 @@ bool prefixed_path_strv_contains(char **l, const char *path) {
 
         return false;
 }
-#endif // 0
 
 int path_glob_can_match(const char *pattern, const char *prefix, char **ret) {
         assert(pattern);
@@ -1402,3 +1401,4 @@ int path_glob_can_match(const char *pattern, const char *prefix, char **ret) {
                 *ret = NULL;
         return false;
 }
+#endif // 0

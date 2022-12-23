@@ -64,8 +64,8 @@ int safe_getcwd(char **ret);
 int path_make_absolute_cwd(const char *p, char **ret);
 #if 0 /// UNNEEDED by elogind
 int path_make_relative(const char *from, const char *to, char **ret);
-#endif // 0
 int path_make_relative_parent(const char *from_child, const char *to, char **ret);
+#endif // 0
 char *path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) _pure_;
 static inline char* path_startswith(const char *path, const char *prefix) {
         return path_startswith_full(path, prefix, true);
@@ -214,6 +214,6 @@ static inline const char *empty_to_root(const char *path) {
 bool path_strv_contains(char **l, const char *path);
 #if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char **l, const char *path);
-#endif // 0
 
 int path_glob_can_match(const char *pattern, const char *prefix, char **ret);
+#endif // 0
