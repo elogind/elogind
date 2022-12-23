@@ -359,6 +359,7 @@ int parse_env_file_sentinel(
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int load_env_file_push(
                 const char *filename, unsigned line,
                 const char *key, char *value,
@@ -395,7 +396,6 @@ int load_env_file(FILE *f, const char *fname, char ***rl) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int load_env_file_push_pairs(
                 const char *filename, unsigned line,
                 const char *key, char *value,
