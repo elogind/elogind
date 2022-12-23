@@ -373,9 +373,9 @@ static sd_hwdb *hwdb_free(sd_hwdb *hwdb) {
         safe_fclose(hwdb->f);
         ordered_hashmap_free(hwdb->properties);
         return mfree(hwdb);
+#else // 0
         if (hwdb)
                 mfree(hwdb);
-#else // 0
         return NULL;
 #endif // 0
 }
