@@ -13,7 +13,6 @@ _systemd_headers = [
         'sd-journal.h',
         'sd-login.h',
         'sd-messages.h',
-        'sd-netlink.h',
         'sd-path.h',
 ]
 
@@ -36,6 +35,7 @@ _not_installed_headers = [
         'sd-lldp-tx.h',
         'sd-lldp.h',
         'sd-ndisc.h',
+        'sd-netlink.h',
         'sd-network.h',
         'sd-radv.h',
         'sd-resolve.h',
