@@ -1,1084 +1,903 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 #
-# German translation for elogind.
-# Christian Kirbach <Christian.Kirbach@gmail.com>, 2014, 2015.
-# Benjamin Steinwender <b@stbe.at>, 2014.
-# Bernd Homuth <dev@hmt.im>, 2015.
-# Fabian Affolter <mail@fabian-affolter.ch>, 2020.
-# Ettore Atalan <atalanttore@googlemail.com>, 2021.
-# Christian Wehrli <christian@chw.onl>, 2021.
+# H A <contact+fedora@hen.ee>, 2022.
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-20 10:35+0200\n"
-"PO-Revision-Date: 2021-11-08 00:49+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
-"Language-Team: German <https://translate.fedoraproject.org/projects/elogind/"
-"master/de/>\n"
-"Language: de\n"
+"PO-Revision-Date: 2022-10-24 15:23+0000\n"
+"Last-Translator: H A <contact+fedora@hen.ee>\n"
+"Language-Team: Estonian <https://translate.fedoraproject.org/projects/"
+"elogind/master/et/>\n"
+"Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
 # msgid "Send passphrase back to system"
-# msgstr "Passphrase zurück an das System senden"
+# msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:23
 # msgid ""
 # "Authentication is required to send the entered passphrase back to the system."
 # msgstr ""
-# "Legitimierung ist zum Senden des eingegebenen Kennworts zurück an das System "
-# "notwendig."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
 # msgid "Manage system services or other units"
-# msgstr "Systemdienste und andere Einheiten verwalten"
+# msgstr "Halda süsteemi teenuseid või teisi ühikuid"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:34
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
-# "Legitimierung ist notwendig für die Verwaltung von Systemdiensten und "
-# "anderen Einheiten."
+# "Autentimine on vajalik, et hallata süsteemi teenuseid või teisi ühikuid."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:43
 # msgid "Manage system service or unit files"
-# msgstr "Systemdienste und Einheitendateien verwalten"
+# msgstr "Halda süsteemi teenuseid või ühikfaile"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:44
 # msgid "Authentication is required to manage system service or unit files."
-# msgstr ""
-# "Legitimierung ist notwendig für die Verwaltung von Systemdiensten und "
-# "Einheitendateien."
+# msgstr "Autentimine on vajalik, et hallata süsteemi teenuseid või ühikfaile."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:54
 # msgid "Set or unset system and service manager environment variables"
 # msgstr ""
-# "Umgebungsvariablen der System- und Dienstverwaltung festlegen oder entfernen"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:55
 # msgid ""
 # "Authentication is required to set or unset system and service manager "
 # "environment variables."
-# msgstr "Legitimierung ist notwendig für die System- und Dienstverwaltung."
+# msgstr ""
+# "Autentimine on vajalik, et määrata või kustutada süsteemi- või "
+# "teenusehalduri keskkonnamuutujaid."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
 # msgid "Reload the systemd state"
-# msgstr "Den systemd-Zustand neu laden"
+# msgstr "Lae systemd olek uuesti"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
 # msgid "Authentication is required to reload the systemd state."
-# msgstr "Legitimierung ist zum erneuten Laden des systemd-Zustands notwendig."
+# msgstr "Autentimine on vajalik, et laadida systemd olekut uuesti."
 #
 # #: src/home/org.freedesktop.home1.policy:13
 # msgid "Create a home area"
-# msgstr "Zuhause-Bereich erzeugen"
+# msgstr "Loo koduala"
 #
 # #: src/home/org.freedesktop.home1.policy:14
-# #, fuzzy
 # msgid "Authentication is required to create a user's home area."
-# msgstr "Legitimierung ist zum erneuten Laden des systemd-Zustands notwendig."
+# msgstr "Autentimine on vajalik, et luua kasutaja koduala."
 #
 # #: src/home/org.freedesktop.home1.policy:23
 # msgid "Remove a home area"
-# msgstr "Zuhause-Bereich entfernen"
+# msgstr "Eemalda koduala"
 #
 # #: src/home/org.freedesktop.home1.policy:24
-# #, fuzzy
 # msgid "Authentication is required to remove a user's home area."
-# msgstr "Legitimierung ist zum erneuten Laden des systemd-Zustands notwendig."
+# msgstr "Autentmine on vajalik, et eemaldada kasutaja koduala."
 #
 # #: src/home/org.freedesktop.home1.policy:33
 # msgid "Check credentials of a home area"
-# msgstr "Prüfen Sie die Zugangsdaten für den Zuhause-Bereich"
+# msgstr ""
 #
-# # https://www.freedesktop.org/software/systemd/man/sd-login.html
 # #: src/home/org.freedesktop.home1.policy:34
-# #, fuzzy
 # msgid ""
 # "Authentication is required to check credentials against a user's home area."
 # msgstr ""
-# "Legitimierung ist zur Verwaltung aktiver Sitzungen, Benutzern und "
-# "Arbeitsstationen notwendig."
 #
 # #: src/home/org.freedesktop.home1.policy:43
 # msgid "Update a home area"
-# msgstr "Zuhause-Bereich aktualisieren"
+# msgstr "Uuenda koduala"
 #
-# # https://www.freedesktop.org/software/systemd/man/sd-login.html
 # #: src/home/org.freedesktop.home1.policy:44
-# #, fuzzy
 # msgid "Authentication is required to update a user's home area."
-# msgstr ""
-# "Legitimierung ist zum Anschließen eines Geräts an eine Arbeitsstation "
-# "notwendig."
+# msgstr "Autentmine on vajalik, et uuendada kasutaja koduala."
 #
 # #: src/home/org.freedesktop.home1.policy:53
 # msgid "Resize a home area"
-# msgstr ""
+# msgstr "Muuda koduala suurust"
 #
 # #: src/home/org.freedesktop.home1.policy:54
-# #, fuzzy
 # msgid "Authentication is required to resize a user's home area."
-# msgstr "Legitimierung ist zum Einstellen einer Nachricht an alle notwendig"
+# msgstr "Autentmine on vajalik, et muuta kasutaja koduala suurust."
 #
 # #: src/home/org.freedesktop.home1.policy:63
 # msgid "Change password of a home area"
-# msgstr ""
+# msgstr "Muuda koduala parooli"
 #
-# # https://www.freedesktop.org/software/systemd/man/sd-login.html
 # #: src/home/org.freedesktop.home1.policy:64
-# #, fuzzy
 # msgid ""
 # "Authentication is required to change the password of a user's home area."
-# msgstr ""
-# "Legitimierung ist zur Verwaltung aktiver Sitzungen, Benutzern und "
-# "Arbeitsstationen notwendig."
+# msgstr "Autentimine on vajalik, et muuta kasutaja koduala parooli."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:20
 # msgid "Set hostname"
-# msgstr "Rechnername festlegen"
+# msgstr "Säti hostinimi"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:21
 # msgid "Authentication is required to set the local hostname."
-# msgstr "Legitimierung ist zum Festlegen des lokalen Rechnernamens notwendig"
+# msgstr "Autentmine on vajalik, et sättida kohaliku hostinime."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:30
 # msgid "Set static hostname"
-# msgstr "Statischen Rechnernamen festlegen"
+# msgstr "Säti staatiline hostinimi"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:31
 # msgid ""
 # "Authentication is required to set the statically configured local hostname, "
 # "as well as the pretty hostname."
 # msgstr ""
-# "Authentifizierung ist erforderlich, um den statisch geänderten, lokalen "
-# "Rechnernamen, sowie den beschönigten Rechnernamen festzulegen."
+# "Autentmine on vajalik, et sättida staatiline konfigureeritud kohalikku "
+# "hostinime ja ka kena hostinime."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:41
 # msgid "Set machine information"
-# msgstr "Maschinen-Information festlegen"
+# msgstr "Määra süsteemi informatsiooni"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:42
 # msgid "Authentication is required to set local machine information."
-# msgstr ""
-# "Legitimierung ist zum Festlegen der lokalen Maschinen-Information "
-# "erforderlich."
+# msgstr "Autentimine on vajalik, et määrata kohaliku süsteemi informatsiooni."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:51
 # msgid "Get product UUID"
-# msgstr "Die Produkte-UUID erhalten"
+# msgstr "Saa toote UUID"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:52
-# #, fuzzy
 # msgid "Authentication is required to get product UUID."
-# msgstr "Legitimierung ist zum erneuten Laden von »$(unit)« notwendig."
+# msgstr "Autentmine on vajalik, et saada toote UUID."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:61
 # msgid "Get hardware serial number"
-# msgstr ""
+# msgstr "Hangi riistvara seerianumber"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:62
-# #, fuzzy
 # msgid "Authentication is required to get hardware serial number."
-# msgstr "Legitimierung ist zum Festlegen der Systemzeit notwendig."
+# msgstr "Autentimine on vajalik, et hankida riistvara seerianumber."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:71
-# #, fuzzy
 # msgid "Get system description"
-# msgstr "Die Systemzeitzone festlegen"
+# msgstr "Hangi süsteemi kirjeldus"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:72
-# #, fuzzy
 # msgid "Authentication is required to get system description."
-# msgstr "Legitimierung ist zum Festlegen der Systemzeitzone notwendig."
+# msgstr "Autentimine on vajalik, et hankida süsteemi kirjeldust."
 #
 # #: src/import/org.freedesktop.import1.policy:22
 # msgid "Import a VM or container image"
-# msgstr "Abbild einer VM oder eines Containers importieren"
+# msgstr "Impordi VM või konteinerpilti"
 #
 # #: src/import/org.freedesktop.import1.policy:23
 # msgid "Authentication is required to import a VM or container image"
-# msgstr ""
-# "Legitimierung ist zum Importieren eines VM- oder Containerabbilds "
-# "erforderlich"
+# msgstr "Autentmine on vajalik, et importida VM või konteinerpilti"
 #
 # #: src/import/org.freedesktop.import1.policy:32
 # msgid "Export a VM or container image"
-# msgstr "Abbild einer VM oder eines Containers exportieren"
+# msgstr "Ekspordi VM või konteinerpilti"
 #
 # #: src/import/org.freedesktop.import1.policy:33
 # msgid "Authentication is required to export a VM or container image"
-# msgstr ""
-# "Legitimierung ist zum Exportieren eines VM- oder Containerabbilds "
-# "erforderlich"
+# msgstr "Autentmine on vajalik, et eksportida VM või konteinerpilti"
 #
 # #: src/import/org.freedesktop.import1.policy:42
 # msgid "Download a VM or container image"
-# msgstr "Abbild einer VM oder eines Containers herunterladen"
+# msgstr "Lae alla VM või konteinerpildi"
 #
 # #: src/import/org.freedesktop.import1.policy:43
 # msgid "Authentication is required to download a VM or container image"
-# msgstr ""
-# "Legitimierung ist zum Herunterladen eines VM- oder Containerabbilds "
-# "erforderlich"
+# msgstr "Autentmine on vajalik, et laadida alla VM või konteinerpildi"
 #
 # #: src/locale/org.freedesktop.locale1.policy:22
 # msgid "Set system locale"
-# msgstr "Die lokale Sprachumgebung festlegen"
+# msgstr "Määra süsteemi lokaali"
 #
 # #: src/locale/org.freedesktop.locale1.policy:23
 # msgid "Authentication is required to set the system locale."
-# msgstr ""
-# "Legitimierung ist zum Festlegen der systemweiten Spracheinstellungen "
-# "erforderlich."
+# msgstr "Autentimine on vajalik, et määrata süsteemi lokaali."
 #
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
-# msgstr "Tastatureinstellungen des Systems festlegen"
+# msgstr "Määra süsteemi klaviatuuriseadeid"
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
-# msgstr ""
-# "Legitimierung ist zum Festlegen der Tastatureinstellungen des Systems "
-# "erforderlich."
+# msgstr "Autentimine on vajalik, et määrata süsteemi klaviatuurisätteid."
 #endif // 0
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
-msgstr "Anwendungen dürfen das Herunterfahren des Systems unterbinden"
+msgstr "Luba rakendustel takistada süsteemi välja lülitamist"
 
 #: src/login/org.freedesktop.login1.policy:23
 msgid ""
 "Authentication is required for an application to inhibit system shutdown."
 msgstr ""
-"Legitimierung ist notwendig, um Anwendungen das Herunterfahren des Systems "
-"zu erlauben."
 
 #: src/login/org.freedesktop.login1.policy:33
 msgid "Allow applications to delay system shutdown"
-msgstr "Anwendungen dürfen das Herunterfahren des Systems verzögern"
+msgstr "Luba rakendustel viivitada süsteemi välja lülitamist"
 
 #: src/login/org.freedesktop.login1.policy:34
 msgid "Authentication is required for an application to delay system shutdown."
 msgstr ""
-"Legitimierung ist notwendig, um Anwendungen das Verzögern des Herunterfahren "
-"des Systems zu erlauben."
 
 #: src/login/org.freedesktop.login1.policy:44
 msgid "Allow applications to inhibit system sleep"
-msgstr "Anwendungen dürfen den Bereitschaftsmodus unterbinden"
+msgstr "Luba rakendustel takistada süsteemi unerežiimi"
 
 #: src/login/org.freedesktop.login1.policy:45
 msgid "Authentication is required for an application to inhibit system sleep."
-msgstr ""
-"Legitimierung ist erforderlich, um Anwendungen das Unterbinden des "
-"Bereitschaftsmodus zu erlauben."
+msgstr "Autentimine on vajalik, et rakendus takistaks süsteemi unerežiimi."
 
 #: src/login/org.freedesktop.login1.policy:55
 msgid "Allow applications to delay system sleep"
-msgstr "Anwendungen dürfen den Bereitschaftsmodus verzögern"
+msgstr "Luba rakendustel viivitada süsteemi unerežiimi"
 
 #: src/login/org.freedesktop.login1.policy:56
 msgid "Authentication is required for an application to delay system sleep."
-msgstr ""
-"Legitimierung ist erforderlich, um Anwendungen das Verzögern des "
-"Bereitschaftsmodus zu erlauben."
+msgstr "Autentimine on vajalik, et rakendus viivitaks süsteemi unerežiimi."
 
 #: src/login/org.freedesktop.login1.policy:65
 msgid "Allow applications to inhibit automatic system suspend"
-msgstr "Anwendungen dürfen den automatischen Bereitschaftsmodus unterbinden"
+msgstr "Luba rakendustel takistada automaatset süsteemiuinakut"
 
 #: src/login/org.freedesktop.login1.policy:66
 msgid ""
 "Authentication is required for an application to inhibit automatic system "
 "suspend."
 msgstr ""
-"Legitimierung ist notwendig, um Anwendungen das Unterbinden des "
-"automatischen Bereitschaftsmodus zu erlauben."
+"Autentimine on vajalik, et rakendus takistaks automaatset süsteemiuinakut."
 
 #: src/login/org.freedesktop.login1.policy:75
 msgid "Allow applications to inhibit system handling of the power key"
-msgstr ""
-"Anwendungen dürfen das Auswerten des Ein-/Ausschaltknopfs des Systems "
-"unterbinden"
+msgstr "Luba rakendustel blokeerida süsteemi toitenuppu"
 
 #: src/login/org.freedesktop.login1.policy:76
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the power key."
-msgstr ""
-"Legitmierung ist erforderlich, um Anwendungen das Unterbinden der Auswertung "
-"der Ein-/Ausschaltknopfs des Systems zu erlauben."
+msgstr "Autentimine on vajalik, et rakendus blokeeriks süsteemi toitenuppu."
 
 #: src/login/org.freedesktop.login1.policy:86
 msgid "Allow applications to inhibit system handling of the suspend key"
-msgstr ""
-"Anwendungen dürfen das Auswerten des Bereitschaftsknopfs des Systems "
-"unterbinden"
+msgstr "Luba rakendustel blokeerida süsteemi uinakunuppu"
 
 #: src/login/org.freedesktop.login1.policy:87
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the suspend key."
-msgstr ""
-"Legitimierung ist erforderlich, um Anwendungen das Unterbinden der "
-"Auswertung des Bereitschaftsknopfes des Systems zu erlauben."
+msgstr "Autentimine on vajalik, et rakendus blokeeriks süsteemi uinakunuppu."
 
 #: src/login/org.freedesktop.login1.policy:97
 msgid "Allow applications to inhibit system handling of the hibernate key"
 msgstr ""
-"Anwendungen dürfen das Auswerten des Knopfs für den Ruhezustand unterbinden"
 
 #: src/login/org.freedesktop.login1.policy:98
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the hibernate key."
 msgstr ""
-"Legitimierung ist erforderlich, um Anwendungen das Unterbinden der "
-"Auswertung des Knopfs für den Ruhezustand zu erlauben."
 
 #: src/login/org.freedesktop.login1.policy:107
 msgid "Allow applications to inhibit system handling of the lid switch"
 msgstr ""
-"Anwendungen dürfen das Auswerten des Notebookdeckelschalters unterbinden"
 
 #: src/login/org.freedesktop.login1.policy:108
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the lid switch."
 msgstr ""
-"Legitimierung ist erforderlich, um Anwendungen das Unterbinden der "
-"Auswertung des Notebookdeckelschalters des Systems zu erlauben."
 
 #: src/login/org.freedesktop.login1.policy:117
-#, fuzzy
 msgid "Allow applications to inhibit system handling of the reboot key"
 msgstr ""
-"Anwendungen dürfen das Auswerten des Ein-/Ausschaltknopfs des Systems "
-"unterbinden"
 
 #: src/login/org.freedesktop.login1.policy:118
-#, fuzzy
 msgid ""
 "Authentication is required for an application to inhibit system handling of "
 "the reboot key."
 msgstr ""
-"Legitimierung ist erforderlich, um Anwendungen das Unterbinden der "
-"Auswertung der Ein-/Ausschaltknopfs des Systems zu erlauben."
 
 #: src/login/org.freedesktop.login1.policy:128
 msgid "Allow non-logged-in user to run programs"
-msgstr "Nicht angemeldetem Benutzer die Ausführung von Programmen erlauben"
+msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:129
-#, fuzzy
 msgid "Explicit request is required to run programs as a non-logged-in user."
 msgstr ""
-"Legitimierung ist erforderlich, damit nicht angemeldete Benutzer Programme "
-"ausführen dürfen."
 
 #: src/login/org.freedesktop.login1.policy:138
 msgid "Allow non-logged-in users to run programs"
-msgstr "Nicht angemeldete Benutzer dürfen Programme ausführen"
+msgstr "Luba mitte sisse logitud kasutajadel programme käivitada"
 
 #: src/login/org.freedesktop.login1.policy:139
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr ""
-"Legitimierung ist erforderlich, damit nicht angemeldete Benutzer Programme "
-"ausführen dürfen."
+"Autentimine on vajalik, et käivitada programme mitte sisse logitud "
+"kasutajana."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Allow attaching devices to seats"
-msgstr "Das Anschließen von Geräten an Arbeitsstationen erlauben"
+msgstr ""
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:149
 msgid "Authentication is required to attach a device to a seat."
 msgstr ""
-"Legitimierung ist zum Anschließen eines Geräts an eine Arbeitsstation "
-"notwendig."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:159
 msgid "Flush device to seat attachments"
-msgstr "Zurücksetzen der an eine Arbeitsstation angeschlossenen Geräte"
+msgstr ""
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:160
 msgid "Authentication is required to reset how devices are attached to seats."
 msgstr ""
-"Legitimierung ist zum Zurücksetzen notwendig, wie Geräte an eine "
-"Arbeitsstation angeschlossen werden."
 
 #: src/login/org.freedesktop.login1.policy:169
 msgid "Power off the system"
-msgstr "Das System ausschalten"
+msgstr "Lülita välja süsteem"
 
 #: src/login/org.freedesktop.login1.policy:170
 msgid "Authentication is required to power off the system."
-msgstr "Legitimierung ist zum Ausschalten des Systems notwendig."
+msgstr "Autentimine on vajalik, et lülitada süsteemi välja."
 
 #: src/login/org.freedesktop.login1.policy:180
 msgid "Power off the system while other users are logged in"
-msgstr "Das System herunter fahren, während andere Benutzer angemeldet sind"
+msgstr "Lülita välja süsteem, isegi kui teised kasutajad on sisse logitud"
 
 #: src/login/org.freedesktop.login1.policy:181
 msgid ""
 "Authentication is required to power off the system while other users are "
 "logged in."
 msgstr ""
-"Legitimierung ist zum Herunterfahren des Systems notwendig, während andere "
-"Benutzer angemeldet sind."
+"Autentimine on vajalik, et lülitada süsteemi välja, kui teised kasutajad on "
+"sisse logitud."
 
 #: src/login/org.freedesktop.login1.policy:191
 msgid "Power off the system while an application is inhibiting this"
 msgstr ""
-"Das System ausschalten, während eine Anwendung anfordert es zu unterbinden"
 
 #: src/login/org.freedesktop.login1.policy:192
 msgid ""
 "Authentication is required to power off the system while an application is "
 "inhibiting this."
 msgstr ""
-"Legitimierung ist zum Ausschalten des Systems notwendig, während eine "
-"Anwendung anfordert es zu unterbinden."
 
 #: src/login/org.freedesktop.login1.policy:202
 msgid "Reboot the system"
-msgstr "Das System neu starten"
+msgstr "Taaskäivita süsteem"
 
 #: src/login/org.freedesktop.login1.policy:203
 msgid "Authentication is required to reboot the system."
-msgstr "Legitimierung ist zum Neustart des Systems notwendig."
+msgstr "Autentimine on vajalik, et taaskäivitada süsteemi."
 
 #: src/login/org.freedesktop.login1.policy:213
 msgid "Reboot the system while other users are logged in"
-msgstr "Das Systems neu starten, während andere Benutzer angemeldet sind"
+msgstr "Taaskäivita süsteem, isegi kui teised kasutajad on sisse logitud"
 
 #: src/login/org.freedesktop.login1.policy:214
 msgid ""
 "Authentication is required to reboot the system while other users are logged "
 "in."
 msgstr ""
-"Legitimierung ist zum Neustart des Systems notwendig, während andere "
-"Benutzer angemeldet sind."
+"Autentimine on vajalik, et taaskäivitada süsteemi, kui teised kasutajad on "
+"sisse logitud."
 
 #: src/login/org.freedesktop.login1.policy:224
 msgid "Reboot the system while an application is inhibiting this"
-msgstr ""
-"Das System neu starten, während eine Anwendung anfordert es zu unterbinden"
+msgstr "Taaskäivita süsteem, kui üks rakendus takistab seda"
 
 #: src/login/org.freedesktop.login1.policy:225
 msgid ""
 "Authentication is required to reboot the system while an application is "
 "inhibiting this."
 msgstr ""
-"Legitimierung ist zum Neustart des Systems notwendig, während eine Anwendung "
-"anforderte es zu unterbinden."
+"Autentimine on vajalik, et taaskäivitada süsteemi, kui rakendus takistab "
+"seda."
 
 #: src/login/org.freedesktop.login1.policy:235
 msgid "Halt the system"
-msgstr "Das System anhalten"
+msgstr "Peata süsteem"
 
 #: src/login/org.freedesktop.login1.policy:236
-#, fuzzy
 msgid "Authentication is required to halt the system."
-msgstr ""
-"Legitimierung ist zum Aktivieren des Ruhezustands des Systems notwendig."
+msgstr "Autentimine on vajalik, et peatada süsteemi."
 
 #: src/login/org.freedesktop.login1.policy:246
-#, fuzzy
 msgid "Halt the system while other users are logged in"
-msgstr ""
-"Den Ruhezustand des Systems aktivieren, während andere Benutzer angemeldet "
-"sind"
+msgstr "Peata süsteem, isegi kui teised kasutajad on sisse logitud"
 
 #: src/login/org.freedesktop.login1.policy:247
-#, fuzzy
 msgid ""
 "Authentication is required to halt the system while other users are logged "
 "in."
 msgstr ""
-"Legitimierung ist zum Aktivieren des Ruhezustands des Systems notwendig, "
-"während andere Benutzer angemeldet sind."
+"Autentimine on vajalik, et peatada süsteemi, kui teised kasutajad on sisse "
+"logitud."
 
 #: src/login/org.freedesktop.login1.policy:257
-#, fuzzy
 msgid "Halt the system while an application is inhibiting this"
-msgstr ""
-"Das System in den Ruhezustand versetzen, während eine Anwendung wünscht dies "
-"zu verhindern"
+msgstr "Peata süsteem, kui üks rakendus takistab seda"
 
 #: src/login/org.freedesktop.login1.policy:258
-#, fuzzy
 msgid ""
 "Authentication is required to halt the system while an application is "
 "inhibiting this."
 msgstr ""
-"Legitimierung ist zum Versetzen des System in den Ruhezustand notwendig, "
-"während eine Anwendung wünscht dies zu verhindern."
+"Autentimine on vajalik, et peatada süsteemi, kui üks rakendus takistab seda."
 
 #: src/login/org.freedesktop.login1.policy:268
 msgid "Suspend the system"
-msgstr "Das System in Bereitschaft versetzen"
+msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:269
 msgid "Authentication is required to suspend the system."
-msgstr "Legitimierung ist zum Versetzen des Systems in Bereitschaft notwendig."
+msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:278
 msgid "Suspend the system while other users are logged in"
 msgstr ""
-"Das System in Bereitschaft versetzen, während andere Benutzer angemeldet "
-"sind."
 
 #: src/login/org.freedesktop.login1.policy:279
 msgid ""
 "Authentication is required to suspend the system while other users are "
 "logged in."
 msgstr ""
-"Legitimierung ist zum Versetzen des Systems in Bereitschaft notwendig, "
-"während andere Benutzer angemeldet sind."
 
 #: src/login/org.freedesktop.login1.policy:289
 msgid "Suspend the system while an application is inhibiting this"
 msgstr ""
-"Das System in Bereitschaft versetzen, während eine Anwendung anfordert dies "
-"zu unterbinden"
 
 #: src/login/org.freedesktop.login1.policy:290
 msgid ""
 "Authentication is required to suspend the system while an application is "
 "inhibiting this."
 msgstr ""
-"Legitimierung ist zum Versetzen des Systems in Bereitschaft notwendig, "
-"während eine Anwendung anfordert dies zu unterbinden."
 
 #: src/login/org.freedesktop.login1.policy:300
 msgid "Hibernate the system"
-msgstr "Den Ruhezustand des Systems aktivieren"
+msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:301
 msgid "Authentication is required to hibernate the system."
 msgstr ""
-"Legitimierung ist zum Aktivieren des Ruhezustands des Systems notwendig."
 
 #: src/login/org.freedesktop.login1.policy:310
 msgid "Hibernate the system while other users are logged in"
 msgstr ""
-"Den Ruhezustand des Systems aktivieren, während andere Benutzer angemeldet "
-"sind"
 
 #: src/login/org.freedesktop.login1.policy:311
 msgid ""
 "Authentication is required to hibernate the system while other users are "
 "logged in."
 msgstr ""
-"Legitimierung ist zum Aktivieren des Ruhezustands des Systems notwendig, "
-"während andere Benutzer angemeldet sind."
 
 #: src/login/org.freedesktop.login1.policy:321
 msgid "Hibernate the system while an application is inhibiting this"
 msgstr ""
-"Das System in den Ruhezustand versetzen, während eine Anwendung wünscht dies "
-"zu verhindern"
 
 #: src/login/org.freedesktop.login1.policy:322
 msgid ""
 "Authentication is required to hibernate the system while an application is "
 "inhibiting this."
 msgstr ""
-"Legitimierung ist zum Versetzen des System in den Ruhezustand notwendig, "
-"während eine Anwendung wünscht dies zu verhindern."
 
 #: src/login/org.freedesktop.login1.policy:332
 msgid "Manage active sessions, users and seats"
-msgstr "Aktive Sitzungen, Benutzer und Arbeitsstationen verwalten"
+msgstr "Halda aktiivseid seansse, kasutajaid ja kohti"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:333
 msgid "Authentication is required to manage active sessions, users and seats."
 msgstr ""
-"Legitimierung ist zur Verwaltung aktiver Sitzungen, Benutzern und "
-"Arbeitsstationen notwendig."
+"Autentimine on vajalik, et hallata aktiivseid seansse, kasutajaid ning kohti."
 
 #: src/login/org.freedesktop.login1.policy:342
 msgid "Lock or unlock active sessions"
-msgstr "Aktive Sitzungen sperren und entsperren"
+msgstr "Lukusta või ava aktiivseid seansse"
 
 #: src/login/org.freedesktop.login1.policy:343
 msgid "Authentication is required to lock or unlock active sessions."
-msgstr ""
-"Legitimierung ist zum Sperren und Entsperren aktiver Sitzungen notwendig."
+msgstr "Autentimine on vajalik, et lukustada või avada aktiivseid seansse."
 
 #: src/login/org.freedesktop.login1.policy:352
 msgid "Set the reboot \"reason\" in the kernel"
-msgstr "Den Reboot-\"Grund\" im Kernel festlegen"
+msgstr "Määra taaskäivitamise \"põhjus\" kernelis"
 
 #: src/login/org.freedesktop.login1.policy:353
-#, fuzzy
 msgid "Authentication is required to set the reboot \"reason\" in the kernel."
-msgstr "Legitimierung ist zum Festlegen der Systemzeitzone notwendig."
+msgstr ""
+"Autentimine on vajalik, et määrata taaskäivitamise \"põhjuse\" kernelis."
 
 #: src/login/org.freedesktop.login1.policy:363
-#, fuzzy
 msgid "Indicate to the firmware to boot to setup interface"
 msgstr ""
-"Mitteilungen an die Firmware zum Starten in die Einrichtungsoberfläche "
-"zulassen"
 
 #: src/login/org.freedesktop.login1.policy:364
 msgid ""
 "Authentication is required to indicate to the firmware to boot to setup "
 "interface."
 msgstr ""
-"Legitimierung ist zum Starten der Firmware in die Einrichtungsoberfläche "
-"notwendig."
 
 #: src/login/org.freedesktop.login1.policy:374
 msgid "Indicate to the boot loader to boot to the boot loader menu"
-msgstr ""
+msgstr "Viita buudilaadurile, et buutida buudilaaduri menüüsse"
 
 #: src/login/org.freedesktop.login1.policy:375
-#, fuzzy
 msgid ""
 "Authentication is required to indicate to the boot loader to boot to the "
 "boot loader menu."
 msgstr ""
-"Legitimierung ist zum Starten der Firmware in die Einrichtungsoberfläche "
-"notwendig."
+"Autentimine on vajalik, et viitata buudilaadurile, et buutida buudilaaduri "
+"menüüsse."
 
 #: src/login/org.freedesktop.login1.policy:385
 msgid "Indicate to the boot loader to boot a specific entry"
-msgstr ""
+msgstr "Viita buudilaadurile, et buutida spetsiifiline valik"
 
 #: src/login/org.freedesktop.login1.policy:386
-#, fuzzy
 msgid ""
 "Authentication is required to indicate to the boot loader to boot into a "
 "specific boot loader entry."
 msgstr ""
-"Legitimierung ist zum Starten der Firmware in die Einrichtungsoberfläche "
-"notwendig."
+"Autentimine on vajalik, et viitata buudilaadurile, et buutida spetsiifilist "
+"buudilaaduri valikut."
 
 #: src/login/org.freedesktop.login1.policy:396
 msgid "Set a wall message"
-msgstr "Nachricht an alle einstellen"
+msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:397
 msgid "Authentication is required to set a wall message"
-msgstr "Legitimierung ist zum Einstellen einer Nachricht an alle notwendig"
+msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:406
 msgid "Change Session"
-msgstr "Sitzung ändern"
+msgstr "Vaheta sessiooni"
 
 #: src/login/org.freedesktop.login1.policy:407
 msgid "Authentication is required to change the virtual terminal."
-msgstr "Legitimierung ist zum Ändern des virtuellen Terminals notwendig."
+msgstr ""
 
 #if 0 /// UNNEEDED by elogind
 # #: src/machine/org.freedesktop.machine1.policy:22
 # msgid "Log into a local container"
-# msgstr "In einem lokalen Container anmelden"
+# msgstr "Logi sisse kohalikku konteinerisse"
 #
 # #: src/machine/org.freedesktop.machine1.policy:23
 # msgid "Authentication is required to log into a local container."
-# msgstr "Legitimierung ist zum Anmelden in einem lokalen Container notwendig."
+# msgstr "Autentimine on vajalik, et logida sisse kohalikku konteinerisse."
 #
 # #: src/machine/org.freedesktop.machine1.policy:32
 # msgid "Log into the local host"
-# msgstr "Am lokalen Rechner anmelden"
+# msgstr "Logi sisse kohalikku hosti"
 #
 # #: src/machine/org.freedesktop.machine1.policy:33
 # msgid "Authentication is required to log into the local host."
-# msgstr "Legitimierung ist zum Anmelden am lokalen Rechner notwendig."
+# msgstr "Autentimine on vajalik, et logida sisse kohalikku hosti."
 #
 # #: src/machine/org.freedesktop.machine1.policy:42
 # msgid "Acquire a shell in a local container"
-# msgstr "Eine Shell in einem lokalen Container erhalten"
+# msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:43
 # msgid "Authentication is required to acquire a shell in a local container."
 # msgstr ""
-# "Legitimierung ist zum Erhalten einer Shell in einem lokalen Container "
-# "notwendig."
 #
 # #: src/machine/org.freedesktop.machine1.policy:53
 # msgid "Acquire a shell on the local host"
-# msgstr "Eine Shell auf dem lokalen Rechner erhalten"
+# msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:54
 # msgid "Authentication is required to acquire a shell on the local host."
 # msgstr ""
-# "Legitimierung ist zum Erhalten einer Shell auf dem lokalen Rechner notwendig."
 #
 # #: src/machine/org.freedesktop.machine1.policy:64
 # msgid "Acquire a pseudo TTY in a local container"
-# msgstr "Ein Pseudo-TTY in einem lokalen Container erhalten"
+# msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:65
 # msgid ""
 # "Authentication is required to acquire a pseudo TTY in a local container."
 # msgstr ""
-# "Legitimierung ist zum Erhalten eines Pseudo-TTY in einem lokalen Container "
-# "notwendig."
 #
 # #: src/machine/org.freedesktop.machine1.policy:74
 # msgid "Acquire a pseudo TTY on the local host"
-# msgstr "Ein Pseudo-TTY auf dem lokalen Rechner erhalten"
+# msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:75
 # msgid "Authentication is required to acquire a pseudo TTY on the local host."
 # msgstr ""
-# "Legitimierung ist zum Erhalten eines Pseudo-TTY auf dem lokalen Rechner "
-# "notwendig."
 #
 # #: src/machine/org.freedesktop.machine1.policy:84
 # msgid "Manage local virtual machines and containers"
-# msgstr "Lokale virtuelle Maschinen und Container verwalten"
+# msgstr "Halda kohalikke virtuaalsüsteeme ja konteinereid"
 #
 # #: src/machine/org.freedesktop.machine1.policy:85
 # msgid ""
 # "Authentication is required to manage local virtual machines and containers."
 # msgstr ""
-# "Legitimierung ist zum Verwalten lokaler virtueller Maschinen und Container "
-# "erforderlich."
+# "Autentimine on vajalik, et hallata kohalikke virtuaalsüsteeme ja "
+# "konteinereid."
 #
 # #: src/machine/org.freedesktop.machine1.policy:95
 # msgid "Manage local virtual machine and container images"
-# msgstr "Lokale virtuelle Maschinen und Containerabbilder verwalten"
+# msgstr "Halda kohalikke virtuaalmasinaid ja konteinerpilte"
 #
 # #: src/machine/org.freedesktop.machine1.policy:96
 # msgid ""
 # "Authentication is required to manage local virtual machine and container "
 # "images."
 # msgstr ""
-# "Legitimierung ist zum Verwalten lokaler virtueller Maschinen und "
-# "Containerabbildern erforderlich."
+# "Autentimine on vajalik, et hallata kohalikke virtuaalmasinaid ja "
+# "konteinerpilte."
 #
 # #: src/network/org.freedesktop.network1.policy:22
 # msgid "Set NTP servers"
-# msgstr "NTP-Server festlegen"
+# msgstr "Säti NTP servereid"
 #
 # #: src/network/org.freedesktop.network1.policy:23
 # msgid "Authentication is required to set NTP servers."
-# msgstr "Legitimierung ist zum Festlegen von NTP-Servern notwendig."
+# msgstr "Autentimine on vajalik, et seadistada NTP servereid."
 #
 # #: src/network/org.freedesktop.network1.policy:33
 # #: src/resolve/org.freedesktop.resolve1.policy:44
 # msgid "Set DNS servers"
-# msgstr "DNS-Server festlegen"
+# msgstr "Säti DNS serverid"
 #
 # #: src/network/org.freedesktop.network1.policy:34
 # #: src/resolve/org.freedesktop.resolve1.policy:45
 # msgid "Authentication is required to set DNS servers."
-# msgstr "Legitimierung ist zum Festlegen von DNS-Servern notwendig."
+# msgstr "Autentimine on vajalik, et seadistada DNS servereid."
 #
 # #: src/network/org.freedesktop.network1.policy:44
 # #: src/resolve/org.freedesktop.resolve1.policy:55
 # msgid "Set domains"
-# msgstr ""
+# msgstr "Säti domeenid"
 #
 # #: src/network/org.freedesktop.network1.policy:45
 # #: src/resolve/org.freedesktop.resolve1.policy:56
-# #, fuzzy
 # msgid "Authentication is required to set domains."
-# msgstr "Legitimierung ist zum Festlegen von Domains notwendig."
+# msgstr "Autentimine on vajalik, et seadistada domeene."
 #
 # #: src/network/org.freedesktop.network1.policy:55
 # #: src/resolve/org.freedesktop.resolve1.policy:66
 # msgid "Set default route"
-# msgstr "Standardroute festlegen"
+# msgstr "Säti default route"
 #
 # #: src/network/org.freedesktop.network1.policy:56
 # #: src/resolve/org.freedesktop.resolve1.policy:67
-# #, fuzzy
 # msgid "Authentication is required to set default route."
-# msgstr "Legitimierung ist zum Festlegen der Standardroute notwendig."
+# msgstr "Autentimine on vajalik, et seadistada default route."
 #
 # #: src/network/org.freedesktop.network1.policy:66
 # #: src/resolve/org.freedesktop.resolve1.policy:77
 # msgid "Enable/disable LLMNR"
-# msgstr "LLMNR aktivieren/deaktivieren"
+# msgstr "Lülita LLMNR sisse/välja"
 #
 # #: src/network/org.freedesktop.network1.policy:67
 # #: src/resolve/org.freedesktop.resolve1.policy:78
-# #, fuzzy
 # msgid "Authentication is required to enable or disable LLMNR."
-# msgstr ""
-# "Legitimierung ist zum Aktivieren oder Deaktivieren von  LLMNR notwendig."
+# msgstr "Autentimine on vajalik, et LLMNR lülitada sisse või välja."
 #
 # #: src/network/org.freedesktop.network1.policy:77
 # #: src/resolve/org.freedesktop.resolve1.policy:88
 # msgid "Enable/disable multicast DNS"
-# msgstr "Multicast-DNS aktivieren/deaktivieren"
+# msgstr "Lülita multicast DNS sisse/välja"
 #
 # #: src/network/org.freedesktop.network1.policy:78
 # #: src/resolve/org.freedesktop.resolve1.policy:89
-# #, fuzzy
 # msgid "Authentication is required to enable or disable multicast DNS."
-# msgstr ""
-# "Legitimierung ist zum Aktivieren oder Deaktivieren von Multicast-DNS "
-# "notwendig."
+# msgstr "Autentimine on vajalik, et multicast DNS lülitada sisse või välja."
 #
 # #: src/network/org.freedesktop.network1.policy:88
 # #: src/resolve/org.freedesktop.resolve1.policy:99
 # msgid "Enable/disable DNS over TLS"
-# msgstr "DNS over TLS aktivieren/deaktivieren"
+# msgstr "Lülita DNS üle TLS sisse/välja"
 #
 # #: src/network/org.freedesktop.network1.policy:89
 # #: src/resolve/org.freedesktop.resolve1.policy:100
-# #, fuzzy
 # msgid "Authentication is required to enable or disable DNS over TLS."
-# msgstr ""
-# "Legitimierung ist zum Aktivieren oder Deaktivieren von DNS over TLS "
-# "notwendig."
+# msgstr "Autentimine on vajalik, et DNS üle TLS'i lülitada sisse või välja."
 #
 # #: src/network/org.freedesktop.network1.policy:99
 # #: src/resolve/org.freedesktop.resolve1.policy:110
 # msgid "Enable/disable DNSSEC"
-# msgstr "DNSSEC aktivieren/deaktivieren"
+# msgstr "Lülita DNSSEC sisse/välja"
 #
 # #: src/network/org.freedesktop.network1.policy:100
 # #: src/resolve/org.freedesktop.resolve1.policy:111
-# #, fuzzy
 # msgid "Authentication is required to enable or disable DNSSEC."
-# msgstr ""
-# "Legitimierung ist zum Aktivieren oder Deaktivieren von DNSSEC notwendig."
+# msgstr "Autentimine on vajalik, et DNSSEC lülitada sisse või välja."
 #
 # #: src/network/org.freedesktop.network1.policy:110
 # #: src/resolve/org.freedesktop.resolve1.policy:121
 # msgid "Set DNSSEC Negative Trust Anchors"
-# msgstr "Negative Vertrauensanker für DNSSEC festlegen"
+# msgstr "Säti DNSSEC negatiivsed usaldusankrud"
 #
 # #: src/network/org.freedesktop.network1.policy:111
 # #: src/resolve/org.freedesktop.resolve1.policy:122
-# #, fuzzy
 # msgid "Authentication is required to set DNSSEC Negative Trust Anchors."
 # msgstr ""
-# "Legitimierung ist zum Festlegen von negativen Vertrauensankern für DNSSEC "
-# "erforderlich."
+# "Autentimine on vajalik, et seadistada DNSSEC negatiivsed usaldusankrud."
 #
 # #: src/network/org.freedesktop.network1.policy:121
 # msgid "Revert NTP settings"
-# msgstr "NTP-Einstellungen zurücksetzen"
+# msgstr "Taasta NTP sätted"
 #
 # #: src/network/org.freedesktop.network1.policy:122
 # msgid "Authentication is required to reset NTP settings."
-# msgstr "Legitimierung ist zum Zurücksetzen der NTP-Einstellungen notwendig."
+# msgstr "Autentimine on vajalik, et taastada NTP sätted."
 #
 # #: src/network/org.freedesktop.network1.policy:132
 # msgid "Revert DNS settings"
-# msgstr "DNS-Einstellungen zurücksetzen"
+# msgstr "Taasta DNS sätted"
 #
 # #: src/network/org.freedesktop.network1.policy:133
 # msgid "Authentication is required to reset DNS settings."
-# msgstr "Legitimierung ist zum Zurücksetzen der DNS-Einstellungen notwendig."
+# msgstr "Autentimine on vajalik, et lähtestada DNS sätted."
 #
 # #: src/network/org.freedesktop.network1.policy:143
 # msgid "DHCP server sends force renew message"
-# msgstr ""
+# msgstr "DHCP server saadab sunduuendamise sõnumi"
 #
 # #: src/network/org.freedesktop.network1.policy:144
-# #, fuzzy
 # msgid "Authentication is required to send force renew message."
-# msgstr "Legitimierung ist zum Einstellen einer Nachricht an alle notwendig"
+# msgstr "Autentimine on vajalik, et saata sunduuendamis sõnumi."
 #
 # #: src/network/org.freedesktop.network1.policy:154
 # msgid "Renew dynamic addresses"
-# msgstr "Dynamische Adressen erneuern"
+# msgstr "Uuenda dünaamilist aadressit"
 #
 # #: src/network/org.freedesktop.network1.policy:155
 # msgid "Authentication is required to renew dynamic addresses."
-# msgstr "Legitimierung ist für die Erneuerung dynamischer Adressen notwendig."
+# msgstr "Autentimine on vajalik, et uuendada dünaamilist aadressit."
 #
 # #: src/network/org.freedesktop.network1.policy:165
 # msgid "Reload network settings"
-# msgstr "Netzwerkeinstellungen neu laden"
+# msgstr "Lae võrgu seaded uuesti"
 #
 # #: src/network/org.freedesktop.network1.policy:166
 # msgid "Authentication is required to reload network settings."
-# msgstr ""
-# "Legitimierung ist zum erneuten Laden der Netzwerkeinstellungen notwendig."
+# msgstr "Autentimine on vajalik, et laadida võrgu seaded uuesti."
 #
 # #: src/network/org.freedesktop.network1.policy:176
 # msgid "Reconfigure network interface"
-# msgstr "Netzwerkschnittstelle neu konfigurieren"
+# msgstr "Määra võrguliides"
 #
 # #: src/network/org.freedesktop.network1.policy:177
 # msgid "Authentication is required to reconfigure network interface."
-# msgstr ""
-# "Legitimierung ist zur Neukonfiguration der Netzwerkschnittstelle notwendig."
+# msgstr "Autentimine on vajalik, et määrata võrguliidese."
 #
 # #: src/portable/org.freedesktop.portable1.policy:13
 # msgid "Inspect a portable service image"
 # msgstr ""
 #
 # #: src/portable/org.freedesktop.portable1.policy:14
-# #, fuzzy
 # msgid "Authentication is required to inspect a portable service image."
 # msgstr ""
-# "Legitimierung ist zum Importieren eines VM- oder Containerabbilds "
-# "erforderlich"
 #
 # #: src/portable/org.freedesktop.portable1.policy:23
 # msgid "Attach or detach a portable service image"
 # msgstr ""
 #
-# # https://www.freedesktop.org/software/systemd/man/sd-login.html
 # #: src/portable/org.freedesktop.portable1.policy:24
-# #, fuzzy
 # msgid ""
 # "Authentication is required to attach or detach a portable service image."
 # msgstr ""
-# "Legitimierung ist zum Anschließen eines Geräts an eine Arbeitsstation "
-# "notwendig."
 #
 # #: src/portable/org.freedesktop.portable1.policy:34
 # msgid "Delete or modify portable service image"
 # msgstr ""
 #
 # #: src/portable/org.freedesktop.portable1.policy:35
-# #, fuzzy
 # msgid ""
 # "Authentication is required to delete or modify a portable service image."
 # msgstr ""
-# "Legitimierung ist zum Herunterladen eines VM- oder Containerabbilds "
-# "erforderlich"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:22
 # msgid "Register a DNS-SD service"
-# msgstr "Einen DNS-SD-Dienst registrieren"
+# msgstr "Registeeri DNS-SD teenust"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:23
-# #, fuzzy
 # msgid "Authentication is required to register a DNS-SD service"
-# msgstr "Legitimierung ist zum Einstellen einer Nachricht an alle notwendig"
+# msgstr "Autentimine on vajalik, et registeerida DNS-SD teenust"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:33
 # msgid "Unregister a DNS-SD service"
-# msgstr "Einen DNS-SD-Dienst deregistrieren"
+# msgstr ""
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:34
-# #, fuzzy
 # msgid "Authentication is required to unregister a DNS-SD service"
-# msgstr "Legitimierung ist zum Einstellen einer Nachricht an alle notwendig"
+# msgstr ""
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:132
 # msgid "Revert name resolution settings"
-# msgstr "Namensauflösungseinstellungen zurücksetzen"
+# msgstr "Lähtesta nimeteenuse seadeid"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:133
 # msgid "Authentication is required to reset name resolution settings."
-# msgstr ""
-# "Legitimierung ist zum Zurücksetzen der Namensauflösungseinstellungen "
-# "erforderlich."
+# msgstr "Autentimine on vajalik, et lähtestada nimeteenuse seadeid."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:22
 # msgid "Set system time"
-# msgstr "Die Systemzeit festlegen"
+# msgstr "Määra süsteemi aeg"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:23
 # msgid "Authentication is required to set the system time."
-# msgstr "Legitimierung ist zum Festlegen der Systemzeit notwendig."
+# msgstr "Autentimine on vajalik, et määrata süsteemi aega."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:33
 # msgid "Set system timezone"
-# msgstr "Die Systemzeitzone festlegen"
+# msgstr "Määra süsteemi ajavööndit"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:34
 # msgid "Authentication is required to set the system timezone."
-# msgstr "Legitimierung ist zum Festlegen der Systemzeitzone notwendig."
+# msgstr "Autentimine on vajalik, et määrata süsteemi ajavööndit."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:43
 # msgid "Set RTC to local timezone or UTC"
-# msgstr "Echtzeituhr auf lokale Zeitzone oder UTC setzen"
+# msgstr "Määra RTC (reaalaja kella) kohaliku ajavööndina või UTC'na"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:44
 # msgid ""
 # "Authentication is required to control whether the RTC stores the local or "
 # "UTC time."
 # msgstr ""
-# "Legitimierung ist notwendig zum Festlegen, ob die Echtzeituhr auf lokale "
-# "Zeitzone oder UTC eingestellt ist."
+# "Autentimine on vajalik, et kontrollida kas RTC hoiab kohalikku või UTC aega."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:53
 # msgid "Turn network time synchronization on or off"
-# msgstr "Netzwerkzeitabgeich ein- oder ausschalten"
+# msgstr "Lülita võrgu ajasünkroneerimine sisse või välja"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:54
 # msgid ""
 # "Authentication is required to control whether network time synchronization "
 # "shall be enabled."
 # msgstr ""
-# "Legitimierung ist zum Festlegen, ob Netzwerkzeitabgeich eingeschaltet sein "
-# "soll, erforderlich."
+# "Autentimine on vajalik, et kontrollida kas võrgu ajasünkroneerimine peaks "
+# "olema lubatud."
 #
 # #: src/core/dbus-unit.c:359
 # msgid "Authentication is required to start '$(unit)'."
-# msgstr "Legitimierung ist zum Starten von »$(unit)« notwendig."
+# msgstr "Autentimine on vajalik, et käivitada '$(unit)'."
 #
 # #: src/core/dbus-unit.c:360
 # msgid "Authentication is required to stop '$(unit)'."
-# msgstr "Legitimierung ist zum Stoppen von »$(unit)« notwendig."
+# msgstr "Autentimine on vajalik, et peatada '$(unit)'."
 #
 # #: src/core/dbus-unit.c:361
 # msgid "Authentication is required to reload '$(unit)'."
-# msgstr "Legitimierung ist zum erneuten Laden von »$(unit)« notwendig."
+# msgstr "Autentimine on vajalik, et laadida '$(unit)' uuesti."
 #
 # #: src/core/dbus-unit.c:362 src/core/dbus-unit.c:363
 # msgid "Authentication is required to restart '$(unit)'."
-# msgstr "Legitimierung ist zum Neustarten von »$(unit)« notwendig."
+# msgstr "Autentimine on vajalik, et restartida '$(unit)'."
 #
 # #: src/core/dbus-unit.c:546
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
 # msgstr ""
-# "Legitimierung ist zum Senden eines UNIX-Signals an die Prozesse von "
-# "»$(unit)« notwendig."
+# "Autentimine on vajalik, et saata UNIX signaali '$(unit)' protsessidele."
 #
 # #: src/core/dbus-unit.c:576
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
-# "Legitimierung ist zum Zurücksetzen des Status »fehlgeschlagen« von »$(unit)« "
-# "notwendig"
+# "Autentimine on vajalik, et lähtestada '$(unit)' \"ebaõnnestunud\" olekut."
 #
 # #: src/core/dbus-unit.c:608
 # msgid "Authentication is required to set properties on '$(unit)'."
-# msgstr ""
-# "Legitimierung ist zum Festlegen der Eigenschaften von »$(unit)« notwendig."
+# msgstr "Autentimine on vajalik, et määrata '$(unit)' omadusi."
 #
 # #: src/core/dbus-unit.c:714
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
-# msgstr ""
-# "Legitimierung ist zum Löschen von Dateien und Verzeichnissen, die zu "
-# "»$(unit)« gehören, erforderlich."
+# msgstr "Autentimine on vajalik, et kustutada '$(unit)' faile ja kauste."
 #
 # #: src/core/dbus-unit.c:762
-# #, fuzzy
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""
-# "Legitimierung ist zum Zurücksetzen des Status »fehlgeschlagen« von »$(unit)« "
-# "notwendig"
-#
-# #~ msgid "Authentication is required to kill '$(unit)'."
-# #~ msgstr "Legitimierung ist zum Eliminieren von »$(unit)« notwendig."
-#
-# #~ msgid "Press Ctrl+C to cancel all filesystem checks in progress"
-# #~ msgstr "Strg+C drücken um laufende Dateisystem-Prüfungen abzubrechen"
-#
-# #~ msgid "Checking in progress on %d disk (%3.1f%% complete)"
-# #~ msgid_plural "Checking in progress on %d disks (%3.1f%% complete)"
-# #~ msgstr[0] "Prüfe %d Laufwerk (%3.1f%% fertig)"
-# #~ msgstr[1] "Prüfe %d Laufwerke (%3.1f%% fertig)"
 #endif // 0
