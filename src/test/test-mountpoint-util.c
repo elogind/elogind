@@ -99,7 +99,6 @@ TEST(mnt_id) {
                 } else
                         log_debug("mnt ids of %s are %i (from /proc/self/mountinfo), %i (from path_get_mnt_id()).", p, mnt_id, mnt_id2);
 
-#if 0 /// Unfortunately this doesn't work in all cases where elogind is running in a chroot. (#127)
                 /* The ids don't match? This can easily happen e.g. running with "unshare --mount-proc".
                  * See #11505. */
                 assert_se(q = hashmap_get(h, INT_TO_PTR(mnt_id2)));
@@ -114,13 +113,12 @@ TEST(mnt_id) {
                         /* If the path is still a mount point, then it must be equivalent to the path
                          * corresponds to mnt_id2 */
                         log_debug("There are multiple mounts on the same path %s.", p);
+#if 0 /// Unfortunately this doesn't work in all cases where elogind is running in a chroot. (#127)
                         assert_se(path_equal(p, q));
-                }
 #else // 0
-                assert_se(path_equal(p, t) || (
-                          running_in_chroot() && startswith(p, t)
-                ) );
+                        assert_se(path_equal(p, q) || ( running_in_chroot() && startswith(p, q) ) );
 #endif // 0
+                }
         }
 }
 
