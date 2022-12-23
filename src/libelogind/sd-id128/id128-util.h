@@ -41,4 +41,3 @@ sd_id128_t id128_make_v4_uuid(sd_id128_t id);
 #if 0 /// UNNEEDED by elogind
 int id128_get_product(sd_id128_t *ret);
 #endif // 0
-
