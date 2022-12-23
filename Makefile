@@ -20,6 +20,7 @@ HERE := $(shell pwd -P)
 
 BASIC_OPT  := --buildtype release
 BUILDDIR   ?= $(HERE)/build
+BUILDMODE  ?= auto
 CGCONTROL  ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
 CGDEFAULT  ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
 DESTDIR    ?=
@@ -66,10 +67,16 @@ ifeq (YES,$(DEBUG))
     CFLAGS    := -O0 -g3 -ggdb -ftrapv ${envCFLAGS} -fPIE
     LDFLAGS   := -fPIE
     NINJA_OPT := ${NINJA_OPT} -j 1 -k 1
+    ifneq (release,$(BUILDMODE))
+        BUILDMODE := developer
+    endif
 else
     BUILDDIR  := ${BUILDDIR}_release
     CFLAGS    := -fwrapv ${envCFLAGS}
     LDFLAGS   :=
+    ifneq (developer,$(BUILDMODE))
+        BUILDMODE := release
+    endif
 endif
 
 # Set search paths including the actual build directory
@@ -145,6 +152,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Dpam=true \
 			-Dselinux=false \
 			-Dsmack=true \
+			-Dmode=$(BUILDMODE) \
 	)
 
 .DEFAULT: all
