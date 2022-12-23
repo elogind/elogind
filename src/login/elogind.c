@@ -330,9 +330,9 @@ int elogind_startup(int argc, char *argv[], bool *has_forked) {
         int i, r;
         pid_t pid;
 
-        /* if elogind was called with -h/--help, skip all checks */
+        /* if elogind was called with -h/--help or --bus-introspect, skip all checks */
         for (i = 1; !daemonize && (i <= argc) && argv[i]; ++i ) {
-                if (streq("-h", argv[i]) || streq("--help", argv[i]))
+                if (streq("-h", argv[i]) || streq("--help", argv[i]) || startswith(argv[i], "--bus-introspect") )
                         return 0;
         }
 
