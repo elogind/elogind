@@ -286,7 +286,7 @@ int elogind_setup_cgroups_agent( Manager* m ) {
                 if ( fd < 0 )
                         return log_error_errno( errno, "Failed to allocate cgroups agent socket: %m" );
 
-                fd_inc_rcvbuf( fd, CGROUPS_AGENT_RCVBUF_SIZE );
+                fd_increase_rxbuf( fd, CGROUPS_AGENT_RCVBUF_SIZE );
 
                 (void) unlink( sa.un.sun_path );
 
