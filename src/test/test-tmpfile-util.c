@@ -165,6 +165,7 @@ TEST(tempfn_xxxxxx) {
         test_tempfn_xxxxxx_one(p, "hoge", q, 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_tempfn_random_child_one(const char *p, const char *extra, const char *expect, int ret) {
         _cleanup_free_ char *s = NULL;
         int r;
@@ -238,7 +239,6 @@ TEST(tempfn_random_child) {
         assert_se(strextend(&q, "hoge"));
         test_tempfn_random_child_one(p, "hoge", q, 0);
 }
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0
+
 DEFINE_TEST_MAIN(LOG_DEBUG);
