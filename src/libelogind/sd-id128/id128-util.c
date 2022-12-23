@@ -165,6 +165,7 @@ int id128_write(const char *p, Id128Format f, sd_id128_t id, bool do_sync) {
 
         return id128_write_fd(fd, f, id, do_sync);
 }
+#endif // 0
 
 void id128_hash_func(const sd_id128_t *p, struct siphash *state) {
         siphash24_compress(p, sizeof(sd_id128_t), state);
@@ -173,7 +174,6 @@ void id128_hash_func(const sd_id128_t *p, struct siphash *state) {
 int id128_compare_func(const sd_id128_t *a, const sd_id128_t *b) {
         return memcmp(a, b, 16);
 }
-#endif // 0
 
 sd_id128_t id128_make_v4_uuid(sd_id128_t id) {
         /* Stolen from generate_random_uuid() of drivers/char/random.c
@@ -188,7 +188,6 @@ sd_id128_t id128_make_v4_uuid(sd_id128_t id) {
         return id;
 }
 
-#if 0 /// UNNEEDED by elogind
 DEFINE_HASH_OPS(id128_hash_ops, sd_id128_t, id128_hash_func, id128_compare_func);
 
 int id128_get_product(sd_id128_t *ret) {
@@ -212,4 +211,3 @@ int id128_get_product(sd_id128_t *ret) {
         *ret = uuid;
         return 0;
 }
-#endif // 0

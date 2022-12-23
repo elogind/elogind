@@ -30,14 +30,12 @@ int id128_read(const char *p, Id128Format f, sd_id128_t *ret);
 int id128_write_fd(int fd, Id128Format f, sd_id128_t id, bool do_sync);
 #if 0 /// UNNEEDED by elogind
 int id128_write(const char *p, Id128Format f, sd_id128_t id, bool do_sync);
+#endif // 0
 
 void id128_hash_func(const sd_id128_t *p, struct siphash *state);
 int id128_compare_func(const sd_id128_t *a, const sd_id128_t *b) _pure_;
 extern const struct hash_ops id128_hash_ops;
-#endif // 0
 
 sd_id128_t id128_make_v4_uuid(sd_id128_t id);
 
-#if 0 /// UNNEEDED by elogind
 int id128_get_product(sd_id128_t *ret);
-#endif // 0
