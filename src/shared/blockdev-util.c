@@ -537,7 +537,6 @@ int path_is_encrypted(const char *path) {
 
         return blockdev_is_encrypted(p, 10 /* safety net: maximum recursion depth */);
 }
-#endif // 0
 
 int fd_get_whole_disk(int fd, bool backing, dev_t *ret) {
         dev_t devt;
@@ -793,3 +792,4 @@ int blockdev_reread_partition_table(sd_device *dev) {
 
         return 0;
 }
+#endif // 0
