@@ -562,6 +562,7 @@ static int custom_timer_suspend(const SleepConfig *sleep_config) {
 
 /* Freeze when invoked and thaw on cleanup */
 static int freeze_thaw_user_slice(const char **method) {
+#if 0 /// elogind does not support systemd scopes and slices
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         int r;
@@ -569,13 +570,14 @@ static int freeze_thaw_user_slice(const char **method) {
         if (!method || !*method)
                 return 0;
 
-        r = bus_connect_system_elogind(&bus);
+        r = bus_connect_system_systemd(&bus);
         if (r < 0)
-                return log_debug_errno(r, "Failed to open connection to elogind: %m");
+                return log_debug_errno(r, "Failed to open connection to systemd: %m");
 
-        r = bus_call_method(bus, bus_elogind_mgr, *method, &error, NULL, "s", SPECIAL_USER_SLICE);
+        r = bus_call_method(bus, bus_systemd_mgr, *method, &error, NULL, "s", SPECIAL_USER_SLICE);
         if (r < 0)
                 return log_debug_errno(r, "Failed to execute operation: %s", bus_error_message(&error, r));
+#endif // 0
 
         return 1;
 }
