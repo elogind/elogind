@@ -26,6 +26,7 @@
 
   <refsynopsisdiv>
     <para><filename>elogind-pcrphase.service</filename></para>
+    <para><filename>elogind-pcrphase-sysinit.service</filename></para>
     <para><filename>elogind-pcrphase-initrd.service</filename></para>
     <para><filename>/usr/lib/elogind/system-pcrphase</filename> <replaceable>STRING</replaceable></para>
   </refsynopsisdiv>
@@ -51,7 +52,6 @@
       initializes, before activating system extension images for the initrd. It is supposed to act as barrier
       between the time where the kernel initializes, and where the initrd starts operating and enables
       system extension images, i.e. code shipped outside of the UKI. (This string is extended at start of
-      <filename>elogind-pcrphase-initrd.service</filename>.)</para></listitem>
       <filename>systemd-pcrphase-initrd.service</filename>.)</para></listitem>
 
       <listitem><para><literal>leave-initrd</literal> is extended into PCR 11 when the initrd is about to
@@ -69,7 +69,6 @@
       are permitted to log in (i.e. before <filename>elogind-user-sessions.service</filename>). It is
       supposed to act as barrier between the time where unprivileged regular users are still prohibited to
       log in and where they are allowed to log in. (This string is extended at start of
-      <filename>elogind-pcrphase.service</filename>.)</para></listitem>
       <filename>systemd-pcrphase.service</filename>.)</para></listitem>
 
       <listitem><para><literal>shutdown</literal> is extended into PCR 11 when system shutdown begins. It is
