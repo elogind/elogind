@@ -490,7 +490,6 @@ int user_start(User *u) {
 
 #if 0 /// elogind does not spawn user instances of systemd
         /* Start user@UID.service */
-#endif // 0
         user_start_service(u);
 
         if (!u->started) {
@@ -499,6 +498,7 @@ int user_start(User *u) {
                 user_send_signal(u, true);
                 u->started = true;
         }
+#endif // 0
 
         /* Save new user data */
         user_save(u);

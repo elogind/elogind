@@ -80,6 +80,8 @@ void manager_reset_config(Manager *m) {
 
         m->kill_only_users = strv_free(m->kill_only_users);
         m->kill_exclude_users = strv_free(m->kill_exclude_users);
+        m->stop_idle_session_usec = USEC_INFINITY;
+}
 
 #if 1 /// Add-On for manager_reset_config() used by elogind
 void elogind_manager_reset_config(Manager* m) {
@@ -119,7 +121,6 @@ void elogind_manager_reset_config(Manager* m) {
                           m->hibernate_delay_sec / USEC_PER_SEC,
                           m->hibernate_delay_sec / USEC_PER_MINUTE);
 #endif // ENABLE_DEBUG_ELOGIND
-        m->stop_idle_session_usec = USEC_INFINITY;
 }
 #endif // 1
 
@@ -439,7 +440,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
                 if (r >= 0)
                         s = hashmap_get(m->session_units, unit);
 #else // 0
-                log_debug_elogind("Searching session for PID %u", pid);
+                log_debug_elogind("Searching session for PID %d", pid);
                 r = cg_pid_get_session(pid, &session_name);
 
                 if (r >= 0)

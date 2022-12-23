@@ -484,7 +484,7 @@ int session_load(Session *s) {
                                                "User of session %s not known.",
                                                s->id);
 
-                log_debug_elogind("Attaching session %s to user %d", s->id, user->user_record->uid);
+                log_debug_elogind("Attaching session %s to user %u", s->id, user->user_record->uid);
                 session_set_user(s, user);
         }
 
