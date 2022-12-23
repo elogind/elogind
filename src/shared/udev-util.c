@@ -730,9 +730,6 @@ int on_ac_power(void) {
 bool udev_available(void) {
         static int cache = -1;
 
-        /* The service elogind-udevd is started only when /sys is read write.
-         * See elogind-udevd.service: ConditionPathIsReadWrite=/sys
-         * Also, our container interface (http://elogind.io/CONTAINER_INTERFACE/) states that /sys must
         /* The service systemd-udevd is started only when /sys is read write.
          * See systemd-udevd.service: ConditionPathIsReadWrite=/sys
          * Also, our container interface (http://systemd.io/CONTAINER_INTERFACE/) states that /sys must
