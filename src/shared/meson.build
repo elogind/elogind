@@ -378,6 +378,7 @@ shared_sources = files(
         'conf-parser.h',
         'copy.c',
         'copy.h',
+        'daemon-util.c',
         'daemon-util.h',
         'dev-setup.c',
         'dev-setup.h',
