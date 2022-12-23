@@ -73,7 +73,6 @@ retry:
 
         return fd;
 }
-#endif // 0
 
 int journal_fd_nonblock(bool nonblock) {
         int r;
@@ -84,6 +83,7 @@ int journal_fd_nonblock(bool nonblock) {
 
         return fd_nonblock(r, nonblock);
 }
+#endif /// 0
 
 #if VALGRIND
 void close_journal_fd(void) {
