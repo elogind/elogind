@@ -483,7 +483,6 @@ TEST(path_make_relative) {
         test_path_make_relative_one("/some/path/./dot", "/some/further/path", "../../further/path");
         test_path_make_relative_one("//extra.//.//./.slashes//./won't////fo.ol///anybody//", "/././/extra././/.slashes////ar.e/.just/././.fine///", "../../../ar.e/.just/.fine");
 }
-#endif // 0
 
 static void test_path_make_relative_parent_one(const char *from, const char *to, const char *expected) {
         _cleanup_free_ char *z = NULL;
@@ -511,6 +510,7 @@ TEST(path_make_relative_parent) {
         test_path_make_relative_parent_one("/some/path/./dot/hoge", "/some/further/path", "../../further/path");
         test_path_make_relative_parent_one("//extra.//.//./.slashes//./won't////fo.ol///anybody//hoge", "/././/extra././/.slashes////ar.e/.just/././.fine///", "../../../ar.e/.just/.fine");
 }
+#endif // 0
 
 TEST(path_strv_resolve) {
         char tmp_dir[] = "/tmp/test-path-util-XXXXXX";
