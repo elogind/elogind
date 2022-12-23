@@ -283,9 +283,6 @@ static int trie_search_f(sd_hwdb *hwdb, const char *search) {
         return 0;
 }
 
-#endif // 0
-
-#if 0 /// hwdb is only stubbed but not used in elogind
 static int hwdb_new(const char *path, sd_hwdb **ret) {
         _cleanup_(sd_hwdb_unrefp) sd_hwdb *hwdb = NULL;
         const char sig[] = HWDB_SIG;
@@ -346,14 +343,21 @@ static int hwdb_new(const char *path, sd_hwdb **ret) {
 
         return 0;
 }
+#endif // 0
+
 
 _public_ int sd_hwdb_new_from_path(const char *path, sd_hwdb **ret) {
+#if 0 /// hwdb is only stubbed but not used in elogind
         assert_return(!isempty(path), -EINVAL);
 
         return hwdb_new(path, ret);
+#else // 0
+        return -ENOSYS;
+#endif // 0
 }
 
 _public_ int sd_hwdb_new(sd_hwdb **ret) {
+#if 0 /// hwdb is only stubbed but not used in elogind
         return hwdb_new(NULL, ret);
 #else // 0
         return -ENOSYS;
@@ -369,9 +373,9 @@ static sd_hwdb *hwdb_free(sd_hwdb *hwdb) {
         safe_fclose(hwdb->f);
         ordered_hashmap_free(hwdb->properties);
         return mfree(hwdb);
-#else // 0
         if (hwdb)
                 mfree(hwdb);
+#else // 0
         return NULL;
 #endif // 0
 }
