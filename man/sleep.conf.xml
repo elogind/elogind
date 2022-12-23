@@ -129,7 +129,7 @@
     <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     when
     <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
-    attempts to suspend or hibernate the machine.
+      attempts to suspend or hibernate the machine.</para>
 <!-- // 0 -->
   </refsect1>
 

@@ -321,8 +321,13 @@ if __name__ == '__main__':
             print(item, file=sys.stderr)
             exit(77 if opts.test else 1)
 
-    if not os.path.exists(f'{opts.build_dir}/systemd'):
-        exit(f"{opts.build_dir}/systemd doesn't exist. Use --build-dir=.")
+#if 0 /// check for elogind instead
+#     if not os.path.exists(f'{opts.build_dir}/systemd'):
+#         exit(f"{opts.build_dir}/systemd doesn't exist. Use --build-dir=.")
+#else // 0
+    if not os.path.exists(f'{opts.build_dir}/elogind'):
+        exit(f"{opts.build_dir}/elogind doesn't exist. Use --build-dir=.")
+#endif // 0
 
     stats = {page.split('/')[-1] : process(page) for page in opts.pages}
 
