@@ -63,10 +63,10 @@ typedef enum JsonVariantType {
 int json_variant_new_stringn(JsonVariant **ret, const char *s, size_t n);
 #if 0 /// UNNEEDED by elogind
 int json_variant_new_base64(JsonVariant **ret, const void *p, size_t n);
-#endif // 0
 int json_variant_new_base32hex(JsonVariant **ret, const void *p, size_t n);
 int json_variant_new_hex(JsonVariant **ret, const void *p, size_t n);
 int json_variant_new_octescape(JsonVariant **ret, const void *p, size_t n);
+#endif // 0
 int json_variant_new_integer(JsonVariant **ret, int64_t i);
 int json_variant_new_unsigned(JsonVariant **ret, uint64_t u);
 int json_variant_new_real(JsonVariant **ret, double d);
@@ -76,7 +76,9 @@ int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n);
 int json_variant_new_array_strv(JsonVariant **ret, char **l);
 int json_variant_new_object(JsonVariant **ret, JsonVariant **array, size_t n);
 int json_variant_new_null(JsonVariant **ret);
+#if 0 /// UNNEEDED by elogind
 int json_variant_new_id128(JsonVariant **ret, sd_id128_t id);
+#endif // 0
 
 static inline int json_variant_new_string(JsonVariant **ret, const char *s) {
         return json_variant_new_stringn(ret, s, SIZE_MAX);

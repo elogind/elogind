@@ -438,7 +438,6 @@ int json_variant_new_base64(JsonVariant **ret, const void *p, size_t n) {
 
         return json_variant_new_stringn(ret, s, k);
 }
-#endif // 0
 
 int json_variant_new_base32hex(JsonVariant **ret, const void *p, size_t n) {
         _cleanup_free_ char *s = NULL;
@@ -482,6 +481,7 @@ int json_variant_new_octescape(JsonVariant **ret, const void *p, size_t n) {
 int json_variant_new_id128(JsonVariant **ret, sd_id128_t id) {
         return json_variant_new_string(ret, SD_ID128_TO_STRING(id));
 }
+#endif // 0
 
 static void json_variant_set(JsonVariant *a, JsonVariant *b) {
         assert(a);
