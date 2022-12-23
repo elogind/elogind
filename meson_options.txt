@@ -27,9 +27,9 @@ option('rootprefix', type : 'string',
 # option('link-timesyncd-shared', type: 'boolean',
 #        description : 'link systemd-timesyncd and its helpers to libsystemd-shared.so')
 # option('link-journalctl-shared', type: 'boolean',
-#        description : 'link journalctl against libelogind-shared.so')
+#        description : 'link journalctl against libsystemd-shared.so')
 # option('link-boot-shared', type: 'boolean',
-#        description : 'link bootctl and elogind-bless-boot against libelogind-shared.so')
+#        description : 'link bootctl and systemd-bless-boot against libsystemd-shared.so')
 # option('first-boot-full-preset', type: 'boolean', value: false,
 #        description : 'during first boot, do full preset-all (default will be changed to true later)')
 #endif // 0
@@ -583,7 +583,6 @@ option('urlify', type : 'boolean', value : true,
 
 #if 0 /// BPF is nowhere used or usable within elogind
 # option('bpf-compiler', type : 'combo', choices : ['clang', 'gcc'],
-#
 #     description: 'compiler used to build BPF programs, note: gcc is experimental')
 # option('bpf-framework', type : 'combo', choices : ['auto', 'true', 'false'],
 #     description: 'build BPF programs from source code in restricted C')

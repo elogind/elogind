@@ -15,7 +15,7 @@ project('elogind', 'c',
 
 libsystemd_version = '0.35.0'
 #if 0 /// elogind does not ship lubudev
-libudev_version = '1.7.5'
+# libudev_version = '1.7.5'
 #endif // 0
 
 conf = configuration_data()
@@ -326,7 +326,6 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      rootbindir / 'systemctl')
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        rootlibexecdir / 'systemd')
 # conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
-# conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 # conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'systemd-cgroups-agent')
 #else // 0
 conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'elogind-cgroups-agent')
@@ -961,7 +960,6 @@ endif
 # conf.set('TIME_EPOCH', time_epoch)
 #
 # conf.set('CLOCK_VALID_RANGE_USEC_MAX', get_option('clock-valid-range-usec-max'))
-# ############################################################
 #else // 0
 # elogind needs to know which cgroups controller to follow.
 get_cg_ctrl_sh = find_program('tools/meson-get-cg-controller.sh')
@@ -990,7 +988,6 @@ conf.set_quoted('SYSTEMD_CGROUP_CONTROLLER_HYBRID',
 default_user_shell = get_option('default-user-shell')
 conf.set_quoted('DEFAULT_USER_SHELL',      default_user_shell)
 conf.set_quoted('DEFAULT_USER_SHELL_NAME', fs.name(default_user_shell))
-############################################################
 
 foreach tuple : [['system-alloc-uid-min', 'SYS_UID_MIN', 1],  # Also see login.defs(5).
                  ['system-uid-max',       'SYS_UID_MAX', 999],
@@ -3855,13 +3852,14 @@ endif
 #         install_dir : rootlibexecdir)
 #endif // 0
 
-executable('elogind-cgroups-agent',
-           'src/cgroups-agent/cgroups-agent.c',
-           include_directories : includes,
-           link_with : [libshared],
-           install_rpath : rootlibexecdir,
-           install : true,
-           install_dir : rootlibexecdir)
+executable(
+        'elogind-cgroups-agent',
+        'src/cgroups-agent/cgroups-agent.c',
+        include_directories : includes,
+        link_with : [libshared],
+        install_rpath : rootpkglibdir,
+        install : true,
+        install_dir : rootlibexecdir)
 
 #if 0 /// UNNEEDED by elogind
 # systemd_id128 = executable(
