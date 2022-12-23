@@ -73,9 +73,9 @@ TEST(set_put) {
         assert_se(ordered_set_put(m, (void*) "333") == 0);
 #if 0 /// Nowhere else used by elogind
         assert_se(ordered_set_remove(m, (void*) "333"));
-#endif // 0
         assert_se(ordered_set_put(m, (void*) "333") == 1);
         assert_se(ordered_set_put(m, (void*) "333") == 0);
+#endif // 0
         assert_se(ordered_set_put(m, (void*) "22") == 0);
 
         assert_se(str = strdup("333"));
