@@ -1064,6 +1064,7 @@ TEST(path_startswith_strv) {
         assert_se(streq_ptr(path_startswith_strv("/foo2/bar", STRV_MAKE("/foo/quux", "", "/zzz")), NULL));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_path_glob_can_match_one(const char *pattern, const char *prefix, const char *expected) {
         _cleanup_free_ char *result = NULL;
 
@@ -1101,6 +1102,7 @@ TEST(path_glob_can_match) {
         test_path_glob_can_match_one("/foo/*/aaa/*", "/foo", "/foo/*/aaa/*");
         test_path_glob_can_match_one("/foo/*/aaa/*", "/", "/foo/*/aaa/*");
 }
+#endif // 0
 
 TEST(print_MAX) {
         log_info("PATH_MAX=%zu\n"
@@ -1111,14 +1113,6 @@ TEST(print_MAX) {
                  (size_t) NAME_MAX);
 
         assert_cc(FILENAME_MAX == PATH_MAX);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 }
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
