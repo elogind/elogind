@@ -46,11 +46,11 @@ int main(int argc, const char *argv[]) {
 
         assert_se(!LIST_JUST_US(item_list, head));
 
-
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[1].item_list_next == &items[0]);
         assert_se(items[2].item_list_next == &items[1]);
         assert_se(items[3].item_list_next == &items[2]);
+
         assert_se(items[0].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[2]);
         assert_se(items[2].item_list_prev == &items[3]);
@@ -66,64 +66,64 @@ int main(int argc, const char *argv[]) {
         LIST_REMOVE(item_list, head, &items[1]);
         assert_se(LIST_JUST_US(item_list, &items[1]));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[2].item_list_next == &items[0]);
         assert_se(items[3].item_list_next == &items[2]);
+
         assert_se(items[0].item_list_prev == &items[2]);
         assert_se(items[2].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_INSERT_AFTER(item_list, head, &items[3], &items[1]);
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[2].item_list_next == &items[0]);
         assert_se(items[1].item_list_next == &items[2]);
         assert_se(items[3].item_list_next == &items[1]);
+
         assert_se(items[0].item_list_prev == &items[2]);
         assert_se(items[2].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_REMOVE(item_list, head, &items[1]);
         assert_se(LIST_JUST_US(item_list, &items[1]));
+
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[2].item_list_next == &items[0]);
         assert_se(items[3].item_list_next == &items[2]);
+
         assert_se(items[0].item_list_prev == &items[2]);
         assert_se(items[2].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_INSERT_BEFORE(item_list, head, &items[2], &items[1]);
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[2].item_list_next == &items[0]);
         assert_se(items[1].item_list_next == &items[2]);
         assert_se(items[3].item_list_next == &items[1]);
+
         assert_se(items[0].item_list_prev == &items[2]);
         assert_se(items[2].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_REMOVE(item_list, head, &items[0]);
         assert_se(LIST_JUST_US(item_list, &items[0]));
+
         assert_se(items[2].item_list_next == NULL);
         assert_se(items[1].item_list_next == &items[2]);
         assert_se(items[3].item_list_next == &items[1]);
+
         assert_se(items[2].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_INSERT_BEFORE(item_list, head, &items[3], &items[0]);
         assert_se(items[2].item_list_next == NULL);
         assert_se(items[1].item_list_next == &items[2]);
         assert_se(items[3].item_list_next == &items[1]);
         assert_se(items[0].item_list_next == &items[3]);
+
         assert_se(items[2].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == &items[0]);
@@ -133,45 +133,45 @@ int main(int argc, const char *argv[]) {
         LIST_REMOVE(item_list, head, &items[0]);
         assert_se(LIST_JUST_US(item_list, &items[0]));
 
-
-
-
-
-
-
-
-
-
-
         assert_se(items[2].item_list_next == NULL);
         assert_se(items[1].item_list_next == &items[2]);
         assert_se(items[3].item_list_next == &items[1]);
+
         assert_se(items[2].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_INSERT_BEFORE(item_list, head, NULL, &items[0]);
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[2].item_list_next == &items[0]);
         assert_se(items[1].item_list_next == &items[2]);
         assert_se(items[3].item_list_next == &items[1]);
+
         assert_se(items[0].item_list_prev == &items[2]);
         assert_se(items[2].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_REMOVE(item_list, head, &items[0]);
         assert_se(LIST_JUST_US(item_list, &items[0]));
+
         assert_se(items[2].item_list_next == NULL);
         assert_se(items[1].item_list_next == &items[2]);
         assert_se(items[3].item_list_next == &items[1]);
+
         assert_se(items[2].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_REMOVE(item_list, head, &items[1]);
         assert_se(LIST_JUST_US(item_list, &items[1]));
+
         assert_se(items[2].item_list_next == NULL);
         assert_se(items[3].item_list_next == &items[2]);
+
         assert_se(items[2].item_list_prev == &items[3]);
         assert_se(items[3].item_list_prev == NULL);
+
         LIST_REMOVE(item_list, head, &items[2]);
         assert_se(LIST_JUST_US(item_list, &items[2]));
         assert_se(LIST_JUST_US(item_list, head));
@@ -210,16 +210,16 @@ int main(int argc, const char *argv[]) {
         }
 
         for (i = ELEMENTSOF(items) / 2; i < ELEMENTSOF(items); i++) {
-        }
-
-
                 LIST_INIT(item_list, &items[i]);
                 assert_se(LIST_JUST_US(item_list, &items[i]));
                 LIST_PREPEND(item_list, head2, &items[i]);
+        }
+
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[1].item_list_next == &items[0]);
         assert_se(items[2].item_list_next == NULL);
         assert_se(items[3].item_list_next == &items[2]);
+
         assert_se(items[0].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == NULL);
         assert_se(items[2].item_list_prev == &items[3]);
@@ -228,11 +228,11 @@ int main(int argc, const char *argv[]) {
         LIST_JOIN(item_list, head2, head);
         assert_se(head == NULL);
 
-
         assert_se(items[0].item_list_next == NULL);
         assert_se(items[1].item_list_next == &items[0]);
         assert_se(items[2].item_list_next == &items[1]);
         assert_se(items[3].item_list_next == &items[2]);
+
         assert_se(items[0].item_list_prev == &items[1]);
         assert_se(items[1].item_list_prev == &items[2]);
         assert_se(items[2].item_list_prev == &items[3]);
@@ -247,10 +247,10 @@ int main(int argc, const char *argv[]) {
 
         assert_se(head == NULL);
 
-
         LIST_PREPEND(item_list, head, items + 0);
         LIST_PREPEND(item_list, head, items + 1);
         LIST_PREPEND(item_list, head, items + 2);
+
         assert_se(LIST_POP(item_list, head) == items + 2);
         assert_se(LIST_POP(item_list, head) == items + 1);
         assert_se(LIST_POP(item_list, head) == items + 0);
