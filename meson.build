@@ -327,13 +327,13 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        rootlibexecdir / 'systemd')
 # conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
 # conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
+# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'systemd-cgroups-agent')
 #else // 0
-conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'elogind-cgroups-agent'))
-conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               join_paths(rootlibexecdir, 'elogind-uaccess-command'))
-conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'elogind'))
+conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'elogind-cgroups-agent')
+conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               rootlibexecdir / 'elogind-uaccess-command')
+conf.set_quoted('SYSTEMD_BINARY_PATH',                        rootlibexecdir / 'elogind')
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'systemd-cgroups-agent')
 # conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    rootlibexecdir / 'systemd-cryptsetup')
 # conf.set_quoted('SYSTEMD_EXPORT_PATH',                        rootlibexecdir / 'systemd-export')
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          rootlibexecdir / 'systemd-fsck')
@@ -1235,21 +1235,26 @@ if not libcap.found()
         libcap = cc.find_library('cap')
 endif
 
-want_bpf_framework = get_option('bpf-framework')
-bpf_compiler = get_option('bpf-compiler')
-bpf_framework_required = want_bpf_framework == 'true'
-
-libbpf_version_requirement = '>= 0.1.0'
-if bpf_compiler == 'gcc'
-        libbpf_version_requirement = '>= 1.0.0'
-endif
-libbpf = dependency('libbpf', required : bpf_framework_required, version : libbpf_version_requirement)
-conf.set10('HAVE_LIBBPF', libbpf.found())
-
-bpftool_strip_version_requirement = '>= 5.13.0'
-if bpf_compiler == 'gcc'
-        bpftool_strip_version_requirement = '>= 7.0.0'
-endif
+#if 0 /// BPF is nowhere used or usable within elogind
+# want_bpf_framework = get_option('bpf-framework')
+# bpf_compiler = get_option('bpf-compiler')
+# bpf_framework_required = want_bpf_framework == 'true'
+#
+# libbpf_version_requirement = '>= 0.1.0'
+# if bpf_compiler == 'gcc'
+#         libbpf_version_requirement = '>= 1.0.0'
+# endif
+# libbpf = dependency('libbpf', required : bpf_framework_required, version : libbpf_version_requirement)
+# conf.set10('HAVE_LIBBPF', libbpf.found())
+#
+# bpftool_strip_version_requirement = '>= 5.13.0'
+# if bpf_compiler == 'gcc'
+#         bpftool_strip_version_requirement = '>= 7.0.0'
+# endif
+#else // 0
+want_bpf_framework = 'false'
+conf.set10('HAVE_LIBBPF', false)
+#endif // 0
 
 if want_bpf_framework == 'false' or not libbpf.found() or skip_deps
         conf.set10('BPF_FRAMEWORK', false)
@@ -3850,7 +3855,6 @@ endif
 #         install_dir : rootlibexecdir)
 #endif // 0
 
-#if 1 /// elogind brings its own cgroups agent
 executable('elogind-cgroups-agent',
            'src/cgroups-agent/cgroups-agent.c',
            include_directories : includes,
@@ -3858,18 +3862,8 @@ executable('elogind-cgroups-agent',
            install_rpath : rootlibexecdir,
            install : true,
            install_dir : rootlibexecdir)
-#endif // 1
 
 #if 0 /// UNNEEDED by elogind
-# executable(
-#         'systemd-cgroups-agent',
-#         'src/cgroups-agent/cgroups-agent.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         install_rpath : rootpkglibdir,
-#         install : true,
-#         install_dir : rootlibexecdir)
-#
 # systemd_id128 = executable(
 #         'systemd-id128',
 #         'src/id128/id128.c',
