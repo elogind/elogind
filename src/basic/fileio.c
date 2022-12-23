@@ -337,7 +337,6 @@ fail:
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int write_string_filef(
                 const char *fn,
                 WriteStringFileFlags flags,
@@ -356,7 +355,6 @@ int write_string_filef(
 
         return write_string_file(fn, p, flags);
 }
-#endif // 0
 
 int read_one_line_file(const char *fn, char **line) {
         _cleanup_fclose_ FILE *f = NULL;

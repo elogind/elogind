@@ -64,9 +64,7 @@ static inline int write_string_file(const char *fn, const char *line, WriteStrin
         return write_string_file_ts(fn, line, flags, NULL);
 }
 
-#if 0 /// UNNEEDED by elogind
 int write_string_filef(const char *fn, WriteStringFileFlags flags, const char *format, ...) _printf_(3, 4);
-#endif // 0
 
 int read_one_line_file(const char *filename, char **line);
 int read_full_file_full(int dir_fd, const char *filename, uint64_t offset, size_t size, ReadFullFileFlags flags, const char *bind_name, char **ret_contents, size_t *ret_size);
