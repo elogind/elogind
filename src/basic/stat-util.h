@@ -15,11 +15,11 @@
 #if 0 /// UNNEEDED by elogind
 int is_symlink(const char *path);
 #endif // 0
-#if 0 /// UNNEEDED by elogind
 int is_dir_full(int atfd, const char *fname, bool follow);
 static inline int is_dir(const char *path, bool follow) {
         return is_dir_full(AT_FDCWD, path, follow);
 }
+#if 0 /// UNNEEDED by elogind
 static inline int is_dir_fd(int fd) {
         return is_dir_full(fd, NULL, false);
 }
