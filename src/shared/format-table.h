@@ -35,9 +35,9 @@ typedef enum TableDataType {
         TABLE_UINT32,
         TABLE_UINT64,
         TABLE_UINT64_HEX,
+#if 0 /// UNNEEDED by elogind
         TABLE_PERCENT,
         TABLE_IFINDEX,
-#if 0 /// UNNEEDED by elogind
         TABLE_IN_ADDR,  /* Takes a union in_addr_union (or a struct in_addr) */
         TABLE_IN6_ADDR, /* Takes a union in_addr_union (or a struct in6_addr) */
 #endif // 0
@@ -52,15 +52,19 @@ typedef enum TableDataType {
 
         /* The following are not really data types, but commands for table_add_cell_many() to make changes to
          * a cell just added. */
+#if 0 /// UNNEEDED by elogind
         TABLE_SET_MINIMUM_WIDTH,
         TABLE_SET_MAXIMUM_WIDTH,
         TABLE_SET_WEIGHT,
         TABLE_SET_ALIGN_PERCENT,
         TABLE_SET_ELLIPSIZE_PERCENT,
+#endif // 0
         TABLE_SET_COLOR,
+#if 0 /// UNNEEDED by elogind
         TABLE_SET_RGAP_COLOR,
         TABLE_SET_BOTH_COLORS,
         TABLE_SET_URL,
+#endif // 0
         TABLE_SET_UPPERCASE,
 
         _TABLE_DATA_TYPE_INVALID = -EINVAL,
