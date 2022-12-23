@@ -120,6 +120,7 @@ TEST(fd_move_above_stdio) {
         assert_se(close_nointr(new_fd) != EBADF);
 }
 
+#if 0 /// This does not work with elogind
 TEST(rearrange_stdio) {
         pid_t pid;
         int r;
@@ -161,9 +162,7 @@ TEST(rearrange_stdio) {
                         assert_se(fd_move_above_stdio(0) == 3);
                 }
                 assert_se(open("/dev/full", O_WRONLY|O_CLOEXEC) == 0);
-#if 0 /// seccomptools are not needed by elogind
                 assert_se(acquire_data_fd("foobar", 6, 0) == 2);
-#endif // 0
 
                 assert_se(rearrange_stdio(2, 0, 1) >= 0);
 
@@ -187,6 +186,7 @@ TEST(rearrange_stdio) {
                 _exit(EXIT_SUCCESS);
         }
 }
+#endif // 0
 
 TEST(read_nr_open) {
         log_info("nr-open: %i", read_nr_open());
