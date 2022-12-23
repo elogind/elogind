@@ -155,7 +155,6 @@ static int tempfn_build(const char *p, const char *pre, const char *post, bool c
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
         /*
          * Turns this:
@@ -168,6 +167,7 @@ int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
         return tempfn_build(p, extra, "XXXXXX", /* child = */ false, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int tempfn_random(const char *p, const char *extra, char **ret) {
         _cleanup_free_ char *s = NULL;
 
