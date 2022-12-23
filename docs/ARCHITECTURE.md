@@ -64,7 +64,6 @@ To summarize:
 - may be used by all code in the tree
 - may not use any code outside of `src/fundamental/` and `src/basic/`
 
-`src/libelogind/`
 `src/libsystemd/`
 - may be used by all code in the tree that links to `libsystem.so`
 - may not use any code outside of `src/fundamental/`, `src/basic/`, and
