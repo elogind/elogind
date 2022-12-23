@@ -845,6 +845,7 @@ char** strv_shell_escape(char **l, const char *bad) {
 
         return l;
 }
+#endif // 0
 
 bool strv_fnmatch_full(
                 char* const* patterns,
@@ -869,8 +870,6 @@ bool strv_fnmatch_full(
 
         return false;
 }
-
-#endif // 0
 
 char** strv_skip(char **l, size_t n) {
 

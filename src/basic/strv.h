@@ -66,12 +66,12 @@ static inline int strv_push_prepend(char ***l, char *value) {
         return strv_insert(l, 0, value);
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_consume_with_size(char ***l, size_t *n, char *value);
 static inline int strv_consume(char ***l, char *value) {
         return strv_consume_with_size(l, NULL, value);
 }
 
+#if 0 /// UNNEEDED by elogind
 int strv_consume_pair(char ***l, char *a, char *b);
 #endif // 0
 int strv_consume_prepend(char ***l, char *value);
@@ -260,6 +260,7 @@ void strv_print(char * const *l);
 #if 0 /// UNNEEDED by elogind
 char** strv_reverse(char **l);
 char** strv_shell_escape(char **l, const char *bad);
+#endif // 0
 
 bool strv_fnmatch_full(char* const* patterns, const char *s, int flags, size_t *ret_matched_pos);
 static inline bool strv_fnmatch(char* const* patterns, const char *s) {
@@ -271,8 +272,6 @@ static inline bool strv_fnmatch_or_empty(char* const* patterns, const char *s, i
         return strv_isempty(patterns) ||
                strv_fnmatch_full(patterns, s, flags, NULL);
 }
-
-#endif // 0
 
 char** strv_skip(char **l, size_t n);
 
