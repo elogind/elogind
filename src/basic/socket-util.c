@@ -1082,6 +1082,7 @@ int receive_one_fd(int transport_fd, int flags) {
         assert(k < 0);
         return (int) k;
 }
+#endif // 0
 
 ssize_t next_datagram_size_fd(int fd) {
         ssize_t l;
@@ -1121,6 +1122,7 @@ fallback:
  * only on "transient" errors, but let's make sure we don't loop forever. */
 #define MAX_FLUSH_ITERATIONS 1024
 
+#if 0 /// UNNEEDED by elogind
 int flush_accept(int fd) {
 
         int r, b;

@@ -15,7 +15,7 @@
 #include <sys/un.h>
 
 #include "errno-util.h"
-//#include "in-addr-util.h"
+#include "in-addr-util.h"
 #include "macro.h"
 #include "missing_network.h"
 #include "missing_socket.h"
@@ -182,9 +182,11 @@ int send_one_fd_sa(int transport_fd,
 #define send_one_fd(transport_fd, fd, flags) send_one_fd_iov_sa(transport_fd, fd, NULL, 0, NULL, 0, flags)
 ssize_t receive_one_fd_iov(int transport_fd, struct iovec *iov, size_t iovlen, int flags, int *ret_fd);
 int receive_one_fd(int transport_fd, int flags);
+#endif // 0
 
 ssize_t next_datagram_size_fd(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int flush_accept(int fd);
 #endif // 0
 
