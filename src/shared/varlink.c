@@ -23,9 +23,6 @@
 #include "user-util.h"
 #include "varlink.h"
 
-/// Additional includes needed by elogind
-#include "varlink-internal.h"
-
 #define VARLINK_DEFAULT_CONNECTIONS_MAX 4096U
 #define VARLINK_DEFAULT_CONNECTIONS_PER_UID_MAX 1024U
 
@@ -2604,7 +2601,6 @@ int varlink_server_set_description(VarlinkServer *s, const char *description) {
 
         return free_and_strdup(&s->description, description);
 }
-#endif // 0
 
 int varlink_server_serialize(VarlinkServer *s, FILE *f, FDSet *fds) {
         assert(f);
@@ -2686,3 +2682,4 @@ int varlink_server_deserialize_one(VarlinkServer *s, const char *value, FDSet *f
         LIST_PREPEND(sockets, s->sockets, TAKE_PTR(ss));
         return 0;
 }
+#endif // 0
