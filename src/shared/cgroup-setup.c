@@ -173,13 +173,13 @@ int cg_weight_parse(const char *s, uint64_t *ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_cpu_weight_parse(const char *s, uint64_t *ret) {
         if (streq_ptr(s, "idle"))
                 return *ret = CGROUP_WEIGHT_IDLE;
         return cg_weight_parse(s, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_cpu_shares_parse(const char *s, uint64_t *ret) {
         uint64_t u;
         int r;
