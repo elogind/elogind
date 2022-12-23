@@ -161,9 +161,6 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         return 0;
 }
 
-#if 1 /// Only available in this file for elogind
-static
-#endif // 1
 /* Get the list of batteries */
 static int battery_enumerator_new(sd_device_enumerator **ret) {
         _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
@@ -627,6 +624,9 @@ int check_wakeup_type(void) {
         return false;
 }
 
+#if 1 /// Only available in this file for elogind
+static
+#endif // 1
 int can_sleep_state(char **types) {
         _cleanup_free_ char *text = NULL;
         int r;
