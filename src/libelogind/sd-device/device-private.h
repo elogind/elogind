@@ -11,9 +11,9 @@
 
 #include "macro.h"
 
-#if 0 /// UNNEEDED by elogind
 int device_new_from_mode_and_devnum(sd_device **ret, mode_t mode, dev_t devnum);
 int device_new_from_nulstr(sd_device **ret, char *nulstr, size_t len);
+#if 0 /// UNNEEDED by elogind
 int device_new_from_strv(sd_device **ret, char **strv);
 #endif // 0
 
@@ -63,8 +63,8 @@ uint64_t device_get_devlinks_generation(sd_device *device);
 #endif // 0
 
 int device_properties_prepare(sd_device *device);
-#if 0 /// UNNEEDED by elogind
 int device_get_properties_nulstr(sd_device *device, const char **ret_nulstr, size_t *ret_len);
+#if 0 /// UNNEEDED by elogind
 int device_get_properties_strv(sd_device *device, char ***ret);
 
 int device_rename(sd_device *device, const char *name);
