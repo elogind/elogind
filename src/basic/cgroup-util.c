@@ -729,7 +729,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
         }
 
         fs = procfs_file_alloca(pid, "cgroup");
-        log_debug_elogind("Searching for PID %u in \"%s\" (controller \"%s\")", pid, fs, controller);
+        log_debug_elogind("Searching for PID %d in \"%s\" (controller \"%s\")", pid, fs, controller);
         r = fopen_unlocked(fs, "re", &f);
         if (r == -ENOENT)
                 return -ESRCH;
@@ -1114,7 +1114,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **cgroup) {
         if (r < 0)
                 return r;
 
-        log_debug_elogind("Shifting path: \"%s\" (PID %u, root: \"%s\")",
+        log_debug_elogind("Shifting path: \"%s\" (PID %d, root: \"%s\")",
                           raw, pid, root ? root : "NULL");
         r = cg_shift_path(raw, root, &c);
         if (r < 0)
@@ -1584,7 +1584,7 @@ int cg_pid_get_slice(pid_t pid, char **slice) {
         assert(slice);
 
         r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
-        log_debug_elogind("Found cgroup %s for pid %u (result %d)",
+        log_debug_elogind("Found cgroup %s for PID %d (result %d)",
                           cgroup, pid, r);
         if (r < 0)
                 return r;
