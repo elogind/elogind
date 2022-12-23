@@ -75,10 +75,6 @@
     <filename>/etc/elogind/sleep.conf.d/*.conf</filename> only have a <literal>[Sleep]</literal> section.</para>
     <!-- // 0 -->
 
-    <!-- 1 /// elogind needs a second level, as we use two sections. -->
-    <refsect2><title>[Login] section:</title>
-    <!-- // 1 -->
-
     <variablelist class='config-directives'>
       <!-- 0 /// elogind has no support for AutoVT
 
