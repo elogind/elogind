@@ -1112,7 +1112,6 @@ int parse_sec(const char *t, usec_t *usec) {
         return parse_time(t, usec, USEC_PER_SEC);
 }
 
-#if 0 /// UNNEEDED by elogind
 int parse_sec_fix_0(const char *t, usec_t *ret) {
         usec_t k;
         int r;
@@ -1128,6 +1127,7 @@ int parse_sec_fix_0(const char *t, usec_t *ret) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_sec_def_infinity(const char *t, usec_t *ret) {
         t += strspn(t, WHITESPACE);
         if (isempty(t)) {
