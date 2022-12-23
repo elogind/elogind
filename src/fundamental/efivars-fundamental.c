@@ -18,7 +18,6 @@ const sd_char *secure_boot_mode_to_string(SecureBootMode m) {
 }
 #endif // 0
 
-
 SecureBootMode decode_secure_boot_mode(bool secure, bool audit, bool deployed, bool setup) {
         /* See figure 32-4 Secure Boot Modes from UEFI Specification 2.9 */
         if (secure && deployed && !audit && !setup)
