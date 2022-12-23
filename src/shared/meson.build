@@ -383,6 +383,7 @@ shared_sources = files(
         'dev-setup.c',
         'dev-setup.h',
         'devnode-acl.h',
+        'dlfcn-util.h',
         'dns-domain.c',
         'dns-domain.h',
         'efi-api.c',
