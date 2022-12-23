@@ -961,12 +961,8 @@ endif
 # conf.set('TIME_EPOCH', time_epoch)
 #
 # conf.set('CLOCK_VALID_RANGE_USEC_MAX', get_option('clock-valid-range-usec-max'))
-#
-# default_user_shell = get_option('default-user-shell')
-# conf.set_quoted('DEFAULT_USER_SHELL',      default_user_shell)
-# conf.set_quoted('DEFAULT_USER_SHELL_NAME', fs.name(default_user_shell))
+# ############################################################
 #else // 0
-############################################################
 # elogind needs to know which cgroups controller to follow.
 get_cg_ctrl_sh = find_program('tools/meson-get-cg-controller.sh')
 with_cgroupctrl = get_option('cgroup-controller')
@@ -990,6 +986,11 @@ conf.set_quoted('SYSTEMD_CGROUP_CONTROLLER_HYBRID',
                 '='.join(['name', with_cgroupctrl]))
 ############################################################
 #endif // 0
+
+default_user_shell = get_option('default-user-shell')
+conf.set_quoted('DEFAULT_USER_SHELL',      default_user_shell)
+conf.set_quoted('DEFAULT_USER_SHELL_NAME', fs.name(default_user_shell))
+############################################################
 
 foreach tuple : [['system-alloc-uid-min', 'SYS_UID_MIN', 1],  # Also see login.defs(5).
                  ['system-uid-max',       'SYS_UID_MAX', 999],
