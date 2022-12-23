@@ -13,26 +13,26 @@
 //#include "bpf-socket-bind.h"
 //#include "btrfs-util.h"
 //#include "bus-error.h"
-#include "bus-locator.h"
+//#include "bus-locator.h"
 #include "cgroup-setup.h"
 #include "cgroup-util.h"
 #include "cgroup.h"
-#include "devnum-util.h"
+//#include "devnum-util.h"
 #include "fd-util.h"
-#include "fileio.h"
-#include "in-addr-prefix-util.h"
-#include "inotify-util.h"
-#include "io-util.h"
-#include "ip-protocol-list.h"
-#include "limits-util.h"
+//#include "fileio.h"
+//#include "in-addr-prefix-util.h"
+//#include "inotify-util.h"
+//#include "io-util.h"
+//#include "ip-protocol-list.h"
+//#include "limits-util.h"
 #include "nulstr-util.h"
 //#include "parse-util.h"
 #include "path-util.h"
-#include "percent-util.h"
+//#include "percent-util.h"
 //#include "process-util.h"
 #include "procfs-util.h"
 //#include "restrict-ifaces.h"
-#include "special.h"
+//#include "special.h"
 #include "stdio-util.h"
 //#include "string-table.h"
 #include "string-util.h"
@@ -44,6 +44,7 @@
 #include "bpf/restrict_fs/restrict-fs-skel.h"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #define CGROUP_CPU_QUOTA_DEFAULT_PERIOD_USEC ((usec_t) 100 * USEC_PER_MSEC)
 
 /* Returns the log level to use when cgroup attribute writes fail. When an attribute is missing or we have access
@@ -51,7 +52,6 @@
  * out specific attributes from us. */
 #define LOG_LEVEL_CGROUP_WRITE(r) (IN_SET(abs(r), ENOENT, EROFS, EACCES, EPERM) ? LOG_DEBUG : LOG_WARNING)
 
-#if 0 /// UNNEEDED by elogind
 uint64_t tasks_max_resolve(const TasksMax *tasks_max) {
         if (tasks_max->scale == 0)
                 return tasks_max->value;
@@ -3655,6 +3655,36 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         unit_add_to_cgroup_empty_queue(u);
         return 1;
 }
+#else // 0
+int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
+        _cleanup_free_ char *path = NULL;
+	int r = 0;
+        Session *s;
+
+        assert(m);
+        assert(cgroup);
+
+        log_debug_elogind("Got cgroup empty notification for: %s", cgroup);
+
+        s = hashmap_get(m->sessions, cgroup);
+
+        if (s) {
+                /* Let's verify that the cgroup is really empty */
+                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, s->id, &path);
+                if (r < 0)
+                        return log_error_errno(r, "Cannot find session %s cgroup path: %m", s->id);
+                if (cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, path) > 0) {
+                        log_debug_elogind("Queing session %s for gc, its cgroup is empty!", s->id);
+                        session_add_to_gc_queue(s);
+                }
+        } else
+                log_warning("Session not found: %s", cgroup);
+
+        return 0;
+}
+#endif // 0
+
+#if 0 /// UNNEEDED by elogind
 
 int unit_get_memory_available(Unit *u, uint64_t *ret) {
         uint64_t unit_current, available = UINT64_MAX;
@@ -3727,36 +3757,6 @@ int unit_get_memory_available(Unit *u, uint64_t *ret) {
         return 0;
 }
 
-#else // 0
-int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
-        _cleanup_free_ char *path = NULL;
-	int r = 0;
-        Session *s;
-
-        assert(m);
-        assert(cgroup);
-
-        log_debug_elogind("Got cgroup empty notification for: %s", cgroup);
-
-        s = hashmap_get(m->sessions, cgroup);
-
-        if (s) {
-                /* Let's verify that the cgroup is really empty */
-                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, s->id, &path);
-                if (r < 0)
-                        return log_error_errno(r, "Cannot find session %s cgroup path: %m", s->id);
-                if (cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, path) > 0) {
-                        log_debug_elogind("Queing session %s for gc, its cgroup is empty!", s->id);
-                        session_add_to_gc_queue(s);
-                }
-        } else
-                log_warning("Session not found: %s", cgroup);
-
-        return 0;
-}
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 int unit_get_memory_current(Unit *u, uint64_t *ret) {
         int r;
 
