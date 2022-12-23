@@ -81,10 +81,10 @@ static inline int mknod_atomic(const char *path, mode_t mode, dev_t dev) {
 }
 
 int mkfifoat_atomic(int dir_fd, const char *path, mode_t mode);
-#endif // 0
 static inline int mkfifo_atomic(const char *path, mode_t mode) {
         return mkfifoat_atomic(AT_FDCWD, path, mode);
 }
+#endif // 0
 
 int get_files_in_directory(const char *path, char ***list);
 
