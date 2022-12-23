@@ -525,6 +525,7 @@ int chase_symlinks_and_stat(
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int chase_symlinks_and_access(
                 const char *path,
                 const char *root,
@@ -567,6 +568,7 @@ int chase_symlinks_and_access(
 
         return 1;
 }
+#endif // 0
 
 int chase_symlinks_and_fopen_unlocked(
                 const char *path,
