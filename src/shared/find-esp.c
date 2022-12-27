@@ -23,6 +23,9 @@
 #include "string-util.h"
 #include "virt.h"
 
+/// Additional includes needed by elogind
+#include "sd-gpt.h"
+
 typedef enum VerifyESPFlags {
         VERIFY_ESP_SEARCHING         = 1 << 0, /* Downgrade various "not found" logs to debug level */
         VERIFY_ESP_UNPRIVILEGED_MODE = 1 << 1, /* Call into udev rather than blkid */
