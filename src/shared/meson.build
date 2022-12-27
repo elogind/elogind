@@ -401,7 +401,6 @@ shared_sources = files(
         'find-esp.h',
         'format-table.c',
         'format-table.h',
-        'gpt.h',
         'json.c',
         'json.h',
         'json-internal.h',

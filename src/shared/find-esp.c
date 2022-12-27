@@ -16,7 +16,7 @@
 #include "errno-util.h"
 #include "fd-util.h"
 #include "find-esp.h"
-#include "gpt.h"
+//#include "gpt.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "stat-util.h"
