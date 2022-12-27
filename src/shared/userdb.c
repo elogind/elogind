@@ -525,10 +525,14 @@ static int userdb_start_query(
 
 static int userdb_process(
                 UserDBIterator *iterator,
+#if 0 /// Never needed in elogind
                 UserRecord **ret_user_record,
                 GroupRecord **ret_group_record,
                 char **ret_user_name,
                 char **ret_group_name) {
+#else // 0
+                UserRecord **ret_user_record) {
+#endif // 0
 
         int r;
 
@@ -541,12 +545,14 @@ static int userdb_process(
                         else
                                 iterator->found_user = user_record_unref(iterator->found_user);
 
+#if 0 /// Never needed in elogind
                         if (ret_group_record)
                                 *ret_group_record = NULL;
                         if (ret_user_name)
                                 *ret_user_name = NULL;
                         if (ret_group_name)
                                 *ret_group_name = NULL;
+#endif // 0
 
                         return 0;
                 }
@@ -644,7 +650,11 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
 
         r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
+#if 0 /// The NULL parameters are not needed with elogind
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
+#else // 0
+                r = userdb_process(iterator, ret);
+#endif // 0
                 if (r >= 0)
                         return r;
         }
@@ -697,7 +707,11 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
 
         r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
+#if 0 /// The NULL parameters are not needed with elogind
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
+#else // 0
+                r = userdb_process(iterator, ret);
+#endif // 0
                 if (r >= 0)
                         return r;
         }
