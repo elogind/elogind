@@ -375,7 +375,6 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
  */
 static int elogind_schedule_shutdown(sd_bus *bus, enum elogind_action a) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        char date[FORMAT_TIMESTAMP_MAX];
         const char *action;
         int r;
 

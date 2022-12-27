@@ -21,5 +21,25 @@
         </clean>
       </configuration>
     </target>
+    <target id="6f0ef9ab-c3c3-43dd-bfb8-1762f1cd0aa0" name="build Debug/release" defaultType="MAKE">
+      <configuration id="0dac5605-893a-4e7f-b2e5-8d7760738bd5" name="build Debug/release" toolchainName="Default">
+        <build type="MAKE">
+          <make targetName="DEBUG=YES BUILDMODE=release" />
+        </build>
+        <clean type="MAKE">
+          <make targetName="clean DEBUG=YES BUILDMODE=release" />
+        </clean>
+      </configuration>
+    </target>
+    <target id="24e915da-4695-4756-b33b-04824e1d9569" name="build Release/developer" defaultType="MAKE">
+      <configuration id="5cb2d7fe-08de-48c8-8420-3748985c3647" name="build Release/developer" toolchainName="Default">
+        <build type="MAKE">
+          <make targetName="DEBUG=NO BUILDMODE=developer" />
+        </build>
+        <clean type="MAKE">
+          <make targetName="clean DEBUG=NO BUILDMODE=developer" />
+        </clean>
+      </configuration>
+    </target>
   </component>
 </project>
