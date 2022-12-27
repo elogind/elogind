@@ -173,13 +173,13 @@ int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error) {
         return has_owner;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool bus_error_is_unknown_service(const sd_bus_error *error) {
         return sd_bus_error_has_names(error,
                                       SD_BUS_ERROR_SERVICE_UNKNOWN,
                                       SD_BUS_ERROR_NAME_HAS_NO_OWNER,
                                       BUS_ERROR_NO_SUCH_UNIT);
 }
+#if 0 /// UNNEEDED by elogind
 
 int bus_check_peercred(sd_bus *c) {
         struct ucred ucred;
