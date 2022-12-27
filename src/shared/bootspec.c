@@ -1084,6 +1084,7 @@ static int boot_load_efi_entry_pointers(BootConfig *config, bool skip_efivars) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int boot_config_select_special_entries(BootConfig *config, bool skip_efivars) {
         int r;
 
@@ -1098,6 +1099,7 @@ int boot_config_select_special_entries(BootConfig *config, bool skip_efivars) {
 
         return 0;
 }
+#endif // 0
 
 int boot_config_finalize(BootConfig *config) {
         int r;
