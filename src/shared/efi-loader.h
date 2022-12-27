@@ -6,7 +6,7 @@
 #include "efivars-fundamental.h"
 #include "efivars.h"
 
-/* Various calls that interface with EFI variables implementing https://elogind.io/BOOT_LOADER_INTERFACE */
+/* Various calls that interface with EFI variables implementing https://systemd.io/BOOT_LOADER_INTERFACE */
 
 #if ENABLE_EFI
 

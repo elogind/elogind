@@ -9,7 +9,7 @@
 /*
  * If you change this file you probably should also change its documentation:
  *
- * https://elogind.io/JOURNAL_FILE_FORMAT
+ * https://systemd.io/JOURNAL_FILE_FORMAT
  */
 
 typedef struct Header Header;

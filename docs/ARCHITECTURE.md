@@ -154,9 +154,9 @@ including under `valgrind` or `gdb`.
 Sources in `test/TEST-*` implement system-level testing for executables,
 libraries and daemons that are shipped by the project. They require privileges
 to run, and are not safe to execute directly on a host. By default they will
-build an image and run the test under it via `qemu` or `elogind-nspawn`.
+build an image and run the test under it via `qemu` or `systemd-nspawn`.
 
-Most of those tests should be able to run via `elogind-nspawn`, which is
+Most of those tests should be able to run via `systemd-nspawn`, which is
 orders-of-magnitude faster than `qemu`, but some tests require privileged
 operations like using `dm-crypt` or `loopdev`. They are clearly marked if that
 is the case.
@@ -171,10 +171,10 @@ by contributors.
 
 ## Documentation
 
-## elogind.io
+## systemd.io
 
 Markdown files found under `docs/` are automatically published on the
-[elogind.io](https://elogind.io) website using Github Pages. A minimal unit test
+[systemd.io](https://systemd.io) website using Github Pages. A minimal unit test
 to ensure the formatting doesn't have errors is included in the
 `meson test -C build/ github-pages` run as part of the CI.
 

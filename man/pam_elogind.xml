@@ -34,12 +34,12 @@
     and hence the systemd control group hierarchy.</para>
     --><!-- else // 0 -->
     <para><command>pam_elogind</command> registers user sessions with
-    the elogind login manager
+    the <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry> login manager,
     and hence the elogind control group hierarchy.</para>
     <!-- // 0 -->
 
     <para>The module also applies various resource management and runtime parameters to the new session, as
-    configured in the <ulink url="https://elogind.io/USER_RECORD">JSON User Records</ulink> of the user, when
+    configured in the <ulink url="https://systemd.io/USER_RECORD">JSON User Records</ulink> of the user, when
     one is defined.</para>
 
     <para>On login, this module — in conjunction with <filename>elogind-logind.service</filename> — ensures the

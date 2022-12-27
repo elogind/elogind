@@ -34,7 +34,7 @@ static int cg_any_controller_used_for_v1(void) {
 
         /* The intention of this is to check if the fully unified cgroup tree setup is possible, meaning all
          * enabled kernel cgroup controllers are currently not in use by cgroup1.  For reference:
-         * https://elogind.io/CGROUP_DELEGATION/#three-different-tree-setups-
+         * https://systemd.io/CGROUP_DELEGATION/#three-different-tree-setups-
          *
          * Note that this is typically only useful to check inside a container where we don't know what
          * cgroup tree setup is in use by the host; if the host is using legacy or hybrid, we can't use

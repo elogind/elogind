@@ -15,8 +15,13 @@
 
 <policyconfig>
 
+        <!-- 0 /// elogind can be found elsewhere
         <vendor>The systemd Project</vendor>
-        <vendor_url>https://elogind.io</vendor_url>
+        <vendor_url>https://systemd.io</vendor_url>
+        --><!-- else // 0 -->
+        <vendor>The elogind Project</vendor>
+        <vendor_url>https://github.com/elogind</vendor_url>
+        <!-- // 0 -->
 
         <action id="org.freedesktop.login1.inhibit-block-shutdown">
                 <description gettext-domain="systemd">Allow applications to inhibit system shutdown</description>
