@@ -100,16 +100,20 @@ int table_fill_empty(Table *t, size_t until_column);
 
 #if 0 /// UNNEEDED by elogind
 int table_dup_cell(Table *t, TableCell *cell);
-#endif // 0
 
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width);
+#endif // 0
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width);
 int table_set_weight(Table *t, TableCell *cell, unsigned weight);
 int table_set_align_percent(Table *t, TableCell *cell, unsigned percent);
+#if 0 /// UNNEEDED by elogind
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent);
+#endif // 0
 int table_set_color(Table *t, TableCell *cell, const char *color);
+#if 0 /// UNNEEDED by elogind
 int table_set_rgap_color(Table *t, TableCell *cell, const char *color);
 int table_set_url(Table *t, TableCell *cell, const char *url);
+#endif // 0
 int table_set_uppercase(Table *t, TableCell *cell, bool b);
 
 #if 0 /// UNNEEDED by elogind
@@ -129,9 +133,9 @@ int table_set_sort_internal(Table *t, size_t first_column, ...);
 #define table_set_sort(...) table_set_sort_internal(__VA_ARGS__, SIZE_MAX)
 #if 0 /// UNNEEDED by elogind
 int table_set_reverse(Table *t, size_t column, bool b);
-#endif // 0
 int table_hide_column_from_display_internal(Table *t, ...);
 #define table_hide_column_from_display(t, ...) table_hide_column_from_display_internal(t, __VA_ARGS__, (size_t) -1)
+#endif // 0
 
 int table_print(Table *t, FILE *f);
 int table_format(Table *t, char **ret);

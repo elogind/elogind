@@ -678,6 +678,7 @@ int table_set_align_percent(Table *t, TableCell *cell, unsigned percent) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent) {
         int r;
 
@@ -696,6 +697,7 @@ int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent) {
         table_get_data(t, cell)->ellipsize_percent = percent;
         return 0;
 }
+#endif // 0
 
 int table_set_color(Table *t, TableCell *cell, const char *color) {
         int r;
@@ -711,6 +713,7 @@ int table_set_color(Table *t, TableCell *cell, const char *color) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_set_rgap_color(Table *t, TableCell *cell, const char *color) {
         int r;
 
@@ -744,6 +747,7 @@ int table_set_url(Table *t, TableCell *cell, const char *url) {
 
         return free_and_replace(table_get_data(t, cell)->url, copy);
 }
+#endif // 0
 
 int table_set_uppercase(Table *t, TableCell *cell, bool b) {
         TableData *d;
@@ -1133,6 +1137,7 @@ static const char* table_ersatz_string(const Table *t) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static int table_set_display_all(Table *t) {
         size_t *d;
 
@@ -1152,6 +1157,7 @@ static int table_set_display_all(Table *t) {
 
         return 0;
 }
+#endif // 0
 
 int table_set_display_internal(Table *t, size_t first_column, ...) {
         size_t column;
@@ -1210,6 +1216,7 @@ int table_set_sort_internal(Table *t, size_t first_column, ...) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_hide_column_from_display_internal(Table *t, ...) {
         size_t cur = 0;
         int r;
@@ -1251,6 +1258,7 @@ int table_hide_column_from_display_internal(Table *t, ...) {
 
         return 0;
 }
+#endif // 0
 
 static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t index_b) {
         assert(a);
