@@ -34,14 +34,14 @@ int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t 
 #endif // 0
 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
+#if 0 /// UNNEEDED by elogind
 bool bus_error_is_unknown_service(const sd_bus_error *error);
 
-#if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c);
 
+int bus_connect_system_systemd(sd_bus **ret_bus);
+int bus_connect_user_systemd(sd_bus **ret_bus);
 #endif // 0
-int bus_connect_system_elogind(sd_bus **ret_bus);
-int bus_connect_user_elogind(sd_bus **ret_bus);
 
 int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #if 0 /// UNNEEDED by elogind
