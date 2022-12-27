@@ -12,20 +12,20 @@
 
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int efi_loader_get_device_part_uuid(sd_id128_t *ret);
 int efi_loader_get_boot_usec(usec_t *ret_firmware, usec_t *ret_loader);
+#endif // 0
 
 int efi_loader_get_entries(char ***ret);
 
 int efi_loader_get_features(uint64_t *ret);
+#if 0 /// UNNEEDED by elogind
 int efi_stub_get_features(uint64_t *ret);
+#endif // 0
 
 int efi_loader_get_config_timeout_one_shot(usec_t *ret);
 int efi_loader_update_entry_one_shot_cache(char **cache, struct stat *cache_stat);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 #else
 
@@ -48,9 +48,11 @@ static inline int efi_loader_get_features(uint64_t *ret) {
         return -EOPNOTSUPP;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline int efi_stub_get_features(uint64_t *ret) {
         return -EOPNOTSUPP;
 }
+#endif // 0
 
 static inline int efi_loader_get_config_timeout_one_shot(usec_t *ret) {
         return -EOPNOTSUPP;
@@ -60,12 +62,7 @@ static inline int efi_loader_update_entry_one_shot_cache(char **cache, struct st
         return -EOPNOTSUPP;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 #endif
 
 bool efi_loader_entry_name_valid(const char *s);
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0

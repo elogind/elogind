@@ -191,6 +191,7 @@ int efi_loader_get_features(uint64_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int efi_stub_get_features(uint64_t *ret) {
         _cleanup_free_ void *v = NULL;
         size_t s;
@@ -238,6 +239,7 @@ int efi_stub_get_features(uint64_t *ret) {
         memcpy(ret, v, sizeof(uint64_t));
         return 0;
 }
+#endif // 0
 
 int efi_loader_get_config_timeout_one_shot(usec_t *ret) {
         _cleanup_free_ char *v = NULL;
