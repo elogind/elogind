@@ -42,6 +42,6 @@ jobs:
              python3 -m pip install --user --upgrade pip
              python3 -m pip install --user "meson==0.60.3"
       - name: Build elogind
-        run: make DEBUG=YES BUILDMODE=RELEASE CGDEFAULT=hybrid MESON=$HOME/.local/bin/meson NINJA=/tmp/build/bin/ninja
+        run: make DEBUG=YES BUILDMODE=release CGDEFAULT=hybrid MESON=$HOME/.local/bin/meson NINJA=/tmp/build/bin/ninja
       - name: Run tests
-        run: make test DEBUG=YES BUILDMODE=RELEASE CGDEFAULT=hybrid MESON=$HOME/.local/bin/meson NINJA=/tmp/build/bin/ninja
+        run: make test DEBUG=YES BUILDMODE=release CGDEFAULT=hybrid MESON=$HOME/.local/bin/meson NINJA=/tmp/build/bin/ninja
