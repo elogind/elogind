@@ -699,6 +699,13 @@ static int manager_connect_bus(Manager *m) {
         r = bus_call_method_async(m->bus, NULL, bus_systemd_mgr, "Subscribe", NULL, NULL, NULL);
         if (r < 0)
                 return log_error_errno(r, "Failed to enable subscription: %m");
+#else // 0
+        /* Since the facilities just above are not available, elogind needs another mean to
+         * take action when the dbus connection is closed.
+         */
+        r = sd_bus_set_exit_on_disconnect(m->bus, true);
+        if (r < 0)
+                return log_error_errno(r, "Failed to set exit on disconnect: %m");
 #endif // 0
 
         r = sd_bus_request_name_async(m->bus, NULL, "org.freedesktop.login1", 0, NULL, NULL);
