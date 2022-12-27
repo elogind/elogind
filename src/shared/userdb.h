@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include "group-record.h"
+//#include "group-record.h"
 #include "user-record.h"
 
 /* Inquire local services for user/group records */

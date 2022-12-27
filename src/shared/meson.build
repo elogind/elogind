@@ -402,8 +402,6 @@ shared_sources = files(
         'format-table.c',
         'format-table.h',
         'gpt.h',
-        'group-record.c',
-        'group-record.h',
         'json.c',
         'json.h',
         'json-internal.h',

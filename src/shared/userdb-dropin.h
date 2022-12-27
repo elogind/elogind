@@ -2,7 +2,7 @@
 #pragma once
 
 #include "def.h"
-#include "group-record.h"
+//#include "group-record.h"
 #include "user-record.h"
 #include "userdb.h"
 

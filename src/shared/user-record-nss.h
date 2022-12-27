@@ -6,7 +6,7 @@
 #include <pwd.h>
 #include <shadow.h>
 
-#include "group-record.h"
+//#include "group-record.h"
 #include "user-record.h"
 
 /* Synthesize UserRecord and GroupRecord objects from NSS data */

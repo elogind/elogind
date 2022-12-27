@@ -23,8 +23,10 @@ DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(link_hash_ops, void, trivial_hash_
 
 typedef enum LookupWhat {
         LOOKUP_USER,
+#if 0 /// Nowhere needed in elogind
         LOOKUP_GROUP,
         LOOKUP_MEMBERSHIP,
+#endif // 0
         _LOOKUP_WHAT_MAX,
 } LookupWhat;
 
@@ -44,9 +46,11 @@ struct UserDBIterator {
         unsigned n_found;
         sd_event *event;
         UserRecord *found_user;                   /* when .what == LOOKUP_USER */
+#if 0 /// Nowhere needed in elogind
         GroupRecord *found_group;                 /* when .what == LOOKUP_GROUP */
 
         char *found_user_name, *found_group_name; /* when .what == LOOKUP_MEMBERSHIP */
+#endif // 0
         char **members_of_group;
         size_t index_members_of_group;
         char *filter_user_name, *filter_group_name;
@@ -69,6 +73,7 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
 
                 break;
 
+#if 0 /// Nowhere needed in elogind
         case LOOKUP_GROUP:
                 group_record_unref(iterator->found_group);
 
@@ -88,6 +93,7 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
                         endgrent();
 
                 break;
+#endif // 0
 
         default:
                 assert_not_reached();
@@ -234,8 +240,8 @@ static int userdb_on_query_reply(
                 goto finish;
         }
 
-        case LOOKUP_GROUP: {
 #if 0 /// Nowhere needed in elogind
+        case LOOKUP_GROUP: {
                 _cleanup_(user_group_data_release) struct user_group_data group_data = {};
 
                 static const JsonDispatch dispatch_table[] = {
@@ -283,14 +289,12 @@ static int userdb_on_query_reply(
 
                 if (FLAGS_SET(flags, VARLINK_REPLY_CONTINUES))
                         return 0;
-#endif // 0
 
                 r = 0;
                 goto finish;
         }
 
         case LOOKUP_MEMBERSHIP: {
-#if 0 /// Nowhere needed in elogind
                 struct membership_data {
                         const char *user_name;
                         const char *group_name;
@@ -328,11 +332,11 @@ static int userdb_on_query_reply(
 
                 if (FLAGS_SET(flags, VARLINK_REPLY_CONTINUES))
                         return 0;
-#endif // 0
 
                 r = 0;
                 goto finish;
         }
+#endif // 0
 
         default:
                 assert_not_reached();
