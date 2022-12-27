@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 #if 0 /// elogind does not ship homed or anything related
-/* Users managed by systemd-homed. See https://elogind.io/UIDS-GIDS for details how this range fits into the rest of the world */
+/* Users managed by systemd-homed. See https://systemd.io/UIDS-GIDS for details how this range fits into the rest of the world */
 #define HOME_UID_MIN ((uid_t) 60001)
 #define HOME_UID_MAX ((uid_t) 60513)
 
