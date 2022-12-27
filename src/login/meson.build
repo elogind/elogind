@@ -127,11 +127,11 @@ if enable_logind
 #         install_data('org.freedesktop.login1.service',
 #                      install_dir : dbussystemservicedir)
 #else // 0
-        logind_service = configure_file(
-                input : 'org.freedesktop.login1.service.in',
-                output : 'org.freedesktop.login1.service',
-                configuration : conf)
-        install_data(logind_service,
+        custom_target(
+                input: 'org.freedesktop.login1.service.in',
+                output: 'org.freedesktop.login1.service',
+                command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+                install : enable_logind,
                 install_dir : dbussystemservicedir)
 #endif // 0
         install_data('org.freedesktop.login1.policy',

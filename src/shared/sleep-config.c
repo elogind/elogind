@@ -747,14 +747,14 @@ static int can_sleep_mem(char **types) {
                 }
 
                 if (strv_contains(types, s)) {
-                        log_debug_errno(r, "Mem sleep mode \"%s\" is supported by the kernel.", s);
+                        log_debug("Mem Suspend sleep mode \"%s\" is supported by the kernel.", s);
                         return true;
                 }
         }
 
         if (DEBUG_LOGGING) {
                 _cleanup_free_ char *t = strv_join(types, "/");
-                log_debug_errno(r, "Mem sleep mode %s not supported by the kernel, sorry.", strnull(t));
+                log_debug("Mem sleep mode %s not supported by the kernel, sorry.", strnull(t));
         }
         return false;
 }
@@ -1232,8 +1232,8 @@ static int can_sleep_internal(
                 return false;
 #else // 0
         if ( (can_sleep_state(sleep_config->states[operation]) <= 0) ||
-             ( (SLEEP_SUSPEND != operation) && (can_sleep_disk(sleep_config->modes[operation]) <= 0) ) ||
-             (can_sleep_mem(sleep_config->modes[operation]) <= 0))
+            ( (SLEEP_SUSPEND != operation) && (can_sleep_disk(sleep_config->modes[operation]) <= 0) ) ||
+            ( (SLEEP_SUSPEND == operation) && (can_sleep_mem(sleep_config->modes[operation]) <= 0)))
                 return false;
 #endif // 0
 
